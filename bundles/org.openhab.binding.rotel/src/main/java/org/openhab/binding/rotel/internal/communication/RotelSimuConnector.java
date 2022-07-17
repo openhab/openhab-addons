@@ -907,6 +907,12 @@ public class RotelSimuConnector extends RotelConnector {
                 case DIMMER_LEVEL_GET:
                     textAscii = buildAsciiResponse(KEY_DIMMER, dimmer);
                     break;
+                case MODEL:
+                    textAscii = buildAsciiResponse(KEY_MODEL, model.getName());
+                    break;
+                case VERSION:
+                    textAscii = buildAsciiResponse(KEY_VERSION, "1.00");
+                    break;
                 default:
                     accepted = false;
                     break;

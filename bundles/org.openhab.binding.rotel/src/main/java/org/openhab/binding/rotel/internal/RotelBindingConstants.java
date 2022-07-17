@@ -259,6 +259,8 @@ public class RotelBindingConstants {
     public static final String KEY_BALANCE_ZONE3 = "balance_zone3";
     public static final String KEY_BALANCE_ZONE4 = "balance_zone4";
     public static final String KEY_SPEAKER = "speaker";
+    public static final String KEY_MODEL = "model";
+    public static final String KEY_VERSION = "version";
     // Output keys only used by the HEX protocol
     public static final String KEY_LINE1 = "line1";
     public static final String KEY_LINE2 = "line2";

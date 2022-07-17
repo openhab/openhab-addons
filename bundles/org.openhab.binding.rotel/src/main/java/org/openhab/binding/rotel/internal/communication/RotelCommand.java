@@ -304,7 +304,9 @@ public enum RotelCommand {
     SPEAKER_B_TOGGLE("Toggle Speaker B Output", PRIMARY_CMD, (byte) 0x51, "speaker_b", "speaker_b"),
     SPEAKER_B_ON("Set Speaker B Output", "speaker_b_on", "speaker_b_on"),
     SPEAKER_B_OFF("Unset Speaker B Output", "speaker_b_off", "speaker_b_off"),
-    SPEAKER("Request current active speaker outputs", "get_current_speaker", "speaker?");
+    SPEAKER("Request current active speaker outputs", "get_current_speaker", "speaker?"),
+    MODEL("Request the model number", null, "model?"),
+    VERSION("Request the main CPU software version", null, "version?");
 
     public static final byte PRIMARY_COMMAND = (byte) 0x10;
 

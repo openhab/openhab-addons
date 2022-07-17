@@ -1571,6 +1571,12 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                         throw new RotelException("Invalid value");
                     }
                     break;
+                case KEY_MODEL:
+                    getThing().setProperty(Thing.PROPERTY_MODEL_ID, value);
+                    break;
+                case KEY_VERSION:
+                    getThing().setProperty(Thing.PROPERTY_FIRMWARE_VERSION, value);
+                    break;
                 default:
                     logger.debug("onNewMessageEvent: unhandled key {}", key);
                     break;
@@ -1868,6 +1874,10 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                                 sendCommand(RotelCommand.SPEAKER);
                                 Thread.sleep(SLEEP_INTV);
                             }
+                            sendCommand(RotelCommand.MODEL);
+                            Thread.sleep(SLEEP_INTV);
+                            sendCommand(RotelCommand.VERSION);
+                            Thread.sleep(SLEEP_INTV);
                             break;
                     }
                 } catch (RotelException e) {
