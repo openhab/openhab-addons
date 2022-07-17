@@ -13,30 +13,68 @@
 package org.openhab.transform.scale.internal;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 
-import java.util.Locale;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.measure.quantity.Dimensionless;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
+import org.mockito.stubbing.Answer;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.transform.Transformation;
 import org.openhab.core.transform.TransformationException;
+import org.openhab.core.transform.TransformationRegistry;
 
 /**
  * @author Gaël L'hopital - Initial contribution
  */
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@NonNullByDefault
 public class ScaleTransformServiceTest {
-    private ScaleTransformationService processor;
+    private static final String SRC_FOLDER = "conf" + File.separator + "transform";
+
+    @Mock
+    private @NonNullByDefault({}) TransformationRegistry transformationConfigurationRegistry;
+    private final Map<String, Transformation> configurationMap = new HashMap<>();
+    private @NonNullByDefault({}) ScaleTransformationService processor;
 
     @BeforeEach
-    public void init() {
-        processor = new ScaleTransformationService() {
-            @Override
-            protected Locale getLocale() {
-                return Locale.US;
+    public void init() throws IOException {
+        configurationMap.clear();
+        Files.walk(Path.of(SRC_FOLDER)).filter(Files::isRegularFile).forEach(file -> {
+            try {
+                String content = new String(Files.readAllBytes(file), StandardCharsets.UTF_8);
+                String uid = Path.of(SRC_FOLDER).relativize(file).toString();
+                Transformation transformationConfiguration = new Transformation(uid, uid, "scale",
+                        Map.of(Transformation.FUNCTION, content));
+                configurationMap.put(uid, transformationConfiguration);
+            } catch (IOException ignored) {
             }
-        };
+        });
+
+        Mockito.when(transformationConfigurationRegistry.get(anyString(), eq(null)))
+                .thenAnswer((Answer<Transformation>) invocation -> {
+                    Object[] args = invocation.getArguments();
+                    return configurationMap.get(args[0]);
+                });
+        processor = new ScaleTransformationService(transformationConfigurationRegistry);
     }
 
     @Test
@@ -80,8 +118,7 @@ public class ScaleTransformServiceTest {
         // Issue #1107
         String existingscale = "scale/humidex_fr.scale";
         String source = "-";
-        String transformedResponse = processor.transform(existingscale, source);
-        assertEquals("", transformedResponse);
+        assertThrows(TransformationException.class, () -> processor.transform(existingscale, source));
     }
 
     @Test
@@ -104,8 +141,7 @@ public class ScaleTransformServiceTest {
         // checks that an error is raised when trying to scale an erroneous value
         String existingscale = "scale/evaluationorder.scale";
         String source = "azerty";
-        String transformedResponse = processor.transform(existingscale, source);
-        assertEquals("", transformedResponse);
+        assertThrows(TransformationException.class, () -> processor.transform(existingscale, source));
     }
 
     @Test
@@ -150,7 +186,6 @@ public class ScaleTransformServiceTest {
     public void testValueExceedsRange() throws TransformationException {
         String existingscale = "scale/humidex.scale";
         String source = "200";
-        String transformedResponse = processor.transform(existingscale, source);
-        assertEquals("", transformedResponse);
+        assertThrows(TransformationException.class, () -> processor.transform(existingscale, source));
     }
 }

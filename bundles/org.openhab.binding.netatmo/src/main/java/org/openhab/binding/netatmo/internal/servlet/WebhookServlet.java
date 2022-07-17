@@ -13,13 +13,9 @@
 package org.openhab.binding.netatmo.internal.servlet;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.http.HttpServletRequest;
@@ -35,7 +31,7 @@ import org.openhab.binding.netatmo.internal.api.SecurityApi;
 import org.openhab.binding.netatmo.internal.api.dto.WebhookEvent;
 import org.openhab.binding.netatmo.internal.deserialization.NADeserializer;
 import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
-import org.openhab.binding.netatmo.internal.handler.capability.EventCapability;
+import org.openhab.binding.netatmo.internal.handler.capability.Capability;
 import org.osgi.service.http.HttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +45,7 @@ import org.slf4j.LoggerFactory;
 public class WebhookServlet extends NetatmoServlet {
     private static final long serialVersionUID = -354583910860541214L;
 
-    private final Map<String, EventCapability> dataListeners = new ConcurrentHashMap<>();
+    private final Map<String, Capability> dataListeners = new ConcurrentHashMap<>();
     private final Logger logger = LoggerFactory.getLogger(WebhookServlet.class);
     private final SecurityApi securityApi;
     private final NADeserializer deserializer;
@@ -96,7 +92,7 @@ public class WebhookServlet extends NetatmoServlet {
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         replyQuick(resp);
-        processEvent(inputStreamToString(req.getInputStream()));
+        processEvent(new String(req.getInputStream().readAllBytes(), StandardCharsets.UTF_8));
     }
 
     private void processEvent(String data) throws IOException {
@@ -104,10 +100,7 @@ public class WebhookServlet extends NetatmoServlet {
             logger.debug("Event transmitted from restService : {}", data);
             try {
                 WebhookEvent event = deserializer.deserialize(WebhookEvent.class, data);
-                List<String> toBeNotified = new ArrayList<>();
-                toBeNotified.add(event.getCameraId());
-                toBeNotified.addAll(event.getPersons().keySet());
-                notifyListeners(toBeNotified, event);
+                notifyListeners(event);
             } catch (NetatmoException e) {
                 logger.debug("Error deserializing webhook data received : {}. {}", data, e.getMessage());
             }
@@ -119,31 +112,22 @@ public class WebhookServlet extends NetatmoServlet {
         resp.setContentType(MediaType.APPLICATION_JSON);
         resp.setHeader("Access-Control-Allow-Origin", "*");
         resp.setHeader("Access-Control-Allow-Methods", HttpMethod.POST);
-        resp.setIntHeader("Access-Control-Max-Age", 3600);
         resp.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+        resp.setIntHeader("Access-Control-Max-Age", 3600);
         resp.getWriter().write("");
     }
 
-    private String inputStreamToString(InputStream is) throws IOException {
-        String value = "";
-        try (Scanner scanner = new Scanner(is)) {
-            scanner.useDelimiter("\\A");
-            value = scanner.hasNext() ? scanner.next() : "";
-        }
-        return value;
-    }
-
-    private void notifyListeners(List<String> tobeNotified, WebhookEvent event) {
-        tobeNotified.forEach(id -> {
-            EventCapability module = dataListeners.get(id);
+    private void notifyListeners(WebhookEvent event) {
+        event.getNAObjectList().forEach(id -> {
+            Capability module = dataListeners.get(id);
             if (module != null) {
                 module.setNewData(event);
             }
         });
     }
 
-    public void registerDataListener(String id, EventCapability eventCapability) {
-        dataListeners.put(id, eventCapability);
+    public void registerDataListener(String id, Capability capability) {
+        dataListeners.put(id, capability);
     }
 
     public void unregisterDataListener(String id) {

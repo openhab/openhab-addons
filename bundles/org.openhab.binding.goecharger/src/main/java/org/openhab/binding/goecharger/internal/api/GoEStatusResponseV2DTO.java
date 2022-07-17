@@ -41,4 +41,7 @@ public class GoEStatusResponseV2DTO extends GoEStatusResponseBaseDTO {
 
     @SerializedName("frc")
     public Integer forceState;
+
+    @SerializedName("nrg")
+    public Double[] energy;
 }

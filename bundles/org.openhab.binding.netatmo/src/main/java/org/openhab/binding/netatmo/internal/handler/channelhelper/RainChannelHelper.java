@@ -15,6 +15,8 @@ package org.openhab.binding.netatmo.internal.handler.channelhelper;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.toQuantityType;
 
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.MeasureClass;
@@ -30,8 +32,8 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 public class RainChannelHelper extends ChannelHelper {
 
-    public RainChannelHelper() {
-        super(GROUP_RAIN, MeasureClass.RAIN_QUANTITY);
+    public RainChannelHelper(Set<String> providedGroups) {
+        super(providedGroups);
     }
 
     @Override

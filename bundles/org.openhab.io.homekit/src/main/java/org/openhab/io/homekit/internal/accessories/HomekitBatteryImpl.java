@@ -37,7 +37,7 @@ import io.github.hapjava.services.impl.BatteryService;
  * @author Eugen Freiter - Initial contribution
  */
 public class HomekitBatteryImpl extends AbstractHomekitAccessoryImpl implements BatteryAccessory {
-    private static final String BATTERY_TYPE = "chargeable";
+    public static final String BATTERY_TYPE = "chargeable";
 
     private final BooleanItemReader lowBatteryReader;
     private BooleanItemReader chargingBatteryReader;
@@ -87,7 +87,9 @@ public class HomekitBatteryImpl extends AbstractHomekitAccessoryImpl implements 
 
     @Override
     public void subscribeBatteryChargingState(final HomekitCharacteristicChangeCallback callback) {
-        subscribe(BATTERY_CHARGING_STATE, callback);
+        if (isChargeable) {
+            subscribe(BATTERY_CHARGING_STATE, callback);
+        }
     }
 
     @Override
@@ -102,6 +104,8 @@ public class HomekitBatteryImpl extends AbstractHomekitAccessoryImpl implements 
 
     @Override
     public void unsubscribeBatteryChargingState() {
-        unsubscribe(BATTERY_CHARGING_STATE);
+        if (isChargeable) {
+            unsubscribe(BATTERY_CHARGING_STATE);
+        }
     }
 }

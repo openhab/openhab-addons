@@ -213,19 +213,40 @@ If the new string is invalid, the old configuration will be used.
 This binding includes a rule action, which allows to immediately change DMX channels from within rules.
 There is a separate instance for each bridge, which can be retrieved e.g. through
 
-```
+:::: tabs
+
+::: tab DSL
+
+```php
 val dmxActions = getActions("dmx","dmx:sacn-bridge:mydmxbridge")
 ```
 
 where the first parameter always has to be `dmx` and the second is the full Thing UID of the bridge that should be used.
 Once this action instance is retrieved, you can invoke the `sendFade(String channels, String fade, Boolean resumeAfter)` method on it:
 
-```
+```php
 dmxActions.sendFade("1:41/3","10000:255,255,255:-1", false)
 ```
 
 The parameters are the same as in a chaser thing configuration.
 Defining more than one step in `fadeString` is supported, too.
+
+:::
+
+::: tab JavaScript
+
+The first parameter always has to be `dmx` and the second is the full Thing UID of the bridge that should be used.
+
+```javascript
+actions.get("dmx","dmx:sacn-bridge:mydmxbridge").sendFade("1:41/3","10000:255,255,255:-1", false);
+```
+
+The sendFade parameters are the same as in a chaser thing configuration.
+Defining more than one step in `fadeString` is supported, too.
+
+:::
+
+::::
 
 ## Full Example
 

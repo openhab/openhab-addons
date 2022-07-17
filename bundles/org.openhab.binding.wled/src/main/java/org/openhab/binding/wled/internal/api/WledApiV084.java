@@ -31,13 +31,13 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
-import org.openhab.binding.wled.internal.WLedHandler;
 import org.openhab.binding.wled.internal.WLedHelper;
 import org.openhab.binding.wled.internal.WledState;
 import org.openhab.binding.wled.internal.WledState.InfoResponse;
 import org.openhab.binding.wled.internal.WledState.JsonResponse;
 import org.openhab.binding.wled.internal.WledState.LedInfo;
 import org.openhab.binding.wled.internal.WledState.StateResponse;
+import org.openhab.binding.wled.internal.handlers.WLedBridgeHandler;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
@@ -45,8 +45,6 @@ import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
-import org.openhab.core.thing.Channel;
-import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.StateOption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,12 +63,12 @@ public class WledApiV084 implements WledApi {
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
     protected final Gson gson = new Gson();
     protected final HttpClient httpClient;
-    protected final WLedHandler handler;
+    protected final WLedBridgeHandler handler;
     protected final String address;
     protected WledState state = new WledState();
     private int version = 0;
 
-    public WledApiV084(WLedHandler handler, HttpClient httpClient) {
+    public WledApiV084(WLedBridgeHandler handler, HttpClient httpClient) {
         this.handler = handler;
         this.address = handler.config.address;
         this.httpClient = httpClient;
@@ -79,33 +77,13 @@ public class WledApiV084 implements WledApi {
     @Override
     public void initialize() throws ApiException {
         state.jsonResponse = getJson();
-        getUpdatedFxList();
-        getUpdatedPaletteList();
-
+        state.infoResponse = getInfo();
         @Nullable
         LedInfo localLedInfo = gson.fromJson(state.infoResponse.leds.toString(), LedInfo.class);
         if (localLedInfo != null) {
             state.ledInfo = localLedInfo;
         }
-
         handler.hasWhite = state.ledInfo.rgbw;
-        ArrayList<Channel> removeChannels = new ArrayList<>();
-        if (!state.ledInfo.rgbw) {
-            logger.debug("WLED is not setup to use RGBW, so removing un-needed white channels");
-            Channel channel = handler.getThing().getChannel(CHANNEL_PRIMARY_WHITE);
-            if (channel != null) {
-                removeChannels.add(channel);
-            }
-            channel = handler.getThing().getChannel(CHANNEL_SECONDARY_WHITE);
-            if (channel != null) {
-                removeChannels.add(channel);
-            }
-            channel = handler.getThing().getChannel(CHANNEL_THIRD_WHITE);
-            if (channel != null) {
-                removeChannels.add(channel);
-            }
-        }
-        handler.removeChannels(removeChannels);
     }
 
     @Override
@@ -172,7 +150,10 @@ public class WledApiV084 implements WledApi {
             }
             state.stateResponse = response;
             state.unpackJsonObjects();
-            processState();
+            processBridgeStates();
+            for (int count = 0; count < state.stateResponse.seg.length; count++) {
+                processState(count);
+            }
         } catch (JsonSyntaxException | ApiException e) {
             logger.debug("Reply back when a command was sent triggered an exception:{}", jsonState);
         }
@@ -199,6 +180,7 @@ public class WledApiV084 implements WledApi {
             if (response == null) {
                 throw new ApiException("Could not GET:/json/info");
             }
+            logger.trace("/json/info:{}", returnContent);
             return response;
         } catch (JsonSyntaxException e) {
             throw new ApiException("JsonSyntaxException:{}", e);
@@ -222,10 +204,14 @@ public class WledApiV084 implements WledApi {
     public void update() throws ApiException {
         state.stateResponse = getState();
         state.unpackJsonObjects();
-        processState();
+        processBridgeStates();
+        for (int count = 0; count < state.stateResponse.seg.length; count++) {
+            processState(count);
+        }
     }
 
-    protected void getUpdatedFxList() {
+    @Override
+    public List<StateOption> getUpdatedFxList() {
         List<StateOption> fxOptions = new ArrayList<>();
         int counter = 0;
         for (String value : state.jsonResponse.effects) {
@@ -234,11 +220,11 @@ public class WledApiV084 implements WledApi {
         if (handler.config.sortEffects) {
             fxOptions.sort(Comparator.comparing(o -> o.getValue().equals("0") ? "" : o.getLabel()));
         }
-        handler.stateDescriptionProvider.setStateOptions(new ChannelUID(handler.getThing().getUID(), CHANNEL_FX),
-                fxOptions);
+        return fxOptions;
     }
 
-    protected void getUpdatedPaletteList() {
+    @Override
+    public List<StateOption> getUpdatedPaletteList() {
         List<StateOption> palleteOptions = new ArrayList<>();
         int counter = 0;
         for (String value : state.jsonResponse.palettes) {
@@ -247,8 +233,7 @@ public class WledApiV084 implements WledApi {
         if (handler.config.sortPalettes) {
             palleteOptions.sort(Comparator.comparing(o -> o.getValue().equals("0") ? "" : o.getLabel()));
         }
-        handler.stateDescriptionProvider.setStateOptions(new ChannelUID(handler.getThing().getUID(), CHANNEL_PALETTES),
-                palleteOptions);
+        return palleteOptions;
     }
 
     @Override
@@ -264,45 +249,19 @@ public class WledApiV084 implements WledApi {
         return version;
     }
 
-    protected void processState() throws ApiException {
-        if (state.stateResponse.seg.length <= handler.config.segmentIndex) {
-            throw new ApiException("Segment " + handler.config.segmentIndex
-                    + " is not currently setup correctly in the WLED firmware");
-        }
-        HSBType tempHSB = WLedHelper
-                .parseToHSBType(state.stateResponse.seg[handler.config.segmentIndex].col[0].toString());
-        handler.update(CHANNEL_PRIMARY_COLOR, tempHSB);
-        handler.update(CHANNEL_SECONDARY_COLOR,
-                WLedHelper.parseToHSBType(state.stateResponse.seg[handler.config.segmentIndex].col[1].toString()));
-        handler.update(CHANNEL_THIRD_COLOR,
-                WLedHelper.parseToHSBType(state.stateResponse.seg[handler.config.segmentIndex].col[2].toString()));
-        if (state.ledInfo.rgbw) {
-            handler.update(CHANNEL_PRIMARY_WHITE, WLedHelper
-                    .parseWhitePercent(state.stateResponse.seg[handler.config.segmentIndex].col[0].toString()));
-            handler.update(CHANNEL_SECONDARY_WHITE, WLedHelper
-                    .parseWhitePercent(state.stateResponse.seg[handler.config.segmentIndex].col[1].toString()));
-            handler.update(CHANNEL_THIRD_WHITE, WLedHelper
-                    .parseWhitePercent(state.stateResponse.seg[handler.config.segmentIndex].col[2].toString()));
-        }
-        // Global OFF or Segment OFF needs to be treated as OFF
-        if (!state.stateResponse.seg[handler.config.segmentIndex].on || !state.stateResponse.on) {
-            handler.update(CHANNEL_MASTER_CONTROLS, OnOffType.OFF);
-            handler.update(CHANNEL_SEGMENT_BRIGHTNESS, OnOffType.OFF);
+    protected void processBridgeStates() throws ApiException {
+        if (!state.stateResponse.on) {
+            handler.update(CHANNEL_GLOBAL_BRIGHTNESS, OnOffType.OFF);
         } else {
-            handler.update(CHANNEL_MASTER_CONTROLS, tempHSB);
-            handler.update(CHANNEL_SEGMENT_BRIGHTNESS,
-                    new PercentType(new BigDecimal(state.stateResponse.seg[handler.config.segmentIndex].bri)
-                            .divide(BIG_DECIMAL_2_55, RoundingMode.HALF_UP)));
+            handler.update(CHANNEL_GLOBAL_BRIGHTNESS, new PercentType(
+                    new BigDecimal(state.stateResponse.bri).divide(BIG_DECIMAL_2_55, RoundingMode.HALF_UP)));
         }
+        handler.update(CHANNEL_LIVE_OVERRIDE, new StringType(Integer.toString(state.stateResponse.lor)));
+        handler.update(CHANNEL_PRESETS, new StringType(Integer.toString(state.stateResponse.ps)));
         if (state.nightLightState.on) {
             handler.update(CHANNEL_SLEEP, OnOffType.ON);
         } else {
             handler.update(CHANNEL_SLEEP, OnOffType.OFF);
-        }
-        if (state.stateResponse.pl == 0) {
-            handler.update(CHANNEL_PRESET_CYCLE, OnOffType.ON);
-        } else {
-            handler.update(CHANNEL_PRESET_CYCLE, OnOffType.OFF);
         }
         if (state.udpnState.recv) {
             handler.update(CHANNEL_SYNC_RECEIVE, OnOffType.ON);
@@ -314,32 +273,75 @@ public class WledApiV084 implements WledApi {
         } else {
             handler.update(CHANNEL_SYNC_SEND, OnOffType.OFF);
         }
-        if (state.stateResponse.seg[handler.config.segmentIndex].mi) {
-            handler.update(CHANNEL_MIRROR, OnOffType.ON);
+        if (state.stateResponse.pl == 0) {
+            handler.update(CHANNEL_PRESET_CYCLE, OnOffType.ON);
         } else {
-            handler.update(CHANNEL_MIRROR, OnOffType.OFF);
-        }
-        if (state.stateResponse.seg[handler.config.segmentIndex].rev) {
-            handler.update(CHANNEL_REVERSE, OnOffType.ON);
-        } else {
-            handler.update(CHANNEL_REVERSE, OnOffType.OFF);
+            handler.update(CHANNEL_PRESET_CYCLE, OnOffType.OFF);
         }
         handler.update(CHANNEL_TRANS_TIME, new QuantityType<>(
                 new BigDecimal(state.stateResponse.transition).divide(BigDecimal.TEN), Units.SECOND));
-        handler.update(CHANNEL_PRESETS, new StringType(Integer.toString(state.stateResponse.ps)));
-        handler.update(CHANNEL_FX,
-                new StringType(Integer.toString(state.stateResponse.seg[handler.config.segmentIndex].fx)));
-        handler.update(CHANNEL_PALETTES,
-                new StringType(Integer.toString(state.stateResponse.seg[handler.config.segmentIndex].pal)));
-        handler.update(CHANNEL_SPEED,
-                new PercentType(new BigDecimal(state.stateResponse.seg[handler.config.segmentIndex].sx)
-                        .divide(BIG_DECIMAL_2_55, RoundingMode.HALF_UP)));
-        handler.update(CHANNEL_INTENSITY,
-                new PercentType(new BigDecimal(state.stateResponse.seg[handler.config.segmentIndex].ix)
-                        .divide(BIG_DECIMAL_2_55, RoundingMode.HALF_UP)));
-        handler.update(CHANNEL_LIVE_OVERRIDE, new StringType(Integer.toString(state.stateResponse.lor)));
-        handler.update(CHANNEL_GROUPING, new DecimalType(state.stateResponse.seg[handler.config.segmentIndex].grp));
-        handler.update(CHANNEL_SPACING, new DecimalType(state.stateResponse.seg[handler.config.segmentIndex].spc));
+        handler.update(CHANNEL_SLEEP_DURATION,
+                new QuantityType<>(new BigDecimal(state.nightLightState.dur), Units.MINUTE));
+        handler.update(CHANNEL_SLEEP_BRIGHTNESS, new PercentType(
+                new BigDecimal(state.nightLightState.tbri).divide(BIG_DECIMAL_2_55, RoundingMode.HALF_UP)));
+        handler.update(CHANNEL_SLEEP_MODE, new StringType(Integer.toString(state.nightLightState.mode)));
+    }
+
+    protected void processState(int segmentIndex) throws ApiException {
+        if (state.stateResponse.seg.length <= segmentIndex) {
+            throw new ApiException(
+                    "Segment " + segmentIndex + " is not currently setup correctly in the WLED firmware");
+        }
+        if (handler.handlerMissing(segmentIndex)) {
+            // There is no thing setup for this segmentIndex.
+            return;
+        }
+        HSBType tempHSB = WLedHelper.parseToHSBType(state.stateResponse.seg[segmentIndex].col[0].toString());
+        handler.update(segmentIndex, CHANNEL_PRIMARY_COLOR, tempHSB);
+        handler.update(segmentIndex, CHANNEL_SECONDARY_COLOR,
+                WLedHelper.parseToHSBType(state.stateResponse.seg[segmentIndex].col[1].toString()));
+        handler.update(segmentIndex, CHANNEL_THIRD_COLOR,
+                WLedHelper.parseToHSBType(state.stateResponse.seg[segmentIndex].col[2].toString()));
+        if (state.ledInfo.rgbw) {
+            handler.update(segmentIndex, CHANNEL_PRIMARY_WHITE,
+                    WLedHelper.parseWhitePercent(state.stateResponse.seg[segmentIndex].col[0].toString()));
+            handler.update(segmentIndex, CHANNEL_SECONDARY_WHITE,
+                    WLedHelper.parseWhitePercent(state.stateResponse.seg[segmentIndex].col[1].toString()));
+            handler.update(segmentIndex, CHANNEL_THIRD_WHITE,
+                    WLedHelper.parseWhitePercent(state.stateResponse.seg[segmentIndex].col[2].toString()));
+        }
+        // Global OFF or Segment OFF needs to be treated as OFF
+        if (!state.stateResponse.seg[segmentIndex].on || !state.stateResponse.on) {
+            handler.update(segmentIndex, CHANNEL_MASTER_CONTROLS, OnOffType.OFF);
+            handler.update(segmentIndex, CHANNEL_SEGMENT_BRIGHTNESS, OnOffType.OFF);
+        } else {
+            handler.update(segmentIndex, CHANNEL_MASTER_CONTROLS, tempHSB);
+            handler.update(segmentIndex, CHANNEL_SEGMENT_BRIGHTNESS,
+                    new PercentType(new BigDecimal(state.stateResponse.seg[segmentIndex].bri).divide(BIG_DECIMAL_2_55,
+                            RoundingMode.HALF_UP)));
+        }
+        if (state.stateResponse.seg[segmentIndex].mi) {
+            handler.update(segmentIndex, CHANNEL_MIRROR, OnOffType.ON);
+        } else {
+            handler.update(segmentIndex, CHANNEL_MIRROR, OnOffType.OFF);
+        }
+        if (state.stateResponse.seg[segmentIndex].rev) {
+            handler.update(segmentIndex, CHANNEL_REVERSE, OnOffType.ON);
+        } else {
+            handler.update(segmentIndex, CHANNEL_REVERSE, OnOffType.OFF);
+        }
+        handler.update(segmentIndex, CHANNEL_FX,
+                new StringType(Integer.toString(state.stateResponse.seg[segmentIndex].fx)));
+        handler.update(segmentIndex, CHANNEL_PALETTES,
+                new StringType(Integer.toString(state.stateResponse.seg[segmentIndex].pal)));
+        handler.update(segmentIndex, CHANNEL_SPEED,
+                new PercentType(new BigDecimal(state.stateResponse.seg[segmentIndex].sx).divide(BIG_DECIMAL_2_55,
+                        RoundingMode.HALF_UP)));
+        handler.update(segmentIndex, CHANNEL_INTENSITY,
+                new PercentType(new BigDecimal(state.stateResponse.seg[segmentIndex].ix).divide(BIG_DECIMAL_2_55,
+                        RoundingMode.HALF_UP)));
+        handler.update(segmentIndex, CHANNEL_GROUPING, new DecimalType(state.stateResponse.seg[segmentIndex].grp));
+        handler.update(segmentIndex, CHANNEL_SPACING, new DecimalType(state.stateResponse.seg[segmentIndex].spc));
     }
 
     @Override
@@ -511,5 +513,29 @@ public class WledApiV084 implements WledApi {
     @Override
     public void setSpacing(int value, int segmentIndex) throws ApiException {
         postState("{\"seg\":[{\"id\":" + segmentIndex + ",\"spc\":" + value + "}]}");
+    }
+
+    @Override
+    public List<String> getSegmentNames() {
+        List<String> segmentNames = new ArrayList<>(state.stateResponse.seg.length);
+        for (int count = 0; count < state.stateResponse.seg.length; count++) {
+            segmentNames.add("Segment " + count);
+        }
+        return segmentNames;
+    }
+
+    @Override
+    public void setSleepMode(String value) throws ApiException {
+        // Binding requires firmware 0.11.0 and newer
+    }
+
+    @Override
+    public void setSleepDuration(BigDecimal time) throws ApiException {
+        postState("{\"nl\":{\"dur\":" + time + "}}");
+    }
+
+    @Override
+    public void setSleepTargetBrightness(PercentType percent) throws ApiException {
+        postState("{\"nl\":{\"tbri\":" + percent.toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + "}}");
     }
 }

@@ -113,8 +113,7 @@ public class MyBMWProxy {
         }
 
         // return in case of unknown brand
-        String userAgent = BimmerConstants.BRAND_USER_AGENTS_MAP.get(brand.toLowerCase());
-        if (userAgent == null) {
+        if (!BimmerConstants.ALL_BRANDS.contains(brand.toLowerCase())) {
             logger.warn("Unknown Brand {}", brand);
             return;
         }
@@ -138,7 +137,8 @@ public class MyBMWProxy {
             req = httpClient.newRequest(completeUrl);
         }
         req.header(HttpHeader.AUTHORIZATION, getToken().getBearerToken());
-        req.header(HTTPConstants.X_USER_AGENT, userAgent);
+        req.header(HTTPConstants.X_USER_AGENT,
+                String.format(BimmerConstants.X_USER_AGENT, brand, configuration.region));
         req.header(HttpHeader.ACCEPT_LANGUAGE, configuration.language);
         if (callback instanceof ByteResponseCallback) {
             req.header(HttpHeader.ACCEPT, "image/png");
@@ -306,7 +306,9 @@ public class MyBMWProxy {
                     + BimmerConstants.API_OAUTH_CONFIG;
             Request authValuesRequest = httpClient.newRequest(authValuesUrl);
             authValuesRequest.header(ACP_SUBSCRIPTION_KEY, BimmerConstants.OCP_APIM_KEYS.get(configuration.region));
-            authValuesRequest.header(X_USER_AGENT, BimmerConstants.USER_AGENT_BMW);
+            authValuesRequest.header(X_USER_AGENT,
+                    String.format(BimmerConstants.X_USER_AGENT, BimmerConstants.BRAND_BMW, configuration.region));
+
             ContentResponse authValuesResponse = authValuesRequest.send();
             if (authValuesResponse.getStatus() != 200) {
                 throw new HttpResponseException("URL: " + authValuesRequest.getURI() + ", Error: "
@@ -442,7 +444,9 @@ public class MyBMWProxy {
             String publicKeyUrl = "https://" + BimmerConstants.EADRAX_SERVER_MAP.get(BimmerConstants.REGION_CHINA)
                     + BimmerConstants.CHINA_PUBLIC_KEY;
             Request oauthQueryRequest = httpClient.newRequest(publicKeyUrl);
-            oauthQueryRequest.header(X_USER_AGENT, BimmerConstants.USER_AGENT_BMW);
+            oauthQueryRequest.header(HttpHeader.USER_AGENT, BimmerConstants.USER_AGENT);
+            oauthQueryRequest.header(X_USER_AGENT,
+                    String.format(BimmerConstants.X_USER_AGENT, BimmerConstants.BRAND_BMW, configuration.region));
             ContentResponse publicKeyResponse = oauthQueryRequest.send();
             if (publicKeyResponse.getStatus() != 200) {
                 throw new HttpResponseException("URL: " + oauthQueryRequest.getURI() + ", Error: "
@@ -476,7 +480,8 @@ public class MyBMWProxy {
             String tokenUrl = "https://" + BimmerConstants.EADRAX_SERVER_MAP.get(BimmerConstants.REGION_CHINA)
                     + BimmerConstants.CHINA_LOGIN;
             Request loginRequest = httpClient.POST(tokenUrl);
-            loginRequest.header(X_USER_AGENT, BimmerConstants.USER_AGENT_BMW);
+            loginRequest.header(X_USER_AGENT,
+                    String.format(BimmerConstants.X_USER_AGENT, BimmerConstants.BRAND_BMW, configuration.region));
             String jsonContent = "{ \"mobile\":\"" + configuration.userName + "\", \"password\":\"" + encodedPassword
                     + "\"}";
             loginRequest.content(new StringContentProvider(jsonContent));

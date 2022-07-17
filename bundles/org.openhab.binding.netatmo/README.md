@@ -5,7 +5,10 @@ The Netatmo binding integrates the following Netatmo products:
 - *Personal Weather Station*. Reports temperature, humidity, air pressure, carbon dioxide concentration in the air, as well as the ambient noise level.
 - *Thermostat*. Reports ambient temperature, allow to check target temperature, consult and change furnace heating status.
 - *Indoor Camera / Welcome*. Reports last event and persons at home, consult picture and video from event/camera.
+- *Siren*
 - *Outdoor Camera / Presence*. Reports last event, consult picture and video from event/camera.
+- *Doorbell* 
+- *Smoke Detector*
 
 See https://www.netatmo.com/ for details on their product.
 
@@ -30,7 +33,6 @@ The binding has the following configuration options:
 
 | Parameter    | Type          | Description                                                                                |
 |--------------|---------------|--------------------------------------------------------------------------------------------|
-| features     | String        | The perimeter of functionalities given to the binding WEATHER, AIR_CARE, ENERGY, SECURITY  |
 | readFriends  | Boolean       | Enables or disables the discovery of guest weather stations.                               |
 
 
@@ -131,6 +133,8 @@ You have to calculate the ID for the outside module as follows: (it cannot be re
 
 - if the first serial character is "h": start with "02"
 - if the first serial character is "i": start with "03"
+- if the first serial character is "j": start with "04"
+- if the first serial character is "k": start with "05"
 
 append ":00:00:",
 
@@ -182,6 +186,21 @@ Based on a standard update period of 10mn by Netatmo systems - it will auto adap
 
 All these channels are read only.
 
+**Extensible channels for the main indoor module:**
+
+| Channel Type         | Item Type            | Description                       | Channel parameters               |
+|----------------------|----------------------|-----------------------------------|----------------------------------|
+| co2-measurement      | Number:Dimensionless | CO2 measurement                   | limit (MIN, MAX), period (30min, 1hour, 3hours, 1day, 1week, 1month) |
+| co2-timestamp        | DateTime             | CO2 measurement timestamp         | limit (DATE_MIN, DATE_MAX), period (1week, 1month) |
+| hum-measurement      | Number:Dimensionless | Humidity measurement              | limit (MIN, MAX), period (30min, 1hour, 3hours, 1day, 1week, 1month) |
+| hum-timestamp        | DateTime             | Humidity measurement timestamp    | limit (DATE_MIN, DATE_MAX), period (1week, 1month) |
+| noise-measurement    | Number:Dimensionless | Noise measurement                 | limit (MIN, MAX), period (30min, 1hour, 3hours, 1day, 1week, 1month) |
+| noise-timestamp      | DateTime             | Noise measurement timestamp       | limit (DATE_MIN, DATE_MAX), period (1week, 1month) |
+| pressure-measurement | Number:Pressure      | Pressure measurement              | limit (MIN, MAX), period (30min, 1hour, 3hours, 1day, 1week, 1month) |
+| pressure-timestamp   | DateTime             | Pressure measurement timestamp    | limit (DATE_MIN, DATE_MAX), period (1week, 1month) |
+| temp-measurement     | Number:Temperature   | Temperature measurement           | limit (MIN, MAX), period (30min, 1hour, 3hours, 1day, 1week, 1month) |
+| temp-timestamp       | DateTime             | Temperature measurement timestamp | limit (DATE_MIN, DATE_MAX), period (1week, 1month) |
+
 
 ### Weather Station Outdoor module
 
@@ -209,6 +228,15 @@ All these channels are read only.
 | battery             | low-battery          | Switch               | Low battery                                      |
 
 All these channels are read only.
+
+**Extensible channels for the outdoor module:**
+
+| Channel Type         | Item Type            | Description                       | Channel parameters               |
+|----------------------|----------------------|-----------------------------------|----------------------------------|
+| hum-measurement      | Number:Dimensionless | Humidity measurement              | limit (MIN, MAX), period (30min, 1hour, 3hours, 1day, 1week, 1month) |
+| hum-timestamp        | DateTime             | Humidity measurement timestamp    | limit (DATE_MIN, DATE_MAX), period (1week, 1month) |
+| temp-measurement     | Number:Temperature   | Temperature measurement           | limit (MIN, MAX), period (30min, 1hour, 3hours, 1day, 1week, 1month) |
+| temp-timestamp       | DateTime             | Temperature measurement timestamp | limit (DATE_MIN, DATE_MAX), period (1week, 1month) |
 
 
 ### Weather Station Additional Indoor module
@@ -240,6 +268,17 @@ All these channels are read only.
 
 All these channels are read only.
 
+**Extensible channels for the additional indoor module:**
+
+| Channel Type         | Item Type            | Description                       | Channel parameters               |
+|----------------------|----------------------|-----------------------------------|----------------------------------|
+| co2-measurement      | Number:Dimensionless | CO2 measurement                   | limit (MIN, MAX), period (30min, 1hour, 3hours, 1day, 1week, 1month) |
+| co2-timestamp        | DateTime             | CO2 measurement timestamp         | limit (DATE_MIN, DATE_MAX), period (1week, 1month) |
+| hum-measurement      | Number:Dimensionless | Humidity measurement              | limit (MIN, MAX), period (30min, 1hour, 3hours, 1day, 1week, 1month) |
+| hum-timestamp        | DateTime             | Humidity measurement timestamp    | limit (DATE_MIN, DATE_MAX), period (1week, 1month) |
+| temp-measurement     | Number:Temperature   | Temperature measurement           | limit (MIN, MAX), period (30min, 1hour, 3hours, 1day, 1week, 1month) |
+| temp-timestamp       | DateTime             | Temperature measurement timestamp | limit (DATE_MIN, DATE_MAX), period (1week, 1month) |
+
 
 ### Rain Gauge
 
@@ -259,6 +298,12 @@ All these channels are read only.
 | battery             | low-battery          | Switch               | Low battery                                      |
 
 All these channels are read only.
+
+**Extensible channels for the rain guage:**
+
+| Channel Type         | Item Type            | Description                       | Channel parameters                                 |
+|----------------------|----------------------|-----------------------------------|----------------------------------------------------|
+| sum_rain-measurement | Number:Length        | Summing rain measurement          | period (30min, 1hour, 3hours, 1day, 1week, 1month) |
 
 
 ### Weather Station Wind module
@@ -322,6 +367,20 @@ All these channels are read only.
 
 All these channels are read only.
 
+**Extensible channels for the healthy home coach device:**
+
+| Channel Type         | Item Type            | Description                       | Channel parameters               |
+|----------------------|----------------------|-----------------------------------|----------------------------------|
+| hum-measurement      | Number:Dimensionless | Humidity measurement              | limit (MIN, MAX), period (30min, 1hour, 3hours, 1day, 1week, 1month) |
+| hum-timestamp        | DateTime             | Humidity measurement timestamp    | limit (DATE_MIN, DATE_MAX), period (1week, 1month) |
+| noise-measurement    | Number:Dimensionless | Noise measurement                 | limit (MIN, MAX), period (30min, 1hour, 3hours, 1day, 1week, 1month) |
+| noise-timestamp      | DateTime             | Noise measurement timestamp       | limit (DATE_MIN, DATE_MAX), period (1week, 1month) |
+| pressure-measurement | Number:Pressure      | Pressure measurement              | limit (MIN, MAX), period (30min, 1hour, 3hours, 1day, 1week, 1month) |
+| pressure-timestamp   | DateTime             | Pressure measurement timestamp    | limit (DATE_MIN, DATE_MAX), period (1week, 1month) |
+| temp-measurement     | Number:Temperature   | Temperature measurement           | limit (MIN, MAX), period (30min, 1hour, 3hours, 1day, 1week, 1month) |
+| temp-timestamp       | DateTime             | Temperature measurement timestamp | limit (DATE_MIN, DATE_MAX), period (1week, 1month) |
+
+
 
 ### Thermostat Relay Device
 
@@ -351,16 +410,16 @@ All these channels are read only.
 
 **Supported channels for the Room thing:**
 
-| Channel Group    | Channel Id            | Item Type            | Description                                             |
-|------------------|-----------------------|----------------------|---------------------------------------------------------|
-| room-temperature | value                 | Number:Temperature   | Current temperature in the room                         |
-| room-properties  | window-open           | Contact              | Windows of the room are opened                          |
-| room-properties  | anticipating          | Switch               | Anticipates next scheduled setpoint                     |
-| room-properties  | heating-power-request | Number:Dimensionless | Percentage of heating power                             |
-| setpoint         | value                 | Number:Temperature   | Thermostat temperature setpoint                         |
-| setpoint         | mode                  | String               | Chosen thermostat mode (home, frost guard, manual, max) |
-| setpoint         | start                 | DateTime             | Start time of the currently applied setpoint            |
-| setpoint         | end                   | DateTime             | End time of the currently applied setpoint              |
+| Channel Group | Channel Id            | Item Type            | Description                                             |
+|---------------|-----------------------|----------------------|---------------------------------------------------------|
+| temperature   | value                 | Number:Temperature   | Current temperature in the room                         |
+| properties    | window-open           | Contact              | Windows of the room are opened                          |
+| properties    | anticipating          | Switch               | Anticipates next scheduled setpoint                     |
+| properties    | heating-power-request | Number:Dimensionless | Percentage of heating power                             |
+| setpoint      | value                 | Number:Temperature   | Thermostat temperature setpoint                         |
+| setpoint      | mode                  | String               | Chosen thermostat mode (home, frost guard, manual, max) |
+| setpoint      | start                 | DateTime             | Start time of the currently applied setpoint            |
+| setpoint      | end                   | DateTime             | End time of the currently applied setpoint              |
 
 All these channels except setpoint and setpoint-mode are read only.
 
@@ -369,14 +428,14 @@ All these channels except setpoint and setpoint-mode are read only.
 
 **Supported channels for the thermostat module:**
 
-| Channel Group       | Channel Id         | Item Type            | Description                                      |
-|---------------------|--------------------|----------------------|--------------------------------------------------|
-| th-properties       | relay-status       | Contact              | Indicates if the boiler is currently heating     |
-| signal              | strength           | Number               | Signal strength (0 for no signal, 1 for weak...) |
-| signal              | value              | Number:Power         | Signal strength in dBm                           |
-| battery             | value              | Number               | Battery level                                    |
-| battery             | low-battery        | Switch               | Low battery                                      |
-| battery             | status             | String               | Description of the battery status (*)            |
+| Channel Group | Channel Id  | Item Type    | Description                                      |
+|---------------|-------------|--------------|--------------------------------------------------|
+| properties    | relay       | Contact      | Indicates if the boiler is currently heating     |
+| signal        | strength    | Number       | Signal strength (0 for no signal, 1 for weak...) |
+| signal        | value       | Number:Power | Signal strength in dBm                           |
+| battery       | value       | Number       | Battery level                                    |
+| battery       | low-battery | Switch       | Low battery                                      |
+| battery       | status      | String       | Description of the battery status (*)            |
 
 (*) Can be UNDEF on some modules
 
@@ -439,7 +498,7 @@ All these channels are read only.
 |                  | TAG_UNINSTALLED        | Triggered when a tag gets uninstalled                                                                                                                                            |  
 |                  | TAG_OPEN               | Triggered when an open event of a tag was detected                                                                                                                               |
 
-### Welcome and Presence Camera
+### Welcome, Presence and Doorbell Cameras
 
 Warnings:
 
@@ -504,6 +563,45 @@ Warnings:
 
 (*) This channel is configurable : low, poor, high.
 
+**Supported channels for the Doorbell thing:**
+
+| Channel Group | Channel ID        | Item Type    | Read/Write | Description                                                                                                                                 |
+|---------------|-------------------|--------------|------------|---------------------------------------------------------------------------------------------------------------------------------------------|
+| status        | sd-card           | String       | Read-only  | State of the SD card                                                                                                                        |
+| status        | alim              | String       | Read-only  | State of the power connector                                                                                                                |
+| live          | picture           | Image        | Read-only  | Camera Live Snapshot                                                                                                                        |
+| live          | local-picture-url | String       | Read-only  | Local Url of the live snapshot for this camera                                                                                              |
+| live          | vpn-picture-url   | String       | Read-only  | Url of the live snapshot for this camera through Netatmo VPN.                                                                               |
+| signal        | strength          | Number       | Read-only  | Signal strength (0 for no signal, 1 for weak...)                                                                                            |
+| signal        | value             | Number:Power | Read-only  | Signal strength in dBm                                                                                                                      |
+| last-event    | type              | String       | Read-only  | Type of event                                                                                                                               |
+| last-event    | video-status      | String       | Read-only  | Status of the video (recording, deleted or available)                                                                                       |
+| last-event    | time              | DateTime     | Read-only  | Time of occurrence of event                                                                                                                 |
+| last-event    | local-video-url   | String       | Read-only  | If the last event (depending upon event type) in the home lead a snapshot picture, the corresponding local video URL will be available here |
+| last-event    | vpn-video-url     | String       | Read-only  | If the last event (depending upon event type) in the home lead a snapshot picture, the corresponding VPN video URL will be available here   |
+| sub-event     | type              | String       | Read-only  | Type of sub-event                                                                                                                           |
+| sub-event     | time              | DateTime     | Read-only  | Time of occurrence of sub-event                                                                                                             |
+| sub-event     | message           | String       | Read-only  | Message sent by Netatmo corresponding to given sub-event                                                                                    |
+| sub-event     | snapshot-url      | String       | Read-only  | Depending upon event type in the home, a snapshot picture of the corresponding local video URL will be available here                       |
+| sub-event     | vignette-url      | String       | Read-only  | A vignette representing the snapshot                                                                                                        |
+| sub-event     | snapshot          | Image        | Read-only  | picture of the snapshot                                                                                                                     |
+| sub-event     | vignet            | Image        | Read-only  | picture of the vignette                                                                                                                     |
+
+
+Note: live feeds either locally or via VPN are not available in Netatmo API.
+
+**Supported channels for the Siren thing:**
+
+| Channel Group | Channel ID        | Item Type    | Read/Write | Description                                          |
+|---------------|-------------------|--------------|------------|------------------------------------------------------|
+| siren         | status            | String       | Read-only  | Status of the siren, if silent or emitting an alarm  |
+| siren         | monitoring        | Switch       | Read-only  | State of the siren device                            |
+| signal        | strength          | Number       | Read-only  | Signal strength (0 for no signal, 1 for weak...)     |
+| signal        | value             | Number:Power | Read-only  | Signal strength in dBm                               |
+| timestamp     | last-seen         | DateTime     | Read-only  | Last time the module reported its presence           |
+| battery       | value             | Number       | Read-only  | Battery level                                        |
+| battery       | low-battery       | Switch       | Read-only  | Low battery                                          |
+
 
 ### Welcome Person
 
@@ -516,29 +614,45 @@ Person things are automatically created in discovery process for all known perso
 
 **Supported channels for the Person thing:**
 
-| Channel Group  | Channel ID     | Item Type    | Description                                            |
-|----------------|----------------|--------------|--------------------------------------------------------|
-| person         | avatar-url     | String       | URL for the avatar of this person                      |
-| person         | avatar         | Image        | Avatar of this person                                  |
-| person         | at-home        | Switch       | Indicates if this person is known to be at home or not |
-| person         | last-seen      | DateTime     | Moment when this person was last seen                  |
-| person-event   | subtype        | String       | Sub-type of event                                      |
-| person-event   | message        | String       | Last event message from this person                    |
-| person-event   | time           | DateTime     | Moment of the last event for this person               |
-| person-event   | snapshot       | Image        | Picture of the last event for this person              |
-| person-event   | snapshot-url   | String       | URL for the picture of the last event for this person  |
-| person-event   | camera-id      | String       | ID of the camera that triggered the event              |
+| Channel Group | Channel ID   | Item Type | Description                                            |
+|---------------|--------------|-----------|--------------------------------------------------------|
+| person        | avatar-url   | String    | URL for the avatar of this person                      |
+| person        | avatar       | Image     | Avatar of this person                                  |
+| person        | at-home      | Switch    | Indicates if this person is known to be at home or not |
+| person        | last-seen    | DateTime  | Moment when this person was last seen                  |
+| last-event    | subtype      | String    | Sub-type of event                                      |
+| last-event    | message      | String    | Last event message from this person                    |
+| last-event    | time         | DateTime  | Moment of the last event for this person               |
+| last-event    | snapshot     | Image     | Picture of the last event for this person              |
+| last-event    | snapshot-url | String    | URL for the picture of the last event for this person  |
+| last-event    | camera-id    | String    | ID of the camera that triggered the event              |
 
 All these channels except at-home are read only.
 
 
-# Configuration Examples
+### Netatmo Smart Smoke Detector
+
+All these channels are read only.
+
+**Supported channels for the Smoke Detector thing:**
+
+| Channel Group | Channel Id   | Item Type    | Description                                      |
+|---------------|--------------|--------------|--------------------------------------------------|
+| signal        | strength     | Number       | Signal strength (0 for no signal, 1 for weak...) |
+| signal        | value        | Number:Power | Signal strength in dBm                           |
+| timestamp     | last-seen    | DateTime     | Last time the module reported its presence       |
+| last-event    | type         | String       | Type of event                                    |
+| last-event    | time         | DateTime     | Moment of the last event for this person         |
+| last-event    | subtype      | String       | Sub-type of event                                |
+| last-event    | message      | String       | Last event message from this person              |
+
+## Configuration Examples
 
 
-## things/netatmo.things
+### things/netatmo.things
 
 ```
-Bridge netatmo:account:home "Netatmo Account" [clientId="xxxxx", clientSecret="yyyy", refreshToken="zzzzz"] {
+Bridge netatmo:account:myaccount "Netatmo Account" [clientId="xxxxx", clientSecret="yyyy", refreshToken="zzzzz"] {
     Bridge weather-station inside "Inside Weather Station" [id="70:ee:aa:aa:aa:aa"] {
         outdoor outside   "Outside Module" [id="02:00:00:aa:aa:aa"] {
             Channels:
@@ -546,67 +660,78 @@ Bridge netatmo:account:home "Netatmo Account" [clientId="xxxxx", clientSecret="y
         }
         rain rainModule        "Rain Module"    [id="05:00:00:aa:aa:aa"] {
             Channels:
-                Type sum_rain-measurement: rainThisWeek  "Rain This Week"     [period="1week"]
-                Type sum_rain-measurement: rainThisMonth "Rain This Month"    [period="1month"]
+                Type sum_rain-measurement : rainThisWeek  "Rain This Week"     [period="1week"]
+                Type sum_rain-measurement : rainThisMonth "Rain This Month"    [period="1month"]
+        }
+    }
+    Bridge home myhome "My home" [ id="0123456789abcdef", refreshInterval=150 ] {
+        Thing welcome mycam "My camera" [ id="70:aa:bb:cc:dd:ee" ] {
+            Channels:
+                Type live-stream-url : live#local-stream-url [ quality="high" ]
+                Type live-stream-url : live#vpn-stream-url [ quality="low" ]
         }
     }
 }
 ```
 
 
-## Sample configuration of live-stream-url channels:
+### items/netatmo.items
 
 ```
-        ....
-        Thing welcome camera "Caméra" [ id="xxxxxx" ] {
-            Channels:
-                Type live-stream-url : live#local-stream-url [ quality="high" ]
-                Type live-stream-url : live#vpn-stream-url [ quality="low" ]
-        }
-        ...
+// Indoor Module
+Number:Temperature   Indoor_Temp                       "Temperature [%.1f %unit%]"                                  <temperature>      { channel = "netatmo:weather-station:myaccount:inside:temperature#value" }
+Number:Temperature   Indoor_Min_Temp                   "Min Temperature Today [%.1f %unit%]"                        <temperature>      { channel = "netatmo:weather-station:myaccount:inside:temperature#min-today" }
+Number:Temperature   Indoor_Max_Temp                   "Max Temperature Today [%.1f %unit%]"                        <temperature>      { channel = "netatmo:weather-station:myaccount:inside:temperature#max-today" }
+Number:Dimensionless Indoor_Humidity                   "Humidity [%d %unit%]"                                       <humidity>         { channel = "netatmo:weather-station:myaccount:inside:humidity#value" }
+Number               Indoor_Humidex                    "Humidex [%.0f]"                                             <temperature_hot>  { channel = "netatmo:weather-station:myaccount:inside:humidity#humidex" }
+Number:Temperature   Indoor_HeatIndex                  "HeatIndex [%.1f %unit%]"                                    <temperature_hot>  { channel = "netatmo:weather-station:myaccount:inside:temperature#heat-index" }
+Number:Temperature   Indoor_Dewpoint                   "Dewpoint [%.1f %unit%]"                                     <temperature_cold> { channel = "netatmo:weather-station:myaccount:inside:temperature#dewpoint" }
+Number:Temperature   Indoor_DewpointDepression         "DewpointDepression [%.1f %unit%]"                           <temperature_cold> { channel = "netatmo:weather-station:myaccount:inside:temperature#dewpoint-depression" }
+Number:Dimensionless Indoor_Co2                        "CO2 [%d %unit%]"                                            <carbondioxide>    { channel = "netatmo:weather-station:myaccount:inside:airquality#co2" }
+Number:Pressure      Indoor_Pressure                   "Pressure [%.1f %unit%]"                                     <pressure>         { channel = "netatmo:weather-station:myaccount:inside:pressure#value" }
+Number:Pressure      Indoor_AbsolutePressure           "AbsolutePressure [%.1f %unit%]"                             <pressure>         { channel = "netatmo:weather-station:myaccount:inside:pressure#absolute" }
+Number:Dimensionless Indoor_Noise                      "Noise [%d %unit%]"                                          <soundvolume>      { channel = "netatmo:weather-station:myaccount:inside:noise#value" }
+Number               Indoor_RadioStatus                 "RadioStatus [%s]"                                          <signal>           { channel = "netatmo:weather-station:myaccount:inside:signal#strength" }
+DateTime             Indoor_TimeStamp                  "TimeStamp [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"                  <calendar>         { channel = "netatmo:weather-station:myaccount:inside:timestamp#measures" }
+DateTime             Indoor_LastSeen            "LastSeen [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"                          <text>             { channel = "netatmo:weather-station:myaccount:inside:timestamp#last-seen" }
+
+// Outdoor Module
+Number:Temperature   Outdoor_Temperature               "Temperature [%.1f %unit%]"                                  <temperature>      { channel = "netatmo:outdoor:myaccount:inside:outside:temperature#value" }
+String               Outdoor_TempTrend                 "TempTrend [%s]"                                             <line>             { channel = "netatmo:outdoor:myaccount:inside:outside:temperature#trend" }
+Number:Dimensionless Outdoor_Humidity                  "Humidity [%d %unit%]"                                       <humidity>         { channel = "netatmo:outdoor:myaccount:inside:outside:humidity#value" }
+Number               Outdoor_Humidex                   "Humidex [%.0f]"                                             <temperature_hot>  { channel = "netatmo:outdoor:myaccount:inside:outside:humidity#humidex" }
+Number:Temperature   Outdoor_HeatIndex                 "heat-index [%.1f %unit%]"                                   <temperature_hot>  { channel = "netatmo:outdoor:myaccount:inside:outside:temperature#heat-index" }
+Number:Temperature   Outdoor_Dewpoint                  "Dewpoint [%.1f %unit%]"                                     <temperature_cold> { channel = "netatmo:outdoor:myaccount:inside:outside:temperature#dewpoint" }
+Number:Temperature   Outdoor_DewpointDepression        "DewpointDepression [%.1f %unit%]"                           <temperature_cold> { channel = "netatmo:outdoor:myaccount:inside:outside:temperature#dewpoint-depression" }
+Number               Outdoor_RadioStatus               "RfStatus [%.0f / 5]"                                        <signal>           { channel = "netatmo:outdoor:myaccount:inside:outside:signal#strength" }
+Switch               Outdoor_LowBattery                "LowBattery [%s]"                                            <siren>            { channel = "netatmo:outdoor:myaccount:inside:outside:battery#low-battery" }
+DateTime             Outdoor_TimeStamp                 "Measures TimeStamp [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"         <calendar>         { channel = "netatmo:outdoor:myaccount:inside:outside:timestamp#measures" }
+DateTime             Outdoor_LastMessage               "LastMessage [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"                <text>             { channel = "netatmo:outdoor:myaccount:inside:outside:timestamp#last-seen" }
+
+// Rain Module
+Number:Speed         Rain_Intensity                    "Rain Intensity [%.1f %unit%]"                               <rain>             { channel = "netatmo:rain:myaccount:inside:rainModule:rain#value"}
+Number:Length        Rain_Hour                         "Rain Last Hour [%.1f %unit%]"                               <rain>             { channel = "netatmo:rain:myaccount:inside:rainModule:rain#sum-1"}
+Number:Length        Rain_Today                        "Rain Today [%.1f %unit%]"                                   <rain>             { channel = "netatmo:rain:myaccount:inside:rainModule:rain#sum-24"}
+
+// Camera
+Switch               CameraMonitoring                  "Monitoring"                                                 <switch>           { channel = "netatmo:welcome:myaccount:myhome:mycam:status#monitoring", autoupdate="false" }
+String               CameraAlimState                   "Alim State [%s]"                                            <none>             { channel = "netatmo:welcome:myaccount:myhome:mycam:status#alim" }
+String               CameraSDCardState                 "SD Card State [%s]"                                         <none>             { channel = "netatmo:welcome:myaccount:myhome:mycam:status#sd-card" }
+Image                CameraLiveSnapshot                "Live Snapshot"                                              <none>             { channel = "netatmo:welcome:myaccount:myhome:mycam:live#picture" }
+String               CameraLiveStreamLocalUrl          "Live Video Stream [%s]"                                     <none>             { channel = "netatmo:welcome:myaccount:myhome:mycam:live#local-stream-url" }
+String               CameraLiveStreamVpnUrl            "Live Video Stream [%s]"                                     <none>             { channel = "netatmo:welcome:myaccount:myhome:mycam:live#vpn-stream-url" }
+Number               CameraWifiStrength                "Wi-Fi Strength [%s]"                                        <wifi>             { channel = "netatmo:welcome:myaccount:myhome:mycam:signal#strength" }
+DateTime             CameraEventTime                   "Event Timestamp [%1$tb %1$td %1$tH:%1$tM]"                  <time>             { channel = "netatmo:welcome:myaccount:myhome:mycam:last-event#time" }
+String               CameraEventType                   "Event Type [%s]"                                            <none>             { channel = "netatmo:welcome:myaccount:myhome:mycam:last-event#type" }
+String               CameraEventMessage                "Event Message [%s]"                                         <none>             { channel = "netatmo:welcome:myaccount:myhome:mycam:last-event#message" }
+Image                CameraEventSnapshot               "Event Snapshot"                                             <none>             { channel = "netatmo:welcome:myaccount:myhome:mycam:last-event#snapshot" }
+String               CameraEventStreamLocalUrl         "Event Video Stream [%s]"                                    <none>             { channel = "netatmo:welcome:myaccount:myhome:mycam:last-event#local-video-url" }
+String               CameraEventStreamVpnUrl           "Event Video Stream [%s]"                                    <none>             { channel = "netatmo:welcome:myaccount:myhome:mycam:last-event#vpn-video-url" }
+String               CameraEventVideoStatus            "Video Status [%s]"                                          <none>             { channel = "netatmo:welcome:myaccount:myhome:mycam:last-event#video-status" }
+String               CameraEventPersonId               "Person Id [%s]"                                             <none>             { channel = "netatmo:welcome:myaccount:myhome:mycam:last-event#person-id" }
 ```
 
-
-## items/netatmo.items
-
-```
-# Indoor Module
-Number:Temperature   Indoor_Temp                       "Temperature [%.1f %unit%]"                                  <temperature>      { channel = "netatmo:weather-station:home:inside:temperature#value" }
-Number:Temperature   Indoor_Min_Temp                   "Min Temperature Today [%.1f %unit%]"                        <temperature>      { channel = "netatmo:weather-station:home:inside:temperature#min-today" }
-Number:Temperature   Indoor_Max_Temp                   "Max Temperature Today [%.1f %unit%]"                        <temperature>      { channel = "netatmo:weather-station:home:inside:temperature#max-today" }
-Number:Dimensionless Indoor_Humidity                   "Humidity [%d %unit%]"                                       <humidity>         { channel = "netatmo:weather-station:home:inside:humidity#value" }
-Number               Indoor_Humidex                    "Humidex [%.0f]"                                             <temperature_hot>  { channel = "netatmo:weather-station:home:inside:humidity#humidex" }
-Number:Temperature   Indoor_HeatIndex                  "HeatIndex [%.1f %unit%]"                                    <temperature_hot>  { channel = "netatmo:weather-station:home:inside:temperature#heat-index" }
-Number:Temperature   Indoor_Dewpoint                   "Dewpoint [%.1f %unit%]"                                     <temperature_cold> { channel = "netatmo:weather-station:home:inside:temperature#dewpoint" }
-Number:Temperature   Indoor_DewpointDepression         "DewpointDepression [%.1f %unit%]"                           <temperature_cold> { channel = "netatmo:weather-station:home:inside:temperature#dewpoint-depression" }
-Number:Dimensionless Indoor_Co2                        "CO2 [%d %unit%]"                                            <carbondioxide>    { channel = "netatmo:weather-station:home:inside:airquality#co2" }
-Number:Pressure      Indoor_Pressure                   "Pressure [%.1f %unit%]"                                     <pressure>         { channel = "netatmo:weather-station:home:inside:pressure#value" }
-Number:Pressure      Indoor_AbsolutePressure           "AbsolutePressure [%.1f %unit%]"                             <pressure>         { channel = "netatmo:weather-station:home:inside:pressure#absolute" }
-Number:Dimensionless Indoor_Noise                      "Noise [%d %unit%]"                                          <soundvolume>      { channel = "netatmo:weather-station:home:inside:noise#value" }
-Number               Indoor_RadioStatus                 "RadioStatus [%s]"                                          <signal>           { channel = "netatmo:weather-station:home:inside:signal#strength" }
-DateTime             Indoor_TimeStamp                  "TimeStamp [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"                  <calendar>         { channel = "netatmo:weather-station:home:inside:timestamp#measures" }
-DateTime             Indoor_LastSeen            "LastSeen [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"                          <text>             { channel = "netatmo:weather-station:home:inside:timestamp#last-seen" }
-
-# Outdoor Module
-Number:Temperature   Outdoor_Temperature               "Temperature [%.1f %unit%]"                                  <temperature>      { channel = "netatmo:outdoor:home:inside:outside:temperature#value" }
-String               Outdoor_TempTrend                 "TempTrend [%s]"                                             <line>             { channel = "netatmo:outdoor:home:inside:outside:temperature#trend" }
-Number:Dimensionless Outdoor_Humidity                  "Humidity [%d %unit%]"                                       <humidity>         { channel = "netatmo:outdoor:home:inside:outside:humidity#value" }
-Number               Outdoor_Humidex                   "Humidex [%.0f]"                                             <temperature_hot>  { channel = "netatmo:outdoor:home:inside:outside:humidity#humidex" }
-Number:Temperature   Outdoor_HeatIndex                 "heat-index [%.1f %unit%]"                                   <temperature_hot>  { channel = "netatmo:outdoor:home:inside:outside:temperature#heat-index" }
-Number:Temperature   Outdoor_Dewpoint                  "Dewpoint [%.1f %unit%]"                                     <temperature_cold> { channel = "netatmo:outdoor:home:inside:outside:temperature#dewpoint" }
-Number:Temperature   Outdoor_DewpointDepression        "DewpointDepression [%.1f %unit%]"                           <temperature_cold> { channel = "netatmo:outdoor:home:inside:outside:temperature#dewpoint-depression" }
-Number               Outdoor_RadioStatus               "RfStatus [%.0f / 5]"                                        <signal>           { channel = "netatmo:outdoor:home:inside:outside:signal#strength" }
-Switch               Outdoor_LowBattery                "LowBattery [%s]"                                            <siren>            { channel = "netatmo:outdoor:home:inside:outside:battery#low-battery" }
-DateTime             Outdoor_TimeStamp                 "Measures TimeStamp [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"         <calendar>         { channel = "netatmo:outdoor:home:inside:outside:timestamp#measures" }
-DateTime             Outdoor_LastMessage               "LastMessage [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"                <text>             { channel = "netatmo:outdoor:home:inside:outside:timestamp#last-seen" }
-
-# Rain Module
-Number:Speed         Rain_Intensity                    "Rain Intensity [%.1f %unit%]"                               <rain>             { channel = "netatmo:rain:home:inside:rainModule:rain#value"}
-Number:Length        Rain_Hour                         "Rain Last Hour [%.1f %unit%]"                               <rain>             { channel = "netatmo:rain:home:inside:rainModule:rain#sum-1"}
-Number:Length        Rain_Today                        "Rain Today [%.1f %unit%]"                                   <rain>             { channel = "netatmo:rain:home:inside:rainModule:rain#sum-24"}
-```
-
-## sitemaps/netatmo.sitemap
+### sitemaps/netatmo.sitemap
 
 ```
 sitemap netatmo label="Netatmo" {
@@ -651,29 +776,104 @@ sitemap netatmo label="Netatmo" {
         Text item=Rain_Month
         Text item=Rain_BatteryVP
     }
+    Frame label="Camera" icon="camera" {
+        Switch item=CameraMonitoring
+        Text item=CameraAlimState
+        Text item=CameraSDCardState
+        Text item=CameraWifiStrength
+        Image item=CameraLiveSnapshot
+        Text label="Live (local)" icon="none" {
+            Video url="xxxxxx" item=CameraLiveStreamLocalUrl encoding="HLS"
+        }
+        Text label="Live (VPN)" icon="none" {
+            Video url="xxxxxx" item=CameraLiveStreamVpnUrl encoding="HLS"
+        }
+        Text label="Last event" icon="none" {
+            Text item=CameraEventTime
+            Text item=CameraEventType
+            Text item=CameraEventMessage
+            Text item=CameraEventPersonId
+            Image item=CameraEventSnapshot
+            Text item=CameraEventVideoStatus
+            Text label="Video (local)" icon="none" {
+                Video url="xxxxxx" item=CameraEventStreamLocalUrl encoding="HLS"
+            }
+            Text label="Video (VPN)" icon="none" {
+                Video url="xxxxxx" item=CameraEventStreamVpnUrl encoding="HLS"
+            }
+        }
+    }
 }
 ```
 
+## Rule Actions
 
-# Sample data
+Multiple actions are supported by this binding. In classic rules these are accessible as shown in this example (adjust getActions with your ThingId):
+
+Example
+
+```
+ val actions = getActions("netatmo","netatmo:room:myaccount:myhome:livingroom")
+ if(null === actions) {
+        logInfo("actions", "Actions not found, check thing ID")
+        return
+ }
+```
+
+### setThermRoomTempSetpoint(temp,endtime)
+
+Sends a temperature setpoint (and switch to manual mode) to the thermostat for a room with an end time.
+
+Parameters:
+
+| Name    | Description                                                          |
+|---------|----------------------------------------------------------------------|
+| temp    | The temperature setpoint.                                            |
+| endtime | Time the setpoint should end (Local Unix time in seconds).           |
+
+Example:
+
+```
+actions.setThermRoomTempSetpoint(19.0, 1654387205)
+```
+
+### setThermRoomModeSetpoint(mode,endtime)
+
+Sends a mode to the thermostat for a room with an optional end time.
+
+Parameters:
+
+| Name    | Description                                                          |
+|---------|----------------------------------------------------------------------|
+| mode    | The mode to set: MANUAL, MAX or HOME.                                |
+| endtime | Time the setpoint should end (Local Unix time in seconds).           |
+
+Example:
+
+```
+actions.setThermRoomModeSetpoint("MANUAL", 1654387205)
+actions.setThermRoomModeSetpoint("HOME", null)
+```
+
+## Sample data
 
 If you want to evaluate this binding but have not got a Netatmo station yourself
 yet, you can search on the web for a publicly shared weather station.
 
 
-# Icons
+## Icons
 
 The following icons are used by original Netatmo web app:
 
 
-## Modules
+### Modules
 
 - https://my.netatmo.com/images/my/app/module_int.png
 - https://my.netatmo.com/images/my/app/module_ext.png
 - https://my.netatmo.com/images/my/app/module_rain.png
 
 
-## Battery status
+### Battery status
 
 - https://my.netatmo.com/images/my/app/battery_verylow.png
 - https://my.netatmo.com/images/my/app/battery_low.png
@@ -682,7 +882,7 @@ The following icons are used by original Netatmo web app:
 - https://my.netatmo.com/images/my/app/battery_full.png
 
 
-## Signal status
+### Signal status
 
 - https://my.netatmo.com/images/my/app/signal_verylow.png
 - https://my.netatmo.com/images/my/app/signal_low.png
@@ -691,7 +891,7 @@ The following icons are used by original Netatmo web app:
 - https://my.netatmo.com/images/my/app/signal_full.png
 
 
-## Wifi status
+### Wifi status
 
 - https://my.netatmo.com/images/my/app/wifi_low.png
 - https://my.netatmo.com/images/my/app/wifi_medium.png

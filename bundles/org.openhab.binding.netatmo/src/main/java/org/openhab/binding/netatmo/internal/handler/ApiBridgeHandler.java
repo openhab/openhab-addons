@@ -102,6 +102,9 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     public void initialize() {
         logger.debug("Initializing Netatmo API bridge handler.");
         updateStatus(ThingStatus.UNKNOWN);
+        GrantServlet servlet = new GrantServlet(this, httpService);
+        servlet.startListening();
+        this.grantServlet = servlet;
         scheduler.execute(() -> openConnection(null, null));
     }
 
@@ -115,9 +118,6 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
                 break;
             case REFRESH_TOKEN_NEEDED:
                 if (code == null || redirectUri == null) {
-                    GrantServlet servlet = new GrantServlet(this, httpService);
-                    servlet.startListening();
-                    this.grantServlet = servlet;
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, level.message);
                     break;
                 } // else we can proceed to get the token refresh
@@ -125,7 +125,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
                 try {
                     logger.debug("Connecting to Netatmo API.");
 
-                    String refreshToken = connectApi.authorize(configuration, bindingConf.features, code, redirectUri);
+                    String refreshToken = connectApi.authorize(configuration, code, redirectUri);
 
                     if (configuration.refreshToken.isBlank()) {
                         Configuration thingConfig = editConfiguration();
@@ -273,7 +273,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     }
 
     public UriBuilder formatAuthorizationUrl() {
-        return AuthenticationApi.getAuthorizationBuilder(getId(), bindingConf.features);
+        return AuthenticationApi.getAuthorizationBuilder(getId());
     }
 
     @Override

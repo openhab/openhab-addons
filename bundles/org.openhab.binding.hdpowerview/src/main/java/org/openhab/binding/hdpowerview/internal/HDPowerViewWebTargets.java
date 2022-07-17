@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.hdpowerview.internal;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -28,6 +29,7 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.hdpowerview.internal.api.Color;
 import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
+import org.openhab.binding.hdpowerview.internal.api.SurveyData;
 import org.openhab.binding.hdpowerview.internal.api.requests.RepeaterBlinking;
 import org.openhab.binding.hdpowerview.internal.api.requests.RepeaterColor;
 import org.openhab.binding.hdpowerview.internal.api.requests.ShadeCalibrate;
@@ -80,8 +82,8 @@ public class HDPowerViewWebTargets {
      * exception handling during the five minute maintenance period after a 423
      * error is received
      */
-    private final int maintenancePeriod = 300;
-    private Instant maintenanceScheduledEnd = Instant.now().minusSeconds(2 * maintenancePeriod);
+    private final Duration maintenancePeriod = Duration.ofMinutes(5);
+    private Instant maintenanceScheduledEnd = Instant.MIN;
 
     private final String base;
     private final String firmwareVersion;
@@ -575,7 +577,7 @@ public class HDPowerViewWebTargets {
         int statusCode = response.getStatus();
         if (statusCode == HttpStatus.LOCKED_423) {
             // set end of maintenance window, and throw a "softer" exception
-            maintenanceScheduledEnd = Instant.now().plusSeconds(maintenancePeriod);
+            maintenanceScheduledEnd = Instant.now().plus(maintenancePeriod);
             logger.debug("Hub undergoing maintenance");
             throw new HubMaintenanceException("Hub undergoing maintenance");
         }
@@ -584,12 +586,12 @@ public class HDPowerViewWebTargets {
             throw new HubProcessingException(String.format("HTTP %d error", statusCode));
         }
         String jsonResponse = response.getContentAsString();
-        if ("".equals(jsonResponse)) {
-            logger.warn("Hub returned no content");
-            throw new HubProcessingException("Missing response entity");
-        }
         if (logger.isTraceEnabled()) {
             logger.trace("JSON response = {}", jsonResponse);
+        }
+        if (jsonResponse == null || jsonResponse.isEmpty()) {
+            logger.warn("Hub returned no content");
+            throw new HubProcessingException("Missing response entity");
         }
         return jsonResponse;
     }
@@ -637,12 +639,12 @@ public class HDPowerViewWebTargets {
      * class instance
      *
      * @param shadeId id of the shade to be surveyed
-     * @return Survey class instance
+     * @return List of SurveyData class instances
      * @throws HubInvalidResponseException if response is invalid
      * @throws HubProcessingException if there is any processing error
      * @throws HubMaintenanceException if the hub is down for maintenance
      */
-    public Survey getShadeSurvey(int shadeId)
+    public List<SurveyData> getShadeSurvey(int shadeId)
             throws HubInvalidResponseException, HubProcessingException, HubMaintenanceException {
         String jsonResponse = invoke(HttpMethod.GET, shades + Integer.toString(shadeId),
                 Query.of("survey", Boolean.toString(true)), null);
@@ -651,7 +653,11 @@ public class HDPowerViewWebTargets {
             if (survey == null) {
                 throw new HubInvalidResponseException("Missing survey response");
             }
-            return survey;
+            List<SurveyData> surveyData = survey.surveyData;
+            if (surveyData == null) {
+                throw new HubInvalidResponseException("Missing 'survey.surveyData' element");
+            }
+            return surveyData;
         } catch (JsonParseException e) {
             throw new HubInvalidResponseException("Error parsing survey response", e);
         }

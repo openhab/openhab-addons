@@ -448,7 +448,7 @@ DateTime Oven_ElapsedTime "Elapsed time" <time>             {channel="miele:oven
 DateTime Oven_FinishTime "Remaining time" <time>            {channel="miele:oven:home:oven:finish"}
 Number:Temperature Oven_CurrentTemperature <temperature>    {channel="miele:oven:home:oven:measured"}
 Number:Temperature Oven_TargetTemperature <temperature>     {channel="miele:oven:home:oven:target"}
-Switch Oven_Stop                                            {channel="miele:oven:home:oven:stop", autoupdate="false"}
+Switch Oven_Stop                                            {channel="miele:oven:home:oven:stop"}
 
 String WashingMachine_State                                 {channel="miele:washingmachine:home:washingmachine:state"}
 Number WashingMachine_RawState                              {channel="miele:washingmachine:home:washingmachine:rawState"}

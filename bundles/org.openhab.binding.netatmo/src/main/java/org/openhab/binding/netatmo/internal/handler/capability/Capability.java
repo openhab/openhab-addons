@@ -32,6 +32,7 @@ import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatus.HomeStatus;
 import org.openhab.binding.netatmo.internal.api.dto.NAMain;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
+import org.openhab.binding.netatmo.internal.api.dto.WebhookEvent;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.ThingHandlerService;
@@ -74,6 +75,9 @@ public class Capability {
         if (newData instanceof Event) {
             updateEvent((Event) newData);
         }
+        if (newData instanceof WebhookEvent) {
+            updateWebhookEvent((WebhookEvent) newData);
+        }
         if (newData instanceof HomeEvent) {
             updateHomeEvent((HomeEvent) newData);
         }
@@ -94,8 +98,9 @@ public class Capability {
         properties = new HashMap<>(thing.getProperties());
         firstLaunch = properties.isEmpty();
         if (firstLaunch && !moduleType.isLogical()) {
+            String name = moduleType.apiName.isBlank() ? moduleType.name() : moduleType.apiName;
+            properties.put(PROPERTY_MODEL_ID, name);
             properties.put(PROPERTY_VENDOR, VENDOR);
-            properties.put(PROPERTY_MODEL_ID, moduleType.name());
         }
         statusReason = null;
     }
@@ -133,6 +138,10 @@ public class Capability {
     }
 
     protected void updateEvent(Event newData) {
+        // do nothing by default, can be overridden by subclasses
+    }
+
+    protected void updateWebhookEvent(WebhookEvent newData) {
         // do nothing by default, can be overridden by subclasses
     }
 

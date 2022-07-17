@@ -70,6 +70,7 @@ public class RokuBindingConstants {
     public static final String EMPTY = "";
     public static final String ROKU_HOME = "Roku Home";
     public static final String ROKU_HOME_ID = "-1";
+    public static final String ROKU_HOME_ID_562859 = "562859";
     public static final String ROKU_HOME_BUTTON = "Home";
     public static final String NON_DIGIT_PATTERN = "[^\\d]";
     public static final String TV_APP = "tvinput.dtv";

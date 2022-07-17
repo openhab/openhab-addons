@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.netatmo.internal.api.data;
 
+import java.util.EnumSet;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -46,11 +47,14 @@ public enum EventType {
     @SerializedName("movement") // When the Indoor Camera detects motion
     MOVEMENT(ModuleType.WELCOME),
 
-    @SerializedName("human") // When the Indoor Camera detects human motion
-    HUMAN(ModuleType.WELCOME),
+    @SerializedName("human") // When the camera detects human motion
+    HUMAN(ModuleType.WELCOME, ModuleType.OUTDOOR, ModuleType.DOORBELL),
 
-    @SerializedName("animal") // When the Indoor Camera detects animal motion
-    ANIMAL(ModuleType.WELCOME),
+    @SerializedName("animal") // When the camera detects animal motion
+    ANIMAL(ModuleType.WELCOME, ModuleType.OUTDOOR),
+
+    @SerializedName("vehicle") // When the Outdoor Camera detects a car
+    VEHICLE(ModuleType.OUTDOOR),
 
     @SerializedName("new_module") // A new Module has been paired with the Indoor Camera
     NEW_MODULE(ModuleType.WELCOME),
@@ -67,10 +71,10 @@ public enum EventType {
     @SerializedName("module_end_update") // Module's firmware update is over
     MODULE_END_UPDATE(ModuleType.WELCOME),
 
-    @SerializedName("connection") // When the Camera connects to Netatmo servers
+    @SerializedName("connection") // When the camera connects to Netatmo servers
     CONNECTION(ModuleType.WELCOME, ModuleType.PRESENCE),
 
-    @SerializedName("disconnection") // When the Camera loses connection with Netatmo servers
+    @SerializedName("disconnection") // When the camera loses connection with Netatmo servers
     DISCONNECTION(ModuleType.WELCOME, ModuleType.PRESENCE),
 
     @SerializedName("on") // When Camera Monitoring is resumed
@@ -86,7 +90,45 @@ public enum EventType {
     SD(ModuleType.WELCOME, ModuleType.PRESENCE),
 
     @SerializedName("alim") // When Camera power supply status changes
-    ALIM(ModuleType.WELCOME, ModuleType.PRESENCE);
+    ALIM(ModuleType.WELCOME, ModuleType.PRESENCE),
+
+    @SerializedName("accepted_call") // When a call is incoming
+    ACCEPTED_CALL(ModuleType.DOORBELL),
+
+    @SerializedName("incoming_call") // When a call as been answered by a user
+    INCOMING_CALL(ModuleType.DOORBELL),
+
+    @SerializedName("rtc") // Button pressed
+    RTC(ModuleType.DOORBELL),
+
+    @SerializedName("missed_call") // When a call has not been answered by anyone
+    MISSED_CALL(ModuleType.DOORBELL),
+
+    @SerializedName("hush") // When the smoke detection is activated or deactivated
+    HUSH(ModuleType.SMOKE_DETECTOR),
+
+    @SerializedName("smoke") // When smoke is detected or smoke is cleared
+    SMOKE(ModuleType.SMOKE_DETECTOR),
+
+    @SerializedName("tampered") // When smoke detector is ready or tampered
+    TAMPERED(ModuleType.SMOKE_DETECTOR),
+
+    @SerializedName("wifi_status") // When wifi status is updated
+    WIFI_STATUS(ModuleType.SMOKE_DETECTOR),
+
+    @SerializedName("battery_status") // When battery status is too low
+    BATTERY_STATUS(ModuleType.SMOKE_DETECTOR),
+
+    @SerializedName("detection_chamber_status") // When the detection chamber is dusty or clean
+    DETECTION_CHAMBER_STATUS(ModuleType.SMOKE_DETECTOR),
+
+    @SerializedName("sound_test") // Sound test result
+    SOUND_TEST(ModuleType.SMOKE_DETECTOR),
+
+    @SerializedName("new_device")
+    NEW_DEVICE(ModuleType.HOME);
+
+    public static final EnumSet<EventType> AS_SET = EnumSet.allOf(EventType.class);
 
     private final Set<ModuleType> appliesTo;
 
@@ -99,7 +141,7 @@ public enum EventType {
         return name().toLowerCase();
     }
 
-    public boolean appliesOn(ModuleType searched) {
+    public boolean validFor(ModuleType searched) {
         return appliesTo.contains(searched);
     }
 }

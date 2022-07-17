@@ -41,6 +41,7 @@ At the moment only the following models are supported:
 -   TX-NR737
 -   TX-NR747
 -   TX-NR757
+-   TX-NR807
 -   TX-NR809
 -   TX-NR818
 -   TX-NR828

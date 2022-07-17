@@ -14,14 +14,21 @@
 
 		<channels>
 			<channel id="inverterdatachannelpac" typeId="pac"/>
+			<channel id="inverterdatachannelpdc" typeId="pdc"/>
+			<channel id="inverterdatachannelpdc2" typeId="pdc2"/>
+			<channel id="inverterdatachannelpdc3" typeId="pdc3"/>
 			<channel id="inverterdatachanneldayenergy" typeId="day_energy"/>
 			<channel id="inverterdatachanneltotal" typeId="total_energy"/>
 			<channel id="inverterdatachannelyear" typeId="year_energy"/>
 			<channel id="inverterdatachannelfac" typeId="fac"/>
 			<channel id="inverterdatachanneliac" typeId="iac"/>
 			<channel id="inverterdatachannelidc" typeId="idc"/>
+			<channel id="inverterdatachannelidc2" typeId="idc2"/>
+			<channel id="inverterdatachannelidc3" typeId="idc3"/>
 			<channel id="inverterdatachanneluac" typeId="uac"/>
 			<channel id="inverterdatachanneludc" typeId="udc"/>
+			<channel id="inverterdatachanneludc2" typeId="udc2"/>
+			<channel id="inverterdatachanneludc3" typeId="udc3"/>
 			<channel id="inverterdatadevicestatuserrorcode" typeId="devicestatus_errorcode"/>
 			<channel id="inverterdatadevicestatusstatuscode" typeId="devicestatus_statuscode"/>
 			<channel id="powerflowchannelpgrid" typeId="pGrid">
@@ -157,6 +164,24 @@
 		<description>AC power</description>
 		<state pattern="%f W" readOnly="true"></state>
 	</channel-type>
+	<channel-type id="pdc">
+		<item-type>Number:Power</item-type>
+		<label>DC Power</label>
+		<description>DC power</description>
+		<state pattern="%f W" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="pdc2">
+		<item-type>Number:Power</item-type>
+		<label>DC Power 2</label>
+		<description>DC power 2</description>
+		<state pattern="%f W" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="pdc3">
+		<item-type>Number:Power</item-type>
+		<label>DC Power 3</label>
+		<description>DC power 3</description>
+		<state pattern="%f W" readOnly="true"></state>
+	</channel-type>
 	<channel-type id="total_energy">
 		<item-type>Number:Energy</item-type>
 		<label>Total Energy</label>
@@ -190,6 +215,18 @@
 		<description>DC current</description>
 		<state pattern="%.2f A" readOnly="true"></state>
 	</channel-type>
+	<channel-type id="idc2">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>DC Current 2</label>
+		<description>DC current 2</description>
+		<state pattern="%.2f A" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="idc3">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>DC Current 3</label>
+		<description>DC current 3</description>
+		<state pattern="%.2f A" readOnly="true"></state>
+	</channel-type>
 	<channel-type id="uac">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>AC Voltage</label>
@@ -200,6 +237,18 @@
 		<item-type>Number:ElectricPotential</item-type>
 		<label>DC Voltage</label>
 		<description>DC voltage</description>
+		<state pattern="%.1f V" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="udc2">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>DC Voltage 2</label>
+		<description>DC voltage 2</description>
+		<state pattern="%.1f V" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="udc3">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>DC Voltage 3</label>
+		<description>DC voltage 3</description>
 		<state pattern="%.1f V" readOnly="true"></state>
 	</channel-type>
 

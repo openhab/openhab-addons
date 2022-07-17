@@ -16,6 +16,8 @@ import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.*;
 import static org.openhab.binding.netatmo.internal.utils.WeatherUtils.*;
 
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.MeasureClass;
@@ -30,17 +32,9 @@ import org.openhab.core.types.State;
  */
 @NonNullByDefault
 public class TemperatureChannelHelper extends ChannelHelper {
-    /*
-     * TemperatureChannelHelper may be used by indoor or outdoor modules. There is no easy way here to decide what is
-     * the handler owning the channelHelper. The usage of OUTSIDE_TEMPERATURE instead of INSIDE_TEMPERATURE is by design
-     * because OUTSIDE_TEMPERATURE has wide value range than INSIDE_TEMPERATURE.
-     */
-    public TemperatureChannelHelper() {
-        this(GROUP_TEMPERATURE, MeasureClass.OUTSIDE_TEMPERATURE);
-    }
 
-    protected TemperatureChannelHelper(String groupName, MeasureClass measureClass) {
-        super(groupName, measureClass);
+    public TemperatureChannelHelper(Set<String> providedGroups) {
+        super(providedGroups);
     }
 
     @Override
@@ -66,6 +60,8 @@ public class TemperatureChannelHelper extends ChannelHelper {
                 double dewPoint = dewPoint(dashboard.getTemperature(), dashboard.getHumidity());
                 return toQuantityType(dewPointDep(dashboard.getTemperature(), dewPoint),
                         MeasureClass.OUTSIDE_TEMPERATURE);
+            case CHANNEL_TREND:
+                return toStringType(dashboard.getTempTrend());
         }
         return null;
     }

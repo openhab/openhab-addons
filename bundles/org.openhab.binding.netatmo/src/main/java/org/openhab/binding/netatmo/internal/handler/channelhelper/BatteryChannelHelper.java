@@ -13,9 +13,13 @@
 package org.openhab.binding.netatmo.internal.handler.channelhelper;
 
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
+import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.toStringType;
+
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.BatteryState;
 import org.openhab.binding.netatmo.internal.api.dto.HomeStatusModule;
 import org.openhab.binding.netatmo.internal.api.dto.Module;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
@@ -33,22 +37,22 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 public class BatteryChannelHelper extends ChannelHelper {
 
-    public BatteryChannelHelper() {
-        super(GROUP_BATTERY);
-    }
-
-    protected BatteryChannelHelper(String groupName) {
-        super(groupName);
+    public BatteryChannelHelper(Set<String> providedGroups) {
+        super(providedGroups);
     }
 
     @Override
     protected @Nullable State internalGetProperty(String channelId, NAThing naThing, Configuration config) {
         int percent = -1;
+        BatteryState batteryState = BatteryState.UNKNOWN;
         if (naThing instanceof Module) {
             percent = ((Module) naThing).getBatteryPercent();
-        }
-        if (naThing instanceof HomeStatusModule) {
+            batteryState = ((Module) naThing).getBatteryState();
+        } else if (naThing instanceof HomeStatusModule) {
             percent = ((HomeStatusModule) naThing).getBatteryState().level;
+            batteryState = ((HomeStatusModule) naThing).getBatteryState();
+        } else {
+            return null;
         }
         switch (channelId) {
             case CHANNEL_VALUE:
@@ -59,6 +63,8 @@ public class BatteryChannelHelper extends ChannelHelper {
                 if (percent >= 0) {
                     return OnOffType.from(percent < 20);
                 }
+            case CHANNEL_BATTERY_STATUS:
+                return toStringType(batteryState);
         }
         return null;
     }

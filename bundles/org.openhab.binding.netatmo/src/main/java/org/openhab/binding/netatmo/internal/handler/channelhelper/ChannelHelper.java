@@ -12,17 +12,15 @@
  */
 package org.openhab.binding.netatmo.internal.handler.channelhelper;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.MeasureClass;
 import org.openhab.binding.netatmo.internal.api.dto.Dashboard;
 import org.openhab.binding.netatmo.internal.api.dto.Event;
+import org.openhab.binding.netatmo.internal.api.dto.HomeEvent;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
-import org.openhab.binding.netatmo.internal.providers.NetatmoThingTypeProvider;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.types.State;
 
@@ -34,19 +32,12 @@ import org.openhab.core.types.State;
  */
 @NonNullByDefault
 public abstract class ChannelHelper {
+    private final Set<String> channelGroups;
+
     private @Nullable NAObject data;
-    private final Set<String> channelGroupTypes;
-    private final Set<String> channelGroups = new HashSet<>();
-    private Set<String> extensibleChannels = Set.of();
 
-    ChannelHelper(String... providedGroups) {
-        this.channelGroupTypes = Set.of(providedGroups);
-        channelGroupTypes.forEach(groupType -> channelGroups.add(NetatmoThingTypeProvider.toGroupName(groupType)));
-    }
-
-    ChannelHelper(String providedGroup, MeasureClass measureClass) {
-        this(providedGroup);
-        this.extensibleChannels = measureClass.channels.keySet();
+    public ChannelHelper(Set<String> providedGroups) {
+        channelGroups = providedGroups;
     }
 
     public void setNewData(@Nullable NAObject data) {
@@ -57,6 +48,12 @@ public abstract class ChannelHelper {
         State result = null;
         if (channelGroups.isEmpty() || (groupId != null && channelGroups.contains(groupId))) {
             NAObject localData = data;
+            if (localData instanceof HomeEvent) {
+                result = internalGetHomeEvent(channelId, groupId, (HomeEvent) localData);
+                if (result != null) {
+                    return result;
+                }
+            }
             if (localData instanceof Event) {
                 result = internalGetEvent(channelId, (Event) localData);
                 if (result != null) {
@@ -108,11 +105,7 @@ public abstract class ChannelHelper {
         return null;
     }
 
-    public Set<String> getChannelGroupTypes() {
-        return channelGroupTypes;
-    }
-
-    public Set<String> getExtensibleChannels() {
-        return extensibleChannels;
+    protected @Nullable State internalGetHomeEvent(String channelId, @Nullable String groupId, HomeEvent event) {
+        return null;
     }
 }
