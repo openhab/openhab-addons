@@ -16,6 +16,7 @@ All supported Onkyo devices are registered as an audio sink in the framework.
 This binding can discover the supported Onkyo AV receivers.
 At the moment only the following models are supported:
 
+-   HT-RC440
 -   HT-RC560
 -   TX-NR414
 -   TX-NR474
