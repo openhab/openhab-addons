@@ -38,6 +38,7 @@ import com.google.gson.JsonObject;
 
 /**
  * transforms the http response into the openhab datamodel (instances of State)
+ * this is a generic trnasformer which tries to map json fields 1:1 to channels.
  *
  * @author Alexander Friese - initial contribution
  */
@@ -45,9 +46,11 @@ import com.google.gson.JsonObject;
 public class GenericResponseTransformer {
     private final Logger logger = LoggerFactory.getLogger(GenericResponseTransformer.class);
     private final ChannelProvider channelProvider;
+    private final CustomResponseTransformer customResponseTransformer;
 
     public GenericResponseTransformer(ChannelProvider channelProvider) {
         this.channelProvider = channelProvider;
+        this.customResponseTransformer = new CustomResponseTransformer(channelProvider);
     }
 
     public Map<Channel, State> transform(JsonObject jsonData, String group) {
@@ -105,7 +108,11 @@ public class GenericResponseTransformer {
                             default:
                                 logger.warn("no mapping implemented for channel type '{}'", channelType);
                         }
-                        handleAdditionalMappings(result, channel, value);
+
+                        // call the custom handler to handle specific / composite channels which do not map 1:1 to JSON
+                        // fields.
+                        result.putAll(customResponseTransformer.transform(channel, value, jsonData));
+
                     } catch (Exception ex) {
                         logger.warn("caught exception while trying to update channel {} with value '{}'. Exception: {}",
                                 channel.getUID().getId(), value, ex.getMessage());
@@ -117,25 +124,4 @@ public class GenericResponseTransformer {
         return result;
     }
 
-    /**
-     * allows additional updates of related (virtual) channels.
-     *
-     * @param result map which will contain all updates.
-     * @param triggerChannel the channel which triggers the additional update
-     * @param value updated value of the triggering channel
-     */
-    private void handleAdditionalMappings(Map<Channel, State> result, Channel triggerChannel, String value) {
-        switch (triggerChannel.getUID().getId()) {
-            case CHANNEL_GROUP_CHARGER_STATE + "#" + CHANNEL_CHARGER_OP_MODE:
-                updateChargerStartStop(result, value);
-                break;
-        }
-    }
-
-    private void updateChargerStartStop(Map<Channel, State> result, String value) {
-        Channel channel = channelProvider.getChannel(CHANNEL_GROUP_CHARGER_COMMANDS, CHANNEL_CHARGER_START_STOP);
-        if (channel != null) {
-            result.put(channel, OnOffType.from(CHARGER_OP_STATE_CHARGING.equals(value)));
-        }
-    }
 }

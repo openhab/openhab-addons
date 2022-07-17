@@ -68,6 +68,18 @@ public class EaseeBindingConstants {
     // Channels with specific handling
     public static final String CHANNEL_CHARGER_OP_MODE = "chargerOpMode";
     public static final String CHANNEL_CHARGER_START_STOP = "startStop";
+    public static final String CHANNEL_CIRCUIT_DYNAMIC_CURRENTS = "dynamicCurrents";
+    public static final String CHANNEL_CIRCUIT_DYNAMIC_CURRENT_PHASE1 = "phase1";
+    public static final String CHANNEL_CIRCUIT_DYNAMIC_CURRENT_PHASE2 = "phase2";
+    public static final String CHANNEL_CIRCUIT_DYNAMIC_CURRENT_PHASE3 = "phase3";
+    public static final String CHANNEL_CIRCUIT_MAX_CURRENTS = "maxCurrents";
+    public static final String CHANNEL_CIRCUIT_MAX_CURRENT_PHASE1 = "maxCircuitCurrentP1";
+    public static final String CHANNEL_CIRCUIT_MAX_CURRENT_PHASE2 = "maxCircuitCurrentP2";
+    public static final String CHANNEL_CIRCUIT_MAX_CURRENT_PHASE3 = "maxCircuitCurrentP3";
+    public static final String CHANNEL_CIRCUIT_OFFLINE_MAX_CURRENTS = "offlineMaxCurrents";
+    public static final String CHANNEL_CIRCUIT_OFFLINE_MAX_CURRENT_PHASE1 = "offlineMaxCircuitCurrentP1";
+    public static final String CHANNEL_CIRCUIT_OFFLINE_MAX_CURRENT_PHASE2 = "offlineMaxCircuitCurrentP2";
+    public static final String CHANNEL_CIRCUIT_OFFLINE_MAX_CURRENT_PHASE3 = "offlineMaxCircuitCurrentP3";
 
     // JSON Keys
     public static final String JSON_KEY_GENERIC_ID = "id";
