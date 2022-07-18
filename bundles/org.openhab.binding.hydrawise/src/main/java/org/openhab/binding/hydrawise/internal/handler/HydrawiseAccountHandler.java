@@ -66,7 +66,8 @@ public class HydrawiseAccountHandler extends BaseBridgeHandler implements Access
     private static final String CLIENT_SECRET = "zn3CrjglwNV1";
     private static final String CLIENT_ID = "hydrawise_app";
     private static final String SCOPE = "all";
-    private final List<HydrawiseControllerListener> controllerListeners = new ArrayList<HydrawiseControllerListener>();
+    private final List<HydrawiseControllerListener> controllerListeners = Collections
+            .synchronizedList(new ArrayList<HydrawiseControllerListener>());
     private final HydrawiseGraphQLClient apiClient;
     private final OAuthClientService oAuthService;
     private @Nullable ScheduledFuture<?> pollFuture;
@@ -197,9 +198,11 @@ public class HydrawiseAccountHandler extends BaseBridgeHandler implements Access
                 updateStatus(ThingStatus.ONLINE);
             }
             lastData = response.data.me;
-            controllerListeners.forEach(listener -> {
-                listener.onData(response.data.me.controllers);
-            });
+            synchronized (controllerListeners) {
+                controllerListeners.forEach(listener -> {
+                    listener.onData(response.data.me.controllers);
+                });
+            }
         } catch (HydrawiseConnectionException e) {
             if (retry) {
                 logger.debug("Retrying failed poll", e);
