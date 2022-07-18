@@ -38,7 +38,7 @@ You just need to click on one of the sites listed there, the id will be part of 
 It will be a number with typically 6 digits.
 
 - **dataPollingInterval** (optional)  
-interval (minutes) in which live data values are retrieved from the Easee Cloud API. (default = 5)
+interval (seconds) in which live data values are retrieved from the Easee Cloud API. (default = 120)
 
 ## Thing configuration
 
