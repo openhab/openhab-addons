@@ -72,7 +72,7 @@ public enum MeasureType {
 
     PERCENTAGE(PERCENT, 1, CHANNEL_TYPE_HUMIDITY, (data, offset) -> toUInt8(data[offset])),
 
-    PRESSURE(HECTO(PASCAL), 2, CHANNEL_TYPE_PRESSURE, Utils::toUInt16),
+    PRESSURE(HECTO(PASCAL), 2, CHANNEL_TYPE_PRESSURE, (data, offset) -> toUInt16(data, offset) / 10.),
 
     DEGREE(DEGREE_ANGLE, 2, null, Utils::toUInt16),
 
