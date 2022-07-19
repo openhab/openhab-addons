@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+  <!-- Ignore classes from external library -->
+  <Match>    
+    <Package name="org.openhab.bluetooth.gattparser"/>
+  </Match>
+  <Match>    
+    <Package name="org.openhab.bluetooth.gattparser.spec"/>
+  </Match>
+</FindBugsFilter>
