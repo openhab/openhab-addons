@@ -137,11 +137,6 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                     "@text/offline.configuration-error.ip-multicast-interface-not-set");
             return false;
         }
-        if (!IP_PATTERN.matcher((String) config.get(HOST)).matches()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "@text/offline.configuration-error.invalid-ip-gateway [\"" + config.get(HOST) + "\"]");
-            return false;
-        }
         if (!IP_PATTERN.matcher((String) config.get(INTERFACE)).matches()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                     "@text/offline.configuration-error.invalid-ip-multicast-interface [\"" + config.get(INTERFACE)
