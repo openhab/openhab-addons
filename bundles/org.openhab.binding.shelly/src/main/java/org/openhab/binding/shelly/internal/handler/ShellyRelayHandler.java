@@ -335,7 +335,7 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
     public boolean updateRelays(ShellySettingsStatus status) throws ShellyApiException {
         boolean updated = false;
         // Check for Relay in Standard Mode
-        if (profile.hasRelays && !profile.isRoller && !profile.isDimmer) {
+        if (profile.hasRelays && !profile.isDimmer) {
             double voltage = -1;
             if (status.voltage == null && profile.settings.supplyVoltage != null) {
                 // Shelly 1PM/1L (fix)
@@ -348,7 +348,9 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                 updated |= updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_VOLTAGE,
                         toQuantityType(voltage, DIGITS_VOLT, Units.VOLT));
             }
+        }
 
+        if (profile.hasRelays && !profile.isRoller && !profile.isDimmer) {
             logger.trace("{}: Updating {} relay(s)", thingName, profile.numRelays);
             int i = 0;
             ShellyStatusRelay rstatus = api.getRelayStatus(i);
@@ -479,12 +481,14 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                             toQuantityType(0.0, DIGITS_NONE, Units.PERCENT));
                 }
 
-                ShellySettingsDimmer dsettings = profile.settings.dimmers.get(l);
-                if (dsettings != null) {
-                    updated |= updateChannel(groupName, CHANNEL_TIMER_AUTOON,
-                            toQuantityType(getDouble(dsettings.autoOn), Units.SECOND));
-                    updated |= updateChannel(groupName, CHANNEL_TIMER_AUTOOFF,
-                            toQuantityType(getDouble(dsettings.autoOff), Units.SECOND));
+                if (profile.settings.dimmers != null) {
+                    ShellySettingsDimmer dsettings = profile.settings.dimmers.get(l);
+                    if (dsettings != null) {
+                        updated |= updateChannel(groupName, CHANNEL_TIMER_AUTOON,
+                                toQuantityType(getDouble(dsettings.autoOn), Units.SECOND));
+                        updated |= updateChannel(groupName, CHANNEL_TIMER_AUTOOFF,
+                                toQuantityType(getDouble(dsettings.autoOff), Units.SECOND));
+                    }
                 }
 
                 l++;
