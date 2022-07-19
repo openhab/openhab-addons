@@ -32,6 +32,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,14 +46,13 @@ public class SolarForecastPlaneHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SolarForecastPlaneHandler.class);
     private final HttpClient httpClient;
-    private final PointType location;
     private ForecastObject forecast = new ForecastObject();
     private Optional<SolarForecastConfiguration> config = Optional.empty();
+    private Optional<PointType> location = Optional.empty();
 
-    public SolarForecastPlaneHandler(Thing thing, HttpClient hc, PointType loc) {
+    public SolarForecastPlaneHandler(Thing thing, HttpClient hc) {
         super(thing);
         httpClient = hc;
-        location = loc;
     }
 
     @Override
@@ -65,6 +65,7 @@ public class SolarForecastPlaneHandler extends BaseThingHandler {
             if (handler != null) {
                 if (handler instanceof SolarForecastBridgeHandler) {
                     ((SolarForecastBridgeHandler) handler).addPlane(this);
+                    location = Optional.of(((SolarForecastBridgeHandler) handler).getLocation());
                     updateStatus(ThingStatus.ONLINE);
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
@@ -88,16 +89,18 @@ public class SolarForecastPlaneHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // TODO Auto-generated method stub
+        if (command instanceof RefreshType) {
+            fetchData();
+        }
     }
 
     /**
      * https://doc.forecast.solar/doku.php?id=api:estimate
      */
     ForecastObject fetchData() {
-        if (!forecast.isValid()) {
+        if (!forecast.isValid() && location.isPresent()) {
             // https://api.forecast.solar/estimate/:lat/:lon/:dec/:az/:kwp
-            String url = BASE_URL + location.getLatitude() + SLASH + location.getLongitude() + SLASH
+            String url = BASE_URL + location.get().getLatitude() + SLASH + location.get().getLongitude() + SLASH
                     + config.get().declination + SLASH + config.get().azimuth + SLASH + config.get().kwp;
             logger.info("Call {}", url);
             try {
@@ -112,17 +115,23 @@ public class SolarForecastPlaneHandler extends BaseThingHandler {
             } catch (InterruptedException | ExecutionException | TimeoutException e) {
                 logger.info("Call {} failed {}", url, e.getMessage());
             }
-            return new ForecastObject();
         }
-        // return old forecast - forecast object will interpolate values
+        updateChannels(forecast);
         return forecast;
     }
 
     private void updateChannels(ForecastObject f) {
         updateState(new ChannelUID(thing.getUID(), SolarForecastBindingConstants.CHANNEL_ACTUAL),
-                f.getCurrentValue(LocalDateTime.now()));
+                ForecastObject.getStateObject(f.getActualValue(LocalDateTime.now())));
         updateState(new ChannelUID(thing.getUID(), SolarForecastBindingConstants.CHANNEL_REMAINING),
-                f.getRemainingProduction(LocalDateTime.now()));
-        updateState(new ChannelUID(thing.getUID(), SolarForecastBindingConstants.CHANNEL_TODAY), f.getDayTotal());
+                ForecastObject.getStateObject(f.getRemainingProduction(LocalDateTime.now())));
+        updateState(new ChannelUID(thing.getUID(), SolarForecastBindingConstants.CHANNEL_TODAY),
+                ForecastObject.getStateObject(f.getDayTotal(LocalDateTime.now(), 0)));
+        updateState(new ChannelUID(thing.getUID(), SolarForecastBindingConstants.CHANNEL_TOMORROW),
+                ForecastObject.getStateObject(f.getDayTotal(LocalDateTime.now(), 1)));
+    }
+
+    protected void setLocation(PointType loc) {
+        location = Optional.of(loc);
     }
 }

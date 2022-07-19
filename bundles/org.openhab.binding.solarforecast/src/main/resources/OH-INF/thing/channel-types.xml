@@ -8,21 +8,25 @@
 		<item-type>Number:Energy</item-type>
 		<label>Forecast Today</label>
 		<description>Todays forecast in total</description>
+		<state pattern="%.3f %unit" readOnly="true"/>
 	</channel-type>
 	<channel-type id="remaining-channel">
 		<item-type>Number:Energy</item-type>
 		<label>Remaining Production Today</label>
 		<description>Forecast of todays remaining production</description>
+		<state pattern="%.3f %unit" readOnly="true"/>
 	</channel-type>
 	<channel-type id="actual-channel">
 		<item-type>Number:Energy</item-type>
 		<label>Actual Forecast</label>
 		<description>Forecast till now (actual time)</description>
+		<state pattern="%.3f %unit" readOnly="true"/>
 	</channel-type>
 	<channel-type id="tomorrow-channel">
 		<item-type>Number:Energy</item-type>
 		<label>Forecast Tomorrow</label>
 		<description>Tomorrows forecast in total</description>
+		<state pattern="%.3f %unit" readOnly="true"/>
 	</channel-type>
 	<channel-type id="raw-channel">
 		<item-type>String</item-type>

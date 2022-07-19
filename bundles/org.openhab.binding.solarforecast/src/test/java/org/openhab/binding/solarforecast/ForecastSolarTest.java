@@ -12,22 +12,20 @@
  */
 package org.openhab.binding.solarforecast;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Iterator;
-import java.util.Map.Entry;
-import java.util.TreeMap;
 
 import javax.measure.quantity.Energy;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.solarforecast.internal.ForecastObject;
+import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.types.State;
 
 /**
  * The {@link ForecastSolarTest} tests responses from forecast solar website
@@ -40,65 +38,43 @@ class ForecastSolarTest {
     public static final DateTimeFormatter DATE_INPUT_PATTERN = DateTimeFormatter.ofPattern(DATE_INPUT_PATTERN_STRING);
 
     @Test
-    void test() {
-        System.out.println("Test");
-        String content = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
-        JSONObject contentJson = new JSONObject(content);
-        JSONObject resultJson = contentJson.getJSONObject("result");
-        JSONObject wattsJson = resultJson.getJSONObject("watt_hours");
-        Iterator<String> iter = wattsJson.keys();
-        TreeMap<LocalDateTime, Integer> m = new TreeMap<LocalDateTime, Integer>();
-        while (iter.hasNext()) {
-            String dateStr = iter.next();
-            LocalDateTime ldt = LocalDateTime.parse(dateStr.replace(" ", "T"));
-            if (ldt.getDayOfMonth() == 17) {
-                m.put(ldt, wattsJson.getInt(dateStr));
-            }
-            // Date d = new Date(dateStr.replace(" ", "T"));
-        }
-        System.out.println(m);
-        // LocalDateTime now = LocalDateTime.now();
-        LocalDateTime now = LocalDateTime.of(2022, 7, 17, 16, 23);
-        System.out.println(now);
-        Entry<LocalDateTime, Integer> f = m.floorEntry(now);
-        System.out.println(f);
-        Entry<LocalDateTime, Integer> c = m.ceilingEntry(now);
-        System.out.println(c);
-        if (f != null) {
-            if (c != null) {
-                // we're during suntime!
-                System.out.println("Floor " + f + " Ceiling " + c);
-                int production = c.getValue() - f.getValue();
-                int interpolation = now.getMinute() - f.getKey().getMinute();
-                int interpolationProduction = production * interpolation / 60;
-                System.out
-                        .println("Minutes to interpolate " + interpolation + " Production " + interpolationProduction);
-            }
-        }
-    }
-
-    @Test
     void testForecastObject() {
-        System.out.println("Test FO");
         String content = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
         LocalDateTime now = LocalDateTime.of(2022, 7, 17, 16, 23);
         ForecastObject fo = new ForecastObject(content, now);
-        System.out.println(fo.getCurrentValue(now));
+        assertEquals(49.431, fo.getActualValue(now), 0.001, "Current Production");
+        assertEquals(14.152, fo.getRemainingProduction(now), 0.001, "Current Production");
+        assertEquals(fo.getDayTotal(now, 0), fo.getActualValue(now) + fo.getRemainingProduction(now), 0.001,
+                "Total production");
+        assertEquals(fo.getDayTotal(now, 0), fo.getActualValue(now) + fo.getRemainingProduction(now), 0.001,
+                "Total production");
+    }
+
+    @Test
+    void testInterpolation() {
+        String content = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
+        LocalDateTime now = LocalDateTime.of(2022, 7, 17, 16, 0);
+        ForecastObject fo = new ForecastObject(content, now);
+        double previousValue = 0;
+        for (int i = 0; i < 60; i++) {
+            now = now.plusMinutes(1);
+            assertTrue(previousValue < fo.getActualValue(now));
+            previousValue = fo.getActualValue(now);
+        }
     }
 
     @Test
     void testForecastSum() {
-        System.out.println("Test FO");
         String content = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
         LocalDateTime now = LocalDateTime.of(2022, 7, 17, 16, 23);
         ForecastObject fo = new ForecastObject(content, now);
-        System.out.println(fo.getCurrentValue(now));
         QuantityType<Energy> actual = QuantityType.valueOf(0, Units.KILOWATT_HOUR);
-        System.out.println(actual + " / " + fo.getCurrentValue(now));
-        actual = actual.add(fo.getCurrentValue(now));
-        System.out.println(actual + " / " + fo.getCurrentValue(now));
-        actual = actual.add(fo.getCurrentValue(now));
-        System.out.println(actual + " / " + fo.getCurrentValue(now));
+        State st = ForecastObject.getStateObject(fo.getActualValue(now));
+        assertTrue(st instanceof QuantityType);
+        actual = actual.add((QuantityType<Energy>) st);
+        assertEquals(49.431, actual.floatValue(), 0.001, "Current Production");
+        actual = actual.add((QuantityType<Energy>) st);
+        assertEquals(98.862, actual.floatValue(), 0.001, "Doubled Current Production");
     }
 
     @Test
@@ -106,8 +82,14 @@ class ForecastSolarTest {
         ForecastObject fo = new ForecastObject();
         assertFalse(fo.isValid());
         LocalDateTime now = LocalDateTime.of(2022, 7, 17, 16, 23);
-        fo.getCurrentValue(now);
-        fo.getDayTotal();
-        fo.getRemainingProduction(now);
+        assertEquals(-1.0, fo.getActualValue(now), 0.001, "Actual Production");
+        assertEquals(-1.0, fo.getDayTotal(now, 0), 0.001, "Today Production");
+        assertEquals(-1.0, fo.getRemainingProduction(now), 0.001, "Remaining Production");
+    }
+
+    @Test
+    void testLocation() {
+        PointType pt = PointType.valueOf("1.234,9.876");
+        System.out.println(pt);
     }
 }

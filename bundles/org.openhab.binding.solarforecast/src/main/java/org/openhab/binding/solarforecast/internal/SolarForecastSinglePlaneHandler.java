@@ -19,13 +19,12 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.types.Command;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link SolarForecastBridgeHandler} is a non active handler instance. It will be triggerer by the bridge.
@@ -34,20 +33,28 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SolarForecastSinglePlaneHandler extends SolarForecastPlaneHandler {
-
-    private final Logger logger = LoggerFactory.getLogger(SolarForecastSinglePlaneHandler.class);
-
     private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
+    private PointType homeLocation;
     private @Nullable SolarForecastConfiguration config;
 
     public SolarForecastSinglePlaneHandler(Thing thing, HttpClient httpClient, PointType location) {
-        super(thing, httpClient, location);
+        super(thing, httpClient);
+        homeLocation = location;
     }
 
     @Override
     public void initialize() {
         config = getConfigAs(SolarForecastConfiguration.class);
         startSchedule(config.refreshInterval);
+        if (config.location.equals(SolarForecastBindingConstants.AUTODETECT)) {
+            Configuration editConfig = editConfiguration();
+            editConfig.put("location", homeLocation.toString());
+            updateConfiguration(editConfig);
+            super.setLocation(homeLocation);
+            config = getConfigAs(SolarForecastConfiguration.class);
+        } else {
+            super.setLocation(PointType.valueOf(config.location));
+        }
         updateStatus(ThingStatus.ONLINE);
     }
 

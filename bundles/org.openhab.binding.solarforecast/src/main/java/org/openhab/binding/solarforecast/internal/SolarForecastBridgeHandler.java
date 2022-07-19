@@ -22,14 +22,10 @@ import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import javax.measure.quantity.Energy;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.PointType;
-import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -47,19 +43,27 @@ import org.slf4j.LoggerFactory;
 public class SolarForecastBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SolarForecastBridgeHandler.class);
+    private final PointType homeLocation;
 
     private List<SolarForecastPlaneHandler> parts = new ArrayList<SolarForecastPlaneHandler>();
     private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
     private @Nullable SolarForecastConfiguration config;
 
-    public SolarForecastBridgeHandler(Bridge bridge, HttpClient httpClient, PointType location) {
+    public SolarForecastBridgeHandler(Bridge bridge, PointType location) {
         super(bridge);
+        homeLocation = location;
     }
 
     @Override
     public void initialize() {
         config = getConfigAs(SolarForecastConfiguration.class);
         startSchedule(config.refreshInterval);
+        if (config.location.equals(SolarForecastBindingConstants.AUTODETECT)) {
+            Configuration editConfig = editConfiguration();
+            editConfig.put("location", homeLocation.toString());
+            updateConfiguration(editConfig);
+            config = getConfigAs(SolarForecastConfiguration.class);
+        }
         updateStatus(ThingStatus.ONLINE);
     }
 
@@ -78,24 +82,30 @@ public class SolarForecastBridgeHandler extends BaseBridgeHandler {
         });
     }
 
-    private void getData() {
+    /**
+     * Get data for all planes. Protect parts map from being modified during update
+     */
+    private synchronized void getData() {
         LocalDateTime now = LocalDateTime.now();
-        QuantityType<Energy> today = QuantityType.valueOf(0, Units.KILOWATT_HOUR);
-        QuantityType<Energy> actual = QuantityType.valueOf(0, Units.KILOWATT_HOUR);
-        QuantityType<Energy> remain = QuantityType.valueOf(0, Units.KILOWATT_HOUR);
+        double todaySum = 0;
+        double tomorrowSum = 0;
+        double actualSum = 0;
+        double remainSum = 0;
         for (Iterator<SolarForecastPlaneHandler> iterator = parts.iterator(); iterator.hasNext();) {
             ForecastObject fo = iterator.next().fetchData();
             if (fo.isValid()) {
-                today = today.add(fo.getDayTotal());
-                actual = actual.add(fo.getCurrentValue(now));
-                remain = remain.add(fo.getRemainingProduction(now));
+                todaySum += fo.getDayTotal(now, 0);
+                tomorrowSum = fo.getDayTotal(now, 1);
+                actualSum = fo.getActualValue(now);
+                remainSum = fo.getRemainingProduction(now);
             } else {
                 logger.info("Fetched data not valid {}", fo.toString());
             }
         }
-        updateState(CHANNEL_TODAY, today);
-        updateState(CHANNEL_REMAINING, remain);
-        updateState(CHANNEL_TODAY, today);
+        updateState(CHANNEL_TODAY, ForecastObject.getStateObject(todaySum));
+        updateState(CHANNEL_TOMORROW, ForecastObject.getStateObject(tomorrowSum));
+        updateState(CHANNEL_REMAINING, ForecastObject.getStateObject(remainSum));
+        updateState(CHANNEL_ACTUAL, ForecastObject.getStateObject(actualSum));
     }
 
     @Override
@@ -109,5 +119,9 @@ public class SolarForecastBridgeHandler extends BaseBridgeHandler {
 
     synchronized void removePlane(SolarForecastPlaneHandler sfph) {
         parts.remove(sfph);
+    }
+
+    public PointType getLocation() {
+        return PointType.valueOf(config.location);
     }
 }

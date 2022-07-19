@@ -42,6 +42,7 @@ public class SolarForecastBindingConstants {
 
     public static final String BASE_URL = "https://api.forecast.solar/estimate/";
 
+    public static final String AUTODETECT = "AUTODETECT";
     public static final String SLASH = "/";
     public static final String EMPTY = "";
 }

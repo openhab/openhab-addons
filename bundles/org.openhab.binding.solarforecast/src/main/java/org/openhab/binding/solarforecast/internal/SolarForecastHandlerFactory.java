@@ -63,9 +63,11 @@ public class SolarForecastHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (FORECAST_SOLAR_MULTI_STRING.equals(thingTypeUID)) {
-            return new SolarForecastBridgeHandler((Bridge) thing, httpClient, location);
+            return new SolarForecastBridgeHandler((Bridge) thing, location);
         } else if (FORECAST_SOLAR_PART_STRING.equals(thingTypeUID)) {
-            return new SolarForecastPlaneHandler(thing, httpClient, location);
+            return new SolarForecastPlaneHandler(thing, httpClient);
+        } else if (FORECAST_SOLAR_SINGLE_STRING.equals(thingTypeUID)) {
+            return new SolarForecastSinglePlaneHandler(thing, httpClient, location);
         }
         return null;
     }
