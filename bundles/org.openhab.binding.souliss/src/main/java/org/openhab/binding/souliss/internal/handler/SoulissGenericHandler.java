@@ -79,8 +79,8 @@ public abstract class SoulissGenericHandler extends BaseThingHandler implements 
             var pSlot = props.get("slot");
 
             if ((pNode != null) && (pSlot != null)) {
-                iNode = Integer.parseInt(pNode.toString());
-                iSlot = Integer.parseInt(pSlot.toString());
+                iNode = (int) Float.parseFloat(pNode.toString());
+                iSlot = (int) Float.parseFloat(pSlot.toString());
                 updateProperty(SoulissBindingConstants.PROPERTY_NODE, Integer.toString(iNode));
                 updateProperty(SoulissBindingConstants.PROPERTY_SLOT, Integer.toString(iSlot));
                 updateProperty(SoulissBindingConstants.PROPERTY_UNIQUEID,
