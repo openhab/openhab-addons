@@ -131,10 +131,10 @@ The Master Charger is like the "normal" charger but has some extra channel to co
 Bridge easee:site:mysite1 [ username="abc@def.net", password="secret", siteId="123456" ]
 ```
 
-- manual configuration with two chargers, pollingInterval set to 1 minute.
+- manual configuration with two chargers, pollingInterval set to 60 seconds.
 
 ```
-Bridge easee:site:mysite1 [ username="abc@def.net", password="secret", siteId="471111", dataPollingInterval=1 ] {
+Bridge easee:site:mysite1 [ username="abc@def.net", password="secret", siteId="471111", dataPollingInterval=60 ] {
         Thing mastercharger myCharger1 [ id="EHXXXXX1", circuitId="1234567" ]
         Thing charger myCharger2 [ id="EHXXXXX2" ]
 }
@@ -144,33 +144,36 @@ Bridge easee:site:mysite1 [ username="abc@def.net", password="secret", siteId="4
 ### Items
 
 ```
-Number                  Easee_Charger_Power                   "Wallbox Power [%d]"
-Number:ElectricCurrent  Easee_Circuit_Phase1                  "Phase 1"                               { channel="easee:mastercharger:mysite1:charger:dynamic_current#phase1" }
-Number:ElectricCurrent  Easee_Circuit_Phase2                  "Phase 2"                               { channel="easee:mastercharger:mysite1:charger:dynamic_current#phase2" }
-Number:ElectricCurrent  Easee_Circuit_Phase3                  "Phase 3"                               { channel="easee:mastercharger:mysite1:charger:dynamic_current#phase3" }
-String                  Easee_Circuit_Dynamic_Phase_Command   "Dynamic Phase Command"                 { channel="easee:mastercharger:mysite1:charger:dynamic_current#setDynamicCurrents" }
-```
-
-### Rules
-
-```
-    logDebug("easee.trigger", "[TRIGGER] Easee Power Control")
-    if (Easee_Charger_Status.state == 2 || Easee_Charger_Status.state == 3) {
-        if (Easee_Charger_Power.state > 16) {
-            var int totalCurrent =  (Easee_Charger_Power.state as Number).intValue
-            var int singlePhaseCurrent = totalCurrent/3
-            Easee_Circuit_Dynamic_Phase_Command.sendCommand(singlePhaseCurrent + ";" + singlePhaseCurrent + ";" + singlePhaseCurrent)
-        } else {
-            Easee_Circuit_Dynamic_Phase_Command.sendCommand(Easee_Charger_Power.state + ";0;0")
-        }
-    } else {
-        logInfo("easee.script", "No active charging process")
-    }
+Number:ElectricCurrent  Easee_Circuit_Phase1                  "Phase 1"                                   { channel="easee:mastercharger:mysite1:myCharger1:dynamic_current#phase1" }
+Number:ElectricCurrent  Easee_Circuit_Phase2                  "Phase 2"                                   { channel="easee:mastercharger:mysite1:myCharger1:dynamic_current#phase2" }
+Number:ElectricCurrent  Easee_Circuit_Phase3                  "Phase 3"                                   { channel="easee:mastercharger:mysite1:myCharger1:dynamic_current#phase3" }
+String                  Easee_Circuit_Dynamic_Phases          "Dynamic Power [MAP(easeePhases.map):%s]"   { channel="easee:mastercharger:mysite1:myCharger1:dynamic_current#setDynamicCurrents" }
+Switch                  Easee_Charger_Start_Stop              "Start / Stop"                              { channel="easee:mastercharger:mysite1:myCharger1:commands#startStop" }
 ```
 
 ### Sitemap
 
 ```
-    Switch item=Easee_Charger_Power mappings=[0="Pause", 6="1400", 7="1600", 8="1800", 9="2100", 10="2300", 16="3700", 48="11000"] icon="energy"
+    Switch item=Easee_Circuit_Dynamic_Phases mappings=["0;0;0"="0,00 kW", "6;0;0"="1,44 kW", "7;0;0"="1,68 kW", "8;0;0"="1,92 kW", "9;0;0"="2,16 kW", "10;0;0"="2,40 kW", "16;0;0"="3,72 kW", "16;16;16"="11,1 kW"] icon="energy"
 ```
 
+### Mapping
+
+easeePhases.map will make the phase setting more readable.
+
+```
+0;0;0=0 kW
+6;0;0=1,44 kW
+7;0;0=1,68 kW
+8;0;0=1,92 kW
+9;0;0=2,16 kW
+10;0;0=2,40 kW
+11;0;0=2,64 kW
+12;0;0=2,88 kW
+13;0;0=3,12 kW
+14;0;0=3,36 kW
+15;0;0=3,60 kW
+16;0;0=3,72 kW
+6;6;6=4,32 kW
+16;16;16=11,1 kW
+´´´
