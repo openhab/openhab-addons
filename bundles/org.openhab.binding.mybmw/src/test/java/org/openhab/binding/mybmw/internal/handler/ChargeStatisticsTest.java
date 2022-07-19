@@ -28,6 +28,7 @@ import org.openhab.binding.mybmw.internal.VehicleConfiguration;
 import org.openhab.binding.mybmw.internal.dto.ChargeStatisticWrapper;
 import org.openhab.binding.mybmw.internal.util.FileReader;
 import org.openhab.binding.mybmw.internal.utils.Constants;
+import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
@@ -73,7 +74,8 @@ public class ChargeStatisticsTest {
         Thing thing = mock(Thing.class);
         when(thing.getUID()).thenReturn(new ThingUID("testbinding", "test"));
         MyBMWCommandOptionProvider cop = mock(MyBMWCommandOptionProvider.class);
-        cch = new VehicleHandler(thing, cop, type);
+        LocationProvider locationProvider = mock(LocationProvider.class);
+        cch = new VehicleHandler(thing, cop, locationProvider, type);
         VehicleConfiguration vc = new VehicleConfiguration();
         vc.vin = Constants.ANONYMOUS;
         Optional<VehicleConfiguration> ovc = Optional.of(vc);

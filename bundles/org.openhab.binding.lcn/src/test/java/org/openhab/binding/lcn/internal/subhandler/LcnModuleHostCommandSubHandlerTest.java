@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.lcn.internal.subhandler;
 
-import static org.mockito.Mockito.verify;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,48 +27,49 @@ import org.openhab.binding.lcn.internal.common.LcnChannelGroup;
  */
 @NonNullByDefault
 public class LcnModuleHostCommandSubHandlerTest extends AbstractTestLcnModuleSubHandler {
-    private @NonNullByDefault({}) LcnModuleHostCommandSubHandler subHandler;
-
     @Override
     @BeforeEach
     public void setUp() {
         super.setUp();
-
-        subHandler = new LcnModuleHostCommandSubHandler(handler, info);
     }
 
     @Test
     public void testA1Hit() {
-        subHandler.tryParse("+M004000005.STH065001");
+        tryParseAllHandlers("+M004000005.STH065001");
         verify(handler).triggerChannel(LcnChannelGroup.HOSTCOMMAND, "sendKeys", "A1:HIT");
+        verify(handler).triggerChannel(any(), any(), any());
     }
 
     @Test
     public void testA1Make() {
-        subHandler.tryParse("+M004000005.STH066001");
+        tryParseAllHandlers("+M004000005.STH066001");
         verify(handler).triggerChannel(LcnChannelGroup.HOSTCOMMAND, "sendKeys", "A1:MAKE");
+        verify(handler).triggerChannel(any(), any(), any());
     }
 
     @Test
     public void testC8Break() {
-        subHandler.tryParse("+M004000005.STH112128");
+        tryParseAllHandlers("+M004000005.STH112128");
         verify(handler).triggerChannel(LcnChannelGroup.HOSTCOMMAND, "sendKeys", "C8:BREAK");
+        verify(handler).triggerChannel(any(), any(), any());
     }
 
     @Test
     public void testC1Hit() {
-        subHandler.tryParse("+M004000005.STH080001");
+        tryParseAllHandlers("+M004000005.STH080001");
         verify(handler).triggerChannel(LcnChannelGroup.HOSTCOMMAND, "sendKeys", "C1:HIT");
+        verify(handler).triggerChannel(any(), any(), any());
     }
 
     @Test
     public void testMultiple() {
-        subHandler.tryParse("+M004000005.STH121034");
+        tryParseAllHandlers("+M004000005.STH121034");
         verify(handler).triggerChannel(LcnChannelGroup.HOSTCOMMAND, "sendKeys", "A2:HIT");
         verify(handler).triggerChannel(LcnChannelGroup.HOSTCOMMAND, "sendKeys", "A6:HIT");
         verify(handler).triggerChannel(LcnChannelGroup.HOSTCOMMAND, "sendKeys", "B2:MAKE");
         verify(handler).triggerChannel(LcnChannelGroup.HOSTCOMMAND, "sendKeys", "B6:MAKE");
         verify(handler).triggerChannel(LcnChannelGroup.HOSTCOMMAND, "sendKeys", "C2:BREAK");
         verify(handler).triggerChannel(LcnChannelGroup.HOSTCOMMAND, "sendKeys", "C6:BREAK");
+        verify(handler, times(6)).triggerChannel(any(), any(), any());
     }
 }

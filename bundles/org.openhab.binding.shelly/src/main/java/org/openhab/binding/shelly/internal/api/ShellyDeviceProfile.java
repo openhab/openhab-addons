@@ -58,6 +58,7 @@ public class ShellyDeviceProfile {
     public ShellySettingsStatus status = new ShellySettingsStatus();
 
     public String hostname = "";
+    public String name = "";
     public String mode = "";
     public boolean discoverable = true;
     public boolean auth = false;
@@ -118,6 +119,7 @@ public class ShellyDeviceProfile {
         settings = gs; // only update when no exception
 
         // General settings
+        name = getString(settings.name);
         deviceType = getString(settings.device.type);
         mac = getString(settings.device.mac);
         hostname = settings.device.hostname != null && !settings.device.hostname.isEmpty()
@@ -251,6 +253,10 @@ public class ShellyDeviceProfile {
         return numRelays == 1 ? CHANNEL_GROUP_STATUS : CHANNEL_GROUP_STATUS + idx;
     }
 
+    public String getMeterGroup(int idx) {
+        return numMeters > 1 ? CHANNEL_GROUP_METER + (idx + 1) : CHANNEL_GROUP_METER;
+    }
+
     public String getInputGroup(int i) {
         int idx = i + 1; // group names are 1-based
         if (isRGBW2) {
@@ -275,7 +281,7 @@ public class ShellyDeviceProfile {
             // Roller has 2 relays, but it will be mapped to 1 roller with 2 inputs
             return String.valueOf(idx);
         } else if (hasRelays) {
-            return (numRelays) == 1 && (numInputs >= 2) ? String.valueOf(idx) : "";
+            return numRelays == 1 && numInputs >= 2 ? String.valueOf(idx) : "";
         }
         return "";
     }
@@ -288,7 +294,7 @@ public class ShellyDeviceProfile {
         String btnType = "";
         if (isButton) {
             return true;
-        } else if (isIX3 && (settings.inputs != null) && (idx < settings.inputs.size())) {
+        } else if (isIX3 && settings.inputs != null && idx < settings.inputs.size()) {
             ShellySettingsInput input = settings.inputs.get(idx);
             btnType = getString(input.btnType);
         } else if (isDimmer) {
@@ -315,7 +321,6 @@ public class ShellyDeviceProfile {
             btnType = light.btnType;
         }
 
-        logger.trace("{}: Checking for trigger, button-type[{}] is {}", thingName, idx, btnType);
         return btnType.equalsIgnoreCase(SHELLY_BTNT_MOMENTARY) || btnType.equalsIgnoreCase(SHELLY_BTNT_MOM_ON_RELEASE)
                 || btnType.equalsIgnoreCase(SHELLY_BTNT_ONE_BUTTON) || btnType.equalsIgnoreCase(SHELLY_BTNT_TWO_BUTTON)
                 || btnType.equalsIgnoreCase(SHELLY_BTNT_DETACHED);

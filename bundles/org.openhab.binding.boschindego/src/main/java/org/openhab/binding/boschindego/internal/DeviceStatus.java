@@ -49,6 +49,7 @@ public class DeviceStatus {
             entry(517, new DeviceStatus("paused", true, DeviceCommand.PAUSE)),
             entry(518, new DeviceStatus("border-cut", false, DeviceCommand.MOW)),
             entry(519, new DeviceStatus("idle-in-lawn", true, DeviceCommand.MOW)),
+            entry(523, new DeviceStatus("spotmow", false, DeviceCommand.MOW)),
             entry(769, new DeviceStatus("returning-to-dock", false, DeviceCommand.RETURN)),
             entry(770, new DeviceStatus("returning-to-dock", false, DeviceCommand.RETURN)),
             entry(771, new DeviceStatus("returning-to-dock-battery-low", false, DeviceCommand.RETURN)),

@@ -5,7 +5,7 @@
 
 	<bridge-type id="pckGateway">
 		<label>LCN-PCHK Gateway</label>
-		<description>An LCN gateway speaking the PCK language. E.g. LCN-PCHK software or the DIN rail device LCN-PKE.</description>
+		<description>An LCN gateway speaking the PCK language. E.g. LCN-PCHK software or the DIN rail device LCN-VISU.</description>
 
 		<config-description-ref uri="thing-type:lcn:pckGateway"/>
 	</bridge-type>
@@ -24,10 +24,12 @@
 			<channel-group typeId="leds" id="led"/>
 			<channel-group typeId="relays" id="relay"/>
 			<channel-group typeId="rollershutterrelays" id="rollershutterrelay"/>
+			<channel-group typeId="rollershutterrelayslats" id="rollershutterrelayslat"/>
 			<channel-group typeId="logics" id="logic"/>
 			<channel-group typeId="binarysensors" id="binarysensor"/>
 			<channel-group typeId="variables" id="variable"/>
 			<channel-group typeId="rvarsetpoints" id="rvarsetpoint"/>
+			<channel-group typeId="rvarmodes" id="rvarmode"/>
 			<channel-group typeId="rvarlocks" id="rvarlock"/>
 			<channel-group typeId="thresholdregisters1" id="thresholdregister1"/>
 			<channel-group typeId="thresholdregisters2" id="thresholdregister2"/>
@@ -39,6 +41,7 @@
 			<channel-group typeId="keyslocktablec" id="keylocktablec"/>
 			<channel-group typeId="keyslocktabled" id="keylocktabled"/>
 			<channel-group typeId="codes" id="code"/>
+			<channel-group typeId="operatinghourscounters" id="operatinghourscounter"/>
 			<channel-group typeId="hostcommands" id="hostcommand"/>
 		</channel-groups>
 		<properties>
@@ -91,6 +94,19 @@
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
+	<channel-type id="tunablewhite">
+		<item-type>String</item-type>
+		<label>Tunable White Mode</label>
+		<state>
+			<options>
+				<option value="DISABLE">Tunable White Disabled</option>
+				<option value="OUTPUT1">Control Output 1 (Output 2 is auto)</option>
+				<option value="BOTH">Output 1 Brightness/Output 2 Temperature</option>
+			</options>
+		</state>
+		<autoUpdatePolicy>recommend</autoUpdatePolicy><!-- There's no status message in LCN -->
+	</channel-type>
+
 	<channel-group-type id="outputs">
 		<label>Dimmer Outputs</label>
 		<channels>
@@ -109,6 +125,7 @@
 			<channel typeId="color" id="color">
 				<label>RGB Color Control (Outputs 1-3)</label>
 			</channel>
+			<channel typeId="tunablewhite" id="tunablewhite"/>
 		</channels>
 	</channel-group-type>
 
@@ -151,7 +168,7 @@
 	<channel-type id="rollershutter">
 		<item-type>Rollershutter</item-type>
 		<label>Roller Shutter</label>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
+		<autoUpdatePolicy>veto</autoUpdatePolicy><!-- The position messages come as the shutter moves -->
 		<config-description>
 			<parameter name="invertUpDown" type="boolean">
 				<label>Invert Up/Down</label>
@@ -163,19 +180,37 @@
 	</channel-type>
 
 	<channel-group-type id="rollershutterrelays">
-		<label>Roller Shutter (Relay)</label>
+		<label>Shutter (Relay)</label>
 		<channels>
 			<channel typeId="rollershutter" id="1">
-				<label>Shutter 1-2</label>
+				<label>Position 1-2</label>
 			</channel>
 			<channel typeId="rollershutter" id="2">
-				<label>Shutter 3-4</label>
+				<label>Position 3-4</label>
 			</channel>
 			<channel typeId="rollershutter" id="3">
-				<label>Shutter 5-6</label>
+				<label>Position 5-6</label>
 			</channel>
 			<channel typeId="rollershutter" id="4">
-				<label>Shutter 7-8</label>
+				<label>Position 7-8</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="rollershutterrelayslats">
+		<label>Shutter Slat Angle (Relay)</label>
+		<channels>
+			<channel typeId="rollershutter" id="1">
+				<label>Slat Angle 1-2</label>
+			</channel>
+			<channel typeId="rollershutter" id="2">
+				<label>Slat Angle 3-4</label>
+			</channel>
+			<channel typeId="rollershutter" id="3">
+				<label>Slat Angle 5-6</label>
+			</channel>
+			<channel typeId="rollershutter" id="4">
+				<label>Slat Angle 7-8</label>
 			</channel>
 		</channels>
 	</channel-group-type>
@@ -374,6 +409,30 @@
 			</channel>
 			<channel typeId="variable" id="2">
 				<label>R2Var Setpoint</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="rvarmode" advanced="true">
+		<item-type>String</item-type>
+		<label>RVar Heating/Cooling</label>
+		<state>
+			<options>
+				<option value="HEATING">Heating</option>
+				<option value="COOLING">Cooling</option>
+			</options>
+		</state>
+		<autoUpdatePolicy>recommend</autoUpdatePolicy><!-- There's no status message in LCN -->
+	</channel-type>
+
+	<channel-group-type id="rvarmodes">
+		<label>RVar Heating/Cooling</label>
+		<channels>
+			<channel typeId="rvarmode" id="1">
+				<label>R1Var Mode</label>
+			</channel>
+			<channel typeId="rvarmode" id="2">
+				<label>R2Var Mode</label>
 			</channel>
 		</channels>
 	</channel-group-type>
@@ -663,6 +722,90 @@
 			<channel typeId="sendKeys" id="sendKeys"/>
 		</channels>
 	</channel-group-type>
+
+	<channel-group-type id="operatinghourscounters">
+		<label>Operating Hours Counters</label>
+		<channels>
+			<channel typeId="operatinghourscounter" id="output1">
+				<label>Output 1</label>
+			</channel>
+			<channel typeId="operatinghourscounter" id="output2">
+				<label>Output 2</label>
+			</channel>
+			<channel typeId="operatinghourscounter" id="output3">
+				<label>Output 3</label>
+			</channel>
+			<channel typeId="operatinghourscounter" id="output4">
+				<label>Output 4</label>
+			</channel>
+			<channel typeId="operatinghourscounter" id="relay1">
+				<label>Relay 1</label>
+			</channel>
+			<channel typeId="operatinghourscounter" id="relay2">
+				<label>Relay 2</label>
+			</channel>
+			<channel typeId="operatinghourscounter" id="relay3">
+				<label>Relay 3</label>
+			</channel>
+			<channel typeId="operatinghourscounter" id="relay4">
+				<label>Relay 4</label>
+			</channel>
+			<channel typeId="operatinghourscounter" id="relay5">
+				<label>Relay 5</label>
+			</channel>
+			<channel typeId="operatinghourscounter" id="relay6">
+				<label>Relay 6</label>
+			</channel>
+			<channel typeId="operatinghourscounter" id="relay7">
+				<label>Relay 7</label>
+			</channel>
+			<channel typeId="operatinghourscounter" id="relay8">
+				<label>Relay 8</label>
+			</channel>
+			<channel typeId="operatinghourscounter" id="binarysensor1">
+				<label>Binary Sensor 1</label>
+			</channel>
+			<channel typeId="operatinghourscounter" id="binarysensor2">
+				<label>Binary Sensor 2</label>
+			</channel>
+			<channel typeId="operatinghourscounter" id="binarysensor3">
+				<label>Binary Sensor 3</label>
+			</channel>
+			<channel typeId="operatinghourscounter" id="binarysensor4">
+				<label>Binary Sensor 4</label>
+			</channel>
+			<channel typeId="operatinghourscounter" id="binarysensor5">
+				<label>Binary Sensor 5</label>
+			</channel>
+			<channel typeId="operatinghourscounter" id="binarysensor6">
+				<label>Binary Sensor 6</label>
+			</channel>
+			<channel typeId="operatinghourscounter" id="binarysensor7">
+				<label>Binary Sensor 7</label>
+			</channel>
+			<channel typeId="operatinghourscounter" id="binarysensor8">
+				<label>Binary Sensor 8</label>
+			</channel>
+			<channel typeId="operatinghourscounter" id="outputrelativework1">
+				<label>Output 1 Relative Work</label>
+			</channel>
+			<channel typeId="operatinghourscounter" id="outputrelativework2">
+				<label>Output 2 Relative Work</label>
+			</channel>
+			<channel typeId="operatinghourscounter" id="outputrelativework3">
+				<label>Output 3 Relative Work</label>
+			</channel>
+			<channel typeId="operatinghourscounter" id="outputrelativework4">
+				<label>Output 4 Relative Work</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="operatinghourscounter" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Operating Hours Counter</label>
+		<state readOnly="true"/>
+	</channel-type>
 
 	<channel-type id="sendKeys" advanced="true">
 		<kind>trigger</kind>

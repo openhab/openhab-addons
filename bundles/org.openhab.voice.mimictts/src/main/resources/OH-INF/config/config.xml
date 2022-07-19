@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
+		https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="voice:mimictts">
+		<parameter name="url" type="text">
+			<label>URL</label>
+			<description>Mimic 3 URL.</description>
+			<default>http://localhost:59125</default>
+		</parameter>
+		<parameter name="speakingRate" min="0" max="1" type="decimal" required="false">
+			<label>Speaking Rate</label>
+			<description>Controls how fast the voice speaks the text. A value of 1 is the speed of the training dataset. Less
+				than 1 is faster, and more than 1 is slower.</description>
+			<default>1</default>
+		</parameter>
+		<parameter name="audioVolatility" min="0" max="1" type="decimal" required="false">
+			<label>Audio Volatility</label>
+			<description>The amount of noise added to the generated audio (0-1). Can help mask audio artifacts from the voice
+				model. Multi-speaker models tend to sound better with a lower amount of noise than single speaker models.
+			</description>
+			<default>0.667</default>
+		</parameter>
+		<parameter name="phonemeVolatility" min="0" max="1" type="decimal" required="false">
+			<label>Phoneme Volatility</label>
+			<description>The amount of noise used to generate phoneme durations (0-1). Allows for variable speaking cadance, with
+				a value closer to 1 being more variable. Multi-speaker models tend to sound better with a lower amount of phoneme
+				variability than single speaker models.
+			</description>
+			<default>0.8</default>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>

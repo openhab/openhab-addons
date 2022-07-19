@@ -281,8 +281,14 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
             case THING_TYPE_ID_T14:
                 model = RotelModel.T14;
                 break;
+            case THING_TYPE_ID_M8:
+                model = RotelModel.M8;
+                break;
             case THING_TYPE_ID_P5:
                 model = RotelModel.P5;
+                break;
+            case THING_TYPE_ID_S5:
+                model = RotelModel.S5;
                 break;
             case THING_TYPE_ID_X3:
                 model = RotelModel.X3;
@@ -1585,7 +1591,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                         balance = maxBalanceLevel;
                     } else if (value.toUpperCase().startsWith("L")) {
                         balance = -Integer.parseInt(value.substring(1));
-                    } else if (value.toLowerCase().startsWith("R")) {
+                    } else if (value.toUpperCase().startsWith("R")) {
                         balance = Integer.parseInt(value.substring(1));
                     } else {
                         balance = Integer.parseInt(value);

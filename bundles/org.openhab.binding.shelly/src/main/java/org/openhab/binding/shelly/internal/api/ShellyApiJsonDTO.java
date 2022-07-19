@@ -60,6 +60,7 @@ public class ShellyApiJsonDTO {
     public static final String SHELLY_WAKEUPT_PERIODIC = "PERIODIC"; // periodic wakeup
     public static final String SHELLY_WAKEUPT_BUTTON = "BUTTON"; // button pressed
     public static final String SHELLY_WAKEUPT_POWERON = "POWERON"; // device powered up
+    public static final String SHELLY_WAKEUPT_EXT_POWER = "EXT_POWER"; // charger connected
     public static final String SHELLY_WAKEUPT_UNKNOWN = "UNKNOWN"; // other event
 
     //
@@ -94,6 +95,12 @@ public class ShellyApiJsonDTO {
     public static final String SHELLY_EVENT_ROLLER_OPEN = "roller_open";
     public static final String SHELLY_EVENT_ROLLER_CLOSE = "roller_close";
     public static final String SHELLY_EVENT_ROLLER_STOP = "roller_stop";
+    public static final String SHELLY_EVENT_ROLLER_CALIB = "roller_calibrating";
+
+    // Roller states
+    public static final String SHELLY_RSTATE_OPEN = "open";
+    public static final String SHELLY_RSTATE_STOP = "stop";
+    public static final String SHELLY_RSTATE_CLOSE = "close";
 
     // Sensors
     public static final String SHELLY_EVENT_SENSORREPORT = "report";
@@ -116,6 +123,8 @@ public class ShellyApiJsonDTO {
     //
     // API values
     //
+    public static final double SHELLY_API_INVTEMP = -999.0;
+
     public static final String SHELLY_BTNT_MOMENTARY = "momentary";
     public static final String SHELLY_BTNT_MOM_ON_RELEASE = "momentary_on_release";
     public static final String SHELLY_BTNT_ONE_BUTTON = "one_button";
@@ -128,6 +137,8 @@ public class ShellyApiJsonDTO {
     public static final String SHELLY_STATE_STOP = "stop";
 
     public static final String SHELLY_INP_MODE_OPENCLOSE = "openclose";
+    public static final String SHELLY_INP_MODE_ONEBUTTON = "onebutton";
+
     public static final String SHELLY_OBSTMODE_DISABLED = "disabled";
     public static final String SHELLY_SAFETYM_WHILEOPENING = "while_opening";
 
@@ -359,8 +370,6 @@ public class ShellyApiJsonDTO {
 
     public static class ShellySettingsRelay {
         public String name;
-        public Boolean ison;
-        public Boolean overpower;
         @SerializedName("default_state")
         public String defaultState; // Accepted values: off, on, last, switch
         @SerializedName("btn_type")
@@ -393,6 +402,16 @@ public class ShellyApiJsonDTO {
         public String pushLongUrl; // to access when roller stopped
         @SerializedName("shortpush_url")
         public String pushShortUrl; // to access when roller stopped
+
+        // Status information
+        public Boolean ison;
+        public Boolean overpower;
+        @SerializedName("is_valid")
+        public Boolean isValid;
+        @SerializedName("ext_temperature")
+        public ShellyStatusSensor.ShellyExtTemperature extTemperature; // Shelly 1/1PM: sensor values
+        @SerializedName("ext_humidity")
+        public ShellyStatusSensor.ShellyExtHumidity extHumidity; // Shelly 1/1PM: sensor values
     }
 
     public static class ShellySettingsDimmer {
@@ -591,18 +610,19 @@ public class ShellyApiJsonDTO {
         public Boolean calibrated;
 
         public ArrayList<ShellySettingsRelay> relays;
-        public Double voltage; // AC voltage for Shelly 2.5
-        @SerializedName("supply_voltage")
-        public Long supplyVoltage; // Shelly 1PM/1L: 0=110V, 1=220V
+        public ArrayList<ShellySettingsRoller> rollers;
         public ArrayList<ShellySettingsDimmer> dimmers;
         public ArrayList<ShellySettingsRgbwLight> lights;
         public ArrayList<ShellySettingsEMeter> emeters;
         public ArrayList<ShellySettingsInput> inputs; // ix3
-
         public ArrayList<ShellyThermnostat> thermostats; // TRV
 
+        public Double voltage; // AC voltage for Shelly 2.5
+        @SerializedName("supply_voltage")
+        public Long supplyVoltage; // Shelly 1PM/1L: 0=110V, 1=220V
+
         @SerializedName("temperature_units")
-        public String temperatureUnits; // Either'C'or'F'
+        public String temperatureUnits = "C"; // Either'C'or'F'
 
         @SerializedName("led_status_disable")
         public Boolean ledStatusDisable; // PlugS only Disable LED indication for network
@@ -641,7 +661,7 @@ public class ShellyApiJsonDTO {
 
         // Roller with FW 1.9.2+
         @SerializedName("favorites_enabled")
-        public Boolean favoritesEnabled;
+        public Boolean favoritesEnabled = false;
         public ArrayList<ShellyFavPos> favorites;
 
         // Motion
@@ -686,7 +706,7 @@ public class ShellyApiJsonDTO {
         public ShellyStatusMqtt mqtt;
 
         public String time;
-        public Integer serial;
+        public Integer serial = -1;
         @SerializedName("has_update")
         public Boolean hasUpdate;
         public String mac;
@@ -709,7 +729,7 @@ public class ShellyApiJsonDTO {
 
         // Internal device temp
         public ShellyStatusSensor.ShellySensorTmp tmp; // Shelly 1PM
-        public Double temperature; // Shelly 2.5
+        public Double temperature = SHELLY_API_INVTEMP; // Shelly 2.5
         public Boolean overtemperature;
 
         // Shelly Dimmer only
@@ -838,16 +858,16 @@ public class ShellyApiJsonDTO {
         public Integer currentPos; // current position 0..100, 100=open
     }
 
-    public class ShellyOtaCheckResult {
+    public static class ShellyOtaCheckResult {
         public String status;
     }
 
-    public class ShellyApRoaming {
+    public static class ShellyApRoaming {
         public Boolean enabled;
         public Integer threshold;
     }
 
-    public class ShellySensorSleepMode {
+    public static class ShellySensorSleepMode {
         public Integer period;
         public String unit;
     }

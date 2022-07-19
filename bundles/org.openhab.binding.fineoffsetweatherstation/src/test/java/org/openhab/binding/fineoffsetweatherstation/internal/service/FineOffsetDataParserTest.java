@@ -38,7 +38,7 @@ class FineOffsetDataParserTest {
         Assertions.assertThat(data)
                 .extracting(MeasuredValue::getChannelId, measuredValue -> measuredValue.getState().toString())
                 .containsExactly(new Tuple("temperature-indoor", "21.1 °C"), new Tuple("humidity-indoor", "40 %"),
-                        new Tuple("pressure-absolute", "10223 hPa"), new Tuple("pressure-relative", "10223 hPa"),
+                        new Tuple("pressure-absolute", "1022.3 hPa"), new Tuple("pressure-relative", "1022.3 hPa"),
                         new Tuple("temperature-outdoor", "6.9 °C"), new Tuple("humidity-outdoor", "79 %"),
                         new Tuple("direction-wind", "21 °"), new Tuple("speed-wind", "0 m/s"),
                         new Tuple("speed-gust", "0 m/s"), new Tuple("illumination", "0 lx"),

@@ -60,7 +60,7 @@ import com.google.gson.JsonSyntaxException;
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public class ShellyHttpApi {
+public class ShellyHttpApi implements ShellyApiInterface {
     public static final String HTTP_HEADER_AUTH = "Authorization";
     public static final String HTTP_AUTH_TYPE_BASIC = "Basic";
     public static final String CONTENT_TYPE_JSON = "application/json; charset=UTF-8";
@@ -82,19 +82,23 @@ public class ShellyHttpApi {
         profile.initFromThingType(thingName);
     }
 
+    @Override
     public void setConfig(String thingName, ShellyThingConfiguration config) {
         this.thingName = thingName;
         this.config = config;
     }
 
-    public ShellySettingsDevice getDevInfo() throws ShellyApiException {
+    @Override
+    public ShellySettingsDevice getDeviceInfo() throws ShellyApiException {
         return callApi(SHELLY_URL_DEVINFO, ShellySettingsDevice.class);
     }
 
+    @Override
     public String setDebug(boolean enabled) throws ShellyApiException {
         return callApi(SHELLY_URL_SETTINGS + "?debug_enable=" + Boolean.valueOf(enabled), String.class);
     }
 
+    @Override
     public String getDebugLog(String id) throws ShellyApiException {
         return callApi("/debug/" + id, String.class);
     }
@@ -106,6 +110,7 @@ public class ShellyHttpApi {
      * @return Initialized ShellyDeviceProfile
      * @throws ShellyApiException
      */
+    @Override
     public ShellyDeviceProfile getDeviceProfile(String thingType) throws ShellyApiException {
         String json = request(SHELLY_URL_SETTINGS);
         if (json.contains("\"type\":\"SHDM-")) {
@@ -131,6 +136,7 @@ public class ShellyHttpApi {
         return profile;
     }
 
+    @Override
     public boolean isInitialized() {
         return profile.initialized;
     }
@@ -141,6 +147,7 @@ public class ShellyHttpApi {
      * @return Device settings/status as ShellySettingsStatus object
      * @throws ShellyApiException
      */
+    @Override
     public ShellySettingsStatus getStatus() throws ShellyApiException {
         String json = "";
         try {
@@ -156,42 +163,55 @@ public class ShellyHttpApi {
         }
     }
 
+    @Override
     public ShellyStatusRelay getRelayStatus(Integer relayIndex) throws ShellyApiException {
         return callApi(SHELLY_URL_STATUS_RELEAY + "/" + relayIndex.toString(), ShellyStatusRelay.class);
     }
 
-    public ShellyShortLightStatus setRelayTurn(Integer id, String turnMode) throws ShellyApiException {
+    @Override
+    public void setRelayTurn(int id, String turnMode) throws ShellyApiException {
+        callApi(getControlUriPrefix(id) + "?" + SHELLY_LIGHT_TURN + "=" + turnMode.toLowerCase(),
+                ShellyShortLightStatus.class);
+    }
+
+    @Override
+    public ShellyShortLightStatus setLightTurn(int id, String turnMode) throws ShellyApiException {
         return callApi(getControlUriPrefix(id) + "?" + SHELLY_LIGHT_TURN + "=" + turnMode.toLowerCase(),
                 ShellyShortLightStatus.class);
     }
 
-    public void setBrightness(Integer id, Integer brightness, boolean autoOn) throws ShellyApiException {
+    @Override
+    public void setBrightness(int id, int brightness, boolean autoOn) throws ShellyApiException {
         String turn = autoOn ? SHELLY_LIGHT_TURN + "=" + SHELLY_API_ON + "&" : "";
-        request(getControlUriPrefix(id) + "?" + turn + "brightness=" + brightness.toString());
+        request(getControlUriPrefix(id) + "?" + turn + "brightness=" + brightness);
     }
 
-    public ShellyControlRoller getRollerStatus(Integer rollerIndex) throws ShellyApiException {
-        String uri = SHELLY_URL_CONTROL_ROLLER + "/" + rollerIndex.toString() + "/pos";
+    @Override
+    public ShellyControlRoller getRollerStatus(int idx) throws ShellyApiException {
+        String uri = SHELLY_URL_CONTROL_ROLLER + "/" + idx + "/pos";
         return callApi(uri, ShellyControlRoller.class);
     }
 
-    public void setRollerTurn(Integer relayIndex, String turnMode) throws ShellyApiException {
-        request(SHELLY_URL_CONTROL_ROLLER + "/" + relayIndex.toString() + "?go=" + turnMode);
+    @Override
+    public void setRollerTurn(int idx, String turnMode) throws ShellyApiException {
+        request(SHELLY_URL_CONTROL_ROLLER + "/" + idx + "?go=" + turnMode);
     }
 
-    public void setRollerPos(Integer relayIndex, Integer position) throws ShellyApiException {
-        request(SHELLY_URL_CONTROL_ROLLER + "/" + relayIndex.toString() + "?go=to_pos&roller_pos="
-                + position.toString());
+    @Override
+    public void setRollerPos(int id, int position) throws ShellyApiException {
+        request(SHELLY_URL_CONTROL_ROLLER + "/" + id + "?go=to_pos&roller_pos=" + position);
     }
 
-    public void setRollerTimer(Integer relayIndex, Integer timer) throws ShellyApiException {
-        request(SHELLY_URL_CONTROL_ROLLER + "/" + relayIndex.toString() + "?timer=" + timer.toString());
+    public void setRollerTimer(int idx, int timer) throws ShellyApiException {
+        request(SHELLY_URL_CONTROL_ROLLER + "/" + idx + "?timer=" + timer);
     }
 
-    public ShellyShortLightStatus getLightStatus(Integer index) throws ShellyApiException {
+    @Override
+    public ShellyShortLightStatus getLightStatus(int index) throws ShellyApiException {
         return callApi(getControlUriPrefix(index), ShellyShortLightStatus.class);
     }
 
+    @Override
     public ShellyStatusSensor getSensorStatus() throws ShellyApiException {
         ShellyStatusSensor status = callApi(SHELLY_URL_STATUS, ShellyStatusSensor.class);
         if (profile.isSense) {
@@ -210,6 +230,7 @@ public class ShellyHttpApi {
         return status;
     }
 
+    @Override
     public void setTimer(int index, String timerName, int value) throws ShellyApiException {
         String type = SHELLY_CLASS_RELAY;
         if (profile.isRoller) {
@@ -221,14 +242,17 @@ public class ShellyHttpApi {
         request(uri);
     }
 
+    @Override
     public void setSleepTime(int value) throws ShellyApiException {
         request(SHELLY_URL_SETTINGS + "?sleep_time=" + value);
     }
 
-    public void setTemperature(int valveId, int value) throws ShellyApiException {
+    @Override
+    public void setValveTemperature(int valveId, int value) throws ShellyApiException {
         request("/thermostat/" + valveId + "?target_t_enabled=1&target_t=" + value);
     }
 
+    @Override
     public void setValveMode(int valveId, boolean auto) throws ShellyApiException {
         String uri = "/settings/thermostat/" + valveId + "?target_t_enabled=" + (auto ? "1" : "0");
         if (auto) {
@@ -237,24 +261,29 @@ public class ShellyHttpApi {
         request(uri); // percentage to open the valve
     }
 
-    public void setProfile(int valveId, int value) throws ShellyApiException {
+    @Override
+    public void setValveProfile(int valveId, int value) throws ShellyApiException {
         String uri = "/settings/thermostat/" + valveId + "?";
         request(uri + (value == 0 ? "schedule=0" : "schedule=1&schedule_profile=" + value));
     }
 
+    @Override
     public void setValvePosition(int valveId, double value) throws ShellyApiException {
         request("/thermostat/" + valveId + "?pos=" + value); // percentage to open the valve
     }
 
-    public void setBoostTime(int valveId, int value) throws ShellyApiException {
+    @Override
+    public void setValveBoostTime(int valveId, int value) throws ShellyApiException {
         request("/settings/thermostat/" + valveId + "?boost_minutes=" + value);
     }
 
-    public void startBoost(int valveId, int value) throws ShellyApiException {
+    @Override
+    public void startValveBoost(int valveId, int value) throws ShellyApiException {
         int minutes = value != -1 ? value : getInteger(profile.settings.thermostats.get(0).boostMinutes);
         request("/thermostat/" + valveId + "?boost_minutes=" + minutes);
     }
 
+    @Override
     public void setLedStatus(String ledName, Boolean value) throws ShellyApiException {
         request(SHELLY_URL_SETTINGS + "?" + ledName + "=" + (value ? SHELLY_API_TRUE : SHELLY_API_FALSE));
     }
@@ -263,6 +292,7 @@ public class ShellyHttpApi {
         return callApi(SHELLY_URL_SETTINGS_LIGHT, ShellySettingsLight.class);
     }
 
+    @Override
     public ShellyStatusLight getLightStatus() throws ShellyApiException {
         return callApi(SHELLY_URL_STATUS, ShellyStatusLight.class);
     }
@@ -271,15 +301,18 @@ public class ShellyHttpApi {
         request(SHELLY_URL_SETTINGS + "?" + parm + "=" + value);
     }
 
+    @Override
     public ShellySettingsLogin getLoginSettings() throws ShellyApiException {
         return callApi(SHELLY_URL_SETTINGS + "/login", ShellySettingsLogin.class);
     }
 
+    @Override
     public ShellySettingsLogin setLoginCredentials(String user, String password) throws ShellyApiException {
         return callApi(SHELLY_URL_SETTINGS + "/login?enabled=yes&username=" + urlEncode(user) + "&password="
                 + urlEncode(password), ShellySettingsLogin.class);
     }
 
+    @Override
     public String getCoIoTDescription() throws ShellyApiException {
         try {
             return callApi("/cit/d", String.class);
@@ -291,31 +324,38 @@ public class ShellyHttpApi {
         }
     }
 
+    @Override
     public ShellySettingsLogin setCoIoTPeer(String peer) throws ShellyApiException {
         return callApi(SHELLY_URL_SETTINGS + "?coiot_enable=true&coiot_peer=" + peer, ShellySettingsLogin.class);
     }
 
+    @Override
     public String deviceReboot() throws ShellyApiException {
         return callApi(SHELLY_URL_RESTART, String.class);
     }
 
+    @Override
     public String factoryReset() throws ShellyApiException {
         return callApi(SHELLY_URL_SETTINGS + "?reset=true", String.class);
     }
 
+    @Override
     public ShellyOtaCheckResult checkForUpdate() throws ShellyApiException {
         return callApi("/ota/check", ShellyOtaCheckResult.class); // nw FW 1.10+: trigger update check
     }
 
+    @Override
     public String setWiFiRecovery(boolean enable) throws ShellyApiException {
         return callApi(SHELLY_URL_SETTINGS + "?wifirecovery_reboot_enabled=" + (enable ? "true" : "false"),
                 String.class); // FW 1.10+: Enable auto-restart on WiFi problems
     }
 
+    @Override
     public String setApRoaming(boolean enable) throws ShellyApiException { // FW 1.10+: Enable AP Roadming
         return callApi(SHELLY_URL_SETTINGS + "?ap_roaming_enabled=" + (enable ? "true" : "false"), String.class);
     }
 
+    @Override
     public String resetStaCache() throws ShellyApiException { // FW 1.10+: Reset cached STA/AP list and to a rescan
         return callApi("/sta_cache_reset", String.class);
     }
@@ -324,6 +364,7 @@ public class ShellyHttpApi {
         return callApi("/ota?" + uri, ShellySettingsUpdate.class);
     }
 
+    @Override
     public String setCloud(boolean enabled) throws ShellyApiException {
         return callApi("/settings/cloud/?enabled=" + (enabled ? "1" : "0"), String.class);
     }
@@ -334,6 +375,7 @@ public class ShellyHttpApi {
      * @param mode
      * @throws ShellyApiException
      */
+    @Override
     public void setLightMode(String mode) throws ShellyApiException {
         if (!mode.isEmpty() && !profile.mode.equals(mode)) {
             setLightSetting(SHELLY_API_MODE, mode);
@@ -350,13 +392,15 @@ public class ShellyHttpApi {
      * @param value The value
      * @throws ShellyApiException
      */
-    public void setLightParm(Integer lightIndex, String parm, String value) throws ShellyApiException {
+    @Override
+    public void setLightParm(int lightIndex, String parm, String value) throws ShellyApiException {
         // Bulb, RGW2: /<color mode>/<light id>?parm?value
         // Dimmer: /light/<light id>?parm=value
         request(getControlUriPrefix(lightIndex) + "?" + parm + "=" + value);
     }
 
-    public void setLightParms(Integer lightIndex, Map<String, String> parameters) throws ShellyApiException {
+    @Override
+    public void setLightParms(int lightIndex, Map<String, String> parameters) throws ShellyApiException {
         String url = getControlUriPrefix(lightIndex) + "?";
         int i = 0;
         for (String key : parameters.keySet()) {
@@ -405,6 +449,7 @@ public class ShellyHttpApi {
      * @throws ShellyApiException
      * @throws IllegalArgumentException
      */
+    @Override
     public void sendIRKey(String keyCode) throws ShellyApiException, IllegalArgumentException {
         String type = "";
         if (profile.irCodes.containsKey(keyCode)) {
@@ -437,6 +482,7 @@ public class ShellyHttpApi {
      * @param ShellyApiException
      * @throws ShellyApiException
      */
+    @Override
     public void setActionURLs() throws ShellyApiException {
         setRelayEvents();
         setDimmerEvents();
@@ -659,10 +705,12 @@ public class ShellyHttpApi {
         return uri;
     }
 
+    @Override
     public int getTimeoutErrors() {
         return timeoutErrors;
     }
 
+    @Override
     public int getTimeoutsRecovered() {
         return timeoutsRecovered;
     }

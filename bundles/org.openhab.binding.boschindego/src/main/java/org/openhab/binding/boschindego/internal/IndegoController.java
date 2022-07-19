@@ -38,11 +38,15 @@ import org.openhab.binding.boschindego.internal.dto.response.AuthenticationRespo
 import org.openhab.binding.boschindego.internal.dto.response.DeviceCalendarResponse;
 import org.openhab.binding.boschindego.internal.dto.response.DeviceStateResponse;
 import org.openhab.binding.boschindego.internal.dto.response.LocationWeatherResponse;
-import org.openhab.binding.boschindego.internal.dto.response.PredictiveCuttingTimeResponse;
+import org.openhab.binding.boschindego.internal.dto.response.OperatingDataResponse;
+import org.openhab.binding.boschindego.internal.dto.response.PredictiveLastCuttingResponse;
+import org.openhab.binding.boschindego.internal.dto.response.PredictiveNextCuttingResponse;
 import org.openhab.binding.boschindego.internal.exceptions.IndegoAuthenticationException;
 import org.openhab.binding.boschindego.internal.exceptions.IndegoException;
 import org.openhab.binding.boschindego.internal.exceptions.IndegoInvalidCommandException;
 import org.openhab.binding.boschindego.internal.exceptions.IndegoInvalidResponseException;
+import org.openhab.binding.boschindego.internal.exceptions.IndegoUnreachableException;
+import org.openhab.core.library.types.RawType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -164,16 +168,32 @@ public class IndegoController {
     }
 
     /**
+     * Deauthenticate session. This method should be called as part of cleanup to reduce
+     * lingering sessions. This can potentially avoid killed sessions in situation with
+     * multiple clients (e.g. openHAB and mobile app) if restrictions on concurrent
+     * number of sessions would be put on the service.
+     *
+     * @throws IndegoException if any communication or parsing error occurred
+     */
+    public void deauthenticate() throws IndegoException {
+        if (session.isValid()) {
+            deleteRequest("authenticate");
+            session.invalidate();
+        }
+    }
+
+    /**
      * Wraps {@link #getRequest(String, Class)} into an authenticated session.
      *
      * @param path the relative path to which the request should be sent
      * @param dtoClass the DTO class to which the JSON result should be deserialized
      * @return the deserialized DTO from the JSON response
      * @throws IndegoAuthenticationException if request was rejected as unauthorized
+     * @throws IndegoUnreachableException if device cannot be reached (gateway timeout error)
      * @throws IndegoException if any communication or parsing error occurred
      */
     private <T> T getRequestWithAuthentication(String path, Class<? extends T> dtoClass)
-            throws IndegoAuthenticationException, IndegoException {
+            throws IndegoAuthenticationException, IndegoUnreachableException, IndegoException {
         if (!session.isValid()) {
             authenticate();
         }
@@ -199,10 +219,11 @@ public class IndegoController {
      * @param dtoClass the DTO class to which the JSON result should be deserialized
      * @return the deserialized DTO from the JSON response
      * @throws IndegoAuthenticationException if request was rejected as unauthorized
+     * @throws IndegoUnreachableException if device cannot be reached (gateway timeout error)
      * @throws IndegoException if any communication or parsing error occurred
      */
     private <T> T getRequest(String path, Class<? extends T> dtoClass)
-            throws IndegoAuthenticationException, IndegoException {
+            throws IndegoAuthenticationException, IndegoUnreachableException, IndegoException {
         try {
             Request request = httpClient.newRequest(BASE_URL + path).method(HttpMethod.GET).header(CONTEXT_HEADER_NAME,
                     session.getContextId());
@@ -214,6 +235,9 @@ public class IndegoController {
             if (status == HttpStatus.UNAUTHORIZED_401) {
                 // This will currently not happen because "WWW-Authenticate" header is missing; see below.
                 throw new IndegoAuthenticationException("Context rejected");
+            }
+            if (status == HttpStatus.GATEWAY_TIMEOUT_504) {
+                throw new IndegoUnreachableException("Gateway timeout");
             }
             if (!HttpStatus.isSuccess(status)) {
                 throw new IndegoException("The request failed with error: " + status);
@@ -230,6 +254,93 @@ public class IndegoController {
                 throw new IndegoInvalidResponseException("Parsed response is null");
             }
             return result;
+        } catch (JsonParseException e) {
+            throw new IndegoInvalidResponseException("Error parsing response", e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new IndegoException(e);
+        } catch (TimeoutException e) {
+            throw new IndegoException(e);
+        } catch (ExecutionException e) {
+            Throwable cause = e.getCause();
+            if (cause != null && cause instanceof HttpResponseException) {
+                Response response = ((HttpResponseException) cause).getResponse();
+                if (response.getStatus() == HttpStatus.UNAUTHORIZED_401) {
+                    /*
+                     * When contextId is not valid, the service will respond with HTTP code 401 without
+                     * any "WWW-Authenticate" header, violating RFC 7235. Jetty will then throw
+                     * HttpResponseException. We need to handle this in order to attempt
+                     * reauthentication.
+                     */
+                    throw new IndegoAuthenticationException("Context rejected", e);
+                }
+            }
+            throw new IndegoException(e);
+        }
+    }
+
+    /**
+     * Wraps {@link #getRawRequest(String)} into an authenticated session.
+     *
+     * @param path the relative path to which the request should be sent
+     * @return the raw data from the response
+     * @throws IndegoAuthenticationException if request was rejected as unauthorized
+     * @throws IndegoException if any communication or parsing error occurred
+     */
+    private RawType getRawRequestWithAuthentication(String path) throws IndegoAuthenticationException, IndegoException {
+        if (!session.isValid()) {
+            authenticate();
+        }
+        try {
+            logger.debug("Session {} valid, skipping authentication", session);
+            return getRawRequest(path);
+        } catch (IndegoAuthenticationException e) {
+            if (logger.isTraceEnabled()) {
+                logger.trace("Context rejected", e);
+            } else {
+                logger.debug("Context rejected: {}", e.getMessage());
+            }
+            session.invalidate();
+            authenticate();
+            return getRawRequest(path);
+        }
+    }
+
+    /**
+     * Sends a GET request to the server and returns the raw response.
+     * 
+     * @param path the relative path to which the request should be sent
+     * @return the raw data from the response
+     * @throws IndegoAuthenticationException if request was rejected as unauthorized
+     * @throws IndegoException if any communication or parsing error occurred
+     */
+    private RawType getRawRequest(String path) throws IndegoAuthenticationException, IndegoException {
+        try {
+            Request request = httpClient.newRequest(BASE_URL + path).method(HttpMethod.GET).header(CONTEXT_HEADER_NAME,
+                    session.getContextId());
+            if (logger.isTraceEnabled()) {
+                logger.trace("GET request for {}", BASE_URL + path);
+            }
+            ContentResponse response = sendRequest(request);
+            int status = response.getStatus();
+            if (status == HttpStatus.UNAUTHORIZED_401) {
+                // This will currently not happen because "WWW-Authenticate" header is missing; see below.
+                throw new IndegoAuthenticationException("Context rejected");
+            }
+            if (!HttpStatus.isSuccess(status)) {
+                throw new IndegoException("The request failed with error: " + status);
+            }
+            byte[] data = response.getContent();
+            if (data == null) {
+                throw new IndegoInvalidResponseException("No data returned");
+            }
+            String contentType = response.getMediaType();
+            if (contentType == null || contentType.isEmpty()) {
+                throw new IndegoInvalidResponseException("No content-type returned");
+            }
+            logger.debug("Media download response: type {}, length {}", contentType, data.length);
+
+            return new RawType(data, contentType);
         } catch (JsonParseException e) {
             throw new IndegoInvalidResponseException("Error parsing response", e);
         } catch (InterruptedException e) {
@@ -339,6 +450,32 @@ public class IndegoController {
     }
 
     /**
+     * Sends a DELETE request to the server.
+     * 
+     * @param path the relative path to which the request should be sent
+     * @throws IndegoException if any communication or parsing error occurred
+     */
+    private void deleteRequest(String path) throws IndegoException {
+        try {
+            Request request = httpClient.newRequest(BASE_URL + path).method(HttpMethod.DELETE)
+                    .header(CONTEXT_HEADER_NAME, session.getContextId());
+            if (logger.isTraceEnabled()) {
+                logger.trace("DELETE request for {}", BASE_URL + path);
+            }
+            ContentResponse response = sendRequest(request);
+            int status = response.getStatus();
+            if (!HttpStatus.isSuccess(status)) {
+                throw new IndegoException("The request failed with error: " + status);
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new IndegoException(e);
+        } catch (TimeoutException | ExecutionException e) {
+            throw new IndegoException(e);
+        }
+    }
+
+    /**
      * Send request. This method exists for the purpose of avoiding multiple calls to
      * the server at the same time.
      * 
@@ -360,7 +497,7 @@ public class IndegoController {
      * @throws IndegoAuthenticationException if request was rejected as unauthorized
      * @throws IndegoException if any communication or parsing error occurred
      */
-    public String getSerialNumber() throws IndegoAuthenticationException, IndegoException {
+    public synchronized String getSerialNumber() throws IndegoAuthenticationException, IndegoException {
         if (!session.isInitialized()) {
             logger.debug("Session not yet initialized when serial number was requested; authenticating...");
             authenticate();
@@ -378,6 +515,32 @@ public class IndegoController {
     public DeviceStateResponse getState() throws IndegoAuthenticationException, IndegoException {
         return getRequestWithAuthentication(SERIAL_NUMBER_SUBPATH + this.getSerialNumber() + "/state",
                 DeviceStateResponse.class);
+    }
+
+    /**
+     * Queries the device operating data from the server.
+     * Server will request this directly from the device, so operation might be slow.
+     * 
+     * @return the device state
+     * @throws IndegoAuthenticationException if request was rejected as unauthorized
+     * @throws IndegoUnreachableException if device cannot be reached (gateway timeout error)
+     * @throws IndegoException if any communication or parsing error occurred
+     */
+    public OperatingDataResponse getOperatingData()
+            throws IndegoAuthenticationException, IndegoUnreachableException, IndegoException {
+        return getRequestWithAuthentication(SERIAL_NUMBER_SUBPATH + this.getSerialNumber() + "/operatingData",
+                OperatingDataResponse.class);
+    }
+
+    /**
+     * Queries the map generated by the device from the server.
+     * 
+     * @return the garden map
+     * @throws IndegoAuthenticationException if request was rejected as unauthorized
+     * @throws IndegoException if any communication or parsing error occurred
+     */
+    public RawType getMap() throws IndegoAuthenticationException, IndegoException {
+        return getRawRequestWithAuthentication(SERIAL_NUMBER_SUBPATH + this.getSerialNumber() + "/map");
     }
 
     /**
@@ -455,9 +618,8 @@ public class IndegoController {
      * @throws IndegoException if any communication or parsing error occurred
      */
     public boolean getPredictiveMoving() throws IndegoAuthenticationException, IndegoException {
-        final PredictiveStatus status = getRequestWithAuthentication(
-                SERIAL_NUMBER_SUBPATH + this.getSerialNumber() + "/predictive", PredictiveStatus.class);
-        return status.enabled;
+        return getRequestWithAuthentication(SERIAL_NUMBER_SUBPATH + this.getSerialNumber() + "/predictive",
+                PredictiveStatus.class).enabled;
     }
 
     /**
@@ -474,17 +636,27 @@ public class IndegoController {
     }
 
     /**
+     * Queries predictive last cutting as {@link Instant}.
+     * 
+     * @return predictive last cutting
+     * @throws IndegoAuthenticationException if request was rejected as unauthorized
+     * @throws IndegoException if any communication or parsing error occurred
+     */
+    public @Nullable Instant getPredictiveLastCutting() throws IndegoAuthenticationException, IndegoException {
+        return getRequestWithAuthentication(SERIAL_NUMBER_SUBPATH + this.getSerialNumber() + "/predictive/lastcutting",
+                PredictiveLastCuttingResponse.class).getLastCutting();
+    }
+
+    /**
      * Queries predictive next cutting as {@link Instant}.
      * 
      * @return predictive next cutting
      * @throws IndegoAuthenticationException if request was rejected as unauthorized
      * @throws IndegoException if any communication or parsing error occurred
      */
-    public Instant getPredictiveNextCutting() throws IndegoAuthenticationException, IndegoException {
-        final PredictiveCuttingTimeResponse nextCutting = getRequestWithAuthentication(
-                SERIAL_NUMBER_SUBPATH + this.getSerialNumber() + "/predictive/nextcutting",
-                PredictiveCuttingTimeResponse.class);
-        return nextCutting.getNextCutting();
+    public @Nullable Instant getPredictiveNextCutting() throws IndegoAuthenticationException, IndegoException {
+        return getRequestWithAuthentication(SERIAL_NUMBER_SUBPATH + this.getSerialNumber() + "/predictive/nextcutting",
+                PredictiveNextCuttingResponse.class).getNextCutting();
     }
 
     /**
@@ -495,9 +667,8 @@ public class IndegoController {
      * @throws IndegoException if any communication or parsing error occurred
      */
     public DeviceCalendarResponse getPredictiveExclusionTime() throws IndegoAuthenticationException, IndegoException {
-        final DeviceCalendarResponse calendar = getRequestWithAuthentication(
-                SERIAL_NUMBER_SUBPATH + this.getSerialNumber() + "/predictive/calendar", DeviceCalendarResponse.class);
-        return calendar;
+        return getRequestWithAuthentication(SERIAL_NUMBER_SUBPATH + this.getSerialNumber() + "/predictive/calendar",
+                DeviceCalendarResponse.class);
     }
 
     /**

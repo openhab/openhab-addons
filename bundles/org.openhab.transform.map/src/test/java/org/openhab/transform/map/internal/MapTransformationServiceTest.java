@@ -35,13 +35,13 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.mockito.stubbing.Answer;
 import org.openhab.core.test.java.JavaTest;
-import org.openhab.core.transform.TransformationConfiguration;
-import org.openhab.core.transform.TransformationConfigurationRegistry;
+import org.openhab.core.transform.Transformation;
 import org.openhab.core.transform.TransformationException;
+import org.openhab.core.transform.TransformationRegistry;
 
 /**
  * @author Gaël L'hopital - Initial contribution
- * @author Jan N. Klug - Refactored to use {@link TransformationConfigurationRegistry}
+ * @author Jan N. Klug - Refactored to use {@link TransformationRegistry}
  */
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -58,10 +58,10 @@ public class MapTransformationServiceTest extends JavaTest {
     private static final String SRC_FOLDER = "conf" + File.separator + "transform";
 
     @Mock
-    private @NonNullByDefault({}) TransformationConfigurationRegistry transformationConfigurationRegistry;
+    private @NonNullByDefault({}) TransformationRegistry transformationRegistry;
 
     private @NonNullByDefault({}) MapTransformationService processor;
-    private final Map<String, TransformationConfiguration> configurationMap = new HashMap<>();
+    private final Map<String, Transformation> configurationMap = new HashMap<>();
 
     @BeforeEach
     public void setUp() throws IOException {
@@ -70,20 +70,20 @@ public class MapTransformationServiceTest extends JavaTest {
             try {
                 String content = new String(Files.readAllBytes(file), StandardCharsets.UTF_8);
                 String uid = Path.of(SRC_FOLDER).relativize(file).toString();
-                TransformationConfiguration transformationConfiguration = new TransformationConfiguration(uid, uid,
-                        "map", null, content);
-                configurationMap.put(uid, transformationConfiguration);
+                Transformation transformation = new Transformation(uid, uid, "map",
+                        Map.of(Transformation.FUNCTION, content));
+                configurationMap.put(uid, transformation);
             } catch (IOException ignored) {
             }
         });
 
-        Mockito.when(transformationConfigurationRegistry.get(anyString(), eq(null)))
-                .thenAnswer((Answer<TransformationConfiguration>) invocation -> {
+        Mockito.when(transformationRegistry.get(anyString(), eq(null)))
+                .thenAnswer((Answer<Transformation>) invocation -> {
                     Object[] args = invocation.getArguments();
                     return configurationMap.get(args[0]);
                 });
 
-        processor = new MapTransformationService(transformationConfigurationRegistry);
+        processor = new MapTransformationService(transformationRegistry);
     }
 
     @Test
@@ -109,49 +109,40 @@ public class MapTransformationServiceTest extends JavaTest {
     }
 
     @Test
-    public void setTransformationConfigurationIsRemoved() throws TransformationException {
+    public void setTransformationIsRemoved() throws TransformationException {
         assertEquals("zu", processor.transform(NON_DEFAULTED_TRANSFORMATION_DE, SOURCE_CLOSED));
 
-        TransformationConfiguration transformationConfiguration = configurationMap
-                .remove(NON_DEFAULTED_TRANSFORMATION_DE);
-        processor.removed(Objects.requireNonNull(transformationConfiguration));
+        Transformation transformation = configurationMap.remove(NON_DEFAULTED_TRANSFORMATION_DE);
+        processor.removed(Objects.requireNonNull(transformation));
 
         assertThrows(TransformationException.class,
                 () -> processor.transform(NON_DEFAULTED_TRANSFORMATION_DE, SOURCE_CLOSED));
     }
 
     @Test
-    public void setTransformationConfigurationIsNotUpdatedIfOldElementMissing() throws TransformationException {
+    public void setTransformationIsNotUpdatedIfOldElementMissing() throws TransformationException {
         // update configuration
-        TransformationConfiguration transformationConfigurationDE = Objects
-                .requireNonNull(configurationMap.get(NON_DEFAULTED_TRANSFORMATION_DE));
-        TransformationConfiguration transformationConfigurationFR = Objects
-                .requireNonNull(configurationMap.get(NON_DEFAULTED_TRANSFORMATION_FR));
-        TransformationConfiguration transformationConfigurationModified = new TransformationConfiguration(
-                transformationConfigurationDE.getUID(), transformationConfigurationDE.getLabel(),
-                transformationConfigurationDE.getType(), transformationConfigurationDE.getLanguage(),
-                transformationConfigurationFR.getContent());
-        processor.updated(transformationConfigurationDE, transformationConfigurationModified);
+        Transformation transformationDE = Objects.requireNonNull(configurationMap.get(NON_DEFAULTED_TRANSFORMATION_DE));
+        Transformation transformationFR = Objects.requireNonNull(configurationMap.get(NON_DEFAULTED_TRANSFORMATION_FR));
+        Transformation transformationModified = new Transformation(transformationDE.getUID(),
+                transformationDE.getLabel(), transformationDE.getType(), transformationDE.getConfiguration());
+        processor.updated(transformationDE, transformationModified);
 
         // assert there is no modified cached version
         assertEquals("zu", processor.transform(NON_DEFAULTED_TRANSFORMATION_DE, SOURCE_CLOSED));
     }
 
     @Test
-    public void setTransformationConfigurationIsUpdatedIfOldElementPresent() throws TransformationException {
+    public void setTransformationIsUpdatedIfOldElementPresent() throws TransformationException {
         // ensure old transformation is cached
         processor.transform(NON_DEFAULTED_TRANSFORMATION_DE, SOURCE_CLOSED);
 
         // update configuration
-        TransformationConfiguration transformationConfigurationDE = Objects
-                .requireNonNull(configurationMap.get(NON_DEFAULTED_TRANSFORMATION_DE));
-        TransformationConfiguration transformationConfigurationFR = Objects
-                .requireNonNull(configurationMap.get(NON_DEFAULTED_TRANSFORMATION_FR));
-        TransformationConfiguration transformationConfigurationModified = new TransformationConfiguration(
-                transformationConfigurationDE.getUID(), transformationConfigurationDE.getLabel(),
-                transformationConfigurationDE.getType(), transformationConfigurationDE.getLanguage(),
-                transformationConfigurationFR.getContent());
-        processor.updated(transformationConfigurationDE, transformationConfigurationModified);
+        Transformation transformationDE = Objects.requireNonNull(configurationMap.get(NON_DEFAULTED_TRANSFORMATION_DE));
+        Transformation transformationFR = Objects.requireNonNull(configurationMap.get(NON_DEFAULTED_TRANSFORMATION_FR));
+        Transformation transformationModified = new Transformation(transformationDE.getUID(),
+                transformationDE.getLabel(), transformationDE.getType(), transformationFR.getConfiguration());
+        processor.updated(transformationDE, transformationModified);
 
         // ensure modified configuration is applied
         assertEquals("fermé", processor.transform(NON_DEFAULTED_TRANSFORMATION_DE, SOURCE_CLOSED));

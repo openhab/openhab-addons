@@ -137,6 +137,21 @@ public final class PckGenerator {
     }
 
     /**
+     * Generates a command for setting the tunable white mode.
+     *
+     * @param mode 0..2
+     * @return the PCK command (without address header) as text
+     * @throws LcnException if out of range
+     */
+    public static String setTunableWhiteMode(int mode) throws LcnException {
+        if (mode < 0 || mode > 2) {
+            throw new LcnException();
+        }
+
+        return String.format("AW%d", mode);
+    }
+
+    /**
      * Generates a dim command for all output-ports.
      *
      * Attention: This command is supported since module firmware version 180501 AND LCN-PCHK 2.61
@@ -333,6 +348,42 @@ public final class PckGenerator {
     }
 
     /**
+     * Generates a command to control the position of roller shutters on relays.
+     *
+     * @param motorNumber of the roller shutter (0-based)
+     * @param percent of the entire roller shutter height
+     * @return the PCK command (without address header) as text
+     * @throws LcnException if out of range
+     */
+    public static String controlShutterPosition(int motorNumber, int percent) throws LcnException {
+        return controlShutter(motorNumber, percent, "JH");
+    }
+
+    /**
+     * Generates a command to control the slat angle of roller shutters on relays.
+     *
+     * @param motorNumber of the roller shutter (0-based)
+     * @param percent of the slat angle
+     * @return the PCK command (without address header) as text
+     * @throws LcnException if out of range
+     */
+    public static String controlShutterSlatAngle(int motorNumber, int percent) throws LcnException {
+        return controlShutter(motorNumber, percent, "JW");
+    }
+
+    private static String controlShutter(int motorNumber, int percent, String command) throws LcnException {
+        if (motorNumber < 0 || motorNumber >= 4) {
+            throw new LcnException("Roller shutter (relay) motor number out of range: " + motorNumber);
+        }
+
+        if (percent < 0 || percent > 100) {
+            throw new LcnException("Roller shutter (relay) position/angle out of range (percent): " + percent);
+        }
+
+        return String.format("%s%03d%03d", command, percent, 1 << motorNumber);
+    }
+
+    /**
      * Generates a binary-sensors status request.
      *
      * @return the PCK command (without address header) as text
@@ -363,6 +414,30 @@ public final class PckGenerator {
         b1 |= (internalValue >> 8) & 0x0f; // xxxx1111
         int b2 = internalValue & 0xff;
         return String.format("X2%03d%03d%03d", 30, b1, b2);
+    }
+
+    /**
+     * Generates a command to change the regulator mode.
+     *
+     * @param number regulator number 0..1
+     * @param cooling true=cooling, false=heating
+     * @return the PCK command (without address header) as text
+     * @throws LcnException
+     */
+    public static String setRVarMode(int number, boolean cooling) throws LcnException {
+        String regulator;
+        switch (number) {
+            case 0:
+                regulator = "A";
+                break;
+            case 1:
+                regulator = "B";
+                break;
+            default:
+                throw new LcnException();
+        }
+
+        return "RE" + regulator + "T" + (cooling ? "C" : "H");
     }
 
     /**
@@ -749,6 +824,41 @@ public final class PckGenerator {
         data.setCharAt(relayNumber - 1, '1');
         command.append(data);
         return command.toString();
+    }
+
+    /**
+     * Generates a command to set the beeping sound volume.
+     *
+     * @param volume the sound volume
+     * @return the PCK command (without address header) as text
+     * @throws LcnException if out of range
+     */
+    public static String setBeepVolume(double volume) throws LcnException {
+        if (volume < 0 || volume > 100) {
+            throw new LcnException();
+        }
+
+        return String.format("PIV%03d", Math.round(volume));
+    }
+
+    /**
+     * Generates a command to let the beeper connected to the LCN module beep.
+     *
+     * @param volume the sound volume
+     * @return the PCK command (without address header) as text
+     * @throws LcnException if out of range
+     */
+    public static String beep(String tonality, int count) throws LcnException {
+        LcnBindingConstants.ALLOWED_BEEP_TONALITIES.stream() //
+                .filter(t -> t.equals(tonality)) //
+                .findAny() //
+                .orElseThrow(LcnException::new);
+
+        if (count < 0) {
+            throw new LcnException();
+        }
+
+        return String.format("PI%s%d", tonality, Math.min(count, 50));
     }
 
     /**

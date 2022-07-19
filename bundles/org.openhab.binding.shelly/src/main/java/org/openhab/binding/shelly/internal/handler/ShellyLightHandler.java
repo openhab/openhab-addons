@@ -143,7 +143,7 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                     int value = -1;
                     if (command instanceof OnOffType) { // Switch
                         logger.debug("{}: Switch light {}", thingName, command);
-                        ShellyShortLightStatus light = api.setRelayTurn(lightId,
+                        ShellyShortLightStatus light = api.setLightTurn(lightId,
                                 command == OnOffType.ON ? SHELLY_API_ON : SHELLY_API_OFF);
                         col.power = getOnOff(light.ison);
                         col.setBrightness(light.brightness);
@@ -164,7 +164,7 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                     }
                     if (value == 0) {
                         logger.debug("{}: Brightness=0 -> switch light OFF", thingName);
-                        api.setRelayTurn(lightId, SHELLY_API_OFF);
+                        api.setLightTurn(lightId, SHELLY_API_OFF);
                         update = false;
                     } else {
                         if (command instanceof IncreaseDecreaseType) {
@@ -347,12 +347,14 @@ public class ShellyLightHandler extends ShellyBaseHandler {
             ShellyColorUtils col = getCurrentColors(lightId);
             col.power = getOnOff(light.ison);
 
-            // Channel control/timer
-            ShellySettingsRgbwLight ls = profile.settings.lights.get(lightId);
-            updated |= updateChannel(controlGroup, CHANNEL_TIMER_AUTOON, getDecimal(ls.autoOn));
-            updated |= updateChannel(controlGroup, CHANNEL_TIMER_AUTOOFF, getDecimal(ls.autoOff));
-            updated |= updateChannel(controlGroup, CHANNEL_LIGHT_POWER, col.power);
-            updated |= updateChannel(controlGroup, CHANNEL_TIMER_ACTIVE, getOnOff(light.hasTimer));
+            if (profile.settings.lights != null) {
+                // Channel control/timer
+                ShellySettingsRgbwLight ls = profile.settings.lights.get(lightId);
+                updated |= updateChannel(controlGroup, CHANNEL_TIMER_AUTOON, getDecimal(ls.autoOn));
+                updated |= updateChannel(controlGroup, CHANNEL_TIMER_AUTOOFF, getDecimal(ls.autoOff));
+                updated |= updateChannel(controlGroup, CHANNEL_TIMER_ACTIVE, getOnOff(light.hasTimer));
+                updated |= updateChannel(controlGroup, CHANNEL_LIGHT_POWER, col.power);
+            }
 
             if (getBool(light.overpower)) {
                 postEvent(ALARM_TYPE_OVERPOWER, false);
