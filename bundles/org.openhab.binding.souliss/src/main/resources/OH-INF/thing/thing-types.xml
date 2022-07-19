@@ -191,7 +191,6 @@
 		</supported-bridge-type-refs>
 		<label>T13</label>
 		<description>Digital Input</description>
-
 		<channels>
 			<channel id="stateOpenClose" typeId="stateOpenClose"/>
 			<channel id="lastStatusStored" typeId="lastStatusStored"/>
