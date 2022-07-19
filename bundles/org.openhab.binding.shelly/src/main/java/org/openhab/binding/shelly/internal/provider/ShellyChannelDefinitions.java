@@ -13,6 +13,7 @@
 package org.openhab.binding.shelly.internal.provider;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
+import static org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.SHELLY_API_INVTEMP;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.HashMap;
@@ -41,7 +42,7 @@ import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyStatusLigh
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyStatusRelay;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyStatusSensor;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
-import org.openhab.binding.shelly.internal.handler.ShellyBaseHandler;
+import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -261,26 +262,24 @@ public class ShellyChannelDefinitions {
 
         addChannel(thing, add, profile.settings.name != null, CHGR_DEVST, CHANNEL_DEVST_NAME);
 
-        if (!profile.isSensor) {
+        if (!profile.isSensor && !profile.isIX3 && getDouble(status.temperature) != SHELLY_API_INVTEMP) {
             // Only some devices report the internal device temp
-            addChannel(thing, add, (status.tmp != null) || (status.temperature != null), CHGR_DEVST,
-                    CHANNEL_DEVST_ITEMP);
+            addChannel(thing, add, status.tmp != null || status.temperature != null, CHGR_DEVST, CHANNEL_DEVST_ITEMP);
         }
         addChannel(thing, add, profile.settings.sleepTime != null, CHGR_SENSOR, CHANNEL_SENSOR_SLEEPTIME);
 
         // If device has more than 1 meter the channel accumulatedWatts receives the accumulated value
-        boolean accuChannel = !profile.isRoller && !profile.isRGBW2
-                && (((status.meters != null) && (status.meters.size() > 1))
-                        || ((status.emeters != null && status.emeters.size() > 1)));
+        boolean accuChannel = (((status.meters != null) && (status.meters.size() > 1) && !profile.isRoller
+                && !profile.isRGBW2) || ((status.emeters != null && status.emeters.size() > 1)));
         addChannel(thing, add, accuChannel, CHGR_DEVST, CHANNEL_DEVST_ACCUWATTS);
         addChannel(thing, add, accuChannel, CHGR_DEVST, CHANNEL_DEVST_ACCUTOTAL);
         addChannel(thing, add, accuChannel && (status.emeters != null), CHGR_DEVST, CHANNEL_DEVST_ACCURETURNED);
+        addChannel(thing, add, status.voltage != null || profile.settings.supplyVoltage != null, CHGR_DEVST,
+                CHANNEL_DEVST_VOLTAGE);
         addChannel(thing, add,
-                !profile.isRoller && !profile.isRGBW2
-                        && (status.voltage != null || profile.settings.supplyVoltage != null),
-                CHGR_DEVST, CHANNEL_DEVST_VOLTAGE);
+                profile.status.uptime != null && (!profile.hasBattery || profile.isMotion || profile.isTRV), CHGR_DEVST,
+                CHANNEL_DEVST_UPTIME);
         addChannel(thing, add, true, CHGR_DEVST, CHANNEL_DEVST_UPDATE);
-        addChannel(thing, add, true, CHGR_DEVST, CHANNEL_DEVST_UPTIME);
         addChannel(thing, add, true, CHGR_DEVST, CHANNEL_DEVST_HEARTBEAT);
         addChannel(thing, add, profile.settings.ledPowerDisable != null, CHGR_DEVST, CHANNEL_LED_POWER_DISABLE);
         addChannel(thing, add, profile.settings.ledStatusDisable != null, CHGR_DEVST, CHANNEL_LED_STATUS_DISABLE); // WiFi
@@ -360,8 +359,7 @@ public class ShellyChannelDefinitions {
         if (status.inputs != null) {
             // Create channels per input. For devices with more than 1 input (Dimmer, 1L) multiple channel sets are
             // created by adding the index to the channel name
-            boolean multi = ((profile.numRelays == 1) || profile.isDimmer || profile.isRoller)
-                    && (profile.numInputs >= 2);
+            boolean multi = (profile.numRelays == 1 || profile.isDimmer || profile.isRoller) && profile.numInputs >= 2;
             for (int i = 0; i < profile.numInputs; i++) {
                 String suffix = multi ? String.valueOf(i + 1) : "";
                 ShellyInputState input = status.inputs.get(i);
@@ -390,7 +388,7 @@ public class ShellyChannelDefinitions {
         addChannel(thing, add, roller.stopReason != null, CHGR_ROLLER, CHANNEL_ROL_CONTROL_STOPR);
         addChannel(thing, add, roller.safetySwitch != null, CHGR_ROLLER, CHANNEL_ROL_CONTROL_SAFETY);
 
-        ShellyBaseHandler handler = (ShellyBaseHandler) thing.getHandler();
+        ShellyThingInterface handler = (ShellyThingInterface) thing.getHandler();
         if (handler != null) {
             ShellySettingsGlobal settings = handler.getProfile().settings;
             if (getBool(settings.favoritesEnabled) && (settings.favorites != null)) {
@@ -404,7 +402,7 @@ public class ShellyChannelDefinitions {
         Map<String, Channel> newChannels = new LinkedHashMap<>();
         addChannel(thing, newChannels, meter.power != null, group, CHANNEL_METER_CURRENTWATTS);
         addChannel(thing, newChannels, meter.total != null, group, CHANNEL_METER_TOTALKWH);
-        addChannel(thing, newChannels, (meter.counters != null) && (meter.counters[0] != null), group,
+        addChannel(thing, newChannels, meter.counters != null && meter.counters[0] != null, group,
                 CHANNEL_METER_LASTMIN1);
         addChannel(thing, newChannels, meter.timestamp != null, group, CHANNEL_LAST_UPDATE);
         return newChannels;
@@ -509,14 +507,23 @@ public class ShellyChannelDefinitions {
                 ChannelTypeUID channelTypeUID = channelDef.typeId.contains("system:")
                         ? new ChannelTypeUID(channelDef.typeId)
                         : new ChannelTypeUID(BINDING_ID, channelDef.typeId);
-                Channel channel;
+                ChannelBuilder builder;
                 if (channelDef.typeId.equalsIgnoreCase("system:button")) {
-                    channel = ChannelBuilder.create(channelUID, null).withKind(ChannelKind.TRIGGER)
-                            .withType(channelTypeUID).build();
+                    builder = ChannelBuilder.create(channelUID, null).withKind(ChannelKind.TRIGGER);
                 } else {
-                    channel = ChannelBuilder.create(channelUID, channelDef.itemType).withType(channelTypeUID).build();
+                    builder = ChannelBuilder.create(channelUID, channelDef.itemType);
                 }
-                newChannels.put(channelId, channel);
+                if (!channelDef.label.isEmpty()) {
+                    char grseq = lastChar(group);
+                    char chseq = lastChar(channelName);
+                    char sequence = isDigit(chseq) ? chseq : grseq;
+                    String label = !isDigit(sequence) ? channelDef.label : channelDef.label + " " + sequence;
+                    builder.withLabel(label);
+                }
+                if (!channelDef.description.isEmpty()) {
+                    builder.withDescription(channelDef.description);
+                }
+                newChannels.put(channelId, builder.withType(channelTypeUID).build());
             }
         }
     }
@@ -549,9 +556,21 @@ public class ShellyChannelDefinitions {
             this.typeId = typeId;
 
             groupLabel = getText(PREFIX_GROUP + group + ".label");
+            if (groupLabel.contains(PREFIX_GROUP)) {
+                groupLabel = "";
+            }
             groupDescription = getText(PREFIX_GROUP + group + ".description");
-            label = getText(PREFIX_CHANNEL + channel + ".label");
-            description = getText(PREFIX_CHANNEL + channel + ".description");
+            if (groupDescription.contains(PREFIX_GROUP)) {
+                groupDescription = "";
+            }
+            label = getText(PREFIX_CHANNEL + typeId.replace(':', '.') + ".label");
+            if (label.contains(PREFIX_CHANNEL)) {
+                label = "";
+            }
+            description = getText(PREFIX_CHANNEL + typeId + ".description");
+            if (description.contains(PREFIX_CHANNEL)) {
+                description = "";
+            }
         }
 
         public String getChanneId() {

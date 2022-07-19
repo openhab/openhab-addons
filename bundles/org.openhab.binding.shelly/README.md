@@ -45,8 +45,10 @@ Also check out the [Shelly Manager](doc/ShellyManager.md), which
 | shellyplugs        | Shelly Plug-S                                          | SHPLG-S   |
 | shellyem           | Shelly EM with integrated Power Meters                 | SHEM      |
 | shellyem3          | Shelly 3EM with 3 integrated Power Meter               | SHEM-3    |
-| shellyrgbw2        | Shelly RGB Controller                                  | SHRGBW2   |
-| shellybulb         | Shelly Bulb in Color or White Mode                     | SHBLB-1   |
+| shellyrgbw2-color  | Shelly RGBW2 Controller in Color Mode                  | SHRGBW2   |
+| shellyrgbw2-white  | Shelly RGBW2 Controller in White Mode                  | SHRGBW2   |
+| shellybulb-color   | Shelly Bulb in Color Mode                              | SHBLB-1   |
+| shellybulb-white   | Shelly Bulb in White Mode                              | SHBLB-1   |
 | shellybulbduo      | Shelly Duo White                                       | SHBDUO-1  |
 | shellybulbduo      | Shelly Duo White G10                                   | SHBDUO-1  |
 | shellycolorbulb    | Shelly Duo Color G10                                   | SHCB-1    |
@@ -55,6 +57,7 @@ Also check out the [Shelly Manager](doc/ShellyManager.md), which
 | shellyflood        | Shelly Flood Sensor                                    | SHWT-1    |
 | shellysmoke        | Shelly Smoke Sensor                                    | SHSM-1    |
 | shellymotion       | Shelly Motion Sensor                                   | SHMOS-01  |
+| shellymotion2      | Shelly Motion Sensor 2                                 | SHMOS-02  |
 | shellygas          | Shelly Gas Sensor                                      | SHGS-1    |
 | shellydw           | Shelly Door/Window                                     | SHDW-1    |
 | shellydw2          | Shelly Door/Window 2                                   | SHDW-2    |
@@ -742,6 +745,23 @@ Using the Thing configuration option `brightnessAutoOn` you could decide if the 
 `true`:  Brightness will be set and device output is powered = light turns on with the new brightness
 `false`: Brightness will be set, but output stays unchanged so light will not be switched on when it's currently off.
 
+### Shelly RGBW2 in White Mode (thing-type: shellyrgbw2-color)
+
+|Group     |Channel      |Type     |read-only|Description                                                            |
+|----------|-------------|---------|---------|-----------------------------------------------------------------------|
+|control   |power        |Switch   |r/w      |Switch light ON/OFF                                                    |
+|          |input        |Switch   |yes      |State of Input                                                         |
+|          |autoOn       |Number   |r/w      |Sets a  timer to turn the device ON after every OFF; in sec            |
+|          |autoOff      |Number   |r/w      |Sets a  timer to turn the device OFF after every ON: in sec            |
+|          |timerActive  |Switch   |yes      |ON: An auto-on/off timer is active                                     |
+|color     |             |         |         |Color settings: only valid in COLOR mode                               |
+|          |hsb          |HSB      |r/w      |Represents the color picker (HSBType), control r/g/b, but not white    |
+|meter     |currentWatts |Number   |yes      |Current power consumption in Watts (all channels)                      |
+
+Please note that the settings of channel group color are only valid in color mode and vice versa for white mode.
+The current firmware doesn't support the timestamp report for the meters. 
+The binding emulates this by using the system time on every update.
+
 ### Shelly RGBW2 in White Mode (thing-type: shellyrgbw2-white)
 
 |Group     |Channel      |Type     |read-only|Description                                                            |
@@ -844,6 +864,23 @@ Use case for the 'sensorSleepTime':
 You have a Motion controlling your light. 
 You switch off the light and want to leave the room, but the motion sensor immediately switches light back on.
 Using 'sensorSleepTime' you could suppress motion events while leaving the room, e.g. for 5sec and the light doesn's switch on. 
+
+### Shelly Motion 2 (thing-type: shellymotion2)
+
+|Group     |Channel        |Type     |read-only|Description                                                          |
+|----------|---------------|---------|---------|---------------------------------------------------------------------|
+|sensors   |motion         |Switch   |yes      |ON: Motion was detected                                              |
+|          |motionTimestamp|DateTime |yes      |Time when motion started/was detected                                |
+|          |lux            |Number   |yes      |Brightness in Lux                                                    |
+|          |illumination   |String   |yes      |Current illumination: dark/twilight/bright                           |
+|          |temperature    |Number   |yes      |Temperature measured by the sensor                                   |
+|          |vibration      |Switch   |yes      |ON: Vibration detected                                               |
+|          |charger        |Switch   |yes      |ON: USB charging cable is connected external power supply activated. |
+|          |motionActive   |Switch   |yes      |ON: Motion detection is currently active                             |
+|          |sensorSleepTime|Number   |no       |Specifies the number of sec the sensor should not report events      ]
+|          |lastUpdate     |DateTime |yes      |Timestamp of the last update (any sensor value changed)              |
+|battery   |batteryLevel   |Number   |yes      |Battery Level in %                                                   |
+|          |lowBattery     |Switch   |yes      |Low battery alert (< 20%)                                            |
 
 ### Shelly TRV (thing-type: shellytrv)
 
