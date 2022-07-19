@@ -193,7 +193,6 @@
 		<description>Digital Input</description>
 
 		<channels>
-			<channel id="stateOnOff" typeId="stateOnOff"/>
 			<channel id="stateOpenClose" typeId="stateOpenClose"/>
 			<channel id="lastStatusStored" typeId="lastStatusStored"/>
 			<channel id="healthy" typeId="healthy"/>
