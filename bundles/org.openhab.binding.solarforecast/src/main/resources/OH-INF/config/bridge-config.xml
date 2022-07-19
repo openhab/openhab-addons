@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:solarforecast:multi">
+		<parameter name="location" type="text">
+			<context>location</context>
+			<label>PV Location</label>
+			<description>Location of Photovoltaic system</description>
+			<default>AUTODETECT</default>
+		</parameter>
+		<parameter name="refreshInterval" type="integer" min="1" unit="min" required="true">
+			<label>Refresh Interval</label>
+			<description>Data refresh rate of forecast data</description>
+			<default>1</default>
+		</parameter>
+		<parameter name="apiKey" type="text">
+			<label>API Key</label>
+			<description>If you have a paid subscription plan</description>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="solarforecast"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="part">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="multi"/>
+		</supported-bridge-type-refs>
+
+		<label>PV Plane</label>
+		<description>PV Plane as part of Multi Plane Bridge</description>
+
+		<channels>
+			<channel id="today" typeId="today-channel"/>
+			<channel id="actual" typeId="actual-channel"/>
+			<channel id="remaining" typeId="remaining-channel"/>
+			<channel id="tomorrow" typeId="tomorrow-channel"/>
+			<channel id="raw" typeId="raw-channel"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:solarforecast:part"/>
+	</thing-type>
+</thing:thing-descriptions>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:solarforecast:part">
+		<parameter name="declination" type="integer" min="0" max="90" required="true">
+			<label>Plane Declination</label>
+			<description>0 for horizontal till 90 for vertical declination</description>
+		</parameter>
+		<parameter name="azimuth" type="integer" min="-180" max="180" required="true">
+			<label>Plane Azimuth</label>
+			<description>-180 = north, -90 = east, 0 = south, 90 = west, 180 = north</description>
+		</parameter>
+		<parameter name="kwp" type="integer" min="-180" max="180" required="true">
+			<label>Installed Kilowatt Peak</label>
+			<description>Installed Module power of this plane</description>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>

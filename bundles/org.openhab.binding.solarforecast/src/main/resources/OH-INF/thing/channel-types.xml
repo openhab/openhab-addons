@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="solarforecast"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="today-channel">
+		<item-type>Number:Energy</item-type>
+		<label>Forecast Today</label>
+		<description>Todays forecast in total</description>
+	</channel-type>
+	<channel-type id="remaining-channel">
+		<item-type>Number:Energy</item-type>
+		<label>Remaining Production Today</label>
+		<description>Forecast of todays remaining production</description>
+	</channel-type>
+	<channel-type id="actual-channel">
+		<item-type>Number:Energy</item-type>
+		<label>Actual Forecast</label>
+		<description>Forecast till now (actual time)</description>
+	</channel-type>
+	<channel-type id="tomorrow-channel">
+		<item-type>Number:Energy</item-type>
+		<label>Forecast Tomorrow</label>
+		<description>Tomorrows forecast in total</description>
+	</channel-type>
+	<channel-type id="raw-channel">
+		<item-type>String</item-type>
+		<label>Raw JSON Response</label>
+		<description>Plain JSON response without conversions</description>
+	</channel-type>
+</thing:thing-descriptions>
