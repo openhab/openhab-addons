@@ -104,7 +104,7 @@
 		<description>The current temperature from a device that supports reporting temperatures</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
+			<tag>Measurement</tag>
 			<tag>Temperature</tag>
 		</tags>
 		<state pattern="%.3f °C" readOnly="true"/>

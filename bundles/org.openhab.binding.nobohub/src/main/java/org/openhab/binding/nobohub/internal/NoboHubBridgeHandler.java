@@ -21,8 +21,6 @@ import static org.openhab.binding.nobohub.internal.NoboHubBindingConstants.RECOM
 import java.time.Duration;
 import java.util.Collection;
 
-import javax.validation.constraints.NotNull;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.nobohub.internal.connection.HubCommunicationThread;
@@ -72,15 +70,13 @@ public class NoboHubBridgeHandler extends BaseBridgeHandler {
     private @Nullable NoboThingDiscoveryService discoveryService;
     private @Nullable Hub hub;
 
-    private final @NotNull OverrideRegister overrideRegister = new OverrideRegister();
-    private final @NotNull WeekProfileRegister weekProfileRegister = new WeekProfileRegister();
-    private final @NotNull ZoneRegister zoneRegister = new ZoneRegister();
-    private final @NotNull ComponentRegister componentRegister = new ComponentRegister();
-    private final NoboHubTranslationProvider messages;
+    private final OverrideRegister overrideRegister = new OverrideRegister();
+    private final WeekProfileRegister weekProfileRegister = new WeekProfileRegister();
+    private final ZoneRegister zoneRegister = new ZoneRegister();
+    private final ComponentRegister componentRegister = new ComponentRegister();
 
-    public NoboHubBridgeHandler(Bridge bridge, NoboHubTranslationProvider messages) {
+    public NoboHubBridgeHandler(Bridge bridge) {
         super(bridge);
-        this.messages = messages;
     }
 
     @Override
@@ -179,7 +175,8 @@ public class NoboHubBridgeHandler extends BaseBridgeHandler {
                     updateProperty(Thing.PROPERTY_SERIAL_NUMBER, serialNumber);
                     updateStatus(ThingStatus.ONLINE);
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "@text/message.bridge.connection.failed");
                 }
             } catch (NoboCommunicationException commEx) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, commEx.getMessage());

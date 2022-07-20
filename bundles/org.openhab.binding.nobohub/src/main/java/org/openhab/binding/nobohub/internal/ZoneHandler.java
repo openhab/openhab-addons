@@ -61,11 +61,14 @@ public class ZoneHandler extends BaseThingHandler {
 
     private final WeekProfileStateDescriptionOptionsProvider weekProfileStateDescriptionOptionsProvider;
 
+    private final NoboHubTranslationProvider messages;
+
     protected int id;
 
-    public ZoneHandler(Thing thing,
+    public ZoneHandler(Thing thing, NoboHubTranslationProvider messages,
             WeekProfileStateDescriptionOptionsProvider weekProfileStateDescriptionOptionsProvider) {
         super(thing);
+        this.messages = messages;
         this.weekProfileStateDescriptionOptionsProvider = weekProfileStateDescriptionOptionsProvider;
     }
 
@@ -81,18 +84,14 @@ public class ZoneHandler extends BaseThingHandler {
 
         Double temp = zone.getTemperature();
         if (temp != null && temp != Double.NaN) {
-            try {
-                QuantityType<Temperature> currentTemperature = new QuantityType<>(temp, SIUnits.CELSIUS);
-                updateState(CHANNEL_ZONE_CURRENT_TEMPERATURE, currentTemperature);
-            } catch (NumberFormatException nfe) {
-                logger.debug("Could not set decimal value to temperature: {}", temp);
-            }
+            QuantityType<Temperature> currentTemperature = new QuantityType<>(temp, SIUnits.CELSIUS);
+            updateState(CHANNEL_ZONE_CURRENT_TEMPERATURE, currentTemperature);
         }
 
         int activeWeekProfileId = zone.getActiveWeekProfileId();
         Bridge noboHub = getBridge();
         if (null != noboHub) {
-            logger.debug("Updating zone: {} at hub brige: {}", zone.getName(),
+            logger.debug("Updating zone: {} at hub bridge: {}", zone.getName(),
                     noboHub.getStatusInfo().getStatus().name());
             NoboHubBridgeHandler hubHandler = (NoboHubBridgeHandler) noboHub.getHandler();
             if (hubHandler != null) {
@@ -139,7 +138,8 @@ public class ZoneHandler extends BaseThingHandler {
             Zone zone = getZone();
             if (null == zone) {
                 logger.debug("Could not find Zone with id {} for channel {}", id, channelUID);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE,
+                        messages.getText("message.zone.notfound", id, channelUID));
             } else {
                 onUpdate(zone);
                 Bridge noboHub = getBridge();

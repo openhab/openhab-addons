@@ -1,6 +1,6 @@
 # NoboHub Binding
 
-This binding controls the Glen Dimplex Nobø Hub using the Nobø Hub API v1.1 that can be found <a href="https://www.glendimplex.se/media/15650/nobo-hub-api-v-1-1-integration-for-advanced-users.pdf">here</a>
+This binding controls the Glen Dimplex Nobø Hub using the <a href="https://www.glendimplex.se/media/15650/nobo-hub-api-v-1-1-integration-for-advanced-users.pdf">Nobø Hub API v1.1</a>.
 
 ![Nobo Hub](doc/nobohub.jpg)
 
@@ -16,20 +16,26 @@ This binding is tested with the following devices:
 
 Not all thermostats are made equal.
 
-* NCU-1R: Comfort temperature setting on device overrides values from Hub. Making Comfort settings in the Hub useless.
+* NCU-1R: Comfort temperature setting on the device overrides values from the Hub, making the setting in the Hub useless.
 * NCU-2R: Synchronizes temperature settings to and from the Hub.
 
 ## Supported Things
 
-Nobø Hub is the hub that communicates with switches and thermostats.
+| Thing     | Thing Type | Description                                                                                     |
+|-----------|------------|-------------------------------------------------------------------------------------------------|
+| hub       | Bridge     | The Nobø Hub provides a gateway between your components, with the ability to organise in zones. |
+| component | Thing      | A component is a device, i.e. panel heater or switch.                                           |
+| zone      | Thing      | A zone can hold one or more components.                                                         |
+
 
 ## Discovery
 
-The hub will be automatically discovered. Before it can be used, you will have to update the configuration with the last three digits of its serial number.
+The hub will be automatically discovered. 
+Before it can be used, you will have to update the configuration with the last three digits of its serial number.
 
 When the hub is configured with the correct serial number, it will autodetect zones and components (thermostats and switches).
 
-## Binding Configuration
+## Thing Configuration
 
 ```
 # Configuration for Nobø Hub
@@ -75,9 +81,9 @@ Not all devices report this.
 ### nobo.things
 
 ```
-Bridge nobohub:nobohub:controller "Nobø Hub" [ hostName="192.168.1.10", serialNumber="SERIAL_NUMBER" ] {
-	Thing zone 1                             "Zone - Kitchen"            	[ id=1 ]
-	Thing component SERIAL_NUMBER_COMPONENT  "Heater - Kitchen"         	[ serialNumber="SERIAL_NUMBER_COMPONENT" ]
+Bridge nobohub:nobohub:controller "Nobø Hub" [ hostName="192.168.1.10", serialNumber="103000000000" ] {
+	Thing zone 1                  "Zone - Kitchen"            	[ id=1 ]
+	Thing component 184000000000  "Heater - Kitchen"         	[ serialNumber="184000000000" ]
 }
 ```
 
@@ -88,15 +94,15 @@ Bridge nobohub:nobohub:controller "Nobø Hub" [ hostName="192.168.1.10", serialN
 String	            Nobo_Hub_GlobalOverride         "Global Override %s"                <heating>       {channel="nobohub:nobohub:controller:activeOverrideName"}
 
 // Panel Heater
-Number:Temperature	PanelHeater_CurrentTemperatur   "Setpoint [%.1f °C]"                <temperature>   {channel="nobohub:component:controller:SERIAL_NUMBER_COMPONENT:currentTemperature"}
+Number:Temperature	PanelHeater_CurrentTemperature  "Setpoint [%.1f °C]"                <temperature>   {channel="nobohub:component:controller:184000000000:currentTemperature"}
 
 // Zone
 String	            Zone_ActiveWeekProfileName      "Active week profile name [%s]"     <calendar>      {channel="nobohub:zone:controller:1:activeWeekProfileName"}
 Number	            Zone_ActiveWeekProfile          "Active week profile [%d]"          <calendar>      {channel="nobohub:zone:controller:1:activeWeekProfile"}
 String	            Zone_ActiveStatus               "Active status %s]"                 <heating>       {channel="nobohub:zone:controller:1:calculatedWeekProfileStatus"}
-Number:Temperature	Zone_ComfortTemperatur          "Comfort temperature [%.1f °C]"     <temperature>   {channel="nobohub:zone:controller:1:comfortTemperature"}
+Number:Temperature	Zone_ComfortTemperature         "Comfort temperature [%.1f °C]"     <temperature>   {channel="nobohub:zone:controller:1:comfortTemperature"}
 Number:Temperature	Zone_EcoTemperatur              "Eco temperature [%.1f °C]"         <temperature>   {channel="nobohub:zone:controller:1:ecoTemperature"}
-Number:Temperature	Zone_CurrentTemperatur          "Current temperature [%.1f °C]"     <temperature>   {channel="nobohub:zone:controller:1:currentTemperature"}
+Number:Temperature	Zone_CurrentTemperature         "Current temperature [%.1f °C]"     <temperature>   {channel="nobohub:zone:controller:1:currentTemperature"}
 ```
 
 ### nobo.sitemap
@@ -124,9 +130,11 @@ sitemap nobo label="Nobø " {
 ## Organize your setup
 
 Nobø Hub uses a combination of status types (Normal, Comfort, Eco, Away), profiles types (Comfort, Eco, Away, Off), predefined temperature types (Comfort, Eco, Away), zones and override settings to organize and enable different features.
-This makes it possible to control the heaters in many different scenarios and combinations. The following is a suggested way of organizing the binding with the Hub for a good level of control and flexibility.
+This makes it possible to control the heaters in many different scenarios and combinations. 
+The following is a suggested way of organizing the binding with the Hub for a good level of control and flexibility.
 
-If you own panels with a physical Comfort temperature override, you need to use the Eco temperature type for setting level used by the day based profiles. If not, you can use either Comfort or Eco to set wanted leve.
+If you own panels with a physical Comfort temperature override, you need to use the Eco temperature type for setting level used by the day based profiles. 
+If not, you can use either Comfort or Eco to set wanted level.
 
 Start by creating the following profiles in the Nobø Hub App:
 
@@ -141,9 +149,11 @@ Start by creating the following profiles in the Nobø Hub App:
     Every day 06->16    Set to status [Comfort|Eco] between 06->16 every day, otherwise set to [Away|Off]
     Every day 06->23    Set to status [Comfort|Eco] between 06->23 every day, otherwise set to [Away|Off]
 
-Next set [Comfort|Eco] level for each zone to your requirements. For a more advanced setup, you can create a rule which both sets temperature level and profile.
+Next set [Comfort|Eco] level for each zone to your requirements. 
+For a more advanced setup, you can create a rule which both sets temperature level and profile.
 
-Then create a sitemap with a Selection pointing to the Week Profile item. The binding will now automatically update all available week profile options in the selection button:
+Then create a sitemap with a Selection pointing to the Week Profile item. 
+The binding will now automatically update all available week profile options in the selection button:
 
 ### nobo.sitemap
 
@@ -155,13 +165,3 @@ sitemap nobo label="Nobø " {
     }
 }
 ```
-
-## Bugs and logging
-
-If you find any bugs or unwanted behaviour, please contact the maintainer. To help the maintainer it would be great if you could send logs with a description of what is wrong. To turn on logging, go to the Keraf console and run
-
-log:set DEBUG org.openhab.binding.nobohub
-
-To see the log:
-
-log:tail

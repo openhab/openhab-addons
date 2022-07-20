@@ -77,12 +77,12 @@ public class NoboHubHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_HUB.equals(thingTypeUID)) {
-            NoboHubBridgeHandler handler = new NoboHubBridgeHandler((Bridge) thing, i18nProvider);
+            NoboHubBridgeHandler handler = new NoboHubBridgeHandler((Bridge) thing);
             registerDiscoveryService(handler);
             return handler;
         } else if (THING_TYPE_ZONE.equals(thingTypeUID)) {
             logger.debug("Setting WeekProfileStateDescriptionOptionsProvider for: {}", thing.getLabel());
-            return new ZoneHandler(thing, stateDescriptionOptionsProvider);
+            return new ZoneHandler(thing, i18nProvider, stateDescriptionOptionsProvider);
         } else if (THING_TYPE_COMPONENT.equals(thingTypeUID)) {
             return new ComponentHandler(thing, i18nProvider);
         }

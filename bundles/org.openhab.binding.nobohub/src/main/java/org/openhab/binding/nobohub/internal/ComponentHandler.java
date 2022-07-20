@@ -62,12 +62,8 @@ public class ComponentHandler extends BaseThingHandler {
 
         double temp = component.getTemperature();
         if (!Double.isNaN(temp)) {
-            try {
-                QuantityType<Temperature> currentTemperature = new QuantityType<>(temp, SIUnits.CELSIUS);
-                updateState(CHANNEL_COMPONENT_CURRENT_TEMPERATURE, currentTemperature);
-            } catch (NumberFormatException nfe) {
-                logger.debug("Couldn't set decimal value to temperature: {}", temp);
-            }
+            QuantityType<Temperature> currentTemperature = new QuantityType<>(temp, SIUnits.CELSIUS);
+            updateState(CHANNEL_COMPONENT_CURRENT_TEMPERATURE, currentTemperature);
         }
 
         updateProperty(Thing.PROPERTY_SERIAL_NUMBER, component.getSerialNumber().toString());
@@ -107,7 +103,7 @@ public class ComponentHandler extends BaseThingHandler {
             SerialNumber sn = new SerialNumber(serialNumberString);
             if (!sn.isWellFormed()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/message.component.illegal.serial [\"" + serialNumber + "\"]");
+                        "@text/message.component.illegal.serial [\"" + serialNumberString + "\"]");
             } else {
                 this.serialNumber = sn;
                 updateStatus(ThingStatus.ONLINE);
@@ -148,10 +144,9 @@ public class ComponentHandler extends BaseThingHandler {
         Bridge noboHub = getBridge();
         if (null != noboHub) {
             NoboHubBridgeHandler hubHandler = (NoboHubBridgeHandler) noboHub.getHandler();
+            SerialNumber serialNumber = this.serialNumber;
             if (null != serialNumber && null != hubHandler) {
-                SerialNumber sn = Helpers.castToNonNull(serialNumber, Thing.PROPERTY_SERIAL_NUMBER);
-                NoboHubBridgeHandler hh = Helpers.castToNonNull(hubHandler, "hubHandler");
-                return hh.getComponent(sn);
+                return hubHandler.getComponent(serialNumber);
             }
         }
 

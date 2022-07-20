@@ -89,7 +89,7 @@ public class HubCommunicationThread extends Thread {
                 hubConnection.disconnect();
             }
         } catch (NoboCommunicationException nce) {
-            logger.error("Error disconnecting from Hub", nce);
+            logger.debug("Error disconnecting from Hub", nce);
         }
     }
 

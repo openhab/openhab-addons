@@ -100,14 +100,14 @@ public class NoboHubBindingConstants {
     // Mappings
 
     public static final Map<String, String> REJECT_REASONS = Stream.of(new String[][] {
-            { "0", "Client command set too old, run it in with debug logs and let the maintainer know" },
-            { "1", "Hub serial number mismatch (should be 12 digits, if hub was autodetected, plase add the last three)" },
-            { "2", "Wrong number of arguments, run it in with debug logs and let the maintainer know" },
-            { "3", "Timestamp incorrectly formatted, run it in with debug logs and let the maintainer know" }, })
+            { "0", "Client command set too old. Please run with debug logs." },
+            { "1", "Hub serial number mismatch. Should be 12 digits, if hub was autodetected, please add the last three." },
+            { "2", "Wrong number of arguments. Please run with debug logs." },
+            { "3", "Timestamp incorrectly formatted. Please run with debug logs." }, })
             .collect(Collectors.collectingAndThen(Collectors.toMap(data -> data[0], data -> data[1]),
                     Collections::<String, String> unmodifiableMap));
 
-    // Full list of units: http://help.nobo.no/skriver/?chapterid=344&chapterlanguageid=2
+    // Full list of units: https://help.nobo.no/skriver/?chapterid=344&chapterlanguageid=2
     public static final Map<String, String> SERIALNUMBERS_FOR_TYPES = Stream
             .of(new String[][] { { "120", "RS-700" }, { "168", "NCU-2R" }, { "184", "NCU-1R" }, { "186", "NTD-4R" },
                     { "192", "TXF" }, { "198", "NCU-ER" }, { "210", "NTB-2R" }, { "234", "Nobø Switch" }, })

@@ -15,6 +15,7 @@ package org.openhab.binding.nobohub.internal.discovery;
 import static org.openhab.binding.nobohub.internal.NoboHubBindingConstants.AUTODISCOVERED_THING_TYPES_UIDS;
 import static org.openhab.binding.nobohub.internal.NoboHubBindingConstants.PROPERTY_MODEL;
 import static org.openhab.binding.nobohub.internal.NoboHubBindingConstants.PROPERTY_NAME;
+import static org.openhab.binding.nobohub.internal.NoboHubBindingConstants.PROPERTY_TEMPERATURE_SENSOR_FOR_ZONE;
 import static org.openhab.binding.nobohub.internal.NoboHubBindingConstants.PROPERTY_VENDOR_NAME;
 import static org.openhab.binding.nobohub.internal.NoboHubBindingConstants.PROPERTY_ZONE;
 import static org.openhab.binding.nobohub.internal.NoboHubBindingConstants.PROPERTY_ZONE_ID;
@@ -140,7 +141,7 @@ public class NoboThingDiscoveryService extends AbstractDiscoveryService {
                     if (zoneId >= 0) {
                         String tempForZoneName = getZoneName(zoneId);
                         if (tempForZoneName != null) {
-                            properties.put("temperatureSensorForZone", tempForZoneName);
+                            properties.put(PROPERTY_TEMPERATURE_SENSOR_FOR_ZONE, tempForZoneName);
                         }
                     }
 

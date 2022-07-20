@@ -101,7 +101,7 @@ public class NoboHubDiscoveryService extends AbstractDiscoveryService implements
                 MulticastSocket socket = new MulticastSocket(NOBO_HUB_MULTICAST_PORT);
                 found = waitOnSocket(socket, "multicast");
             } catch (IOException ioex) {
-                logger.error("Failed detecting Nobø Hub multicast", ioex);
+                logger.error("Failed detecting Nobø Hub via multicast", ioex);
             }
 
             if (!found) {
