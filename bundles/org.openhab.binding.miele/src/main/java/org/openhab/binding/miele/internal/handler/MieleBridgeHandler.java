@@ -137,11 +137,6 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                     "@text/offline.configuration-error.ip-multicast-interface-not-set");
             return false;
         }
-        if (!IP_PATTERN.matcher((String) config.get(HOST)).matches()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "@text/offline.configuration-error.invalid-ip-gateway [\"" + config.get(HOST) + "\"]");
-            return false;
-        }
         if (!IP_PATTERN.matcher((String) config.get(INTERFACE)).matches()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                     "@text/offline.configuration-error.invalid-ip-multicast-interface [\"" + config.get(INTERFACE)
@@ -210,17 +205,20 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                 }
             } catch (MieleRpcException e) {
                 Throwable cause = e.getCause();
+                String message;
                 if (cause == null) {
-                    logger.debug("An exception occurred while polling an appliance: '{}'", e.getMessage());
+                    message = e.getMessage();
+                    logger.debug("An exception occurred while polling an appliance: '{}'", message);
                 } else {
+                    message = cause.getMessage();
                     logger.debug("An exception occurred while polling an appliance: '{}' -> '{}'", e.getMessage(),
-                            cause.getMessage());
+                            message);
                 }
                 if (lastBridgeConnectionState) {
                     logger.debug("Connection to Miele Gateway {} lost.", host);
                     lastBridgeConnectionState = false;
                 }
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, message);
             }
         }
     };
