@@ -199,6 +199,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
         xmlResponse = httpXmlResponse(urlParameters);
 
         if (xmlResponse.isEmpty()) {
+            logger.debug("Hayward Connection thing: Login XML response was null");
             return false;
         }
 
@@ -227,7 +228,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
         xmlResponse = httpXmlResponse(urlParameters);
 
         if (xmlResponse.isEmpty()) {
-            logger.debug("Hayward Connection thing: Login XML response was null");
+            logger.debug("Hayward Connection thing: getApiDef XML response was null");
             return false;
         }
         return true;
@@ -277,12 +278,12 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
         String xmlResponse = httpXmlResponse(urlParameters);
 
         if (xmlResponse.isEmpty()) {
-            logger.debug("Hayward Connection thing: requestConfig XML response was null");
+            logger.debug("Hayward Connection thing: getMSPConfig XML response was null");
             return "Fail";
         }
 
         if (evaluateXPath("//Backyard/Name/text()", xmlResponse).isEmpty()) {
-            logger.debug("Hayward Connection thing: requestConfiguration XML response: {}", xmlResponse);
+            logger.debug("Hayward Connection thing: getMSPConfig XML response: {}", xmlResponse);
             return "Fail";
         }
         return xmlResponse;
@@ -293,6 +294,10 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
         List<String> property2 = new ArrayList<>();
 
         String xmlResponse = getMspConfig();
+
+        if (xmlResponse.contentEquals("Fail")) {
+            return false;
+        }
 
         // Get Units (Standard, Metric)
         property1 = evaluateXPath("//System/Units/text()", xmlResponse);
