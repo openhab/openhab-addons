@@ -19,9 +19,8 @@ You can use SoulissApp and the Souliss binding at the same time, and generally u
 
 ### Sketches
 
-The easiest way is start with a simple example to control an ON/OFF light (though a relay). 
+The easiest way is start with a simple example to control an ON/OFF light (though a relay).
 You can go to project [Souliss](https://github.com/souliss/souliss), see a lot of examples sketches: [Souliss examples](https://github.com/souliss/souliss/tree/friariello/examples)
-
 
 ## Discovery
 
@@ -29,9 +28,9 @@ First add a gateway (one only is permitted on LAN at this moment), then discover
 
 ## Supported Things
 
-In Souliss Framework a Typical is one of predefined logic dedicated to smart home devices like lights, heating or antitheft. 
+In Souliss Framework a Typical is one of predefined logic dedicated to smart home devices like lights, heating or antitheft.
 
-Typical can be one of T11, T12, T13, T14, etc... 
+Typical can be one of T11, T12, T13, T14, etc...
 
 They are defined [here](https://github.com/souliss/souliss/wiki/Typicals).
 
@@ -99,7 +98,6 @@ mode = COOLING_MODE, HEATING_MODE, POWEREDOFF_MODE
 
 fan = AUTO, HIGH, MEDIUM, LOW, FANOFF
 
-
 | Thing type / Channel | DateTime / lastStatusStored | Number / healthy | Number / value |
 |----------------------|-----------------------------|------------------|----------------|
 | t51                  | x                           | x                | x              |
@@ -153,10 +151,7 @@ fan = AUTO, HIGH, MEDIUM, LOW, FANOFF
 | T5x        |                                   |                                                                                                       |
 | T6x        |                                   |                                                                                                       |
 
-
 ## Full Example
-
-
 
 souliss.things:
 
@@ -175,8 +170,8 @@ Thing t52 4-12 "Temp.Pannelli Gruppo 2"@"Soggiorno" [node=4,slot=12]
 Thing t52 3-0 "Temperatura Boiler Solare Termico" [node=3,slot=0]
 Thing t52 3-2 "Temperatura Termocamino" [node=3,slot=2]
 Thing t11 3-4 "Acqua Termocamino" [node=3,slot=4]
-Thing t11 3-6 "Auto: Boiler / Termocamino" [node=3,slot=6]	 
-Thing t31 3-7  "Acqua Auto: Boiler / Termocamino" [node=3,slot=7]	
+Thing t11 3-6 "Auto: Boiler / Termocamino" [node=3,slot=6] 
+Thing t31 3-7  "Acqua Auto: Boiler / Termocamino" [node=3,slot=7]
 
 Thing t31 6-0 "Termostato Soggiorno"@"Soggiorno" [node=6,slot=0]
 Thing t53 6-7 "Umidità"@"Soggiorno" [node=6,slot=7]
@@ -192,12 +187,13 @@ Thing t11 10-0 "Albero di Natale" [node=10,slot=0]
 Thing t11 11-0 "Birra"@"Soppalco" [node=11,slot=0]
 Thing t52 11-1 "Birra - Temp 1"@"Soppalco" [node=11,slot=1]
 Thing t52 11-3 "Birra - Temp 2"@"Soppalco" [node=11,slot=3]
+
+Thing t13 0-12 "Valvola Riscaldamento Zona Giorno"@"Riscaldamento" [node=0,slot=12]
 }
 
 ```
 
 You have to write your Gateway IP Number and leave all other to default values
-
 
 default.items:
 
@@ -213,23 +209,23 @@ Group    Diagnostic
 Group    TermostatoSoggiorno
 
 Switch   tettoia  "Tettoia"  <light>    (Outside)   ["Lighting"]   {autoupdate="false", channel="souliss:t11:105:5-0:onoff"}
-String	 tettoia_aggiornamento	"Agg [%1$td.%1$tm.%1$tY %1$tk:%1$tM:%1$tS]"	<keyring> (Outside, Diagnostic)  {channel="souliss:t31:105:5-0:lastStatusStored"}
+String   tettoia_aggiornamento "Agg [%1$td.%1$tm.%1$tY %1$tk:%1$tM:%1$tS]" <keyring> (Outside, Diagnostic)  {channel="souliss:t31:105:5-0:lastStatusStored"}
 
 Switch   portoncino         "Portoncino"          <light>         (FamilyRoom)         ["Lighting"]   {autoupdate="false",channel="souliss:t14:105:1-6:pulse"}
 Switch   cancello         "Cancello"          <light>         (FamilyRoom)         ["Lighting"]   {autoupdate="false",channel="souliss:t14:105:1-7:pulse"}
 
 Number   FamilyRoom_Temperature   "Temperatura [%.1f °C]"   <temperature>  (FamilyRoom)                  {channel="souliss:t31:105:6-0:measured"}
 Number   FamilyRoom_Humidity      "Umidità [%.1f %%]"       <humidity>      (FamilyRoom)                     {channel="souliss:t53:105:6-7:value"}
-String	AggiornamentoNodo6	"Agg [%1$td.%1$tm.%1$tY %1$tk:%1$tM:%1$tS]"	<keyring> (FamilyRoom, Diagnostic)  {channel="souliss:t31:105:6-0:lastStatusStored"}
+String   AggiornamentoNodo6 "Agg [%1$td.%1$tm.%1$tY %1$tk:%1$tM:%1$tS]" <keyring> (FamilyRoom, Diagnostic)  {channel="souliss:t31:105:6-0:lastStatusStored"}
 
 Number   Consumo      "Consumo [%.1f W]"       <energy>      (FamilyRoom, Elettricita)                     {channel="souliss:t57:105:1-4:value"}
 Number   Fotovoltaico      "Fotovoltaico [%.1f W]"       <energy>      (FamilyRoom, Elettricita)                     {channel="souliss:t57:105:4-0:value"}
-String	AggiornamentoNodo1	"Agg.Consumi [%1$td.%1$tm.%1$tY %1$tk:%1$tM:%1$tS]"	<keyring> (FamilyRoom, Elettricita, Diagnostic)  {channel="souliss:t57:105:1-4:lastStatusStored"}
-String	AggiornamentoNodo4	"Agg.Fotovoltaico [%1$td.%1$tm.%1$tY %1$tk:%1$tM:%1$tS]"	<keyring> (FamilyRoom, Elettricita, Diagnostic)  {channel="souliss:t57:105:4-0:lastStatusStored"}
+String   AggiornamentoNodo1 "Agg.Consumi [%1$td.%1$tm.%1$tY %1$tk:%1$tM:%1$tS]" <keyring> (FamilyRoom, Elettricita, Diagnostic)  {channel="souliss:t57:105:1-4:lastStatusStored"}
+String   AggiornamentoNodo4 "Agg.Fotovoltaico [%1$td.%1$tm.%1$tY %1$tk:%1$tM:%1$tS]" <keyring> (FamilyRoom, Elettricita, Diagnostic)  {channel="souliss:t57:105:4-0:lastStatusStored"}
                                   
 Switch divano "Divano" <light> (FamilyRoom, Divano ) ["Switchable"] {autoupdate="false", channel="souliss:t11:105:12-0:onOff"}
-String divano_aggiornamento	"Agg. [%1$td.%1$tm.%1$tY %1$tk:%1$tM:%1$tS]"	<keyring> (FamilyRoom, Divano, Diagnostic)  {channel="souliss:t57:105:12-0:lastStatusStored"}
-String divano_healthy	"Salute"	<keyring> (FamilyRoom, Divano, Diagnostic)  {channel="souliss:t57:105:12-0:healthy"}
+String divano_aggiornamento "Agg. [%1$td.%1$tm.%1$tY %1$tk:%1$tM:%1$tS]" <keyring> (FamilyRoom, Divano, Diagnostic)  {channel="souliss:t57:105:12-0:lastStatusStored"}
+String divano_healthy "Salute" <keyring> (FamilyRoom, Divano, Diagnostic)  {channel="souliss:t57:105:12-0:healthy"}
 
 Number termostatosoggiorno_temperatura  "Temperatura [%.1f °C]" <temperature> (TermostatoSoggiorno) {channel="souliss:t31:105:6-0:measured"}
 Number termostatosoggiorno_umidita "Umidità [%.1f %%]" <temperature>   (TermostatoSoggiorno)       {channel="souliss:t53:105:6-7:value" }
@@ -243,9 +239,11 @@ String termostatosoggiorno_modo "Modo" (TermostatoSoggiorno) {autoupdate="false"
 Switch termostatosoggiorno_power "Termostato" <powerIcon> (TermostatoSoggiorno) {channel="souliss:t31:105:6-0:system"}
 Switch termostatosoggiorno_fire "Fire" <fire> (TermostatoSoggiorno) {channel="souliss:t31:105:6-0:fire"}
 
-Dimmer  TermostatoSoggiorno_displayBright   "Lumin.min. display" (TermostatoSoggiorno)      {channel="souliss:t19:105:6-9" }
+Dimmer TermostatoSoggiorno_displayBright   "Lumin.min. display" (TermostatoSoggiorno)      {channel="souliss:t19:105:6-9" }
 String TermostatoSoggiorno_aggiornamento "Agg.[%1$td.%1$tm.%1$tY %1$tk:%1$tM:%1$tS]" <keyring> (TermostatoSoggiorno, Diagnostic)  {channel="souliss:t31:105:6-0:lastStatusStored"}
 Number TermostatoSoggiorno_healthy "Salute" <keyring> (TermostatoSoggiorno, Diagnostic )  {channel="souliss:t31:105:6-0:healthy"}
+
+Contact ValvolaGiorno "Z.Giorno - Valvola - Stato" <switch> (gRiscaldamento, gTermostGiorno, gHistory) ["Status","Opening"] {channel="souliss:t13:61:0-12:stateOpenClose"}
 
 ```
 
@@ -276,7 +274,7 @@ Frame {
        Group item=Divano icon="light"
 }
 
-Frame label="Temperature"{	
+Frame label="Temperature"{
 
             Text label="Temperatura e umidità" icon="temperature" {
             Default item=FamilyRoom_Temperature label="Temperatura"
@@ -293,10 +291,11 @@ Text label="Termostato soggiorno" icon="temperature" {
             Switch item=termostatosoggiorno_modo label="Heating Mode" mappings=[HEATING_MODE="Set"] 
             Switch item=termostatosoggiorno_power label="Power On/Off"
             Default item=termostatosoggiorno_fire label="Fire"
-	        Text item=termostatoSoggiorno_aggiornamento label="Aggiornato: [%1$td.%1$tm.%1$tY %1$tk:%1$tM:%1$tS]" icon="icon16x16"
+            Text item=termostatoSoggiorno_aggiornamento label="Aggiornato: [%1$td.%1$tm.%1$tY %1$tk:%1$tM:%1$tS]" icon="icon16x16"
             Default item=termostatoSoggiorno_healthy
-	        Slider item=termostatoSoggiorno_displayBright
-	}		
+            Slider item=termostatoSoggiorno_displayBright
+            Default item= ValvolaGiorno label="Valvola consenso zona Giorno" 
+    }
  }
 }
 ```
@@ -311,7 +310,7 @@ English Group, [here](https://groups.google.com/forum/#!forum/souliss)
 
 Italian Group, [here](https://groups.google.com/forum/#!forum/souliss-it)
 
-Spanish Group, [here] (https://groups.google.com/forum/#!forum/souliss-es)
+Spanish Group, [here](https://groups.google.com/forum/#!forum/souliss-es)
 
 ## Contribution
 
