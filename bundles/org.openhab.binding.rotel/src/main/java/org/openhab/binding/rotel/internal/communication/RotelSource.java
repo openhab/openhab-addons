@@ -416,6 +416,8 @@ public enum RotelSource {
      */
     public @Nullable RotelCommand getZoneCommand(int numZone) {
         switch (numZone) {
+            case 1:
+                return zone1Command;
             case 2:
                 return zone2Command;
             case 3:
@@ -423,7 +425,7 @@ public enum RotelSource {
             case 4:
                 return zone4Command;
             default:
-                return zone1Command;
+                throw new IllegalArgumentException("numZone must be a value between 1 and 4");
         }
     }
 
