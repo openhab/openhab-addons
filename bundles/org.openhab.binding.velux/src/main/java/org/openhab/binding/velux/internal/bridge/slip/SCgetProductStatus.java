@@ -47,6 +47,15 @@ public class SCgetProductStatus extends GetProduct implements SlipBridgeCommunic
     private static final Command COMMAND = Command.GW_STATUS_REQUEST_REQ;
 
     /*
+     * RunStatus and StatusReply parameter values (from KLF200 API specification)
+     */
+    private static final int EXECUTION_COMPLETED = 0;// Execution is completed with no errors.
+    private static final int EXECUTION_FAILED = 1; // Execution has failed. (Get specifics in the following error code)
+    private static final int EXECUTION_ACTIVE = 2;// Execution is still active
+    private static final int UNKNOWN_STATUS_REPLY = 0x00; // Used to indicate unknown reply.
+    private static final int COMMAND_COMPLETED_OK = 0x01;
+
+    /*
      * ===========================================================
      * Message Content Parameters
      */
@@ -192,14 +201,25 @@ public class SCgetProductStatus extends GetProduct implements SlipBridgeCommunic
 
                 int ntfState;
                 switch (ntfRunStatus) {
-                    case 1:
-                        ntfState = VeluxProduct.ProductState.ERROR.value;
-                        break;
-                    case 2:
+                    case EXECUTION_ACTIVE:
                         ntfState = VeluxProduct.ProductState.EXECUTING.value;
                         break;
-                    default:
+                    case EXECUTION_COMPLETED:
                         ntfState = VeluxProduct.ProductState.DONE.value;
+                        break;
+                    case EXECUTION_FAILED:
+                    default:
+                        switch (ntfStatusReply) {
+                            case UNKNOWN_STATUS_REPLY:
+                                ntfState = VeluxProduct.ProductState.UNKNOWN.value;
+                                break;
+                            case COMMAND_COMPLETED_OK:
+                                ntfState = VeluxProduct.ProductState.DONE.value;
+                                break;
+                            default:
+                                ntfState = VeluxProduct.ProductState.ERROR.value;
+                        }
+                        break;
                 }
 
                 // create notification product with the returned values
