@@ -1347,7 +1347,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                         updateChannelState(CHANNEL_MAIN_VOLUME_UP_DOWN);
                     } else {
                         updateGroupChannelState(numZone, CHANNEL_VOLUME);
-                        updateGroupChannelState(numZone, "volumeUpDown");
+                        updateGroupChannelState(numZone, CHANNEL_VOLUME_UP_DOWN);
                     }
                     break;
                 case KEY_MUTE:
@@ -1662,7 +1662,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
         updateGroupChannelState(numZone, CHANNEL_TREBLE);
         updateGroupChannelState(numZone, CHANNEL_BALANCE);
         updateGroupChannelState(numZone, CHANNEL_FREQUENCY);
-        updateGroupChannelState(numZone, "volumeUpDown");
+        updateGroupChannelState(numZone, CHANNEL_VOLUME_UP_DOWN);
     }
 
     /**
