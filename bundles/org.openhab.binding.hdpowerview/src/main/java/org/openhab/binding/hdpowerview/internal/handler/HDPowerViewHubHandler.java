@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.hdpowerview.internal.handler;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -82,6 +84,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
     private final HttpClient httpClient;
     private final HDPowerViewTranslationProvider translationProvider;
     private final ConcurrentHashMap<ThingUID, ShadeData> pendingShadeInitializations = new ConcurrentHashMap<>();
+    private final Duration firmwareVersionValidityPeriod = Duration.ofDays(1);
 
     private long refreshInterval;
     private long hardRefreshPositionInterval;
@@ -95,7 +98,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
     private List<Scene> sceneCache = new CopyOnWriteArrayList<>();
     private List<SceneCollection> sceneCollectionCache = new CopyOnWriteArrayList<>();
     private List<ScheduledEvent> scheduledEventCache = new CopyOnWriteArrayList<>();
-    private @Nullable FirmwareVersions firmwareVersions;
+    private Instant firmwareVersionsUpdated = Instant.MIN;
     private Boolean deprecatedChannelsCreated = false;
 
     private final ChannelTypeUID sceneChannelTypeUID = new ChannelTypeUID(HDPowerViewBindingConstants.BINDING_ID,
@@ -141,6 +144,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             }
         } catch (HubMaintenanceException e) {
             // exceptions are logged in HDPowerViewWebTargets
+            firmwareVersionsUpdated = Instant.MIN;
         } catch (NumberFormatException | HubException e) {
             logger.debug("Unexpected error {}", e.getMessage());
         }
@@ -164,7 +168,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         hardRefreshPositionInterval = config.hardRefresh;
         hardRefreshBatteryLevelInterval = config.hardRefreshBatteryLevel;
         initializeChannels();
-        firmwareVersions = null;
+        firmwareVersionsUpdated = Instant.MIN;
 
         updateStatus(ThingStatus.UNKNOWN);
         schedulePoll();
@@ -304,15 +308,17 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             }
         } catch (HubMaintenanceException e) {
             // exceptions are logged in HDPowerViewWebTargets
+            firmwareVersionsUpdated = Instant.MIN;
         } catch (HubException e) {
             logger.warn("Error connecting to bridge: {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            firmwareVersionsUpdated = Instant.MIN;
         }
     }
 
     private void updateFirmwareProperties()
             throws HubInvalidResponseException, HubProcessingException, HubMaintenanceException {
-        if (firmwareVersions != null) {
+        if (firmwareVersionsUpdated.isAfter(Instant.now().minus(firmwareVersionValidityPeriod))) {
             return;
         }
         FirmwareVersions firmwareVersions = webTargets.getFirmwareVersions();
@@ -334,6 +340,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             properties.put(HDPowerViewBindingConstants.PROPERTY_RADIO_FIRMWARE_VERSION, radio.toString());
         }
         updateProperties(properties);
+        firmwareVersionsUpdated = Instant.now();
     }
 
     private void pollShades() throws HubInvalidResponseException, HubProcessingException, HubMaintenanceException {
