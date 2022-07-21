@@ -187,6 +187,7 @@ public class FineOffsetGatewayDiscoveryService extends AbstractDiscoveryService 
 
         ThingUID uid = new ThingUID(THING_TYPE_GATEWAY, id);
         DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
+                .withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS)
                 .withLabel(translationProvider.getText(bundle, "thing.gateway.label", name, localeProvider.getLocale()))
                 .build();
         thingDiscovered(result);

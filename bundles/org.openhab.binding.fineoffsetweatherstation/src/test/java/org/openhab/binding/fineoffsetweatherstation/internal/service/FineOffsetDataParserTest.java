@@ -41,7 +41,7 @@ class FineOffsetDataParserTest {
                         new Tuple("temperature-outdoor", "6.9 °C"), new Tuple("humidity-outdoor", "79 %"),
                         new Tuple("direction-wind", "21 °"), new Tuple("speed-wind", "0 m/s"),
                         new Tuple("speed-gust", "0 m/s"), new Tuple("illumination", "0 lx"),
-                        new Tuple("irradiation-uv", "1 µW/cm²"), new Tuple("uv-index", "0"),
+                        new Tuple("irradiation-uv", "0.1 mW/m²"), new Tuple("uv-index", "0"),
                         new Tuple("wind-max-day", "0 m/s"), new Tuple("rain-rate", "0 mm/h"),
                         new Tuple("rain-day", "0 mm"), new Tuple("rain-week", "3.3 mm"),
                         new Tuple("rain-month", "3.3 mm"), new Tuple("rain-year", "141.3 mm"),
@@ -71,7 +71,7 @@ class FineOffsetDataParserTest {
                         new Tuple("rain-day", "3.3 mm"), new Tuple("rain-week", "4.6 mm"),
                         new Tuple("rain-month", "33.5 mm"), new Tuple("rain-year", "410.3 mm"),
                         new Tuple("rain-total", "486.1 mm"), new Tuple("illumination", "74028 lx"),
-                        new Tuple("irradiation-uv", "2153 µW/cm²"), new Tuple("uv-index", "5"));
+                        new Tuple("irradiation-uv", "215.3 mW/m²"), new Tuple("uv-index", "5"));
     }
 
     @Test
