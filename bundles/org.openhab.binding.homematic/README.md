@@ -664,6 +664,8 @@ In scripts:
 
 ::: tab JavaScript
 import org.openhab.core.types.RefreshType
+...
+Var_1.sendCommand(RefreshType.REFRESH)
 :::
 
 ::: tab DSL
