@@ -5,7 +5,6 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="single">
-
 		<label>Single PV Plane</label>
 		<description>One PV plane attached to your inverter</description>
 

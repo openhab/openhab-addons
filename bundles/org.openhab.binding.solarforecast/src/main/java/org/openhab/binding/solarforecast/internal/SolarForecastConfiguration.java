@@ -21,11 +21,16 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class SolarForecastConfiguration {
-
     public String location = "0.0,0.0";
     public int declination = -1;
     public int azimuth = 360;
-    public int kwp = 0;
+    public double kwp = 0;
     public int refreshInterval = -1;
     public String apiKey = SolarForecastBindingConstants.EMPTY;
+
+    @Override
+    public String toString() {
+        return "Loc " + location + " Dec " + declination + " Azi " + azimuth + " KWP " + kwp + " Ref "
+                + refreshInterval;
+    }
 }

@@ -45,21 +45,22 @@ public class SolarForecastSinglePlaneHandler extends SolarForecastPlaneHandler {
     @Override
     public void initialize() {
         config = getConfigAs(SolarForecastConfiguration.class);
-        startSchedule(config.refreshInterval);
         if (config.location.equals(SolarForecastBindingConstants.AUTODETECT)) {
             Configuration editConfig = editConfiguration();
             editConfig.put("location", homeLocation.toString());
             updateConfiguration(editConfig);
-            super.setLocation(homeLocation);
             config = getConfigAs(SolarForecastConfiguration.class);
-        } else {
-            super.setLocation(PointType.valueOf(config.location));
         }
+        if (config != null) {
+            super.setConfig(config);
+        }
+        startSchedule(config.refreshInterval);
         updateStatus(ThingStatus.ONLINE);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        super.handleCommand(channelUID, command);
     }
 
     private void startSchedule(int interval) {

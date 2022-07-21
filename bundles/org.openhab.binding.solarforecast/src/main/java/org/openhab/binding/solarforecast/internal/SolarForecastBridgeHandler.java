@@ -86,18 +86,23 @@ public class SolarForecastBridgeHandler extends BaseBridgeHandler {
      * Get data for all planes. Protect parts map from being modified during update
      */
     private synchronized void getData() {
+        if (parts.isEmpty()) {
+            logger.info("No plane defined yet");
+            return;
+        }
         LocalDateTime now = LocalDateTime.now();
         double todaySum = 0;
         double tomorrowSum = 0;
         double actualSum = 0;
         double remainSum = 0;
         for (Iterator<SolarForecastPlaneHandler> iterator = parts.iterator(); iterator.hasNext();) {
-            ForecastObject fo = iterator.next().fetchData();
+            SolarForecastPlaneHandler sfph = iterator.next();
+            ForecastObject fo = sfph.fetchData();
             if (fo.isValid()) {
                 todaySum += fo.getDayTotal(now, 0);
-                tomorrowSum = fo.getDayTotal(now, 1);
-                actualSum = fo.getActualValue(now);
-                remainSum = fo.getRemainingProduction(now);
+                tomorrowSum += fo.getDayTotal(now, 1);
+                actualSum += fo.getActualValue(now);
+                remainSum += fo.getRemainingProduction(now);
             } else {
                 logger.info("Fetched data not valid {}", fo.toString());
             }

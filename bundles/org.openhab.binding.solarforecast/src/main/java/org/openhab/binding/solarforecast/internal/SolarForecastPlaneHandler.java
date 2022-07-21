@@ -43,9 +43,9 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SolarForecastPlaneHandler extends BaseThingHandler {
-
     private final Logger logger = LoggerFactory.getLogger(SolarForecastPlaneHandler.class);
     private final HttpClient httpClient;
+
     private ForecastObject forecast = new ForecastObject();
     private Optional<SolarForecastConfiguration> config = Optional.empty();
     private Optional<PointType> location = Optional.empty();
@@ -82,13 +82,20 @@ public class SolarForecastPlaneHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         super.dispose();
-        if (thing instanceof SolarForecastBridgeHandler) {
-            ((SolarForecastBridgeHandler) thing).removePlane(this);
+        Bridge bridge = getBridge();
+        if (bridge != null) {
+            BridgeHandler handler = bridge.getHandler();
+            if (handler != null) {
+                if (handler instanceof SolarForecastBridgeHandler) {
+                    ((SolarForecastBridgeHandler) handler).removePlane(this);
+                }
+            }
         }
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        logger.info("Handle command {} for channel {}", channelUID, command);
         if (command instanceof RefreshType) {
             fetchData();
         }
@@ -98,25 +105,33 @@ public class SolarForecastPlaneHandler extends BaseThingHandler {
      * https://doc.forecast.solar/doku.php?id=api:estimate
      */
     ForecastObject fetchData() {
-        if (!forecast.isValid() && location.isPresent()) {
-            // https://api.forecast.solar/estimate/:lat/:lon/:dec/:az/:kwp
-            String url = BASE_URL + location.get().getLatitude() + SLASH + location.get().getLongitude() + SLASH
-                    + config.get().declination + SLASH + config.get().azimuth + SLASH + config.get().kwp;
-            logger.info("Call {}", url);
-            try {
-                ContentResponse cr = httpClient.GET(url);
-                if (cr.getStatus() == 200) {
-                    forecast = new ForecastObject(cr.getContentAsString(), LocalDateTime.now());
-                    logger.info("Fetched data {}", forecast.toString());
-                    updateChannels(forecast);
-                    updateState(new ChannelUID(thing.getUID(), CHANNEL_RAW),
-                            StringType.valueOf(cr.getContentAsString()));
+        if (location.isPresent()) {
+            if (!forecast.isValid()) {
+                // https://api.forecast.solar/estimate/:lat/:lon/:dec/:az/:kwp
+                String url = BASE_URL + location.get().getLatitude() + SLASH + location.get().getLongitude() + SLASH
+                        + config.get().declination + SLASH + config.get().azimuth + SLASH + config.get().kwp;
+                logger.info("{} Call {}", thing.getLabel(), url);
+                try {
+                    ContentResponse cr = httpClient.GET(url);
+                    if (cr.getStatus() == 200) {
+                        forecast = new ForecastObject(cr.getContentAsString(), LocalDateTime.now());
+                        logger.info("{} Fetched data {}", thing.getLabel(), forecast.toString());
+                        updateChannels(forecast);
+                        updateState(new ChannelUID(thing.getUID(), CHANNEL_RAW),
+                                StringType.valueOf(cr.getContentAsString()));
+                    } else {
+                        logger.info("{} Call {} failed {}", thing.getLabel(), url, cr.getStatus());
+                    }
+                } catch (InterruptedException | ExecutionException | TimeoutException e) {
+                    logger.info("{} Call {} failed {}", thing.getLabel(), url, e.getMessage());
                 }
-            } catch (InterruptedException | ExecutionException | TimeoutException e) {
-                logger.info("Call {} failed {}", url, e.getMessage());
+            } else {
+                logger.info("{} use available forecast {}", thing.getLabel(), forecast);
             }
+            updateChannels(forecast);
+        } else {
+            logger.info("{} Location not present", thing.getLabel());
         }
-        updateChannels(forecast);
         return forecast;
     }
 
@@ -131,7 +146,23 @@ public class SolarForecastPlaneHandler extends BaseThingHandler {
                 ForecastObject.getStateObject(f.getDayTotal(LocalDateTime.now(), 1)));
     }
 
-    protected void setLocation(PointType loc) {
+    /**
+     * Used by Bridge to set location directly
+     *
+     * @param loc
+     */
+    void setLocation(PointType loc) {
         location = Optional.of(loc);
+    }
+
+    /**
+     * Used by SinglePlaneHandler to submit config data
+     *
+     * @param c
+     */
+    protected void setConfig(SolarForecastConfiguration c) {
+        logger.info("Config {}", c);
+        config = Optional.of(c);
+        location = Optional.of(PointType.valueOf(c.location));
     }
 }

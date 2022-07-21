@@ -28,7 +28,7 @@
 		<description>Tomorrows forecast in total</description>
 		<state pattern="%.3f %unit" readOnly="true"/>
 	</channel-type>
-	<channel-type id="raw-channel">
+	<channel-type id="raw-channel" advanced="true">
 		<item-type>String</item-type>
 		<label>Raw JSON Response</label>
 		<description>Plain JSON response without conversions</description>

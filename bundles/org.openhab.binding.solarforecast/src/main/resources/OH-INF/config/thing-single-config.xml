@@ -19,7 +19,7 @@
 			<label>Plane Azimuth</label>
 			<description>-180 = north, -90 = east, 0 = south, 90 = west, 180 = north</description>
 		</parameter>
-		<parameter name="kwp" type="integer" min="-180" max="180" required="true">
+		<parameter name="kwp" type="decimal" step="0.001" required="true">
 			<label>Installed Kilowatt Peak</label>
 			<description>Installed Module power of this plane</description>
 		</parameter>
