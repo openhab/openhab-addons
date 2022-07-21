@@ -315,7 +315,7 @@ public enum RotelModel {
      *
      * @return the number of zones
      */
-    public int getNbZones() {
+    public int getNumberOfZones() {
         return nbAdditionalZones + 1;
     }
 

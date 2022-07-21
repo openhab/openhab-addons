@@ -469,7 +469,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
     public void dispose() {
         logger.debug("Disposing handler for thing {}", getThing().getUID());
         cancelPowerOffJob();
-        for (int zone = 0; zone <= model.getNbZones(); zone++) {
+        for (int zone = 0; zone <= model.getNumberOfZones(); zone++) {
             cancelPowerOnZoneJob(zone);
         }
         cancelReconnectJob();
@@ -560,7 +560,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                     case CHANNEL_ZONE4_POWER:
                         if (numZone == 0 || model.hasZoneCommands(numZone)) {
                             handlePowerCmd(channel, command, getPowerOnCommand(numZone), getPowerOffCommand(numZone));
-                        } else if (numZone == 2 && model.getNbZones() == 2) {
+                        } else if (numZone == 2 && model.getNumberOfZones() == 2) {
                             Boolean powerZone = powers[numZone];
                             if (isPowerOn() || (powerZone != null && powerZone.booleanValue())) {
                                 selectZone(2, model.getZoneSelectCmd());
@@ -613,7 +613,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                                 logger.debug("Command {} from channel {} failed: undefined source command", command,
                                         channel);
                             }
-                        } else if (numZone == 2 && model.getNbZones() > 1) {
+                        } else if (numZone == 2 && model.getNumberOfZones() > 1) {
                             src = model.getSourceFromName(command.toString());
                             cmd = src.getCommand();
                             if (cmd != null) {
@@ -702,7 +702,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                                     CHANNEL_MAIN_VOLUME_UP_DOWN.equals(channel)
                                             || CHANNEL_ZONE2_VOLUME_UP_DOWN.equals(channel) ? null
                                                     : getVolumeSetCommand(numZone));
-                        } else if (numZone == 2 && model.hasVolumeControl() && model.getNbZones() > 1) {
+                        } else if (numZone == 2 && model.hasVolumeControl() && model.getNumberOfZones() > 1) {
                             selectZone(2, model.getZoneSelectCmd());
                             handleVolumeCmd(volumes[numZone], channel, command, RotelCommand.VOLUME_UP,
                                     RotelCommand.VOLUME_DOWN,
@@ -1136,11 +1136,11 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
      */
     private void selectZone(int zone, @Nullable RotelCommand selectCommand)
             throws RotelException, InterruptedException {
-        if (protocol == RotelProtocol.HEX && model.getNbZones() > 1 && zone >= 1 && zone != currentZone
+        if (protocol == RotelProtocol.HEX && model.getNumberOfZones() > 1 && zone >= 1 && zone != currentZone
                 && selectCommand != null) {
             int nbSelect;
             if (zone < currentZone) {
-                nbSelect = zone + model.getNbZones() - 1 - currentZone;
+                nbSelect = zone + model.getNumberOfZones() - 1 - currentZone;
                 if (isPowerOn() && selectCommand == RotelCommand.RECORD_FONCTION_SELECT) {
                     nbSelect++;
                 }
@@ -1290,8 +1290,8 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                         handlePowerOn();
                     } else if (STANDBY.equalsIgnoreCase(value)) {
                         handlePowerOff();
-                        if (model.getNbZones() > 1 && !powerControlPerZone) {
-                            for (int zone = 1; zone <= model.getNbZones(); zone++) {
+                        if (model.getNumberOfZones() > 1 && !powerControlPerZone) {
+                            for (int zone = 1; zone <= model.getNumberOfZones(); zone++) {
                                 handlePowerOffZone(zone);
                             }
                         }
@@ -1677,7 +1677,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
             logger.debug("Power OFF job");
             handlePowerOff();
             if (switchOffAllZones) {
-                for (int zone = 1; zone <= model.getNbZones(); zone++) {
+                for (int zone = 1; zone <= model.getNumberOfZones(); zone++) {
                     handlePowerOffZone(zone);
                 }
             }
@@ -1713,7 +1713,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                                 sendCommand(getVolumeUpCommand(0));
                                 Thread.sleep(100);
                             }
-                            if (model.getNbZones() > 1) {
+                            if (model.getNumberOfZones() > 1) {
                                 if (currentZone != 1
                                         && model.getZoneSelectCmd() == RotelCommand.RECORD_FONCTION_SELECT) {
                                     selectZone(1, model.getZoneSelectCmd());
@@ -1822,7 +1822,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                             sendCommand(RotelCommand.UPDATE_AUTO);
                             Thread.sleep(SLEEP_INTV);
                             if (model.hasSourceControl()) {
-                                if (model.getNbZones() > 1) {
+                                if (model.getNumberOfZones() > 1) {
                                     sendCommand(RotelCommand.INPUT);
                                 } else {
                                     sendCommand(RotelCommand.SOURCE);
@@ -1903,7 +1903,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
             synchronized (sequenceLock) {
                 logger.debug("Power ON zone {} job", numZone);
                 try {
-                    if (protocol == RotelProtocol.HEX && model.getNbZones() >= numZone) {
+                    if (protocol == RotelProtocol.HEX && model.getNumberOfZones() >= numZone) {
                         selectZone(numZone, model.getZoneSelectCmd());
                         sendCommand(model.hasZoneCommands(numZone) ? volumeDown : RotelCommand.VOLUME_DOWN);
                         Thread.sleep(100);
@@ -1963,7 +1963,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                 }
                 if (error != null) {
                     handlePowerOff();
-                    for (int zone = 1; zone <= model.getNbZones(); zone++) {
+                    for (int zone = 1; zone <= model.getNumberOfZones(); zone++) {
                         handlePowerOffZone(zone);
                     }
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, error);

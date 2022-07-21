@@ -245,8 +245,8 @@ public class RotelSimuConnector extends RotelConnector {
             case POWER_OFF:
             case MAIN_ZONE_POWER_OFF:
                 powers[0] = false;
-                if (model.getNbZones() > 1 && !model.hasPowerControlPerZone()) {
-                    for (int zone = 1; zone <= model.getNbZones(); zone++) {
+                if (model.getNumberOfZones() > 1 && !model.hasPowerControlPerZone()) {
+                    for (int zone = 1; zone <= model.getNumberOfZones(); zone++) {
                         powers[zone] = false;
                     }
                 }
@@ -258,8 +258,8 @@ public class RotelSimuConnector extends RotelConnector {
             case POWER_ON:
             case MAIN_ZONE_POWER_ON:
                 powers[0] = true;
-                if (model.getNbZones() > 1 && !model.hasPowerControlPerZone()) {
-                    for (int zone = 1; zone <= model.getNbZones(); zone++) {
+                if (model.getNumberOfZones() > 1 && !model.hasPowerControlPerZone()) {
+                    for (int zone = 1; zone <= model.getNumberOfZones(); zone++) {
                         powers[zone] = true;
                     }
                 }
@@ -288,9 +288,9 @@ public class RotelSimuConnector extends RotelConnector {
                 resetZone = false;
                 break;
             case RECORD_FONCTION_SELECT:
-                if (model.getNbZones() > 1 && model.getZoneSelectCmd() == cmd) {
+                if (model.getNumberOfZones() > 1 && model.getZoneSelectCmd() == cmd) {
                     showZone++;
-                    if (showZone >= model.getNbZones()) {
+                    if (showZone >= model.getNumberOfZones()) {
                         showZone = 1;
                         if (!powers[0]) {
                             showZone++;
@@ -310,7 +310,7 @@ public class RotelSimuConnector extends RotelConnector {
                 resetZone = false;
                 break;
             case ZONE_SELECT:
-                if (model.getNbZones() == 1 || (model.getNbZones() > 2 && model.getZoneSelectCmd() == cmd)
+                if (model.getNumberOfZones() == 1 || (model.getNumberOfZones() > 2 && model.getZoneSelectCmd() == cmd)
                         || (showZone == 1 && model.getZoneSelectCmd() != cmd)) {
                     accepted = false;
                 } else {
@@ -481,7 +481,7 @@ public class RotelSimuConnector extends RotelConnector {
         }
         if (!accepted) {
             // Check if command is a change of source input for a zone
-            for (int zone = 1; zone <= model.getNbZones(); zone++) {
+            for (int zone = 1; zone <= model.getNumberOfZones(); zone++) {
                 if (powers[zone]) {
                     try {
                         sources[zone] = model.getZoneSourceFromCommand(cmd, zone);
@@ -497,7 +497,7 @@ public class RotelSimuConnector extends RotelConnector {
                 }
             }
         }
-        if (!accepted && powers[2] && !model.hasZoneCommands(2) && model.getNbZones() > 1 && showZone == 2) {
+        if (!accepted && powers[2] && !model.hasZoneCommands(2) && model.getNumberOfZones() > 1 && showZone == 2) {
             accepted = true;
             switch (cmd) {
                 case VOLUME_UP:
@@ -895,7 +895,7 @@ public class RotelSimuConnector extends RotelConnector {
                     textAscii = buildDspAsciiResponse();
                     break;
                 case FREQUENCY:
-                    textAscii = model.getNbZones() > 1 ? buildAsciiResponse(KEY_FREQ, "44.1,48,none,176.4")
+                    textAscii = model.getNumberOfZones() > 1 ? buildAsciiResponse(KEY_FREQ, "44.1,48,none,176.4")
                             : buildAsciiResponse(KEY_FREQ, "44.1");
                     break;
                 case DIMMER_LEVEL_SET:
@@ -1061,9 +1061,9 @@ public class RotelSimuConnector extends RotelConnector {
     }
 
     private String buildVolumeAsciiResponse() {
-        if (model.getNbZones() > 1) {
+        if (model.getNumberOfZones() > 1) {
             StringJoiner sj = new StringJoiner(",");
-            for (int zone = 1; zone <= model.getNbZones(); zone++) {
+            for (int zone = 1; zone <= model.getNumberOfZones(); zone++) {
                 sj.add(String.format("%02d", volumes[zone]));
             }
             return buildAsciiResponse(KEY_VOLUME, sj.toString());
@@ -1073,9 +1073,9 @@ public class RotelSimuConnector extends RotelConnector {
     }
 
     private String buildMuteAsciiResponse() {
-        if (model.getNbZones() > 1) {
+        if (model.getNumberOfZones() > 1) {
             StringJoiner sj = new StringJoiner(",");
-            for (int zone = 1; zone <= model.getNbZones(); zone++) {
+            for (int zone = 1; zone <= model.getNumberOfZones(); zone++) {
                 sj.add(buildOnOffValue(mutes[zone]));
             }
             return buildAsciiResponse(KEY_MUTE, sj.toString());
@@ -1085,9 +1085,9 @@ public class RotelSimuConnector extends RotelConnector {
     }
 
     private String buildBassAsciiResponse() {
-        if (model.getNbZones() > 1) {
+        if (model.getNumberOfZones() > 1) {
             StringJoiner sj = new StringJoiner(",");
-            for (int zone = 1; zone <= model.getNbZones(); zone++) {
+            for (int zone = 1; zone <= model.getNumberOfZones(); zone++) {
                 sj.add(buildBassTrebleValue(basses[zone]));
             }
             return buildAsciiResponse(KEY_BASS, sj.toString());
@@ -1097,9 +1097,9 @@ public class RotelSimuConnector extends RotelConnector {
     }
 
     private String buildTrebleAsciiResponse() {
-        if (model.getNbZones() > 1) {
+        if (model.getNumberOfZones() > 1) {
             StringJoiner sj = new StringJoiner(",");
-            for (int zone = 1; zone <= model.getNbZones(); zone++) {
+            for (int zone = 1; zone <= model.getNumberOfZones(); zone++) {
                 sj.add(buildBassTrebleValue(trebles[zone]));
             }
             return buildAsciiResponse(KEY_TREBLE, sj.toString());
@@ -1119,9 +1119,9 @@ public class RotelSimuConnector extends RotelConnector {
     }
 
     private String buildBalanceAsciiResponse() {
-        if (model.getNbZones() > 1) {
+        if (model.getNumberOfZones() > 1) {
             StringJoiner sj = new StringJoiner(",");
-            for (int zone = 1; zone <= model.getNbZones(); zone++) {
+            for (int zone = 1; zone <= model.getNumberOfZones(); zone++) {
                 sj.add(buildBalanceValue(balances[zone]));
             }
             return buildAsciiResponse(KEY_BALANCE, sj.toString());
@@ -1175,9 +1175,9 @@ public class RotelSimuConnector extends RotelConnector {
     }
 
     private String buildSourceAsciiResponse() {
-        if (model.getNbZones() > 1) {
+        if (model.getNumberOfZones() > 1) {
             StringJoiner sj = new StringJoiner(",");
-            for (int zone = 1; zone <= model.getNbZones(); zone++) {
+            for (int zone = 1; zone <= model.getNumberOfZones(); zone++) {
                 sj.add(buildZoneSourceValue(sources[zone]));
             }
             return buildAsciiResponse(KEY_INPUT, sj.toString());
@@ -1240,7 +1240,7 @@ public class RotelSimuConnector extends RotelConnector {
     private String buildZonePowerResponse(int numZone) {
         String zone;
         if (numZone == 2) {
-            zone = model.getNbZones() > 2 ? "ZONE2" : "ZONE";
+            zone = model.getNumberOfZones() > 2 ? "ZONE2" : "ZONE";
         } else {
             zone = String.format("ZONE%d", numZone);
         }
@@ -1279,7 +1279,7 @@ public class RotelSimuConnector extends RotelConnector {
     private String buildZoneVolumeResponse(int numZone) {
         String zone;
         if (numZone == 2) {
-            zone = model.getNbZones() > 2 ? "ZONE2" : "ZONE";
+            zone = model.getNumberOfZones() > 2 ? "ZONE2" : "ZONE";
         } else {
             zone = String.format("ZONE%d", numZone);
         }

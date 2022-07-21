@@ -293,5 +293,5 @@ public class RotelBindingConstants {
     public static final String PAUSE = "pause";
     public static final String STOP = "stop";
 
-    public static final int MAX_NB_ZONES = 4;
+    public static final int MAX_NUMBER_OF_ZONES = 4;
 }

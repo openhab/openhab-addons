@@ -130,8 +130,8 @@ public class RotelAsciiV2ProtocolHandler extends RotelAbstractAsciiProtocolHandl
                 case KEY_FREQ:
                     String[] splitValues = value.split(",");
                     int nb = splitValues.length;
-                    if (nb > MAX_NB_ZONES) {
-                        nb = MAX_NB_ZONES;
+                    if (nb > MAX_NUMBER_OF_ZONES) {
+                        nb = MAX_NUMBER_OF_ZONES;
                     }
                     for (int i = 1; i <= nb; i++) {
                         String val = KEY_INPUT.equals(key) ? String.format("z%d:input_%s", i, splitValues[i - 1])
