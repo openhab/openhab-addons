@@ -127,7 +127,7 @@ final class ChannelActuatorPosition extends ChannelHandlerTemplate {
             }
 
             VeluxProduct newProduct = bcp.getProduct();
-            if (STATES_TO_PROCESS.contains(newProduct.getActuatorState())) {
+            if (STATES_TO_PROCESS.contains(newProduct.getProductState())) {
                 ProductBridgeIndex productBridgeIndex = newProduct.getBridgeProductIndex();
                 VeluxExistingProducts existingProducts = thisBridgeHandler.existingProducts();
                 VeluxProduct existingProduct = existingProducts.get(productBridgeIndex);

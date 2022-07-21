@@ -137,7 +137,7 @@ public class TestNotificationsAndDatabase {
         assertNull(product.getFunctionalParameters());
         assertTrue(product.supportsVanePosition());
         assertTrue(product.isSomfyProduct());
-        assertEquals(ProductState.DONE, product.getActuatorState());
+        assertEquals(ProductState.DONE, product.getProductState());
 
         // check negative assertions
         assertNotEquals(VANE_POSITION_A, product.getVanePosition());
@@ -228,7 +228,7 @@ public class TestNotificationsAndDatabase {
         assertEquals(ACTUATOR_TYPE_SOMFY, product.getActuatorType());
         assertEquals(VANE_POSITION_A, product.getVanePosition());
         assertNotNull(product.getFunctionalParameters());
-        assertEquals(ProductState.DONE, product.getActuatorState());
+        assertEquals(ProductState.DONE, product.getProductState());
 
         // test updating the existing product in the database
         VeluxExistingProducts existingProducts = getExistingProducts();
@@ -259,7 +259,7 @@ public class TestNotificationsAndDatabase {
         assertEquals(ACTUATOR_TYPE_SOMFY, product.getActuatorType());
         assertEquals(VANE_POSITION_A, product.getVanePosition());
         assertNotNull(product.getFunctionalParameters());
-        assertEquals(ProductState.DONE, product.getActuatorState());
+        assertEquals(ProductState.DONE, product.getProductState());
     }
 
     /**
@@ -491,7 +491,7 @@ public class TestNotificationsAndDatabase {
         // check the resulting updater product state is 'executing' with the new values
         product = bcp.getProduct();
         product.setActuatorType(ACTUATOR_TYPE_SOMFY);
-        assertEquals(ProductState.EXECUTING, product.getActuatorState());
+        assertEquals(ProductState.EXECUTING, product.getProductState());
         assertEquals(targetMainPosition, product.getCurrentPosition());
         assertEquals(targetMainPosition, product.getTarget());
         assertEquals(targetMainPosition, product.getDisplayPosition());
@@ -518,7 +518,7 @@ public class TestNotificationsAndDatabase {
         product = bcp.getProduct();
         product.setActuatorType(ACTUATOR_TYPE_SOMFY);
 
-        assertEquals(ProductState.EXECUTING, product.getActuatorState());
+        assertEquals(ProductState.EXECUTING, product.getProductState());
         assertEquals(IGNORE_POSITION, product.getCurrentPosition());
         assertEquals(IGNORE_POSITION, product.getTarget());
         assertEquals(UNKNOWN_POSITION, product.getDisplayPosition());
@@ -540,7 +540,7 @@ public class TestNotificationsAndDatabase {
                 ProductState.DONE, ProductState.UNKNOWN, ProductState.MANUAL };
         for (int i = 0; i < inputStates.length; i++) {
             product.setState(inputStates[i]);
-            assertEquals(expected[i], product.getActuatorState());
+            assertEquals(expected[i], product.getProductState());
         }
     }
 
@@ -662,7 +662,7 @@ public class TestNotificationsAndDatabase {
         ProductBridgeIndex index = new ProductBridgeIndex(PRODUCT_INDEX_A);
         VeluxProduct product = existingProducts.get(index).clone();
 
-        assertEquals(ProductState.DONE, product.getActuatorState());
+        assertEquals(ProductState.DONE, product.getProductState());
 
         // state = done
         assertEquals(MAIN_POSITION_A, product.getDisplayPosition());

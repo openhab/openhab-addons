@@ -416,7 +416,7 @@ public class VeluxProduct {
      *
      * @return state cast to an ActuatorState enum.
      */
-    public ProductState getActuatorState() {
+    public ProductState getProductState() {
         return ProductState.of(state);
     }
 
@@ -503,7 +503,7 @@ public class VeluxProduct {
      * @return The display position of the actuator
      */
     public int getDisplayPosition() {
-        switch (getActuatorState()) {
+        switch (getProductState()) {
             case EXECUTING:
                 if (VeluxProductPosition.isValid(targetPosition)) {
                     return targetPosition;
@@ -615,7 +615,7 @@ public class VeluxProduct {
      * @return the display position.
      */
     public int getVaneDisplayPosition() {
-        switch (getActuatorState()) {
+        switch (getProductState()) {
             case ERROR:
             case UNKNOWN:
             case MANUAL:
