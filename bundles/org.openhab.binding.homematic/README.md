@@ -669,7 +669,6 @@ Var_1.sendCommand(RefreshType.REFRESH)
 :::
 
 ::: tab DSL
-
 Var_1.sendCommand(REFRESH)
 :::
 
