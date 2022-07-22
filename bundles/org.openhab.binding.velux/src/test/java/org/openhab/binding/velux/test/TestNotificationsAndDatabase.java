@@ -877,4 +877,31 @@ public class TestNotificationsAndDatabase {
         ok = bcp.setNodeIdAndParameters(PRODUCT_INDEX_A, null, null);
         assertFalse(ok);
     }
+
+    /**
+     * Test SCgetProductStatus exceptional error state processing.
+     */
+    @Test
+    @Order(21)
+    public void testErrorStateMapping() {
+        // initialise the test parameters
+        final String packet = "0F A3 01 06 01 00 01 02 00 9A 36 03 00 00 00 00 00 00 00 00 00 00 00 00 00"
+                + " 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00"
+                + " 00 00 00 00 00";
+        final Command command = VeluxKLFAPI.Command.GW_STATUS_REQUEST_NTF;
+
+        // initialise the BCP
+        SCgetProductStatus bcp = new SCgetProductStatus();
+        bcp.setProductId(PRODUCT_INDEX_A);
+
+        // set the packet response
+        bcp.setResponse(command.getShort(), toByteArray(packet), false);
+
+        // check BCP status
+        assertTrue(bcp.isCommunicationSuccessful());
+        assertTrue(bcp.isCommunicationFinished());
+
+        // check the product state
+        assertEquals(ProductState.UNKNOWN.value, bcp.getProduct().getState());
+    }
 }
