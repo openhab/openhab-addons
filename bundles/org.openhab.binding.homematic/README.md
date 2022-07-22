@@ -663,13 +663,17 @@ In scripts:
 :::: tabs
 
 ::: tab JavaScript
+``` javascript 
 import org.openhab.core.types.RefreshType
 ...
 Var_1.sendCommand(RefreshType.REFRESH)
+``` 
 :::
 
 ::: tab DSL
+``` php 
 Var_1.sendCommand(REFRESH)
+```
 :::
 
 ::::
