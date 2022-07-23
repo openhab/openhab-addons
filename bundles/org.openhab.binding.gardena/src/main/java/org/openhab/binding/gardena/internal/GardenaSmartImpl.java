@@ -330,7 +330,8 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
         }
         httpClient.destroy();
         webSocketClient.destroy();
-        List<LocationDataItem> locationData = locationsResponse.data;
+        @Nullable
+        List<?> locationData = locationsResponse.data;
         if (locationData != null) {
             locationData.clear();
         }
