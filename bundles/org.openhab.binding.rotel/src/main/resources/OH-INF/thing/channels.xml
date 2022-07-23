@@ -128,6 +128,29 @@
 		</channels>
 	</channel-group-type>
 
+	<channel-group-type id="allZones">
+		<label>@text/channel-group.allZones.label</label>
+		<description>@text/channel-group.allZones.description</description>
+		<channels>
+			<channel id="power" typeId="system.power"/>
+			<channel id="brightness" typeId="brightness"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="zone">
+		<label>@text/channel-group.zone.label</label>
+		<description>@text/channel-group.zone.description</description>
+		<channels>
+			<channel id="source" typeId="source"/>
+			<channel id="volume" typeId="system.volume"/>
+			<channel id="mute" typeId="system.mute"/>
+			<channel id="bass" typeId="bass"/>
+			<channel id="treble" typeId="treble"/>
+			<channel id="balance" typeId="balance"/>
+			<channel id="frequency" typeId="frequency"/>
+		</channels>
+	</channel-group-type>
+
 	<channel-type id="source">
 		<item-type>String</item-type>
 		<label>Source Input</label>
