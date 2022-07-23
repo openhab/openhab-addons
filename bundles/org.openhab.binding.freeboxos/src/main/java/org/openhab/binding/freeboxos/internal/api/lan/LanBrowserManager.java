@@ -81,7 +81,7 @@ public class LanBrowserManager extends ListableRest<LanInterface, LanInterfaceRe
 
     public void wakeOnLan(String host) throws FreeboxException {
         WakeOnLineData wol = new WakeOnLineData(host);
-        // TODO: default interface should be dynamically resolved
+        // TODO: default interface could be dynamically resolved
         post(wol, WOL_SUB_PATH, DEFAULT_INTF, host);
     }
 }
