@@ -172,6 +172,8 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
             if (reInitializeTask != null) {
                 reInitializeTask.cancel(false);
             }
+            // treat manual dispose() as an error, since subsequent reinitialization uses an API call
+            this.lastErrorTime = LocalDateTime.now();
             this.reInitializationTask = null;
             this.reInitializationCausedBy429 = false;
         }
