@@ -136,6 +136,8 @@ public class RotelBindingConstants {
     public static final String CHANNEL_TREBLE = "treble";
     public static final String CHANNEL_PLAY_CONTROL = "playControl";
     public static final String CHANNEL_TRACK = "track";
+    public static final String CHANNEL_RANDOM = "random";
+    public static final String CHANNEL_REPEAT = "repeat";
     public static final String CHANNEL_FREQUENCY = "frequency";
     public static final String CHANNEL_LINE1 = "mainZone#line1";
     public static final String CHANNEL_LINE2 = "mainZone#line2";
@@ -259,6 +261,8 @@ public class RotelBindingConstants {
     public static final String KEY1_PLAY_STATUS = "play_status";
     public static final String KEY2_PLAY_STATUS = "status";
     public static final String KEY_TRACK = "track";
+    public static final String KEY_RANDOM = "rnd";
+    public static final String KEY_REPEAT = "rpt";
     public static final String KEY_DIMMER = "dimmer";
     public static final String KEY_FREQ = "freq";
     public static final String KEY_FREQ_ZONE1 = "freq_zone1";
@@ -306,6 +310,8 @@ public class RotelBindingConstants {
     public static final String PLAY = "play";
     public static final String PAUSE = "pause";
     public static final String STOP = "stop";
+    public static final String TRACK = "track";
+    public static final String DISC = "disc";
 
     public static final int MAX_NUMBER_OF_ZONES = 4;
 }

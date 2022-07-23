@@ -28,6 +28,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.rotel.internal.RotelException;
 import org.openhab.binding.rotel.internal.RotelModel;
 import org.openhab.binding.rotel.internal.RotelPlayStatus;
+import org.openhab.binding.rotel.internal.RotelRepeatMode;
 import org.openhab.binding.rotel.internal.protocol.RotelAbstractProtocolHandler;
 import org.openhab.binding.rotel.internal.protocol.RotelProtocol;
 import org.openhab.binding.rotel.internal.protocol.hex.RotelHexProtocolHandler;
@@ -71,6 +72,8 @@ public class RotelSimuConnector extends RotelConnector {
     private boolean speakerB = false;
     private RotelPlayStatus playStatus = RotelPlayStatus.STOPPED;
     private int track = 1;
+    private boolean randomMode;
+    private RotelRepeatMode repeatMode = RotelRepeatMode.OFF;
     private boolean selectingRecord;
     private int showZone;
     private int dimmer;
@@ -780,6 +783,30 @@ public class RotelSimuConnector extends RotelConnector {
                 case TRACK:
                     textAscii = buildTrackAsciiResponse();
                     break;
+                case RANDOM_TOGGLE:
+                    randomMode = !randomMode;
+                    textAscii = buildRandomModeAsciiResponse();
+                    break;
+                case RANDOM_MODE:
+                    textAscii = buildRandomModeAsciiResponse();
+                    break;
+                case REPEAT_TOGGLE:
+                    switch (repeatMode) {
+                        case TRACK:
+                            repeatMode = RotelRepeatMode.DISC;
+                            break;
+                        case DISC:
+                            repeatMode = RotelRepeatMode.OFF;
+                            break;
+                        case OFF:
+                            repeatMode = RotelRepeatMode.TRACK;
+                            break;
+                    }
+                    textAscii = buildRepeatModeAsciiResponse();
+                    break;
+                case REPEAT_MODE:
+                    textAscii = buildRepeatModeAsciiResponse();
+                    break;
                 case SOURCE_MULTI_INPUT:
                     multiinput = !multiinput;
                     text = "MULTI IN " + (multiinput ? "ON" : "OFF");
@@ -1172,6 +1199,26 @@ public class RotelSimuConnector extends RotelConnector {
 
     private String buildTrackAsciiResponse() {
         return buildAsciiResponse(KEY_TRACK, String.format("%03d", track));
+    }
+
+    private String buildRandomModeAsciiResponse() {
+        return buildAsciiResponse(KEY_RANDOM, randomMode);
+    }
+
+    private String buildRepeatModeAsciiResponse() {
+        String mode = "";
+        switch (repeatMode) {
+            case TRACK:
+                mode = TRACK;
+                break;
+            case DISC:
+                mode = DISC;
+                break;
+            case OFF:
+                mode = MSG_VALUE_OFF;
+                break;
+        }
+        return buildAsciiResponse(KEY_REPEAT, mode);
     }
 
     private String buildSourceAsciiResponse() {

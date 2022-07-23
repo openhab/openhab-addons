@@ -205,6 +205,26 @@
 		<state pattern="%d" readOnly="true"/>
 	</channel-type>
 
+	<channel-type id="random" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Random Mode</label>
+		<description>The current random mode</description>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="repeat" advanced="true">
+		<item-type>String</item-type>
+		<label>Repeat Mode</label>
+		<description>The current repeat mode</description>
+		<state readOnly="false" pattern="%s">
+			<options>
+				<option value="TRACK">Track</option>
+				<option value="DISC">Disc</option>
+				<option value="OFF">Off</option>
+			</options>
+		</state>
+	</channel-type>
+
 	<channel-type id="frequency" advanced="true">
 		<item-type>Number</item-type>
 		<label>Current Frequency</label>

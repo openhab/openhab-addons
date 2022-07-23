@@ -13,6 +13,8 @@
 			<channel id="power" typeId="system.power"/>
 			<channel id="playControl" typeId="system.media-control"/>
 			<channel id="track" typeId="track"/>
+			<channel id="random" typeId="random"/>
+			<channel id="repeat" typeId="repeat"/>
 			<channel id="brightness" typeId="brightness"/>
 		</channels>
 
