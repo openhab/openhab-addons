@@ -331,22 +331,28 @@ public enum RotelModel {
     /**
      * Inform whether zone N commands are available
      *
-     * @param numZone the zone number, 1 for for main zone or zone 1 until 4 for zone 4
+     * @param numZone the zone number, 1 for for zone 1 until 4 for zone 4
      *
      * @return true if zone N commands are available
      */
     public boolean hasZoneCommands(int numZone) {
+        if (numZone < 1 || numZone > 4) {
+            throw new IllegalArgumentException("numZone must be in range 1-4");
+        }
         return additionalCommands && (numZone == 1 || (numZone > 1 && nbAdditionalZones >= (numZone - 1)));
     }
 
     /**
      * Inform whether source control is available in a zone
      *
-     * @param numZone the zone number, 1 for main zone or zone 1 until 4 for zone 4
+     * @param numZone the zone number, 1 for zone 1 until 4 for zone 4
      *
      * @return true if source control is available
      */
     public boolean hasZoneSourceControl(int numZone) {
+        if (numZone < 1 || numZone > 4) {
+            throw new IllegalArgumentException("numZone must be in range 1-4");
+        }
         return hasSourceControl()
                 && ((numZone > 1 && nbAdditionalZones >= (numZone - 1)) || (numZone == 1 && additionalCommands));
     }
@@ -575,11 +581,14 @@ public enum RotelModel {
     /**
      * Get the list of available {@link RotelSource} in a zone
      *
-     * @param numZone the zone number, 1 for main zone or zone 1 until 4 for zone 4
+     * @param numZone the zone number, 1 for zone 1 until 4 for zone 4
      *
      * @return the list of available {@link RotelSource} in the zone 2
      */
     public List<RotelSource> getZoneSources(int numZone) {
+        if (numZone < 1 || numZone > 4) {
+            throw new IllegalArgumentException("numZone must be in range 1-4");
+        }
         return hasZoneSourceControl(numZone) ? RotelSource.getSources(sourceCategory, numZone) : new ArrayList<>();
     }
 
@@ -622,13 +631,16 @@ public enum RotelModel {
      * Get the zone N source associated to a command
      *
      * @param command the command used to identify the zone N source
-     * @param numZone the zone number, 1 for main zone or zone 1 until 4 for zone 4
+     * @param numZone the zone number, 1 for zone 1 until 4 for zone 4
      *
      * @return the zone N source associated to the searched command
      *
      * @throws RotelException - If no zone N source is associated to the searched command
      */
     public RotelSource getZoneSourceFromCommand(RotelCommand command, int numZone) throws RotelException {
+        if (numZone < 1 || numZone > 4) {
+            throw new IllegalArgumentException("numZone must be in range 1-4");
+        }
         return RotelSource.getFromCommand(sourceCategory, command, numZone);
     }
 

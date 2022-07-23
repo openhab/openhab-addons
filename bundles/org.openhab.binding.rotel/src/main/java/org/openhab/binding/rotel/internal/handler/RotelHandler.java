@@ -561,8 +561,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                         if (numZone == 0 || model.hasZoneCommands(numZone)) {
                             handlePowerCmd(channel, command, getPowerOnCommand(numZone), getPowerOffCommand(numZone));
                         } else if (numZone == 2 && model.getNumberOfZones() == 2) {
-                            Boolean powerZone = powers[numZone];
-                            if (isPowerOn() || (powerZone != null && powerZone.booleanValue())) {
+                            if (isPowerOn() || isPowerOn(numZone)) {
                                 selectZone(2, model.getZoneSelectCmd());
                             }
                             sendCommand(RotelCommand.ZONE_SELECT);
@@ -580,13 +579,10 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                     case CHANNEL_ZONE2_SOURCE:
                     case CHANNEL_ZONE3_SOURCE:
                     case CHANNEL_ZONE4_SOURCE:
-                        if (numZone == 0 && !isPowerOn()) {
+                        if (!isPowerOn(numZone)) {
                             success = false;
-                            logger.debug("Command {} from channel {} ignored: device in standby", command, channel);
-                        } else if (numZone > 0 && !isZonePowerOn(numZone)) {
-                            success = false;
-                            logger.debug("Command {} from channel {} ignored: zone {} in standby", command, channel,
-                                    numZone);
+                            logger.debug("Command {} from channel {} ignored: {} in standby", command, channel,
+                                    numZone == 0 ? "device" : "zone " + numZone);
                         } else if (numZone == 0 || model.hasZoneCommands(numZone)) {
                             src = model.getSourceFromName(command.toString());
                             if (numZone == 0) {
@@ -686,13 +682,10 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                     case CHANNEL_ZONE2_VOLUME_UP_DOWN:
                     case CHANNEL_ZONE3_VOLUME:
                     case CHANNEL_ZONE4_VOLUME:
-                        if (numZone == 0 && !isPowerOn()) {
-                            success = false;
-                            logger.debug("Command {} from channel {} ignored: device in standby", command, channel);
-                        } else if (numZone > 0 && !isZonePowerOn(numZone)) {
+                        if (!isPowerOn(numZone)) {
                             success = false;
                             logger.debug("Command {} from channel {} ignored: zone {} in standby", command, channel,
-                                    numZone);
+                                    numZone == 0 ? "device" : "zone " + numZone);
                         } else if (fixedVolumeZones[numZone]) {
                             success = false;
                             logger.debug("Command {} from channel {} ignored: fixed volume", command, channel);
@@ -718,13 +711,10 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                     case CHANNEL_ZONE2_MUTE:
                     case CHANNEL_ZONE3_MUTE:
                     case CHANNEL_ZONE4_MUTE:
-                        if (numZone == 0 && !isPowerOn()) {
-                            success = false;
-                            logger.debug("Command {} from channel {} ignored: device in standby", command, channel);
-                        } else if (numZone > 0 && !isZonePowerOn(numZone)) {
+                        if (!isPowerOn(numZone)) {
                             success = false;
                             logger.debug("Command {} from channel {} ignored: zone {} in standby", command, channel,
-                                    numZone);
+                                    numZone == 0 ? "device" : "zone " + numZone);
                         } else if (model.hasVolumeControl() && (numZone == 0 || model.hasZoneCommands(numZone))) {
                             handleMuteCmd(numZone == 0 && protocol == RotelProtocol.HEX, channel, command,
                                     getMuteOnCommand(numZone), getMuteOffCommand(numZone),
@@ -740,13 +730,10 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                     case CHANNEL_ZONE2_BASS:
                     case CHANNEL_ZONE3_BASS:
                     case CHANNEL_ZONE4_BASS:
-                        if (numZone == 0 && !isPowerOn()) {
-                            success = false;
-                            logger.debug("Command {} from channel {} ignored: device in standby", command, channel);
-                        } else if (numZone > 0 && !isZonePowerOn(numZone)) {
+                        if (!isPowerOn(numZone)) {
                             success = false;
                             logger.debug("Command {} from channel {} ignored: zone {} in standby", command, channel,
-                                    numZone);
+                                    numZone == 0 ? "device" : "zone " + numZone);
                         } else if (tcbypass) {
                             success = false;
                             logger.debug("Command {} from channel {} ignored: tone control bypass is ON", command,
@@ -765,13 +752,10 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                     case CHANNEL_ZONE2_TREBLE:
                     case CHANNEL_ZONE3_TREBLE:
                     case CHANNEL_ZONE4_TREBLE:
-                        if (numZone == 0 && !isPowerOn()) {
-                            success = false;
-                            logger.debug("Command {} from channel {} ignored: device in standby", command, channel);
-                        } else if (numZone > 0 && !isZonePowerOn(numZone)) {
+                        if (!isPowerOn(numZone)) {
                             success = false;
                             logger.debug("Command {} from channel {} ignored: zone {} in standby", command, channel,
-                                    numZone);
+                                    numZone == 0 ? "device" : "zone " + numZone);
                         } else if (tcbypass) {
                             success = false;
                             logger.debug("Command {} from channel {} ignored: tone control bypass is ON", command,
@@ -844,13 +828,10 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                     case CHANNEL_ZONE2_BALANCE:
                     case CHANNEL_ZONE3_BALANCE:
                     case CHANNEL_ZONE4_BALANCE:
-                        if (numZone == 0 && !isPowerOn()) {
-                            success = false;
-                            logger.debug("Command {} from channel {} ignored: device in standby", command, channel);
-                        } else if (numZone > 0 && !isZonePowerOn(numZone)) {
+                        if (!isPowerOn(numZone)) {
                             success = false;
                             logger.debug("Command {} from channel {} ignored: zone {} in standby", command, channel,
-                                    numZone);
+                                    numZone == 0 ? "device" : "zone " + numZone);
                         } else if (!model.hasBalanceControl() || protocol == RotelProtocol.HEX) {
                             success = false;
                             logger.debug("Command {} from channel {} failed: unavailable feature", command, channel);
@@ -2063,13 +2044,13 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
             case CHANNEL_ZONE2_SOURCE:
             case CHANNEL_ZONE3_SOURCE:
             case CHANNEL_ZONE4_SOURCE:
-                localSource = this.sources[numZone];
-                if (((numZone == 0 && isPowerOn()) || (numZone > 0 && isZonePowerOn(numZone))) && localSource != null) {
+                localSource = sources[numZone];
+                if (isPowerOn(numZone) && localSource != null) {
                     state = new StringType(localSource.getName());
                 }
                 break;
             case CHANNEL_MAIN_RECORD_SOURCE:
-                localSource = this.recordSource;
+                localSource = recordSource;
                 if (isPowerOn() && localSource != null) {
                     state = new StringType(localSource.getName());
                 }
@@ -2086,8 +2067,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
             case CHANNEL_ZONE2_VOLUME:
             case CHANNEL_ZONE3_VOLUME:
             case CHANNEL_ZONE4_VOLUME:
-                if (((numZone == 0 && isPowerOn()) || (numZone > 0 && isZonePowerOn(numZone)))
-                        && !fixedVolumeZones[numZone]) {
+                if (isPowerOn(numZone) && !fixedVolumeZones[numZone]) {
                     long volumePct = Math
                             .round((double) (volumes[numZone] - minVolume) / (double) (maxVolume - minVolume) * 100.0);
                     state = new PercentType(BigDecimal.valueOf(volumePct));
@@ -2095,8 +2075,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                 break;
             case CHANNEL_MAIN_VOLUME_UP_DOWN:
             case CHANNEL_ZONE2_VOLUME_UP_DOWN:
-                if (((numZone == 0 && isPowerOn()) || (numZone > 0 && isZonePowerOn(numZone)))
-                        && !fixedVolumeZones[numZone]) {
+                if (isPowerOn(numZone) && !fixedVolumeZones[numZone]) {
                     state = new DecimalType(volumes[numZone]);
                 }
                 break;
@@ -2106,7 +2085,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
             case CHANNEL_ZONE2_MUTE:
             case CHANNEL_ZONE3_MUTE:
             case CHANNEL_ZONE4_MUTE:
-                if ((numZone == 0 && isPowerOn()) || (numZone > 0 && isZonePowerOn(numZone))) {
+                if (isPowerOn(numZone)) {
                     state = OnOffType.from(mutes[numZone]);
                 }
                 break;
@@ -2116,7 +2095,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
             case CHANNEL_ZONE2_BASS:
             case CHANNEL_ZONE3_BASS:
             case CHANNEL_ZONE4_BASS:
-                if ((numZone == 0 && isPowerOn()) || (numZone > 0 && isZonePowerOn(numZone))) {
+                if (isPowerOn(numZone)) {
                     state = new DecimalType(basses[numZone]);
                 }
                 break;
@@ -2126,12 +2105,12 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
             case CHANNEL_ZONE2_TREBLE:
             case CHANNEL_ZONE3_TREBLE:
             case CHANNEL_ZONE4_TREBLE:
-                if ((numZone == 0 && isPowerOn()) || (numZone > 0 && isZonePowerOn(numZone))) {
+                if (isPowerOn(numZone)) {
                     state = new DecimalType(trebles[numZone]);
                 }
                 break;
             case CHANNEL_TRACK:
-                if (track > 0 && isPowerOn()) {
+                if (isPowerOn() && track > 0) {
                     state = new DecimalType(track);
                 }
                 break;
@@ -2153,8 +2132,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
             case CHANNEL_ZONE2_FREQUENCY:
             case CHANNEL_ZONE3_FREQUENCY:
             case CHANNEL_ZONE4_FREQUENCY:
-                if (((numZone == 0 && isPowerOn()) || (numZone > 0 && isZonePowerOn(numZone)))
-                        && frequencies[numZone] > 0.0) {
+                if (isPowerOn(numZone) && frequencies[numZone] > 0.0) {
                     state = new DecimalType(frequencies[numZone]);
                 }
                 break;
@@ -2182,7 +2160,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
             case CHANNEL_ZONE2_BALANCE:
             case CHANNEL_ZONE3_BALANCE:
             case CHANNEL_ZONE4_BALANCE:
-                if ((numZone == 0 && isPowerOn()) || (numZone > 0 && isZonePowerOn(numZone))) {
+                if (isPowerOn(numZone)) {
                     state = new DecimalType(balances[numZone]);
                 }
                 break;
@@ -2203,28 +2181,37 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
     }
 
     /**
-     * Inform about the main zone power state
+     * Inform about the device / main zone power state
      *
-     * @return true if main zone power state is known and known as ON
+     * @return true if device / main zone power state is known and known as ON
      */
     private boolean isPowerOn() {
-        Boolean power = powers[0];
-        return power != null && power.booleanValue();
-    }
-
-    private boolean isZonePowerOn(int numZone) {
-        Boolean powerZone = powers[numZone];
-        return (powerControlPerZone && powerZone != null && powerZone.booleanValue())
-                || (!powerControlPerZone && isPowerOn());
+        return isPowerOn(0);
     }
 
     /**
-     * Get the command to be used for main zone POWER ON
+     * Inform about the power state
+     *
+     * @param numZone the zone number (1-4) or 0 for the device or main zone
+     *
+     * @return true if power state is known and known as ON
+     */
+    private boolean isPowerOn(int numZone) {
+        Boolean power = powers[numZone];
+        return (numZone > 0 && !powerControlPerZone) ? isPowerOn(0) : power != null && power.booleanValue();
+    }
+
+    /**
+     * Get the command to be used for POWER ON
+     *
+     * @param numZone the zone number (2-4) or 0 for the device or main zone
      *
      * @return the command
      */
     private RotelCommand getPowerOnCommand(int numZone) {
         switch (numZone) {
+            case 0:
+                return model.hasOtherThanPrimaryCommands() ? RotelCommand.MAIN_ZONE_POWER_ON : RotelCommand.POWER_ON;
             case 2:
                 return RotelCommand.ZONE2_POWER_ON;
             case 3:
@@ -2232,17 +2219,21 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
             case 4:
                 return RotelCommand.ZONE4_POWER_ON;
             default:
-                return model.hasOtherThanPrimaryCommands() ? RotelCommand.MAIN_ZONE_POWER_ON : RotelCommand.POWER_ON;
+                throw new IllegalArgumentException("No power ON command defined for zone " + numZone);
         }
     }
 
     /**
-     * Get the command to be used for main zone POWER OFF
+     * Get the command to be used for POWER OFF
+     *
+     * @param numZone the zone number (2-4) or 0 for the device or main zone
      *
      * @return the command
      */
     private RotelCommand getPowerOffCommand(int numZone) {
         switch (numZone) {
+            case 1:
+                return model.hasOtherThanPrimaryCommands() ? RotelCommand.MAIN_ZONE_POWER_OFF : RotelCommand.POWER_OFF;
             case 2:
                 return RotelCommand.ZONE2_POWER_OFF;
             case 3:
@@ -2250,17 +2241,21 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
             case 4:
                 return RotelCommand.ZONE4_POWER_OFF;
             default:
-                return model.hasOtherThanPrimaryCommands() ? RotelCommand.MAIN_ZONE_POWER_OFF : RotelCommand.POWER_OFF;
+                throw new IllegalArgumentException("No power OFF command defined for zone " + numZone);
         }
     }
 
     /**
-     * Get the command to be used for main zone VOLUME UP
+     * Get the command to be used for VOLUME UP
+     *
+     * @param numZone the zone number (1-4) or 0 for the device or main zone
      *
      * @return the command
      */
     private RotelCommand getVolumeUpCommand(int numZone) {
         switch (numZone) {
+            case 0:
+                return model.hasOtherThanPrimaryCommands() ? RotelCommand.MAIN_ZONE_VOLUME_UP : RotelCommand.VOLUME_UP;
             case 1:
                 return RotelCommand.ZONE1_VOLUME_UP;
             case 2:
@@ -2270,17 +2265,22 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
             case 4:
                 return RotelCommand.ZONE4_VOLUME_UP;
             default:
-                return model.hasOtherThanPrimaryCommands() ? RotelCommand.MAIN_ZONE_VOLUME_UP : RotelCommand.VOLUME_UP;
+                throw new IllegalArgumentException("No VOLUME UP command defined for zone " + numZone);
         }
     }
 
     /**
-     * Get the command to be used for main zone VOLUME DOWN
+     * Get the command to be used for VOLUME DOWN
+     *
+     * @param numZone the zone number (1-4) or 0 for the device or main zone
      *
      * @return the command
      */
     private RotelCommand getVolumeDownCommand(int numZone) {
         switch (numZone) {
+            case 0:
+                return model.hasOtherThanPrimaryCommands() ? RotelCommand.MAIN_ZONE_VOLUME_DOWN
+                        : RotelCommand.VOLUME_DOWN;
             case 1:
                 return RotelCommand.ZONE1_VOLUME_DOWN;
             case 2:
@@ -2290,13 +2290,21 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
             case 4:
                 return RotelCommand.ZONE4_VOLUME_DOWN;
             default:
-                return model.hasOtherThanPrimaryCommands() ? RotelCommand.MAIN_ZONE_VOLUME_DOWN
-                        : RotelCommand.VOLUME_DOWN;
+                throw new IllegalArgumentException("No VOLUME DOWN command defined for zone " + numZone);
         }
     }
 
+    /**
+     * Get the command to be used for VOLUME SET
+     *
+     * @param numZone the zone number (1-4) or 0 for the device
+     *
+     * @return the command
+     */
     private RotelCommand getVolumeSetCommand(int numZone) {
         switch (numZone) {
+            case 0:
+                return RotelCommand.VOLUME_SET;
             case 1:
                 return RotelCommand.ZONE1_VOLUME_SET;
             case 2:
@@ -2306,17 +2314,21 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
             case 4:
                 return RotelCommand.ZONE4_VOLUME_SET;
             default:
-                return RotelCommand.VOLUME_SET;
+                throw new IllegalArgumentException("No VOLUME SET command defined for zone " + numZone);
         }
     }
 
     /**
-     * Get the command to be used for main zone MUTE ON
+     * Get the command to be used for MUTE ON
+     *
+     * @param numZone the zone number (1-4) or 0 for the device or main zone
      *
      * @return the command
      */
     private RotelCommand getMuteOnCommand(int numZone) {
         switch (numZone) {
+            case 0:
+                return model.hasOtherThanPrimaryCommands() ? RotelCommand.MAIN_ZONE_MUTE_ON : RotelCommand.MUTE_ON;
             case 1:
                 return RotelCommand.ZONE1_MUTE_ON;
             case 2:
@@ -2326,17 +2338,21 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
             case 4:
                 return RotelCommand.ZONE4_MUTE_ON;
             default:
-                return model.hasOtherThanPrimaryCommands() ? RotelCommand.MAIN_ZONE_MUTE_ON : RotelCommand.MUTE_ON;
+                throw new IllegalArgumentException("No MUTE ON command defined for zone " + numZone);
         }
     }
 
     /**
-     * Get the command to be used for main zone MUTE OFF
+     * Get the command to be used for MUTE OFF
+     *
+     * @param numZone the zone number (1-4) or 0 for the device or main zone
      *
      * @return the command
      */
     private RotelCommand getMuteOffCommand(int numZone) {
         switch (numZone) {
+            case 0:
+                return model.hasOtherThanPrimaryCommands() ? RotelCommand.MAIN_ZONE_MUTE_OFF : RotelCommand.MUTE_OFF;
             case 1:
                 return RotelCommand.ZONE1_MUTE_OFF;
             case 2:
@@ -2346,17 +2362,22 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
             case 4:
                 return RotelCommand.ZONE4_MUTE_OFF;
             default:
-                return model.hasOtherThanPrimaryCommands() ? RotelCommand.MAIN_ZONE_MUTE_OFF : RotelCommand.MUTE_OFF;
+                throw new IllegalArgumentException("No MUTE OFF command defined for zone " + numZone);
         }
     }
 
     /**
-     * Get the command to be used for main zone MUTE TOGGLE
+     * Get the command to be used for MUTE TOGGLE
+     *
+     * @param numZone the zone number (1-4) or 0 for the device or main zone
      *
      * @return the command
      */
     private RotelCommand getMuteToggleCommand(int numZone) {
         switch (numZone) {
+            case 0:
+                return model.hasOtherThanPrimaryCommands() ? RotelCommand.MAIN_ZONE_MUTE_TOGGLE
+                        : RotelCommand.MUTE_TOGGLE;
             case 1:
                 return RotelCommand.ZONE1_MUTE_TOGGLE;
             case 2:
@@ -2366,13 +2387,21 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
             case 4:
                 return RotelCommand.ZONE4_MUTE_TOGGLE;
             default:
-                return model.hasOtherThanPrimaryCommands() ? RotelCommand.MAIN_ZONE_MUTE_TOGGLE
-                        : RotelCommand.MUTE_TOGGLE;
+                throw new IllegalArgumentException("No MUTE TOGGLE command defined for zone " + numZone);
         }
     }
 
+    /**
+     * Get the command to be used for BASS UP
+     *
+     * @param numZone the zone number (1-4) or 0 for the device
+     *
+     * @return the command
+     */
     private RotelCommand getBassUpCommand(int numZone) {
         switch (numZone) {
+            case 0:
+                return RotelCommand.BASS_UP;
             case 1:
                 return RotelCommand.ZONE1_BASS_UP;
             case 2:
@@ -2382,12 +2411,21 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
             case 4:
                 return RotelCommand.ZONE4_BASS_UP;
             default:
-                return RotelCommand.BASS_UP;
+                throw new IllegalArgumentException("No BASS UP command defined for zone " + numZone);
         }
     }
 
+    /**
+     * Get the command to be used for BASS DOWN
+     *
+     * @param numZone the zone number (1-4) or 0 for the device
+     *
+     * @return the command
+     */
     private RotelCommand getBassDownCommand(int numZone) {
         switch (numZone) {
+            case 0:
+                return RotelCommand.BASS_DOWN;
             case 1:
                 return RotelCommand.ZONE1_BASS_DOWN;
             case 2:
@@ -2397,12 +2435,21 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
             case 4:
                 return RotelCommand.ZONE4_BASS_DOWN;
             default:
-                return RotelCommand.BASS_DOWN;
+                throw new IllegalArgumentException("No BASS DOWN command defined for zone " + numZone);
         }
     }
 
+    /**
+     * Get the command to be used for BASS SET
+     *
+     * @param numZone the zone number (1-4) or 0 for the device
+     *
+     * @return the command
+     */
     private RotelCommand getBassSetCommand(int numZone) {
         switch (numZone) {
+            case 0:
+                return RotelCommand.BASS_SET;
             case 1:
                 return RotelCommand.ZONE1_BASS_SET;
             case 2:
@@ -2412,12 +2459,21 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
             case 4:
                 return RotelCommand.ZONE4_BASS_SET;
             default:
-                return RotelCommand.BASS_SET;
+                throw new IllegalArgumentException("No BASS SET command defined for zone " + numZone);
         }
     }
 
+    /**
+     * Get the command to be used for TREBLE UP
+     *
+     * @param numZone the zone number (1-4) or 0 for the device
+     *
+     * @return the command
+     */
     private RotelCommand getTrebleUpCommand(int numZone) {
         switch (numZone) {
+            case 0:
+                return RotelCommand.TREBLE_UP;
             case 1:
                 return RotelCommand.ZONE1_TREBLE_UP;
             case 2:
@@ -2427,12 +2483,21 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
             case 4:
                 return RotelCommand.ZONE4_TREBLE_UP;
             default:
-                return RotelCommand.TREBLE_UP;
+                throw new IllegalArgumentException("No TREBLE UP command defined for zone " + numZone);
         }
     }
 
+    /**
+     * Get the command to be used for TREBLE DOWN
+     *
+     * @param numZone the zone number (1-4) or 0 for the device
+     *
+     * @return the command
+     */
     private RotelCommand getTrebleDownCommand(int numZone) {
         switch (numZone) {
+            case 0:
+                return RotelCommand.TREBLE_DOWN;
             case 1:
                 return RotelCommand.ZONE1_TREBLE_DOWN;
             case 2:
@@ -2442,12 +2507,21 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
             case 4:
                 return RotelCommand.ZONE4_TREBLE_DOWN;
             default:
-                return RotelCommand.TREBLE_DOWN;
+                throw new IllegalArgumentException("No TREBLE DOWN command defined for zone " + numZone);
         }
     }
 
+    /**
+     * Get the command to be used for TREBLE SET
+     *
+     * @param numZone the zone number (1-4) or 0 for the device
+     *
+     * @return the command
+     */
     private RotelCommand getTrebleSetCommand(int numZone) {
         switch (numZone) {
+            case 0:
+                return RotelCommand.TREBLE_SET;
             case 1:
                 return RotelCommand.ZONE1_TREBLE_SET;
             case 2:
@@ -2457,12 +2531,21 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
             case 4:
                 return RotelCommand.ZONE4_TREBLE_SET;
             default:
-                return RotelCommand.TREBLE_SET;
+                throw new IllegalArgumentException("No TREBLE SET command defined for zone " + numZone);
         }
     }
 
+    /**
+     * Get the command to be used for BALANCE LEFT
+     *
+     * @param numZone the zone number (1-4) or 0 for the device
+     *
+     * @return the command
+     */
     private RotelCommand getBalanceLeftCommand(int numZone) {
         switch (numZone) {
+            case 0:
+                return RotelCommand.BALANCE_LEFT;
             case 1:
                 return RotelCommand.ZONE1_BALANCE_LEFT;
             case 2:
@@ -2472,12 +2555,21 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
             case 4:
                 return RotelCommand.ZONE4_BALANCE_LEFT;
             default:
-                return RotelCommand.BALANCE_LEFT;
+                throw new IllegalArgumentException("No BALANCE LEFT command defined for zone " + numZone);
         }
     }
 
+    /**
+     * Get the command to be used for BALANCE RIGHT
+     *
+     * @param numZone the zone number (1-4) or 0 for the device
+     *
+     * @return the command
+     */
     private RotelCommand getBalanceRightCommand(int numZone) {
         switch (numZone) {
+            case 0:
+                return RotelCommand.BALANCE_RIGHT;
             case 1:
                 return RotelCommand.ZONE1_BALANCE_RIGHT;
             case 2:
@@ -2487,12 +2579,21 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
             case 4:
                 return RotelCommand.ZONE4_BALANCE_RIGHT;
             default:
-                return RotelCommand.BALANCE_RIGHT;
+                throw new IllegalArgumentException("No BALANCE RIGHT command defined for zone " + numZone);
         }
     }
 
+    /**
+     * Get the command to be used for BALANCE SET
+     *
+     * @param numZone the zone number (1-4) or 0 for the device
+     *
+     * @return the command
+     */
     private RotelCommand getBalanceSetCommand(int numZone) {
         switch (numZone) {
+            case 0:
+                return RotelCommand.BALANCE_SET;
             case 1:
                 return RotelCommand.ZONE1_BALANCE_SET;
             case 2:
@@ -2502,7 +2603,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
             case 4:
                 return RotelCommand.ZONE4_BALANCE_SET;
             default:
-                return RotelCommand.BALANCE_SET;
+                throw new IllegalArgumentException("No BALANCE SET command defined for zone " + numZone);
         }
     }
 
