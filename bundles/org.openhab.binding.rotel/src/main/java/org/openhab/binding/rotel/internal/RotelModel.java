@@ -319,6 +319,10 @@ public enum RotelModel {
         return nbAdditionalZones + 1;
     }
 
+    private boolean isZoneAvailable(int numZone) {
+        return numZone >= 1 && numZone <= getNumberOfZones();
+    }
+
     /**
      * Inform whether other than primary commands are available
      *
@@ -339,7 +343,7 @@ public enum RotelModel {
         if (numZone < 1 || numZone > 4) {
             throw new IllegalArgumentException("numZone must be in range 1-4");
         }
-        return additionalCommands && (numZone == 1 || (numZone > 1 && nbAdditionalZones >= (numZone - 1)));
+        return additionalCommands && isZoneAvailable(numZone);
     }
 
     /**
@@ -353,8 +357,7 @@ public enum RotelModel {
         if (numZone < 1 || numZone > 4) {
             throw new IllegalArgumentException("numZone must be in range 1-4");
         }
-        return hasSourceControl()
-                && ((numZone > 1 && nbAdditionalZones >= (numZone - 1)) || (numZone == 1 && additionalCommands));
+        return hasSourceControl() && isZoneAvailable(numZone);
     }
 
     /**
