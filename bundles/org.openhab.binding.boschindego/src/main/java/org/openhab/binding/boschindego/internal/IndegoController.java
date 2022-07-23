@@ -643,8 +643,14 @@ public class IndegoController {
      * @throws IndegoException if any communication or parsing error occurred
      */
     public @Nullable Instant getPredictiveLastCutting() throws IndegoAuthenticationException, IndegoException {
-        return getRequestWithAuthentication(SERIAL_NUMBER_SUBPATH + this.getSerialNumber() + "/predictive/lastcutting",
-                PredictiveLastCuttingResponse.class).getLastCutting();
+        try {
+            return getRequestWithAuthentication(
+                    SERIAL_NUMBER_SUBPATH + this.getSerialNumber() + "/predictive/lastcutting",
+                    PredictiveLastCuttingResponse.class).getLastCutting();
+        } catch (IndegoInvalidResponseException e) {
+            logger.trace("Invalid response", e);
+            return null;
+        }
     }
 
     /**
@@ -655,8 +661,14 @@ public class IndegoController {
      * @throws IndegoException if any communication or parsing error occurred
      */
     public @Nullable Instant getPredictiveNextCutting() throws IndegoAuthenticationException, IndegoException {
-        return getRequestWithAuthentication(SERIAL_NUMBER_SUBPATH + this.getSerialNumber() + "/predictive/nextcutting",
-                PredictiveNextCuttingResponse.class).getNextCutting();
+        try {
+            return getRequestWithAuthentication(
+                    SERIAL_NUMBER_SUBPATH + this.getSerialNumber() + "/predictive/nextcutting",
+                    PredictiveNextCuttingResponse.class).getNextCutting();
+        } catch (IndegoInvalidResponseException e) {
+            logger.trace("Invalid response", e);
+            return null;
+        }
     }
 
     /**
