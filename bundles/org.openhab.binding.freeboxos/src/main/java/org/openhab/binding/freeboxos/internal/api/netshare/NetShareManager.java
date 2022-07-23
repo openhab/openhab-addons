@@ -42,6 +42,6 @@ public class NetShareManager extends RestManager {
         super(session, NETSHARE_SUB_PATH);
         session.addManager(SambaManager.class, new SambaManager(session, getUriBuilder()));
 
-        // TODO : on pourra ajouter la gestion des partages Mac OS
+        // TODO : Mac OS shares handling could later be added here
     }
 }
