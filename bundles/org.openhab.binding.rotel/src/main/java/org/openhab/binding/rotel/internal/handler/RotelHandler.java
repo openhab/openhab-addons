@@ -2232,7 +2232,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
      */
     private RotelCommand getPowerOffCommand(int numZone) {
         switch (numZone) {
-            case 1:
+            case 0:
                 return model.hasOtherThanPrimaryCommands() ? RotelCommand.MAIN_ZONE_POWER_OFF : RotelCommand.POWER_OFF;
             case 2:
                 return RotelCommand.ZONE2_POWER_OFF;
