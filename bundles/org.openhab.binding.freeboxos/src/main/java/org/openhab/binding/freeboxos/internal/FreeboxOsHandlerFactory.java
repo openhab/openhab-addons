@@ -72,27 +72,27 @@ public class FreeboxOsHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
-        // Validate bean
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-        if (thingTypeUID.equals(BRIDGE_TYPE_API)) {
+
+        if (BRIDGE_TYPE_API.equals(thingTypeUID)) {
             return new FreeboxOsHandler((Bridge) thing, new FreeboxOsSession(apiHandler));
-        } else if (thingTypeUID.equals(THING_TYPE_REVOLUTION)) {
+        } else if (THING_TYPE_REVOLUTION.equals(thingTypeUID)) {
             return new RevolutionHandler(thing, audioHTTPServer, ipAddress, bundleContext);
-        } else if (thingTypeUID.equals(THING_TYPE_DELTA)) {
+        } else if (THING_TYPE_DELTA.equals(thingTypeUID)) {
             return new ServerHandler(thing, audioHTTPServer, ipAddress, bundleContext);
-        } else if (thingTypeUID.equals(THING_TYPE_ACTIVE_PLAYER)) {
+        } else if (THING_TYPE_ACTIVE_PLAYER.equals(thingTypeUID)) {
             return new ActivePlayerHandler(thing, audioHTTPServer, ipAddress, bundleContext);
-        } else if (thingTypeUID.equals(THING_TYPE_PLAYER)) {
+        } else if (THING_TYPE_PLAYER.equals(thingTypeUID)) {
             return new PlayerHandler(thing, audioHTTPServer, ipAddress, bundleContext);
-        } else if (thingTypeUID.equals(THING_TYPE_HOST)) {
+        } else if (THING_TYPE_HOST.equals(thingTypeUID)) {
             return new HostHandler(thing);
-        } else if (thingTypeUID.equals(THING_TYPE_WIFI_HOST)) {
+        } else if (THING_TYPE_WIFI_HOST.equals(thingTypeUID)) {
             return new WifiHostHandler(thing);
-        } else if (thingTypeUID.equals(THING_TYPE_LANDLINE)) {
+        } else if (THING_TYPE_LANDLINE.equals(thingTypeUID)) {
             return new LandlineHandler(thing);
-        } else if (thingTypeUID.equals(THING_TYPE_VM)) {
+        } else if (THING_TYPE_VM.equals(thingTypeUID)) {
             return new VmHandler(thing);
-        } else if (thingTypeUID.equals(THING_TYPE_REPEATER)) {
+        } else if (THING_TYPE_REPEATER.equals(thingTypeUID)) {
             return new RepeaterHandler(thing);
         }
         return null;
