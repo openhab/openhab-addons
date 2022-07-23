@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.rotel.internal;
 
+import static org.openhab.binding.rotel.internal.RotelBindingConstants.MAX_NUMBER_OF_ZONES;
 import static org.openhab.binding.rotel.internal.communication.RotelCommand.*;
 import static org.openhab.binding.rotel.internal.protocol.ascii.RotelAbstractAsciiProtocolHandler.*;
 
@@ -340,8 +341,8 @@ public enum RotelModel {
      * @return true if zone N commands are available
      */
     public boolean hasZoneCommands(int numZone) {
-        if (numZone < 1 || numZone > 4) {
-            throw new IllegalArgumentException("numZone must be in range 1-4");
+        if (numZone < 1 || numZone > MAX_NUMBER_OF_ZONES) {
+            throw new IllegalArgumentException("numZone must be in range 1-" + MAX_NUMBER_OF_ZONES);
         }
         return additionalCommands && isZoneAvailable(numZone);
     }
@@ -354,8 +355,8 @@ public enum RotelModel {
      * @return true if source control is available
      */
     public boolean hasZoneSourceControl(int numZone) {
-        if (numZone < 1 || numZone > 4) {
-            throw new IllegalArgumentException("numZone must be in range 1-4");
+        if (numZone < 1 || numZone > MAX_NUMBER_OF_ZONES) {
+            throw new IllegalArgumentException("numZone must be in range 1-" + MAX_NUMBER_OF_ZONES);
         }
         return hasSourceControl() && isZoneAvailable(numZone);
     }
@@ -589,8 +590,8 @@ public enum RotelModel {
      * @return the list of available {@link RotelSource} in the zone 2
      */
     public List<RotelSource> getZoneSources(int numZone) {
-        if (numZone < 1 || numZone > 4) {
-            throw new IllegalArgumentException("numZone must be in range 1-4");
+        if (numZone < 1 || numZone > MAX_NUMBER_OF_ZONES) {
+            throw new IllegalArgumentException("numZone must be in range 1-" + MAX_NUMBER_OF_ZONES);
         }
         return hasZoneSourceControl(numZone) ? RotelSource.getSources(sourceCategory, numZone) : new ArrayList<>();
     }
@@ -641,8 +642,8 @@ public enum RotelModel {
      * @throws RotelException - If no zone N source is associated to the searched command
      */
     public RotelSource getZoneSourceFromCommand(RotelCommand command, int numZone) throws RotelException {
-        if (numZone < 1 || numZone > 4) {
-            throw new IllegalArgumentException("numZone must be in range 1-4");
+        if (numZone < 1 || numZone > MAX_NUMBER_OF_ZONES) {
+            throw new IllegalArgumentException("numZone must be in range 1-" + MAX_NUMBER_OF_ZONES);
         }
         return RotelSource.getFromCommand(sourceCategory, command, numZone);
     }

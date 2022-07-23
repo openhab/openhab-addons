@@ -2197,6 +2197,9 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
      * @return true if power state is known and known as ON
      */
     private boolean isPowerOn(int numZone) {
+        if (numZone < 0 || numZone > MAX_NUMBER_OF_ZONES) {
+            throw new IllegalArgumentException("numZone must be in range 0-" + MAX_NUMBER_OF_ZONES);
+        }
         Boolean power = powers[numZone];
         return (numZone > 0 && !powerControlPerZone) ? isPowerOn(0) : power != null && power.booleanValue();
     }
