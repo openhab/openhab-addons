@@ -73,22 +73,24 @@ public class HandlerTemperatureSensor extends HandlerBase {
 
     @Override
     public void updateChannels(String interfaceName, List<JsonObject> stateList, UpdateChannelResult result) {
+        QuantityType<Temperature> temperatureValue = null;
         for (JsonObject state : stateList) {
-            QuantityType<Temperature> temperatureValue = null;
             logger.debug("Updating {} with state: {}", interfaceName, state.toString());
             if (TEMPERATURE.propertyName.equals(state.get("name").getAsString())) {
                 JsonObject value = state.get("value").getAsJsonObject();
                 // For groups take the first
-                float temperature = value.get("value").getAsFloat();
-                String scale = value.get("scale").getAsString();
-                if ("CELSIUS".equals(scale)) {
-                    temperatureValue = new QuantityType<Temperature>(temperature, SIUnits.CELSIUS);
-                } else {
-                    temperatureValue = new QuantityType<Temperature>(temperature, ImperialUnits.FAHRENHEIT);
+                if (temperatureValue == null) {
+                    float temperature = value.get("value").getAsFloat();
+                    String scale = value.get("scale").getAsString();
+                    if ("CELSIUS".equals(scale)) {
+                        temperatureValue = new QuantityType<Temperature>(temperature, SIUnits.CELSIUS);
+                    } else {
+                        temperatureValue = new QuantityType<Temperature>(temperature, ImperialUnits.FAHRENHEIT);
+                    }
                 }
-                updateState(TEMPERATURE.channelId, temperatureValue == null ? UnDefType.UNDEF : temperatureValue);
             }
         }
+        updateState(TEMPERATURE.channelId, temperatureValue == null ? UnDefType.UNDEF : temperatureValue);
     }
 
     @Override

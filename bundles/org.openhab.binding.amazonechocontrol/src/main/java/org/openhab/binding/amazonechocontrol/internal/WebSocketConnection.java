@@ -30,6 +30,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
@@ -58,7 +59,6 @@ import com.google.gson.JsonSyntaxException;
 public class WebSocketConnection {
     private final Logger logger = LoggerFactory.getLogger(WebSocketConnection.class);
     private final Gson gson = new Gson();
-    private final org.eclipse.jetty.client.HttpClient httpClient;
     private final WebSocketClient webSocketClient;
     private final IWebSocketCommandHandler webSocketCommandHandler;
     private final AmazonEchoControlWebSocket amazonEchoControlWebSocket;
@@ -74,7 +74,7 @@ public class WebSocketConnection {
             IWebSocketCommandHandler webSocketCommandHandler) throws IOException {
         this.webSocketCommandHandler = webSocketCommandHandler;
         amazonEchoControlWebSocket = new AmazonEchoControlWebSocket();
-        httpClient = new org.eclipse.jetty.client.HttpClient(new SslContextFactory.Client());
+        HttpClient httpClient = new HttpClient(new SslContextFactory.Client());
         webSocketClient = new WebSocketClient(httpClient);
         try {
             String host;

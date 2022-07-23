@@ -37,6 +37,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Random;
 import java.util.Scanner;
@@ -1167,8 +1168,8 @@ public class Connection {
     public void smartHomeCommand(String entityId, String action, @Nullable String property, @Nullable Object value)
             throws IOException, InterruptedException {
         String url = alexaServer + "/api/phoenix/state";
-        Float lowerSetpoint = Float.valueOf(60);
-        Float upperSetpoint = Float.valueOf(85);
+        Float lowerSetpoint = null;
+        Float upperSetpoint = null;
 
         JsonObject json = new JsonObject();
         JsonArray controlRequests = new JsonArray();
@@ -1190,14 +1191,19 @@ public class Connection {
                                 ((QuantityType<?>) value).getUnit().equals(SIUnits.CELSIUS) ? "celsius" : "fahrenheit");
                     }
                 } else {
+                    // Get current upper and lower setpoints to build command syntax
                     Map<String, JsonArray> devices = null;
                     try {
-                        devices = getSmartHomeDeviceStatesJson(new HashSet<>(getSmarthomeDeviceList()));
+                        List<SmartHomeBaseDevice> deviceList = getSmarthomeDeviceList().stream().filter(
+                                device -> "AAA_SonarCloudService_00QAbw7vzYhdndv3-Sirp40Zargm3orQ0tKQK9sIKbqIM6-rFm3KsAnOKWApPNqtmzGL6cOR30mQrIwEQtDA"
+                                        .equals(device.findId()))
+                                .collect(Collectors.toList());
+                        devices = getSmartHomeDeviceStatesJson(new HashSet<>(deviceList));
                     } catch (URISyntaxException e) {
-                        logger.error("{}", e.toString());
+                        logger.debug("{}", e.toString());
                     }
-                    Object applianceId = "AAA_SonarCloudService_00QAbw7vzYhdndv3-Sirp40Zargm3orQ0tKQK9sIKbqIM6-rFm3KsAnOKWApPNqtmzGL6cOR30mQrIwEQtDA";
-                    JsonArray states = devices.get(applianceId);
+                    Entry<String, JsonArray> entry = devices.entrySet().iterator().next();
+                    JsonArray states = entry.getValue();
                     for (JsonElement stateElement : states) {
                         JsonObject stateValue = new JsonObject();
                         String stateJson = stateElement.getAsString();
@@ -1220,9 +1226,6 @@ public class Connection {
                                     lowerSetpoint = Objects
                                             .requireNonNullElse(stateValue.get("value"), JsonNull.INSTANCE)
                                             .getAsFloat();
-                                }
-                                if (lowerSetpoint > 60 && upperSetpoint < 85) {
-                                    break;
                                 }
                             }
                         }

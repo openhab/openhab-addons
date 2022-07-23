@@ -93,7 +93,6 @@ public class HandlerThermostatController extends HandlerBase {
     public void updateChannels(String interfaceName, List<JsonObject> stateList, UpdateChannelResult result) {
         for (JsonObject state : stateList) {
             QuantityType<Temperature> temperatureValue = null;
-            StringType operationValue = null;
             logger.debug("Updating {} with state: {}", interfaceName, state.toString());
             if (TARGET_SETPOINT.propertyName.equals(state.get("name").getAsString())) {
                 // For groups take the first
@@ -112,8 +111,8 @@ public class HandlerThermostatController extends HandlerBase {
             if (THERMOSTAT_MODE.propertyName.equals(state.get("name").getAsString())) {
                 // For groups take the first
                 String operation = state.get("value").getAsString().toUpperCase();
-                operationValue = new StringType(operation);
-                updateState(THERMOSTAT_MODE.channelId, operationValue == null ? UnDefType.UNDEF : operationValue);
+                StringType operationValue = new StringType(operation);
+                updateState(THERMOSTAT_MODE.channelId, operationValue);
             }
             if (UPPER_SETPOINT.propertyName.equals(state.get("name").getAsString())) {
                 // For groups take the first

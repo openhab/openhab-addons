@@ -70,7 +70,7 @@ import com.google.gson.JsonObject;
  */
 @NonNullByDefault
 public class SmartHomeDeviceHandler extends BaseThingHandler {
-    private final static Logger logger = LoggerFactory.getLogger(SmartHomeDeviceHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(SmartHomeDeviceHandler.class);
 
     private @Nullable SmartHomeBaseDevice smartHomeBaseDevice;
     private final Gson gson;
