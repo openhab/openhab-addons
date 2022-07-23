@@ -163,6 +163,8 @@ The following channels are available:
 | treble, mainZone#treble | Treble Adjustment     | Number    | Adjust the treble                                        | INCREASE, DECREASE, value          |
 | playControl    | Playback Control               | Player    | Control the playback                                     | PLAY, PAUSE, NEXT, PREVIOUS        |
 | track          | Current Track                  | Number    | The current CD track number                              |                                    |
+| random         | Random Mode                    | Switch    | The current random mode                                  |                                    |
+| repeat         | Repeat Mode                    | String    | The current repeat mode                                  | TRACK, DISC, OFF                   |
 | mainZone#line1 | Front Panel Line 1             | String    | The first line displayed on the device front panel       |                                    |
 | mainZone#line2 | Front Panel Line 2             | String    | The second line displayed on the device front panel      |                                    |
 | frequency      | Current Frequency              | Number    | The current frequency (in kHz) for digital source input  |                                    |
@@ -179,8 +181,8 @@ Here are the list of channels available for each thing type:
 | a11        | power, source, volume, mute, bass, treble, brightness, tcbypass, balance, speakera, speakerb            |
 | a12        | power, source, volume, mute, bass, treble, frequency, brightness, tcbypass, balance, speakera, speakerb |
 | a14        | power, source, volume, mute, bass, treble, frequency, brightness, tcbypass, balance, speakera, speakerb |
-| cd11       | power, playControl, track, brightness                                                                   |
-| cd14       | power, playControl, track, brightness                                                                   |
+| cd11       | power, playControl, track, random, repeat, brightness                                                   |
+| cd14       | power, playControl, track, random, repeat, brightness                                                   |
 | m8         | power, brightness                                                                                       |
 | p5         | power, source, volume, mute, bass, treble, frequency, brightness, tcbypass, balance                     |
 | ra11       | power, source, volume, mute, bass, treble, playControl, frequency, brightness, tcbypass, balance        |
@@ -193,7 +195,7 @@ Here are the list of channels available for each thing type:
 | rc1572     | power, source, volume, mute, bass, treble, frequency, brightness, tcbypass, balance                     |
 | rc1590     | power, source, volume, mute, bass, treble, frequency, brightness, tcbypass, balance                     |
 | rcd1570    | power, playControl, brightness                                                                          |
-| rcd1572    | power, playControl, track, brightness                                                                   |
+| rcd1572    | power, playControl, track, random, repeat, brightness                                                   |
 | rcx1500    | power, source, volume, mute, playControl                                                                |
 | rdd1580    | power, source, playControl, frequency                                                                   |
 | rdg1520    | power, source, playControl                                                                              |

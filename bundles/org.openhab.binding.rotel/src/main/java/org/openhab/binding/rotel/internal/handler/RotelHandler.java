@@ -29,6 +29,7 @@ import org.openhab.binding.rotel.internal.RotelBindingConstants;
 import org.openhab.binding.rotel.internal.RotelException;
 import org.openhab.binding.rotel.internal.RotelModel;
 import org.openhab.binding.rotel.internal.RotelPlayStatus;
+import org.openhab.binding.rotel.internal.RotelRepeatMode;
 import org.openhab.binding.rotel.internal.RotelStateDescriptionOptionProvider;
 import org.openhab.binding.rotel.internal.communication.RotelCommand;
 import org.openhab.binding.rotel.internal.communication.RotelConnector;
@@ -112,6 +113,8 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
     private int[] trebles = { 0, 0, 0, 0, 0 };
     private RotelPlayStatus playStatus = RotelPlayStatus.STOPPED;
     private int track;
+    private boolean randomMode;
+    private RotelRepeatMode repeatMode = RotelRepeatMode.OFF;
     private double[] frequencies = { 0.0, 0.0, 0.0, 0.0, 0.0 };
     private String frontPanelLine1 = "";
     private String frontPanelLine2 = "";
@@ -790,6 +793,48 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                             logger.debug("Command {} from channel {} failed: invalid command value", command, channel);
                         }
                         break;
+                    case CHANNEL_RANDOM:
+                        if (!isPowerOn()) {
+                            success = false;
+                            logger.debug("Command {} from channel {} ignored: device in standby", command, channel);
+                        } else if (command instanceof OnOffType) {
+                            sendCommand(RotelCommand.RANDOM_TOGGLE);
+                        } else {
+                            success = false;
+                            logger.debug("Command {} from channel {} failed: invalid command value", command, channel);
+                        }
+                        break;
+                    case CHANNEL_REPEAT:
+                        if (!isPowerOn()) {
+                            success = false;
+                            logger.debug("Command {} from channel {} ignored: device in standby", command, channel);
+                        } else {
+                            RotelRepeatMode currentMode = repeatMode;
+                            RotelRepeatMode mode = RotelRepeatMode.OFF;
+                            try {
+                                mode = RotelRepeatMode.getFromName(command.toString());
+                                if (mode == currentMode) {
+                                    success = false;
+                                    logger.debug("Command {} from channel {} ignored: no change requested", command,
+                                            channel);
+                                }
+                            } catch (RotelException e) {
+                                success = false;
+                                logger.debug("Command {} from channel {} failed: invalid command value", command,
+                                        channel);
+                            }
+                            if (success) {
+                                // Toggle TRACK -> DISC -> OFF
+                                sendCommand(RotelCommand.REPEAT_TOGGLE);
+                                if ((mode == RotelRepeatMode.OFF && currentMode == RotelRepeatMode.TRACK)
+                                        || (mode == RotelRepeatMode.TRACK && currentMode == RotelRepeatMode.DISC)
+                                        || (mode == RotelRepeatMode.DISC && currentMode == RotelRepeatMode.OFF)) {
+                                    Thread.sleep(SLEEP_INTV);
+                                    sendCommand(RotelCommand.REPEAT_TOGGLE);
+                                }
+                            }
+                        }
+                        break;
                     case CHANNEL_BRIGHTNESS:
                     case CHANNEL_ALL_BRIGHTNESS:
                         if (!isPowerOn()) {
@@ -1455,6 +1500,31 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                         updateChannelState(CHANNEL_TRACK);
                     }
                     break;
+                case KEY_RANDOM:
+                    if (MSG_VALUE_ON.equalsIgnoreCase(value)) {
+                        randomMode = true;
+                        updateChannelState(CHANNEL_RANDOM);
+                    } else if (MSG_VALUE_OFF.equalsIgnoreCase(value)) {
+                        randomMode = false;
+                        updateChannelState(CHANNEL_RANDOM);
+                    } else {
+                        throw new RotelException("Invalid value");
+                    }
+                    break;
+                case KEY_REPEAT:
+                    if (TRACK.equalsIgnoreCase(value)) {
+                        repeatMode = RotelRepeatMode.TRACK;
+                        updateChannelState(CHANNEL_REPEAT);
+                    } else if (DISC.equalsIgnoreCase(value)) {
+                        repeatMode = RotelRepeatMode.DISC;
+                        updateChannelState(CHANNEL_REPEAT);
+                    } else if (MSG_VALUE_OFF.equalsIgnoreCase(value)) {
+                        repeatMode = RotelRepeatMode.OFF;
+                        updateChannelState(CHANNEL_REPEAT);
+                    } else {
+                        throw new RotelException("Invalid value");
+                    }
+                    break;
                 case KEY_FREQ:
                 case KEY_FREQ_ZONE1:
                 case KEY_FREQ_ZONE2:
@@ -1596,6 +1666,8 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
         updateChannelState(CHANNEL_TREBLE);
         updateChannelState(CHANNEL_PLAY_CONTROL);
         updateChannelState(CHANNEL_TRACK);
+        updateChannelState(CHANNEL_RANDOM);
+        updateChannelState(CHANNEL_REPEAT);
         updateChannelState(CHANNEL_FREQUENCY);
         updateChannelState(CHANNEL_BRIGHTNESS);
         updateChannelState(CHANNEL_TCBYPASS);
@@ -1836,6 +1908,10 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                                 RotelSource source = sources[0];
                                 if (source != null && source.getName().equals("CD") && !model.hasSourceControl()) {
                                     sendCommand(RotelCommand.TRACK);
+                                    Thread.sleep(SLEEP_INTV);
+                                    sendCommand(RotelCommand.RANDOM_MODE);
+                                    Thread.sleep(SLEEP_INTV);
+                                    sendCommand(RotelCommand.REPEAT_MODE);
                                     Thread.sleep(SLEEP_INTV);
                                 }
                             }
@@ -2112,6 +2188,16 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
             case CHANNEL_TRACK:
                 if (isPowerOn() && track > 0) {
                     state = new DecimalType(track);
+                }
+                break;
+            case CHANNEL_RANDOM:
+                if (isPowerOn()) {
+                    state = OnOffType.from(randomMode);
+                }
+                break;
+            case CHANNEL_REPEAT:
+                if (isPowerOn()) {
+                    state = new StringType(repeatMode.name());
                 }
                 break;
             case CHANNEL_PLAY_CONTROL:
