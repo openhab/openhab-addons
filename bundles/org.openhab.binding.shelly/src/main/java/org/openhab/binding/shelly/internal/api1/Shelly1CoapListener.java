@@ -10,18 +10,18 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.shelly.internal.coap;
+package org.openhab.binding.shelly.internal.api1;
 
 import org.eclipse.californium.core.coap.Response;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link ShellyCoapListener} describes the listening interface to process Coap responses
+ * The {@link Shelly1CoapListener} describes the listening interface to process Coap responses
  *
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public interface ShellyCoapListener {
+public interface Shelly1CoapListener {
     public void processResponse(@Nullable Response response);
 }

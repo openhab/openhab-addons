@@ -15,15 +15,15 @@ package org.openhab.binding.shelly.internal.api;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyControlRoller;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyOtaCheckResult;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsDevice;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsLogin;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsStatus;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyShortLightStatus;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyStatusLight;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyStatusRelay;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyStatusSensor;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyOtaCheckResult;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyRollerStatus;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDevice;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsLogin;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyShortLightStatus;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusLight;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusRelay;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 
 /**
@@ -47,11 +47,11 @@ public interface ShellyApiInterface {
 
     public void setSleepTime(int value) throws ShellyApiException;
 
-    public ShellyStatusRelay getRelayStatus(Integer relayIndex) throws ShellyApiException;
+    public ShellyStatusRelay getRelayStatus(int relayIndex) throws ShellyApiException;
 
     public void setRelayTurn(int id, String turnMode) throws ShellyApiException;
 
-    public ShellyControlRoller getRollerStatus(int rollerIndex) throws ShellyApiException;
+    public ShellyRollerStatus getRollerStatus(int rollerIndex) throws ShellyApiException;
 
     public void setRollerTurn(int relayIndex, String turnMode) throws ShellyApiException;
 

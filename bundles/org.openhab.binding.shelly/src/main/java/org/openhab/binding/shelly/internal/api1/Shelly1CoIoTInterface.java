@@ -10,26 +10,26 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.shelly.internal.coap;
+package org.openhab.binding.shelly.internal.api1;
 
 import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotDescrBlk;
-import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotDescrSen;
-import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotSensor;
+import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO.CoIotDescrBlk;
+import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO.CoIotDescrSen;
+import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO.CoIotSensor;
 import org.openhab.binding.shelly.internal.handler.ShellyColorUtils;
 import org.openhab.core.types.State;
 
 /**
- * The {@link ShellyCoapListener} describes the listening interface to process Coap responses
+ * The {@link Shelly1CoapListener} describes the listening interface to process Coap responses
  *
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public interface ShellyCoIoTInterface {
+public interface Shelly1CoIoTInterface {
     public int getVersion();
 
     public CoIotDescrSen fixDescription(@Nullable CoIotDescrSen sen, Map<String, CoIotDescrBlk> blkMap);

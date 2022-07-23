@@ -27,6 +27,8 @@ Also check out the [Shelly Manager](doc/ShellyManager.md), which
 
 ## Supported Devices
 
+### Generation 1:
+
 | thing-type         | Model                                                  | Vendor ID |
 |--------------------|--------------------------------------------------------|-----------|
 | shelly1            | Shelly 1 Single Relay Switch                           | SHSW-1    |

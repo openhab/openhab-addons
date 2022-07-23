@@ -17,6 +17,7 @@
 			<default>admin</default>
 			<label>@text/binding.shelly.config.defaultPassword.label</label>
 			<description>@text/binding.shelly.config.defaultPassword.description</description>
+			<context>password</context>
 		</parameter>
 		<parameter name="localIP" type="text">
 			<label>@text/binding.shelly.config.localIP.label</label>

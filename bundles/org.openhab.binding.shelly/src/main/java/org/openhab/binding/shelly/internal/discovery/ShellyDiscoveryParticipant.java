@@ -29,7 +29,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyApiResult;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
-import org.openhab.binding.shelly.internal.api.ShellyHttpApi;
+import org.openhab.binding.shelly.internal.api1.Shelly1HttpApi;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyBaseHandler;
@@ -140,7 +140,7 @@ public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
             config.password = bindingConfig.defaultPassword;
 
             try {
-                ShellyHttpApi api = new ShellyHttpApi(name, config, httpClient);
+                Shelly1HttpApi api = new Shelly1HttpApi(name, config, httpClient);
 
                 profile = api.getDeviceProfile(thingType);
                 logger.debug("{}: Shelly settings : {}", name, profile.settingsJson);
