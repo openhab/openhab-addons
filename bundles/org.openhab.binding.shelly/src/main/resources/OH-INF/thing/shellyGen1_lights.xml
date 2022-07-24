@@ -55,17 +55,10 @@
 		<description>@text/thing-type.shelly.shellyvintage.description</description>
 		<category>Lightbulb</category>
 		<channel-groups>
-			<<<<<<< HEAD
 			<channel-group id="control" typeId="duoControl" />
 			<channel-group id="white" typeId="whiteSettings" />
 			<channel-group id="meter" typeId="meter" />
 			<channel-group id="device" typeId="deviceStatus" />
-			=======
-			<channel-group id="control" typeId="duoControl" />
-			<channel-group id="white" typeId="whiteSettings" />
-			<channel-group id="meter" typeId="meter" />
-			<channel-group id="device" typeId="deviceStatus" />
-			>>>>>>> 097e589c8f (also create brightness and light temp channels dynamically (to support)
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
@@ -175,17 +168,6 @@
 	<channel-group-type id="rgbw2Channel">
 		<label>@text/channel-group-type.shelly.rgbw2Channel.label</label>
 		<description>@text/channel-group-type.shelly.rgbw2Channel.description</description>
-		<<<<<<< HEAD
-		<<<<<<< HEAD
-		=======
-		<channels>
-			<!--<channel id="autoOn" typeId="timerAutoOn"/> <channel id="autoOff" typeId="timerAutoOff"/> <channel id="timerActive" 
-				typeId="timerActive"/ -->
-			<channel id="brightness" typeId="whiteBrightness" />
-		</channels>
-		>>>>>>> a8136db132 (make autoOn/autoOff and timerActive channels dynamic)
-		=======
-		>>>>>>> 097e589c8f (also create brightness and light temp channels dynamically (to support)
 	</channel-group-type>
 
 	<channel-type id="colorMode">
@@ -289,12 +271,4 @@
 			</options>
 		</state>
 	</channel-type>
-	<<<<<<< HEAD
-	<<<<<<< HEAD
 </thing:thing-descriptions>
-=======
-</thing:thing-descriptions>
->>>>>>> a8136db132 (make autoOn/autoOff and timerActive channels dynamic)
-=======
-</thing:thing-descriptions>
->>>>>>> 097e589c8f (also create brightness and light temp channels dynamically (to support)
