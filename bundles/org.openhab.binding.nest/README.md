@@ -67,8 +67,9 @@ Now an OAuth 2.0 client is created and configured for using the SDM API by the b
 1. Create a new client on the "Credentials" page ([APIs & Services > Credentials](https://console.cloud.google.com/apis/credentials)):
     1. Click the "Create Credentials" button at the top of the page
     1. Choose "OAuth client ID"
-    1. As "Application type" choose "TVs and Limited Input devices"
+    1. As "Application type" choose "Web application"
     1. Give it a name so you can remember what it is used for (e.g. `Nest Binding SDM`)
+    1. Add "https://www.google.com" to the "Authorized redirect URIs"
     1. Click "Create" to create the client
     1. Copy and save the generated **Client ID** (e.g. `1046297811237-3f5sj4ccfubit0fum027ral82jgffsd1.apps.googleusercontent.com`) and **Client Secret** (e.g. `726kcU-d1W4RXxEJA79oZ0oG`) somewhere
 1. Configure the SDM project to use the created client:
@@ -88,19 +89,19 @@ Finally, an SDM Account Thing can be created to access the SDM project using the
 1. Create an authorization code for the binding:
     1. Replace the **Project ID** and **Client ID** in the URL below with your SDM Project ID and SDM OAuth 2.0 Client ID and open the URL in a new browser tab:
        
-       `https://nestservices.google.com/partnerconnections/<ProjectID>/auth?redirect_uri=urn:ietf:wg:oauth:2.0:oob&access_type=offline&prompt=consent&client_id=<ClientID>&response_type=code&scope=https://www.googleapis.com/auth/sdm.service`
+       `https://nestservices.google.com/partnerconnections/<ProjectID>/auth?scope=https://www.googleapis.com/auth/sdm.service&access_type=offline&prompt=consent&include_granted_scopes=true&response_type=code&redirect_uri=https://www.google.com&client_id=<ClientID>`
        
        For the example values used so far this is:
        
-       `https://nestservices.google.com/partnerconnections/585de72e-968c-435c-b16a-31d1d3f76833/auth?redirect_uri=urn:ietf:wg:oauth:2.0:oob&access_type=offline&prompt=consent&client_id=1046297811237-3f5sj4ccfubit0fum027ral82jgffsd1.apps.googleusercontent.com&response_type=code&scope=https://www.googleapis.com/auth/sdm.service`
+       `https://nestservices.google.com/partnerconnections/585de72e-968c-435c-b16a-31d1d3f76833/auth?scope=https://www.googleapis.com/auth/sdm.service&access_type=offline&prompt=consent&include_granted_scopes=true&response_type=code&redirect_uri=https://www.google.com&client_id=1046297811237-3f5sj4ccfubit0fum027ral82jgffsd1.apps.googleusercontent.com`
     1. Enable all the permissions you want to use with the binding and click "Next" to continue
     1. Login using your Google account when prompted
     1. On the "Google hasn't verified this app" page, click on "Advanced"
     1. Then click on "Go to ... (advanced)"
     1. Now "Allow" the SDM permissions and confirm your choices again by clicking "Allow"
-    1. Next the "Sign in" page will show the **Authorization Code**
+    1. After your browser has been redirected to https://www.google.com, the **Authorization Code** will be set in the browser URL as value of the "code" URL query parameter
     1. Copy/paste the **Authorization Code** to the SDM group parameter in the openHAB Nest SDM Account Thing configuration
-1. All required SDM Account Thing configuration parameters have now been entered so create it by clicking "Create Thing".
+1. All required SDM Account Thing configuration parameters have now been entered so create it by clicking "Create Thing"
 
 The SDM Account Thing should now be ONLINE and have as status description "Using periodic refresh".
 It should also be possible to use the configured account to discover your Nest devices via the Inbox.
@@ -134,8 +135,9 @@ Next an OAuth 2.0 client is created which is used to create a Pub/Sub subscripti
 1. Open the "Credentials" page ([APIs & Services > Credentials](https://console.cloud.google.com/apis/credentials)):
 1. Click the "Create Credentials" button at the top of the page
 1. Choose "OAuth client ID"
-1. As "Application type" choose "TVs and Limited Input devices"
+1. As "Application type" choose "Web application"
 1. Give it a name so you can remember what it is used for (e.g. `Nest Binding Pub/Sub`)
+1. Add "https://www.google.com" to the "Authorized redirect URIs"
 1. Click "Create" to create the client
 1. Copy and save the generated **Client ID** (e.g. `1046297811237-lg27h26kln6r1nbg54jpg6nfjg6h4b3n.apps.googleusercontent.com`) and **Client Secret** (e.g. `1-k78-XcHhp_gdZF-I6JaIHp`) somewhere
 
@@ -151,18 +153,18 @@ Finally, the existing SDM Account Thing can be updated so it can subscribe to SD
 1. Create an authorization code for the binding:
     1. Replace the **Client ID** in the URL below with your Pub/Sub OAuth 2.0 Client ID and open the URL in a new browser tab:
        
-       `https://accounts.google.com/o/oauth2/auth?client_id=<ClientID>&redirect_uri=urn:ietf:wg:oauth:2.0:oob&response_type=code&scope=https://www.googleapis.com/auth/pubsub`
+       `https://accounts.google.com/o/oauth2/v2/auth?scope=https://www.googleapis.com/auth/pubsub&access_type=offline&prompt=consent&include_granted_scopes=true&response_type=code&redirect_uri=https://www.google.com&client_id=<ClientID>`
        
        For the example client this is:
        
-       `https://accounts.google.com/o/oauth2/auth?client_id=1046297811237-lg27h26kln6r1nbg54jpg6nfjg6h4b3n.apps.googleusercontent.com&redirect_uri=urn:ietf:wg:oauth:2.0:oob&response_type=code&scope=https://www.googleapis.com/auth/pubsub`
+       `https://accounts.google.com/o/oauth2/v2/auth?scope=https://www.googleapis.com/auth/pubsub&access_type=offline&prompt=consent&include_granted_scopes=true&response_type=code&redirect_uri=https://www.google.com&client_id=1046297811237-lg27h26kln6r1nbg54jpg6nfjg6h4b3n.apps.googleusercontent.com`
     1. Login using your Google account when prompted
     1. On the "Google hasn't verified this app" page, click on "Advanced"
     1. Then click on "Go to ... (advanced)"
     1. Now "Allow" the Pub/Sub permissions and confirm your choices again by clicking "Allow"
-    1. Next the "Sign in" page will show the **Authorization Code**
+    1. After your browser has been redirected to https://www.google.com, the **Authorization Code** will be set in the browser URL as value of the "code" URL query parameter
     1. Copy/paste the **Authorization Code** to the Pub/Sub group parameter in the openHAB Nest SDM Account Thing configuration
-1. All required Pub/Sub Account Thing configuration parameters have now been entered so click "Save" to update the SDM Account Thing configuration.
+1. All required Pub/Sub Account Thing configuration parameters have now been entered so click "Save" to update the SDM Account Thing configuration
 
 The SDM Account Thing should now be ONLINE and have as status description "Using periodic refresh and Pub/Sub".
 

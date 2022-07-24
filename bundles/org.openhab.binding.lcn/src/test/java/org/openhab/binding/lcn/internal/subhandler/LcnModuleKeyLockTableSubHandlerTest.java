@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.lcn.internal.subhandler;
 
-import static org.mockito.Mockito.verify;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,7 +41,7 @@ public class LcnModuleKeyLockTableSubHandlerTest extends AbstractTestLcnModuleSu
 
     @Test
     public void testStatus() {
-        l.tryParse("=M000005.TX098036000255");
+        tryParseAllHandlers("=M000005.TX098036000255");
         verify(handler).updateChannel(LcnChannelGroup.KEYLOCKTABLEA, "1", OnOffType.OFF);
         verify(handler).updateChannel(LcnChannelGroup.KEYLOCKTABLEA, "2", OnOffType.ON);
         verify(handler).updateChannel(LcnChannelGroup.KEYLOCKTABLEA, "3", OnOffType.OFF);
@@ -73,6 +74,7 @@ public class LcnModuleKeyLockTableSubHandlerTest extends AbstractTestLcnModuleSu
         verify(handler).updateChannel(LcnChannelGroup.KEYLOCKTABLED, "6", OnOffType.ON);
         verify(handler).updateChannel(LcnChannelGroup.KEYLOCKTABLED, "7", OnOffType.ON);
         verify(handler).updateChannel(LcnChannelGroup.KEYLOCKTABLED, "8", OnOffType.ON);
+        verify(handler, times(32)).updateChannel(any(), any(), any());
     }
 
     @Test

@@ -4,9 +4,65 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="wled">
-		<label>WLED String</label>
-		<description>A WLED string of LEDs</description>
+	<bridge-type id="json">
+		<label>WLED via JSON API</label>
+		<description>A connection to a WLED device controlled via the JSON API.</description>
+		<channels>
+			<channel id="globalBrightness" typeId="globalBrightness"/>
+			<channel id="playlists" typeId="playlists"/>
+			<channel id="presets" typeId="presets"/>
+			<channel id="presetDuration" typeId="presetDuration"/>
+			<channel id="transformTime" typeId="transformTime"/>
+			<channel id="presetCycle" typeId="presetCycle"/>
+			<channel id="liveOverride" typeId="liveOverride"/>
+			<channel id="sleep" typeId="sleep"/>
+			<channel id="sleepMode" typeId="sleepMode"/>
+			<channel id="sleepDuration" typeId="sleepDuration"/>
+			<channel id="sleepTargetBrightness" typeId="sleepTargetBrightness"/>
+			<channel id="syncSend" typeId="syncSend"/>
+			<channel id="syncReceive" typeId="syncReceive"/>
+		</channels>
+		<config-description>
+			<parameter name="address" type="text" required="true">
+				<label>Address</label>
+				<description>Use this format http://192.168.1.2:80</description>
+			</parameter>
+			<parameter name="pollTime" type="integer" min="1" unit="s">
+				<label>Poll Time</label>
+				<description>Time in seconds of how often to fetch the state of the LEDs.</description>
+				<default>5</default>
+			</parameter>
+			<parameter name="saturationThreshold" type="integer" min="0" max="99">
+				<label>Saturation Threshold</label>
+				<description>This feature allows you to specify a number that if the saturation drops below, will trigger white.
+				</description>
+				<advanced>true</advanced>
+				<default>0</default>
+			</parameter>
+			<parameter name="sortEffects" type="boolean">
+				<label>Sort Effects</label>
+				<description>If set, will sort the state options of the effects channel alphabetically while keeping the first
+					option (Solid) at the top.</description>
+				<advanced>true</advanced>
+				<default>true</default>
+			</parameter>
+			<parameter name="sortPalettes" type="boolean">
+				<label>Sort Palettes</label>
+				<description>If set, will sort the state options of the palettes channel alphabetically while keeping the first
+					option (Default) at the top.</description>
+				<advanced>true</advanced>
+				<default>true</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="segment">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="json"/>
+		</supported-bridge-type-refs>
+		<label>WLED Segment</label>
+		<description>Controls an entire LED strip, or a section of the strip if the LED string is split into multiple
+			segments.</description>
 		<category>ColorLight</category>
 		<channels>
 			<channel id="masterControls" typeId="masterControls"/>
@@ -17,11 +73,6 @@
 			<channel id="secondaryWhite" typeId="secondaryWhite"/>
 			<channel id="tertiaryColor" typeId="tertiaryColor"/>
 			<channel id="tertiaryWhite" typeId="tertiaryWhite"/>
-			<channel id="presets" typeId="presets"/>
-			<channel id="playlists" typeId="playlists"/>
-			<channel id="presetDuration" typeId="presetDuration"/>
-			<channel id="transformTime" typeId="transformTime"/>
-			<channel id="presetCycle" typeId="presetCycle"/>
 			<channel id="palettes" typeId="palettes"/>
 			<channel id="fx" typeId="fx"/>
 			<channel id="speed" typeId="speed"/>
@@ -30,47 +81,23 @@
 			<channel id="reverse" typeId="reverse"/>
 			<channel id="grouping" typeId="grouping"/>
 			<channel id="spacing" typeId="spacing"/>
-			<channel id="liveOverride" typeId="liveOverride"/>
-			<channel id="sleep" typeId="sleep"/>
-			<channel id="syncSend" typeId="syncSend"/>
-			<channel id="syncReceive" typeId="syncReceive"/>
 		</channels>
 		<config-description>
-			<parameter name="address" type="text" required="true">
-				<label>Address</label>
-				<description>Use this format http://192.168.1.2:80</description>
-			</parameter>
-			<parameter name="pollTime" type="integer" required="true" min="1" unit="s">
-				<label>Poll States</label>
-				<description>Time in seconds of how often to fetch the state of the LEDs.</description>
-				<default>10</default>
-			</parameter>
-			<parameter name="segmentIndex" type="integer" required="true" min="0">
+			<parameter name="segmentIndex" type="integer" min="0">
 				<label>Segment Index</label>
-				<description>Leave this as 0 if you are not using segments, otherwise set this to the segment index number that you
-					wish to control.</description>
+				<description>Leave this as 0 if you are not using multiple segments, otherwise set this to the segment index number
+					that you wish to control.</description>
 				<default>0</default>
-			</parameter>
-			<parameter name="saturationThreshold" type="integer" required="true" min="0" max="99">
-				<label>Saturation Threshold</label>
-				<description>This feature allows you to specify a number that if the saturation drops below, will trigger white.
-				</description>
-				<default>0</default>
-			</parameter>
-			<parameter name="sortEffects" type="boolean">
-				<label>Sort Effects</label>
-				<description>If set, will sort the state options of the effects channel alphabetically while keeping the first
-					option (Solid) at the top.</description>
-				<default>false</default>
-			</parameter>
-			<parameter name="sortPalettes" type="boolean">
-				<label>Sort Palettes</label>
-				<description>If set, will sort the state options of the palettes channel alphabetically while keeping the first
-					option (Default) at the top.</description>
-				<default>false</default>
 			</parameter>
 		</config-description>
 	</thing-type>
+
+	<channel-type id="globalBrightness">
+		<item-type>Dimmer</item-type>
+		<label>Global Brightness</label>
+		<description>Allows you to fade and turn all segments ON and OFF at the same time</description>
+		<category>ColorLight</category>
+	</channel-type>
 
 	<channel-type id="masterControls">
 		<item-type>Color</item-type>
@@ -83,11 +110,11 @@
 		</tags>
 	</channel-type>
 
-	<channel-type id="segmentBrightness" advanced="true">
+	<channel-type id="segmentBrightness">
 		<item-type>Dimmer</item-type>
 		<label>Segment Brightness</label>
 		<description>Changes the brightness of the whole segment</description>
-		<category>DimmableLight</category>
+		<category>ColorLight</category>
 	</channel-type>
 
 	<channel-type id="primaryColor" advanced="true">
@@ -101,7 +128,7 @@
 		<item-type>Dimmer</item-type>
 		<label>Primary White</label>
 		<description>Changes the brightness of the primary white LED</description>
-		<category>DimmableLight</category>
+		<category>ColorLight</category>
 	</channel-type>
 
 	<channel-type id="secondaryColor" advanced="true">
@@ -115,7 +142,7 @@
 		<item-type>Dimmer</item-type>
 		<label>Secondary White</label>
 		<description>Changes the brightness of the secondary white LED</description>
-		<category>DimmableLight</category>
+		<category>ColorLight</category>
 	</channel-type>
 
 	<channel-type id="tertiaryColor" advanced="true">
@@ -129,7 +156,7 @@
 		<item-type>Dimmer</item-type>
 		<label>Tertiary White</label>
 		<description>Changes the brightness of the third white LED</description>
-		<category>DimmableLight</category>
+		<category>ColorLight</category>
 	</channel-type>
 
 	<channel-type id="palettes">
@@ -148,26 +175,6 @@
 		<item-type>String</item-type>
 		<label>Presets</label>
 		<description>Auto rotate or change to a saved preset</description>
-		<state>
-			<options>
-				<option value="1">Preset 1</option>
-				<option value="2">Preset 2</option>
-				<option value="3">Preset 3</option>
-				<option value="4">Preset 4</option>
-				<option value="5">Preset 5</option>
-				<option value="6">Preset 6</option>
-				<option value="7">Preset 7</option>
-				<option value="8">Preset 8</option>
-				<option value="9">Preset 9</option>
-				<option value="10">Preset 10</option>
-				<option value="11">Preset 11</option>
-				<option value="12">Preset 12</option>
-				<option value="13">Preset 13</option>
-				<option value="14">Preset 14</option>
-				<option value="15">Preset 15</option>
-				<option value="16">Preset 16</option>
-			</options>
-		</state>
 	</channel-type>
 
 	<channel-type id="playlists">
@@ -218,19 +225,19 @@
 		<category>Time</category>
 		<state>
 			<options>
-				<option value="0 s"/>
-				<option value="0.3 s"/>
-				<option value="0.7 s"/>
-				<option value="1 s"/>
-				<option value="2 s"/>
-				<option value="3 s"/>
-				<option value="4 s"/>
-				<option value="5 s"/>
-				<option value="6 s"/>
-				<option value="7 s"/>
-				<option value="8 s"/>
-				<option value="9 s"/>
-				<option value="10 s"/>
+				<option value="0s">0 Seconds</option>
+				<option value="0.3s">0.3 Seconds</option>
+				<option value="0.7s">0.7 Seconds</option>
+				<option value="1s">1 Second</option>
+				<option value="2s">2 Seconds</option>
+				<option value="3s">3 Seconds</option>
+				<option value="4s">4 Seconds</option>
+				<option value="5s">5 Seconds</option>
+				<option value="6s">6 Seconds</option>
+				<option value="7s">7 Seconds</option>
+				<option value="8s">8 Seconds</option>
+				<option value="9s">9 Seconds</option>
+				<option value="10s">10 Seconds</option>
 			</options>
 		</state>
 	</channel-type>
@@ -264,6 +271,51 @@
 		<label>Sleep Timer</label>
 		<description>Fade the level of light and turn off after set time</description>
 		<category>Time</category>
+	</channel-type>
+
+	<channel-type id="sleepMode" advanced="true">
+		<item-type>String</item-type>
+		<label>Sleep Mode</label>
+		<description>Timed Light Mode selects how the light will fade or increase when the sleep timer is turned ON.</description>
+		<state readOnly="false">
+			<options>
+				<option value="0">Instant</option>
+				<option value="1">Fade</option>
+				<option value="2">Color Fade</option>
+				<option value="3">Sunrise</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="sleepDuration" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Sleep Duration</label>
+		<description>Time it takes to change/fade to the target brightness.</description>
+		<category>Time</category>
+		<state min="1" max="255" step="1" readOnly="false">
+			<options>
+				<option value="1min">1 Minute</option>
+				<option value="5min">5 Minutes</option>
+				<option value="10min">10 Minutes</option>
+				<option value="15min">15 Minutes</option>
+				<option value="20min">20 Minutes</option>
+				<option value="25min">25 Minutes</option>
+				<option value="30min">30 Minutes</option>
+				<option value="40min">40 Minutes</option>
+				<option value="50min">50 Minutes</option>
+				<option value="60min">1 Hour</option>
+				<option value="90min">1.5 Hours</option>
+				<option value="120min">2 Hours</option>
+				<option value="150min">2.5 Hours</option>
+				<option value="240min">4 Hours</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="sleepTargetBrightness" advanced="true">
+		<item-type>Dimmer</item-type>
+		<label>Sleep Target Brightness</label>
+		<description>Sets how bright the light will be after the sleep duration time has expired.</description>
 	</channel-type>
 
 	<channel-type id="presetCycle" advanced="true">

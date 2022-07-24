@@ -12,10 +12,8 @@
  */
 package org.openhab.binding.daikin.internal.api;
 
-import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
@@ -42,22 +40,14 @@ public class EnergyInfoDayAndWeek {
     }
 
     public static EnergyInfoDayAndWeek parse(String response) {
-        EnergyInfoDayAndWeek info = new EnergyInfoDayAndWeek();
-
         LOGGER.trace("Parsing string: \"{}\"", response);
 
         // /aircon/get_week_power_ex
         // ret=OK,s_dayw=0,week_heat=1/1/1/1/1/5/2/1/1/1/1/2/1/1,week_cool=0/0/0/0/0/0/0/0/0/0/0/0/0/0
         // week_heat=<today>/<today-1>/<today-2>/<today-3>/...
-        Map<String, String> responseMap = Arrays.asList(response.split(",")).stream().filter(kv -> kv.contains("="))
-                .map(kv -> {
-                    String[] keyValue = kv.split("=");
-                    String key = keyValue[0];
-                    String value = keyValue.length > 1 ? keyValue[1] : "";
-                    return new String[] { key, value };
-                }).collect(Collectors.toMap(x -> x[0], x -> x[1]));
-
-        if (responseMap.get("ret") != null && ("OK".equals(responseMap.get("ret")))) {
+        Map<String, String> responseMap = InfoParser.parse(response);
+        EnergyInfoDayAndWeek info = new EnergyInfoDayAndWeek();
+        if ("OK".equals(responseMap.get("ret"))) {
             Optional<Integer> dayOfWeek = Optional.ofNullable(responseMap.get("s_dayw"))
                     .flatMap(value -> InfoParser.parseInt(value));
 
@@ -94,7 +84,7 @@ public class EnergyInfoDayAndWeek {
                 info.energyCoolingLastWeek = Optional.of(previousWeekEnergy / 10);
             }
         } else {
-            LOGGER.debug("did not receive 'ret=OK' from adapter");
+            LOGGER.debug("EnergyInfoDayAndWeek::parse() did not receive 'ret=OK' from adapter");
         }
         return info;
     }

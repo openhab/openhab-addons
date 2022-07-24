@@ -42,6 +42,7 @@ public class HomekitTaggedItem {
     public final static String DIMMER_MODE = "dimmerMode";
     public final static String DELAY = "commandDelay";
     public final static String INVERTED = "inverted";
+    public final static String PRIMARY_SERVICE = "primary";
 
     private static final Map<Integer, String> CREATED_ACCESSORY_IDS = new ConcurrentHashMap<>();
 
@@ -281,7 +282,7 @@ public class HomekitTaggedItem {
     }
 
     public String toString() {
-        return "Item:" + proxyItem.getItem() + "  HomeKit type:" + homekitAccessoryType + " HomeKit characteristic:"
-                + homekitCharacteristicType;
+        return "Item:" + proxyItem.getItem() + "  HomeKit type: '" + homekitAccessoryType.getTag()
+                + "' characteristic: '" + homekitCharacteristicType.getTag() + "'";
     }
 }

@@ -2,7 +2,8 @@
 
 <img align="right" width="220" src="./logo.png" />
 
-[![Build Status](https://ci.openhab.org/job/openHAB-Addons/badge/icon)](https://ci.openhab.org/job/openHAB-Addons/)
+[![GitHub Actions Build Status](https://github.com/openhab/openhab-addons/actions/workflows/ci-build.yml/badge.svg?branch=main)](https://github.com/openhab/openhab-addons/actions/workflows/ci-build.yml)
+[![Jenkins Build Status](https://ci.openhab.org/job/openHAB-Addons/badge/icon)](https://ci.openhab.org/job/openHAB-Addons/)
 [![EPL-2.0](https://img.shields.io/badge/license-EPL%202-green.svg)](https://opensource.org/licenses/EPL-2.0)
 [![Crowdin](https://badges.crowdin.net/openhab-addons/localized.svg)](https://crowdin.com/project/openhab-addons)
 [![Bountysource](https://www.bountysource.com/badge/tracker?tracker_id=2164344)](https://www.bountysource.com/teams/openhab/issues?tracker_ids=2164344)
@@ -62,7 +63,25 @@ You find the following repository structure:
 
 To build all add-ons from the command-line, type in:
 
-`mvn clean install`
+```shell
+mvn clean install
+```
+
+Most of the time you do not need to build all bindings, but only the binding you are working on.
+To simply build only your binding use the `-pl` option.
+For example to build only the astro binding:
+
+```shell
+mvn clean install -pl :org.openhab.binding.astro
+```
+
+If you have a binding that has dependencies that are dynamically as specified in the feature.xml you can create a `.kar` instead of a `.jar` file.
+A `.kar` file will include the feature.xml and when added to openHAB will load and activate any dependencies specified in the feature.xml file.
+To create a `.kar` file run maven with the goal `karaf:kar`:
+
+```shell
+mvn clean install karaf:kar -pl :org.openhab.binding.astro
+```
 
 To improve build times you can add the following options to the command:
 
@@ -75,19 +94,63 @@ To improve build times you can add the following options to the command:
 | `-Dspotless.check.skip=true`  | Skip the Spotless code style checks                 |
 | `-o`                          | Work offline so Maven does not download any updates |
 | `-T 1C`                       | Build in parallel, using 1 thread per core          |
+| `-pl :<add-on directory>`     | Build a single add-on                               |
 
 For example you can skip checks and tests during development with:
 
-`mvn clean install -DskipChecks -DskipTests`
+```shell
+mvn clean install -DskipChecks -DskipTests -pl :org.openhab.binding.astro
+```
 
 Adding these options improves the build time but could hide problems in your code.
 Parallel builds are also less easy to debug and the increased load may cause timing sensitive tests to fail.
 
-To check if your code is following the [code style](https://www.openhab.org/docs/developer/guidelines.html#b-code-formatting-rules-style) run: `mvn spotless:check`
-To reformat your code so it conforms to the code style you can run: `mvn spotless:apply`
+#### Translations
+
+Add-on translations are managed via [Crowdin](https://crowdin.com/project/openhab-addons).
+The English translation is taken from the openHAB-addons GitHub repo and automatically imported in Crowdin when changes are made to the English i18n properties file.
+When translations are added or updated and approved in Crowdin, a pull request is automatically created by Crowdin.
+Therefore translations should not be edited in the openHAB-addons repo, but only in Crowdin.
+Otherwise translation are overridden by the automatic process.
+
+To fill the English properties file run the following maven command on an add-on:
+
+```shell
+mvn i18n:generate-default-translations
+```
+
+This command can also update the file when things or channel are added or updated.
+
+In some cases the command does not work, and requires the full plug-in name.
+In that case use:
+
+```shell
+mvn org.openhab.core.tools:i18n-maven-plugin:3.3.0:generate-default-translations
+```
+
+
+#### Code Quality
+
+To check if your code is following the [code style](https://www.openhab.org/docs/developer/guidelines.html#b-code-formatting-rules-style) run:
+
+```shell
+mvn spotless:check
+```
+
+To reformat your code so it conforms to the code style you can run: 
+
+```shell
+mvn spotless:apply
+```
+
+### Integration Tests
 
 When your add-on also has an integration test in the `itests` directory, you may need to update the runbundles in the `itest.bndrun` file when the Maven dependencies change.
-Maven can resolve the integration test dependencies automatically by executing: `mvn clean install -DwithResolver -DskipChecks`
+Maven can resolve the integration test dependencies automatically by executing: 
+
+```shell
+mvn clean install -DwithResolver -DskipChecks
+```
 
 The build generates a `.jar` file per bundle in the respective bundle `/target` directory.
 

@@ -6,6 +6,7 @@
 
 	<bridge-type id="api">
 		<label>SNCF API</label>
+		<description>This bridge is the gateway to SNCF API.</description>
 		<config-description-ref uri="thing-type:sncf:api"/>
 	</bridge-type>
 

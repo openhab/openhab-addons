@@ -16,7 +16,7 @@ package org.openhab.binding.tesla.internal.protocol.sso;
  * The {@link TokenResponse} is a datastructure to capture
  * authentication response from Tesla Remote Service
  *
- * @author Nicolai Grødum
+ * @author Nicolai Grødum - Initial contribution
  */
 public class TokenResponse {
 

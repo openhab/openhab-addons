@@ -48,29 +48,28 @@ import com.google.gson.JsonDeserializer;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.linky")
 public class LinkyHandlerFactory extends BaseThingHandlerFactory {
     private static final DateTimeFormatter LINKY_FORMATTER = DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss.SSSX");
+    private static final int REQUEST_BUFFER_SIZE = 8000;
 
     private final Logger logger = LoggerFactory.getLogger(LinkyHandlerFactory.class);
-
+    private final Gson gson = new GsonBuilder().registerTypeAdapter(ZonedDateTime.class,
+            (JsonDeserializer<ZonedDateTime>) (json, type, jsonDeserializationContext) -> ZonedDateTime
+                    .parse(json.getAsJsonPrimitive().getAsString(), LINKY_FORMATTER))
+            .create();
     private final LocaleProvider localeProvider;
-    private final Gson gson;
     private final HttpClient httpClient;
 
     @Activate
     public LinkyHandlerFactory(final @Reference LocaleProvider localeProvider,
             final @Reference HttpClientFactory httpClientFactory) {
         this.localeProvider = localeProvider;
-        this.gson = new GsonBuilder().registerTypeAdapter(ZonedDateTime.class,
-                (JsonDeserializer<ZonedDateTime>) (json, type, jsonDeserializationContext) -> ZonedDateTime
-                        .parse(json.getAsJsonPrimitive().getAsString(), LINKY_FORMATTER))
-                .create();
         this.httpClient = httpClientFactory.createHttpClient(LinkyBindingConstants.BINDING_ID);
     }
 
     @Override
     protected void activate(ComponentContext componentContext) {
         super.activate(componentContext);
-        httpClient.getSslContextFactory().setExcludeCipherSuites(new String[0]);
         httpClient.setFollowRedirects(false);
+        httpClient.setRequestBufferSize(REQUEST_BUFFER_SIZE);
         try {
             httpClient.start();
         } catch (Exception e) {
@@ -95,8 +94,7 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
-        ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-
-        return supportsThingType(thingTypeUID) ? new LinkyHandler(thing, localeProvider, gson, httpClient) : null;
+        return supportsThingType(thing.getThingTypeUID()) ? new LinkyHandler(thing, localeProvider, gson, httpClient)
+                : null;
     }
 }

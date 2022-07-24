@@ -24,7 +24,6 @@ import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -86,7 +85,7 @@ public class GoogleSTTService implements STTService {
 
     private static final String GCP_AUTH_URI = "https://accounts.google.com/o/oauth2/auth";
     private static final String GCP_TOKEN_URI = "https://accounts.google.com/o/oauth2/token";
-    private static final String GCP_REDIRECT_URI = "urn:ietf:wg:oauth:2.0:oob";
+    private static final String GCP_REDIRECT_URI = "https://www.google.com";
     private static final String GCP_SCOPE = "https://www.googleapis.com/auth/cloud-platform";
 
     private final Logger logger = LoggerFactory.getLogger(GoogleSTTService.class);
@@ -147,17 +146,12 @@ public class GoogleSTTService implements STTService {
     @Override
     public STTServiceHandle recognize(STTListener sttListener, AudioStream audioStream, Locale locale,
             Set<String> set) {
-        AtomicBoolean keepStreaming = new AtomicBoolean(true);
-        Future scheduledTask = backgroundRecognize(sttListener, audioStream, keepStreaming, locale, set);
+        AtomicBoolean aborted = new AtomicBoolean(false);
+        backgroundRecognize(sttListener, audioStream, aborted, locale, set);
         return new STTServiceHandle() {
             @Override
             public void abort() {
-                keepStreaming.set(false);
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                }
-                scheduledTask.cancel(true);
+                aborted.set(true);
             }
         };
     }
@@ -181,7 +175,11 @@ public class GoogleSTTService implements STTService {
     private void getAccessToken(OAuthClientService oAuthService, String oauthCode) {
         logger.debug("Trying to get access and refresh tokens.");
         try {
-            oAuthService.getAccessTokenResponseByAuthorizationCode(oauthCode, GCP_REDIRECT_URI);
+            AccessTokenResponse response = oAuthService.getAccessTokenResponseByAuthorizationCode(oauthCode,
+                    GCP_REDIRECT_URI);
+            if (response.getRefreshToken() == null || response.getRefreshToken().isEmpty()) {
+                logger.warn("Error fetching refresh token. Please try to reauthorize.");
+            }
         } catch (OAuthException | OAuthResponseException e) {
             if (logger.isDebugEnabled()) {
                 logger.debug("Error fetching access token: {}", e.getMessage(), e);
@@ -206,7 +204,7 @@ public class GoogleSTTService implements STTService {
         }
     }
 
-    private Future<?> backgroundRecognize(STTListener sttListener, AudioStream audioStream, AtomicBoolean keepStreaming,
+    private Future<?> backgroundRecognize(STTListener sttListener, AudioStream audioStream, AtomicBoolean aborted,
             Locale locale, Set<String> set) {
         Credentials credentials = getCredentials();
         return executor.submit(() -> {
@@ -214,10 +212,9 @@ public class GoogleSTTService implements STTService {
             ClientStream<StreamingRecognizeRequest> clientStream = null;
             try (SpeechClient client = SpeechClient
                     .create(SpeechSettings.newBuilder().setCredentialsProvider(() -> credentials).build())) {
-                TranscriptionListener responseObserver = new TranscriptionListener(sttListener, config,
-                        (t) -> keepStreaming.set(false));
+                TranscriptionListener responseObserver = new TranscriptionListener(sttListener, config, aborted);
                 clientStream = client.streamingRecognizeCallable().splitCall(responseObserver);
-                streamAudio(clientStream, audioStream, responseObserver, keepStreaming, locale);
+                streamAudio(clientStream, audioStream, responseObserver, aborted, locale);
                 clientStream.closeSend();
                 logger.debug("Background recognize done");
             } catch (IOException e) {
@@ -232,7 +229,7 @@ public class GoogleSTTService implements STTService {
     }
 
     private void streamAudio(ClientStream<StreamingRecognizeRequest> clientStream, AudioStream audioStream,
-            TranscriptionListener responseObserver, AtomicBoolean keepStreaming, Locale locale) throws IOException {
+            TranscriptionListener responseObserver, AtomicBoolean aborted, Locale locale) throws IOException {
         // Gather stream info and send config
         AudioFormat streamFormat = audioStream.getFormat();
         RecognitionConfig.AudioEncoding streamEncoding;
@@ -259,10 +256,14 @@ public class GoogleSTTService implements STTService {
         long maxTranscriptionMillis = (config.maxTranscriptionSeconds * 1000L);
         long maxSilenceMillis = (config.maxSilenceSeconds * 1000L);
         int readBytes = 6400;
-        while (keepStreaming.get()) {
+        while (!aborted.get()) {
             byte[] data = new byte[readBytes];
             int dataN = audioStream.read(data);
-            if (!keepStreaming.get() || isExpiredInterval(maxTranscriptionMillis, startTime)) {
+            if (aborted.get()) {
+                logger.debug("Stops listening, aborted");
+                break;
+            }
+            if (isExpiredInterval(maxTranscriptionMillis, startTime)) {
                 logger.debug("Stops listening, max transcription time reached");
                 break;
             }
@@ -301,19 +302,21 @@ public class GoogleSTTService implements STTService {
 
     private @Nullable Credentials getCredentials() {
         String accessToken = null;
+        String refreshToken = null;
         try {
             OAuthClientService oAuthService = this.oAuthService;
             if (oAuthService != null) {
                 AccessTokenResponse response = oAuthService.getAccessTokenResponse();
                 if (response != null) {
                     accessToken = response.getAccessToken();
+                    refreshToken = response.getRefreshToken();
                 }
             }
         } catch (OAuthException | IOException | OAuthResponseException e) {
             logger.warn("Access token error: {}", e.getMessage());
         }
-        if (accessToken == null) {
-            logger.warn("Missed google cloud access token");
+        if (accessToken == null || refreshToken == null) {
+            logger.warn("Missed google cloud access and/or refresh token");
             return null;
         }
         return OAuth2Credentials.create(new AccessToken(accessToken, null));
@@ -328,16 +331,15 @@ public class GoogleSTTService implements STTService {
         private final StringBuilder transcriptBuilder = new StringBuilder();
         private final STTListener sttListener;
         GoogleSTTConfiguration config;
-        private final Consumer<@Nullable Throwable> completeListener;
+        private final AtomicBoolean aborted;
         private float confidenceSum = 0;
         private int responseCount = 0;
         private long lastInputTime = 0;
 
-        public TranscriptionListener(STTListener sttListener, GoogleSTTConfiguration config,
-                Consumer<@Nullable Throwable> completeListener) {
+        public TranscriptionListener(STTListener sttListener, GoogleSTTConfiguration config, AtomicBoolean aborted) {
             this.sttListener = sttListener;
             this.config = config;
-            this.completeListener = completeListener;
+            this.aborted = aborted;
         }
 
         @Override
@@ -372,7 +374,7 @@ public class GoogleSTTService implements STTService {
                     responseCount++;
                     // when in single utterance mode we can just get one final result so complete
                     if (config.singleUtteranceMode) {
-                        completeListener.accept(null);
+                        onComplete();
                     }
                 }
             });
@@ -380,13 +382,13 @@ public class GoogleSTTService implements STTService {
 
         @Override
         public void onComplete() {
-            sttListener.sttEventReceived(new RecognitionStopEvent());
-            float averageConfidence = confidenceSum / responseCount;
-            String transcript = transcriptBuilder.toString();
-            if (!transcript.isBlank()) {
-                sttListener.sttEventReceived(new SpeechRecognitionEvent(transcript, averageConfidence));
-            } else {
-                if (!config.noResultsMessage.isBlank()) {
+            if (!aborted.getAndSet(true)) {
+                sttListener.sttEventReceived(new RecognitionStopEvent());
+                float averageConfidence = confidenceSum / responseCount;
+                String transcript = transcriptBuilder.toString();
+                if (!transcript.isBlank()) {
+                    sttListener.sttEventReceived(new SpeechRecognitionEvent(transcript, averageConfidence));
+                } else if (!config.noResultsMessage.isBlank()) {
                     sttListener.sttEventReceived(new SpeechRecognitionErrorEvent(config.noResultsMessage));
                 } else {
                     sttListener.sttEventReceived(new SpeechRecognitionErrorEvent("No results"));
@@ -397,14 +399,15 @@ public class GoogleSTTService implements STTService {
         @Override
         public void onError(@Nullable Throwable t) {
             logger.warn("Recognition error: ", t);
-            completeListener.accept(t);
-            sttListener.sttEventReceived(new RecognitionStopEvent());
-            if (!config.errorMessage.isBlank()) {
-                sttListener.sttEventReceived(new SpeechRecognitionErrorEvent(config.errorMessage));
-            } else {
-                String errorMessage = t.getMessage();
-                sttListener.sttEventReceived(
-                        new SpeechRecognitionErrorEvent(errorMessage != null ? errorMessage : "Unknown error"));
+            if (!aborted.getAndSet(true)) {
+                sttListener.sttEventReceived(new RecognitionStopEvent());
+                if (!config.errorMessage.isBlank()) {
+                    sttListener.sttEventReceived(new SpeechRecognitionErrorEvent(config.errorMessage));
+                } else {
+                    String errorMessage = t.getMessage();
+                    sttListener.sttEventReceived(
+                            new SpeechRecognitionErrorEvent(errorMessage != null ? errorMessage : "Unknown error"));
+                }
             }
         }
 

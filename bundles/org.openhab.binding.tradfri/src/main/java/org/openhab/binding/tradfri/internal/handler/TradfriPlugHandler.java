@@ -15,6 +15,7 @@ package org.openhab.binding.tradfri.internal.handler;
 import static org.openhab.binding.tradfri.internal.TradfriBindingConstants.CHANNEL_POWER;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.tradfri.internal.TradfriCoapClient;
 import org.openhab.binding.tradfri.internal.model.TradfriPlugData;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
@@ -62,8 +63,13 @@ public class TradfriPlugHandler extends TradfriThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (active) {
             if (command instanceof RefreshType) {
-                logger.debug("Refreshing channel {}", channelUID);
-                coapClient.asyncGet(this);
+                TradfriCoapClient coapClient = this.coapClient;
+                if (coapClient != null) {
+                    logger.debug("Refreshing channel {}", channelUID);
+                    coapClient.asyncGet(this);
+                } else {
+                    logger.debug("coapClient is null!");
+                }
                 return;
             }
 

@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.miele.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link FullyQualifiedApplianceIdentifier} class represents a fully qualified appliance identifier.
  * Example: "hdm:ZigBee:0123456789abcdef#210"
  *
  * @author Jacob Laursen - Initial contribution
  */
+@NonNullByDefault
 public class FullyQualifiedApplianceIdentifier {
     private String uid;
     private String protocol;
@@ -56,7 +59,7 @@ public class FullyQualifiedApplianceIdentifier {
     }
 
     /**
-     * @return Protocol prefix of fully qualified appliance identifier (e.g. "hdmi:ZigBee:"")
+     * @return Protocol prefix of fully qualified appliance identifier (e.g. "hdmi:ZigBee:")
      */
     public String getProtocol() {
         return this.protocol;

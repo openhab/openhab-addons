@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:mybmw:bridge">
+		<parameter name="userName" type="text" required="true">
+			<label>Username</label>
+			<description>MyBMW Username</description>
+		</parameter>
+		<parameter name="password" type="text" required="true">
+			<label>Password</label>
+			<description>MyBMW Password</description>
+			<context>password</context>
+		</parameter>
+		<parameter name="region" type="text" required="true">
+			<label>Region</label>
+			<description>Select Region in order to connect to the appropriate BMW Server</description>
+			<options>
+				<option value="NORTH_AMERICA">North America</option>
+				<option value="CHINA">China</option>
+				<option value="ROW">Rest of the World</option>
+			</options>
+			<default>ROW</default>
+		</parameter>
+		<parameter name="language" type="text">
+			<label>Language Settings</label>
+			<description>Channel data can be returned in the desired language like en, de, fr ...</description>
+			<advanced>true</advanced>
+			<default>AUTODETECT</default>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>

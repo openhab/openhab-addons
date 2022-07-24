@@ -14,10 +14,6 @@
 		<channels>
 			<channel id="switch" typeId="lock_switch"/>
 		</channels>
-		<properties>
-			<property name="name"/>
-			<property name="area"/>
-		</properties>
 		<representation-property>number</representation-property>
 		<config-description>
 			<parameter name="number" type="integer" required="true">

@@ -57,8 +57,8 @@ class MaryTTSAudioStream extends FixedLengthAudioStream {
         // The length of an AudioInputStream is expressed in sample frames, not bytes so readAllBytes() cannot be used.
         rawAudio = inputStreamToBytes(inputStream);
         this.length = rawAudio.length + 36;
-        this.inputStream = new SequenceInputStream(getWavHeaderInputStream(length), new ByteArrayInputStream(rawAudio));
         this.audioFormat = audioFormat;
+        this.inputStream = new SequenceInputStream(getWavHeaderInputStream(length), new ByteArrayInputStream(rawAudio));
     }
 
     private byte[] inputStreamToBytes(InputStream inputStream) throws IOException {

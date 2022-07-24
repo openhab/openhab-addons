@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-    <version>3.3.0-SNAPSHOT</version>
+    <version>3.4.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.persistence.rrd4j</artifactId>
@@ -23,7 +23,7 @@
     <dependency>
       <groupId>org.rrd4j</groupId>
       <artifactId>rrd4j</artifactId>
-      <version>3.8</version>
+      <version>3.8.1</version>
     </dependency>
   </dependencies>
 </project>

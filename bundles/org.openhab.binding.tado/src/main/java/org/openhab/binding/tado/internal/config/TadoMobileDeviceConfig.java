@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.tado.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Holder-object for mobile device configuration
  *
  * @author Dennis Frommknecht - Initial contribution
  */
+@NonNullByDefault
 public class TadoMobileDeviceConfig {
     public int id;
     public int refreshInterval;

@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<timetable station='Lehrte'>
+  <!-- Modified testdata where first train arrives before the second one and departs after second train. -->
+  <s id="-8364795265993682073-2108160911-6">
+    <tl f="S" t="p" o="800244" c="S" n="99031"/>
+    <ar pt="2108160934" pp="13" l="3" ppth="Celle|Ehlershausen|Otze|Burgdorf|Aligse"/>
+    <dp pt="2108160937" pp="13" l="3" ppth="Sehnde|Algermissen|Harsum|Hildesheim Hbf"/>
+  </s>
+
+  <s id="-5296516961807204721-2108160906-5">
+    <tl f="S" t="p" o="800244" c="S" n="99030"/>
+    <ar pt="2108160935" pp="14" l="3" ppth="Hildesheim Hbf|Harsum|Algermissen|Sehnde"/>
+    <dp pt="2108160936" pp="14" l="3" ppth="Aligse|Burgdorf|Otze|Ehlershausen|Celle"/>
+  </s>
+
+</timetable>

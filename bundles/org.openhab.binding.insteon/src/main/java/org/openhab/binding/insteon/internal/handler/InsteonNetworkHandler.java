@@ -12,10 +12,9 @@
  */
 package org.openhab.binding.insteon.internal.handler;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -24,6 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.insteon.internal.InsteonBinding;
 import org.openhab.binding.insteon.internal.config.InsteonNetworkConfiguration;
+import org.openhab.binding.insteon.internal.device.InsteonAddress;
 import org.openhab.binding.insteon.internal.discovery.InsteonDeviceDiscoveryService;
 import org.openhab.core.io.console.Console;
 import org.openhab.core.io.transport.serial.SerialPortManager;
@@ -206,6 +206,16 @@ public class InsteonNetworkHandler extends BaseBridgeHandler {
         });
     }
 
+    public void deviceNotLinked(InsteonAddress addr) {
+        getThing().getThings().stream().forEach((thing) -> {
+            InsteonDeviceHandler handler = (InsteonDeviceHandler) thing.getHandler();
+            if (handler != null && addr.equals(handler.getInsteonAddress())) {
+                handler.deviceNotLinked();
+                return;
+            }
+        });
+    }
+
     public void displayDevices(Console console) {
         display(console, deviceInfo);
     }
@@ -244,10 +254,9 @@ public class InsteonNetworkHandler extends BaseBridgeHandler {
     }
 
     private void display(Console console, Map<String, String> info) {
-        ArrayList<String> ids = new ArrayList<>(info.keySet());
-        Collections.sort(ids);
-        for (String id : ids) {
-            console.println(info.get(id));
-        }
+        info.entrySet().stream() //
+                .sorted(Entry.comparingByKey()) //
+                .map(Entry::getValue) //
+                .forEach(console::println);
     }
 }

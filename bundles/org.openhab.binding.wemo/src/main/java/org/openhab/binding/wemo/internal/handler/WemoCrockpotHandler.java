@@ -25,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.jupnp.UpnpService;
 import org.openhab.binding.wemo.internal.http.WemoHttpCall;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
@@ -60,8 +61,9 @@ public class WemoCrockpotHandler extends WemoBaseThingHandler {
 
     private @Nullable ScheduledFuture<?> pollingJob;
 
-    public WemoCrockpotHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemoHttpCaller) {
-        super(thing, upnpIOService, wemoHttpCaller);
+    public WemoCrockpotHandler(Thing thing, UpnpIOService upnpIOService, UpnpService upnpService,
+            WemoHttpCall wemoHttpCaller) {
+        super(thing, upnpIOService, upnpService, wemoHttpCaller);
 
         logger.debug("Creating a WemoCrockpotHandler for thing '{}'", getThing().getUID());
     }
@@ -74,14 +76,12 @@ public class WemoCrockpotHandler extends WemoBaseThingHandler {
         if (configuration.get(UDN) != null) {
             logger.debug("Initializing WemoCrockpotHandler for UDN '{}'", configuration.get(UDN));
             addSubscription(BASICEVENT);
-            host = getHost();
             pollingJob = scheduler.scheduleWithFixedDelay(this::poll, 0, DEFAULT_REFRESH_INTERVAL_SECONDS,
                     TimeUnit.SECONDS);
-            updateStatus(ThingStatus.ONLINE);
+            updateStatus(ThingStatus.UNKNOWN);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/config-status.error.missing-udn");
-            logger.debug("Cannot initalize WemoCrockpotHandler. UDN not set.");
         }
     }
 
@@ -103,12 +103,10 @@ public class WemoCrockpotHandler extends WemoBaseThingHandler {
             }
             try {
                 logger.debug("Polling job");
-                host = getHost();
                 // Check if the Wemo device is set in the UPnP service registry
-                // If not, set the thing state to ONLINE/CONFIG-PENDING and wait for the next poll
                 if (!isUpnpDeviceRegistered()) {
                     logger.debug("UPnP device {} not yet registered", getUDN());
-                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
                             "@text/config-status.pending.device-not-registered [\"" + getUDN() + "\"]");
                     return;
                 }
@@ -121,20 +119,10 @@ public class WemoCrockpotHandler extends WemoBaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        String localHost = getHost();
-        if (localHost.isEmpty()) {
-            logger.warn("Failed to send command '{}' for device '{}': IP address missing", command,
-                    getThing().getUID());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/config-status.error.missing-ip");
-            return;
-        }
-        String wemoURL = getWemoURL(localHost, BASICACTION);
+        String wemoURL = getWemoURL(BASICACTION);
         if (wemoURL == null) {
             logger.debug("Failed to send command '{}' for device '{}': URL cannot be created", command,
                     getThing().getUID());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/config-status.error.missing-url");
             return;
         }
         String mode = "0";
@@ -142,7 +130,7 @@ public class WemoCrockpotHandler extends WemoBaseThingHandler {
 
         if (command instanceof RefreshType) {
             updateWemoState();
-        } else if (CHANNEL_COOKMODE.equals(channelUID.getId())) {
+        } else if (CHANNEL_COOK_MODE.equals(channelUID.getId())) {
             String commandString = command.toString();
             switch (commandString) {
                 case "OFF":
@@ -192,19 +180,10 @@ public class WemoCrockpotHandler extends WemoBaseThingHandler {
      *
      */
     protected void updateWemoState() {
-        String localHost = getHost();
-        if (localHost.isEmpty()) {
-            logger.warn("Failed to get actual state for device '{}': IP address missing", getThing().getUID());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/config-status.error.missing-ip");
-            return;
-        }
         String actionService = BASICEVENT;
-        String wemoURL = getWemoURL(localHost, actionService);
+        String wemoURL = getWemoURL(actionService);
         if (wemoURL == null) {
             logger.warn("Failed to get actual state for device '{}': URL cannot be created", getThing().getUID());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/config-status.error.missing-url");
             return;
         }
         try {
@@ -225,12 +204,12 @@ public class WemoCrockpotHandler extends WemoBaseThingHandler {
                 case "50":
                     newMode = new StringType("WARM");
                     State warmTime = DecimalType.valueOf(time);
-                    updateState(CHANNEL_WARMCOOKTIME, warmTime);
+                    updateState(CHANNEL_WARM_COOK_TIME, warmTime);
                     break;
                 case "51":
                     newMode = new StringType("LOW");
                     State lowTime = DecimalType.valueOf(time);
-                    updateState(CHANNEL_LOWCOOKTIME, lowTime);
+                    updateState(CHANNEL_LOW_COOK_TIME, lowTime);
                     break;
                 case "52":
                     newMode = new StringType("HIGH");
@@ -238,8 +217,8 @@ public class WemoCrockpotHandler extends WemoBaseThingHandler {
                     updateState(CHANNEL_HIGHCOOKTIME, highTime);
                     break;
             }
-            updateState(CHANNEL_COOKMODE, newMode);
-            updateState(CHANNEL_COOKEDTIME, newCoockedTime);
+            updateState(CHANNEL_COOK_MODE, newMode);
+            updateState(CHANNEL_COOKED_TIME, newCoockedTime);
             updateStatus(ThingStatus.ONLINE);
         } catch (IOException e) {
             logger.debug("Failed to get actual state for device '{}': {}", getThing().getUID(), e.getMessage(), e);

@@ -41,4 +41,5 @@ public class ShellyThingConfiguration {
 
     public String localIp = ""; // local ip addresses used to create callback url
     public String localPort = "8080";
+    public String serviceName = "";
 }

@@ -14,8 +14,6 @@ package org.openhab.binding.denonmarantz.internal.xml.adapters;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
-import org.apache.commons.lang3.StringUtils;
-
 /**
  * Adapter to clean up string values
  *
@@ -27,7 +25,7 @@ public class StringAdapter extends XmlAdapter<String, String> {
     public String unmarshal(String v) throws Exception {
         String val = v;
         if (val != null) {
-            val = StringUtils.trimToEmpty(val);
+            return val.trim();
         }
         return val;
     }

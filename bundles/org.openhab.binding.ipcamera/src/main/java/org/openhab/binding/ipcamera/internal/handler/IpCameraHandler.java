@@ -213,7 +213,7 @@ public class IpCameraHandler extends BaseThingHandler {
             try {
                 if (msg instanceof HttpResponse) {
                     HttpResponse response = (HttpResponse) msg;
-                    if (response.status().code() != 401) {
+                    if (response.status().code() == 200) {
                         if (!response.headers().isEmpty()) {
                             for (String name : response.headers().names()) {
                                 // Some cameras use first letter uppercase and others dont.
@@ -253,7 +253,7 @@ public class IpCameraHandler extends BaseThingHandler {
                             }
                         }
                     } else {
-                        // 401 errors already handled in pipeline by MyNettyAuthHandler.java
+                        // Non 200 OK replies are logged and handled in pipeline by MyNettyAuthHandler.java
                         return;
                     }
                 }
@@ -570,7 +570,7 @@ public class IpCameraHandler extends BaseThingHandler {
         if (!"PUT".equals(httpMethod) || (useDigestAuth && digestString == null)) {
             request = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, new HttpMethod(httpMethod), httpRequestURL);
             request.headers().set("Host", cameraConfig.getIp() + ":" + port);
-            request.headers().set("Connection", HttpHeaderValues.KEEP_ALIVE);
+            request.headers().set("Connection", HttpHeaderValues.CLOSE);
         } else {
             request = putRequestWithBody;
         }
@@ -1354,7 +1354,8 @@ public class IpCameraHandler extends BaseThingHandler {
 
     void pollingCameraConnection() {
         keepMjpegRunning();
-        if (thing.getThingTypeUID().getId().equals(GENERIC_THING)) {
+        if (thing.getThingTypeUID().getId().equals(GENERIC_THING)
+                || thing.getThingTypeUID().getId().equals(DOORBIRD_THING)) {
             if (rtspUri.isEmpty()) {
                 logger.warn("Binding has not been supplied with a FFmpeg Input URL, so some features will not work.");
             }
@@ -1648,7 +1649,8 @@ public class IpCameraHandler extends BaseThingHandler {
     }
 
     private void tryConnecting() {
-        if (!thing.getThingTypeUID().getId().equals(GENERIC_THING)) {
+        if (!thing.getThingTypeUID().getId().equals(GENERIC_THING)
+                && !thing.getThingTypeUID().getId().equals(DOORBIRD_THING)) {
             onvifCamera = new OnvifConnection(this, cameraConfig.getIp() + ":" + cameraConfig.getOnvifPort(),
                     cameraConfig.getUser(), cameraConfig.getPassword());
             onvifCamera.setSelectedMediaProfile(cameraConfig.getOnvifMediaProfile());

@@ -66,6 +66,7 @@ public class VelbusBindingConstants {
     public static final ThingTypeUID THING_TYPE_VMBEL2 = new ThingTypeUID(BINDING_ID, "vmbel2");
     public static final ThingTypeUID THING_TYPE_VMBEL4 = new ThingTypeUID(BINDING_ID, "vmbel4");
     public static final ThingTypeUID THING_TYPE_VMBELO = new ThingTypeUID(BINDING_ID, "vmbelo");
+    public static final ThingTypeUID THING_TYPE_VMBELPIR = new ThingTypeUID(BINDING_ID, "vmbelpir");
     public static final ThingTypeUID THING_TYPE_VMBGP1 = new ThingTypeUID(BINDING_ID, "vmbgp1");
     public static final ThingTypeUID THING_TYPE_VMBGP1_2 = new ThingTypeUID(BINDING_ID, "vmbgp1-2");
     public static final ThingTypeUID THING_TYPE_VMBGP2 = new ThingTypeUID(BINDING_ID, "vmbgp2");
@@ -94,8 +95,8 @@ public class VelbusBindingConstants {
                     THING_TYPE_VMB4AN, THING_TYPE_VMB4DC, THING_TYPE_VMB4RY, THING_TYPE_VMB4RYLD, THING_TYPE_VMB4RYNO,
                     THING_TYPE_VMB6IN, THING_TYPE_VMB6PBN, THING_TYPE_VMB7IN, THING_TYPE_VMB8IR, THING_TYPE_VMB8PB,
                     THING_TYPE_VMB8PBU, THING_TYPE_VMBDME, THING_TYPE_VMBDMI, THING_TYPE_VMBDMIR, THING_TYPE_VMBEL1,
-                    THING_TYPE_VMBEL2, THING_TYPE_VMBEL4, THING_TYPE_VMBELO, THING_TYPE_VMBGP1, THING_TYPE_VMBGP1_2,
-                    THING_TYPE_VMBGP2, THING_TYPE_VMBGP2_2, THING_TYPE_VMBGP4, THING_TYPE_VMBGP4_2,
+                    THING_TYPE_VMBEL2, THING_TYPE_VMBEL4, THING_TYPE_VMBELO, THING_TYPE_VMBELPIR, THING_TYPE_VMBGP1,
+                    THING_TYPE_VMBGP1_2, THING_TYPE_VMBGP2, THING_TYPE_VMBGP2_2, THING_TYPE_VMBGP4, THING_TYPE_VMBGP4_2,
                     THING_TYPE_VMBGP4PIR, THING_TYPE_VMBGP4PIR_2, THING_TYPE_VMBGPO, THING_TYPE_VMBGPOD,
                     THING_TYPE_VMBGPOD_2, THING_TYPE_VMBMETEO, THING_TYPE_VMBPIRC, THING_TYPE_VMBPIRM,
                     THING_TYPE_VMBPIRO, THING_TYPE_VMBRFR8S, THING_TYPE_VMBVP1)));
@@ -142,6 +143,7 @@ public class VelbusBindingConstants {
     public static final byte MODULE_TYPE_VMBEL2 = 0x35;
     public static final byte MODULE_TYPE_VMBEL4 = 0x36;
     public static final byte MODULE_TYPE_VMBELO = 0x37;
+    public static final byte MODULE_TYPE_VMBELPIR = 0x38;
     public static final byte MODULE_TYPE_VMBGP1_2 = 0x3A;
     public static final byte MODULE_TYPE_VMBGP2_2 = 0x3B;
     public static final byte MODULE_TYPE_VMBGP4_2 = 0x3C;
@@ -224,4 +226,31 @@ public class VelbusBindingConstants {
     public static final String CHANNEL = "CH";
     public static final String SUB_ADDRESS = "subaddress";
     public static final String DIMSPEED = "dimspeed";
+
+    // Channels ids
+    public static final String CHANNEL_BRIDGE_CLOCK_ALARM1_ENABLED = "bridgeClockAlarm#clockAlarm1Enabled";
+    public static final String CHANNEL_BRIDGE_CLOCK_ALARM1_WAKEUP_HOUR = "bridgeClockAlarm#clockAlarm1WakeupHour";
+    public static final String CHANNEL_BRIDGE_CLOCK_ALARM1_WAKEUP_MINUTE = "bridgeClockAlarm#clockAlarm1WakeupMinute";
+    public static final String CHANNEL_BRIDGE_CLOCK_ALARM1_BEDTIME_HOUR = "bridgeClockAlarm#clockAlarm1BedtimeHour";
+    public static final String CHANNEL_BRIDGE_CLOCK_ALARM1_BEDTIME_MINUTE = "bridgeClockAlarm#clockAlarm1BedtimeMinute";
+    public static final String CHANNEL_BRIDGE_CLOCK_ALARM2_ENABLED = "bridgeClockAlarm#clockAlarm2Enabled";
+    public static final String CHANNEL_BRIDGE_CLOCK_ALARM2_WAKEUP_HOUR = "bridgeClockAlarm#clockAlarm2WakeupHour";
+    public static final String CHANNEL_BRIDGE_CLOCK_ALARM2_WAKEUP_MINUTE = "bridgeClockAlarm#clockAlarm2WakeupMinute";
+    public static final String CHANNEL_BRIDGE_CLOCK_ALARM2_BEDTIME_HOUR = "bridgeClockAlarm#clockAlarm2BedtimeHour";
+    public static final String CHANNEL_BRIDGE_CLOCK_ALARM2_BEDTIME_MINUTE = "bridgeClockAlarm#clockAlarm2BedtimeMinute";
+    public static final String CHANNEL_MODULE_CLOCK_ALARM1_ENABLED = "clockAlarm#clockAlarm1Enabled";
+    public static final String CHANNEL_MODULE_CLOCK_ALARM1_TYPE = "clockAlarm#clockAlarm1Type";
+    public static final String CHANNEL_MODULE_CLOCK_ALARM1_WAKEUP_HOUR = "clockAlarm#clockAlarm1WakeupHour";
+    public static final String CHANNEL_MODULE_CLOCK_ALARM1_WAKEUP_MINUTE = "clockAlarm#clockAlarm1WakeupMinute";
+    public static final String CHANNEL_MODULE_CLOCK_ALARM1_BEDTIME_HOUR = "clockAlarm#clockAlarm1BedtimeHour";
+    public static final String CHANNEL_MODULE_CLOCK_ALARM1_BEDTIME_MINUTE = "clockAlarm#clockAlarm1BedtimeMinute";
+    public static final String CHANNEL_MODULE_CLOCK_ALARM2_ENABLED = "clockAlarm#clockAlarm2Enabled";
+    public static final String CHANNEL_MODULE_CLOCK_ALARM2_TYPE = "clockAlarm#clockAlarm2Type";
+    public static final String CHANNEL_MODULE_CLOCK_ALARM2_WAKEUP_HOUR = "clockAlarm#clockAlarm2WakeupHour";
+    public static final String CHANNEL_MODULE_CLOCK_ALARM2_WAKEUP_MINUTE = "clockAlarm#clockAlarm2WakeupMinute";
+    public static final String CHANNEL_MODULE_CLOCK_ALARM2_BEDTIME_HOUR = "clockAlarm#clockAlarm2BedtimeHour";
+    public static final String CHANNEL_MODULE_CLOCK_ALARM2_BEDTIME_MINUTE = "clockAlarm#clockAlarm2BedtimeMinute";
+
+    // Delay
+    public static final Integer DELAY_SEND_CLOCK_ALARM_UPDATE = 10000;
 }

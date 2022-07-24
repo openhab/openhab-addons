@@ -16,7 +16,6 @@ import static org.openhab.automation.pidcontroller.internal.PIDControllerConstan
 
 import java.math.BigDecimal;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -108,6 +107,8 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
         double kiAdjuster = getDoubleFromConfig(config, CONFIG_KI_GAIN);
         double kdAdjuster = getDoubleFromConfig(config, CONFIG_KD_GAIN);
         double kdTimeConstant = getDoubleFromConfig(config, CONFIG_KD_TIMECONSTANT);
+        double iMinValue = getDoubleFromConfig(config, CONFIG_I_MIN);
+        double iMaxValue = getDoubleFromConfig(config, CONFIG_I_MAX);
         pInspector = (String) config.get(P_INSPECTOR);
         iInspector = (String) config.get(I_INSPECTOR);
         dInspector = (String) config.get(D_INSPECTOR);
@@ -116,7 +117,12 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
         loopTimeMs = ((BigDecimal) requireNonNull(config.get(CONFIG_LOOP_TIME), CONFIG_LOOP_TIME + " is not set"))
                 .intValue();
 
-        controller = new PIDController(kpAdjuster, kiAdjuster, kdAdjuster, kdTimeConstant);
+        double previousIntegralPart = getItemNameValueAsNumberOrZero(itemRegistry, iInspector);
+        double previousDerivativePart = getItemNameValueAsNumberOrZero(itemRegistry, dInspector);
+        double previousError = getItemNameValueAsNumberOrZero(itemRegistry, eInspector);
+
+        controller = new PIDController(kpAdjuster, kiAdjuster, kdAdjuster, kdTimeConstant, iMinValue, iMaxValue,
+                previousIntegralPart, previousDerivativePart, previousError);
 
         eventFilter = event -> {
             String topic = event.getTopic();
@@ -146,7 +152,13 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
     }
 
     private double getDoubleFromConfig(Configuration config, String key) {
-        return ((BigDecimal) Objects.requireNonNull(config.get(key), key + " is not set")).doubleValue();
+        Object rawValue = config.get(key);
+
+        if (rawValue == null) {
+            return Double.NaN;
+        }
+
+        return ((BigDecimal) rawValue).doubleValue();
     }
 
     private void calculate() {
@@ -184,7 +196,8 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
         if (itemName != null) {
             try {
                 itemRegistry.getItem(itemName);
-                eventPublisher.post(ItemEventFactory.createCommandEvent(itemName, new DecimalType(value)));
+                eventPublisher.post(ItemEventFactory.createStateEvent(itemName,
+                        Double.isFinite(value) ? new DecimalType(value) : UnDefType.UNDEF));
             } catch (ItemNotFoundException e) {
                 logger.warn("Item doesn't exist: {}", itemName);
             }
@@ -198,6 +211,26 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
         }
 
         throw new IllegalStateException("The module callback is not set");
+    }
+
+    private double getItemNameValueAsNumberOrZero(ItemRegistry itemRegistry, @Nullable String itemName)
+            throws IllegalArgumentException {
+        double value = 0.0;
+
+        if (itemName == null) {
+            return value;
+        }
+
+        try {
+            value = getItemValueAsNumber(itemRegistry.getItem(itemName));
+            logger.debug("Item '{}' value {} recovered by PID controller", itemName, value);
+        } catch (ItemNotFoundException e) {
+            throw new IllegalArgumentException("Configured item not found: " + itemName, e);
+        } catch (PIDException e) {
+            logger.warn("Item '{}' value recovery errored: {}", itemName, e.getMessage());
+        }
+
+        return value;
     }
 
     private double getItemValueAsNumber(Item item) throws PIDException {

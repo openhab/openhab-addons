@@ -81,7 +81,47 @@ public class DaliStandardCommand extends DaliGearCommandBase {
         return new DaliStandardCommand(target, 0x90, 0, false);
     }
 
+    public static DaliStandardCommand createQueryContentDTR0Command(DaliAddress target) throws DaliException {
+        return new DaliStandardCommand(target, 0x98, 0, false);
+    }
+
     public static DaliStandardCommand createQueryActualLevelCommand(DaliAddress target) throws DaliException {
         return new DaliStandardCommand(target, 0xa0, 0, false);
+    }
+
+    public static DaliStandardCommand createActivateCommand(DaliAddress target) throws DaliException {
+        return new DaliStandardCommand(target, 0xe2, 0, false);
+    }
+
+    public static DaliStandardCommand createQueryColorValueCommand(DaliAddress target) throws DaliException {
+        return new DaliStandardCommand(target, 0xfa, 0, false);
+    }
+
+    // Global commands sent to special addresses
+
+    public static DaliStandardCommand createSetDTR0Command(int value) throws DaliException {
+        return new DaliStandardCommand(DaliAddress.createRawAddress(0xa3), value, 0, false);
+    }
+
+    public static DaliStandardCommand createSetDTR1Command(int value) throws DaliException {
+        return new DaliStandardCommand(DaliAddress.createRawAddress(0xc3), value, 0, false);
+    }
+
+    public static DaliStandardCommand createSetDTR2Command(int value) throws DaliException {
+        return new DaliStandardCommand(DaliAddress.createRawAddress(0xc5), value, 0, false);
+    }
+
+    public static DaliStandardCommand createSetDeviceTypeCommand(int value) throws DaliException {
+        return new DaliStandardCommand(DaliAddress.createRawAddress(0xc1), value, 0, false);
+    }
+
+    // DT8 (color temperature and single-channel RGB) commands
+
+    public static DaliStandardCommand createSetRgbDimlevelCommand(DaliAddress target) throws DaliException {
+        return new DaliStandardCommand(target, 0xeb, 0, false);
+    }
+
+    public static DaliStandardCommand createSetColorTemperatureCommand(DaliAddress target) throws DaliException {
+        return new DaliStandardCommand(target, 0xe7, 0, false);
     }
 }

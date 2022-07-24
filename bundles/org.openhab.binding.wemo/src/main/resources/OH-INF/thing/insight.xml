@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="wemo"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="insight">
+		<label>WeMo Insight Switch</label>
+		<description>This is a WeMo Insight Switch with energy measurement</description>
+
+		<channels>
+			<channel id="state" typeId="state"/>
+			<channel id="lastChangedAt" typeId="lastChangedAt"/>
+			<channel id="lastOnFor" typeId="lastOnFor"/>
+			<channel id="onToday" typeId="onToday"/>
+			<channel id="onTotal" typeId="onTotal"/>
+			<channel id="timespan" typeId="timespan"/>
+			<channel id="averagePower" typeId="averagePower"/>
+			<channel id="currentPower" typeId="currentPower"/>
+			<channel id="currentPowerRaw" typeId="currentPowerRaw"/>
+			<channel id="energyToday" typeId="energyToday"/>
+			<channel id="energyTotal" typeId="energyTotal"/>
+			<channel id="standByLimit" typeId="standByLimit"/>
+			<channel id="onStandBy" typeId="onStandBy"/>
+		</channels>
+
+		<representation-property>udn</representation-property>
+
+		<config-description-ref uri="thing-type:wemo:insight"/>
+	</thing-type>
+
+</thing:thing-descriptions>

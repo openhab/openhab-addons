@@ -12,10 +12,7 @@
  */
 package org.openhab.binding.wemo.internal;
 
-import java.util.Collections;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
@@ -49,68 +46,69 @@ public class WemoBindingConstants {
 
     // List of all Channel ids
     public static final String CHANNEL_STATE = "state";
-    public static final String CHANNEL_MOTIONDETECTION = "motionDetection";
-    public static final String CHANNEL_LASTMOTIONDETECTED = "lastMotionDetected";
-    public static final String CHANNEL_LASTCHANGEDAT = "lastChangedAt";
-    public static final String CHANNEL_LASTONFOR = "lastOnFor";
-    public static final String CHANNEL_ONTODAY = "onToday";
-    public static final String CHANNEL_ONTOTAL = "onTotal";
+    public static final String CHANNEL_MOTION_DETECTION = "motionDetection";
+    public static final String CHANNEL_LAST_MOTION_DETECTED = "lastMotionDetected";
+    public static final String CHANNEL_LAST_CHANGED_AT = "lastChangedAt";
+    public static final String CHANNEL_LAST_ON_FOR = "lastOnFor";
+    public static final String CHANNEL_ON_TODAY = "onToday";
+    public static final String CHANNEL_ON_TOTAL = "onTotal";
     public static final String CHANNEL_TIMESPAN = "timespan";
-    public static final String CHANNEL_AVERAGEPOWER = "averagePower";
-    public static final String CHANNEL_CURRENTPOWER = "currentPower";
-    public static final String CHANNEL_ENERGYTODAY = "energyToday";
-    public static final String CHANNEL_ENERGYTOTAL = "energyTotal";
-    public static final String CHANNEL_STANDBYLIMIT = "standByLimit";
+    public static final String CHANNEL_AVERAGE_POWER = "averagePower";
+    public static final String CHANNEL_CURRENT_POWER = "currentPower";
+    public static final String CHANNEL_CURRENT_POWER_RAW = "currentPowerRaw";
+    public static final String CHANNEL_ENERGY_TODAY = "energyToday";
+    public static final String CHANNEL_ENERGY_TOTAL = "energyTotal";
+    public static final String CHANNEL_STAND_BY_LIMIT = "standByLimit";
     public static final String CHANNEL_BRIGHTNESS = "brightness";
     public static final String CHANNEL_RELAY = "relay";
     public static final String CHANNEL_SENSOR = "sensor";
-    public static final String CHANNEL_ONSTANDBY = "onStandBy";
+    public static final String CHANNEL_ON_STAND_BY = "onStandBy";
 
-    public static final String CHANNEL_COFFEEMODE = "coffeeMode";
-    public static final String CHANNEL_MODETIME = "modeTime";
-    public static final String CHANNEL_TIMEREMAINING = "timeRemaining";
-    public static final String CHANNEL_WATERLEVELREACHED = "waterLevelReached";
-    public static final String CHANNEL_CLEANADVISE = "cleanAdvise";
-    public static final String CHANNEL_FILTERADVISE = "filterAdvise";
+    public static final String CHANNEL_COFFEE_MODE = "coffeeMode";
+    public static final String CHANNEL_MODE_TIME = "modeTime";
+    public static final String CHANNEL_TIME_REMAINING = "timeRemaining";
+    public static final String CHANNEL_WATER_LEVEL_REACHED = "waterLevelReached";
+    public static final String CHANNEL_CLEAN_ADVISE = "cleanAdvise";
+    public static final String CHANNEL_FILTER_ADVISE = "filterAdvise";
     public static final String CHANNEL_BREWED = "brewed";
-    public static final String CHANNEL_LASTCLEANED = "lastCleaned";
+    public static final String CHANNEL_LAST_CLEANED = "lastCleaned";
 
-    public static final String CHANNEL_FADERENABLED = "faderEnabled";
-    public static final String CHANNEL_TIMERSTART = "timerStart";
-    public static final String CHANNEL_FADERCOUNTDOWNTIME = "faderCountDownTime";
-    public static final String CHANNEL_NIGHTMODE = "nightMode";
-    public static final String CHANNEL_STARTTIME = "startTime";
-    public static final String CHANNEL_ENDTIME = "endTime";
-    public static final String CHANNEL_NIGHTMODEBRIGHTNESS = "nightModeBrightness";
+    public static final String CHANNEL_FADER_ENABLED = "faderEnabled";
+    public static final String CHANNEL_TIMER_START = "timerStart";
+    public static final String CHANNEL_FADER_COUNT_DOWN_TIME = "faderCountDownTime";
+    public static final String CHANNEL_NIGHT_MODE = "nightMode";
+    public static final String CHANNEL_START_TIME = "startTime";
+    public static final String CHANNEL_END_TIME = "endTime";
+    public static final String CHANNEL_NIGHT_MODE_BRIGHTNESS = "nightModeBrightness";
 
-    public static final String CHANNEL_COOKMODE = "cookMode";
-    public static final String CHANNEL_LOWCOOKTIME = "lowCookTime";
-    public static final String CHANNEL_WARMCOOKTIME = "warmCooktime";
+    public static final String CHANNEL_COOK_MODE = "cookMode";
+    public static final String CHANNEL_LOW_COOK_TIME = "lowCookTime";
+    public static final String CHANNEL_WARM_COOK_TIME = "warmCooktime";
     public static final String CHANNEL_HIGHCOOKTIME = "highCooktime";
-    public static final String CHANNEL_COOKEDTIME = "cookedtime";
+    public static final String CHANNEL_COOKED_TIME = "cookedtime";
 
-    public static final String CHANNEL_PURIFIERMODE = "purifierMode";
-    public static final String CHANNEL_AIRQUALITY = "airQuality";
+    public static final String CHANNEL_PURIFIER_MODE = "purifierMode";
+    public static final String CHANNEL_AIR_QUALITY = "airQuality";
     public static final String CHANNEL_IONIZER = "ionizer";
-    public static final String CHANNEL_FILTERLIFE = "filterLife";
-    public static final String CHANNEL_EXPIREDFILTERTIME = "expiredFilterTime";
-    public static final String CHANNEL_FILTERPRESENT = "filterPresent";
+    public static final String CHANNEL_FILTER_LIFE = "filterLife";
+    public static final String CHANNEL_EXPIRED_FILTER_TIME = "expiredFilterTime";
+    public static final String CHANNEL_FILTER_PRESENT = "filterPresent";
 
-    public static final String CHANNEL_HUMIDIFIERMODE = "humidifierMode";
-    public static final String CHANNEL_CURRENTHUMIDITY = "currentHumidity";
-    public static final String CHANNEL_DESIREDHUMIDITY = "desiredHumidity";
-    public static final String CHANNEL_WATERLEVEL = "waterLEvel";
+    public static final String CHANNEL_HUMIDIFIER_MODE = "humidifierMode";
+    public static final String CHANNEL_CURRENT_HUMIDITY = "currentHumidity";
+    public static final String CHANNEL_DESIRED_HUMIDITY = "desiredHumidity";
+    public static final String CHANNEL_WATER_LEVEL = "waterLEvel";
 
-    public static final String CHANNEL_HEATERMODE = "heaterMode";
-    public static final String CHANNEL_CURRENTTEMP = "currentTemperature";
-    public static final String CHANNEL_TARGETTEMP = "targetTemperature";
-    public static final String CHANNEL_AUTOOFFTIME = "autoOffTime";
-    public static final String CHANNEL_HEATINGREMAINING = "heatingRemaining";
+    public static final String CHANNEL_HEATER_MODE = "heaterMode";
+    public static final String CHANNEL_CURRENT_TEMPERATURE = "currentTemperature";
+    public static final String CHANNEL_TARGET_TEMPERATURE = "targetTemperature";
+    public static final String CHANNEL_AUTO_OFF_TIME = "autoOffTime";
+    public static final String CHANNEL_HEATING_REMAINING = "heatingRemaining";
 
     // List of thing configuration properties
     public static final String UDN = "udn";
     public static final String DEVICE_ID = "deviceID";
-    public static final String POLLINGINTERVALL = "pollingInterval";
+    public static final String POLLING_INTERVAL = "pollingInterval";
     public static final int DEFAULT_REFRESH_INTERVAL_SECONDS = 60;
     public static final int SUBSCRIPTION_DURATION_SECONDS = 600;
     public static final int LINK_DISCOVERY_SERVICE_INITIAL_DELAY = 5;
@@ -125,14 +123,12 @@ public class WemoBindingConstants {
     public static final String INSIGHTACTION = "insight";
     public static final String INSIGHTEVENT = "insight1";
 
-    public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
+    public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_THING_TYPES = Set.of(THING_TYPE_BRIDGE);
 
-    public static final Set<ThingTypeUID> SUPPORTED_LIGHT_THING_TYPES = Collections.singleton(THING_TYPE_MZ100);
+    public static final Set<ThingTypeUID> SUPPORTED_LIGHT_THING_TYPES = Set.of(THING_TYPE_MZ100);
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections
-            .unmodifiableSet(Stream
-                    .of(THING_TYPE_SOCKET, THING_TYPE_INSIGHT, THING_TYPE_LIGHTSWITCH, THING_TYPE_MOTION,
-                            THING_TYPE_BRIDGE, THING_TYPE_MZ100, THING_TYPE_MAKER, THING_TYPE_COFFEE, THING_TYPE_DIMMER,
-                            THING_TYPE_CROCKPOT, THING_TYPE_PURIFIER, THING_TYPE_HUMIDIFIER, THING_TYPE_HEATER)
-                    .collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_SOCKET, THING_TYPE_INSIGHT,
+            THING_TYPE_LIGHTSWITCH, THING_TYPE_MOTION, THING_TYPE_BRIDGE, THING_TYPE_MZ100, THING_TYPE_MAKER,
+            THING_TYPE_COFFEE, THING_TYPE_DIMMER, THING_TYPE_CROCKPOT, THING_TYPE_PURIFIER, THING_TYPE_HUMIDIFIER,
+            THING_TYPE_HEATER);
 }

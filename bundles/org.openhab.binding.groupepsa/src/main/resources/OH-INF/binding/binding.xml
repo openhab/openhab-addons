@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<binding:binding id="groupepsa" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:binding="https://openhab.org/schemas/binding/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
+
+	<name>Groupe PSA Binding</name>
+	<description>Provides information and (limited) control of cars from the Groupe PSA (Peugeot, Citroen, Opel, etc.).</description>
+
+</binding:binding>

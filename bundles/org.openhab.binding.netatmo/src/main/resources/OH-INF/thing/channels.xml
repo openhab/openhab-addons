@@ -4,12 +4,577 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<channel-type id="lastStatusStore" advanced="true">
+	<channel-type id="monitoring-status">
+		<item-type>Switch</item-type>
+		<label>Monitoring</label>
+		<description>Monitoring state of the camera</description>
+	</channel-type>
+
+	<channel-type id="siren-monitoring">
+		<item-type>Switch</item-type>
+		<label>Monitoring</label>
+		<description>Monitoring state of the equipment</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="siren-status">
+		<item-type>String</item-type>
+		<label>Status</label>
+		<description>Status of the siren</description>
+		<state pattern="%s" readOnly="true">
+			<options>
+				<option value="no_sound">Silent</option>
+				<option value="sound">Alarm</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="window-open">
+		<item-type>Contact</item-type>
+		<label>Window Status</label>
+		<description>Windows of the room are opened.</description>
+		<category>Window</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="anticipating-heating">
+		<item-type>Switch</item-type>
+		<label>Anticipated Heating</label>
+		<description>Anticipates next scheduled setpoint.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="heating-status">
+		<item-type>Contact</item-type>
+		<label>Heating Status</label>
+		<description>Is the furnace currently heating?</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="camera-event">
+		<kind>trigger</kind>
+		<label>Camera Event</label>
+		<event>
+			<options>
+				<option value="ANIMAL"/>
+				<option value="HUMAN"/>
+				<option value="MOVEMENT"/>
+				<option value="VEHICLE"/>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="battery-status">
+		<item-type>String</item-type>
+		<label>Battery Status</label>
+		<description>Description of the battery status.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="video-url">
+		<item-type>String</item-type>
+		<label>Video URL</label>
+		<description>URL of the event recording.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="planning">
+		<item-type>String</item-type>
+		<label>Planning</label>
+		<description>Planning currently applied when following weekly schedule.</description>
+		<state readOnly="false" pattern="%s"/>
+	</channel-type>
+
+	<channel-type id="person-count">
+		<item-type>Number</item-type>
+		<label>Person Count</label>
+		<description>Total number of persons that are at home.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Presence</tag>
+		</tags>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="unknown-person-count">
+		<item-type>Number</item-type>
+		<label>Unknown Persons Count</label>
+		<description>Total number of unknown persons that are at home.</description>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="unknown-person-picture">
+		<item-type>Image</item-type>
+		<label>Unknown Person Snapshot</label>
+		<description>Snapshot of unknown person that is at home.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="rain-quantity">
+		<item-type>Number:Length</item-type>
+		<label>Rain Quantity</label>
+		<description>Quantity of water over the period.</description>
+		<category>Rain</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="rain-intensity">
+		<item-type>Number:Speed</item-type>
+		<label>Rain Intensity</label>
+		<description>Current precipitation intensity.</description>
+		<category>Rain</category>
+		<state readOnly="true" pattern="%.1f mm/h"/>
+	</channel-type>
+
+	<channel-type id="setpoint-duration">
+		<item-type>Number:Time</item-type>
+		<label>Setpoint Duration</label>
+		<description>Default duration of manual setpoint changes.</description>
+		<category>Time</category>
+		<state pattern="%d %unit%" min="5" max="720" step="5"/>
+	</channel-type>
+
+	<channel-type id="floodlight-mode">
+		<item-type>String</item-type>
+		<label>Floodlight</label>
+		<description>State of the floodlight (On/Off/Auto)</description>
+		<state pattern="%s">
+			<options>
+				<option value="ON">On</option>
+				<option value="OFF">Off</option>
+				<option value="AUTO">Auto</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="trend" advanced="true">
+		<item-type>String</item-type>
+		<label>Trend</label>
+		<description>Evolution of the measure over time.</description>
+		<category>Line</category>
+		<state readOnly="true" pattern="%s">
+			<options>
+				<option value="UP">Up</option>
+				<option value="STABLE">Stable</option>
+				<option value="DOWN">Down</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="sd-card-status">
+		<item-type>String</item-type>
+		<label>SD Card State</label>
+		<description>State of the SD card</description>
+		<state readOnly="true" pattern="%s">
+			<options>
+				<option value="SD_CARD_MISSING">Missing SD Card</option>
+				<option value="SD_CARD_INSERTED">SD Card inserted</option>
+				<option value="SD_CARD_FORMATTED">SD Card formated</option>
+				<option value="SD_CARD_WORKING">Working SD Card</option>
+				<option value="SD_CARD_DEFECTIVE">Defective SD Card</option>
+				<option value="SD_CARD_INCOMPATIBLE_SPEED">Incompatible SD Card speed</option>
+				<option value="SD_CARD_INSUFFICIENT_SPACE">Insufficient SD Card space</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="alim-status">
+		<item-type>String</item-type>
+		<label>Alim State</label>
+		<description>State of the power connector</description>
+		<state readOnly="true" pattern="%s">
+			<options>
+				<option value="ALIM_INCORRECT_POWER">Incorrect power adapter</option>
+				<option value="ALIM_CORRECT_POWER">Correct power adapter</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="video-status">
+		<item-type>String</item-type>
+		<label>Video Status</label>
+		<description>Status of the video (recording, deleted or available).</description>
+		<state readOnly="true">
+			<options>
+				<option value="RECORDING">Recording</option>
+				<option value="DELETED">Deleted</option>
+				<option value="AVAILABLE">Available</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="setpoint">
+		<item-type>Number:Temperature</item-type>
+		<label>Setpoint</label>
+		<description>Thermostat temperature setpoint.</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="false" min="7" max="30" step="0.5"/>
+	</channel-type>
+
+	<channel-type id="th-mode">
+		<item-type>String</item-type>
+		<label>Thermostat Mode</label>
+		<description>Chosen thermostat mode (home, frost guard, manual, max).</description>
+		<state readOnly="false">
+			<options>
+				<option value="HOME">Home</option>
+				<option value="FROST_GUARD">Frost Guard</option>
+				<option value="MANUAL">Manual</option>
+				<option value="MAX">Max</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="energy-mode">
+		<item-type>String</item-type>
+		<label>House Mode</label>
+		<description>Chosen mode for the house (schedule, away, frost guard, manual).</description>
+		<state readOnly="false">
+			<options>
+				<option value="SCHEDULE">Following a weekly schedule</option>
+				<option value="AWAY">Applying the -away- temperature as defined by the user</option>
+				<option value="FROST_GUARD">Frost-guard</option>
+				<option value="MANUAL">Applying a manually set temperature setpoint</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="room-heating-percent">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Heating Power</label>
+		<description>Percentage of heating power.</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="timestamp">
 		<item-type>DateTime</item-type>
-		<label>Last Status Store</label>
-		<description>Last Status Store</description>
+		<label>Timestamp</label>
+		<description>Moment when data was measured.</description>
 		<category>Time</category>
 		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="timestamp-advanced" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Timestamp</label>
+		<description>Moment when data was measured.</description>
+		<category>Time</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="co2">
+		<item-type>Number:Dimensionless</item-type>
+		<label>CO2</label>
+		<description>Air Quality indicator.</description>
+		<category>Carbondioxide</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>CO2</tag>
+		</tags>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="noise">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Noise</label>
+		<description>Current Noise Level.</description>
+		<category>SoundVolume</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Noise</tag>
+		</tags>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="health-index">
+		<item-type>Number</item-type>
+		<label>Health Index</label>
+		<description>Health index (healthy, fine, fair, poor, unhealthy).</description>
+		<state readOnly="true" pattern="%d">
+			<options>
+				<option value="0">Healthy</option>
+				<option value="1">Fine</option>
+				<option value="2">Fair</option>
+				<option value="3">Poor</option>
+				<option value="4">Unhealthy</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="humidex" advanced="true">
+		<item-type>Number</item-type>
+		<label>Humidex</label>
+		<description>Computed Humidex: felt temperature.</description>
+		<state readOnly="true" pattern="%.0f"/>
+	</channel-type>
+
+	<channel-type id="humidex-scale" advanced="true">
+		<item-type>Number</item-type>
+		<label>Humidex Appreciation</label>
+		<description>Appreciation of the Humidex.</description>
+		<state readOnly="true" pattern="%d">
+			<options>
+				<option value="0">Comfortable</option>
+				<option value="1">Some discomfort</option>
+				<option value="2">Great discomfort</option>
+				<option value="3">Dangerous</option>
+				<option value="4">Very dangerous</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="event-type">
+		<item-type>String</item-type>
+		<label>Event Type</label>
+		<description>Description of the event.</description>
+		<state readOnly="true">
+			<options>
+				<option value="PERSON">Face detected</option>
+				<option value="PERSON_AWAY">Person has left home</option>
+				<option value="PERSON_HOME">Person is at home</option>
+				<option value="OUTDOOR">Motion detected by Outdoor Camera</option>
+				<option value="MOVEMENT">Motion detected</option>
+				<option value="HUMAN">Human seen</option>
+				<option value="ANIMAL">Animal seen</option>
+				<option value="VEHICLE">Car seen</option>
+				<option value="NEW_MODULE">New Module has been paired</option>
+				<option value="MODULE_CONNECT">Module is connected with the Indoor Camera</option>
+				<option value="MODULE_DISCONNECT">Module lost its connection with the Indoor Camera</option>
+				<option value="MODULE_LOW_BATTERY">Module's battery is low</option>
+				<option value="MODULE_END_UPDATE">Module's firmware update is over</option>
+				<option value="CONNECTION">Camera connected to Netatmo</option>
+				<option value="DISCONNECTION">Camera disconnected from Netatmo</option>
+				<option value="ON">Monitoring activated</option>
+				<option value="OFF">Monitoring stopped</option>
+				<option value="BOOT">Camera booting</option>
+				<option value="SD">SD card status changed</option>
+				<option value="ALIM">Power status changed</option>
+				<option value="ACCEPTED_CALL">Call is incoming</option>
+				<option value="INCOMING_CALL">Call has been answered by a user</option>
+				<option value="RTC">Button pressed</option>
+				<option value="MISSED_CALL">Call has not been answered by anyone</option>
+				<option value="HUSH">Smoke detector status</option>
+				<option value="SMOKE">Smoke detection</option>
+				<option value="TAMPERED">Smoke Detector tamper</option>
+				<option value="WIFI_STATUS">Wifi status</option>
+				<option value="BATTERY_STATUS">Battery status</option>
+				<option value="DETECTION_CHAMBER_STATUS">Detection chamber status</option>
+				<option value="SOUND_TEST">Sound test</option>
+				<option value="NEW_DEVICE">A device has been added</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="event-subtype">
+		<item-type>String</item-type>
+		<label>Event Sub Type</label>
+		<description>Details of the event.</description>
+		<state readOnly="true">
+			<options>
+				<option value="SD_CARD_MISSING">Missing SD Card</option>
+				<option value="SD_CARD_INSERTED">SD Card inserted</option>
+				<option value="SD_CARD_FORMATTED">SD Card formated</option>
+				<option value="SD_CARD_WORKING">Working SD Card</option>
+				<option value="SD_CARD_DEFECTIVE">Defective SD Card</option>
+				<option value="SD_CARD_INCOMPATIBLE_SPEED">Incompatible SD Card speed</option>
+				<option value="SD_CARD_INSUFFICIENT_SPACE">Insufficient SD Card space</option>
+				<option value="ALIM_INCORRECT_POWER">Incorrect power adapter</option>
+				<option value="ALIM_CORRECT_POWER">Correct power adapter</option>
+				<option value="PERSON_ARRIVAL">Person arrived</option>
+				<option value="PERSON_DEPARTURE">Person has left</option>
+				<option value="PERSON_SEEN">Person has been seen</option>
+				<option value="MOVEMENT_HUMAN">Human seen</option>
+				<option value="MOVEMENT_VEHICLE">Car seen</option>
+				<option value="MOVEMENT_ANIMAL">Animal seen</option>
+				<option value="SOUND_TEST_OK">Alarm test successful</option>
+				<option value="SOUND_TEST_ERROR">Alarm test failed</option>
+				<option value="DETECTOR_READY">Smoke detector installed</option>
+				<option value="DETECTOR_TAMPERED">Smoke detector tampered</option>
+				<option value="DETECTION_CHAMBER_CLEAN">Detection chamber clean</option>
+				<option value="DETECTION_CHAMBER_DIRTY">Detection chamber dusty</option>
+				<option value="BATTERY_LOW">Battery low</option>
+				<option value="BATTERY_VERY_LOW">Battery very low</option>
+				<option value="SMOKE_CLEARED">Smoke cleared</option>
+				<option value="SMOKE_DETECTED">Smoke detected</option>
+				<option value="WIFI_STATUS_OK">Wi-Fi status ok</option>
+				<option value="WIFI_STATUS_ERROR">Wi-Fi status error</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="home-event">
+		<kind>trigger</kind>
+		<label>Home Event</label>
+		<event>
+			<options>
+				<option value="PERSON"/>
+				<option value="PERSON_AWAY"/>
+				<option value="PERSON_HOME"/>
+				<option value="OUTDOOR"/>
+				<option value="MOVEMENT"/>
+				<option value="HUMAN"/>
+				<option value="ANIMAL"/>
+				<option value="VEHICLE"/>
+				<option value="NEW_MODULE"/>
+				<option value="MODULE_CONNECT"/>
+				<option value="MODULE_DISCONNECT"/>
+				<option value="MODULE_LOW_BATTERY"/>
+				<option value="MODULE_END_UPDATE"/>
+				<option value="CONNECTION"/>
+				<option value="DISCONNECTION"/>
+				<option value="ON"/>
+				<option value="OFF"/>
+				<option value="BOOT"/>
+				<option value="SD"/>
+				<option value="ALIM"/>
+				<option value="ACCEPTED_CALL"/>
+				<option value="INCOMING_CALL"/>
+				<option value="RTC"/>
+				<option value="MISSED_CALL"/>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="message">
+		<item-type>String</item-type>
+		<label>Message</label>
+		<description>Message sent by Netatmo corresponding to given event.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="event-picture">
+		<item-type>Image</item-type>
+		<label>Event Snapshot</label>
+		<description>Capture image of the event.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="event-picture-url" advanced="true">
+		<item-type>String</item-type>
+		<label>Event Snapshot URL</label>
+		<description>Url of the event snapshot.</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="person-id">
+		<item-type>String</item-type>
+		<label>Person ID</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="camera-id">
+		<item-type>String</item-type>
+		<label>Camera ID</label>
+		<description>ID of the camera that triggered the event.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="avatar-picture-url">
+		<item-type>String</item-type>
+		<label>Avatar Picture URL</label>
+		<description>URL for the avatar of this person.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="avatar-picture">
+		<item-type>Image</item-type>
+		<label>Avatar Picture</label>
+		<description>Avatar of this person.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="at-home">
+		<item-type>Switch</item-type>
+		<label>At Home</label>
+		<description>Indicates if this person is known to be at home or not.</description>
+	</channel-type>
+
+	<channel-type id="rssi" advanced="true">
+		<item-type>Number:Power</item-type>
+		<label>Signal</label>
+		<description>Signal strength indicator.</description>
+		<category>QualityOfService</category>
+		<state readOnly="true" pattern="%d %unit%"></state>
+	</channel-type>
+
+	<channel-type id="absolute-pressure" advanced="true">
+		<item-type>Number:Pressure</item-type>
+		<label>Absolute Pressure</label>
+		<description>Pressure measured relative to a full vacuum.</description>
+		<category>Pressure</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="heat-index">
+		<item-type>Number:Temperature</item-type>
+		<label>Heat Index</label>
+		<description>Apparent computed temperature (based on temperature and humidity).</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="dewpoint" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Dewpoint</label>
+		<description>Temperature to which air must be cooled to become saturated with water vapor.</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="dewpoint-depression" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Dewpoint Depression</label>
+		<description>Difference between the temperature and the dewpoint.</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="max-temp" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Max Temp</label>
+		<description>Maximum Temperature on current day.</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="min-temp" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Min Temp</label>
+		<description>Minimum Temperature on current day</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="gust-angle">
+		<item-type>Number:Angle</item-type>
+		<label>Gust Angle</label>
+		<description>Direction of the last 5 minutes highest gust wind</description>
+		<category>Wind</category>
+		<state min="0" max="360" step="1" readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="gust-strength">
+		<item-type>Number:Speed</item-type>
+		<label>Gust Strength</label>
+		<description>Speed of the last 5 minutes highest gust wind</description>
+		<category>Wind</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="max-wind-strength" advanced="true">
+		<item-type>Number:Speed</item-type>
+		<label>Max Wind Strength</label>
+		<description>Maximum wind strength recorded</description>
+		<category>Wind</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="location">
@@ -19,822 +584,37 @@
 		<state readOnly="true" pattern="%2$s°N,%3$s°W, %1$s m"/>
 	</channel-type>
 
-	<channel-type id="temperature">
-		<item-type>Number:Temperature</item-type>
-		<label>Temperature</label>
-		<description>Current temperature</description>
-		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-
-	<channel-type id="minTemp" advanced="true">
-		<item-type>Number:Temperature</item-type>
-		<label>Min Temp</label>
-		<description>Minimum Temperature on current day</description>
-		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-
-	<channel-type id="minTempThisWeek" advanced="true">
-		<item-type>Number:Temperature</item-type>
-		<label>Min Temp This Week</label>
-		<description>Minimum Temperature this week</description>
-		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-
-	<channel-type id="minTempThisMonth" advanced="true">
-		<item-type>Number:Temperature</item-type>
-		<label>Min Temp This Month</label>
-		<description>Minimum Temperature this month</description>
-		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-
-	<channel-type id="maxTemp" advanced="true">
-		<item-type>Number:Temperature</item-type>
-		<label>Max Temp</label>
-		<description>Maximum Temperature on current day</description>
-		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-
-	<channel-type id="maxTempThisWeek" advanced="true">
-		<item-type>Number:Temperature</item-type>
-		<label>Max Temp This Week</label>
-		<description>Maximum Temperature this week</description>
-		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-
-	<channel-type id="maxTempThisMonth" advanced="true">
-		<item-type>Number:Temperature</item-type>
-		<label>Max Temp This Month</label>
-		<description>Maximum Temperature this month</description>
-		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-
-	<channel-type id="temperatureTrend" advanced="true">
+	<channel-type id="live-stream-url">
 		<item-type>String</item-type>
-		<label>Temp Trend</label>
-		<description>Temperature Evolution Trend</description>
-		<category>Temperature</category>
-		<state readOnly="true" pattern="%s">
-			<options>
-				<option value="up">up</option>
-				<option value="stable">stable</option>
-				<option value="down">down</option>
-			</options>
-		</state>
+		<label>Live Stream URL</label>
+		<description>URL of the live stream for this camera.</description>
+		<state readOnly="true"></state>
+		<config-description>
+			<parameter name="quality" type="text">
+				<label>Quality Level</label>
+				<description>Defines quality level of the feed (the higher the more bandwidth)</description>
+				<options>
+					<option value="low">Low Quality</option>
+					<option value="poor">Poor Quality</option>
+					<option value="high">High Quality</option>
+				</options>
+				<default>poor</default>
+			</parameter>
+		</config-description>
 	</channel-type>
 
-	<channel-type id="setpointTemp">
-		<item-type>Number:Temperature</item-type>
-		<label>Setpoint</label>
-		<description>Thermostat temperature setpoint</description>
-		<category>Temperature</category>
-		<state pattern="%.1f %unit%" readOnly="false"/>
+	<channel-type id="live-picture">
+		<item-type>Image</item-type>
+		<label>Live Snapshot</label>
+		<description>Camera Live Snapshot.</description>
+		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="setpointMode">
+	<channel-type id="live-picture-url" advanced="true">
 		<item-type>String</item-type>
-		<label>Setpoint Mode</label>
-		<description>Chosen setpoint_mode (program, away, hg, manual, off, max)</description>
-		<state readOnly="false">
-			<options>
-				<option value="program">Following a weekly schedule</option>
-				<option value="away">Applying the -away- temperature as defined by the user</option>
-				<option value="hg">Frost-guard</option>
-				<option value="manual">Applying a manually set temperature setpoint</option>
-				<option value="off">Currently off</option>
-				<option value="max">Heating continuously</option>
-			</options>
-		</state>
-	</channel-type>
-
-	<channel-type id="ThermRelayCmd" advanced="false">
-		<item-type>Switch</item-type>
-		<label>Heating Status</label>
-		<description>Indicates whether the furnace is heating or not</description>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="ThermOrientation" advanced="true">
-		<item-type>Number</item-type>
-		<label>Orientation</label>
-		<description>Physical orientation of the thermostat module</description>
-		<state readOnly="true" pattern="%d"/>
-	</channel-type>
-
-	<channel-type id="timeUtc" advanced="true">
-		<item-type>DateTime</item-type>
-		<label>Measurement Time</label>
-		<description>Timestamp when data was measured</description>
-		<category>Time</category>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="lastPlugSeen" advanced="true">
-		<item-type>DateTime</item-type>
-		<label>Last Plug Seen</label>
-		<description>Last Plug Seen</description>
-		<category>Time</category>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="dateMinCo2" advanced="true">
-		<item-type>DateTime</item-type>
-		<label>Date Min CO2</label>
-		<description>Date when minimum CO2 was reached on current day</description>
-		<category>Time</category>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="dateMinCo2ThisWeek" advanced="true">
-		<item-type>DateTime</item-type>
-		<label>Date Min CO2 This Week</label>
-		<description>Date when minimum CO2 was reached this week</description>
-		<category>Time</category>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="dateMinCo2ThisMonth" advanced="true">
-		<item-type>DateTime</item-type>
-		<label>Date Min CO2 This Month</label>
-		<description>Date when minimum CO2 was reached this month</description>
-		<category>Time</category>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="dateMaxCo2" advanced="true">
-		<item-type>DateTime</item-type>
-		<label>Date Max CO2</label>
-		<description>Date when maximum CO2 was reached on current day</description>
-		<category>Time</category>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="dateMaxCo2ThisWeek" advanced="true">
-		<item-type>DateTime</item-type>
-		<label>Date Max CO2 This Week</label>
-		<description>Date when maximum CO2 was reached this week</description>
-		<category>Time</category>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="dateMaxCo2ThisMonth" advanced="true">
-		<item-type>DateTime</item-type>
-		<label>Date Max CO2 This Month</label>
-		<description>Date when maximum CO2 was reached this month</description>
-		<category>Time</category>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="dateMinTemp" advanced="true">
-		<item-type>DateTime</item-type>
-		<label>Date Min Temp</label>
-		<description>Date when minimum temperature was reached on current day</description>
-		<category>Time</category>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="dateMinTempThisWeek" advanced="true">
-		<item-type>DateTime</item-type>
-		<label>Date Min Temp This Week</label>
-		<description>Date when minimum temperature was reached this week</description>
-		<category>Time</category>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="dateMinTempThisMonth" advanced="true">
-		<item-type>DateTime</item-type>
-		<label>Date Min Temp This Month</label>
-		<description>Date when minimum temperature was reached this month</description>
-		<category>Time</category>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="dateMaxTemp" advanced="true">
-		<item-type>DateTime</item-type>
-		<label>Date Max Temp</label>
-		<description>Date when maximum temperature was reached on current day</description>
-		<category>Time</category>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="dateMaxTempThisWeek" advanced="true">
-		<item-type>DateTime</item-type>
-		<label>Date Max Temp This Week</label>
-		<description>Date when maximum temperature was reached this week</description>
-		<category>Time</category>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="dateMaxTempThisMonth" advanced="true">
-		<item-type>DateTime</item-type>
-		<label>Date Max Temp This Month</label>
-		<description>Date when maximum temperature was reached this month</description>
-		<category>Time</category>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="dateMinHumidity" advanced="true">
-		<item-type>DateTime</item-type>
-		<label>Date Min Humidity</label>
-		<description>Date when minimum humidity was reached on current day</description>
-		<category>Time</category>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="dateMinHumidityThisWeek" advanced="true">
-		<item-type>DateTime</item-type>
-		<label>Date Min Humidity This Week</label>
-		<description>Date when minimum humidity was reached this week</description>
-		<category>Time</category>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="dateMinHumidityThisMonth" advanced="true">
-		<item-type>DateTime</item-type>
-		<label>Date Min Humidity This Month</label>
-		<description>Date when minimum humidity was reached this month</description>
-		<category>Time</category>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="dateMaxHumidity" advanced="true">
-		<item-type>DateTime</item-type>
-		<label>Date Max Humidity</label>
-		<description>Date when maximum humidity was reached on current day</description>
-		<category>Time</category>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="dateMaxHumidityThisWeek" advanced="true">
-		<item-type>DateTime</item-type>
-		<label>Date Max Humidity This Week</label>
-		<description>Date when maximum humidity was reached this week</description>
-		<category>Time</category>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="dateMaxHumidityThisMonth" advanced="true">
-		<item-type>DateTime</item-type>
-		<label>Date Max Humidity This Month</label>
-		<description>Date when maximum humidity was reached this month</description>
-		<category>Time</category>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="dateMinNoise" advanced="true">
-		<item-type>DateTime</item-type>
-		<label>Date Min Noise</label>
-		<description>Date when minimum noise was reached on current day</description>
-		<category>Time</category>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="dateMinNoiseThisWeek" advanced="true">
-		<item-type>DateTime</item-type>
-		<label>Date Min Noise This Week</label>
-		<description>Date when minimum noise was reached this week</description>
-		<category>Time</category>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="dateMinNoiseThisMonth" advanced="true">
-		<item-type>DateTime</item-type>
-		<label>Date Min Noise This Month</label>
-		<description>Date when minimum noise was reached this month</description>
-		<category>Time</category>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="dateMaxNoise" advanced="true">
-		<item-type>DateTime</item-type>
-		<label>Date Max Noise</label>
-		<description>Date when maximum noise was reached on current day</description>
-		<category>Time</category>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="dateMaxNoiseThisWeek" advanced="true">
-		<item-type>DateTime</item-type>
-		<label>Date Max Noise This Week</label>
-		<description>Date when maximum noise was reached this week</description>
-		<category>Time</category>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="dateMaxNoiseThisMonth" advanced="true">
-		<item-type>DateTime</item-type>
-		<label>Date Max Noise This Month</label>
-		<description>Date when maximum noise was reached this month</description>
-		<category>Time</category>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="dateMinPressure" advanced="true">
-		<item-type>DateTime</item-type>
-		<label>Date Min Pressure</label>
-		<description>Date when minimum pressure was reached on current day</description>
-		<category>Time</category>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="dateMinPressureThisWeek" advanced="true">
-		<item-type>DateTime</item-type>
-		<label>Date Min Pressure This Week</label>
-		<description>Date when minimum pressure was reached this week</description>
-		<category>Time</category>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="dateMinPressureThisMonth" advanced="true">
-		<item-type>DateTime</item-type>
-		<label>Date Min Pressure This Month</label>
-		<description>Date when minimum pressure was reached this month</description>
-		<category>Time</category>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="dateMaxPressure" advanced="true">
-		<item-type>DateTime</item-type>
-		<label>Date Max Pressure</label>
-		<description>Date when maximum pressure was reached on current day</description>
-		<category>Time</category>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="dateMaxPressureThisWeek" advanced="true">
-		<item-type>DateTime</item-type>
-		<label>Date Max Pressure This Week</label>
-		<description>Date when maximum pressure was reached this week</description>
-		<category>Time</category>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="dateMaxPressureThisMonth" advanced="true">
-		<item-type>DateTime</item-type>
-		<label>Date Max Pressure This Month</label>
-		<description>Date when maximum pressure was reached this month</description>
-		<category>Time</category>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="lastBilan" advanced="true">
-		<item-type>DateTime</item-type>
-		<label>Available Bilan</label>
-		<description>Month of the last available thermostat bilan</description>
-		<category>Time</category>
-		<state readOnly="true" pattern="%1$td.%1$tm.%1$tY"/>
-	</channel-type>
-
-	<channel-type id="connectedBoiler" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Plug Connected Boiler</label>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="lastMessage" advanced="true">
-		<item-type>DateTime</item-type>
-		<label>Last Message</label>
-		<description>Last Message emitted by the module</description>
-		<category>Time</category>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="setpointEndTime" advanced="true">
-		<item-type>DateTime</item-type>
-		<label>Setpoint End</label>
-		<description>Thermostat goes back to schedule after that timestamp.</description>
-		<category>Time</category>
-		<state readOnly="true" pattern="%1$td.%1$tm.%1$tY %1$tH:%1$tM"/>
-	</channel-type>
-
-	<channel-type id="lastThermSeen" advanced="true">
-		<item-type>DateTime</item-type>
-		<label>Last Therm Seen</label>
-		<description>Last Them Seen</description>
-		<category>Time</category>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="co2">
-		<item-type>Number:Dimensionless</item-type>
-		<label>CO2</label>
-		<description>Air Quality</description>
-		<category>Carbondioxide</category>
-		<state readOnly="true" pattern="%d %unit%"/>
-	</channel-type>
-
-	<channel-type id="minCo2" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
-		<label>Min Co2</label>
-		<description>Minimum CO2 on current day</description>
-		<category>Carbondioxide</category>
-		<state readOnly="true" pattern="%d %unit%"/>
-	</channel-type>
-
-	<channel-type id="minCo2ThisWeek" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
-		<label>Min Co2 This Week</label>
-		<description>Minimum CO2 this week</description>
-		<category>Carbondioxide</category>
-		<state readOnly="true" pattern="%d %unit%"/>
-	</channel-type>
-
-	<channel-type id="minCo2ThisMonth" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
-		<label>Min Co2 This Month</label>
-		<description>Minimum CO2 this month</description>
-		<category>Carbondioxide</category>
-		<state readOnly="true" pattern="%d %unit%"/>
-	</channel-type>
-
-	<channel-type id="maxCo2" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
-		<label>Max Co2</label>
-		<description>Maximum CO2 on current day</description>
-		<category>Carbondioxide</category>
-		<state readOnly="true" pattern="%d %unit%"/>
-	</channel-type>
-
-	<channel-type id="maxCo2ThisWeek" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
-		<label>Max Co2 This Week</label>
-		<description>Maximum CO2 this week</description>
-		<category>Carbondioxide</category>
-		<state readOnly="true" pattern="%d %unit%"/>
-	</channel-type>
-
-	<channel-type id="maxCo2ThisMonth" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
-		<label>Max Co2 This Month</label>
-		<description>Maximum CO2 this month</description>
-		<category>Carbondioxide</category>
-		<state readOnly="true" pattern="%d %unit%"/>
-	</channel-type>
-
-	<channel-type id="noise">
-		<item-type>Number:Dimensionless</item-type>
-		<label>Noise</label>
-		<description>Current Noise Level</description>
-		<category>Noise</category>
-		<state readOnly="true" pattern="%d %unit%"/>
-	</channel-type>
-
-	<channel-type id="minNoise" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
-		<label>Min Noise</label>
-		<description>Minimum Noise on current day</description>
-		<category>Noise</category>
-		<state readOnly="true" pattern="%d %unit%"/>
-	</channel-type>
-
-	<channel-type id="minNoiseThisWeek" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
-		<label>Min Noise This Week</label>
-		<description>Minimum Noise this week</description>
-		<category>Noise</category>
-		<state readOnly="true" pattern="%d %unit%"/>
-	</channel-type>
-
-	<channel-type id="minNoiseThisMonth" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
-		<label>Min Noise This Month</label>
-		<description>Minimum Noise this month</description>
-		<category>Noise</category>
-		<state readOnly="true" pattern="%d %unit%"/>
-	</channel-type>
-
-	<channel-type id="maxNoise" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
-		<label>Max Noise</label>
-		<description>Maximum Noise on current day</description>
-		<category>Noise</category>
-		<state readOnly="true" pattern="%d %unit%"/>
-	</channel-type>
-
-	<channel-type id="maxNoiseThisWeek" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
-		<label>Max Noise This Week</label>
-		<description>Maximum Noise this week</description>
-		<category>Noise</category>
-		<state readOnly="true" pattern="%d %unit%"/>
-	</channel-type>
-
-	<channel-type id="maxNoiseThisMonth" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
-		<label>Max Noise This Month</label>
-		<description>Maximum Noise this month</description>
-		<category>Noise</category>
-		<state readOnly="true" pattern="%d %unit%"/>
-	</channel-type>
-
-	<channel-type id="healthindex">
-		<item-type>String</item-type>
-		<label>Health Index</label>
-		<description>Health Index (healthy, fine, fair, poor, unhealthy)</description>
-		<state readOnly="true" pattern="%s">
-			<options>
-				<option value="healthy">healthy</option>
-				<option value="fine">fine</option>
-				<option value="fair">fair</option>
-				<option value="poor">poor</option>
-				<option value="unhealthy">unhealthy</option>
-			</options>
-		</state>
-	</channel-type>
-
-	<channel-type id="pressure">
-		<item-type>Number:Pressure</item-type>
-		<label>Pressure</label>
-		<description>Current pressure</description>
-		<category>Pressure</category>
-		<state readOnly="true" pattern="%.3f %unit%"/>
-	</channel-type>
-
-	<channel-type id="minPressure" advanced="true">
-		<item-type>Number:Pressure</item-type>
-		<label>Min Pressure</label>
-		<description>Minimum Pressure on current day</description>
-		<category>Pressure</category>
-		<state readOnly="true" pattern="%.3f %unit%"/>
-	</channel-type>
-
-	<channel-type id="minPressureThisWeek" advanced="true">
-		<item-type>Number:Pressure</item-type>
-		<label>Min Pressure This Week</label>
-		<description>Minimum Pressure this week</description>
-		<category>Pressure</category>
-		<state readOnly="true" pattern="%.3f %unit%"/>
-	</channel-type>
-
-	<channel-type id="minPressureThisMonth" advanced="true">
-		<item-type>Number:Pressure</item-type>
-		<label>Min Pressure This Month</label>
-		<description>Minimum Pressure this month</description>
-		<category>Pressure</category>
-		<state readOnly="true" pattern="%.3f %unit%"/>
-	</channel-type>
-
-	<channel-type id="maxPressure" advanced="true">
-		<item-type>Number:Pressure</item-type>
-		<label>Max Pressure</label>
-		<description>Maximum Pressure on current day</description>
-		<category>Pressure</category>
-		<state readOnly="true" pattern="%.3f %unit%"/>
-	</channel-type>
-
-	<channel-type id="maxPressureThisWeek" advanced="true">
-		<item-type>Number:Pressure</item-type>
-		<label>Max Pressure This Week</label>
-		<description>Maximum Pressure this week</description>
-		<category>Pressure</category>
-		<state readOnly="true" pattern="%.3f %unit%"/>
-	</channel-type>
-
-	<channel-type id="maxPressureThisMonth" advanced="true">
-		<item-type>Number:Pressure</item-type>
-		<label>Max Pressure This Month</label>
-		<description>Maximum Pressure this month</description>
-		<category>Pressure</category>
-		<state readOnly="true" pattern="%.3f %unit%"/>
-	</channel-type>
-
-	<channel-type id="pressureTrend" advanced="true">
-		<item-type>String</item-type>
-		<label>Pressure Trend</label>
-		<description>Pressure evolution trend for last 12h (up, down, stable)</description>
-		<category>Pressure</category>
-		<state readOnly="true" pattern="%s">
-			<options>
-				<option value="up">up</option>
-				<option value="stable">stable</option>
-				<option value="down">down</option>
-			</options>
-		</state>
-	</channel-type>
-
-	<channel-type id="planning" advanced="false">
-		<item-type>String</item-type>
-		<label>Planning</label>
-		<description>Heat planning currently used</description>
-		<state pattern="%s"/>
-	</channel-type>
-
-	<channel-type id="absolutePressure" advanced="true">
-		<item-type>Number:Pressure</item-type>
-		<label>Abs Pressure</label>
-		<description>Absolute pressure</description>
-		<category>Pressure</category>
-		<state readOnly="true" pattern="%.3f %unit%"/>
-	</channel-type>
-
-	<channel-type id="humidity">
-		<item-type>Number:Dimensionless</item-type>
-		<label>Humidity</label>
-		<description>Current humidity</description>
-		<category>Humidity</category>
-		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
-	</channel-type>
-
-	<channel-type id="minHumidity" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
-		<label>Min Humidity</label>
-		<description>Minimum Humidity on current day</description>
-		<category>Humidity</category>
-		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
-	</channel-type>
-
-	<channel-type id="minHumidityThisWeek" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
-		<label>Min Humidity This Week</label>
-		<description>Minimum Humidity this week</description>
-		<category>Humidity</category>
-		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
-	</channel-type>
-
-	<channel-type id="minHumidityThisMonth" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
-		<label>Min Humidity This Month</label>
-		<description>Minimum Humidity this month</description>
-		<category>Humidity</category>
-		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
-	</channel-type>
-
-	<channel-type id="maxHumidity" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
-		<label>Max Humidity</label>
-		<description>Maximum Humidity on current day</description>
-		<category>Humidity</category>
-		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
-	</channel-type>
-
-	<channel-type id="maxHumidityThisWeek" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
-		<label>Max Humidity This Week</label>
-		<description>Minimum Humidity this week</description>
-		<category>Humidity</category>
-		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
-	</channel-type>
-
-	<channel-type id="maxHumidityThisMonth" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
-		<label>Max Humidity This Month</label>
-		<description>Maximum Humidity this month</description>
-		<category>Humidity</category>
-		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
-	</channel-type>
-
-	<channel-type id="humidex">
-		<item-type>Number</item-type>
-		<label>Humidex</label>
-		<description>Computed Humidex index</description>
-		<category>Temperature</category>
-		<state readOnly="true" pattern="%.0f"/>
-	</channel-type>
-
-	<channel-type id="heatIndex">
-		<item-type>Number:Temperature</item-type>
-		<label>Heat Index</label>
-		<description>Computed Heat Index</description>
-		<category>Temperature</category>
-		<state readOnly="true" pattern="%.0f %unit%"/>
-	</channel-type>
-
-	<channel-type id="dewPoint" advanced="true">
-		<item-type>Number:Temperature</item-type>
-		<label>Dewpoint</label>
-		<description>Computed Dewpoint Temperature</description>
-		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-
-	<channel-type id="dewPointDepression" advanced="true">
-		<item-type>Number:Temperature</item-type>
-		<label>Dewpoint Depression</label>
-		<description>Computed Dewpoint Depression</description>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-
-	<channel-type id="rain">
-		<item-type>Number:Length</item-type>
-		<label>Rain</label>
-		<description>Quantity of water</description>
-		<category>Rain</category>
-		<state readOnly="true" pattern="%.2f %unit%"/>
-	</channel-type>
-
-	<channel-type id="rain1" advanced="true">
-		<item-type>Number:Length</item-type>
-		<label>Rain 1h</label>
-		<description>Quantity of water on last hour</description>
-		<category>Rain</category>
-		<state readOnly="true" pattern="%.2f %unit%"/>
-	</channel-type>
-
-	<channel-type id="rain24" advanced="true">
-		<item-type>Number:Length</item-type>
-		<label>Rain 24h</label>
-		<description>Quantity of water on last day</description>
-		<category>Rain</category>
-		<state readOnly="true" pattern="%.2f %unit%"/>
-	</channel-type>
-
-	<channel-type id="rainThisWeek" advanced="true">
-		<item-type>Number:Length</item-type>
-		<label>Rain This Week</label>
-		<description>Quantity of water this week</description>
-		<category>Rain</category>
-		<state readOnly="true" pattern="%.2f %unit%"/>
-	</channel-type>
-
-	<channel-type id="rainThisMonth" advanced="true">
-		<item-type>Number:Length</item-type>
-		<label>Rain This Month</label>
-		<description>Quantity of water this month</description>
-		<category>Rain</category>
-		<state readOnly="true" pattern="%.2f %unit%"/>
-	</channel-type>
-
-	<channel-type id="WindAngle">
-		<item-type>Number:Angle</item-type>
-		<label>Wind Angle</label>
-		<description>Current 5 minutes average wind direction</description>
-		<category>Wind</category>
-		<state min="0" max="360" step="1" readOnly="true" pattern="%d %unit%"/>
-	</channel-type>
-
-	<channel-type id="WindStrength">
-		<item-type>Number:Speed</item-type>
-		<label>Wind Strength</label>
-		<description>Current 5 minutes average wind speed</description>
-		<category>Wind</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-
-	<channel-type id="MaxWindStrength" advanced="true">
-		<item-type>Number:Speed</item-type>
-		<label>Max Wind Strength</label>
-		<description>Maximum wind strength recorded</description>
-		<category>Wind</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-
-	<channel-type id="DateMaxWindStrength" advanced="true">
-		<item-type>DateTime</item-type>
-		<label>Date Max Wind Strength</label>
-		<description>Timestamp when MaxWindStrength was recorded.</description>
-		<category>Time</category>
-		<state readOnly="true" pattern="%1$td.%1$tm.%1$tY %1$tH:%1$tM"/>
-	</channel-type>
-
-	<channel-type id="GustAngle">
-		<item-type>Number:Angle</item-type>
-		<label>Gust Angle</label>
-		<description>Direction of the last 5 minutes highest gust wind</description>
-		<category>Wind</category>
-		<state min="0" max="360" step="1" readOnly="true" pattern="%d %unit%"/>
-	</channel-type>
-
-	<channel-type id="GustStrength">
-		<item-type>Number:Speed</item-type>
-		<label>Gust Strength</label>
-		<description>Speed of the last 5 minutes highest gust wind</description>
-		<category>Wind</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-
-	<channel-type id="homeEvent">
-		<kind>trigger</kind>
-		<label>Home Event</label>
-		<description>Home event</description>
-		<event>
-			<options>
-				<option value="PERSON">person</option>
-				<option value="PERSON_AWAY">person_away</option>
-				<option value="MOVEMENT">movement</option>
-				<option value="CONNECTION">connection</option>
-				<option value="DISCONNECTION">disconnection</option>
-				<option value="ON">on</option>
-				<option value="OFF">off</option>
-				<option value="BOOT">boot</option>
-				<option value="SD">sd</option>
-				<option value="ALIM">alim</option>
-				<option value="NEW_MODULE">new_module</option>
-				<option value="MODULE_CONNECT">module_connect</option>
-				<option value="MODULE_DISCONNECT">module_disconnect</option>
-				<option value="MODULE_LOW_BATTERY">module_low_battery</option>
-				<option value="MODULE_END_UPDATE">module_end_update</option>
-				<option value="TAG_BIG_MOVE">tag_big_move</option>
-				<option value="TAG_SMALL_MOVE">tag_small_move</option>
-				<option value="TAG_UNINSTALLED">tag_uninstalled</option>
-				<option value="TAG_OPEN">tag_open</option>
-			</options>
-		</event>
+		<label>Live Snapshot URL</label>
+		<description>URL of the live snapshot for this camera (need scope access_camera).</description>
+		<state readOnly="true"></state>
 	</channel-type>
 
 </thing:thing-descriptions>

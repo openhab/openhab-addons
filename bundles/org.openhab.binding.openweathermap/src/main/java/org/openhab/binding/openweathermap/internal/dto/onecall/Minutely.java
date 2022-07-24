@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.openweathermap.internal.dto.onecall;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
 /**
  * Holds the data from the deserialised JSON response. Created using http://www.jsonschema2pojo.org/.
  * Settings:
@@ -26,12 +23,7 @@ import com.google.gson.annotations.SerializedName;
  * @author Wolfgang Klimt - Initial contribution
  */
 public class Minutely {
-
-    @SerializedName("dt")
-    @Expose
     private int dt;
-    @SerializedName("precipitation")
-    @Expose
     private double precipitation;
 
     public int getDt() {

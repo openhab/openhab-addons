@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -55,6 +56,7 @@ import org.osgi.framework.Constants;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Modified;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,8 +70,8 @@ import ai.picovoice.porcupine.PorcupineException;
  */
 @NonNullByDefault
 @Component(configurationPid = SERVICE_PID, property = Constants.SERVICE_PID + "=" + SERVICE_PID)
-@ConfigurableService(category = SERVICE_CATEGORY, label = SERVICE_NAME, description_uri = SERVICE_CATEGORY + ":"
-        + SERVICE_ID)
+@ConfigurableService(category = SERVICE_CATEGORY, label = SERVICE_NAME
+        + " Keyword Spotter", description_uri = SERVICE_CATEGORY + ":" + SERVICE_ID)
 public class PorcupineKSService implements KSService {
     private static final String PORCUPINE_FOLDER = Path.of(OpenHAB.getUserDataFolder(), "porcupine").toString();
     private static final String EXTRACTION_FOLDER = Path.of(OpenHAB.getUserDataFolder(), "porcupine", "extracted")
@@ -77,7 +79,6 @@ public class PorcupineKSService implements KSService {
     private final Logger logger = LoggerFactory.getLogger(PorcupineKSService.class);
     private final ScheduledExecutorService executor = ThreadPoolManager.getScheduledPool("OH-voice-porcupineks");
     private PorcupineKSConfiguration config = new PorcupineKSConfiguration();
-    private boolean loop = false;
     private @Nullable BundleContext bundleContext;
 
     static {
@@ -98,8 +99,13 @@ public class PorcupineKSService implements KSService {
 
     @Activate
     protected void activate(ComponentContext componentContext, Map<String, Object> config) {
-        this.config = new Configuration(config).as(PorcupineKSConfiguration.class);
         this.bundleContext = componentContext.getBundleContext();
+        modified(config);
+    }
+
+    @Modified
+    protected void modified(Map<String, Object> config) {
+        this.config = new Configuration(config).as(PorcupineKSConfiguration.class);
         if (this.config.apiKey.isBlank()) {
             logger.warn("Missing pico voice api key to use Porcupine Keyword Spotter");
         }
@@ -187,12 +193,14 @@ public class PorcupineKSService implements KSService {
         } catch (PorcupineException | IOException e) {
             throw new KSException(e);
         }
-        Future<?> scheduledTask = executor.submit(() -> processInBackground(porcupine, ksListener, audioStream));
+        final AtomicBoolean aborted = new AtomicBoolean(false);
+        Future<?> scheduledTask = executor
+                .submit(() -> processInBackground(porcupine, ksListener, audioStream, aborted));
         return new KSServiceHandle() {
             @Override
             public void abort() {
                 logger.debug("stopping service");
-                loop = false;
+                aborted.set(true);
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
@@ -288,8 +296,9 @@ public class PorcupineKSService implements KSService {
                                 + localKeywordPath);
             }
             String env = getPorcupineEnv();
-            String keywordPath = "porcupine/resources/keyword_files/" + env + "/" + keyWord.replace(" ", "_") + "_"
-                    + env + ".ppn";
+            String keywordPath = Path
+                    .of("porcupine", "resources", "keyword_files", env, keyWord.replace(" ", "_") + "_" + env + ".ppn")
+                    .toString();
             return prepareLib(bundleContext, keywordPath);
         } else {
             throw new IllegalArgumentException(
@@ -298,19 +307,19 @@ public class PorcupineKSService implements KSService {
         }
     }
 
-    private void processInBackground(Porcupine porcupine, KSListener ksListener, AudioStream audioStream) {
+    private void processInBackground(Porcupine porcupine, KSListener ksListener, AudioStream audioStream,
+            AtomicBoolean aborted) {
         int numBytesRead;
         // buffers for processing audio
         int frameLength = porcupine.getFrameLength();
         ByteBuffer captureBuffer = ByteBuffer.allocate(frameLength * 2);
         captureBuffer.order(ByteOrder.LITTLE_ENDIAN);
         short[] porcupineBuffer = new short[frameLength];
-        this.loop = true;
-        while (loop) {
+        while (!aborted.get()) {
             try {
                 // read a buffer of audio
                 numBytesRead = audioStream.read(captureBuffer.array(), 0, captureBuffer.capacity());
-                if (!loop) {
+                if (aborted.get()) {
                     break;
                 }
                 // don't pass to porcupine if we don't have a full buffer

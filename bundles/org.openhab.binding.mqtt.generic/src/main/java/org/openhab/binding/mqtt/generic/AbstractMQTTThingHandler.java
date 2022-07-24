@@ -23,7 +23,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.values.OnOffValue;
@@ -327,8 +326,8 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler
     }
 
     @Override
-    public void removeAvailabilityTopic(@NonNull String availability_topic) {
-        availabilityStates.computeIfPresent(availability_topic, (topic, state) -> {
+    public void removeAvailabilityTopic(String availabilityTopic) {
+        availabilityStates.computeIfPresent(availabilityTopic, (topic, state) -> {
             if (connection != null && state != null) {
                 state.stop();
             }

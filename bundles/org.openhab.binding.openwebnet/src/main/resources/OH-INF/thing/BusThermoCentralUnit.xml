@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="openwebnet"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Thing for BUS Thermo Central Unit -->
+	<thing-type id="bus_thermo_cu">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bus_gateway"/>
+		</supported-bridge-type-refs>
+
+		<label>Thermo Central Unit</label>
+		<description>A OpenWebNet BUS/SCS configured thermo Central Unit.</description>
+
+		<channels>
+			<!-- read only -->
+			<channel id="remoteControl" typeId="remoteControl"/>
+			<channel id="batteryStatus" typeId="batteryStatus"/>
+			<channel id="function" typeId="functionCentralUnit"/>
+			<channel id="failureDiscovered" typeId="failureDiscovered"/>
+			<channel id="atLeastOneProbeOff" typeId="atLeastOneProbeOff"/>
+			<channel id="atLeastOneProbeProtection" typeId="atLeastOneProbeProtection"/>
+			<channel id="atLeastOneProbeManual" typeId="atLeastOneProbeManual"/>
+			<!-- read/write -->
+			<channel id="setpointTemperature" typeId="setpointTemperature"/>
+			<channel id="mode" typeId="modeCentralUnit"/>
+			<channel id="weeklyProgram" typeId="weeklyProgramCentralUnit"/>
+			<channel id="scenarioProgram" typeId="scenarioProgramCentralUnit"/>
+		</channels>
+
+		<properties>
+			<property name="vendor">BTicino/Legrand</property>
+			<property name="model">BTicino Central Unit 3550 (99 zones) or BTI-L/NT/HC/4695 (4 zones) </property>
+			<property name="ownDeviceType">430</property>
+		</properties>
+
+		<representation-property>ownId</representation-property>
+
+		<config-description>
+			<parameter name="where" type="text" readOnly="true">
+				<label>OpenWebNet Address (where)</label>
+				<description>The Central Unit can only assume where=0.</description>
+				<default>0</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+</thing:thing-descriptions>

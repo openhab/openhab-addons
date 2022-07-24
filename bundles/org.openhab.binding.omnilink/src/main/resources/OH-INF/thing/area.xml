@@ -31,9 +31,6 @@
 			<channel id="night_delayed" typeId="area_command"/>
 			<channel id="all_on_off_event" typeId="all_on_off_event"/>
 		</channels>
-		<properties>
-			<property name="name"/>
-		</properties>
 		<representation-property>number</representation-property>
 		<config-description>
 			<parameter name="number" type="integer" required="true">
@@ -77,6 +74,9 @@
 		<label>Area Alarm</label>
 		<description>Indicates if an alarm is active.</description>
 		<category>Alarm</category>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="luxom"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="bridge">
+		<label>Luxom Bridge</label>
+		<description>This bridge represents a Luxom IP-interface (for example a DS-65L).</description>
+		<config-description>
+			<parameter name="ipAddress" type="text" required="true">
+				<context>network-address</context>
+				<label>IP or Host Name</label>
+				<description>The IP or host name of the Luxom IP-interface.</description>
+			</parameter>
+			<parameter name="port" type="integer" required="true">
+				<label>Bridge Port</label>
+				<description>Port to communicate with Luxom IP-interface, default 2300.</description>
+				<default>2300</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="reconnectInterval" type="integer" min="1" max="60" unit="min">
+				<label>Reconnect Interval</label>
+				<description>The period in minutes that the handler will wait between connection attempts after disconnect.</description>
+				<unitLabel>minutes</unitLabel>
+				<default>1</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="switch">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+		<label>Switch</label>
+		<description>Switch type action in Luxom</description>
+		<channels>
+			<channel id="switch" typeId="switchState"/>
+		</channels>
+		<representation-property>address</representation-property>
+		<config-description>
+			<parameter name="address" type="text" required="true">
+				<label>Address</label>
+				<description>Luxom bus address</description>
+				<advanced>false</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="dimmer">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+		<label>Dimmer</label>
+		<description>Dimmer type action in Luxom</description>
+		<channels>
+			<channel id="brightness" typeId="system.brightness"/>
+		</channels>
+		<config-description>
+			<parameter name="address" type="text" required="true">
+				<label>Address</label>
+				<description>Luxom bus address</description>
+				<advanced>false</advanced>
+			</parameter>
+			<parameter name="onLevel" type="decimal" min="0.01" max="100.00">
+				<label>On Level</label>
+				<description>Output level to go to when an ON command is received. Default is 100%.</description>
+				<default>100</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="onToLast" type="boolean">
+				<label>Turn On To Last Level</label>
+				<description>
+					If set to true, dimmer will go to the last non-zero level set when an ON command is received. If the
+					last level cannot be determined, the value of onLevel will be used instead.
+				</description>
+				<default>false</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="stepPercentage" type="integer" required="false">
+				<label>Step Value</label>
+				<description>Step value used for increase/decrease of dimmer brightness, default 5%</description>
+				<default>5</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="switchState">
+		<item-type>Switch</item-type>
+		<label>Switch</label>
+		<description>Switch control for action in Luxom.</description>
+		<category>Switch</category>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+</thing:thing-descriptions>

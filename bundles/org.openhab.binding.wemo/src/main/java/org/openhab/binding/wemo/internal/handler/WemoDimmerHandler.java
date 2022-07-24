@@ -27,6 +27,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.jupnp.UpnpService;
 import org.openhab.binding.wemo.internal.http.WemoHttpCall;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
@@ -73,8 +74,9 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
      */
     private static final int DIM_STEPSIZE = 5;
 
-    public WemoDimmerHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemoHttpCaller) {
-        super(thing, upnpIOService, wemoHttpCaller);
+    public WemoDimmerHandler(Thing thing, UpnpIOService upnpIOService, UpnpService upnpService,
+            WemoHttpCall wemoHttpCaller) {
+        super(thing, upnpIOService, upnpService, wemoHttpCaller);
 
         logger.debug("Creating a WemoDimmerHandler for thing '{}'", getThing().getUID());
     }
@@ -87,14 +89,12 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
         if (configuration.get(UDN) != null) {
             logger.debug("Initializing WemoDimmerHandler for UDN '{}'", configuration.get(UDN));
             addSubscription(BASICEVENT);
-            host = getHost();
             pollingJob = scheduler.scheduleWithFixedDelay(this::poll, 0, DEFAULT_REFRESH_INTERVAL_SECONDS,
                     TimeUnit.SECONDS);
-            updateStatus(ThingStatus.ONLINE);
+            updateStatus(ThingStatus.UNKNOWN);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/config-status.error.missing-udn");
-            logger.debug("Cannot initalize WemoDimmerHandler. UDN not set.");
         }
     }
 
@@ -117,12 +117,10 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
             }
             try {
                 logger.debug("Polling job");
-                host = getHost();
                 // Check if the Wemo device is set in the UPnP service registry
-                // If not, set the thing state to ONLINE/CONFIG-PENDING and wait for the next poll
                 if (!isUpnpDeviceRegistered()) {
                     logger.debug("UPnP device {} not yet registered", getUDN());
-                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
                             "@text/config-status.pending.device-not-registered [\"" + getUDN() + "\"]");
                     return;
                 }
@@ -156,7 +154,7 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
                         if (command.equals(OnOffType.OFF)) {
                             State brightnessState = new PercentType("0");
                             updateState(CHANNEL_BRIGHTNESS, brightnessState);
-                            updateState(CHANNEL_TIMERSTART, OnOffType.OFF);
+                            updateState(CHANNEL_TIMER_START, OnOffType.OFF);
                         } else {
                             State brightnessState = new PercentType(currentBrightness);
                             updateState(CHANNEL_BRIGHTNESS, brightnessState);
@@ -215,7 +213,7 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
                         setBinaryState(action, argument, value);
                     }
                     break;
-                case CHANNEL_FADERCOUNTDOWNTIME:
+                case CHANNEL_FADER_COUNT_DOWN_TIME:
                     argument = "Fader";
                     if (command instanceof DecimalType) {
                         int commandValue = Integer.valueOf(String.valueOf(command));
@@ -227,7 +225,7 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
                         setBinaryState(action, argument, value);
                     }
                     break;
-                case CHANNEL_FADERENABLED:
+                case CHANNEL_FADER_ENABLED:
                     argument = "Fader";
                     if (command.equals(OnOffType.ON)) {
                         value = "<BinaryState></BinaryState>" + "<Duration></Duration>" + "<EndAction></EndAction>"
@@ -238,7 +236,7 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
                     }
                     setBinaryState(action, argument, value);
                     break;
-                case CHANNEL_TIMERSTART:
+                case CHANNEL_TIMER_START:
                     argument = "Fader";
                     long ts = System.currentTimeMillis() / 1000;
                     timeStamp = String.valueOf(ts);
@@ -269,7 +267,7 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
                     }
                     setBinaryState(action, argument, value);
                     break;
-                case CHANNEL_NIGHTMODE:
+                case CHANNEL_NIGHT_MODE:
                     action = "ConfigureNightMode";
                     argument = "NightModeConfiguration";
                     String nightModeBrightness = String.valueOf(currentNightModeBrightness);
@@ -282,7 +280,7 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
                     }
                     setBinaryState(action, argument, value);
                     break;
-                case CHANNEL_NIGHTMODEBRIGHTNESS:
+                case CHANNEL_NIGHT_MODE_BRIGHTNESS:
                     action = "ConfigureNightMode";
                     argument = "NightModeConfiguration";
                     if (command instanceof PercentType) {
@@ -338,7 +336,7 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
                         logger.debug("State '{}' for device '{}' received", state, getThing().getUID());
                         updateState(CHANNEL_BRIGHTNESS, state);
                         if (state.equals(OnOffType.OFF)) {
-                            updateState(CHANNEL_TIMERSTART, OnOffType.OFF);
+                            updateState(CHANNEL_TIMER_START, OnOffType.OFF);
                         }
                     }
                     break;
@@ -362,13 +360,13 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
                         State faderMinutes = new DecimalType(faderSeconds / 60);
                         logger.debug("faderTime '{} minutes' for device '{}' received", faderMinutes,
                                 getThing().getUID());
-                        updateState(CHANNEL_FADERCOUNTDOWNTIME, faderMinutes);
+                        updateState(CHANNEL_FADER_COUNT_DOWN_TIME, faderMinutes);
                     }
                     if (splitFader[1] != null) {
                         State isTimerRunning = splitFader[1].equals("-1") ? OnOffType.OFF : OnOffType.ON;
                         logger.debug("isTimerRunning '{}' for device '{}' received", isTimerRunning,
                                 getThing().getUID());
-                        updateState(CHANNEL_TIMERSTART, isTimerRunning);
+                        updateState(CHANNEL_TIMER_START, isTimerRunning);
                         if (isTimerRunning.equals(OnOffType.ON)) {
                             updateState(CHANNEL_STATE, OnOffType.ON);
                         }
@@ -377,27 +375,27 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
                         State isFaderEnabled = splitFader[1].equals("0") ? OnOffType.OFF : OnOffType.ON;
                         logger.debug("isFaderEnabled '{}' for device '{}' received", isFaderEnabled,
                                 getThing().getUID());
-                        updateState(CHANNEL_FADERENABLED, isFaderEnabled);
+                        updateState(CHANNEL_FADER_ENABLED, isFaderEnabled);
                     }
                     break;
                 case "nightMode":
                     State nightModeState = "0".equals(value) ? OnOffType.OFF : OnOffType.ON;
                     currentNightModeState = value;
                     logger.debug("nightModeState '{}' for device '{}' received", nightModeState, getThing().getUID());
-                    updateState(CHANNEL_NIGHTMODE, nightModeState);
+                    updateState(CHANNEL_NIGHT_MODE, nightModeState);
                     break;
                 case "startTime":
                     State startTimeState = getDateTimeState(value);
                     logger.debug("startTimeState '{}' for device '{}' received", startTimeState, getThing().getUID());
                     if (startTimeState != null) {
-                        updateState(CHANNEL_STARTTIME, startTimeState);
+                        updateState(CHANNEL_START_TIME, startTimeState);
                     }
                     break;
                 case "endTime":
                     State endTimeState = getDateTimeState(value);
                     logger.debug("endTimeState '{}' for device '{}' received", endTimeState, getThing().getUID());
                     if (endTimeState != null) {
-                        updateState(CHANNEL_ENDTIME, endTimeState);
+                        updateState(CHANNEL_END_TIME, endTimeState);
                     }
                     break;
                 case "nightModeBrightness":
@@ -406,7 +404,7 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
                     State nightModeBrightnessState = new PercentType(nightModeBrightnessValue);
                     logger.debug("nightModeBrightnessState '{}' for device '{}' received", nightModeBrightnessState,
                             getThing().getUID());
-                    updateState(CHANNEL_NIGHTMODEBRIGHTNESS, nightModeBrightnessState);
+                    updateState(CHANNEL_NIGHT_MODE_BRIGHTNESS, nightModeBrightnessState);
                     break;
             }
         }
@@ -418,18 +416,9 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
      *
      */
     protected void updateWemoState() {
-        String localHost = getHost();
-        if (localHost.isEmpty()) {
-            logger.warn("Failed to get actual state for device '{}': IP address missing", getThing().getUID());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/config-status.error.missing-ip");
-            return;
-        }
-        String wemoURL = getWemoURL(localHost, BASICACTION);
+        String wemoURL = getWemoURL(BASICACTION);
         if (wemoURL == null) {
             logger.debug("Failed to get actual state for device '{}': URL cannot be created", getThing().getUID());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/config-status.error.missing-url");
             return;
         }
         String action = "GetBinaryState";
@@ -496,18 +485,9 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
     }
 
     public void setBinaryState(String action, String argument, String value) {
-        String localHost = getHost();
-        if (localHost.isEmpty()) {
-            logger.warn("Failed to set binary state for device '{}': IP address missing", getThing().getUID());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/config-status.error.missing-ip");
-            return;
-        }
-        String wemoURL = getWemoURL(localHost, BASICACTION);
+        String wemoURL = getWemoURL(BASICACTION);
         if (wemoURL == null) {
             logger.debug("Failed to set binary state for device '{}': URL cannot be created", getThing().getUID());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/config-status.error.missing-url");
             return;
         }
         try {
@@ -527,18 +507,9 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
     }
 
     public void setTimerStart(String action, String argument, String value) {
-        String localHost = getHost();
-        if (localHost.isEmpty()) {
-            logger.warn("Failed to set timerStart for device '{}': IP address missing", getThing().getUID());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/config-status.error.missing-ip");
-            return;
-        }
-        String wemoURL = getWemoURL(localHost, BASICACTION);
+        String wemoURL = getWemoURL(BASICACTION);
         if (wemoURL == null) {
             logger.warn("Failed to set timerStart for device '{}': URL cannot be created", getThing().getUID());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/config-status.error.missing-url");
             return;
         }
         try {

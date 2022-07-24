@@ -21,6 +21,8 @@ import static org.openhab.binding.mqtt.generic.internal.handler.ThingChannelCons
 
 import java.util.concurrent.CompletableFuture;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -56,43 +58,44 @@ import org.openhab.core.types.RefreshType;
  * @author David Graeff - Initial contribution
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@NonNullByDefault
 public class GenericThingHandlerTests {
 
-    private @Mock ThingHandlerCallback callback;
-    private @Mock Thing thing;
-    private @Mock AbstractBrokerHandler bridgeHandler;
-    private @Mock MqttBrokerConnection connection;
+    private @Mock @NonNullByDefault({}) ThingHandlerCallback callbackMock;
+    private @Mock @NonNullByDefault({}) Thing thingMock;
+    private @Mock @NonNullByDefault({}) AbstractBrokerHandler bridgeHandlerMock;
+    private @Mock @NonNullByDefault({}) MqttBrokerConnection connectionMock;
 
-    private GenericMQTTThingHandler thingHandler;
+    private @NonNullByDefault({}) GenericMQTTThingHandler thingHandler;
 
     @BeforeEach
     public void setUp() {
         ThingStatusInfo thingStatus = new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
 
         // Mock the thing: We need the thingUID and the bridgeUID
-        when(thing.getUID()).thenReturn(testGenericThing);
-        when(thing.getChannels()).thenReturn(thingChannelList);
-        when(thing.getStatusInfo()).thenReturn(thingStatus);
-        when(thing.getConfiguration()).thenReturn(new Configuration());
+        when(thingMock.getUID()).thenReturn(TEST_GENERIC_THING);
+        when(thingMock.getChannels()).thenReturn(THING_CHANNEL_LIST);
+        when(thingMock.getStatusInfo()).thenReturn(thingStatus);
+        when(thingMock.getConfiguration()).thenReturn(new Configuration());
 
         // Return the mocked connection object if the bridge handler is asked for it
-        when(bridgeHandler.getConnectionAsync()).thenReturn(CompletableFuture.completedFuture(connection));
+        when(bridgeHandlerMock.getConnectionAsync()).thenReturn(CompletableFuture.completedFuture(connectionMock));
 
-        CompletableFuture<Void> voidFutureComplete = new CompletableFuture<>();
+        CompletableFuture<@Nullable Void> voidFutureComplete = new CompletableFuture<>();
         voidFutureComplete.complete(null);
-        doReturn(voidFutureComplete).when(connection).unsubscribeAll();
-        doReturn(CompletableFuture.completedFuture(true)).when(connection).subscribe(any(), any());
-        doReturn(CompletableFuture.completedFuture(true)).when(connection).unsubscribe(any(), any());
-        doReturn(CompletableFuture.completedFuture(true)).when(connection).publish(any(), any(), anyInt(),
+        doReturn(voidFutureComplete).when(connectionMock).unsubscribeAll();
+        doReturn(CompletableFuture.completedFuture(true)).when(connectionMock).subscribe(any(), any());
+        doReturn(CompletableFuture.completedFuture(true)).when(connectionMock).unsubscribe(any(), any());
+        doReturn(CompletableFuture.completedFuture(true)).when(connectionMock).publish(any(), any(), anyInt(),
                 anyBoolean());
 
-        thingHandler = spy(new GenericMQTTThingHandler(thing, mock(MqttChannelStateDescriptionProvider.class),
+        thingHandler = spy(new GenericMQTTThingHandler(thingMock, mock(MqttChannelStateDescriptionProvider.class),
                 mock(TransformationServiceProvider.class), 1500));
-        thingHandler.setCallback(callback);
+        thingHandler.setCallback(callbackMock);
 
         // Return the bridge handler if the thing handler asks for it
-        doReturn(bridgeHandler).when(thingHandler).getBridgeHandler();
+        doReturn(bridgeHandlerMock).when(thingHandler).getBridgeHandler();
 
         // The broker connection bridge is by default online
         doReturn(thingStatus).when(thingHandler).getBridgeStatus();
@@ -102,8 +105,8 @@ public class GenericThingHandlerTests {
     public void initializeWithUnknownThingUID() {
         ChannelConfig config = textConfiguration().as(ChannelConfig.class);
         assertThrows(IllegalArgumentException.class,
-                () -> thingHandler.createChannelState(config, new ChannelUID(testGenericThing, "test"),
-                        ValueFactory.createValueState(config, unknownChannel.getId())));
+                () -> thingHandler.createChannelState(config, new ChannelUID(TEST_GENERIC_THING, "test"),
+                        ValueFactory.createValueState(config, UNKNOWN_CHANNEL.getId())));
     }
 
     @Test
@@ -111,16 +114,16 @@ public class GenericThingHandlerTests {
         thingHandler.initialize();
         verify(thingHandler).bridgeStatusChanged(any());
         verify(thingHandler).start(any());
-        assertThat(thingHandler.getConnection(), is(connection));
+        assertThat(thingHandler.getConnection(), is(connectionMock));
 
-        ChannelState channelConfig = thingHandler.channelStateByChannelUID.get(textChannelUID);
+        ChannelState channelConfig = thingHandler.channelStateByChannelUID.get(TEXT_CHANNEL_UID);
         assertThat(channelConfig.getStateTopic(), is("test/state"));
         assertThat(channelConfig.getCommandTopic(), is("test/command"));
 
-        verify(connection).subscribe(eq(channelConfig.getStateTopic()), eq(channelConfig));
+        verify(connectionMock).subscribe(eq(channelConfig.getStateTopic()), eq(channelConfig));
 
-        verify(callback).statusUpdated(eq(thing), argThat((arg) -> arg.getStatus().equals(ThingStatus.ONLINE)
-                && arg.getStatusDetail().equals(ThingStatusDetail.NONE)));
+        verify(callbackMock).statusUpdated(eq(thingMock), argThat(arg -> ThingStatus.ONLINE.equals(arg.getStatus())
+                && ThingStatusDetail.NONE.equals(arg.getStatusDetail())));
     }
 
     @Test
@@ -135,24 +138,24 @@ public class GenericThingHandlerTests {
         doReturn(channelConfig).when(thingHandler).createChannelState(any(), any(), any());
         thingHandler.initialize();
 
-        ThingHandlerHelper.setConnection(thingHandler, connection);
+        ThingHandlerHelper.setConnection(thingHandler, connectionMock);
 
-        thingHandler.handleCommand(textChannelUID, RefreshType.REFRESH);
-        verify(callback).stateUpdated(eq(textChannelUID), argThat(arg -> "DEMOVALUE".equals(arg.toString())));
+        thingHandler.handleCommand(TEXT_CHANNEL_UID, RefreshType.REFRESH);
+        verify(callbackMock).stateUpdated(eq(TEXT_CHANNEL_UID), argThat(arg -> "DEMOVALUE".equals(arg.toString())));
     }
 
     @Test
     public void handleCommandUpdateString() {
         TextValue value = spy(new TextValue());
         ChannelState channelConfig = spy(
-                new ChannelState(ChannelConfigBuilder.create("stateTopic", "commandTopic").build(), textChannelUID,
+                new ChannelState(ChannelConfigBuilder.create("stateTopic", "commandTopic").build(), TEXT_CHANNEL_UID,
                         value, thingHandler));
         doReturn(channelConfig).when(thingHandler).createChannelState(any(), any(), any());
         thingHandler.initialize();
-        ThingHandlerHelper.setConnection(thingHandler, connection);
+        ThingHandlerHelper.setConnection(thingHandler, connectionMock);
 
         StringType updateValue = new StringType("UPDATE");
-        thingHandler.handleCommand(textChannelUID, updateValue);
+        thingHandler.handleCommand(TEXT_CHANNEL_UID, updateValue);
         verify(value).update(eq(updateValue));
         assertThat(channelConfig.getCache().getChannelState().toString(), is("UPDATE"));
     }
@@ -161,14 +164,14 @@ public class GenericThingHandlerTests {
     public void handleCommandUpdateBoolean() {
         OnOffValue value = spy(new OnOffValue("ON", "OFF"));
         ChannelState channelConfig = spy(
-                new ChannelState(ChannelConfigBuilder.create("stateTopic", "commandTopic").build(), textChannelUID,
+                new ChannelState(ChannelConfigBuilder.create("stateTopic", "commandTopic").build(), TEXT_CHANNEL_UID,
                         value, thingHandler));
         doReturn(channelConfig).when(thingHandler).createChannelState(any(), any(), any());
         thingHandler.initialize();
-        ThingHandlerHelper.setConnection(thingHandler, connection);
+        ThingHandlerHelper.setConnection(thingHandler, connectionMock);
 
         StringType updateValue = new StringType("ON");
-        thingHandler.handleCommand(textChannelUID, updateValue);
+        thingHandler.handleCommand(TEXT_CHANNEL_UID, updateValue);
 
         verify(value).update(eq(updateValue));
         assertThat(channelConfig.getCache().getChannelState(), is(OnOffType.ON));
@@ -178,7 +181,7 @@ public class GenericThingHandlerTests {
     public void processMessage() {
         TextValue textValue = new TextValue();
         ChannelState channelConfig = spy(
-                new ChannelState(ChannelConfigBuilder.create("test/state", "test/state/set").build(), textChannelUID,
+                new ChannelState(ChannelConfigBuilder.create("test/state", "test/state/set").build(), TEXT_CHANNEL_UID,
                         textValue, thingHandler));
         doReturn(channelConfig).when(thingHandler).createChannelState(any(), any(), any());
         thingHandler.initialize();
@@ -186,10 +189,10 @@ public class GenericThingHandlerTests {
         // Test process message
         channelConfig.processMessage("test/state", payload);
 
-        verify(callback, atLeastOnce()).statusUpdated(eq(thing),
-                argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
+        verify(callbackMock, atLeastOnce()).statusUpdated(eq(thingMock),
+                argThat(arg -> ThingStatus.ONLINE.equals(arg.getStatus())));
 
-        verify(callback).stateUpdated(eq(textChannelUID), argThat(arg -> "UPDATE".equals(arg.toString())));
+        verify(callbackMock).stateUpdated(eq(TEXT_CHANNEL_UID), argThat(arg -> "UPDATE".equals(arg.toString())));
         assertThat(textValue.getChannelState().toString(), is("UPDATE"));
     }
 
@@ -197,11 +200,11 @@ public class GenericThingHandlerTests {
     public void handleBridgeStatusChange() {
         Configuration config = new Configuration();
         config.put("availabilityTopic", "test/LWT");
-        when(thing.getConfiguration()).thenReturn(config);
+        when(thingMock.getConfiguration()).thenReturn(config);
         thingHandler.initialize();
         thingHandler
                 .bridgeStatusChanged(new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, null));
         thingHandler.bridgeStatusChanged(new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null));
-        verify(connection, times(2)).subscribe(eq("test/LWT"), any());
+        verify(connectionMock, times(2)).subscribe(eq("test/LWT"), any());
     }
 }

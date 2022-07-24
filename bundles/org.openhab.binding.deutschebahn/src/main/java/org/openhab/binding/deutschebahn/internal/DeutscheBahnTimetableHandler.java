@@ -13,13 +13,13 @@
 package org.openhab.binding.deutschebahn.internal;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
@@ -52,7 +52,6 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
 
 /**
  * The {@link DeutscheBahnTimetableHandler} is responsible for handling commands, which are
@@ -108,29 +107,27 @@ public class DeutscheBahnTimetableHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(DeutscheBahnTimetableHandler.class);
     private @Nullable TimetableLoader loader;
 
-    private TimetablesV1ApiFactory timetablesV1ApiFactory;
+    private final TimetablesV1ApiFactory timetablesV1ApiFactory;
 
-    private Supplier<Date> currentTimeProvider;
+    private final Supplier<Date> currentTimeProvider;
+
+    private final ScheduledExecutorService executorService;
 
     /**
-     * Creates an new {@link DeutscheBahnTimetableHandler}.
+     * Creates a new {@link DeutscheBahnTimetableHandler}.
      */
     public DeutscheBahnTimetableHandler( //
             final Bridge bridge, //
             final TimetablesV1ApiFactory timetablesV1ApiFactory, //
-            final Supplier<Date> currentTimeProvider) {
+            final Supplier<Date> currentTimeProvider, //
+            @Nullable final ScheduledExecutorService executorService) {
         super(bridge);
         this.timetablesV1ApiFactory = timetablesV1ApiFactory;
         this.currentTimeProvider = currentTimeProvider;
+        this.executorService = executorService == null ? this.scheduler : executorService;
     }
 
-    private List<TimetableStop> loadTimetable() {
-        final TimetableLoader currentLoader = this.loader;
-        if (currentLoader == null) {
-            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR);
-            return Collections.emptyList();
-        }
-
+    private List<TimetableStop> loadTimetable(TimetableLoader currentLoader) {
         try {
             final List<TimetableStop> stops = currentLoader.getTimetableStops();
             this.updateStatus(ThingStatus.ONLINE);
@@ -153,7 +150,11 @@ public class DeutscheBahnTimetableHandler extends BaseBridgeHandler {
         final DeutscheBahnTimetableConfiguration config = this.getConfigAs(DeutscheBahnTimetableConfiguration.class);
 
         try {
-            final TimetablesV1Api api = this.timetablesV1ApiFactory.create(config.accessToken, HttpUtil::executeUrl);
+            final TimetablesV1Api api = this.timetablesV1ApiFactory.create( //
+                    config.clientId, //
+                    config.clientSecret, //
+                    HttpUtil::executeUrl //
+            );
 
             final TimetableStopFilter stopFilter = config.getTrainFilterFilter();
             final TimetableStopPredicate additionalFilter = config.getAdditionalFilter();
@@ -166,7 +167,7 @@ public class DeutscheBahnTimetableHandler extends BaseBridgeHandler {
             }
 
             final EventType eventSelection = stopFilter == TimetableStopFilter.ARRIVALS ? EventType.ARRIVAL
-                    : EventType.ARRIVAL;
+                    : EventType.DEPARTURE;
 
             this.loader = new TimetableLoader( //
                     api, //
@@ -178,13 +179,13 @@ public class DeutscheBahnTimetableHandler extends BaseBridgeHandler {
 
             this.updateStatus(ThingStatus.UNKNOWN);
 
-            this.scheduler.execute(() -> {
+            this.executorService.execute(() -> {
                 this.updateChannels();
                 this.restartJob();
             });
         } catch (FilterScannerException | FilterParserException e) {
             this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
-        } catch (JAXBException | SAXException | URISyntaxException e) {
+        } catch (JAXBException e) {
             this.logger.error("Error initializing api", e);
             this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
@@ -196,7 +197,7 @@ public class DeutscheBahnTimetableHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Schedules an job that updates the timetable every 30 seconds.
+     * Schedules a job that updates the timetable every 30 seconds.
      */
     private void restartJob() {
         this.logger.debug("Restarting jobs for bridge {}", this.getThing().getUID());
@@ -204,7 +205,7 @@ public class DeutscheBahnTimetableHandler extends BaseBridgeHandler {
         try {
             this.stopUpdateJob();
             if (this.getThing().getStatus() == ThingStatus.ONLINE) {
-                this.updateJob = this.scheduler.scheduleWithFixedDelay(//
+                this.updateJob = this.executorService.scheduleWithFixedDelay(//
                         this::updateChannels, //
                         0L, //
                         UPDATE_INTERVAL_SECONDS, //
@@ -242,7 +243,7 @@ public class DeutscheBahnTimetableHandler extends BaseBridgeHandler {
         }
         final GroupedThings groupedThings = this.groupThingsPerPosition();
         currentLoader.setStopCount(groupedThings.getMaxPosition());
-        final List<TimetableStop> timetableStops = this.loadTimetable();
+        final List<TimetableStop> timetableStops = this.loadTimetable(currentLoader);
         if (timetableStops.isEmpty()) {
             updateThingsToUndefined(groupedThings);
             return;
@@ -299,7 +300,7 @@ public class DeutscheBahnTimetableHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Returns an map containing the things grouped by timetable stop position.
+     * Returns a map containing the things grouped by timetable stop position.
      */
     private GroupedThings groupThingsPerPosition() {
         final GroupedThings groupedThings = new GroupedThings();

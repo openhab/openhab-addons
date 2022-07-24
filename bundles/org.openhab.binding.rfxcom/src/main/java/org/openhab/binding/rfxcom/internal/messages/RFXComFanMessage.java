@@ -106,6 +106,12 @@ public class RFXComFanMessage extends RFXComDeviceMessageImpl<RFXComFanMessage.S
         LUCCI_AIR_DC_REVERSE(5, LUCCI_AIR_DC),
         LUCCI_AIR_DC_NATURAL_FLOW(6, LUCCI_AIR_DC),
         LUCCI_AIR_DC_PAIR(7, LUCCI_AIR_DC),
+        LUCCI_AIR_DC_SPEED_1(8, 1, LUCCI_AIR_DC),
+        LUCCI_AIR_DC_SPEED_2(9, 2, LUCCI_AIR_DC),
+        LUCCI_AIR_DC_SPEED_3(10, 3, LUCCI_AIR_DC),
+        LUCCI_AIR_DC_SPEED_4(11, 4, LUCCI_AIR_DC),
+        LUCCI_AIR_DC_SPEED_5(12, 5, LUCCI_AIR_DC),
+        LUCCI_AIR_DC_SPEED_6(13, 6, LUCCI_AIR_DC),
 
         LUCCI_AIR_DC_II_POWER_OFF(1, 0, LUCCI_AIR_DC_II),
         LUCCI_AIR_DC_II_SPEED_1(2, 1, LUCCI_AIR_DC_II),
@@ -141,7 +147,7 @@ public class RFXComFanMessage extends RFXComDeviceMessageImpl<RFXComFanMessage.S
         @Nullable
         public static Commands bySpeed(SubType subType, int speed) {
             for (Commands value : values()) {
-                if (value.supportedBySubTypes.contains(subType) && value.speed == speed) {
+                if (value.supportedBySubTypes.contains(subType) && value.speed != null && value.speed == speed) {
                     return value;
                 }
             }
@@ -169,7 +175,9 @@ public class RFXComFanMessage extends RFXComDeviceMessageImpl<RFXComFanMessage.S
             LUCCI_AIR_DC_II_LIGHT, FALMEC_LIGHT_ON, NOVY_LIGHT);
     private static final List<Commands> ON_COMMANDS = Arrays.asList(HI, MED, LOW, FALMEC_SPEED_1, FALMEC_SPEED_2,
             FALMEC_SPEED_3, FALMEC_SPEED_4, LUCCI_AIR_DC_II_SPEED_1, LUCCI_AIR_DC_II_SPEED_2, LUCCI_AIR_DC_II_SPEED_3,
-            LUCCI_AIR_DC_II_SPEED_4, LUCCI_AIR_DC_II_SPEED_5, LUCCI_AIR_DC_II_SPEED_6);
+            LUCCI_AIR_DC_II_SPEED_4, LUCCI_AIR_DC_II_SPEED_5, LUCCI_AIR_DC_II_SPEED_6, LUCCI_AIR_DC_SPEED_1,
+            LUCCI_AIR_DC_SPEED_2, LUCCI_AIR_DC_SPEED_3, LUCCI_AIR_DC_SPEED_4, LUCCI_AIR_DC_SPEED_5,
+            LUCCI_AIR_DC_SPEED_6);
     private static final List<Commands> OFF_COMMANDS = Arrays.asList(OFF, FALMEC_POWER_OFF, LUCCI_AIR_DC_II_POWER_OFF);
 
     private SubType subType;
@@ -321,6 +329,12 @@ public class RFXComFanMessage extends RFXComDeviceMessageImpl<RFXComFanMessage.S
             case FT1211R_SPEED_3:
             case FT1211R_SPEED_4:
             case FT1211R_SPEED_5:
+            case LUCCI_AIR_DC_SPEED_1:
+            case LUCCI_AIR_DC_SPEED_2:
+            case LUCCI_AIR_DC_SPEED_3:
+            case LUCCI_AIR_DC_SPEED_4:
+            case LUCCI_AIR_DC_SPEED_5:
+            case LUCCI_AIR_DC_SPEED_6:
             case LUCCI_AIR_DC_II_POWER_OFF:
             case LUCCI_AIR_DC_II_SPEED_1:
             case LUCCI_AIR_DC_II_SPEED_2:
@@ -460,6 +474,9 @@ public class RFXComFanMessage extends RFXComDeviceMessageImpl<RFXComFanMessage.S
 
                 case LUCCI_AIR_DC_II:
                     return LUCCI_AIR_DC_II_LIGHT;
+
+                default:
+                    // return exception
             }
         } else if (type == OnOffType.OFF && subType == FALMEC) {
             return Commands.FALMEC_LIGHT_OFF;

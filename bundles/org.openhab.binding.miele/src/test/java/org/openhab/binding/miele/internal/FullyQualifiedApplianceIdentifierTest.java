@@ -14,6 +14,7 @@ package org.openhab.binding.miele.internal;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.core.test.java.JavaTest;
 
@@ -23,6 +24,7 @@ import org.openhab.core.test.java.JavaTest;
  *
  * @author Jacob Laursen - Initial contribution
  */
+@NonNullByDefault
 public class FullyQualifiedApplianceIdentifierTest extends JavaTest {
 
     @Test

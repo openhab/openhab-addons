@@ -5,39 +5,41 @@ The Guntamatic Binding can be used to monitor and control [Guntamatic Heating Sy
 ## Supported Things
 
 The Guntamatic Binding was developed and tested using Guntamatic Biostar 15kW Pellets Heating System, running Firmware 3.2d.
-It should work for all other Guntamatic Heating Systems as well, that support the same web interface.
+It should work for all other Guntamatic Heating Systems as well, that support the same web interface (Pellets, WoodChips, EnergyGrain as well as Log Heating Systems).
 
 ## Things
 
 Guntamatic Heating Systems supported as Thing Types:
 
-| Name          | Thing Type ID | Status                            |
-|---------------|---------------|-----------------------------------|
-| Biostar       | `biostar`     | tested via 15kW, firmware 3.2d    |
-| Powerchip     | `powerchip`   | untested                          |
-| Powercorn     | `powercorn`   | untested                          |
-| Biocom        | `biocom`      | untested                          |
-| Pro           | `pro`         | untested                          |
-| Therm         | `therm`       | untested                          |
+| Name          | Thing Type ID | Heating System Type  | Binding Development Status                       |
+|---------------|---------------|----------------------|--------------------------------------------------|
+| Biostar       | `biostar`     | Pellets              | tested via 15kW, firmware 3.2d, German & English |
+| Biosmart      | `biosmart`    | Logs                 | tested via 22kW, firmware 3.2f, German           |
+| Powerchip     | `powerchip`   | WoodChips            | tested via 100kW, firmware 3.2d, French          |
+| Powercorn     | `powercorn`   | EnergyGrain          | untested                                         |
+| Biocom        | `biocom`      | Pellets              | untested                                         |
+| Pro           | `pro`         | Pellets or WoodChips | untested                                         |
+| Therm         | `therm`       | Pellets              | untested                                         |
+| Generic       | `generic`     | -                    | use, if none from above                          |
 
 ### Thing Configuration
 
-| Parameter        | Description                                                                 | Default         |
-|------------------|-----------------------------------------------------------------------------|-----------------|
-| `hostname`         | Hostname or IP address of the Guntamatic Heating System                   |                 |
-| `key`              | Optional, but required to read protected parameters and to control the Guntamatic Heating System.<br/>The key needs to be requested from Guntamatic support, e.g. via https://www.guntamatic.com/en/contact/.                                        |                 |
-| `refreshInterval` | Interval the Guntamatic Heating System is polled in seconds                | `60`            |
-| `encoding`         | Code page used by the Guntamatic Heating System                           | `windows-1252`  |
+| Parameter          | Description                                                                 | Default         |
+|--------------------|-----------------------------------------------------------------------------|-----------------|
+| `hostname`         | Hostname or IP address of the Guntamatic Heating System                     |                 |
+| `key`              | Optional, but required to read protected parameters and to control the Guntamatic Heating System.<br/>The key needs to be requested from Guntamatic support, e.g. via https://www.guntamatic.com/en/contact/.                                          |                 |
+| `refreshInterval`  | Interval the Guntamatic Heating System is polled in seconds                 | `60`            |
+| `encoding`         | Code page used by the Guntamatic Heating System                             | `windows-1252`  |
 
 ### Properties
 
-| Property            | Description                                                   |
-|---------------------|---------------------------------------------------------------|
-| `extraWwHeat`       | Parameter used by `controlExtraWwHeat` channels               |
-| `boilerApproval`    | Parameter used by `controlBoilerApproval` channel             |
-| `heatCircProgram`   | Parameter used by `controlHeatCircProgram` channels           |
-| `program`           | Parameter used by `controlProgram` channel                    |
-| `wwHeat`            | Parameter used by `controlWwHeat` channels                    |
+| Property            | Description                                                   | Supported                                         |
+|---------------------|---------------------------------------------------------------|---------------------------------------------------|
+| `extraWwHeat`       | Parameter used by `controlExtraWwHeat` channels               | all                                               |
+| `boilerApproval`    | Parameter used by `controlBoilerApproval` channel             | Biostar, Powerchip, Powercorn, Biocom, Pro, Therm |
+| `heatCircProgram`   | Parameter used by `controlHeatCircProgram` channels           | all                                               | 
+| `program`           | Parameter used by `controlProgram` channel                    | all                                               |
+| `wwHeat`            | Parameter used by `controlWwHeat` channels                    | all                                               |
 
 ## Channels
 
@@ -45,10 +47,10 @@ Guntamatic Heating Systems supported as Thing Types:
 
 The Guntamatic Heating System can be controlled using the following channels:
 
-|	Channel             |	Description                                             | Type	|	Unit	|	Security Access Level	| ReadOnly | Advanced |
-|-----------------------|-----------------------------------------------------------|-------|:---------:|:-------------------------:|:--------:|:--------:|
-|	`controlBoilerApproval`	|	Set Boiler Approval (`AUTO`, `OFF`, `ON`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
-|	`controlProgram`	|	Set Program (`OFF`, `NORMAL`, `WARMWATER`, `MANUAL`)	|	`String`	|		|	🔐 W1	|	R/W	|	false	|
+|	Channel             |	Description                                                             | Type	|	Unit	|	Security Access Level	| ReadOnly | Advanced |
+|-----------------------|---------------------------------------------------------------------------|-------|:---------:|:-------------------------:|:--------:|:--------:|
+|	`controlBoilerApproval`	|	Set Boiler Approval (`AUTO`, `OFF`, `ON`)	                        |	`String`	|		|	🔐 W1	|	R/W	|	true	|
+|	`controlProgram`	|	Set Program (`OFF`, `NORMAL`, `WARMWATER`, `MANUAL`<sup id="a1">[1](#f1)</sup>)	|	`String`	|		|	🔐 W1	|	R/W	|	false	|
 |	`controlHeatCircProgram0`	|	Set Heat Circle 0 Program (`OFF`, `NORMAL`, `HEAT`, `LOWER`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
 |	`controlHeatCircProgram1`	|	Set Heat Circle 1 Program (`OFF`, `NORMAL`, `HEAT`, `LOWER`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
 |	`controlHeatCircProgram2`	|	Set Heat Circle 2 Program (`OFF`, `NORMAL`, `HEAT`, `LOWER`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
@@ -58,17 +60,21 @@ The Guntamatic Heating System can be controlled using the following channels:
 |	`controlHeatCircProgram6`	|	Set Heat Circle 6 Program (`OFF`, `NORMAL`, `HEAT`, `LOWER`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
 |	`controlHeatCircProgram7`	|	Set Heat Circle 7 Program (`OFF`, `NORMAL`, `HEAT`, `LOWER`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
 |	`controlHeatCircProgram8`	|	Set Heat Circle 8 Program (`OFF`, `NORMAL`, `HEAT`, `LOWER`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
-|	`controlWwHeat0`	|	Trigger Warm Water Circle 0 (`RECHARGE`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
-|	`controlWwHeat1`	|	Trigger Warm Water Circle 1 (`RECHARGE`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
-|	`controlWwHeat2`	|	Trigger Warm Water Circle 2 (`RECHARGE`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
-|	`controlExtraWwHeat0`	|	Trigger Extra Warm Water Circle 0 (`RECHARGE`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
-|	`controlExtraWwHeat1`	|	Trigger Extra Warm Water Circle 1 (`RECHARGE`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
-|	`controlExtraWwHeat2`	|	Trigger Extra Warm Water Circle 2 (`RECHARGE`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
+|	`controlWwHeat0`	        |	Trigger Warm Water Circle 0 (`RECHARGE`)	                    |	`String`	|		|	🔐 W1	|	R/W	|	true	|
+|	`controlWwHeat1`            |	Trigger Warm Water Circle 1 (`RECHARGE`)	                    |	`String`	|		|	🔐 W1	|	R/W	|	true	|
+|	`controlWwHeat2`            |	Trigger Warm Water Circle 2 (`RECHARGE`)	                    |	`String`	|		|	🔐 W1	|	R/W	|	true	|
+|	`controlExtraWwHeat0`       |	Trigger Extra Warm Water Circle 0 (`RECHARGE`)	                |	`String`	|		|	🔐 W1	|	R/W	|	true	|
+|	`controlExtraWwHeat1`       |	Trigger Extra Warm Water Circle 1 (`RECHARGE`)	                |	`String`	|		|	🔐 W1	|	R/W	|	true	|
+|	`controlExtraWwHeat2`       |	Trigger Extra Warm Water Circle 2 (`RECHARGE`)	                |	`String`	|		|	🔐 W1	|	R/W	|	true	|
+
+- <b id="f1">1)</b> ... `MANUAL` is supported by Biostar, Powerchip, Powercorn, Biocom, Pro as well as Therm only [↩](#a1)
 
 #### Response of Control Channels
 
 - `{"ack":"confirmation message"}` ... in case of success
 - `{"err":"error message"}`        ... in case of error
+
+The reaction of the Guntamatic Heating System can be monitored via the corresponding data channel. E.g. `programHc1` if you triggered `controlHeatCircProgram1`. The data channel gets updated with the next cyclic update (according to the `refreshInterval` configuration).
 
 ### Monitoring Channels
 
