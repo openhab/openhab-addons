@@ -14,7 +14,8 @@ package org.openhab.binding.gardena.internal.handler;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.Collections;
@@ -73,6 +74,7 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
     private @Nullable ScheduledFuture<?> reInitializationTask;
     private boolean reInitializationCausedBy429 = false;
     private Instant lastApiCallTime = Instant.MIN;
+    private boolean lastApiCallTimeLoaded = false;
 
     public GardenaAccountHandler(Bridge bridge, HttpClientFactory httpClientFactory,
             WebSocketFactory webSocketFactory) {
@@ -81,19 +83,32 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
         this.webSocketFactory = webSocketFactory;
     }
 
+    private Instant lastApiCallTime() {
+        if (!lastApiCallTimeLoaded) {
+            Map<String, String> properties = getThing().getProperties();
+            String property = properties.getOrDefault(GardenaBindingConstants.LAST_API_CALL_TIME, "");
+            lastApiCallTime = "".equals(property) ? Instant.now().minus(Duration.ofHours(1)) : Instant.parse(property);
+            lastApiCallTimeLoaded = true;
+        }
+        return lastApiCallTime;
+    }
+
+    private void lastApiCallTimeUpdate() {
+        lastApiCallTime = Instant.now();
+        getThing().setProperty(GardenaBindingConstants.LAST_API_CALL_TIME,
+                lastApiCallTime.truncatedTo(ChronoUnit.SECONDS).toString());
+    }
+
     @Override
     public void initialize() {
         logger.debug("Initializing Gardena account '{}'", getThing().getUID().getId());
-        Map<String, String> properties = getThing().getProperties();
-        String property = properties.getOrDefault(GardenaBindingConstants.LAST_API_CALL_TIME, "");
-        lastApiCallTime = "".equals(property) ? Instant.MIN : Instant.parse(property);
         Instant now = Instant.now();
-        Instant notBeforeTime = lastApiCallTime.plus(REINITIALIZE_DELAY_MINUTES_BACK_OFF)
+        Instant notBeforeTime = lastApiCallTime().plus(REINITIALIZE_DELAY_MINUTES_BACK_OFF)
                 .plus(REINITIALIZE_DELAY_MINUTES_BACK_OFF);
         if (now.isBefore(notBeforeTime)) {
             // delay the initialisation
             Duration delay = Duration.between(now, notBeforeTime);
-            updateStatus(ThingStatus.INITIALIZING, ThingStatusDetail.NONE, delayText(delay.getSeconds()));
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.DUTY_CYCLE, uiText(delay.getSeconds()));
             scheduleReinitialize(delay);
         } else {
             // do immediate initialisation
@@ -111,9 +126,9 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
      * @param delaySeconds the delay that will be added to the current time
      * @return the description text
      */
-    private String delayText(long delaySeconds) {
-        return "Pending reconnect @ "
-                + LocalTime.now().plusSeconds(delaySeconds).truncatedTo(ChronoUnit.SECONDS).toString();
+    public String uiText(long delaySeconds) {
+        return "Waiting to make automatic reconnection attempt at " + LocalDateTime.now().plusSeconds(delaySeconds)
+                .truncatedTo(ChronoUnit.SECONDS).format(DateTimeFormatter.ofPattern("HH:MM:SS (cccc)"));
     }
 
     /**
@@ -147,7 +162,7 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
                     delay = REINITIALIZE_DELAY_HOURS_LIMIT_EXCEEDED;
                 } else {
                     Instant now = Instant.now();
-                    Instant notBeforeTime = lastApiCallTime.plus(REINITIALIZE_DELAY_MINUTES_BACK_OFF)
+                    Instant notBeforeTime = lastApiCallTime().plus(REINITIALIZE_DELAY_MINUTES_BACK_OFF)
                             .plus(REINITIALIZE_DELAY_MINUTES_BACK_OFF);
                     if (now.isBefore(notBeforeTime)) {
                         delay = Duration.between(now, notBeforeTime);
@@ -165,10 +180,10 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
                 delaySecs = reInitializationTask.getDelay(TimeUnit.SECONDS);
             }
 
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, delayText(delaySecs));
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, uiText(delaySecs));
             disposeGardena();
         }
-        lastApiCallTime = Instant.now();
+        lastApiCallTimeUpdate();
     }
 
     /**
@@ -207,8 +222,6 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
             this.reInitializationTask = null;
             this.reInitializationCausedBy429 = false;
         }
-        getThing().setProperty(GardenaBindingConstants.LAST_API_CALL_TIME,
-                lastApiCallTime.truncatedTo(ChronoUnit.SECONDS).toString());
         disposeGardena();
     }
 
