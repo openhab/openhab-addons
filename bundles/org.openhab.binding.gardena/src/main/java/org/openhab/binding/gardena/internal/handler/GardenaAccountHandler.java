@@ -18,11 +18,13 @@ import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.gardena.internal.GardenaBindingConstants;
 import org.openhab.binding.gardena.internal.GardenaSmart;
 import org.openhab.binding.gardena.internal.GardenaSmartEventListener;
 import org.openhab.binding.gardena.internal.GardenaSmartImpl;
@@ -69,7 +71,7 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
     private final Object reInitializationCodeLock = new Object();
     private @Nullable ScheduledFuture<?> reInitializationTask;
     private boolean reInitializationCausedBy429 = false;
-    private LocalDateTime lastErrorTime = LocalDateTime.MIN;
+    private LocalDateTime lastApiCallTime = LocalDateTime.MIN;
 
     public GardenaAccountHandler(Bridge bridge, HttpClientFactory httpClientFactory,
             WebSocketFactory webSocketFactory) {
@@ -81,11 +83,35 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
     @Override
     public void initialize() {
         logger.debug("Initializing Gardena account '{}'", getThing().getUID().getId());
-        scheduler.submit(() -> initializeGardena());
+        Map<String, String> properties = getThing().getProperties();
+        String property = properties.getOrDefault(GardenaBindingConstants.LAST_API_CALL_TIME, "");
+        lastApiCallTime = "".equals(property) ? LocalDateTime.MIN : LocalDateTime.parse(property);
+        LocalDateTime notBeforeTime = lastApiCallTime.plus(REINITIALIZE_DELAY_MINUTES_BACK_OFF);
+        LocalDateTime now = LocalDateTime.now();
+        if (now.isBefore(notBeforeTime)) {
+            // delay the initialisation
+            Duration delay = Duration.between(now, notBeforeTime);
+            updateStatus(ThingStatus.INITIALIZING, ThingStatusDetail.NONE, delayText(delay.getSeconds()));
+            scheduleReinitialize(delay);
+        } else {
+            // do immediate initialisation
+            scheduler.submit(() -> initializeGardena());
+        }
     }
 
     public void setDiscoveryService(GardenaDeviceDiscoveryService discoveryService) {
         this.discoveryService = discoveryService;
+    }
+
+    /**
+     * Format a description text to display on the thing main UI page
+     *
+     * @param delaySeconds the delay that will be added to the current time
+     * @return the description text
+     */
+    private String delayText(long delaySeconds) {
+        return "Pending reconnect @ "
+                + LocalTime.now().plusSeconds(delaySeconds).truncatedTo(ChronoUnit.SECONDS).toString();
     }
 
     /**
@@ -110,15 +136,22 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
         } catch (GardenaException ex) {
             logger.warn("{}", ex.getMessage());
 
-            long secondsUntilRestart;
+            long delaySecs;
 
             synchronized (reInitializationCodeLock) {
+                Duration delay;
                 boolean isHttp429Error = (ex.getStatus() == 429);
-                boolean isRepeatError = lastErrorTime.plus(REINITIALIZE_DELAY_MINUTES_BACK_OFF)
-                        .isAfter(LocalDateTime.now());
-
-                Duration delay = isHttp429Error ? REINITIALIZE_DELAY_HOURS_LIMIT_EXCEEDED
-                        : isRepeatError ? REINITIALIZE_DELAY_MINUTES_BACK_OFF : REINITIALIZE_DELAY_SECONDS;
+                if (isHttp429Error) {
+                    delay = REINITIALIZE_DELAY_HOURS_LIMIT_EXCEEDED;
+                } else {
+                    LocalDateTime now = LocalDateTime.now();
+                    LocalDateTime notBeforeTime = lastApiCallTime.plus(REINITIALIZE_DELAY_MINUTES_BACK_OFF);
+                    if (now.isBefore(notBeforeTime)) {
+                        delay = Duration.between(now, notBeforeTime);
+                    } else {
+                        delay = REINITIALIZE_DELAY_SECONDS;
+                    }
+                }
 
                 ScheduledFuture<?> reInitializationTask = this.reInitializationTask;
                 if (reInitializationTask == null || reInitializationTask.isDone()
@@ -126,15 +159,13 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
                     reInitializationTask = scheduleReinitialize(delay);
                 }
                 reInitializationCausedBy429 = isHttp429Error;
-                lastErrorTime = LocalDateTime.now();
-                secondsUntilRestart = reInitializationTask.getDelay(TimeUnit.SECONDS);
+                delaySecs = reInitializationTask.getDelay(TimeUnit.SECONDS);
             }
 
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Auto reconnect @ "
-                    + LocalTime.now().plusSeconds(secondsUntilRestart).truncatedTo(ChronoUnit.SECONDS).toString());
-
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, delayText(delaySecs));
             disposeGardena();
         }
+        lastApiCallTime = LocalDateTime.now();
     }
 
     /**
@@ -149,8 +180,6 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
 
     /**
      * Schedules a reinitialization, if Gardena smart system account is not reachable.
-     *
-     * @return
      *
      * @return pointer to the reinitialization task
      */
@@ -172,11 +201,11 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
             if (reInitializeTask != null) {
                 reInitializeTask.cancel(false);
             }
-            // treat manual dispose() as an error, since subsequent reinitialization uses an API call
-            this.lastErrorTime = LocalDateTime.now();
             this.reInitializationTask = null;
             this.reInitializationCausedBy429 = false;
         }
+        getThing().setProperty(GardenaBindingConstants.LAST_API_CALL_TIME,
+                lastApiCallTime.truncatedTo(ChronoUnit.SECONDS).toString());
         disposeGardena();
     }
 
@@ -212,7 +241,7 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (RefreshType.REFRESH == command) {
             // ****
-            // TODO: REALLY ?? should a refresh be causing a complete initialisation of the bridge ???
+            // TODO: REALLY ??? should a UI refresh be causing a complete initialisation of the bridge ???
             // ****
             logger.debug("Refreshing Gardena account '{}'", getThing().getUID().getId());
             disposeGardena();
