@@ -108,7 +108,7 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
         if (now.isBefore(notBeforeTime)) {
             // delay the initialisation
             Duration delay = Duration.between(now, notBeforeTime);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.DUTY_CYCLE, uiText(delay.getSeconds()));
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, uiText(delay.getSeconds()));
             scheduleReinitialize(delay);
         } else {
             // do immediate initialisation
@@ -303,7 +303,8 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
 
     @Override
     public void onError() {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Connection lost");
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                uiText(REINITIALIZE_DELAY_SECONDS.toSeconds()));
         disposeGardena();
         synchronized (reInitializationCodeLock) {
             reInitializationCausedBy429 = false;
