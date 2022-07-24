@@ -57,6 +57,7 @@ import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
@@ -157,6 +158,7 @@ public class FineOffsetGatewayHandler extends BaseBridgeHandler {
         }
         List<MeasuredValue> data = query(GatewayQueryService::getMeasuredValues);
         if (data == null) {
+            getThing().getChannels().forEach(c -> updateState(c.getUID(), UnDefType.UNDEF));
             return;
         }
 

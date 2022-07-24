@@ -27,6 +27,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.UnDefType;
 
 /**
  * The {@link FineOffsetSensorHandler} keeps track of the signal and battery of the sensor attached to the gateway.
@@ -62,6 +63,7 @@ public class FineOffsetSensorHandler extends BaseThingHandler {
         }
         if (sensorDevice == null) {
             updateStatus(ThingStatus.OFFLINE);
+            getThing().getChannels().forEach(c -> updateState(c.getUID(), UnDefType.UNDEF));
             return;
         }
         if (sensorDevice.getSignal() == 0) {
