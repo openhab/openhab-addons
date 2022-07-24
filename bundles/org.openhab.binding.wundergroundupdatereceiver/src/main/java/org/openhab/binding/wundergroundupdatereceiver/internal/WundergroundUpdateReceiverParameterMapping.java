@@ -54,7 +54,7 @@ public class WundergroundUpdateReceiverParameterMapping {
     }
 
     private static final List<String> UNMAPPED_PARAMETERS = List.of(STATION_ID_PARAMETER, PASSWORD, ACTION,
-            REALTIME_MARKER);
+            REALTIME_MARKER, LAST_QUERY);
 
     private static final WundergroundUpdateReceiverParameterMapping[] KNOWN_MAPPINGS = {
             new WundergroundUpdateReceiverParameterMapping(LAST_RECEIVED, LAST_RECEIVED_DATETIME_CHANNELTYPEUID,
