@@ -86,7 +86,7 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
     private final ScheduledExecutorService scheduler;
 
     private final Map<String, Device> allDevicesById = new HashMap<>();
-    private final LocationsResponse locationsResponse;
+    private @Nullable LocationsResponse locationsResponse = null;
     private final GardenaSmartEventListener eventListener;
 
     private final HttpClient httpClient;
@@ -125,14 +125,22 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
 
             // initially load access token
             verifyToken();
-            locationsResponse = loadLocations();
+            try {
+                locationsResponse = loadLocations();
+            } catch (GardenaException ex) {
+                locationsResponse = null;
+                throw ex;
+            }
 
             // assemble devices
-            for (LocationDataItem location : locationsResponse.data) {
-                LocationResponse locationResponse = loadLocation(location.id);
-                if (locationResponse.included != null) {
-                    for (DataItem<?> dataItem : locationResponse.included) {
-                        handleDataItem(dataItem);
+            LocationsResponse locationsResponse = this.locationsResponse;
+            if (locationsResponse != null && locationsResponse.data != null) {
+                for (LocationDataItem location : locationsResponse.data) {
+                    LocationResponse locationResponse = loadLocation(location.id);
+                    if (locationResponse.included != null) {
+                        for (DataItem<?> dataItem : locationResponse.included) {
+                            handleDataItem(dataItem);
+                        }
                     }
                 }
             }
@@ -157,16 +165,19 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
      * Starts the websockets for each location.
      */
     private void startWebsockets() throws Exception {
-        for (LocationDataItem location : locationsResponse.data) {
-            WebSocketCreatedResponse webSocketCreatedResponse = getWebsocketInfo(location.id);
-            Location locationAttributes = location.attributes;
-            WebSocket webSocketAttributes = webSocketCreatedResponse.data.attributes;
-            if (locationAttributes == null || webSocketAttributes == null) {
-                continue;
+        LocationsResponse locationsResponse = this.locationsResponse;
+        if (locationsResponse != null) {
+            for (LocationDataItem location : locationsResponse.data) {
+                WebSocketCreatedResponse webSocketCreatedResponse = getWebsocketInfo(location.id);
+                Location locationAttributes = location.attributes;
+                WebSocket webSocketAttributes = webSocketCreatedResponse.data.attributes;
+                if (locationAttributes == null || webSocketAttributes == null) {
+                    continue;
+                }
+                String socketId = id + "-" + locationAttributes.name;
+                webSockets.put(location.id, new GardenaSmartWebSocket(this, webSocketClient, scheduler,
+                        webSocketAttributes.url, token, socketId, location.id));
             }
-            String socketId = id + "-" + locationAttributes.name;
-            webSockets.put(location.id, new GardenaSmartWebSocket(this, webSocketClient, scheduler,
-                    webSocketAttributes.url, token, socketId, location.id));
         }
     }
 
@@ -330,10 +341,9 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
         }
         httpClient.destroy();
         webSocketClient.destroy();
-        @Nullable
-        List<?> locationData = locationsResponse.data;
-        if (locationData != null) {
-            locationData.clear();
+        LocationsResponse locationsResponse = this.locationsResponse;
+        if (locationsResponse != null && locationsResponse.data != null) {
+            locationsResponse.data.clear();
         }
         allDevicesById.clear();
     }
