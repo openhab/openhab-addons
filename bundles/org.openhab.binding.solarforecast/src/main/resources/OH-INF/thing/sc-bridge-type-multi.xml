@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="solarforecast"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="sc-multi">
+		<label>Solcast Multi Plane</label>
+		<description>Bridge holding multiple photovoltaic planes</description>
+
+		<channels>
+			<channel id="actual" typeId="actual-channel"/>
+			<channel id="remaining" typeId="remaining-channel"/>
+			<channel id="today" typeId="today-channel"/>
+			<channel id="tomorrow" typeId="tomorrow-channel"/>
+			<channel id="tomorrow-low" typeId="tomorrow-low-channel"/>
+			<channel id="tomorrow-high" typeId="tomorrow-high-channel"/>
+			<channel id="day2" typeId="day2-channel"/>
+			<channel id="day2-low" typeId="day2-low-channel"/>
+			<channel id="day2-high" typeId="day2-high-channel"/>
+			<channel id="day3" typeId="day3-channel"/>
+			<channel id="day3-low" typeId="day3-low-channel"/>
+			<channel id="day3-high" typeId="day3-high-channel"/>
+			<channel id="day4" typeId="day4-channel"/>
+			<channel id="day4-low" typeId="day4-low-channel"/>
+			<channel id="day4-high" typeId="day4-high-channel"/>
+			<channel id="day5" typeId="day5-channel"/>
+			<channel id="day5-low" typeId="day5-low-channel"/>
+			<channel id="day5-high" typeId="day5-high-channel"/>
+			<channel id="day6" typeId="day6-channel"/>
+			<channel id="day6-low" typeId="day6-low-channel"/>
+			<channel id="day6-high" typeId="day6-high-channel"/>
+		</channels>
+	</bridge-type>
+</thing:thing-descriptions>

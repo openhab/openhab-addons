@@ -21,8 +21,8 @@ import javax.measure.quantity.Energy;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.solarforecast.internal.ForecastObject;
-import org.openhab.core.library.types.PointType;
+import org.openhab.binding.solarforecast.internal.forecastsolar.ForecastSolarObject;
+import org.openhab.binding.solarforecast.internal.solcast.SolcastObject;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
@@ -41,7 +41,7 @@ class ForecastSolarTest {
     void testForecastObject() {
         String content = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
         LocalDateTime now = LocalDateTime.of(2022, 7, 17, 16, 23);
-        ForecastObject fo = new ForecastObject(content, now);
+        ForecastSolarObject fo = new ForecastSolarObject(content, now, now);
         assertEquals(49.431, fo.getActualValue(now), 0.001, "Current Production");
         assertEquals(14.152, fo.getRemainingProduction(now), 0.001, "Current Production");
         assertEquals(fo.getDayTotal(now, 0), fo.getActualValue(now) + fo.getRemainingProduction(now), 0.001,
@@ -54,7 +54,7 @@ class ForecastSolarTest {
     void testInterpolation() {
         String content = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
         LocalDateTime now = LocalDateTime.of(2022, 7, 17, 16, 0);
-        ForecastObject fo = new ForecastObject(content, now);
+        ForecastSolarObject fo = new ForecastSolarObject(content, now, now);
         double previousValue = 0;
         for (int i = 0; i < 60; i++) {
             now = now.plusMinutes(1);
@@ -67,9 +67,9 @@ class ForecastSolarTest {
     void testForecastSum() {
         String content = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
         LocalDateTime now = LocalDateTime.of(2022, 7, 17, 16, 23);
-        ForecastObject fo = new ForecastObject(content, now);
+        ForecastSolarObject fo = new ForecastSolarObject(content, now, now);
         QuantityType<Energy> actual = QuantityType.valueOf(0, Units.KILOWATT_HOUR);
-        State st = ForecastObject.getStateObject(fo.getActualValue(now));
+        State st = SolcastObject.getStateObject(fo.getActualValue(now));
         assertTrue(st instanceof QuantityType);
         actual = actual.add((QuantityType<Energy>) st);
         assertEquals(49.431, actual.floatValue(), 0.001, "Current Production");
@@ -79,17 +79,11 @@ class ForecastSolarTest {
 
     @Test
     void testErrorCases() {
-        ForecastObject fo = new ForecastObject();
+        ForecastSolarObject fo = new ForecastSolarObject();
         assertFalse(fo.isValid());
         LocalDateTime now = LocalDateTime.of(2022, 7, 17, 16, 23);
         assertEquals(-1.0, fo.getActualValue(now), 0.001, "Actual Production");
         assertEquals(-1.0, fo.getDayTotal(now, 0), 0.001, "Today Production");
         assertEquals(-1.0, fo.getRemainingProduction(now), 0.001, "Remaining Production");
-    }
-
-    @Test
-    void testLocation() {
-        PointType pt = PointType.valueOf("1.234,9.876");
-        System.out.println(pt);
     }
 }

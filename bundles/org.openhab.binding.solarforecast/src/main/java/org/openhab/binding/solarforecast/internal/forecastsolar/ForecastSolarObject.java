@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.solarforecast.internal;
+package org.openhab.binding.solarforecast.internal.forecastsolar;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -21,29 +21,34 @@ import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONObject;
+import org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * The {@link ForecastObject} holds complete data for forecast
+ * The {@link ForecastSolarObject} holds complete data for forecast
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class ForecastObject {
+public class ForecastSolarObject {
+    private final Logger logger = LoggerFactory.getLogger(ForecastSolarObject.class);
     private static final double UNDEF = -1;
     private final TreeMap<LocalDateTime, Double> dataMap = new TreeMap<LocalDateTime, Double>();
     private Optional<String> rawData = Optional.empty();
     private boolean valid = false;
-    private int constructionHour;
+    private LocalDateTime expirationDateTime;
 
-    public ForecastObject() {
+    public ForecastSolarObject() {
+        expirationDateTime = LocalDateTime.now();
     }
 
-    public ForecastObject(String content, LocalDateTime now) {
-        constructionHour = now.getHour();
+    public ForecastSolarObject(String content, LocalDateTime now, LocalDateTime expirationDate) {
+        expirationDateTime = expirationDate;
         if (!content.equals(SolarForecastBindingConstants.EMPTY)) {
             rawData = Optional.of(content);
             JSONObject contentJson = new JSONObject(content);
@@ -64,7 +69,20 @@ public class ForecastObject {
     }
 
     public boolean isValid() {
-        return valid && constructionHour == LocalDateTime.now().getHour() && !dataMap.isEmpty();
+        if (valid) {
+            if (!dataMap.isEmpty()) {
+                if (expirationDateTime.isAfter(LocalDateTime.now())) {
+                    return true;
+                } else {
+                    logger.info("Forecast data expired");
+                }
+            } else {
+                logger.info("Empty data map");
+            }
+        } else {
+            logger.info("No Forecast data available");
+        }
+        return false;
     }
 
     public double getActualValue(LocalDateTime now) {
@@ -123,6 +141,6 @@ public class ForecastObject {
 
     @Override
     public String toString() {
-        return "Hour: " + constructionHour + ", Valid: " + valid + ", Data:" + dataMap;
+        return "Expiration: " + expirationDateTime + ", Valid: " + valid + ", Data:" + dataMap;
     }
 }

@@ -4,12 +4,6 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<channel-type id="today-channel">
-		<item-type>Number:Energy</item-type>
-		<label>Forecast Today</label>
-		<description>Todays forecast in total</description>
-		<state pattern="%.3f %unit" readOnly="true"/>
-	</channel-type>
 	<channel-type id="remaining-channel">
 		<item-type>Number:Energy</item-type>
 		<label>Remaining Production Today</label>
@@ -22,15 +16,123 @@
 		<description>Forecast till now (actual time)</description>
 		<state pattern="%.3f %unit" readOnly="true"/>
 	</channel-type>
-	<channel-type id="tomorrow-channel">
+	<channel-type id="today-channel">
 		<item-type>Number:Energy</item-type>
-		<label>Forecast Tomorrow</label>
-		<description>Tomorrows forecast in total</description>
+		<label>Forecast Today</label>
+		<description>Todays forecast in total</description>
 		<state pattern="%.3f %unit" readOnly="true"/>
 	</channel-type>
 	<channel-type id="raw-channel" advanced="true">
 		<item-type>String</item-type>
 		<label>Raw JSON Response</label>
 		<description>Plain JSON response without conversions</description>
+	</channel-type>
+	<channel-type id="tomorrow-channel">
+		<item-type>Number:Energy</item-type>
+		<label>Forecast Tomorrow</label>
+		<description>Tomorrows forecast in total</description>
+		<state pattern="%.3f %unit" readOnly="true"/>
+	</channel-type>
+	<channel-type id="tomorrow-low-channel">
+		<item-type>Number:Energy</item-type>
+		<label>Forecast Tomorrow Low</label>
+		<description>Tomorrows pessimistic forecast</description>
+		<state pattern="%.3f %unit" readOnly="true"/>
+	</channel-type>
+	<channel-type id="tomorrow-high-channel">
+		<item-type>Number:Energy</item-type>
+		<label>Forecast Tomorrow High</label>
+		<description>Tomorrows optimistic forecast</description>
+		<state pattern="%.3f %unit" readOnly="true"/>
+	</channel-type>
+	<channel-type id="day2-channel">
+		<item-type>Number:Energy</item-type>
+		<label>Day 2 Estimation</label>
+		<description>Day after tomorrow estimation</description>
+		<state pattern="%.3f %unit" readOnly="true"/>
+	</channel-type>
+	<channel-type id="day2-low-channel">
+		<item-type>Number:Energy</item-type>
+		<label>Day 2 Low Estimation</label>
+		<description>Day after tomorrow pessimistic estimation</description>
+		<state pattern="%.3f %unit" readOnly="true"/>
+	</channel-type>
+	<channel-type id="day2-high-channel">
+		<item-type>Number:Energy</item-type>
+		<label>Day 2 High Estimation</label>
+		<description>Day after tomorrow optimistic estimation</description>
+		<state pattern="%.3f %unit" readOnly="true"/>
+	</channel-type>
+	<channel-type id="day3-channel">
+		<item-type>Number:Energy</item-type>
+		<label>Day 3 Estimation</label>
+		<description>Day 3 estimation</description>
+		<state pattern="%.3f %unit" readOnly="true"/>
+	</channel-type>
+	<channel-type id="day3-low-channel">
+		<item-type>Number:Energy</item-type>
+		<label>Day 3 Low Estimation</label>
+		<description>Day 3 pessimistic estimation</description>
+		<state pattern="%.3f %unit" readOnly="true"/>
+	</channel-type>
+	<channel-type id="day3-high-channel">
+		<item-type>Number:Energy</item-type>
+		<label>Day 3 High Estimation</label>
+		<description>Day 3 optimistic estimation</description>
+		<state pattern="%.3f %unit" readOnly="true"/>
+	</channel-type>
+	<channel-type id="day4-channel">
+		<item-type>Number:Energy</item-type>
+		<label>Day 4 Estimation</label>
+		<description>Day 4 estimation</description>
+		<state pattern="%.3f %unit" readOnly="true"/>
+	</channel-type>
+	<channel-type id="day4-low-channel">
+		<item-type>Number:Energy</item-type>
+		<label>Day 4 Low Estimation</label>
+		<description>Day 4 pessimistic estimation</description>
+		<state pattern="%.3f %unit" readOnly="true"/>
+	</channel-type>
+	<channel-type id="day4-high-channel">
+		<item-type>Number:Energy</item-type>
+		<label>Day 4 High Estimation</label>
+		<description>Day 4 optimistic estimation</description>
+		<state pattern="%.3f %unit" readOnly="true"/>
+	</channel-type>
+	<channel-type id="day5-channel">
+		<item-type>Number:Energy</item-type>
+		<label>Day 5 Estimation</label>
+		<description>Day 5 estimation</description>
+		<state pattern="%.3f %unit" readOnly="true"/>
+	</channel-type>
+	<channel-type id="day5-low-channel">
+		<item-type>Number:Energy</item-type>
+		<label>Day 5 Low Estimation</label>
+		<description>Day 5 pessimistic estimation</description>
+		<state pattern="%.3f %unit" readOnly="true"/>
+	</channel-type>
+	<channel-type id="day5-high-channel">
+		<item-type>Number:Energy</item-type>
+		<label>Day 5 High Estimation</label>
+		<description>Day 5 optimistic estimation</description>
+		<state pattern="%.3f %unit" readOnly="true"/>
+	</channel-type>
+	<channel-type id="day6-channel">
+		<item-type>Number:Energy</item-type>
+		<label>Day 3 Estimation</label>
+		<description>Day 3 estimation</description>
+		<state pattern="%.3f %unit" readOnly="true"/>
+	</channel-type>
+	<channel-type id="day6-low-channel">
+		<item-type>Number:Energy</item-type>
+		<label>Day 6 Low Estimation</label>
+		<description>Day 6 pessimistic estimation</description>
+		<state pattern="%.3f %unit" readOnly="true"/>
+	</channel-type>
+	<channel-type id="day6-high-channel">
+		<item-type>Number:Energy</item-type>
+		<label>Day 6 High Estimation</label>
+		<description>Day 6 optimistic estimation</description>
+		<state pattern="%.3f %unit" readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

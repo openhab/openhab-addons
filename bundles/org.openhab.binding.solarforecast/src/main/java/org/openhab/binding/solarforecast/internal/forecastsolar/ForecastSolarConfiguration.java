@@ -10,17 +10,18 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.solarforecast.internal;
+package org.openhab.binding.solarforecast.internal.forecastsolar;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants;
 
 /**
- * The {@link SolarForecastConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link ForecastSolarConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class SolarForecastConfiguration {
+public class ForecastSolarConfiguration {
     public String location = "0.0,0.0";
     public int declination = -1;
     public int azimuth = 360;

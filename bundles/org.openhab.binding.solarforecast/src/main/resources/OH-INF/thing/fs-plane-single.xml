@@ -4,17 +4,20 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<bridge-type id="multi">
-		<label>Multi Plane Bridge</label>
-		<description>Bridge holding multiple photovoltaic planes</description>
+	<thing-type id="single">
+		<label>ForecastSolar Single PV Plane</label>
+		<description>One PV plane attached to your inverter</description>
 
 		<channels>
 			<channel id="today" typeId="today-channel"/>
 			<channel id="actual" typeId="actual-channel"/>
 			<channel id="remaining" typeId="remaining-channel"/>
 			<channel id="tomorrow" typeId="tomorrow-channel"/>
+			<channel id="day2" typeId="day2-channel"/>
+			<channel id="day3" typeId="day3-channel"/>
+			<channel id="raw" typeId="raw-channel"/>
 		</channels>
 
-		<config-description-ref uri="thing-type:solarforecast:multi"/>
-	</bridge-type>
+		<config-description-ref uri="thing-type:solarforecast:fs-single"/>
+	</thing-type>
 </thing:thing-descriptions>

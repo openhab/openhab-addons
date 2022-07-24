@@ -10,51 +10,38 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.solarforecast.internal;
+package org.openhab.binding.solarforecast.internal.solcast;
 
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.core.config.core.Configuration;
-import org.openhab.core.library.types.PointType;
+import org.openhab.binding.solarforecast.internal.forecastsolar.ForecastSolarBridgeHandler;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.types.Command;
 
 /**
- * The {@link SolarForecastBridgeHandler} is a non active handler instance. It will be triggerer by the bridge.
+ * The {@link ForecastSolarBridgeHandler} is a non active handler instance. It will be triggerer by the bridge.
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class SolarForecastSinglePlaneHandler extends SolarForecastPlaneHandler {
+public class SolcastSinglePlaneHandler extends SolcastPlaneHandler {
     private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
-    private PointType homeLocation;
-    private @Nullable SolarForecastConfiguration config;
 
-    public SolarForecastSinglePlaneHandler(Thing thing, HttpClient httpClient, PointType location) {
+    public SolcastSinglePlaneHandler(Thing thing, HttpClient httpClient) {
         super(thing, httpClient);
-        homeLocation = location;
     }
 
     @Override
     public void initialize() {
-        config = getConfigAs(SolarForecastConfiguration.class);
-        if (config.location.equals(SolarForecastBindingConstants.AUTODETECT)) {
-            Configuration editConfig = editConfiguration();
-            editConfig.put("location", homeLocation.toString());
-            updateConfiguration(editConfig);
-            config = getConfigAs(SolarForecastConfiguration.class);
-        }
-        if (config != null) {
-            super.setConfig(config);
-        }
-        startSchedule(config.refreshInterval);
+        SolcastConfiguration config = getConfigAs(SolcastConfiguration.class);
+        super.setConfig(config);
+        startSchedule(1);
         updateStatus(ThingStatus.ONLINE);
     }
 
@@ -80,6 +67,7 @@ public class SolarForecastSinglePlaneHandler extends SolarForecastPlaneHandler {
 
     @Override
     public void dispose() {
+        super.dispose();
         refreshJob.ifPresent(job -> job.cancel(true));
     }
 }

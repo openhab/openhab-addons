@@ -4,7 +4,12 @@
 	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
-	<config-description uri="thing-type:solarforecast:part">
+	<config-description uri="thing-type:solarforecast:fs-part">
+		<parameter name="refreshInterval" type="integer" min="1" unit="min" required="true">
+			<label>Refresh Interval</label>
+			<description>Data refresh rate of forecast data</description>
+			<default>30</default>
+		</parameter>
 		<parameter name="declination" type="integer" min="0" max="90" required="true">
 			<label>Plane Declination</label>
 			<description>0 for horizontal till 90 for vertical declination</description>

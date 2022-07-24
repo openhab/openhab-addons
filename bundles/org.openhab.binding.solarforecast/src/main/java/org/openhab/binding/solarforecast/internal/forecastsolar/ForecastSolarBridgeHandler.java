@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.solarforecast.internal;
+package org.openhab.binding.solarforecast.internal.forecastsolar;
 
 import static org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants.*;
 
@@ -23,7 +23,8 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants;
+import org.openhab.binding.solarforecast.internal.solcast.SolcastObject;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.thing.Bridge;
@@ -35,36 +36,38 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link SolarForecastBridgeHandler} is a non active handler instance. It will be triggerer by the bridge.
+ * The {@link ForecastSolarBridgeHandler} is a non active handler instance. It will be triggerer by the bridge.
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class SolarForecastBridgeHandler extends BaseBridgeHandler {
+public class ForecastSolarBridgeHandler extends BaseBridgeHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(SolarForecastBridgeHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(ForecastSolarBridgeHandler.class);
     private final PointType homeLocation;
 
-    private List<SolarForecastPlaneHandler> parts = new ArrayList<SolarForecastPlaneHandler>();
+    private List<ForecastSolarPlaneHandler> parts = new ArrayList<ForecastSolarPlaneHandler>();
+    private Optional<ForecastSolarConfiguration> configuration = Optional.empty();
     private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
-    private @Nullable SolarForecastConfiguration config;
 
-    public SolarForecastBridgeHandler(Bridge bridge, PointType location) {
+    public ForecastSolarBridgeHandler(Bridge bridge, PointType location) {
         super(bridge);
         homeLocation = location;
     }
 
     @Override
     public void initialize() {
-        config = getConfigAs(SolarForecastConfiguration.class);
-        startSchedule(config.refreshInterval);
+        ForecastSolarConfiguration config = getConfigAs(ForecastSolarConfiguration.class);
         if (config.location.equals(SolarForecastBindingConstants.AUTODETECT)) {
             Configuration editConfig = editConfiguration();
             editConfig.put("location", homeLocation.toString());
             updateConfiguration(editConfig);
-            config = getConfigAs(SolarForecastConfiguration.class);
+            config = getConfigAs(ForecastSolarConfiguration.class);
         }
+        configuration = Optional.of(config);
         updateStatus(ThingStatus.ONLINE);
+        getData();
+        startSchedule(1);
     }
 
     @Override
@@ -91,26 +94,33 @@ public class SolarForecastBridgeHandler extends BaseBridgeHandler {
             return;
         }
         LocalDateTime now = LocalDateTime.now();
-        double todaySum = 0;
-        double tomorrowSum = 0;
         double actualSum = 0;
         double remainSum = 0;
-        for (Iterator<SolarForecastPlaneHandler> iterator = parts.iterator(); iterator.hasNext();) {
-            SolarForecastPlaneHandler sfph = iterator.next();
-            ForecastObject fo = sfph.fetchData();
+        double todaySum = 0;
+        double tomorrowSum = 0;
+        double day2Sum = 0;
+        double day3Sum = 0;
+        for (Iterator<ForecastSolarPlaneHandler> iterator = parts.iterator(); iterator.hasNext();) {
+            ForecastSolarPlaneHandler sfph = iterator.next();
+            ForecastSolarObject fo = sfph.fetchData();
             if (fo.isValid()) {
-                todaySum += fo.getDayTotal(now, 0);
-                tomorrowSum += fo.getDayTotal(now, 1);
                 actualSum += fo.getActualValue(now);
                 remainSum += fo.getRemainingProduction(now);
+                todaySum += fo.getDayTotal(now, 0);
+                tomorrowSum += fo.getDayTotal(now, 1);
+                day2Sum += fo.getDayTotal(now, 2);
+                day3Sum += fo.getDayTotal(now, 3);
             } else {
                 logger.info("Fetched data not valid {}", fo.toString());
             }
         }
-        updateState(CHANNEL_TODAY, ForecastObject.getStateObject(todaySum));
-        updateState(CHANNEL_TOMORROW, ForecastObject.getStateObject(tomorrowSum));
-        updateState(CHANNEL_REMAINING, ForecastObject.getStateObject(remainSum));
-        updateState(CHANNEL_ACTUAL, ForecastObject.getStateObject(actualSum));
+        logger.info("Remain: {}", remainSum);
+        updateState(CHANNEL_REMAINING, SolcastObject.getStateObject(remainSum));
+        updateState(CHANNEL_ACTUAL, SolcastObject.getStateObject(actualSum));
+        updateState(CHANNEL_TODAY, SolcastObject.getStateObject(todaySum));
+        updateState(CHANNEL_TOMORROW, SolcastObject.getStateObject(tomorrowSum));
+        updateState(CHANNEL_DAY2, SolcastObject.getStateObject(day2Sum));
+        updateState(CHANNEL_DAY3, SolcastObject.getStateObject(day3Sum));
     }
 
     @Override
@@ -118,15 +128,19 @@ public class SolarForecastBridgeHandler extends BaseBridgeHandler {
         refreshJob.ifPresent(job -> job.cancel(true));
     }
 
-    synchronized void addPlane(SolarForecastPlaneHandler sfph) {
+    synchronized void addPlane(ForecastSolarPlaneHandler sfph) {
         parts.add(sfph);
+        // update passive PV plane with necessary data
+        if (configuration.isPresent()) {
+            sfph.setLocation(new PointType(configuration.get().location));
+            if (!EMPTY.equals(configuration.get().apiKey)) {
+                sfph.setApiKey(configuration.get().apiKey);
+            }
+        }
+        getData();
     }
 
-    synchronized void removePlane(SolarForecastPlaneHandler sfph) {
+    synchronized void removePlane(ForecastSolarPlaneHandler sfph) {
         parts.remove(sfph);
-    }
-
-    public PointType getLocation() {
-        return PointType.valueOf(config.location);
     }
 }

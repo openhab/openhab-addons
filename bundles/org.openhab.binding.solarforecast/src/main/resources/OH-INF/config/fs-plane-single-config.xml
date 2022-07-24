@@ -4,7 +4,7 @@
 	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
-	<config-description uri="thing-type:solarforecast:single">
+	<config-description uri="thing-type:solarforecast:fs-single">
 		<parameter name="location" type="text">
 			<context>location</context>
 			<label>PV Location</label>
@@ -26,7 +26,7 @@
 		<parameter name="refreshInterval" type="integer" min="1" unit="min" required="true">
 			<label>Refresh Interval</label>
 			<description>Data refresh rate of forecast data</description>
-			<default>1</default>
+			<default>15</default>
 		</parameter>
 		<parameter name="apiKey" type="text">
 			<label>API Key</label>
