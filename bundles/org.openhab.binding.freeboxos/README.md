@@ -1,4 +1,4 @@
-# Freebox Binding
+# FreeboxOS Binding
 
 This binding integrates the [Freebox Revolution](https://www.free.fr/freebox/freebox-revolution/) and [Freebox Delta](https://www.free.fr/freebox/freebox-delta/) to your openHAB installation.
 
@@ -28,7 +28,7 @@ Note that the discovered thing will be setup to use only HTTP API (and not HTTPS
 
 ## Binding configuration
 
-FreeboxOs binding has the following configuration parameters:
+FreeboxOS binding has the following configuration parameters:
 
 | Name            | Description                                        | Mandatory |
 |-----------------|----------------------------------------------------|-----------|
@@ -106,13 +106,13 @@ You will have to authorize openHAB to connect to your Freebox. Here is the proce
 
 **Step 1** At binding startup, if no token is recorded in the Freebox Server (bridge) configuration, the binding will run a pairing request
 
-**Step 2** Run to your Freebox and approve the pairing request for openHAB Freebox Binding that is displayed on the Freebox screen
+**Step 2** Run to your Freebox and approve the pairing request for openHAB FreeboxOS Binding that is displayed on the Freebox screen
 
 **Step 3** the application token is automatically recorded in the Freebox Server (bridge) configuration
 
 **Step 4** you can use the console command `freeboxos apptoken` to display the application token and use it later to set up your thing in a configuration file
 
-**Optionally** you can log in your Freebox admin console to allocate needed rights to openHAB
+**Step 5** log in your Freebox admin console to allocate needed rights to FreeboxOS Binding
 
 Once initialized, the thing will generate all available channels.
 
