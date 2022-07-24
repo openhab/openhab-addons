@@ -48,6 +48,8 @@ import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.internal.type.StateChannelTypeBuilderImpl;
 import org.openhab.core.thing.internal.type.TriggerChannelTypeBuilderImpl;
+import org.openhab.core.thing.type.AutoUpdatePolicy;
+import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.thing.type.ChannelTypeProvider;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.thing.type.ChannelTypeUID;
@@ -67,6 +69,84 @@ class WundergroundUpdateReceiverDiscoveryServiceTest {
     @BeforeEach
     public void setUp() {
         openMocks(this);
+    }
+
+    @Test
+    void programmticChannelsAreAddedCorrectlyOnce() throws ServletException, NamespaceException, IOException {
+        // Given
+        final String queryString = "ID=dfggger&" + "PASSWORD=XXXXXX&" + "humidity=74&"
+                + "dateutc=2021-02-07%2014:04:03&" + "softwaretype=WH2600%20V2.2.8&" + "action=updateraw&"
+                + "realtime=1&" + "rtfreq=5";
+        MetaData.Request request = new MetaData.Request("GET",
+                new HttpURI("http://localhost" + WundergroundUpdateReceiverServlet.SERVLET_URL + "?" + queryString),
+                HttpVersion.HTTP_1_1, new HttpFields());
+        HttpChannel httpChannel = mock(HttpChannel.class);
+        Request req = new Request(httpChannel, null);
+        req.setMetaData(request);
+
+        TestChannelTypeRegistry channelTypeRegistry = new TestChannelTypeRegistry();
+        WundergroundUpdateReceiverDiscoveryService discoveryService = new WundergroundUpdateReceiverDiscoveryService(
+                true);
+        discoveryService.addUnhandledStationId(REQ_STATION_ID, req.getParameterMap());
+        HttpService httpService = mock(HttpService.class);
+        WundergroundUpdateReceiverServlet sut = new WundergroundUpdateReceiverServlet(httpService, discoveryService);
+        Thing thing = ThingBuilder.create(SUPPORTED_THING_TYPES_UIDS.stream().findFirst().get(), TEST_THING_UID)
+                .withConfiguration(new Configuration(Map.of(REPRESENTATION_PROPERTY, REQ_STATION_ID)))
+                .withLabel("test thing").withLocation("location").build();
+        ManagedThingProvider managedThingProvider = mock(ManagedThingProvider.class);
+        when(managedThingProvider.get(any())).thenReturn(thing);
+        WundergroundUpdateReceiverHandler handler = new WundergroundUpdateReceiverHandler(thing, sut, discoveryService,
+                new WundergroundUpdateReceiverUnknownChannelTypeProvider(), channelTypeRegistry, managedThingProvider);
+        handler.setCallback(mock(ThingHandlerCallback.class));
+
+        // When
+        handler.initialize();
+        var actual = handler.getThing().getChannels();
+
+        // Then
+        assertThat(actual.size(), is(7));
+
+        Channel c0 = actual.get(0);
+        assertThat(c0.getChannelTypeUID(), is(LAST_RECEIVED_DATETIME_CHANNELTYPEUID));
+        assertThat(c0.getKind(), is(ChannelKind.STATE));
+        assertThat(c0.getAutoUpdatePolicy(), is(AutoUpdatePolicy.DEFAULT));
+        assertThat(c0.getAcceptedItemType(), is("DateTime"));
+
+        Channel c1 = actual.get(1);
+        assertThat(c1.getChannelTypeUID(), is(LAST_QUERY_TRIGGER_CHANNELTYPEUID));
+        assertThat(c1.getKind(), is(ChannelKind.TRIGGER));
+        assertThat(c1.getAutoUpdatePolicy(), is(AutoUpdatePolicy.DEFAULT));
+        assertThat(c1.getAcceptedItemType(), nullValue());
+
+        Channel c2 = actual.get(2);
+        assertThat(c2.getChannelTypeUID(), is(LAST_QUERY_STATE_CHANNELTYPEUID));
+        assertThat(c2.getKind(), is(ChannelKind.STATE));
+        assertThat(c2.getAutoUpdatePolicy(), is(AutoUpdatePolicy.DEFAULT));
+        assertThat(c2.getAcceptedItemType(), is("String"));
+
+        Channel c3 = actual.get(3);
+        assertThat(c3.getChannelTypeUID(), is(HUMIDITY_CHANNELTYPEUID));
+        assertThat(c3.getKind(), is(ChannelKind.STATE));
+        assertThat(c3.getAutoUpdatePolicy(), is(AutoUpdatePolicy.DEFAULT));
+        assertThat(c3.getAcceptedItemType(), is("Number:Dimensionless"));
+
+        Channel c4 = actual.get(4);
+        assertThat(c4.getChannelTypeUID(), is(DATEUTC_CHANNELTYPEUID));
+        assertThat(c4.getKind(), is(ChannelKind.STATE));
+        assertThat(c4.getAutoUpdatePolicy(), is(AutoUpdatePolicy.DEFAULT));
+        assertThat(c4.getAcceptedItemType(), is("String"));
+
+        Channel c5 = actual.get(5);
+        assertThat(c5.getChannelTypeUID(), is(SOFTWARETYPE_CHANNELTYPEUID));
+        assertThat(c5.getKind(), is(ChannelKind.STATE));
+        assertThat(c5.getAutoUpdatePolicy(), is(AutoUpdatePolicy.DEFAULT));
+        assertThat(c5.getAcceptedItemType(), is("String"));
+
+        Channel c6 = actual.get(6);
+        assertThat(c6.getChannelTypeUID(), is(REALTIME_FREQUENCY_CHANNELTYPEUID));
+        assertThat(c6.getKind(), is(ChannelKind.STATE));
+        assertThat(c6.getAutoUpdatePolicy(), is(AutoUpdatePolicy.DEFAULT));
+        assertThat(c5.getAcceptedItemType(), is("String"));
     }
 
     @Test
