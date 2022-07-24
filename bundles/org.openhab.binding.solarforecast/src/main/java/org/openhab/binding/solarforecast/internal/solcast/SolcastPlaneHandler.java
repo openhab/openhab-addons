@@ -23,6 +23,8 @@ import java.util.concurrent.TimeoutException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.http.HttpHeader;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -100,22 +102,28 @@ public class SolcastPlaneHandler extends BaseThingHandler {
      */
     protected SolcastObject fetchData() {
         if (!forecast.isValid()) {
-            // get etsimate
             String forecastUrl = String.format(FORECAST_URL, configuration.get().resourceId);
             String currentEstimateUrl = String.format(CURRENT_ESTIMATE_URL, configuration.get().resourceId);
-            logger.trace("{} Call {}", thing.getLabel(), currentEstimateUrl);
+            logger.info("{} Call {}", thing.getLabel(), currentEstimateUrl);
             try {
-                ContentResponse crEstimate = httpClient.GET(currentEstimateUrl);
+                // get actual estimate
+                Request estimateRequest = httpClient.newRequest(currentEstimateUrl);
+                estimateRequest.header(HttpHeader.AUTHORIZATION, BEARER + bridgeHandler.get().getApiKey());
+                ContentResponse crEstimate = estimateRequest.send();
                 if (crEstimate.getStatus() == 200) {
                     forecast = new SolcastObject(crEstimate.getContentAsString(),
                             LocalDateTime.now().plusMinutes(configuration.get().refreshInterval));
-                    logger.info("{} Fetched data {}", thing.getLabel(), forecast.toString());
+                    logger.trace("{} Fetched data {}", thing.getLabel(), forecast.toString());
+
                     // get forecast
                     logger.info("{} Call {}", thing.getLabel(), forecastUrl);
-                    ContentResponse crForecast = httpClient.GET(forecastUrl);
+                    Request forecastRequest = httpClient.newRequest(forecastUrl);
+                    forecastRequest.header(HttpHeader.AUTHORIZATION, BEARER + bridgeHandler.get().getApiKey());
+                    ContentResponse crForecast = forecastRequest.send();
+
                     if (crForecast.getStatus() == 200) {
                         forecast.join(crForecast.getContentAsString());
-                        logger.info("{} Fetched data {}", thing.getLabel(), forecast.toString());
+                        logger.trace("{} Fetched data {}", thing.getLabel(), forecast.toString());
                         updateChannels(forecast);
                         updateState(CHANNEL_RAW, StringType.valueOf(forecast.getRaw()));
                     } else {
@@ -130,7 +138,7 @@ public class SolcastPlaneHandler extends BaseThingHandler {
                 logger.info("{} Call {} failed {}", thing.getLabel(), currentEstimateUrl, e.getMessage());
             }
         } else {
-            logger.info("{} use available forecast {}", thing.getLabel(), forecast);
+            logger.debug("{} use available forecast {}", thing.getLabel(), forecast);
         }
         updateChannels(forecast);
         return forecast;
@@ -160,6 +168,7 @@ public class SolcastPlaneHandler extends BaseThingHandler {
         updateState(CHANNEL_DAY6, SolcastObject.getStateObject(f.getDayTotal(LocalDateTime.now(), 6)));
         updateState(CHANNEL_DAY6_HIGH, SolcastObject.getStateObject(f.getOptimisticDayTotal(LocalDateTime.now(), 6)));
         updateState(CHANNEL_DAY6_LOW, SolcastObject.getStateObject(f.getPessimisticDayTotal(LocalDateTime.now(), 6)));
+        updateState(CHANNEL_RAW, StringType.valueOf(forecast.getRaw()));
     }
 
     public void setConfig(SolcastConfiguration config) {

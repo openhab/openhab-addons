@@ -23,5 +23,6 @@ import org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants;
 @NonNullByDefault
 public class SolcastConfiguration {
     public int refreshInterval = -1;
+    public String apiKey = SolarForecastBindingConstants.EMPTY;
     public String resourceId = SolarForecastBindingConstants.EMPTY;
 }

@@ -114,7 +114,6 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler {
                 logger.info("Fetched data not valid {}", fo.toString());
             }
         }
-        logger.info("Remain: {}", remainSum);
         updateState(CHANNEL_REMAINING, SolcastObject.getStateObject(remainSum));
         updateState(CHANNEL_ACTUAL, SolcastObject.getStateObject(actualSum));
         updateState(CHANNEL_TODAY, SolcastObject.getStateObject(todaySum));

@@ -119,8 +119,8 @@
 	</channel-type>
 	<channel-type id="day6-channel">
 		<item-type>Number:Energy</item-type>
-		<label>Day 3 Estimation</label>
-		<description>Day 3 estimation</description>
+		<label>Day 6 Estimation</label>
+		<description>Day 6 estimation</description>
 		<state pattern="%.3f %unit" readOnly="true"/>
 	</channel-type>
 	<channel-type id="day6-low-channel">

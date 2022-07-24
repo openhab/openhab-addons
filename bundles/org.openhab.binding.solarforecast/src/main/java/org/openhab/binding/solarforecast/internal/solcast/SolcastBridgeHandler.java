@@ -26,6 +26,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
@@ -41,6 +42,7 @@ public class SolcastBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SolcastBridgeHandler.class);
     private List<SolcastPlaneHandler> parts = new ArrayList<SolcastPlaneHandler>();
+    private Optional<SolcastConfiguration> configuration = Optional.empty();
     private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
 
     public SolcastBridgeHandler(Bridge bridge) {
@@ -49,10 +51,16 @@ public class SolcastBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        // nothing to initialze - simply start scheduling
-        updateStatus(ThingStatus.ONLINE);
-        getData();
-        startSchedule(1);
+        SolcastConfiguration config = getConfigAs(SolcastConfiguration.class);
+        configuration = Optional.of(config);
+        if (!EMPTY.equals(config.apiKey)) {
+            updateStatus(ThingStatus.ONLINE);
+            getData();
+            startSchedule(1);
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "API Key is mandatory");
+            logger.info("API Key missing");
+        }
     }
 
     @Override
@@ -165,5 +173,12 @@ public class SolcastBridgeHandler extends BaseBridgeHandler {
 
     synchronized void removePlane(SolcastPlaneHandler sph) {
         parts.remove(sph);
+    }
+
+    String getApiKey() {
+        if (configuration.isPresent()) {
+            return configuration.get().apiKey;
+        }
+        return EMPTY;
     }
 }

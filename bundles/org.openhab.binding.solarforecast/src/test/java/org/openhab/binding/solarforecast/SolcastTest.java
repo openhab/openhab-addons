@@ -103,9 +103,18 @@ class SolcastTest {
     }
 
     @Test
-    void testJSONObject() {
-        JSONObject jo = new JSONObject();
-        jo.put("a", 1);
-        System.out.println(jo);
+    void testRoofNE() {
+        String content = FileReader.readFileInString("src/test/resources/solcast/NE.json");
+        LocalDateTime now = LocalDateTime.now();
+        JSONObject act = new JSONObject(content);
+        JSONObject actual = new JSONObject();
+        actual.put("estimated_actuals", act.getJSONArray("estimated_actuals"));
+        SolcastObject scfo = new SolcastObject(actual.toString(), now);
+        System.out.println(scfo.getActualValue(now));
+
+        JSONObject forecasts = new JSONObject();
+        forecasts.put("forecasts", act.getJSONArray("forecasts"));
+        scfo.join(forecasts.toString());
+        System.out.println(scfo.getActualValue(now));
     }
 }

@@ -125,8 +125,7 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler {
                     if (cr.getStatus() == 200) {
                         forecast = new ForecastSolarObject(cr.getContentAsString(), LocalDateTime.now(),
                                 LocalDateTime.now().plusMinutes(configuration.get().refreshInterval));
-                        logger.info("{} Fetched data {}", thing.getLabel(), forecast.toString());
-                        logger.info("{} Valid after creation? {}", thing.getLabel(), forecast.isValid());
+                        logger.debug("{} Fetched data {}", thing.getLabel(), forecast.toString());
                         updateChannels(forecast);
                         updateState(CHANNEL_RAW, StringType.valueOf(cr.getContentAsString()));
                     } else {
@@ -136,7 +135,7 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler {
                     logger.info("{} Call {} failed {}", thing.getLabel(), url, e.getMessage());
                 }
             } else {
-                logger.info("{} use available forecast {}", thing.getLabel(), forecast);
+                logger.debug("{} use available forecast {}", thing.getLabel(), forecast);
             }
             updateChannels(forecast);
         } else {

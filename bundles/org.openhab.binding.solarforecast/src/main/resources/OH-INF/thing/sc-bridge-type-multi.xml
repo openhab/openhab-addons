@@ -31,5 +31,6 @@
 			<channel id="day6-low" typeId="day6-low-channel"/>
 			<channel id="day6-high" typeId="day6-high-channel"/>
 		</channels>
+		<config-description-ref uri="thing-type:solarforecast:sc-multi"/>
 	</bridge-type>
 </thing:thing-descriptions>

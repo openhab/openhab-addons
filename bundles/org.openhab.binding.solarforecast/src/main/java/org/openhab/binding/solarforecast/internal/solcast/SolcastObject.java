@@ -150,7 +150,9 @@ public class SolcastObject {
         Set<LocalDateTime> keySet = dtm.keySet();
         for (LocalDateTime key : keySet) {
             if (key.isBefore(now)) {
-                forecastValue += dtm.get(key);
+                // value are reported in PT30M = 30 minutes interval with kw value
+                // for kw/h it's half the value
+                forecastValue += dtm.get(key) / 2;
             }
         }
 
@@ -208,7 +210,9 @@ public class SolcastObject {
         double forecastValue = 0;
         Set<LocalDateTime> keySet = map.keySet();
         for (LocalDateTime key : keySet) {
-            forecastValue += map.get(key);
+            // value are reported in PT30M = 30 minutes interval with kw value
+            // for kw/h it's half the value
+            forecastValue += map.get(key) / 2;
         }
         return forecastValue;
     }
