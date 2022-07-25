@@ -18,6 +18,9 @@ import java.net.Socket;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -43,6 +46,8 @@ import org.slf4j.LoggerFactory;
 public abstract class GatewayQueryService implements AutoCloseable {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    private static final Lock REQUEST_LOCK = new ReentrantLock();
+
     private @Nullable Socket socket;
 
     @Nullable
@@ -66,12 +71,16 @@ public abstract class GatewayQueryService implements AutoCloseable {
         this.thingStatusListener = thingStatusListener;
     }
 
-    protected synchronized byte @Nullable [] executeCommand(String command, byte[] request,
+    protected byte @Nullable [] executeCommand(String command, byte[] request,
             Function<byte[], Boolean> validateResponse) {
         byte[] buffer = new byte[2028];
         int bytesRead;
 
         try {
+            if (!REQUEST_LOCK.tryLock(30, TimeUnit.SECONDS)) {
+                logger.trace("executeCommand({}): time out while getting lock", command);
+                return null;
+            }
             Socket socket = getConnection();
             if (socket == null) {
                 return null;
@@ -110,6 +119,8 @@ public abstract class GatewayQueryService implements AutoCloseable {
         } catch (Exception ex) {
             logger.warn("executeCommand({})", command, ex);
             return null;
+        } finally {
+            REQUEST_LOCK.unlock();
         }
 
         var data = Arrays.copyOfRange(buffer, 0, bytesRead);
