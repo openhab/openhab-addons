@@ -215,12 +215,14 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
      */
     protected void onCompleteCodeDefault(@Nullable String json) {
         JsonObject jsonObject = transform(json);
-        if (processFailureResponse == ProcessFailureResponse.YES && jsonObject != null) {
+        if (jsonObject == null) {
+            jsonObject = new JsonObject();
+        }
+        if (processFailureResponse == ProcessFailureResponse.YES) {
             processResult(jsonObject);
         } else {
             logger.info("command failed, url: {} - code: {} - result: {}", getURL(),
-                    getCommunicationStatus().getHttpCode(),
-                    jsonObject == null ? "null" : jsonObject.get(EaseeBindingConstants.JSON_KEY_ERROR_TITLE));
+                    getCommunicationStatus().getHttpCode(), jsonObject.get(EaseeBindingConstants.JSON_KEY_ERROR_TITLE));
         }
 
         if (retryOnFailure == RetryOnFailure.YES && retries++ < MAX_RETRIES) {
@@ -239,7 +241,7 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
             try {
                 return gson.fromJson(json, JsonObject.class);
             } catch (Exception ex) {
-                logger.info("JSON could not be parsed: {}\nError: {}", json, ex.getMessage());
+                logger.debug("JSON could not be parsed: {}\nError: {}", json, ex.getMessage());
             }
         }
         return null;
