@@ -247,29 +247,33 @@ public class HDPowerViewJUnitTests {
      * Test generic JSON shades response.
      */
     @Test
-    public void shadeResponseIsParsedCorrectly() throws IOException {
-        getObjectFromJson("shades.json", Shades.class);
+    public void shadeNameIsDecoded() throws IOException {
+        Shades shades = getObjectFromJson("shades.json", Shades.class);
+        List<ShadeData> shadeData = shades.shadeData;
+        assertNotNull(shadeData);
+        assertEquals(3, shadeData.size());
+        ShadeData shade = shadeData.get(0);
+        assertEquals("Shade 2", shade.getName());
     }
 
     /**
      * Test generic JSON scene response.
      */
     @Test
-    public void sceneResponseIsParsedCorrectly() throws IOException {
+    public void sceneNameIsDecoded() throws IOException {
         Scenes scenes = getObjectFromJson("scenes.json", Scenes.class);
         List<Scene> sceneData = scenes.sceneData;
         assertNotNull(sceneData);
         assertEquals(4, sceneData.size());
         Scene scene = sceneData.get(0);
         assertEquals("Door Open", scene.getName());
-        assertEquals(18097, scene.id);
     }
 
     /**
      * Test generic JSON scene collection response.
      */
     @Test
-    public void sceneCollectionResponseIsParsedCorrectly() throws IOException {
+    public void sceneCollectionNameIsDecoded() throws IOException {
         SceneCollections sceneCollections = getObjectFromJson("sceneCollections.json", SceneCollections.class);
 
         List<SceneCollection> sceneCollectionData = sceneCollections.sceneCollectionData;
@@ -278,7 +282,6 @@ public class HDPowerViewJUnitTests {
 
         SceneCollection sceneCollection = sceneCollectionData.get(0);
         assertEquals("Børn op", sceneCollection.getName());
-        assertEquals(27119, sceneCollection.id);
     }
 
     /**
