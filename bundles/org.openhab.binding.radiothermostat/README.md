@@ -43,7 +43,6 @@ Some notes:
 * Since retrieving the thermostat's data is the slowest operation, it will take several seconds after changing the mode before the new set point is displayed.
 * The 'Program Mode' command is untested and according to the published API is only available on a CT80 Rev B.
 * Humidity information is available only when using a CT80 thermostat.
-* I have noticed that the humidity reported is very inaccurate (much lower than actual humidity) on my test thermostat.
 
 ## Channels
 
