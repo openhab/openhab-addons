@@ -122,14 +122,16 @@ public final class CreateBridgeServlet extends AbstractRedirectionServlet {
     }
 
     private Thing pairOrReconfigureBridge(String locale, ThingUID bridgeUid, String email) {
-        DiscoveryResult result = DiscoveryResultBuilder.create(bridgeUid)
-                .withRepresentationProperty(Thing.PROPERTY_MODEL_ID).withLabel(MIELE_CLOUD_BRIDGE_LABEL)
-                .withProperty(Thing.PROPERTY_MODEL_ID, MIELE_CLOUD_BRIDGE_NAME)
-                .withProperty(MieleCloudBindingConstants.CONFIG_PARAM_LOCALE, locale)
-                .withProperty(MieleCloudBindingConstants.CONFIG_PARAM_EMAIL, email).build();
-        if (thingRegistry.get(bridgeUid) != null) {
-            return reconfigureBridge(bridgeUid);
+        var thing = thingRegistry.get(bridgeUid);
+        if (thing != null) {
+            reconfigureBridge(thing);
+            return thing;
         } else {
+            DiscoveryResult result = DiscoveryResultBuilder.create(bridgeUid)
+                    .withRepresentationProperty(Thing.PROPERTY_MODEL_ID).withLabel(MIELE_CLOUD_BRIDGE_LABEL)
+                    .withProperty(Thing.PROPERTY_MODEL_ID, MIELE_CLOUD_BRIDGE_NAME)
+                    .withProperty(MieleCloudBindingConstants.CONFIG_PARAM_LOCALE, locale)
+                    .withProperty(MieleCloudBindingConstants.CONFIG_PARAM_EMAIL, email).build();
             inbox.add(result);
             return pairBridge(bridgeUid);
         }
@@ -145,14 +147,8 @@ public final class CreateBridgeServlet extends AbstractRedirectionServlet {
         return thing;
     }
 
-    private Thing reconfigureBridge(ThingUID thingUid) {
+    private void reconfigureBridge(Thing thing) {
         logger.debug("Thing already exists. Modifying configuration.");
-        Thing thing = thingRegistry.get(thingUid);
-        if (thing == null) {
-            throw new BridgeReconfigurationFailedException(
-                    "Cannot modify non existing bridge: Could neither add bridge via inbox nor find existing bridge.");
-        }
-
         ThingHandler handler = thing.getHandler();
         if (handler == null) {
             throw new BridgeReconfigurationFailedException("Bridge exists but has no handler.");
@@ -165,8 +161,6 @@ public final class CreateBridgeServlet extends AbstractRedirectionServlet {
         MieleBridgeHandler bridgeHandler = (MieleBridgeHandler) handler;
         bridgeHandler.disposeWebservice();
         bridgeHandler.initializeWebservice();
-
-        return thing;
     }
 
     private String getValidLocale(@Nullable String localeParameterValue) {
