@@ -28,9 +28,9 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.common.registry.RegistryChangeListener;
 import org.openhab.core.config.core.ConfigOptionProvider;
 import org.openhab.core.config.core.ParameterOption;
-import org.openhab.core.transform.TransformationConfiguration;
-import org.openhab.core.transform.TransformationConfigurationRegistry;
+import org.openhab.core.transform.Transformation;
 import org.openhab.core.transform.TransformationException;
+import org.openhab.core.transform.TransformationRegistry;
 import org.openhab.core.transform.TransformationService;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -45,43 +45,41 @@ import org.slf4j.LoggerFactory;
  *
  * @author Kai Kreuzer - Initial contribution and API
  * @author Gaël L'hopital - Make it localizable
- * @author Jan N. Klug - Refactored to use {@link TransformationConfigurationRegistry}
+ * @author Jan N. Klug - Refactored to use {@link TransformationRegistry}
  */
 @NonNullByDefault
 @Component(service = { TransformationService.class, ConfigOptionProvider.class }, property = {
         "openhab.transform=MAP" })
 public class MapTransformationService
-        implements TransformationService, ConfigOptionProvider, RegistryChangeListener<TransformationConfiguration> {
+        implements TransformationService, ConfigOptionProvider, RegistryChangeListener<Transformation> {
     private final Logger logger = LoggerFactory.getLogger(MapTransformationService.class);
 
     private static final String PROFILE_CONFIG_URI = "profile:transform:MAP";
     private static final String CONFIG_PARAM_FUNCTION = "function";
     private static final Set<String> SUPPORTED_CONFIGURATION_TYPES = Set.of("map");
 
-    private final TransformationConfigurationRegistry transformationConfigurationRegistry;
+    private final TransformationRegistry transformationRegistry;
     private final Map<String, Properties> cachedTransformations = new ConcurrentHashMap<>();
 
     @Activate
-    public MapTransformationService(
-            @Reference TransformationConfigurationRegistry transformationConfigurationRegistry) {
-        this.transformationConfigurationRegistry = transformationConfigurationRegistry;
-        transformationConfigurationRegistry.addRegistryChangeListener(this);
+    public MapTransformationService(@Reference TransformationRegistry transformationRegistry) {
+        this.transformationRegistry = transformationRegistry;
+        transformationRegistry.addRegistryChangeListener(this);
     }
 
     @Deactivate
     public void deactivate() {
-        transformationConfigurationRegistry.removeRegistryChangeListener(this);
+        transformationRegistry.removeRegistryChangeListener(this);
     }
 
     @Override
     public @Nullable String transform(String function, String source) throws TransformationException {
         // always get a configuration from the registry to account for changed system locale
-        TransformationConfiguration transformationConfiguration = transformationConfigurationRegistry.get(function,
-                null);
+        Transformation transformation = transformationRegistry.get(function, null);
 
-        if (transformationConfiguration != null) {
-            if (!cachedTransformations.containsKey(transformationConfiguration.getUID())) {
-                importConfiguration(transformationConfiguration);
+        if (transformation != null) {
+            if (!cachedTransformations.containsKey(transformation.getUID())) {
+                importConfiguration(transformation);
             }
             Properties properties = cachedTransformations.get(function);
             if (properties != null) {
@@ -106,7 +104,7 @@ public class MapTransformationService
             @Nullable Locale locale) {
         if (PROFILE_CONFIG_URI.equals(uri.toString())) {
             if (CONFIG_PARAM_FUNCTION.equals(param)) {
-                return transformationConfigurationRegistry.getConfigurations(SUPPORTED_CONFIGURATION_TYPES).stream()
+                return transformationRegistry.getTransformations(SUPPORTED_CONFIGURATION_TYPES).stream()
                         .map(c -> new ParameterOption(c.getUID(), c.getLabel())).collect(Collectors.toList());
             }
         }
@@ -114,29 +112,34 @@ public class MapTransformationService
     }
 
     @Override
-    public void added(TransformationConfiguration element) {
+    public void added(Transformation element) {
         // do nothing, configurations are added to cache if needed
     }
 
     @Override
-    public void removed(TransformationConfiguration element) {
+    public void removed(Transformation element) {
         cachedTransformations.remove(element.getUID());
     }
 
     @Override
-    public void updated(TransformationConfiguration oldElement, TransformationConfiguration element) {
+    public void updated(Transformation oldElement, Transformation element) {
         if (cachedTransformations.remove(oldElement.getUID()) != null) {
             // import only if it was present before
             importConfiguration(element);
         }
     }
 
-    private void importConfiguration(@Nullable TransformationConfiguration configuration) {
-        if (configuration != null) {
+    private void importConfiguration(@Nullable Transformation transformation) {
+        if (transformation != null) {
             try {
                 Properties properties = new Properties();
-                properties.load(new StringReader(configuration.getContent()));
-                cachedTransformations.put(configuration.getUID(), properties);
+                String function = transformation.getConfiguration().get(Transformation.FUNCTION);
+                if (function == null || function.isBlank()) {
+                    logger.warn("Function not defined for transformation '{}'", transformation.getUID());
+                    return;
+                }
+                properties.load(new StringReader(function));
+                cachedTransformations.put(transformation.getUID(), properties);
             } catch (IOException ignored) {
             }
         }

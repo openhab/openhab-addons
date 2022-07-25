@@ -24,12 +24,19 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class IndegoInvalidResponseException extends IndegoException {
 
     private static final long serialVersionUID = -4236849226899489934L;
+    private int httpStatusCode = 0;
 
-    public IndegoInvalidResponseException(String message) {
+    public IndegoInvalidResponseException(String message, int httpStatusCode) {
         super(message);
+        this.httpStatusCode = httpStatusCode;
     }
 
-    public IndegoInvalidResponseException(String message, Throwable cause) {
+    public IndegoInvalidResponseException(String message, Throwable cause, int httpStatusCode) {
         super(message, cause);
+        this.httpStatusCode = httpStatusCode;
+    }
+
+    public int getHttpStatusCode() {
+        return httpStatusCode;
     }
 }

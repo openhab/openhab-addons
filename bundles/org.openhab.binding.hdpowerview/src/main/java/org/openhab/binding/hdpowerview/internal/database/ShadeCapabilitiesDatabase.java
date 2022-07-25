@@ -69,6 +69,8 @@ public class ShadeCapabilitiesDatabase {
             new Type( 9).capabilities(7).text("Duette DuoLite Top Down Bottom Up"),
             new Type(18).capabilities(1).text("Pirouette"),
             new Type(23).capabilities(1).text("Silhouette"),
+            new Type(31).capabilities(0).text("Vignette"),
+            new Type(33).capabilities(7).text("Duette Architella"),
             new Type(38).capabilities(9).text("Silhouette Duolite"),
             new Type(42).capabilities(0).text("M25T Roller Blind"),
             new Type(43).capabilities(1).text("Facette"),
@@ -77,9 +79,9 @@ public class ShadeCapabilitiesDatabase {
             new Type(47).capabilities(7).text("Pleated Top Down Bottom Up"),
             new Type(49).capabilities(0).text("AC Roller"),
             new Type(51).capabilities(2).text("Venetian"),
-            new Type(54).capabilities(3).text("Vertical Slats Left Stack"),
-            new Type(55).capabilities(3).text("Vertical Slats Right Stack"),
-            new Type(56).capabilities(3).text("Vertical Slats Split Stack"),
+            new Type(54).capabilities(4).text("Vertical Slats Left Stack").capabilitiesOverride(3),
+            new Type(55).capabilities(4).text("Vertical Slats Right Stack").capabilitiesOverride(3),
+            new Type(56).capabilities(4).text("Vertical Slats Split Stack").capabilitiesOverride(3),
             new Type(62).capabilities(2).text("Venetian"),
             new Type(65).capabilities(8).text("Vignette Duolite"),
             new Type(66).capabilities(5).text("Shutter"),
@@ -333,20 +335,37 @@ public class ShadeCapabilitiesDatabase {
     }
 
     /**
-     * Return a Capabilities class instance that corresponds to the given 'typeId' parameter. If the 'typeId' parameter
-     * is a valid type in the database, and it has a 'capabilitiesOverride' value, then an instance of the respective
-     * overridden Capabilities class is returned. Otherwise if the 'capabilitiesId' parameter is for a valid
-     * capabilities entry in the database, then that respective Capabilities class instance is returned. Otherwise a
-     * blank Capabilities class instance is returned.
+     * Return a Capabilities class instance that corresponds to the given 'typeId' parameter.
+     * <p>
+     * <ul>
+     * <li>If the 'typeId' parameter is a valid type in the database, and it has a 'capabilitiesOverride' value, then an
+     * instance of the respective overridden Capabilities class is returned.
+     * <li>Otherwise if the 'capabilitiesId' parameter is for a valid capabilities entry in the database, then that
+     * respective Capabilities class instance is returned.
+     * <li>Otherwise if the type is a valid type in the database, then its 'capabilities' instance is returned.
+     * <li>Otherwise a default Capabilities '0' class instance is returned.
+     * </ul>
+     * <p>
      *
      * @param typeId the target shade type Id (to check if it has a 'capabilitiesOverride' value).
      * @param capabilitiesId the target capabilities value (when type Id does not have a 'capabilitiesOverride').
      * @return corresponding Capabilities class instance.
      */
     public Capabilities getCapabilities(int typeId, @Nullable Integer capabilitiesId) {
-        int targetCapabilities = TYPE_DATABASE.getOrDefault(typeId, new Type()).getCapabilitiesOverride();
+        Type type = TYPE_DATABASE.getOrDefault(typeId, new Type());
+        // first try capabilitiesOverride for type Id
+        int targetCapabilities = type.getCapabilitiesOverride();
+        // then try capabilitiesId
+        if (targetCapabilities < 0 && capabilitiesId != null && isCapabilitiesInDatabase(capabilitiesId.intValue())) {
+            targetCapabilities = capabilitiesId.intValue();
+        }
+        // then try capabilities for typeId
         if (targetCapabilities < 0) {
-            targetCapabilities = capabilitiesId != null ? capabilitiesId.intValue() : -1;
+            targetCapabilities = type.getCapabilities();
+        }
+        // fallback to default capabilities 0 (so at least something may work..)
+        if (targetCapabilities < 0) {
+            targetCapabilities = 0;
         }
         return getCapabilities(targetCapabilities);
     }

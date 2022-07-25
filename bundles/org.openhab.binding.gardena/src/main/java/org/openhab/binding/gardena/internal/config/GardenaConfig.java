@@ -24,8 +24,7 @@ import org.eclipse.jdt.annotation.Nullable;
 public class GardenaConfig {
     private static final Integer DEFAULT_CONNECTION_TIMEOUT = 10;
 
-    private @Nullable String email;
-    private @Nullable String password;
+    private @Nullable String apiSecret;
     private @Nullable String apiKey;
 
     private transient Integer connectionTimeout = DEFAULT_CONNECTION_TIMEOUT;
@@ -33,37 +32,23 @@ public class GardenaConfig {
     public GardenaConfig() {
     }
 
-    public GardenaConfig(String email, String password) {
-        this.email = email;
-        this.password = password;
+    public GardenaConfig(String apiKey, String apiSecret) {
+        this.apiKey = apiKey;
+        this.apiSecret = apiSecret;
     }
 
     /**
-     * Returns the email to connect to Gardena smart system.
+     * Returns the apiSecret to connect to Gardena smart system.
      */
-    public @Nullable String getEmail() {
-        return email;
+    public @Nullable String getApiSecret() {
+        return apiSecret;
     }
 
     /**
-     * Sets the email to connect to Gardena smart system.
+     * Sets the apiSecret to connect to Gardena smart system.
      */
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    /**
-     * Returns the password to connect to Gardena smart system.
-     */
-    public @Nullable String getPassword() {
-        return password;
-    }
-
-    /**
-     * Sets the password to connect to Gardena smart system.
-     */
-    public void setPassword(String password) {
-        this.password = password;
+    public void setApiSecret(String apiSecret) {
+        this.apiSecret = apiSecret;
     }
 
     /**
@@ -98,17 +83,14 @@ public class GardenaConfig {
      * Validate the config if email, password and apiKey is specified.
      */
     public boolean isValid() {
-        final String email = this.email;
-        final String password = this.password;
+        final String apiSecret = this.apiSecret;
         final String apiKey = this.apiKey;
-        return email != null && !email.isBlank() && password != null && !password.isBlank() && apiKey != null
-                && !apiKey.isBlank();
+        return apiSecret != null && !apiSecret.isBlank() && apiKey != null && !apiKey.isBlank();
     }
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(GardenaConfig.class.getSimpleName()).append("[");
-        sb.append("email: ").append(email).append(", ");
         sb.append("connectionTimeout: ").append(connectionTimeout).append(", ");
         sb.append("apiKey: ").append(apiKey);
         return sb.append("]").toString();

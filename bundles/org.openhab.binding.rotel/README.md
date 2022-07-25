@@ -35,6 +35,7 @@ This binding supports the following thing types:
 | a14        | Connection to the Rotel A14 or A14MKII integrated amplifier                   |
 | cd11       | Connection to the Rotel CD11 CD player                                        |
 | cd14       | Connection to the Rotel CD14 or CD14MKII CD player                            |
+| m8         | Connection to the Rotel Michi M8 monoblock amplifier                          |
 | p5         | Connection to the Rotel Michi P5 stereo preamplifier                          |
 | ra11       | Connection to the Rotel RA-11 integrated amplifier                            |
 | ra12       | Connection to the Rotel RA-12 integrated amplifier                            |
@@ -70,6 +71,7 @@ This binding supports the following thing types:
 | rt09       | Connection to the Rotel RT-09 tuner                                           |
 | rt11       | Connection to the Rotel RT-11 tuner                                           |
 | rt1570     | Connection to the Rotel RT-1570 tuner                                         |
+| s5         | Connection to the Rotel Michi S5 stereo amplifier                             |
 | t11        | Connection to the Rotel T11 tuner                                             |
 | t14        | Connection to the Rotel T14 tuner                                             |
 | x3         | Connection to the Rotel Michi X3 integrated amplifier                         |
@@ -161,6 +163,8 @@ The following channels are available:
 | treble, mainZone#treble | Treble Adjustment     | Number    | Adjust the treble                                        | INCREASE, DECREASE, value          |
 | playControl    | Playback Control               | Player    | Control the playback                                     | PLAY, PAUSE, NEXT, PREVIOUS        |
 | track          | Current Track                  | Number    | The current CD track number                              |                                    |
+| random         | Random Mode                    | Switch    | The current random mode                                  |                                    |
+| repeat         | Repeat Mode                    | String    | The current repeat mode                                  | TRACK, DISC, OFF                   |
 | mainZone#line1 | Front Panel Line 1             | String    | The first line displayed on the device front panel       |                                    |
 | mainZone#line2 | Front Panel Line 2             | String    | The second line displayed on the device front panel      |                                    |
 | frequency      | Current Frequency              | Number    | The current frequency (in kHz) for digital source input  |                                    |
@@ -177,8 +181,9 @@ Here are the list of channels available for each thing type:
 | a11        | power, source, volume, mute, bass, treble, brightness, tcbypass, balance, speakera, speakerb            |
 | a12        | power, source, volume, mute, bass, treble, frequency, brightness, tcbypass, balance, speakera, speakerb |
 | a14        | power, source, volume, mute, bass, treble, frequency, brightness, tcbypass, balance, speakera, speakerb |
-| cd11       | power, playControl, track, brightness                                                                   |
-| cd14       | power, playControl, track, brightness                                                                   |
+| cd11       | power, playControl, track, random, repeat, brightness                                                   |
+| cd14       | power, playControl, track, random, repeat, brightness                                                   |
+| m8         | power, brightness                                                                                       |
 | p5         | power, source, volume, mute, bass, treble, frequency, brightness, tcbypass, balance                     |
 | ra11       | power, source, volume, mute, bass, treble, playControl, frequency, brightness, tcbypass, balance        |
 | ra12       | power, source, volume, mute, bass, treble, playControl, frequency, brightness, tcbypass, balance        |
@@ -190,7 +195,7 @@ Here are the list of channels available for each thing type:
 | rc1572     | power, source, volume, mute, bass, treble, frequency, brightness, tcbypass, balance                     |
 | rc1590     | power, source, volume, mute, bass, treble, frequency, brightness, tcbypass, balance                     |
 | rcd1570    | power, playControl, brightness                                                                          |
-| rcd1572    | power, playControl, track, brightness                                                                   |
+| rcd1572    | power, playControl, track, random, repeat, brightness                                                   |
 | rcx1500    | power, source, volume, mute, playControl                                                                |
 | rdd1580    | power, source, playControl, frequency                                                                   |
 | rdg1520    | power, source, playControl                                                                              |
@@ -214,6 +219,7 @@ Here are the list of channels available for each thing type:
 | rt09       | power, source, playControl, brightness                                                                  |
 | rt11       | power, source, brightness                                                                               |
 | rt1570     | power, source, brightness                                                                               |
+| s5         | power, brightness                                                                                       |
 | t11        | power, source, brightness                                                                               |
 | t14        | power, source, brightness                                                                               |
 | x3         | power, source, volume, mute, bass, treble, frequency, brightness, tcbypass, balance                     |

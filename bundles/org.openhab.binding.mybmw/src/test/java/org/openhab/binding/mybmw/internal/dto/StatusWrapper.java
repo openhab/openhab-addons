@@ -27,6 +27,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mybmw.internal.MyBMWConstants.VehicleType;
 import org.openhab.binding.mybmw.internal.dto.properties.CBS;
 import org.openhab.binding.mybmw.internal.dto.vehicle.Vehicle;
+import org.openhab.binding.mybmw.internal.handler.VehicleTests;
 import org.openhab.binding.mybmw.internal.utils.Constants;
 import org.openhab.binding.mybmw.internal.utils.Converter;
 import org.openhab.binding.mybmw.internal.utils.VehicleStatusUtils;
@@ -36,6 +37,7 @@ import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.State;
@@ -60,7 +62,7 @@ public class StatusWrapper {
 
     public StatusWrapper(String type, String statusJson) {
         hasFuel = type.equals(VehicleType.CONVENTIONAL.toString()) || type.equals(VehicleType.PLUGIN_HYBRID.toString())
-                || type.equals(VehicleType.ELECTRIC_REX.toString());
+                || type.equals(VehicleType.ELECTRIC_REX.toString()) || type.equals(VehicleType.MILD_HYBRID.toString());
         isElectric = type.equals(VehicleType.PLUGIN_HYBRID.toString())
                 || type.equals(VehicleType.ELECTRIC_REX.toString()) || type.equals(VehicleType.ELECTRIC.toString());
         isHybrid = hasFuel && isElectric;
@@ -246,20 +248,22 @@ public class StatusWrapper {
                 assertEquals(expected.toString(), dtt.toString(), "Last Update");
                 break;
             case GPS:
-                assertTrue(state instanceof PointType);
-                pt = (PointType) state;
-                assertNotNull(vehicle.properties.vehicleLocation);
-                assertEquals(
-                        PointType.valueOf(Double.toString(vehicle.properties.vehicleLocation.coordinates.latitude) + ","
-                                + Double.toString(vehicle.properties.vehicleLocation.coordinates.longitude)),
-                        pt, "Coordinates");
+                if (state instanceof PointType) {
+                    pt = (PointType) state;
+                    assertNotNull(vehicle.properties.vehicleLocation);
+                    assertEquals(
+                            PointType.valueOf(Double.toString(vehicle.properties.vehicleLocation.coordinates.latitude)
+                                    + "," + Double.toString(vehicle.properties.vehicleLocation.coordinates.longitude)),
+                            pt, "Coordinates");
+                } // else no check needed
                 break;
             case HEADING:
-                assertTrue(state instanceof QuantityType);
-                qt = ((QuantityType) state);
-                assertEquals(Units.DEGREE_ANGLE, qt.getUnit(), "Angle Unit");
-                assertNotNull(vehicle.properties.vehicleLocation);
-                assertEquals(vehicle.properties.vehicleLocation.heading, qt.intValue(), 0.01, "Heading");
+                if (state instanceof QuantityType) {
+                    qt = ((QuantityType) state);
+                    assertEquals(Units.DEGREE_ANGLE, qt.getUnit(), "Angle Unit");
+                    assertNotNull(vehicle.properties.vehicleLocation);
+                    assertEquals(vehicle.properties.vehicleLocation.heading, qt.intValue(), 0.01, "Heading");
+                } // else no check needed
                 break;
             case RANGE_RADIUS_ELECTRIC:
                 assertTrue(state instanceof QuantityType);
@@ -568,10 +572,22 @@ public class StatusWrapper {
                 }
                 break;
             case ADDRESS:
-                assertTrue(state instanceof StringType);
-                st = (StringType) state;
-                assertEquals(st.toFullString(), vehicle.properties.vehicleLocation.address.formatted,
-                        "Location Address");
+                if (state instanceof StringType) {
+                    st = (StringType) state;
+                    assertEquals(st.toFullString(), vehicle.properties.vehicleLocation.address.formatted,
+                            "Location Address");
+                } // else no check needed
+                break;
+            case HOME_DISTANCE:
+                if (state instanceof QuantityType) {
+                    qt = (QuantityType) state;
+                    PointType vehicleLocation = PointType
+                            .valueOf(Double.toString(vehicle.properties.vehicleLocation.coordinates.latitude) + ","
+                                    + Double.toString(vehicle.properties.vehicleLocation.coordinates.longitude));
+                    int distance = vehicleLocation.distanceFrom(VehicleTests.HOME_LOCATION).intValue();
+                    assertEquals(qt.intValue(), distance, "Distance from Home");
+                    assertEquals(qt.getUnit(), SIUnits.METRE, "Distance from Home Unit");
+                } // else no check needed
                 break;
             case RAW:
                 // don't assert raw channel

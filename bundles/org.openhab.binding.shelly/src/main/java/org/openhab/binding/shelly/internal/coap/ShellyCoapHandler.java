@@ -36,8 +36,8 @@ import org.eclipse.californium.core.network.Endpoint;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
+import org.openhab.binding.shelly.internal.api.ShellyApiInterface;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
-import org.openhab.binding.shelly.internal.api.ShellyHttpApi;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotDescrBlk;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotDescrSen;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotDevDescrTypeAdapter;
@@ -46,8 +46,8 @@ import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotGenericSe
 import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotSensor;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotSensorTypeAdapter;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
-import org.openhab.binding.shelly.internal.handler.ShellyBaseHandler;
 import org.openhab.binding.shelly.internal.handler.ShellyColorUtils;
+import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
@@ -67,7 +67,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
     private static final byte[] EMPTY_BYTE = new byte[0];
 
     private final Logger logger = LoggerFactory.getLogger(ShellyCoapHandler.class);
-    private final ShellyBaseHandler thingHandler;
+    private final ShellyThingInterface thingHandler;
     private ShellyThingConfiguration config = new ShellyThingConfiguration();
     private final GsonBuilder gsonBuilder = new GsonBuilder();
     private final Gson gson;
@@ -91,11 +91,11 @@ public class ShellyCoapHandler implements ShellyCoapListener {
     private Map<String, CoIotDescrBlk> blkMap = new LinkedHashMap<>();
     private Map<String, CoIotDescrSen> sensorMap = new LinkedHashMap<>();
     private ShellyDeviceProfile profile;
-    private ShellyHttpApi api;
+    private ShellyApiInterface api;
 
-    public ShellyCoapHandler(ShellyBaseHandler thingHandler, ShellyCoapServer coapServer) {
+    public ShellyCoapHandler(ShellyThingInterface thingHandler, ShellyCoapServer coapServer) {
         this.thingHandler = thingHandler;
-        this.thingName = thingHandler.thingName;
+        this.thingName = thingHandler.getThingName();
         this.profile = thingHandler.getProfile();
         this.api = thingHandler.getApi();
         this.coapServer = coapServer;
@@ -506,15 +506,11 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                     String meter = CHANNEL_GROUP_METER + i;
                     double current = thingHandler.getChannelDouble(meter, CHANNEL_METER_CURRENTWATTS);
                     double total = thingHandler.getChannelDouble(meter, CHANNEL_METER_TOTALKWH);
-                    logger.debug("{}: {}#{}={}, total={}", thingName, meter, CHANNEL_METER_CURRENTWATTS, current,
-                            totalCurrent);
                     totalCurrent += current >= 0 ? current : 0;
                     totalKWH += total >= 0 ? total : 0;
                     updateMeter |= current >= 0 | total >= 0;
                     i++;
                 }
-                logger.debug("{}: totalCurrent={}, totalKWH={}, update={}", thingName, totalCurrent, totalKWH,
-                        updateMeter);
                 if (updateMeter) {
                     thingHandler.updateChannel(CHANNEL_GROUP_METER, CHANNEL_METER_CURRENTWATTS,
                             toQuantityType(totalCurrent, DIGITS_WATT, Units.WATT));
@@ -525,10 +521,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
             // Old firmware release are lacking various status values, which are not updated using CoIoT.
             // In this case we keep a refresh so it gets polled using REST. Beginning with Firmware 1.6 most
             // of the values are available
-            if ((!thingHandler.autoCoIoT && (thingHandler.scheduledUpdates < 1))
-                    || (thingHandler.autoCoIoT && !profile.isLight && !profile.hasBattery)) {
-                thingHandler.requestUpdates(1, false);
-            }
+            thingHandler.triggerUpdateFromCoap();
         } else {
             if (failed == sensorUpdates.size()) {
                 logger.debug("{}: Device description problem detected, re-discover", thingName);

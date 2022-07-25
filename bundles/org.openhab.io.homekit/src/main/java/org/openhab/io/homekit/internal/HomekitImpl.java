@@ -148,6 +148,8 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener {
         try {
             HomekitSettings oldSettings = settings;
             settings = processConfig(config);
+            if ((oldSettings == null) || (settings == null))
+                return;
             changeListener.updateSettings(settings);
             if (!oldSettings.networkInterface.equals(settings.networkInterface) || oldSettings.port != settings.port
                     || oldSettings.useOHmDNS != settings.useOHmDNS) {

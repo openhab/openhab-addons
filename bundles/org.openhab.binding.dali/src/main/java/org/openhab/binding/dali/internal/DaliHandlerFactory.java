@@ -21,6 +21,7 @@ import java.util.stream.Stream;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.dali.internal.handler.DaliDeviceHandler;
+import org.openhab.binding.dali.internal.handler.DaliDt8DeviceHandler;
 import org.openhab.binding.dali.internal.handler.DaliRgbHandler;
 import org.openhab.binding.dali.internal.handler.DaliserverBridgeHandler;
 import org.openhab.core.thing.Bridge;
@@ -63,6 +64,9 @@ public class DaliHandlerFactory extends BaseThingHandlerFactory {
         }
         if (THING_TYPE_RGB.equals(thingTypeUID)) {
             return new DaliRgbHandler(thing);
+        }
+        if (THING_TYPE_DEVICE_DT8.equals(thingTypeUID) || THING_TYPE_GROUP_DT8.equals(thingTypeUID)) {
+            return new DaliDt8DeviceHandler(thing);
         }
 
         return null;

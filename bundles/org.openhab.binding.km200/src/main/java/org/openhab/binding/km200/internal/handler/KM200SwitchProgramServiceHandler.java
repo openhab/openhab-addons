@@ -101,7 +101,8 @@ public class KM200SwitchProgramServiceHandler {
         if (!setpoints.contains(setpoint)) {
             if (setpoints.size() == 2 && "on".compareTo(setpoint) == 0) {
                 if ("high".compareTo(setpoints.get(0)) == 0 && "off".compareTo(setpoints.get(1)) == 0) {
-                    if ("on".compareTo(positiveSwitch) == 0 && "off".compareTo(negativeSwitch) == 0) {
+                    if (("on".compareTo(positiveSwitch) == 0 && "off".compareTo(negativeSwitch) == 0)
+                            || ("off".compareTo(positiveSwitch) == 0 && "on".compareTo(negativeSwitch) == 0)) {
                         logger.info(
                                 "!!! Wrong configuration on device. 'on' instead of 'high' in switch program. It seems that's a firmware problem-> ignoring it !!!");
                     } else {

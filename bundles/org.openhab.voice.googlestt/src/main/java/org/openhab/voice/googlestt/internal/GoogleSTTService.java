@@ -175,7 +175,11 @@ public class GoogleSTTService implements STTService {
     private void getAccessToken(OAuthClientService oAuthService, String oauthCode) {
         logger.debug("Trying to get access and refresh tokens.");
         try {
-            oAuthService.getAccessTokenResponseByAuthorizationCode(oauthCode, GCP_REDIRECT_URI);
+            AccessTokenResponse response = oAuthService.getAccessTokenResponseByAuthorizationCode(oauthCode,
+                    GCP_REDIRECT_URI);
+            if (response.getRefreshToken() == null || response.getRefreshToken().isEmpty()) {
+                logger.warn("Error fetching refresh token. Please try to reauthorize.");
+            }
         } catch (OAuthException | OAuthResponseException e) {
             if (logger.isDebugEnabled()) {
                 logger.debug("Error fetching access token: {}", e.getMessage(), e);
@@ -298,19 +302,21 @@ public class GoogleSTTService implements STTService {
 
     private @Nullable Credentials getCredentials() {
         String accessToken = null;
+        String refreshToken = null;
         try {
             OAuthClientService oAuthService = this.oAuthService;
             if (oAuthService != null) {
                 AccessTokenResponse response = oAuthService.getAccessTokenResponse();
                 if (response != null) {
                     accessToken = response.getAccessToken();
+                    refreshToken = response.getRefreshToken();
                 }
             }
         } catch (OAuthException | IOException | OAuthResponseException e) {
             logger.warn("Access token error: {}", e.getMessage());
         }
-        if (accessToken == null) {
-            logger.warn("Missed google cloud access token");
+        if (accessToken == null || refreshToken == null) {
+            logger.warn("Missed google cloud access and/or refresh token");
             return null;
         }
         return OAuth2Credentials.create(new AccessToken(accessToken, null));

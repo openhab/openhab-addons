@@ -37,9 +37,9 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.mockito.stubbing.Answer;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.transform.TransformationConfiguration;
-import org.openhab.core.transform.TransformationConfigurationRegistry;
+import org.openhab.core.transform.Transformation;
 import org.openhab.core.transform.TransformationException;
+import org.openhab.core.transform.TransformationRegistry;
 
 /**
  * @author Gaël L'hopital - Initial contribution
@@ -51,8 +51,8 @@ public class ScaleTransformServiceTest {
     private static final String SRC_FOLDER = "conf" + File.separator + "transform";
 
     @Mock
-    private @NonNullByDefault({}) TransformationConfigurationRegistry transformationConfigurationRegistry;
-    private final Map<String, TransformationConfiguration> configurationMap = new HashMap<>();
+    private @NonNullByDefault({}) TransformationRegistry transformationConfigurationRegistry;
+    private final Map<String, Transformation> configurationMap = new HashMap<>();
     private @NonNullByDefault({}) ScaleTransformationService processor;
 
     @BeforeEach
@@ -62,15 +62,15 @@ public class ScaleTransformServiceTest {
             try {
                 String content = new String(Files.readAllBytes(file), StandardCharsets.UTF_8);
                 String uid = Path.of(SRC_FOLDER).relativize(file).toString();
-                TransformationConfiguration transformationConfiguration = new TransformationConfiguration(uid, uid,
-                        "scale", null, content);
+                Transformation transformationConfiguration = new Transformation(uid, uid, "scale",
+                        Map.of(Transformation.FUNCTION, content));
                 configurationMap.put(uid, transformationConfiguration);
             } catch (IOException ignored) {
             }
         });
 
         Mockito.when(transformationConfigurationRegistry.get(anyString(), eq(null)))
-                .thenAnswer((Answer<TransformationConfiguration>) invocation -> {
+                .thenAnswer((Answer<Transformation>) invocation -> {
                     Object[] args = invocation.getArguments();
                     return configurationMap.get(args[0]);
                 });
