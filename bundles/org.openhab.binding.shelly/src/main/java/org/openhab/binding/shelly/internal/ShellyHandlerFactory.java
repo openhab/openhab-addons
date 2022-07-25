@@ -81,7 +81,6 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
             @Reference ShellyTranslationProvider translationProvider, @Reference ShellyThingTable thingTable,
             @Reference HttpClientFactory httpClientFactory, ComponentContext componentContext,
             Map<String, Object> configProperties) {
-        logger.debug("Activate Shelly HandlerFactory");
         super.activate(componentContext);
         messages = translationProvider;
         // Save bindingConfig & pass it to all registered listeners
@@ -104,9 +103,6 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
 
         this.thingTable = thingTable;
         this.coapServer = new Shelly1CoapServer();
-
-        // Promote Shelly Manager usage
-        logger.info("{}", messages.get("status.managerstarted", localIP, httpPort));
     }
 
     @Override
