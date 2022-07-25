@@ -65,6 +65,7 @@ public class HDPowerViewBindingConstants {
     // Hub properties
     public static final String PROPERTY_FIRMWARE_NAME = "firmwareName";
     public static final String PROPERTY_RADIO_FIRMWARE_VERSION = "radioFirmwareVersion";
+    public static final String PROPERTY_HUB_NAME = "hubName";
 
     // Shade properties
     public static final String PROPERTY_SHADE_TYPE = "type";
