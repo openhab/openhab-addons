@@ -11,14 +11,14 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 /**
- * The {@link ShellyCoIoTVersion1} implements the parsing for CoIoT version 1
+ * The {@link Shelly1CoIoTVersion1} implements the parsing for CoIoT version 1
  *
  * @author Markus Michels - Initial contribution
  */
-package org.openhab.binding.shelly.internal.coap;
+package org.openhab.binding.shelly.internal.api1;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
-import static org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.*;
+import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.List;
@@ -26,9 +26,9 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotDescrBlk;
-import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotDescrSen;
-import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotSensor;
+import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO.CoIotDescrBlk;
+import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO.CoIotDescrSen;
+import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO.CoIotSensor;
 import org.openhab.binding.shelly.internal.handler.ShellyColorUtils;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.core.library.types.OnOffType;
@@ -41,22 +41,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link ShellyCoIoTVersion1} implements the parsing for CoIoT version 2
+ * The {@link Shelly1CoIoTVersion1} implements the parsing for CoIoT version 2
  *
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public class ShellyCoIoTVersion2 extends ShellyCoIoTProtocol implements ShellyCoIoTInterface {
-    private final Logger logger = LoggerFactory.getLogger(ShellyCoIoTVersion2.class);
+public class Shelly1CoIoTVersion2 extends Shelly1CoIoTProtocol implements Shelly1CoIoTInterface {
+    private final Logger logger = LoggerFactory.getLogger(Shelly1CoIoTVersion2.class);
 
-    public ShellyCoIoTVersion2(String thingName, ShellyThingInterface thingHandler, Map<String, CoIotDescrBlk> blkMap,
+    public Shelly1CoIoTVersion2(String thingName, ShellyThingInterface thingHandler, Map<String, CoIotDescrBlk> blkMap,
             Map<String, CoIotDescrSen> sensorMap) {
         super(thingName, thingHandler, blkMap, sensorMap);
     }
 
     @Override
     public int getVersion() {
-        return ShellyCoapJSonDTO.COIOT_VERSION_2;
+        return Shelly1CoapJSonDTO.COIOT_VERSION_2;
     }
 
     /**

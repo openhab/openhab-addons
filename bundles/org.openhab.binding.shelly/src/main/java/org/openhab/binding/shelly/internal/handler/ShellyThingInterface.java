@@ -17,10 +17,11 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyApiInterface;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsStatus;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.Thing;
@@ -80,6 +81,8 @@ public interface ShellyThingInterface {
     public String getThingName();
 
     public ShellyThingConfiguration getThingConfig();
+
+    public HttpClient getHttpClient();
 
     public String getProperty(String key);
 

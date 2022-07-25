@@ -72,14 +72,14 @@ public class ShellyManagerServlet extends HttpServlet {
         className = substringAfterLast(getClass().toString(), ".");
         this.httpService = httpService;
         String localIp = getString(networkAddressService.getPrimaryIpv4HostAddress());
-        int localPort = HttpServiceUtil.getHttpServicePort(componentContext.getBundleContext());
+        Integer localPort = HttpServiceUtil.getHttpServicePort(componentContext.getBundleContext());
         this.manager = new ShellyManager(configurationAdmin, translationProvider,
                 httpClientFactory.getCommonHttpClient(), localIp, localPort, handlerFactory);
 
         try {
             httpService.registerServlet(SERVLET_URI, this, null, httpService.createDefaultHttpContext());
             // Promote Shelly Manager usage
-            logger.info("{}", translationProvider.get("status.managerstarted", localIp, localPort + ""));
+            logger.info("{}", translationProvider.get("status.managerstarted", localIp, localPort.toString()));
         } catch (NamespaceException | ServletException | IllegalArgumentException e) {
             logger.warn("{}: Unable to initialize bindingConfig", className, e);
         }

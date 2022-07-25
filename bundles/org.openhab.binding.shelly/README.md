@@ -27,6 +27,8 @@ Also check out the [Shelly Manager](doc/ShellyManager.md), which
 
 ## Supported Devices
 
+### Generation 1:
+
 | thing-type         | Model                                                  | Vendor ID |
 |--------------------|--------------------------------------------------------|-----------|
 | shelly1            | Shelly 1 Single Relay Switch                           | SHSW-1    |
@@ -745,22 +747,28 @@ Using the Thing configuration option `brightnessAutoOn` you could decide if the 
 `true`:  Brightness will be set and device output is powered = light turns on with the new brightness
 `false`: Brightness will be set, but output stays unchanged so light will not be switched on when it's currently off.
 
-### Shelly RGBW2 in White Mode (thing-type: shellyrgbw2-color)
+### Shelly RGBW2 in Color Mode (thing-type: shellyrgbw2-color)
 
 |Group     |Channel      |Type     |read-only|Description                                                            |
 |----------|-------------|---------|---------|-----------------------------------------------------------------------|
 |control   |power        |Switch   |r/w      |Switch light ON/OFF                                                    |
-|          |input        |Switch   |yes      |State of Input                                                         |
-|          |autoOn       |Number   |r/w      |Sets a  timer to turn the device ON after every OFF; in sec            |
-|          |autoOff      |Number   |r/w      |Sets a  timer to turn the device OFF after every ON: in sec            |
+|          |autoOn       |Number   |r/w      |Sets a  timer to turn the device ON after every OFF command; in seconds|
+|          |autoOff      |Number   |r/w      |Sets a  timer to turn the device OFF after every ON command; in seconds|
 |          |timerActive  |Switch   |yes      |ON: An auto-on/off timer is active                                     |
-|color     |             |         |         |Color settings: only valid in COLOR mode                               |
-|          |hsb          |HSB      |r/w      |Represents the color picker (HSBType), control r/g/b, but not white    |
-|meter     |currentWatts |Number   |yes      |Current power consumption in Watts (all channels)                      |
-
-Please note that the settings of channel group color are only valid in color mode and vice versa for white mode.
-The current firmware doesn't support the timestamp report for the meters. 
-The binding emulates this by using the system time on every update.
+|color     |hsb          |HSB      |r/w      |Represents the color picker (HSBType), control r/g/b, bight not white  |
+|          |full         |String   |r/w      |Set Red / Green / Blue / Yellow / White mode and switch mode           |
+|          |             |         |r/w      |Valid settings: "red", "green", "blue", "yellow", "white" or "r,g,b,w" | 
+|          |red          |Dimmer   |r/w      |Red brightness: 0..100% or 0..255 (control only the red channel)       |
+|          |green        |Dimmer   |r/w      |Green brightness: 0..100% or 0..255 (control only the green channel)   |
+|          |blue         |Dimmer   |r/w      |Blue brightness: 0..100% or 0..255 (control only the blue channel)     |
+|          |white        |Dimmer   |r/w      |White brightness: 0..100% or 0..255 (control only the white channel)   |
+|          |gain         |Dimmer   |r/w      |Gain setting: 0..100%     or 0..100                                    |
+|          |effect       |Number   |r/w      |Puts the light into effect mode: 0..3)                                 |
+|          |             |         |         |0=No effect, 1=Meteor Shower, 2=Gradual Change, 3=Flash                |
+|meter     |currentWatts |Number   |yes      |Current power consumption in Watts                                     |
+|          |lastPower1   |Number   |yes      |Energy consumption for a round minute, 1 minute  ago                   |
+|          |totalKWH     |Number   |yes      |Total energy consumption in kWh since the device powered up (resets on restart)|
+|          |lastUpdate   |DateTime |yes      |Timestamp of the last measurement                                      |
 
 ### Shelly RGBW2 in White Mode (thing-type: shellyrgbw2-white)
 
