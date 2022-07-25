@@ -638,7 +638,7 @@
 	<channel-type id="relativeHumidity">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Humidity</label>
-		<description>Humidity</description>
+		<description>Relative humidity measured by the thermostat.</description>
 		<category>Humidity</category>
 		<tags>
 			<tag>Measurement</tag>

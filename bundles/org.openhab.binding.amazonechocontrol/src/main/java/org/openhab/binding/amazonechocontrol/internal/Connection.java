@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.amazonechocontrol.internal;
 
+import static org.openhab.binding.amazonechocontrol.internal.smarthome.Constants.*;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InterruptedIOException;
@@ -1194,10 +1196,8 @@ public class Connection {
                     // Get current upper and lower setpoints to build command syntax
                     Map<String, JsonArray> devices = null;
                     try {
-                        List<SmartHomeBaseDevice> deviceList = getSmarthomeDeviceList().stream().filter(
-                                device -> "AAA_SonarCloudService_00QAbw7vzYhdndv3-Sirp40Zargm3orQ0tKQK9sIKbqIM6-rFm3KsAnOKWApPNqtmzGL6cOR30mQrIwEQtDA"
-                                        .equals(device.findId()))
-                                .collect(Collectors.toList());
+                        List<SmartHomeBaseDevice> deviceList = getSmarthomeDeviceList().stream()
+                                .filter(device -> entityId.equals(device.findEntityId())).collect(Collectors.toList());
                         devices = getSmartHomeDeviceStatesJson(new HashSet<>(deviceList));
                     } catch (URISyntaxException e) {
                         logger.debug("{}", e.toString());

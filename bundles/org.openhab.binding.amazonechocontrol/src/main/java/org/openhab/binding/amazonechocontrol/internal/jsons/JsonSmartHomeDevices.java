@@ -56,6 +56,11 @@ public class JsonSmartHomeDevices {
         }
 
         @Override
+        public @Nullable String findEntityId() {
+            return entityId;
+        }
+
+        @Override
         public boolean isGroup() {
             return false;
         }
