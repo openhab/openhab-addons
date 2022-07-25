@@ -27,32 +27,30 @@ import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.Mea
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.SensorDevice;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.SystemInfo;
 import org.openhab.binding.fineoffsetweatherstation.internal.handler.ThingStatusListener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
- * Service to query the gateway device.
+ * Service to query an ELV gateway device.
  *
  * @author Andreas Berger - Initial contribution
  */
 @NonNullByDefault
-public class FineOffsetGatewayQueryService extends GatewayQueryService {
-    private final Logger logger = LoggerFactory.getLogger(FineOffsetGatewayQueryService.class);
+public class ELVGatewayQueryService extends GatewayQueryService {
 
     private final FineOffsetDataParser fineOffsetDataParser;
 
     private final ConversionContext conversionContext;
 
-    public FineOffsetGatewayQueryService(FineOffsetGatewayConfiguration config,
+    public ELVGatewayQueryService(FineOffsetGatewayConfiguration config,
             @Nullable ThingStatusListener thingStatusListener, ConversionContext conversionContext) {
         super(config, thingStatusListener);
-        this.fineOffsetDataParser = new FineOffsetDataParser(Protocol.DEFAULT);
+        this.fineOffsetDataParser = new FineOffsetDataParser(Protocol.ELV);
         this.conversionContext = conversionContext;
     }
 
     @Override
     public @Nullable String getFirmwareVersion() {
-        var data = executeCommand(Command.CMD_READ_FIRMWARE_VERSION);
+        Command command = Command.CMD_READ_FIRMWARE_VERSION;
+        var data = executeCommand(command.name(), command.getPayloadAlternative(), bytes -> true);
         if (null != data) {
             return fineOffsetDataParser.getFirmwareVersion(data);
         }
@@ -61,40 +59,26 @@ public class FineOffsetGatewayQueryService extends GatewayQueryService {
 
     @Override
     public Map<SensorGatewayBinding, SensorDevice> getRegisteredSensors() {
-        var data = executeCommand(Command.CMD_READ_SENSOR_ID_NEW);
-        if (null == data) {
-            return Map.of();
-        }
-        return fineOffsetDataParser.getRegisteredSensors(data, () -> {
-            @Nullable
-            SystemInfo systemInfo = fetchSystemInfo();
-            if (systemInfo != null) {
-                return systemInfo.isUseWh24();
-            }
-            return null;
-        });
+        // not supported by ELV device
+        return Collections.emptyMap();
     }
 
     @Override
     public @Nullable SystemInfo fetchSystemInfo() {
-        var data = executeCommand(Command.CMD_READ_SSSS);
-        if (data == null) {
-            logger.debug("Unexpected response to System Info!");
-            return null;
-        }
-        return fineOffsetDataParser.fetchSystemInfo(data);
+        // not supported by ELV device
+        return null;
     }
 
     @Override
     public List<MeasuredValue> getMeasuredValues() {
-        byte[] data = executeCommand(Command.CMD_GW1000_LIVEDATA);
+        Command command = Command.CMD_WS980_LIVEDATA;
+        // since this request has 2 checksums we shortcut it here and provide the concrete payload directly
+        byte[] payload = new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0x0b, (byte) 0x00, (byte) 0x06, (byte) 0x04,
+                (byte) 0x04, (byte) 0x19 };
+        byte[] data = executeCommand(command.name(), payload, command::isResponseValid);
         if (data == null) {
             return Collections.emptyList();
         }
         return fineOffsetDataParser.getMeasuredValues(data, conversionContext);
-    }
-
-    protected byte @Nullable [] executeCommand(Command command) {
-        return executeCommand(command.name(), command.getPayload(), command::isResponseValid);
     }
 }

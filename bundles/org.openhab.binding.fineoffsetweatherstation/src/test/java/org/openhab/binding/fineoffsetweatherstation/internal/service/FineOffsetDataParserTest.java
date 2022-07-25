@@ -21,6 +21,7 @@ import org.bouncycastle.util.encoders.Hex;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.ConversionContext;
+import org.openhab.binding.fineoffsetweatherstation.internal.domain.Protocol;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.MeasuredValue;
 
 /**
@@ -28,11 +29,9 @@ import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.Mea
  */
 @NonNullByDefault
 class FineOffsetDataParserTest {
-    private final FineOffsetDataParser parser = new FineOffsetDataParser();
-
     @Test
     void testLiveDataWH45() {
-        List<MeasuredValue> data = parser.getLiveData(Hex.decode(
+        List<MeasuredValue> data = new FineOffsetDataParser(Protocol.DEFAULT).getMeasuredValues(Hex.decode(
                 "FFFF2700510100D306280827EF0927EF020045074F0A00150B00000C0000150000000016000117001900000E0000100000110021120000002113000005850D00007000D12E0060005A005B005502AE028F0633"),
                 new ConversionContext(ZoneOffset.UTC));
         Assertions.assertThat(data)
@@ -42,7 +41,7 @@ class FineOffsetDataParserTest {
                         new Tuple("temperature-outdoor", "6.9 °C"), new Tuple("humidity-outdoor", "79 %"),
                         new Tuple("direction-wind", "21 °"), new Tuple("speed-wind", "0 m/s"),
                         new Tuple("speed-gust", "0 m/s"), new Tuple("illumination", "0 lx"),
-                        new Tuple("irradiation-uv", "1 µW/cm²"), new Tuple("uv-index", "0"),
+                        new Tuple("irradiation-uv", "0.1 mW/m²"), new Tuple("uv-index", "0"),
                         new Tuple("wind-max-day", "0 m/s"), new Tuple("rain-rate", "0 mm/h"),
                         new Tuple("rain-day", "0 mm"), new Tuple("rain-week", "3.3 mm"),
                         new Tuple("rain-month", "3.3 mm"), new Tuple("rain-year", "141.3 mm"),
@@ -52,5 +51,33 @@ class FineOffsetDataParserTest {
                         new Tuple("sensor-co2-pm25", "9.1 µg/m³"),
                         new Tuple("sensor-co2-pm25-24-hour-average", "8.5 µg/m³"),
                         new Tuple("sensor-co2-co2", "686 ppm"), new Tuple("sensor-co2-co2-24-hour-average", "655 ppm"));
+    }
+
+    @Test
+    void testLiveDataELV() {
+        byte[] data = Hex.decode(
+                "FFFF0B00500401010B0201120300620401120501120629072108254B09254B0A01480B00040C000A0E000000001000000021110000002E120000014F130000100714000012FD15000B4BB816086917056D35");
+        List<MeasuredValue> measuredValues = new FineOffsetDataParser(Protocol.ELV).getMeasuredValues(data,
+                new ConversionContext(ZoneOffset.UTC));
+        Assertions.assertThat(measuredValues)
+                .extracting(MeasuredValue::getChannelId, measuredValue -> measuredValue.getState().toString())
+                .containsExactly(new Tuple("temperature-indoor", "26.7 °C"),
+                        new Tuple("temperature-outdoor", "27.4 °C"), new Tuple("temperature-dew-point", "9.8 °C"),
+                        new Tuple("temperature-wind-chill", "27.4 °C"), new Tuple("temperature-heat-index", "27.4 °C"),
+                        new Tuple("humidity-indoor", "41 %"), new Tuple("humidity-outdoor", "33 %"),
+                        new Tuple("pressure-absolute", "954.7 hPa"), new Tuple("pressure-relative", "954.7 hPa"),
+                        new Tuple("direction-wind", "328 °"), new Tuple("speed-wind", "0.4 m/s"),
+                        new Tuple("speed-gust", "1 m/s"), new Tuple("rain-rate", "0 mm/h"),
+                        new Tuple("rain-day", "3.3 mm"), new Tuple("rain-week", "4.6 mm"),
+                        new Tuple("rain-month", "33.5 mm"), new Tuple("rain-year", "410.3 mm"),
+                        new Tuple("rain-total", "486.1 mm"), new Tuple("illumination", "74028 lx"),
+                        new Tuple("irradiation-uv", "215.3 mW/m²"), new Tuple("uv-index", "5"));
+    }
+
+    @Test
+    void testFirmware() {
+        byte[] data = Hex.decode("FFFF501511456173795765617468657256312E362E3400");
+        String firmware = new FineOffsetDataParser(Protocol.ELV).getFirmwareVersion(data);
+        Assertions.assertThat(firmware).isEqualTo("EasyWeatherV1.6.4");
     }
 }
