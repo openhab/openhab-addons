@@ -185,7 +185,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         boolean updated = false;
         if (channelUpdate) {
             ShellyComponents.updateMeters(getThing(), status);
-            updated |= updateSensors((ShellyBaseHandler) getThing(), status);
+            updated |= updateSensors(getThing(), status);
         }
         return updated;
     }
@@ -203,8 +203,6 @@ public class Shelly2ApiClient extends ShellyHttpClient {
 
         ShellySettingsRelay rstatus = status.relays.get(rs.id);
         ShellyShortStatusRelay sr = relayStatus.relays.get(rs.id);
-        String group = profile.getControlGroup(rs.id);
-
         sr.isValid = rstatus.isValid = true;
         sr.name = rstatus.name = status.name;
         if (rs.output != null) {
