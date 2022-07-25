@@ -29,6 +29,8 @@ import org.openhab.binding.hdpowerview.internal.api.responses.Scenes.Scene;
 import org.openhab.binding.hdpowerview.internal.api.responses.ScheduledEvents;
 import org.openhab.binding.hdpowerview.internal.api.responses.ScheduledEvents.ScheduledEvent;
 import org.openhab.binding.hdpowerview.internal.builders.AutomationChannelBuilder;
+import org.openhab.binding.hdpowerview.providers.MockedLocaleProvider;
+import org.openhab.binding.hdpowerview.providers.MockedTranslationProvider;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ThingUID;
@@ -51,7 +53,7 @@ public class AutomationChannelBuilderTest {
             HDPowerViewBindingConstants.CHANNELTYPE_AUTOMATION_ENABLED);
 
     private static final HDPowerViewTranslationProvider translationProvider = new HDPowerViewTranslationProvider(
-            mock(Bundle.class), new TranslationProviderForTests(), new LocaleProviderForTests());
+            mock(Bundle.class), new MockedTranslationProvider(), new MockedLocaleProvider());
     private AutomationChannelBuilder builder = AutomationChannelBuilder.create(translationProvider, CHANNEL_GROUP_UID);
     private List<Scene> scenes = new ArrayList<>();
     private List<SceneCollection> sceneCollections = new ArrayList<>();

@@ -26,6 +26,8 @@ import org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewTranslationProvider;
 import org.openhab.binding.hdpowerview.internal.api.responses.Scenes.Scene;
 import org.openhab.binding.hdpowerview.internal.builders.SceneChannelBuilder;
+import org.openhab.binding.hdpowerview.providers.MockedLocaleProvider;
+import org.openhab.binding.hdpowerview.providers.MockedTranslationProvider;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ThingUID;
@@ -45,7 +47,7 @@ public class SceneChannelBuilderTest {
             HDPowerViewBindingConstants.CHANNELTYPE_SCENE_ACTIVATE);
 
     private static final HDPowerViewTranslationProvider translationProvider = new HDPowerViewTranslationProvider(
-            mock(Bundle.class), new TranslationProviderForTests(), new LocaleProviderForTests());
+            mock(Bundle.class), new MockedTranslationProvider(), new MockedLocaleProvider());
     private SceneChannelBuilder builder = SceneChannelBuilder.create(translationProvider, CHANNEL_GROUP_UID);
 
     @BeforeEach
