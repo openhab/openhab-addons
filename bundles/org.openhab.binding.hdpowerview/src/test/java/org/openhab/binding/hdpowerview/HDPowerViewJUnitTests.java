@@ -16,11 +16,11 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.openhab.binding.hdpowerview.internal.api.CoordinateSystem.*;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
@@ -43,7 +43,6 @@ import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonParseException;
 
 /**
  * Unit tests for HD PowerView binding.
@@ -57,17 +56,20 @@ public class HDPowerViewJUnitTests {
     private static final Pattern VALID_IP_V4_ADDRESS = Pattern
             .compile("\\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\\.|$)){4}\\b");
 
-    /*
-     * load a test JSON string from a file.
-     */
-    private String loadJson(String fileName) {
-        try {
-            return Files.readAllLines(Paths.get(String.format("src/test/resources/%s.json", fileName))).stream()
-                    .collect(Collectors.joining());
-        } catch (IOException e) {
-            fail(e.getMessage());
+    private Gson gson = new Gson();
+
+    private <T> T getObjectFromJson(String filename, Class<T> clazz) throws IOException {
+        try (InputStream inputStream = HDPowerViewJUnitTests.class.getResourceAsStream(filename)) {
+            if (inputStream == null) {
+                throw new IOException("inputstream is null");
+            }
+            byte[] bytes = inputStream.readAllBytes();
+            if (bytes == null) {
+                throw new IOException("Resulting byte-array empty");
+            }
+            String json = new String(bytes, StandardCharsets.UTF_8);
+            return Objects.requireNonNull(gson.fromJson(json, clazz));
         }
-        return "";
     }
 
     /**
@@ -245,26 +247,16 @@ public class HDPowerViewJUnitTests {
      * Test generic JSON shades response.
      */
     @Test
-    public void shadeResponseIsParsedCorrectly() throws JsonParseException {
-        final Gson gson = new Gson();
-        Shades shades;
-        String json = loadJson("shades");
-        assertNotEquals("", json);
-        shades = gson.fromJson(json, Shades.class);
-        assertNotNull(shades);
+    public void shadeResponseIsParsedCorrectly() throws IOException {
+        getObjectFromJson("shades.json", Shades.class);
     }
 
     /**
      * Test generic JSON scene response.
      */
     @Test
-    public void sceneResponseIsParsedCorrectly() throws JsonParseException {
-        final Gson gson = new Gson();
-        String json = loadJson("scenes");
-        assertNotEquals("", json);
-
-        Scenes scenes = gson.fromJson(json, Scenes.class);
-        assertNotNull(scenes);
+    public void sceneResponseIsParsedCorrectly() throws IOException {
+        Scenes scenes = getObjectFromJson("scenes.json", Scenes.class);
         List<Scene> sceneData = scenes.sceneData;
         assertNotNull(sceneData);
         assertEquals(4, sceneData.size());
@@ -277,13 +269,8 @@ public class HDPowerViewJUnitTests {
      * Test generic JSON scene collection response.
      */
     @Test
-    public void sceneCollectionResponseIsParsedCorrectly() throws JsonParseException {
-        final Gson gson = new Gson();
-        String json = loadJson("sceneCollections");
-        assertNotEquals("", json);
-
-        SceneCollections sceneCollections = gson.fromJson(json, SceneCollections.class);
-        assertNotNull(sceneCollections);
+    public void sceneCollectionResponseIsParsedCorrectly() throws IOException {
+        SceneCollections sceneCollections = getObjectFromJson("sceneCollections.json", SceneCollections.class);
 
         List<SceneCollection> sceneCollectionData = sceneCollections.sceneCollectionData;
         assertNotNull(sceneCollectionData);
@@ -298,13 +285,8 @@ public class HDPowerViewJUnitTests {
      * Test the JSON parsing for a duette top down bottom up shade.
      */
     @Test
-    public void duetteTopDownBottomUpShadeIsParsedCorrectly() throws JsonParseException {
-        final Gson gson = new Gson();
-        String json = loadJson("duette");
-        assertNotEquals("", json);
-
-        Shades shades = gson.fromJson(json, Shades.class);
-        assertNotNull(shades);
+    public void duetteTopDownBottomUpShadeIsParsedCorrectly() throws IOException {
+        Shades shades = getObjectFromJson("duette.json", Shades.class);
         List<ShadeData> shadesData = shades.shadeData;
         assertNotNull(shadesData);
 
