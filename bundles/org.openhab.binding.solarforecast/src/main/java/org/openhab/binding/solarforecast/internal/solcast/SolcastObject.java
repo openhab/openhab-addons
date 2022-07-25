@@ -70,7 +70,6 @@ public class SolcastObject {
             if (contentJson.has("forecasts")) {
                 resultJsonArray = contentJson.getJSONArray("forecasts");
                 rawData.get().put("forecasts", resultJsonArray);
-
             } else {
                 resultJsonArray = contentJson.getJSONArray("estimated_actuals");
                 rawData.get().put("estimated_actuals", resultJsonArray);
@@ -152,7 +151,10 @@ public class SolcastObject {
             if (key.isBefore(now)) {
                 // value are reported in PT30M = 30 minutes interval with kw value
                 // for kw/h it's half the value
-                forecastValue += dtm.get(key) / 2;
+                Double addedValue = dtm.get(key);
+                if (addedValue != null) {
+                    forecastValue += addedValue.doubleValue() / 2;
+                }
             }
         }
 
@@ -212,7 +214,10 @@ public class SolcastObject {
         for (LocalDateTime key : keySet) {
             // value are reported in PT30M = 30 minutes interval with kw value
             // for kw/h it's half the value
-            forecastValue += map.get(key) / 2;
+            Double addedValue = map.get(key);
+            if (addedValue != null) {
+                forecastValue += addedValue.doubleValue() / 2;
+            }
         }
         return forecastValue;
     }

@@ -19,10 +19,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.solarforecast.internal.forecastsolar.ForecastSolarBridgeHandler;
 import org.openhab.binding.solarforecast.internal.forecastsolar.ForecastSolarPlaneHandler;
-import org.openhab.binding.solarforecast.internal.forecastsolar.ForecastSolarSinglePlaneHandler;
 import org.openhab.binding.solarforecast.internal.solcast.SolcastBridgeHandler;
 import org.openhab.binding.solarforecast.internal.solcast.SolcastPlaneHandler;
-import org.openhab.binding.solarforecast.internal.solcast.SolcastSinglePlaneHandler;
 import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.PointType;
@@ -72,14 +70,10 @@ public class SolarForecastHandlerFactory extends BaseThingHandlerFactory {
             return new ForecastSolarBridgeHandler((Bridge) thing, location);
         } else if (FORECAST_SOLAR_PART_STRING.equals(thingTypeUID)) {
             return new ForecastSolarPlaneHandler(thing, httpClient);
-        } else if (FORECAST_SOLAR_SINGLE_STRING.equals(thingTypeUID)) {
-            return new ForecastSolarSinglePlaneHandler(thing, httpClient, location);
         } else if (SOLCAST_BRIDGE_STRING.equals(thingTypeUID)) {
             return new SolcastBridgeHandler((Bridge) thing);
         } else if (SOLCAST_PART_STRING.equals(thingTypeUID)) {
             return new SolcastPlaneHandler(thing, httpClient);
-        } else if (SOLCAST_SINGLE_STRING.equals(thingTypeUID)) {
-            return new SolcastSinglePlaneHandler(thing, httpClient);
         }
         return null;
     }

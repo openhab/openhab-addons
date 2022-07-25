@@ -48,7 +48,7 @@ public class SolcastPlaneHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(SolcastPlaneHandler.class);
     private final HttpClient httpClient;
 
-    private Optional<SolcastConfiguration> configuration = Optional.empty();
+    private Optional<SolcastPlaneConfiguration> configuration = Optional.empty();
     private Optional<SolcastBridgeHandler> bridgeHandler = Optional.empty();
     private SolcastObject forecast = new SolcastObject();
 
@@ -59,7 +59,7 @@ public class SolcastPlaneHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        SolcastConfiguration c = getConfigAs(SolcastConfiguration.class);
+        SolcastPlaneConfiguration c = getConfigAs(SolcastPlaneConfiguration.class);
         configuration = Optional.of(c);
         Bridge bridge = getBridge();
         if (bridge != null) {
@@ -169,9 +169,5 @@ public class SolcastPlaneHandler extends BaseThingHandler {
         updateState(CHANNEL_DAY6_HIGH, SolcastObject.getStateObject(f.getOptimisticDayTotal(LocalDateTime.now(), 6)));
         updateState(CHANNEL_DAY6_LOW, SolcastObject.getStateObject(f.getPessimisticDayTotal(LocalDateTime.now(), 6)));
         updateState(CHANNEL_RAW, StringType.valueOf(forecast.getRaw()));
-    }
-
-    public void setConfig(SolcastConfiguration config) {
-        configuration = Optional.of(config);
     }
 }

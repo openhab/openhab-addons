@@ -47,7 +47,7 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler {
     private final PointType homeLocation;
 
     private List<ForecastSolarPlaneHandler> parts = new ArrayList<ForecastSolarPlaneHandler>();
-    private Optional<ForecastSolarConfiguration> configuration = Optional.empty();
+    private Optional<ForecastSolarBridgeConfiguration> configuration = Optional.empty();
     private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
 
     public ForecastSolarBridgeHandler(Bridge bridge, PointType location) {
@@ -57,17 +57,17 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        ForecastSolarConfiguration config = getConfigAs(ForecastSolarConfiguration.class);
+        ForecastSolarBridgeConfiguration config = getConfigAs(ForecastSolarBridgeConfiguration.class);
         if (config.location.equals(SolarForecastBindingConstants.AUTODETECT)) {
             Configuration editConfig = editConfiguration();
             editConfig.put("location", homeLocation.toString());
             updateConfiguration(editConfig);
-            config = getConfigAs(ForecastSolarConfiguration.class);
+            config = getConfigAs(ForecastSolarBridgeConfiguration.class);
         }
         configuration = Optional.of(config);
         updateStatus(ThingStatus.ONLINE);
         getData();
-        startSchedule(1);
+        startSchedule(configuration.get().channelRefreshInterval);
     }
 
     @Override

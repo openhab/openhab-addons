@@ -13,7 +13,7 @@
 	<channel-type id="actual-channel">
 		<item-type>Number:Energy</item-type>
 		<label>Actual Forecast</label>
-		<description>Forecast till now (actual time)</description>
+		<description>Todays forecast till now</description>
 		<state pattern="%.3f %unit" readOnly="true"/>
 	</channel-type>
 	<channel-type id="today-channel">

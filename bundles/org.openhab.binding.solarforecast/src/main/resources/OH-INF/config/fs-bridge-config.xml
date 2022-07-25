@@ -15,5 +15,10 @@
 			<label>API Key</label>
 			<description>If you have a paid subscription plan</description>
 		</parameter>
+		<parameter name="channelRefreshInterval" type="integer" min="1" unit="min" required="true">
+			<label>Channel Refresh Interval</label>
+			<description>Refresh rate of channel data</description>
+			<default>1</default>
+		</parameter>
 	</config-description>
 </config-description:config-descriptions>

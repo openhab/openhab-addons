@@ -1,69 +1,130 @@
- SolarForecast Binding
+SolarForecast Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
+This binding provides data from Solar Forecast services. 
+Use it to estimate your daily production, plan electric consumers like Electric Vehicle charging, heating or HVAC.
+Look ahead the next days in order to identify surplus / shortages in yor energy planning.
 
-_If possible, provide some resources like pictures (only PNG is supported currently), a video, etc. to give an impression of what can be done with this binding._
-_You can place such resources into a `doc` folder next to this README.md._
+Supported Services
 
-_Put each sentence in a separate line to improve readability of diffs._
+- [Solcast](https://solcast.com/)
+    - [Hobbyist Plan](https://toolkit.solcast.com.au/register/hobbyist)
+- [Forecast.Solar](https://forecast.solar/)
+
 
 ## Supported Things
 
-_Please describe the different supported things / devices including their ThingTypeUID within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+Each service needs one `Bridge` for your location and 1+ Photovaltaic Plane `Things`  
 
-- `bridge`: Short description of the Bridge, if any
-- `sample`: Short description of the Thing with the ThingTypeUID `sample`
+| Name                         | Thing Type ID |
+|------------------------------|---------------|
+| Solcast Plane Bridge         | sc-multi      |
+| Solcast PV Plane             | sc-plane      |
+| Forecast Solar Plane Bridge  | fs-multi      |
+| Forecast Solar PV Plane      | fs-plane      |
 
-## Discovery
+## Solcast Configuration
 
-_Describe the available auto-discovery features here._
-_Mention for what it works and what needs to be kept in mind when using it._
+[Solcast service](https://solcast.com/) requires a personal registration with an email address.
+A free version for your personal home PV system is available in [Hobbyist Plan](https://toolkit.solcast.com.au/register/hobbyist)
+You need to configure your Home Photovoltaic System within the web interface.
+After configuration the necessary information is available.
 
-## Binding Configuration
+### Solcast Bridge Configuration
 
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it._
-_In this section, you should link to this file and provide some information about the options._
-_The file could e.g. look like:_
+| Name                   | Type    | Description                           | Default | Required |
+|------------------------|---------|---------------------------------------|---------|----------|
+| apiKey                 | text    | API Key                               | N/A     | yes      |
+| channelRefreshInterval | integer | Channel Refresh Interval in minutes   | 1       | yes      |
 
-```
-# Configuration for the SolarForecast Binding
-#
-# Default secret key for the pairing of the SolarForecast Thing.
-# It has to be between 10-40 (alphanumeric) characters.
-# This may be changed by the user for security reasons.
-secret=openHABSecret
-```
+`apiKey` can be obtained in your [Account Settings](https://toolkit.solcast.com.au/account)
 
-_Note that it is planned to generate some part of this based on the information that is available within ```src/main/resources/OH-INF/binding``` of your binding._
 
-_If your binding does not offer any generic configurations, you can remove this section completely._
+### Solcast Plane Configuration
 
-## Thing Configuration
+| Name            | Type    | Description                           | Default | Required |
+|-----------------|---------|---------------------------------------|---------|----------|
+| resourceId      | text    | Resource Id of Solcast rooftop site   | N/A     | yes      |
+| refreshInterval | integer | Forecast Refresh Interval in minutes  | 120     | yes      |
 
-_Describe what is needed to manually configure a thing, either through the UI or via a thing-file._
-_This should be mainly about its mandatory and optional configuration parameters._
+`resourceId` for each plane can be obtained in your [Rooftop Sites](https://toolkit.solcast.com.au/rooftop-sites)
+`refreshInterval` of forecast data needs to respect the throttling of the Solcast service. 
+If you've 25 free calls per day, each plane needs 2 call per update a refresh interval of 120 minutes will result in 24 call per day.
+Nore: `channelRefreshInterval` from [Bridge Configuration](#solcast-bridge-configuration) will calculate intermediate values withput requesting new forecast data.
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
 
-### `sample` Thing Configuration
+## Solcast Channels
 
-| Name            | Type    | Description                           | Default | Required | Advanced |
-|-----------------|---------|---------------------------------------|---------|----------|----------|
-| hostname        | text    | Hostname or IP address of the device  | N/A     | yes      | no       |
-| password        | text    | Password to access the device         | N/A     | yes      | no       |
-| refreshInterval | integer | Interval the device is polled in sec. | 600     | no       | yes      |
+Each Plane Thing reports their specific values including a `raw` channel holding json content.
+The Bridge sums up all `Plane Thing` values and provides the total forecast for your home location.  
 
-## Channels
+Channels are covering todays actual data with current, remaining and todays total prediction.
+Forecasts are delivered up to 6 days in advance including 
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
+- a pessismitic scenario: 10th percentile 
+- an optimistic scenario: 90th percentile
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
 
-| Channel | Type   | Read/Write | Description                 |
-|---------|--------|------------|-----------------------------|
-| control | Switch | RW         | This is the control channel |
+| Channel                 | Type          | Description                             |
+|-------------------------|---------------|-----------------------------------------|
+| actual-channel          | Number:Energy | Todays forecast till now                |
+| remaining-channel       | Number:Energy | Forecast of todays remaining production |
+| today-channel           | Number:Energy | Todays forecast in total                |
+| tomorrow-channel        | Number:Energy | Tomorrows forecast in total             |
+| tomorrow-low-channel    | Number:Energy | Tomorrows pessimistic forecast          |
+| tomorrow-high-channel   | Number:Energy | Tomorrows optimistic forecast           |
+| day`X`-channel          | Number:Energy | Day `X` forecast in total               |
+| day`X`-low-channel      | Number:Energy | Day `X` pessimistic forecast            |
+| day`X`-high-channel     | Number:Energy | Day `X` optimistic forecast             |
+| raw                     | String        | Plain JSON response without conversions |
+
+
+## ForecastSolar Configuration
+
+[ForecastSolar service](https://forecast.solar/) provides a public free plan.
+
+### ForecastSolar Bridge Configuration
+
+| Name                   | Type    | Description                           | Default      | Required |
+|------------------------|---------|---------------------------------------|--------------|----------|
+| location               | text    | Location of Photovoltaic system       | AUTODETECT   | yes      |
+| channelRefreshInterval | integer | Channel Refresh Interval in minutes   | 1            | yes      |
+| apiKey                 | text    | API Key                               | N/A          | no       |
+
+`location` defines latitufe,longitude values of your PV system.
+In case of autodetect the location configured in openHAB is obtained.
+`apiKey` can be given in case you subscribed to a paid plan
+
+
+### ForecastSolar Plane Configuration
+
+| Name            | Type    | Description                                                                  | Default | Required |
+|-----------------|---------|------------------------------------------------------------------------------|---------|----------|
+| refreshInterval | integer | Forecast Refresh Interval in minutes                                         | 30      | yes      |
+| declination     | integer | Plane Declination - 0 for horizontal till 90 for vertical declination        | N/A     | yes      |
+| azimuth         | integer | Plane Azimuth - -180 = north, -90 = east, 0 = south, 90 = west, 180 = north  | N/A     | yes      |
+| kwp             | decimal | Installed Kilowatt Peak                                                      | N/A     | yes      |
+
+`refreshInterval` of forecast data needs to respect the throttling of the ForecastSolar service. 
+There're 12 calls per hour allowed from your caller IP address so for 2 planes lowest possible refresh rate is 10 minutes.
+Nore: `channelRefreshInterval` from [Bridge Configuration](#forecastsolar-bridge-configuration) will calculate intermediate values withput requesting new forecast data.
+
+
+## ForecastSolar Channels
+
+Each Plane Thing reports their specific values including a `raw` channel holding json content.
+The Bridge sums up all `Plane Thing` values and provides the total forecast for your home location.  
+
+Channels are covering todays actual data with current, remaining and todays total prediction.
+Forecasts are delivered up to 3 days for paid personal plans.
+
+| Channel                 | Type          | Description                             |
+|-------------------------|---------------|-----------------------------------------|
+| actual-channel          | Number:Energy | Todays forecast till now                |
+| remaining-channel       | Number:Energy | Forecast of todays remaining production |
+| today-channel           | Number:Energy | Todays forecast in total                |
+| tomorrow-channel        | Number:Energy | Tomorrows forecast in total             |
+| day`X`-channel          | Number:Energy | Day `X` forecast in total               |
+| raw                     | String        | Plain JSON response without conversions |
 
 ## Full Example
 
@@ -71,6 +132,3 @@ _Provide a full usage example based on textual configuration files._
 _*.things, *.items examples are mandatory as textual configuration is well used by many users._
 _*.sitemap examples are optional._
 
-## Any custom content here!
-
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_

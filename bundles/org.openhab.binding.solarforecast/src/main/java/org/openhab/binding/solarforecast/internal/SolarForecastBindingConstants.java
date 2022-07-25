@@ -28,15 +28,12 @@ public class SolarForecastBindingConstants {
 
     private static final String BINDING_ID = "solarforecast";
 
-    public static final ThingTypeUID FORECAST_SOLAR_SINGLE_STRING = new ThingTypeUID(BINDING_ID, "fs-single");
     public static final ThingTypeUID FORECAST_SOLAR_MULTI_STRING = new ThingTypeUID(BINDING_ID, "fs-multi");
     public static final ThingTypeUID FORECAST_SOLAR_PART_STRING = new ThingTypeUID(BINDING_ID, "fs-part");
     public static final ThingTypeUID SOLCAST_BRIDGE_STRING = new ThingTypeUID(BINDING_ID, "sc-multi");
     public static final ThingTypeUID SOLCAST_PART_STRING = new ThingTypeUID(BINDING_ID, "sc-part");
-    public static final ThingTypeUID SOLCAST_SINGLE_STRING = new ThingTypeUID(BINDING_ID, "sc-single");
-    public static final Set<ThingTypeUID> SUPPORTED_THING_SET = Set.of(FORECAST_SOLAR_SINGLE_STRING,
-            FORECAST_SOLAR_MULTI_STRING, FORECAST_SOLAR_PART_STRING, SOLCAST_BRIDGE_STRING, SOLCAST_PART_STRING,
-            SOLCAST_SINGLE_STRING);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_SET = Set.of(FORECAST_SOLAR_MULTI_STRING,
+            FORECAST_SOLAR_PART_STRING, SOLCAST_BRIDGE_STRING, SOLCAST_PART_STRING);
 
     public static final String CHANNEL_TODAY = "today";
     public static final String CHANNEL_ACTUAL = "actual";

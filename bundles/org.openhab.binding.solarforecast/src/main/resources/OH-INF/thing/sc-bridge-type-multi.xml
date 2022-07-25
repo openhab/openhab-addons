@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<bridge-type id="sc-multi">
-		<label>Solcast Multi Plane</label>
+		<label>Solcast Plane Bridge</label>
 		<description>Bridge holding multiple photovoltaic planes</description>
 
 		<channels>

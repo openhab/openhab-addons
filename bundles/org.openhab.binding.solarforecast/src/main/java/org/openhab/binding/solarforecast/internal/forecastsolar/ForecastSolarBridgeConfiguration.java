@@ -10,19 +10,24 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.solarforecast.internal.solcast;
+package org.openhab.binding.solarforecast.internal.forecastsolar;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants;
 
 /**
- * The {@link SolcastConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link ForecastSolarBridgeConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class SolcastConfiguration {
-    public int refreshInterval = -1;
+public class ForecastSolarBridgeConfiguration {
+    public String location = "0.0,0.0";
+    public int channelRefreshInterval = -1;
     public String apiKey = SolarForecastBindingConstants.EMPTY;
-    public String resourceId = SolarForecastBindingConstants.EMPTY;
+
+    @Override
+    public String toString() {
+        return "Loc " + location + " Ref " + channelRefreshInterval;
+    }
 }

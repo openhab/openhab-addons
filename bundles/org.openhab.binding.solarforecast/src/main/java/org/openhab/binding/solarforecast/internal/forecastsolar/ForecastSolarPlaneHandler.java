@@ -48,7 +48,7 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(ForecastSolarPlaneHandler.class);
     private final HttpClient httpClient;
 
-    private Optional<ForecastSolarConfiguration> configuration = Optional.empty();
+    private Optional<ForecastSolarPlaneConfiguration> configuration = Optional.empty();
     private Optional<ForecastSolarBridgeHandler> bridgeHandler = Optional.empty();
     private Optional<PointType> location = Optional.empty();
     private Optional<String> apiKey = Optional.empty();
@@ -61,7 +61,7 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        ForecastSolarConfiguration c = getConfigAs(ForecastSolarConfiguration.class);
+        ForecastSolarPlaneConfiguration c = getConfigAs(ForecastSolarPlaneConfiguration.class);
         configuration = Optional.of(c);
         Bridge bridge = getBridge();
         if (bridge != null) {
@@ -169,19 +169,5 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler {
      */
     void setApiKey(String key) {
         apiKey = Optional.of(key);
-    }
-
-    /**
-     * Used by SinglePlaneHandler to submit config data
-     *
-     * @param c
-     */
-    protected void setConfig(ForecastSolarConfiguration c) {
-        logger.info("Config {}", c);
-        configuration = Optional.of(c);
-        location = Optional.of(PointType.valueOf(c.location));
-        if (!EMPTY.equals(c.apiKey)) {
-            apiKey = Optional.of(c.apiKey);
-        }
     }
 }

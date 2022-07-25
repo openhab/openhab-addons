@@ -42,7 +42,7 @@ public class SolcastBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SolcastBridgeHandler.class);
     private List<SolcastPlaneHandler> parts = new ArrayList<SolcastPlaneHandler>();
-    private Optional<SolcastConfiguration> configuration = Optional.empty();
+    private Optional<SolcastBridgeConfiguration> configuration = Optional.empty();
     private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
 
     public SolcastBridgeHandler(Bridge bridge) {
@@ -51,12 +51,12 @@ public class SolcastBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        SolcastConfiguration config = getConfigAs(SolcastConfiguration.class);
+        SolcastBridgeConfiguration config = getConfigAs(SolcastBridgeConfiguration.class);
         configuration = Optional.of(config);
         if (!EMPTY.equals(config.apiKey)) {
             updateStatus(ThingStatus.ONLINE);
             getData();
-            startSchedule(1);
+            startSchedule(configuration.get().channelRefreshInterval);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "API Key is mandatory");
             logger.info("API Key missing");
