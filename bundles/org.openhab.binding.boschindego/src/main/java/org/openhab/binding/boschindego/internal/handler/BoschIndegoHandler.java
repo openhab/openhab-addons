@@ -16,6 +16,7 @@ import static org.openhab.binding.boschindego.internal.BoschIndegoBindingConstan
 
 import java.time.Instant;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -71,6 +72,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
     private @NonNullByDefault({}) IndegoController controller;
     private @Nullable ScheduledFuture<?> statePollFuture;
     private @Nullable ScheduledFuture<?> cuttingTimeMapPollFuture;
+    private @Nullable ScheduledFuture<?> cuttingTimeFuture;
     private boolean propertiesInitialized;
     private Optional<Integer> previousStateCode = Optional.empty();
 
@@ -124,6 +126,11 @@ public class BoschIndegoHandler extends BaseThingHandler {
             pollFuture.cancel(true);
         }
         this.cuttingTimeMapPollFuture = null;
+        pollFuture = this.cuttingTimeFuture;
+        if (pollFuture != null) {
+            pollFuture.cancel(true);
+        }
+        this.cuttingTimeFuture = null;
 
         scheduler.execute(() -> {
             try {
@@ -249,6 +256,17 @@ public class BoschIndegoHandler extends BaseThingHandler {
         updateStatus(ThingStatus.ONLINE);
     }
 
+    private void refreshCuttingTimesWithExceptionHandling() {
+        try {
+            refreshCuttingTimes();
+        } catch (IndegoAuthenticationException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.comm-error.authentication-failure");
+        } catch (IndegoException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        }
+    }
+
     private void refreshCuttingTimes() throws IndegoAuthenticationException, IndegoException {
         if (isLinked(LAST_CUTTING)) {
             Instant lastCutting = controller.getPredictiveLastCutting();
@@ -260,14 +278,36 @@ public class BoschIndegoHandler extends BaseThingHandler {
             }
         }
 
+        cancelCuttingTimeRefresh();
         if (isLinked(NEXT_CUTTING)) {
             Instant nextCutting = controller.getPredictiveNextCutting();
             if (nextCutting != null) {
                 updateState(NEXT_CUTTING,
                         new DateTimeType(ZonedDateTime.ofInstant(nextCutting, timeZoneProvider.getTimeZone())));
+                scheduleCuttingTimesRefresh(nextCutting);
             } else {
                 updateState(NEXT_CUTTING, UnDefType.UNDEF);
             }
+        }
+    }
+
+    private void cancelCuttingTimeRefresh() {
+        ScheduledFuture<?> cuttingTimeFuture = this.cuttingTimeFuture;
+        if (cuttingTimeFuture != null) {
+            // Do not interrupt as we might be running within that job.
+            cuttingTimeFuture.cancel(false);
+            this.cuttingTimeFuture = null;
+        }
+    }
+
+    private void scheduleCuttingTimesRefresh(Instant nextCutting) {
+        // Schedule additional update right after next planned cutting. This ensures a faster update
+        // in case the next cutting will be postponed (for example due to weather conditions).
+        long secondsUntilNextCutting = Instant.now().until(nextCutting, ChronoUnit.SECONDS) + 2;
+        if (secondsUntilNextCutting > 0) {
+            logger.debug("Scheduling fetching of cutting times in {} seconds", secondsUntilNextCutting);
+            this.cuttingTimeFuture = scheduler.schedule(this::refreshCuttingTimesWithExceptionHandling,
+                    secondsUntilNextCutting, TimeUnit.SECONDS);
         }
     }
 
