@@ -278,6 +278,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
             }
         }
 
+        cancelCuttingTimeRefresh();
         if (isLinked(NEXT_CUTTING)) {
             Instant nextCutting = controller.getPredictiveNextCutting();
             if (nextCutting != null) {
@@ -290,14 +291,16 @@ public class BoschIndegoHandler extends BaseThingHandler {
         }
     }
 
-    private void scheduleCuttingTimesRefresh(Instant nextCutting) {
+    private void cancelCuttingTimeRefresh() {
         ScheduledFuture<?> cuttingTimeFuture = this.cuttingTimeFuture;
         if (cuttingTimeFuture != null) {
             // Do not interrupt as we might be running within that job.
             cuttingTimeFuture.cancel(false);
             this.cuttingTimeFuture = null;
         }
+    }
 
+    private void scheduleCuttingTimesRefresh(Instant nextCutting) {
         // Schedule additional update right after next planned cutting. This ensures a faster update
         // in case the next cutting will be postponed (for example due to weather conditions).
         long secondsUntilNextCutting = Instant.now().until(nextCutting, ChronoUnit.SECONDS) + 2;
