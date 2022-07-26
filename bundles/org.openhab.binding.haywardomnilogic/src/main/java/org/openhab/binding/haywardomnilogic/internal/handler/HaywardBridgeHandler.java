@@ -437,6 +437,12 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
         String urlParameterslength = Integer.toString(urlParameters.length());
         String statusMessage;
 
+        if (logger.isTraceEnabled()) {
+            logger.trace("Hayward Connection thing:  {} Hayward http command: {}", getCallingMethod(), urlParameters);
+        } else if (logger.isDebugEnabled()) {
+            logger.debug("Hayward Connection thing:  {}", getCallingMethod());
+        }
+
         for (int retry = 0; retry <= 2; retry++) {
             try {
                 ContentResponse httpResponse = sendRequestBuilder(config.endpointUrl, HttpMethod.POST)
@@ -456,18 +462,12 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
                     }
 
                     if (logger.isTraceEnabled()) {
-                        logger.trace("Hayward Connection thing:  {} Hayward http command: {}", getCallingMethod(),
-                                urlParameters);
                         logger.trace("Hayward Connection thing:  {} Hayward http response: {} {}", getCallingMethod(),
                                 statusMessage, xmlResponse);
-                    } else if (logger.isDebugEnabled()) {
-                        logger.debug("Hayward Connection thing:  {}", getCallingMethod());
                     }
                     return xmlResponse;
                 } else {
                     if (logger.isDebugEnabled()) {
-                        logger.debug("Hayward Connection thing:  {} Hayward http command: {}", getCallingMethod(),
-                                urlParameters);
                         logger.debug("Hayward Connection thing:  {} Hayward http response: {} {}", getCallingMethod(),
                                 status, xmlResponse);
                     }
