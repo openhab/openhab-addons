@@ -1,17 +1,12 @@
 # Philips Somneo Binding
 
 This binding integrates Philips Somneo HF3670/60 into openHAB.
-By using the HTTP API provided by the device.
 
 ## Supported Things
 
 This binding does only support one Thing:
 
-- `Philips Somneo HF3670/60`: A connected sleep and wake-Up light with the ThingTypeUID `hf367x`
-
-## Discovery
-
-Auto-discovery is not supported.
+- `Philips Somneo HF367X`: A connected sleep and wake-Up light with the ThingTypeUID `hf367x`
 
 ## Thing Configuration
 
@@ -23,7 +18,7 @@ Its API only allows HTTPS access, but unfortunately the SSL certificate is not t
 | hostname            | Hostname or IP address of the device      | -       |
 | port                | Port number                               | 443     |
 | refreshInterval     | Interval the device is polled in sec      | 30      |
-| ignoreSSLErrors     | Ignore SSL Errors                         | false   |
+| ignoreSSLErrors     | Ignore SSL Errors                         | true    |
 
 ## Channels
 
@@ -148,7 +143,7 @@ sitemap somneo label="Philips Somneo" {
 }
 ```
 
-## Recognition
+## Acknowledgements
 
 Thanks to:
 

@@ -14,8 +14,11 @@ package org.openhab.binding.somneo.internal;
 
 import static org.openhab.binding.somneo.internal.SomneoBindingConstants.*;
 
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -67,19 +70,19 @@ public class SomneoHttpConnector {
         this.urlBase = String.format("https://%s:%d/di/v1/products", config.hostname, config.port);
     }
 
-    public SensorData fetchSensorData() throws Exception {
+    public SensorData fetchSensorData() throws TimeoutException, InterruptedException, ExecutionException {
         return executeUrl("GET", SENSORS_ENDPOINT, SensorData.class);
     }
 
-    public LightData fetchLightData() throws Exception {
+    public LightData fetchLightData() throws TimeoutException, InterruptedException, ExecutionException {
         return executeUrl("GET", LIGHT_ENDPOINT, LightData.class);
     }
 
-    public SunsetData fetchSunsetData() throws Exception {
+    public SunsetData fetchSunsetData() throws TimeoutException, InterruptedException, ExecutionException {
         return executeUrl("GET", SUNSET_ENDPOINT, SunsetData.class);
     }
 
-    public void switchMainLight(boolean state) throws Exception {
+    public void switchMainLight(boolean state) throws TimeoutException, InterruptedException, ExecutionException {
         final LightData data = new LightData();
         data.setMainLight(state);
         data.setNightLight(false);
@@ -88,7 +91,7 @@ public class SomneoHttpConnector {
         executeUrl("PUT", LIGHT_ENDPOINT, data);
     }
 
-    public void setMainLightDimmer(int level) throws Exception {
+    public void setMainLightDimmer(int level) throws TimeoutException, InterruptedException, ExecutionException {
         final LightData data = new LightData();
         data.setMainLightLevel(level);
         data.setMainLight(true);
@@ -98,7 +101,7 @@ public class SomneoHttpConnector {
         executeUrl("PUT", LIGHT_ENDPOINT, data);
     }
 
-    public void switchNightLight(boolean state) throws Exception {
+    public void switchNightLight(boolean state) throws TimeoutException, InterruptedException, ExecutionException {
         final LightData data = new LightData();
         data.setMainLight(false);
         data.setNightLight(state);
@@ -107,99 +110,99 @@ public class SomneoHttpConnector {
         executeUrl("PUT", LIGHT_ENDPOINT, data);
     }
 
-    public void switchSunsetProgram(boolean state) throws Exception {
+    public void switchSunsetProgram(boolean state) throws TimeoutException, InterruptedException, ExecutionException {
         final SunsetData data = new SunsetData();
         data.setState(state);
 
         executeUrl("PUT", SUNSET_ENDPOINT, data);
     }
 
-    public void setSunsetLightIntensity(int percent) throws Exception {
+    public void setSunsetLightIntensity(int percent) throws TimeoutException, InterruptedException, ExecutionException {
         final SunsetData data = new SunsetData();
         data.setLightIntensity(percent);
 
         executeUrl("PUT", SUNSET_ENDPOINT, data);
     }
 
-    public void setSunsetDuration(int duration) throws Exception {
+    public void setSunsetDuration(int duration) throws TimeoutException, InterruptedException, ExecutionException {
         final SunsetData data = new SunsetData();
         data.setDurationInMin(duration);
 
         executeUrl("PUT", SUNSET_ENDPOINT, data);
     }
 
-    public void setSunsetColorSchema(int value) throws Exception {
+    public void setSunsetColorSchema(int value) throws TimeoutException, InterruptedException, ExecutionException {
         final SunsetData data = new SunsetData();
         data.setColorSchema(value);
 
         executeUrl("PUT", SUNSET_ENDPOINT, data);
     }
 
-    public void setSunsetAmbientNoise(String option) throws Exception {
+    public void setSunsetAmbientNoise(String option) throws TimeoutException, InterruptedException, ExecutionException {
         final SunsetData data = new SunsetData();
         data.setAmbientNoise(option);
 
         executeUrl("PUT", SUNSET_ENDPOINT, data);
     }
 
-    public void setSunsetVolume(int percent) throws Exception {
+    public void setSunsetVolume(int percent) throws TimeoutException, InterruptedException, ExecutionException {
         final SunsetData data = new SunsetData();
         data.setSoundVolume(percent);
 
         executeUrl("PUT", SUNSET_ENDPOINT, data);
     }
 
-    public RelaxData fetchRelaxData() throws Exception {
+    public RelaxData fetchRelaxData() throws TimeoutException, InterruptedException, ExecutionException {
         return executeUrl("GET", RELAX_ENDPOINT, RelaxData.class);
     }
 
-    public void setRelaxVolume(int percent) throws Exception {
+    public void setRelaxVolume(int percent) throws TimeoutException, InterruptedException, ExecutionException {
         final RelaxData data = new RelaxData();
         data.setSoundVolume(percent);
 
         executeUrl("PUT", RELAX_ENDPOINT, data);
     }
 
-    public void setRelaxLightIntensity(int percent) throws Exception {
+    public void setRelaxLightIntensity(int percent) throws TimeoutException, InterruptedException, ExecutionException {
         final RelaxData data = new RelaxData();
         data.setLightIntensity(percent);
 
         executeUrl("PUT", RELAX_ENDPOINT, data);
     }
 
-    public void switchRelaxProgram(boolean state) throws Exception {
+    public void switchRelaxProgram(boolean state) throws TimeoutException, InterruptedException, ExecutionException {
         final RelaxData data = new RelaxData();
         data.setState(state);
 
         executeUrl("PUT", RELAX_ENDPOINT, data);
     }
 
-    public void setRelaxBreathingRate(int value) throws Exception {
+    public void setRelaxBreathingRate(int value) throws TimeoutException, InterruptedException, ExecutionException {
         final RelaxData data = new RelaxData();
         data.setBreathingRate(value);
 
         executeUrl("PUT", RELAX_ENDPOINT, data);
     }
 
-    public void setRelaxDuration(int value) throws Exception {
+    public void setRelaxDuration(int value) throws TimeoutException, InterruptedException, ExecutionException {
         final RelaxData data = new RelaxData();
         data.setDurationInMin(value);
 
         executeUrl("PUT", RELAX_ENDPOINT, data);
     }
 
-    public void setRelaxGuidanceType(int value) throws Exception {
+    public void setRelaxGuidanceType(int value) throws TimeoutException, InterruptedException, ExecutionException {
         final RelaxData data = new RelaxData();
         data.setGuidanceType(value);
 
         executeUrl("PUT", RELAX_ENDPOINT, data);
     }
 
-    public AudioData fetchAudioData() throws Exception {
+    public AudioData fetchAudioData() throws TimeoutException, InterruptedException, ExecutionException {
         return executeUrl("GET", AUDIO_ENDPOINT, AudioData.class);
     }
 
-    public void switchRadio(boolean state) throws Exception {
+    public void switchRadio(boolean state) throws TimeoutException, InterruptedException, ExecutionException {
         final AudioData data = new AudioData();
         if (state) {
             data.enableRadio();
@@ -210,7 +213,7 @@ public class SomneoHttpConnector {
         executeUrl("PUT", AUDIO_ENDPOINT, data);
     }
 
-    public void switchAux(boolean state) throws Exception {
+    public void switchAux(boolean state) throws TimeoutException, InterruptedException, ExecutionException {
         final AudioData data = new AudioData();
         if (state) {
             data.enableAux();
@@ -221,14 +224,14 @@ public class SomneoHttpConnector {
         executeUrl("PUT", AUDIO_ENDPOINT, data);
     }
 
-    public void setAudioVolume(int percent) throws Exception {
+    public void setAudioVolume(int percent) throws TimeoutException, InterruptedException, ExecutionException {
         final AudioData data = new AudioData();
         data.setVolume(percent);
 
         executeUrl("PUT", AUDIO_ENDPOINT, data);
     }
 
-    public void setRadioChannel(String preset) throws Exception {
+    public void setRadioChannel(String preset) throws TimeoutException, InterruptedException, ExecutionException {
         final AudioData data = new AudioData();
         data.enableRadio();
         data.setRadioPreset(preset);
@@ -236,7 +239,7 @@ public class SomneoHttpConnector {
         executeUrl("PUT", AUDIO_ENDPOINT, data);
     }
 
-    public RadioData getRadioData() throws Exception {
+    public RadioData getRadioData() throws TimeoutException, InterruptedException, ExecutionException {
         RadioData data = new RadioData();
         int loops = 0;
         do {
@@ -253,47 +256,49 @@ public class SomneoHttpConnector {
         return data;
     }
 
-    public void radioSeekUp() throws Exception {
+    public void radioSeekUp() throws TimeoutException, InterruptedException, ExecutionException {
         final RadioData data = new RadioData();
         data.setCmdSeekUp();
 
         executeUrl("PUT", RADIO_ENDPOINT, data);
     }
 
-    public void radioSeekDown() throws Exception {
+    public void radioSeekDown() throws TimeoutException, InterruptedException, ExecutionException {
         final RadioData data = new RadioData();
         data.setCmdSeekDown();
 
         executeUrl("PUT", RADIO_ENDPOINT, data);
     }
 
-    public DeviceData fetchDeviceData() throws Exception {
+    public DeviceData fetchDeviceData() throws TimeoutException, InterruptedException, ExecutionException {
         return executeUrl("GET", DEVICE_ENDPOINT, DeviceData.class);
     }
 
-    public WifiData fetchWifiData() throws Exception {
+    public WifiData fetchWifiData() throws TimeoutException, InterruptedException, ExecutionException {
         return executeUrl("GET", WIFI_ENDPOINT, WifiData.class);
     }
 
-    public FirmwareData fetchFirmwareData() throws Exception {
+    public FirmwareData fetchFirmwareData() throws TimeoutException, InterruptedException, ExecutionException {
         return executeUrl("GET", FIRMWARE_ENDPOINT, FirmwareData.class);
     }
 
-    public TimerData fetchTimerData() throws Exception {
+    public TimerData fetchTimerData() throws TimeoutException, InterruptedException, ExecutionException {
         return executeUrl("GET", TIMER_ENDPOINT, TimerData.class);
     }
 
-    public PresetData fetchPresetData() throws Exception {
+    public PresetData fetchPresetData() throws TimeoutException, InterruptedException, ExecutionException {
         return executeUrl("GET", PRESET_ENDPOINT, PresetData.class);
     }
 
-    private <T> T executeUrl(String httpMethod, String endpoint, Class<T> classOfT) throws Exception {
+    private <T> T executeUrl(String httpMethod, String endpoint, Class<T> classOfT)
+            throws TimeoutException, InterruptedException, ExecutionException {
         final String responseBody = executeUrl("GET", endpoint, (String) null);
         final T data = gson.fromJson(responseBody, classOfT);
         return data;
     }
 
-    private void executeUrl(String httpMethod, String endpoint, Object data) throws Exception {
+    private void executeUrl(String httpMethod, String endpoint, Object data)
+            throws TimeoutException, InterruptedException, ExecutionException {
         final String content = gson.toJson(data);
         executeUrl(httpMethod, endpoint, content);
     }
@@ -306,9 +311,13 @@ public class SomneoHttpConnector {
      * @param content the content to be sent to the given <code>url</code> or
      *            <code>null</code> if no content should be sent.
      * @return
+     * @throws ExecutionException
+     * @throws InterruptedException
+     * @throws UnsupportedEncodingException
      * @throws Exception when the request execution failed, timed out or it was interrupted
      */
-    private String executeUrl(String httpMethod, String endpoint, @Nullable String content) throws Exception {
+    private String executeUrl(String httpMethod, String endpoint, @Nullable String content)
+            throws TimeoutException, InterruptedException, ExecutionException {
         final String url = urlBase + endpoint;
         final HttpMethod method = HttpUtil.createHttpMethod(httpMethod);
 
@@ -334,10 +343,14 @@ public class SomneoHttpConnector {
 
         final String encoding = response.getEncoding() != null ? response.getEncoding().replaceAll("\"", "").trim()
                 : StandardCharsets.UTF_8.name();
-        final String responseBody = new String(response.getContent(), encoding);
 
-        logger.trace("Response for url '{}':\r\n{}", url, responseBody);
-
-        return responseBody;
+        try {
+            String responseBody = new String(response.getContent(), encoding);
+            logger.trace("Response for url '{}':\r\n{}", url, responseBody);
+            return responseBody;
+        } catch (UnsupportedEncodingException e) {
+            logger.warn("Get response content failed!", e);
+            return "";
+        }
     }
 }

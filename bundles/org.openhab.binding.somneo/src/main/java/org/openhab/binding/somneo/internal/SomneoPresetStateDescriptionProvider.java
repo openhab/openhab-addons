@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.somneo.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.events.EventPublisher;
 import org.openhab.core.thing.binding.BaseDynamicStateDescriptionProvider;
 import org.openhab.core.thing.i18n.ChannelTypeI18nLocalizationService;
@@ -27,11 +28,12 @@ import org.osgi.service.component.annotations.Reference;
  * @author Michael Myrcik - Initial contribution
  */
 @Component(service = { DynamicStateDescriptionProvider.class, SomneoPresetStateDescriptionProvider.class })
+@NonNullByDefault
 public class SomneoPresetStateDescriptionProvider extends BaseDynamicStateDescriptionProvider {
 
     @Activate
-    public SomneoPresetStateDescriptionProvider(final @Reference EventPublisher eventPublisher, //
-            final @Reference ItemChannelLinkRegistry itemChannelLinkRegistry, //
+    public SomneoPresetStateDescriptionProvider(final @Reference EventPublisher eventPublisher,
+            final @Reference ItemChannelLinkRegistry itemChannelLinkRegistry,
             final @Reference ChannelTypeI18nLocalizationService channelTypeI18nLocalizationService) {
         this.eventPublisher = eventPublisher;
         this.itemChannelLinkRegistry = itemChannelLinkRegistry;

@@ -16,6 +16,7 @@ import static org.openhab.binding.somneo.internal.SomneoBindingConstants.*;
 
 import java.io.EOFException;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -104,9 +105,7 @@ public class SomneoHandler extends BaseThingHandler {
         logger.debug("Handle command '{}' for channel {}", command, channelId);
 
         if (command instanceof RefreshType) {
-            // Refreshing individual channels isn't supported by the Http connector.
-            // The connector refreshes all channels together at the configured polling
-            // interval.
+            this.poll();
             return;
         }
 
@@ -291,15 +290,14 @@ public class SomneoHandler extends BaseThingHandler {
                     logger.warn("Received unknown channel {}", channelId);
                     break;
             }
-        } catch (TimeoutException e) {
-            logger.warn("Timeout: {}", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-        } catch (Exception e) {
+        } catch (InterruptedException e) {
+            logger.debug("Handle command interrupted");
+            Thread.currentThread().interrupt();
+        } catch (TimeoutException | ExecutionException e) {
             if (e.getCause() instanceof EOFException) {
                 // Occurs on parallel mobile app access
-                logger.warn("EOF: {}", e.getMessage());
+                logger.debug("EOF: {}", e.getMessage());
             } else {
-                logger.error("Sending command failed", e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }
@@ -371,9 +369,16 @@ public class SomneoHandler extends BaseThingHandler {
             }
 
             updateProperties(properties);
-        } catch (Exception e) {
-            logger.error("Fetching data failed", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        } catch (InterruptedException e) {
+            logger.debug("Update properties interrupted");
+            Thread.currentThread().interrupt();
+        } catch (TimeoutException | ExecutionException e) {
+            if (e.getCause() instanceof EOFException) {
+                // Occurs on parallel mobile app access
+                logger.debug("EOF: {}", e.getMessage());
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            }
         }
     }
 
@@ -447,23 +452,20 @@ public class SomneoHandler extends BaseThingHandler {
             updateRemainingTimer();
 
             updateStatus(ThingStatus.ONLINE);
-        } catch (TimeoutException e) {
-            logger.warn("Timeout: {}", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (InterruptedException e) {
             logger.debug("Polling data interrupted");
-        } catch (Exception e) {
+            Thread.currentThread().interrupt();
+        } catch (TimeoutException | ExecutionException e) {
             if (e.getCause() instanceof EOFException) {
                 // Occurs on parallel mobile app access
-                logger.warn("EOF: {}", e.getMessage());
+                logger.debug("EOF: {}", e.getMessage());
             } else {
-                logger.error("Polling data failed", e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }
     }
 
-    private void updateFrequency() throws Exception {
+    private void updateFrequency() throws TimeoutException, InterruptedException, ExecutionException {
         final SomneoHttpConnector connector = this.connector;
         if (connector == null) {
             return;
@@ -479,7 +481,7 @@ public class SomneoHandler extends BaseThingHandler {
         }
     }
 
-    private void updateRemainingTimer() throws Exception {
+    private void updateRemainingTimer() throws TimeoutException, InterruptedException, ExecutionException {
         final SomneoHttpConnector connector = this.connector;
         if (connector == null) {
             return;
@@ -506,7 +508,7 @@ public class SomneoHandler extends BaseThingHandler {
         }
 
         logger.debug("Start remaining timer ticker job");
-        this.remainingTimerJob = scheduler.scheduleAtFixedRate(this::remainingTimerTick, 0, 1, TimeUnit.SECONDS);
+        this.remainingTimerJob = scheduler.scheduleWithFixedDelay(this::remainingTimerTick, 0, 1, TimeUnit.SECONDS);
     }
 
     private void stopRemainingTimer() {
