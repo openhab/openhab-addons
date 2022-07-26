@@ -116,9 +116,9 @@ public class InsteonNetworkHandler extends BaseBridgeHandler {
 
                             ScheduledFuture<?> driverInitializedJob = this.driverInitializedJob;
                             if (driverInitializedJob != null) {
-                                driverInitializedJob.cancel(true);
+                                driverInitializedJob.cancel(false);
+                                this.driverInitializedJob = null;
                             }
-                            this.driverInitializedJob = null;
                         } else {
                             logger.debug("driver is not initialized yet");
                         }
@@ -134,8 +134,8 @@ public class InsteonNetworkHandler extends BaseBridgeHandler {
                 ScheduledFuture<?> settleJob = this.settleJob;
                 if (settleJob != null) {
                     settleJob.cancel(false);
+                    this.settleJob = null;
                 }
-                this.settleJob = null;
             }
         }, SETTLE_TIME_IN_SECONDS, 1, TimeUnit.SECONDS);
     }
@@ -146,9 +146,9 @@ public class InsteonNetworkHandler extends BaseBridgeHandler {
 
         ScheduledFuture<?> driverInitializedJob = this.driverInitializedJob;
         if (driverInitializedJob != null) {
-            driverInitializedJob.cancel(false);
+            driverInitializedJob.cancel(true);
+            this.driverInitializedJob = null;
         }
-        this.driverInitializedJob = null;
 
         ScheduledFuture<?> pollingJob = this.pollingJob;
         if (pollingJob != null) {
@@ -193,8 +193,8 @@ public class InsteonNetworkHandler extends BaseBridgeHandler {
                 ScheduledFuture<?> reconnectJob = this.reconnectJob;
                 if (reconnectJob != null) {
                     reconnectJob.cancel(false);
+                    this.reconnectJob = null;
                 }
-                this.reconnectJob = null;
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Port disconnected.");
             }
