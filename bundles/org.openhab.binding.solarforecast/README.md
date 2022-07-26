@@ -1,4 +1,4 @@
-SolarForecast Binding
+# SolarForecast Binding
 
 This binding provides data from Solar Forecast services. 
 Use it to estimate your daily production, plan electric consumers like Electric Vehicle charging, heating or HVAC.
@@ -49,7 +49,7 @@ After configuration the necessary information is available.
 `resourceId` for each plane can be obtained in your [Rooftop Sites](https://toolkit.solcast.com.au/rooftop-sites)
 `refreshInterval` of forecast data needs to respect the throttling of the Solcast service. 
 If you've 25 free calls per day, each plane needs 2 call per update a refresh interval of 120 minutes will result in 24 call per day.
-Nore: `channelRefreshInterval` from [Bridge Configuration](#solcast-bridge-configuration) will calculate intermediate values withput requesting new forecast data.
+Nore: `channelRefreshInterval` from [Bridge Configuration](#solcast-bridge-configuration) will calculate intermediate values without requesting new forecast data.
 
 
 ## Solcast Channels
@@ -106,7 +106,7 @@ In case of autodetect the location configured in openHAB is obtained.
 
 `refreshInterval` of forecast data needs to respect the throttling of the ForecastSolar service. 
 There're 12 calls per hour allowed from your caller IP address so for 2 planes lowest possible refresh rate is 10 minutes.
-Nore: `channelRefreshInterval` from [Bridge Configuration](#forecastsolar-bridge-configuration) will calculate intermediate values withput requesting new forecast data.
+Nore: `channelRefreshInterval` from [Bridge Configuration](#forecastsolar-bridge-configuration) will calculate intermediate values without requesting new forecast data.
 
 
 ## ForecastSolar Channels

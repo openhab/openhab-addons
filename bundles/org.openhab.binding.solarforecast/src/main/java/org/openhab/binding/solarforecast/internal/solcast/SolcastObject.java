@@ -184,7 +184,7 @@ public class SolcastObject {
         if (dtm != null) {
             return getTotalValue(dtm);
         } else {
-            return 0;
+            return -1;
         }
     }
 
@@ -194,7 +194,7 @@ public class SolcastObject {
         if (dtm != null) {
             return getTotalValue(dtm);
         } else {
-            return 0;
+            return -1;
         }
     }
 
