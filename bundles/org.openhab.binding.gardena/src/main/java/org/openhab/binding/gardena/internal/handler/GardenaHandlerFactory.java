@@ -64,7 +64,7 @@ public class GardenaHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         if (THING_TYPE_ACCOUNT.equals(thing.getThingTypeUID())) {
-            return new GardenaAccountHandler((Bridge) thing, httpClientFactory, webSocketFactory,
+            return new GardenaAccountHandler((Bridge) thing, httpClientFactory, webSocketFactory, timeZoneProvider,
                     getBundleContext().getBundle(), i18nProvider, localeProvider);
         } else {
             return new GardenaThingHandler(thing, timeZoneProvider);

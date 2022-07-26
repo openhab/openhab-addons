@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.gardena.internal.handler;
 
+import java.text.MessageFormat;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -35,6 +36,7 @@ import org.openhab.binding.gardena.internal.exception.GardenaException;
 import org.openhab.binding.gardena.internal.model.dto.Device;
 import org.openhab.binding.gardena.internal.util.UidUtils;
 import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.io.net.http.WebSocketFactory;
@@ -69,13 +71,14 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
 
     // localisation constants
     private static final String RECONNECT_MSG_KEY = "accounthandler.waiting-to-reconnect-at-time";
-    private static final DateTimeFormatter DATE_TIME_FORMAT = DateTimeFormatter.ofPattern(" HH:MM:SS (cccc)");
+    private static final DateTimeFormatter DATE_TIME_FORMAT = DateTimeFormatter.ofPattern("HH:MM:SS (cccc)");
 
     // assets
     private @Nullable GardenaDeviceDiscoveryService discoveryService;
     private @Nullable GardenaSmart gardenaSmart;
     private final HttpClientFactory httpClientFactory;
     private final WebSocketFactory webSocketFactory;
+    private final TimeZoneProvider timeZoneProvider;
     private final Bundle bundle;
     private final TranslationProvider i18nProvider;
     private final LocaleProvider localeProvider;
@@ -88,10 +91,12 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
     private Instant apiCallSuppressionEnd = Instant.MIN;
 
     public GardenaAccountHandler(Bridge bridge, HttpClientFactory httpClientFactory, WebSocketFactory webSocketFactory,
-            Bundle bundle, TranslationProvider i18nProvider, LocaleProvider localeProvider) {
+            TimeZoneProvider timeZoneProvider, Bundle bundle, TranslationProvider i18nProvider,
+            LocaleProvider localeProvider) {
         super(bridge);
         this.httpClientFactory = httpClientFactory;
         this.webSocketFactory = webSocketFactory;
+        this.timeZoneProvider = timeZoneProvider;
         this.bundle = bundle;
         this.i18nProvider = i18nProvider;
         this.localeProvider = localeProvider;
@@ -165,8 +170,11 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
      * @return the (localised) description text.
      */
     private String uiText(long delaySeconds) {
-        return i18nProvider.getText(bundle, RECONNECT_MSG_KEY, RECONNECT_MSG_KEY, localeProvider.getLocale())
-                + LocalDateTime.now().plusSeconds(delaySeconds).format(DATE_TIME_FORMAT);
+        String template = i18nProvider.getText(bundle, RECONNECT_MSG_KEY, RECONNECT_MSG_KEY,
+                localeProvider.getLocale());
+        String dateTime = LocalDateTime.now(timeZoneProvider.getTimeZone()).plusSeconds(delaySeconds)
+                .format(DATE_TIME_FORMAT);
+        return MessageFormat.format(template, dateTime);
     }
 
     /**
