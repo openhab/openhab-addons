@@ -16,7 +16,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -65,8 +64,8 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
 
     // timing constants
     private static final Duration REINITIALIZE_DELAY_SECONDS = Duration.ofSeconds(120);
-    private static final Duration REINITIALIZE_DELAY_MINUTES_BACK_OFF = Duration.ofMinutes(15).plusSeconds(30);
-    private static final Duration REINITIALIZE_DELAY_HOURS_LIMIT_EXCEEDED = Duration.ofHours(24).plusMinutes(15);
+    private static final Duration REINITIALIZE_DELAY_MINUTES_BACK_OFF = Duration.ofMinutes(15).plusSeconds(10);
+    private static final Duration REINITIALIZE_DELAY_HOURS_LIMIT_EXCEEDED = Duration.ofHours(24).plusSeconds(10);
 
     // localisation constants
     private static final String RECONNECT_MSG_KEY = "accounthandler.waiting-to-reconnect-at-time";
@@ -85,8 +84,8 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
     private final Object reInitializationCodeLock = new Object();
     private @Nullable ScheduledFuture<?> reInitializationTask;
     private boolean reInitializationCausedBy429 = false;
-    private Instant lastApiCallTime = Instant.MIN;
-    private boolean lastApiCallTimeLoaded = false;
+    private Instant apiCallSuppressionStart = Instant.MIN;
+    private Instant apiCallSuppressionEnd = Instant.MIN;
 
     public GardenaAccountHandler(Bridge bridge, HttpClientFactory httpClientFactory, WebSocketFactory webSocketFactory,
             Bundle bundle, TranslationProvider i18nProvider, LocaleProvider localeProvider) {
@@ -99,45 +98,59 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
     }
 
     /**
-     * Returns the time when the last api call was made. If the thing was newly created, restores the time from a
-     * property to ensure consistent behaviour over restarts.
-     *
-     * @return the time when the last api call was made.
+     * Load the api call suppression properties.
      */
-    private Instant lastApiCallTime() {
-        if (!lastApiCallTimeLoaded) {
-            Map<String, String> properties = getThing().getProperties();
-            String property = properties.getOrDefault(GardenaBindingConstants.LAST_API_CALL_TIME, "");
-            lastApiCallTime = "".equals(property) ? Instant.now().minus(Duration.ofHours(1)) : Instant.parse(property);
-            lastApiCallTimeLoaded = true;
-        }
-        return lastApiCallTime;
+    private void loadApiCallSuppressionProperties() {
+        Map<String, String> properties = getThing().getProperties();
+        String propertyValue;
+        propertyValue = properties.getOrDefault(GardenaBindingConstants.API_CALL_SUPPRESSION_START, "");
+        apiCallSuppressionStart = "".equals(propertyValue) ? Instant.MIN : Instant.parse(propertyValue);
+        propertyValue = properties.getOrDefault(GardenaBindingConstants.API_CALL_SUPPRESSION_END, "");
+        apiCallSuppressionEnd = "".equals(propertyValue) ? Instant.MIN : Instant.parse(propertyValue);
     }
 
     /**
-     * Updates the time when the last api call was made to now(). Saves the value to a property to ensure consistent
-     * behaviour over restarts.
+     * Get the duration remaining until the end of the api call suppression window, or Duration.ZERO if we are outside
+     * the call suppression window.
+     *
+     * @return the duration until the end of the suppression window, or zero.
      */
-    private void lastApiCallTimeUpdate() {
-        lastApiCallTime = Instant.now();
-        getThing().setProperty(GardenaBindingConstants.LAST_API_CALL_TIME,
-                lastApiCallTime.truncatedTo(ChronoUnit.SECONDS).toString());
+    private Duration getApiCallSuppressionDurationRemaining() {
+        Instant now = Instant.now();
+        if (now.isAfter(apiCallSuppressionStart) && now.isBefore(apiCallSuppressionEnd)) {
+            return Duration.between(now, apiCallSuppressionEnd);
+        }
+        return Duration.ZERO;
+    }
+
+    /**
+     * Updates the time when api call suppression begins to now(), and the time when api call suppression ends to now()
+     * plus the given suppressionDuration. The suppressionDuration must not be a negative duration. Saves the start and
+     * end time values as properties to ensure consistent behaviour across restarts.
+     *
+     * @param suppressionDuration the duration between the start and end of the suppression window.
+     */
+    private void apiCallSuppressionWindowUpdate(Duration suppressionDuration) {
+        Duration offset = suppressionDuration.isNegative() ? Duration.ZERO : suppressionDuration;
+        apiCallSuppressionStart = Instant.now();
+        apiCallSuppressionEnd = apiCallSuppressionStart.plus(offset);
+        Thing thing = getThing();
+        thing.setProperty(GardenaBindingConstants.API_CALL_SUPPRESSION_START, apiCallSuppressionStart.toString());
+        thing.setProperty(GardenaBindingConstants.API_CALL_SUPPRESSION_END, apiCallSuppressionEnd.toString());
     }
 
     @Override
     public void initialize() {
         logger.debug("Initializing Gardena account '{}'", getThing().getUID().getId());
-        Instant now = Instant.now();
-        Instant notBeforeTime = lastApiCallTime().plus(REINITIALIZE_DELAY_MINUTES_BACK_OFF)
-                .plus(REINITIALIZE_DELAY_MINUTES_BACK_OFF);
-        if (now.isBefore(notBeforeTime)) {
-            // delay the initialisation
-            Duration delay = Duration.between(now, notBeforeTime);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, uiText(delay.getSeconds()));
-            scheduleReinitialize(delay);
-        } else {
+        loadApiCallSuppressionProperties();
+        Duration delay = getApiCallSuppressionDurationRemaining();
+        if (Duration.ZERO.equals(delay)) {
             // do immediate initialisation
             scheduler.submit(() -> initializeGardena());
+        } else {
+            // delay the initialisation
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, uiText(delay.getSeconds()));
+            scheduleReinitialize(delay);
         }
     }
 
@@ -174,6 +187,7 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
                 discoveryService.waitForScanFinishing();
             }
             reInitializationCausedBy429 = false;
+            apiCallSuppressionWindowUpdate(Duration.ZERO);
             updateStatus(ThingStatus.ONLINE);
         } catch (GardenaException ex) {
             logger.warn("{}", ex.getMessage());
@@ -182,18 +196,20 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
 
             synchronized (reInitializationCodeLock) {
                 Duration delay;
-                boolean isHttp429Error = (ex.getStatus() == HttpStatus.TOO_MANY_REQUESTS_429);
-                if (isHttp429Error) {
-                    delay = REINITIALIZE_DELAY_HOURS_LIMIT_EXCEEDED;
+
+                int status = ex.getStatus();
+                boolean isNetworkError = (status <= 0);
+                boolean isHttp429Error = (status == HttpStatus.TOO_MANY_REQUESTS_429);
+
+                if (isNetworkError) {
+                    delay = REINITIALIZE_DELAY_SECONDS;
                 } else {
-                    Instant now = Instant.now();
-                    Instant notBeforeTime = lastApiCallTime().plus(REINITIALIZE_DELAY_MINUTES_BACK_OFF)
-                            .plus(REINITIALIZE_DELAY_MINUTES_BACK_OFF);
-                    if (now.isBefore(notBeforeTime)) {
-                        delay = Duration.between(now, notBeforeTime);
+                    if (isHttp429Error) {
+                        delay = REINITIALIZE_DELAY_HOURS_LIMIT_EXCEEDED;
                     } else {
-                        delay = REINITIALIZE_DELAY_SECONDS;
+                        delay = getApiCallSuppressionDurationRemaining().plus(REINITIALIZE_DELAY_MINUTES_BACK_OFF);
                     }
+                    apiCallSuppressionWindowUpdate(delay);
                 }
 
                 ScheduledFuture<?> reInitializationTask = this.reInitializationTask;
@@ -201,14 +217,13 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
                         || (isHttp429Error != reInitializationCausedBy429)) {
                     reInitializationTask = scheduleReinitialize(delay);
                 }
+
                 reInitializationCausedBy429 = isHttp429Error;
                 delaySecs = reInitializationTask.getDelay(TimeUnit.SECONDS);
             }
-
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, uiText(delaySecs));
             disposeGardena();
         }
-        lastApiCallTimeUpdate();
     }
 
     /**
@@ -321,12 +336,12 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
 
     @Override
     public void onError() {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                uiText(REINITIALIZE_DELAY_SECONDS.toSeconds()));
+        Duration delay = REINITIALIZE_DELAY_SECONDS;
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, uiText(delay.toSeconds()));
         disposeGardena();
         synchronized (reInitializationCodeLock) {
             reInitializationCausedBy429 = false;
-            scheduleReinitialize(REINITIALIZE_DELAY_SECONDS);
+            scheduleReinitialize(delay);
         }
     }
 }
