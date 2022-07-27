@@ -322,10 +322,13 @@ public class KonnectedHandler extends BaseThingHandler {
      * @return a json settings payload which can be sent to the Konnected Module based on the Thing
      */
     private String constructSettingsPayload() {
-        String hostPath = "";
-        hostPath = callbackIpAddress + this.konnectedServletPath;
+        String apiUrl = (String) getThing().getConfiguration().get(CALLBACK_URI);
+        if (apiUrl == null) {
+            apiUrl = "http://" + callbackIpAddress + this.konnectedServletPath;
+        }
+
         logger.debug("The Auth_Token is: {}", authToken);
-        KonnectedModulePayload payload = new KonnectedModulePayload(authToken, "http://" + hostPath);
+        KonnectedModulePayload payload = new KonnectedModulePayload(authToken, apiUrl);
         payload.setBlink(config.blink);
         payload.setDiscovery(config.discovery);
         this.getThing().getChannels().forEach(channel -> {

@@ -38,6 +38,7 @@ public class KonnectedBindingConstants {
     public static final String CALLBACK_PATH = "callBackPath";
     public static final String REQUEST_TIMEOUT = "request_timeout";
     public static final String RETRY_COUNT = "retry_count";
+    public static final String CALLBACK_URI = "callback_uri";
 
     // PIN_TO_ZONE array, this array maps an index location as a zone to the corresponding
     // pin location
