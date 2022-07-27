@@ -12,12 +12,14 @@
  */
 package org.openhab.binding.gardena.internal.handler;
 
-import java.text.MessageFormat;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
+import java.time.format.DateTimeParseException;
+import java.time.format.FormatStyle;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -71,7 +73,7 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
     private static final Duration REINITIALIZE_DELAY_HOURS_LIMIT_EXCEEDED = Duration.ofHours(24).plusSeconds(10);
 
     // localisation constants
-    private static final String RECONNECT_MSG_KEY = "accounthandler.waiting-to-reconnect-at-time";
+    private static final String RECONNECT_MSG_KEY = "accounthandler.waiting-until-to-reconnect";
 
     // assets
     private @Nullable GardenaDeviceDiscoveryService discoveryService;
@@ -86,8 +88,7 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
     // re- initialisation stuff
     private final Object reInitializationCodeLock = new Object();
     private @Nullable ScheduledFuture<?> reInitializationTask;
-    private Instant apiCallSuppressionStart = Instant.MIN;
-    private Instant apiCallSuppressionEnd = Instant.MIN;
+    private @Nullable Instant apiCallSuppressionUntil;
 
     public GardenaAccountHandler(Bridge bridge, HttpClientFactory httpClientFactory, WebSocketFactory webSocketFactory,
             TimeZoneProvider timeZoneProvider, Bundle bundle, TranslationProvider i18nProvider,
@@ -102,15 +103,16 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
     }
 
     /**
-     * Load the api call suppression properties.
+     * Load the api call suppression until property.
      */
-    private void loadApiCallSuppressionProperties() {
-        Map<String, String> properties = getThing().getProperties();
-        String propertyValue;
-        propertyValue = properties.getOrDefault(GardenaBindingConstants.API_CALL_SUPPRESSION_START, "");
-        apiCallSuppressionStart = "".equals(propertyValue) ? Instant.MIN : Instant.parse(propertyValue);
-        propertyValue = properties.getOrDefault(GardenaBindingConstants.API_CALL_SUPPRESSION_END, "");
-        apiCallSuppressionEnd = "".equals(propertyValue) ? Instant.MIN : Instant.parse(propertyValue);
+    private void loadApiCallSuppressionUntil() {
+        try {
+            Map<String, String> properties = getThing().getProperties();
+            apiCallSuppressionUntil = Instant
+                    .parse(properties.getOrDefault(GardenaBindingConstants.API_CALL_SUPPRESSION_UNTIL, ""));
+        } catch (DateTimeParseException e) {
+            apiCallSuppressionUntil = null;
+        }
     }
 
     /**
@@ -119,35 +121,30 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
      *
      * @return the duration until the end of the suppression window, or zero.
      */
-    private Duration getApiCallSuppressionDurationRemaining() {
+    private Duration apiCallSuppressionDelay() {
         Instant now = Instant.now();
-        if (now.isAfter(apiCallSuppressionStart) && now.isBefore(apiCallSuppressionEnd)) {
-            return Duration.between(now, apiCallSuppressionEnd);
-        }
-        return Duration.ZERO;
+        Instant until = apiCallSuppressionUntil;
+        return (until != null) && now.isBefore(until) ? Duration.between(now, until) : Duration.ZERO;
     }
 
     /**
-     * Updates the time when api call suppression begins to now(), and the time when api call suppression ends to now()
-     * plus the given delay. The delay must not be a negative duration. Saves the start and end time values as
-     * properties to ensure consistent behaviour across restarts.
+     * Updates the time when api call suppression ends to now() plus the given delay. If delay is zero or negative, the
+     * suppression time is nulled. Saves the value as a property to ensure consistent behaviour across restarts.
      *
-     * @param delay the duration between the start and end of the suppression window.
+     * @param delay the delay until the end of the suppression window.
      */
-    private void apiCallSuppressionPropertiesUpdate(Duration delay) {
-        Duration offset = delay.isNegative() ? Duration.ZERO : delay;
-        apiCallSuppressionStart = Instant.now();
-        apiCallSuppressionEnd = apiCallSuppressionStart.plus(offset);
-        Thing thing = getThing();
-        thing.setProperty(GardenaBindingConstants.API_CALL_SUPPRESSION_START, apiCallSuppressionStart.toString());
-        thing.setProperty(GardenaBindingConstants.API_CALL_SUPPRESSION_END, apiCallSuppressionEnd.toString());
+    private void apiCallSuppressionUpdate(Duration delay) {
+        Instant until = (delay.isZero() || delay.isNegative()) ? null : Instant.now().plus(delay);
+        getThing().setProperty(GardenaBindingConstants.API_CALL_SUPPRESSION_UNTIL,
+                until == null ? null : until.toString());
+        apiCallSuppressionUntil = until;
     }
 
     @Override
     public void initialize() {
         logger.debug("Initializing Gardena account '{}'", getThing().getUID().getId());
-        loadApiCallSuppressionProperties();
-        Duration delay = getApiCallSuppressionDurationRemaining();
+        loadApiCallSuppressionUntil();
+        Duration delay = apiCallSuppressionDelay();
         if (Duration.ZERO.equals(delay)) {
             // do immediate initialisation
             scheduler.submit(() -> initializeGardena());
@@ -168,11 +165,17 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
      * @return the (localised) description text.
      */
     private String getUiText() {
-        String template = i18nProvider.getText(bundle, RECONNECT_MSG_KEY, RECONNECT_MSG_KEY,
-                localeProvider.getLocale());
-        String dateTime = LocalDateTime.ofInstant(apiCallSuppressionEnd, timeZoneProvider.getTimeZone())
-                .truncatedTo(ChronoUnit.SECONDS).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-        return MessageFormat.format(template, dateTime);
+        Instant until = apiCallSuppressionUntil;
+        if (until != null) {
+            ZoneId zone = timeZoneProvider.getTimeZone();
+            boolean isToday = LocalDate.now(zone).equals(LocalDate.ofInstant(until, zone));
+            DateTimeFormatter formatter = isToday ? DateTimeFormatter.ofLocalizedTime(FormatStyle.MEDIUM)
+                    : DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM);
+            String value = i18nProvider.getText(bundle, RECONNECT_MSG_KEY, null, localeProvider.getLocale(),
+                    formatter.format(ZonedDateTime.ofInstant(until, zone)));
+            return value != null ? value : "";
+        }
+        return "";
     }
 
     /**
@@ -187,7 +190,7 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
             String id = getThing().getUID().getId();
             gardenaSmart = new GardenaSmartImpl(id, gardenaConfig, this, scheduler, httpClientFactory,
                     webSocketFactory);
-            apiCallSuppressionPropertiesUpdate(Duration.ZERO);
+            apiCallSuppressionUpdate(Duration.ZERO);
             final GardenaDeviceDiscoveryService discoveryService = this.discoveryService;
             if (discoveryService != null) {
                 discoveryService.startScan(null);
@@ -204,9 +207,10 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
                 } else if (status == HttpStatus.TOO_MANY_REQUESTS_429) {
                     delay = REINITIALIZE_DELAY_HOURS_LIMIT_EXCEEDED;
                 } else {
-                    delay = getApiCallSuppressionDurationRemaining().plus(REINITIALIZE_DELAY_MINUTES_BACK_OFF);
+                    delay = apiCallSuppressionDelay().plus(REINITIALIZE_DELAY_MINUTES_BACK_OFF);
                 }
                 scheduleReinitialize(delay);
+                apiCallSuppressionUpdate(delay);
             }
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, getUiText());
             disposeGardena();
@@ -233,7 +237,6 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
         }
         this.reInitializationTask = scheduler.schedule(() -> reIninitializeGardena(), delay.getSeconds(),
                 TimeUnit.SECONDS);
-        apiCallSuppressionPropertiesUpdate(delay);
     }
 
     @Override
@@ -324,6 +327,7 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
         synchronized (reInitializationCodeLock) {
             scheduleReinitialize(delay);
         }
+        apiCallSuppressionUpdate(delay);
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, getUiText());
         disposeGardena();
     }

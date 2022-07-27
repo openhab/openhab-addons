@@ -38,6 +38,5 @@ public class GardenaBindingConstants {
     public static final String DEVICE_TYPE_SENSOR = "sensor";
     public static final String DEVICE_TYPE_POWER = "power";
 
-    public static final String API_CALL_SUPPRESSION_START = "apiCallSuppressionStartTime";
-    public static final String API_CALL_SUPPRESSION_END = "apiCallSuppressionEndTime";
+    public static final String API_CALL_SUPPRESSION_UNTIL = "apiCallSuppressionUntil";
 }
