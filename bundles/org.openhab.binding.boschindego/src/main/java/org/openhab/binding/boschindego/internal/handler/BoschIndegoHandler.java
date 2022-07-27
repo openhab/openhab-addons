@@ -252,6 +252,9 @@ public class BoschIndegoHandler extends BaseThingHandler {
         DeviceStateResponse state = controller.getState();
         updateState(state);
 
+        if (state.mapUpdateAvailable) {
+            cachedMapTimestamp = Instant.MIN;
+        }
         refreshMap(state.svgXPos, state.svgYPos);
 
         // When state code changed, refresh cutting times immediately.
