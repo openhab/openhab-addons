@@ -349,7 +349,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
             if (mapRefreshed) {
                 logger.warn("Unexpected map format, unable to plot location");
                 logger.trace("Received map: {}", svgMap);
-                updateState(GARDEN_MAP, new RawType(svgMap.getBytes(), cachedMap.getMimeType()));
+                updateState(GARDEN_MAP, cachedMap);
             }
             return;
         }
