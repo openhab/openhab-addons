@@ -1,6 +1,6 @@
 # Philips Somneo Binding
 
-This binding integrates Philips Somneo HF3670/60 into openHAB.
+This binding integrates Philips Somneo HF367X into openHAB.
 
 ## Supported Things
 
