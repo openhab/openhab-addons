@@ -307,7 +307,7 @@
 				<description>The Zone Number of the channel.</description>
 				<default>13</default>
 				<options>
-					<option value="13">Output1</option>
+					<option value="13">Alarm1</option>
 				</options>
 			</parameter>
 			<parameter name="onvalue" type="text">
@@ -344,7 +344,7 @@
 				<description>The Zone Number of the channel.</description>
 				<default>14</default>
 				<options>
-					<option value="14">Alarm1</option>
+					<option value="14">Output1</option>
 				</options>
 			</parameter>
 			<parameter name="onvalue" type="text">
