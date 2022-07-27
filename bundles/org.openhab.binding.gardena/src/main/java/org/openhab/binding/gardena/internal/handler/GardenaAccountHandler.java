@@ -17,6 +17,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -71,7 +72,6 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
 
     // localisation constants
     private static final String RECONNECT_MSG_KEY = "accounthandler.waiting-to-reconnect-at-time";
-    private static final DateTimeFormatter DATE_TIME_FORMAT = DateTimeFormatter.ofPattern("HH:MM:SS (cccc)");
 
     // assets
     private @Nullable GardenaDeviceDiscoveryService discoveryService;
@@ -171,7 +171,7 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
         String template = i18nProvider.getText(bundle, RECONNECT_MSG_KEY, RECONNECT_MSG_KEY,
                 localeProvider.getLocale());
         String dateTime = LocalDateTime.ofInstant(apiCallSuppressionEnd, timeZoneProvider.getTimeZone())
-                .format(DATE_TIME_FORMAT);
+                .truncatedTo(ChronoUnit.SECONDS).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
         return MessageFormat.format(template, dateTime);
     }
 
