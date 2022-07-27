@@ -86,7 +86,6 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
     // re- initialisation stuff
     private final Object reInitializationCodeLock = new Object();
     private @Nullable ScheduledFuture<?> reInitializationTask;
-    private boolean reInitializationCausedBy429 = false;
     private Instant apiCallSuppressionStart = Instant.MIN;
     private Instant apiCallSuppressionEnd = Instant.MIN;
 
@@ -130,13 +129,13 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
 
     /**
      * Updates the time when api call suppression begins to now(), and the time when api call suppression ends to now()
-     * plus the given suppressionDuration. The suppressionDuration must not be a negative duration. Saves the start and
-     * end time values as properties to ensure consistent behaviour across restarts.
+     * plus the given delay. The delay must not be a negative duration. Saves the start and end time values as
+     * properties to ensure consistent behaviour across restarts.
      *
-     * @param suppressionDuration the duration between the start and end of the suppression window.
+     * @param delay the duration between the start and end of the suppression window.
      */
-    private void apiCallSuppressionWindowUpdate(Duration suppressionDuration) {
-        Duration offset = suppressionDuration.isNegative() ? Duration.ZERO : suppressionDuration;
+    private void apiCallSuppressionPropertiesUpdate(Duration delay) {
+        Duration offset = delay.isNegative() ? Duration.ZERO : delay;
         apiCallSuppressionStart = Instant.now();
         apiCallSuppressionEnd = apiCallSuppressionStart.plus(offset);
         Thing thing = getThing();
@@ -154,8 +153,8 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
             scheduler.submit(() -> initializeGardena());
         } else {
             // delay the initialisation
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, uiText(delay.getSeconds()));
             scheduleReinitialize(delay);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, getUiText());
         }
     }
 
@@ -166,13 +165,12 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
     /**
      * Format a localised description text to display on the thing main UI page.
      *
-     * @param delaySeconds the delay that will be added to the current time.
      * @return the (localised) description text.
      */
-    private String uiText(long delaySeconds) {
+    private String getUiText() {
         String template = i18nProvider.getText(bundle, RECONNECT_MSG_KEY, RECONNECT_MSG_KEY,
                 localeProvider.getLocale());
-        String dateTime = LocalDateTime.now(timeZoneProvider.getTimeZone()).plusSeconds(delaySeconds)
+        String dateTime = LocalDateTime.ofInstant(apiCallSuppressionEnd, timeZoneProvider.getTimeZone())
                 .format(DATE_TIME_FORMAT);
         return MessageFormat.format(template, dateTime);
     }
@@ -189,47 +187,28 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
             String id = getThing().getUID().getId();
             gardenaSmart = new GardenaSmartImpl(id, gardenaConfig, this, scheduler, httpClientFactory,
                     webSocketFactory);
+            apiCallSuppressionPropertiesUpdate(Duration.ZERO);
             final GardenaDeviceDiscoveryService discoveryService = this.discoveryService;
             if (discoveryService != null) {
                 discoveryService.startScan(null);
                 discoveryService.waitForScanFinishing();
             }
-            reInitializationCausedBy429 = false;
-            apiCallSuppressionWindowUpdate(Duration.ZERO);
             updateStatus(ThingStatus.ONLINE);
         } catch (GardenaException ex) {
             logger.warn("{}", ex.getMessage());
-
-            long delaySecs;
-
             synchronized (reInitializationCodeLock) {
                 Duration delay;
-
                 int status = ex.getStatus();
-                boolean isNetworkError = (status <= 0);
-                boolean isHttp429Error = (status == HttpStatus.TOO_MANY_REQUESTS_429);
-
-                if (isNetworkError) {
+                if (status <= 0) {
                     delay = REINITIALIZE_DELAY_SECONDS;
+                } else if (status == HttpStatus.TOO_MANY_REQUESTS_429) {
+                    delay = REINITIALIZE_DELAY_HOURS_LIMIT_EXCEEDED;
                 } else {
-                    if (isHttp429Error) {
-                        delay = REINITIALIZE_DELAY_HOURS_LIMIT_EXCEEDED;
-                    } else {
-                        delay = getApiCallSuppressionDurationRemaining().plus(REINITIALIZE_DELAY_MINUTES_BACK_OFF);
-                    }
-                    apiCallSuppressionWindowUpdate(delay);
+                    delay = getApiCallSuppressionDurationRemaining().plus(REINITIALIZE_DELAY_MINUTES_BACK_OFF);
                 }
-
-                ScheduledFuture<?> reInitializationTask = this.reInitializationTask;
-                if (reInitializationTask == null || reInitializationTask.isDone()
-                        || (isHttp429Error != reInitializationCausedBy429)) {
-                    reInitializationTask = scheduleReinitialize(delay);
-                }
-
-                reInitializationCausedBy429 = isHttp429Error;
-                delaySecs = reInitializationTask.getDelay(TimeUnit.SECONDS);
+                scheduleReinitialize(delay);
             }
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, uiText(delaySecs));
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, getUiText());
             disposeGardena();
         }
     }
@@ -246,17 +225,15 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
 
     /**
      * Schedules a reinitialization, if Gardena smart system account is not reachable.
-     *
-     * @return reinitialization task reference
      */
-    private ScheduledFuture<?> scheduleReinitialize(Duration delay) {
+    private void scheduleReinitialize(Duration delay) {
         ScheduledFuture<?> reInitializationTask = this.reInitializationTask;
         if (reInitializationTask != null) {
             reInitializationTask.cancel(false);
         }
-        reInitializationTask = scheduler.schedule(() -> reIninitializeGardena(), delay.getSeconds(), TimeUnit.SECONDS);
-        this.reInitializationTask = reInitializationTask;
-        return reInitializationTask;
+        this.reInitializationTask = scheduler.schedule(() -> reIninitializeGardena(), delay.getSeconds(),
+                TimeUnit.SECONDS);
+        apiCallSuppressionPropertiesUpdate(delay);
     }
 
     @Override
@@ -268,7 +245,6 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
                 reInitializeTask.cancel(false);
             }
             this.reInitializationTask = null;
-            this.reInitializationCausedBy429 = false;
         }
         disposeGardena();
     }
@@ -345,11 +321,10 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
     @Override
     public void onError() {
         Duration delay = REINITIALIZE_DELAY_SECONDS;
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, uiText(delay.toSeconds()));
-        disposeGardena();
         synchronized (reInitializationCodeLock) {
-            reInitializationCausedBy429 = false;
             scheduleReinitialize(delay);
         }
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, getUiText());
+        disposeGardena();
     }
 }
