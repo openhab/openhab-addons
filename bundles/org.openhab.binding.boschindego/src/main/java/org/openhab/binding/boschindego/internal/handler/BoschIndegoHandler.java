@@ -14,6 +14,8 @@ package org.openhab.binding.boschindego.internal.handler;
 
 import static org.openhab.binding.boschindego.internal.BoschIndegoBindingConstants.*;
 
+import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
@@ -40,6 +42,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
@@ -64,6 +67,11 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class BoschIndegoHandler extends BaseThingHandler {
 
+    private static final String MAP_POSITION_STROKE_COLOR = "#8c8b6d";
+    private static final String MAP_POSITION_FILL_COLOR = "#fff701";
+    private static final int MAP_POSITION_RADIUS = 10;
+    private static final int MAP_REFRESH_INTERVAL_DAYS = 1;
+
     private final Logger logger = LoggerFactory.getLogger(BoschIndegoHandler.class);
     private final HttpClient httpClient;
     private final BoschIndegoTranslationProvider translationProvider;
@@ -71,10 +79,12 @@ public class BoschIndegoHandler extends BaseThingHandler {
 
     private @NonNullByDefault({}) IndegoController controller;
     private @Nullable ScheduledFuture<?> statePollFuture;
-    private @Nullable ScheduledFuture<?> cuttingTimeMapPollFuture;
+    private @Nullable ScheduledFuture<?> cuttingTimePollFuture;
     private @Nullable ScheduledFuture<?> cuttingTimeFuture;
     private boolean propertiesInitialized;
     private Optional<Integer> previousStateCode = Optional.empty();
+    private @Nullable RawType cachedMap;
+    private Instant cachedMapTimestamp = Instant.MIN;
 
     public BoschIndegoHandler(Thing thing, HttpClient httpClient, BoschIndegoTranslationProvider translationProvider,
             TimeZoneProvider timeZoneProvider) {
@@ -108,9 +118,8 @@ public class BoschIndegoHandler extends BaseThingHandler {
         previousStateCode = Optional.empty();
         this.statePollFuture = scheduler.scheduleWithFixedDelay(this::refreshStateAndOperatingDataWithExceptionHandling,
                 0, config.refresh, TimeUnit.SECONDS);
-        this.cuttingTimeMapPollFuture = scheduler.scheduleWithFixedDelay(
-                this::refreshCuttingTimesAndMapWithExceptionHandling, 0, config.cuttingTimeMapRefresh,
-                TimeUnit.MINUTES);
+        this.cuttingTimePollFuture = scheduler.scheduleWithFixedDelay(this::refreshCuttingTimesWithExceptionHandling, 0,
+                config.cuttingTimeRefresh, TimeUnit.MINUTES);
     }
 
     @Override
@@ -121,11 +130,11 @@ public class BoschIndegoHandler extends BaseThingHandler {
             pollFuture.cancel(true);
         }
         this.statePollFuture = null;
-        pollFuture = this.cuttingTimeMapPollFuture;
+        pollFuture = this.cuttingTimePollFuture;
         if (pollFuture != null) {
             pollFuture.cancel(true);
         }
-        this.cuttingTimeMapPollFuture = null;
+        this.cuttingTimePollFuture = null;
         pollFuture = this.cuttingTimeFuture;
         if (pollFuture != null) {
             pollFuture.cancel(true);
@@ -166,6 +175,9 @@ public class BoschIndegoHandler extends BaseThingHandler {
     private void handleRefreshCommand(String channelId)
             throws IndegoAuthenticationException, IndegoUnreachableException, IndegoException {
         switch (channelId) {
+            case GARDEN_MAP:
+                // Force map refresh and fall through to state update.
+                cachedMapTimestamp = Instant.MIN;
             case STATE:
             case TEXTUAL_STATE:
             case MOWED:
@@ -184,9 +196,6 @@ public class BoschIndegoHandler extends BaseThingHandler {
             case BATTERY_TEMPERATURE:
             case GARDEN_SIZE:
                 refreshOperatingData();
-                break;
-            case GARDEN_MAP:
-                refreshMap();
                 break;
         }
     }
@@ -243,9 +252,19 @@ public class BoschIndegoHandler extends BaseThingHandler {
         DeviceStateResponse state = controller.getState();
         updateState(state);
 
+        if (state.mapUpdateAvailable) {
+            cachedMapTimestamp = Instant.MIN;
+        }
+        refreshMap(state.svgXPos, state.svgYPos);
+
         // When state code changed, refresh cutting times immediately.
         if (previousStateCode.isPresent() && state.state != previousStateCode.get()) {
             refreshCuttingTimes();
+
+            // After learning lawn, trigger a forced map refresh on next poll.
+            if (previousStateCode.get() == DeviceStatus.STATE_LEARNING_LAWN) {
+                cachedMapTimestamp = Instant.MIN;
+            }
         }
         previousStateCode = Optional.of(state.state);
     }
@@ -311,22 +330,33 @@ public class BoschIndegoHandler extends BaseThingHandler {
         }
     }
 
-    private void refreshCuttingTimesAndMapWithExceptionHandling() {
-        try {
-            refreshCuttingTimes();
-            refreshMap();
-        } catch (IndegoAuthenticationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.comm-error.authentication-failure");
-        } catch (IndegoException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+    private void refreshMap(int xPos, int yPos) throws IndegoAuthenticationException, IndegoException {
+        if (!isLinked(GARDEN_MAP)) {
+            return;
         }
-    }
-
-    private void refreshMap() throws IndegoAuthenticationException, IndegoException {
-        if (isLinked(GARDEN_MAP)) {
-            updateState(GARDEN_MAP, controller.getMap());
+        RawType cachedMap = this.cachedMap;
+        boolean mapRefreshed;
+        if (cachedMap == null
+                || cachedMapTimestamp.isBefore(Instant.now().minus(Duration.ofDays(MAP_REFRESH_INTERVAL_DAYS)))) {
+            this.cachedMap = cachedMap = controller.getMap();
+            cachedMapTimestamp = Instant.now();
+            mapRefreshed = true;
+        } else {
+            mapRefreshed = false;
         }
+        String svgMap = new String(cachedMap.getBytes(), StandardCharsets.UTF_8);
+        if (!svgMap.endsWith("</svg>")) {
+            if (mapRefreshed) {
+                logger.warn("Unexpected map format, unable to plot location");
+                logger.trace("Received map: {}", svgMap);
+                updateState(GARDEN_MAP, cachedMap);
+            }
+            return;
+        }
+        svgMap = svgMap.substring(0, svgMap.length() - 6) + "<circle cx=\"" + xPos + "\" cy=\"" + yPos + "\" r=\""
+                + MAP_POSITION_RADIUS + "\" stroke=\"" + MAP_POSITION_STROKE_COLOR + "\" fill=\""
+                + MAP_POSITION_FILL_COLOR + "\" />\n</svg>";
+        updateState(GARDEN_MAP, new RawType(svgMap.getBytes(), cachedMap.getMimeType()));
     }
 
     private void updateState(DeviceStateResponse state) {

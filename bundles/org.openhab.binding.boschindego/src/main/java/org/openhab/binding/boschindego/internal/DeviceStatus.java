@@ -29,6 +29,8 @@ import org.openhab.binding.boschindego.internal.dto.DeviceCommand;
 @NonNullByDefault
 public class DeviceStatus {
 
+    public static final int STATE_LEARNING_LAWN = 516;
+
     private final static String STATE_PREFIX = "indego.state.";
     private final static String STATE_UNKNOWN = "unknown";
 
@@ -45,7 +47,7 @@ public class DeviceStatus {
             entry(513, new DeviceStatus("mowing", false, DeviceCommand.MOW)),
             entry(514, new DeviceStatus("relocalising", false, DeviceCommand.MOW)),
             entry(515, new DeviceStatus("loading-map", false, DeviceCommand.MOW)),
-            entry(516, new DeviceStatus("learning-lawn", false, DeviceCommand.MOW)),
+            entry(STATE_LEARNING_LAWN, new DeviceStatus("learning-lawn", false, DeviceCommand.MOW)),
             entry(517, new DeviceStatus("paused", true, DeviceCommand.PAUSE)),
             entry(518, new DeviceStatus("border-cut", false, DeviceCommand.MOW)),
             entry(519, new DeviceStatus("idle-in-lawn", true, DeviceCommand.MOW)),
