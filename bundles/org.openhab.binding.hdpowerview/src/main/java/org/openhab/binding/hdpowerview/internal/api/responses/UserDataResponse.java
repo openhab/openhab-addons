@@ -14,15 +14,14 @@ package org.openhab.binding.hdpowerview.internal.api.responses;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.hdpowerview.internal.api.HubFirmware;
+import org.openhab.binding.hdpowerview.internal.api.UserData;
 
 /**
- * Firmware information for an HD PowerView hub
+ * Response with {@link UserData} for an HD PowerView hub
  *
  * @author Jacob Laursen - Initial contribution
  */
 @NonNullByDefault
-public class FirmwareVersion {
-    @Nullable
-    public HubFirmware firmware;
+public class UserDataResponse {
+    public @Nullable UserData userData;
 }

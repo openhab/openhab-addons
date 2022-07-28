@@ -10,19 +10,22 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.hdpowerview.internal.api.responses;
+package org.openhab.binding.hdpowerview.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.hdpowerview.internal.api.HubFirmware;
 
 /**
- * Firmware information for an HD PowerView hub
+ * Times as part of {@link UserData} for an HD PowerView hub
  *
  * @author Jacob Laursen - Initial contribution
  */
 @NonNullByDefault
-public class FirmwareVersion {
-    @Nullable
-    public HubFirmware firmware;
+public class Times {
+    public @Nullable String timezone;
+    public int localSunriseTimeInMinutes;
+    public int localSunsetTimeInMinutes;
+    public int currentOffset;
+    public double longitude;
+    public double latitude;
 }

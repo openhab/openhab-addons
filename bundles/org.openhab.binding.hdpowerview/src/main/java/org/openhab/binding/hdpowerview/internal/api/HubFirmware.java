@@ -10,11 +10,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.hdpowerview.internal.api.responses;
+package org.openhab.binding.hdpowerview.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.hdpowerview.internal.api.Firmware;
 
 /**
  * Firmware information for an HD PowerView hub
@@ -22,7 +21,7 @@ import org.openhab.binding.hdpowerview.internal.api.Firmware;
  * @author Jacob Laursen - Initial contribution
  */
 @NonNullByDefault
-public class FirmwareVersions {
+public class HubFirmware {
     @Nullable
     public Firmware mainProcessor;
     @Nullable
