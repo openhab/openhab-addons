@@ -164,7 +164,7 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
      *
      * @return the (localised) description text.
      */
-    private String getUiText() {
+    private @Nullable String getUiText() {
         Instant until = apiCallSuppressionUntil;
         if (until != null) {
             ZoneId zone = timeZoneProvider.getTimeZone();
@@ -173,9 +173,9 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
                     : DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM);
             String value = i18nProvider.getText(bundle, RECONNECT_MSG_KEY, null, localeProvider.getLocale(),
                     formatter.format(ZonedDateTime.ofInstant(until, zone)));
-            return value != null ? value : "";
+            return value;
         }
-        return "";
+        return null;
     }
 
     /**
@@ -190,12 +190,12 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
             String id = getThing().getUID().getId();
             gardenaSmart = new GardenaSmartImpl(id, gardenaConfig, this, scheduler, httpClientFactory,
                     webSocketFactory);
-            apiCallSuppressionUpdate(Duration.ZERO);
             final GardenaDeviceDiscoveryService discoveryService = this.discoveryService;
             if (discoveryService != null) {
                 discoveryService.startScan(null);
                 discoveryService.waitForScanFinishing();
             }
+            apiCallSuppressionUpdate(Duration.ZERO);
             updateStatus(ThingStatus.ONLINE);
         } catch (GardenaException ex) {
             logger.warn("{}", ex.getMessage());
