@@ -4,24 +4,19 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="fs-part">
-		<supported-bridge-type-refs>
-			<bridge-type-ref id="fs-multi"/>
-		</supported-bridge-type-refs>
-
-		<label>ForecastSolar PV Plane</label>
-		<description>PV Plane as part of Multi Plane Bridge</description>
+	<bridge-type id="fs-site">
+		<label>ForecastSolar Site</label>
+		<description>Site location for Forecast Solar</description>
 
 		<channels>
-			<channel id="today" typeId="today-channel"/>
 			<channel id="actual" typeId="actual-channel"/>
 			<channel id="remaining" typeId="remaining-channel"/>
-			<channel id="tomorrow" typeId="tomorrow-channel"/>
+			<channel id="today" typeId="today-channel"/>
+			<channel id="day1" typeId="day1-channel"/>
 			<channel id="day2" typeId="day2-channel"/>
 			<channel id="day3" typeId="day3-channel"/>
-			<channel id="raw" typeId="raw-channel"/>
 		</channels>
 
-		<config-description-ref uri="thing-type:solarforecast:fs-part"/>
-	</thing-type>
+		<config-description-ref uri="thing-type:solarforecast:fs-site"/>
+	</bridge-type>
 </thing:thing-descriptions>

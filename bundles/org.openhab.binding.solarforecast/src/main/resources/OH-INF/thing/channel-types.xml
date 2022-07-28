@@ -27,19 +27,19 @@
 		<label>Raw JSON Response</label>
 		<description>Plain JSON response without conversions</description>
 	</channel-type>
-	<channel-type id="tomorrow-channel">
+	<channel-type id="day1-channel">
 		<item-type>Number:Energy</item-type>
 		<label>Forecast Tomorrow</label>
 		<description>Tomorrows forecast in total</description>
 		<state pattern="%.3f %unit" readOnly="true"/>
 	</channel-type>
-	<channel-type id="tomorrow-low-channel">
+	<channel-type id="day1-low-channel">
 		<item-type>Number:Energy</item-type>
 		<label>Forecast Tomorrow Low</label>
 		<description>Tomorrows pessimistic forecast</description>
 		<state pattern="%.3f %unit" readOnly="true"/>
 	</channel-type>
-	<channel-type id="tomorrow-high-channel">
+	<channel-type id="day1-high-channel">
 		<item-type>Number:Energy</item-type>
 		<label>Forecast Tomorrow High</label>
 		<description>Tomorrows optimistic forecast</description>

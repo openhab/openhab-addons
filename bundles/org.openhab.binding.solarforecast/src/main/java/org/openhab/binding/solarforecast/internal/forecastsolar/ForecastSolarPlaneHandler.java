@@ -119,7 +119,7 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler {
                             + location.get().getLongitude() + SLASH + configuration.get().declination + SLASH
                             + configuration.get().azimuth + SLASH + configuration.get().kwp;
                 }
-                logger.info("{} Call {}", thing.getLabel(), url);
+                logger.debug("{} Call {}", thing.getLabel(), url);
                 try {
                     ContentResponse cr = httpClient.GET(url);
                     if (cr.getStatus() == 200) {
@@ -148,7 +148,7 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler {
         updateState(CHANNEL_ACTUAL, SolcastObject.getStateObject(f.getActualValue(LocalDateTime.now())));
         updateState(CHANNEL_REMAINING, SolcastObject.getStateObject(f.getRemainingProduction(LocalDateTime.now())));
         updateState(CHANNEL_TODAY, SolcastObject.getStateObject(f.getDayTotal(LocalDateTime.now(), 0)));
-        updateState(CHANNEL_TOMORROW, SolcastObject.getStateObject(f.getDayTotal(LocalDateTime.now(), 1)));
+        updateState(CHANNEL_DAY1, SolcastObject.getStateObject(f.getDayTotal(LocalDateTime.now(), 1)));
         updateState(CHANNEL_DAY2, SolcastObject.getStateObject(f.getDayTotal(LocalDateTime.now(), 2)));
         updateState(CHANNEL_DAY3, SolcastObject.getStateObject(f.getDayTotal(LocalDateTime.now(), 3)));
     }

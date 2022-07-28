@@ -83,16 +83,16 @@ public class SolcastBridgeHandler extends BaseBridgeHandler {
      */
     private synchronized void getData() {
         if (parts.isEmpty()) {
-            logger.info("No plane defined yet");
+            logger.debug("No PV plane defined yet");
             return;
         }
         LocalDateTime now = LocalDateTime.now();
         double actualSum = 0;
         double remainSum = 0;
         double todaySum = 0;
-        double tomorrowSum = 0;
-        double tomorrowSumLow = 0;
-        double tomorrowSumHigh = 0;
+        double day1Sum = 0;
+        double day1SumLow = 0;
+        double day1SumHigh = 0;
         double day2Sum = 0;
         double day2SumLow = 0;
         double day2SumHigh = 0;
@@ -116,9 +116,9 @@ public class SolcastBridgeHandler extends BaseBridgeHandler {
                 actualSum += fo.getActualValue(now);
                 remainSum += fo.getRemainingProduction(now);
                 todaySum += fo.getDayTotal(now, 0);
-                tomorrowSum += fo.getDayTotal(now, 1);
-                tomorrowSumLow += fo.getPessimisticDayTotal(now, 1);
-                tomorrowSumHigh += fo.getOptimisticDayTotal(now, 1);
+                day1Sum += fo.getDayTotal(now, 1);
+                day1SumLow += fo.getPessimisticDayTotal(now, 1);
+                day1SumHigh += fo.getOptimisticDayTotal(now, 1);
                 day2Sum += fo.getDayTotal(now, 2);
                 day2SumLow += fo.getPessimisticDayTotal(now, 2);
                 day2SumHigh += fo.getOptimisticDayTotal(now, 2);
@@ -141,9 +141,9 @@ public class SolcastBridgeHandler extends BaseBridgeHandler {
         updateState(CHANNEL_ACTUAL, SolcastObject.getStateObject(actualSum));
         updateState(CHANNEL_REMAINING, SolcastObject.getStateObject(remainSum));
         updateState(CHANNEL_TODAY, SolcastObject.getStateObject(todaySum));
-        updateState(CHANNEL_TOMORROW, SolcastObject.getStateObject(tomorrowSum));
-        updateState(CHANNEL_TOMORROW_HIGH, SolcastObject.getStateObject(tomorrowSumHigh));
-        updateState(CHANNEL_TOMORROW_LOW, SolcastObject.getStateObject(tomorrowSumLow));
+        updateState(CHANNEL_DAY1, SolcastObject.getStateObject(day1Sum));
+        updateState(CHANNEL_DAY1_HIGH, SolcastObject.getStateObject(day1SumHigh));
+        updateState(CHANNEL_DAY1_LOW, SolcastObject.getStateObject(day1SumLow));
         updateState(CHANNEL_DAY2, SolcastObject.getStateObject(day2Sum));
         updateState(CHANNEL_DAY2_HIGH, SolcastObject.getStateObject(day2SumHigh));
         updateState(CHANNEL_DAY2_LOW, SolcastObject.getStateObject(day2SumLow));

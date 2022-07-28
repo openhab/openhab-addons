@@ -90,14 +90,14 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler {
      */
     private synchronized void getData() {
         if (parts.isEmpty()) {
-            logger.info("No plane defined yet");
+            logger.debug("No PV plane defined yet");
             return;
         }
         LocalDateTime now = LocalDateTime.now();
         double actualSum = 0;
         double remainSum = 0;
         double todaySum = 0;
-        double tomorrowSum = 0;
+        double day1Sum = 0;
         double day2Sum = 0;
         double day3Sum = 0;
         for (Iterator<ForecastSolarPlaneHandler> iterator = parts.iterator(); iterator.hasNext();) {
@@ -107,7 +107,7 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler {
                 actualSum += fo.getActualValue(now);
                 remainSum += fo.getRemainingProduction(now);
                 todaySum += fo.getDayTotal(now, 0);
-                tomorrowSum += fo.getDayTotal(now, 1);
+                day1Sum += fo.getDayTotal(now, 1);
                 day2Sum += fo.getDayTotal(now, 2);
                 day3Sum += fo.getDayTotal(now, 3);
             } else {
@@ -117,7 +117,7 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler {
         updateState(CHANNEL_REMAINING, SolcastObject.getStateObject(remainSum));
         updateState(CHANNEL_ACTUAL, SolcastObject.getStateObject(actualSum));
         updateState(CHANNEL_TODAY, SolcastObject.getStateObject(todaySum));
-        updateState(CHANNEL_TOMORROW, SolcastObject.getStateObject(tomorrowSum));
+        updateState(CHANNEL_DAY1, SolcastObject.getStateObject(day1Sum));
         updateState(CHANNEL_DAY2, SolcastObject.getStateObject(day2Sum));
         updateState(CHANNEL_DAY3, SolcastObject.getStateObject(day3Sum));
     }

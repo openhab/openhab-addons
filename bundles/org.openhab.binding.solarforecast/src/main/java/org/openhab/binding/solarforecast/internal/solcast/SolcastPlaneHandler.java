@@ -104,7 +104,7 @@ public class SolcastPlaneHandler extends BaseThingHandler {
         if (!forecast.isValid()) {
             String forecastUrl = String.format(FORECAST_URL, configuration.get().resourceId);
             String currentEstimateUrl = String.format(CURRENT_ESTIMATE_URL, configuration.get().resourceId);
-            logger.info("{} Call {}", thing.getLabel(), currentEstimateUrl);
+            logger.debug("{} Call {}", thing.getLabel(), currentEstimateUrl);
             try {
                 // get actual estimate
                 Request estimateRequest = httpClient.newRequest(currentEstimateUrl);
@@ -116,7 +116,7 @@ public class SolcastPlaneHandler extends BaseThingHandler {
                     logger.trace("{} Fetched data {}", thing.getLabel(), forecast.toString());
 
                     // get forecast
-                    logger.info("{} Call {}", thing.getLabel(), forecastUrl);
+                    logger.debug("{} Call {}", thing.getLabel(), forecastUrl);
                     Request forecastRequest = httpClient.newRequest(forecastUrl);
                     forecastRequest.header(HttpHeader.AUTHORIZATION, BEARER + bridgeHandler.get().getApiKey());
                     ContentResponse crForecast = forecastRequest.send();
@@ -148,11 +148,9 @@ public class SolcastPlaneHandler extends BaseThingHandler {
         updateState(CHANNEL_ACTUAL, SolcastObject.getStateObject(f.getActualValue(LocalDateTime.now())));
         updateState(CHANNEL_REMAINING, SolcastObject.getStateObject(f.getRemainingProduction(LocalDateTime.now())));
         updateState(CHANNEL_TODAY, SolcastObject.getStateObject(f.getDayTotal(LocalDateTime.now(), 0)));
-        updateState(CHANNEL_TOMORROW, SolcastObject.getStateObject(f.getDayTotal(LocalDateTime.now(), 1)));
-        updateState(CHANNEL_TOMORROW_HIGH,
-                SolcastObject.getStateObject(f.getOptimisticDayTotal(LocalDateTime.now(), 1)));
-        updateState(CHANNEL_TOMORROW_LOW,
-                SolcastObject.getStateObject(f.getPessimisticDayTotal(LocalDateTime.now(), 1)));
+        updateState(CHANNEL_DAY1, SolcastObject.getStateObject(f.getDayTotal(LocalDateTime.now(), 1)));
+        updateState(CHANNEL_DAY1_HIGH, SolcastObject.getStateObject(f.getOptimisticDayTotal(LocalDateTime.now(), 1)));
+        updateState(CHANNEL_DAY1_LOW, SolcastObject.getStateObject(f.getPessimisticDayTotal(LocalDateTime.now(), 1)));
         updateState(CHANNEL_DAY2, SolcastObject.getStateObject(f.getDayTotal(LocalDateTime.now(), 2)));
         updateState(CHANNEL_DAY2_HIGH, SolcastObject.getStateObject(f.getOptimisticDayTotal(LocalDateTime.now(), 2)));
         updateState(CHANNEL_DAY2_LOW, SolcastObject.getStateObject(f.getPessimisticDayTotal(LocalDateTime.now(), 2)));

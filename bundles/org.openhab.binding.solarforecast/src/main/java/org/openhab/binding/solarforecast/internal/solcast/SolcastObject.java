@@ -125,13 +125,13 @@ public class SolcastObject {
                 if (expirationDateTime.isAfter(LocalDateTime.now())) {
                     return true;
                 } else {
-                    logger.info("Forecast data expired");
+                    logger.debug("Forecast data expired");
                 }
             } else {
-                logger.info("Empty data map");
+                logger.debug("Empty data map");
             }
         } else {
-            logger.info("No Forecast data available");
+            logger.debug("No Forecast data available");
         }
         return false;
     }

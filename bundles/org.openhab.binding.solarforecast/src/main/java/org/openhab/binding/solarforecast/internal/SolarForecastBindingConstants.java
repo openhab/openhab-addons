@@ -28,19 +28,19 @@ public class SolarForecastBindingConstants {
 
     private static final String BINDING_ID = "solarforecast";
 
-    public static final ThingTypeUID FORECAST_SOLAR_MULTI_STRING = new ThingTypeUID(BINDING_ID, "fs-multi");
-    public static final ThingTypeUID FORECAST_SOLAR_PART_STRING = new ThingTypeUID(BINDING_ID, "fs-part");
-    public static final ThingTypeUID SOLCAST_BRIDGE_STRING = new ThingTypeUID(BINDING_ID, "sc-multi");
-    public static final ThingTypeUID SOLCAST_PART_STRING = new ThingTypeUID(BINDING_ID, "sc-part");
+    public static final ThingTypeUID FORECAST_SOLAR_MULTI_STRING = new ThingTypeUID(BINDING_ID, "fs-site");
+    public static final ThingTypeUID FORECAST_SOLAR_PART_STRING = new ThingTypeUID(BINDING_ID, "fs-plane");
+    public static final ThingTypeUID SOLCAST_BRIDGE_STRING = new ThingTypeUID(BINDING_ID, "sc-site");
+    public static final ThingTypeUID SOLCAST_PART_STRING = new ThingTypeUID(BINDING_ID, "sc-plane");
     public static final Set<ThingTypeUID> SUPPORTED_THING_SET = Set.of(FORECAST_SOLAR_MULTI_STRING,
             FORECAST_SOLAR_PART_STRING, SOLCAST_BRIDGE_STRING, SOLCAST_PART_STRING);
 
     public static final String CHANNEL_TODAY = "today";
     public static final String CHANNEL_ACTUAL = "actual";
     public static final String CHANNEL_REMAINING = "remaining";
-    public static final String CHANNEL_TOMORROW = "tomorrow";
-    public static final String CHANNEL_TOMORROW_LOW = "tomorrow-low";
-    public static final String CHANNEL_TOMORROW_HIGH = "tomorrow-high";
+    public static final String CHANNEL_DAY1 = "day1";
+    public static final String CHANNEL_DAY1_LOW = "day1-low";
+    public static final String CHANNEL_DAY1_HIGH = "day1-high";
     public static final String CHANNEL_DAY2 = "day2";
     public static final String CHANNEL_DAY2_LOW = "day2-low";
     public static final String CHANNEL_DAY2_HIGH = "day2-high";
