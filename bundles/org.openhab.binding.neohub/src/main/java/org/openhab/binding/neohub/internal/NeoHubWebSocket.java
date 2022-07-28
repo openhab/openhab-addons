@@ -102,8 +102,11 @@ public class NeoHubWebSocket extends NeoHubSocketBase {
             try {
                 URI uri = new URI(String.format("wss://%s:%d", config.hostName, config.portNumber));
                 webSocketClient.connect(this, uri).get();
-            } catch (InterruptedException | ExecutionException | IOException | URISyntaxException e) {
-                throw new NeoHubException(String.format("Error starting session: '%s'", e.getMessage()));
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new NeoHubException(String.format("Error starting session: '%s'", e.getMessage(), e));
+            } catch (ExecutionException | IOException | URISyntaxException e) {
+                throw new NeoHubException(String.format("Error starting session: '%s'", e.getMessage(), e));
             }
         }
     }
