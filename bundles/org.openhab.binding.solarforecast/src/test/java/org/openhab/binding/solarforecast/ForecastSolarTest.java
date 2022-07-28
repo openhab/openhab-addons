@@ -85,5 +85,6 @@ class ForecastSolarTest {
         assertEquals(-1.0, fo.getActualValue(now), 0.001, "Actual Production");
         assertEquals(-1.0, fo.getDayTotal(now, 0), 0.001, "Today Production");
         assertEquals(-1.0, fo.getRemainingProduction(now), 0.001, "Remaining Production");
+        assertEquals(-1.0, fo.getDayTotal(now, 1), 0.001, "Tomorrow Production");
     }
 }

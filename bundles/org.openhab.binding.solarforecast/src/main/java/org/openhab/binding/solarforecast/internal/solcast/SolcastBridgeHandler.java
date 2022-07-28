@@ -112,31 +112,27 @@ public class SolcastBridgeHandler extends BaseBridgeHandler {
         for (Iterator<SolcastPlaneHandler> iterator = parts.iterator(); iterator.hasNext();) {
             SolcastPlaneHandler sfph = iterator.next();
             SolcastObject fo = sfph.fetchData();
-            if (fo.isValid()) {
-                actualSum += fo.getActualValue(now);
-                remainSum += fo.getRemainingProduction(now);
-                todaySum += fo.getDayTotal(now, 0);
-                day1Sum += fo.getDayTotal(now, 1);
-                day1SumLow += fo.getPessimisticDayTotal(now, 1);
-                day1SumHigh += fo.getOptimisticDayTotal(now, 1);
-                day2Sum += fo.getDayTotal(now, 2);
-                day2SumLow += fo.getPessimisticDayTotal(now, 2);
-                day2SumHigh += fo.getOptimisticDayTotal(now, 2);
-                day3Sum += fo.getDayTotal(now, 3);
-                day3SumLow += fo.getPessimisticDayTotal(now, 3);
-                day3SumHigh += fo.getOptimisticDayTotal(now, 3);
-                day4Sum += fo.getDayTotal(now, 4);
-                day4SumLow += fo.getPessimisticDayTotal(now, 4);
-                day4SumHigh += fo.getOptimisticDayTotal(now, 4);
-                day5Sum += fo.getDayTotal(now, 5);
-                day5SumLow += fo.getPessimisticDayTotal(now, 5);
-                day5SumHigh += fo.getOptimisticDayTotal(now, 5);
-                day6Sum += fo.getDayTotal(now, 6);
-                day6SumLow += fo.getPessimisticDayTotal(now, 6);
-                day6SumHigh += fo.getOptimisticDayTotal(now, 6);
-            } else {
-                logger.info("Fetched data not valid {}", fo.toString());
-            }
+            actualSum += fo.getActualValue(now);
+            remainSum += fo.getRemainingProduction(now);
+            todaySum += fo.getDayTotal(now, 0);
+            day1Sum += fo.getDayTotal(now, 1);
+            day1SumLow += fo.getPessimisticDayTotal(now, 1);
+            day1SumHigh += fo.getOptimisticDayTotal(now, 1);
+            day2Sum += fo.getDayTotal(now, 2);
+            day2SumLow += fo.getPessimisticDayTotal(now, 2);
+            day2SumHigh += fo.getOptimisticDayTotal(now, 2);
+            day3Sum += fo.getDayTotal(now, 3);
+            day3SumLow += fo.getPessimisticDayTotal(now, 3);
+            day3SumHigh += fo.getOptimisticDayTotal(now, 3);
+            day4Sum += fo.getDayTotal(now, 4);
+            day4SumLow += fo.getPessimisticDayTotal(now, 4);
+            day4SumHigh += fo.getOptimisticDayTotal(now, 4);
+            day5Sum += fo.getDayTotal(now, 5);
+            day5SumLow += fo.getPessimisticDayTotal(now, 5);
+            day5SumHigh += fo.getOptimisticDayTotal(now, 5);
+            day6Sum += fo.getDayTotal(now, 6);
+            day6SumLow += fo.getPessimisticDayTotal(now, 6);
+            day6SumHigh += fo.getOptimisticDayTotal(now, 6);
         }
         updateState(CHANNEL_ACTUAL, SolcastObject.getStateObject(actualSum));
         updateState(CHANNEL_REMAINING, SolcastObject.getStateObject(remainSum));

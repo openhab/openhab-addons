@@ -50,7 +50,7 @@ After configuration the necessary information is available.
 `resourceId` for each plane can be obtained in your [Rooftop Sites](https://toolkit.solcast.com.au/rooftop-sites)
 
 `refreshInterval` of forecast data needs to respect the throttling of the Solcast service. 
-If you've 25 free calls per day, each plane needs 2 call per update a refresh interval of 120 minutes will result in 24 call per day.
+If you've 25 free calls per day, each plane needs 2 calls per update a refresh interval of 120 minutes will result in 24 call per day.
 
 Note: `channelRefreshInterval` from [Bridge Configuration](#solcast-bridge-configuration) will calculate intermediate values without requesting new forecast data.
 
@@ -83,7 +83,8 @@ Day*X* channels are referring to forecasts plus *X* days: 1 = tomorrow, 2 = day 
 ## ForecastSolar Configuration
 
 [ForecastSolar service](https://forecast.solar/) provides a [public free](https://forecast.solar/#accounts) plan.
-You can try this out without any registration or other pre-conditions.
+You can try it without any registration or other pre-conditions.
+
 
 ### ForecastSolar Bridge Configuration
 
@@ -146,6 +147,7 @@ Bridge solarforecast:fs-site:homeSite   "ForecastSolar Home" [ location="54.321,
          Thing fs-plane homeNorthEast   "ForecastSolar Home North-East" [ refreshInterval=10, azimuth=-145, declination=35, kwp=4.425]
 }
 ````
+
 ### Items file
 
 ````

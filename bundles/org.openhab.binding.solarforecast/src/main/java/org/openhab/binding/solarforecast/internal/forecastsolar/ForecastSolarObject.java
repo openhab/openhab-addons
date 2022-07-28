@@ -111,7 +111,7 @@ public class ForecastSolarObject {
 
     public double getDayTotal(LocalDateTime now, int offset) {
         if (rawData.isEmpty()) {
-            return -1;
+            return UNDEF;
         }
         LocalDate ld = now.plusDays(offset).toLocalDate();
         JSONObject contentJson = new JSONObject(rawData.get());

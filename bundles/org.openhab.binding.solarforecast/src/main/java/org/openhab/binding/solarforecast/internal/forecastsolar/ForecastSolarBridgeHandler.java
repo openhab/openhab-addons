@@ -103,16 +103,12 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler {
         for (Iterator<ForecastSolarPlaneHandler> iterator = parts.iterator(); iterator.hasNext();) {
             ForecastSolarPlaneHandler sfph = iterator.next();
             ForecastSolarObject fo = sfph.fetchData();
-            if (fo.isValid()) {
-                actualSum += fo.getActualValue(now);
-                remainSum += fo.getRemainingProduction(now);
-                todaySum += fo.getDayTotal(now, 0);
-                day1Sum += fo.getDayTotal(now, 1);
-                day2Sum += fo.getDayTotal(now, 2);
-                day3Sum += fo.getDayTotal(now, 3);
-            } else {
-                logger.info("Fetched data not valid {}", fo.toString());
-            }
+            actualSum += fo.getActualValue(now);
+            remainSum += fo.getRemainingProduction(now);
+            todaySum += fo.getDayTotal(now, 0);
+            day1Sum += fo.getDayTotal(now, 1);
+            day2Sum += fo.getDayTotal(now, 2);
+            day3Sum += fo.getDayTotal(now, 3);
         }
         updateState(CHANNEL_REMAINING, SolcastObject.getStateObject(remainSum));
         updateState(CHANNEL_ACTUAL, SolcastObject.getStateObject(actualSum));
