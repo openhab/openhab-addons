@@ -14,7 +14,7 @@ Supported Services
 
 ## Supported Things
 
-Each service needs one `Bridge` for your location and 1+ Photovoltaic Plane `Things`  
+Each service needs one `site` for your location and 1+ Photovoltaic `plane`.  
 
 | Name                              | Thing Type ID |
 |-----------------------------------|---------------|
@@ -50,15 +50,15 @@ After configuration the necessary information is available.
 `resourceId` for each plane can be obtained in your [Rooftop Sites](https://toolkit.solcast.com.au/rooftop-sites)
 
 `refreshInterval` of forecast data needs to respect the throttling of the Solcast service. 
-If you've 25 free calls per day, each plane needs 2 calls per update a refresh interval of 120 minutes will result in 24 call per day.
+If you've 25 free calls per day, each plane needs 2 calls per update a refresh interval of 120 minutes will result in 24 calls per day.
 
 Note: `channelRefreshInterval` from [Bridge Configuration](#solcast-bridge-configuration) will calculate intermediate values without requesting new forecast data.
 
 
 ## Solcast Channels
 
-Each Plane Thing reports their specific values including a `raw` channel holding json content.
-The Bridge sums up all attched `sc-pLane` values and provides the total forecast for your home location.  
+Each `sc-plane` reports it's own values including a `raw` channel holding json content.
+The `sc-site` bridge sums up all attached `sc-plane` values and provides the total forecast for your home location.  
 
 Channels are covering today's actual data with current, remaining and today's total prediction.
 Forecasts are delivered up to 6 days in advance including 
@@ -117,8 +117,8 @@ Note: `channelRefreshInterval` from [Bridge Configuration](#forecastsolar-bridge
 
 ## ForecastSolar Channels
 
-Each Plane Thing reports their specific values including a `raw` channel holding json content.
-The Bridge sums up all `Plane Thing` values and provides the total forecast for your home location.  
+Each `fs-plane` reports it's own values including a `raw` channel holding json content.
+The `fs-site` bridge sums up all attached `fs-plane` values and provides the total forecast for your home location.  
 
 Channels are covering todays actual data with current, remaining and today's total prediction.
 Forecasts are delivered up to 3 days for paid personal plans.
