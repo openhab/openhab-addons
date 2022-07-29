@@ -468,123 +468,114 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
                     int sat = ColorControlModel.fromPercent(hsbType.getSaturation());
 
                     if (sat >= 25) {
-                        if ((hue < 16.5) && (sat >= 146)) {
+                        if (hue < 16.5 || hue >= 346.5) {
                             hue = 358;
-                            sat = 180;
-                        } else if ((hue < 16.5) && (sat >= 83)) {
-                            hue = 358;
-                            sat = 112;
-                        } else if ((hue < 16.5) && (sat >= 0)) {
-                            hue = 358;
-                            sat = 54;
-                        } else if ((hue >= 16.5) && (hue < 43.5) && (sat >= 177)) {
+                            if (sat >= 146) {
+                                sat = 180;
+                            } else if (sat >= 83) {
+                                sat = 112;
+                            } else {
+                                sat = 54;
+                            }
+                        } else if ((hue >= 16.5) && (hue < 43.5)) {
                             hue = 35;
-                            sat = 214;
-                        } else if ((hue >= 16.5) && (hue < 43.5) && (sat >= 106)) {
-                            hue = 35;
-                            sat = 140;
-                        } else if ((hue >= 16.5) && (hue < 43.5) && (sat >= 0)) {
-                            hue = 35;
-                            sat = 72;
-                        } else if ((hue >= 43.5) && (hue < 72) && (sat >= 127.5)) {
+                            if (sat >= 177) {
+                                sat = 214;
+                            } else if (sat >= 106) {
+                                sat = 140;
+                            } else {
+                                sat = 72;
+                            }
+                        } else if ((hue >= 43.5) && (hue < 72)) {
                             hue = 52;
-                            sat = 153;
-                        } else if ((hue >= 43.5) && (hue < 72) && (sat >= 76.5)) {
-                            hue = 52;
-                            sat = 102;
-                        } else if ((hue >= 43.5) && (hue < 72) && (sat >= 0)) {
-                            hue = 52;
-                            sat = 51;
-                        } else if ((hue >= 72) && (hue < 106) && (sat >= 101)) {
+                            if (sat >= 127.5) {
+                                sat = 153;
+                            } else if (sat >= 76.5) {
+                                sat = 102;
+                            } else {
+                                sat = 51;
+                            }
+                        } else if ((hue >= 72) && (hue < 106)) {
                             hue = 92;
-                            sat = 123;
-                        } else if ((hue >= 72) && (hue < 106) && (sat >= 58.5)) {
-                            hue = 92;
-                            sat = 79;
-                        } else if ((hue >= 72) && (hue < 106) && (sat >= 0)) {
-                            hue = 92;
-                            sat = 38;
-                        } else if ((hue >= 106) && (hue < 140) && (sat >= 121)) {
+                            if (sat >= 101) {
+                                sat = 123;
+                            } else if (sat >= 58.5) {
+                                sat = 79;
+                            } else {
+                                sat = 38;
+                            }
+                        } else if ((hue >= 106) && (hue < 140)) {
                             hue = 120;
-                            sat = 160;
-                        } else if ((hue >= 106) && (hue < 140) && (sat >= 60)) {
-                            hue = 120;
-                            sat = 82;
-                        } else if ((hue >= 106) && (hue < 140) && (sat >= 0)) {
-                            hue = 120;
-                            sat = 38;
-                        } else if ((hue >= 140) && (hue < 177.5) && (sat >= 114.5)) {
+                            if (sat >= 121) {
+                                sat = 160;
+                            } else if (sat >= 60) {
+                                sat = 82;
+                            } else {
+                                sat = 38;
+                            }
+                        } else if ((hue >= 140) && (hue < 177.5)) {
                             hue = 160;
-                            sat = 145;
-                        } else if ((hue >= 140) && (hue < 177.5) && (sat >= 62.5)) {
-                            hue = 160;
-                            sat = 84;
-                        } else if ((hue >= 140) && (hue < 177.5) && (sat >= 0)) {
-                            hue = 160;
-                            sat = 41;
-                        } else if ((hue >= 177.5) && (hue < 203.5) && (sat >= 148.5)) {
+                            if (sat >= 114.5) {
+                                sat = 145;
+                            } else if (sat >= 62.5) {
+                                sat = 84;
+                            } else {
+                                sat = 41;
+                            }
+                        } else if ((hue >= 177.5) && (hue < 203.5)) {
                             hue = 195;
-                            sat = 179;
-                        } else if ((hue >= 177.5) && (hue < 203.5) && (sat >= 88.5)) {
-                            hue = 195;
-                            sat = 118;
-                        } else if ((hue >= 177.5) && (hue < 203.5) && (sat >= 0)) {
-                            hue = 195;
-                            sat = 59;
-                        } else if ((hue >= 203.5) && (hue < 218.5) && (sat >= 146)) {
+                            if (sat >= 148.5) {
+                                sat = 179;
+                            } else if (sat >= 88.5) {
+                                sat = 118;
+                            } else {
+                                sat = 59;
+                            }
+                        } else if ((hue >= 203.5) && (hue < 218.5)) {
                             hue = 212;
-                            sat = 169;
-                        } else if ((hue >= 203.5) && (hue < 218.5) && (sat >= 83)) {
-                            hue = 212;
-                            sat = 110;
-                        } else if ((hue >= 203.5) && (hue < 218.5) && (sat >= 0)) {
-                            hue = 212;
-                            sat = 56;
-                        } else if ((hue >= 218.5) && (hue < 245.5) && (sat >= 146)) {
+                            if (sat >= 146) {
+                                sat = 169;
+                            } else if (sat >= 83) {
+                                sat = 110;
+                            } else {
+                                sat = 56;
+                            }
+                        } else if ((hue >= 218.5) && (hue < 245.5)) {
                             hue = 225;
-                            sat = 204;
-                        } else if ((hue >= 218.5) && (hue < 245.5) && (sat >= 83)) {
-                            hue = 225;
-                            sat = 135;
-                        } else if ((hue >= 218.5) && (hue < 245.5) && (sat >= 0)) {
-                            hue = 225;
-                            sat = 67;
-                        } else if ((hue >= 245.5) && (hue < 281) && (sat >= 146)) {
+                            if (sat >= 146) {
+                                sat = 204;
+                            } else if (sat >= 83) {
+                                sat = 135;
+                            } else {
+                                sat = 67;
+                            }
+                        } else if ((hue >= 245.5) && (hue < 281)) {
                             hue = 266;
-                            sat = 169;
-                        } else if ((hue >= 245.5) && (hue < 281) && (sat >= 83)) {
-                            hue = 266;
-                            sat = 110;
-                        } else if ((hue >= 245.5) && (hue < 281) && (sat >= 0)) {
-                            hue = 266;
-                            sat = 54;
-                        } else if ((hue >= 281) && (hue < 315.5) && (sat >= 146)) {
+                            if (sat >= 146) {
+                                sat = 169;
+                            } else if (sat >= 83) {
+                                sat = 110;
+                            } else {
+                                sat = 54;
+                            }
+                        } else if ((hue >= 281) && (hue < 315.5)) {
                             hue = 296;
-                            sat = 140;
-                        } else if ((hue >= 281) && (hue < 315.5) && (sat >= 83)) {
-                            hue = 296;
-                            sat = 92;
-                        } else if ((hue >= 281) && (hue < 315.5) && (sat >= 0)) {
-                            hue = 296;
-                            sat = 46;
-                        } else if ((hue >= 315.5) && (hue < 346.5) && (sat >= 146)) {
+                            if (sat >= 146) {
+                                sat = 140;
+                            } else if (sat >= 83) {
+                                sat = 92;
+                            } else {
+                                sat = 46;
+                            }
+                        } else if ((hue >= 315.5) && (hue < 346.5)) {
                             hue = 335;
-                            sat = 180;
-                        } else if ((hue >= 315.5) && (hue < 346.5) && (sat >= 83)) {
-                            hue = 335;
-                            sat = 107;
-                        } else if ((hue >= 315.5) && (hue < 346.5) && (sat >= 0)) {
-                            hue = 335;
-                            sat = 51;
-                        } else if ((hue >= 346.5) && (sat >= 146)) {
-                            hue = 358;
-                            sat = 180;
-                        } else if ((hue >= 346.5) && (sat >= 83)) {
-                            hue = 358;
-                            sat = 112;
-                        } else if ((hue >= 346.5) && (sat >= 0)) {
-                            hue = 358;
-                            sat = 54;
+                            if (sat >= 146) {
+                                sat = 180;
+                            } else if (sat >= 83) {
+                                sat = 107;
+                            } else {
+                                sat = 51;
+                            }
                         }
                         fritzBox.setHueAndSaturation(ain, hue, sat, 0);
                     } else {
