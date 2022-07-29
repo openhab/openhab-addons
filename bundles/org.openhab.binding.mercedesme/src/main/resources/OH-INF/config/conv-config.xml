@@ -13,7 +13,7 @@
 			<description>Data refresh rate for your vehicle data</description>
 			<default>5</default>
 		</parameter>
-		<parameter name="fuelCapacity" type="decimal">
+		<parameter name="fuelCapacity" type="decimal" min="0">
 			<label>Fuel Capacity</label>
 			<description>Fuel capacity in liters of vehicle</description>
 		</parameter>

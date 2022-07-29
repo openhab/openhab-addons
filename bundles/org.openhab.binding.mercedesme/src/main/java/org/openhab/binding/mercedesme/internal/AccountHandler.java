@@ -63,7 +63,6 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
 
     @Override
     public void initialize() {
-        updateStatus(ThingStatus.UNKNOWN);
         config = Optional.of(getConfigAs(AccountConfiguration.class));
         handleConfig();
         String configValidReason = configValid();

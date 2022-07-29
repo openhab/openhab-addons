@@ -128,9 +128,9 @@ public class VehicleHandler extends BaseThingHandler {
             } else {
                 logger.trace("Refresh rejected {}", nextRefresh);
             }
-        } else if (channelUID.getIdWithoutGroup().equals("image-view")) {
+        } else if ("image-view".equals(channelUID.getIdWithoutGroup())) {
             if (imageStorage.isPresent()) {
-                if (command.toFullString().equals(INITIALIZE_COMMAND)) {
+                if (INITIALIZE_COMMAND.equals(command.toFullString())) {
                     getImageResources();
                 }
                 String key = command.toFullString() + "_" + config.get().vin;
@@ -171,9 +171,9 @@ public class VehicleHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         config = Optional.of(getConfigAs(VehicleConfiguration.class));
-        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, null);
         Bridge bridge = getBridge();
         if (bridge != null) {
+            updateStatus(ThingStatus.UNKNOWN);
             BridgeHandler handler = bridge.getHandler();
             if (handler != null) {
                 accountHandler = Optional.of((AccountHandler) handler);
@@ -217,7 +217,7 @@ public class VehicleHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Check Bridge Authorization");
                 return;
             } else if (!online) { // only update if thing isn't already ONLINE
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
+                updateStatus(ThingStatus.ONLINE);
             }
 
             // Mileage for all cars
@@ -325,7 +325,7 @@ public class VehicleHandler extends BaseThingHandler {
                 logger.debug("Failed to get image resources {} {}", cr.getStatus(), cr.getContentAsString());
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logger.warn("Error getting image resources {}", e.getMessage());
+            logger.debug("Error getting image resources {}", e.getMessage());
         }
     }
 
@@ -450,11 +450,12 @@ public class VehicleHandler extends BaseThingHandler {
                      * handle some specific channels
                      */
                     // store ChannelMap for range radius calculation
-                    if (csm.getChannel().equals("range-electric")) {
+                    String channel = csm.getChannel();
+                    if ("range-electric".equals(channel)) {
                         rangeElectric = Optional.of((QuantityType<?>) csm.getState());
-                    } else if (csm.getChannel().equals("range-fuel")) {
+                    } else if ("range-fuel".equals(channel)) {
                         rangeFuel = Optional.of((QuantityType<?>) csm.getState());
-                    } else if (csm.getChannel().equals("soc")) {
+                    } else if ("soc".equals(channel)) {
                         if (config.get().batteryCapacity > 0) {
                             float socValue = ((QuantityType<?>) csm.getState()).floatValue();
                             float batteryCapacity = config.get().batteryCapacity;
@@ -470,7 +471,7 @@ public class VehicleHandler extends BaseThingHandler {
                         } else {
                             logger.debug("No battery capacity given");
                         }
-                    } else if (csm.getChannel().equals("fuel-level")) {
+                    } else if ("fuel-level".equals(channel)) {
                         if (config.get().fuelCapacity > 0) {
                             float fuelLevelValue = ((QuantityType<?>) csm.getState()).floatValue();
                             float fuelCapacity = config.get().fuelCapacity;

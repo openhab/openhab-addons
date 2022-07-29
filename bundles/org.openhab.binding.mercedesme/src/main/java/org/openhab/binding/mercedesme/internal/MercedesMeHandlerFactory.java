@@ -19,6 +19,7 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.storage.StorageService;
@@ -50,16 +51,18 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
     private final MercedesMeCommandOptionProvider mmcop;
     private final MercedesMeStateOptionProvider mmsop;
     private final StorageService storageService;
+    private final TranslationProvider translationProvider;
 
     @Activate
     public MercedesMeHandlerFactory(@Reference OAuthFactory oAuthFactory, @Reference HttpClientFactory hcf,
             @Reference StorageService storageService, final @Reference MercedesMeCommandOptionProvider cop,
-            final @Reference MercedesMeStateOptionProvider sop) {
+            final @Reference MercedesMeStateOptionProvider sop, final @Reference TranslationProvider tp) {
         this.oAuthFactory = oAuthFactory;
         this.httpClientFactory = hcf;
         this.storageService = storageService;
         mmcop = cop;
         mmsop = sop;
+        translationProvider = tp;
         tokenStorage = storageService.getStorage(Constants.BINDING_ID);
     }
 
