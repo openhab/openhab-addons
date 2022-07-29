@@ -13,7 +13,7 @@
 package org.openhab.binding.shelly.internal.provider;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
-import static org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.SHELLY_API_INVTEMP;
+import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_API_INVTEMP;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.HashMap;
@@ -27,21 +27,21 @@ import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyControlRoller;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyInputState;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsDimmer;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsEMeter;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsGlobal;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsMeter;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsRelay;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsRgbwLight;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsStatus;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyShortLightStatus;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyShortStatusRelay;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyStatusLightChannel;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyStatusRelay;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyStatusSensor;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyInputState;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyRollerStatus;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDimmer;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsEMeter;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsGlobal;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsMeter;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRelay;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRgbwLight;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyShortLightStatus;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyShortStatusRelay;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusLightChannel;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusRelay;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -262,7 +262,7 @@ public class ShellyChannelDefinitions {
 
         addChannel(thing, add, profile.settings.name != null, CHGR_DEVST, CHANNEL_DEVST_NAME);
 
-        if (!profile.isSensor && !profile.isIX3 && getDouble(status.temperature) != SHELLY_API_INVTEMP) {
+        if (!profile.isSensor && !profile.isIX && getDouble(status.temperature) != SHELLY_API_INVTEMP) {
             // Only some devices report the internal device temp
             addChannel(thing, add, status.tmp != null || status.temperature != null, CHGR_DEVST, CHANNEL_DEVST_ITEMP);
         }
@@ -298,15 +298,18 @@ public class ShellyChannelDefinitions {
         Map<String, Channel> add = new LinkedHashMap<>();
         String group = profile.getControlGroup(idx);
 
-        ShellySettingsRelay rs = profile.settings.relays.get(idx);
-        ShellyShortStatusRelay rstatus = relay.relays.get(idx);
-        boolean timer = rs.hasTimer != null || (rstatus != null && rstatus.hasTimer != null); // Dimmer 1/2 have
-                                                                                              // has_timer under /status
-        addChannel(thing, add, rs.ison != null, group, CHANNEL_OUTPUT);
-        addChannel(thing, add, rs.name != null, group, CHANNEL_OUTPUT_NAME);
-        addChannel(thing, add, rs.autoOn != null, group, CHANNEL_TIMER_AUTOON);
-        addChannel(thing, add, rs.autoOff != null, group, CHANNEL_TIMER_AUTOOFF);
-        addChannel(thing, add, timer, group, CHANNEL_TIMER_ACTIVE);
+        if (profile.settings.relays != null) {
+            ShellySettingsRelay rs = profile.settings.relays.get(idx);
+            ShellyShortStatusRelay rstatus = relay.relays.get(idx);
+            boolean timer = rs.hasTimer != null || (rstatus != null && rstatus.hasTimer != null); // Dimmer 1/2 have
+                                                                                                  // has_timer under
+                                                                                                  // /status
+            addChannel(thing, add, rs.ison != null, group, CHANNEL_OUTPUT);
+            addChannel(thing, add, rs.name != null, group, CHANNEL_OUTPUT_NAME);
+            addChannel(thing, add, rs.autoOn != null, group, CHANNEL_TIMER_AUTOON);
+            addChannel(thing, add, rs.autoOff != null, group, CHANNEL_TIMER_AUTOOFF);
+            addChannel(thing, add, timer, group, CHANNEL_TIMER_ACTIVE);
+        }
 
         // Shelly 1/1PM Addon
         if (relay.extTemperature != null) {
@@ -329,12 +332,14 @@ public class ShellyChannelDefinitions {
         // Shelly Dimmer has an additional brightness channel
         addChannel(thing, add, profile.isDimmer, group, CHANNEL_BRIGHTNESS);
 
-        ShellySettingsDimmer ds = profile.settings.dimmers.get(idx);
-        addChannel(thing, add, ds.autoOn != null, group, CHANNEL_TIMER_AUTOON);
-        addChannel(thing, add, ds.autoOff != null, group, CHANNEL_TIMER_AUTOOFF);
+        if (profile.settings.dimmers != null) {
+            ShellySettingsDimmer ds = profile.settings.dimmers.get(idx);
+            addChannel(thing, add, ds.autoOn != null, group, CHANNEL_TIMER_AUTOON);
+            addChannel(thing, add, ds.autoOff != null, group, CHANNEL_TIMER_AUTOOFF);
 
-        ShellyShortLightStatus dss = dstatus.dimmers.get(idx);
-        addChannel(thing, add, dss != null && dss.hasTimer != null, group, CHANNEL_TIMER_ACTIVE);
+            ShellyShortLightStatus dss = dstatus.dimmers.get(idx);
+            addChannel(thing, add, dss != null && dss.hasTimer != null, group, CHANNEL_TIMER_ACTIVE);
+        }
         return add;
     }
 
@@ -343,13 +348,16 @@ public class ShellyChannelDefinitions {
         Map<String, Channel> add = new LinkedHashMap<>();
         String group = profile.getControlGroup(idx);
 
-        ShellySettingsRgbwLight light = profile.settings.lights.get(idx);
-        // The is no brightness channel in color mode, so we need a power channel
-        addChannel(thing, add, profile.inColor, group, CHANNEL_LIGHT_POWER);
-
-        addChannel(thing, add, light.autoOn != null, group, CHANNEL_TIMER_AUTOON);
-        addChannel(thing, add, light.autoOff != null, group, CHANNEL_TIMER_AUTOOFF);
-        addChannel(thing, add, status.hasTimer != null, group, CHANNEL_TIMER_ACTIVE);
+        if (profile.settings.lights != null) {
+            ShellySettingsRgbwLight light = profile.settings.lights.get(idx);
+            // Create power channel in color mode and brightness channel in white mode
+            addChannel(thing, add, profile.inColor, group, CHANNEL_LIGHT_POWER);
+            addChannel(thing, add, !profile.inColor, group, CHANNEL_BRIGHTNESS);
+            addChannel(thing, add, light.temp != null, CHANNEL_GROUP_WHITE_CONTROL, CHANNEL_COLOR_TEMP);
+            addChannel(thing, add, light.autoOn != null, group, CHANNEL_TIMER_AUTOON);
+            addChannel(thing, add, light.autoOff != null, group, CHANNEL_TIMER_AUTOOFF);
+            addChannel(thing, add, status.hasTimer != null, group, CHANNEL_TIMER_ACTIVE);
+        }
         return add;
     }
 
@@ -379,7 +387,7 @@ public class ShellyChannelDefinitions {
         return add;
     }
 
-    public static Map<String, Channel> createRollerChannels(Thing thing, final ShellyControlRoller roller) {
+    public static Map<String, Channel> createRollerChannels(Thing thing, final ShellyRollerStatus roller) {
         Map<String, Channel> add = new LinkedHashMap<>();
         addChannel(thing, add, true, CHGR_ROLLER, CHANNEL_ROL_CONTROL_CONTROL);
         addChannel(thing, add, true, CHGR_ROLLER, CHANNEL_ROL_CONTROL_STATE);

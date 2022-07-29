@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.shelly.internal;
 
-import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
+import static org.openhab.binding.shelly.internal.discovery.ShellyThingCreator.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,7 +21,7 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.shelly.internal.coap.ShellyCoapServer;
+import org.openhab.binding.shelly.internal.api1.Shelly1CoapServer;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyBaseHandler;
 import org.openhab.binding.shelly.internal.handler.ShellyLightHandler;
@@ -62,7 +62,7 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(ShellyHandlerFactory.class);
     private final HttpClient httpClient;
     private final ShellyTranslationProvider messages;
-    private final ShellyCoapServer coapServer;
+    private final Shelly1CoapServer coapServer;
 
     private final ShellyThingTable thingTable;
     private ShellyBindingConfiguration bindingConfig = new ShellyBindingConfiguration();
@@ -81,7 +81,6 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
             @Reference ShellyTranslationProvider translationProvider, @Reference ShellyThingTable thingTable,
             @Reference HttpClientFactory httpClientFactory, ComponentContext componentContext,
             Map<String, Object> configProperties) {
-        logger.debug("Activate Shelly HandlerFactory");
         super.activate(componentContext);
         messages = translationProvider;
         // Save bindingConfig & pass it to all registered listeners
@@ -103,10 +102,7 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
         logger.debug("Using OH HTTP port {}", httpPort);
 
         this.thingTable = thingTable;
-        this.coapServer = new ShellyCoapServer();
-
-        // Promote Shelly Manager usage
-        logger.info("{}", messages.get("status.managerstarted", localIP, httpPort));
+        this.coapServer = new Shelly1CoapServer();
     }
 
     @Override

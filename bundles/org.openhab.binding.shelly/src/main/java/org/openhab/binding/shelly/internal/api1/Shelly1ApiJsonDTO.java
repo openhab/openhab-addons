@@ -10,22 +10,22 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.shelly.internal.api;
+package org.openhab.binding.shelly.internal.api1;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyStatusSensor.ShellyMotionSettings;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyMotionSettings;
 import org.openhab.core.thing.CommonTriggerEvents;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link ShellyApiJsonDTO} is used for the JSon/GSon mapping
+ * The {@link Shelly1ApiJsonDTO} is used for the JSon/GSon mapping
  *
  * @author Markus Michels - Initial contribution
  */
-public class ShellyApiJsonDTO {
+public class Shelly1ApiJsonDTO {
     public static final String SHELLY_NULL_URL = "null";
     public static final String SHELLY_URL_DEVINFO = "/shelly";
     public static final String SHELLY_URL_STATUS = "/status";
@@ -264,6 +264,7 @@ public class ShellyApiJsonDTO {
         public String hostname;
         public String fw;
         public Boolean auth;
+        public Integer gen;
 
         @SerializedName("coiot") // Shelly Motion Multicast Endpoint
         public String coiot;
@@ -495,6 +496,7 @@ public class ShellyApiJsonDTO {
         public String name;
         public Boolean ison; // true: output is ON
         public Integer brightness;
+        public Integer temp;
         public Integer transition;
         @SerializedName("default_state")
         public String defaultState;
@@ -728,7 +730,7 @@ public class ShellyApiJsonDTO {
         public ArrayList<ShellySettingsEMeter> emeters;
 
         // Internal device temp
-        public ShellyStatusSensor.ShellySensorTmp tmp; // Shelly 1PM
+        public ShellySensorTmp tmp; // Shelly 1PM
         public Double temperature = SHELLY_API_INVTEMP; // Shelly 2.5
         public Boolean overtemperature;
 
@@ -818,7 +820,7 @@ public class ShellyApiJsonDTO {
         public ShellyStatusSensor.ShellyExtHumidity extHumidity; // Shelly 1/1PM: sensor values
 
         public Double temperature; // device temp acc. on the selected temp unit
-        public ShellyStatusSensor.ShellySensorTmp tmp;
+        public ShellySensorTmp tmp;
     }
 
     public static class ShellyStatusDimmer {
@@ -827,14 +829,14 @@ public class ShellyApiJsonDTO {
         public ArrayList<ShellyShortLightStatus> lights; // relay status
         public ArrayList<ShellySettingsMeter> meters; // current meter value
 
-        public ShellyStatusSensor.ShellySensorTmp tmp;
+        public ShellySensorTmp tmp;
         public Boolean overtemperature;
 
         public Boolean loaderror;
         public Boolean overload;
     }
 
-    public static class ShellyControlRoller {
+    public static class ShellyRollerStatus {
         public String name; // FW 1.8: Symbolic name is configurable
 
         @SerializedName("roller_pos")
@@ -900,17 +902,17 @@ public class ShellyApiJsonDTO {
         public Integer boostMinutes;
     }
 
+    public static class ShellySensorTmp {
+        public Double value; // Temperature in configured unites
+        public String units; // 'C' or 'F'
+        public Double tC; // temperature in deg C
+        public Double tF; // temperature in deg F
+        @SerializedName("is_valid")
+        public Boolean isValid; // whether the internal sensor is operating properly
+    }
+
     public static class ShellyStatusSensor {
         // https://shelly-api-docs.shelly.cloud/#h-amp-t-settings
-        public static class ShellySensorTmp {
-            public Double value; // Temperature in configured unites
-            public String units; // 'C' or 'F'
-            public Double tC; // temperature in deg C
-            public Double tF; // temperature in deg F
-            @SerializedName("is_valid")
-            public Boolean isValid; // whether the internal sensor is operating properly
-        }
-
         public static class ShellySensorHum {
             public Double value; // relative humidity in %
         }

@@ -10,10 +10,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.shelly.internal.api;
+package org.openhab.binding.shelly.internal.api1;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
-import static org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.*;
+import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.nio.charset.StandardCharsets;
@@ -31,61 +31,59 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyControlRoller;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyOtaCheckResult;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySendKeyList;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySenseKeyCode;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsDevice;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsLight;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsLogin;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsStatus;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsUpdate;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyShortLightStatus;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyStatusLight;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyStatusRelay;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyStatusSensor;
+import org.openhab.binding.shelly.internal.api.ShellyApiException;
+import org.openhab.binding.shelly.internal.api.ShellyApiInterface;
+import org.openhab.binding.shelly.internal.api.ShellyApiResult;
+import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
+import org.openhab.binding.shelly.internal.api.ShellyHttpClient;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyOtaCheckResult;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySendKeyList;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySenseKeyCode;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDevice;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsLight;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsLogin;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsUpdate;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyShortLightStatus;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusLight;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusRelay;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
+import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 /**
- * {@link ShellyHttpApi} wraps the Shelly REST API and provides various low level function to access the device api (not
+ * {@link Shelly1HttpApi} wraps the Shelly REST API and provides various low level function to access the device api
+ * (not
  * cloud api).
  *
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public class ShellyHttpApi implements ShellyApiInterface {
-    public static final String HTTP_HEADER_AUTH = "Authorization";
-    public static final String HTTP_AUTH_TYPE_BASIC = "Basic";
-    public static final String CONTENT_TYPE_JSON = "application/json; charset=UTF-8";
+public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterface {
+    private final Logger logger = LoggerFactory.getLogger(Shelly1HttpApi.class);
+    private final ShellyDeviceProfile profile;
 
-    private final Logger logger = LoggerFactory.getLogger(ShellyHttpApi.class);
-    private final HttpClient httpClient;
-    private ShellyThingConfiguration config = new ShellyThingConfiguration();
-    private String thingName;
-    private final Gson gson = new Gson();
-    private int timeoutErrors = 0;
-    private int timeoutsRecovered = 0;
-
-    private ShellyDeviceProfile profile = new ShellyDeviceProfile();
-
-    public ShellyHttpApi(String thingName, ShellyThingConfiguration config, HttpClient httpClient) {
-        this.httpClient = httpClient;
-        this.thingName = thingName;
-        setConfig(thingName, config);
-        profile.initFromThingType(thingName);
+    public Shelly1HttpApi(String thingName, ShellyThingInterface thing) {
+        super(thingName, thing);
+        profile = thing.getProfile();
     }
 
-    @Override
-    public void setConfig(String thingName, ShellyThingConfiguration config) {
-        this.thingName = thingName;
-        this.config = config;
+    /**
+     * Simple initialization - called by discovery handler
+     *
+     * @param thingName Symbolic thing name
+     * @param config Thing Configuration
+     * @param httpClient HTTP Client to be passed to ShellyHttpClient
+     */
+    public Shelly1HttpApi(String thingName, ShellyThingConfiguration config, HttpClient httpClient) {
+        super(thingName, config, httpClient);
+        this.profile = new ShellyDeviceProfile();
     }
 
     @Override
@@ -112,7 +110,7 @@ public class ShellyHttpApi implements ShellyApiInterface {
      */
     @Override
     public ShellyDeviceProfile getDeviceProfile(String thingType) throws ShellyApiException {
-        String json = request(SHELLY_URL_SETTINGS);
+        String json = httpRequest(SHELLY_URL_SETTINGS);
         if (json.contains("\"type\":\"SHDM-")) {
             logger.trace("{}: Detected a Shelly Dimmer: fix Json (replace lights[] tag with dimmers[]", thingName);
             json = fixDimmerJson(json);
@@ -151,7 +149,7 @@ public class ShellyHttpApi implements ShellyApiInterface {
     public ShellySettingsStatus getStatus() throws ShellyApiException {
         String json = "";
         try {
-            json = request(SHELLY_URL_STATUS);
+            json = httpRequest(SHELLY_URL_STATUS);
             // Dimmer2 returns invalid json type for loaderror :-(
             json = getString(json.replace("\"loaderror\":0,", "\"loaderror\":false,"));
             json = getString(json.replace("\"loaderror\":1,", "\"loaderror\":true,"));
@@ -164,8 +162,8 @@ public class ShellyHttpApi implements ShellyApiInterface {
     }
 
     @Override
-    public ShellyStatusRelay getRelayStatus(Integer relayIndex) throws ShellyApiException {
-        return callApi(SHELLY_URL_STATUS_RELEAY + "/" + relayIndex.toString(), ShellyStatusRelay.class);
+    public ShellyStatusRelay getRelayStatus(int relayIndex) throws ShellyApiException {
+        return callApi(SHELLY_URL_STATUS_RELEAY + "/" + relayIndex, ShellyStatusRelay.class);
     }
 
     @Override
@@ -183,27 +181,23 @@ public class ShellyHttpApi implements ShellyApiInterface {
     @Override
     public void setBrightness(int id, int brightness, boolean autoOn) throws ShellyApiException {
         String turn = autoOn ? SHELLY_LIGHT_TURN + "=" + SHELLY_API_ON + "&" : "";
-        request(getControlUriPrefix(id) + "?" + turn + "brightness=" + brightness);
+        httpRequest(getControlUriPrefix(id) + "?" + turn + "brightness=" + brightness);
     }
 
     @Override
-    public ShellyControlRoller getRollerStatus(int idx) throws ShellyApiException {
-        String uri = SHELLY_URL_CONTROL_ROLLER + "/" + idx + "/pos";
-        return callApi(uri, ShellyControlRoller.class);
+    public ShellyRollerStatus getRollerStatus(int rollerIndex) throws ShellyApiException {
+        String uri = SHELLY_URL_CONTROL_ROLLER + "/" + rollerIndex + "/pos";
+        return callApi(uri, ShellyRollerStatus.class);
     }
 
     @Override
-    public void setRollerTurn(int idx, String turnMode) throws ShellyApiException {
-        request(SHELLY_URL_CONTROL_ROLLER + "/" + idx + "?go=" + turnMode);
+    public void setRollerTurn(int relayIndex, String turnMode) throws ShellyApiException {
+        httpRequest(SHELLY_URL_CONTROL_ROLLER + "/" + relayIndex + "?go=" + turnMode);
     }
 
     @Override
-    public void setRollerPos(int id, int position) throws ShellyApiException {
-        request(SHELLY_URL_CONTROL_ROLLER + "/" + id + "?go=to_pos&roller_pos=" + position);
-    }
-
-    public void setRollerTimer(int idx, int timer) throws ShellyApiException {
-        request(SHELLY_URL_CONTROL_ROLLER + "/" + idx + "?timer=" + timer);
+    public void setRollerPos(int relayIndex, int position) throws ShellyApiException {
+        httpRequest(SHELLY_URL_CONTROL_ROLLER + "/" + relayIndex + "?go=to_pos&roller_pos=" + position);
     }
 
     @Override
@@ -239,12 +233,12 @@ public class ShellyHttpApi implements ShellyApiInterface {
             type = SHELLY_CLASS_LIGHT;
         }
         String uri = SHELLY_URL_SETTINGS + "/" + type + "/" + index + "?" + timerName + "=" + value;
-        request(uri);
+        httpRequest(uri);
     }
 
     @Override
     public void setSleepTime(int value) throws ShellyApiException {
-        request(SHELLY_URL_SETTINGS + "?sleep_time=" + value);
+        httpRequest(SHELLY_URL_SETTINGS + "?sleep_time=" + value);
     }
 
     @Override
@@ -258,7 +252,7 @@ public class ShellyHttpApi implements ShellyApiInterface {
         if (auto) {
             uri = uri + "&target_t=" + getDouble(profile.settings.thermostats.get(0).targetTemp.value);
         }
-        request(uri); // percentage to open the valve
+        httpRequest(uri); // percentage to open the valve
     }
 
     @Override
@@ -280,12 +274,12 @@ public class ShellyHttpApi implements ShellyApiInterface {
     @Override
     public void startValveBoost(int valveId, int value) throws ShellyApiException {
         int minutes = value != -1 ? value : getInteger(profile.settings.thermostats.get(0).boostMinutes);
-        request("/thermostat/" + valveId + "?boost_minutes=" + minutes);
+        httpRequest("/thermostat/0?boost_minutes=" + minutes);
     }
 
     @Override
     public void setLedStatus(String ledName, Boolean value) throws ShellyApiException {
-        request(SHELLY_URL_SETTINGS + "?" + ledName + "=" + (value ? SHELLY_API_TRUE : SHELLY_API_FALSE));
+        httpRequest(SHELLY_URL_SETTINGS + "?" + ledName + "=" + (value ? SHELLY_API_TRUE : SHELLY_API_FALSE));
     }
 
     public ShellySettingsLight getLightSettings() throws ShellyApiException {
@@ -298,7 +292,7 @@ public class ShellyHttpApi implements ShellyApiInterface {
     }
 
     public void setLightSetting(String parm, String value) throws ShellyApiException {
-        request(SHELLY_URL_SETTINGS + "?" + parm + "=" + value);
+        httpRequest(SHELLY_URL_SETTINGS + "?" + parm + "=" + value);
     }
 
     @Override
@@ -396,7 +390,7 @@ public class ShellyHttpApi implements ShellyApiInterface {
     public void setLightParm(int lightIndex, String parm, String value) throws ShellyApiException {
         // Bulb, RGW2: /<color mode>/<light id>?parm?value
         // Dimmer: /light/<light id>?parm=value
-        request(getControlUriPrefix(lightIndex) + "?" + parm + "=" + value);
+        httpRequest(getControlUriPrefix(lightIndex) + "?" + parm + "=" + value);
     }
 
     @Override
@@ -410,7 +404,7 @@ public class ShellyHttpApi implements ShellyApiInterface {
             url = url + key + "=" + parameters.get(key);
             i++;
         }
-        request(url);
+        httpRequest(url);
     }
 
     /**
@@ -422,7 +416,7 @@ public class ShellyHttpApi implements ShellyApiInterface {
      * @throws ShellyApiException
      */
     public Map<String, String> getIRCodeList() throws ShellyApiException {
-        String result = request(SHELLY_URL_LIST_IR);
+        String result = httpRequest(SHELLY_URL_LIST_IR);
         // take pragmatic approach to make the returned JSon into named arrays for Gson parsing
         String keyList = substringAfter(result, "[");
         keyList = substringBeforeLast(keyList, "]");
@@ -468,11 +462,11 @@ public class ShellyHttpApi implements ShellyApiInterface {
         } else if (type.equals(SHELLY_IR_CODET_PRONTO_HEX)) {
             url = url + "&" + SHELLY_IR_CODET_PRONTO_HEX + "=" + keyCode;
         }
-        request(url);
+        httpRequest(url);
     }
 
     public void setSenseSetting(String setting, String value) throws ShellyApiException {
-        request(SHELLY_URL_SETTINGS + "?" + setting + "=" + value);
+        httpRequest(SHELLY_URL_SETTINGS + "?" + setting + "=" + value);
     }
 
     /**
@@ -500,7 +494,8 @@ public class ShellyHttpApi implements ShellyApiInterface {
 
     private void setDimmerEvents() throws ShellyApiException {
         if (profile.settings.dimmers != null) {
-            for (int i = 0; i < profile.settings.dimmers.size(); i++) {
+            int sz = profile.settings.dimmers.size();
+            for (int i = 0; i < sz; i++) {
                 setEventUrls(i);
             }
         } else if (profile.isLight) {
@@ -574,7 +569,7 @@ public class ShellyHttpApi implements ShellyApiInterface {
                 if (!profile.settingsJson.contains(testUrl)) {
                     // Current Action URL is != new URL
                     logger.debug("{}: Set new url for event type {}: {}", thingName, eventType, newUrl);
-                    request(SHELLY_URL_SETTINGS + "?" + mkEventUrl(eventType) + "=" + urlEncode(newUrl));
+                    httpRequest(SHELLY_URL_SETTINGS + "?" + mkEventUrl(eventType) + "=" + urlEncode(newUrl));
                 }
             }
         }
@@ -597,8 +592,8 @@ public class ShellyHttpApi implements ShellyApiInterface {
                 if (!profile.settingsJson.contains(test)) {
                     // Current Action URL is != new URL
                     logger.debug("{}: Set URL for type {} to {}", thingName, eventType, newUrl);
-                    request(SHELLY_URL_SETTINGS + "/" + deviceClass + "/" + index + "?" + mkEventUrl(eventType) + "="
-                            + urlEncode(newUrl));
+                    httpRequest(SHELLY_URL_SETTINGS + "/" + deviceClass + "/" + index + "?" + mkEventUrl(eventType)
+                            + "=" + urlEncode(newUrl));
                 }
             }
         }
@@ -613,6 +608,7 @@ public class ShellyHttpApi implements ShellyApiInterface {
      *
      * @param uri: URI (e.g. "/settings")
      */
+    @Override
     public <T> T callApi(String uri, Class<T> classOfT) throws ShellyApiException {
         String json = request(uri);
         return fromJson(gson, json, classOfT);
@@ -687,6 +683,7 @@ public class ShellyHttpApi implements ShellyApiInterface {
         return apiResult;
     }
 
+    @Override
     public String getControlUriPrefix(Integer id) {
         String uri = "";
         if (profile.isLight || profile.isDimmer) {

@@ -10,10 +10,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.shelly.internal.coap;
+package org.openhab.binding.shelly.internal.api1;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
-import static org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.*;
+import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.List;
@@ -23,9 +23,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.api.ShellyApiInterface;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
-import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotDescrBlk;
-import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotDescrSen;
-import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotSensor;
+import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO.CoIotDescrBlk;
+import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO.CoIotDescrSen;
+import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO.CoIotSensor;
 import org.openhab.binding.shelly.internal.handler.ShellyColorUtils;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.core.library.types.OnOffType;
@@ -41,13 +41,13 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 
 /**
- * The {@link ShellyCoIoTProtocol} implements common functions for the CoIoT implementations
+ * The {@link Shelly1CoIoTProtocol} implements common functions for the CoIoT implementations
  *
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public class ShellyCoIoTProtocol {
-    private final Logger logger = LoggerFactory.getLogger(ShellyCoIoTProtocol.class);
+public class Shelly1CoIoTProtocol {
+    private final Logger logger = LoggerFactory.getLogger(Shelly1CoIoTProtocol.class);
     protected final String thingName;
     protected final ShellyThingInterface thingHandler;
     protected final ShellyDeviceProfile profile;
@@ -63,7 +63,7 @@ public class ShellyCoIoTProtocol {
     protected String[] inputEvent = { "", "", "", "", "", "", "", "" };
     protected String lastWakeup = "";
 
-    public ShellyCoIoTProtocol(String thingName, ShellyThingInterface thingHandler, Map<String, CoIotDescrBlk> blkMap,
+    public Shelly1CoIoTProtocol(String thingName, ShellyThingInterface thingHandler, Map<String, CoIotDescrBlk> blkMap,
             Map<String, CoIotDescrSen> sensorMap) {
         this.thingName = thingName;
         this.thingHandler = thingHandler;

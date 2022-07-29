@@ -14,7 +14,7 @@ package org.openhab.binding.shelly.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.shelly.internal.coap.ShellyCoapServer;
+import org.openhab.binding.shelly.internal.api1.Shelly1CoapServer;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
 import org.openhab.core.thing.Thing;
@@ -36,7 +36,7 @@ public class ShellyProtectedHandler extends ShellyBaseHandler {
      * @param httpPort port of the openHAB HTTP API
      */
     public ShellyProtectedHandler(final Thing thing, final ShellyTranslationProvider translationProvider,
-            final ShellyBindingConfiguration bindingConfig, final ShellyCoapServer coapServer, final String localIP,
+            final ShellyBindingConfiguration bindingConfig, final Shelly1CoapServer coapServer, final String localIP,
             int httpPort, final HttpClient httpClient) {
         super(thing, translationProvider, bindingConfig, coapServer, localIP, httpPort, httpClient);
     }

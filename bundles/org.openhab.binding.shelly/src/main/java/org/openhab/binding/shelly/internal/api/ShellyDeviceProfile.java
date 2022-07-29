@@ -13,7 +13,8 @@
 package org.openhab.binding.shelly.internal.api;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
-import static org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.*;
+import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
+import static org.openhab.binding.shelly.internal.discovery.ShellyThingCreator.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.HashMap;
@@ -23,12 +24,12 @@ import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsDimmer;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsGlobal;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsInput;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsRelay;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsRgbwLight;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsStatus;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDimmer;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsGlobal;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsInput;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRelay;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRgbwLight;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
 import org.openhab.binding.shelly.internal.util.ShellyVersionDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,6 +64,7 @@ public class ShellyDeviceProfile {
     public boolean discoverable = true;
     public boolean auth = false;
     public boolean alwaysOn = true;
+    public boolean isGen2 = false;
 
     public String hwRev = "";
     public String hwBatchId = "";
@@ -93,7 +95,7 @@ public class ShellyDeviceProfile {
     public boolean isHT = false; // true for H&T
     public boolean isDW = false; // true for Door Window sensor
     public boolean isButton = false; // true for a Shelly Button 1
-    public boolean isIX3 = false; // true for a Shelly IX
+    public boolean isIX = false; // true for a Shelly IX
     public boolean isTRV = false; // true for a Shelly TRV
 
     public int minTemp = 0; // Bulb/Duo: Min Light Temp
@@ -202,11 +204,12 @@ public class ShellyDeviceProfile {
         boolean isSmoke = thingType.equals(THING_TYPE_SHELLYSMOKE_STR);
         boolean isGas = thingType.equals(THING_TYPE_SHELLYGAS_STR);
         boolean isUNI = thingType.equals(THING_TYPE_SHELLYUNI_STR);
-        isHT = thingType.equals(THING_TYPE_SHELLYHT_STR);
+        isHT = thingType.equals(THING_TYPE_SHELLYHT_STR) || thingType.equals(THING_TYPE_SHELLYPLUSHT_STR);
         isDW = thingType.equals(THING_TYPE_SHELLYDOORWIN_STR) || thingType.equals(THING_TYPE_SHELLYDOORWIN2_STR);
         isMotion = thingType.startsWith(THING_TYPE_SHELLYMOTION_STR);
         isSense = thingType.equals(THING_TYPE_SHELLYSENSE_STR);
-        isIX3 = thingType.equals(THING_TYPE_SHELLYIX3_STR);
+        isIX = thingType.equals(THING_TYPE_SHELLYIX3_STR) || thingType.equals(THING_TYPE_SHELLYPLUSI4_STR)
+                || thingType.equals(THING_TYPE_SHELLYPLUSI4DC_STR);
         isButton = thingType.equals(THING_TYPE_SHELLYBUTTON1_STR) || thingType.equals(THING_TYPE_SHELLYBUTTON2_STR);
         isSensor = isHT || isFlood || isDW || isSmoke || isGas || isButton || isUNI || isMotion || isSense || isTRV;
         hasBattery = isHT || isFlood || isDW || isSmoke || isButton || isMotion || isTRV;
@@ -261,7 +264,7 @@ public class ShellyDeviceProfile {
         int idx = i + 1; // group names are 1-based
         if (isRGBW2) {
             return CHANNEL_GROUP_LIGHT_CONTROL;
-        } else if (isIX3) {
+        } else if (isIX) {
             return CHANNEL_GROUP_STATUS + idx;
         } else if (isButton) {
             return CHANNEL_GROUP_STATUS;
@@ -275,7 +278,7 @@ public class ShellyDeviceProfile {
 
     public String getInputSuffix(int i) {
         int idx = i + 1; // channel names are 1-based
-        if (isRGBW2 || isIX3) {
+        if (isRGBW2 || isIX) {
             return ""; // RGBW2 has only 1 channel
         } else if (isRoller || isDimmer) {
             // Roller has 2 relays, but it will be mapped to 1 roller with 2 inputs
@@ -294,7 +297,7 @@ public class ShellyDeviceProfile {
         String btnType = "";
         if (isButton) {
             return true;
-        } else if (isIX3 && settings.inputs != null && idx < settings.inputs.size()) {
+        } else if (isIX && settings.inputs != null && idx < settings.inputs.size()) {
             ShellySettingsInput input = settings.inputs.get(idx);
             btnType = getString(input.btnType);
         } else if (isDimmer) {

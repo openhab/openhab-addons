@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.shelly.internal.coap;
+package org.openhab.binding.shelly.internal.api1;
 
-import static org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.COIOT_PORT;
+import static org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO.COIOT_PORT;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -38,24 +38,24 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link ShellyCoapServer} implements the UDP listener and status event processor (for /cit/s messages)
+ * The {@link Shelly1CoapServer} implements the UDP listener and status event processor (for /cit/s messages)
  *
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public class ShellyCoapServer {
-    private final Logger logger = LoggerFactory.getLogger(ShellyCoapServer.class);
+public class Shelly1CoapServer {
+    private final Logger logger = LoggerFactory.getLogger(Shelly1CoapServer.class);
 
     boolean started = false;
     private CoapEndpoint statusEndpoint = new CoapEndpoint.Builder().build();
     private @Nullable UdpMulticastConnector statusConnector;
     private CoapServer server = new CoapServer(NetworkConfig.getStandard(), COIOT_PORT);
-    private final Set<ShellyCoapListener> coapListeners = ConcurrentHashMap.newKeySet();
+    private final Set<Shelly1CoapListener> coapListeners = ConcurrentHashMap.newKeySet();
 
     protected class ShellyStatusListener extends CoapResource {
-        private ShellyCoapServer listener;
+        private Shelly1CoapServer listener;
 
-        public ShellyStatusListener(String uri, ShellyCoapServer listener) {
+        public ShellyStatusListener(String uri, Shelly1CoapServer listener) {
             super(uri, true);
             getAttributes().setTitle("ShellyCoapListener");
             this.listener = listener;
@@ -78,7 +78,7 @@ public class ShellyCoapServer {
         }
     }
 
-    public synchronized void start(String localIp, int port, ShellyCoapListener listener)
+    public synchronized void start(String localIp, int port, Shelly1CoapListener listener)
             throws UnknownHostException, SocketException {
         if (!started) {
             logger.debug("Initializing CoIoT listener (local IP={}:{})", localIp, port);
@@ -125,7 +125,7 @@ public class ShellyCoapServer {
     /**
      * Cancel pending requests and shutdown the client
      */
-    public void stop(ShellyCoapListener listener) {
+    public void stop(Shelly1CoapListener listener) {
         coapListeners.remove(listener);
         if (coapListeners.isEmpty()) {
             stop();

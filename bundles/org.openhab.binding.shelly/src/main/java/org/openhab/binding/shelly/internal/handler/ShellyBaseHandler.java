@@ -13,7 +13,8 @@
 package org.openhab.binding.shelly.internal.handler;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
-import static org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.*;
+import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
+import static org.openhab.binding.shelly.internal.discovery.ShellyThingCreator.*;
 import static org.openhab.binding.shelly.internal.handler.ShellyComponents.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 import static org.openhab.core.thing.Thing.*;
@@ -31,17 +32,17 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyApiInterface;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyInputState;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyOtaCheckResult;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsDevice;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsStatus;
 import org.openhab.binding.shelly.internal.api.ShellyApiResult;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
-import org.openhab.binding.shelly.internal.api.ShellyHttpApi;
-import org.openhab.binding.shelly.internal.coap.ShellyCoapHandler;
-import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO;
-import org.openhab.binding.shelly.internal.coap.ShellyCoapServer;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyInputState;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyOtaCheckResult;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDevice;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
+import org.openhab.binding.shelly.internal.api1.Shelly1CoapHandler;
+import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO;
+import org.openhab.binding.shelly.internal.api1.Shelly1CoapServer;
+import org.openhab.binding.shelly.internal.api1.Shelly1HttpApi;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.discovery.ShellyThingCreator;
@@ -84,11 +85,13 @@ public class ShellyBaseHandler extends BaseThingHandler
     public String thingType = "";
 
     protected final ShellyApiInterface api;
+    private final HttpClient httpClient;
+
     protected ShellyBindingConfiguration bindingConfig;
     protected ShellyThingConfiguration config = new ShellyThingConfiguration();
     protected ShellyDeviceProfile profile = new ShellyDeviceProfile(); // init empty profile to avoid NPE
     protected ShellyDeviceStats stats = new ShellyDeviceStats();
-    private final ShellyCoapHandler coap;
+    private final Shelly1CoapHandler coap;
     public boolean autoCoIoT = false;
 
     public final ShellyTranslationProvider messages;
@@ -124,7 +127,7 @@ public class ShellyBaseHandler extends BaseThingHandler
      * @param httpPort from httpService
      */
     public ShellyBaseHandler(final Thing thing, final ShellyTranslationProvider translationProvider,
-            final ShellyBindingConfiguration bindingConfig, final ShellyCoapServer coapServer, final String localIP,
+            final ShellyBindingConfiguration bindingConfig, final Shelly1CoapServer coapServer, final String localIP,
             int httpPort, final HttpClient httpClient) {
         super(thing);
 
@@ -135,11 +138,12 @@ public class ShellyBaseHandler extends BaseThingHandler
         this.bindingConfig = bindingConfig;
         this.config = getConfigAs(ShellyThingConfiguration.class);
 
+        this.httpClient = httpClient;
         this.localIP = localIP;
         this.localPort = String.valueOf(httpPort);
-        this.api = new ShellyHttpApi(thingName, config, httpClient);
+        this.api = new Shelly1HttpApi(thingName, config, httpClient);
 
-        coap = new ShellyCoapHandler(this, coapServer);
+        coap = new Shelly1CoapHandler(this, coapServer);
     }
 
     @Override
@@ -194,6 +198,11 @@ public class ShellyBaseHandler extends BaseThingHandler
     @Override
     public ShellyThingConfiguration getThingConfig() {
         return config;
+    }
+
+    @Override
+    public HttpClient getHttpClient() {
+        return httpClient;
     }
 
     /**
@@ -274,7 +283,7 @@ public class ShellyBaseHandler extends BaseThingHandler
 
         if (config.eventsCoIoT && (tmpPrf.settings.coiot != null) && (tmpPrf.settings.coiot.enabled != null)) {
             String devpeer = getString(tmpPrf.settings.coiot.peer);
-            String ourpeer = config.localIp + ":" + ShellyCoapJSonDTO.COIOT_PORT;
+            String ourpeer = config.localIp + ":" + Shelly1CoapJSonDTO.COIOT_PORT;
             if (!tmpPrf.settings.coiot.enabled || (profile.isMotion && devpeer.isEmpty())) {
                 try {
                     api.setCoIoTPeer(ourpeer);
@@ -749,7 +758,7 @@ public class ShellyBaseHandler extends BaseThingHandler
                         if (isButton) {
                             triggerButton(group, idx, mapButtonEvent(event));
                             channel = CHANNEL_BUTTON_TRIGGER + profile.getInputSuffix(idx);
-                            payload = ShellyApiJsonDTO.mapButtonEvent(event);
+                            payload = Shelly1ApiJsonDTO.mapButtonEvent(event);
                         } else {
                             logger.debug("{}: Relay button is not in memontary or detached mode, ignore SHORT/LONGPUSH",
                                     thingName);
