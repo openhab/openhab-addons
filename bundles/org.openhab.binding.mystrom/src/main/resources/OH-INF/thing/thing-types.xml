@@ -41,6 +41,10 @@
 				<description>Specifies the refresh interval in seconds.</description>
 				<default>10</default>
 			</parameter>
+			<parameter name="apiToken" type="text">
+				<label>API Token</label>
+				<description>Specifies the API Token, if required(optional).</description>
+			</parameter>
 		</config-description>
 
 	</thing-type>
@@ -85,6 +89,10 @@
 				<label>Refresh Interval</label>
 				<description>Specifies the refresh interval in seconds.</description>
 				<default>10</default>
+			</parameter>
+			<parameter name="apiToken" type="text">
+				<label>API Token</label>
+				<description>Specifies the API Token, if required(optional).</description>
 			</parameter>
 		</config-description>
 

@@ -24,12 +24,42 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class MyStromConfiguration {
 
+    private final String url_prefix = "http://";
+
+    private String hostname = "localhost";
+
+    private String apiToken = "";
+
+    private int refresh = DEFAULT_REFRESH_RATE_SECONDS;
+
     /**
-     * Hostname of the myStrom device.
+     * Returns the hostname with http prefix if missing.
+     *
+     * @return hostname
      */
-    public String hostname = "localhost";
+    public String getHostname() {
+        String prefix = "";
+        if (!this.hostname.contains(url_prefix)) {
+            prefix = url_prefix;
+        }
+        return prefix + this.hostname;
+    }
+
     /**
-     * Number of seconds in between refreshes from the myStrom device.
+     * returns API Token
+     *
+     * @return apiToken
      */
-    public int refresh = DEFAULT_REFRESH_RATE_SECONDS;
+    public String getApiToken() {
+        return apiToken;
+    }
+
+    /**
+     * Returns the refreshrate in SECONDS
+     *
+     * @return refresh
+     */
+    public int getRefresh() {
+        return refresh;
+    }
 }
