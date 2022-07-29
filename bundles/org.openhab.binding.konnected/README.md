@@ -2,11 +2,11 @@
 
 This binding is for interacting with the [Konnected Alarm Panel](https://konnected.io/).
 A module which interfaces with existing home security sensors.
-Konnected is an open-source firmware and software that runs on a NodeMCU ESP8266 device.
-The Konnected hardware is specifically designed for an alarm panel installation, but the general purpose firmware/software can be run on any ESP8266 device.
+Konnected is an open-source firmware and software that runs on a NodeMCU ESP8266 (wifi) or ESP32 (pro) device.
+The Konnected hardware is designed for an alarm panel installation, but the general purpose firmware/software can be run on a generic NodeMCU device.
 
 ## Supported Things
-
+``
 This binding supports two types of thing modules, which represents the wifi version of the Konnected Alarm Panel and the Konnected Alarm Panel Pro.
 
 ## Discovery
@@ -27,27 +27,7 @@ The blink setting will disable the transmission LED on the Konnected Alarm Panel
 
 
 ## Channels
-
-Depending on whether the thing type is the wifi version or the pro version the automativally added channels will differ.  
-For the wifi verision the auto discovered thing adds two default channels.
-
-| Channel | Channel Id | Channel Type | Description                                              |
-|---------|------------|--------------|----------------------------------------------------------|
-| 1       | Zone_6     | Switch-wifi       | A Switch channel for zone 6                              |
-| 2       | Out        | Actuator-wifi     | The Channel for the Out Pin on the Konnected Alarm Panel |
-
-One channel for Zone 6 which is a sensor type channel, and one channel for the out pin that is an actuator type channel.
-These channels represent the two pins on the Konnected Alarm Panel whose type cannot be changed.
-
-For the Konnected Alarm Panel Pro the auto discovered thing adds three default channels.
-
-| Channel | Channel Id | Channel Type | Description                                              |
-|---------|------------|--------------|----------------------------------------------------------|
-| 1       | Alarm1     | Switch-Pro       | 12v Alarm 1 Output on the Konnected Pro                      |
-| 2       | Output1    | Actuator-Pro     | 3.3v Output 1 on the Konnected Alarm Panel					 |
-| 3       | Alarm2-Output2  | Switch-Pro     | The Selectable 12v Alarm 2 / 3.3v Output 2 on the Konnected Alarm Panel Pro |
-
-For zones 1-5 (wifi version) or zones 1-12 (pro version), you will need to add channels for the remaining zones that you have connected and configure them with the appropriate configuration parameters for each channel.
+You will need to add channels for the zones that you have connected and configure them with the appropriate configuration parameters for each channel.
 
 | Channel Type | Item Type            | Config Parameters                                  | Description                                                                                                                                                                                                                                     |
 |--------------|----------------------|----------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -69,7 +49,7 @@ It can also be used to blink lights.
 
 A note about the Alarm Panel Pro.
 Zones 1-8 can be configured for any Channel-Types.  
-Zones 9-12 can only be configured for the Switch-Pro type. (binary sensor)
+Zones 9-12, out1, alarm1 and out2/alarm2 can only be configured as an actuator.
 For More information see: https://help.konnected.io/support/solutions/articles/32000028978-alarm-panel-pro-inputs-and-outputs 
 
 DSB1820 temperature probes.

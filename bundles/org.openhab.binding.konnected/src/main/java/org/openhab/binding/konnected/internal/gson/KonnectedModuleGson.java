@@ -14,8 +14,6 @@ package org.openhab.binding.konnected.internal.gson;
 
 import static org.openhab.binding.konnected.internal.KonnectedBindingConstants.*;
 
-import java.util.Arrays;
-
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -41,50 +39,20 @@ public class KonnectedModuleGson {
     private Integer pollInterval;
     private String addr;
 
-    private Integer getPin() {
-
-        return Arrays.asList(PIN_TO_ZONE).indexOf(pin);
+    public String getPin() {
+        return ESP8266_PIN_TO_ZONE.get(pin);
     }
 
-    private void setPin(Integer setPin) {
-
-        this.pin = Arrays.asList(PIN_TO_ZONE).get(setPin);
+    public void setPin(Integer pin) {
+        this.pin = pin;
     }
 
-    private Integer getZone() {
-
-        switch (zone) {
-            case PRO_MODULE_ALARM1:
-                return Integer.decode("13");
-
-            case PRO_MODULE_OUT1:
-                return Integer.decode("14");
-
-            case PRO_MODULE_ALARM2_OUT2:
-                return Integer.decode("15");
-            default:
-                return Integer.decode(zone);
-        }
+    public String getZone() {
+        return zone;
     }
 
-    private void setZone(Integer setZone) {
-
-        switch (setZone) {
-            case 13:
-                this.zone = PRO_MODULE_ALARM1;
-                break;
-            case 14:
-                this.zone = PRO_MODULE_OUT1;
-                break;
-            case 15:
-                this.zone = PRO_MODULE_ALARM2_OUT2;
-                break;
-            default:
-                this.zone = Integer.toString(setZone);
-
-        }
-
-        ;
+    public void setZone(String zone) {
+        this.zone = zone;
     }
 
     public Integer getPollInterval() {
@@ -155,19 +123,18 @@ public class KonnectedModuleGson {
         this.addr = setAddr;
     }
 
-    public void setPinZone(String ThingID, Integer sentZone) {
+    public void setZone(String ThingID, String zone) {
         switch (ThingID) {
             case PRO_MODULE:
-                this.setZone(sentZone);
+                this.setZone(zone);
                 break;
             case WIFI_MODULE:
-                this.setPin(sentZone);
+                this.setPin(ESP8266_ZONE_TO_PIN.get(zone));
                 break;
         }
     }
 
-    public Integer getPinZone(String ThingID) {
-
+    public String getZone(String ThingID) {
         switch (ThingID) {
             case PRO_MODULE:
                 return this.getZone();
