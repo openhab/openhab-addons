@@ -492,13 +492,13 @@ public class KonnectedHandler extends BaseThingHandler {
             String payloadString = gson.toJson(payload);
             logger.debug("The command payload  is: {}", payloadString);
             try {
-                sendSetSwitchState(payloadString);
+                sendSetSwitchState(thingID, payloadString);
             } catch (KonnectedHttpRetryExceeded e) {
                 // try to get the state of the device one more time 30 seconds later. This way it can be confirmed if
                 // the device was simply in a reboot loop when device state was attempted the first time
                 scheduler.schedule(() -> {
                     try {
-                        sendSetSwitchState(payloadString);
+                        sendSetSwitchState(thingID, payloadString);
                     } catch (KonnectedHttpRetryExceeded ex) {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                                 "Unable to communicate with Konnected Alarm Panel confirm settings, and that module is online.");
@@ -513,10 +513,18 @@ public class KonnectedHandler extends BaseThingHandler {
         }
     }
 
-    private void sendSetSwitchState(String payloadString) throws KonnectedHttpRetryExceeded {
-        String response = http.doGet(moduleIpAddress + "/device", payloadString, retryCount);
-        KonnectedModuleGson event = gson.fromJson(response, KonnectedModuleGson.class);
-        this.handleWebHookEvent(event);
+    private void sendSetSwitchState(String thingId, String payloadString) throws KonnectedHttpRetryExceeded {
+        if (thingId.equals(WIFI_MODULE)) {
+            String response = http.doGet(moduleIpAddress + "/device", payloadString, retryCount);
+            KonnectedModuleGson event = gson.fromJson(response, KonnectedModuleGson.class);
+            this.handleWebHookEvent(event);
+        } else {
+            String response = http.doGet(moduleIpAddress + "/zone", payloadString, retryCount);
+            KonnectedModuleGson[] events = gson.fromJson(response, KonnectedModuleGson[].class);
+            for (KonnectedModuleGson event : events) {
+                this.handleWebHookEvent(event);
+            }
+        }
     }
 
     private String getOnState(Channel channel) {
