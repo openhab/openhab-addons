@@ -10,21 +10,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.boschindego.internal.config;
+package org.openhab.binding.boschindego.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Configuration for the Bosch Indego thing.
- *
+ * {@link DeviceStateAttribute} describes a characteristic for a device state.
+ * 
  * @author Jacob Laursen - Initial contribution
  */
 @NonNullByDefault
-public class BoschIndegoConfiguration {
-    public @Nullable String username;
-    public @Nullable String password;
-    public long refresh = 180;
-    public long stateActiveRefresh = 30;
-    public long cuttingTimeRefresh = 60;
+public enum DeviceStateAttribute {
+    READY_TO_MOW,
+    DOCKED,
+    CHARGING,
+    ACTIVE,
+    COMPLETED
 }

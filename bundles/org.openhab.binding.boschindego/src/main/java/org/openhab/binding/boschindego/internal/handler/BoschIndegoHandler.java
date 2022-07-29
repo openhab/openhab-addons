@@ -71,6 +71,10 @@ public class BoschIndegoHandler extends BaseThingHandler {
     private static final String MAP_POSITION_FILL_COLOR = "#fff701";
     private static final int MAP_POSITION_RADIUS = 10;
     private static final int MAP_REFRESH_INTERVAL_DAYS = 1;
+    private static final Duration OPERATING_DATA_INACTIVE_REFRESH_INTERVAL_DURATION = Duration.ofHours(6);
+    private static final Duration OPERATING_DATA_ACTIVE_REFRESH_INTERVAL_DURATION = Duration.ofMinutes(2);
+    private static final Duration MAP_REFRESH_SESSION_DURATION = Duration.ofMinutes(5);
+    private static final int STATE_REFRESH_DELAY_SECONDS = 10;
 
     private final Logger logger = LoggerFactory.getLogger(BoschIndegoHandler.class);
     private final HttpClient httpClient;
@@ -85,6 +89,11 @@ public class BoschIndegoHandler extends BaseThingHandler {
     private Optional<Integer> previousStateCode = Optional.empty();
     private @Nullable RawType cachedMap;
     private Instant cachedMapTimestamp = Instant.MIN;
+    private Instant operatingDataTimestamp = Instant.MIN;
+    private Instant mapRefreshStartedTimestamp = Instant.MIN;
+    private int stateInactiveRefreshIntervalSeconds;
+    private int stateActiveRefreshIntervalSeconds;
+    private int currentRefreshIntervalSeconds;
 
     public BoschIndegoHandler(Thing thing, HttpClient httpClient, BoschIndegoTranslationProvider translationProvider,
             TimeZoneProvider timeZoneProvider) {
@@ -98,6 +107,8 @@ public class BoschIndegoHandler extends BaseThingHandler {
     public void initialize() {
         logger.debug("Initializing Indego handler");
         BoschIndegoConfiguration config = getConfigAs(BoschIndegoConfiguration.class);
+        stateInactiveRefreshIntervalSeconds = (int) config.refresh;
+        stateActiveRefreshIntervalSeconds = (int) config.stateActiveRefresh;
         String username = config.username;
         String password = config.password;
 
@@ -116,10 +127,27 @@ public class BoschIndegoHandler extends BaseThingHandler {
 
         updateStatus(ThingStatus.UNKNOWN);
         previousStateCode = Optional.empty();
-        this.statePollFuture = scheduler.scheduleWithFixedDelay(this::refreshStateAndOperatingDataWithExceptionHandling,
-                0, config.refresh, TimeUnit.SECONDS);
+        rescheduleStatePoll(0, stateInactiveRefreshIntervalSeconds, false);
         this.cuttingTimePollFuture = scheduler.scheduleWithFixedDelay(this::refreshCuttingTimesWithExceptionHandling, 0,
                 config.cuttingTimeRefresh, TimeUnit.MINUTES);
+    }
+
+    private boolean rescheduleStatePoll(int delaySeconds, int refreshIntervalSeconds, boolean force) {
+        ScheduledFuture<?> statePollFuture = this.statePollFuture;
+        if (statePollFuture != null) {
+            if (refreshIntervalSeconds == currentRefreshIntervalSeconds && !force) {
+                // No change.
+                return false;
+            }
+            statePollFuture.cancel(false);
+        }
+        logger.debug("Scheduling state refresh job with {}s interval and {}s delay", refreshIntervalSeconds,
+                delaySeconds);
+        this.statePollFuture = scheduler.scheduleWithFixedDelay(this::refreshStateWithExceptionHandling, delaySeconds,
+                refreshIntervalSeconds, TimeUnit.SECONDS);
+        currentRefreshIntervalSeconds = refreshIntervalSeconds;
+
+        return true;
     }
 
     @Override
@@ -187,8 +215,10 @@ public class BoschIndegoHandler extends BaseThingHandler {
                 refreshState();
                 break;
             case LAST_CUTTING:
+                refreshLastCuttingTime();
+                break;
             case NEXT_CUTTING:
-                refreshCuttingTimes();
+                refreshNextCuttingTime();
                 break;
             case BATTERY_LEVEL:
             case LOW_BATTERY:
@@ -223,15 +253,19 @@ public class BoschIndegoHandler extends BaseThingHandler {
             return;
         }
         logger.debug("Sending command {}", command);
-        updateState(TEXTUAL_STATE, UnDefType.UNDEF);
         controller.sendCommand(command);
-        refreshState();
+
+        // State is not updated immediately, so reschedule with delay to receive new values
+        // sooner than next ordinary job cycle.
+        rescheduleStatePoll(STATE_REFRESH_DELAY_SECONDS,
+                deviceStatus.isCharging() || deviceStatus.isActive() ? stateActiveRefreshIntervalSeconds
+                        : stateInactiveRefreshIntervalSeconds,
+                true);
     }
 
-    private void refreshStateAndOperatingDataWithExceptionHandling() {
+    private void refreshStateWithExceptionHandling() {
         try {
             refreshState();
-            refreshOperatingData();
         } catch (IndegoAuthenticationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.comm-error.authentication-failure");
@@ -250,34 +284,78 @@ public class BoschIndegoHandler extends BaseThingHandler {
         }
 
         DeviceStateResponse state = controller.getState();
+        DeviceStatus deviceStatus = DeviceStatus.fromCode(state.state);
         updateState(state);
 
+        // Update map and start tracking positions if mower is active.
         if (state.mapUpdateAvailable) {
             cachedMapTimestamp = Instant.MIN;
         }
         refreshMap(state.svgXPos, state.svgYPos);
+        if (deviceStatus.isActive()) {
+            trackPosition();
+        }
 
-        // When state code changed, refresh cutting times immediately.
-        if (previousStateCode.isPresent() && state.state != previousStateCode.get()) {
-            refreshCuttingTimes();
-
-            // After learning lawn, trigger a forced map refresh on next poll.
-            if (previousStateCode.get() == DeviceStatus.STATE_LEARNING_LAWN) {
-                cachedMapTimestamp = Instant.MIN;
+        int previousState;
+        DeviceStatus previousDeviceStatus;
+        if (previousStateCode.isPresent()) {
+            previousState = previousStateCode.get();
+            previousDeviceStatus = DeviceStatus.fromCode(previousState);
+            if (state.state != previousState
+                    && ((!previousDeviceStatus.isDocked() && deviceStatus.isDocked()) || deviceStatus.isCompleted())) {
+                // When returning to dock or on its way after completing lawn, refresh last cutting time immediately.
+                // We cannot fully rely on completed lawn state since active polling refresh interval is configurable
+                // and we might miss the state if mower returns before next poll.
+                refreshLastCuttingTime();
             }
+        } else {
+            previousState = state.state;
+            previousDeviceStatus = DeviceStatus.fromCode(previousState);
         }
         previousStateCode = Optional.of(state.state);
+
+        refreshOperatingDataConditionally(
+                previousDeviceStatus.isCharging() || deviceStatus.isCharging() || deviceStatus.isActive());
+
+        int refreshIntervalSeconds;
+        if (deviceStatus.isActive()) {
+            refreshIntervalSeconds = stateActiveRefreshIntervalSeconds;
+        } else if (deviceStatus.isCharging()) {
+            refreshIntervalSeconds = (int) OPERATING_DATA_ACTIVE_REFRESH_INTERVAL_DURATION.getSeconds();
+        } else {
+            refreshIntervalSeconds = stateInactiveRefreshIntervalSeconds;
+        }
+        if (rescheduleStatePoll(refreshIntervalSeconds, refreshIntervalSeconds, false)) {
+            // After job has been rescheduled, request operating data one last time on next poll.
+            // This is needed to update battery values after a charging cycle has completed.
+            operatingDataTimestamp = Instant.MIN;
+        }
+    }
+
+    private void refreshOperatingDataConditionally(boolean isActive)
+            throws IndegoAuthenticationException, IndegoUnreachableException, IndegoException {
+        // Refresh operating data only occationally or when robot is active/charging.
+        // This will contact the robot directly through cellular network and wake it up
+        // when sleeping.
+        if ((isActive && operatingDataTimestamp
+                .isBefore(Instant.now().minus(OPERATING_DATA_ACTIVE_REFRESH_INTERVAL_DURATION)))
+                || operatingDataTimestamp
+                        .isBefore(Instant.now().minus(OPERATING_DATA_INACTIVE_REFRESH_INTERVAL_DURATION))) {
+            refreshOperatingData();
+        }
     }
 
     private void refreshOperatingData()
             throws IndegoAuthenticationException, IndegoUnreachableException, IndegoException {
         updateOperatingData(controller.getOperatingData());
+        operatingDataTimestamp = Instant.now();
         updateStatus(ThingStatus.ONLINE);
     }
 
     private void refreshCuttingTimesWithExceptionHandling() {
         try {
-            refreshCuttingTimes();
+            refreshLastCuttingTime();
+            refreshNextCuttingTime();
         } catch (IndegoAuthenticationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.comm-error.authentication-failure");
@@ -286,7 +364,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
         }
     }
 
-    private void refreshCuttingTimes() throws IndegoAuthenticationException, IndegoException {
+    private void refreshLastCuttingTime() throws IndegoAuthenticationException, IndegoException {
         if (isLinked(LAST_CUTTING)) {
             Instant lastCutting = controller.getPredictiveLastCutting();
             if (lastCutting != null) {
@@ -296,7 +374,20 @@ public class BoschIndegoHandler extends BaseThingHandler {
                 updateState(LAST_CUTTING, UnDefType.UNDEF);
             }
         }
+    }
 
+    private void refreshNextCuttingTimeWithExceptionHandling() {
+        try {
+            refreshNextCuttingTime();
+        } catch (IndegoAuthenticationException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.comm-error.authentication-failure");
+        } catch (IndegoException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        }
+    }
+
+    private void refreshNextCuttingTime() throws IndegoAuthenticationException, IndegoException {
         cancelCuttingTimeRefresh();
         if (isLinked(NEXT_CUTTING)) {
             Instant nextCutting = controller.getPredictiveNextCutting();
@@ -320,12 +411,11 @@ public class BoschIndegoHandler extends BaseThingHandler {
     }
 
     private void scheduleCuttingTimesRefresh(Instant nextCutting) {
-        // Schedule additional update right after next planned cutting. This ensures a faster update
-        // in case the next cutting will be postponed (for example due to weather conditions).
+        // Schedule additional update right after next planned cutting. This ensures a faster update.
         long secondsUntilNextCutting = Instant.now().until(nextCutting, ChronoUnit.SECONDS) + 2;
         if (secondsUntilNextCutting > 0) {
-            logger.debug("Scheduling fetching of cutting times in {} seconds", secondsUntilNextCutting);
-            this.cuttingTimeFuture = scheduler.schedule(this::refreshCuttingTimesWithExceptionHandling,
+            logger.debug("Scheduling fetching of next cutting time in {} seconds", secondsUntilNextCutting);
+            this.cuttingTimeFuture = scheduler.schedule(this::refreshNextCuttingTimeWithExceptionHandling,
                     secondsUntilNextCutting, TimeUnit.SECONDS);
         }
     }
@@ -359,9 +449,23 @@ public class BoschIndegoHandler extends BaseThingHandler {
         updateState(GARDEN_MAP, new RawType(svgMap.getBytes(), cachedMap.getMimeType()));
     }
 
+    private void trackPosition() throws IndegoAuthenticationException, IndegoException {
+        if (!isLinked(GARDEN_MAP)) {
+            return;
+        }
+        if (mapRefreshStartedTimestamp.isBefore(Instant.now().minus(MAP_REFRESH_SESSION_DURATION))) {
+            int count = (int) MAP_REFRESH_SESSION_DURATION.getSeconds() / stateActiveRefreshIntervalSeconds + 1;
+            logger.debug("Requesting position updates (count: {}; interval: {}s), previously triggered {}", count,
+                    stateActiveRefreshIntervalSeconds, mapRefreshStartedTimestamp);
+            controller.requestPosition(count, stateActiveRefreshIntervalSeconds);
+            mapRefreshStartedTimestamp = Instant.now();
+        }
+    }
+
     private void updateState(DeviceStateResponse state) {
         DeviceStatus deviceStatus = DeviceStatus.fromCode(state.state);
-        int status = getStatusFromCommand(deviceStatus.getAssociatedCommand());
+        DeviceCommand associatedCommand = deviceStatus.getAssociatedCommand();
+        int status = associatedCommand != null ? getStatusFromCommand(associatedCommand) : 0;
         int mowed = state.mowed;
         int error = state.error;
         int statecode = state.state;
@@ -390,7 +494,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
     private boolean verifyCommand(DeviceCommand command, DeviceStatus deviceStatus, int errorCode) {
         // Mower reported an error
         if (errorCode != 0) {
-            logger.error("The mower reported an error.");
+            logger.warn("The mower reported an error.");
             return false;
         }
 
@@ -401,35 +505,27 @@ public class BoschIndegoHandler extends BaseThingHandler {
         }
         // Can't pause while the mower is docked
         if (command == DeviceCommand.PAUSE && deviceStatus.getAssociatedCommand() == DeviceCommand.RETURN) {
-            logger.debug("Can't pause the mower while it's docked or docking");
+            logger.info("Can't pause the mower while it's docked or docking");
             return false;
         }
         // Command means "MOW" but mower is not ready
         if (command == DeviceCommand.MOW && !isReadyToMow(deviceStatus, errorCode)) {
-            logger.debug("The mower is not ready to mow at the moment");
+            logger.info("The mower is not ready to mow at the moment");
             return false;
         }
         return true;
     }
 
-    private int getStatusFromCommand(@Nullable DeviceCommand command) {
-        if (command == null) {
-            return 0;
-        }
-        int status;
+    private int getStatusFromCommand(DeviceCommand command) {
         switch (command) {
             case MOW:
-                status = 1;
-                break;
+                return 1;
             case RETURN:
-                status = 2;
-                break;
+                return 2;
             case PAUSE:
-                status = 3;
-                break;
+                return 3;
             default:
-                status = 0;
+                return 0;
         }
-        return status;
     }
 }
