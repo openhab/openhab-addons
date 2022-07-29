@@ -8,12 +8,12 @@ His [Java Library](https://github.com/zazaz-de/iot-device-bosch-indego-controlle
 
 Currently the binding supports  ***indego***  mowers as a thing type with these configuration parameters:
 
-| Parameter             | Description                                                             | Default |
-|-----------------------|-------------------------------------------------------------------------|---------|
-| username              | Username for the Bosch Indego account                                   |         |
-| password              | Password for the Bosch Indego account                                   |         |
-| refresh               | The number of seconds between refreshing device state                   | 180     |
-| cuttingTimeMapRefresh | The number of minutes between refreshing last/next cutting time and map | 60      |
+| Parameter          | Description                                                     | Default |
+|--------------------|-----------------------------------------------------------------|---------|
+| username           | Username for the Bosch Indego account                           |         |
+| password           | Password for the Bosch Indego account                           |         |
+| refresh            | The number of seconds between refreshing device state           | 180     |
+| cuttingTimeRefresh | The number of minutes between refreshing last/next cutting time | 60      |
 
 ## Channels
 

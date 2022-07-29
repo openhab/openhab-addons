@@ -19,6 +19,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.DateTimeException;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -289,9 +291,6 @@ public class ShellyUtils {
 
     public static DateTimeType getTimestamp(String zone, long timestamp) {
         try {
-            if (timestamp == 0) {
-                throw new IllegalArgumentException("Timestamp value 0 is invalid");
-            }
             ZoneId zoneId = !zone.isEmpty() ? ZoneId.of(zone) : ZoneId.systemDefault();
             ZonedDateTime zdt = LocalDateTime.now().atZone(zoneId);
             int delta = zdt.getOffset().getTotalSeconds();
@@ -345,5 +344,35 @@ public class ShellyUtils {
             strength = 0;
         }
         return new DecimalType(strength);
+    }
+
+    public static boolean isDigit(char c) {
+        return c >= '0' && c <= '9';
+    }
+
+    public static char lastChar(String s) {
+        return s.length() > 1 ? s.charAt(s.length() - 1) : '*';
+    }
+
+    public static String sha256(String string) throws ShellyApiException {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            final byte[] hashbytes = digest.digest(string.getBytes(StandardCharsets.UTF_8));
+            return bytesToHex(hashbytes);
+        } catch (NoSuchAlgorithmException e) {
+            throw new ShellyApiException("SHA256 can't be initialzed", e);
+        }
+    }
+
+    public static String bytesToHex(byte[] bytes) {
+        StringBuilder hexString = new StringBuilder(2 * bytes.length);
+        for (int i = 0; i < bytes.length; i++) {
+            String hex = Integer.toHexString(0xff & bytes[i]);
+            if (hex.length() == 1) {
+                hexString.append('0');
+            }
+            hexString.append(hex);
+        }
+        return hexString.toString();
     }
 }

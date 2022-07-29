@@ -379,7 +379,6 @@
 		<item-type>Dimmer</item-type>
 		<label>@text/channel-type.shelly.rollerPosition.label</label>
 		<description>@text/channel-type.shelly.rollerPosition.description</description>
-		<category>Blinds</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Level</tag>

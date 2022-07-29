@@ -46,6 +46,8 @@ public class HDPowerViewBindingConstants {
     public static final String CHANNEL_SHADE_BATTERY_LEVEL = "batteryLevel";
     public static final String CHANNEL_SHADE_BATTERY_VOLTAGE = "batteryVoltage";
     public static final String CHANNEL_SHADE_SIGNAL_STRENGTH = "signalStrength";
+    public static final String CHANNEL_SHADE_HUB_RSSI = "hubRssi";
+    public static final String CHANNEL_SHADE_REPEATER_RSSI = "repeaterRssi";
 
     public static final String CHANNEL_REPEATER_COLOR = "color";
     public static final String CHANNEL_REPEATER_BRIGHTNESS = "brightness";
@@ -63,6 +65,7 @@ public class HDPowerViewBindingConstants {
     // Hub properties
     public static final String PROPERTY_FIRMWARE_NAME = "firmwareName";
     public static final String PROPERTY_RADIO_FIRMWARE_VERSION = "radioFirmwareVersion";
+    public static final String PROPERTY_HUB_NAME = "hubName";
 
     // Shade properties
     public static final String PROPERTY_SHADE_TYPE = "type";

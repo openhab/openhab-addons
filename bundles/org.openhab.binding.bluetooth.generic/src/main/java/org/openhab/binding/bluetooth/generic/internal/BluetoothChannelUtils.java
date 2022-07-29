@@ -22,6 +22,13 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.bluetooth.gattparser.BluetoothGattParser;
+import org.openhab.bluetooth.gattparser.FieldHolder;
+import org.openhab.bluetooth.gattparser.GattRequest;
+import org.openhab.bluetooth.gattparser.spec.Enumeration;
+import org.openhab.bluetooth.gattparser.spec.Field;
+import org.openhab.bluetooth.gattparser.spec.FieldFormat;
+import org.openhab.bluetooth.gattparser.spec.FieldType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
@@ -29,13 +36,6 @@ import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.sputnikdev.bluetooth.gattparser.BluetoothGattParser;
-import org.sputnikdev.bluetooth.gattparser.FieldHolder;
-import org.sputnikdev.bluetooth.gattparser.GattRequest;
-import org.sputnikdev.bluetooth.gattparser.spec.Enumeration;
-import org.sputnikdev.bluetooth.gattparser.spec.Field;
-import org.sputnikdev.bluetooth.gattparser.spec.FieldFormat;
-import org.sputnikdev.bluetooth.gattparser.spec.FieldType;
 
 /**
  * The {@link BluetoothChannelUtils} contains utility functions used by the GattChannelHandler

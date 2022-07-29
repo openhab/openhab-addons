@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.rotel.internal;
 
+import static org.openhab.binding.rotel.internal.RotelBindingConstants.MAX_NUMBER_OF_ZONES;
 import static org.openhab.binding.rotel.internal.communication.RotelCommand.*;
 import static org.openhab.binding.rotel.internal.protocol.ascii.RotelAbstractAsciiProtocolHandler.*;
 
@@ -89,6 +90,8 @@ public enum RotelModel {
     RT1570("RT-1570", 115200, 14, null, false, null, false, -1, false, true, 6, 0, NO_SPECIAL_CHARACTERS),
     T11("T11", 115200, 12, null, false, null, false, -1, false, true, 6, 0, NO_SPECIAL_CHARACTERS),
     T14("T14", 115200, 13, null, false, null, false, -1, false, true, 6, 0, NO_SPECIAL_CHARACTERS),
+    C8("C8", 115200, POWER, 21, 3, true, false, 96, true, 10, false, 10, false, null, -1, true, false, true, 4, 0,
+            (byte) 0, 0, 0, false, RotelFlagsMapping.NO_MAPPING, NO_SPECIAL_CHARACTERS),
     M8("M8", 115200, 0, null, false, null, false, -1, false, true, 4, 0, NO_SPECIAL_CHARACTERS),
     P5("P5", 115200, 20, 96, true, 10, 10, false, -1, true, false, true, 4, 0, NO_SPECIAL_CHARACTERS),
     S5("S5", 115200, 0, null, false, null, false, -1, false, true, 4, 0, NO_SPECIAL_CHARACTERS),
@@ -101,9 +104,11 @@ public enum RotelModel {
     private int sourceCategory;
     private int nbAdditionalZones;
     private boolean additionalCommands;
+    private boolean powerControlPerZone;
     private @Nullable Integer volumeMax;
     private boolean directVolume;
     private @Nullable Integer toneLevelMax;
+    private boolean getBypassStatusAvailable;
     private boolean playControl;
     private @Nullable RotelCommand zoneSelectCmd;
     private int dspCategory;
@@ -144,9 +149,9 @@ public enum RotelModel {
             @Nullable Integer volumeMax, boolean directVolume, @Nullable Integer toneLevelMax, boolean playControl,
             @Nullable RotelCommand zoneSelectCmd, int dspCategory, byte deviceId, int respNbChars, int respNbFlags,
             boolean charsBeforeFlags, RotelFlagsMapping flagsMapping) {
-        this(name, baudRate, DISPLAY_REFRESH, sourceCategory, nbAdditionalZones, additionalCommands, volumeMax,
-                directVolume, toneLevelMax, null, playControl, zoneSelectCmd, dspCategory, false, false, false, null,
-                null, deviceId, respNbChars, respNbFlags, charsBeforeFlags, flagsMapping, NO_SPECIAL_CHARACTERS);
+        this(name, baudRate, DISPLAY_REFRESH, sourceCategory, nbAdditionalZones, additionalCommands, true, volumeMax,
+                directVolume, toneLevelMax, false, null, playControl, zoneSelectCmd, dspCategory, false, false, false,
+                null, null, deviceId, respNbChars, respNbFlags, charsBeforeFlags, flagsMapping, NO_SPECIAL_CHARACTERS);
     }
 
     /**
@@ -170,9 +175,10 @@ public enum RotelModel {
             @Nullable Integer toneLevelMax, boolean playControl, int dspCategory, boolean getFrequencyAvailable,
             boolean getDimmerLevelAvailable, @Nullable Integer diummerLevelMin, @Nullable Integer diummerLevelMax,
             byte[][] specialCharacters) {
-        this(name, baudRate, POWER, sourceCategory, 0, false, volumeMax, directVolume, toneLevelMax, null, playControl,
-                null, dspCategory, getFrequencyAvailable, false, getDimmerLevelAvailable, diummerLevelMin,
-                diummerLevelMax, (byte) 0, 0, 0, false, RotelFlagsMapping.NO_MAPPING, specialCharacters);
+        this(name, baudRate, POWER, sourceCategory, 0, false, false, volumeMax, directVolume, toneLevelMax,
+                toneLevelMax != null, null, playControl, null, dspCategory, getFrequencyAvailable, false,
+                getDimmerLevelAvailable, diummerLevelMin, diummerLevelMax, (byte) 0, 0, 0, false,
+                RotelFlagsMapping.NO_MAPPING, specialCharacters);
     }
 
     /**
@@ -198,10 +204,10 @@ public enum RotelModel {
             @Nullable Integer toneLevelMax, @Nullable Integer balanceLevelMax, boolean playControl, int dspCategory,
             boolean getFrequencyAvailable, boolean getSpeakerGroupsAvailable, boolean getDimmerLevelAvailable,
             @Nullable Integer diummerLevelMin, @Nullable Integer diummerLevelMax, byte[][] specialCharacters) {
-        this(name, baudRate, POWER, sourceCategory, 0, false, volumeMax, directVolume, toneLevelMax, balanceLevelMax,
-                playControl, null, dspCategory, getFrequencyAvailable, getSpeakerGroupsAvailable,
-                getDimmerLevelAvailable, diummerLevelMin, diummerLevelMax, (byte) 0, 0, 0, false,
-                RotelFlagsMapping.NO_MAPPING, specialCharacters);
+        this(name, baudRate, POWER, sourceCategory, 0, false, false, volumeMax, directVolume, toneLevelMax,
+                toneLevelMax != null, balanceLevelMax, playControl, null, dspCategory, getFrequencyAvailable,
+                getSpeakerGroupsAvailable, getDimmerLevelAvailable, diummerLevelMin, diummerLevelMax, (byte) 0, 0, 0,
+                false, RotelFlagsMapping.NO_MAPPING, specialCharacters);
     }
 
     /**
@@ -213,9 +219,11 @@ public enum RotelModel {
      * @param sourceCategory the category from {@link RotelSource}
      * @param nbAdditionalZones the number of additional zones
      * @param additionalCommands true if other than primary commands are available
+     * @param powerControlPerZone true if device supports power control per zone
      * @param volumeMax the maximum volume or null if no volume management is available
      * @param directVolume true if a command to set the volume with a value is available
      * @param toneLevelMax the maximum tone level or null if no bass/treble management is available
+     * @param getBypassStatusAvailable true if the command to get the bypass status for tone control is available
      * @param balanceLevelMax the maximum balance level or null if no balance management is available
      * @param playControl true if control of source playback is available
      * @param zoneSelectCmd the command to be used to select a zone
@@ -233,9 +241,9 @@ public enum RotelModel {
      * @param specialCharacters the table of special characters that can be found in the standard response message
      */
     private RotelModel(String name, int baudRate, RotelCommand powerStateCmd, int sourceCategory, int nbAdditionalZones,
-            boolean additionalCommands, @Nullable Integer volumeMax, boolean directVolume,
-            @Nullable Integer toneLevelMax, @Nullable Integer balanceLevelMax, boolean playControl,
-            @Nullable RotelCommand zoneSelectCmd, int dspCategory, boolean getFrequencyAvailable,
+            boolean additionalCommands, boolean powerControlPerZone, @Nullable Integer volumeMax, boolean directVolume,
+            @Nullable Integer toneLevelMax, boolean getBypassStatusAvailable, @Nullable Integer balanceLevelMax,
+            boolean playControl, @Nullable RotelCommand zoneSelectCmd, int dspCategory, boolean getFrequencyAvailable,
             boolean getSpeakerGroupsAvailable, boolean getDimmerLevelAvailable, @Nullable Integer diummerLevelMin,
             @Nullable Integer diummerLevelMax, byte deviceId, int respNbChars, int respNbFlags,
             boolean charsBeforeFlags, RotelFlagsMapping flagsMapping, byte[][] specialCharacters) {
@@ -245,9 +253,11 @@ public enum RotelModel {
         this.sourceCategory = sourceCategory;
         this.nbAdditionalZones = nbAdditionalZones;
         this.additionalCommands = additionalCommands;
+        this.powerControlPerZone = powerControlPerZone;
         this.volumeMax = volumeMax;
         this.directVolume = directVolume;
         this.toneLevelMax = toneLevelMax;
+        this.getBypassStatusAvailable = getBypassStatusAvailable;
         this.balanceLevelMax = balanceLevelMax;
         this.playControl = playControl;
         this.zoneSelectCmd = zoneSelectCmd;
@@ -302,12 +312,16 @@ public enum RotelModel {
     }
 
     /**
-     * Get the number of additional zones
+     * Get the number of zones
      *
-     * @return the number of additional zones
+     * @return the number of zones
      */
-    public int getNbAdditionalZones() {
-        return nbAdditionalZones;
+    public int getNumberOfZones() {
+        return nbAdditionalZones + 1;
+    }
+
+    private boolean isZoneAvailable(int numZone) {
+        return numZone >= 1 && numZone <= getNumberOfZones();
     }
 
     /**
@@ -320,57 +334,40 @@ public enum RotelModel {
     }
 
     /**
-     * Inform whether zone 2 commands are available
+     * Inform whether zone N commands are available
      *
-     * @return true if zone 2 commands are available
+     * @param numZone the zone number, 1 for for zone 1 until 4 for zone 4
+     *
+     * @return true if zone N commands are available
      */
-    public boolean hasZone2Commands() {
-        return nbAdditionalZones >= 1 && additionalCommands;
+    public boolean hasZoneCommands(int numZone) {
+        if (numZone < 1 || numZone > MAX_NUMBER_OF_ZONES) {
+            throw new IllegalArgumentException("numZone must be in range 1-" + MAX_NUMBER_OF_ZONES);
+        }
+        return additionalCommands && isZoneAvailable(numZone);
     }
 
     /**
-     * Inform whether zone 3 commands are available
+     * Inform whether source control is available in a zone
      *
-     * @return true if zone 3 commands are available
-     */
-    public boolean hasZone3Commands() {
-        return nbAdditionalZones >= 2 && additionalCommands;
-    }
-
-    /**
-     * Inform whether zone 4 commands are available
-     *
-     * @return true if zone 4 commands are available
-     */
-    public boolean hasZone4Commands() {
-        return nbAdditionalZones >= 3 && additionalCommands;
-    }
-
-    /**
-     * Inform whether source control is available in the zone 2
+     * @param numZone the zone number, 1 for zone 1 until 4 for zone 4
      *
      * @return true if source control is available
      */
-    public boolean hasZone2SourceControl() {
-        return sourceCategory >= 1 && nbAdditionalZones >= 1;
+    public boolean hasZoneSourceControl(int numZone) {
+        if (numZone < 1 || numZone > MAX_NUMBER_OF_ZONES) {
+            throw new IllegalArgumentException("numZone must be in range 1-" + MAX_NUMBER_OF_ZONES);
+        }
+        return hasSourceControl() && isZoneAvailable(numZone);
     }
 
     /**
-     * Inform whether source control is available in the zone 3
+     * Inform whether device supports power control per zone
      *
-     * @return true if source control is available
+     * @return true if device supports power control per zone
      */
-    public boolean hasZone3SourceControl() {
-        return sourceCategory >= 1 && nbAdditionalZones >= 2;
-    }
-
-    /**
-     * Inform whether source control is available in the zone 4
-     *
-     * @return true if source control is available
-     */
-    public boolean hasZone4SourceControl() {
-        return sourceCategory >= 1 && nbAdditionalZones >= 3;
+    public boolean hasPowerControlPerZone() {
+        return powerControlPerZone;
     }
 
     /**
@@ -408,6 +405,15 @@ public enum RotelModel {
      */
     public boolean hasToneControl() {
         return toneLevelMax != null;
+    }
+
+    /**
+     * Inform whether the command to get the current bypass status for tone control is available
+     *
+     * @return true if the command is available
+     */
+    public boolean canGetBypassStatus() {
+        return getBypassStatusAvailable;
     }
 
     /**
@@ -577,40 +583,17 @@ public enum RotelModel {
     }
 
     /**
-     * Get the list of available {@link RotelSource} in the main zone
+     * Get the list of available {@link RotelSource} in a zone
      *
-     * @return the list of available {@link RotelSource} in the main zone
-     */
-    public List<RotelSource> getMainZoneSources() {
-        return (hasSourceControl() && hasOtherThanPrimaryCommands()) ? RotelSource.getSources(sourceCategory, 1)
-                : new ArrayList<>();
-    }
-
-    /**
-     * Get the list of available {@link RotelSource} in the zone 2
+     * @param numZone the zone number, 1 for zone 1 until 4 for zone 4
      *
      * @return the list of available {@link RotelSource} in the zone 2
      */
-    public List<RotelSource> getZone2Sources() {
-        return hasZone2SourceControl() ? RotelSource.getSources(sourceCategory, 2) : new ArrayList<>();
-    }
-
-    /**
-     * Get the list of available {@link RotelSource} in the zone 3
-     *
-     * @return the list of available {@link RotelSource} in the zone 3
-     */
-    public List<RotelSource> getZone3Sources() {
-        return hasZone3SourceControl() ? RotelSource.getSources(sourceCategory, 3) : new ArrayList<>();
-    }
-
-    /**
-     * Get the list of available {@link RotelSource} in the zone 4
-     *
-     * @return the list of available {@link RotelSource} in the zone 4
-     */
-    public List<RotelSource> getZone4Sources() {
-        return hasZone4SourceControl() ? RotelSource.getSources(sourceCategory, 4) : new ArrayList<>();
+    public List<RotelSource> getZoneSources(int numZone) {
+        if (numZone < 1 || numZone > MAX_NUMBER_OF_ZONES) {
+            throw new IllegalArgumentException("numZone must be in range 1-" + MAX_NUMBER_OF_ZONES);
+        }
+        return hasZoneSourceControl(numZone) ? RotelSource.getSources(sourceCategory, numZone) : new ArrayList<>();
     }
 
     /**
@@ -649,55 +632,20 @@ public enum RotelModel {
     }
 
     /**
-     * Get the main zone source associated to a command
+     * Get the zone N source associated to a command
      *
-     * @param command the command used to identify the main zone source
+     * @param command the command used to identify the zone N source
+     * @param numZone the zone number, 1 for zone 1 until 4 for zone 4
      *
-     * @return the main zone source associated to the searched command
+     * @return the zone N source associated to the searched command
      *
-     * @throws RotelException - If no main zone source is associated to the searched command
+     * @throws RotelException - If no zone N source is associated to the searched command
      */
-    public RotelSource getMainZoneSourceFromCommand(RotelCommand command) throws RotelException {
-        return RotelSource.getFromCommand(sourceCategory, command, 1);
-    }
-
-    /**
-     * Get the zone 2 source associated to a command
-     *
-     * @param command the command used to identify the zone 2 source
-     *
-     * @return the zone 2 source associated to the searched command
-     *
-     * @throws RotelException - If no zone 2 source is associated to the searched command
-     */
-    public RotelSource getZone2SourceFromCommand(RotelCommand command) throws RotelException {
-        return RotelSource.getFromCommand(sourceCategory, command, 2);
-    }
-
-    /**
-     * Get the zone 3 source associated to a command
-     *
-     * @param command the command used to identify the zone 3 source
-     *
-     * @return the zone 3 source associated to the searched command
-     *
-     * @throws RotelException - If no zone 3 source is associated to the searched command
-     */
-    public RotelSource getZone3SourceFromCommand(RotelCommand command) throws RotelException {
-        return RotelSource.getFromCommand(sourceCategory, command, 3);
-    }
-
-    /**
-     * Get the zone 4 source associated to a command
-     *
-     * @param command the command used to identify the zone 4 source
-     *
-     * @return the zone 4 source associated to the searched command
-     *
-     * @throws RotelException - If no zone 4 source is associated to the searched command
-     */
-    public RotelSource getZone4SourceFromCommand(RotelCommand command) throws RotelException {
-        return RotelSource.getFromCommand(sourceCategory, command, 4);
+    public RotelSource getZoneSourceFromCommand(RotelCommand command, int numZone) throws RotelException {
+        if (numZone < 1 || numZone > MAX_NUMBER_OF_ZONES) {
+            throw new IllegalArgumentException("numZone must be in range 1-" + MAX_NUMBER_OF_ZONES);
+        }
+        return RotelSource.getFromCommand(sourceCategory, command, numZone);
     }
 
     /**

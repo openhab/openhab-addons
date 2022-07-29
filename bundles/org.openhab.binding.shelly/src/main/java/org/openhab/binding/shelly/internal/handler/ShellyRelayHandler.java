@@ -13,22 +13,22 @@
 package org.openhab.binding.shelly.internal.handler;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
-import static org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.*;
+import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyControlRoller;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsDimmer;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsRelay;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsRoller;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsStatus;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyShortLightStatus;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyShortStatusRelay;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyStatusRelay;
-import org.openhab.binding.shelly.internal.coap.ShellyCoapServer;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyRollerStatus;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDimmer;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRelay;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRoller;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyShortLightStatus;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyShortStatusRelay;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusRelay;
+import org.openhab.binding.shelly.internal.api1.Shelly1CoapServer;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
 import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
@@ -69,7 +69,7 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
      * @param httpPort port of the openHAB HTTP API
      */
     public ShellyRelayHandler(final Thing thing, final ShellyTranslationProvider translationProvider,
-            final ShellyBindingConfiguration bindingConfig, final ShellyCoapServer coapServer, final String localIP,
+            final ShellyBindingConfiguration bindingConfig, final Shelly1CoapServer coapServer, final String localIP,
             int httpPort, final HttpClient httpClient) {
         super(thing, translationProvider, bindingConfig, coapServer, localIP, httpPort, httpClient);
     }
@@ -222,7 +222,7 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
         int position = -1;
 
         if ((command instanceof UpDownType) || (command instanceof OnOffType)) {
-            ShellyControlRoller rstatus = api.getRollerStatus(index);
+            ShellyRollerStatus rstatus = api.getRollerStatus(index);
 
             if (!getString(rstatus.state).isEmpty() && !getString(rstatus.state).equals(SHELLY_ALWD_ROLLER_TURN_STOP)) {
                 if ((command == UpDownType.UP && getString(rstatus.state).equals(SHELLY_ALWD_ROLLER_TURN_OPEN))
@@ -317,7 +317,7 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
         }
     }
 
-    private void createRollerChannels(ShellyControlRoller roller) {
+    private void createRollerChannels(ShellyRollerStatus roller) {
         if (!areChannelsCreated()) {
             updateChannelDefinitions(ShellyChannelDefinitions.createRollerChannels(getThing(), roller));
         }
@@ -335,7 +335,7 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
     public boolean updateRelays(ShellySettingsStatus status) throws ShellyApiException {
         boolean updated = false;
         // Check for Relay in Standard Mode
-        if (profile.hasRelays && !profile.isRoller && !profile.isDimmer) {
+        if (profile.hasRelays && !profile.isDimmer) {
             double voltage = -1;
             if (status.voltage == null && profile.settings.supplyVoltage != null) {
                 // Shelly 1PM/1L (fix)
@@ -348,7 +348,9 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                 updated |= updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_VOLTAGE,
                         toQuantityType(voltage, DIGITS_VOLT, Units.VOLT));
             }
+        }
 
+        if (profile.hasRelays && !profile.isRoller && !profile.isDimmer) {
             logger.trace("{}: Updating {} relay(s)", thingName, profile.numRelays);
             int i = 0;
             ShellyStatusRelay rstatus = api.getRelayStatus(i);
@@ -404,7 +406,7 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
 
             for (ShellySettingsRoller roller : status.rollers) {
                 if (roller.isValid) {
-                    ShellyControlRoller control = api.getRollerStatus(i);
+                    ShellyRollerStatus control = api.getRollerStatus(i);
                     Integer relayIndex = i + 1;
                     String groupName = profile.numRollers > 1 ? CHANNEL_GROUP_ROL_CONTROL + relayIndex.toString()
                             : CHANNEL_GROUP_ROL_CONTROL;
@@ -454,7 +456,7 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
             // the same structure as lights[] from Bulb,RGBW2 and Duo. The tag gets replaced by dimmers[] so that Gson
             // maps to a different structure (ShellyShortLight).
             Gson gson = new Gson();
-            ShellySettingsStatus dstatus = fromJson(gson, ShellyApiJsonDTO.fixDimmerJson(orgStatus.json),
+            ShellySettingsStatus dstatus = fromJson(gson, Shelly1ApiJsonDTO.fixDimmerJson(orgStatus.json),
                     ShellySettingsStatus.class);
 
             logger.trace("{}: Updating {} dimmers(s)", thingName, dstatus.dimmers.size());
@@ -479,12 +481,14 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                             toQuantityType(0.0, DIGITS_NONE, Units.PERCENT));
                 }
 
-                ShellySettingsDimmer dsettings = profile.settings.dimmers.get(l);
-                if (dsettings != null) {
-                    updated |= updateChannel(groupName, CHANNEL_TIMER_AUTOON,
-                            toQuantityType(getDouble(dsettings.autoOn), Units.SECOND));
-                    updated |= updateChannel(groupName, CHANNEL_TIMER_AUTOOFF,
-                            toQuantityType(getDouble(dsettings.autoOff), Units.SECOND));
+                if (profile.settings.dimmers != null) {
+                    ShellySettingsDimmer dsettings = profile.settings.dimmers.get(l);
+                    if (dsettings != null) {
+                        updated |= updateChannel(groupName, CHANNEL_TIMER_AUTOON,
+                                toQuantityType(getDouble(dsettings.autoOn), Units.SECOND));
+                        updated |= updateChannel(groupName, CHANNEL_TIMER_AUTOOFF,
+                                toQuantityType(getDouble(dsettings.autoOff), Units.SECOND));
+                    }
                 }
 
                 l++;

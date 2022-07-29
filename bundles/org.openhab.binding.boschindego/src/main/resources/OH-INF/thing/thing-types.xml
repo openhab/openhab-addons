@@ -38,9 +38,9 @@
 				<description>The number of seconds between refreshing device state.</description>
 				<default>180</default>
 			</parameter>
-			<parameter name="cuttingTimeMapRefresh" type="integer" min="1">
-				<label>Cutting Time/Map Refresh Interval</label>
-				<description>The number of minutes between refreshing last/next cutting time and map.</description>
+			<parameter name="cuttingTimeRefresh" type="integer" min="1">
+				<label>Cutting Time Refresh Interval</label>
+				<description>The number of minutes between refreshing last/next cutting time.</description>
 				<advanced>true</advanced>
 				<default>60</default>
 			</parameter>
