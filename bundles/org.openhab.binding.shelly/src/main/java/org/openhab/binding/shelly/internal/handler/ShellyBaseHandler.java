@@ -369,12 +369,12 @@ public class ShellyBaseHandler extends BaseThingHandler
                 profile.hostname, profile.deviceType, profile.hwRev, profile.hwBatchId, profile.fwVersion,
                 profile.fwDate);
         logger.debug("{}: Shelly settings info for {}: {}", thingName, profile.hostname, profile.settingsJson);
-        logger.debug("{}: Device alwaysOn: {},"
+        logger.debug("{}: Device "
                 + "hasRelays:{} (numRelays={}),isRoller:{} (numRoller={}),isDimmer:{},numMeter={},isEMeter:{})"
                 + ",isSensor:{},isDS:{},hasBattery:{}{},isSense:{},isMotion:{},isLight:{},isBulb:{},isDuo:{},isRGBW2:{},inColor:{}"
-                + ",alwaysOn:{}, updatePeriod:{}sec", thingName, profile.alwaysOn, profile.hasRelays, profile.numRelays,
-                profile.isRoller, profile.numRollers, profile.isDimmer, profile.numMeters, profile.isEMeter,
-                profile.isSensor, profile.isDW, profile.hasBattery,
+                + ",alwaysOn:{}, updatePeriod:{}sec", thingName, profile.hasRelays, profile.numRelays, profile.isRoller,
+                profile.numRollers, profile.isDimmer, profile.numMeters, profile.isEMeter, profile.isSensor,
+                profile.isDW, profile.hasBattery,
                 profile.hasBattery ? " (low battery threshold=" + config.lowBattery + "%)" : "", profile.isSense,
                 profile.isMotion, profile.isLight, profile.isBulb, profile.isDuo, profile.isRGBW2, profile.inColor,
                 profile.alwaysOn, profile.updatePeriod);
@@ -442,6 +442,7 @@ public class ShellyBaseHandler extends BaseThingHandler
                         logger.warn("{}: Invalid profile Id {} requested", thingName, profile);
                         api.setValveProfile(0, id);
                     }
+                    api.setValveProfile(0, id);
                     break;
                 case CHANNEL_CONTROL_MODE:
                     logger.debug("{}: Set mode to {}", thingName, command);
@@ -511,7 +512,7 @@ public class ShellyBaseHandler extends BaseThingHandler
 
             if (vibrationFilter > 0) {
                 vibrationFilter--;
-                logger.debug("{}: Vibration events are absorbed for {} more seconds", thingName,
+                logger.debug("{}: Vibration events are absorbed for {} more seconds", thingName,
                         vibrationFilter * UPDATE_STATUS_INTERVAL_SECONDS);
             }
 
