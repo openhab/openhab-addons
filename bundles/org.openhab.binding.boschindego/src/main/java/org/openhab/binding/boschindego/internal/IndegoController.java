@@ -13,6 +13,7 @@
 package org.openhab.binding.boschindego.internal;
 
 import java.net.URI;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Base64;
 import java.util.concurrent.ExecutionException;
@@ -550,6 +551,21 @@ public class IndegoController {
      */
     public DeviceStateResponse getState() throws IndegoAuthenticationException, IndegoException {
         return getRequestWithAuthentication(SERIAL_NUMBER_SUBPATH + this.getSerialNumber() + "/state",
+                DeviceStateResponse.class);
+    }
+
+    /**
+     * Queries the device state from the server. This overload will return when the state
+     * has changed, or the timeout has been reached.
+     * 
+     * @param timeout Maximum time to wait for response
+     * @return the device state
+     * @throws IndegoAuthenticationException if request was rejected as unauthorized
+     * @throws IndegoException if any communication or parsing error occurred
+     */
+    public DeviceStateResponse getState(Duration timeout) throws IndegoAuthenticationException, IndegoException {
+        return getRequestWithAuthentication(
+                SERIAL_NUMBER_SUBPATH + this.getSerialNumber() + "/state?longpoll=true&timeout=" + timeout.getSeconds(),
                 DeviceStateResponse.class);
     }
 

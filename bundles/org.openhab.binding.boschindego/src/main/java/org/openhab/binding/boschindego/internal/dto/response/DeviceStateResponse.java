@@ -41,7 +41,20 @@ public class DeviceStateResponse {
 
     public int yPos;
 
+    /**
+     * This is returned only for non-longpoll requests.
+     */
     public DeviceStateRuntimes runtime;
+
+    /**
+     * This is returned only for longpoll requests.
+     */
+    public long charge;
+
+    /**
+     * This is returned only for longpoll requests.
+     */
+    public long operate;
 
     @SerializedName("mowed_ts")
     public long mowedTimestamp;

@@ -74,7 +74,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
     private static final Duration OPERATING_DATA_INACTIVE_REFRESH_INTERVAL_DURATION = Duration.ofHours(6);
     private static final Duration OPERATING_DATA_ACTIVE_REFRESH_INTERVAL_DURATION = Duration.ofMinutes(2);
     private static final Duration MAP_REFRESH_SESSION_DURATION = Duration.ofMinutes(5);
-    private static final int STATE_REFRESH_DELAY_SECONDS = 10;
+    private static final Duration COMMAND_STATE_REFRESH_TIMEOUT = Duration.ofSeconds(10);
 
     private final Logger logger = LoggerFactory.getLogger(BoschIndegoHandler.class);
     private final HttpClient httpClient;
@@ -127,15 +127,15 @@ public class BoschIndegoHandler extends BaseThingHandler {
 
         updateStatus(ThingStatus.UNKNOWN);
         previousStateCode = Optional.empty();
-        rescheduleStatePoll(0, stateInactiveRefreshIntervalSeconds, false);
+        rescheduleStatePoll(0, stateInactiveRefreshIntervalSeconds);
         this.cuttingTimePollFuture = scheduler.scheduleWithFixedDelay(this::refreshCuttingTimesWithExceptionHandling, 0,
                 config.cuttingTimeRefresh, TimeUnit.MINUTES);
     }
 
-    private boolean rescheduleStatePoll(int delaySeconds, int refreshIntervalSeconds, boolean force) {
+    private boolean rescheduleStatePoll(int delaySeconds, int refreshIntervalSeconds) {
         ScheduledFuture<?> statePollFuture = this.statePollFuture;
         if (statePollFuture != null) {
-            if (refreshIntervalSeconds == currentRefreshIntervalSeconds && !force) {
+            if (refreshIntervalSeconds == currentRefreshIntervalSeconds) {
                 // No change.
                 return false;
             }
@@ -255,12 +255,16 @@ public class BoschIndegoHandler extends BaseThingHandler {
         logger.debug("Sending command {}", command);
         controller.sendCommand(command);
 
-        // State is not updated immediately, so reschedule with delay to receive new values
-        // sooner than next ordinary job cycle.
-        rescheduleStatePoll(STATE_REFRESH_DELAY_SECONDS,
-                deviceStatus.isCharging() || deviceStatus.isActive() ? stateActiveRefreshIntervalSeconds
-                        : stateInactiveRefreshIntervalSeconds,
-                true);
+        // State is not updated immediately, so await new state for some seconds.
+        // For command MOW, state will shortly be updated to 262 (docked, loading map).
+        // This is considered "active", so after this state change, polling frequency will
+        // be increased for faster updates.
+        DeviceStateResponse stateResponse = controller.getState(COMMAND_STATE_REFRESH_TIMEOUT);
+        if (stateResponse.state != 0) {
+            updateState(stateResponse);
+            deviceStatus = DeviceStatus.fromCode(stateResponse.state);
+            rescheduleStatePollAccordingToState(deviceStatus);
+        }
     }
 
     private void refreshStateWithExceptionHandling() {
@@ -317,6 +321,10 @@ public class BoschIndegoHandler extends BaseThingHandler {
         refreshOperatingDataConditionally(
                 previousDeviceStatus.isCharging() || deviceStatus.isCharging() || deviceStatus.isActive());
 
+        rescheduleStatePollAccordingToState(deviceStatus);
+    }
+
+    private void rescheduleStatePollAccordingToState(DeviceStatus deviceStatus) {
         int refreshIntervalSeconds;
         if (deviceStatus.isActive()) {
             refreshIntervalSeconds = stateActiveRefreshIntervalSeconds;
@@ -325,7 +333,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
         } else {
             refreshIntervalSeconds = stateInactiveRefreshIntervalSeconds;
         }
-        if (rescheduleStatePoll(refreshIntervalSeconds, refreshIntervalSeconds, false)) {
+        if (rescheduleStatePoll(refreshIntervalSeconds, refreshIntervalSeconds)) {
             // After job has been rescheduled, request operating data one last time on next poll.
             // This is needed to update battery values after a charging cycle has completed.
             operatingDataTimestamp = Instant.MIN;
