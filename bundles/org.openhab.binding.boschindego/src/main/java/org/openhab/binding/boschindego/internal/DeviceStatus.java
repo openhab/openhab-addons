@@ -30,8 +30,8 @@ import org.openhab.binding.boschindego.internal.dto.DeviceCommand;
 @NonNullByDefault
 public class DeviceStatus {
 
-    private final static String STATE_PREFIX = "indego.state.";
-    private final static String STATE_UNKNOWN = "unknown";
+    private static final String STATE_PREFIX = "indego.state.";
+    private static final String STATE_UNKNOWN = "unknown";
 
     private static final Map<Integer, DeviceStatus> STATUS_MAP = Map.ofEntries(
             entry(0, new DeviceStatus("reading-status", EnumSet.noneOf(DeviceStateAttribute.class),
