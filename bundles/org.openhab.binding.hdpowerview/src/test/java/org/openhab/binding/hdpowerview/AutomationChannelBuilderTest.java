@@ -52,9 +52,10 @@ public class AutomationChannelBuilderTest {
             new ThingUID(HDPowerViewBindingConstants.BINDING_ID, AutomationChannelBuilderTest.class.getSimpleName()),
             HDPowerViewBindingConstants.CHANNELTYPE_AUTOMATION_ENABLED);
 
-    private static final HDPowerViewTranslationProvider translationProvider = new HDPowerViewTranslationProvider(
+    private static final HDPowerViewTranslationProvider TRANSLATION_PROVIDER = new HDPowerViewTranslationProvider(
             mock(Bundle.class), new MockedTranslationProvider(), new MockedLocaleProvider());
-    private AutomationChannelBuilder builder = AutomationChannelBuilder.create(translationProvider, CHANNEL_GROUP_UID);
+
+    private AutomationChannelBuilder builder = AutomationChannelBuilder.create(TRANSLATION_PROVIDER, CHANNEL_GROUP_UID);
     private List<Scene> scenes = new ArrayList<>();
     private List<SceneCollection> sceneCollections = new ArrayList<>();
 
@@ -62,7 +63,7 @@ public class AutomationChannelBuilderTest {
     private void setUp() {
         final Logger logger = (Logger) LoggerFactory.getLogger(AutomationChannelBuilder.class);
         logger.setLevel(Level.OFF);
-        builder = AutomationChannelBuilder.create(translationProvider, CHANNEL_GROUP_UID);
+        builder = AutomationChannelBuilder.create(TRANSLATION_PROVIDER, CHANNEL_GROUP_UID);
 
         Scene scene = new Scene();
         scene.id = 1;

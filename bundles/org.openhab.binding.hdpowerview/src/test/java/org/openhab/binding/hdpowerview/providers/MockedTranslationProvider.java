@@ -31,7 +31,7 @@ import org.osgi.framework.Bundle;
 @NonNullByDefault
 public class MockedTranslationProvider implements TranslationProvider {
 
-    private final static Map<String, String> texts = Map.ofEntries(
+    private static final Map<String, String> TEXTS = Map.ofEntries(
             entry("dynamic-channel.scene-activate.description", "Activates the scene ''{0}''"),
             entry("dynamic-channel.scene-group-activate.description", "Activates the scene group ''{0}''"),
             entry("dynamic-channel.automation-enabled.description", "Enables/disables the automation ''{0}''"),
@@ -60,7 +60,7 @@ public class MockedTranslationProvider implements TranslationProvider {
     @Nullable
     public String getText(@Nullable Bundle bundle, @Nullable String key, @Nullable String defaultText,
             @Nullable Locale locale, @Nullable Object @Nullable... arguments) {
-        String text = texts.get(key);
+        String text = TEXTS.get(key);
         return MessageFormat.format(text != null ? text : key, arguments);
     }
 }

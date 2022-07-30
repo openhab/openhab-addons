@@ -46,13 +46,14 @@ public class SceneChannelBuilderTest {
             new ThingUID(HDPowerViewBindingConstants.BINDING_ID, SceneChannelBuilderTest.class.getSimpleName()),
             HDPowerViewBindingConstants.CHANNELTYPE_SCENE_ACTIVATE);
 
-    private static final HDPowerViewTranslationProvider translationProvider = new HDPowerViewTranslationProvider(
+    private static final HDPowerViewTranslationProvider TRANSLATION_PROVIDER = new HDPowerViewTranslationProvider(
             mock(Bundle.class), new MockedTranslationProvider(), new MockedLocaleProvider());
-    private SceneChannelBuilder builder = SceneChannelBuilder.create(translationProvider, CHANNEL_GROUP_UID);
+
+    private SceneChannelBuilder builder = SceneChannelBuilder.create(TRANSLATION_PROVIDER, CHANNEL_GROUP_UID);
 
     @BeforeEach
     private void setUp() {
-        builder = SceneChannelBuilder.create(translationProvider, CHANNEL_GROUP_UID);
+        builder = SceneChannelBuilder.create(TRANSLATION_PROVIDER, CHANNEL_GROUP_UID);
     }
 
     @Test
