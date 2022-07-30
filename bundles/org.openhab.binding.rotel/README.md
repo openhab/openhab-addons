@@ -33,6 +33,7 @@ This binding supports the following thing types:
 | a11        | Connection to the Rotel A11 integrated amplifier                              |
 | a12        | Connection to the Rotel A12 or A12MKII integrated amplifier                   |
 | a14        | Connection to the Rotel A14 or A14MKII integrated amplifier                   |
+| c8         | Connection to the Rotel C8 or C8+ distribution amplifier                      |
 | cd11       | Connection to the Rotel CD11 CD player                                        |
 | cd14       | Connection to the Rotel CD14 or CD14MKII CD player                            |
 | m8         | Connection to the Rotel Michi M8 monoblock amplifier                          |
@@ -152,25 +153,25 @@ The following channels are available:
 
 | Channel ID   | Label               | Item Type | Description                           | Possible values (depends on model) |
 |--------------|---------------------|-----------|---------------------------------------|------------------------------------|
-| power, mainZone#power, zone2#power, zone3#power, zone4#power | Power               | Switch    | Power ON/OFF the equipment or the zone | ON, OFF                            |
-| source, mainZone#source, zone2#source, zone3#source, zone4#source | Source Input        | String    | Select the source input               | CD, TUNER, TAPE, VIDEO1, VIDEO2, VIDEO3, VIDEO4, VIDEO5, VIDEO6, VIDEO7, VIDEO8, USB, PCUSB, MULTI, PHONO, BLUETOOTH, AUX, AUX1, AUX2, AUX1_COAX, AUX1_OPTICAL, COAX1, COAX2, COAX3, OPTICAL1, OPTICAL2, OPTICAL3, XLR, RCD, FM, DAB, PLAYFI, IRADIO, NETWORK |
+| power, mainZone#power, allZones#power, zone2#power, zone3#power, zone4#power | Power               | Switch    | Power ON/OFF the equipment or the zone | ON, OFF                            |
+| source, mainZone#source, zone1#source, zone2#source, zone3#source, zone4#source | Source Input        | String    | Select the source input               | CD, TUNER, TAPE, VIDEO1, VIDEO2, VIDEO3, VIDEO4, VIDEO5, VIDEO6, VIDEO7, VIDEO8, USB, PCUSB, MULTI, PHONO, BLUETOOTH, AUX, AUX1, AUX2, AUX1_COAX, AUX1_OPTICAL, COAX1, COAX2, COAX3, OPTICAL1, OPTICAL2, OPTICAL3, XLR, RCD, FM, DAB, PLAYFI, IRADIO, NETWORK, INPUTA, INPUTB, INPUTC, INPUTD |
 | mainZone#recordSource | Record Source       | String    | Select the source to be recorded      | CD, TUNER, TAPE, VIDEO1, VIDEO2, VIDEO3, VIDEO4, VIDEO5, VIDEO6, USB, MAIN |
 | dsp, mainZone#dsp | DSP Mode            | String    | Select the DSP mode                   | NONE, STEREO3, STEREO5, STEREO7, STEREO9, STEREO11, MUSIC1, MUSIC2, MUSIC3, MUSIC4, PROLOGIC, PLIICINEMA, PLIIMUSIC, PLIIGAME, PLIIXCINEMA, PLIIXMUSIC, PLIIXGAME, PLIIZ, NEO6MUSIC, NEO6CINEMA, ATMOS, NEURALX, BYPASS |
 | mainZone#volumeUpDown, zone2#volumeUpDown | Volume              | Number    | Increase or decrease the volume       | INCREASE, DECREASE, value |
-| volume, mainZone#volume, zone2#volume, zone3#volume, zone4#volume | Volume              | Dimmer    | Adjust the volume                     | value between 0 and 100 |
-| mute, mainZone#mute, zone2#mute, zone3#mute, zone4#mute | Mute                | Switch    | Mute/unmute the sound                 | ON, OFF                            |
-| bass, mainZone#bass | Bass Adjustment           | Number    | Adjust the bass                                          | INCREASE, DECREASE, value          |
-| treble, mainZone#treble | Treble Adjustment     | Number    | Adjust the treble                                        | INCREASE, DECREASE, value          |
+| volume, mainZone#volume, zone1#volume, zone2#volume, zone3#volume, zone4#volume | Volume              | Dimmer    | Adjust the volume                     | value between 0 and 100 |
+| mute, mainZone#mute, zone1#mute, zone2#mute, zone3#mute, zone4#mute | Mute                | Switch    | Mute/unmute the sound                 | ON, OFF                            |
+| bass, mainZone#bass, zone1#bass, zone2#bass, zone3#bass, zone4#bass | Bass Adjustment           | Number    | Adjust the bass                                          | INCREASE, DECREASE, value          |
+| treble, mainZone#treble, zone1#treble, zone2#treble, zone3#treble, zone4#treble | Treble Adjustment     | Number    | Adjust the treble                                        | INCREASE, DECREASE, value          |
 | playControl    | Playback Control               | Player    | Control the playback                                     | PLAY, PAUSE, NEXT, PREVIOUS        |
 | track          | Current Track                  | Number    | The current CD track number                              |                                    |
 | random         | Random Mode                    | Switch    | The current random mode                                  |                                    |
 | repeat         | Repeat Mode                    | String    | The current repeat mode                                  | TRACK, DISC, OFF                   |
 | mainZone#line1 | Front Panel Line 1             | String    | The first line displayed on the device front panel       |                                    |
 | mainZone#line2 | Front Panel Line 2             | String    | The second line displayed on the device front panel      |                                    |
-| frequency      | Current Frequency              | Number    | The current frequency (in kHz) for digital source input  |                                    |
-| brightness     | Front Panel Display Brightness | Dimmer    | The backlight brightness level (in %) of the device front panel |                             |
+| frequency, zone1#frequency, zone2#frequency, zone3#frequency, zone4#frequency | Current Frequency              | Number    | The current frequency (in kHz) for digital source input  |                                    |
+| brightness, allZones#brightness | Front Panel Display Brightness | Dimmer    | The backlight brightness level (in %) of the device front panel |                             |
 | tcbypass       | Tone Control Bypass            | Switch    | The user's bass-/treble-settings are bypassed            | ON, OFF                            |
-| balance        | Stereo Balance Adjustment      | Number    | Adjust the balance                                       | INCREASE, DECREASE, value          |
+| balance, zone1#balance, zone2#balance, zone3#balance, zone4#balance | Stereo Balance Adjustment      | Number    | Adjust the balance                                       | INCREASE, DECREASE, value          |
 | speakera       | Speaker-A Adjustment           | Switch    | Turn on/off the speaker group A                          | ON, OFF                            |
 | speakerb       | Speaker-B Adjustment           | Switch    | Turn on/off the speaker group B                          | ON, OFF                            |
 
@@ -181,6 +182,7 @@ Here are the list of channels available for each thing type:
 | a11        | power, source, volume, mute, bass, treble, brightness, tcbypass, balance, speakera, speakerb            |
 | a12        | power, source, volume, mute, bass, treble, frequency, brightness, tcbypass, balance, speakera, speakerb |
 | a14        | power, source, volume, mute, bass, treble, frequency, brightness, tcbypass, balance, speakera, speakerb |
+| c8         | allZones#power, allZones#brightness, zone1#source, zone1#volume, zone1#mute, zone1#bass, zone1#treble, zone1#balance, zone1#frequency, zone2#source, zone2#volume, zone2#mute, zone2#bass, zone2#treble, zone2#balance, zone2#frequency, zone3#source, zone3#volume, zone3#mute, zone3#bass, zone3#treble, zone3#balance, zone3#frequency, zone4#source, zone4#volume, zone4#mute, zone4#bass, zone4#treble, zone4#balance, zone4#frequency |
 | cd11       | power, playControl, track, random, repeat, brightness                                                   |
 | cd14       | power, playControl, track, random, repeat, brightness                                                   |
 | m8         | power, brightness                                                                                       |
