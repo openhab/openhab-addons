@@ -210,7 +210,6 @@
 		<state readOnly="false"></state>
 	</channel-type>
 
-
 	<channel-group-type id="sensorData">
 		<label>@text/channel-group-type.shelly.sensorData.label</label>
 		<description>@text/channel-group-type.shelly.sensorData.description</description>

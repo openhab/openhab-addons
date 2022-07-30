@@ -151,6 +151,7 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
         String json = "";
         try {
             json = httpRequest(SHELLY_URL_STATUS);
+
             // Dimmer2 returns invalid json type for loaderror :-(
             json = json.replace("\"loaderror\":0,", "\"loaderror\":false,")
                     .replace("\"loaderror\":1,", "\"loaderror\":true,")

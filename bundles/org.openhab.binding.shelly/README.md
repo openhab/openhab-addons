@@ -930,7 +930,7 @@ You should calibrate the valve using the device Web UI or Shelly App before star
 |control   |targetTemp   |Number   |no       |Temperature in °C: 4=Low/Min; 5..30=target temperature;31=Hi/Max       |
 |          |position     |Dimmer   |no       |Set valve to manual mode (0..100%) disables auto-temp)                 |
 |          |mode         |String   |no       |Switch between manual and automatic mode                               |
-|          |selectedProfile|String |no       |Select profile: Profile name or 0=disable, 1-n: profile index          |
+|          |selectedProfile|String |no       |Select profile Id: "0"=disable, "1"-"n": profile index                 |
 |          |boost        |Number   |no       |Enable/disable boost mode (full heating power)                         |
 |          |boostTimer   |Number   |no       |Number of minutes to heat at full power while boost mode is enabled    |
 |          |schedule     |Switch   |yes      |ON: Schedule is active                                                 |

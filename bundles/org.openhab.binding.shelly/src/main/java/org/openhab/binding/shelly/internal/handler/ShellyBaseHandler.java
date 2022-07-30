@@ -369,12 +369,12 @@ public class ShellyBaseHandler extends BaseThingHandler
                 profile.hostname, profile.deviceType, profile.hwRev, profile.hwBatchId, profile.fwVersion,
                 profile.fwDate);
         logger.debug("{}: Shelly settings info for {}: {}", thingName, profile.hostname, profile.settingsJson);
-        logger.debug("{}: Device "
+        logger.debug("{}: Device alwaysOn: {},"
                 + "hasRelays:{} (numRelays={}),isRoller:{} (numRoller={}),isDimmer:{},numMeter={},isEMeter:{})"
                 + ",isSensor:{},isDS:{},hasBattery:{}{},isSense:{},isMotion:{},isLight:{},isBulb:{},isDuo:{},isRGBW2:{},inColor:{}"
-                + ",alwaysOn:{}, updatePeriod:{}sec", thingName, profile.hasRelays, profile.numRelays, profile.isRoller,
-                profile.numRollers, profile.isDimmer, profile.numMeters, profile.isEMeter, profile.isSensor,
-                profile.isDW, profile.hasBattery,
+                + ",alwaysOn:{}, updatePeriod:{}sec", thingName, profile.alwaysOn, profile.hasRelays, profile.numRelays,
+                profile.isRoller, profile.numRollers, profile.isDimmer, profile.numMeters, profile.isEMeter,
+                profile.isSensor, profile.isDW, profile.hasBattery,
                 profile.hasBattery ? " (low battery threshold=" + config.lowBattery + "%)" : "", profile.isSense,
                 profile.isMotion, profile.isLight, profile.isBulb, profile.isDuo, profile.isRGBW2, profile.inColor,
                 profile.alwaysOn, profile.updatePeriod);
@@ -440,7 +440,6 @@ public class ShellyBaseHandler extends BaseThingHandler
                     int id = Integer.parseInt(cmd);
                     if (id < 0 || id > 5) {
                         logger.warn("{}: Invalid profile Id {} requested", thingName, profile);
-                    } else {
                         api.setValveProfile(0, id);
                     }
                     break;
@@ -949,7 +948,7 @@ public class ShellyBaseHandler extends BaseThingHandler
         }
         config.localIp = bindingConfig.localIP;
         config.localPort = String.valueOf(bindingConfig.httpPort);
-        if (config.userId.isEmpty() && !bindingConfig.defaultUserId.isEmpty()) {
+        if (config.password.isEmpty() && !bindingConfig.defaultPassword.isEmpty()) {
             config.userId = bindingConfig.defaultUserId;
             config.password = bindingConfig.defaultPassword;
             logger.debug("{}: Using userId {} from bindingConfig", thingName, config.userId);

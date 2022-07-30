@@ -127,7 +127,9 @@ public class Shelly1CoIoTVersion2 extends Shelly1CoIoTProtocol implements Shelly
                 default:
                     processed = false;
             }
-        } else {
+        } else
+
+        {
             processed = false;
         }
 
