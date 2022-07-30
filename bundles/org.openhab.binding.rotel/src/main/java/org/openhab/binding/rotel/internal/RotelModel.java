@@ -25,6 +25,8 @@ import org.openhab.binding.rotel.internal.communication.RotelCommand;
 import org.openhab.binding.rotel.internal.communication.RotelDsp;
 import org.openhab.binding.rotel.internal.communication.RotelFlagsMapping;
 import org.openhab.binding.rotel.internal.communication.RotelSource;
+import org.openhab.binding.rotel.internal.protocol.RotelProtocol;
+import org.openhab.core.types.CommandOption;
 import org.openhab.core.types.StateOption;
 
 /**
@@ -35,68 +37,112 @@ import org.openhab.core.types.StateOption;
 @NonNullByDefault
 public enum RotelModel {
 
-    RSP1066("RSP-1066", 19200, 3, 1, false, 90, false, 12, false, ZONE_SELECT, 1, (byte) 0xC2, 13, 8, true,
+    RSP1066("RSP-1066", 19200, 3, 1, false, 90, false, 12, false, ZONE_SELECT, 1,
+            concatenate(DSP_CMDS_SET1, MENU2_CTRL_CMDS, OTHER_CMDS_SET1), (byte) 0xC2, 13, 8, true,
             RotelFlagsMapping.MAPPING1),
-    RSP1068("RSP-1068", 19200, 1, 1, true, 96, true, 6, false, RECORD_FONCTION_SELECT, 2, (byte) 0xA1, 42, 5, true,
+    RSP1068("RSP-1068", 19200, 1, 1, true, 96, true, 6, false, RECORD_FONCTION_SELECT, 2,
+            concatenate(DSP_CMDS_SET1, MENU2_CTRL_CMDS, OTHER_CMDS_SET1), (byte) 0xA1, 42, 5, true,
             RotelFlagsMapping.MAPPING2),
-    RSP1069("RSP-1069", 38400, 1, 3, true, 96, true, 6, false, RECORD_FONCTION_SELECT, 2, (byte) 0xA2, 42, 5, true,
+    RSP1069("RSP-1069", 38400, 1, 3, true, 96, true, 6, false, RECORD_FONCTION_SELECT, 2,
+            concatenate(DSP_CMDS_SET1, MENU2_CTRL_CMDS, OTHER_CMDS_SET1, OTHER_CMDS_SET2), (byte) 0xA2, 42, 5, true,
             RotelFlagsMapping.MAPPING5),
-    RSP1098("RSP-1098", 19200, 1, 1, true, 96, true, 6, false, ZONE_SELECT, 2, (byte) 0xA0, 13, 8, true,
-            RotelFlagsMapping.MAPPING1),
-    RSP1570("RSP-1570", 115200, 1, 3, true, 96, true, 6, false, RECORD_FONCTION_SELECT, 3, (byte) 0xA3, 42, 5, true,
-            RotelFlagsMapping.MAPPING5),
-    RSP1572("RSP-1572", 115200, 2, 3, true, 96, true, null, false, RECORD_FONCTION_SELECT, 4, (byte) 0xA5, 42, 5, true,
-            RotelFlagsMapping.MAPPING5),
-    RSX1055("RSX-1055", 19200, 3, 1, false, 90, false, 12, false, ZONE_SELECT, 1, (byte) 0xC3, 13, 8, true,
-            RotelFlagsMapping.MAPPING1),
-    RSX1056("RSX-1056", 19200, 1, 1, true, 96, true, 12, false, ZONE_SELECT, 2, (byte) 0xC5, 13, 8, true,
-            RotelFlagsMapping.MAPPING1),
-    RSX1057("RSX-1057", 19200, 1, 1, true, 96, true, 6, false, RECORD_FONCTION_SELECT, 2, (byte) 0xC7, 13, 8, true,
-            RotelFlagsMapping.MAPPING1),
-    RSX1058("RSX-1058", 38400, 1, 3, true, 96, true, 6, false, RECORD_FONCTION_SELECT, 2, (byte) 0xC8, 13, 8, true,
-            RotelFlagsMapping.MAPPING4),
-    RSX1065("RSX-1065", 19200, 3, 1, false, 96, false, 12, false, ZONE_SELECT, 1, (byte) 0xC1, 42, 5, true,
-            RotelFlagsMapping.MAPPING2),
-    RSX1067("RSX-1067", 19200, 1, 1, true, 96, true, 6, false, RECORD_FONCTION_SELECT, 2, (byte) 0xC4, 42, 5, true,
-            RotelFlagsMapping.MAPPING2),
-    RSX1550("RSX-1550", 115200, 1, 3, true, 96, true, 6, false, RECORD_FONCTION_SELECT, 3, (byte) 0xC9, 13, 8, true,
-            RotelFlagsMapping.MAPPING3),
-    RSX1560("RSX-1560", 115200, 1, 3, true, 96, true, 6, false, RECORD_FONCTION_SELECT, 3, (byte) 0xCA, 42, 5, true,
-            RotelFlagsMapping.MAPPING5),
-    RSX1562("RSX-1562", 115200, 2, 3, true, 96, true, null, false, RECORD_FONCTION_SELECT, 4, (byte) 0xCC, 42, 5, true,
-            RotelFlagsMapping.MAPPING5),
-    A11("A11", 115200, 4, 96, true, 10, 15, false, -1, false, true, true, 6, 0, NO_SPECIAL_CHARACTERS),
-    A12("A12", 115200, 5, 96, true, 10, 15, false, -1, true, true, true, 6, 0, NO_SPECIAL_CHARACTERS),
-    A14("A14", 115200, 5, 96, true, 10, 15, false, -1, true, true, true, 6, 0, NO_SPECIAL_CHARACTERS),
-    CD11("CD11", 57600, 0, null, false, null, true, -1, false, true, 6, 0, NO_SPECIAL_CHARACTERS),
-    CD14("CD14", 57600, 0, null, false, null, true, -1, false, true, 6, 0, NO_SPECIAL_CHARACTERS),
-    RA11("RA-11", 115200, 6, 96, true, 10, 15, true, -1, true, false, false, 6, 0, SPECIAL_CHARACTERS),
-    RA12("RA-12", 115200, 6, 96, true, 10, 15, true, -1, true, false, false, 6, 0, SPECIAL_CHARACTERS),
-    RA1570("RA-1570", 115200, 7, 96, true, 10, 15, true, -1, true, true, false, 6, 0, SPECIAL_CHARACTERS),
-    RA1572("RA-1572", 115200, 8, 96, true, 10, 15, false, -1, true, true, true, 6, 0, SPECIAL_CHARACTERS),
-    RA1592("RA-1592", 115200, 9, 96, true, 10, 15, false, -1, true, true, true, 6, 0, SPECIAL_CHARACTERS),
-    RAP1580("RAP-1580", 115200, 11, 96, true, null, false, 5, false, false, -10, 10, NO_SPECIAL_CHARACTERS),
-    RC1570("RC-1570", 115200, 7, 96, true, 10, 15, true, -1, true, false, false, 6, 0, SPECIAL_CHARACTERS),
-    RC1572("RC-1572", 115200, 8, 96, true, 10, 15, false, -1, true, false, true, 6, 0, SPECIAL_CHARACTERS),
-    RC1590("RC-1590", 115200, 9, 96, true, 10, 15, false, -1, true, false, true, 6, 0, SPECIAL_CHARACTERS),
-    RCD1570("RCD-1570", 115200, 0, null, false, null, true, -1, false, true, 6, 0, SPECIAL_CHARACTERS),
-    RCD1572("RCD-1572", 57600, 0, null, false, null, true, -1, false, true, 6, 0, SPECIAL_CHARACTERS_RCD1572),
-    RCX1500("RCX-1500", 115200, 17, 86, true, null, true, -1, false, false, null, null, SPECIAL_CHARACTERS),
-    RDD1580("RDD-1580", 115200, 15, null, false, null, true, -1, true, false, null, null, NO_SPECIAL_CHARACTERS),
-    RDG1520("RDG-1520", 115200, 16, null, false, null, true, -1, false, false, null, null, SPECIAL_CHARACTERS),
-    RSP1576("RSP-1576", 115200, 10, 96, true, null, false, 5, false, false, -10, 10, NO_SPECIAL_CHARACTERS),
-    RSP1582("RSP-1582", 115200, 11, 96, true, null, false, 6, false, false, -10, 10, NO_SPECIAL_CHARACTERS),
-    RT11("RT-11", 115200, 12, null, false, null, false, -1, false, true, 6, 0, NO_SPECIAL_CHARACTERS),
-    RT1570("RT-1570", 115200, 14, null, false, null, false, -1, false, true, 6, 0, NO_SPECIAL_CHARACTERS),
-    T11("T11", 115200, 12, null, false, null, false, -1, false, true, 6, 0, NO_SPECIAL_CHARACTERS),
-    T14("T14", 115200, 13, null, false, null, false, -1, false, true, 6, 0, NO_SPECIAL_CHARACTERS),
+    RSP1098("RSP-1098", 19200, 1, 1, true, 96, true, 6, false, ZONE_SELECT, 2,
+            concatenate(DSP_CMDS_SET1, MENU2_CTRL_CMDS, OTHER_CMDS_SET1, List.of(REMOTE_VOLUME_UP, REMOTE_VOLUME_DOWN)),
+            (byte) 0xA0, 13, 8, true, RotelFlagsMapping.MAPPING1),
+    RSP1570("RSP-1570", 115200, 1, 3, true, 96, true, 6, false, RECORD_FONCTION_SELECT, 3,
+            concatenate(DSP_CMDS_SET1, MENU2_CTRL_CMDS, OTHER_CMDS_SET1, OTHER_CMDS_SET2, List.of(RESET_FACTORY)),
+            (byte) 0xA3, 42, 5, true, RotelFlagsMapping.MAPPING5),
+    RSP1572("RSP-1572", 115200, 2, 3, true, 96, true, null, false, RECORD_FONCTION_SELECT, 4,
+            concatenate(DSP_CMDS_SET1, NUMERIC_KEY_CMDS, MENU3_CTRL_CMDS, OTHER_CMDS_SET1, OTHER_CMDS_SET4),
+            (byte) 0xA5, 42, 5, true, RotelFlagsMapping.MAPPING5),
+    RSX1055("RSX-1055", 19200, 3, 1, false, 90, false, 12, false, ZONE_SELECT, 1,
+            concatenate(DSP_CMDS_SET1, TUNER_CMDS_SET1, NUMERIC_KEY_CMDS, MENU2_CTRL_CMDS, OTHER_CMDS_SET1),
+            (byte) 0xC3, 13, 8, true, RotelFlagsMapping.MAPPING1),
+    RSX1056("RSX-1056", 19200, 1, 1, true, 96, true, 12, false, ZONE_SELECT, 2,
+            concatenate(DSP_CMDS_SET1, TUNER_CMDS_SET1, ZONE2_TUNER_CMDS_SET1, NUMERIC_KEY_CMDS, ZONE2_NUMERIC_KEY_CMDS,
+                    MENU2_CTRL_CMDS, OTHER_CMDS_SET1),
+            (byte) 0xC5, 13, 8, true, RotelFlagsMapping.MAPPING1),
+    RSX1057("RSX-1057", 19200, 1, 1, true, 96, true, 6, false, RECORD_FONCTION_SELECT, 2,
+            concatenate(DSP_CMDS_SET1, TUNER_CMDS_SET2, ZONE2_TUNER_CMDS_SET2, NUMERIC_KEY_CMDS, ZONE2_NUMERIC_KEY_CMDS,
+                    MENU2_CTRL_CMDS, OTHER_CMDS_SET1),
+            (byte) 0xC7, 13, 8, true, RotelFlagsMapping.MAPPING1),
+    RSX1058("RSX-1058", 38400, 1, 3, true, 96, true, 6, false, RECORD_FONCTION_SELECT, 2,
+            concatenate(DSP_CMDS_SET1, TUNER_CMDS_SET2, ZONE234_TUNER_CMDS_SET1, NUMERIC_KEY_CMDS,
+                    ZONE234_NUMERIC_KEY_CMDS, MENU2_CTRL_CMDS, OTHER_CMDS_SET1, OTHER_CMDS_SET2),
+            (byte) 0xC8, 13, 8, true, RotelFlagsMapping.MAPPING4),
+    RSX1065("RSX-1065", 19200, 3, 1, false, 96, false, 12, false, ZONE_SELECT, 1,
+            concatenate(DSP_CMDS_SET1, TUNER_CMDS_SET1, NUMERIC_KEY_CMDS, MENU2_CTRL_CMDS, OTHER_CMDS_SET3),
+            (byte) 0xC1, 42, 5, true, RotelFlagsMapping.MAPPING2),
+    RSX1067("RSX-1067", 19200, 1, 1, true, 96, true, 6, false, RECORD_FONCTION_SELECT, 2,
+            concatenate(DSP_CMDS_SET1, TUNER_CMDS_SET1, ZONE2_TUNER_CMDS_SET1, NUMERIC_KEY_CMDS, ZONE2_NUMERIC_KEY_CMDS,
+                    MENU2_CTRL_CMDS, OTHER_CMDS_SET1),
+            (byte) 0xC4, 42, 5, true, RotelFlagsMapping.MAPPING2),
+    RSX1550("RSX-1550", 115200, 1, 3, true, 96, true, 6, false, RECORD_FONCTION_SELECT, 3,
+            concatenate(DSP_CMDS_SET1, TUNER_CMDS_SET2, ZONE234_TUNER_CMDS_SET1, NUMERIC_KEY_CMDS,
+                    ZONE234_NUMERIC_KEY_CMDS, MENU2_CTRL_CMDS, OTHER_CMDS_SET1, OTHER_CMDS_SET2,
+                    List.of(RESET_FACTORY)),
+            (byte) 0xC9, 13, 8, true, RotelFlagsMapping.MAPPING3),
+    RSX1560("RSX-1560", 115200, 1, 3, true, 96, true, 6, false, RECORD_FONCTION_SELECT, 3,
+            concatenate(DSP_CMDS_SET1, TUNER_CMDS_SET2, ZONE234_TUNER_CMDS_SET1, NUMERIC_KEY_CMDS,
+                    ZONE234_NUMERIC_KEY_CMDS, MENU2_CTRL_CMDS, OTHER_CMDS_SET1, OTHER_CMDS_SET2,
+                    List.of(RESET_FACTORY)),
+            (byte) 0xCA, 42, 5, true, RotelFlagsMapping.MAPPING5),
+    RSX1562("RSX-1562", 115200, 2, 3, true, 96, true, null, false, RECORD_FONCTION_SELECT, 4,
+            concatenate(DSP_CMDS_SET1, TUNER_CMDS_SET2, ZONE234_TUNER_CMDS_SET1, NUMERIC_KEY_CMDS,
+                    ZONE234_NUMERIC_KEY_CMDS, MENU3_CTRL_CMDS, OTHER_CMDS_SET1, OTHER_CMDS_SET4),
+            (byte) 0xCC, 42, 5, true, RotelFlagsMapping.MAPPING5),
+    A11("A11", 115200, 4, 96, true, 10, 15, false, -1, false, true, true, 6, 0, SRC_CTRL_CMDS_SET1,
+            NO_SPECIAL_CHARACTERS),
+    A12("A12", 115200, 5, 96, true, 10, 15, false, -1, true, true, true, 6, 0, SRC_CTRL_CMDS_SET1,
+            NO_SPECIAL_CHARACTERS),
+    A14("A14", 115200, 5, 96, true, 10, 15, false, -1, true, true, true, 6, 0, SRC_CTRL_CMDS_SET1,
+            NO_SPECIAL_CHARACTERS),
+    CD11("CD11", 57600, 0, null, false, null, true, -1, false, true, 6, 0,
+            concatenate(SRC_CTRL_CMDS_SET3, NUMERIC_KEY_CMDS), NO_SPECIAL_CHARACTERS),
+    CD14("CD14", 57600, 0, null, false, null, true, -1, false, true, 6, 0,
+            concatenate(SRC_CTRL_CMDS_SET3, NUMERIC_KEY_CMDS), NO_SPECIAL_CHARACTERS),
+    RA11("RA-11", 115200, 6, 96, true, 10, 15, true, -1, true, false, false, 6, 0,
+            concatenate(SRC_CTRL_CMDS_SET2, MENU_CTRL_CMDS, NUMERIC_KEY_CMDS), SPECIAL_CHARACTERS),
+    RA12("RA-12", 115200, 6, 96, true, 10, 15, true, -1, true, false, false, 6, 0,
+            concatenate(SRC_CTRL_CMDS_SET2, MENU_CTRL_CMDS, NUMERIC_KEY_CMDS), SPECIAL_CHARACTERS),
+    RA1570("RA-1570", 115200, 7, 96, true, 10, 15, true, -1, true, true, false, 6, 0,
+            concatenate(SRC_CTRL_CMDS_SET2, MENU_CTRL_CMDS, NUMERIC_KEY_CMDS, PCUSB_CLASS_CMDS), SPECIAL_CHARACTERS),
+    RA1572("RA-1572", 115200, 8, 96, true, 10, 15, false, -1, true, true, true, 6, 0,
+            concatenate(SRC_CTRL_CMDS_SET1, MENU_CTRL_CMDS, PCUSB_CLASS_CMDS, List.of(RESET_FACTORY)),
+            SPECIAL_CHARACTERS),
+    RA1592("RA-1592", 115200, 9, 96, true, 10, 15, false, -1, true, true, true, 6, 0, List.of(), SPECIAL_CHARACTERS),
+    RAP1580("RAP-1580", 115200, 11, 96, true, null, false, 5, false, false, -10, 10, List.of(), NO_SPECIAL_CHARACTERS),
+    RC1570("RC-1570", 115200, 7, 96, true, 10, 15, true, -1, true, false, false, 6, 0,
+            concatenate(SRC_CTRL_CMDS_SET2, MENU_CTRL_CMDS, NUMERIC_KEY_CMDS, PCUSB_CLASS_CMDS), SPECIAL_CHARACTERS),
+    RC1572("RC-1572", 115200, 8, 96, true, 10, 15, false, -1, true, false, true, 6, 0,
+            concatenate(SRC_CTRL_CMDS_SET1, MENU_CTRL_CMDS, PCUSB_CLASS_CMDS, List.of(RESET_FACTORY)),
+            SPECIAL_CHARACTERS),
+    RC1590("RC-1590", 115200, 9, 96, true, 10, 15, false, -1, true, false, true, 6, 0, List.of(), SPECIAL_CHARACTERS),
+    RCD1570("RCD-1570", 115200, 0, null, false, null, true, -1, false, true, 6, 0, List.of(), SPECIAL_CHARACTERS),
+    RCD1572("RCD-1572", 57600, 0, null, false, null, true, -1, false, true, 6, 0,
+            concatenate(SRC_CTRL_CMDS_SET3, List.of(PROGRAM), MENU_CTRL_CMDS, NUMERIC_KEY_CMDS),
+            SPECIAL_CHARACTERS_RCD1572),
+    RCX1500("RCX-1500", 115200, 17, 86, true, null, true, -1, false, false, null, null, List.of(), SPECIAL_CHARACTERS),
+    RDD1580("RDD-1580", 115200, 15, null, false, null, true, -1, true, false, null, null, List.of(),
+            NO_SPECIAL_CHARACTERS),
+    RDG1520("RDG-1520", 115200, 16, null, false, null, true, -1, false, false, null, null, List.of(),
+            SPECIAL_CHARACTERS),
+    RSP1576("RSP-1576", 115200, 10, 96, true, null, false, 5, false, false, -10, 10, List.of(), NO_SPECIAL_CHARACTERS),
+    RSP1582("RSP-1582", 115200, 11, 96, true, null, false, 6, false, false, -10, 10, List.of(), NO_SPECIAL_CHARACTERS),
+    RT11("RT-11", 115200, 12, null, false, null, false, -1, false, true, 6, 0, List.of(), NO_SPECIAL_CHARACTERS),
+    RT1570("RT-1570", 115200, 14, null, false, null, false, -1, false, true, 6, 0, List.of(), NO_SPECIAL_CHARACTERS),
+    T11("T11", 115200, 12, null, false, null, false, -1, false, true, 6, 0, List.of(), NO_SPECIAL_CHARACTERS),
+    T14("T14", 115200, 13, null, false, null, false, -1, false, true, 6, 0, List.of(), NO_SPECIAL_CHARACTERS),
     C8("C8", 115200, POWER, 21, 3, true, false, 96, true, 10, false, 10, false, null, -1, true, false, true, 4, 0,
-            (byte) 0, 0, 0, false, RotelFlagsMapping.NO_MAPPING, NO_SPECIAL_CHARACTERS),
-    M8("M8", 115200, 0, null, false, null, false, -1, false, true, 4, 0, NO_SPECIAL_CHARACTERS),
-    P5("P5", 115200, 20, 96, true, 10, 10, false, -1, true, false, true, 4, 0, NO_SPECIAL_CHARACTERS),
-    S5("S5", 115200, 0, null, false, null, false, -1, false, true, 4, 0, NO_SPECIAL_CHARACTERS),
-    X3("X3", 115200, 18, 96, true, 10, 10, false, -1, true, false, true, 4, 0, NO_SPECIAL_CHARACTERS),
-    X5("X5", 115200, 19, 96, true, 10, 10, false, -1, true, false, true, 4, 0, NO_SPECIAL_CHARACTERS);
+            List.of(), (byte) 0, 0, 0, false, RotelFlagsMapping.NO_MAPPING, NO_SPECIAL_CHARACTERS),
+    M8("M8", 115200, 0, null, false, null, false, -1, false, true, 4, 0, List.of(), NO_SPECIAL_CHARACTERS),
+    P5("P5", 115200, 20, 96, true, 10, 10, false, -1, true, false, true, 4, 0, SRC_CTRL_CMDS_SET1,
+            NO_SPECIAL_CHARACTERS),
+    S5("S5", 115200, 0, null, false, null, false, -1, false, true, 4, 0, List.of(), NO_SPECIAL_CHARACTERS),
+    X3("X3", 115200, 18, 96, true, 10, 10, false, -1, true, false, true, 4, 0, SRC_CTRL_CMDS_SET1,
+            NO_SPECIAL_CHARACTERS),
+    X5("X5", 115200, 19, 96, true, 10, 10, false, -1, true, false, true, 4, 0, SRC_CTRL_CMDS_SET1,
+            NO_SPECIAL_CHARACTERS);
 
     private String name;
     private int baudRate;
@@ -116,6 +162,7 @@ public enum RotelModel {
     private boolean getDimmerLevelAvailable;
     private @Nullable Integer diummerLevelMin;
     private @Nullable Integer diummerLevelMax;
+    private List<RotelCommand> otherCommands;
     private byte deviceId;
     private int respNbChars;
     private int respNbFlags;
@@ -139,6 +186,7 @@ public enum RotelModel {
      * @param playControl true if control of source playback is available
      * @param zoneSelectCmd the command to be used to select a zone
      * @param dspCategory the category from {@link RotelDsp}
+     * @param otherCommands the list of other available commands to expose
      * @param deviceId the device id (value to be used in the messages)
      * @param respNbChars the number of bytes for the characters in the standard response
      * @param respNbFlags the number of bytes for the flags in the standard response
@@ -147,11 +195,12 @@ public enum RotelModel {
      */
     private RotelModel(String name, int baudRate, int sourceCategory, int nbAdditionalZones, boolean additionalCommands,
             @Nullable Integer volumeMax, boolean directVolume, @Nullable Integer toneLevelMax, boolean playControl,
-            @Nullable RotelCommand zoneSelectCmd, int dspCategory, byte deviceId, int respNbChars, int respNbFlags,
-            boolean charsBeforeFlags, RotelFlagsMapping flagsMapping) {
+            @Nullable RotelCommand zoneSelectCmd, int dspCategory, List<RotelCommand> otherCommands, byte deviceId,
+            int respNbChars, int respNbFlags, boolean charsBeforeFlags, RotelFlagsMapping flagsMapping) {
         this(name, baudRate, DISPLAY_REFRESH, sourceCategory, nbAdditionalZones, additionalCommands, true, volumeMax,
                 directVolume, toneLevelMax, false, null, playControl, zoneSelectCmd, dspCategory, false, false, false,
-                null, null, deviceId, respNbChars, respNbFlags, charsBeforeFlags, flagsMapping, NO_SPECIAL_CHARACTERS);
+                null, null, otherCommands, deviceId, respNbChars, respNbFlags, charsBeforeFlags, flagsMapping,
+                NO_SPECIAL_CHARACTERS);
     }
 
     /**
@@ -169,15 +218,16 @@ public enum RotelModel {
      * @param getDimmerLevelAvailable true if the command to get the front display dimmer level is available
      * @param diummerLevelMin the minimum front display dimmer level or null if dimmer control is unavailable
      * @param diummerLevelMax the maximum front display dimmer level or null if dimmer control is unavailable
+     * @param otherCommands the list of other available commands to expose
      * @param specialCharacters the table of special characters that can be found in the standard response message
      */
     private RotelModel(String name, int baudRate, int sourceCategory, @Nullable Integer volumeMax, boolean directVolume,
             @Nullable Integer toneLevelMax, boolean playControl, int dspCategory, boolean getFrequencyAvailable,
             boolean getDimmerLevelAvailable, @Nullable Integer diummerLevelMin, @Nullable Integer diummerLevelMax,
-            byte[][] specialCharacters) {
+            List<RotelCommand> otherCommands, byte[][] specialCharacters) {
         this(name, baudRate, POWER, sourceCategory, 0, false, false, volumeMax, directVolume, toneLevelMax,
                 toneLevelMax != null, null, playControl, null, dspCategory, getFrequencyAvailable, false,
-                getDimmerLevelAvailable, diummerLevelMin, diummerLevelMax, (byte) 0, 0, 0, false,
+                getDimmerLevelAvailable, diummerLevelMin, diummerLevelMax, otherCommands, (byte) 0, 0, 0, false,
                 RotelFlagsMapping.NO_MAPPING, specialCharacters);
     }
 
@@ -198,16 +248,18 @@ public enum RotelModel {
      * @param getDimmerLevelAvailable true if the command to get the front display dimmer level is available
      * @param diummerLevelMin the minimum front display dimmer level or null if dimmer control is unavailable
      * @param diummerLevelMax the maximum front display dimmer level or null if dimmer control is unavailable
+     * @param otherCommands the list of other available commands to expose
      * @param specialCharacters the table of special characters that can be found in the standard response message
      */
     private RotelModel(String name, int baudRate, int sourceCategory, @Nullable Integer volumeMax, boolean directVolume,
             @Nullable Integer toneLevelMax, @Nullable Integer balanceLevelMax, boolean playControl, int dspCategory,
             boolean getFrequencyAvailable, boolean getSpeakerGroupsAvailable, boolean getDimmerLevelAvailable,
-            @Nullable Integer diummerLevelMin, @Nullable Integer diummerLevelMax, byte[][] specialCharacters) {
+            @Nullable Integer diummerLevelMin, @Nullable Integer diummerLevelMax, List<RotelCommand> otherCommands,
+            byte[][] specialCharacters) {
         this(name, baudRate, POWER, sourceCategory, 0, false, false, volumeMax, directVolume, toneLevelMax,
                 toneLevelMax != null, balanceLevelMax, playControl, null, dspCategory, getFrequencyAvailable,
-                getSpeakerGroupsAvailable, getDimmerLevelAvailable, diummerLevelMin, diummerLevelMax, (byte) 0, 0, 0,
-                false, RotelFlagsMapping.NO_MAPPING, specialCharacters);
+                getSpeakerGroupsAvailable, getDimmerLevelAvailable, diummerLevelMin, diummerLevelMax, otherCommands,
+                (byte) 0, 0, 0, false, RotelFlagsMapping.NO_MAPPING, specialCharacters);
     }
 
     /**
@@ -233,6 +285,7 @@ public enum RotelModel {
      * @param getDimmerLevelAvailable true if the command to get the front display dimmer level is available
      * @param diummerLevelMin the minimum front display dimmer level or null if dimmer control is unavailable
      * @param diummerLevelMax the maximum front display dimmer level or null if dimmer control is unavailable
+     * @param otherCommands the list of other available commands to expose
      * @param deviceId the device id (value to be used in the messages)
      * @param respNbChars the number of bytes for the characters in the standard response
      * @param respNbFlags the number of bytes for the flags in the standard response
@@ -245,8 +298,8 @@ public enum RotelModel {
             @Nullable Integer toneLevelMax, boolean getBypassStatusAvailable, @Nullable Integer balanceLevelMax,
             boolean playControl, @Nullable RotelCommand zoneSelectCmd, int dspCategory, boolean getFrequencyAvailable,
             boolean getSpeakerGroupsAvailable, boolean getDimmerLevelAvailable, @Nullable Integer diummerLevelMin,
-            @Nullable Integer diummerLevelMax, byte deviceId, int respNbChars, int respNbFlags,
-            boolean charsBeforeFlags, RotelFlagsMapping flagsMapping, byte[][] specialCharacters) {
+            @Nullable Integer diummerLevelMax, List<RotelCommand> otherCommands, byte deviceId, int respNbChars,
+            int respNbFlags, boolean charsBeforeFlags, RotelFlagsMapping flagsMapping, byte[][] specialCharacters) {
         this.name = name;
         this.baudRate = baudRate;
         this.powerStateCmd = powerStateCmd;
@@ -267,6 +320,7 @@ public enum RotelModel {
         this.getDimmerLevelAvailable = getDimmerLevelAvailable;
         this.diummerLevelMin = diummerLevelMin;
         this.diummerLevelMax = diummerLevelMax;
+        this.otherCommands = otherCommands;
         this.deviceId = deviceId;
         this.respNbChars = respNbChars;
         this.respNbFlags = respNbFlags;
@@ -807,6 +861,37 @@ public enum RotelModel {
      */
     public RotelDsp getDspFromFeedback(String feedback) throws RotelException {
         return RotelDsp.getFromFeedback(dspCategory, feedback);
+    }
+
+    /**
+     * Get the list of {@link CommandOption} associated to the available other commands
+     *
+     * @param protocol the used protocol for the model
+     *
+     * @return the list of {@link CommandOption} associated to the available other commands
+     */
+    public List<CommandOption> getOtherCommandsOptions(RotelProtocol protocol) {
+        List<CommandOption> options = new ArrayList<>();
+        for (RotelCommand cmd : otherCommands) {
+            switch (protocol) {
+                case HEX:
+                    if (cmd.getHexType() != 0) {
+                        options.add(new CommandOption(cmd.name(), cmd.getLabel()));
+                    }
+                    break;
+                case ASCII_V1:
+                    if (cmd.getAsciiCommandV1() != null) {
+                        options.add(new CommandOption(cmd.name(), cmd.getLabel()));
+                    }
+                    break;
+                case ASCII_V2:
+                    if (cmd.getAsciiCommandV2() != null) {
+                        options.add(new CommandOption(cmd.name(), cmd.getLabel()));
+                    }
+                    break;
+            }
+        }
+        return options;
     }
 
     /**
