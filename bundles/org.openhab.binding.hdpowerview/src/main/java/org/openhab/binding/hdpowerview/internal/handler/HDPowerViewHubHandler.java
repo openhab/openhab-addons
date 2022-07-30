@@ -99,7 +99,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
     private List<Scene> sceneCache = new CopyOnWriteArrayList<>();
     private List<SceneCollection> sceneCollectionCache = new CopyOnWriteArrayList<>();
     private List<ScheduledEvent> scheduledEventCache = new CopyOnWriteArrayList<>();
-    private Instant UserDataUpdated = Instant.MIN;
+    private Instant userDataUpdated = Instant.MIN;
     private Boolean deprecatedChannelsCreated = false;
 
     private final ChannelTypeUID sceneChannelTypeUID = new ChannelTypeUID(HDPowerViewBindingConstants.BINDING_ID,
@@ -145,7 +145,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             }
         } catch (HubMaintenanceException e) {
             // exceptions are logged in HDPowerViewWebTargets
-            UserDataUpdated = Instant.MIN;
+            userDataUpdated = Instant.MIN;
         } catch (NumberFormatException | HubException e) {
             logger.debug("Unexpected error {}", e.getMessage());
         }
@@ -169,7 +169,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         hardRefreshPositionInterval = config.hardRefresh;
         hardRefreshBatteryLevelInterval = config.hardRefreshBatteryLevel;
         initializeChannels();
-        UserDataUpdated = Instant.MIN;
+        userDataUpdated = Instant.MIN;
 
         updateStatus(ThingStatus.UNKNOWN);
         schedulePoll();
@@ -309,17 +309,17 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             }
         } catch (HubMaintenanceException e) {
             // exceptions are logged in HDPowerViewWebTargets
-            UserDataUpdated = Instant.MIN;
+            userDataUpdated = Instant.MIN;
         } catch (HubException e) {
             logger.warn("Error connecting to bridge: {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            UserDataUpdated = Instant.MIN;
+            userDataUpdated = Instant.MIN;
         }
     }
 
     private void updateUserDataProperties()
             throws HubInvalidResponseException, HubProcessingException, HubMaintenanceException {
-        if (UserDataUpdated.isAfter(Instant.now().minus(firmwareVersionValidityPeriod))) {
+        if (userDataUpdated.isAfter(Instant.now().minus(firmwareVersionValidityPeriod))) {
             return;
         }
 
@@ -342,7 +342,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             properties.put(HDPowerViewBindingConstants.PROPERTY_HUB_NAME, hubName);
         }
         updateProperties(properties);
-        UserDataUpdated = Instant.now();
+        userDataUpdated = Instant.now();
     }
 
     private void updateFirmwareProperties(Map<String, String> properties, HubFirmware firmwareVersions) {
