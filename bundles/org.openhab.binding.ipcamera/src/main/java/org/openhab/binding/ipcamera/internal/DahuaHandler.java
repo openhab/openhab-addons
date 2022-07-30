@@ -248,7 +248,7 @@ public class DahuaHandler extends ChannelDuplexHandler {
                 if ("Start".equals(action)) {
                     if (content.contains("index=0")) {
                         ipCameraHandler.setChannelState(CHANNEL_EXTERNAL_ALARM_INPUT, OnOffType.ON);
-                    } else if (content.contains("index=3")){
+                    } else if (content.contains("index=3")) {
                         ipCameraHandler.setChannelState(CHANNEL_EXIT_BUTTON, OnOffType.ON);
                         ipCameraHandler.logger.debug("Dahua exit button pressed");
                     } else {
@@ -258,7 +258,7 @@ public class DahuaHandler extends ChannelDuplexHandler {
                 } else if ("Stop".equals(action)) {
                     if (content.contains("index=0")) {
                         ipCameraHandler.setChannelState(CHANNEL_EXTERNAL_ALARM_INPUT, OnOffType.OFF);
-                    } else if (content.contains("index=3")){
+                    } else if (content.contains("index=3")) {
                         ipCameraHandler.setChannelState(CHANNEL_EXIT_BUTTON, OnOffType.OFF);
                         ipCameraHandler.logger.debug("Dahua exit button released");
                     } else {
@@ -448,8 +448,7 @@ public class DahuaHandler extends ChannelDuplexHandler {
                 int motionlevel = Math.round(Float.valueOf(command.toString()));
 
                 if (motionlevel == 0) {
-                    ipCameraHandler.sendHttpGET(
-                            "/cgi-bin/configManager.cgi?action=setConfig&MotionDetect[0].Level=1");
+                    ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&MotionDetect[0].Level=1");
                 } else {
                     ipCameraHandler.sendHttpGET(
                             "/cgi-bin/configManager.cgi?action=setConfig&MotionDetect[0].Level=" + motionlevel);
