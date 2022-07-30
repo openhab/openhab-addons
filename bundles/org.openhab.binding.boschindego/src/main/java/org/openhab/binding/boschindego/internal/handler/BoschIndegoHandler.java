@@ -70,9 +70,10 @@ public class BoschIndegoHandler extends BaseThingHandler {
     private static final String MAP_POSITION_STROKE_COLOR = "#8c8b6d";
     private static final String MAP_POSITION_FILL_COLOR = "#fff701";
     private static final int MAP_POSITION_RADIUS = 10;
-    private static final int MAP_REFRESH_INTERVAL_DAYS = 1;
-    private static final Duration OPERATING_DATA_INACTIVE_REFRESH_INTERVAL_DURATION = Duration.ofHours(6);
-    private static final Duration OPERATING_DATA_ACTIVE_REFRESH_INTERVAL_DURATION = Duration.ofMinutes(2);
+
+    private static final Duration MAP_REFRESH_INTERVAL = Duration.ofDays(1);
+    private static final Duration OPERATING_DATA_INACTIVE_REFRESH_INTERVAL = Duration.ofHours(6);
+    private static final Duration OPERATING_DATA_ACTIVE_REFRESH_INTERVAL = Duration.ofMinutes(2);
     private static final Duration MAP_REFRESH_SESSION_DURATION = Duration.ofMinutes(5);
     private static final Duration COMMAND_STATE_REFRESH_TIMEOUT = Duration.ofSeconds(10);
 
@@ -329,7 +330,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
         if (deviceStatus.isActive()) {
             refreshIntervalSeconds = stateActiveRefreshIntervalSeconds;
         } else if (deviceStatus.isCharging()) {
-            refreshIntervalSeconds = (int) OPERATING_DATA_ACTIVE_REFRESH_INTERVAL_DURATION.getSeconds();
+            refreshIntervalSeconds = (int) OPERATING_DATA_ACTIVE_REFRESH_INTERVAL.getSeconds();
         } else {
             refreshIntervalSeconds = stateInactiveRefreshIntervalSeconds;
         }
@@ -345,10 +346,8 @@ public class BoschIndegoHandler extends BaseThingHandler {
         // Refresh operating data only occationally or when robot is active/charging.
         // This will contact the robot directly through cellular network and wake it up
         // when sleeping.
-        if ((isActive && operatingDataTimestamp
-                .isBefore(Instant.now().minus(OPERATING_DATA_ACTIVE_REFRESH_INTERVAL_DURATION)))
-                || operatingDataTimestamp
-                        .isBefore(Instant.now().minus(OPERATING_DATA_INACTIVE_REFRESH_INTERVAL_DURATION))) {
+        if ((isActive && operatingDataTimestamp.isBefore(Instant.now().minus(OPERATING_DATA_ACTIVE_REFRESH_INTERVAL)))
+                || operatingDataTimestamp.isBefore(Instant.now().minus(OPERATING_DATA_INACTIVE_REFRESH_INTERVAL))) {
             refreshOperatingData();
         }
     }
@@ -434,8 +433,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
         }
         RawType cachedMap = this.cachedMap;
         boolean mapRefreshed;
-        if (cachedMap == null
-                || cachedMapTimestamp.isBefore(Instant.now().minus(Duration.ofDays(MAP_REFRESH_INTERVAL_DAYS)))) {
+        if (cachedMap == null || cachedMapTimestamp.isBefore(Instant.now().minus(MAP_REFRESH_INTERVAL))) {
             this.cachedMap = cachedMap = controller.getMap();
             cachedMapTimestamp = Instant.now();
             mapRefreshed = true;
