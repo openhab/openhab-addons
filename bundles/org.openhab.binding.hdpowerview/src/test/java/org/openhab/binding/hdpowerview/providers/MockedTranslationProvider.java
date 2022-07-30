@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.hdpowerview;
+package org.openhab.binding.hdpowerview.providers;
 
 import static java.util.Map.entry;
 
@@ -29,9 +29,9 @@ import org.osgi.framework.Bundle;
  * @author Jacob Laursen - Initial contribution
  */
 @NonNullByDefault
-public class TranslationProviderForTests implements TranslationProvider {
+public class MockedTranslationProvider implements TranslationProvider {
 
-    private final static Map<String, String> texts = Map.ofEntries(
+    private static final Map<String, String> TEXTS = Map.ofEntries(
             entry("dynamic-channel.scene-activate.description", "Activates the scene ''{0}''"),
             entry("dynamic-channel.scene-group-activate.description", "Activates the scene group ''{0}''"),
             entry("dynamic-channel.automation-enabled.description", "Enables/disables the automation ''{0}''"),
@@ -48,7 +48,7 @@ public class TranslationProviderForTests implements TranslationProvider {
             entry("dynamic-channel.automation.weekends", "Weekends"),
             entry("dynamic-channel.automation.all-days", "All days"));
 
-    public TranslationProviderForTests() {
+    public MockedTranslationProvider() {
     }
 
     @Nullable
@@ -60,7 +60,7 @@ public class TranslationProviderForTests implements TranslationProvider {
     @Nullable
     public String getText(@Nullable Bundle bundle, @Nullable String key, @Nullable String defaultText,
             @Nullable Locale locale, @Nullable Object @Nullable... arguments) {
-        String text = texts.get(key);
+        String text = TEXTS.get(key);
         return MessageFormat.format(text != null ? text : key, arguments);
     }
 }

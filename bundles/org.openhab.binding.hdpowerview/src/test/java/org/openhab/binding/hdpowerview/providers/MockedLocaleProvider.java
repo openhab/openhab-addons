@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.hdpowerview;
+package org.openhab.binding.hdpowerview.providers;
 
 import java.util.Locale;
 
@@ -23,7 +23,7 @@ import org.openhab.core.i18n.LocaleProvider;
  * @author Jacob Laursen - Initial contribution
  */
 @NonNullByDefault
-public class LocaleProviderForTests implements LocaleProvider {
+public class MockedLocaleProvider implements LocaleProvider {
     public Locale getLocale() {
         return Locale.ENGLISH;
     }
