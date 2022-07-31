@@ -41,7 +41,7 @@ Before the binding can communicate with the hub, the following Configuration Par
 | pollingInterval            | Time (seconds) between polling requests to the NeoHub (Min=4, Max=60, Default=60)                        |
 | socketTimeout              | Time (seconds) to allow for TCP socket connections to the hub to succeed (Min=4, Max=20, Default=5)      |
 | preferLegacyApi            | ADVANCED: Prefer to use older API calls; but if not supported, it switches to new calls (Default=false)  |
-| portOverride<sup>2)</sup>  | ADVANCED: Port number for connection to the NeoHub (0 = automatic)                                       |
+| portNumber<sup>2)</sup>    | ADVANCED: Port number for connection to the NeoHub (Default=0 (automatic))                               |
 
 <sup>1)</sup> If `useWebSockets` is false, the binding will connect via an older and less secure TCP connection, in which case `apiToken` is not required.
 However see the chapter "Connection Refused Errors" below.

@@ -110,11 +110,11 @@ public class NeoHubHandler extends BaseBridgeHandler {
         }
 
         if (logger.isDebugEnabled()) {
-            logger.debug("hub '{}' port={}", getThing().getUID(), config.portOverride);
+            logger.debug("hub '{}' port={}", getThing().getUID(), config.portNumber);
         }
 
-        if (config.portOverride < 0 || config.portOverride > 0xFFFF) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "portOverride is invalid!");
+        if (config.portNumber < 0 || config.portNumber > 0xFFFF) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "portNumber is invalid!");
             return;
         }
 

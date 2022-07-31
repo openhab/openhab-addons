@@ -46,7 +46,7 @@ public class NeoHubSocket extends NeoHubSocketBase {
         StringBuilder builder = new StringBuilder();
 
         try (Socket socket = new Socket()) {
-            int port = config.portOverride > 0 ? config.portOverride : NeoHubBindingConstants.PORT_TCP;
+            int port = config.portNumber > 0 ? config.portNumber : NeoHubBindingConstants.PORT_TCP;
             socket.connect(new InetSocketAddress(config.hostName, port), config.socketTimeout * 1000);
             socket.setSoTimeout(config.socketTimeout * 1000);
 

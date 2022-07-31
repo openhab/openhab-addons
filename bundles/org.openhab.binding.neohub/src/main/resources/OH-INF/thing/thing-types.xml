@@ -26,8 +26,8 @@
 				<description>Host name (IP address) of the NeoHub</description>
 			</parameter>
 
-			<parameter name="portOverride" type="integer" required="false">
-				<label>Port Number Override</label>
+			<parameter name="portNumber" type="integer" required="false">
+				<label>Port Number</label>
 				<description>Override port number to use to connect to the NeoHub (0=automatic)</description>
 				<default>0</default>
 				<advanced>true</advanced>
@@ -54,14 +54,15 @@
 				<advanced>true</advanced>
 			</parameter>
 
+			<parameter name="useWebSockets" type="boolean" required="false">
+				<label>Connect via WebSockets</label>
+				<description>Select whether to communicate with the Neohub via WebSocket or TCP connection</description>
+				<default>false</default>
+			</parameter>
+
 			<parameter name="apiToken" type="text" required="false">
 				<label>API Access Token</label>
 				<description>API access token for the hub (created with the Heatmiser mobile app)</description>
-			</parameter>
-
-			<parameter name="useWebSockets" type="boolean" required="true">
-				<label>Connect via WebSockets</label>
-				<description>Select whether to communicate with the Neohub via WebSocket or TCP connection</description>
 			</parameter>
 		</config-description>
 
