@@ -26,6 +26,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.rotel.internal.RotelBindingConstants;
+import org.openhab.binding.rotel.internal.RotelCommandDescriptionOptionProvider;
 import org.openhab.binding.rotel.internal.RotelException;
 import org.openhab.binding.rotel.internal.RotelModel;
 import org.openhab.binding.rotel.internal.RotelPlayStatus;
@@ -60,6 +61,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.CommandOption;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.StateOption;
@@ -82,12 +84,13 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
     private static final boolean USE_SIMULATED_DEVICE = false;
     private static final int SLEEP_INTV = 30;
 
+    private final RotelStateDescriptionOptionProvider stateDescriptionProvider;
+    private final RotelCommandDescriptionOptionProvider commandDescriptionProvider;
+    private final SerialPortManager serialPortManager;
+
     private @Nullable ScheduledFuture<?> reconnectJob;
     private @Nullable ScheduledFuture<?> powerOffJob;
     private @Nullable ScheduledFuture<?>[] powerOnZoneJobs = { null, null, null, null, null };
-
-    private RotelStateDescriptionOptionProvider stateDescriptionProvider;
-    private SerialPortManager serialPortManager;
 
     private RotelModel model;
     private RotelProtocol protocol;
@@ -132,9 +135,10 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
      * Constructor
      */
     public RotelHandler(Thing thing, RotelStateDescriptionOptionProvider stateDescriptionProvider,
-            SerialPortManager serialPortManager) {
+            RotelCommandDescriptionOptionProvider commandDescriptionProvider, SerialPortManager serialPortManager) {
         super(thing);
         this.stateDescriptionProvider = stateDescriptionProvider;
+        this.commandDescriptionProvider = commandDescriptionProvider;
         this.serialPortManager = serialPortManager;
         this.model = DEFAULT_MODEL;
         this.protocolHandler = new RotelHexProtocolHandler(model, Map.of());
@@ -458,6 +462,14 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                         model.getDspStateOptions());
                 stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_MAIN_DSP),
                         model.getDspStateOptions());
+            }
+
+            List<CommandOption> options = model.getOtherCommandsOptions(protocol);
+            if (!options.isEmpty()) {
+                commandDescriptionProvider.setCommandOptions(new ChannelUID(getThing().getUID(), CHANNEL_OTHER_COMMAND),
+                        options);
+                commandDescriptionProvider
+                        .setCommandOptions(new ChannelUID(getThing().getUID(), CHANNEL_MAIN_OTHER_COMMAND), options);
             }
 
             updateStatus(ThingStatus.UNKNOWN);
@@ -785,9 +797,9 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                                 sendCommand(RotelCommand.PLAY_STATUS);
                             }
                         } else if (command instanceof NextPreviousType && command == NextPreviousType.NEXT) {
-                            sendCommand(RotelCommand.TRACK_FORWARD);
+                            sendCommand(RotelCommand.TRACK_FWD);
                         } else if (command instanceof NextPreviousType && command == NextPreviousType.PREVIOUS) {
-                            sendCommand(RotelCommand.TRACK_BACKWORD);
+                            sendCommand(RotelCommand.TRACK_BACK);
                         } else {
                             success = false;
                             logger.debug("Command {} from channel {} failed: invalid command value", command, channel);
@@ -901,6 +913,24 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                         } else {
                             handleSpeakerCmd(protocol == RotelProtocol.HEX, channel, command, RotelCommand.SPEAKER_B_ON,
                                     RotelCommand.SPEAKER_B_OFF, RotelCommand.SPEAKER_B_TOGGLE);
+                        }
+                        break;
+                    case CHANNEL_OTHER_COMMAND:
+                    case CHANNEL_MAIN_OTHER_COMMAND:
+                        if (!isPowerOn()) {
+                            success = false;
+                            logger.debug("Command {} from channel {} ignored: device in standby", command, channel);
+                        } else {
+                            try {
+                                cmd = RotelCommand.getFromName(command.toString());
+                            } catch (RotelException e) {
+                                success = false;
+                                logger.debug("Command {} from channel {} failed: undefined command", command, channel);
+                                cmd = null;
+                            }
+                            if (cmd != null) {
+                                sendCommand(cmd);
+                            }
                         }
                         break;
                     default:
@@ -2717,7 +2747,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
             logger.debug("sendCommand: {}", e.getMessage());
             return;
         }
-        connector.writeOutput(cmd.getName(), message);
+        connector.writeOutput(cmd, message);
 
         if (connector instanceof RotelSimuConnector) {
             if ((protocol == RotelProtocol.HEX && cmd.getHexType() != 0)

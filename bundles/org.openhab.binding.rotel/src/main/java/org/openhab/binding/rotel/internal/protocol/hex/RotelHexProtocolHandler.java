@@ -133,7 +133,7 @@ public class RotelHexProtocolHandler extends RotelAbstractProtocolHandler {
     @Override
     public byte[] buildCommandMessage(RotelCommand cmd, @Nullable Integer value) throws RotelException {
         if (cmd.getHexType() == 0) {
-            throw new RotelException("Command \"" + cmd.getName() + "\" ignored: not available for HEX protocol");
+            throw new RotelException("Command \"" + cmd.getLabel() + "\" ignored: not available for HEX protocol");
         }
         final int size = 6;
         byte[] message = new byte[size];
@@ -151,7 +151,7 @@ public class RotelHexProtocolHandler extends RotelAbstractProtocolHandler {
         } else {
             message[idx++] = checksum;
         }
-        logger.debug("Command \"{}\" => {}", cmd.getName(), HexUtils.bytesToHex(message));
+        logger.debug("Command \"{}\" => {}", cmd, HexUtils.bytesToHex(message));
         return message;
     }
 

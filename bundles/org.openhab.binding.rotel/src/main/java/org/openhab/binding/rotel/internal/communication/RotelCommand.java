@@ -14,6 +14,12 @@ package org.openhab.binding.rotel.internal.communication;
 
 import static org.openhab.binding.rotel.internal.RotelBindingConstants.*;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.rotel.internal.RotelException;
@@ -29,6 +35,7 @@ public enum RotelCommand {
     POWER_TOGGLE("Power Toggle", PRIMARY_CMD, (byte) 0x0A, "power_toggle", "power_toggle"),
     POWER_OFF("Power Off", PRIMARY_CMD, (byte) 0x4A, "power_off", "power_off"),
     POWER_ON("Power On", PRIMARY_CMD, (byte) 0x4B, "power_on", "power_on"),
+    POWER_OFF_ALL_ZONES("Power Off All Zones", PRIMARY_CMD, (byte) 0x71),
     POWER("Request current power status", "get_current_power", "power?"),
     ZONE_SELECT("Zone Select", PRIMARY_CMD, (byte) 0x23),
     MAIN_ZONE_POWER_TOGGLE("Main Zone Power Toggle", MAIN_ZONE_CMD, (byte) 0x0A),
@@ -49,6 +56,8 @@ public enum RotelCommand {
     VOLUME_GET("Request current volume level", "get_volume", "volume?"),
     VOLUME_GET_MIN("Request Min volume level", "get_volume_min", null),
     VOLUME_GET_MAX("Request Max volume level", "get_volume_max", null),
+    REMOTE_VOLUME_UP("Remote Volume Up", PRIMARY_CMD, (byte) 0x00),
+    REMOTE_VOLUME_DOWN("Remote Volume Down", PRIMARY_CMD, (byte) 0x01),
     MUTE_TOGGLE("Mute Toggle", PRIMARY_CMD, (byte) 0x1E, "mute", "mute"),
     MUTE_ON("Mute On", "mute_on", "mute_on"),
     MUTE_OFF("Mute Off", "mute_off", "mute_off"),
@@ -212,20 +221,30 @@ public enum RotelCommand {
     STEREO7("7 Channel Stereo", PRIMARY_CMD, (byte) 0x5C, "7channel", "7channel"),
     STEREO9("9 Channel Stereo", "9channel", "9channel"),
     STEREO11("11 Channel Stereo", "11channel", "11channel"),
+    DSP_TOGGLE("DSP Mode Toggle", PRIMARY_CMD, (byte) 0x14),
     DSP1("DSP 1", PRIMARY_CMD, (byte) 0x57),
     DSP2("DSP 2", PRIMARY_CMD, (byte) 0x58),
     DSP3("DSP 3", PRIMARY_CMD, (byte) 0x59),
     DSP4("DSP 4", PRIMARY_CMD, (byte) 0x5A),
+    PROLOGIC_TOGGLE("Dolby 3 Stereo / Pro Logic Toggle", PRIMARY_CMD, (byte) 0x53),
     PROLOGIC("Dolby Pro Logic", PRIMARY_CMD, (byte) 0x5F),
     PLII_CINEMA("Dolby PLII Cinema", PRIMARY_CMD, (byte) 0x5D, "prologic_movie", "prologic_movie"),
     PLII_MUSIC("Dolby PLII Music", PRIMARY_CMD, (byte) 0x5E, "prologic_music", "prologic_music"),
     PLII_GAME("Dolby PLII Game", PRIMARY_CMD, (byte) 0x74, "prologic_game", "prologic_game"),
     PLIIZ("Dolby PLIIz", PRIMARY_CMD, (byte) 0x92, "prologic_iiz", "prologic_iiz"),
+    PLII_PANORAMA_TOGGLE("PLII Panorama Toggle", PRIMARY_CMD, (byte) 0x62),
+    PLII_DIMENSION_UP("PLII Dimension Up", PRIMARY_CMD, (byte) 0x63),
+    PLII_DIMENSION_DOWN("PLII Dimension Down", PRIMARY_CMD, (byte) 0x64),
+    PLII_CENTER_WIDTH_UP("PLII Center Width Up", PRIMARY_CMD, (byte) 0x65),
+    PLII_CENTER_WIDTH_DOWN("PLII Center Width Down", PRIMARY_CMD, (byte) 0x66),
+    DDEX_TOGGLE("Dolby Digital EX Toggle", PRIMARY_CMD, (byte) 0x68),
+    NEO6_TOGGLE("dts Neo:6 Music/Cinema Toggle", PRIMARY_CMD, (byte) 0x54),
     NEO6_MUSIC("dts Neo:6 Music", PRIMARY_CMD, (byte) 0x60, "neo6_music", "neo6_music"),
     NEO6_CINEMA("dts Neo:6 Cinema", PRIMARY_CMD, (byte) 0x61, "neo6_cinema", "neo6_cinema"),
     ATMOS("Dolby Atmos", "dolby_atmos", "dolby_atmos"),
     NEURAL_X("dts Neural:X", "dts_neural", "dts_neural"),
     BYPASS("Analog Bypass", PRIMARY_CMD, (byte) 0x11, "bypass", "bypass"),
+    NEXT_MODE("Next Surround Mode", PRIMARY_CMD, (byte) 0x22),
     DSP_MODE("Request current DSP mode", "get_dsp_mode", null),
     TONE_MAX("Request Max tone level", "get_tone_max", null),
     TONE_CONTROL_SELECT("Tone Control Select", PRIMARY_CMD, (byte) 0x67),
@@ -271,9 +290,13 @@ public enum RotelCommand {
     RANDOM_MODE("Request current random play mode", null, "rnd?"),
     REPEAT_TOGGLE("Repeat Play Mode Toggle", PRIMARY_CMD, (byte) 0x26, "repeat", "rpt"),
     REPEAT_MODE("Request current repeat play mode", null, "rpt?"),
-    TRACK_FORWARD("Track Forward", PRIMARY_CMD, (byte) 0x09, "track_fwd", "trkf"),
-    TRACK_BACKWORD("Track Backward", PRIMARY_CMD, (byte) 0x08, "track_back", "trkb"),
+    TRACK_FWD("Track Forward/Tune Up", PRIMARY_CMD, (byte) 0x09, "track_fwd", "trkf"),
+    TRACK_BACK("Track Backward/Tune Down", PRIMARY_CMD, (byte) 0x08, "track_back", "trkb"),
+    FAST_FWD("Fast Forward/Search Forward", PRIMARY_CMD, (byte) 0x0B, "fast_fwd", "ff"),
+    FAST_BACK("Fast Backward/Search Backward", PRIMARY_CMD, (byte) 0x0A, "fast_back", "fb"),
     TRACK("Request current CD track number", null, "track?"),
+    EJECT("Eject CD", "eject", "eject"),
+    TIME_TOGGLE("Toggle CD Time Display", "time", "time"),
     FREQUENCY("Request current frequency for digital source input", "get_current_freq", "freq?"),
     DISPLAY_REFRESH("Display Refresh", PRIMARY_CMD, (byte) 0xFF),
     DIMMER_LEVEL_GET("Request current front display dimmer level", "get_current_dimmer", "dimmer?"),
@@ -309,12 +332,211 @@ public enum RotelCommand {
     SPEAKER_B_ON("Set Speaker B Output", "speaker_b_on", "speaker_b_on"),
     SPEAKER_B_OFF("Unset Speaker B Output", "speaker_b_off", "speaker_b_off"),
     SPEAKER("Request current active speaker outputs", "get_current_speaker", "speaker?"),
+    TUNE_UP("Tune Up", PRIMARY_CMD, (byte) 0x28),
+    TUNE_DOWN("Tune Down", PRIMARY_CMD, (byte) 0x29),
+    PRESET_UP("Preset Up", PRIMARY_CMD, (byte) 0x6F),
+    PRESET_DOWN("Preset Down", PRIMARY_CMD, (byte) 0x70),
+    FREQUENCY_UP("Frequency Up", PRIMARY_CMD, (byte) 0x72),
+    FREQUENCY_DOWN("Frequency Down", PRIMARY_CMD, (byte) 0x73),
+    MEMORY("Memory", PRIMARY_CMD, (byte) 0x27),
+    BAND_TOGGLE("Band Toggle", PRIMARY_CMD, (byte) 0x24),
+    AM("AM", PRIMARY_CMD, (byte) 0x56),
+    FM("FM", PRIMARY_CMD, (byte) 0x55),
+    TUNE_PRESET_TOGGLE("Tune / Preset", PRIMARY_CMD, (byte) 0x20),
+    TUNING_MODE_SELECT("Tuning Mode Select", PRIMARY_CMD, (byte) 0x69),
+    PRESET_MODE_SELECT("Preset Mode Select", PRIMARY_CMD, (byte) 0x6A),
+    FREQUENCY_DIRECT("Frequency Direct", PRIMARY_CMD, (byte) 0x25),
+    PRESET_SCAN("Preset Scan", PRIMARY_CMD, (byte) 0x21),
+    TUNER_DISPLAY("Tuner Display", PRIMARY_CMD, (byte) 0x44),
+    RDS_PTY("RDS PTY", PRIMARY_CMD, (byte) 0x45),
+    RDS_TP("RDS TP", PRIMARY_CMD, (byte) 0x46),
+    RDS_TA("RDS TA", PRIMARY_CMD, (byte) 0x47),
+    FM_MONO_TOGGLE("FM Mono", PRIMARY_CMD, (byte) 0x26),
+    ZONE2_TUNE_UP("Zone 2 Tune Up", ZONE2_CMD, (byte) 0x28),
+    ZONE2_TUNE_DOWN("Zone 2 Tune Down", ZONE2_CMD, (byte) 0x29),
+    ZONE2_PRESET_UP("Zone 2 Preset Up", ZONE2_CMD, (byte) 0x6F),
+    ZONE2_PRESET_DOWN("Zone 2 Preset Down", ZONE2_CMD, (byte) 0x70),
+    ZONE2_FREQUENCY_UP("Zone 2 Frequency Up", ZONE2_CMD, (byte) 0x72),
+    ZONE2_FREQUENCY_DOWN("Zone 2 Frequency Down", ZONE2_CMD, (byte) 0x73),
+    ZONE2_BAND_TOGGLE("Zone 2 Band Toggle", ZONE2_CMD, (byte) 0x24),
+    ZONE2_AM("Zone 2 AM", ZONE2_CMD, (byte) 0x56),
+    ZONE2_FM("Zone 2 FM", ZONE2_CMD, (byte) 0x55),
+    ZONE2_TUNE_PRESET_TOGGLE("Zone 2 Tune / Preset", ZONE2_CMD, (byte) 0x20),
+    ZONE2_TUNING_MODE_SELECT("Zone 2 Tuning Mode Select", ZONE2_CMD, (byte) 0x69),
+    ZONE2_PRESET_MODE_SELECT("Zone 2 Preset Mode Select", ZONE2_CMD, (byte) 0x6A),
+    ZONE2_PRESET_SCAN("Zone 2 Preset Scan", ZONE2_CMD, (byte) 0x21),
+    ZONE2_FM_MONO_TOGGLE("Zone 2 FM Mono", ZONE2_CMD, (byte) 0x26),
+    ZONE3_TUNE_UP("Zone 3 Tune Up", ZONE3_CMD, (byte) 0x28),
+    ZONE3_TUNE_DOWN("Zone 3 Tune Down", ZONE3_CMD, (byte) 0x29),
+    ZONE3_PRESET_UP("Zone 3 Preset Up", ZONE3_CMD, (byte) 0x6F),
+    ZONE3_PRESET_DOWN("Zone 3 Preset Down", ZONE3_CMD, (byte) 0x70),
+    ZONE3_FREQUENCY_UP("Zone 3 Frequency Up", ZONE3_CMD, (byte) 0x72),
+    ZONE3_FREQUENCY_DOWN("Zone 3 Frequency Down", ZONE3_CMD, (byte) 0x73),
+    ZONE3_BAND_TOGGLE("Zone 3 Band Toggle", ZONE3_CMD, (byte) 0x24),
+    ZONE3_AM("Zone 3 AM", ZONE3_CMD, (byte) 0x56),
+    ZONE3_FM("Zone 3 FM", ZONE3_CMD, (byte) 0x55),
+    ZONE3_TUNE_PRESET_TOGGLE("Zone 3 Tune / Preset", ZONE3_CMD, (byte) 0x20),
+    ZONE3_TUNING_MODE_SELECT("Zone 3 Tuning Mode Select", ZONE3_CMD, (byte) 0x69),
+    ZONE3_PRESET_MODE_SELECT("Zone 3 Preset Mode Select", ZONE3_CMD, (byte) 0x6A),
+    ZONE3_PRESET_SCAN("Zone 3 Preset Scan", ZONE3_CMD, (byte) 0x21),
+    ZONE3_FM_MONO_TOGGLE("Zone 3 FM Mono", ZONE3_CMD, (byte) 0x26),
+    ZONE4_TUNE_UP("Zone 4 Tune Up", ZONE4_CMD, (byte) 0x28),
+    ZONE4_TUNE_DOWN("Zone 4 Tune Down", ZONE4_CMD, (byte) 0x29),
+    ZONE4_PRESET_UP("Zone 4 Preset Up", ZONE4_CMD, (byte) 0x6F),
+    ZONE4_PRESET_DOWN("Zone 4 Preset Down", ZONE4_CMD, (byte) 0x70),
+    ZONE4_FREQUENCY_UP("Zone 4 Frequency Up", ZONE4_CMD, (byte) 0x72),
+    ZONE4_FREQUENCY_DOWN("Zone 4 Frequency Down", ZONE4_CMD, (byte) 0x73),
+    ZONE4_BAND_TOGGLE("Zone 4 Band Toggle", ZONE4_CMD, (byte) 0x24),
+    ZONE4_AM("Zone 4 AM", ZONE4_CMD, (byte) 0x56),
+    ZONE4_FM("Zone 4 FM", ZONE4_CMD, (byte) 0x55),
+    ZONE4_TUNE_PRESET_TOGGLE("Zone 4 Tune / Preset", ZONE4_CMD, (byte) 0x20),
+    ZONE4_TUNING_MODE_SELECT("Zone 4 Tuning Mode Select", ZONE4_CMD, (byte) 0x69),
+    ZONE4_PRESET_MODE_SELECT("Zone 4 Preset Mode Select", ZONE4_CMD, (byte) 0x6A),
+    ZONE4_PRESET_SCAN("Zone 4 Preset Scan", ZONE4_CMD, (byte) 0x21),
+    ZONE4_FM_MONO_TOGGLE("Zone 4 FM Mono", ZONE4_CMD, (byte) 0x26),
+    MENU("Display the Menu", PRIMARY_CMD, (byte) 0x18, "menu", null),
+    EXIT("Exit Key", PRIMARY_CMD, (byte) 0x90, "exit", null),
+    UP("Cursor Up", PRIMARY_CMD, (byte) 0x1C, "up", null),
+    UP_PRESSED("Cursor Up – Key Pressed", PRIMARY_CMD, (byte) 0x1C),
+    UP_RELEASED("Cursor Up – Key Released", (byte) 0x11, (byte) 0x1C),
+    DOWN("Cursor Down", PRIMARY_CMD, (byte) 0x1D, "down", null),
+    DOWN_PRESSED("Cursor Down – Key Pressed", PRIMARY_CMD, (byte) 0x1D),
+    DOWN_RELEASED("Cursor Down – Key Released", (byte) 0x11, (byte) 0x1D),
+    LEFT("Cursor Left", PRIMARY_CMD, (byte) 0x1B, "left", null),
+    LEFT_PRESSED("Cursor Left – Key Pressed", PRIMARY_CMD, (byte) 0x1B),
+    LEFT_RELEASED("Cursor Left – Key Released", (byte) 0x11, (byte) 0x1B),
+    RIGHT("Cursor Right", PRIMARY_CMD, (byte) 0x1A, "right", null),
+    ENTER("Enter Key", PRIMARY_CMD, (byte) 0x19, "enter", null),
+    RIGHT_PRESSED("Cursor Right – Key Pressed", PRIMARY_CMD, (byte) 0x1A),
+    RIGHT_RELEASED("Cursor Right – Key Released", (byte) 0x11, (byte) 0x1A),
+    KEY1("Number Key 1", PRIMARY_CMD, (byte) 0x2A, "1", "1"),
+    KEY2("Number Key 2", PRIMARY_CMD, (byte) 0x2B, "2", "2"),
+    KEY3("Number Key 3", PRIMARY_CMD, (byte) 0x2C, "3", "3"),
+    KEY4("Number Key 4", PRIMARY_CMD, (byte) 0x2D, "4", "4"),
+    KEY5("Number Key 5", PRIMARY_CMD, (byte) 0x2E, "5", "5"),
+    KEY6("Number Key 6", PRIMARY_CMD, (byte) 0x2F, "6", "6"),
+    KEY7("Number Key 7", PRIMARY_CMD, (byte) 0x30, "7", "7"),
+    KEY8("Number Key 8", PRIMARY_CMD, (byte) 0x31, "8", "8"),
+    KEY9("Number Key 9", PRIMARY_CMD, (byte) 0x32, "9", "9"),
+    KEY0("Number Key 0", PRIMARY_CMD, (byte) 0x33, "0", "0"),
+    ZONE2_KEY1("Zone 2 Number Key 1", ZONE2_CMD, (byte) 0x2A),
+    ZONE2_KEY2("Zone 2 Number Key 2", ZONE2_CMD, (byte) 0x2B),
+    ZONE2_KEY3("Zone 2 Number Key 3", ZONE2_CMD, (byte) 0x2C),
+    ZONE2_KEY4("Zone 2 Number Key 4", ZONE2_CMD, (byte) 0x2D),
+    ZONE2_KEY5("Zone 2 Number Key 5", ZONE2_CMD, (byte) 0x2E),
+    ZONE2_KEY6("Zone 2 Number Key 6", ZONE2_CMD, (byte) 0x2F),
+    ZONE2_KEY7("Zone 2 Number Key 7", ZONE2_CMD, (byte) 0x30),
+    ZONE2_KEY8("Zone 2 Number Key 8", ZONE2_CMD, (byte) 0x31),
+    ZONE2_KEY9("Zone 2 Number Key 9", ZONE2_CMD, (byte) 0x32),
+    ZONE2_KEY0("Zone 2 Number Key 0", ZONE2_CMD, (byte) 0x33),
+    ZONE3_KEY1("Zone 3 Number Key 1", ZONE3_CMD, (byte) 0x2A),
+    ZONE3_KEY2("Zone 3 Number Key 2", ZONE3_CMD, (byte) 0x2B),
+    ZONE3_KEY3("Zone 3 Number Key 3", ZONE3_CMD, (byte) 0x2C),
+    ZONE3_KEY4("Zone 3 Number Key 4", ZONE3_CMD, (byte) 0x2D),
+    ZONE3_KEY5("Zone 3 Number Key 5", ZONE3_CMD, (byte) 0x2E),
+    ZONE3_KEY6("Zone 3 Number Key 6", ZONE3_CMD, (byte) 0x2F),
+    ZONE3_KEY7("Zone 3 Number Key 7", ZONE3_CMD, (byte) 0x30),
+    ZONE3_KEY8("Zone 3 Number Key 8", ZONE3_CMD, (byte) 0x31),
+    ZONE3_KEY9("Zone 3 Number Key 9", ZONE3_CMD, (byte) 0x32),
+    ZONE3_KEY0("Zone 3 Number Key 0", ZONE3_CMD, (byte) 0x33),
+    ZONE4_KEY1("Zone 4 Number Key 1", ZONE4_CMD, (byte) 0x2A),
+    ZONE4_KEY2("Zone 4 Number Key 2", ZONE4_CMD, (byte) 0x2B),
+    ZONE4_KEY3("Zone 4 Number Key 3", ZONE4_CMD, (byte) 0x2C),
+    ZONE4_KEY4("Zone 4 Number Key 4", ZONE4_CMD, (byte) 0x2D),
+    ZONE4_KEY5("Zone 4 Number Key 5", ZONE4_CMD, (byte) 0x2E),
+    ZONE4_KEY6("Zone 4 Number Key 6", ZONE4_CMD, (byte) 0x2F),
+    ZONE4_KEY7("Zone 4 Number Key 7", ZONE4_CMD, (byte) 0x30),
+    ZONE4_KEY8("Zone 4 Number Key 8", ZONE4_CMD, (byte) 0x31),
+    ZONE4_KEY9("Zone 4 Number Key 9", ZONE4_CMD, (byte) 0x32),
+    ZONE4_KEY0("Zone 4 Number Key 0", ZONE4_CMD, (byte) 0x33),
+    PROGRAM("Program Key", "program", null),
+    PCUSB_CLASS_1("Set PC-USB Audio Class to 1.0", "pcusb_class_1", "pcusb_class_1"),
+    PCUSB_CLASS_2("Set PC-USB Audio Class to 2.0", "pcusb_class_2", "pcusb_class_2"),
+    PCUSB_CLASS_GET("Request current PC-USB class", "get_pcusb_class", "pcusb?"),
+    RESET_FACTORY("Reset unit to factory defaults", PRIMARY_CMD, (byte) 0x93, "factory_default_on",
+            "factory_default_on"),
+    DYNAMIC_RANGE("Dynamic Range", PRIMARY_CMD, (byte) 0x16),
+    DIGITAL_INPUT_SELECT("Digital Input Select", PRIMARY_CMD, (byte) 0x1F),
+    ZONE_TOGGLE("Zone Toggle", PRIMARY_CMD, (byte) 0x23),
+    CENTER_TRIM("Temporary Center Trim", PRIMARY_CMD, (byte) 0x4C),
+    SUB_TRIM("Temporary Subwoofer  Trim", PRIMARY_CMD, (byte) 0x4D),
+    SURROUND_TRIM("Temporary Surround  Trim", PRIMARY_CMD, (byte) 0x4E),
+    CINEMA_EQ_TOGGLE("Cinema EQ Toggle", PRIMARY_CMD, (byte) 0x4F),
+    DISPLAY_TOGGLE("Front Display On/Off", PRIMARY_CMD, (byte) 0x52),
+    PARTY_MODE_TOGGLE("Party Mode Toggle", PRIMARY_CMD, (byte) 0x6E),
+    ZONE2_PARTY_MODE_TOGGLE("Zone 2 Party Mode Toggle", ZONE2_CMD, (byte) 0x6E),
+    ZONE3_PARTY_MODE_TOGGLE("Zone 3 Party Mode Toggle", ZONE3_CMD, (byte) 0x6E),
+    ZONE4_PARTY_MODE_TOGGLE("Zone 4 Party Mode Toggle", ZONE4_CMD, (byte) 0x6E),
+    OUTPUT_RESOLUTION("Output Resolution", PRIMARY_CMD, (byte) 0x75),
+    HDMI_AMP_MODE("HDMI Amp Mode", PRIMARY_CMD, (byte) 0x78),
+    HDMI_TV_MODE("HDMI TV Mode", PRIMARY_CMD, (byte) 0x79),
+    ROOM_EQ_TOGGLE("Temporary Room EQ Toggle", PRIMARY_CMD, (byte) 0x67),
+    SPEAKER_SETTING_TOGGLE("Speaker Level Setting Toggle", PRIMARY_CMD, (byte) 0xA1),
     MODEL("Request the model number", null, "model?"),
     VERSION("Request the main CPU software version", null, "version?");
 
+    public static final List<RotelCommand> DSP_CMDS_SET1 = List.of(DSP_TOGGLE, PROLOGIC_TOGGLE, PLII_PANORAMA_TOGGLE,
+            PLII_DIMENSION_UP, PLII_DIMENSION_DOWN, PLII_CENTER_WIDTH_UP, PLII_CENTER_WIDTH_DOWN, DDEX_TOGGLE,
+            NEO6_TOGGLE, NEXT_MODE);
+
+    public static final List<RotelCommand> SRC_CTRL_CMDS_SET1 = List.of(PLAY, STOP, PAUSE, TRACK_FWD, TRACK_BACK);
+    public static final List<RotelCommand> SRC_CTRL_CMDS_SET2 = List.of(FAST_FWD, FAST_BACK, RANDOM_TOGGLE,
+            REPEAT_TOGGLE);
+    public static final List<RotelCommand> SRC_CTRL_CMDS_SET3 = List.of(FAST_FWD, FAST_BACK, EJECT, TIME_TOGGLE);
+
+    public static final List<RotelCommand> TUNER_CMDS_SET1 = List.of(TUNE_UP, TUNE_DOWN, MEMORY, BAND_TOGGLE, AM, FM,
+            TUNE_PRESET_TOGGLE, TUNING_MODE_SELECT, PRESET_MODE_SELECT, FREQUENCY_DIRECT, PRESET_SCAN, TUNER_DISPLAY,
+            RDS_PTY, RDS_TP, RDS_TA, FM_MONO_TOGGLE);
+    public static final List<RotelCommand> TUNER_CMDS_SET2 = List.of(TUNE_UP, TUNE_DOWN, PRESET_UP, PRESET_DOWN,
+            FREQUENCY_UP, FREQUENCY_DOWN, MEMORY, BAND_TOGGLE, AM, FM, TUNE_PRESET_TOGGLE, TUNING_MODE_SELECT,
+            PRESET_MODE_SELECT, FREQUENCY_DIRECT, PRESET_SCAN, TUNER_DISPLAY, RDS_PTY, RDS_TP, RDS_TA, FM_MONO_TOGGLE);
+    public static final List<RotelCommand> ZONE2_TUNER_CMDS_SET1 = List.of(ZONE2_TUNE_UP, ZONE2_TUNE_DOWN,
+            ZONE2_BAND_TOGGLE, ZONE2_AM, ZONE2_FM, ZONE2_TUNE_PRESET_TOGGLE, ZONE2_TUNING_MODE_SELECT,
+            ZONE2_PRESET_MODE_SELECT, ZONE2_PRESET_SCAN, ZONE2_FM_MONO_TOGGLE);
+    public static final List<RotelCommand> ZONE2_TUNER_CMDS_SET2 = List.of(ZONE2_TUNE_UP, ZONE2_TUNE_DOWN,
+            ZONE2_PRESET_UP, ZONE2_PRESET_DOWN, ZONE2_FREQUENCY_UP, ZONE2_FREQUENCY_DOWN, ZONE2_BAND_TOGGLE, ZONE2_AM,
+            ZONE2_FM, ZONE2_TUNE_PRESET_TOGGLE, ZONE2_TUNING_MODE_SELECT, ZONE2_PRESET_MODE_SELECT, ZONE2_PRESET_SCAN,
+            ZONE2_FM_MONO_TOGGLE);
+    public static final List<RotelCommand> ZONE234_TUNER_CMDS_SET1 = List.of(ZONE2_TUNE_UP, ZONE2_TUNE_DOWN,
+            ZONE2_PRESET_UP, ZONE2_PRESET_DOWN, ZONE2_FREQUENCY_UP, ZONE2_FREQUENCY_DOWN, ZONE2_BAND_TOGGLE, ZONE2_AM,
+            ZONE2_FM, ZONE2_TUNE_PRESET_TOGGLE, ZONE2_TUNING_MODE_SELECT, ZONE2_PRESET_MODE_SELECT, ZONE2_PRESET_SCAN,
+            ZONE2_FM_MONO_TOGGLE, ZONE3_TUNE_UP, ZONE3_TUNE_DOWN, ZONE3_PRESET_UP, ZONE3_PRESET_DOWN,
+            ZONE3_FREQUENCY_UP, ZONE3_FREQUENCY_DOWN, ZONE3_BAND_TOGGLE, ZONE3_AM, ZONE3_FM, ZONE3_TUNE_PRESET_TOGGLE,
+            ZONE3_TUNING_MODE_SELECT, ZONE3_PRESET_MODE_SELECT, ZONE3_PRESET_SCAN, ZONE3_FM_MONO_TOGGLE, ZONE4_TUNE_UP,
+            ZONE4_TUNE_DOWN, ZONE4_PRESET_UP, ZONE4_PRESET_DOWN, ZONE4_FREQUENCY_UP, ZONE4_FREQUENCY_DOWN,
+            ZONE4_BAND_TOGGLE, ZONE4_AM, ZONE4_FM, ZONE4_TUNE_PRESET_TOGGLE, ZONE4_TUNING_MODE_SELECT,
+            ZONE4_PRESET_MODE_SELECT, ZONE4_PRESET_SCAN, ZONE4_FM_MONO_TOGGLE);
+
+    public static final List<RotelCommand> MENU_CTRL_CMDS = List.of(MENU, EXIT, UP, DOWN, LEFT, RIGHT, ENTER);
+    public static final List<RotelCommand> MENU2_CTRL_CMDS = List.of(MENU, UP, DOWN, LEFT, RIGHT, ENTER);
+    public static final List<RotelCommand> MENU3_CTRL_CMDS = List.of(MENU, EXIT, UP_PRESSED, UP_RELEASED, DOWN_PRESSED,
+            DOWN_RELEASED, LEFT_PRESSED, LEFT_RELEASED, RIGHT_PRESSED, RIGHT_RELEASED, ENTER);
+
+    public static final List<RotelCommand> NUMERIC_KEY_CMDS = List.of(KEY1, KEY2, KEY3, KEY4, KEY5, KEY6, KEY7, KEY8,
+            KEY9, KEY0);
+    public static final List<RotelCommand> ZONE2_NUMERIC_KEY_CMDS = List.of(ZONE2_KEY1, ZONE2_KEY2, ZONE2_KEY3,
+            ZONE2_KEY4, ZONE2_KEY5, ZONE2_KEY6, ZONE2_KEY7, ZONE2_KEY8, ZONE2_KEY9, ZONE2_KEY0);
+    public static final List<RotelCommand> ZONE234_NUMERIC_KEY_CMDS = List.of(ZONE2_KEY1, ZONE2_KEY2, ZONE2_KEY3,
+            ZONE2_KEY4, ZONE2_KEY5, ZONE2_KEY6, ZONE2_KEY7, ZONE2_KEY8, ZONE2_KEY9, ZONE2_KEY0, ZONE3_KEY1, ZONE3_KEY2,
+            ZONE3_KEY3, ZONE3_KEY4, ZONE3_KEY5, ZONE3_KEY6, ZONE3_KEY7, ZONE3_KEY8, ZONE3_KEY9, ZONE3_KEY0, ZONE4_KEY1,
+            ZONE4_KEY2, ZONE4_KEY3, ZONE4_KEY4, ZONE4_KEY5, ZONE4_KEY6, ZONE4_KEY7, ZONE4_KEY8, ZONE4_KEY9, ZONE4_KEY0);
+
+    public static final List<RotelCommand> PCUSB_CLASS_CMDS = List.of(PCUSB_CLASS_1, PCUSB_CLASS_2);
+
+    public static final List<RotelCommand> OTHER_CMDS_SET1 = List.of(RECORD_FONCTION_SELECT, TONE_CONTROL_SELECT,
+            DYNAMIC_RANGE, DIGITAL_INPUT_SELECT, ZONE_TOGGLE, CENTER_TRIM, SUB_TRIM, SURROUND_TRIM, CINEMA_EQ_TOGGLE);
+    public static final List<RotelCommand> OTHER_CMDS_SET2 = List.of(POWER_OFF_ALL_ZONES, PARTY_MODE_TOGGLE,
+            ZONE2_PARTY_MODE_TOGGLE, ZONE3_PARTY_MODE_TOGGLE, ZONE4_PARTY_MODE_TOGGLE, OUTPUT_RESOLUTION, HDMI_AMP_MODE,
+            HDMI_TV_MODE);
+    public static final List<RotelCommand> OTHER_CMDS_SET3 = List.of(RECORD_FONCTION_SELECT, DYNAMIC_RANGE,
+            DIGITAL_INPUT_SELECT, ZONE_TOGGLE, CENTER_TRIM, SUB_TRIM, SURROUND_TRIM, CINEMA_EQ_TOGGLE);
+    public static final List<RotelCommand> OTHER_CMDS_SET4 = List.of(POWER_OFF_ALL_ZONES, PARTY_MODE_TOGGLE,
+            ZONE2_PARTY_MODE_TOGGLE, ZONE3_PARTY_MODE_TOGGLE, ZONE4_PARTY_MODE_TOGGLE, OUTPUT_RESOLUTION, HDMI_AMP_MODE,
+            HDMI_TV_MODE, ROOM_EQ_TOGGLE, SPEAKER_SETTING_TOGGLE, RESET_FACTORY);
+
     public static final byte PRIMARY_COMMAND = (byte) 0x10;
 
-    private String name;
+    private String label;
     private byte hexType;
     private byte hexKey;
     private @Nullable String asciiCommandV1;
@@ -323,37 +545,37 @@ public enum RotelCommand {
     /**
      * Constructor when the textual commands are undefined
      *
-     * @param name the command name
+     * @param label the command label
      * @param hexType the the command type (HEX protocol)
      * @param hexKey the the command key (HEX protocol)
      */
-    private RotelCommand(String name, byte hexType, byte hexKey) {
-        this(name, hexType, hexKey, null, null);
+    private RotelCommand(String label, byte hexType, byte hexKey) {
+        this(label, hexType, hexKey, null, null);
     }
 
     /**
      * Constructor when the HEX command is undefined
      *
-     * @param name the command name
+     * @param label the command label
      * @param asciiCommandV1 the textual command (ASCII protocol V1)
      * @param asciiCommandV2 the textual command (ASCII protocol V2)
      */
-    private RotelCommand(String name, @Nullable String asciiCommandV1, @Nullable String asciiCommandV2) {
-        this(name, (byte) 0, (byte) 0, asciiCommandV1, asciiCommandV2);
+    private RotelCommand(String label, @Nullable String asciiCommandV1, @Nullable String asciiCommandV2) {
+        this(label, (byte) 0, (byte) 0, asciiCommandV1, asciiCommandV2);
     }
 
     /**
      * Constructor
      *
-     * @param name the command name
+     * @param label the command label
      * @param hexType the the command type (HEX protocol)
      * @param hexKey the the command key (HEX protocol)
      * @param asciiCommandV1 the textual command (ASCII protocol V1)
      * @param asciiCommandV2 the textual command (ASCII protocol V2)
      */
-    private RotelCommand(String name, byte hexType, byte hexKey, @Nullable String asciiCommandV1,
+    private RotelCommand(String label, byte hexType, byte hexKey, @Nullable String asciiCommandV1,
             @Nullable String asciiCommandV2) {
-        this.name = name;
+        this.label = label;
         this.hexType = hexType;
         this.hexKey = hexKey;
         this.asciiCommandV1 = asciiCommandV1;
@@ -361,12 +583,12 @@ public enum RotelCommand {
     }
 
     /**
-     * Get the command name
+     * Get the command label
      *
-     * @return the command name
+     * @return the command label
      */
-    public String getName() {
-        return name;
+    public String getLabel() {
+        return label;
     }
 
     /**
@@ -406,6 +628,23 @@ public enum RotelCommand {
     }
 
     /**
+     * Indicate if the command is relative to a particular zone
+     *
+     * @param numZone the zone number
+     *
+     * @return true if the command is relative to the zone
+     */
+    public boolean isCommandForZone(int numZone) {
+        String prefix = String.format("ZONE%d", numZone);
+        return name().startsWith(prefix);
+    }
+
+    @Override
+    public @NonNull String toString() {
+        return label;
+    }
+
+    /**
      * Get the command associated to a textual command
      *
      * @param text the textual command used to identify the command
@@ -421,5 +660,69 @@ public enum RotelCommand {
             }
         }
         throw new RotelException("Invalid textual command: " + text);
+    }
+
+    /**
+     * Get the command from its name
+     *
+     * @param name the command name used to identify the command
+     *
+     * @return the command associated to the searched name
+     *
+     * @throws RotelException - If no command is associated to the searched name
+     */
+    public static RotelCommand getFromName(String name) throws RotelException {
+        for (RotelCommand value : RotelCommand.values()) {
+            if (value.name().equals(name)) {
+                return value;
+            }
+        }
+        throw new RotelException("Invalid command: " + name);
+    }
+
+    public static List<RotelCommand> concatenate(List<RotelCommand> list1, List<RotelCommand> list2) {
+        return Stream.of(list1, list2).flatMap(Collection::stream).collect(Collectors.toList());
+    }
+
+    public static List<RotelCommand> concatenate(List<RotelCommand> list1, List<RotelCommand> list2,
+            List<RotelCommand> list3) {
+        return Stream.of(list1, list2, list3).flatMap(Collection::stream).collect(Collectors.toList());
+    }
+
+    public static List<RotelCommand> concatenate(List<RotelCommand> list1, List<RotelCommand> list2,
+            List<RotelCommand> list3, List<RotelCommand> list4) {
+        return Stream.of(list1, list2, list3, list4).flatMap(Collection::stream).collect(Collectors.toList());
+    }
+
+    public static List<RotelCommand> concatenate(List<RotelCommand> list1, List<RotelCommand> list2,
+            List<RotelCommand> list3, List<RotelCommand> list4, List<RotelCommand> list5) {
+        return Stream.of(list1, list2, list3, list4, list5).flatMap(Collection::stream).collect(Collectors.toList());
+    }
+
+    public static List<RotelCommand> concatenate(List<RotelCommand> list1, List<RotelCommand> list2,
+            List<RotelCommand> list3, List<RotelCommand> list4, List<RotelCommand> list5, List<RotelCommand> list6) {
+        return Stream.of(list1, list2, list3, list4, list5, list6).flatMap(Collection::stream)
+                .collect(Collectors.toList());
+    }
+
+    public static List<RotelCommand> concatenate(List<RotelCommand> list1, List<RotelCommand> list2,
+            List<RotelCommand> list3, List<RotelCommand> list4, List<RotelCommand> list5, List<RotelCommand> list6,
+            List<RotelCommand> list7) {
+        return Stream.of(list1, list2, list3, list4, list5, list6, list7).flatMap(Collection::stream)
+                .collect(Collectors.toList());
+    }
+
+    public static List<RotelCommand> concatenate(List<RotelCommand> list1, List<RotelCommand> list2,
+            List<RotelCommand> list3, List<RotelCommand> list4, List<RotelCommand> list5, List<RotelCommand> list6,
+            List<RotelCommand> list7, List<RotelCommand> list8) {
+        return Stream.of(list1, list2, list3, list4, list5, list6, list7, list8).flatMap(Collection::stream)
+                .collect(Collectors.toList());
+    }
+
+    public static List<RotelCommand> concatenate(List<RotelCommand> list1, List<RotelCommand> list2,
+            List<RotelCommand> list3, List<RotelCommand> list4, List<RotelCommand> list5, List<RotelCommand> list6,
+            List<RotelCommand> list7, List<RotelCommand> list8, List<RotelCommand> list9) {
+        return Stream.of(list1, list2, list3, list4, list5, list6, list7, list8, list9).flatMap(Collection::stream)
+                .collect(Collectors.toList());
     }
 }

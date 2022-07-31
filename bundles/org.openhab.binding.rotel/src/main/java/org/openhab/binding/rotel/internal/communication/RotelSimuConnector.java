@@ -770,11 +770,11 @@ public class RotelSimuConnector extends RotelConnector {
                 case PLAY_STATUS:
                     textAscii = buildPlayStatusAsciiResponse();
                     break;
-                case TRACK_FORWARD:
+                case TRACK_FWD:
                     track++;
                     textAscii = buildTrackAsciiResponse();
                     break;
-                case TRACK_BACKWORD:
+                case TRACK_BACK:
                     if (track > 1) {
                         track--;
                     }

@@ -146,6 +146,7 @@ public class RotelBindingConstants {
     public static final String CHANNEL_BALANCE = "balance";
     public static final String CHANNEL_SPEAKER_A = "speakera";
     public static final String CHANNEL_SPEAKER_B = "speakerb";
+    public static final String CHANNEL_OTHER_COMMAND = "otherCommand";
 
     public static final String CHANNEL_GROUP_ALL_ZONES = "allZones";
     public static final String CHANNEL_ALL_POWER = CHANNEL_GROUP_ALL_ZONES + "#" + CHANNEL_POWER;
@@ -161,6 +162,7 @@ public class RotelBindingConstants {
     public static final String CHANNEL_MAIN_MUTE = CHANNEL_GROUP_MAIN_ZONE + "#" + CHANNEL_MUTE;
     public static final String CHANNEL_MAIN_BASS = CHANNEL_GROUP_MAIN_ZONE + "#" + CHANNEL_BASS;
     public static final String CHANNEL_MAIN_TREBLE = CHANNEL_GROUP_MAIN_ZONE + "#" + CHANNEL_TREBLE;
+    public static final String CHANNEL_MAIN_OTHER_COMMAND = CHANNEL_GROUP_MAIN_ZONE + "#" + CHANNEL_OTHER_COMMAND;
 
     public static final String CHANNEL_GROUP_ZONE1 = "zone1";
     public static final String CHANNEL_ZONE1_SOURCE = CHANNEL_GROUP_ZONE1 + "#" + CHANNEL_SOURCE;

@@ -493,6 +493,6 @@ public enum RotelSource {
                 return value;
             }
         }
-        throw new RotelException("Invalid command for a source: " + command.getName());
+        throw new RotelException("Invalid command for a source: " + command.getLabel());
     }
 }

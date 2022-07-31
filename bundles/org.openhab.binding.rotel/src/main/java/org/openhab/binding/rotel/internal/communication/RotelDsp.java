@@ -238,6 +238,6 @@ public enum RotelDsp {
                 return value;
             }
         }
-        throw new RotelException("Invalid command for a DSP mode: " + command.getName());
+        throw new RotelException("Invalid command for a DSP mode: " + command.getLabel());
     }
 }
