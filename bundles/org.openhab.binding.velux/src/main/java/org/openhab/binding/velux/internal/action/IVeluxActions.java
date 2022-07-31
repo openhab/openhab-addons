@@ -40,4 +40,18 @@ public interface IVeluxActions {
      * @throws IllegalStateException if anything else is wrong
      */
     Boolean moveRelative(String nodeId, String relativePercent) throws NumberFormatException, IllegalStateException;
+
+    /**
+     * Action to simultaneously move the shade main position and vane positions.
+     *
+     * @param thingName the name of the thing to be moved (e.g. 'velux:rollershutter:hubid:thingid')
+     * @param mainPercent the desired main position (range 0..100)
+     * @param vanePercent the desired vane position (range 0..100)
+     * @return true if the command was sent
+     * @throws NumberFormatException if any of the arguments are not an integer
+     * @throws IllegalArgumentException if any of the arguments are invalid
+     * @throws IllegalStateException if anything else is wrong
+     */
+    Boolean moveMainAndVane(String thingName, Integer mainPercent, Integer vanePercent)
+            throws NumberFormatException, IllegalArgumentException, IllegalStateException;
 }

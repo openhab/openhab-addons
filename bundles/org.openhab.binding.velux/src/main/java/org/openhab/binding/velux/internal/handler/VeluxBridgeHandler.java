@@ -43,6 +43,7 @@ import org.openhab.binding.velux.internal.bridge.common.BridgeCommunicationProto
 import org.openhab.binding.velux.internal.bridge.common.RunProductCommand;
 import org.openhab.binding.velux.internal.bridge.common.RunReboot;
 import org.openhab.binding.velux.internal.bridge.json.JsonVeluxBridge;
+import org.openhab.binding.velux.internal.bridge.slip.FunctionalParameters;
 import org.openhab.binding.velux.internal.bridge.slip.SlipVeluxBridge;
 import org.openhab.binding.velux.internal.config.VeluxBridgeConfiguration;
 import org.openhab.binding.velux.internal.development.Threads;
@@ -143,14 +144,15 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
      * ***** Default visibility Objects *****
      */
 
-    VeluxBridge thisBridge = myJsonBridge;
+    public VeluxBridge thisBridge = myJsonBridge;
     public BridgeParameters bridgeParameters = new BridgeParameters();
-    Localization localization;
+    public Localization localization;
 
     /**
      * Mapping from ChannelUID to class Thing2VeluxActuator, which return Velux device information, probably cached.
      */
-    Map<ChannelUID, Thing2VeluxActuator> channel2VeluxActuator = new ConcurrentHashMap<>();
+    public final Map<ChannelUID, Thing2VeluxActuator> channel2VeluxActuator = new ConcurrentHashMap<>();
+    private final Map<String, Thing2VeluxActuator> thingName2VeluxActuator = new ConcurrentHashMap<>();
 
     /**
      * Information retrieved by {@link VeluxBinding#VeluxBinding}.
@@ -392,6 +394,8 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
     @Override
     public void channelLinked(ChannelUID channelUID) {
         if (thing.getStatus() == ThingStatus.ONLINE) {
+            Thing2VeluxActuator actuator = new Thing2VeluxActuator(this, channelUID);
+            thingName2VeluxActuator.put(channelUID.getThingUID().toString(), actuator);
             channel2VeluxActuator.put(channelUID, new Thing2VeluxActuator(this, channelUID));
             logger.trace("channelLinked({}) refreshing channel value with help of handleCommand as Thing is online.",
                     channelUID.getAsString());
@@ -906,5 +910,50 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
      */
     public boolean isDisposing() {
         return disposing;
+    }
+
+    /**
+     * Exported method (called by an OpenHAB Rules Action) to simultaneously move the shade main position and the vane
+     * position.
+     *
+     * @param productBridgeIndex the node index in the bridge.
+     * @param mainPercentType the desired main position.
+     * @param vanePercentType the desired vane position.
+     * @return true if the command could be issued.
+     */
+    public Boolean moveMainAndVane(ProductBridgeIndex productBridgeIndex, PercentType mainPercentType,
+            PercentType vanePercentType) {
+        logger.trace("setMainAndVanePosition() called on {}", getThing().getUID());
+        RunProductCommand bcp = thisBridge.bridgeAPI().runProductCommand();
+        if (bcp != null) {
+            VeluxProduct product = existingProducts().get(productBridgeIndex).clone();
+            FunctionalParameters functionalParameters = null;
+            if (product.supportsVanePosition()) {
+                int vanePosition = new VeluxProductPosition(vanePercentType).getPositionAsVeluxType();
+                product.setVanePosition(vanePosition);
+                functionalParameters = product.getFunctionalParameters();
+            }
+            VeluxProductPosition mainPosition = new VeluxProductPosition(mainPercentType);
+            bcp.setNodeIdAndParameters(productBridgeIndex.toInt(), mainPosition, functionalParameters);
+            submitCommunicationsJob(() -> {
+                if (thisBridge.bridgeCommunicate(bcp)) {
+                    logger.trace("setMainAndVanePosition() command {}sucessfully sent to {}",
+                            bcp.isCommunicationSuccessful() ? "" : "un", getThing().getUID());
+                }
+            });
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Get the bridge product index for a given thing name.
+     *
+     * @param thingName the thing name
+     * @return the the bridge product index or ProductBridgeIndex.UNKNOWN if not found.
+     */
+    public ProductBridgeIndex getProductBridgeIndex(String thingName) {
+        Thing2VeluxActuator actuator = thingName2VeluxActuator.get(thingName);
+        return actuator != null ? actuator.getProductBridgeIndex() : ProductBridgeIndex.UNKNOWN;
     }
 }

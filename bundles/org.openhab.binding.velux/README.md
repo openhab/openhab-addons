@@ -276,6 +276,42 @@ Frame label="Velux Windows" {
 
 See [velux.sitemap](doc/conf/sitemaps/velux.sitemap) for more examples.
 
+### Rule for simultaneously moving the main position and the vane position
+
+This applies to shades or shutters that have both a main position and a vane / tilt position.
+On such shades if one sends a vane position command followed shortly by a main position command (or vice versa) the second command will cause the first command to stop.
+This problem is most problematic when the two commands are issued simultaneously by a single rule.
+In order to solve this problem, there is a rule action to simultaneously set the main position and the vane position.
+
+_Warning: use this command carefully..._
+
+The action is a command method that is called from within a rule.
+The method is called with the following syntax `moveMainAndVane(thingName, mainPercent, vanePercent)`.
+The meaning of the arguments is described in the table below.
+The method returns a `Boolean` whose meaning is also described in the table below.
+
+| Argument    | Type    | Example                             | Description                                                                             |
+|-------------|---------|-------------------------------------|-----------------------------------------------------------------------------------------|
+| thingName   | String  | "velux:rollershutter:hubid:thingid" | The thing name of the shutter. Must be a valid configured thing in the hub.             |
+| mainPercent | Integer | 75                                  | The target main position in percent. Integer between 0 and 100.                         |
+| vanePercent | Integer | 25                                  | The target main position in percent. Integer between 0 and 100.                         |
+| return      | Boolean | `true`                              | Is `true` if the command was sent sucessfully or `false` if any arguments were invalid. |
+
+Example:
+
+```java
+rule "Simultaneously Move Main and Vane Positions"
+when
+	...
+then
+    // note: "velux:klf200:hubid" shall be the thing name of your KLF 200 hub
+	val veluxActions = getActions("velux", "velux:klf200:hubid")
+	if (veluxActions !== null) {
+		val succeeded = veluxActions.moveMainAndVane("velux:rollershutter:hubid:thingid", 75, 25)
+	}
+end
+```
+
 ### Rule for closing windows after a period of time
 
 Especially in the colder months, it is advisable to close the window after adequate ventilation.
