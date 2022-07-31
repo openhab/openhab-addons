@@ -199,4 +199,9 @@ public class FunctionalParameters {
         }
         return true;
     }
+
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(values);
+    };
 }
