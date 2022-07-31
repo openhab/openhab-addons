@@ -350,8 +350,11 @@ public class ShellyLightHandler extends ShellyBaseHandler {
             if (profile.settings.lights != null) {
                 // Channel control/timer
                 ShellySettingsRgbwLight ls = profile.settings.lights.get(lightId);
-                updated |= updateChannel(controlGroup, CHANNEL_TIMER_AUTOON, getDecimal(ls.autoOn));
-                updated |= updateChannel(controlGroup, CHANNEL_TIMER_AUTOOFF, getDecimal(ls.autoOff));
+                updated |= updateChannel(controlGroup, CHANNEL_TIMER_AUTOON,
+                        toQuantityType(getDouble(ls.autoOn), Units.SECOND));
+                updated |= updateChannel(controlGroup, CHANNEL_TIMER_AUTOOFF,
+                        toQuantityType(getDouble(ls.autoOff), Units.SECOND));
+                updated |= updateChannel(controlGroup, CHANNEL_LIGHT_POWER, col.power);
                 updated |= updateChannel(controlGroup, CHANNEL_TIMER_ACTIVE, getOnOff(light.hasTimer));
                 updated |= updateChannel(controlGroup, CHANNEL_LIGHT_POWER, col.power);
             }

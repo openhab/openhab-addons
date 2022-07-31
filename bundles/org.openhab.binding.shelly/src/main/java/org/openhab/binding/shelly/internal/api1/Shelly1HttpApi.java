@@ -37,6 +37,7 @@ import org.openhab.binding.shelly.internal.api.ShellyApiResult;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api.ShellyHttpClient;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyOtaCheckResult;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyRollerStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySendKeyList;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySenseKeyCode;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDevice;
@@ -151,8 +152,9 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
         try {
             json = httpRequest(SHELLY_URL_STATUS);
             // Dimmer2 returns invalid json type for loaderror :-(
-            json = getString(json.replace("\"loaderror\":0,", "\"loaderror\":false,"));
-            json = getString(json.replace("\"loaderror\":1,", "\"loaderror\":true,"));
+            json = json.replace("\"loaderror\":0,", "\"loaderror\":false,")
+                    .replace("\"loaderror\":1,", "\"loaderror\":true,")
+                    .replace("\"tmp\":{\"value\": \"null\",", "\"tmp\":{\"value\": null,");
             ShellySettingsStatus status = fromJson(gson, json, ShellySettingsStatus.class);
             status.json = json;
             return status;
