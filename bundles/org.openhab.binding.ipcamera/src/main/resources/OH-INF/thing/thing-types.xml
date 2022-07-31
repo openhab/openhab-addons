@@ -2679,21 +2679,21 @@
 
 	<channel-type id="acceptedCardNumber" advanced="true">
 		<item-type>String</item-type>
-		<label>Accepted card number</label>
+		<label>Accepted Card Number</label>
 		<description>Displays last card number accepted</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="doorUnlock" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Door unlock</label>
+		<label>Door Unlock</label>
 		<description>Lock/unlock.</description>
 		<category>Lock</category>
 	</channel-type>
 
 	<channel-type id="doorContact" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Door contact</label>
+		<label>Door Contact</label>
 		<description>Door contact representing if the door is opened/closed</description>
 		<category>Lock</category>
 		<state readOnly="true"/>
@@ -2701,7 +2701,7 @@
 
 	<channel-type id="exitButton" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Exit button</label>
+		<label>Exit Button</label>
 		<description>Exit button pressed/released</description>
 		<category>Lock</category>
 		<state readOnly="true"/>
