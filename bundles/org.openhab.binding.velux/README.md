@@ -38,6 +38,10 @@ The binding will automatically discover Velux Bridges within the local network, 
 Once a Velux Bridge has been discovered, you will need to enter the `password` Configuration Parameter (see below) before the binding can communicate with it.
 And once the Velux Bridge is fully configured, the binding will automatically discover all its respective scenes and actuators (like windows and rollershutters), and place them in the Inbox.
 
+Note: When the KLF200 hub is started it provides a temporary private Wi-Fi Access Point for initial configuration.
+And if any device connects to this AP, it disables the normal LAN connection, thus preventing the binding from connecting.
+So make sure this AP is not permanently on (the default setting is that the AP will turn off after some time).
+
 ## Thing Configuration
 
 ### Thing Configuration for "bridge"
@@ -135,7 +139,7 @@ The supported Channels and their associated channel types are shown below.
 | downtime    | Number    | Time interval (sec) between last successful and most recent device interaction. |
 | doDetection | Switch    | Command to activate bridge detection mode.                                      |
 
-### Channels for "window" / "rollershutter" Things
+### Channels for "window" Things
 
 The supported Channels and their associated channel types are shown below.
 
@@ -153,6 +157,23 @@ The `position` Channel indicates the open/close state of the window (resp. rolle
 - If a window is opened manually, the display is `UNDEF`.
 - In case of errors (e.g. window jammed) the display is `UNDEF`.
 - If a Somfy actuator is commanded to its 'favorite' position via a Somfy remote control, under some circumstances the display is `UNDEF`. See also Rules below.
+
+### Channels for "rollershutter" Things
+
+The supported Channels and their associated channel types are shown below.
+
+| Channel      | Data Type     | Description                                     |
+|--------------|---------------|-------------------------------------------------|
+| position     | Rollershutter | Actual position of the window or device.        |
+| limitMinimum | Rollershutter | Minimum limit position of the window or device. |
+| limitMaximum | Rollershutter | Maximum limit position of the window or device. |
+| vanePosition | Dimmer        | Vane position of a Venetian blind.              |
+
+The `position`, `limitMinimum`, and `limitMaximum` are the same as described above for "window" Things.
+
+The `vanePosition` Channel only applies to Venetian blinds that have tiltable slats.
+It can only have a valid position value if the main `position` of the Thing is fully down.
+So, if `vanePosition` is commanded to a new value, this will automatically cause the main `position` to move to the fully down position.
 
 ### Channels for "actuator" Things
 

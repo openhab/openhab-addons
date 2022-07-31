@@ -12,7 +12,13 @@
  */
 package org.openhab.binding.velux.internal.things;
 
+import java.util.regex.Pattern;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.velux.internal.bridge.slip.FunctionalParameters;
+import org.openhab.binding.velux.internal.things.VeluxKLFAPI.Command;
+import org.openhab.binding.velux.internal.things.VeluxProductType.ActuatorType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,28 +63,90 @@ public class VeluxProduct {
         }
     }
 
-    // State (of movement) of an actuator
-    public static enum State {
+    /**
+     * State (of movement) of an actuator product.
+     *
+     * @author AndrewFG - Initial contribution.
+     */
+    public static enum ProductState {
         NON_EXECUTING(0),
         ERROR(1),
         NOT_USED(2),
         WAITING_FOR_POWER(3),
         EXECUTING(4),
         DONE(5),
-        MANUAL_OVERRIDE(0x80),
-        UNKNOWN(0xFF);
+        UNKNOWN(0xFF),
+        MANUAL(0b10000000);
+
+        private static final int ACTION_MASK = 0b111;
+        private static final int EQUIVALENT_MASK = ACTION_MASK | MANUAL.value;
 
         public final int value;
 
-        private State(int value) {
+        private ProductState(int value) {
             this.value = value;
         }
+
+        /**
+         * Create an ProductState from an integer seed value.
+         *
+         * @param value the seed value.
+         * @return the ProductState.
+         */
+        public static ProductState of(int value) {
+            if ((value < NON_EXECUTING.value) || (value > UNKNOWN.value)) {
+                return ERROR;
+            }
+            if (value == UNKNOWN.value) {
+                return UNKNOWN;
+            }
+            if ((value & MANUAL.value) != 0) {
+                return MANUAL;
+            }
+            int masked = value & ACTION_MASK;
+            for (ProductState state : values()) {
+                if (state.value > DONE.value) {
+                    break;
+                }
+                if (masked == state.value) {
+                    return state;
+                }
+            }
+            return ERROR;
+        }
+
+        /**
+         * Test if the masked values of two state values are operationally equivalent, including if both values are
+         * 'unknown' (0xFF).
+         *
+         * @param a first value to compare
+         * @param b second value to compare
+         * @return true if the masked values are equivalent.
+         */
+        public static boolean equivalent(int a, int b) {
+            return (a & EQUIVALENT_MASK) == (b & EQUIVALENT_MASK);
+        }
+    }
+
+    // pattern to match a Velux serial number '00:00:00:00:00:00:00:00'
+    private static final Pattern VELUX_SERIAL_NUMBER = Pattern.compile(
+            "^[A-Fa-f0-9]{2}:[A-Fa-f0-9]{2}:[A-Fa-f0-9]{2}:[A-Fa-f0-9]{2}:[A-Fa-f0-9]{2}:[A-Fa-f0-9]{2}:[A-Fa-f0-9]{2}:[A-Fa-f0-9]{2}$");
+
+    /**
+     * Indicates the data source where the product's contents came from.
+     *
+     * @author AndrewFG - Initial contribution.
+     */
+    public static enum DataSource {
+        GATEWAY,
+        BINDING;
     }
 
     // Class internal
 
     private VeluxProductName name;
     private VeluxProductType typeId;
+    private ActuatorType actuatorType;
     private ProductBridgeIndex bridgeProductIndex;
 
     private boolean v2 = false;
@@ -88,11 +156,15 @@ public class VeluxProduct {
     private int variation = 0;
     private int powerMode = 0;
     private String serialNumber = VeluxProductSerialNo.UNKNOWN;
-    private int state = State.UNKNOWN.value;
+    private int state = ProductState.UNKNOWN.value;
     private int currentPosition = 0;
     private int targetPosition = 0;
+    private @Nullable FunctionalParameters functionalParameters = null;
     private int remainingTime = 0;
     private int timeStamp = 0;
+    private Command creatorCommand = Command.UNDEFTYPE;
+    private DataSource dataSource = DataSource.GATEWAY;
+    private boolean isSomfyProduct;
 
     // Constructor
 
@@ -106,6 +178,8 @@ public class VeluxProduct {
         this.name = VeluxProductName.UNKNOWN;
         this.typeId = VeluxProductType.UNDEFTYPE;
         this.bridgeProductIndex = ProductBridgeIndex.UNKNOWN;
+        this.actuatorType = ActuatorType.UNDEFTYPE;
+        this.isSomfyProduct = false;
     }
 
     /**
@@ -118,10 +192,12 @@ public class VeluxProduct {
      *            value from 0 to 199.
      */
     public VeluxProduct(VeluxProductName name, VeluxProductType typeId, ProductBridgeIndex bridgeProductIndex) {
-        logger.trace("VeluxProduct(v1,name={}) created.", name.toString());
+        logger.trace("VeluxProduct(v1,name={}) created.", name);
         this.name = name;
         this.typeId = typeId;
         this.bridgeProductIndex = bridgeProductIndex;
+        this.actuatorType = ActuatorType.WINDOW_4_0;
+        this.isSomfyProduct = false;
     }
 
     /**
@@ -142,15 +218,20 @@ public class VeluxProduct {
      * @param state This field indicates the operating state of the node.
      * @param currentPosition This field indicates the current position of the node.
      * @param target This field indicates the target position of the current operation.
+     * @param functionalParameters the target Functional Parameters (may be null).
      * @param remainingTime This field indicates the remaining time for a node activation in seconds.
      * @param timeStamp UTC time stamp for last known position.
+     * @param creatorCommand the API command that caused this instance to be created.
      */
-    public VeluxProduct(VeluxProductName name, VeluxProductType typeId, ProductBridgeIndex bridgeProductIndex,
-            int order, int placement, int velocity, int variation, int powerMode, String serialNumber, int state,
-            int currentPosition, int target, int remainingTime, int timeStamp) {
-        logger.trace("VeluxProduct(v2,name={}) created.", name.toString());
+    public VeluxProduct(VeluxProductName name, VeluxProductType typeId, ActuatorType actuatorType,
+            ProductBridgeIndex bridgeProductIndex, int order, int placement, int velocity, int variation, int powerMode,
+            String serialNumber, int state, int currentPosition, int target,
+            @Nullable FunctionalParameters functionalParameters, int remainingTime, int timeStamp,
+            Command creatorCommand) {
+        logger.trace("VeluxProduct(v2, name={}) created.", name);
         this.name = name;
         this.typeId = typeId;
+        this.actuatorType = actuatorType;
         this.bridgeProductIndex = bridgeProductIndex;
         this.v2 = true;
         this.order = order;
@@ -162,8 +243,44 @@ public class VeluxProduct {
         this.state = state;
         this.currentPosition = currentPosition;
         this.targetPosition = target;
+        this.functionalParameters = functionalParameters;
         this.remainingTime = remainingTime;
         this.timeStamp = timeStamp;
+        this.creatorCommand = creatorCommand;
+
+        // isSomfyProduct is true if serial number not matching the '00:00:00:00:00:00:00:00' pattern
+        this.isSomfyProduct = !VELUX_SERIAL_NUMBER.matcher(serialNumber).find();
+    }
+
+    /**
+     * Constructor for a 'notification' product. Such products are used as data transfer objects to carry the limited
+     * sub
+     * set of data fields which are returned by 'GW_STATUS_REQUEST_NTF' or 'GW_NODE_STATE_POSITION_CHANGED_NTF'
+     * notifications, and to transfer those respective field values to another product that had already been created via
+     * a 'GW_GET_NODE_INFORMATION_NTF' notification, with all the other fields already filled.
+     *
+     * @param name the name of the notification command that created the product.
+     * @param bridgeProductIndex the product bridge index from the notification.
+     * @param state the actuator state from the notification.
+     * @param currentPosition the current actuator position from the notification.
+     * @param target the target position from the notification (may be VeluxProductPosition.VPP_VELUX_IGNORE).
+     * @param functionalParameters the actuator functional parameters (may be null).
+     * @param creatorCommand the API command that caused this instance to be created.
+     */
+    public VeluxProduct(VeluxProductName name, ProductBridgeIndex bridgeProductIndex, int state, int currentPosition,
+            int target, @Nullable FunctionalParameters functionalParameters, Command creatorCommand) {
+        logger.trace("VeluxProduct(v2, name={}) [notification product] created.", name);
+        this.v2 = true;
+        this.typeId = VeluxProductType.UNDEFTYPE;
+        this.actuatorType = ActuatorType.UNDEFTYPE;
+        this.name = name;
+        this.bridgeProductIndex = bridgeProductIndex;
+        this.state = state;
+        this.currentPosition = currentPosition;
+        this.targetPosition = target;
+        this.functionalParameters = functionalParameters;
+        this.isSomfyProduct = false;
+        this.creatorCommand = creatorCommand;
     }
 
     // Utility methods
@@ -171,11 +288,13 @@ public class VeluxProduct {
     @Override
     public VeluxProduct clone() {
         if (this.v2) {
-            return new VeluxProduct(this.name, this.typeId, this.bridgeProductIndex, this.order, this.placement,
-                    this.velocity, this.variation, this.powerMode, this.serialNumber, this.state, this.currentPosition,
-                    this.targetPosition, this.remainingTime, this.timeStamp);
+            FunctionalParameters functionalParameters = this.functionalParameters;
+            return new VeluxProduct(name, typeId, actuatorType, bridgeProductIndex, order, placement, velocity,
+                    variation, powerMode, serialNumber, state, currentPosition, targetPosition,
+                    functionalParameters == null ? null : functionalParameters.clone(), remainingTime, timeStamp,
+                    creatorCommand);
         } else {
-            return new VeluxProduct(this.name, this.typeId, this.bridgeProductIndex);
+            return new VeluxProduct(name, typeId, bridgeProductIndex);
         }
     }
 
@@ -206,16 +325,26 @@ public class VeluxProduct {
     @Override
     public String toString() {
         if (this.v2) {
-            return String.format("Product \"%s\" / %s (bridgeIndex=%d,serial=%s,position=%04X)", this.name, this.typeId,
-                    this.bridgeProductIndex.toInt(), this.serialNumber, this.currentPosition);
+            FunctionalParameters functionalParameters = this.functionalParameters;
+            return String.format(
+                    "VeluxProduct(v2, creator:%s, dataSource:%s, name:%s, typeId:%s, bridgeIndex:%d, state:%d, serial:%s, position:%04X, target:%04X, functionalParameters:%s)",
+                    creatorCommand.name(), dataSource.name(), name, typeId, bridgeProductIndex.toInt(), state,
+                    serialNumber, currentPosition, targetPosition,
+                    functionalParameters == null ? "null" : functionalParameters.toString());
         } else {
-            return String.format("Product \"%s\" / %s (bridgeIndex %d)", this.name, this.typeId,
-                    this.bridgeProductIndex.toInt());
+            return String.format("VeluxProduct(v1, name:%s, typeId:%s, bridgeIndex:%d)", name, typeId,
+                    bridgeProductIndex.toInt());
         }
     }
 
     // Class helper methods
 
+    /**
+     * Return the product unique index.
+     * Either the serial number (for normal Velux devices), or its name (for e.g. Somfy devices).
+     *
+     * @return the serial number or its name
+     */
     public String getProductUniqueIndex() {
         if (!v2 || serialNumber.startsWith(VeluxProductSerialNo.UNKNOWN)) {
             return name.toString();
@@ -283,6 +412,15 @@ public class VeluxProduct {
     }
 
     /**
+     * Get the actuator state.
+     *
+     * @return state cast to an ActuatorState enum.
+     */
+    public ProductState getProductState() {
+        return ProductState.of(state);
+    }
+
+    /**
      * @param newState Update the operating state of the node.
      * @return <B>modified</B> as type boolean to signal a real modification.
      */
@@ -290,8 +428,8 @@ public class VeluxProduct {
         if (this.state == newState) {
             return false;
         } else {
-            logger.trace("setState(name={},index={}) state {} replaced by {}.", name.toString(),
-                    bridgeProductIndex.toInt(), this.state, newState);
+            logger.trace("setState(name={},index={}) state {} replaced by {}.", name, bridgeProductIndex, state,
+                    newState);
             this.state = newState;
             return true;
         }
@@ -312,8 +450,8 @@ public class VeluxProduct {
         if (this.currentPosition == newCurrentPosition) {
             return false;
         } else {
-            logger.trace("setCurrentPosition(name={},index={}) currentPosition {} replaced by {}.", name.toString(),
-                    bridgeProductIndex.toInt(), this.currentPosition, newCurrentPosition);
+            logger.trace("setCurrentPosition(name={},index={}) currentPosition {} replaced by {}.", name,
+                    bridgeProductIndex, currentPosition, newCurrentPosition);
             this.currentPosition = newCurrentPosition;
             return true;
         }
@@ -334,8 +472,8 @@ public class VeluxProduct {
         if (this.targetPosition == newTarget) {
             return false;
         } else {
-            logger.trace("setCurrentPosition(name={},index={}) target {} replaced by {}.", name.toString(),
-                    bridgeProductIndex.toInt(), this.targetPosition, newTarget);
+            logger.trace("setTarget(name={},index={}) target {} replaced by {}.", name, bridgeProductIndex,
+                    targetPosition, newTarget);
             this.targetPosition = newTarget;
             return true;
         }
@@ -365,24 +503,176 @@ public class VeluxProduct {
      * @return The display position of the actuator
      */
     public int getDisplayPosition() {
-        // manual override flag set: position is 'unknown'
-        if ((state & State.MANUAL_OVERRIDE.value) != 0) {
-            return VeluxProductPosition.VPP_VELUX_UNKNOWN;
+        switch (getProductState()) {
+            case EXECUTING:
+                if (VeluxProductPosition.isValid(targetPosition)) {
+                    return targetPosition;
+                }
+                break;
+            case DONE:
+                if (!VeluxProductPosition.isValid(currentPosition) && VeluxProductPosition.isValid(targetPosition)) {
+                    return targetPosition;
+                }
+                break;
+            case ERROR:
+            case UNKNOWN:
+            case MANUAL:
+                return VeluxProductPosition.VPP_VELUX_UNKNOWN;
+            default:
         }
-        // only check other conditions if targetPosition is valid and differs from currentPosition
-        if ((targetPosition != currentPosition) && (targetPosition <= VeluxProductPosition.VPP_VELUX_MAX)
-                && (targetPosition >= VeluxProductPosition.VPP_VELUX_MIN)) {
-            int state = this.state & 0xf;
-            // actuator is in motion: for quicker UI update, return targetPosition
-            if ((state > State.ERROR.value) && (state < State.DONE.value)) {
-                return targetPosition;
-            }
-            // motion complete but currentPosition is not valid: return targetPosition
-            if ((state == State.DONE.value) && ((currentPosition > VeluxProductPosition.VPP_VELUX_MAX)
-                    || (currentPosition < VeluxProductPosition.VPP_VELUX_MIN))) {
-                return targetPosition;
-            }
+        return VeluxProductPosition.isValid(currentPosition) ? currentPosition : VeluxProductPosition.VPP_VELUX_UNKNOWN;
+    }
+
+    /**
+     * Get the Functional Parameters.
+     *
+     * @return the Functional Parameters.
+     */
+    public @Nullable FunctionalParameters getFunctionalParameters() {
+        return functionalParameters;
+    }
+
+    /**
+     * Set the Functional Parameters. Calls getMergeSubstitute() to merge the existing parameters (if any) and the new
+     * parameters (if any).
+     *
+     * @param newFunctionalParameters the new values of the Functional Parameters, or null if nothing is to be set.
+     * @return <b>modified</b> if any of the Functional Parameters have been changed.
+     */
+    public boolean setFunctionalParameters(@Nullable FunctionalParameters newFunctionalParameters) {
+        if ((newFunctionalParameters == null) || newFunctionalParameters.equals(functionalParameters)) {
+            return false;
         }
-        return currentPosition;
+        functionalParameters = FunctionalParameters.createMergeSubstitute(functionalParameters,
+                newFunctionalParameters);
+        return true;
+    }
+
+    /**
+     * Determines which of the Functional Parameters contains the vane position.
+     * As defined in the Velux KLF 200 API Technical Specification Appendix 2 Table 276.
+     *
+     * @return the index of the vane position Functional Parameter, or -1 if not supported.
+     */
+    private int getVanePositionIndex() {
+        switch (actuatorType) {
+            case BLIND_1_0:
+                return 0;
+            case ROLLERSHUTTER_2_1:
+            case BLIND_17:
+            case BLIND_18:
+                return 2;
+            default:
+        }
+        return -1;
+    }
+
+    /**
+     * Indicates if the actuator supports a vane position.
+     *
+     * @return true if vane position is supported.
+     */
+    public boolean supportsVanePosition() {
+        return getVanePositionIndex() >= 0;
+    }
+
+    /**
+     * Return the vane position. Reads the vane position from the Functional Parameters, or returns 'UNKNOWN' if vane
+     * position is not supported.
+     *
+     * @return the vane position.
+     */
+    public int getVanePosition() {
+        FunctionalParameters functionalParameters = this.functionalParameters;
+        int index = getVanePositionIndex();
+        if ((index >= 0) && (functionalParameters != null)) {
+            return functionalParameters.getValue(index);
+        }
+        return VeluxProductPosition.VPP_VELUX_UNKNOWN;
+    }
+
+    /**
+     * Set the vane position into the appropriate Functional Parameter. If the actuator does not support vane positions
+     * then a message is logged.
+     *
+     * @param vanePosition the new vane position.
+     */
+    public void setVanePosition(int vanePosition) {
+        int index = getVanePositionIndex();
+        if ((index >= 0) && FunctionalParameters.isNormalPosition(vanePosition)) {
+            functionalParameters = new FunctionalParameters(index, vanePosition);
+        } else {
+            functionalParameters = null;
+            logger.info("setVanePosition(): actuator type {} ({}) does not support vane position {}.",
+                    ActuatorType.get(actuatorType.getNodeType()), actuatorType.getDescription(), vanePosition);
+        }
+    }
+
+    /**
+     * Get the display position of the vanes depending on the product state.
+     * See 'getDisplayPosition()'.
+     *
+     * @return the display position.
+     */
+    public int getVaneDisplayPosition() {
+        switch (getProductState()) {
+            case ERROR:
+            case UNKNOWN:
+            case MANUAL:
+                return VeluxProductPosition.VPP_VELUX_UNKNOWN;
+            default:
+        }
+        return getVanePosition();
+    }
+
+    /**
+     * Get the actuator type.
+     *
+     * @return the actuator type.
+     */
+    public ActuatorType getActuatorType() {
+        return this.actuatorType;
+    }
+
+    /**
+     * Set the actuator type.
+     * Only allowed if the current value is undefined.
+     *
+     * @param actuatorType the new value for the actuator type.
+     */
+    public void setActuatorType(ActuatorType actuatorType) {
+        if (this.actuatorType == ActuatorType.UNDEFTYPE) {
+            this.actuatorType = actuatorType;
+            this.typeId = actuatorType.getTypeClass();
+        } else {
+            logger.debug("setActuatorType() failed: not allowed to change actuatorType from {} to {}.",
+                    this.actuatorType, actuatorType);
+        }
+    }
+
+    /**
+     * @return true if it is a Somfy product.
+     */
+    public boolean isSomfyProduct() {
+        return isSomfyProduct;
+    }
+
+    /**
+     * Return the API command that caused this instance to be created.
+     *
+     * @return the API command.
+     */
+    public Command getCreatorCommand() {
+        return creatorCommand;
+    }
+
+    /**
+     * Override the indicator of the source of the data for this product.
+     *
+     * @return the data source.
+     */
+    public VeluxProduct overrideDataSource(DataSource dataSource) {
+        this.dataSource = dataSource;
+        return this;
     }
 }

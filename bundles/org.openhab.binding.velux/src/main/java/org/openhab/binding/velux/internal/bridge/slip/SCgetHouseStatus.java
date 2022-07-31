@@ -19,6 +19,9 @@ import org.openhab.binding.velux.internal.bridge.slip.utils.KLF200Response;
 import org.openhab.binding.velux.internal.bridge.slip.utils.Packet;
 import org.openhab.binding.velux.internal.things.VeluxKLFAPI.Command;
 import org.openhab.binding.velux.internal.things.VeluxKLFAPI.CommandNumber;
+import org.openhab.binding.velux.internal.things.VeluxProduct;
+import org.openhab.binding.velux.internal.things.VeluxProduct.ProductBridgeIndex;
+import org.openhab.binding.velux.internal.things.VeluxProductName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,7 +52,8 @@ import org.slf4j.LoggerFactory;
  * @author Guenther Schreiner - Initial contribution.
  */
 @NonNullByDefault
-class SCgetHouseStatus extends GetHouseStatus implements BridgeCommunicationProtocol, SlipBridgeCommunicationProtocol {
+public class SCgetHouseStatus extends GetHouseStatus
+        implements BridgeCommunicationProtocol, SlipBridgeCommunicationProtocol {
     private final Logger logger = LoggerFactory.getLogger(SCgetHouseStatus.class);
 
     private static final String DESCRIPTION = "Retrieve House Status";
@@ -71,10 +75,8 @@ class SCgetHouseStatus extends GetHouseStatus implements BridgeCommunicationProt
     private boolean success = false;
     private boolean finished = false;
 
-    private int ntfNodeID;
-    private int ntfState;
-    private int ntfCurrentPosition;
-    private int ntfTarget;
+    private Command creatorCommand = Command.UNDEFTYPE;
+    private VeluxProduct product = VeluxProduct.UNKNOWN;
 
     /*
      * ===========================================================
@@ -103,32 +105,37 @@ class SCgetHouseStatus extends GetHouseStatus implements BridgeCommunicationProt
         success = false;
         finished = true;
         Packet responseData = new Packet(thisResponseData);
-        switch (Command.get(responseCommand)) {
+        Command responseCmd = Command.get(responseCommand);
+        switch (responseCmd) {
             case GW_NODE_STATE_POSITION_CHANGED_NTF:
                 if (!KLF200Response.isLengthValid(logger, responseCommand, thisResponseData, 20)) {
                     break;
                 }
-                ntfNodeID = responseData.getOneByteValue(0);
-                ntfState = responseData.getOneByteValue(1);
-                ntfCurrentPosition = responseData.getTwoByteValue(2);
-                ntfTarget = responseData.getTwoByteValue(4);
-                @SuppressWarnings("unused")
-                int ntfFP1CurrentPosition = responseData.getTwoByteValue(6);
-                @SuppressWarnings("unused")
-                int ntfFP2CurrentPosition = responseData.getTwoByteValue(8);
-                @SuppressWarnings("unused")
-                int ntfFP3CurrentPosition = responseData.getTwoByteValue(10);
-                @SuppressWarnings("unused")
-                int ntfFP4CurrentPosition = responseData.getTwoByteValue(12);
+                int ntfNodeID = responseData.getOneByteValue(0);
+                int ntfState = responseData.getOneByteValue(1);
+                int ntfCurrentPosition = responseData.getTwoByteValue(2);
+                int ntfTarget = responseData.getTwoByteValue(4);
+                FunctionalParameters ntfFunctionalParameters = FunctionalParameters.readArray(responseData, 6);
                 int ntfRemainingTime = responseData.getTwoByteValue(14);
                 int ntfTimeStamp = responseData.getFourByteValue(16);
-                // Extracting information items
-                logger.trace("setResponse(): ntfNodeID={}.", ntfNodeID);
-                logger.trace("setResponse(): ntfState={}.", ntfState);
-                logger.trace("setResponse(): ntfCurrentPosition={}.", ntfCurrentPosition);
-                logger.trace("setResponse(): ntfTarget={}.", ntfTarget);
-                logger.trace("setResponse(): ntfRemainingTime={}.", ntfRemainingTime);
-                logger.trace("setResponse(): ntfTimeStamp={}.", ntfTimeStamp);
+
+                if (logger.isTraceEnabled()) {
+                    logger.trace("setResponse(): ntfNodeID={}.", ntfNodeID);
+                    logger.trace("setResponse(): ntfState={}.", ntfState);
+                    logger.trace("setResponse(): ntfCurrentPosition={}.", String.format("0x%04X", ntfCurrentPosition));
+                    logger.trace("setResponse(): ntfTarget={}.", String.format("0x%04X", ntfTarget));
+                    logger.trace("setResponse(): ntfFunctionalParameters={} (returns null).", ntfFunctionalParameters);
+                    logger.trace("setResponse(): ntfRemainingTime={}.", ntfRemainingTime);
+                    logger.trace("setResponse(): ntfTimeStamp={}.", ntfTimeStamp);
+                }
+
+                // this BCP returns wrong functional parameters on some (e.g. Somfy) devices so return null instead
+                ntfFunctionalParameters = null;
+
+                // create notification product with the returned values
+                product = new VeluxProduct(VeluxProductName.UNKNOWN, new ProductBridgeIndex(ntfNodeID), ntfState,
+                        ntfCurrentPosition, ntfTarget, ntfFunctionalParameters, creatorCommand);
+
                 success = true;
                 break;
 
@@ -153,31 +160,19 @@ class SCgetHouseStatus extends GetHouseStatus implements BridgeCommunicationProt
      * Methods in addition to the interface {@link BridgeCommunicationProtocol}
      */
 
-    /**
-     * @return <b>ntfNodeID</b> returns the Actuator Id as int.
-     */
-    public int getNtfNodeID() {
-        return ntfNodeID;
+    public VeluxProduct getProduct() {
+        logger.trace("getProduct(): returning {}.", product);
+        return product;
     }
 
     /**
-     * @return <b>ntfState</b> returns the state of the Actuator as int.
+     * Change the command id that identifies the API on which 'product' will be created.
+     *
+     * @param creatorCommand the API that will be used to create the product instance.
+     * @return this
      */
-    public int getNtfState() {
-        return ntfState;
-    }
-
-    /**
-     * @return <b>ntfCurrentPosition</b> returns the current position of the Actuator as int.
-     */
-    public int getNtfCurrentPosition() {
-        return ntfCurrentPosition;
-    }
-
-    /**
-     * @return <b>ntfTarget</b> returns the target position of the Actuator as int.
-     */
-    public int getNtfTarget() {
-        return ntfTarget;
+    public SCgetHouseStatus setCreatorCommand(Command creatorCommand) {
+        this.creatorCommand = creatorCommand;
+        return this;
     }
 }
