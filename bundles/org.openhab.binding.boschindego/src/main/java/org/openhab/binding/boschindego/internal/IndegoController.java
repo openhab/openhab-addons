@@ -13,6 +13,7 @@
 package org.openhab.binding.boschindego.internal;
 
 import java.net.URI;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Base64;
 import java.util.concurrent.ExecutionException;
@@ -371,7 +372,7 @@ public class IndegoController {
     }
 
     /**
-     * Wraps {@link #putRequest(String, Object)} into an authenticated session.
+     * Wraps {@link #putPostRequest(HttpMethod, String, Object)} into an authenticated session.
      * 
      * @param path the relative path to which the request should be sent
      * @param requestDto the DTO which should be sent to the server as JSON
@@ -385,7 +386,7 @@ public class IndegoController {
         }
         try {
             logger.debug("Session {} valid, skipping authentication", session);
-            putRequest(path, requestDto);
+            putPostRequest(HttpMethod.PUT, path, requestDto);
         } catch (IndegoAuthenticationException e) {
             if (logger.isTraceEnabled()) {
                 logger.trace("Context rejected", e);
@@ -394,27 +395,59 @@ public class IndegoController {
             }
             session.invalidate();
             authenticate();
-            putRequest(path, requestDto);
+            putPostRequest(HttpMethod.PUT, path, requestDto);
         }
     }
 
     /**
-     * Sends a PUT request to the server.
+     * Wraps {@link #putPostRequest(HttpMethod, String, Object)} into an authenticated session.
      * 
+     * @param path the relative path to which the request should be sent
+     * @throws IndegoAuthenticationException if request was rejected as unauthorized
+     * @throws IndegoException if any communication or parsing error occurred
+     */
+    private void postRequestWithAuthentication(String path) throws IndegoAuthenticationException, IndegoException {
+        if (!session.isValid()) {
+            authenticate();
+        }
+        try {
+            logger.debug("Session {} valid, skipping authentication", session);
+            putPostRequest(HttpMethod.POST, path, null);
+        } catch (IndegoAuthenticationException e) {
+            if (logger.isTraceEnabled()) {
+                logger.trace("Context rejected", e);
+            } else {
+                logger.debug("Context rejected: {}", e.getMessage());
+            }
+            session.invalidate();
+            authenticate();
+            putPostRequest(HttpMethod.POST, path, null);
+        }
+    }
+
+    /**
+     * Sends a PUT/POST request to the server.
+     * 
+     * @param method the type of request ({@link HttpMethod.PUT} or {@link HttpMethod.POST})
      * @param path the relative path to which the request should be sent
      * @param requestDto the DTO which should be sent to the server as JSON
      * @throws IndegoAuthenticationException if request was rejected as unauthorized
      * @throws IndegoException if any communication or parsing error occurred
      */
-    private void putRequest(String path, Object requestDto) throws IndegoAuthenticationException, IndegoException {
+    private void putPostRequest(HttpMethod method, String path, @Nullable Object requestDto)
+            throws IndegoAuthenticationException, IndegoException {
         try {
-            Request request = httpClient.newRequest(BASE_URL + path).method(HttpMethod.PUT)
+            Request request = httpClient.newRequest(BASE_URL + path).method(method)
                     .header(CONTEXT_HEADER_NAME, session.getContextId())
                     .header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_HEADER);
-            String payload = gson.toJson(requestDto);
-            request.content(new StringContentProvider(payload));
-            if (logger.isTraceEnabled()) {
-                logger.trace("PUT request for {} with payload '{}'", BASE_URL + path, payload);
+            if (requestDto != null) {
+                String payload = gson.toJson(requestDto);
+                request.content(new StringContentProvider(payload));
+                if (logger.isTraceEnabled()) {
+                    logger.trace("{} request for {} with payload '{}'", method, BASE_URL + path, payload);
+                }
+            } else {
+                logger.trace("{} request for {} with no payload", method, BASE_URL + path);
             }
             ContentResponse response = sendRequest(request);
             int status = response.getStatus();
@@ -518,6 +551,21 @@ public class IndegoController {
      */
     public DeviceStateResponse getState() throws IndegoAuthenticationException, IndegoException {
         return getRequestWithAuthentication(SERIAL_NUMBER_SUBPATH + this.getSerialNumber() + "/state",
+                DeviceStateResponse.class);
+    }
+
+    /**
+     * Queries the device state from the server. This overload will return when the state
+     * has changed, or the timeout has been reached.
+     * 
+     * @param timeout Maximum time to wait for response
+     * @return the device state
+     * @throws IndegoAuthenticationException if request was rejected as unauthorized
+     * @throws IndegoException if any communication or parsing error occurred
+     */
+    public DeviceStateResponse getState(Duration timeout) throws IndegoAuthenticationException, IndegoException {
+        return getRequestWithAuthentication(
+                SERIAL_NUMBER_SUBPATH + this.getSerialNumber() + "/state?longpoll=true&timeout=" + timeout.getSeconds(),
                 DeviceStateResponse.class);
     }
 
@@ -701,5 +749,18 @@ public class IndegoController {
     public void setPredictiveExclusionTime(final DeviceCalendarResponse calendar)
             throws IndegoAuthenticationException, IndegoException {
         putRequestWithAuthentication(SERIAL_NUMBER_SUBPATH + this.getSerialNumber() + "/predictive/calendar", calendar);
+    }
+
+    /**
+     * Request map position updates for the next ({@link count} * {@link interval}) number of seconds.
+     * 
+     * @param count Number of updates
+     * @param interval Number of seconds between updates
+     * @throws IndegoAuthenticationException if request was rejected as unauthorized
+     * @throws IndegoException if any communication or parsing error occurred
+     */
+    public void requestPosition(int count, int interval) throws IndegoAuthenticationException, IndegoException {
+        postRequestWithAuthentication(SERIAL_NUMBER_SUBPATH + this.getSerialNumber() + "/requestPosition?count=" + count
+                + "&interval=" + interval);
     }
 }

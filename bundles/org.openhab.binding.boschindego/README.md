@@ -8,12 +8,13 @@ His [Java Library](https://github.com/zazaz-de/iot-device-bosch-indego-controlle
 
 Currently the binding supports  ***indego***  mowers as a thing type with these configuration parameters:
 
-| Parameter          | Description                                                     | Default |
-|--------------------|-----------------------------------------------------------------|---------|
-| username           | Username for the Bosch Indego account                           |         |
-| password           | Password for the Bosch Indego account                           |         |
-| refresh            | The number of seconds between refreshing device state           | 180     |
-| cuttingTimeRefresh | The number of minutes between refreshing last/next cutting time | 60      |
+| Parameter          | Description                                                       | Default |
+|--------------------|-------------------------------------------------------------------|---------|
+| username           | Username for the Bosch Indego account                             |         |
+| password           | Password for the Bosch Indego account                             |         |
+| refresh            | The number of seconds between refreshing device state when idle   | 180     |
+| stateActiveRefresh | The number of seconds between refreshing device state when active | 30      |
+| cuttingTimeRefresh | The number of minutes between refreshing last/next cutting time   | 60      |
 
 ## Channels
 
@@ -27,12 +28,15 @@ Currently the binding supports  ***indego***  mowers as a thing type with these 
 | mowed              | Dimmer                   | Cut grass in percent                                                                                                                |           |
 | lastCutting        | DateTime                 | Last cutting time                                                                                                                   |           |
 | nextCutting        | DateTime                 | Next scheduled cutting time                                                                                                         |           |
-| batteryVoltage     | Number:ElectricPotential | Battery voltage reported by the device                                                                                              |           |
-| batteryLevel       | Number                   | Battery level as a percentage (0-100%)                                                                                              |           |
-| lowBattery         | Switch                   | Low battery warning with possible values on (low battery) and off (battery ok)                                                      |           |
-| batteryTemperature | Number:Temperature       | Battery temperature reported by the device                                                                                          |           |
+| batteryVoltage     | Number:ElectricPotential | Battery voltage reported by the device [^1]                                                                                         |           |
+| batteryLevel       | Number                   | Battery level as a percentage (0-100%) [^1]                                                                                         |           |
+| lowBattery         | Switch                   | Low battery warning with possible values on (low battery) and off (battery ok) [^1]                                                 |           |
+| batteryTemperature | Number:Temperature       | Battery temperature reported by the device [^1]                                                                                     |           |
 | gardenSize         | Number:Area              | Garden size mapped by the device                                                                                                    |           |
-| gardenMap          | Image                    | Garden map mapped by the device                                                                                                     |           |
+| gardenMap          | Image                    | Garden map created by the device [^2]                                                                                               |           |
+
+[^1]: This will be updated every six hours when the device is idle. It will wake up the device, which can include turning on its display. When the device is active or charging, this will be updated every two minutes.
+[^2]: This will be updated as often as specified by the `stateActiveRefresh` thing parameter.
 
 ### State Codes
 
