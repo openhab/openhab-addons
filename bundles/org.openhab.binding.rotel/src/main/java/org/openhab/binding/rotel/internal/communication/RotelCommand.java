@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.rotel.internal.RotelException;
@@ -636,6 +637,11 @@ public enum RotelCommand {
     public boolean isCommandForZone(int numZone) {
         String prefix = String.format("ZONE%d", numZone);
         return name().startsWith(prefix);
+    }
+
+    @Override
+    public @NonNull String toString() {
+        return label;
     }
 
     /**

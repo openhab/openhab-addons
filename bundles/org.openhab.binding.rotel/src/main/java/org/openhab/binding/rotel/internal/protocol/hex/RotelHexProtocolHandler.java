@@ -151,7 +151,7 @@ public class RotelHexProtocolHandler extends RotelAbstractProtocolHandler {
         } else {
             message[idx++] = checksum;
         }
-        logger.debug("Command \"{}\" => {}", cmd.getLabel(), HexUtils.bytesToHex(message));
+        logger.debug("Command \"{}\" => {}", cmd, HexUtils.bytesToHex(message));
         return message;
     }
 

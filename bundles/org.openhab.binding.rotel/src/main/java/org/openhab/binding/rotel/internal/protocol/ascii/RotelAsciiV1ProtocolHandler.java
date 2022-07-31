@@ -94,7 +94,7 @@ public class RotelAsciiV1ProtocolHandler extends RotelAbstractAsciiProtocolHandl
             messageStr += "!";
         }
         byte[] message = messageStr.getBytes(StandardCharsets.US_ASCII);
-        logger.debug("Command \"{}\" => {}", cmd.getLabel(), messageStr);
+        logger.debug("Command \"{}\" => {}", cmd, messageStr);
         return message;
     }
 }

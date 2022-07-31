@@ -2747,7 +2747,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
             logger.debug("sendCommand: {}", e.getMessage());
             return;
         }
-        connector.writeOutput(cmd.getLabel(), message);
+        connector.writeOutput(cmd, message);
 
         if (connector instanceof RotelSimuConnector) {
             if ((protocol == RotelProtocol.HEX && cmd.getHexType() != 0)
