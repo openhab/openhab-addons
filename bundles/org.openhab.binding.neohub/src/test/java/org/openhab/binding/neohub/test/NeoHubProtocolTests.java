@@ -43,7 +43,7 @@ public class NeoHubProtocolTests {
      * NOTE: only run these tests if a device is actually available
      *
      */
-    private static final String HUB_IP_ADDRESS = "192.168.1.000";
+    private static final String HUB_IP_ADDRESS = "192.168.1.xxx";
     private static final String HUB_API_TOKEN = "12345678-1234-1234-1234-123456789ABC";
     private static final int SOCKET_TIMEOUT = 5;
     private static final boolean RUN_WSS_TEST = false;
@@ -65,7 +65,6 @@ public class NeoHubProtocolTests {
             config.apiToken = HUB_API_TOKEN;
 
             try {
-                config.portNumber = NeoHubBindingConstants.PORT_WSS;
                 NeoHubWebSocket socket = new NeoHubWebSocket(config);
                 String requestJson = NeoHubBindingConstants.CMD_CODE_FIRMWARE;
                 String responseJson = socket.sendMessage(requestJson);
@@ -93,7 +92,6 @@ public class NeoHubProtocolTests {
             config.apiToken = HUB_API_TOKEN;
 
             try {
-                config.portNumber = NeoHubBindingConstants.PORT_TCP;
                 NeoHubSocket socket = new NeoHubSocket(config);
                 String requestJson = NeoHubBindingConstants.CMD_CODE_FIRMWARE;
                 String responseJson = socket.sendMessage(requestJson);

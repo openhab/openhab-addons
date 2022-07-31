@@ -110,11 +110,11 @@ public class NeoHubHandler extends BaseBridgeHandler {
         }
 
         if (logger.isDebugEnabled()) {
-            logger.debug("hub '{}' port={}", getThing().getUID(), config.portNumber);
+            logger.debug("hub '{}' port={}", getThing().getUID(), config.portOverride);
         }
 
-        if (config.portNumber != PORT_TCP && config.portNumber != PORT_WSS) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "portNumber is invalid!");
+        if (config.portOverride < 0 || config.portOverride > 0xFFFF) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "portOverride is invalid!");
             return;
         }
 
@@ -145,19 +145,10 @@ public class NeoHubHandler extends BaseBridgeHandler {
         // create a web or TCP socket based on the port number in the configuration
         NeoHubSocketBase socket;
         try {
-            switch (config.portNumber) {
-                case PORT_TCP: {
-                    socket = new NeoHubSocket(config);
-                    break;
-                }
-                case PORT_WSS: {
-                    socket = new NeoHubWebSocket(config);
-                    break;
-                }
-                default: {
-                    // actually we already checked for invalid port numbers above
-                    return;
-                }
+            if (config.useWebSockets) {
+                socket = new NeoHubWebSocket(config);
+            } else {
+                socket = new NeoHubSocket(config);
             }
         } catch (NeoHubException e) {
             logger.debug("\"hub '{}' error creating web/tcp socket: '{}'", getThing().getUID(), e.getMessage());

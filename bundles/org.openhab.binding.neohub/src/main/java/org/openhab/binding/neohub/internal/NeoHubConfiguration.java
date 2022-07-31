@@ -26,9 +26,10 @@ public class NeoHubConfiguration {
     public static final String HOST_NAME = "hostName";
 
     public String hostName = "";
-    public int portNumber;
+    public int portOverride;
     public int pollingInterval;
     public int socketTimeout;
     public boolean preferLegacyApi;
     public String apiToken = "";
+    public boolean useWebSockets;
 }

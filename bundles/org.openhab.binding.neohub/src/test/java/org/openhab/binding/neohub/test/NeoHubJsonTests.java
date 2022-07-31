@@ -26,7 +26,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.neohub.internal.NeoHubAbstractDeviceData;
 import org.openhab.binding.neohub.internal.NeoHubAbstractDeviceData.AbstractRecord;
-import org.openhab.binding.neohub.internal.NeoHubBindingConstants;
 import org.openhab.binding.neohub.internal.NeoHubConfiguration;
 import org.openhab.binding.neohub.internal.NeoHubGetEngineersData;
 import org.openhab.binding.neohub.internal.NeoHubInfoResponse;
@@ -362,7 +361,6 @@ public class NeoHubJsonTests {
     private String testCommunicationInner(String requestJson) {
         NeoHubConfiguration config = new NeoHubConfiguration();
         config.hostName = HUB_IP_ADDRESS;
-        config.portNumber = NeoHubBindingConstants.PORT_TCP;
         config.socketTimeout = 5;
         try {
             NeoHubSocket socket = new NeoHubSocket(config);

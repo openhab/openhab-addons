@@ -100,7 +100,8 @@ public class NeoHubWebSocket extends NeoHubSocketBase {
         if (session == null || !session.isOpen()) {
             closeSession();
             try {
-                URI uri = new URI(String.format("wss://%s:%d", config.hostName, config.portNumber));
+                int port = config.portOverride > 0 ? config.portOverride : NeoHubBindingConstants.PORT_WSS;
+                URI uri = new URI(String.format("wss://%s:%d", config.hostName, port));
                 webSocketClient.connect(this, uri).get();
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
