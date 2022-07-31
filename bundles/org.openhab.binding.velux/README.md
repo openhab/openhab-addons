@@ -14,6 +14,19 @@ For details about the features, see the following websites:
 - [Velux](https://www.velux.com)
 - [Velux API](https://www.velux.com/api/klf200)
 
+## Initial Configuration of Devices in the Hub
+
+This guide assumes that you have already configured your devices in the KLF200 hub.
+When the KLF200 hub is started it provides a temporary private Wi-Fi Access Point to facilitate this configuration.
+The Velux leaflet B) explains how to access the configuration web page via this temporary private Wi-Fi Access Point and configure your devices.
+Note: ending the configuration process prematurely might lead to misconfiguration and require factory resetting your hub and/or devices.
+
+If you want to add devices to the hub later, you have to access the configuration web page via the temporary private Wi-Fi Access Point once more.
+See the chapter "FAQ and Troubleshooting" below if you have any problems setting up the connection to openHAB again afterwards.
+
+Note: if any device connects to the temporary private Wi-Fi Access Point, it disables the normal LAN connection, thus preventing the binding from connecting.
+So make sure this Wi-Fi AP is not permanently running (the default setting is that the AP will turn off after some time).
+
 ## Supported Things
 
 The binding supports the following types of Thing.
@@ -37,10 +50,6 @@ To simplify the initial provisioning, the binding provides one thing which can b
 The binding will automatically discover Velux Bridges within the local network, and place them in the Inbox.
 Once a Velux Bridge has been discovered, you will need to enter the `password` Configuration Parameter (see below) before the binding can communicate with it.
 And once the Velux Bridge is fully configured, the binding will automatically discover all its respective scenes and actuators (like windows and rollershutters), and place them in the Inbox.
-
-Note: When the KLF200 hub is started it provides a temporary private Wi-Fi Access Point for initial configuration.
-And if any device connects to this AP, it disables the normal LAN connection, thus preventing the binding from connecting.
-So make sure this AP is not permanently on (the default setting is that the AP will turn off after some time).
 
 ## Thing Configuration
 
@@ -516,11 +525,15 @@ Notes:
 
 - Velux bridges cannot be returned to version one of the firmware after being upgraded to version two.
 
-## Is it possible to run the both communication methods in parallel?
+## FAQ and troubleshooting
 
-For environments with the firmware version 0.1.* on the gateway, the interaction with the bridge is limited to the HTTP/JSON based communication, of course. On the other hand, after upgrading the gateway firmware to version 2, it is possible to run the binding either using HTTP/JSON if there is a permanent connectivity towards the WLAN interface of the KLF200 or using SLIP towards the LAN interface of the gateway. For example the Raspberry PI can directly be connected via WLAN to the Velux gateway and providing the other services via the LAN interface (but not vice versa).
+### Is it possible to run the both communication methods in parallel?
 
-## Known Limitations
+For environments with the firmware version 0.1.* on the gateway, the interaction with the bridge is limited to the HTTP/JSON based communication, of course.
+On the other hand, after upgrading the gateway firmware to version 2, it is possible to run the binding either using HTTP/JSON if there is a permanent connectivity towards the WLAN interface of the KLF200 or using SLIP towards the LAN interface of the gateway.
+For example the Raspberry PI can directly be connected via WLAN to the Velux gateway and providing the other services via the LAN interface (but not vice versa).
+
+### Known Limitations
 
 The communication based on HTTP/JSON is limited to one connection: If the binding is operational, you won't get access to the Web Frontend in parallel.
 
@@ -529,7 +542,15 @@ The SLIP communication is limited to two connections in parallel, i.e. two diffe
 Both interfacing methods, HTTP/JSON and SLIP, can be run in parallel.
 Therefore, on the one hand you can use the Web Frontend for manual control and on the other hand a binding can do all automatic jobs.
 
-## Unknown Velux devices
+### Login sequence fails and Connection Refused
+
+If you get this error first make sure that you entered the right password (the one below SSID on the back of the hub).
+If the error persists, it may be due to the temporary Wi-Fi Access Point blocking the LAN (as described above).
+To recover from this, first disable the bridge in the UI, disconnect the LAN cable, power cycle your KLF200 and wait a few minutes.
+Then reconnect the LAN cable and re-enable the bridge in the UI again.
+DO NOT try to connect anything to the temporary Wi-Fi Access Point during this process!!
+
+### Unknown Velux devices
 
 All known <B>Velux</B> devices can be handled by this binding.
 However, there might be some new ones which will be reported within the logfiles.
