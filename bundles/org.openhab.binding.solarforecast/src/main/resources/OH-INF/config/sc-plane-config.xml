@@ -14,5 +14,11 @@
 			<label>Rooftop Resource Id</label>
 			<description>Resource Id of Solcast rooftop site</description>
 		</parameter>
+		<parameter name="powerItem" type="text">
+			<context>item</context>
+			<label>Power Item Solar Inverter</label>
+			<description>Power item from your solar inverter for this rooftop</description>
+		</parameter>
+
 	</config-description>
 </config-description:config-descriptions>

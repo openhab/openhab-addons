@@ -16,6 +16,8 @@ import static org.openhab.binding.solarforecast.internal.SolarForecastBindingCon
 import static org.openhab.binding.solarforecast.internal.solcast.SolcastConstants.*;
 
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -24,8 +26,14 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
+import org.json.JSONObject;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.persistence.FilterCriteria;
+import org.openhab.core.persistence.HistoricItem;
+import org.openhab.core.persistence.QueryablePersistenceService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -45,16 +53,20 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SolcastPlaneHandler extends BaseThingHandler {
+    private static final int MEASURE_INTERVAL_MIN = 15;
+    private static final int MEASURE_OFFSET_MIN = 5;
     private final Logger logger = LoggerFactory.getLogger(SolcastPlaneHandler.class);
     private final HttpClient httpClient;
-
     private Optional<SolcastPlaneConfiguration> configuration = Optional.empty();
     private Optional<SolcastBridgeHandler> bridgeHandler = Optional.empty();
     private SolcastObject forecast = new SolcastObject();
+    private Optional<QueryablePersistenceService> persistenceService;
+    private ZonedDateTime nextMeasurement = ZonedDateTime.now();
 
-    public SolcastPlaneHandler(Thing thing, HttpClient hc) {
+    public SolcastPlaneHandler(Thing thing, HttpClient hc, Optional<QueryablePersistenceService> qps) {
         super(thing);
         httpClient = hc;
+        persistenceService = qps;
     }
 
     @Override
@@ -141,7 +153,70 @@ public class SolcastPlaneHandler extends BaseThingHandler {
             logger.debug("{} use available forecast {}", thing.getLabel(), forecast);
         }
         updateChannels(forecast);
+        if (ZonedDateTime.now().isAfter(nextMeasurement)) {
+            nextMeasurement = ZonedDateTime.now().plusMinutes(MEASURE_INTERVAL_MIN);
+            sendMeasure();
+        }
         return forecast;
+    }
+
+    /**
+     * https://legacy-docs.solcast.com.au/#measurements-rooftop-site
+     */
+    private void sendMeasure() {
+        if (persistenceService.isPresent() && !EMPTY.equals(configuration.get().powerItem)) {
+            logger.info("Get item {}", configuration.get().powerItem);
+            ZonedDateTime now = ZonedDateTime.now();
+            ZonedDateTime beginPeriodDT = now.minusMinutes(MEASURE_INTERVAL_MIN + MEASURE_OFFSET_MIN);
+            ZonedDateTime endPeriodDT = now.minusMinutes(MEASURE_OFFSET_MIN);
+            FilterCriteria fc = new FilterCriteria();
+            fc.setBeginDate(beginPeriodDT);
+            fc.setEndDate(endPeriodDT);
+            fc.setItemName(configuration.get().powerItem);
+            Iterable<HistoricItem> historicItems = persistenceService.get().query(fc);
+            int count = 0;
+            double total = 0;
+            for (HistoricItem historicItem : historicItems) {
+                // logger.info("Found {} item with average {} power", historicItem.getTimestamp(),
+                // historicItem.getState().toFullString());
+                DecimalType dt = historicItem.getState().as(DecimalType.class);
+                if (dt != null) {
+                    total += dt.doubleValue();
+                }
+                count++;
+            }
+            double power = Math.round(total * 1000.0 / count) / 1000.0;
+            if (power > 0.001) {
+                logger.info("Found {} items with average {} power", count, total / count);
+                JSONObject measureObject = new JSONObject();
+                JSONObject measure = new JSONObject();
+                measure.put("period_end", endPeriodDT.format(DateTimeFormatter.ISO_INSTANT));
+                measure.put("period", "PT" + MEASURE_INTERVAL_MIN + "M");
+                measure.put("total_power", power);
+                measureObject.put("measurement", measure);
+                logger.info("Send {}", measureObject.toString());
+
+                String measureUrl = String.format(MEASUREMENT_URL, configuration.get().resourceId);
+                Request request = httpClient.POST(measureUrl);
+                request.header(HttpHeader.AUTHORIZATION, BEARER + bridgeHandler.get().getApiKey());
+                request.header(HttpHeader.CONTENT_TYPE, "application/json");
+                request.content(new StringContentProvider(measureObject.toString()), "application/json");
+                try {
+                    ContentResponse crMeasure = request.send();
+                    if (crMeasure.getStatus() == 200) {
+                        logger.info("{} Call {} finished {}", thing.getLabel(), measureUrl,
+                                crMeasure.getContentAsString());
+                    } else {
+                        logger.info("{} Call {} failed {} - {}", thing.getLabel(), measureUrl, crMeasure.getStatus(),
+                                crMeasure.getContentAsString());
+                    }
+                } catch (InterruptedException | TimeoutException | ExecutionException e) {
+                    logger.info("{} Call {} failed {}", thing.getLabel(), measureUrl, e.getMessage());
+                }
+            }
+        } else {
+            logger.info("Persistence empty");
+        }
     }
 
     private void updateChannels(SolcastObject f) {

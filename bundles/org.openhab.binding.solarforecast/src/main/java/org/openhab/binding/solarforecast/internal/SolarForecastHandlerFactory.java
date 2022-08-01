@@ -14,6 +14,8 @@ package org.openhab.binding.solarforecast.internal;
 
 import static org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants.*;
 
+import java.util.Optional;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -24,6 +26,9 @@ import org.openhab.binding.solarforecast.internal.solcast.SolcastPlaneHandler;
 import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.PointType;
+import org.openhab.core.persistence.PersistenceService;
+import org.openhab.core.persistence.PersistenceServiceRegistry;
+import org.openhab.core.persistence.QueryablePersistenceService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -43,18 +48,25 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 @Component(configurationPid = "binding.solarforecast", service = ThingHandlerFactory.class)
 public class SolarForecastHandlerFactory extends BaseThingHandlerFactory {
-
+    private Optional<QueryablePersistenceService> qps = Optional.empty();
     private final HttpClient httpClient;
     private final PointType location;
 
     @Activate
-    public SolarForecastHandlerFactory(final @Reference HttpClientFactory hcf, final @Reference LocationProvider lp) {
+    public SolarForecastHandlerFactory(final @Reference HttpClientFactory hcf, final @Reference LocationProvider lp,
+            final @Reference PersistenceServiceRegistry psr) {
         httpClient = hcf.getCommonHttpClient();
         PointType pt = lp.getLocation();
         if (pt != null) {
             location = pt;
         } else {
             location = PointType.valueOf("0.0,0.0");
+        }
+
+        PersistenceService s = psr.getDefault();
+        if (!(s instanceof QueryablePersistenceService)) {
+        } else {
+            qps = Optional.of((QueryablePersistenceService) s);
         }
     }
 
@@ -73,7 +85,7 @@ public class SolarForecastHandlerFactory extends BaseThingHandlerFactory {
         } else if (SOLCAST_BRIDGE_STRING.equals(thingTypeUID)) {
             return new SolcastBridgeHandler((Bridge) thing);
         } else if (SOLCAST_PART_STRING.equals(thingTypeUID)) {
-            return new SolcastPlaneHandler(thing, httpClient);
+            return new SolcastPlaneHandler(thing, httpClient, qps);
         }
         return null;
     }

@@ -53,6 +53,7 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler {
     private Optional<PointType> location = Optional.empty();
     private Optional<String> apiKey = Optional.empty();
     private ForecastSolarObject forecast = new ForecastSolarObject();
+    private int failureCounter = 0;
 
     public ForecastSolarPlaneHandler(Thing thing, HttpClient hc) {
         super(thing);
@@ -126,13 +127,15 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler {
                         forecast = new ForecastSolarObject(cr.getContentAsString(), LocalDateTime.now(),
                                 LocalDateTime.now().plusMinutes(configuration.get().refreshInterval));
                         logger.debug("{} Fetched data {}", thing.getLabel(), forecast.toString());
+                        logger.info("{} {} HTTP errors since last successful update", thing.getLabel(), failureCounter);
+                        failureCounter = 0;
                         updateChannels(forecast);
                         updateState(CHANNEL_RAW, StringType.valueOf(cr.getContentAsString()));
                     } else {
-                        logger.info("{} Call {} failed {}", thing.getLabel(), url, cr.getStatus());
+                        logger.debug("{} Call {} failed {}", thing.getLabel(), url, cr.getStatus());
                     }
                 } catch (InterruptedException | ExecutionException | TimeoutException e) {
-                    logger.info("{} Call {} failed {}", thing.getLabel(), url, e.getMessage());
+                    logger.debug("{} Call {} failed {}", thing.getLabel(), url, e.getMessage());
                 }
             } else {
                 logger.debug("{} use available forecast {}", thing.getLabel(), forecast);

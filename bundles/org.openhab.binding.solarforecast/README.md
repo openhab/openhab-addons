@@ -42,10 +42,11 @@ After configuration the necessary information is available.
 
 ### Solcast Plane Configuration
 
-| Name            | Type    | Description                           | Default | Required |
-|-----------------|---------|---------------------------------------|---------|----------|
-| resourceId      | text    | Resource Id of Solcast rooftop site   | N/A     | yes      |
-| refreshInterval | integer | Forecast Refresh Interval in minutes  | 120     | yes      |
+| Name            | Type    | Description                                            | Default | Required |
+|-----------------|---------|--------------------------------------------------------|---------|----------|
+| resourceId      | text    | Resource Id of Solcast rooftop site                    | N/A     | yes      |
+| refreshInterval | integer | Forecast Refresh Interval in minutes                   | 120     | yes      |
+| powerItem       | text    | Power item from your solar inverter for this rooftop   | N/A     | no       |
 
 `resourceId` for each plane can be obtained in your [Rooftop Sites](https://toolkit.solcast.com.au/rooftop-sites)
 
@@ -54,6 +55,9 @@ If you've 25 free calls per day, each plane needs 2 calls per update a refresh i
 
 Note: `channelRefreshInterval` from [Bridge Configuration](#solcast-bridge-configuration) will calculate intermediate values without requesting new forecast data.
 
+`powerItem` shall reflect the power in kW for this specific rooftop. 
+It's an optional setting and the [measure is sent to Solcast API in order to tune the forecast](https://legacy-docs.solcast.com.au/#measurements-rooftop-site) in the future.
+If you don't want to sent measures to Solcast leave this configuration item empty.
 
 ## Solcast Channels
 

@@ -24,5 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class SolcastConstants {
     public static final String FORECAST_URL = "https://api.solcast.com.au/rooftop_sites/%s/forecasts?format=json";
     public static final String CURRENT_ESTIMATE_URL = "https://api.solcast.com.au/rooftop_sites/%s/estimated_actuals?format=json";
+    public static final String MEASUREMENT_URL = "https://api.solcast.com.au/rooftop_sites/%s/measurements?format=json";
+
     public static final String BEARER = "Bearer ";
 }
