@@ -14,10 +14,13 @@ package org.openhab.binding.neohub.test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.io.IOException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.neohub.internal.NeoHubBindingConstants;
 import org.openhab.binding.neohub.internal.NeoHubConfiguration;
+import org.openhab.binding.neohub.internal.NeoHubException;
 import org.openhab.binding.neohub.internal.NeoHubSocket;
 import org.openhab.binding.neohub.internal.NeoHubWebSocket;
 
@@ -51,9 +54,12 @@ public class NeoHubProtocolTests {
 
     /**
      * Use web socket to send a request, and check for a response.
+     *
+     * @throws NeoHubException
+     * @throws IOException
      */
     @Test
-    void testWssConnection() {
+    void testWssConnection() throws NeoHubException, IOException {
         if (RUN_WSS_TEST) {
             if (!NeoHubJsonTests.VALID_IP_V4_ADDRESS.matcher(HUB_IP_ADDRESS).matches()) {
                 fail();
@@ -64,23 +70,22 @@ public class NeoHubProtocolTests {
             config.socketTimeout = SOCKET_TIMEOUT;
             config.apiToken = HUB_API_TOKEN;
 
-            try {
-                NeoHubWebSocket socket = new NeoHubWebSocket(config);
-                String requestJson = NeoHubBindingConstants.CMD_CODE_FIRMWARE;
-                String responseJson = socket.sendMessage(requestJson);
-                assertNotEquals(0, responseJson.length());
-                socket.close();
-            } catch (Exception e) {
-                fail(e.getMessage());
-            }
+            NeoHubWebSocket socket = new NeoHubWebSocket(config);
+            String requestJson = NeoHubBindingConstants.CMD_CODE_FIRMWARE;
+            String responseJson = socket.sendMessage(requestJson);
+            assertNotEquals(0, responseJson.length());
+            socket.close();
         }
     }
 
     /**
      * Use TCP socket to send a request, and check for a response.
+     *
+     * @throws NeoHubException
+     * @throws IOException
      */
     @Test
-    void testTcpConnection() {
+    void testTcpConnection() throws IOException, NeoHubException {
         if (RUN_TCP_TEST) {
             if (!NeoHubJsonTests.VALID_IP_V4_ADDRESS.matcher(HUB_IP_ADDRESS).matches()) {
                 fail();
@@ -91,15 +96,11 @@ public class NeoHubProtocolTests {
             config.socketTimeout = SOCKET_TIMEOUT;
             config.apiToken = HUB_API_TOKEN;
 
-            try {
-                NeoHubSocket socket = new NeoHubSocket(config);
-                String requestJson = NeoHubBindingConstants.CMD_CODE_FIRMWARE;
-                String responseJson = socket.sendMessage(requestJson);
-                assertNotEquals(0, responseJson.length());
-                socket.close();
-            } catch (Exception e) {
-                fail(e.getMessage());
-            }
+            NeoHubSocket socket = new NeoHubSocket(config);
+            String requestJson = NeoHubBindingConstants.CMD_CODE_FIRMWARE;
+            String responseJson = socket.sendMessage(requestJson);
+            assertNotEquals(0, responseJson.length());
+            socket.close();
         }
     }
 }
