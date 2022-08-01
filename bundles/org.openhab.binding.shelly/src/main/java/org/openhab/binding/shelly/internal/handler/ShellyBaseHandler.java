@@ -446,7 +446,7 @@ public class ShellyBaseHandler extends BaseThingHandler
                     break;
                 case CHANNEL_CONTROL_MODE:
                     logger.debug("{}: Set mode to {}", thingName, command);
-                    api.setValveMode(0, "automatic".equalsIgnoreCase(command.toString()));
+                    api.setValveMode(0, CHANNEL_CONTROL_MODE.equalsIgnoreCase(command.toString()));
                     break;
                 case CHANNEL_CONTROL_SETTEMP:
                     logger.debug("{}: Set temperature to {}", thingName, command);
@@ -718,8 +718,6 @@ public class ShellyBaseHandler extends BaseThingHandler
         }
         if (coap != null) {
             stats.coiotMessages = coap.getMessageCount();
-        }
-        if (coap != null) {
             stats.coiotErrors = coap.getErrorCount();
         }
         if (!alarm.isEmpty()) {

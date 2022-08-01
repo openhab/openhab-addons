@@ -13,7 +13,7 @@
 package org.openhab.binding.shelly.internal.discovery;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
-import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
+import static org.openhab.binding.shelly.internal.util.ShellyUtils.substringBeforeLast;
 import static org.openhab.core.thing.Thing.PROPERTY_MODEL_ID;
 
 import java.io.IOException;
@@ -148,8 +148,8 @@ public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
                 api.initialize();
                 profile = api.getDeviceProfile(thingType);
                 logger.debug("{}: Shelly settings : {}", name, profile.settingsJson);
-                deviceName = getString(profile.name);
-                model = getString(profile.deviceType);
+                deviceName = profile.name;
+                model = profile.deviceType;
                 mode = profile.mode;
                 properties = ShellyBaseHandler.fillDeviceProperties(profile);
                 logger.trace("{}: thingType={}, deviceType={}, mode={}, symbolic name={}", name, thingType,
