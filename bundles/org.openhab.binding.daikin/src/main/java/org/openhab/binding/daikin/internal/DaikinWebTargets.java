@@ -141,17 +141,24 @@ public class DaikinWebTargets {
         Map<String, String> queryParams = new HashMap<>();
         if (specialMode == SpecialMode.NORMAL) {
             queryParams.put("set_spmode", "0");
+            queryParams.put("spmode_kind", "1");
         } else {
             queryParams.put("set_spmode", "1");
             queryParams.put("spmode_kind", Integer.toString(specialMode.getValue()));
         }
         String response = invoke(setSpecialModeUri, queryParams);
+        if (!response.contains("ret=OK")) {
+            logger.warn("Error setting special mode. Response: '{}'", response);
+        }
     }
 
     public void setStreamerMode(boolean state) throws DaikinCommunicationException {
         Map<String, String> queryParams = new HashMap<>();
         queryParams.put("en_streamer", state ? "1" : "0");
         String response = invoke(setSpecialModeUri, queryParams);
+        if (!response.contains("ret=OK")) {
+            logger.warn("Error setting streamer mode. Response: '{}'", response);
+        }
     }
 
     // Daikin Airbase API
