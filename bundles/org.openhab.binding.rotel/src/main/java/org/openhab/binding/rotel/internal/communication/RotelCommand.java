@@ -221,12 +221,13 @@ public enum RotelCommand {
     STEREO7("7 Channel Stereo", PRIMARY_CMD, (byte) 0x5C, "7channel", "7channel"),
     STEREO9("9 Channel Stereo", "9channel", "9channel"),
     STEREO11("11 Channel Stereo", "11channel", "11channel"),
-    DSP_TOGGLE("DSP Mode Toggle", PRIMARY_CMD, (byte) 0x14),
+    PROLOGIC_TOGGLE("Dolby Pro Logic Toggle", PRIMARY_CMD, (byte) 0x13),
+    DSP_TOGGLE("DSP Music Mode Toggle", PRIMARY_CMD, (byte) 0x14),
     DSP1("DSP 1", PRIMARY_CMD, (byte) 0x57),
     DSP2("DSP 2", PRIMARY_CMD, (byte) 0x58),
     DSP3("DSP 3", PRIMARY_CMD, (byte) 0x59),
     DSP4("DSP 4", PRIMARY_CMD, (byte) 0x5A),
-    PROLOGIC_TOGGLE("Dolby 3 Stereo / Pro Logic Toggle", PRIMARY_CMD, (byte) 0x53),
+    DOLBY_TOGGLE("Dolby 3 Stereo / Pro Logic Toggle", PRIMARY_CMD, (byte) 0x53),
     PROLOGIC("Dolby Pro Logic", PRIMARY_CMD, (byte) 0x5F),
     PLII_CINEMA("Dolby PLII Cinema", PRIMARY_CMD, (byte) 0x5D, "prologic_movie", "prologic_movie"),
     PLII_MUSIC("Dolby PLII Music", PRIMARY_CMD, (byte) 0x5E, "prologic_music", "prologic_music"),
@@ -475,9 +476,9 @@ public enum RotelCommand {
     MODEL("Request the model number", null, "model?"),
     VERSION("Request the main CPU software version", null, "version?");
 
-    public static final List<RotelCommand> DSP_CMDS_SET1 = List.of(DSP_TOGGLE, PROLOGIC_TOGGLE, PLII_PANORAMA_TOGGLE,
-            PLII_DIMENSION_UP, PLII_DIMENSION_DOWN, PLII_CENTER_WIDTH_UP, PLII_CENTER_WIDTH_DOWN, DDEX_TOGGLE,
-            NEO6_TOGGLE, NEXT_MODE);
+    public static final List<RotelCommand> DSP_CMDS_SET1 = List.of(DSP_TOGGLE, PROLOGIC_TOGGLE, DOLBY_TOGGLE,
+            PLII_PANORAMA_TOGGLE, PLII_DIMENSION_UP, PLII_DIMENSION_DOWN, PLII_CENTER_WIDTH_UP, PLII_CENTER_WIDTH_DOWN,
+            DDEX_TOGGLE, NEO6_TOGGLE, NEXT_MODE);
 
     public static final List<RotelCommand> SRC_CTRL_CMDS_SET1 = List.of(PLAY, STOP, PAUSE, TRACK_FWD, TRACK_BACK);
     public static final List<RotelCommand> SRC_CTRL_CMDS_SET2 = List.of(FAST_FWD, FAST_BACK, RANDOM_TOGGLE,
