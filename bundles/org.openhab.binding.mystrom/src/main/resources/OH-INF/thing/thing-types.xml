@@ -102,7 +102,8 @@
 
 		<label>myStrom Motion Sensor</label>
 		<channels>
-			<channel id="motion" typeId="system.motion"/><channel typeId="system.indoor-temperature" id="temperature"></channel>
+			<channel id="motion" typeId="system.motion"/>
+			<channel typeId="system.indoor-temperature" id="temperature"></channel>
 			<channel typeId="system.brightness" id="light"></channel>
 		</channels>
 		<properties>
@@ -144,7 +145,8 @@
 			<parameter name="led_enable" type="boolean">
 				<default>true</default>
 				<label>LED Enabled</label>
-				<description>Enables the Status LED on the Device.</description></parameter>
+				<description>Enables the Status LED on the Device.</description>
+			</parameter>
 		</config-description>
 	</thing-type>
 

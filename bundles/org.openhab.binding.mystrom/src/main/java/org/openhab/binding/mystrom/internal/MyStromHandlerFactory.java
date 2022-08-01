@@ -39,7 +39,8 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.mystrom", service = ThingHandlerFactory.class)
 public class MyStromHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_PLUG, THING_TYPE_BULB,THING_TYPE_PIR);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_PLUG, THING_TYPE_BULB,
+            THING_TYPE_PIR);
 
     private final HttpClientFactory httpClientFactory;
 

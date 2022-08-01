@@ -50,7 +50,6 @@ public class MyStromPIRHandler extends AbstractMyStromHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
     }
 
     @Override
