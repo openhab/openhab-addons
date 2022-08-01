@@ -30,6 +30,7 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettings
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRelay;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRgbwLight;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyThermnostat;
 import org.openhab.binding.shelly.internal.util.ShellyVersionDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -327,6 +328,20 @@ public class ShellyDeviceProfile {
             return settings.favorites.get(id).pos;
         }
         return -1;
+    }
+
+    public String getValueProfile(int profileId) {
+        int id = profileId;
+        if (settings.thermostats != null) {
+            ShellyThermnostat t = settings.thermostats.get(0);
+            id = profileId == 0 ? getInteger(t.profile) : profileId;
+            if (id <= 0) {
+                return "DISABLED";
+            }
+            return id <= t.profileNames.length ? getString(t.profileNames[id - 1]) : "" + id;
+        }
+
+        return "" + id;
     }
 
     public static String extractFwVersion(@Nullable String version) {

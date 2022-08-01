@@ -39,6 +39,7 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyInputSta
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyOtaCheckResult;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDevice;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyThermnostat;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapHandler;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapServer;
@@ -400,14 +401,39 @@ public class ShellyBaseHandler extends BaseThingHandler
                             : 0;
                     api.setSleepTime(value);
                     break;
+                case CHANNEL_CONTROL_SCHEDULE:
+                    if (profile.isTRV) {
+                        logger.debug("{}: {} Valve schedule/profile", thingName,
+                                command == OnOffType.ON ? "Enable" : "Disable");
+                        api.setValveProfile(0,
+                                command == OnOffType.OFF ? 0 : profile.status.thermostats.get(0).profile);
+                    }
+                    break;
                 case CHANNEL_CONTROL_PROFILE:
                     logger.debug("{}: Select profile {}", thingName, command);
-                    int profile = (int) getNumber(command);
-                    if (profile < 0 || profile > 5) {
-                        logger.warn("{}: Invalid profile Id {} requested", thingName, profile);
-                        break;
+                    int id = -1;
+                    if (command instanceof Number) {
+                        id = (int) getNumber(command);
+                    } else {
+                        String cmd = command.toString();
+                        if (isDigit(cmd.charAt(0))) {
+                            id = Integer.parseInt(cmd);
+                        } else if (cmd.equalsIgnoreCase("DISABLED")) {
+                            id = 0;
+                        } else if (profile.settings.thermostats != null) {
+                            ShellyThermnostat t = profile.settings.thermostats.get(0);
+                            for (int i = 0; i < t.profileNames.length; i++) {
+                                if (t.profileNames[i].equalsIgnoreCase(cmd)) {
+                                    id = i + 1;
+                                }
+                            }
+                        }
                     }
-                    api.setValveProfile(0, profile);
+                    if (id < 0 || id > 5) {
+                        logger.warn("{}: Invalid profile Id {} requested", thingName, profile);
+                    } else {
+                        api.setValveProfile(0, id);
+                    }
                     break;
                 case CHANNEL_CONTROL_MODE:
                     logger.debug("{}: Set mode to {}", thingName, command);
@@ -961,7 +987,6 @@ public class ShellyBaseHandler extends BaseThingHandler
     protected boolean isAuthorizationFailed(ShellyApiResult result) {
         if (result.isHttpAccessUnauthorized()) {
             // If the device is password protected the API doesn't provide settings to the device settings
-            logger.info("{}: {}", thingName, messages.get("init.protected"));
             setThingOffline(ThingStatusDetail.CONFIGURATION_ERROR, "offline.conf-error-access-denied");
             return true;
         }
