@@ -207,7 +207,7 @@
 		<item-type>Switch</item-type>
 		<label>@text/channel-type.shelly.controlSchedule.label</label>
 		<description>@text/channel-type.shelly.controlSchedule.description</description>
-        <state readOnly="false"></state>
+		<state readOnly="false"></state>
 	</channel-type>
 
 
