@@ -98,6 +98,55 @@
 
 	</thing-type>
 
+	<thing-type id="mystrompir">
+
+		<label>myStrom Motion Sensor</label>
+		<channels>
+			<channel id="motion" typeId="system.motion"/><channel typeId="system.indoor-temperature" id="temperature"></channel>
+			<channel typeId="system.brightness" id="light"></channel>
+		</channels>
+		<properties>
+			<property name="mac"/>
+			<property name="version"/>
+			<property name="type"/>
+			<property name="ssid"/>
+			<property name="ip"/>
+			<property name="mask"/>
+			<property name="gw"/>
+			<property name="dns"/>
+			<property name="static"/>
+			<property name="connected"/>
+		</properties>
+
+		<representation-property>mac</representation-property>
+
+		<config-description>
+			<parameter name="hostname" type="text">
+				<label>Hostname</label>
+				<description>The host name or IP address of the myStrom sensor.</description>
+				<context>network-address</context>
+				<default>localhost</default>
+			</parameter>
+			<parameter name="refresh" type="integer" unit="s" min="1">
+				<label>Refresh Interval</label>
+				<description>Specifies the refresh interval in seconds.</description>
+				<default>10</default>
+			</parameter>
+			<parameter name="apiToken" type="text">
+				<label>API Token</label>
+				<description>Specifies the API Token, if required(optional).</description>
+			</parameter>
+			<parameter name="backoff_time" type="integer" unit="s" min="1">
+				<default>10</default>
+				<label>Backoff Time</label>
+				<description>Specifies the minimum frequency between successive motion detections in seconds.</description>
+			</parameter>
+			<parameter name="led_enable" type="boolean">
+				<default>true</default>
+				<label>LED Enabled</label>
+				<description>Enables the Status LED on the Device.</description></parameter>
+		</config-description>
+	</thing-type>
 
 	<channel-type id="power-channel">
 		<item-type>Number:Power</item-type>

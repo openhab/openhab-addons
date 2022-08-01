@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.mystrom.internal;
 
-import static org.openhab.binding.mystrom.internal.MyStromBindingConstants.DEFAULT_REFRESH_RATE_SECONDS;
+import static org.openhab.binding.mystrom.internal.MyStromBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -20,6 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * The {@link MyStromConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Paul Frank - Initial contribution
+ * @author Stefan Navratil - Added configuration for myStrom PIR
  */
 @NonNullByDefault
 public class MyStromConfiguration {
@@ -31,6 +32,10 @@ public class MyStromConfiguration {
     private String apiToken = "";
 
     private int refresh = DEFAULT_REFRESH_RATE_SECONDS;
+
+    private int backoff_time = DEFAULT_BACKOFF_TIME_SECONDS;
+
+    private boolean led_enable = true;
 
     /**
      * Returns the hostname with http prefix if missing.
@@ -55,11 +60,29 @@ public class MyStromConfiguration {
     }
 
     /**
-     * Returns the refreshrate in SECONDS
+     * Returns the refreshrate in SECONDS.
      *
      * @return refresh
      */
     public int getRefresh() {
         return refresh;
+    }
+
+    /**
+     * Returns the Backoff time of the MotionSensor in SECONDS.
+     *
+     * @return backoff_time
+     */
+    public int getBackoffTime() {
+        return backoff_time;
+    }
+
+    /**
+     * Returns the Status LED Configuration.
+     *
+     * @return led_enable
+     */
+    public boolean getLedEnable() {
+        return led_enable;
     }
 }
