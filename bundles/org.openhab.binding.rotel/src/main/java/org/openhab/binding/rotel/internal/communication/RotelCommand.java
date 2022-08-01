@@ -221,7 +221,7 @@ public enum RotelCommand {
     STEREO7("7 Channel Stereo", PRIMARY_CMD, (byte) 0x5C, "7channel", "7channel"),
     STEREO9("9 Channel Stereo", "9channel", "9channel"),
     STEREO11("11 Channel Stereo", "11channel", "11channel"),
-    PROLOGIC_TOGGLE("Dolby Pro Logic Mode Toggle", PRIMARY_CMD, (byte) 0x13),
+    PROLOGIC_TOGGLE("Dolby Pro Logic Toggle", PRIMARY_CMD, (byte) 0x13),
     DSP_TOGGLE("DSP Music Mode Toggle", PRIMARY_CMD, (byte) 0x14),
     DSP1("DSP 1", PRIMARY_CMD, (byte) 0x57),
     DSP2("DSP 2", PRIMARY_CMD, (byte) 0x58),
