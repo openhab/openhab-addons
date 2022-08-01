@@ -125,16 +125,11 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
 
             // initially load access token
             verifyToken();
-            try {
-                locationsResponse = loadLocations();
-            } catch (GardenaException ex) {
-                locationsResponse = null;
-                throw ex;
-            }
+            LocationsResponse locationsResponse = loadLocations();
+            this.locationsResponse = locationsResponse;
 
             // assemble devices
-            LocationsResponse locationsResponse = this.locationsResponse;
-            if (locationsResponse != null && locationsResponse.data != null) {
+            if (locationsResponse.data != null) {
                 for (LocationDataItem location : locationsResponse.data) {
                     LocationResponse locationResponse = loadLocation(location.id);
                     if (locationResponse.included != null) {
@@ -344,6 +339,7 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
         if (locationsResponse != null && locationsResponse.data != null) {
             locationsResponse.data.clear();
         }
+        this.locationsResponse = null;
         allDevicesById.clear();
     }
 
