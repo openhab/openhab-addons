@@ -36,19 +36,19 @@ Before the binding can communicate with the hub, the following Configuration Par
 | Configuration Parameter    | Description                                                                                              |
 |----------------------------|----------------------------------------------------------------------------------------------------------|
 | hostName                   | Host name (IP address) of the NeoHub (example 192.168.1.123)                                             |
-| useWebSockets<sup>1)</sup> | Use secure WebSockets to connect to  the NeoHub (example `true`)                                         |
+| useWebSocket<sup>1)</sup>  | Use secure WebSocket to connect to  the NeoHub (example `true`)                                          |
 | apiToken<sup>1)</sup>      | API Access Token for secure connection to hub. Create the token in the Heatmiser mobile App              |
 | pollingInterval            | Time (seconds) between polling requests to the NeoHub (Min=4, Max=60, Default=60)                        |
 | socketTimeout              | Time (seconds) to allow for TCP socket connections to the hub to succeed (Min=4, Max=20, Default=5)      |
 | preferLegacyApi            | ADVANCED: Prefer to use older API calls; but if not supported, it switches to new calls (Default=false)  |
 | portNumber<sup>2)</sup>    | ADVANCED: Port number for connection to the NeoHub (Default=0 (automatic))                               |
 
-<sup>1)</sup> If `useWebSockets` is false, the binding will connect via an older and less secure TCP connection, in which case `apiToken` is not required.
+<sup>1)</sup> If `useWebSocket` is false, the binding will connect via an older and less secure TCP connection, in which case `apiToken` is not required.
 However see the chapter "Connection Refused Errors" below.
-Whereas if you prefer to connect via the more secure web socket connection then an API access token `apiToken` is required.
+Whereas if you prefer to connect via more secure WebSocket connections then an API access token `apiToken` is required.
 You can create an API access token in the Heatmiser mobile App (Settings | System | API Access).
 
-<sup>2)</sup> Normally the port number is chosen automatically (for TCP connections it is 4242 and for WebSockets it is 4243).
+<sup>2)</sup> Normally the port number is chosen automatically (for TCP it is 4242 and for WebSocket it is 4243).
 But you can override this in special cases if you want to use (say) port forwarding.
 
 ## Connection Refused Errors

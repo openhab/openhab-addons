@@ -145,7 +145,7 @@ public class NeoHubHandler extends BaseBridgeHandler {
         // create a web or TCP socket based on the port number in the configuration
         NeoHubSocketBase socket;
         try {
-            if (config.useWebSockets) {
+            if (config.useWebSocket) {
                 socket = new NeoHubWebSocket(config);
             } else {
                 socket = new NeoHubSocket(config);

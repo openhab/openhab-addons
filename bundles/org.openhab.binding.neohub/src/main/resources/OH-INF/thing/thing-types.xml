@@ -54,9 +54,9 @@
 				<advanced>true</advanced>
 			</parameter>
 
-			<parameter name="useWebSockets" type="boolean" required="false">
-				<label>Connect via WebSockets</label>
-				<description>Select whether to communicate with the Neohub via WebSocket or TCP connection</description>
+			<parameter name="useWebSocket" type="boolean" required="false">
+				<label>Connect via WebSocket</label>
+				<description>Select whether to communicate with the Neohub via WebSocket or TCP</description>
 				<default>false</default>
 			</parameter>
 
