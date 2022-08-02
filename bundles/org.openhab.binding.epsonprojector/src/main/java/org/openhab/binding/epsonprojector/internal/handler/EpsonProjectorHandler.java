@@ -426,13 +426,14 @@ public class EpsonProjectorHandler extends BaseThingHandler {
     }
 
     private void closeConnection() {
-        EpsonProjectorDevice remoteController = device.get();
-        try {
-            logger.debug("Closing connection to device '{}'", this.thing.getUID());
-            remoteController.disconnect();
-            updateStatus(ThingStatus.OFFLINE);
-        } catch (EpsonProjectorException e) {
-            logger.debug("Error occurred when closing connection to device '{}'", this.thing.getUID(), e);
+        if (device.isPresent()) {
+            try {
+                logger.debug("Closing connection to device '{}'", this.thing.getUID());
+                device.get().disconnect();
+                updateStatus(ThingStatus.OFFLINE);
+            } catch (EpsonProjectorException e) {
+                logger.debug("Error occurred when closing connection to device '{}'", this.thing.getUID(), e);
+            }
         }
     }
 }
