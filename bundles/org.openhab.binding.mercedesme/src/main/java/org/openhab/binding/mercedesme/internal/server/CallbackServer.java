@@ -122,7 +122,8 @@ public class CallbackServer {
                     token = Optional.of(act);
                     listener.onAccessTokenResponse(act);
                 } catch (OAuthException | IOException | OAuthResponseException e) {
-                    LOGGER.warn("Error refreshing token {}", e.getMessage());
+                    LOGGER.warn("Error refreshing token. Reason: {} Manual Authorization needed at {}", e.getMessage(),
+                            callbackUrl);
                 }
             } else {
                 LOGGER.trace("Token valid - do nothing");
