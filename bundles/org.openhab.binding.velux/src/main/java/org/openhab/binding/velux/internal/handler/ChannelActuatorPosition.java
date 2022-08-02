@@ -24,6 +24,7 @@ import org.openhab.binding.velux.internal.bridge.common.RunProductCommand;
 import org.openhab.binding.velux.internal.bridge.slip.FunctionalParameters;
 import org.openhab.binding.velux.internal.bridge.slip.SCrunProductCommand;
 import org.openhab.binding.velux.internal.handler.utils.Thing2VeluxActuator;
+import org.openhab.binding.velux.internal.things.StatusReply;
 import org.openhab.binding.velux.internal.things.VeluxExistingProducts;
 import org.openhab.binding.velux.internal.things.VeluxProduct;
 import org.openhab.binding.velux.internal.things.VeluxProduct.ProductBridgeIndex;
@@ -105,12 +106,10 @@ final class ChannelActuatorPosition extends ChannelHandlerTemplate {
 
             GetProduct bcp = null;
             switch (channelId) {
-                case CHANNEL_VANE_POSITION:
-                    bcp = thisBridgeHandler.thisBridge.bridgeAPI().getProductStatus();
-                    break;
                 case CHANNEL_ACTUATOR_POSITION:
                 case CHANNEL_ACTUATOR_STATE:
-                    bcp = thisBridgeHandler.thisBridge.bridgeAPI().getProduct();
+                case CHANNEL_VANE_POSITION:
+                    bcp = thisBridgeHandler.thisBridge.bridgeAPI().getProductStatus();
                 default:
                     // unknown channel, will exit
             }
@@ -164,6 +163,19 @@ final class ChannelActuatorPosition extends ChannelHandlerTemplate {
                                 }
                             }
                         }
+                    }
+                }
+            } else if (newProduct.getProductState() == ProductState.ERROR) {
+                StatusReply statusReply = bcp.getStatusReply();
+                if (statusReply.isError()) {
+                    VeluxExistingProducts existingProducts = thisBridgeHandler.existingProducts();
+                    VeluxProduct oldProduct = existingProducts.get(newProduct.getBridgeProductIndex());
+                    String id = VeluxProduct.UNKNOWN.equals(oldProduct) ? newProduct.getBridgeProductIndex().toString()
+                            : oldProduct.getProductUniqueIndex();
+                    if (statusReply.isCriticalError()) {
+                        LOGGER.warn("Product Id:{} encountered an error with StatusReply:{}", id, statusReply);
+                    } else {
+                        LOGGER.debug("Product Id:{} encountered an error with StatusReply:{}", id, statusReply);
                     }
                 }
             }
