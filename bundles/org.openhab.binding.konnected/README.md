@@ -2,7 +2,7 @@
 
 This binding is for interacting with the [Konnected Alarm Panel](https://konnected.io/).
 A module which interfaces with existing home security sensors.
-Konnected is an open-source firmware and software that runs on a NodeMCU ESP8266 (wifi) or ESP32 (pro) device.
+Konnected is an open-source firmware and software that runs on a NodeMCU ESP8266 (Wi-Fi) or ESP32 (Pro) device.
 The Konnected hardware is designed for an alarm panel installation, but the general purpose firmware/software can be run on a generic NodeMCU device.
 
 ## Supported Things
