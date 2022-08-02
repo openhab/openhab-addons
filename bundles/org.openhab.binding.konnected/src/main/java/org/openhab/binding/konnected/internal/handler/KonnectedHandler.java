@@ -77,7 +77,7 @@ public class KonnectedHandler extends BaseThingHandler {
         callbackIpAddress = hostAddress + ":" + port;
         logger.debug("The callback ip address is: {}", callbackIpAddress);
         retryCount = 2;
-        thingID = this.getThing().getThingTypeUID().getId();
+        thingID = getThing().getThingTypeUID().getId();
         authToken = getThing().getUID().getAsString();
     }
 
