@@ -27,6 +27,7 @@ The blink setting will disable the transmission LED on the Konnected Alarm Panel
 
 
 ## Channels
+
 You will need to add channels for the zones that you have connected and configure them with the appropriate configuration parameters for each channel.
 
 | Channel Type | Item Type            | Config Parameters                                  | Description                                                                                                                                                                                                                                     |
