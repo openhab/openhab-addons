@@ -50,8 +50,7 @@ import org.slf4j.LoggerFactory;
 @Component(configurationPid = "binding.konnected", service = ThingHandlerFactory.class)
 public class KonnectedHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(KonnectedHandlerFactory.class);
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(THING_TYPE_PROMODULE, THING_TYPE_WIFIMODULE).collect(Collectors.toSet()));
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_PROMODULE, THING_TYPE_WIFIMODULE);
     private static final String alias = "/" + BINDING_ID;
 
     private HttpService httpService;
