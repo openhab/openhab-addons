@@ -7,7 +7,7 @@ The Konnected hardware is designed for an alarm panel installation, but the gene
 
 ## Supported Things
 ``
-This binding supports two types of thing modules, which represents the wifi version of the Konnected Alarm Panel and the Konnected Alarm Panel Pro.
+This binding supports two types of thing modules, which represents the Wi-Fi version of the Konnected Alarm Panel and the Konnected Alarm Panel Pro.
 
 ## Discovery
 
