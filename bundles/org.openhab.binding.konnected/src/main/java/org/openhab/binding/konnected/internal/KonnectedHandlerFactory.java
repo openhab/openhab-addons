@@ -14,11 +14,8 @@ package org.openhab.binding.konnected.internal;
 
 import static org.openhab.binding.konnected.internal.KonnectedBindingConstants.*;
 
-import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.servlet.ServletException;
 
@@ -50,7 +47,8 @@ import org.slf4j.LoggerFactory;
 @Component(configurationPid = "binding.konnected", service = ThingHandlerFactory.class)
 public class KonnectedHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(KonnectedHandlerFactory.class);
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_PROMODULE, THING_TYPE_WIFIMODULE);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_PROMODULE,
+            THING_TYPE_WIFIMODULE);
     private static final String alias = "/" + BINDING_ID;
 
     private HttpService httpService;
