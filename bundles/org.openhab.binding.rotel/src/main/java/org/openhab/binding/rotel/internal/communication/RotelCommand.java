@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.rotel.internal.RotelException;
@@ -216,6 +215,7 @@ public enum RotelCommand {
     ZONE4_SOURCE_INPUT_C("Zone 4 Source Input C", null, "z4:input_c"),
     ZONE4_SOURCE_INPUT_D("Zone 4 Source Input D", null, "z4:input_d"),
     STEREO("Stereo", PRIMARY_CMD, (byte) 0x11, "2channel", "2channel"),
+    STEREO_BYPASS_TOGGLE("Stereo / Bypass Toggle", PRIMARY_CMD, (byte) 0x11),
     STEREO3("Dolby 3 Stereo ", PRIMARY_CMD, (byte) 0x12, "3channel", "3channel"),
     STEREO5("5 Channel Stereo", PRIMARY_CMD, (byte) 0x5B, "5channel", "5channel"),
     STEREO7("7 Channel Stereo", PRIMARY_CMD, (byte) 0x5C, "7channel", "7channel"),
@@ -244,7 +244,7 @@ public enum RotelCommand {
     NEO6_CINEMA("dts Neo:6 Cinema", PRIMARY_CMD, (byte) 0x61, "neo6_cinema", "neo6_cinema"),
     ATMOS("Dolby Atmos", "dolby_atmos", "dolby_atmos"),
     NEURAL_X("dts Neural:X", "dts_neural", "dts_neural"),
-    BYPASS("Analog Bypass", PRIMARY_CMD, (byte) 0x11, "bypass", "bypass"),
+    BYPASS("Analog Bypass", "bypass", "bypass"),
     NEXT_MODE("Next Surround Mode", PRIMARY_CMD, (byte) 0x22),
     DSP_MODE("Request current DSP mode", "get_dsp_mode", null),
     TONE_MAX("Request Max tone level", "get_tone_max", null),
@@ -479,6 +479,9 @@ public enum RotelCommand {
     public static final List<RotelCommand> DSP_CMDS_SET1 = List.of(DSP_TOGGLE, PROLOGIC_TOGGLE, DOLBY_TOGGLE,
             PLII_PANORAMA_TOGGLE, PLII_DIMENSION_UP, PLII_DIMENSION_DOWN, PLII_CENTER_WIDTH_UP, PLII_CENTER_WIDTH_DOWN,
             DDEX_TOGGLE, NEO6_TOGGLE, NEXT_MODE);
+    public static final List<RotelCommand> DSP_CMDS_SET2 = List.of(STEREO_BYPASS_TOGGLE, DSP_TOGGLE, PROLOGIC_TOGGLE,
+            DOLBY_TOGGLE, PLII_PANORAMA_TOGGLE, PLII_DIMENSION_UP, PLII_DIMENSION_DOWN, PLII_CENTER_WIDTH_UP,
+            PLII_CENTER_WIDTH_DOWN, DDEX_TOGGLE, NEO6_TOGGLE, NEXT_MODE);
 
     public static final List<RotelCommand> SRC_CTRL_CMDS_SET1 = List.of(PLAY, STOP, PAUSE, TRACK_FWD, TRACK_BACK);
     public static final List<RotelCommand> SRC_CTRL_CMDS_SET2 = List.of(FAST_FWD, FAST_BACK, RANDOM_TOGGLE,
@@ -641,7 +644,7 @@ public enum RotelCommand {
     }
 
     @Override
-    public @NonNull String toString() {
+    public String toString() {
         return label;
     }
 
