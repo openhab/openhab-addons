@@ -487,7 +487,7 @@ public class RotelHexProtocolHandler extends RotelAbstractProtocolHandler {
                 logger.debug("Invalid value {} for MULTI IN", value);
             }
         } else if (searchDsp && valueLowerCase.startsWith(KEY_HEX_BYPASS)) {
-            dispatchKeyValue(KEY_DSP_MODE, RotelDsp.CAT4_BYPASS.getFeedback());
+            dispatchKeyValue(KEY_DSP_MODE, RotelDsp.CAT4_NONE.getFeedback());
         } else if (searchDsp && searchStereo && valueLowerCase.startsWith(KEY_HEX_STEREO)) {
             dispatchKeyValue(KEY_DSP_MODE, RotelDsp.CAT4_NONE.getFeedback());
         } else if (searchDsp && (valueLowerCase.startsWith(KEY1_HEX_3CH) || valueLowerCase.startsWith(KEY2_HEX_3CH))) {

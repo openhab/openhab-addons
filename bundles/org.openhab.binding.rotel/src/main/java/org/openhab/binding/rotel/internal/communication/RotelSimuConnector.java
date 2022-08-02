@@ -61,6 +61,7 @@ public class RotelSimuConnector extends RotelConnector {
     private RotelSource recordSource;
     private boolean multiinput;
     private RotelDsp dsp = RotelDsp.CAT4_NONE;
+    private boolean bypass = false;
     private int[] volumes = { 50, 10, 20, 30, 40 };
     private boolean[] mutes = { false, false, false, false, false };
     private boolean tcbypass;
@@ -824,7 +825,7 @@ public class RotelSimuConnector extends RotelConnector {
                     break;
                 case STEREO:
                     dsp = RotelDsp.CAT4_NONE;
-                    textLine2 = "STEREO";
+                    textLine2 = bypass ? "BYPASS" : "STEREO";
                     textAscii = buildDspAsciiResponse();
                     break;
                 case STEREO3:
@@ -914,12 +915,15 @@ public class RotelSimuConnector extends RotelConnector {
                     textAscii = buildDspAsciiResponse();
                     break;
                 case BYPASS:
-                    dsp = RotelDsp.CAT4_BYPASS;
-                    textLine2 = "BYPASS";
+                    dsp = RotelDsp.CAT5_BYPASS;
                     textAscii = buildDspAsciiResponse();
                     break;
                 case DSP_MODE:
                     textAscii = buildDspAsciiResponse();
+                    break;
+                case STEREO_BYPASS_TOGGLE:
+                    bypass = !bypass;
+                    textLine2 = bypass ? "BYPASS" : "STEREO";
                     break;
                 case FREQUENCY:
                     textAscii = model.getNumberOfZones() > 1 ? buildAsciiResponse(KEY_FREQ, "44.1,48,none,176.4")
