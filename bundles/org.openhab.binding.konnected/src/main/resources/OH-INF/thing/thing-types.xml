@@ -218,7 +218,7 @@
 			</parameter>
 			<parameter name="momentary" type="integer">
 				<label>Momentary</label>
-				<description>The duration of the pulse in millisecods</description>
+				<description>The duration of the pulse in milliseconds</description>
 			</parameter>
 			<parameter name="pause" type="integer">
 				<label>Pause</label>
