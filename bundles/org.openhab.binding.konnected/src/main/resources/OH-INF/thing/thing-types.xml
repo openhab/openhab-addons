@@ -226,7 +226,7 @@
 			</parameter>
 			<parameter name="times" type="integer">
 				<label>Times</label>
-				<description>is the number of times to repeat or `-1` for an infinitely repeating pulse</description>
+				<description>The number of times to repeat or `-1` for an infinitely repeating pulse</description>
 			</parameter>
 		</config-description>
 	</channel-type>
