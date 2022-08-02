@@ -222,7 +222,7 @@
 			</parameter>
 			<parameter name="pause" type="integer">
 				<label>Pause</label>
-				<description>The time between pulses in millisecods</description>
+				<description>The time between pulses in milliseconds</description>
 			</parameter>
 			<parameter name="times" type="integer">
 				<label>Times</label>
