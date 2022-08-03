@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
 import java.net.SocketAddress;
+import java.net.StandardProtocolFamily;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
@@ -43,8 +44,7 @@ public class EchonetChannel {
     private short tid = 0;
 
     public EchonetChannel(InetSocketAddress discoveryAddress) throws IOException {
-        channel = DatagramChannel.open();
-
+        channel = DatagramChannel.open(StandardProtocolFamily.INET);
         channel.bind(new InetSocketAddress("0.0.0.0", discoveryAddress.getPort()));
         final Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
         while (networkInterfaces.hasMoreElements()) {
