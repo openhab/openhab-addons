@@ -19,8 +19,10 @@ The binding supports the following types of Thing..
 
 ## Discovery
 
-You have to manually create a single (Bridge) Thing for the NeoHub, and enter the required Configuration Parameters (see Thing Configuration for NeoHub below).
-If the Configuration Parameters are all valid, then the NeoHub Thing will automatically attempt to connect and sign on to the hub.
+The binding automatically searches for NeoHub devices, and puts them in the Main UI Inbox.
+Alternatively you can manually create a (Bridge) Thing for the NeoHub.
+In either case you need to enter any missing Configuration Parameters (see Thing Configuration for NeoHub below).
+Once the Configuration Parameters are all valid, then the NeoHub Thing will automatically attempt to connect and sign on to the hub.
 If the sign on succeeds, the Thing will indicate its status as Online, otherwise it will show an error status. 
 
 Once the NeoHub Thing has been created and it has successfully signed on, it will automatically interrogate the HeoHub to discover all the respective Heatmiser device Things that are connected to it.
