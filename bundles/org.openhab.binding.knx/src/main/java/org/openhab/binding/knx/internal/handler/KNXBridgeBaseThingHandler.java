@@ -89,7 +89,7 @@ public abstract class KNXBridgeBaseThingHandler extends BaseBridgeHandler implem
      * @return
      */
     protected boolean initializeSecurity(String cRouterBackboneGroupKey, String cTunnelDevAuth, String cTunnelUser,
-            String cTunnelPassword) {
+            String cTunnelPassword) throws KnxSecureException {
         secureRouting = new SecureRoutingConfig();
         secureTunnel = new SecureTunnelConfig();
 

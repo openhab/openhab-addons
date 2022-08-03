@@ -30,6 +30,8 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import tuwien.auto.calimero.secure.KnxSecureException;
+
 /**
  * The {@link IPBridgeThingHandler} is responsible for handling commands, which are
  * sent to one of the channels. It implements a KNX/IP Gateway, that either acts a a
@@ -82,12 +84,7 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
             } else {
                 logger.debug("KNX security not configured");
             }
-        } catch (NullPointerException e) {
-            logger.warn("Bridge {}, initialization failed", thing.getUID(), e); // for NPE log a stack trace as well
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "KNX security: NPE, see log");
-            return;
-        } catch (Exception e) {
-            // KnxSecureException or others
+        } catch (KnxSecureException e) {
             logger.debug("{}, {}", thing.getUID(), e.toString());
 
             String message = e.getLocalizedMessage();
