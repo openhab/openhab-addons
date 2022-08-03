@@ -34,7 +34,7 @@ This is very easy and you will find good documentation on it on the
 
 ## Configuration
 
-### Configuration via Web-Interface:
+### Configuration via web interface
 All settings for this Persistance Service can be found under `Settings` → `Other Services` → `InfluxDB Persistance Service`
 
 Attention: The file-based configuration (described below) overrides web interface configuration.
