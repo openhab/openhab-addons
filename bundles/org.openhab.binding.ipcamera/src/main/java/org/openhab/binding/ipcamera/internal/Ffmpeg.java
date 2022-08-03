@@ -69,9 +69,9 @@ public class Ffmpeg {
             altInput = input.substring(0, 7) + credentials + input.substring(7);
         }
         if (inputArguments.isEmpty()) {
-            ffmpegCommand = "-i " + altInput + " " + outArguments + " " + output;
+            ffmpegCommand = "-i " + "'" + altInput + "'" + " " + outArguments + " " + output;
         } else {
-            ffmpegCommand = inputArguments + " -i " + altInput + " " + outArguments + " " + output;
+            ffmpegCommand = inputArguments + " -i " + "'" + altInput + "'" + " " + outArguments + " " + output;
         }
         Collections.addAll(commandArrayList, ffmpegCommand.trim().split("\\s+"));
         // ffmpegLocation may have a space in its folder
