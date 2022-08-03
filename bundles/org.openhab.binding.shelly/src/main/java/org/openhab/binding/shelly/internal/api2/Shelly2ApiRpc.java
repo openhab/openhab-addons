@@ -59,6 +59,7 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2WsConfi
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2WsConfigResponse;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
+import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.slf4j.Logger;
@@ -72,6 +73,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterface, Shelly2WebSocketInterface {
     private final Logger logger = LoggerFactory.getLogger(Shelly2ApiRpc.class);
+    private final ShellyThingTable thingTable;
     private final Shelly2WebSocket rpcSocket;
 
     private boolean initialized = false;
@@ -83,16 +85,17 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
      * @param thingName Symbolic thing name
      * @param thing Thing Handler (ThingHandlerInterface)
      */
-    public Shelly2ApiRpc(String thingName, ShellyThingInterface thing) {
+    public Shelly2ApiRpc(String thingName, ShellyThingTable thingTable, ShellyThingInterface thing) {
         super(thingName, thing);
         this.thing = thing;
+        this.thingTable = thingTable;
         try {
             getProfile().initFromThingType(thingName);
         } catch (ShellyApiException e) {
             logger.info("{}: Shelly2 API initialization failed!", thingName, e);
         }
 
-        rpcSocket = new Shelly2WebSocket(config.deviceIp);
+        rpcSocket = new Shelly2WebSocket(thingTable, config.deviceIp);
         rpcSocket.addMessageHandler(this);
     }
 
@@ -103,9 +106,11 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
      * @param config Thing Configuration
      * @param httpClient HTTP Client to be passed to ShellyHttpClient
      */
-    public Shelly2ApiRpc(String thingName, ShellyThingConfiguration config, HttpClient httpClient) {
+    public Shelly2ApiRpc(String thingName, ShellyThingConfiguration config, ShellyThingTable thingTable,
+            HttpClient httpClient) {
         super(thingName, config, httpClient);
-        rpcSocket = new Shelly2WebSocket(config.deviceIp);
+        this.thingTable = thingTable;
+        rpcSocket = new Shelly2WebSocket(thingTable, config.deviceIp);
         rpcSocket.addMessageHandler(this);
     }
 
@@ -248,8 +253,12 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     }
 
     @Override
-    public void onConnect(boolean connected) {
+    public void onConnect(String deviceIp, boolean connected) {
         logger.debug("{}: WebSocket {}", thingName, connected ? "connected successful" : "failed to connect!");
+        if (thing == null) {
+            logger.debug("WebSocket: Get thing from IP");
+            thing = thingTable.getThing(deviceIp);
+        }
     }
 
     @Override
@@ -257,7 +266,11 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         logger.debug("{}: NotifyStatus update received: {}", thingName, gson.toJson(message));
         try {
             if (thing == null) {
-                logger.trace("{}: No matching thing, ignore", thingName);
+                logger.debug("{}: No matching thing on NotifyStatus, ignore", thingName);
+                return;
+            }
+            if (!thing.isThingOnline() && thing.getThingStatusDetail() != ThingStatusDetail.CONFIGURATION_PENDING) {
+                logger.debug("{}: Thing is not in online state/connectable, ignore NotifyStatus", thingName);
                 return;
             }
             if (message.error != null) {

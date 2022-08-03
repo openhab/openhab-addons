@@ -35,6 +35,7 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiRpc;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyBaseHandler;
+import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -66,14 +67,17 @@ public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
     private final ShellyTranslationProvider messages;
     private final HttpClient httpClient;
     private final ConfigurationAdmin configurationAdmin;
+    private final ShellyThingTable thingTable;
 
     @Activate
     public ShellyDiscoveryParticipant(@Reference ConfigurationAdmin configurationAdmin,
-            @Reference HttpClientFactory httpClientFactory, @Reference LocaleProvider localeProvider,
-            @Reference ShellyTranslationProvider translationProvider, ComponentContext componentContext) {
+            @Reference ShellyThingTable thingTable, @Reference HttpClientFactory httpClientFactory,
+            @Reference LocaleProvider localeProvider, @Reference ShellyTranslationProvider translationProvider,
+            ComponentContext componentContext) {
         logger.debug("Activating ShellyDiscovery service");
         this.configurationAdmin = configurationAdmin;
         this.messages = translationProvider;
+        this.thingTable = thingTable;
         this.httpClient = httpClientFactory.getCommonHttpClient();
         bindingConfig.updateFromProperties(componentContext.getProperties());
     }
@@ -143,7 +147,7 @@ public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
             boolean gen2 = "2".equals(service.getPropertyString("gen"));
             try {
-                ShellyApiInterface api = gen2 ? new Shelly2ApiRpc(name, config, httpClient)
+                ShellyApiInterface api = gen2 ? new Shelly2ApiRpc(name, config, thingTable, httpClient)
                         : new Shelly1HttpApi(name, config, httpClient);
                 api.initialize();
                 profile = api.getDeviceProfile(thingType);

@@ -24,7 +24,7 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcNoti
 @NonNullByDefault
 public interface Shelly2WebSocketInterface {
 
-    public void onConnect(boolean connected);
+    public void onConnect(String deviceIp, boolean connected);
 
     public void onClose();
 

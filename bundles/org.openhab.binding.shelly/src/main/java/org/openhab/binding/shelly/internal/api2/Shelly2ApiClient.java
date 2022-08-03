@@ -195,7 +195,6 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         if (rs == null) {
             return false;
         }
-        logger.debug("{}: Update relay{}", thingName, rs.id + 1);
         ShellyDeviceProfile profile = getProfile();
         if (rs.id >= profile.numRelays) {
             throw new IllegalArgumentException("Update for invalid relay index");
@@ -209,12 +208,10 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             sr.ison = rstatus.ison = getBool(rs.output);
         }
         if (getDouble(rs.timerStartetAt) > 0) {
-            logger.debug("{}: Update hasTimer", thingName);
             int duration = (int) (now() - rs.timerStartetAt);
             sr.timerRemaining = duration;
         }
         if (rs.temperature != null) {
-            logger.debug("{}: Update temperature", thingName);
             status.tmp.isValid = true;
             status.tmp.tC = rs.temperature.tC;
             status.tmp.tF = rs.temperature.tF;
@@ -232,7 +229,6 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             }
         }
         if (rs.errors != null) {
-            logger.debug("{}: Update errors", thingName);
             for (String error : rs.errors) {
                 sr.overpower = rstatus.overpower = SHELLY2_ERROR_OVERPOWER.equals(error);
                 status.overload = SHELLY2_ERROR_OVERVOLTAGE.equals(error);
@@ -241,7 +237,6 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             sr.overtemperature = status.overtemperature;
         }
 
-        logger.debug("{}: Update meter{}", thingName, rs.id + 1);
         ShellySettingsMeter sm = new ShellySettingsMeter();
         ShellySettingsEMeter emeter = status.emeters.get(rs.id);
         sm.isValid = emeter.isValid = true;
@@ -269,7 +264,6 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         status.emeters.set(rs.id, emeter);
         relayStatus.relays.set(rs.id, sr);
         relayStatus.meters.set(rs.id, sm);
-        logger.debug("{}: Update relay{} done", thingName, rs.id + 1);
 
         return channelUpdate ? ShellyComponents.updateRelay((ShellyBaseHandler) getThing(), status, rs.id) : false;
     }
@@ -458,7 +452,6 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         if (is == null) {
             return false;
         }
-        logger.debug("{}: Updating input{}", thingName, getInteger(is.id) + 1);
         if (is.id == null || is.id > getProfile().numInputs) {
             logger.debug("{}: Invalid input id: {}", thingName, is.id);
             return false;
@@ -479,7 +472,6 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             updated |= updateChannel(group, CHANNEL_INPUT + getProfile().getInputSuffix(is.id),
                     getOnOff(getBool(is.state)));
         }
-        logger.debug("{}: Update for input{} done", thingName, getInteger(is.id) + 1);
         return updated;
     }
 

@@ -100,6 +100,9 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
         bindingConfig.localIP = localIP;
         bindingConfig.httpPort = httpPort;
 
+        bindingConfig.localIP = localIP;
+        bindingConfig.httpPort = httpPort;
+
         this.coapServer = new Shelly1CoapServer();
     }
 

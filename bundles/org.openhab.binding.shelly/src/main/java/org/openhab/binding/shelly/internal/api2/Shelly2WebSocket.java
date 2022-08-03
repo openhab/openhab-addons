@@ -67,11 +67,13 @@ public class Shelly2WebSocket {
     public Shelly2WebSocket() {
     }
 
-    public Shelly2WebSocket(String deviceIp) {
+    public Shelly2WebSocket(@Nullable ShellyThingTable thingTable, String deviceIp) {
         this.deviceIp = deviceIp;
+        this.thingTable = thingTable;
     }
 
     public Shelly2WebSocket(ShellyThingTable thingTable, boolean inbound) {
+        logger.debug("Create WebSocket, inbound={}", inbound);
         this.thingTable = thingTable;
         this.inbound = inbound;
     }
@@ -89,7 +91,9 @@ public class Shelly2WebSocket {
             request.setHeader("Pragma", "no-cache");
             request.setHeader("Cache-Control", "no-cache");
 
+            logger.debug("WebSocket: Connect WebSocket, URI={}", uri);
             client.start();
+            client.setMaxIdleTimeout(15000);
             client.connect(this, uri, request);
         } catch (Exception e) {
             throw new ShellyApiException("Unable to initialize WebSocket", e);
@@ -98,26 +102,32 @@ public class Shelly2WebSocket {
 
     @OnWebSocketConnect
     public void onConnect(Session session) {
-        this.session = session;
-        if (deviceIp.isEmpty()) {
-            // This is the inbound event web socket
-            deviceIp = session.getRemoteAddress().getAddress().getHostAddress();
-            logger.debug("Inbound WebSocket created iwth {}", deviceIp);
-        }
-        if (websocketHandler == null) {
-            if (thingTable != null) {
-                try {
+        try {
+            logger.debug("WebSocket: WebSocket connected {}<-{}, Idle Timeout={}", session.getLocalAddress(),
+                    session.getRemoteAddress(), session.getIdleTimeout());
+            this.session = session;
+            if (deviceIp.isEmpty()) {
+                // This is the inbound event web socket
+                deviceIp = session.getRemoteAddress().getAddress().getHostAddress();
+                logger.debug("WebSocket: Inbound socket with IP {}", deviceIp);
+            }
+            if (websocketHandler == null) {
+                if (thingTable != null) {
                     ShellyThingInterface thing = thingTable.getThing(deviceIp);
                     Shelly2ApiRpc api = (Shelly2ApiRpc) thing.getApi();
                     websocketHandler = api.getRpcHandler();
-                } catch (IllegalArgumentException e) {
-                    logger.debug("Event for unknown device ip ({})", deviceIp);
                 }
             }
+
+            if (websocketHandler != null) {
+                websocketHandler.onConnect(deviceIp, true);
+                return;
+            }
+        } catch (IllegalArgumentException e) { // unknown thing
         }
-        if (websocketHandler != null) {
-            websocketHandler.onConnect(true);
-        }
+
+        logger.debug("WebSocket: Unable to handle WebSocket connection (unknown thing), close socket");
+        session.close(StatusCode.SHUTDOWN, "Thing not active");
     }
 
     public void sendMessage(String str) throws ShellyApiException {
@@ -161,9 +171,8 @@ public class Shelly2WebSocket {
                 logger.debug("{}: No WebSocket listener registered, skip message: {}", getString(message.src),
                         receivedMessage);
             }
-        } catch (ShellyApiException | NullPointerException e) {
+        } catch (ShellyApiException | IllegalArgumentException | NullPointerException e) {
             logger.warn("Unable to process WebSocket message: {}", receivedMessage, e);
-            logger.debug("", e);
         }
     }
 
@@ -189,8 +198,11 @@ public class Shelly2WebSocket {
             if (session != null) {
                 Session s = session;
                 if (s.isOpen()) {
+                    logger.debug("WebSocket: Disconnecting WebSocket");
+                    ;
                     s.disconnect();
                 }
+                logger.debug("WebSocket: Closing WebSocket");
                 s.close();
             }
         } catch (IOException e) {
