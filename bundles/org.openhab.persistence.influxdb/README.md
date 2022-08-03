@@ -39,7 +39,7 @@ All settings for this Persistance Service can be found under `Settings` → `Oth
 
 Attention: The File based Configuration (described below) overrides the Configuration in the Web-Interface!
 
-### File based configuration (not needed when done via UI)
+### File-based configuration
 This service can be configured in the file `services/influxdb.cfg`.
 
 | Property        | Default               | Required | Description                                                                                                                                               |
