@@ -141,7 +141,7 @@ public class EpsonProjectorDiscoveryService extends AbstractDiscoveryService {
                                 DiscoveryResultBuilder.create(thingUid).withProperties(thingProperties)
                                         .withLabel(translationProvider.getText(bundle,
                                                 "thing-type.epsonprojector.discovery.label", "Epson Projector",
-                                                localeProvider.getLocale()) + " " + uid)
+                                                localeProvider.getLocale(), uid))
                                         .withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS).build());
                     }
                 }
