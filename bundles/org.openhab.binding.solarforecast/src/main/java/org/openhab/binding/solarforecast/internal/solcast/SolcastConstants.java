@@ -12,7 +12,12 @@
  */
 package org.openhab.binding.solarforecast.internal.solcast;
 
+import javax.measure.Unit;
+import javax.measure.quantity.Power;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.library.unit.MetricPrefix;
+import org.openhab.core.library.unit.Units;
 
 /**
  * The {@link SolcastConstants} class defines common constants, which are
@@ -27,4 +32,8 @@ public class SolcastConstants {
     public static final String MEASUREMENT_URL = "https://api.solcast.com.au/rooftop_sites/%s/measurements?format=json";
 
     public static final String BEARER = "Bearer ";
+
+    public static final Unit<Power> KILOWATT_UNIT = MetricPrefix.KILO(Units.WATT);
+
+    public static final double UNDEF_DOUBLE = -1.0;
 }

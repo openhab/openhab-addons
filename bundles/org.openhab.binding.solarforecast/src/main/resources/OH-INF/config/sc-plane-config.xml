@@ -16,9 +16,20 @@
 		</parameter>
 		<parameter name="powerItem" type="text">
 			<context>item</context>
-			<label>Power Item Solar Inverter</label>
+			<label>Power Item</label>
 			<description>Power item from your solar inverter for this rooftop</description>
+			<advanced>true</advanced>
 		</parameter>
-
+		<parameter name="powerUnit" type="text">
+			<label>Power Item Unit</label>
+			<description>Unit delivered by power item</description>
+			<options>
+				<option value="auto-detect">auto-detect</option>
+				<option value="kW">Kilowatt</option>
+				<option value="W">Watt</option>
+			</options>
+			<default>auto-detect</default>
+			<advanced>true</advanced>
+		</parameter>
 	</config-description>
 </config-description:config-descriptions>

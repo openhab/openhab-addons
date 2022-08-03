@@ -58,8 +58,9 @@ public class SolarForecastBindingConstants {
     public static final String CHANNEL_DAY6_HIGH = "day6-high";
 
     public static final String CHANNEL_RAW = "raw";
+    public static final String CHANNEL_RAW_TUNING = "raw-tuning";
 
-    public static final String AUTODETECT = "AUTODETECT";
+    public static final String AUTODETECT = "auto-detect";
     public static final String SLASH = "/";
     public static final String EMPTY = "";
 }

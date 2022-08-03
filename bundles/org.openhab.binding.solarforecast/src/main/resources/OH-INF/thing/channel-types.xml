@@ -27,6 +27,11 @@
 		<label>Raw JSON Response</label>
 		<description>Plain JSON response without conversions</description>
 	</channel-type>
+	<channel-type id="raw-tuning-channel" advanced="true">
+		<item-type>String</item-type>
+		<label>Raw JSON Tuning Response</label>
+		<description>Plain JSON response from tuning call</description>
+	</channel-type>
 	<channel-type id="day1-channel">
 		<item-type>Number:Energy</item-type>
 		<label>Forecast Tomorrow</label>

@@ -15,11 +15,17 @@ package org.openhab.binding.solarforecast;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.solarforecast.internal.solcast.SolcastConstants;
 import org.openhab.binding.solarforecast.internal.solcast.SolcastObject;
+import org.openhab.binding.solarforecast.internal.solcast.SolcastPlaneHandler;
+import org.openhab.core.library.unit.Units;
 
 /**
  * The {@link SolcastTest} tests responses from forecast solar website
@@ -92,5 +98,38 @@ class SolcastTest {
         JSONObject joined = new JSONObject(sco.getRaw());
         assertTrue(joined.has("forecasts"), "Forecasts available");
         assertTrue(joined.has("estimated_actuals"), "Actual data available");
+    }
+
+    @Test
+    void testUnitDetection() {
+        assertEquals("kW", SolcastConstants.KILOWATT_UNIT.toString(), "Kilowatt");
+        assertEquals("W", Units.WATT.toString(), "Watt");
+    }
+
+    @Test
+    void testTimes() {
+        ZonedDateTime zdt = ZonedDateTime.of(2022, 7, 22, 17, 3, 10, 345, ZoneId.systemDefault());
+        assertEquals("17:15", SolcastPlaneHandler.getNextTimeframe(zdt).toLocalTime().toString(), "Q1");
+        zdt = zdt.plusMinutes(20);
+        assertEquals("17:30", SolcastPlaneHandler.getNextTimeframe(zdt).toLocalTime().toString(), "Q2");
+        zdt = zdt.plusMinutes(3);
+        assertEquals("17:30", SolcastPlaneHandler.getNextTimeframe(zdt).toLocalTime().toString(), "Q2");
+        zdt = zdt.plusMinutes(5);
+        assertEquals("17:45", SolcastPlaneHandler.getNextTimeframe(zdt).toLocalTime().toString(), "Q3");
+        zdt = zdt.plusMinutes(25);
+        assertEquals("18:00", SolcastPlaneHandler.getNextTimeframe(zdt).toLocalTime().toString(), "Q4");
+        zdt = zdt.plusMinutes(6);
+        assertEquals("18:15", SolcastPlaneHandler.getNextTimeframe(zdt).toLocalTime().toString(), "Q4");
+        System.out.println(zdt.format(DateTimeFormatter.ISO_INSTANT));
+        // System.out.println(zdt.toLocalDateTime().format(DateTimeFormatter.ISO_INSTANT));
+        System.out.println(DateTimeFormatter.ISO_INSTANT.format(zdt.toOffsetDateTime()));
+        System.out.println(zdt.toOffsetDateTime());
+
+        DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-M-dd'T'HH:mm:ss.SSSSSSS z");
+        String utcTimeString = "2022-07-17T19:30:00.0000000Z";
+        LocalDateTime ldt = LocalDateTime.parse(utcTimeString, DateTimeFormatter.ISO_DATE_TIME);
+        ZonedDateTime zdt2 = ZonedDateTime.parse(utcTimeString, DateTimeFormatter.ISO_DATE_TIME);
+        System.out.println(zdt2);
+
     }
 }

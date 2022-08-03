@@ -35,6 +35,7 @@
 			<channel id="day6-low" typeId="day6-low-channel"/>
 			<channel id="day6-high" typeId="day6-high-channel"/>
 			<channel id="raw" typeId="raw-channel"/>
+			<channel id="raw-tuning" typeId="raw-tuning-channel"/>
 		</channels>
 
 		<config-description-ref uri="thing-type:solarforecast:sc-plane"/>

@@ -24,7 +24,9 @@ import org.openhab.binding.solarforecast.internal.forecastsolar.ForecastSolarPla
 import org.openhab.binding.solarforecast.internal.solcast.SolcastBridgeHandler;
 import org.openhab.binding.solarforecast.internal.solcast.SolcastPlaneHandler;
 import org.openhab.core.i18n.LocationProvider;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.persistence.PersistenceService;
 import org.openhab.core.persistence.PersistenceServiceRegistry;
@@ -48,13 +50,16 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 @Component(configurationPid = "binding.solarforecast", service = ThingHandlerFactory.class)
 public class SolarForecastHandlerFactory extends BaseThingHandlerFactory {
-    private Optional<QueryablePersistenceService> qps = Optional.empty();
+    private final ItemRegistry itemRegistry;
     private final HttpClient httpClient;
     private final PointType location;
 
+    private Optional<QueryablePersistenceService> qps = Optional.empty();
+
     @Activate
     public SolarForecastHandlerFactory(final @Reference HttpClientFactory hcf, final @Reference LocationProvider lp,
-            final @Reference PersistenceServiceRegistry psr) {
+            final @Reference PersistenceServiceRegistry psr, final @Reference ItemRegistry ir,
+            final @Reference TimeZoneProvider tzp) {
         httpClient = hcf.getCommonHttpClient();
         PointType pt = lp.getLocation();
         if (pt != null) {
@@ -68,6 +73,8 @@ public class SolarForecastHandlerFactory extends BaseThingHandlerFactory {
         } else {
             qps = Optional.of((QueryablePersistenceService) s);
         }
+        itemRegistry = ir;
+        tzp.getTimeZone();
     }
 
     @Override
@@ -85,7 +92,7 @@ public class SolarForecastHandlerFactory extends BaseThingHandlerFactory {
         } else if (SOLCAST_BRIDGE_STRING.equals(thingTypeUID)) {
             return new SolcastBridgeHandler((Bridge) thing);
         } else if (SOLCAST_PART_STRING.equals(thingTypeUID)) {
-            return new SolcastPlaneHandler(thing, httpClient, qps);
+            return new SolcastPlaneHandler(thing, httpClient, qps, itemRegistry);
         }
         return null;
     }

@@ -133,6 +133,7 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler {
                         updateState(CHANNEL_RAW, StringType.valueOf(cr.getContentAsString()));
                     } else {
                         logger.debug("{} Call {} failed {}", thing.getLabel(), url, cr.getStatus());
+                        failureCounter++;
                     }
                 } catch (InterruptedException | ExecutionException | TimeoutException e) {
                     logger.debug("{} Call {} failed {}", thing.getLabel(), url, e.getMessage());

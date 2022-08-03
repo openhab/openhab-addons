@@ -30,6 +30,20 @@ A free version for your personal home PV system is available in [Hobbyist Plan](
 You need to configure your Home Photovoltaic System within the web interface.
 After configuration the necessary information is available.
 
+### Solcast Tuning
+
+You've the opportunity to [send your own measurements back to Solcast API](https://legacy-docs.solcast.com.au/#measurements-rooftop-site).
+This data is used internally to improve the forecast for your specific site.
+Configuration and channels can be set after checking the *Show advanced* checkbox.
+You need an item which reports the electric power for the specific rooftop. 
+If this item isn't set no measures will be sent.
+As described in [Solcast Rooftop Measurement](https://legacy-docs.solcast.com.au/#measurements-rooftop-site) check in beforehand if your measures are *sane*.
+
+- item is delivering good values and they are stored in persistence
+- time settings in openHAB are correct in order to so measurements are matching to the measure time frame
+
+After the measurement is sent the `raw-tuning` is reporting the result.
+
 ### Solcast Bridge Configuration
 
 | Name                   | Type    | Description                           | Default | Required |
@@ -42,11 +56,12 @@ After configuration the necessary information is available.
 
 ### Solcast Plane Configuration
 
-| Name            | Type    | Description                                            | Default | Required |
-|-----------------|---------|--------------------------------------------------------|---------|----------|
-| resourceId      | text    | Resource Id of Solcast rooftop site                    | N/A     | yes      |
-| refreshInterval | integer | Forecast Refresh Interval in minutes                   | 120     | yes      |
-| powerItem       | text    | Power item from your solar inverter for this rooftop   | N/A     | no       |
+| Name            | Type    | Description                                            | Default         | Required | Advanced |
+|-----------------|---------|--------------------------------------------------------|-----------------|----------|----------|
+| resourceId      | text    | Resource Id of Solcast rooftop site                    | N/A             | yes      | no       |
+| refreshInterval | integer | Forecast Refresh Interval in minutes                   | 120             | yes      | no       |
+| powerItem       | text    | Power item from your solar inverter for this rooftop   | N/A             | no       | yes      |
+| powerUnit       | text    | Unit selection of the powerItem                        | auto-detect     | no       | yes      |
 
 `resourceId` for each plane can be obtained in your [Rooftop Sites](https://toolkit.solcast.com.au/rooftop-sites)
 
@@ -55,9 +70,13 @@ If you've 25 free calls per day, each plane needs 2 calls per update a refresh i
 
 Note: `channelRefreshInterval` from [Bridge Configuration](#solcast-bridge-configuration) will calculate intermediate values without requesting new forecast data.
 
-`powerItem` shall reflect the power in kW for this specific rooftop. 
+`powerItem` shall reflect the power for this specific rooftop. 
 It's an optional setting and the [measure is sent to Solcast API in order to tune the forecast](https://legacy-docs.solcast.com.au/#measurements-rooftop-site) in the future.
 If you don't want to sent measures to Solcast leave this configuration item empty.
+
+`powerUnit' is set to `auto-detect`. 
+In case the `powerItem` is delivering a valid `QuantityType<Power>` state this setting is fine.
+If the item delivers a raw number without unit please select `powerUnit` accordingly if item state is Watt or Kilowatt unit. 
 
 ## Solcast Channels
 
@@ -72,29 +91,27 @@ Forecasts are delivered up to 6 days in advance including
 
 Day*X* channels are referring to forecasts plus *X* days: 1 = tomorrow, 2 = day after tomorrow, ...
 
-
-| Channel                 | Type          | Description                             |
-|-------------------------|---------------|-----------------------------------------|
-| actual-channel          | Number:Energy | Today's forecast till now                |
-| remaining-channel       | Number:Energy | Forecast of today's remaining production |
-| today-channel           | Number:Energy | Today's forecast in total                |
-| day*X*-channel          | Number:Energy | Day *X* forecast in total               |
-| day*X*-low-channel      | Number:Energy | Day *X* pessimistic forecast            |
-| day*X*-high-channel     | Number:Energy | Day *X* optimistic forecast             |
-| raw                     | String        | Plain JSON response without conversions |
-
+| Channel                 | Type          | Description                              | Advanced |
+|-------------------------|---------------|------------------------------------------|----------|
+| actual-channel          | Number:Energy | Today's forecast till now                | no       |
+| remaining-channel       | Number:Energy | Forecast of today's remaining production | no       |
+| today-channel           | Number:Energy | Today's forecast in total                | no       |
+| day*X*-channel          | Number:Energy | Day *X* forecast in total                | no       |
+| day*X*-low-channel      | Number:Energy | Day *X* pessimistic forecast             | no       |
+| day*X*-high-channel     | Number:Energy | Day *X* optimistic forecast              | no       |
+| raw                     | String        | Plain JSON response without conversions  | no       |
+| raw-tuning              | String        | JSON response from tuning call           | yes      |
 
 ## ForecastSolar Configuration
 
 [ForecastSolar service](https://forecast.solar/) provides a [public free](https://forecast.solar/#accounts) plan.
 You can try it without any registration or other pre-conditions.
 
-
 ### ForecastSolar Bridge Configuration
 
 | Name                   | Type    | Description                           | Default      | Required |
 |------------------------|---------|---------------------------------------|--------------|----------|
-| location               | text    | Location of Photovoltaic system       | AUTODETECT   | yes      |
+| location               | text    | Location of Photovoltaic system       | auto-detect  | yes      |
 | channelRefreshInterval | integer | Channel Refresh Interval in minutes   | 1            | yes      |
 | apiKey                 | text    | API Key                               | N/A          | no       |
 
@@ -103,21 +120,19 @@ In case of auto-detect the location configured in openHAB is obtained.
 
 `apiKey` can be given in case you subscribed to a paid plan
 
-
 ### ForecastSolar Plane Configuration
 
 | Name            | Type    | Description                                                                  | Default | Required |
 |-----------------|---------|------------------------------------------------------------------------------|---------|----------|
 | refreshInterval | integer | Forecast Refresh Interval in minutes                                         | 30      | yes      |
-| declination     | integer | Plane Declination: 0 for horizontal till 90 for vertical declination        | N/A     | yes      |
-| azimuth         | integer | Plane Azimuth: -180 = north, -90 = east, 0 = south, 90 = west, 180 = north  | N/A     | yes      |
+| declination     | integer | Plane Declination: 0 for horizontal till 90 for vertical declination         | N/A     | yes      |
+| azimuth         | integer | Plane Azimuth: -180 = north, -90 = east, 0 = south, 90 = west, 180 = north   | N/A     | yes      |
 | kwp             | decimal | Installed Kilowatt Peak                                                      | N/A     | yes      |
 
 `refreshInterval` of forecast data needs to respect the throttling of the ForecastSolar service. 
 12 calls per hour allowed from your caller IP address so for 2 planes lowest possible refresh rate is 10 minutes.
 
 Note: `channelRefreshInterval` from [Bridge Configuration](#forecastsolar-bridge-configuration) will calculate intermediate values without requesting new forecast data.
-
 
 ## ForecastSolar Channels
 
@@ -129,14 +144,13 @@ Forecasts are delivered up to 3 days for paid personal plans.
 
 Day*X* channels are referring to forecasts plus *X* days: 1 = tomorrow, 2 = day after tomorrow, ...
 
-
-| Channel                 | Type          | Description                             |
-|-------------------------|---------------|-----------------------------------------|
+| Channel                 | Type          | Description                              |
+|-------------------------|---------------|------------------------------------------|
 | actual-channel          | Number:Energy | Today's forecast till now                |
 | remaining-channel       | Number:Energy | Forecast of today's remaining production |
 | today-channel           | Number:Energy | Today's forecast in total                |
-| day*X*-channel          | Number:Energy | Day *X* forecast in total               |
-| raw                     | String        | Plain JSON response without conversions |
+| day*X*-channel          | Number:Energy | Day *X* forecast in total                |
+| raw                     | String        | Plain JSON response without conversions  |
 
 ## Example
 

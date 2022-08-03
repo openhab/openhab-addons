@@ -25,4 +25,5 @@ public class SolcastPlaneConfiguration {
     public String resourceId = SolarForecastBindingConstants.EMPTY;
     public String powerItem = SolarForecastBindingConstants.EMPTY;
     public int refreshInterval = -1;
+    public String powerUnit = SolarForecastBindingConstants.AUTODETECT;
 }
