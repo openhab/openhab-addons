@@ -37,7 +37,7 @@ This is very easy and you will find good documentation on it on the
 ### Configuration via Web-Interface:
 All settings for this Persistance Service can be found under `Settings` → `Other Services` → `InfluxDB Persistance Service`
 
-Attention: The File based Configuration (described below) overrides the Configuration in the Web-Interface!
+Attention: The file-based configuration (described below) overrides web interface configuration.
 
 ### File-based configuration
 This service can be configured in the file `services/influxdb.cfg`.
