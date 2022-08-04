@@ -38,9 +38,7 @@ import org.openhab.binding.gardena.internal.discovery.GardenaDeviceDiscoveryServ
 import org.openhab.binding.gardena.internal.exception.GardenaException;
 import org.openhab.binding.gardena.internal.model.dto.Device;
 import org.openhab.binding.gardena.internal.util.UidUtils;
-import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
-import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.io.net.http.WebSocketFactory;
 import org.openhab.core.thing.Bridge;
@@ -54,7 +52,6 @@ import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
-import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,18 +69,12 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
     private static final Duration REINITIALIZE_DELAY_MINUTES_BACK_OFF = Duration.ofMinutes(15).plusSeconds(10);
     private static final Duration REINITIALIZE_DELAY_HOURS_LIMIT_EXCEEDED = Duration.ofHours(24).plusSeconds(10);
 
-    // localisation constants
-    private static final String RECONNECT_MSG_KEY = "accounthandler.waiting-until-to-reconnect";
-
     // assets
     private @Nullable GardenaDeviceDiscoveryService discoveryService;
     private @Nullable GardenaSmart gardenaSmart;
     private final HttpClientFactory httpClientFactory;
     private final WebSocketFactory webSocketFactory;
     private final TimeZoneProvider timeZoneProvider;
-    private final Bundle bundle;
-    private final TranslationProvider i18nProvider;
-    private final LocaleProvider localeProvider;
 
     // re- initialisation stuff
     private final Object reInitializationCodeLock = new Object();
@@ -91,15 +82,11 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
     private @Nullable Instant apiCallSuppressionUntil;
 
     public GardenaAccountHandler(Bridge bridge, HttpClientFactory httpClientFactory, WebSocketFactory webSocketFactory,
-            TimeZoneProvider timeZoneProvider, Bundle bundle, TranslationProvider i18nProvider,
-            LocaleProvider localeProvider) {
+            TimeZoneProvider timeZoneProvider) {
         super(bridge);
         this.httpClientFactory = httpClientFactory;
         this.webSocketFactory = webSocketFactory;
         this.timeZoneProvider = timeZoneProvider;
-        this.bundle = bundle;
-        this.i18nProvider = i18nProvider;
-        this.localeProvider = localeProvider;
     }
 
     /**
@@ -171,9 +158,8 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
             boolean isToday = LocalDate.now(zone).equals(LocalDate.ofInstant(until, zone));
             DateTimeFormatter formatter = isToday ? DateTimeFormatter.ofLocalizedTime(FormatStyle.MEDIUM)
                     : DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM);
-            String value = i18nProvider.getText(bundle, RECONNECT_MSG_KEY, null, localeProvider.getLocale(),
-                    formatter.format(ZonedDateTime.ofInstant(until, zone)));
-            return value;
+            return "@text/accounthandler.waiting-until-to-reconnect [\""
+                    + formatter.format(ZonedDateTime.ofInstant(until, zone)) + "\"]";
         }
         return null;
     }

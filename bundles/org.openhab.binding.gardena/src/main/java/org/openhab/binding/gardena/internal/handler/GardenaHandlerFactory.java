@@ -16,9 +16,7 @@ import static org.openhab.binding.gardena.internal.GardenaBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
-import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.io.net.http.WebSocketFactory;
 import org.openhab.core.thing.Bridge;
@@ -42,18 +40,13 @@ public class GardenaHandlerFactory extends BaseThingHandlerFactory {
     private HttpClientFactory httpClientFactory;
     private WebSocketFactory webSocketFactory;
     private TimeZoneProvider timeZoneProvider;
-    private TranslationProvider i18nProvider;
-    private LocaleProvider localeProvider;
 
     @Activate
     public GardenaHandlerFactory(final @Reference HttpClientFactory httpClientFactory,
-            final @Reference WebSocketFactory webSocketFactory, final @Reference TimeZoneProvider timeZoneProvider,
-            final @Reference TranslationProvider i18nProvider, final @Reference LocaleProvider localeProvider) {
+            final @Reference WebSocketFactory webSocketFactory, final @Reference TimeZoneProvider timeZoneProvider) {
         this.httpClientFactory = httpClientFactory;
         this.webSocketFactory = webSocketFactory;
         this.timeZoneProvider = timeZoneProvider;
-        this.i18nProvider = i18nProvider;
-        this.localeProvider = localeProvider;
     }
 
     @Override
@@ -64,8 +57,7 @@ public class GardenaHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         if (THING_TYPE_ACCOUNT.equals(thing.getThingTypeUID())) {
-            return new GardenaAccountHandler((Bridge) thing, httpClientFactory, webSocketFactory, timeZoneProvider,
-                    getBundleContext().getBundle(), i18nProvider, localeProvider);
+            return new GardenaAccountHandler((Bridge) thing, httpClientFactory, webSocketFactory, timeZoneProvider);
         } else {
             return new GardenaThingHandler(thing, timeZoneProvider);
         }
