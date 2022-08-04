@@ -121,7 +121,7 @@ The Gardena server imposes call rate limits to prevent malicious use of its API.
 The limits are:
 
 - On average not more than one call every 15 minutes.
-- 3'000 calls per month.
+- 3000 calls per month.
 
 Normally the binding does not exceed these limits.
 But from time to time the server may nevertheless consider the limits to have been exceeded, in which case it reports an HTTP 429 Error (Limit Exceeded).
