@@ -16,13 +16,13 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.mercedesme.internal.server.CallbackServer;
 import org.openhab.binding.mercedesme.internal.server.Utils;
 import org.openhab.core.auth.client.oauth2.AccessTokenRefreshListener;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -43,15 +43,15 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     private final Logger logger = LoggerFactory.getLogger(AccountHandler.class);
     private final OAuthFactory oAuthFactory;
     private final Storage<String> storage;
-    private final HttpClientFactory httpClientFactory;
+    private final HttpClient httpClient;
     private Optional<CallbackServer> server = Optional.empty();
     private Optional<String> tokenStorageKey = Optional.empty();
 
     Optional<AccountConfiguration> config = Optional.empty();
 
-    public AccountHandler(Bridge bridge, HttpClientFactory hcf, OAuthFactory oaf, Storage<String> storage) {
+    public AccountHandler(Bridge bridge, HttpClient hc, OAuthFactory oaf, Storage<String> storage) {
         super(bridge);
-        httpClientFactory = hcf;
+        httpClient = hc;
         oAuthFactory = oaf;
         this.storage = storage;
     }
@@ -72,8 +72,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             String callbackUrl = Utils.getCallbackAddress(config.get().callbackIP, config.get().callbackPort);
             thing.setProperty("callbackUrl", callbackUrl);
 
-            server = Optional.of(new CallbackServer(this, httpClientFactory.getCommonHttpClient(), oAuthFactory,
-                    config.get(), callbackUrl));
+            server = Optional.of(new CallbackServer(this, httpClient, oAuthFactory, config.get(), callbackUrl));
             tokenStorageKey = Optional.of(config.get().clientId + ":token");
             if (storage.containsKey(tokenStorageKey.get())) {
                 String tokenSerial = storage.get(tokenStorageKey.get());

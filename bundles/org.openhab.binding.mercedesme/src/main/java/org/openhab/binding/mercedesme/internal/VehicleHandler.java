@@ -52,7 +52,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.openhab.binding.mercedesme.internal.utils.ChannelStateMap;
 import org.openhab.binding.mercedesme.internal.utils.Mapper;
-import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -92,7 +91,7 @@ public class VehicleHandler extends BaseThingHandler {
     private final MercedesMeCommandOptionProvider mmcop;
     private final MercedesMeStateOptionProvider mmsop;
     private final StorageService storageService;
-    private final HttpClient hc;
+    private final HttpClient httpClient;
     private final String uid;
 
     private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
@@ -104,16 +103,16 @@ public class VehicleHandler extends BaseThingHandler {
     private LocalDateTime nextRefresh;
     private boolean online = false;
 
-    public VehicleHandler(Thing thing, HttpClientFactory hcf, String uid, StorageService storageService,
+    public VehicleHandler(Thing thing, HttpClient hc, String uid, StorageService storageService,
             MercedesMeCommandOptionProvider mmcop, MercedesMeStateOptionProvider mmsop) {
         super(thing);
-        hc = hcf.getCommonHttpClient();
+        httpClient = hc;
         this.uid = uid;
         this.mmcop = mmcop;
         this.mmsop = mmsop;
         this.storageService = storageService;
         // https://github.com/jetty-project/jetty-reactive-httpclient/issues/33
-        hc.getProtocolHandlers().remove(WWWAuthenticationProtocolHandler.NAME);
+        httpClient.getProtocolHandlers().remove(WWWAuthenticationProtocolHandler.NAME);
         nextRefresh = LocalDateTime.now();
     }
 
@@ -313,7 +312,7 @@ public class VehicleHandler extends BaseThingHandler {
         String params = UrlEncoded.encode(parameterMap, StandardCharsets.UTF_8, false);
         String url = String.format(IMAGE_EXTERIOR_RESOURCE_URL, config.get().vin) + "?" + params;
         logger.debug("Get Image resources {} {} ", accountHandler.get().getImageApiKey(), url);
-        Request req = hc.newRequest(url);
+        Request req = httpClient.newRequest(url);
         req.header("x-api-key", accountHandler.get().getImageApiKey());
         req.header(HttpHeader.ACCEPT, "application/json");
         try {
@@ -373,7 +372,7 @@ public class VehicleHandler extends BaseThingHandler {
         }
 
         String url = IMAGE_BASE_URL + "/images/" + imageId;
-        Request req = hc.newRequest(url);
+        Request req = httpClient.newRequest(url);
         req.header("x-api-key", accountHandler.get().getImageApiKey());
         req.header(HttpHeader.ACCEPT, "*/*");
         ContentResponse cr;
@@ -395,7 +394,7 @@ public class VehicleHandler extends BaseThingHandler {
         // debug prefix contains Thing label and call endpoint for propper debugging
         String debugPrefix = this.getThing().getLabel() + Constants.COLON + finalEndpoint;
 
-        Request req = hc.newRequest(requestUrl);
+        Request req = httpClient.newRequest(requestUrl);
         req.header(HttpHeader.AUTHORIZATION, "Bearer " + accountHandler.get().getToken());
         try {
             ContentResponse cr = req.send();

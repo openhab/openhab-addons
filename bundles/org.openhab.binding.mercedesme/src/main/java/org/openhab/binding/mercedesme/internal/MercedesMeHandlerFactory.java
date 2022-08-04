@@ -18,6 +18,7 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -29,9 +30,12 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link MercedesMeHandlerFactory} is responsible for creating things and thing
@@ -45,8 +49,9 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BEV, THING_TYPE_COMB,
             THING_TYPE_HYBRID, THING_TYPE_ACCOUNT);
 
+    private final Logger logger = LoggerFactory.getLogger(MercedesMeHandlerFactory.class);
     private final OAuthFactory oAuthFactory;
-    private final HttpClientFactory httpClientFactory;
+    private final HttpClient httpClient;
     private final Storage<String> tokenStorage;
     private final MercedesMeCommandOptionProvider mmcop;
     private final MercedesMeStateOptionProvider mmsop;
@@ -58,12 +63,17 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
             @Reference StorageService storageService, final @Reference MercedesMeCommandOptionProvider cop,
             final @Reference MercedesMeStateOptionProvider sop, final @Reference TranslationProvider tp) {
         this.oAuthFactory = oAuthFactory;
-        this.httpClientFactory = hcf;
         this.storageService = storageService;
         mmcop = cop;
         mmsop = sop;
         translationProvider = tp;
         tokenStorage = storageService.getStorage(Constants.BINDING_ID);
+        httpClient = hcf.createHttpClient(Constants.BINDING_ID);
+        try {
+            httpClient.start();
+        } catch (Exception e) {
+            logger.warn("HTTP client not started: {} - no web access possible!", e.getLocalizedMessage());
+        }
     }
 
     @Override
@@ -75,8 +85,18 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (THING_TYPE_ACCOUNT.equals(thingTypeUID)) {
-            return new AccountHandler((Bridge) thing, httpClientFactory, oAuthFactory, tokenStorage);
+            return new AccountHandler((Bridge) thing, httpClient, oAuthFactory, tokenStorage);
         }
-        return new VehicleHandler(thing, httpClientFactory, thingTypeUID.getId(), storageService, mmcop, mmsop);
+        return new VehicleHandler(thing, httpClient, thingTypeUID.getId(), storageService, mmcop, mmsop);
+    }
+
+    @Override
+    protected void deactivate(ComponentContext componentContext) {
+        super.deactivate(componentContext);
+        try {
+            httpClient.stop();
+        } catch (Exception e) {
+            logger.debug("HTTP client not stopped: {}", e.getLocalizedMessage());
+        }
     }
 }
