@@ -100,9 +100,6 @@ public class SocketChannelSession implements SocketSession {
 
     @Override
     public void addListener(SocketSessionListener listener) {
-        if (listener == null) {
-            throw new IllegalArgumentException("listener cannot be null");
-        }
         listeners.add(listener);
     }
 
@@ -166,10 +163,6 @@ public class SocketChannelSession implements SocketSession {
 
     @Override
     public synchronized void sendCommand(String command) throws IOException {
-        if (command == null) {
-            throw new IllegalArgumentException("command cannot be null");
-        }
-
         if (!isConnected()) {
             throw new IOException("Cannot send message - disconnected");
         }
