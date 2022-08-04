@@ -145,7 +145,7 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
         logger.debug("Initializing Gardena account '{}'", getThing().getUID().getId());
         loadApiCallSuppressionUntil();
         Duration delay = apiCallSuppressionDelay();
-        if (Duration.ZERO.equals(delay)) {
+        if (delay.isZero()) {
             // do immediate initialisation
             scheduler.submit(() -> initializeGardena());
         } else {
@@ -160,9 +160,9 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
     }
 
     /**
-     * Format a localised description text to display on the thing main UI page.
+     * Format a localized explanatory description regarding active call suppression.
      *
-     * @return the (localised) description text.
+     * @return the localized description text, or null if call suppressions is not active.
      */
     private @Nullable String getUiText() {
         Instant until = apiCallSuppressionUntil;
@@ -245,7 +245,7 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
         synchronized (reInitializationCodeLock) {
             ScheduledFuture<?> reInitializeTask = this.reInitializationTask;
             if (reInitializeTask != null) {
-                reInitializeTask.cancel(false);
+                reInitializeTask.cancel(true);
             }
             this.reInitializationTask = null;
         }
@@ -264,8 +264,8 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
         final GardenaSmart gardenaSmart = this.gardenaSmart;
         if (gardenaSmart != null) {
             gardenaSmart.dispose();
-            this.gardenaSmart = null;
         }
+        this.gardenaSmart = null;
     }
 
     /**

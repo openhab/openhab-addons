@@ -335,12 +335,8 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
         }
         httpClient.destroy();
         webSocketClient.destroy();
-        LocationsResponse locationsResponse = this.locationsResponse;
-        if (locationsResponse != null && locationsResponse.data != null) {
-            locationsResponse.data.clear();
-        }
-        this.locationsResponse = null;
         allDevicesById.clear();
+        locationsResponse = null;
     }
 
     /**
