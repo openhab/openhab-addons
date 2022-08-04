@@ -162,7 +162,7 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
     /**
      * Format a localized explanatory description regarding active call suppression.
      *
-     * @return the localized description text, or null if call suppressions is not active.
+     * @return the localized description text, or null if call suppression is not active.
      */
     private @Nullable String getUiText() {
         Instant until = apiCallSuppressionUntil;
