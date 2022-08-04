@@ -39,6 +39,7 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyInputSta
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyOtaCheckResult;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDevice;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyThermnostat;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapHandler;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapServer;
@@ -87,14 +88,14 @@ public class ShellyBaseHandler extends BaseThingHandler
     protected final ShellyApiInterface api;
     private final HttpClient httpClient;
 
-    protected ShellyBindingConfiguration bindingConfig;
+    private ShellyBindingConfiguration bindingConfig;
     protected ShellyThingConfiguration config = new ShellyThingConfiguration();
     protected ShellyDeviceProfile profile = new ShellyDeviceProfile(); // init empty profile to avoid NPE
     protected ShellyDeviceStats stats = new ShellyDeviceStats();
     private final Shelly1CoapHandler coap;
     public boolean autoCoIoT = false;
 
-    public final ShellyTranslationProvider messages;
+    private final ShellyTranslationProvider messages;
     protected boolean stopping = false;
     private boolean channelsCreated = false;
 
@@ -108,7 +109,7 @@ public class ShellyBaseHandler extends BaseThingHandler
 
     // delay before enabling channel
     private final int cacheCount = UPDATE_SETTINGS_INTERVAL_SECONDS / UPDATE_STATUS_INTERVAL_SECONDS;
-    protected final ShellyChannelCache cache;
+    private final ShellyChannelCache cache;
 
     private String localIP = "";
     private String localPort = "";
@@ -225,7 +226,7 @@ public class ShellyBaseHandler extends BaseThingHandler
      *
      * @throws ShellyApiException e.g. http returned non-ok response, check e.getMessage() for details.
      */
-    private boolean initializeThing() throws ShellyApiException {
+    public boolean initializeThing() throws ShellyApiException {
         // Init from thing type to have a basic profile, gets updated when device info is received from API
         stopping = false;
         refreshSettings = false;
@@ -251,7 +252,7 @@ public class ShellyBaseHandler extends BaseThingHandler
 
         // Initialize API access, exceptions will be catched by initialize()
         ShellySettingsDevice devInfo = api.getDeviceInfo();
-        if (getBool(devInfo.auth) && config.userId.isEmpty()) {
+        if (getBool(devInfo.auth) && config.password.isEmpty()) {
             setThingOffline(ThingStatusDetail.CONFIGURATION_ERROR, "offline.conf-error-no-credentials");
             return false;
         }
@@ -274,11 +275,26 @@ public class ShellyBaseHandler extends BaseThingHandler
             // New Shelly devices might use a different endpoint for the CoAP listener
             tmpPrf.coiotEndpoint = devInfo.coiot;
         }
+        if (tmpPrf.settings.sleepMode != null && !tmpPrf.isTRV) {
+            // Sensor, usually 12h, H&T in USB mode 10min
+            tmpPrf.updatePeriod = getString(tmpPrf.settings.sleepMode.unit).equalsIgnoreCase("m")
+                    ? tmpPrf.settings.sleepMode.period * 60 // minutes
+                    : tmpPrf.settings.sleepMode.period * 3600; // hours
+            tmpPrf.updatePeriod += 60; // give 1min extra
+        } else if ((tmpPrf.settings.coiot != null) && tmpPrf.settings.coiot.updatePeriod != null) {
+            // Derive from CoAP update interval, usually 2*15+10s=40sec -> 70sec
+            tmpPrf.updatePeriod = Math.max(UPDATE_SETTINGS_INTERVAL_SECONDS,
+                    2 * getInteger(tmpPrf.settings.coiot.updatePeriod)) + 10;
+        } else {
+            tmpPrf.updatePeriod = UPDATE_SETTINGS_INTERVAL_SECONDS + 10;
+        }
+
         tmpPrf.auth = devInfo.auth; // missing in /settings
         tmpPrf.status = api.getStatus();
         tmpPrf.updateFromStatus(tmpPrf.status);
 
         showThingConfig(tmpPrf);
+        // update thing properties
         checkVersion(tmpPrf, tmpPrf.status);
 
         if (config.eventsCoIoT && (tmpPrf.settings.coiot != null) && (tmpPrf.settings.coiot.enabled != null)) {
@@ -385,14 +401,39 @@ public class ShellyBaseHandler extends BaseThingHandler
                             : 0;
                     api.setSleepTime(value);
                     break;
+                case CHANNEL_CONTROL_SCHEDULE:
+                    if (profile.isTRV) {
+                        logger.debug("{}: {} Valve schedule/profile", thingName,
+                                command == OnOffType.ON ? "Enable" : "Disable");
+                        api.setValveProfile(0,
+                                command == OnOffType.OFF ? 0 : profile.status.thermostats.get(0).profile);
+                    }
+                    break;
                 case CHANNEL_CONTROL_PROFILE:
                     logger.debug("{}: Select profile {}", thingName, command);
-                    int profile = (int) getNumber(command);
-                    if (profile < 0 || profile > 5) {
-                        logger.warn("{}: Invalid profile Id {} requested", thingName, profile);
-                        break;
+                    int id = -1;
+                    if (command instanceof Number) {
+                        id = (int) getNumber(command);
+                    } else {
+                        String cmd = command.toString();
+                        if (isDigit(cmd.charAt(0))) {
+                            id = Integer.parseInt(cmd);
+                        } else if (cmd.equalsIgnoreCase("DISABLED")) {
+                            id = 0;
+                        } else if (profile.settings.thermostats != null) {
+                            ShellyThermnostat t = profile.settings.thermostats.get(0);
+                            for (int i = 0; i < t.profileNames.length; i++) {
+                                if (t.profileNames[i].equalsIgnoreCase(cmd)) {
+                                    id = i + 1;
+                                }
+                            }
+                        }
                     }
-                    api.setValveProfile(0, profile);
+                    if (id < 0 || id > 5) {
+                        logger.warn("{}: Invalid profile Id {} requested", thingName, profile);
+                    } else {
+                        api.setValveProfile(0, id);
+                    }
                     break;
                 case CHANNEL_CONTROL_MODE:
                     logger.debug("{}: Set mode to {}", thingName, command);
@@ -567,9 +608,10 @@ public class ShellyBaseHandler extends BaseThingHandler
             updateStatus(ThingStatus.ONLINE);
 
             // request 3 updates in a row (during the first 2+3*3 sec)
-            logger.debug("{}: Thing went online, request status update", thingName);
             requestUpdates(profile.alwaysOn ? 3 : 1, !channelsCreated);
         }
+
+        // Restart watchdog when status update was successful (no exception)
         restartWatchdog();
     }
 
@@ -695,7 +737,7 @@ public class ShellyBaseHandler extends BaseThingHandler
 
         if (force || !lastAlarm.equals(event)
                 || (lastAlarm.equals(event) && now() > stats.lastAlarmTs + HEALTH_CHECK_INTERVAL_SEC)) {
-            switch (event) {
+            switch (event.toUpperCase()) {
                 case "":
                 case "0": // DW2 1.8
                 case SHELLY_WAKEUPT_SENSOR:
@@ -957,7 +999,7 @@ public class ShellyBaseHandler extends BaseThingHandler
      * @param thingType thing type acc. to the xml definition
      * @param mode Device mode (e.g. relay, roller)
      */
-    private void changeThingType(String thingType, String mode) {
+    protected void changeThingType(String thingType, String mode) {
         ThingTypeUID thingTypeUID = ShellyThingCreator.getThingTypeUID(thingType, "", mode);
         if (!thingTypeUID.equals(THING_TYPE_SHELLYUNKNOWN)) {
             logger.debug("{}: Changing thing type to {}", getThing().getLabel(), thingTypeUID);
@@ -1034,7 +1076,7 @@ public class ShellyBaseHandler extends BaseThingHandler
             int idx = 0;
             boolean multiInput = status.inputs.size() >= 2; // device has multiple SW (inputs)
             for (ShellyInputState input : status.inputs) {
-                String group = profile.getControlGroup(idx);
+                String group = profile.getInputGroup(idx);
                 String suffix = multiInput ? profile.getInputSuffix(idx) : "";
 
                 if (!areChannelsCreated()) {

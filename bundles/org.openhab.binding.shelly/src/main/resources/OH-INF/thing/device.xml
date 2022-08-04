@@ -146,12 +146,5 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="deviceSchedule" advanced="true">
-		<item-type>Switch</item-type>
-		<label>@text/channel-type.shelly.deviceSchedule.label</label>
-		<description>@text/channel-type.shelly.deviceSchedule.description</description>
-		<state readOnly="true">
-		</state>
-	</channel-type>
 
 </thing:thing-descriptions>

@@ -171,10 +171,10 @@
 	</channel-type>
 
 	<channel-type id="controlProfile">
-		<item-type>Number</item-type>
+		<item-type>String</item-type>
 		<label>@text/channel-type.shelly.controlProfile.label</label>
 		<description>@text/channel-type.shelly.controlProfile.description</description>
-		<state min="0" max="5" step="1" readOnly="false"></state>
+		<state readOnly="false"></state>
 	</channel-type>
 
 	<channel-type id="targetTemp">
@@ -194,12 +194,20 @@
 		<label>@text/channel-type.shelly.boostControl.label</label>
 		<description>@text/channel-type.shelly.boostControl.description</description>
 	</channel-type>
+
 	<channel-type id="boostTimer">
 		<item-type>Number:Time</item-type>
 		<label>@text/channel-type.shelly.boostTimer.label</label>
 		<description>@text/channel-type.shelly.boostTimer.description</description>
 		<category>Time</category>
 		<state min="0" step="1" pattern="%.0f %unit%" readOnly="false"></state>
+	</channel-type>
+
+	<channel-type id="controlSchedule" advanced="true">
+		<item-type>Switch</item-type>
+		<label>@text/channel-type.shelly.controlSchedule.label</label>
+		<description>@text/channel-type.shelly.controlSchedule.description</description>
+		<state readOnly="false"></state>
 	</channel-type>
 
 

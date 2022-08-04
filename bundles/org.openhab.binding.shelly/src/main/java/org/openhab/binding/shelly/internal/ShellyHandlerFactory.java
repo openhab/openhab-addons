@@ -63,7 +63,6 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
     private final HttpClient httpClient;
     private final ShellyTranslationProvider messages;
     private final Shelly1CoapServer coapServer;
-
     private final ShellyThingTable thingTable;
     private ShellyBindingConfiguration bindingConfig = new ShellyBindingConfiguration();
     private String localIP = "";
@@ -82,10 +81,10 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
             @Reference HttpClientFactory httpClientFactory, ComponentContext componentContext,
             Map<String, Object> configProperties) {
         super.activate(componentContext);
-        messages = translationProvider;
-        // Save bindingConfig & pass it to all registered listeners
-        bindingConfig.updateFromProperties(configProperties);
+        this.messages = translationProvider;
+        this.thingTable = thingTable;
 
+        bindingConfig.updateFromProperties(configProperties);
         localIP = bindingConfig.localIP;
         if (localIP.isEmpty()) {
             localIP = ShellyUtils.getString(networkAddressService.getPrimaryIpv4HostAddress());
@@ -101,7 +100,6 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
         }
         logger.debug("Using OH HTTP port {}", httpPort);
 
-        this.thingTable = thingTable;
         this.coapServer = new Shelly1CoapServer();
     }
 
@@ -124,7 +122,8 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
         } else if (thingType.equals(THING_TYPE_SHELLYBULB_STR) || thingType.equals(THING_TYPE_SHELLYDUO_STR)
                 || thingType.equals(THING_TYPE_SHELLYRGBW2_COLOR_STR)
                 || thingType.equals(THING_TYPE_SHELLYRGBW2_WHITE_STR)
-                || thingType.equals(THING_TYPE_SHELLYDUORGBW_STR)) {
+                || thingType.equals(THING_TYPE_SHELLYRGBW2_WHITE_STR) || thingType.equals(THING_TYPE_SHELLYDUORGBW_STR)
+                || thingType.equals(THING_TYPE_SHELLYVINTAGE_STR)) {
             logger.debug("{}: Create new thing of type {} using ShellyLightHandler", thing.getLabel(),
                     thingTypeUID.toString());
             handler = new ShellyLightHandler(thing, messages, bindingConfig, coapServer, localIP, httpPort, httpClient);

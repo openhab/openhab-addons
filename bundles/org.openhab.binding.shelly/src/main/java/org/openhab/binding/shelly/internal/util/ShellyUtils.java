@@ -87,14 +87,14 @@ public class ShellyUtils {
                 @Nullable
                 T obj = gson.fromJson(json, classOfT);
                 if ((obj == null) && exceptionOnNull) { // new in OH3: fromJson may return null
-                    throw new ShellyApiException(PRE + className + "from JSON: " + json);
+                    throw new ShellyApiException(PRE + className + " from JSON: " + json);
                 }
                 return obj;
             } catch (JsonSyntaxException e) {
                 throw new ShellyApiException(
                         PRE + className + "from JSON (syntax/format error: " + e.getMessage() + "): " + json, e);
             } catch (RuntimeException e) {
-                throw new ShellyApiException(PRE + className + "from JSON: " + json, e);
+                throw new ShellyApiException(PRE + className + " from JSON: " + json, e);
             }
         }
     }
@@ -321,7 +321,7 @@ public class ShellyUtils {
     }
 
     public static String buildControlGroupName(ShellyDeviceProfile profile, Integer channelId) {
-        return profile.isBulb || profile.isDuo || profile.inColor ? CHANNEL_GROUP_LIGHT_CONTROL
+        return !profile.isRGBW2 || profile.inColor ? CHANNEL_GROUP_LIGHT_CONTROL
                 : CHANNEL_GROUP_LIGHT_CHANNEL + channelId.toString();
     }
 

@@ -23,11 +23,8 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyRollerStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDimmer;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRelay;
-import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRoller;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyShortLightStatus;
-import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyShortStatusRelay;
-import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusRelay;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapServer;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
 import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
@@ -37,9 +34,7 @@ import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StopMoveType;
-import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
-import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -228,7 +223,7 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                 if ((command == UpDownType.UP && getString(rstatus.state).equals(SHELLY_ALWD_ROLLER_TURN_OPEN))
                         || (command == UpDownType.DOWN
                                 && getString(rstatus.state).equals(SHELLY_ALWD_ROLLER_TURN_CLOSE))) {
-                    logger.debug("{}: Roller is already moving ({}), ignore command {}", thingName,
+                    logger.debug("{}: Roller is already in requested position ({}), ignore command {}", thingName,
                             getString(rstatus.state), command);
                     requestUpdates(1, false);
                     return;
@@ -305,7 +300,7 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
     /**
      * Auto-create relay channels depending on relay type/mode
      */
-    private void createRelayChannels(ShellyStatusRelay relay, int idx) {
+    private void createRelayChannels(ShellySettingsRelay relay, int idx) {
         if (!areChannelsCreated()) {
             updateChannelDefinitions(ShellyChannelDefinitions.createRelayChannels(getThing(), profile, relay, idx));
         }
@@ -350,93 +345,23 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
             }
         }
 
-        if (profile.hasRelays && !profile.isRoller && !profile.isDimmer) {
-            logger.trace("{}: Updating {} relay(s)", thingName, profile.numRelays);
-            int i = 0;
-            ShellyStatusRelay rstatus = api.getRelayStatus(i);
-            for (ShellyShortStatusRelay relay : rstatus.relays) {
-                createRelayChannels(rstatus, i);
-                if ((relay.isValid == null) || relay.isValid) {
-                    String groupName = profile.getControlGroup(i);
-                    ShellySettingsRelay rs = profile.settings.relays.get(i);
-                    updated |= updateChannel(groupName, CHANNEL_OUTPUT_NAME, getStringType(rs.name));
-
-                    if (getBool(relay.overpower)) {
-                        postEvent(ALARM_TYPE_OVERPOWER, false);
-                    }
-
-                    updated |= updateChannel(groupName, CHANNEL_OUTPUT, getOnOff(relay.ison));
-                    updated |= updateChannel(groupName, CHANNEL_TIMER_ACTIVE, getOnOff(relay.hasTimer));
-                    if (rstatus.extTemperature != null) {
-                        // Shelly 1/1PM support up to 3 external sensors
-                        // for whatever reason those are not represented as an array, but 3 elements
-                        if (rstatus.extTemperature.sensor1 != null) {
-                            updated |= updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_ESENDOR_TEMP1, toQuantityType(
-                                    getDouble(rstatus.extTemperature.sensor1.tC), DIGITS_TEMP, SIUnits.CELSIUS));
-                        }
-                        if (rstatus.extTemperature.sensor2 != null) {
-                            updated |= updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_ESENDOR_TEMP2, toQuantityType(
-                                    getDouble(rstatus.extTemperature.sensor2.tC), DIGITS_TEMP, SIUnits.CELSIUS));
-                        }
-                        if (rstatus.extTemperature.sensor3 != null) {
-                            updated |= updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_ESENDOR_TEMP3, toQuantityType(
-                                    getDouble(rstatus.extTemperature.sensor3.tC), DIGITS_TEMP, SIUnits.CELSIUS));
-                        }
-                    }
-                    if ((rstatus.extHumidity != null) && (rstatus.extHumidity.sensor1 != null)) {
-                        updated |= updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_HUM, toQuantityType(
-                                getDouble(rstatus.extHumidity.sensor1.hum), DIGITS_PERCENT, Units.PERCENT));
-                    }
-
-                    // Update Auto-ON/OFF timer
-                    ShellySettingsRelay rsettings = profile.settings.relays.get(i);
-                    if (rsettings != null) {
-                        updated |= updateChannel(groupName, CHANNEL_TIMER_AUTOON,
-                                toQuantityType(getDouble(rsettings.autoOn), Units.SECOND));
-                        updated |= updateChannel(groupName, CHANNEL_TIMER_AUTOOFF,
-                                toQuantityType(getDouble(rsettings.autoOff), Units.SECOND));
-                    }
-                }
+        if (profile.hasRelays && !profile.isRoller) {
+            logger.trace("{}: Updating {} relay(s)", thingName, profile.numRelays);
+            for (int i = 0; i < status.relays.size(); i++) {
+                createRelayChannels(status.relays.get(i), i);
+                updated |= ShellyComponents.updateRelay(this, status, i);
                 i++;
             }
-        } else if (profile.hasRelays && profile.isRoller && (status.rollers != null)) {
+        } else {
             // Check for Relay in Roller Mode
             logger.trace("{}: Updating {} rollers", thingName, profile.numRollers);
-            int i = 0;
-
-            for (ShellySettingsRoller roller : status.rollers) {
-                if (roller.isValid) {
-                    ShellyRollerStatus control = api.getRollerStatus(i);
-                    Integer relayIndex = i + 1;
-                    String groupName = profile.numRollers > 1 ? CHANNEL_GROUP_ROL_CONTROL + relayIndex.toString()
-                            : CHANNEL_GROUP_ROL_CONTROL;
-
-                    createRollerChannels(control);
-
-                    if (control.name != null) {
-                        updated |= updateChannel(groupName, CHANNEL_OUTPUT_NAME, getStringType(control.name));
-                    }
-
-                    String state = getString(control.state);
-                    if (state.equals(SHELLY_ALWD_ROLLER_TURN_STOP)) { // only valid in stop state
-                        int pos = Math.max(SHELLY_MIN_ROLLER_POS, Math.min(control.currentPos, SHELLY_MAX_ROLLER_POS));
-                        logger.debug("{}: REST Update roller position: control={}, position={}", thingName,
-                                SHELLY_MAX_ROLLER_POS - pos, pos);
-                        updated |= updateChannel(groupName, CHANNEL_ROL_CONTROL_CONTROL,
-                                toQuantityType((double) (SHELLY_MAX_ROLLER_POS - pos), Units.PERCENT));
-                        updated |= updateChannel(groupName, CHANNEL_ROL_CONTROL_POS,
-                                toQuantityType((double) pos, Units.PERCENT));
-                        scheduledUpdates = 1; // one more poll and then stop
-                    }
-
-                    updated |= updateChannel(groupName, CHANNEL_ROL_CONTROL_STATE, new StringType(state));
-                    updated |= updateChannel(groupName, CHANNEL_ROL_CONTROL_STOPR, getStringType(control.stopReason));
-                    updated |= updateChannel(groupName, CHANNEL_ROL_CONTROL_SAFETY, getOnOff(control.safetySwitch));
-
-                    i++;
-                }
+            for (int i = 0; i < profile.numRollers; i++) {
+                ShellyRollerStatus roller = status.rollers.get(i);
+                createRollerChannels(roller);
+                updated |= ShellyComponents.updateRoller(this, roller, i);
             }
         }
+
         return updated;
     }
 

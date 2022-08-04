@@ -106,8 +106,9 @@ public class Shelly1CoIoTVersion2 extends Shelly1CoIoTProtocol implements Shelly
                     break;
                 case "3117": // S, mode, 0-5 (0=disabled)
                     value = getDouble(s.value).intValue();
-                    updateChannel(updates, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_PROFILE, getDecimal(value));
-                    updateChannel(updates, CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_SCHEDULE, getOnOff(value > 0));
+                    updateChannel(updates, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_PROFILE,
+                            getStringType(profile.getValueProfile((int) value)));
+                    updateChannel(updates, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_SCHEDULE, getOnOff(value > 0));
                     break;
                 case "3118": // Valve state
                     updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_STATE,
