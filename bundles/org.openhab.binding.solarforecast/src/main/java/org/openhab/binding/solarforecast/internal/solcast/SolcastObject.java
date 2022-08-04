@@ -12,8 +12,9 @@
  */
 package org.openhab.binding.solarforecast.internal.solcast;
 
+import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -41,20 +42,20 @@ import org.slf4j.LoggerFactory;
 public class SolcastObject {
     private final Logger logger = LoggerFactory.getLogger(SolcastObject.class);
     private static final double UNDEF = -1;
-    private final Map<LocalDate, TreeMap<LocalDateTime, Double>> dataMap = new HashMap<LocalDate, TreeMap<LocalDateTime, Double>>();
-    private final Map<LocalDate, TreeMap<LocalDateTime, Double>> optimisticDataMap = new HashMap<LocalDate, TreeMap<LocalDateTime, Double>>();
-    private final Map<LocalDate, TreeMap<LocalDateTime, Double>> pessimisticDataMap = new HashMap<LocalDate, TreeMap<LocalDateTime, Double>>();
+    private final Map<LocalDate, TreeMap<ZonedDateTime, Double>> dataMap = new HashMap<LocalDate, TreeMap<ZonedDateTime, Double>>();
+    private final Map<LocalDate, TreeMap<ZonedDateTime, Double>> optimisticDataMap = new HashMap<LocalDate, TreeMap<ZonedDateTime, Double>>();
+    private final Map<LocalDate, TreeMap<ZonedDateTime, Double>> pessimisticDataMap = new HashMap<LocalDate, TreeMap<ZonedDateTime, Double>>();
     private Optional<JSONObject> rawData = Optional.of(new JSONObject());
-    private LocalDateTime expirationDateTime;
+    private ZonedDateTime expirationDateTime;
     private boolean valid = false;
 
     public SolcastObject() {
         // invalid forecast object
-        expirationDateTime = LocalDateTime.now();
+        expirationDateTime = ZonedDateTime.now(SolcastConstants.zonedId);
     }
 
-    public SolcastObject(String content, LocalDateTime ldt) {
-        expirationDateTime = ldt;
+    public SolcastObject(String content, ZonedDateTime zdt) {
+        expirationDateTime = zdt;
         add(content);
     }
 
@@ -77,41 +78,35 @@ public class SolcastObject {
             for (int i = 0; i < resultJsonArray.length(); i++) {
                 JSONObject jo = resultJsonArray.getJSONObject(i);
                 String periodEnd = jo.getString("period_end");
-                LocalDate ld = LocalDate.parse(periodEnd.substring(0, periodEnd.indexOf("T")));
-                TreeMap<LocalDateTime, Double> forecastMap = dataMap.get(ld);
+                LocalDate ld = getZdtFromUTC(periodEnd).toLocalDate();
+                TreeMap<ZonedDateTime, Double> forecastMap = dataMap.get(ld);
                 if (forecastMap == null) {
-                    forecastMap = new TreeMap<LocalDateTime, Double>();
-                    LocalDateTime ldt = LocalDateTime.parse(periodEnd.substring(0, periodEnd.lastIndexOf(".")));
-                    forecastMap.put(ldt, jo.getDouble("pv_estimate"));
+                    forecastMap = new TreeMap<ZonedDateTime, Double>();
+                    forecastMap.put(getZdtFromUTC(periodEnd), jo.getDouble("pv_estimate"));
                     dataMap.put(ld, forecastMap);
                 } else {
-                    LocalDateTime ldt = LocalDateTime.parse(periodEnd.substring(0, periodEnd.lastIndexOf(".")));
-                    forecastMap.put(ldt, jo.getDouble("pv_estimate"));
+                    forecastMap.put(getZdtFromUTC(periodEnd), jo.getDouble("pv_estimate"));
                     dataMap.put(ld, forecastMap);
                 }
                 if (jo.has("pv_estimate10")) {
-                    TreeMap<LocalDateTime, Double> pessimisticForecastMap = pessimisticDataMap.get(ld);
+                    TreeMap<ZonedDateTime, Double> pessimisticForecastMap = pessimisticDataMap.get(ld);
                     if (pessimisticForecastMap == null) {
-                        pessimisticForecastMap = new TreeMap<LocalDateTime, Double>();
-                        LocalDateTime ldt = LocalDateTime.parse(periodEnd.substring(0, periodEnd.lastIndexOf(".")));
-                        pessimisticForecastMap.put(ldt, jo.getDouble("pv_estimate10"));
+                        pessimisticForecastMap = new TreeMap<ZonedDateTime, Double>();
+                        pessimisticForecastMap.put(getZdtFromUTC(periodEnd), jo.getDouble("pv_estimate10"));
                         pessimisticDataMap.put(ld, pessimisticForecastMap);
                     } else {
-                        LocalDateTime ldt = LocalDateTime.parse(periodEnd.substring(0, periodEnd.lastIndexOf(".")));
-                        pessimisticForecastMap.put(ldt, jo.getDouble("pv_estimate10"));
+                        pessimisticForecastMap.put(getZdtFromUTC(periodEnd), jo.getDouble("pv_estimate10"));
                         pessimisticDataMap.put(ld, pessimisticForecastMap);
                     }
                 }
                 if (jo.has("pv_estimate90")) {
-                    TreeMap<LocalDateTime, Double> optimisticForecastMap = optimisticDataMap.get(ld);
+                    TreeMap<ZonedDateTime, Double> optimisticForecastMap = optimisticDataMap.get(ld);
                     if (optimisticForecastMap == null) {
-                        optimisticForecastMap = new TreeMap<LocalDateTime, Double>();
-                        LocalDateTime ldt = LocalDateTime.parse(periodEnd.substring(0, periodEnd.lastIndexOf(".")));
-                        optimisticForecastMap.put(ldt, jo.getDouble("pv_estimate90"));
+                        optimisticForecastMap = new TreeMap<ZonedDateTime, Double>();
+                        optimisticForecastMap.put(getZdtFromUTC(periodEnd), jo.getDouble("pv_estimate90"));
                         optimisticDataMap.put(ld, optimisticForecastMap);
                     } else {
-                        LocalDateTime ldt = LocalDateTime.parse(periodEnd.substring(0, periodEnd.lastIndexOf(".")));
-                        optimisticForecastMap.put(ldt, jo.getDouble("pv_estimate90"));
+                        optimisticForecastMap.put(getZdtFromUTC(periodEnd), jo.getDouble("pv_estimate90"));
                         optimisticDataMap.put(ld, optimisticForecastMap);
                     }
                 }
@@ -122,7 +117,7 @@ public class SolcastObject {
     public boolean isValid() {
         if (valid) {
             if (!dataMap.isEmpty()) {
-                if (expirationDateTime.isAfter(LocalDateTime.now())) {
+                if (expirationDateTime.isAfter(ZonedDateTime.now(SolcastConstants.zonedId))) {
                     return true;
                 } else {
                     logger.debug("Forecast data expired");
@@ -136,18 +131,18 @@ public class SolcastObject {
         return false;
     }
 
-    public double getActualValue(LocalDateTime now) {
+    public double getActualValue(ZonedDateTime now) {
         if (dataMap.isEmpty()) {
             return UNDEF;
         }
         LocalDate ld = now.toLocalDate();
-        TreeMap<LocalDateTime, Double> dtm = dataMap.get(ld);
+        TreeMap<ZonedDateTime, Double> dtm = dataMap.get(ld);
         if (dtm == null) {
             return UNDEF;
         }
         double forecastValue = 0;
-        Set<LocalDateTime> keySet = dtm.keySet();
-        for (LocalDateTime key : keySet) {
+        Set<ZonedDateTime> keySet = dtm.keySet();
+        for (ZonedDateTime key : keySet) {
             if (key.isBefore(now)) {
                 // value are reported in PT30M = 30 minutes interval with kw value
                 // for kw/h it's half the value
@@ -158,8 +153,8 @@ public class SolcastObject {
             }
         }
 
-        Entry<LocalDateTime, Double> f = dtm.floorEntry(now);
-        Entry<LocalDateTime, Double> c = dtm.ceilingEntry(now);
+        Entry<ZonedDateTime, Double> f = dtm.floorEntry(now);
+        Entry<ZonedDateTime, Double> c = dtm.ceilingEntry(now);
         if (f != null) {
             if (c != null) {
                 // we're during suntime!
@@ -178,9 +173,9 @@ public class SolcastObject {
         }
     }
 
-    public double getDayTotal(LocalDateTime now, int offset) {
+    public double getDayTotal(ZonedDateTime now, int offset) {
         LocalDate ld = now.plusDays(offset).toLocalDate();
-        TreeMap<LocalDateTime, Double> dtm = dataMap.get(ld);
+        TreeMap<ZonedDateTime, Double> dtm = dataMap.get(ld);
         if (dtm != null) {
             return getTotalValue(dtm);
         } else {
@@ -188,9 +183,9 @@ public class SolcastObject {
         }
     }
 
-    public double getOptimisticDayTotal(LocalDateTime now, int offset) {
+    public double getOptimisticDayTotal(ZonedDateTime now, int offset) {
         LocalDate ld = now.plusDays(offset).toLocalDate();
-        TreeMap<LocalDateTime, Double> dtm = optimisticDataMap.get(ld);
+        TreeMap<ZonedDateTime, Double> dtm = optimisticDataMap.get(ld);
         if (dtm != null) {
             return getTotalValue(dtm);
         } else {
@@ -198,9 +193,9 @@ public class SolcastObject {
         }
     }
 
-    public double getPessimisticDayTotal(LocalDateTime now, int offset) {
+    public double getPessimisticDayTotal(ZonedDateTime now, int offset) {
         LocalDate ld = now.plusDays(offset).toLocalDate();
-        TreeMap<LocalDateTime, Double> dtm = pessimisticDataMap.get(ld);
+        TreeMap<ZonedDateTime, Double> dtm = pessimisticDataMap.get(ld);
         if (dtm != null) {
             return getTotalValue(dtm);
         } else {
@@ -208,10 +203,10 @@ public class SolcastObject {
         }
     }
 
-    private double getTotalValue(TreeMap<LocalDateTime, Double> map) {
+    private double getTotalValue(TreeMap<ZonedDateTime, Double> map) {
         double forecastValue = 0;
-        Set<LocalDateTime> keySet = map.keySet();
-        for (LocalDateTime key : keySet) {
+        Set<ZonedDateTime> keySet = map.keySet();
+        for (ZonedDateTime key : keySet) {
             // value are reported in PT30M = 30 minutes interval with kw value
             // for kw/h it's half the value
             Double addedValue = map.get(key);
@@ -222,7 +217,7 @@ public class SolcastObject {
         return forecastValue;
     }
 
-    public double getRemainingProduction(LocalDateTime now) {
+    public double getRemainingProduction(ZonedDateTime now) {
         if (dataMap.isEmpty()) {
             return UNDEF;
         }
@@ -244,5 +239,10 @@ public class SolcastObject {
 
     public String getRaw() {
         return rawData.get().toString();
+    }
+
+    public static ZonedDateTime getZdtFromUTC(String utc) {
+        Instant timestamp = Instant.parse(utc);
+        return timestamp.atZone(SolcastConstants.zonedId);
     }
 }

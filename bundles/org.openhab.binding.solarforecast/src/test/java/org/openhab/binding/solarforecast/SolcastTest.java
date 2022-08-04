@@ -15,9 +15,9 @@ package org.openhab.binding.solarforecast;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONObject;
@@ -38,36 +38,81 @@ class SolcastTest {
     @Test
     void testForecastObject() {
         String content = FileReader.readFileInString("src/test/resources/solcast/forecasts.json");
-        LocalDateTime now = LocalDateTime.of(2022, 7, 23, 16, 23);
+        ZonedDateTime now = LocalDateTime.of(2022, 7, 23, 16, 23).atZone(ZoneId.systemDefault());
         SolcastObject scfo = new SolcastObject(content, now);
-        assertEquals(19.462, scfo.getActualValue(now), 0.001, "Actual estimation");
+        assertEquals(16.809, scfo.getActualValue(now), 0.001, "Actual estimation");
     }
 
+    /**
+     * Data from TreeMap for manual validation
+     * 2022-07-17T04:30+02:00[Europe/Berlin]=0.0,
+     * 2022-07-17T05:00+02:00[Europe/Berlin]=0.0,
+     * 2022-07-17T05:30+02:00[Europe/Berlin]=0.0,
+     * 2022-07-17T06:00+02:00[Europe/Berlin]=0.0262,
+     * 2022-07-17T06:30+02:00[Europe/Berlin]=0.4252,
+     * 2022-07-17T07:00+02:00[Europe/Berlin]=0.7772,
+     * 2022-07-17T07:30+02:00[Europe/Berlin]=1.0663,
+     * 2022-07-17T08:00+02:00[Europe/Berlin]=1.3848,
+     * 2022-07-17T08:30+02:00[Europe/Berlin]=1.6401,
+     * 2022-07-17T09:00+02:00[Europe/Berlin]=1.8614,
+     * 2022-07-17T09:30+02:00[Europe/Berlin]=2.0613,
+     * 2022-07-17T10:00+02:00[Europe/Berlin]=2.2365,
+     * 2022-07-17T10:30+02:00[Europe/Berlin]=2.3766,
+     * 2022-07-17T11:00+02:00[Europe/Berlin]=2.4719,
+     * 2022-07-17T11:30+02:00[Europe/Berlin]=2.5438,
+     * 2022-07-17T12:00+02:00[Europe/Berlin]=2.602,
+     * 2022-07-17T12:30+02:00[Europe/Berlin]=2.6213,
+     * 2022-07-17T13:00+02:00[Europe/Berlin]=2.6061,
+     * 2022-07-17T13:30+02:00[Europe/Berlin]=2.6181,
+     * 2022-07-17T14:00+02:00[Europe/Berlin]=2.5378,
+     * 2022-07-17T14:30+02:00[Europe/Berlin]=2.4651,
+     * 2022-07-17T15:00+02:00[Europe/Berlin]=2.3656,
+     * 2022-07-17T15:30+02:00[Europe/Berlin]=2.2374,
+     * 2022-07-17T16:00+02:00[Europe/Berlin]=2.1015, <=
+     * 2022-07-17T16:30+02:00[Europe/Berlin]=1.9318,
+     * 2022-07-17T17:00+02:00[Europe/Berlin]=1.724,
+     * 2022-07-17T17:30+02:00[Europe/Berlin]=1.5031,
+     * 2022-07-17T18:00+02:00[Europe/Berlin]=1.2834,
+     * 2022-07-17T18:30+02:00[Europe/Berlin]=1.0839,
+     * 2022-07-17T19:00+02:00[Europe/Berlin]=0.8581,
+     * 2022-07-17T19:30+02:00[Europe/Berlin]=0.6164,
+     * 2022-07-17T20:00+02:00[Europe/Berlin]=0.4465,
+     * 2022-07-17T20:30+02:00[Europe/Berlin]=0.2543,
+     * 2022-07-17T21:00+02:00[Europe/Berlin]=0.0848,
+     * 2022-07-17T21:30+02:00[Europe/Berlin]=0.0132,
+     * 2022-07-17T22:00+02:00[Europe/Berlin]=0.0,
+     * 2022-07-17T22:30+02:00[Europe/Berlin]=0.0
+     *
+     * <= 41,0262
+     */
     @Test
     void testForecastTreeMap() {
         String content = FileReader.readFileInString("src/test/resources/solcast/estimated-actuals.json");
-        LocalDateTime now = LocalDateTime.of(2022, 7, 17, 16, 23);
+        ZonedDateTime now = LocalDateTime.of(2022, 7, 17, 16, 23).atZone(ZoneId.systemDefault());
         SolcastObject scfo = new SolcastObject(content, now);
         assertEquals(25.413, scfo.getDayTotal(now, 0), 0.001, "Day total");
-        assertEquals(24.150, scfo.getActualValue(now), 0.001, "Actual estimation");
+        assertEquals(21.254, scfo.getActualValue(now), 0.001, "Actual estimation");
     }
 
     @Test
     void testJoin() {
         String content = FileReader.readFileInString("src/test/resources/solcast/estimated-actuals.json");
-        LocalDateTime now = LocalDateTime.of(2022, 7, 18, 16, 23);
+        ZonedDateTime now = LocalDateTime.of(2022, 7, 18, 16, 23).atZone(ZoneId.systemDefault());
         SolcastObject scfo = new SolcastObject(content, now);
         assertEquals(-1.0, scfo.getActualValue(now), 0.01, "Invalid");
         content = FileReader.readFileInString("src/test/resources/solcast/forecasts.json");
         scfo.join(content);
-        assertEquals(22.011, scfo.getActualValue(now), 0.01, "Actual data");
+        assertEquals(19.408, scfo.getActualValue(now), 0.01, "Actual data");
         assertEquals(23.107, scfo.getDayTotal(now, 0), 0.01, "Today data");
+        JSONObject rawJson = new JSONObject(scfo.getRaw());
+        assertTrue(rawJson.has("forecasts"));
+        assertTrue(rawJson.has("estimated_actuals"));
     }
 
     @Test
     void testOptimisticPessimistic() {
         String content = FileReader.readFileInString("src/test/resources/solcast/estimated-actuals.json");
-        LocalDateTime now = LocalDateTime.of(2022, 7, 18, 16, 23);
+        ZonedDateTime now = LocalDateTime.of(2022, 7, 18, 16, 23).atZone(ZoneId.systemDefault());
         SolcastObject scfo = new SolcastObject(content, now);
         content = FileReader.readFileInString("src/test/resources/solcast/forecasts.json");
         scfo.join(content);
@@ -79,7 +124,7 @@ class SolcastTest {
     @Test
     void testInavlid() {
         String content = FileReader.readFileInString("src/test/resources/solcast/estimated-actuals.json");
-        LocalDateTime now = LocalDateTime.now();
+        ZonedDateTime now = ZonedDateTime.now(ZoneId.systemDefault());
         SolcastObject scfo = new SolcastObject(content, now);
         assertEquals(-1.0, scfo.getActualValue(now), 0.01, "Data available - day not in");
         content = FileReader.readFileInString("src/test/resources/solcast/forecasts.json");
@@ -91,7 +136,7 @@ class SolcastTest {
     @Test
     void testRawChannel() {
         String content = FileReader.readFileInString("src/test/resources/solcast/estimated-actuals.json");
-        LocalDateTime now = LocalDateTime.of(2022, 7, 18, 16, 23);
+        ZonedDateTime now = LocalDateTime.of(2022, 7, 18, 16, 23).atZone(ZoneId.systemDefault());
         SolcastObject sco = new SolcastObject(content, now);
         content = FileReader.readFileInString("src/test/resources/solcast/forecasts.json");
         sco.join(content);
@@ -107,7 +152,7 @@ class SolcastTest {
     }
 
     @Test
-    void testTimes() {
+    void testTimeframes() {
         ZonedDateTime zdt = ZonedDateTime.of(2022, 7, 22, 17, 3, 10, 345, ZoneId.systemDefault());
         assertEquals("17:15", SolcastPlaneHandler.getNextTimeframe(zdt).toLocalTime().toString(), "Q1");
         zdt = zdt.plusMinutes(20);
@@ -120,16 +165,16 @@ class SolcastTest {
         assertEquals("18:00", SolcastPlaneHandler.getNextTimeframe(zdt).toLocalTime().toString(), "Q4");
         zdt = zdt.plusMinutes(6);
         assertEquals("18:15", SolcastPlaneHandler.getNextTimeframe(zdt).toLocalTime().toString(), "Q4");
-        System.out.println(zdt.format(DateTimeFormatter.ISO_INSTANT));
-        // System.out.println(zdt.toLocalDateTime().format(DateTimeFormatter.ISO_INSTANT));
-        System.out.println(DateTimeFormatter.ISO_INSTANT.format(zdt.toOffsetDateTime()));
-        System.out.println(zdt.toOffsetDateTime());
+    }
 
-        DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-M-dd'T'HH:mm:ss.SSSSSSS z");
+    @Test
+    void testTimes() {
         String utcTimeString = "2022-07-17T19:30:00.0000000Z";
-        LocalDateTime ldt = LocalDateTime.parse(utcTimeString, DateTimeFormatter.ISO_DATE_TIME);
-        ZonedDateTime zdt2 = ZonedDateTime.parse(utcTimeString, DateTimeFormatter.ISO_DATE_TIME);
-        System.out.println(zdt2);
-
+        ZonedDateTime zdt = SolcastObject.getZdtFromUTC(utcTimeString);
+        assertEquals("2022-07-17T21:30+02:00[Europe/Berlin]", zdt.toString(), "ZonedDateTime");
+        LocalDateTime ldt = zdt.toLocalDateTime();
+        assertEquals("2022-07-17T21:30", ldt.toString(), "LocalDateTime");
+        LocalTime lt = zdt.toLocalTime();
+        assertEquals("21:30", lt.toString(), "LocalTime");
     }
 }

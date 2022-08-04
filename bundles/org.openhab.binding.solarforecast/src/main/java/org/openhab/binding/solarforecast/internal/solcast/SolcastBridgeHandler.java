@@ -14,7 +14,7 @@ package org.openhab.binding.solarforecast.internal.solcast;
 
 import static org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants.*;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -86,7 +86,7 @@ public class SolcastBridgeHandler extends BaseBridgeHandler {
             logger.debug("No PV plane defined yet");
             return;
         }
-        LocalDateTime now = LocalDateTime.now();
+        ZonedDateTime now = ZonedDateTime.now(SolcastConstants.zonedId);
         double actualSum = 0;
         double remainSum = 0;
         double todaySum = 0;

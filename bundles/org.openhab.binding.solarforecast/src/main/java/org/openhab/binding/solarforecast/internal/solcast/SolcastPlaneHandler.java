@@ -15,7 +15,6 @@ package org.openhab.binding.solarforecast.internal.solcast;
 import static org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants.*;
 import static org.openhab.binding.solarforecast.internal.solcast.SolcastConstants.*;
 
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
@@ -77,7 +76,7 @@ public class SolcastPlaneHandler extends BaseThingHandler {
         httpClient = hc;
         persistenceService = qps;
         itemRegistry = ir;
-        nextMeasurement = getNextTimeframe(ZonedDateTime.now());
+        nextMeasurement = getNextTimeframe(ZonedDateTime.now(SolcastConstants.zonedId));
     }
 
     /**
@@ -177,8 +176,8 @@ public class SolcastPlaneHandler extends BaseThingHandler {
                 estimateRequest.header(HttpHeader.AUTHORIZATION, BEARER + bridgeHandler.get().getApiKey());
                 ContentResponse crEstimate = estimateRequest.send();
                 if (crEstimate.getStatus() == 200) {
-                    forecast = new SolcastObject(crEstimate.getContentAsString(),
-                            LocalDateTime.now().plusMinutes(configuration.get().refreshInterval));
+                    forecast = new SolcastObject(crEstimate.getContentAsString(), ZonedDateTime
+                            .now(SolcastConstants.zonedId).plusMinutes(configuration.get().refreshInterval));
                     logger.trace("{} Fetched data {}", thing.getLabel(), forecast.toString());
 
                     // get forecast
@@ -207,7 +206,7 @@ public class SolcastPlaneHandler extends BaseThingHandler {
             logger.debug("{} use available forecast {}", thing.getLabel(), forecast);
         }
         updateChannels(forecast);
-        if (ZonedDateTime.now().isAfter(nextMeasurement)) {
+        if (ZonedDateTime.now(SolcastConstants.zonedId).isAfter(nextMeasurement)) {
             sendMeasure();
         }
         return forecast;
@@ -304,31 +303,32 @@ public class SolcastPlaneHandler extends BaseThingHandler {
             }
         }
         updateState(CHANNEL_RAW_TUNING, updateState);
-        nextMeasurement = getNextTimeframe(ZonedDateTime.now());
+        nextMeasurement = getNextTimeframe(ZonedDateTime.now(SolcastConstants.zonedId));
     }
 
     private void updateChannels(SolcastObject f) {
-        updateState(CHANNEL_ACTUAL, SolcastObject.getStateObject(f.getActualValue(LocalDateTime.now())));
-        updateState(CHANNEL_REMAINING, SolcastObject.getStateObject(f.getRemainingProduction(LocalDateTime.now())));
-        updateState(CHANNEL_TODAY, SolcastObject.getStateObject(f.getDayTotal(LocalDateTime.now(), 0)));
-        updateState(CHANNEL_DAY1, SolcastObject.getStateObject(f.getDayTotal(LocalDateTime.now(), 1)));
-        updateState(CHANNEL_DAY1_HIGH, SolcastObject.getStateObject(f.getOptimisticDayTotal(LocalDateTime.now(), 1)));
-        updateState(CHANNEL_DAY1_LOW, SolcastObject.getStateObject(f.getPessimisticDayTotal(LocalDateTime.now(), 1)));
-        updateState(CHANNEL_DAY2, SolcastObject.getStateObject(f.getDayTotal(LocalDateTime.now(), 2)));
-        updateState(CHANNEL_DAY2_HIGH, SolcastObject.getStateObject(f.getOptimisticDayTotal(LocalDateTime.now(), 2)));
-        updateState(CHANNEL_DAY2_LOW, SolcastObject.getStateObject(f.getPessimisticDayTotal(LocalDateTime.now(), 2)));
-        updateState(CHANNEL_DAY3, SolcastObject.getStateObject(f.getDayTotal(LocalDateTime.now(), 3)));
-        updateState(CHANNEL_DAY3_HIGH, SolcastObject.getStateObject(f.getOptimisticDayTotal(LocalDateTime.now(), 3)));
-        updateState(CHANNEL_DAY3_LOW, SolcastObject.getStateObject(f.getPessimisticDayTotal(LocalDateTime.now(), 3)));
-        updateState(CHANNEL_DAY4, SolcastObject.getStateObject(f.getDayTotal(LocalDateTime.now(), 4)));
-        updateState(CHANNEL_DAY4_HIGH, SolcastObject.getStateObject(f.getOptimisticDayTotal(LocalDateTime.now(), 4)));
-        updateState(CHANNEL_DAY4_LOW, SolcastObject.getStateObject(f.getPessimisticDayTotal(LocalDateTime.now(), 4)));
-        updateState(CHANNEL_DAY5, SolcastObject.getStateObject(f.getDayTotal(LocalDateTime.now(), 5)));
-        updateState(CHANNEL_DAY5_HIGH, SolcastObject.getStateObject(f.getOptimisticDayTotal(LocalDateTime.now(), 5)));
-        updateState(CHANNEL_DAY5_LOW, SolcastObject.getStateObject(f.getPessimisticDayTotal(LocalDateTime.now(), 5)));
-        updateState(CHANNEL_DAY6, SolcastObject.getStateObject(f.getDayTotal(LocalDateTime.now(), 6)));
-        updateState(CHANNEL_DAY6_HIGH, SolcastObject.getStateObject(f.getOptimisticDayTotal(LocalDateTime.now(), 6)));
-        updateState(CHANNEL_DAY6_LOW, SolcastObject.getStateObject(f.getPessimisticDayTotal(LocalDateTime.now(), 6)));
+        ZonedDateTime now = ZonedDateTime.now(SolcastConstants.zonedId);
+        updateState(CHANNEL_ACTUAL, SolcastObject.getStateObject(f.getActualValue(now)));
+        updateState(CHANNEL_REMAINING, SolcastObject.getStateObject(f.getRemainingProduction(now)));
+        updateState(CHANNEL_TODAY, SolcastObject.getStateObject(f.getDayTotal(now, 0)));
+        updateState(CHANNEL_DAY1, SolcastObject.getStateObject(f.getDayTotal(now, 1)));
+        updateState(CHANNEL_DAY1_HIGH, SolcastObject.getStateObject(f.getOptimisticDayTotal(now, 1)));
+        updateState(CHANNEL_DAY1_LOW, SolcastObject.getStateObject(f.getPessimisticDayTotal(now, 1)));
+        updateState(CHANNEL_DAY2, SolcastObject.getStateObject(f.getDayTotal(now, 2)));
+        updateState(CHANNEL_DAY2_HIGH, SolcastObject.getStateObject(f.getOptimisticDayTotal(now, 2)));
+        updateState(CHANNEL_DAY2_LOW, SolcastObject.getStateObject(f.getPessimisticDayTotal(now, 2)));
+        updateState(CHANNEL_DAY3, SolcastObject.getStateObject(f.getDayTotal(now, 3)));
+        updateState(CHANNEL_DAY3_HIGH, SolcastObject.getStateObject(f.getOptimisticDayTotal(now, 3)));
+        updateState(CHANNEL_DAY3_LOW, SolcastObject.getStateObject(f.getPessimisticDayTotal(now, 3)));
+        updateState(CHANNEL_DAY4, SolcastObject.getStateObject(f.getDayTotal(now, 4)));
+        updateState(CHANNEL_DAY4_HIGH, SolcastObject.getStateObject(f.getOptimisticDayTotal(now, 4)));
+        updateState(CHANNEL_DAY4_LOW, SolcastObject.getStateObject(f.getPessimisticDayTotal(now, 4)));
+        updateState(CHANNEL_DAY5, SolcastObject.getStateObject(f.getDayTotal(now, 5)));
+        updateState(CHANNEL_DAY5_HIGH, SolcastObject.getStateObject(f.getOptimisticDayTotal(now, 5)));
+        updateState(CHANNEL_DAY5_LOW, SolcastObject.getStateObject(f.getPessimisticDayTotal(now, 5)));
+        updateState(CHANNEL_DAY6, SolcastObject.getStateObject(f.getDayTotal(now, 6)));
+        updateState(CHANNEL_DAY6_HIGH, SolcastObject.getStateObject(f.getOptimisticDayTotal(now, 6)));
+        updateState(CHANNEL_DAY6_LOW, SolcastObject.getStateObject(f.getPessimisticDayTotal(now, 6)));
         updateState(CHANNEL_RAW, StringType.valueOf(forecast.getRaw()));
     }
 }

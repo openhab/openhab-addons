@@ -22,6 +22,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.solarforecast.internal.forecastsolar.ForecastSolarBridgeHandler;
 import org.openhab.binding.solarforecast.internal.forecastsolar.ForecastSolarPlaneHandler;
 import org.openhab.binding.solarforecast.internal.solcast.SolcastBridgeHandler;
+import org.openhab.binding.solarforecast.internal.solcast.SolcastConstants;
 import org.openhab.binding.solarforecast.internal.solcast.SolcastPlaneHandler;
 import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
@@ -60,6 +61,8 @@ public class SolarForecastHandlerFactory extends BaseThingHandlerFactory {
     public SolarForecastHandlerFactory(final @Reference HttpClientFactory hcf, final @Reference LocationProvider lp,
             final @Reference PersistenceServiceRegistry psr, final @Reference ItemRegistry ir,
             final @Reference TimeZoneProvider tzp) {
+        itemRegistry = ir;
+        SolcastConstants.zonedId = tzp.getTimeZone();
         httpClient = hcf.getCommonHttpClient();
         PointType pt = lp.getLocation();
         if (pt != null) {
@@ -73,8 +76,6 @@ public class SolarForecastHandlerFactory extends BaseThingHandlerFactory {
         } else {
             qps = Optional.of((QueryablePersistenceService) s);
         }
-        itemRegistry = ir;
-        tzp.getTimeZone();
     }
 
     @Override
