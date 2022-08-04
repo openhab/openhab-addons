@@ -78,6 +78,7 @@ public class LiqiudCheckHandler extends BaseThingHandler {
 
         // Example for background initialization:
         scheduler.execute(() -> {
+            
             boolean thingReachable = true; // <background task with long running initialization here>
             // when done do:
             if (thingReachable) {
