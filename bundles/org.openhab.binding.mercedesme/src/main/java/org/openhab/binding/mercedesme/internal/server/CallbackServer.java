@@ -161,7 +161,7 @@ public class CallbackServer {
                 srv.token = Optional.of(atr);
                 srv.listener.onAccessTokenResponse(atr);
             } else {
-                LOGGER.warn("Either Cllbackserver {} or Authorization Service {} not found", srv, oacs);
+                LOGGER.warn("Either Callbackserver  {} or Authorization Service {} not found", srv, oacs);
             }
         } catch (OAuthException | IOException | OAuthResponseException e) {
             LOGGER.warn("Exception getting token from code {} {}", code, e.getMessage());

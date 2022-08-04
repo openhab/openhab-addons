@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.mercedesme.internal;
 
+import java.time.ZoneId;
+
 import javax.measure.Unit;
 import javax.measure.quantity.Length;
 
@@ -88,4 +90,6 @@ public class Constants {
     public static final String MIME_PREFIX = "image/";
 
     public static final Unit<Length> KILOMETRE_UNIT = MetricPrefix.KILO(SIUnits.METRE);
+
+    public static ZoneId zoneId = ZoneId.systemDefault();
 }

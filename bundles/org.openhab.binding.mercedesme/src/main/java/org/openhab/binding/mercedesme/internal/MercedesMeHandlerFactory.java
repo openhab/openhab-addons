@@ -20,6 +20,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.storage.Storage;
@@ -56,18 +58,20 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
     private final MercedesMeCommandOptionProvider mmcop;
     private final MercedesMeStateOptionProvider mmsop;
     private final StorageService storageService;
-    private final TranslationProvider translationProvider;
+    private final MercedesMeTranslationProvider translationProvider;
 
     @Activate
     public MercedesMeHandlerFactory(@Reference OAuthFactory oAuthFactory, @Reference HttpClientFactory hcf,
             @Reference StorageService storageService, final @Reference MercedesMeCommandOptionProvider cop,
-            final @Reference MercedesMeStateOptionProvider sop, final @Reference TranslationProvider tp) {
+            final @Reference MercedesMeStateOptionProvider sop, final @Reference TimeZoneProvider tzp,
+            final @Reference TranslationProvider i18nProvider, final @Reference LocaleProvider localeProvider) {
         this.oAuthFactory = oAuthFactory;
         this.storageService = storageService;
+        Constants.zoneId = tzp.getTimeZone();
         mmcop = cop;
         mmsop = sop;
-        translationProvider = tp;
         tokenStorage = storageService.getStorage(Constants.BINDING_ID);
+        translationProvider = new MercedesMeTranslationProvider(i18nProvider, localeProvider);
         httpClient = hcf.createHttpClient(Constants.BINDING_ID);
         try {
             httpClient.start();
@@ -85,9 +89,10 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (THING_TYPE_ACCOUNT.equals(thingTypeUID)) {
-            return new AccountHandler((Bridge) thing, httpClient, oAuthFactory, tokenStorage);
+            return new AccountHandler((Bridge) thing, httpClient, oAuthFactory, tokenStorage, translationProvider);
         }
-        return new VehicleHandler(thing, httpClient, thingTypeUID.getId(), storageService, mmcop, mmsop);
+        return new VehicleHandler(thing, httpClient, thingTypeUID.getId(), storageService, mmcop, mmsop,
+                translationProvider);
     }
 
     @Override

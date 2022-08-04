@@ -44,15 +44,18 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     private final OAuthFactory oAuthFactory;
     private final Storage<String> storage;
     private final HttpClient httpClient;
+    private final MercedesMeTranslationProvider i18nProvider;
     private Optional<CallbackServer> server = Optional.empty();
     private Optional<String> tokenStorageKey = Optional.empty();
 
     Optional<AccountConfiguration> config = Optional.empty();
 
-    public AccountHandler(Bridge bridge, HttpClient hc, OAuthFactory oaf, Storage<String> storage) {
+    public AccountHandler(Bridge bridge, HttpClient hc, OAuthFactory oaf, Storage<String> storage,
+            MercedesMeTranslationProvider translationProvider) {
         super(bridge);
         httpClient = hc;
         oAuthFactory = oaf;
+        i18nProvider = translationProvider;
         this.storage = storage;
     }
 
@@ -93,8 +96,9 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             if (!token.equals(Constants.EMPTY)) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
-                        "Manual Authorization needed at " + callbackUrl);
+                String textKey = MercedesMeTranslationProvider.PREFIX + thing.getThingTypeUID().getId()
+                        + MercedesMeTranslationProvider.STATUS_AUTH_NEEDED;
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, i18nProvider.getText(textKey) + callbackUrl);
             }
         }
     }
@@ -119,14 +123,19 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     private String configValid() {
         config = Optional.of(getConfigAs(AccountConfiguration.class));
         if (!config.isEmpty()) {
+            String textKey = MercedesMeTranslationProvider.PREFIX + thing.getThingTypeUID().getId();
             if (config.get().callbackIP.equals(Constants.NOT_SET)) {
-                return "Callback IP " + Constants.NOT_SET;
+                textKey += MercedesMeTranslationProvider.STATUS_IP_MISSING;
+                return i18nProvider.getText(textKey);
             } else if (config.get().callbackPort == -1) {
-                return "Callback Port " + Constants.NOT_SET;
+                textKey += MercedesMeTranslationProvider.STATUS_PORT_MISSING;
+                return i18nProvider.getText(textKey);
             } else if (config.get().clientId.equals(Constants.NOT_SET)) {
-                return "Client ID " + Constants.NOT_SET;
+                textKey += MercedesMeTranslationProvider.STATUS_CLIENT_ID_MISSING;
+                return i18nProvider.getText(textKey);
             } else if (config.get().clientSecret.equals(Constants.NOT_SET)) {
-                return "Client Secret " + Constants.NOT_SET;
+                textKey += MercedesMeTranslationProvider.STATUS_CLIENT_SECRET_MISSING;
+                return i18nProvider.getText(textKey);
             } else {
                 return Constants.EMPTY;
             }
