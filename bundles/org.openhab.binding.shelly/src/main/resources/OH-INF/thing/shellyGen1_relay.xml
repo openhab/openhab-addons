@@ -1,0 +1,632 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="shelly"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="shelly1">
+		<label>Shelly 1 (SHSW-1)</label>
+		<description>@text/thing-type.shelly.shelly1.description</description>
+		<channel-groups>
+			<channel-group id="relay" typeId="relayChannel"/>
+			<channel-group id="sensors" typeId="externalSensors"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:relay"/>
+	</thing-type>
+
+	<thing-type id="shelly1l">
+		<label>Shelly 1L (SHSW-L)</label>
+		<description>@text/thing-type.shelly.shelly1l.description</description>
+		<channel-groups>
+			<channel-group id="relay" typeId="relayChannel"/>
+			<channel-group id="meter" typeId="meter"/>
+			<channel-group id="sensors" typeId="externalSensors"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:relay"/>
+	</thing-type>
+
+	<thing-type id="shelly1pm">
+		<label>Shelly 1PM (SHSW-PM)</label>
+		<description>@text/thing-type.shelly.shelly1pm.description</description>
+		<channel-groups>
+			<channel-group id="relay" typeId="relayChannel"/>
+			<channel-group id="meter" typeId="meter"/>
+			<channel-group id="sensors" typeId="externalSensors"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:relay"/>
+	</thing-type>
+
+	<thing-type id="shellyem">
+		<label>Shelly EM (SHEM)</label>
+		<description>@text/thing-type.shelly.shellyem.description</description>
+		<channel-groups>
+			<channel-group id="meter1" typeId="meter">
+				<label>@text/channel-group-type.shelly.meter1.label</label>
+			</channel-group>
+			<channel-group id="meter2" typeId="meter">
+				<label>@text/channel-group-type.shelly.meter2.label</label>
+			</channel-group>
+			<channel-group id="relay" typeId="relayChannel"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:relay"/>
+	</thing-type>
+
+	<!-- Shelly 3EM - device reports wrong service name: shellyem3, see README -->
+	<thing-type id="shellyem3">
+		<label>Shelly 3EM (SHEM-3)</label>
+		<description>@text/thing-type.shelly.shellyem3.description</description>
+		<channel-groups>
+			<channel-group id="meter1" typeId="meter">
+				<label>@text/channel-group-type.shelly.meter1.label</label>
+			</channel-group>
+			<channel-group id="meter2" typeId="meter">
+				<label>@text/channel-group-type.shelly.meter2.label</label>
+			</channel-group>
+			<channel-group id="meter3" typeId="meter">
+				<label>@text/channel-group-type.shelly.meter3.label</label>
+			</channel-group>
+			<channel-group id="relay" typeId="relayChannel"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:relay"/>
+	</thing-type>
+
+	<thing-type id="shelly2-relay">
+		<label>Shelly 2 Relay (SHSW-21)</label>
+		<description>@text/thing-type.shelly.shelly2-relay.description</description>
+
+		<channel-groups>
+			<channel-group id="relay1" typeId="relayChannel">
+				<label>@text/channel-group-type.shelly.relayChannel1.label</label>
+			</channel-group>
+			<channel-group id="relay2" typeId="relayChannel">
+				<label>@text/channel-group-type.shelly.relayChannel2.label</label>
+			</channel-group>
+			<channel-group id="meter" typeId="meter"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:relay"/>
+	</thing-type>
+
+	<thing-type id="shelly2-roller">
+		<label>Shelly 2 Roller (SHSW-21)</label>
+		<description>@text/thing-type.shelly.shelly2-roller.description</description>
+		<category>Rollershutter</category>
+		<channel-groups>
+			<channel-group id="roller" typeId="rollerControl"/>
+			<channel-group id="meter" typeId="meter"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:roller"/>
+	</thing-type>
+
+	<thing-type id="shelly25-relay">
+		<label>Shelly 2.5 Relay (SHSW-25)</label>
+		<description>@text/thing-type.shelly.shelly25-relay.description</description>
+		<channel-groups>
+			<channel-group id="relay1" typeId="relayChannel">
+				<label>@text/channel-group-type.shelly.relayChannel1.label</label>
+			</channel-group>
+			<channel-group id="meter1" typeId="meter">
+				<label>@text/channel-group-type.shelly.meter1.label</label>
+			</channel-group>
+			<channel-group id="relay2" typeId="relayChannel">
+				<label>@text/channel-group-type.shelly.relayChannel2.label</label>
+			</channel-group>
+			<channel-group id="meter2" typeId="meter">
+				<label>@text/channel-group-type.shelly.meter2.label</label>
+			</channel-group>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:relay"/>
+	</thing-type>
+
+	<thing-type id="shelly25-roller">
+		<label>Shelly 2.5 Roller (SHSW-25)</label>
+		<description>@text/thing-type.shelly.shelly25-roller.description</description>
+		<category>Rollershutter</category>
+		<channel-groups>
+			<channel-group id="roller" typeId="rollerControl"/>
+			<channel-group id="meter" typeId="meter"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:roller"/>
+	</thing-type>
+
+	<thing-type id="shelly4pro">
+		<label>Shelly 4 Pro Relay (SHSW-44)</label>
+		<description>@text/thing-type.shelly.shelly4pro.description</description>
+
+		<channel-groups>
+			<channel-group id="relay1" typeId="relayChannel">
+				<label>@text/channel-group-type.shelly.relayChannel1.label</label>
+			</channel-group>
+			<channel-group id="meter1" typeId="meter">
+				<label>@text/channel-group-type.shelly.meter1.label</label>
+			</channel-group>
+			<channel-group id="relay2" typeId="relayChannel">
+				<label>@text/channel-group-type.shelly.relayChannel2.label</label>
+			</channel-group>
+			<channel-group id="meter2" typeId="meter">
+				<label>@text/channel-group-type.shelly.meter2.label</label>
+			</channel-group>
+			<channel-group id="relay3" typeId="relayChannel">
+				<label>@text/channel-group-type.shelly.relayChannel3.label</label>
+			</channel-group>
+			<channel-group id="meter3" typeId="meter">
+				<label>@text/channel-group-type.shelly.meter3.label</label>
+			</channel-group>
+			<channel-group id="relay4" typeId="relayChannel">
+				<label>@text/channel-group-type.shelly.relayChannel4.label</label>
+			</channel-group>
+			<channel-group id="meter4" typeId="meter">
+				<label>@text/channel-group-type.shelly.meter4.label</label>
+			</channel-group>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:relay"/>
+	</thing-type>
+
+	<thing-type id="shellyplug">
+		<label>Shelly Plug (SHPLG-1)</label>
+		<description>@text/thing-type.shelly.shellyplug.description</description>
+		<category>PowerOutlet</category>
+		<channel-groups>
+			<channel-group id="relay" typeId="relayChannelPlug"/>
+			<channel-group id="meter" typeId="meter"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:relay"/>
+	</thing-type>
+
+	<thing-type id="shellyplugs">
+		<label>Shelly Plug-S (SHPLG-S)</label>
+		<description>@text/thing-type.shelly.shellyplugs.description</description>
+		<category>PowerOutlet</category>
+		<channel-groups>
+			<channel-group id="relay" typeId="relayChannelPlug"/>
+			<channel-group id="meter" typeId="meter"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:relay"/>
+	</thing-type>
+
+	<thing-type id="shellyplugu1">
+		<label>Shelly Plug US (SHPLG-U1)</label>
+		<description>@text/thing-type.shelly.shellyplugu1.description</description>
+		<category>PowerOutlet</category>
+		<channel-groups>
+			<channel-group id="relay" typeId="relayChannelPlug"/>
+			<channel-group id="meter" typeId="meter"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:relay"/>
+	</thing-type>
+
+	<thing-type id="shellyuni">
+		<label>Shelly UNI (SHUNI-1)</label>
+		<description>@text/thing-type.shelly.shellyuni.description</description>
+
+		<channel-groups>
+			<channel-group id="relay1" typeId="relayChannel">
+				<label>@text/channel-group-type.shelly.relayChannel1.label</label>
+			</channel-group>
+			<channel-group id="relay2" typeId="relayChannel">
+				<label>@text/channel-group-type.shelly.relayChannel2.label</label>
+			</channel-group>
+			<channel-group id="sensors" typeId="sensorData"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:relay"/>
+	</thing-type>
+
+	<thing-type id="shellydimmer">
+		<label>Shelly Dimmer (SHDM-1)</label>
+		<description>@text/thing-type.shelly.shellydimmer.description</description>
+		<category>DimmableLight</category>
+		<channel-groups>
+			<channel-group id="relay" typeId="dimmerChannel"/>
+			<channel-group id="meter" typeId="meter"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:dimmer"/>
+	</thing-type>
+
+	<thing-type id="shellydimmer2">
+		<label>Shelly Dimmer 2 (SHDM-2)</label>
+		<description>@text/thing-type.shelly.shellydimmer2.description</description>
+		<category>DimmableLight</category>
+		<channel-groups>
+			<channel-group id="relay" typeId="dimmerChannel"/>
+			<channel-group id="meter" typeId="meter"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:dimmer"/>
+	</thing-type>
+
+	<thing-type id="shellyix3">
+		<label>Shelly ix3 (SHIX3-1)</label>
+		<description>@text/thing-type.shelly.shellyix3.description</description>
+		<channel-groups>
+			<channel-group id="status1" typeId="ix3Channel">
+				<label>@text/channel-group-type.shelly.ix3Channel1.label</label>
+			</channel-group>
+			<channel-group id="status2" typeId="ix3Channel">
+				<label>@text/channel-group-type.shelly.ix3Channel2.label</label>
+			</channel-group>
+			<channel-group id="status3" typeId="ix3Channel">
+				<label>@text/channel-group-type.shelly.ix3Channel3.label</label>
+			</channel-group>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:relay"/>
+	</thing-type>
+
+	<channel-group-type id="relayChannel">
+		<label>@text/channel-group-type.shelly.relayChannel.label</label>
+		<description>@text/channel-group-type.shelly.relayChannel.description</description>
+	</channel-group-type>
+
+	<channel-group-type id="relayChannelPlug">
+		<label>@text/channel-group-type.shelly.relayChannel.label</label>
+		<description>@text/channel-group-type.shelly.relayChannel.description</description>
+	</channel-group-type>
+
+	<channel-group-type id="dimmerChannel">
+		<label>@text/channel-group-type.shelly.dimmerChannel.label</label>
+		<description>@text/channel-group-type.shelly.dimmerChannel.description</description>
+	</channel-group-type>
+
+	<channel-group-type id="ix3Channel">
+		<label>@text/channel-group-type.shelly.ix3Channel.label</label>
+		<description>@text/channel-group-type.shelly.ix3Channel.description</description>
+	</channel-group-type>
+
+	<channel-group-type id="rollerControl">
+		<label>@text/channel-group-type.shelly.rollerControl.label</label>
+		<description>@text/channel-group-type.shelly.rollerControl.description</description>
+	</channel-group-type>
+
+	<channel-group-type id="meter">
+		<label>@text/channel-group-type.shelly.meter.label</label>
+		<description>@text/channel-group-type.shelly.meter.description</description>
+	</channel-group-type>
+
+	<channel-group-type id="externalSensors">
+		<label>@text/channel-group-type.shelly.externalSensors.label</label>
+		<description>@text/channel-group-type.shelly.externalSensors.description</description>
+	</channel-group-type>
+
+	<channel-type id="outputName">
+		<item-type>String</item-type>
+		<label>@text/channel-type.shelly.outputName.label</label>
+		<description>@text/channel-type.shelly.outputName.description</description>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+
+	<channel-type id="timerAutoOn" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>@text/channel-type.shelly.timerAutoOn.label</label>
+		<description>@text/channel-type.shelly.timerAutoOn.description</description>
+		<category>Time</category>
+		<state min="0" step="1" pattern="%.0f %unit%" readOnly="false"></state>
+	</channel-type>
+
+	<channel-type id="timerAutoOff" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>@text/channel-type.shelly.timerAutoOff.label</label>
+		<description>@text/channel-type.shelly.timerAutoOff.description</description>
+		<category>Time</category>
+		<state min="0" step="1" pattern="%.0f %unit%" readOnly="false"></state>
+	</channel-type>
+
+	<channel-type id="timerActive" advanced="true">
+		<item-type>Switch</item-type>
+		<label>@text/channel-type.shelly.timerActive.label</label>
+		<description>@text/channel-type.shelly.timerActive.description</description>
+		<category>Status</category>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+
+	<channel-type id="rollerShutter">
+		<item-type>Rollershutter</item-type>
+		<label>@text/channel-type.shelly.rollerShutter.label</label>
+		<description>@text/channel-type.shelly.rollerShutter.description</description>
+		<category>Blinds</category>
+	</channel-type>
+
+	<channel-type id="rollerPosition" advanced="true">
+		<item-type>Dimmer</item-type>
+		<label>@text/channel-type.shelly.rollerPosition.label</label>
+		<description>@text/channel-type.shelly.rollerPosition.description</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
+		<state readOnly="false" min="0" max="100" pattern="%.0f %%"/>
+	</channel-type>
+
+	<channel-type id="rollerFavorite">
+		<item-type>Number</item-type>
+		<label>@text/channel-type.shelly.rollerFavorite.label</label>
+		<description>@text/channel-type.shelly.rollerFavorite.description</description>
+		<state readOnly="false" min="0" max="4"/>
+	</channel-type>
+
+	<channel-type id="rollerState">
+		<item-type>String</item-type>
+		<label>@text/channel-type.shelly.rollerState.label</label>
+		<description>@text/channel-type.shelly.rollerState.description</description>
+		<category>Status</category>
+		<state readOnly="true">
+			<options>
+				<option value="open">@text/channel-type.shelly.rollerState.state.option.open</option>
+				<option value="close">@text/channel-type.shelly.rollerState.state.option.close</option>
+				<option value="stop">@text/channel-type.shelly.rollerState.state.option.stop</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="rollerStop">
+		<item-type>String</item-type>
+		<label>@text/channel-type.shelly.rollerStop.label</label>
+		<description>@text/channel-type.shelly.rollerStop.description</description>
+		<state readOnly="true">
+			<options>
+				<option value="normal">@text/channel-type.shelly.rollerStop.state.option.normal</option>
+				<option value="safety_switch">@text/channel-type.shelly.rollerStop.state.option.safety_switch</option>
+				<option value="obstacle">@text/channel-type.shelly.rollerStop.state.option.obstacle</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="rollerDirection">
+		<item-type>String</item-type>
+		<label>@text/channel-type.shelly.rollerDirection.label</label>
+		<description>@text/channel-type.shelly.rollerDirection.description</description>
+		<state readOnly="true">
+			<options>
+				<option value="open">@text/channel-type.shelly.rollerDirection.state.option.open</option>
+				<option value="close">@text/channel-type.shelly.rollerDirection.state.option.close</option>
+				<option value="stop">@text/channel-type.shelly.rollerDirection.state.option.stop</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="rollerSafety" advanced="true">
+		<item-type>Switch</item-type>
+		<label>@text/channel-type.shelly.rollerSafety.label</label>
+		<description>@text/channel-type.shelly.rollerSafety.description</description>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+
+	<channel-type id="inputState">
+		<item-type>Switch</item-type>
+		<label>@text/channel-type.shelly.inputState.label</label>
+		<description>@text/channel-type.shelly.inputState.description</description>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+
+	<channel-type id="inputState1" advanced="true">
+		<item-type>Switch</item-type>
+		<label>@text/channel-type.shelly.inputState1.label</label>
+		<description>@text/channel-type.shelly.inputState1.description</description>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+
+	<channel-type id="inputState2" advanced="true">
+		<item-type>Switch</item-type>
+		<label>@text/channel-type.shelly.inputState2.label</label>
+		<description>@text/channel-type.shelly.inputState2.description </description>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+
+	<channel-type id="dimmerBrightness">
+		<item-type>Dimmer</item-type>
+		<label>@text/channel-type.shelly.dimmerBrightness.label</label>
+		<description>@text/channel-type.shelly.dimmerBrightness.description</description>
+		<category>DimmableLight</category>
+	</channel-type>
+
+	<channel-type id="meterWatts">
+		<item-type>Number:Power</item-type>
+		<label>@text/channel-type.shelly.meterWatts.label</label>
+		<description>@text/channel-type.shelly.meterWatts.description</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="meterAccuWatts" advanced="true">
+		<item-type>Number:Power</item-type>
+		<label>@text/channel-type.shelly.meterAccuWatts.label</label>
+		<description>@text/channel-type.shelly.meterAccuWatts.description</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="meterAccuTotal" advanced="true">
+		<item-type>Number:Power</item-type>
+		<label>@text/channel-type.shelly.meterAccuTotal.label</label>
+		<description>@text/channel-type.shelly.meterAccuTotal.description</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.3f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="meterAccuReturned" advanced="true">
+		<item-type>Number:Power</item-type>
+		<label>@text/channel-type.shelly.meterAccuReturned.label</label>
+		<description>@text/channel-type.shelly.meterAccuReturned.description</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.3f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="meterReactive">
+		<item-type>Number:Power</item-type>
+		<label>@text/channel-type.shelly.meterReactive.label</label>
+		<description>@text/channel-type.shelly.meterReactive.description</description>
+		<state readOnly="true" pattern="%.3f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="lastPower1" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>@text/channel-type.shelly.lastPower1.label</label>
+		<description>@text/channel-type.shelly.lastPower1.description</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.3f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="meterTotal">
+		<item-type>Number:Energy</item-type>
+		<label>@text/channel-type.shelly.meterTotal.label</label>
+		<description>@text/channel-type.shelly.meterTotal.description</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.3f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="meterReturned">
+		<item-type>Number:Energy</item-type>
+		<label>@text/channel-type.shelly.meterReturned.label</label>
+		<description>@text/channel-type.shelly.meterReturned.description</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.3f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="meterVoltage">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>@text/channel-type.shelly.meterVoltage.label</label>
+		<description>@text/channel-type.shelly.meterVoltage.description</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
+		<state readOnly="true" pattern="%.3f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="meterCurrent">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>@text/channel-type.shelly.meterCurrent.label</label>
+		<description>@text/channel-type.shelly.meterCurrent.description</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state readOnly="true" pattern="%.3f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="meterPowerFactor">
+		<item-type>Number</item-type>
+		<label>@text/channel-type.shelly.meterPowerFactor.label</label>
+		<description>@text/channel-type.shelly.meterPowerFactor.description</description>
+		<state readOnly="true" pattern="%.3f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="timestamp">
+		<item-type>DateTime</item-type>
+		<label>@text/channel-type.shelly.timestamp.label</label>
+		<description>@text/channel-type.shelly.timestamp.description</description>
+		<category>Time</category>
+		<tags>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+
+	<channel-type id="ledStatusDisable">
+		<item-type>Switch</item-type>
+		<label>@text/channel-type.shelly.ledStatusDisable.label</label>
+		<description>@text/channel-type.shelly.ledStatusDisable.description</description>
+	</channel-type>
+
+	<channel-type id="ledPowerDisable">
+		<item-type>Switch</item-type>
+		<label>@text/channel-type.shelly.ledPowerDisable.label</label>
+		<description>@text/channel-type.shelly.ledPowerDisable.description</description>
+	</channel-type>
+
+	<channel-type id="lastUpdate" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>@text/channel-type.shelly.lastUpdate.label</label>
+		<description>@text/channel-type.shelly.lastUpdate.description</description>
+		<category>Time</category>
+		<tags>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+
+	<channel-type id="eventTrigger">
+		<kind>trigger</kind>
+		<label>@text/channel-type.shelly.eventTrigger.label</label>
+		<description>@text/channel-type.shelly.eventTrigger.description</description>
+		<event>
+			<options>
+				<option value="ROLLER_OPEN">@text/channel-type.shelly.eventTrigger.option.ROLLER_OPEN</option>
+				<option value="ROLLER_CLOSE">@text/channel-type.shelly.eventTrigger.option.ROLLER_CLOSE</option>
+				<option value="ROLLER_STOP">@text/channel-type.shelly.eventTrigger.option.ROLLER_STOP</option>
+			</options>
+		</event>
+	</channel-type>
+
+</thing:thing-descriptions>

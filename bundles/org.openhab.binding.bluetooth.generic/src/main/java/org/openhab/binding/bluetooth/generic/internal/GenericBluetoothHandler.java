@@ -29,6 +29,13 @@ import org.openhab.binding.bluetooth.BluetoothBindingConstants;
 import org.openhab.binding.bluetooth.BluetoothCharacteristic;
 import org.openhab.binding.bluetooth.BluetoothDevice.ConnectionState;
 import org.openhab.binding.bluetooth.ConnectedBluetoothHandler;
+import org.openhab.bluetooth.gattparser.BluetoothGattParser;
+import org.openhab.bluetooth.gattparser.BluetoothGattParserFactory;
+import org.openhab.bluetooth.gattparser.FieldHolder;
+import org.openhab.bluetooth.gattparser.GattRequest;
+import org.openhab.bluetooth.gattparser.GattResponse;
+import org.openhab.bluetooth.gattparser.spec.Characteristic;
+import org.openhab.bluetooth.gattparser.spec.Field;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -44,13 +51,6 @@ import org.openhab.core.types.State;
 import org.openhab.core.util.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.sputnikdev.bluetooth.gattparser.BluetoothGattParser;
-import org.sputnikdev.bluetooth.gattparser.BluetoothGattParserFactory;
-import org.sputnikdev.bluetooth.gattparser.FieldHolder;
-import org.sputnikdev.bluetooth.gattparser.GattRequest;
-import org.sputnikdev.bluetooth.gattparser.GattResponse;
-import org.sputnikdev.bluetooth.gattparser.spec.Characteristic;
-import org.sputnikdev.bluetooth.gattparser.spec.Field;
 
 /**
  * This is a handler for generic connected bluetooth devices that dynamically generates

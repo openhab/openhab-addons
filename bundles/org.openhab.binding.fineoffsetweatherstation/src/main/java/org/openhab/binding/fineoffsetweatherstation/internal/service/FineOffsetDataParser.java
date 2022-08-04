@@ -27,7 +27,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.fineoffsetweatherstation.internal.Utils;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.ConversionContext;
-import org.openhab.binding.fineoffsetweatherstation.internal.domain.Measurand;
+import org.openhab.binding.fineoffsetweatherstation.internal.domain.Measurands;
+import org.openhab.binding.fineoffsetweatherstation.internal.domain.Protocol;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.SensorGatewayBinding;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.BatteryStatus;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.MeasuredValue;
@@ -44,6 +45,11 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class FineOffsetDataParser {
     private final Logger logger = LoggerFactory.getLogger(FineOffsetDataParser.class);
+    private final Protocol protocol;
+
+    public FineOffsetDataParser(Protocol protocol) {
+        this.protocol = protocol;
+    }
 
     public @Nullable String getFirmwareVersion(byte[] data) {
         if (data.length > 0) {
@@ -145,7 +151,7 @@ public class FineOffsetDataParser {
         return new SystemInfo(frequency, date, dst, useWh24);
     }
 
-    List<MeasuredValue> getLiveData(byte[] data, ConversionContext context) {
+    List<MeasuredValue> getMeasuredValues(byte[] data, ConversionContext context) {
         /*
          * Pos| Length | Description
          * -------------------------------------------------
@@ -165,16 +171,20 @@ public class FineOffsetDataParser {
          * | 1 | checksum
          */
         var idx = 5;
+        if (protocol == Protocol.ELV) {
+            idx++; // at index 5 there is an additional Byte being set to 0x04
+        }
         var size = toUInt16(data, 3);
         List<MeasuredValue> result = new ArrayList<>();
+        Measurands measurands = Measurands.getInstance(protocol);
         while (idx < size) {
             byte code = data[idx++];
-            Measurand measurand = Measurand.getByCode(code);
-            if (measurand == null) {
-                logger.warn("failed to get measurand 0x{}", Integer.toHexString(code));
+            try {
+                idx += measurands.extractMeasuredValues(code, data, idx, context, result);
+            } catch (IllegalArgumentException e) {
+                logger.warn("", e);
                 return result;
             }
-            idx += measurand.extractMeasuredValues(data, idx, context, result);
         }
         return result;
     }

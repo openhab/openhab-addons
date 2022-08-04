@@ -7,6 +7,7 @@ Some of these brands are e.g.:
 * Aercus
 * Ambient Weather
 * Ecowitt
+* ELV
 * Frogitt
 * Misol
 * Pantech
@@ -40,6 +41,7 @@ This binding works offline by [implementing the wire protocol](https://osswww.ec
     - WH2680
     - WH2900
     - WH2950
+    - WS980 ELV (tested)
 - `sensor`: A Fine Offset sensor which is connected to the bridge with the ThingTypeUID `fineoffsetweatherstation:sensor`.
   Since the gateway collects all the sensor data and harmonizes them, the sensor thing itself will only hold information about the signal and battery status.
   This is a list of sensors supported by the protocol:
@@ -68,12 +70,13 @@ This binding support discovery of Fine Offset gateway devices by sending a broad
 
 ### `gateway` Thing Configuration
 
-| Name              | Type    | Description                                                                         | Default | Required | Advanced |
-|-------------------|---------|-------------------------------------------------------------------------------------|---------|----------|----------|
-| ip                | text    | The Hostname or IP address of the device                                            | N/A     | yes      | no       |
-| port              | integer | The network port of the gateway                                                     | 45000   | yes      | no       |
-| pollingInterval   | integer | Polling period for refreshing the data in seconds                                   | 16      | yes      | yes      |
-| discoverInterval  | integer | Interval in seconds to fetch registered sensors, battery status and signal strength | 900     | yes      | yes      |
+| Name             | Type    | Description                                                                                  | Default | Required | Advanced |
+|------------------|---------|----------------------------------------------------------------------------------------------|---------|----------|----------|
+| ip               | text    | The Hostname or IP address of the device                                                     | N/A     | yes      | no       |
+| port             | integer | The network port of the gateway                                                              | 45000   | yes      | no       |
+| protocol         | text    | The protocol to use for communicating with the gateway, valid values are: `DEFAULT` or `ELV` | DEFAULT | no       | no       |
+| pollingInterval  | integer | Polling period for refreshing the data in seconds                                            | 16      | yes      | yes      |
+| discoverInterval | integer | Interval in seconds to fetch registered sensors, battery status and signal strength          | 900     | yes      | yes      |
 
 ### `sensor` Thing Configuration
 
@@ -267,7 +270,13 @@ This is an example configuration for the WH2650 gateway
 _weatherstation.things_:
 
 ```xtend
-Bridge fineoffsetweatherstation:gateway:3906700515 "Weather station" [ip="192.168.1.42", port="45000", discoverInterval="900", pollingInterval="16"] {
+Bridge fineoffsetweatherstation:gateway:3906700515 "Weather station" [
+     ip="192.168.1.42",
+     port="45000", 
+     discoverInterval="900",
+     pollingInterval="16",
+     protocol="DEFAULT"
+] {
 	Thing sensor WH25 "WH25" [sensor="WH25"]
 	Thing sensor WH65 "WH65" [sensor="WH65"]
 }

@@ -19,6 +19,7 @@
 			<channel id="position" typeId="position"/>
 			<channel id="limitMinimum" typeId="limitMinimum"/>
 			<channel id="limitMaximum" typeId="limitMaximum"/>
+			<channel id="vanePosition" typeId="vanePosition"/>
 		</channels>
 		<representation-property>serial</representation-property>
 		<config-description-ref uri="thing-type:velux:rollershutter"/>

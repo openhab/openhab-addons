@@ -37,9 +37,9 @@ import org.openhab.core.common.registry.RegistryChangeListener;
 import org.openhab.core.config.core.ConfigOptionProvider;
 import org.openhab.core.config.core.ParameterOption;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.transform.TransformationConfiguration;
-import org.openhab.core.transform.TransformationConfigurationRegistry;
+import org.openhab.core.transform.Transformation;
 import org.openhab.core.transform.TransformationException;
+import org.openhab.core.transform.TransformationRegistry;
 import org.openhab.core.transform.TransformationService;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -59,7 +59,7 @@ import org.slf4j.LoggerFactory;
         "openhab.transform=SCALE" })
 @NonNullByDefault
 public class ScaleTransformationService
-        implements TransformationService, ConfigOptionProvider, RegistryChangeListener<TransformationConfiguration> {
+        implements TransformationService, ConfigOptionProvider, RegistryChangeListener<Transformation> {
 
     private final Logger logger = LoggerFactory.getLogger(ScaleTransformationService.class);
 
@@ -77,34 +77,33 @@ public class ScaleTransformationService
 
     /** Inaccessible range used to store presentation format ]0..0[ */
     private static final Range FORMAT_RANGE = Range.range(BigDecimal.ZERO, false, BigDecimal.ZERO, false);
-    private final TransformationConfigurationRegistry transformationConfigurationRegistry;
+    private final TransformationRegistry transformationRegistry;
 
     private final Map<String, Map<@Nullable Range, String>> cachedTransformations = new ConcurrentHashMap<>();
 
     @Activate
-    public ScaleTransformationService(
-            @Reference TransformationConfigurationRegistry transformationConfigurationRegistry) {
-        this.transformationConfigurationRegistry = transformationConfigurationRegistry;
-        transformationConfigurationRegistry.addRegistryChangeListener(this);
+    public ScaleTransformationService(@Reference TransformationRegistry transformationRegistry) {
+        this.transformationRegistry = transformationRegistry;
+        transformationRegistry.addRegistryChangeListener(this);
     }
 
     @Deactivate
     public void deactivate() {
-        transformationConfigurationRegistry.removeRegistryChangeListener(this);
+        transformationRegistry.removeRegistryChangeListener(this);
     }
 
     @Override
-    public void added(TransformationConfiguration element) {
+    public void added(Transformation element) {
         // do nothing, configurations are added to cache if needed
     }
 
     @Override
-    public void removed(TransformationConfiguration element) {
+    public void removed(Transformation element) {
         cachedTransformations.remove(element.getUID());
     }
 
     @Override
-    public void updated(TransformationConfiguration oldElement, TransformationConfiguration element) {
+    public void updated(Transformation oldElement, Transformation element) {
         if (cachedTransformations.remove(oldElement.getUID()) != null) {
             // import only if it was present before
             importConfiguration(element);
@@ -144,12 +143,11 @@ public class ScaleTransformationService
     @Override
     public @Nullable String transform(String function, String source) throws TransformationException {
         // always get a configuration from the registry to account for changed system locale
-        TransformationConfiguration transformationConfiguration = transformationConfigurationRegistry.get(function,
-                null);
+        Transformation transformation = transformationRegistry.get(function, null);
 
-        if (transformationConfiguration != null) {
-            if (!cachedTransformations.containsKey(transformationConfiguration.getUID())) {
-                importConfiguration(transformationConfiguration);
+        if (transformation != null) {
+            if (!cachedTransformations.containsKey(transformation.getUID())) {
+                importConfiguration(transformation);
             }
             Map<@Nullable Range, String> data = cachedTransformations.get(function);
 
@@ -196,13 +194,17 @@ public class ScaleTransformationService
                 .orElseThrow(() -> new TransformationException("No matching range for '" + source + "'"));
     }
 
-    private void importConfiguration(@Nullable TransformationConfiguration configuration) {
+    private void importConfiguration(@Nullable Transformation configuration) {
         if (configuration != null) {
             try {
                 final Map<@Nullable Range, String> data = new LinkedHashMap<>();
                 data.put(FORMAT_RANGE, FORMAT_LABEL);
                 final OrderedProperties properties = new OrderedProperties();
-                properties.load(new StringReader(configuration.getContent()));
+                String function = configuration.getConfiguration().get(Transformation.FUNCTION);
+                if (function == null) {
+                    return;
+                }
+                properties.load(new StringReader(function));
 
                 for (Object orderedKey : properties.orderedKeys()) {
                     final String entry = (String) orderedKey;
@@ -244,7 +246,7 @@ public class ScaleTransformationService
             @Nullable Locale locale) {
         if (PROFILE_CONFIG_URI.equals(uri.toString())) {
             if (CONFIG_PARAM_FUNCTION.equals(param)) {
-                return transformationConfigurationRegistry.getConfigurations(SUPPORTED_CONFIGURATION_TYPES).stream()
+                return transformationRegistry.getTransformations(SUPPORTED_CONFIGURATION_TYPES).stream()
                         .map(c -> new ParameterOption(c.getUID(), c.getLabel())).collect(Collectors.toList());
             }
         }

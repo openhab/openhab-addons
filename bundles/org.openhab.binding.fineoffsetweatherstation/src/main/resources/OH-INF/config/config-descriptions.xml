@@ -16,6 +16,11 @@
 			<description>The network port of the gateway</description>
 			<default>45000</default>
 		</parameter>
+		<parameter name="protocol" type="text" required="false">
+			<label>Protocol</label>
+			<description>The protocol to use for communicating with the gateway, valid values are: `DEFAULT` or `ELV`</description>
+			<default>DEFAULT</default>
+		</parameter>
 		<parameter name="pollingInterval" type="integer" required="true">
 			<label>Polling Interval</label>
 			<description>Polling interval for refreshing the data in seconds</description>

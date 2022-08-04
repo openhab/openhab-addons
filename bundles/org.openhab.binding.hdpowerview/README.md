@@ -64,7 +64,6 @@ PowerView app. However, the configuration parameters are described below.
 
 #### Thing Configuration for PowerView Repeaters
 
-
 | Configuration Parameter | Description |
 |-------------------------|-------------|
 | id                      | The ID of the PowerView repeater in the app. Must be an integer. |
@@ -100,6 +99,10 @@ All of these channels appear in the binding, but only those which have a physica
 | batteryLevel   | Number                   | Battery level (10% = low, 50% = medium, 100% = high)
 | batteryVoltage | Number:ElectricPotential | Battery voltage reported by the shade. |
 | signalStrength | Number                   | Signal strength (0 for no or unknown signal, 1 for weak, 2 for average, 3 for good or 4 for excellent) |
+| hubRssi        | Number:Power             | Received Signal Strength Indicator for Hub |
+| repeaterRssi   | Number:Power             | Received Signal Strength Indicator for Repeater |
+
+Please note that RSSI values will only be updated upon manual request by a `REFRESH` command (e.g. in a rule).
 
 ### Channels for Repeaters (Thing type `repeater`)
 
@@ -210,6 +213,8 @@ For single shades the refresh takes the item's channel into consideration:
 | batteryLevel   | Battery           |
 | batteryVoltage | Battery           |
 | signalStrength | Survey            |
+| hubRssi        | Survey            |
+| repeaterRssi   | Survey            |
 
 ## Full Example
 

@@ -53,7 +53,7 @@ public class RotelAsciiV1ProtocolHandler extends RotelAbstractAsciiProtocolHandl
     public byte[] buildCommandMessage(RotelCommand cmd, @Nullable Integer value) throws RotelException {
         String messageStr = cmd.getAsciiCommandV1();
         if (messageStr == null) {
-            throw new RotelException("Command \"" + cmd.getName() + "\" ignored: not available for ASCII V1 protocol");
+            throw new RotelException("Command \"" + cmd.getLabel() + "\" ignored: not available for ASCII V1 protocol");
         }
         if (value != null) {
             switch (cmd) {
@@ -94,7 +94,7 @@ public class RotelAsciiV1ProtocolHandler extends RotelAbstractAsciiProtocolHandl
             messageStr += "!";
         }
         byte[] message = messageStr.getBytes(StandardCharsets.US_ASCII);
-        logger.debug("Command \"{}\" => {}", cmd.getName(), messageStr);
+        logger.debug("Command \"{}\" => {}", cmd, messageStr);
         return message;
     }
 }
