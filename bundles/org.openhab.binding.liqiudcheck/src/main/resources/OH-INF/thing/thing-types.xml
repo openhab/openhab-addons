@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="liqiudcheck"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="liquidCheck">
+		<label>Liquid Check</label>
+		<description></description>
+
+		<category>Sensor</category>
+
+		<properties>
+			<property name="firmware">Firmware</property>
+			<property name="hardware">Hardware</property>
+			<property name="name">Name</property>
+			<property name="manufacturer">Manufacturer</property>
+			<property name="uuid">UUID</property>
+			<property name="securityCode">Security Code</property>
+			<porperty name="ip">IP</porperty>
+			<property name="mac">MAC-Address</property>
+			<property name="ssid">SSID</property>
+		</properties>
+
+		<channels>
+			<channel id="content" typeId="content-channel"/>
+			<channel id="level" typeId="level-channel"/>
+		</channels>
+
+		<config-description>
+			<parameter name="hostname" type="text" required="true">
+				<context>network-address</context>
+				<label>Hostname</label>
+				<description>Hostname or IP address of the device.</description>
+			</parameter>
+			<parameter name="maxContent" type="integer" unit="l" min="1">
+				<label>Maximal Content</label>
+				<description>Maximal conten in the container.</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="s" min="1">
+				<label>Refresh Interval</label>
+				<description>Interval the device is polled in sec.</description>
+				<default>600</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="content-channel">
+		<item-type>Number</item-type>
+		<label>Content</label><!-- Use uppercase words, except prepositions. 2-3 words, max 25 chars -->
+		<description>Content in the container</description>
+	</channel-type>
+	<channel-type id="level-channel">
+		<item-type>Number</item-type>
+		<label>Level</label>
+		<description>Level in the container</description>
+	</channel-type>
+</thing:thing-descriptions>
