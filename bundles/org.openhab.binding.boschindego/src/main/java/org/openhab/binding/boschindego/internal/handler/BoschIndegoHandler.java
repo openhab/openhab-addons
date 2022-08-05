@@ -93,6 +93,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
     private Instant cachedMapTimestamp = Instant.MIN;
     private Instant operatingDataTimestamp = Instant.MIN;
     private Instant mapRefreshStartedTimestamp = Instant.MIN;
+    private ThingStatus lastOperatingDataStatus = ThingStatus.UNINITIALIZED;
     private int stateInactiveRefreshIntervalSeconds;
     private int stateActiveRefreshIntervalSeconds;
     private int currentRefreshIntervalSeconds;
@@ -195,7 +196,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.comm-error.authentication-failure");
         } catch (IndegoTimeoutException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(lastOperatingDataStatus = ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.comm-error.unreachable");
         } catch (IndegoInvalidCommandException e) {
             logger.warn("Invalid command: {}", e.getMessage());
@@ -281,7 +282,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.comm-error.authentication-failure");
         } catch (IndegoTimeoutException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(lastOperatingDataStatus = ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.comm-error.unreachable");
         } catch (IndegoException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
@@ -328,6 +329,15 @@ public class BoschIndegoHandler extends BaseThingHandler {
         refreshOperatingDataConditionally(
                 previousDeviceStatus.isCharging() || deviceStatus.isCharging() || deviceStatus.isActive());
 
+        if (lastOperatingDataStatus == ThingStatus.ONLINE && thing.getStatus() != ThingStatus.ONLINE) {
+            // Revert temporary offline status caused by disruptions other than unreachable device.
+            updateStatus(ThingStatus.ONLINE);
+        } else if (lastOperatingDataStatus == ThingStatus.OFFLINE) {
+            // Update description to reflect why thing is still offline.
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.comm-error.unreachable");
+        }
+
         rescheduleStatePollAccordingToState(deviceStatus);
     }
 
@@ -361,7 +371,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
     private void refreshOperatingData() throws IndegoAuthenticationException, IndegoTimeoutException, IndegoException {
         updateOperatingData(controller.getOperatingData());
         operatingDataTimestamp = Instant.now();
-        updateStatus(ThingStatus.ONLINE);
+        updateStatus(lastOperatingDataStatus = ThingStatus.ONLINE);
     }
 
     private void refreshCuttingTimesWithExceptionHandling() {
