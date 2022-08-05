@@ -174,7 +174,7 @@
 			<parameter name="onvalue" type="text">
 				<label>On Value</label>
 				<description>The value that will be treated by the binding as the on value. For sensors that activate with a high
-					value leave at the default of 1 and sensors that activate with a low value set to 0.</description>
+					value, leave at the default of 1 and sensors that activate with a low value set to 0.</description>
 				<default>1</default>
 				<options>
 					<option value="0">0</option>
