@@ -23,7 +23,7 @@ import java.util.concurrent.TimeoutException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
-import org.openhab.binding.solarforecast.internal.solcast.SolcastObject;
+import org.openhab.binding.solarforecast.internal.Utils;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
@@ -149,12 +149,14 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler {
     }
 
     private void updateChannels(ForecastSolarObject f) {
-        updateState(CHANNEL_ACTUAL, SolcastObject.getStateObject(f.getActualValue(LocalDateTime.now())));
-        updateState(CHANNEL_REMAINING, SolcastObject.getStateObject(f.getRemainingProduction(LocalDateTime.now())));
-        updateState(CHANNEL_TODAY, SolcastObject.getStateObject(f.getDayTotal(LocalDateTime.now(), 0)));
-        updateState(CHANNEL_DAY1, SolcastObject.getStateObject(f.getDayTotal(LocalDateTime.now(), 1)));
-        updateState(CHANNEL_DAY2, SolcastObject.getStateObject(f.getDayTotal(LocalDateTime.now(), 2)));
-        updateState(CHANNEL_DAY3, SolcastObject.getStateObject(f.getDayTotal(LocalDateTime.now(), 3)));
+        LocalDateTime now = LocalDateTime.now();
+        updateState(CHANNEL_ACTUAL, Utils.getEnergyState(f.getActualValue(now)));
+        updateState(CHANNEL_ACTUAL_POWER, Utils.getPowerState(f.getActualPowerValue(now)));
+        updateState(CHANNEL_REMAINING, Utils.getEnergyState(f.getRemainingProduction(now)));
+        updateState(CHANNEL_TODAY, Utils.getEnergyState(f.getDayTotal(now, 0)));
+        updateState(CHANNEL_DAY1, Utils.getEnergyState(f.getDayTotal(now, 1)));
+        updateState(CHANNEL_DAY2, Utils.getEnergyState(f.getDayTotal(now, 2)));
+        updateState(CHANNEL_DAY3, Utils.getEnergyState(f.getDayTotal(now, 3)));
     }
 
     /**

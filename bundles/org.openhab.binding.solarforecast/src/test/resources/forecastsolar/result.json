@@ -86,9 +86,9 @@
 		"type": "success",
 		"text": "",
 		"info": {
-			"latitude": 50.556,
-			"longitude": 8.4956,
-			"place": "35585 Wetzlar, Lahn-Dill-Kreis, Hessen, DE",
+			"latitude": 54.321,
+			"longitude": 8.765,
+			"place": "Whereever",
 			"timezone": "Europe/Berlin"
 		},
 		"ratelimit": {

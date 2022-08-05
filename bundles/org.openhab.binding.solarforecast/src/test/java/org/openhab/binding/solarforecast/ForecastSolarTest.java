@@ -21,8 +21,8 @@ import javax.measure.quantity.Energy;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.solarforecast.internal.Utils;
 import org.openhab.binding.solarforecast.internal.forecastsolar.ForecastSolarObject;
-import org.openhab.binding.solarforecast.internal.solcast.SolcastObject;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
@@ -51,6 +51,22 @@ class ForecastSolarTest {
     }
 
     @Test
+    void testActualPower() {
+        String content = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
+        LocalDateTime now = LocalDateTime.of(2022, 7, 17, 16, 23);
+        ForecastSolarObject fo = new ForecastSolarObject(content, now, now);
+        assertEquals(5.704, fo.getActualPowerValue(now), 0.001, "Actual estimation");
+
+        // todo: test this - date out of scope shall return undef
+        // LocalDateTime ldt = LocalDateTime.of(2022, 7, 23, 0, 5);
+        LocalDateTime ldt = LocalDateTime.of(2022, 7, 17, 0, 5);
+        for (int i = 0; i < 96; i++) {
+            ldt = ldt.plusMinutes(15);
+            System.out.println(ldt + " " + fo.getActualPowerValue(ldt));
+        }
+    }
+
+    @Test
     void testInterpolation() {
         String content = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
         LocalDateTime now = LocalDateTime.of(2022, 7, 17, 16, 0);
@@ -69,7 +85,7 @@ class ForecastSolarTest {
         LocalDateTime now = LocalDateTime.of(2022, 7, 17, 16, 23);
         ForecastSolarObject fo = new ForecastSolarObject(content, now, now);
         QuantityType<Energy> actual = QuantityType.valueOf(0, Units.KILOWATT_HOUR);
-        State st = SolcastObject.getStateObject(fo.getActualValue(now));
+        State st = Utils.getEnergyState(fo.getActualValue(now));
         assertTrue(st instanceof QuantityType);
         actual = actual.add((QuantityType<Energy>) st);
         assertEquals(49.431, actual.floatValue(), 0.001, "Current Production");

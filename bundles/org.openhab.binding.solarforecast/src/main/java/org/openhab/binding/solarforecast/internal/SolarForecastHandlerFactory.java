@@ -41,6 +41,8 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link SolarForecastHandlerFactory} is responsible for creating things and thing
@@ -51,6 +53,7 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 @Component(configurationPid = "binding.solarforecast", service = ThingHandlerFactory.class)
 public class SolarForecastHandlerFactory extends BaseThingHandlerFactory {
+    private final Logger logger = LoggerFactory.getLogger(SolarForecastHandlerFactory.class);
     private final ItemRegistry itemRegistry;
     private final HttpClient httpClient;
     private final PointType location;
@@ -72,9 +75,10 @@ public class SolarForecastHandlerFactory extends BaseThingHandlerFactory {
         }
 
         PersistenceService s = psr.getDefault();
-        if (!(s instanceof QueryablePersistenceService)) {
-        } else {
+        if (s instanceof QueryablePersistenceService) {
             qps = Optional.of((QueryablePersistenceService) s);
+        } else {
+            logger.info("Persistence {} cannot be queried. Feature Solcast Tuninng will not work", s);
         }
     }
 

@@ -37,6 +37,7 @@ public class SolarForecastBindingConstants {
 
     public static final String CHANNEL_TODAY = "today";
     public static final String CHANNEL_ACTUAL = "actual";
+    public static final String CHANNEL_ACTUAL_POWER = "actual-power";
     public static final String CHANNEL_REMAINING = "remaining";
     public static final String CHANNEL_DAY1 = "day1";
     public static final String CHANNEL_DAY1_LOW = "day1-low";

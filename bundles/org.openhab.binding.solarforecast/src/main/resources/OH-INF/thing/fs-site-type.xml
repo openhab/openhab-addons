@@ -10,6 +10,7 @@
 
 		<channels>
 			<channel id="actual" typeId="actual-channel"/>
+			<channel id="actual-power" typeId="actual-power-channel"/>
 			<channel id="remaining" typeId="remaining-channel"/>
 			<channel id="today" typeId="today-channel"/>
 			<channel id="day1" typeId="day1-channel"/>

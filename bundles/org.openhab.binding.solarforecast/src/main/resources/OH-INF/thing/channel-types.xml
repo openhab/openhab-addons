@@ -12,8 +12,14 @@
 	</channel-type>
 	<channel-type id="actual-channel">
 		<item-type>Number:Energy</item-type>
-		<label>Actual Forecast</label>
-		<description>Todays forecast till now</description>
+		<label>Actual Energy Forecast</label>
+		<description>Todays production forecast till now</description>
+		<state pattern="%.3f %unit" readOnly="true"/>
+	</channel-type>
+	<channel-type id="actual-power-channel">
+		<item-type>Number:Power</item-type>
+		<label>Actual Power Forecast</label>
+		<description>Predicted power in this moment</description>
 		<state pattern="%.3f %unit" readOnly="true"/>
 	</channel-type>
 	<channel-type id="today-channel">

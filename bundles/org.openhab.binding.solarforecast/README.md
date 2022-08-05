@@ -93,13 +93,14 @@ Day*X* channels are referring to forecasts plus *X* days: 1 = tomorrow, 2 = day 
 
 | Channel                 | Type          | Description                              | Advanced |
 |-------------------------|---------------|------------------------------------------|----------|
-| actual-channel          | Number:Energy | Today's forecast till now                | no       |
-| remaining-channel       | Number:Energy | Forecast of today's remaining production | no       |
-| today-channel           | Number:Energy | Today's forecast in total                | no       |
-| day*X*-channel          | Number:Energy | Day *X* forecast in total                | no       |
-| day*X*-low-channel      | Number:Energy | Day *X* pessimistic forecast             | no       |
-| day*X*-high-channel     | Number:Energy | Day *X* optimistic forecast              | no       |
-| raw                     | String        | Plain JSON response without conversions  | no       |
+| actual                  | Number:Energy | Today's forecast till now                | no       |
+| actual-power            | Number:Power  | Predicted power in this moment           | no       |
+| remaining               | Number:Energy | Forecast of today's remaining production | no       |
+| today                   | Number:Energy | Today's forecast in total                | no       |
+| day*X*                  | Number:Energy | Day *X* forecast in total                | no       |
+| day*X*-low              | Number:Energy | Day *X* pessimistic forecast             | no       |
+| day*X*-high             | Number:Energy | Day *X* optimistic forecast              | no       |
+| raw                     | String        | Plain JSON response without conversions  | yes      |
 | raw-tuning              | String        | JSON response from tuning call           | yes      |
 
 ## ForecastSolar Configuration
@@ -144,13 +145,14 @@ Forecasts are delivered up to 3 days for paid personal plans.
 
 Day*X* channels are referring to forecasts plus *X* days: 1 = tomorrow, 2 = day after tomorrow, ...
 
-| Channel                 | Type          | Description                              |
-|-------------------------|---------------|------------------------------------------|
-| actual-channel          | Number:Energy | Today's forecast till now                |
-| remaining-channel       | Number:Energy | Forecast of today's remaining production |
-| today-channel           | Number:Energy | Today's forecast in total                |
-| day*X*-channel          | Number:Energy | Day *X* forecast in total                |
-| raw                     | String        | Plain JSON response without conversions  |
+| Channel                 | Type          | Description                              | Advanced |
+|-------------------------|---------------|------------------------------------------|----------|
+| actual                  | Number:Energy | Today's forecast till now                | no       |
+| actual-power            | Number:Power  | Predicted power in this moment           | no       |
+| remaining               | Number:Energy | Forecast of today's remaining production | no       |
+| today                   | Number:Energy | Today's forecast in total                | no       |
+| day*X*                  | Number:Energy | Day *X* forecast in total                | no       |
+| raw                     | String        | Plain JSON response without conversions  | yes      |
 
 ## Example
 

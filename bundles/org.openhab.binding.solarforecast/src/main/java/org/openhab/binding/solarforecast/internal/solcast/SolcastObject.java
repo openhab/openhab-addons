@@ -26,10 +26,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants;
-import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.Units;
-import org.openhab.core.types.State;
-import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,33 +78,25 @@ public class SolcastObject {
                 TreeMap<ZonedDateTime, Double> forecastMap = dataMap.get(ld);
                 if (forecastMap == null) {
                     forecastMap = new TreeMap<ZonedDateTime, Double>();
-                    forecastMap.put(getZdtFromUTC(periodEnd), jo.getDouble("pv_estimate"));
-                    dataMap.put(ld, forecastMap);
-                } else {
-                    forecastMap.put(getZdtFromUTC(periodEnd), jo.getDouble("pv_estimate"));
-                    dataMap.put(ld, forecastMap);
                 }
+                forecastMap.put(getZdtFromUTC(periodEnd), jo.getDouble("pv_estimate"));
+                dataMap.put(ld, forecastMap);
+
                 if (jo.has("pv_estimate10")) {
                     TreeMap<ZonedDateTime, Double> pessimisticForecastMap = pessimisticDataMap.get(ld);
                     if (pessimisticForecastMap == null) {
                         pessimisticForecastMap = new TreeMap<ZonedDateTime, Double>();
-                        pessimisticForecastMap.put(getZdtFromUTC(periodEnd), jo.getDouble("pv_estimate10"));
-                        pessimisticDataMap.put(ld, pessimisticForecastMap);
-                    } else {
-                        pessimisticForecastMap.put(getZdtFromUTC(periodEnd), jo.getDouble("pv_estimate10"));
-                        pessimisticDataMap.put(ld, pessimisticForecastMap);
                     }
+                    pessimisticForecastMap.put(getZdtFromUTC(periodEnd), jo.getDouble("pv_estimate10"));
+                    pessimisticDataMap.put(ld, pessimisticForecastMap);
                 }
                 if (jo.has("pv_estimate90")) {
                     TreeMap<ZonedDateTime, Double> optimisticForecastMap = optimisticDataMap.get(ld);
                     if (optimisticForecastMap == null) {
                         optimisticForecastMap = new TreeMap<ZonedDateTime, Double>();
-                        optimisticForecastMap.put(getZdtFromUTC(periodEnd), jo.getDouble("pv_estimate90"));
-                        optimisticDataMap.put(ld, optimisticForecastMap);
-                    } else {
-                        optimisticForecastMap.put(getZdtFromUTC(periodEnd), jo.getDouble("pv_estimate90"));
-                        optimisticDataMap.put(ld, optimisticForecastMap);
                     }
+                    optimisticForecastMap.put(getZdtFromUTC(periodEnd), jo.getDouble("pv_estimate90"));
+                    optimisticDataMap.put(ld, optimisticForecastMap);
                 }
             }
         }
@@ -173,6 +161,38 @@ public class SolcastObject {
         }
     }
 
+    public double getActualPowerValue(ZonedDateTime now) {
+        if (dataMap.isEmpty()) {
+            return UNDEF;
+        }
+        LocalDate ld = now.toLocalDate();
+        TreeMap<ZonedDateTime, Double> dtm = dataMap.get(ld);
+        if (dtm == null) {
+            return UNDEF;
+        }
+        double actualPowerValue = 0;
+        Entry<ZonedDateTime, Double> f = dtm.floorEntry(now);
+        Entry<ZonedDateTime, Double> c = dtm.ceilingEntry(now);
+        if (f != null) {
+            if (c != null) {
+                // we're during suntime!
+                double powerCeiling = c.getValue();
+                double powerFloor = f.getValue();
+                // calculate in minutes from floor to now, e.g. 20 minutes
+                // => take 2/3 of floor and 1/3 of ceiling
+                double interpolation = (now.getMinute() - f.getKey().getMinute()) / 60.0;
+                actualPowerValue = ((1 - interpolation) * powerFloor) + (interpolation * powerCeiling);
+                return Math.round(actualPowerValue * 1000) / 1000.0;
+            } else {
+                // sun is down
+                return 0;
+            }
+        } else {
+            // no floor - sun not rised yet
+            return 0;
+        }
+    }
+
     public double getDayTotal(ZonedDateTime now, int offset) {
         LocalDate ld = now.plusDays(offset).toLocalDate();
         TreeMap<ZonedDateTime, Double> dtm = dataMap.get(ld);
@@ -222,14 +242,6 @@ public class SolcastObject {
             return UNDEF;
         }
         return getDayTotal(now, 0) - getActualValue(now);
-    }
-
-    public static State getStateObject(double d) {
-        if (d < 0) {
-            return UnDefType.UNDEF;
-        } else {
-            return QuantityType.valueOf(d, Units.KILOWATT_HOUR);
-        }
     }
 
     @Override

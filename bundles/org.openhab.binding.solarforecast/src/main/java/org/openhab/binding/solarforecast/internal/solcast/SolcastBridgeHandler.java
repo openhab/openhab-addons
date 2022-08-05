@@ -23,6 +23,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.solarforecast.internal.Utils;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -88,6 +89,7 @@ public class SolcastBridgeHandler extends BaseBridgeHandler {
         }
         ZonedDateTime now = ZonedDateTime.now(SolcastConstants.zonedId);
         double actualSum = 0;
+        double actualPowerSum = 0;
         double remainSum = 0;
         double todaySum = 0;
         double day1Sum = 0;
@@ -113,6 +115,7 @@ public class SolcastBridgeHandler extends BaseBridgeHandler {
             SolcastPlaneHandler sfph = iterator.next();
             SolcastObject fo = sfph.fetchData();
             actualSum += fo.getActualValue(now);
+            actualPowerSum += fo.getActualPowerValue(now);
             remainSum += fo.getRemainingProduction(now);
             todaySum += fo.getDayTotal(now, 0);
             day1Sum += fo.getDayTotal(now, 1);
@@ -134,27 +137,28 @@ public class SolcastBridgeHandler extends BaseBridgeHandler {
             day6SumLow += fo.getPessimisticDayTotal(now, 6);
             day6SumHigh += fo.getOptimisticDayTotal(now, 6);
         }
-        updateState(CHANNEL_ACTUAL, SolcastObject.getStateObject(actualSum));
-        updateState(CHANNEL_REMAINING, SolcastObject.getStateObject(remainSum));
-        updateState(CHANNEL_TODAY, SolcastObject.getStateObject(todaySum));
-        updateState(CHANNEL_DAY1, SolcastObject.getStateObject(day1Sum));
-        updateState(CHANNEL_DAY1_HIGH, SolcastObject.getStateObject(day1SumHigh));
-        updateState(CHANNEL_DAY1_LOW, SolcastObject.getStateObject(day1SumLow));
-        updateState(CHANNEL_DAY2, SolcastObject.getStateObject(day2Sum));
-        updateState(CHANNEL_DAY2_HIGH, SolcastObject.getStateObject(day2SumHigh));
-        updateState(CHANNEL_DAY2_LOW, SolcastObject.getStateObject(day2SumLow));
-        updateState(CHANNEL_DAY3, SolcastObject.getStateObject(day3Sum));
-        updateState(CHANNEL_DAY3_HIGH, SolcastObject.getStateObject(day3SumHigh));
-        updateState(CHANNEL_DAY3_LOW, SolcastObject.getStateObject(day3SumLow));
-        updateState(CHANNEL_DAY4, SolcastObject.getStateObject(day4Sum));
-        updateState(CHANNEL_DAY4_HIGH, SolcastObject.getStateObject(day4SumHigh));
-        updateState(CHANNEL_DAY4_LOW, SolcastObject.getStateObject(day4SumLow));
-        updateState(CHANNEL_DAY5, SolcastObject.getStateObject(day5Sum));
-        updateState(CHANNEL_DAY5_HIGH, SolcastObject.getStateObject(day5SumHigh));
-        updateState(CHANNEL_DAY5_LOW, SolcastObject.getStateObject(day5SumLow));
-        updateState(CHANNEL_DAY6, SolcastObject.getStateObject(day6Sum));
-        updateState(CHANNEL_DAY6_HIGH, SolcastObject.getStateObject(day6SumHigh));
-        updateState(CHANNEL_DAY6_LOW, SolcastObject.getStateObject(day6SumLow));
+        updateState(CHANNEL_ACTUAL, Utils.getEnergyState(actualSum));
+        updateState(CHANNEL_ACTUAL_POWER, Utils.getPowerState(actualPowerSum));
+        updateState(CHANNEL_REMAINING, Utils.getEnergyState(remainSum));
+        updateState(CHANNEL_TODAY, Utils.getEnergyState(todaySum));
+        updateState(CHANNEL_DAY1, Utils.getEnergyState(day1Sum));
+        updateState(CHANNEL_DAY1_HIGH, Utils.getEnergyState(day1SumHigh));
+        updateState(CHANNEL_DAY1_LOW, Utils.getEnergyState(day1SumLow));
+        updateState(CHANNEL_DAY2, Utils.getEnergyState(day2Sum));
+        updateState(CHANNEL_DAY2_HIGH, Utils.getEnergyState(day2SumHigh));
+        updateState(CHANNEL_DAY2_LOW, Utils.getEnergyState(day2SumLow));
+        updateState(CHANNEL_DAY3, Utils.getEnergyState(day3Sum));
+        updateState(CHANNEL_DAY3_HIGH, Utils.getEnergyState(day3SumHigh));
+        updateState(CHANNEL_DAY3_LOW, Utils.getEnergyState(day3SumLow));
+        updateState(CHANNEL_DAY4, Utils.getEnergyState(day4Sum));
+        updateState(CHANNEL_DAY4_HIGH, Utils.getEnergyState(day4SumHigh));
+        updateState(CHANNEL_DAY4_LOW, Utils.getEnergyState(day4SumLow));
+        updateState(CHANNEL_DAY5, Utils.getEnergyState(day5Sum));
+        updateState(CHANNEL_DAY5_HIGH, Utils.getEnergyState(day5SumHigh));
+        updateState(CHANNEL_DAY5_LOW, Utils.getEnergyState(day5SumLow));
+        updateState(CHANNEL_DAY6, Utils.getEnergyState(day6Sum));
+        updateState(CHANNEL_DAY6_HIGH, Utils.getEnergyState(day6SumHigh));
+        updateState(CHANNEL_DAY6_LOW, Utils.getEnergyState(day6SumLow));
     }
 
     @Override

@@ -30,6 +30,7 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.json.JSONObject;
+import org.openhab.binding.solarforecast.internal.Utils;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.library.types.DecimalType;
@@ -308,27 +309,28 @@ public class SolcastPlaneHandler extends BaseThingHandler {
 
     private void updateChannels(SolcastObject f) {
         ZonedDateTime now = ZonedDateTime.now(SolcastConstants.zonedId);
-        updateState(CHANNEL_ACTUAL, SolcastObject.getStateObject(f.getActualValue(now)));
-        updateState(CHANNEL_REMAINING, SolcastObject.getStateObject(f.getRemainingProduction(now)));
-        updateState(CHANNEL_TODAY, SolcastObject.getStateObject(f.getDayTotal(now, 0)));
-        updateState(CHANNEL_DAY1, SolcastObject.getStateObject(f.getDayTotal(now, 1)));
-        updateState(CHANNEL_DAY1_HIGH, SolcastObject.getStateObject(f.getOptimisticDayTotal(now, 1)));
-        updateState(CHANNEL_DAY1_LOW, SolcastObject.getStateObject(f.getPessimisticDayTotal(now, 1)));
-        updateState(CHANNEL_DAY2, SolcastObject.getStateObject(f.getDayTotal(now, 2)));
-        updateState(CHANNEL_DAY2_HIGH, SolcastObject.getStateObject(f.getOptimisticDayTotal(now, 2)));
-        updateState(CHANNEL_DAY2_LOW, SolcastObject.getStateObject(f.getPessimisticDayTotal(now, 2)));
-        updateState(CHANNEL_DAY3, SolcastObject.getStateObject(f.getDayTotal(now, 3)));
-        updateState(CHANNEL_DAY3_HIGH, SolcastObject.getStateObject(f.getOptimisticDayTotal(now, 3)));
-        updateState(CHANNEL_DAY3_LOW, SolcastObject.getStateObject(f.getPessimisticDayTotal(now, 3)));
-        updateState(CHANNEL_DAY4, SolcastObject.getStateObject(f.getDayTotal(now, 4)));
-        updateState(CHANNEL_DAY4_HIGH, SolcastObject.getStateObject(f.getOptimisticDayTotal(now, 4)));
-        updateState(CHANNEL_DAY4_LOW, SolcastObject.getStateObject(f.getPessimisticDayTotal(now, 4)));
-        updateState(CHANNEL_DAY5, SolcastObject.getStateObject(f.getDayTotal(now, 5)));
-        updateState(CHANNEL_DAY5_HIGH, SolcastObject.getStateObject(f.getOptimisticDayTotal(now, 5)));
-        updateState(CHANNEL_DAY5_LOW, SolcastObject.getStateObject(f.getPessimisticDayTotal(now, 5)));
-        updateState(CHANNEL_DAY6, SolcastObject.getStateObject(f.getDayTotal(now, 6)));
-        updateState(CHANNEL_DAY6_HIGH, SolcastObject.getStateObject(f.getOptimisticDayTotal(now, 6)));
-        updateState(CHANNEL_DAY6_LOW, SolcastObject.getStateObject(f.getPessimisticDayTotal(now, 6)));
+        updateState(CHANNEL_ACTUAL, Utils.getEnergyState(f.getActualValue(now)));
+        updateState(CHANNEL_ACTUAL_POWER, Utils.getEnergyState(f.getActualPowerValue(now)));
+        updateState(CHANNEL_REMAINING, Utils.getEnergyState(f.getRemainingProduction(now)));
+        updateState(CHANNEL_TODAY, Utils.getEnergyState(f.getDayTotal(now, 0)));
+        updateState(CHANNEL_DAY1, Utils.getEnergyState(f.getDayTotal(now, 1)));
+        updateState(CHANNEL_DAY1_HIGH, Utils.getEnergyState(f.getOptimisticDayTotal(now, 1)));
+        updateState(CHANNEL_DAY1_LOW, Utils.getEnergyState(f.getPessimisticDayTotal(now, 1)));
+        updateState(CHANNEL_DAY2, Utils.getEnergyState(f.getDayTotal(now, 2)));
+        updateState(CHANNEL_DAY2_HIGH, Utils.getEnergyState(f.getOptimisticDayTotal(now, 2)));
+        updateState(CHANNEL_DAY2_LOW, Utils.getEnergyState(f.getPessimisticDayTotal(now, 2)));
+        updateState(CHANNEL_DAY3, Utils.getEnergyState(f.getDayTotal(now, 3)));
+        updateState(CHANNEL_DAY3_HIGH, Utils.getEnergyState(f.getOptimisticDayTotal(now, 3)));
+        updateState(CHANNEL_DAY3_LOW, Utils.getEnergyState(f.getPessimisticDayTotal(now, 3)));
+        updateState(CHANNEL_DAY4, Utils.getEnergyState(f.getDayTotal(now, 4)));
+        updateState(CHANNEL_DAY4_HIGH, Utils.getEnergyState(f.getOptimisticDayTotal(now, 4)));
+        updateState(CHANNEL_DAY4_LOW, Utils.getEnergyState(f.getPessimisticDayTotal(now, 4)));
+        updateState(CHANNEL_DAY5, Utils.getEnergyState(f.getDayTotal(now, 5)));
+        updateState(CHANNEL_DAY5_HIGH, Utils.getEnergyState(f.getOptimisticDayTotal(now, 5)));
+        updateState(CHANNEL_DAY5_LOW, Utils.getEnergyState(f.getPessimisticDayTotal(now, 5)));
+        updateState(CHANNEL_DAY6, Utils.getEnergyState(f.getDayTotal(now, 6)));
+        updateState(CHANNEL_DAY6_HIGH, Utils.getEnergyState(f.getOptimisticDayTotal(now, 6)));
+        updateState(CHANNEL_DAY6_LOW, Utils.getEnergyState(f.getPessimisticDayTotal(now, 6)));
         updateState(CHANNEL_RAW, StringType.valueOf(forecast.getRaw()));
     }
 }

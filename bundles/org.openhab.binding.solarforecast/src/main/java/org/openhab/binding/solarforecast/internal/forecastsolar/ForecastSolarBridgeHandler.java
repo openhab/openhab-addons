@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants;
-import org.openhab.binding.solarforecast.internal.solcast.SolcastObject;
+import org.openhab.binding.solarforecast.internal.Utils;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.thing.Bridge;
@@ -42,7 +42,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ForecastSolarBridgeHandler extends BaseBridgeHandler {
-
     private final Logger logger = LoggerFactory.getLogger(ForecastSolarBridgeHandler.class);
     private final PointType homeLocation;
 
@@ -95,6 +94,7 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler {
         }
         LocalDateTime now = LocalDateTime.now();
         double actualSum = 0;
+        double actualPowerSum = 0;
         double remainSum = 0;
         double todaySum = 0;
         double day1Sum = 0;
@@ -104,18 +104,20 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler {
             ForecastSolarPlaneHandler sfph = iterator.next();
             ForecastSolarObject fo = sfph.fetchData();
             actualSum += fo.getActualValue(now);
+            actualPowerSum += fo.getActualPowerValue(now);
             remainSum += fo.getRemainingProduction(now);
             todaySum += fo.getDayTotal(now, 0);
             day1Sum += fo.getDayTotal(now, 1);
             day2Sum += fo.getDayTotal(now, 2);
             day3Sum += fo.getDayTotal(now, 3);
         }
-        updateState(CHANNEL_REMAINING, SolcastObject.getStateObject(remainSum));
-        updateState(CHANNEL_ACTUAL, SolcastObject.getStateObject(actualSum));
-        updateState(CHANNEL_TODAY, SolcastObject.getStateObject(todaySum));
-        updateState(CHANNEL_DAY1, SolcastObject.getStateObject(day1Sum));
-        updateState(CHANNEL_DAY2, SolcastObject.getStateObject(day2Sum));
-        updateState(CHANNEL_DAY3, SolcastObject.getStateObject(day3Sum));
+        updateState(CHANNEL_ACTUAL, Utils.getEnergyState(actualSum));
+        updateState(CHANNEL_ACTUAL_POWER, Utils.getPowerState(actualPowerSum));
+        updateState(CHANNEL_REMAINING, Utils.getEnergyState(remainSum));
+        updateState(CHANNEL_TODAY, Utils.getEnergyState(todaySum));
+        updateState(CHANNEL_DAY1, Utils.getEnergyState(day1Sum));
+        updateState(CHANNEL_DAY2, Utils.getEnergyState(day2Sum));
+        updateState(CHANNEL_DAY3, Utils.getEnergyState(day3Sum));
     }
 
     @Override

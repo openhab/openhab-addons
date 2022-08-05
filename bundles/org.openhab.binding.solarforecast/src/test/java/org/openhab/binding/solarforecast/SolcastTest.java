@@ -44,6 +44,35 @@ class SolcastTest {
     }
 
     /**
+     * {
+     * "pv_estimate": 1.9176,
+     * "pv_estimate10": 0.8644,
+     * "pv_estimate90": 2.0456,
+     * "period_end": "2022-07-23T14:00:00.0000000Z",
+     * "period": "PT30M"
+     * },
+     * {
+     * "pv_estimate": 1.7544,
+     * "pv_estimate10": 0.7708,
+     * "pv_estimate90": 1.864,
+     * "period_end": "2022-07-23T14:30:00.0000000Z",
+     * "period": "PT30M"
+     */
+    @Test
+    void testActualPower() {
+        String content = FileReader.readFileInString("src/test/resources/solcast/forecasts.json");
+        ZonedDateTime now = LocalDateTime.of(2022, 7, 23, 16, 23).atZone(ZoneId.systemDefault());
+        SolcastObject scfo = new SolcastObject(content, now);
+        assertEquals(1.855, scfo.getActualPowerValue(now), 0.001, "Actual estimation");
+
+        ZonedDateTime zdt = LocalDateTime.of(2022, 7, 23, 0, 5).atZone(ZoneId.systemDefault());
+        for (int i = 0; i < 96; i++) {
+            zdt = zdt.plusMinutes(15);
+            System.out.println(zdt + " " + scfo.getActualPowerValue(zdt));
+        }
+    }
+
+    /**
      * Data from TreeMap for manual validation
      * 2022-07-17T04:30+02:00[Europe/Berlin]=0.0,
      * 2022-07-17T05:00+02:00[Europe/Berlin]=0.0,

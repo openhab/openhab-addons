@@ -22,10 +22,6 @@ import java.util.TreeMap;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONObject;
 import org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants;
-import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.Units;
-import org.openhab.core.types.State;
-import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +34,8 @@ import org.slf4j.LoggerFactory;
 public class ForecastSolarObject {
     private final Logger logger = LoggerFactory.getLogger(ForecastSolarObject.class);
     private static final double UNDEF = -1;
-    private final TreeMap<LocalDateTime, Double> dataMap = new TreeMap<LocalDateTime, Double>();
+    private final TreeMap<LocalDateTime, Double> wattHourMap = new TreeMap<LocalDateTime, Double>();
+    private final TreeMap<LocalDateTime, Double> wattMap = new TreeMap<LocalDateTime, Double>();
     private Optional<String> rawData = Optional.empty();
     private boolean valid = false;
     private LocalDateTime expirationDateTime;
@@ -53,15 +50,17 @@ public class ForecastSolarObject {
             rawData = Optional.of(content);
             JSONObject contentJson = new JSONObject(content);
             JSONObject resultJson = contentJson.getJSONObject("result");
-            JSONObject wattsJson = resultJson.getJSONObject("watt_hours");
-            Iterator<String> iter = wattsJson.keys();
+            JSONObject wattHourJson = resultJson.getJSONObject("watt_hours");
+            JSONObject wattJson = resultJson.getJSONObject("watts");
+            Iterator<String> iter = wattHourJson.keys();
             // put all values of the current day into sorted tree map
             while (iter.hasNext()) {
                 String dateStr = iter.next();
                 // convert date time into machine readable format
                 LocalDateTime ldt = LocalDateTime.parse(dateStr.replace(" ", "T"));
                 if (ldt.getDayOfMonth() == now.getDayOfMonth()) {
-                    dataMap.put(ldt, wattsJson.getDouble(dateStr));
+                    wattHourMap.put(ldt, wattHourJson.getDouble(dateStr));
+                    wattMap.put(ldt, wattJson.getDouble(dateStr));
                 }
             }
             valid = true;
@@ -70,7 +69,7 @@ public class ForecastSolarObject {
 
     public boolean isValid() {
         if (valid) {
-            if (!dataMap.isEmpty()) {
+            if (!wattHourMap.isEmpty()) {
                 if (expirationDateTime.isAfter(LocalDateTime.now())) {
                     return true;
                 } else {
@@ -86,11 +85,11 @@ public class ForecastSolarObject {
     }
 
     public double getActualValue(LocalDateTime now) {
-        if (dataMap.isEmpty()) {
+        if (wattHourMap.isEmpty()) {
             return UNDEF;
         }
-        Entry<LocalDateTime, Double> f = dataMap.floorEntry(now);
-        Entry<LocalDateTime, Double> c = dataMap.ceilingEntry(now);
+        Entry<LocalDateTime, Double> f = wattHourMap.floorEntry(now);
+        Entry<LocalDateTime, Double> c = wattHourMap.ceilingEntry(now);
         if (f != null) {
             if (c != null) {
                 // we're during suntime!
@@ -102,6 +101,33 @@ public class ForecastSolarObject {
             } else {
                 // sun is down
                 return Math.round(f.getValue()) / 1000.0;
+            }
+        } else {
+            // no floor - sun not rised yet
+            return 0;
+        }
+    }
+
+    public double getActualPowerValue(LocalDateTime now) {
+        if (wattMap.isEmpty()) {
+            return UNDEF;
+        }
+        double actualPowerValue = 0;
+        Entry<LocalDateTime, Double> f = wattMap.floorEntry(now);
+        Entry<LocalDateTime, Double> c = wattMap.ceilingEntry(now);
+        if (f != null) {
+            if (c != null) {
+                // we're during suntime!
+                double powerCeiling = c.getValue();
+                double powerFloor = f.getValue();
+                // calculate in minutes from floor to now, e.g. 20 minutes
+                // => take 2/3 of floor and 1/3 of ceiling
+                double interpolation = (now.getMinute() - f.getKey().getMinute()) / 60.0;
+                actualPowerValue = ((1 - interpolation) * powerFloor) + (interpolation * powerCeiling);
+                return Math.round(actualPowerValue) / 1000.0;
+            } else {
+                // sun is down
+                return 0;
             }
         } else {
             // no floor - sun not rised yet
@@ -125,22 +151,14 @@ public class ForecastSolarObject {
     }
 
     public double getRemainingProduction(LocalDateTime now) {
-        if (dataMap.isEmpty()) {
+        if (wattHourMap.isEmpty()) {
             return UNDEF;
         }
         return getDayTotal(now, 0) - getActualValue(now);
     }
 
-    public static State getStateObject(double d) {
-        if (d < 0) {
-            return UnDefType.UNDEF;
-        } else {
-            return QuantityType.valueOf(d, Units.KILOWATT_HOUR);
-        }
-    }
-
     @Override
     public String toString() {
-        return "Expiration: " + expirationDateTime + ", Valid: " + valid + ", Data:" + dataMap;
+        return "Expiration: " + expirationDateTime + ", Valid: " + valid + ", Data:" + wattHourMap;
     }
 }
