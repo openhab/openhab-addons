@@ -38,6 +38,7 @@ import org.openhab.binding.boschindego.internal.dto.request.SetStateRequest;
 import org.openhab.binding.boschindego.internal.dto.response.AuthenticationResponse;
 import org.openhab.binding.boschindego.internal.dto.response.DeviceCalendarResponse;
 import org.openhab.binding.boschindego.internal.dto.response.DeviceStateResponse;
+import org.openhab.binding.boschindego.internal.dto.response.ErrorResponse;
 import org.openhab.binding.boschindego.internal.dto.response.LocationWeatherResponse;
 import org.openhab.binding.boschindego.internal.dto.response.OperatingDataResponse;
 import org.openhab.binding.boschindego.internal.dto.response.PredictiveLastCuttingResponse;
@@ -236,6 +237,10 @@ public class IndegoController {
             }
             ContentResponse response = sendRequest(request);
             status = response.getStatus();
+            String jsonResponse = response.getContentAsString();
+            if (!jsonResponse.isEmpty()) {
+                logger.trace("JSON response: '{}'", jsonResponse);
+            }
             if (status == HttpStatus.UNAUTHORIZED_401) {
                 // This will currently not happen because "WWW-Authenticate" header is missing; see below.
                 throw new IndegoAuthenticationException("Context rejected");
@@ -246,11 +251,9 @@ public class IndegoController {
             if (!HttpStatus.isSuccess(status)) {
                 throw new IndegoException("The request failed with error: " + status);
             }
-            String jsonResponse = response.getContentAsString();
             if (jsonResponse.isEmpty()) {
                 throw new IndegoInvalidResponseException("No content returned", status);
             }
-            logger.trace("JSON response: '{}'", jsonResponse);
 
             @Nullable
             T result = gson.fromJson(jsonResponse, dtoClass);
@@ -450,12 +453,25 @@ public class IndegoController {
                 logger.trace("{} request for {} with no payload", method, BASE_URL + path);
             }
             ContentResponse response = sendRequest(request);
+            String jsonResponse = response.getContentAsString();
+            if (!jsonResponse.isEmpty()) {
+                logger.trace("JSON response: '{}'", jsonResponse);
+            }
             int status = response.getStatus();
             if (status == HttpStatus.UNAUTHORIZED_401) {
                 // This will currently not happen because "WWW-Authenticate" header is missing; see below.
                 throw new IndegoAuthenticationException("Context rejected");
             }
             if (status == HttpStatus.INTERNAL_SERVER_ERROR_500) {
+                try {
+                    ErrorResponse result = gson.fromJson(jsonResponse, ErrorResponse.class);
+                    if (result != null) {
+                        throw new IndegoInvalidCommandException("The request failed with HTTP error: " + status,
+                                result.error);
+                    }
+                } catch (JsonParseException e) {
+                    // Ignore missing error code, next line will throw.
+                }
                 throw new IndegoInvalidCommandException("The request failed with HTTP error: " + status);
             }
             if (!HttpStatus.isSuccess(status)) {

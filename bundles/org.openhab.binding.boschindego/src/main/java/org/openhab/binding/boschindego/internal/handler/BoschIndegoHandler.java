@@ -35,6 +35,7 @@ import org.openhab.binding.boschindego.internal.dto.response.DeviceStateResponse
 import org.openhab.binding.boschindego.internal.dto.response.OperatingDataResponse;
 import org.openhab.binding.boschindego.internal.exceptions.IndegoAuthenticationException;
 import org.openhab.binding.boschindego.internal.exceptions.IndegoException;
+import org.openhab.binding.boschindego.internal.exceptions.IndegoInvalidCommandException;
 import org.openhab.binding.boschindego.internal.exceptions.IndegoUnreachableException;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
@@ -196,8 +197,13 @@ public class BoschIndegoHandler extends BaseThingHandler {
         } catch (IndegoUnreachableException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.comm-error.unreachable");
+        } catch (IndegoInvalidCommandException e) {
+            logger.warn("Invalid command: {}", e.getMessage());
+            if (e.hasErrorCode()) {
+                updateState(ERRORCODE, new DecimalType(e.getErrorCode()));
+            }
         } catch (IndegoException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            logger.warn("Command failed: {}", e.getMessage());
         }
     }
 
