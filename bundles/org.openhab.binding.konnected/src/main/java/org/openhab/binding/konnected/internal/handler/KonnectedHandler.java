@@ -514,16 +514,11 @@ public class KonnectedHandler extends BaseThingHandler {
     }
 
     private void sendSetSwitchState(String thingId, String payloadString) throws KonnectedHttpRetryExceeded {
-        if (thingId.equals(WIFI_MODULE)) {
-            String response = http.doGet(moduleIpAddress + "/device", payloadString, retryCount);
-            KonnectedModuleGson event = gson.fromJson(response, KonnectedModuleGson.class);
+        String path = thingId.equals(WIFI_MODULE) ? "/device" : "/zone";
+        String response = http.doGet(moduleIpAddress + path, payloadString, retryCount);
+        KonnectedModuleGson[] events = gson.fromJson(response, KonnectedModuleGson[].class);
+        for (KonnectedModuleGson event : events) {
             this.handleWebHookEvent(event);
-        } else {
-            String response = http.doGet(moduleIpAddress + "/zone", payloadString, retryCount);
-            KonnectedModuleGson[] events = gson.fromJson(response, KonnectedModuleGson[].class);
-            for (KonnectedModuleGson event : events) {
-                this.handleWebHookEvent(event);
-            }
         }
     }
 

@@ -44,7 +44,7 @@ public class KonnectedBindingConstants {
 
     // ESP8266_ZONE_TO_PIN map, this maps a zone to a pin for ESP8266 based devices
     // Source: https://help.konnected.io/support/solutions/articles/32000026808-zone-to-gpio-pin-mapping
-    public static final Map<String, Integer> ESP8266_ZONE_TO_PIN = Map.of("1", 1, "2", 2, "3,", 5, "4", 6, "6", 7, "7",
+    public static final Map<String, Integer> ESP8266_ZONE_TO_PIN = Map.of("1", 1, "2", 2, "3", 5, "4", 6, "5", 7, "6",
             9, "alarm_out", 8);
     public static final Map<Integer, String> ESP8266_PIN_TO_ZONE = ESP8266_ZONE_TO_PIN.entrySet().stream()
             .collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));

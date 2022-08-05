@@ -39,8 +39,8 @@ public class KonnectedModuleGson {
     private Integer pollInterval;
     private String addr;
 
-    public String getPin() {
-        return ESP8266_PIN_TO_ZONE.get(pin);
+    public Integer getPin() {
+        return pin;
     }
 
     public void setPin(Integer pin) {
@@ -123,25 +123,19 @@ public class KonnectedModuleGson {
         this.addr = setAddr;
     }
 
-    public void setZone(String ThingID, String zone) {
-        switch (ThingID) {
-            case PRO_MODULE:
-                this.setZone(zone);
-                break;
-            case WIFI_MODULE:
-                this.setPin(ESP8266_ZONE_TO_PIN.get(zone));
-                break;
+    public void setZone(String thingId, String zone) {
+        if (isEsp8266(thingId)) {
+            setPin(ESP8266_ZONE_TO_PIN.get(zone));
+        } else {
+            setZone(zone);
         }
     }
 
-    public String getZone(String ThingID) {
-        switch (ThingID) {
-            case PRO_MODULE:
-                return this.getZone();
+    public String getZone(String thingId) {
+        return isEsp8266(thingId) ? ESP8266_PIN_TO_ZONE.get(pin) : getZone();
+    }
 
-            default:
-                return this.getPin();
-
-        }
+    private boolean isEsp8266(String thingId) {
+        return WIFI_MODULE.equals(thingId);
     }
 }
