@@ -36,7 +36,7 @@ import org.openhab.binding.boschindego.internal.dto.response.OperatingDataRespon
 import org.openhab.binding.boschindego.internal.exceptions.IndegoAuthenticationException;
 import org.openhab.binding.boschindego.internal.exceptions.IndegoException;
 import org.openhab.binding.boschindego.internal.exceptions.IndegoInvalidCommandException;
-import org.openhab.binding.boschindego.internal.exceptions.IndegoUnreachableException;
+import org.openhab.binding.boschindego.internal.exceptions.IndegoTimeoutException;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -194,7 +194,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
         } catch (IndegoAuthenticationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.comm-error.authentication-failure");
-        } catch (IndegoUnreachableException e) {
+        } catch (IndegoTimeoutException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.comm-error.unreachable");
         } catch (IndegoInvalidCommandException e) {
@@ -208,7 +208,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
     }
 
     private void handleRefreshCommand(String channelId)
-            throws IndegoAuthenticationException, IndegoUnreachableException, IndegoException {
+            throws IndegoAuthenticationException, IndegoTimeoutException, IndegoException {
         switch (channelId) {
             case GARDEN_MAP:
                 // Force map refresh and fall through to state update.
@@ -280,7 +280,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
         } catch (IndegoAuthenticationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.comm-error.authentication-failure");
-        } catch (IndegoUnreachableException e) {
+        } catch (IndegoTimeoutException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.comm-error.unreachable");
         } catch (IndegoException e) {
@@ -348,7 +348,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
     }
 
     private void refreshOperatingDataConditionally(boolean isActive)
-            throws IndegoAuthenticationException, IndegoUnreachableException, IndegoException {
+            throws IndegoAuthenticationException, IndegoTimeoutException, IndegoException {
         // Refresh operating data only occationally or when robot is active/charging.
         // This will contact the robot directly through cellular network and wake it up
         // when sleeping.
@@ -358,8 +358,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
         }
     }
 
-    private void refreshOperatingData()
-            throws IndegoAuthenticationException, IndegoUnreachableException, IndegoException {
+    private void refreshOperatingData() throws IndegoAuthenticationException, IndegoTimeoutException, IndegoException {
         updateOperatingData(controller.getOperatingData());
         operatingDataTimestamp = Instant.now();
         updateStatus(ThingStatus.ONLINE);
