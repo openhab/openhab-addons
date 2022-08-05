@@ -74,6 +74,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
 
     private static final Duration MAP_REFRESH_INTERVAL = Duration.ofDays(1);
     private static final Duration OPERATING_DATA_INACTIVE_REFRESH_INTERVAL = Duration.ofHours(6);
+    private static final Duration OPERATING_DATA_OFFLINE_REFRESH_INTERVAL = Duration.ofMinutes(30);
     private static final Duration OPERATING_DATA_ACTIVE_REFRESH_INTERVAL = Duration.ofMinutes(2);
     private static final Duration MAP_REFRESH_SESSION_DURATION = Duration.ofMinutes(5);
     private static final Duration COMMAND_STATE_REFRESH_TIMEOUT = Duration.ofSeconds(10);
@@ -361,8 +362,11 @@ public class BoschIndegoHandler extends BaseThingHandler {
             throws IndegoAuthenticationException, IndegoTimeoutException, IndegoException {
         // Refresh operating data only occationally or when robot is active/charging.
         // This will contact the robot directly through cellular network and wake it up
-        // when sleeping.
+        // when sleeping. Additionally, refresh more often after being offline to try to get
+        // back online as soon as possible without putting too much stress on the service.
         if ((isActive && operatingDataTimestamp.isBefore(Instant.now().minus(OPERATING_DATA_ACTIVE_REFRESH_INTERVAL)))
+                || (lastOperatingDataStatus != ThingStatus.ONLINE && operatingDataTimestamp
+                        .isBefore(Instant.now().minus(OPERATING_DATA_OFFLINE_REFRESH_INTERVAL)))
                 || operatingDataTimestamp.isBefore(Instant.now().minus(OPERATING_DATA_INACTIVE_REFRESH_INTERVAL))) {
             refreshOperatingData();
         }
