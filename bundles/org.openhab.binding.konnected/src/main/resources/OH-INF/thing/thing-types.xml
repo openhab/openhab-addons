@@ -6,7 +6,7 @@
 	<!-- This is the Konnected Wifi Thing-Type -->
 	<thing-type id="wifi-module" extensible="switch-wifi,actuator-wifi,temperature-wifi,humidity-wifi">
 		<label>The Konnected Alarm Panel</label>
-		<description>The Konnected Wifi Alarm Panel</description>
+		<description>The Konnected Wi-Fi Alarm Panel</description>
 		<config-description-ref uri="thing-type:konnected:module"/>
 	</thing-type>
 	<!-- This is the Konnected Alarm Panel Pro Thing-Type -->
