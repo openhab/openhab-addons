@@ -45,7 +45,7 @@
 			<label>Callback URI</label>
 			<description>The URI where the Konnected panel will make callbacks. The default is to auto detect the port and IP
 				address of openhab. This may not work in case you use a reverse proxy or openhab
-				is running in docker. The the plugin
+				is running in Docker. Then the plugin
 				is bound to the /konnected http context.</description>
 			<advanced>true</advanced>
 		</parameter>
