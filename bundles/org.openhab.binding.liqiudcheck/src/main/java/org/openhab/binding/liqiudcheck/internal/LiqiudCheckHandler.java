@@ -14,8 +14,14 @@ package org.openhab.binding.liqiudcheck.internal;
 
 import static org.openhab.binding.liqiudcheck.internal.LiqiudCheckBindingConstants.*;
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.liqiudcheck.internal.httpClient.LiquidCheckHttpClient;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -36,7 +42,9 @@ public class LiqiudCheckHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(LiqiudCheckHandler.class);
 
-    private @Nullable LiqiudCheckConfiguration config;
+    private LiqiudCheckConfiguration config = getConfigAs(LiqiudCheckConfiguration.class);
+
+    private @Nullable ScheduledFuture<?> polling;
 
     public LiqiudCheckHandler(Thing thing) {
         super(thing);
@@ -78,11 +86,27 @@ public class LiqiudCheckHandler extends BaseThingHandler {
 
         // Example for background initialization:
         scheduler.execute(() -> {
-            
-            boolean thingReachable = true; // <background task with long running initialization here>
+
+            LiquidCheckHttpClient httpClient = new LiquidCheckHttpClient(config);
+            boolean thingReachable = httpClient.isConnected(); // <background task with long running initialization
+            // here>
             // when done do:
             if (thingReachable) {
                 updateStatus(ThingStatus.ONLINE);
+                Runnable runnable = new Runnable() {
+
+                    @Override
+                    public void run() {
+                        try {
+                            String response = httpClient.pollData();
+
+                        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                    }
+                };
+                polling = scheduler.scheduleWithFixedDelay(runnable, 0, config.refreshInterval, TimeUnit.MILLISECONDS);
             } else {
                 updateStatus(ThingStatus.OFFLINE);
             }

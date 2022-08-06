@@ -12,9 +12,14 @@
  */
 package org.openhab.binding.liqiudcheck.internal.httpClient;
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.liqiudcheck.internal.LiqiudCheckConfiguration;
 import org.openhab.binding.liqiudcheck.internal.LiqiudCheckHandler;
 import org.slf4j.Logger;
@@ -28,21 +33,54 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class LiquidCheckHttpClient {
-    
+
     private final Logger logger = LoggerFactory.getLogger(LiqiudCheckHandler.class);
     private final HttpClient client;
     private final LiqiudCheckConfiguration config;
+
+    public boolean isClosed = false;
 
     public LiquidCheckHttpClient(LiqiudCheckConfiguration config) {
         this.config = config;
         client = new HttpClient();
 
         try {
+            client.setFollowRedirects(false);
             client.setName("LiquidCheckHttpClient");
+            client.setIdleTimeout(config.connecionTimeOut);
             client.start();
         } catch (Exception e) {
             logger.error("Couldn't start Client! Exception: " + e.toString());
             return;
+        }
+    }
+
+    public String pollData() throws InterruptedException, TimeoutException, ExecutionException {
+        String uri = "http://" + config.hostname + "/infos.json";
+        Request request = client.newRequest(uri);
+        request.method(HttpMethod.GET);
+        ContentResponse response = request.send();
+        return response.getContentAsString();
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public boolean isConnected() {
+        String state = this.client.getState();
+        return "STARTED".equals(state) ? true : false;
+    }
+
+    /**
+     * 
+     */
+    public void close() {
+        this.isClosed = true;
+        try {
+            this.client.stop();
+        } catch (Exception e) {
+            logger.error("Couldn't close HttpClient! Exception: {}", e.toString());
         }
     }
 }
