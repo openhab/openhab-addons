@@ -1,6 +1,7 @@
 package org.openhab.binding.liqiudcheck.internal.discovery;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.liqiudcheck.internal.json.Response;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -17,22 +18,15 @@ public class LiquidCheckProperties {
     public final String mac;
     public final String ssid;
 
-    public LiquidCheckProperties(String response) {
-        JsonObject jsonObject = JsonParser.parseString(response).getAsJsonObject();
-        JsonObject payload = jsonObject.getAsJsonObject("payload");
-        JsonObject device = payload.getAsJsonObject("device");
-        firmware = device.get("firmware").getAsString();
-        hardware = device.get("hardware").getAsString();
-        name = device.get("name").getAsString();
-        manufacturer = device.get("manufacturer").getAsString();
-        uuid = device.get("uuid").getAsString();
-        JsonObject security = device.getAsJsonObject("security");
-        code = security.get("code").getAsString();
-        JsonObject wifi = payload.getAsJsonObject("wifi");
-        JsonObject station = wifi.getAsJsonObject("station");
-        ip = station.get("ip").getAsString();
-        mac = station.get("mac").getAsString();
-        JsonObject accessPoint = wifi.getAsJsonObject("accessPoint");
-        ssid = accessPoint.get("ssid").getAsString();
+    public LiquidCheckProperties(Response response) {
+        firmware = response.payload.device.firmware;
+        hardware = response.payload.device.hardware;
+        name = response.payload.device.name;
+        manufacturer = response.payload.device.manufacturer;
+        uuid = response.payload.device.uuid;
+        code = response.payload.device.security.code;
+        ip = response.payload.wifi.station.ip;
+        mac = response.payload.wifi.station.mac;
+        ssid = response.payload.wifi.accessPoint.ssid;
     }
 }

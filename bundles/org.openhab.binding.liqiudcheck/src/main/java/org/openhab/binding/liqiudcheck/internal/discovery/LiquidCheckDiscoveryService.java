@@ -62,7 +62,11 @@ public class LiquidCheckDiscoveryService extends AbstractDiscoveryService {
                 ContentResponse response = request.send();
                 if (response.getStatus() == 200) {
                     Response json = new Gson().fromJson(response.getContentAsString(), Response.class);
-                    buildDiscoveryResult(response.getContentAsString());
+                    if (null != json) {
+                        buildDiscoveryResult(json);
+                    } else {
+                        logger.debug("Response Object is null!");
+                    }
                 }
             }
 
@@ -168,7 +172,7 @@ public class LiquidCheckDiscoveryService extends AbstractDiscoveryService {
         return hosts;
     }
 
-    private void buildDiscoveryResult(String response) {
+    private void buildDiscoveryResult(Response response) {
         LiquidCheckProperties lcproperties = new LiquidCheckProperties(response);
         Map<String, Object> properties = new HashMap<>();
         properties.put(CONFIG_ID_FIRMWARE, lcproperties.firmware);
