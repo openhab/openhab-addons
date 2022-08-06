@@ -40,6 +40,10 @@ public class LiquidCheckHttpClient {
 
     public boolean isClosed = false;
 
+    /**
+     * 
+     * @param config
+     */
     public LiquidCheckHttpClient(LiqiudCheckConfiguration config) {
         this.config = config;
         client = new HttpClient();
@@ -55,6 +59,13 @@ public class LiquidCheckHttpClient {
         }
     }
 
+    /**
+     * 
+     * @return
+     * @throws InterruptedException
+     * @throws TimeoutException
+     * @throws ExecutionException
+     */
     public String pollData() throws InterruptedException, TimeoutException, ExecutionException {
         String uri = "http://" + config.hostname + "/infos.json";
         Request request = client.newRequest(uri);
