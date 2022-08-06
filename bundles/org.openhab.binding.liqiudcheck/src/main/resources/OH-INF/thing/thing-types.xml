@@ -4,11 +4,15 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="liquidCheck">
-		<label>Liquid Check</label>
+	<thing-type id="liquidCheckDevice">
+		<label>Liquid Check Device</label>
 		<description></description>
-
 		<category>Sensor</category>
+
+		<channels>
+			<channel id="content" typeId="content-channel"/>
+			<channel id="level" typeId="level-channel"/>
+		</channels>
 
 		<properties>
 			<property name="firmware">Firmware</property>
@@ -17,15 +21,10 @@
 			<property name="manufacturer">Manufacturer</property>
 			<property name="uuid">UUID</property>
 			<property name="securityCode">Security Code</property>
-			<porperty name="ip">IP</porperty>
+			<property name="ip">IP</property>
 			<property name="mac">MAC-Address</property>
 			<property name="ssid">SSID</property>
 		</properties>
-
-		<channels>
-			<channel id="content" typeId="content-channel"/>
-			<channel id="level" typeId="level-channel"/>
-		</channels>
 
 		<config-description>
 			<parameter name="hostname" type="text" required="true">
@@ -39,8 +38,14 @@
 			</parameter>
 			<parameter name="refreshInterval" type="integer" unit="s" min="1">
 				<label>Refresh Interval</label>
-				<description>Interval the device is polled in sec.</description>
-				<default>600</default>
+				<description>Interval the device is polled in millisec.</description>
+				<default>1000</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="connecionTimeOut" type="integer">
+				<label>Connection Timeout</label>
+				<description>After the given amout of milliseconds without a response, the connection will be seen as timed out!</description>
+				<default>5000</default>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>
