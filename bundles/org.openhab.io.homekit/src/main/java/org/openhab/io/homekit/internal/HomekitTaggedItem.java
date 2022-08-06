@@ -43,6 +43,7 @@ public class HomekitTaggedItem {
     public final static String DELAY = "commandDelay";
     public final static String INVERTED = "inverted";
     public final static String PRIMARY_SERVICE = "primary";
+    public final static String INSTANCE = "instance";
 
     private static final Map<Integer, String> CREATED_ACCESSORY_IDS = new ConcurrentHashMap<>();
 
