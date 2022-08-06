@@ -41,6 +41,7 @@ class SolcastTest {
         ZonedDateTime now = LocalDateTime.of(2022, 7, 23, 16, 23).atZone(ZoneId.systemDefault());
         SolcastObject scfo = new SolcastObject(content, now);
         assertEquals(16.809, scfo.getActualValue(now), 0.001, "Actual estimation");
+        System.out.println(scfo.getDayTotal(now, -1));
     }
 
     /**
@@ -139,13 +140,30 @@ class SolcastTest {
     }
 
     @Test
+    void testActions() {
+        String content = FileReader.readFileInString("src/test/resources/solcast/estimated-actuals.json");
+        ZonedDateTime now = LocalDateTime.of(2022, 7, 18, 16, 23).atZone(ZoneId.systemDefault());
+        SolcastObject scfo = new SolcastObject(content, now);
+        assertEquals(-1.0, scfo.getActualValue(now), 0.01, "Invalid");
+        content = FileReader.readFileInString("src/test/resources/solcast/forecasts.json");
+        scfo.join(content);
+        System.out.println(scfo.getForecastBegin());
+        System.out.println(scfo.getForecastEnd());
+        System.out.println(scfo.getDay(now.toLocalDate()));
+        System.out.println(scfo.getPower(now.toLocalDateTime()));
+        System.out.println(scfo.getEnergy(now.toLocalDateTime(), now.plusDays(2).toLocalDateTime()));
+        System.out.println(scfo.getEnergy(now.toLocalDateTime(), now.plusMinutes(20).toLocalDateTime()));
+        System.out.println(scfo.getEnergy(now.toLocalDateTime(), now.plusDays(20).toLocalDateTime()));
+    }
+
+    @Test
     void testOptimisticPessimistic() {
         String content = FileReader.readFileInString("src/test/resources/solcast/estimated-actuals.json");
         ZonedDateTime now = LocalDateTime.of(2022, 7, 18, 16, 23).atZone(ZoneId.systemDefault());
         SolcastObject scfo = new SolcastObject(content, now);
         content = FileReader.readFileInString("src/test/resources/solcast/forecasts.json");
         scfo.join(content);
-        assertEquals(19.389, scfo.getDayTotal(now, 2), 0.001, "Estimation");
+        assertEquals(21.96, scfo.getDayTotal(now, 2), 0.001, "Estimation");
         assertEquals(7.358, scfo.getPessimisticDayTotal(now, 2), 0.001, "Estimation");
         assertEquals(22.283, scfo.getOptimisticDayTotal(now, 2), 0.001, "Estimation");
     }

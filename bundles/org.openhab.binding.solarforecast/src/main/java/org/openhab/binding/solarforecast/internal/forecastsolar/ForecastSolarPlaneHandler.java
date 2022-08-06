@@ -16,6 +16,9 @@ import static org.openhab.binding.solarforecast.internal.SolarForecastBindingCon
 import static org.openhab.binding.solarforecast.internal.forecastsolar.ForecastSolarConstants.BASE_URL;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -23,6 +26,9 @@ import java.util.concurrent.TimeoutException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
+import org.openhab.binding.solarforecast.internal.SolarForecast;
+import org.openhab.binding.solarforecast.internal.SolarForecastActions;
+import org.openhab.binding.solarforecast.internal.SolarForecastProvider;
 import org.openhab.binding.solarforecast.internal.Utils;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.StringType;
@@ -33,6 +39,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BridgeHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
@@ -44,7 +51,7 @@ import org.slf4j.LoggerFactory;
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class ForecastSolarPlaneHandler extends BaseThingHandler {
+public class ForecastSolarPlaneHandler extends BaseThingHandler implements SolarForecastProvider {
     private final Logger logger = LoggerFactory.getLogger(ForecastSolarPlaneHandler.class);
     private final HttpClient httpClient;
 
@@ -58,6 +65,11 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler {
     public ForecastSolarPlaneHandler(Thing thing, HttpClient hc) {
         super(thing);
         httpClient = hc;
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singleton(SolarForecastActions.class);
     }
 
     @Override
@@ -124,8 +136,10 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler {
                 try {
                     ContentResponse cr = httpClient.GET(url);
                     if (cr.getStatus() == 200) {
-                        forecast = new ForecastSolarObject(cr.getContentAsString(), LocalDateTime.now(),
+                        ForecastSolarObject localForecast = new ForecastSolarObject(cr.getContentAsString(),
+                                LocalDateTime.now(),
                                 LocalDateTime.now().plusMinutes(configuration.get().refreshInterval));
+                        setForecast(localForecast);
                         logger.debug("{} Fetched data {}", thing.getLabel(), forecast.toString());
                         logger.info("{} {} HTTP errors since last successful update", thing.getLabel(), failureCounter);
                         failureCounter = 0;
@@ -175,5 +189,15 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler {
      */
     void setApiKey(String key) {
         apiKey = Optional.of(key);
+    }
+
+    private synchronized void setForecast(ForecastSolarObject f) {
+        logger.info("Forecast added - valid? {}", f.isValid());
+        forecast = f;
+    }
+
+    @Override
+    public synchronized List<SolarForecast> getSolarForecasts() {
+        return List.of(forecast);
     }
 }

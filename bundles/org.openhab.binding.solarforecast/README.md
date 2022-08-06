@@ -154,6 +154,63 @@ Day*X* channels are referring to forecasts plus *X* days: 1 = tomorrow, 2 = day 
 | day*X*                  | Number:Energy | Day *X* forecast in total                | no       |
 | raw                     | String        | Plain JSON response without conversions  | yes      |
 
+
+## Thing Actions
+
+All things `sc-site`, `sc-plane`, `fs-site` and `fs-plane` are providing the same Actions.
+While channels are providing actual forecast data and daily forecasts in future Actions provides an interface to execute more sophisticated handling in rules.
+You can execute this for each `xx-plane` thing for specific plane values or `xx-site` thing which delivers the sum of all attached planes.
+
+### Get Forecast Begin
+
+````
+LocalDateTime getForecastBegin()
+````
+
+Returns `LocalDateTime` of the earliest possible forecast data available.
+It's located in the past, e.g. Solcast provides data from the last 7 days.
+`LocalDateTime.MIN` is returned in case of now forecast data is available.
+
+### Get Forecast End
+
+````
+LocalDateTime getForecastEnd()
+````
+
+Returns `LocalDateTime` of the latest possible forecast data available.
+`LocalDateTime.MAX` is returned in case of now forecast data is available.
+
+### Get Power
+
+````
+State getPower(LocalDateTime dateTime)
+````
+
+Returns `QuantityType<Power>` at the given `dateTime`.
+Respect `getForecastBegin` and `getForecastEnd` to avoid ambigouos values.
+Check for `UndefType.UNDEF` in case of an errors.
+
+### Get Day
+
+````
+State getDay(LocalDate localDate)
+````
+
+Returns `QuantityType<Energy>` at the given `localDate`.
+Respect `getForecastBegin` and `getForecastEnd` to avoid ambigouos values.
+Check for `UndefType.UNDEF` in case of an errors.
+
+### Get Energy
+
+````
+State State getEnergy(LocalDateTime begin, LocalDateTime end) 
+````
+
+Returns `QuantityType<Energy>` between the timestamps `begin` and `end`.
+Respect `getForecastBegin` and `getForecastEnd` to avoid ambigouos values.
+Check for `UndefType.UNDEF` in case of an errors.
+
+
 ## Example
 
 Example is based on Forecast.Solar service without any registration.
@@ -187,3 +244,31 @@ Number:Energy           ForecastSolarHome_Today_SW       "Total SW Forecast Toda
 Number:Energy           ForecastSolarHome_Day_SW         "Tomorrow SW Forecast [%3.f %unit%]"              {channel="solarforecast:fs-plane:homeSite:homeSouthWest:day1" }                                                                           
 ````
 
+### Actions rule
+
+````
+rule "Forecast Solar Actions"
+    when
+        Time cron "0 0 23 * * ?" // trigger whatever you like
+    then 
+        // get Actions for specific fs-site
+        val solarforecastActions = getActions("solarforecast","solarforecast:fs-site:homeSite")
+        
+        // get earliest and latest forecast dates
+        val beginDT = solarforecastActions.getForecastBegin
+        val endDT = solarforecastActions.getForecastEnd
+        logInfo("SF Tests","Begin: "+ beginDT+" End: "+endDT)
+ 
+        // get daily forecast for tomorrow    
+        val fcToday = solarforecastActions.getDay(LocalDateTime.now.plusDays(1))
+        logInfo("SF Tests","Forecast tomorrow: "+ fcToday.toString)
+        
+        // get power forecast in one hour
+        val currentPower = solarforecastActions.getPower(LocalDateTime.now.plusHours(1))
+        logInfo("SF Tests","Hour+1 Power: "+ currentPower.toString)
+        
+        // get total energy forecast from now till 2 days ahead
+        val twoDaysForecast = solarforecastActions.getEnergy(LocalDateTime.now,LocalDateTime.now.plusDays(2))
+        logInfo("SF Tests","Forecast 2 Days: "+ twoDaysForecast.toString)
+end
+````

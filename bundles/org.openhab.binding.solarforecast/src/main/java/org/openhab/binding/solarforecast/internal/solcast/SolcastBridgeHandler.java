@@ -16,6 +16,8 @@ import static org.openhab.binding.solarforecast.internal.SolarForecastBindingCon
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -23,12 +25,16 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.solarforecast.internal.SolarForecast;
+import org.openhab.binding.solarforecast.internal.SolarForecastActions;
+import org.openhab.binding.solarforecast.internal.SolarForecastProvider;
 import org.openhab.binding.solarforecast.internal.Utils;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +45,7 @@ import org.slf4j.LoggerFactory;
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class SolcastBridgeHandler extends BaseBridgeHandler {
+public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarForecastProvider {
 
     private final Logger logger = LoggerFactory.getLogger(SolcastBridgeHandler.class);
     private List<SolcastPlaneHandler> parts = new ArrayList<SolcastPlaneHandler>();
@@ -48,6 +54,11 @@ public class SolcastBridgeHandler extends BaseBridgeHandler {
 
     public SolcastBridgeHandler(Bridge bridge) {
         super(bridge);
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singleton(SolarForecastActions.class);
     }
 
     @Override
@@ -180,5 +191,14 @@ public class SolcastBridgeHandler extends BaseBridgeHandler {
             return configuration.get().apiKey;
         }
         return EMPTY;
+    }
+
+    @Override
+    public synchronized List<SolarForecast> getSolarForecasts() {
+        List<SolarForecast> l = new ArrayList<SolarForecast>();
+        parts.forEach(entry -> {
+            l.addAll(entry.getSolarForecasts());
+        });
+        return l;
     }
 }

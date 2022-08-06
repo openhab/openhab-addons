@@ -21,7 +21,10 @@ import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONObject;
+import org.openhab.binding.solarforecast.internal.SolarForecast;
 import org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants;
+import org.openhab.binding.solarforecast.internal.Utils;
+import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +34,7 @@ import org.slf4j.LoggerFactory;
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class ForecastSolarObject {
+public class ForecastSolarObject implements SolarForecast {
     private final Logger logger = LoggerFactory.getLogger(ForecastSolarObject.class);
     private static final double UNDEF = -1;
     private final TreeMap<LocalDateTime, Double> wattHourMap = new TreeMap<LocalDateTime, Double>();
@@ -58,10 +61,8 @@ public class ForecastSolarObject {
                 String dateStr = iter.next();
                 // convert date time into machine readable format
                 LocalDateTime ldt = LocalDateTime.parse(dateStr.replace(" ", "T"));
-                if (ldt.getDayOfMonth() == now.getDayOfMonth()) {
-                    wattHourMap.put(ldt, wattHourJson.getDouble(dateStr));
-                    wattMap.put(ldt, wattJson.getDouble(dateStr));
-                }
+                wattHourMap.put(ldt, wattHourJson.getDouble(dateStr));
+                wattMap.put(ldt, wattJson.getDouble(dateStr));
             }
             valid = true;
         }
@@ -91,16 +92,26 @@ public class ForecastSolarObject {
         Entry<LocalDateTime, Double> f = wattHourMap.floorEntry(now);
         Entry<LocalDateTime, Double> c = wattHourMap.ceilingEntry(now);
         if (f != null) {
-            if (c != null) {
-                // we're during suntime!
-                double production = c.getValue() - f.getValue();
-                int interpolation = now.getMinute() - f.getKey().getMinute();
-                double interpolationProduction = production * interpolation / 60;
-                double actualProduction = f.getValue() + interpolationProduction;
-                return Math.round(actualProduction) / 1000.0;
+            if (f.getKey().toLocalDate().equals(now.toLocalDate())) {
+                if (c != null) {
+                    if (c.getKey().toLocalDate().equals(now.toLocalDate())) {
+                        // we're during suntime!
+                        double production = c.getValue() - f.getValue();
+                        int interpolation = now.getMinute() - f.getKey().getMinute();
+                        double interpolationProduction = production * interpolation / 60;
+                        double actualProduction = f.getValue() + interpolationProduction;
+                        return Math.round(actualProduction) / 1000.0;
+                    } else {
+                        // ceiling from wrong date
+                        return Math.round(f.getValue()) / 1000.0;
+                    }
+                } else {
+                    // sun is down
+                    return Math.round(f.getValue()) / 1000.0;
+                }
             } else {
-                // sun is down
-                return Math.round(f.getValue()) / 1000.0;
+                // floor from wrong date
+                return 0;
             }
         } else {
             // no floor - sun not rised yet
@@ -135,11 +146,10 @@ public class ForecastSolarObject {
         }
     }
 
-    public double getDayTotal(LocalDateTime now, int offset) {
+    private double getDayTotal(LocalDate ld) {
         if (rawData.isEmpty()) {
             return UNDEF;
         }
-        LocalDate ld = now.plusDays(offset).toLocalDate();
         JSONObject contentJson = new JSONObject(rawData.get());
         JSONObject resultJson = contentJson.getJSONObject("result");
         JSONObject wattsDay = resultJson.getJSONObject("watt_hours_day");
@@ -148,6 +158,14 @@ public class ForecastSolarObject {
             return Math.round(wattsDay.getDouble(ld.toString())) / 1000.0;
         }
         return UNDEF;
+    }
+
+    public double getDayTotal(LocalDateTime now, int offset) {
+        if (rawData.isEmpty()) {
+            return UNDEF;
+        }
+        LocalDate ld = now.plusDays(offset).toLocalDate();
+        return getDayTotal(ld);
     }
 
     public double getRemainingProduction(LocalDateTime now) {
@@ -160,5 +178,61 @@ public class ForecastSolarObject {
     @Override
     public String toString() {
         return "Expiration: " + expirationDateTime + ", Valid: " + valid + ", Data:" + wattHourMap;
+    }
+
+    // SolarForecast Interface
+    @Override
+    public State getDay(LocalDate localDate) {
+        double measure = getDayTotal(localDate);
+        logger.info("Deliver measure {}", measure);
+        return Utils.getEnergyState(measure);
+    }
+
+    @Override
+    public State getEnergy(LocalDateTime localDateTimeBegin, LocalDateTime localDateTimeEnd) {
+        LocalDate beginDate = localDateTimeBegin.toLocalDate();
+        LocalDate endDate = localDateTimeEnd.toLocalDate();
+        double measure = UNDEF;
+        if (beginDate.equals(endDate)) {
+            measure = getDayTotal(localDateTimeEnd, 0) - getActualValue(localDateTimeBegin)
+                    - getRemainingProduction(localDateTimeEnd);
+        } else {
+            measure = getRemainingProduction(localDateTimeBegin);
+            beginDate = beginDate.plusDays(1);
+            while (beginDate.isBefore(endDate)) {
+                double day = getDayTotal(beginDate);
+                if (day > 0) {
+                    measure += day;
+                }
+                beginDate = beginDate.plusDays(1);
+            }
+            measure += getActualValue(localDateTimeEnd);
+        }
+        return Utils.getEnergyState(Math.round(measure * 1000) / 1000.0);
+    }
+
+    @Override
+    public State getPower(LocalDateTime localDateTime) {
+        double measure = getActualPowerValue(localDateTime);
+        logger.info("Deliver measure {}", measure);
+        return Utils.getPowerState(measure);
+    }
+
+    @Override
+    public LocalDateTime getForecastBegin() {
+        if (!wattHourMap.isEmpty()) {
+            LocalDateTime ldt = wattHourMap.firstEntry().getKey();
+            return ldt;
+        }
+        return LocalDateTime.MIN;
+    }
+
+    @Override
+    public LocalDateTime getForecastEnd() {
+        if (!wattHourMap.isEmpty()) {
+            LocalDateTime ldt = wattHourMap.lastEntry().getKey();
+            return ldt;
+        }
+        return LocalDateTime.MIN;
     }
 }

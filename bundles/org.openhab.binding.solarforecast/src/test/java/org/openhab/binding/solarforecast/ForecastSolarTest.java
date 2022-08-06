@@ -103,4 +103,20 @@ class ForecastSolarTest {
         assertEquals(-1.0, fo.getRemainingProduction(now), 0.001, "Remaining Production");
         assertEquals(-1.0, fo.getDayTotal(now, 1), 0.001, "Tomorrow Production");
     }
+
+    @Test
+    void testActions() {
+        String content = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
+        LocalDateTime now = LocalDateTime.of(2022, 7, 17, 16, 23);
+        ForecastSolarObject fo = new ForecastSolarObject(content, now, now);
+        System.out.println(fo.getForecastBegin());
+        System.out.println(fo.getForecastEnd());
+        System.out.println(fo.getDay(now.toLocalDate()));
+        System.out.println(fo.getDay(now.toLocalDate()));
+        System.out.println(fo.getPower(now));
+        System.out.println(fo.getEnergy(now, now.plusDays(2)));
+        System.out.println(fo.getEnergy(now, now.plusMinutes(120)));
+        System.out.println(fo.getEnergy(now, now.plusDays(20)));
+        System.out.println(fo.getEnergy(now, now.plusDays(20)));
+    }
 }

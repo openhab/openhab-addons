@@ -17,6 +17,9 @@ import static org.openhab.binding.solarforecast.internal.solcast.SolcastConstant
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -30,6 +33,9 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.json.JSONObject;
+import org.openhab.binding.solarforecast.internal.SolarForecast;
+import org.openhab.binding.solarforecast.internal.SolarForecastActions;
+import org.openhab.binding.solarforecast.internal.SolarForecastProvider;
 import org.openhab.binding.solarforecast.internal.Utils;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemRegistry;
@@ -47,6 +53,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BridgeHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -60,7 +67,7 @@ import org.slf4j.LoggerFactory;
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class SolcastPlaneHandler extends BaseThingHandler {
+public class SolcastPlaneHandler extends BaseThingHandler implements SolarForecastProvider {
     private static final int MEASURE_INTERVAL_MIN = 15;
     private final Logger logger = LoggerFactory.getLogger(SolcastPlaneHandler.class);
     private final HttpClient httpClient;
@@ -78,6 +85,11 @@ public class SolcastPlaneHandler extends BaseThingHandler {
         persistenceService = qps;
         itemRegistry = ir;
         nextMeasurement = getNextTimeframe(ZonedDateTime.now(SolcastConstants.zonedId));
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singleton(SolarForecastActions.class);
     }
 
     /**
@@ -177,9 +189,9 @@ public class SolcastPlaneHandler extends BaseThingHandler {
                 estimateRequest.header(HttpHeader.AUTHORIZATION, BEARER + bridgeHandler.get().getApiKey());
                 ContentResponse crEstimate = estimateRequest.send();
                 if (crEstimate.getStatus() == 200) {
-                    forecast = new SolcastObject(crEstimate.getContentAsString(), ZonedDateTime
+                    SolcastObject localForecast = new SolcastObject(crEstimate.getContentAsString(), ZonedDateTime
                             .now(SolcastConstants.zonedId).plusMinutes(configuration.get().refreshInterval));
-                    logger.trace("{} Fetched data {}", thing.getLabel(), forecast.toString());
+                    logger.trace("{} Fetched data {}", thing.getLabel(), localForecast.toString());
 
                     // get forecast
                     logger.debug("{} Call {}", thing.getLabel(), forecastUrl);
@@ -188,7 +200,8 @@ public class SolcastPlaneHandler extends BaseThingHandler {
                     ContentResponse crForecast = forecastRequest.send();
 
                     if (crForecast.getStatus() == 200) {
-                        forecast.join(crForecast.getContentAsString());
+                        localForecast.join(crForecast.getContentAsString());
+                        setForecast(localForecast);
                         logger.trace("{} Fetched data {}", thing.getLabel(), forecast.toString());
                         updateChannels(forecast);
                         updateState(CHANNEL_RAW, StringType.valueOf(forecast.getRaw()));
@@ -332,5 +345,14 @@ public class SolcastPlaneHandler extends BaseThingHandler {
         updateState(CHANNEL_DAY6_HIGH, Utils.getEnergyState(f.getOptimisticDayTotal(now, 6)));
         updateState(CHANNEL_DAY6_LOW, Utils.getEnergyState(f.getPessimisticDayTotal(now, 6)));
         updateState(CHANNEL_RAW, StringType.valueOf(forecast.getRaw()));
+    }
+
+    private synchronized void setForecast(SolcastObject f) {
+        forecast = f;
+    }
+
+    @Override
+    public synchronized List<SolarForecast> getSolarForecasts() {
+        return List.of(forecast);
     }
 }
