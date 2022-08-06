@@ -6,13 +6,13 @@ This binding adds support to control Tapo (Copyright © TP-Link Corporation Limi
 
 The following Tapo-Devices are supported
 
-### P100/P105 SmartPlug (WiFi)
+### P100/P105 SmartPlug (Wi-Fi)
 
 * Power On/Off
 * Wi-Fi signal (SignalStrength)
 * On-Time (Time in seconds device is switched on)
 
-### P110/P115 EnergyMonitoring SmartPlug (WiFi)
+### P110/P115 EnergyMonitoring SmartPlug (Wi-Fi)
 
 * Power On/Off
 * Wi-Fi signal (SignalStrength)
@@ -21,7 +21,7 @@ The following Tapo-Devices are supported
 * today EnergyUsage (Wh)
 * today Runtime (Time in seconds device was on today)
 
-### L510(Series) dimmable SmartBulb (WiFi)
+### L510(Series) dimmable SmartBulb (Wi-Fi)
 
 * Light On/Off
 * Brightnes (Dimmer)  0-100 %
@@ -29,7 +29,7 @@ The following Tapo-Devices are supported
 * Wi-Fi signal (SignalStrength)
 * On-Time (Time in seconds device is switched on)
 
-### L530(Series) MultiColor SmartBulb (WiFi)
+### L530(Series) MultiColor SmartBulb (Wi-Fi)
 
 * Light On/Off
 * Brightnes (Dimmer)  0-100 %
@@ -38,7 +38,7 @@ The following Tapo-Devices are supported
 * Wi-Fi signal (SignalStrength)
 * On-Time (Time in seconds device is switched on)
 
-### L900/L920 LED-LightStrip (WiFi)
+### L900/L920 LED-LightStrip (Wi-Fi)
 
 * Light On/Off
 * Brightnes (Dimmer)  0-100 %
