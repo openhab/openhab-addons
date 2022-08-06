@@ -67,7 +67,7 @@ Arduino code is available [here](https://github.com/openhab/openhab-addons/tree/
 Arduino code can be build via Arduino IDE.
 For more details see [www.arduino.cc](https://www.arduino.cc/en/Main/Software). 
 NibeGW configuration (such IP addresses, ports, etc) can be adapted directly by editing the code files.
-PRODINo ESP32 Ethernet v1 supports also dynamic configuration and OTA updates via Wi-Fi access point.
+PRODINo ESP32 Ethernet v1 also supports dynamic configuration and OTA updates via Wi-Fi access point.
 
 ### Raspberry Pi (or other Linux/Unix based boards)
 
