@@ -87,7 +87,6 @@ public class VehicleHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(VehicleHandler.class);
     private final Map<String, Long> timeHash = new HashMap<String, Long>();
-    private final MercedesMeTranslationProvider i18nProvider;
     private final MercedesMeCommandOptionProvider mmcop;
     private final MercedesMeStateOptionProvider mmsop;
     private final StorageService storageService;
@@ -104,11 +103,9 @@ public class VehicleHandler extends BaseThingHandler {
     private boolean online = false;
 
     public VehicleHandler(Thing thing, HttpClient hc, String uid, StorageService storageService,
-            MercedesMeCommandOptionProvider mmcop, MercedesMeStateOptionProvider mmsop,
-            MercedesMeTranslationProvider translationProvider) {
+            MercedesMeCommandOptionProvider mmcop, MercedesMeStateOptionProvider mmsop) {
         super(thing);
         httpClient = hc;
-        i18nProvider = translationProvider;
         this.uid = uid;
         this.mmcop = mmcop;
         this.mmsop = mmsop;
@@ -188,15 +185,12 @@ public class VehicleHandler extends BaseThingHandler {
                 }
                 updateState(new ChannelUID(thing.getUID(), GROUP_IMAGE, "clear-cache"), OnOffType.OFF);
             } else {
-                String textKey = MercedesMeTranslationProvider.PREFIX + "vehicle"
-                        + MercedesMeTranslationProvider.STATUS_BRIDGEHANDLER_MISSING;
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
-                        i18nProvider.getText(textKey));
+                String textKey = Constants.PREFIX + "vehicle" + Constants.STATUS_BRIDGEHANDLER_MISSING;
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, textKey);
             }
         } else {
-            String textKey = MercedesMeTranslationProvider.PREFIX + "vehicle"
-                    + MercedesMeTranslationProvider.STATUS_BRIDGE_MISSING;
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, i18nProvider.getText(textKey));
+            String textKey = Constants.PREFIX + "vehicle" + Constants.STATUS_BRIDGE_MISSING;
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, textKey);
         }
     }
 
