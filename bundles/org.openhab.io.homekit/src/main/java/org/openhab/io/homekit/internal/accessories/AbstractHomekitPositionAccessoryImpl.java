@@ -57,8 +57,7 @@ abstract class AbstractHomekitPositionAccessoryImpl extends AbstractHomekitAcces
             List<HomekitTaggedItem> mandatoryCharacteristics, HomekitAccessoryUpdater updater,
             HomekitSettings settings) {
         super(taggedItem, mandatoryCharacteristics, updater, settings);
-        final String invertedConfig = getAccessoryConfiguration(HomekitTaggedItem.INVERTED, "true");
-        final boolean inverted = invertedConfig.equalsIgnoreCase("yes") || invertedConfig.equalsIgnoreCase("true");
+        final boolean inverted = getAccessoryConfigurationAsBoolean(HomekitTaggedItem.INVERTED, true);
         closedPosition = inverted ? 0 : 100;
         openPosition = inverted ? 100 : 0;
         positionStateMapping = new EnumMap<>(PositionStateEnum.class);
