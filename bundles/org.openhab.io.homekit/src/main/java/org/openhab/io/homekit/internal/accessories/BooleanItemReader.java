@@ -22,6 +22,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.State;
+import org.openhab.io.homekit.internal.HomekitOHItemProxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,7 +49,9 @@ public class BooleanItemReader {
         this.item = item;
         this.trueOnOffValue = trueOnOffValue;
         this.trueOpenClosedValue = trueOpenClosedValue;
-        if (!(item instanceof SwitchItem) && !(item instanceof ContactItem) && !(item instanceof StringItem)) {
+        final Item baseItem = HomekitOHItemProxy.getBaseItem(item);
+        if (!(baseItem instanceof SwitchItem) && !(baseItem instanceof ContactItem)
+                && !(baseItem instanceof StringItem)) {
             logger.warn("Item {} is a {} instead of the expected SwitchItem, ContactItem or StringItem", item.getName(),
                     item.getClass().getName());
         }
