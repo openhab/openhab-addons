@@ -274,7 +274,7 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
                 try {
                     ContentResponse crMeasure = request.send();
                     if (crMeasure.getStatus() == 200) {
-                        logger.info("{} Call {} finished {}", thing.getLabel(), measureUrl,
+                        logger.debug("{} Call {} finished {}", thing.getLabel(), measureUrl,
                                 crMeasure.getContentAsString());
                         updateState = StringType.valueOf(crMeasure.getContentAsString());
                     } else {
