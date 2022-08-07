@@ -14,7 +14,7 @@ Supported Services
 
 ## Supported Things
 
-Each service needs one `site` for your location and 1+ Photovoltaic `plane`.  
+Each service needs one `xx-site` for your location and at least one photovoltaic `xx-plane`.  
 
 | Name                              | Thing Type ID |
 |-----------------------------------|---------------|
@@ -27,7 +27,7 @@ Each service needs one `site` for your location and 1+ Photovoltaic `plane`.
 
 [Solcast service](https://solcast.com/) requires a personal registration with an email address.
 A free version for your personal home PV system is available in [Hobbyist Plan](https://toolkit.solcast.com.au/register/hobbyist)
-You need to configure your Home Photovoltaic System within the web interface.
+You need to configure your home photovoltaic system within the web interface.
 After configuration the necessary information is available.
 
 ### Solcast Tuning
@@ -42,7 +42,7 @@ As described in [Solcast Rooftop Measurement](https://legacy-docs.solcast.com.au
 - item is delivering good values and they are stored in persistence
 - time settings in openHAB are correct in order to so measurements are matching to the measure time frame
 
-After the measurement is sent the `raw-tuning` is reporting the result.
+After the measurement is sent the `raw-tuning` channel is reporting the result.
 
 ### Solcast Bridge Configuration
 
@@ -74,7 +74,7 @@ Note: `channelRefreshInterval` from [Bridge Configuration](#solcast-bridge-confi
 It's an optional setting and the [measure is sent to Solcast API in order to tune the forecast](https://legacy-docs.solcast.com.au/#measurements-rooftop-site) in the future.
 If you don't want to sent measures to Solcast leave this configuration item empty.
 
-`powerUnit' is set to `auto-detect`. 
+`powerUnit` is set to `auto-detect`. 
 In case the `powerItem` is delivering a valid `QuantityType<Power>` state this setting is fine.
 If the item delivers a raw number without unit please select `powerUnit` accordingly if item state is Watt or Kilowatt unit. 
 
@@ -159,7 +159,7 @@ Day*X* channels are referring to forecasts plus *X* days: 1 = tomorrow, 2 = day 
 
 All things `sc-site`, `sc-plane`, `fs-site` and `fs-plane` are providing the same Actions.
 While channels are providing actual forecast data and daily forecasts in future Actions provides an interface to execute more sophisticated handling in rules.
-You can execute this for each `xx-plane` thing for specific plane values or `xx-site` thing which delivers the sum of all attached planes.
+You can execute this for each `xx-plane` for specific plane values or `xx-site` to sum up all attached planes.
 
 ### Get Forecast Begin
 
@@ -169,7 +169,7 @@ LocalDateTime getForecastBegin()
 
 Returns `LocalDateTime` of the earliest possible forecast data available.
 It's located in the past, e.g. Solcast provides data from the last 7 days.
-`LocalDateTime.MIN` is returned in case of now forecast data is available.
+`LocalDateTime.MIN` is returned in case of no forecast data is available.
 
 ### Get Forecast End
 
@@ -178,7 +178,7 @@ LocalDateTime getForecastEnd()
 ````
 
 Returns `LocalDateTime` of the latest possible forecast data available.
-`LocalDateTime.MAX` is returned in case of now forecast data is available.
+`LocalDateTime.MAX` is returned in case of no forecast data is available.
 
 ### Get Power
 
@@ -187,7 +187,7 @@ State getPower(LocalDateTime dateTime)
 ````
 
 Returns `QuantityType<Power>` at the given `dateTime`.
-Respect `getForecastBegin` and `getForecastEnd` to avoid ambigouos values.
+Respect `getForecastBegin` and `getForecastEnd` to get a valid value.
 Check for `UndefType.UNDEF` in case of errors.
 
 ### Get Day
@@ -203,7 +203,7 @@ Check for `UndefType.UNDEF` in case of errors.
 ### Get Energy
 
 ````java
-State State getEnergy(LocalDateTime begin, LocalDateTime end) 
+State getEnergy(LocalDateTime begin, LocalDateTime end) 
 ````
 
 Returns `QuantityType<Energy>` between the timestamps `begin` and `end`.
@@ -280,4 +280,16 @@ rule "Forecast Solar Actions"
         val twoDaysForecastFromNowValue = (twoDaysForecastFromNowState as Number).doubleValue
         logInfo("SF Tests","Forecast 2 days value: "+ twoDaysForecastFromNowValue)
 end
+````
+
+shall produce following output
+
+````
+2022-08-07 18:02:19.874 [INFO ] [g.openhab.core.model.script.SF Tests] - Begin: 2022-07-31T18:30 End: 2022-08-14T18:00
+2022-08-07 18:02:19.878 [INFO ] [g.openhab.core.model.script.SF Tests] - Forecast tomorrow state: 55.999 kWh
+2022-08-07 18:02:19.880 [INFO ] [g.openhab.core.model.script.SF Tests] - Forecast tomorrow value: 55.999
+2022-08-07 18:02:19.884 [INFO ] [g.openhab.core.model.script.SF Tests] - Hour+1 power state: 2.497 kW
+2022-08-07 18:02:19.886 [INFO ] [g.openhab.core.model.script.SF Tests] - Hour+1 power value: 2.497
+2022-08-07 18:02:19.891 [INFO ] [g.openhab.core.model.script.SF Tests] - Forecast 2 days state: 112.483 kWh
+2022-08-07 18:02:19.892 [INFO ] [g.openhab.core.model.script.SF Tests] - Forecast 2 days value: 112.483
 ````
