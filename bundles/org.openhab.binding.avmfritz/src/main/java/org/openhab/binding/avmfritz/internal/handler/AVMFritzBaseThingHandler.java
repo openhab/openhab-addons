@@ -417,6 +417,13 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
                     brightness = ((PercentType) command).toBigDecimal();
                 } else if (command instanceof OnOffType) {
                     fritzBox.setSwitch(ain, OnOffType.ON.equals(command));
+                } else if (command instanceof IncreaseDecreaseType) {
+                    brightness = ((DeviceModel) currentDevice).getLevelControlModel().getLevelPercentage();
+                    if (IncreaseDecreaseType.INCREASE.equals(command)) {
+                        brightness.add(BigDecimal.TEN);
+                    } else {
+                        brightness.subtract(BigDecimal.TEN);
+                    }
                 }
                 if (brightness != null) {
                     fritzBox.setLevelPercentage(ain, brightness);
