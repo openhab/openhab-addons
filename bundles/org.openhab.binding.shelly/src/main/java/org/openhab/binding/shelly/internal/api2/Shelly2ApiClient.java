@@ -438,17 +438,15 @@ public class Shelly2ApiClient extends ShellyHttpClient {
     protected boolean updateInputStatus(ShellySettingsStatus status, Shelly2DeviceStatusResult ds,
             boolean updateChannels) throws ShellyApiException {
         boolean updated = false;
-        ArrayList<ShellyInputState> inputs = new ArrayList<>();
-        updated |= addInputStatus(inputs, ds.input0, updateChannels);
-        updated |= addInputStatus(inputs, ds.input1, updateChannels);
-        updated |= addInputStatus(inputs, ds.input2, updateChannels);
-        updated |= addInputStatus(inputs, ds.input3, updateChannels);
-        status.inputs = relayStatus.inputs = inputs;
+        updated |= addInputStatus(ds.input0, updateChannels);
+        updated |= addInputStatus(ds.input1, updateChannels);
+        updated |= addInputStatus(ds.input2, updateChannels);
+        updated |= addInputStatus(ds.input3, updateChannels);
+        status.inputs = relayStatus.inputs;
         return updated;
     }
 
-    private boolean addInputStatus(ArrayList<ShellyInputState> inputs, @Nullable Shelly2InputStatus is,
-            boolean updateChannels) throws ShellyApiException {
+    private boolean addInputStatus(@Nullable Shelly2InputStatus is, boolean updateChannels) throws ShellyApiException {
         if (is == null) {
             return false;
         }
@@ -466,8 +464,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             input.event = "";
             input.eventCount = 0;
         }
-        inputs.add(input);
-
+        relayStatus.inputs.set(is.id, input);
         if (updateChannels) {
             updated |= updateChannel(group, CHANNEL_INPUT + getProfile().getInputSuffix(is.id),
                     getOnOff(getBool(is.state)));

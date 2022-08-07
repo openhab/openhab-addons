@@ -126,8 +126,10 @@ public class Shelly2WebSocket {
         } catch (IllegalArgumentException e) { // unknown thing
         }
 
-        logger.debug("WebSocket: Unable to handle WebSocket connection (unknown thing), close socket");
-        session.close(StatusCode.SHUTDOWN, "Thing not active");
+        if (websocketHandler == null && thingTable != null) {
+            logger.debug("WebSocket: Unable to handle WebSocket connection (unknown thing), close socket");
+            session.close(StatusCode.SHUTDOWN, "Thing not active");
+        }
     }
 
     public void sendMessage(String str) throws ShellyApiException {
