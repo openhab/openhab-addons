@@ -12,6 +12,7 @@
  */
 package org.openhab.io.homekit.internal.accessories;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -312,6 +313,26 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
                 getItem(characteristicType, GenericItem.class)
                         .orElseThrow(() -> new IncompleteAccessoryException(characteristicType)),
                 trueOnOffValue, trueOpenClosedValue);
+    }
+
+    /**
+     * create boolean reader with ON state mapped to trueOnOffValue or trueOpenClosedValue depending of item type
+     *
+     * @param characteristicType characteristic id
+     * @param trueOnOffValue ON value for switch
+     * @param trueOpenClosedValue ON value for contact
+     * @param trueThreshold threshold for true of number item
+     * @param invertThreshold result is true if item is less than threshold, instead of more
+     * @return boolean read
+     * @throws IncompleteAccessoryException
+     */
+    @NonNullByDefault
+    protected BooleanItemReader createBooleanReader(HomekitCharacteristicType characteristicType,
+            BigDecimal trueThreshold, boolean invertThreshold) throws IncompleteAccessoryException {
+        final HomekitTaggedItem taggedItem = getCharacteristic(characteristicType)
+                .orElseThrow(() -> new IncompleteAccessoryException(characteristicType));
+        return new BooleanItemReader(taggedItem.getItem(), taggedItem.isInverted() ? OnOffType.OFF : OnOffType.ON,
+                taggedItem.isInverted() ? OpenClosedType.CLOSED : OpenClosedType.OPEN, trueThreshold, invertThreshold);
     }
 
     /**
