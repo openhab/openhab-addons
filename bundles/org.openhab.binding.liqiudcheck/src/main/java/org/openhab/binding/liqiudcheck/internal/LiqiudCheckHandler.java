@@ -25,7 +25,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.liqiudcheck.internal.httpClient.LiquidCheckHttpClient;
 import org.openhab.binding.liqiudcheck.internal.json.Response;
-import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -48,12 +50,15 @@ public class LiqiudCheckHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(LiqiudCheckHandler.class);
 
+    private Map<String, String> oldProps;
+
     private LiqiudCheckConfiguration config = getConfigAs(LiqiudCheckConfiguration.class);
 
     private @Nullable ScheduledFuture<?> polling;
 
     public LiqiudCheckHandler(Thing thing) {
         super(thing);
+        oldProps = thing.getProperties();
     }
 
     @Override
@@ -106,9 +111,13 @@ public class LiqiudCheckHandler extends BaseThingHandler {
                         try {
                             String response = httpClient.pollData();
                             Response json = new Gson().fromJson(response, Response.class);
-                            Map<String, Object> properties = createPropertyMap(json);
-                            updateState(CONTENT_CHANNEL, new DecimalType(json.payload.measure.content));
-                            updateState(LEVEL_CHANNEL, new DecimalType(json.payload.measure.level));
+                            Map<String, String> properties = createPropertyMap(json);
+                            if (!oldProps.equals(properties)) {
+                                oldProps = properties;
+                                updateProperties(properties);
+                            }
+                            updateState(CONTENT_CHANNEL, new QuantityType<>(json.payload.measure.content, Units.LITRE));
+                            updateState(LEVEL_CHANNEL, new QuantityType<>(json.payload.measure.level, SIUnits.METRE));
                         } catch (InterruptedException | TimeoutException | ExecutionException e) {
                             // TODO Auto-generated catch block
                             e.printStackTrace();
@@ -136,8 +145,8 @@ public class LiqiudCheckHandler extends BaseThingHandler {
         // "Can not access device as username and/or password are invalid");
     }
 
-    private Map<String, Object> createPropertyMap(Response response) {
-        Map<String, Object> properties = new HashMap<>();
+    private Map<String, String> createPropertyMap(Response response) {
+        Map<String, String> properties = new HashMap<>();
         properties.put(CONFIG_ID_FIRMWARE, response.payload.device.firmware);
         properties.put(CONFIG_ID_HARDWARE, response.payload.device.hardware);
         properties.put(CONFIG_ID_NAME, response.payload.device.name);

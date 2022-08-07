@@ -3,9 +3,6 @@ package org.openhab.binding.liqiudcheck.internal.discovery;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.liqiudcheck.internal.json.Response;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
 @NonNullByDefault
 public class LiquidCheckProperties {
     public final String firmware;
