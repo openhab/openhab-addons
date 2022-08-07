@@ -411,7 +411,7 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
                 if (command instanceof HSBType) {
                     HSBType hsbType = (HSBType) command;
                     brightness = hsbType.getBrightness().toBigDecimal();
-                    fritzBox.setHueAndSaturation(ain, hsbType.getHue().intValue(),
+                    fritzBox.setUnmappedHueAndSaturation(ain, hsbType.getHue().intValue(),
                             ColorControlModel.fromPercent(hsbType.getSaturation()), 0);
                 } else if (command instanceof PercentType) {
                     brightness = ((PercentType) command).toBigDecimal();
