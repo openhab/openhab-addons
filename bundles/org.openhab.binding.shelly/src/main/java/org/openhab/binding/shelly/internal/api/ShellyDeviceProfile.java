@@ -330,17 +330,19 @@ public class ShellyDeviceProfile {
         return -1;
     }
 
-    public String getValueProfile(int profileId) {
-        int id = profileId;
-        if (settings.thermostats != null) {
-            ShellyThermnostat t = settings.thermostats.get(0);
-            id = profileId == 0 ? getInteger(t.profile) : profileId;
-            if (id <= 0) {
-                return "DISABLED";
-            }
-            return id <= t.profileNames.length ? getString(t.profileNames[id - 1]) : "" + id;
+    public String[] getValveProfileList(int valveId) {
+        if (isTRV && settings.thermostats != null && valveId <= settings.thermostats.size()) {
+            ShellyThermnostat t = settings.thermostats.get(valveId);
+            return t.profileNames;
         }
+        return new String[0];
+    }
 
+    public String getValueProfile(int valveId, int profileId) {
+        int id = profileId;
+        if (id <= 0 && settings.thermostats != null) {
+            id = settings.thermostats.get(0).profile;
+        }
         return "" + id;
     }
 
