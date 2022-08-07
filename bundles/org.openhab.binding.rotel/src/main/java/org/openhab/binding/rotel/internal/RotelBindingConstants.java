@@ -240,6 +240,7 @@ public class RotelBindingConstants {
     public static final String KEY_DSP_MODE = "dsp_mode";
     public static final String KEY_ERROR = "error";
     // Keys only used by the ASCII protocol
+    public static final String KEY_POWER_MODE = "power_mode";
     public static final String KEY_INPUT = "input";
     public static final String KEY_INPUT_ZONE1 = "input_zone1";
     public static final String KEY_INPUT_ZONE2 = "input_zone2";
@@ -279,6 +280,17 @@ public class RotelBindingConstants {
     public static final String KEY_BALANCE_ZONE3 = "balance_zone3";
     public static final String KEY_BALANCE_ZONE4 = "balance_zone4";
     public static final String KEY_SPEAKER = "speaker";
+    public static final String KEY_SUB_LEVEL = "subwoofer_level";
+    public static final String KEY_CENTER_LEVEL = "center_level";
+    public static final String KEY_SURROUND_RIGHT_LEVEL = "surround_right";
+    public static final String KEY_SURROUND_LEFT_LEVEL = "surround_left";
+    public static final String KEY_CENTER_BACK_RIGHT_LEVEL = "center_back_right";
+    public static final String KEY_CENTER_BACK_LEFT_LEVEL = "center_back_left";
+    public static final String KEY_CEILING_FRONT_RIGHT_LEVEL = "ceiling_front_right";
+    public static final String KEY_CEILING_FRONT_LEFT_LEVEL = "ceiling_front_left";
+    public static final String KEY_CEILING_REAR_RIGHT_LEVEL = "ceiling_rear_right";
+    public static final String KEY_CEILING_REAR_LEFT_LEVEL = "ceiling_rear_left";
+    public static final String KEY_PCUSB_CLASS = "pcusb_class";
     public static final String KEY_MODEL = "model";
     public static final String KEY_VERSION = "version";
     // Output keys only used by the HEX protocol
@@ -299,6 +311,8 @@ public class RotelBindingConstants {
     public static final String MSG_VALUE_ON = "on";
     public static final String MSG_VALUE_NONE = "none";
     public static final String POWER_ON = "on";
+    public static final String POWER_QUICK = "quick";
+    public static final String POWER_NORMAL = "normal";
     public static final String STANDBY = "standby";
     public static final String POWER_OFF_DELAYED = "off_delayed";
     public static final String MSG_VALUE_SPEAKER_A = "a";
