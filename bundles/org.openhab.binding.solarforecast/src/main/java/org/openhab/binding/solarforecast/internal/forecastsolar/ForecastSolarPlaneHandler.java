@@ -65,6 +65,7 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
     public ForecastSolarPlaneHandler(Thing thing, HttpClient hc) {
         super(thing);
         httpClient = hc;
+        logger.debug("{} Constructor", thing.getLabel());
     }
 
     @Override
@@ -74,6 +75,7 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
 
     @Override
     public void initialize() {
+        logger.debug("{} initialize", thing.getLabel());
         ForecastSolarPlaneConfiguration c = getConfigAs(ForecastSolarPlaneConfiguration.class);
         configuration = Optional.of(c);
         Bridge bridge = getBridge();
@@ -106,7 +108,7 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.info("Handle command {} for channel {}", channelUID, command);
+        logger.trace("Handle command {} for channel {}", channelUID, command);
         if (command instanceof RefreshType) {
             fetchData();
         }
@@ -116,6 +118,7 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
      * https://doc.forecast.solar/doku.php?id=api:estimate
      */
     protected ForecastSolarObject fetchData() {
+        logger.debug("{} fetch data", thing.getLabel());
         if (location.isPresent()) {
             if (!forecast.isValid()) {
                 String url;
@@ -141,9 +144,9 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
                                 LocalDateTime.now().plusMinutes(configuration.get().refreshInterval));
                         setForecast(localForecast);
                         logger.debug("{} Fetched data {}", thing.getLabel(), forecast.toString());
-                        logger.info("{} {} HTTP errors since last successful update", thing.getLabel(), failureCounter);
+                        logger.debug("{} {} HTTP errors since last successful update", thing.getLabel(),
+                                failureCounter);
                         failureCounter = 0;
-                        updateChannels(forecast);
                         updateState(CHANNEL_RAW, StringType.valueOf(cr.getContentAsString()));
                     } else {
                         logger.debug("{} Call {} failed {}", thing.getLabel(), url, cr.getStatus());
@@ -192,7 +195,7 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
     }
 
     private synchronized void setForecast(ForecastSolarObject f) {
-        logger.info("Forecast added - valid? {}", f.isValid());
+        logger.debug("Forecast set - valid? {}", f.isValid());
         forecast = f;
     }
 

@@ -184,7 +184,7 @@ public class SolcastObject implements SolarForecast {
                 // => take 2/3 of floor and 1/3 of ceiling
                 double interpolation = (now.getMinute() - f.getKey().getMinute()) / 60.0;
                 actualPowerValue = ((1 - interpolation) * powerFloor) + (interpolation * powerCeiling);
-                return Math.round(actualPowerValue * 1000) / 1000.0;
+                return actualPowerValue;
             } else {
                 // sun is down
                 return 0;
@@ -292,7 +292,7 @@ public class SolcastObject implements SolarForecast {
             }
             measure += getActualValue(zdtEnd);
         }
-        return Utils.getEnergyState(Math.round(measure * 1000) / 1000.0);
+        return Utils.getEnergyState(measure);
     }
 
     @Override

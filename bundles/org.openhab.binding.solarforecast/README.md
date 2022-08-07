@@ -163,7 +163,7 @@ You can execute this for each `xx-plane` thing for specific plane values or `xx-
 
 ### Get Forecast Begin
 
-````
+````java
 LocalDateTime getForecastBegin()
 ````
 
@@ -173,7 +173,7 @@ It's located in the past, e.g. Solcast provides data from the last 7 days.
 
 ### Get Forecast End
 
-````
+````java
 LocalDateTime getForecastEnd()
 ````
 
@@ -182,33 +182,33 @@ Returns `LocalDateTime` of the latest possible forecast data available.
 
 ### Get Power
 
-````
+````java
 State getPower(LocalDateTime dateTime)
 ````
 
 Returns `QuantityType<Power>` at the given `dateTime`.
 Respect `getForecastBegin` and `getForecastEnd` to avoid ambigouos values.
-Check for `UndefType.UNDEF` in case of an errors.
+Check for `UndefType.UNDEF` in case of errors.
 
 ### Get Day
 
-````
+````java
 State getDay(LocalDate localDate)
 ````
 
 Returns `QuantityType<Energy>` at the given `localDate`.
 Respect `getForecastBegin` and `getForecastEnd` to avoid ambigouos values.
-Check for `UndefType.UNDEF` in case of an errors.
+Check for `UndefType.UNDEF` in case of errors.
 
 ### Get Energy
 
-````
+````java
 State State getEnergy(LocalDateTime begin, LocalDateTime end) 
 ````
 
 Returns `QuantityType<Energy>` between the timestamps `begin` and `end`.
 Respect `getForecastBegin` and `getForecastEnd` to avoid ambigouos values.
-Check for `UndefType.UNDEF` in case of an errors.
+Check for `UndefType.UNDEF` in case of errors.
 
 
 ## Example
@@ -228,20 +228,23 @@ Bridge solarforecast:fs-site:homeSite   "ForecastSolar Home" [ location="54.321,
 ### Items file
 
 ````
-Number:Energy           ForecastSolarHome_Actual         "Actual Forecast Today [%3.f %unit%]"             {channel="solarforecast:fs-site:homeSite:actual" }                                                                           
-Number:Energy           ForecastSolarHome_Remaining      "Remaining Forecast Today [%3.f %unit%]"          {channel="solarforecast:fs-site:homeSite:remaining" }                                                                           
-Number:Energy           ForecastSolarHome_Today          "Today Total Forecast [%3.f %unit%]"              {channel="solarforecast:fs-site:homeSite:today" }                                                                           
-Number:Energy           ForecastSolarHome_Day1           "Tomorrow Total Forecast [%3.f %unit%]"           {channel="solarforecast:fs-site:homeSite:day1" }                                                                           
+Number:Energy           ForecastSolarHome_Actual           "Actual Forecast Today [%3.f %unit%]"             {channel="solarforecast:fs-site:homeSite:actual" }                                                                           
+Number:Power            ForecastSolarHome_Actual_Power     "Actual Power Forecast [%3.f %unit%]"             {channel="solarforecast:fs-site:homeSite:actual-power" }                                                                           
+Number:Energy           ForecastSolarHome_Remaining        "Remaining Forecast Today [%3.f %unit%]"          {channel="solarforecast:fs-site:homeSite:remaining" }                                                                           
+Number:Energy           ForecastSolarHome_Today            "Today Total Forecast [%3.f %unit%]"              {channel="solarforecast:fs-site:homeSite:today" }                                                                           
+Number:Energy           ForecastSolarHome_Day1             "Tomorrow Total Forecast [%3.f %unit%]"           {channel="solarforecast:fs-site:homeSite:day1" }                                                                           
 
-Number:Energy           ForecastSolarHome_Actual_NE      "Actual NE Forecast Today [%3.f %unit%]"          {channel="solarforecast:fs-plane:homeSite:homeNorthEast:actual" }                                                                           
-Number:Energy           ForecastSolarHome_Remaining_NE   "Remaining NE Forecast Today [%3.f %unit%]"       {channel="solarforecast:fs-plane:homeSite:homeNorthEast:remaining" }                                                                           
-Number:Energy           ForecastSolarHome_Today_NE       "Total NE Forecast Today [%3.f %unit%]"           {channel="solarforecast:fs-plane:homeSite:homeNorthEast:today" }                                                                           
-Number:Energy           ForecastSolarHome_Day_NE         "Tomorrow NE Forecast [%3.f %unit%]"              {channel="solarforecast:fs-plane:homeSite:homeNorthEast:day1" }                                                                           
+Number:Energy           ForecastSolarHome_Actual_NE        "Actual NE Forecast Today [%3.f %unit%]"          {channel="solarforecast:fs-plane:homeSite:homeNorthEast:actual" }                                                                           
+Number:Power            ForecastSolarHome_Actual_Power_NE  "Actual NE Power Forecast [%3.f %unit%]"          {channel="solarforecast:fs-plane:homeSite:homeNorthEast:actual-power" }                                                                           
+Number:Energy           ForecastSolarHome_Remaining_NE     "Remaining NE Forecast Today [%3.f %unit%]"       {channel="solarforecast:fs-plane:homeSite:homeNorthEast:remaining" }                                                                           
+Number:Energy           ForecastSolarHome_Today_NE         "Total NE Forecast Today [%3.f %unit%]"           {channel="solarforecast:fs-plane:homeSite:homeNorthEast:today" }                                                                           
+Number:Energy           ForecastSolarHome_Day_NE           "Tomorrow NE Forecast [%3.f %unit%]"              {channel="solarforecast:fs-plane:homeSite:homeNorthEast:day1" }                                                                           
 
-Number:Energy           ForecastSolarHome_Actual_SW      "Actual SW Forecast Today [%3.f %unit%]"          {channel="solarforecast:fs-plane:homeSite:homeSouthWest:actual" }                                                                           
-Number:Energy           ForecastSolarHome_Remaining_SW   "Remaining SW Forecast Today [%3.f %unit%]"       {channel="solarforecast:fs-plane:homeSite:homeSouthWest:remaining" }                                                                           
-Number:Energy           ForecastSolarHome_Today_SW       "Total SW Forecast Today [%3.f %unit%]"           {channel="solarforecast:fs-plane:homeSite:homeSouthWest:today" }                                                                           
-Number:Energy           ForecastSolarHome_Day_SW         "Tomorrow SW Forecast [%3.f %unit%]"              {channel="solarforecast:fs-plane:homeSite:homeSouthWest:day1" }                                                                           
+Number:Energy           ForecastSolarHome_Actual_SW        "Actual SW Forecast Today [%3.f %unit%]"          {channel="solarforecast:fs-plane:homeSite:homeSouthWest:actual" }                                                                           
+Number:Power            ForecastSolarHome_Actual_Power_SW  "Actual SW Power Forecast [%3.f %unit%]"          {channel="solarforecast:fs-plane:homeSite:homeSouthWest:actual-power" }                                                                           
+Number:Energy           ForecastSolarHome_Remaining_SW     "Remaining SW Forecast Today [%3.f %unit%]"       {channel="solarforecast:fs-plane:homeSite:homeSouthWest:remaining" }                                                                           
+Number:Energy           ForecastSolarHome_Today_SW         "Total SW Forecast Today [%3.f %unit%]"           {channel="solarforecast:fs-plane:homeSite:homeSouthWest:today" }                                                                           
+Number:Energy           ForecastSolarHome_Day_SW           "Tomorrow SW Forecast [%3.f %unit%]"              {channel="solarforecast:fs-plane:homeSite:homeSouthWest:day1" }                                                                           
 ````
 
 ### Actions rule
@@ -253,22 +256,28 @@ rule "Forecast Solar Actions"
     then 
         // get Actions for specific fs-site
         val solarforecastActions = getActions("solarforecast","solarforecast:fs-site:homeSite")
-        
+ 
         // get earliest and latest forecast dates
         val beginDT = solarforecastActions.getForecastBegin
         val endDT = solarforecastActions.getForecastEnd
         logInfo("SF Tests","Begin: "+ beginDT+" End: "+endDT)
  
-        // get daily forecast for tomorrow    
-        val fcToday = solarforecastActions.getDay(LocalDateTime.now.plusDays(1))
-        logInfo("SF Tests","Forecast tomorrow: "+ fcToday.toString)
+        // get forecast for tomorrow    
+        val fcTomorrowState = solarforecastActions.getDay(LocalDate.now.plusDays(1))
+        logInfo("SF Tests","Forecast tomorrow state: "+ fcTomorrowState.toString)
+        val fcToTomorrowDouble = (fcTomorrowState as Number).doubleValue
+        logInfo("SF Tests","Forecast tomorrow value: "+ fcToTomorrowDouble)
         
         // get power forecast in one hour
-        val currentPower = solarforecastActions.getPower(LocalDateTime.now.plusHours(1))
-        logInfo("SF Tests","Hour+1 Power: "+ currentPower.toString)
+        val hourPlusOnePowerState = solarforecastActions.getPower(LocalDateTime.now.plusHours(1))
+        logInfo("SF Tests","Hour+1 power state: "+ hourPlusOnePowerState.toString)
+        val hourPlusOnePowerValue = (hourPlusOnePowerState as Number).doubleValue
+        logInfo("SF Tests","Hour+1 power value: "+ hourPlusOnePowerValue)
         
         // get total energy forecast from now till 2 days ahead
-        val twoDaysForecast = solarforecastActions.getEnergy(LocalDateTime.now,LocalDateTime.now.plusDays(2))
-        logInfo("SF Tests","Forecast 2 Days: "+ twoDaysForecast.toString)
+        val twoDaysForecastFromNowState = solarforecastActions.getEnergy(LocalDateTime.now,LocalDateTime.now.plusDays(2))
+        logInfo("SF Tests","Forecast 2 days state: "+ twoDaysForecastFromNowState.toString)
+        val twoDaysForecastFromNowValue = (twoDaysForecastFromNowState as Number).doubleValue
+        logInfo("SF Tests","Forecast 2 days value: "+ twoDaysForecastFromNowValue)
 end
 ````

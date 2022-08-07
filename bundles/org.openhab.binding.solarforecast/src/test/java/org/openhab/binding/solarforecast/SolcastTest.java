@@ -22,9 +22,9 @@ import java.time.ZonedDateTime;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.solarforecast.internal.Utils;
 import org.openhab.binding.solarforecast.internal.solcast.SolcastConstants;
 import org.openhab.binding.solarforecast.internal.solcast.SolcastObject;
-import org.openhab.binding.solarforecast.internal.solcast.SolcastPlaneHandler;
 import org.openhab.core.library.unit.Units;
 
 /**
@@ -201,17 +201,17 @@ class SolcastTest {
     @Test
     void testTimeframes() {
         ZonedDateTime zdt = ZonedDateTime.of(2022, 7, 22, 17, 3, 10, 345, ZoneId.systemDefault());
-        assertEquals("17:15", SolcastPlaneHandler.getNextTimeframe(zdt).toLocalTime().toString(), "Q1");
+        assertEquals("17:15", Utils.getNextTimeframe(zdt).toLocalTime().toString(), "Q1");
         zdt = zdt.plusMinutes(20);
-        assertEquals("17:30", SolcastPlaneHandler.getNextTimeframe(zdt).toLocalTime().toString(), "Q2");
+        assertEquals("17:30", Utils.getNextTimeframe(zdt).toLocalTime().toString(), "Q2");
         zdt = zdt.plusMinutes(3);
-        assertEquals("17:30", SolcastPlaneHandler.getNextTimeframe(zdt).toLocalTime().toString(), "Q2");
+        assertEquals("17:30", Utils.getNextTimeframe(zdt).toLocalTime().toString(), "Q2");
         zdt = zdt.plusMinutes(5);
-        assertEquals("17:45", SolcastPlaneHandler.getNextTimeframe(zdt).toLocalTime().toString(), "Q3");
+        assertEquals("17:45", Utils.getNextTimeframe(zdt).toLocalTime().toString(), "Q3");
         zdt = zdt.plusMinutes(25);
-        assertEquals("18:00", SolcastPlaneHandler.getNextTimeframe(zdt).toLocalTime().toString(), "Q4");
+        assertEquals("18:00", Utils.getNextTimeframe(zdt).toLocalTime().toString(), "Q4");
         zdt = zdt.plusMinutes(6);
-        assertEquals("18:15", SolcastPlaneHandler.getNextTimeframe(zdt).toLocalTime().toString(), "Q4");
+        assertEquals("18:15", Utils.getNextTimeframe(zdt).toLocalTime().toString(), "Q4");
     }
 
     @Test

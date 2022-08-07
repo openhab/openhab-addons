@@ -58,6 +58,7 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
     public ForecastSolarBridgeHandler(Bridge bridge, PointType location) {
         super(bridge);
         homeLocation = location;
+        logger.debug("{} Constructor", bridge.getLabel());
     }
 
     @Override
@@ -67,6 +68,7 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
 
     @Override
     public void initialize() {
+        logger.debug("{} initialize", thing.getLabel());
         ForecastSolarBridgeConfiguration config = getConfigAs(ForecastSolarBridgeConfiguration.class);
         if (config.location.equals(SolarForecastBindingConstants.AUTODETECT)) {
             Configuration editConfig = editConfiguration();
@@ -85,13 +87,19 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
     }
 
     private void startSchedule(int interval) {
+        /**
+         * Interval given in minutes so seconds needs multiplier. Wait for 10 seconds until attached planes are created
+         * and registered. If now waiting time is defined user will see some glitches e.g. after restart if no or not
+         * all planes are initialized
+         */
         refreshJob.ifPresentOrElse(job -> {
             if (job.isCancelled()) {
                 refreshJob = Optional
-                        .of(scheduler.scheduleWithFixedDelay(this::getData, 0, interval, TimeUnit.MINUTES));
+                        .of(scheduler.scheduleWithFixedDelay(this::getData, 10, interval * 60, TimeUnit.SECONDS));
             } // else - scheduler is already running!
         }, () -> {
-            refreshJob = Optional.of(scheduler.scheduleWithFixedDelay(this::getData, 0, interval, TimeUnit.MINUTES));
+            refreshJob = Optional
+                    .of(scheduler.scheduleWithFixedDelay(this::getData, 10, interval * 60, TimeUnit.SECONDS));
         });
     }
 
@@ -99,6 +107,7 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
      * Get data for all planes. Protect parts map from being modified during update
      */
     private synchronized void getData() {
+        logger.debug("{} getData for {} planes", thing.getLabel(), parts.size());
         if (parts.isEmpty()) {
             logger.debug("No PV plane defined yet");
             return;
@@ -157,7 +166,7 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
         List<SolarForecast> l = new ArrayList<SolarForecast>();
         parts.forEach(entry -> {
             l.addAll(entry.getSolarForecasts());
-            logger.info("{} Forecast added", entry.getSolarForecasts().size());
+            logger.trace("Actions: {} forecast added", entry.getSolarForecasts().size());
 
         });
         return l;

@@ -51,21 +51,20 @@ public class SolarForecastActions implements ThingActions {
     @RuleAction(label = "@text/actionDayLabel", description = "@text/actionDayDesc")
     public State getDay(
             @ActionInput(name = "localDate", label = "@text/actionInputDayLabel", description = "@text/actionInputDayDesc") LocalDate localDate) {
-        logger.info("getDay");
         if (thingHandler.isPresent()) {
             List<SolarForecast> l = ((SolarForecastProvider) thingHandler.get()).getSolarForecasts();
-            logger.info("Found {} SolarForecast entries", l.size());
+            logger.trace("Found {} SolarForecast entries", l.size());
             if (!l.isEmpty()) {
                 QuantityType<Energy> measure = QuantityType.valueOf(0, Units.KILOWATT_HOUR);
                 for (Iterator<SolarForecast> iterator = l.iterator(); iterator.hasNext();) {
                     SolarForecast solarForecast = iterator.next();
                     State s = solarForecast.getDay(localDate);
-                    logger.info("Found measure {}", s);
+                    logger.trace("Found measure {}", s);
                     if (s instanceof QuantityType<?>) {
                         measure = measure.add((QuantityType<Energy>) s);
                     } else {
                         // break in case of failure getting values to avoid ambiguous values
-                        logger.info("Found measure {} - break", s);
+                        logger.debug("Found measure {} - break", s);
                         return UnDefType.UNDEF;
                     }
                 }
@@ -80,18 +79,18 @@ public class SolarForecastActions implements ThingActions {
             @ActionInput(name = "localDateTime", label = "@text/actionInputDateTimeLabel", description = "@text/actionInputDateTimeDesc") LocalDateTime localDateTime) {
         if (thingHandler.isPresent()) {
             List<SolarForecast> l = ((SolarForecastProvider) thingHandler.get()).getSolarForecasts();
-            logger.info("Found {} SolarForecast entries", l.size());
+            logger.trace("Found {} SolarForecast entries", l.size());
             if (!l.isEmpty()) {
                 QuantityType<Power> measure = QuantityType.valueOf(0, MetricPrefix.KILO(Units.WATT));
                 for (Iterator<SolarForecast> iterator = l.iterator(); iterator.hasNext();) {
                     SolarForecast solarForecast = iterator.next();
                     State s = solarForecast.getPower(localDateTime);
-                    logger.info("Found measure {}", s);
+                    logger.trace("Found measure {}", s);
                     if (s instanceof QuantityType<?>) {
                         measure = measure.add((QuantityType<Power>) s);
                     } else {
                         // break in case of failure getting values to avoid ambiguous values
-                        logger.info("Found measure {} - break", s);
+                        logger.debug("Found measure {} - break", s);
                         return UnDefType.UNDEF;
                     }
                 }
@@ -107,18 +106,18 @@ public class SolarForecastActions implements ThingActions {
             @ActionInput(name = "localDateTimeEnd", label = "@text/actionInputDateTimeEndLabel", description = "@text/actionInputDateTimeEndDesc") LocalDateTime localDateTimeEnd) {
         if (thingHandler.isPresent()) {
             List<SolarForecast> l = ((SolarForecastProvider) thingHandler.get()).getSolarForecasts();
-            logger.info("Found {} SolarForecast entries", l.size());
+            logger.trace("Found {} SolarForecast entries", l.size());
             if (!l.isEmpty()) {
                 QuantityType<Energy> measure = QuantityType.valueOf(0, Units.KILOWATT_HOUR);
                 for (Iterator<SolarForecast> iterator = l.iterator(); iterator.hasNext();) {
                     SolarForecast solarForecast = iterator.next();
                     State s = solarForecast.getEnergy(localDateTimeBegin, localDateTimeEnd);
-                    logger.info("Found measure {}", s);
+                    logger.trace("Found measure {}", s);
                     if (s instanceof QuantityType<?>) {
                         measure = measure.add((QuantityType<Energy>) s);
                     } else {
                         // break in case of failure getting values to avoid ambiguous values
-                        logger.info("Found measure {} - break", s);
+                        logger.debug("Found measure {} - break", s);
                         return UnDefType.UNDEF;
                     }
                 }
@@ -130,16 +129,15 @@ public class SolarForecastActions implements ThingActions {
 
     @RuleAction(label = "@text/actionForecastBeginLabel", description = "@text/actionForecastBeginDesc")
     public LocalDateTime getForecastBegin() {
-        logger.info("getForecastBegin");
         LocalDateTime returnLdt = LocalDateTime.MIN;
         if (thingHandler.isPresent()) {
             List<SolarForecast> l = ((SolarForecastProvider) thingHandler.get()).getSolarForecasts();
-            logger.info("Found {} SolarForecast entries", l.size());
+            logger.trace("Found {} SolarForecast entries", l.size());
             if (!l.isEmpty()) {
                 for (Iterator<SolarForecast> iterator = l.iterator(); iterator.hasNext();) {
                     SolarForecast solarForecast = iterator.next();
                     LocalDateTime forecastLdt = solarForecast.getForecastBegin();
-                    logger.info("Found {}", forecastLdt.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+                    logger.trace("Found {}", forecastLdt.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
                     // break in case of failure getting values to avoid ambiguous values
                     if (forecastLdt.equals(LocalDateTime.MIN)) {
                         return LocalDateTime.MIN;
@@ -147,13 +145,11 @@ public class SolarForecastActions implements ThingActions {
                     // take latest possible timestamp to avoid ambiguous values
                     if (forecastLdt.isAfter(returnLdt)) {
                         returnLdt = forecastLdt;
-                        logger.info("Set {}", forecastLdt.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+                        logger.trace("Set {}", forecastLdt.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
                     }
                 }
                 return returnLdt;
             }
-        } else {
-            logger.info("Thinghandler missing");
         }
         return LocalDateTime.MIN;
     }
@@ -178,8 +174,6 @@ public class SolarForecastActions implements ThingActions {
                 }
                 return returnLdt;
             }
-        } else {
-            logger.info("Thinghandler missing");
         }
         return LocalDateTime.MAX;
     }
@@ -206,7 +200,7 @@ public class SolarForecastActions implements ThingActions {
 
     @Override
     public void setThingHandler(ThingHandler handler) {
-        logger.info("ThingHandler {} set", handler.toString());
+        logger.trace("ThingHandler {} set", handler.toString());
         thingHandler = Optional.of(handler);
     }
 

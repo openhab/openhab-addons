@@ -100,14 +100,14 @@ public class ForecastSolarObject implements SolarForecast {
                         int interpolation = now.getMinute() - f.getKey().getMinute();
                         double interpolationProduction = production * interpolation / 60;
                         double actualProduction = f.getValue() + interpolationProduction;
-                        return Math.round(actualProduction) / 1000.0;
+                        return actualProduction / 1000.0;
                     } else {
                         // ceiling from wrong date
-                        return Math.round(f.getValue()) / 1000.0;
+                        return f.getValue() / 1000.0;
                     }
                 } else {
                     // sun is down
-                    return Math.round(f.getValue()) / 1000.0;
+                    return f.getValue() / 1000.0;
                 }
             } else {
                 // floor from wrong date
@@ -135,7 +135,7 @@ public class ForecastSolarObject implements SolarForecast {
                 // => take 2/3 of floor and 1/3 of ceiling
                 double interpolation = (now.getMinute() - f.getKey().getMinute()) / 60.0;
                 actualPowerValue = ((1 - interpolation) * powerFloor) + (interpolation * powerCeiling);
-                return Math.round(actualPowerValue) / 1000.0;
+                return actualPowerValue / 1000.0;
             } else {
                 // sun is down
                 return 0;
@@ -155,7 +155,7 @@ public class ForecastSolarObject implements SolarForecast {
         JSONObject wattsDay = resultJson.getJSONObject("watt_hours_day");
 
         if (wattsDay.has(ld.toString())) {
-            return Math.round(wattsDay.getDouble(ld.toString())) / 1000.0;
+            return wattsDay.getDouble(ld.toString()) / 1000.0;
         }
         return UNDEF;
     }
@@ -184,7 +184,7 @@ public class ForecastSolarObject implements SolarForecast {
     @Override
     public State getDay(LocalDate localDate) {
         double measure = getDayTotal(localDate);
-        logger.info("Deliver measure {}", measure);
+        logger.trace("Actions: deliver measure {}", measure);
         return Utils.getEnergyState(measure);
     }
 
@@ -208,13 +208,13 @@ public class ForecastSolarObject implements SolarForecast {
             }
             measure += getActualValue(localDateTimeEnd);
         }
-        return Utils.getEnergyState(Math.round(measure * 1000) / 1000.0);
+        return Utils.getEnergyState(measure);
     }
 
     @Override
     public State getPower(LocalDateTime localDateTime) {
         double measure = getActualPowerValue(localDateTime);
-        logger.info("Deliver measure {}", measure);
+        logger.trace("Actions: deliver measure {}", measure);
         return Utils.getPowerState(measure);
     }
 

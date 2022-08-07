@@ -36,6 +36,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,6 +55,7 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
 
     public SolcastBridgeHandler(Bridge bridge) {
         super(bridge);
+        logger.debug("{} Constructor", bridge.getLabel());
     }
 
     @Override
@@ -63,11 +65,11 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
 
     @Override
     public void initialize() {
+        logger.debug("{} initialize", thing.getLabel());
         SolcastBridgeConfiguration config = getConfigAs(SolcastBridgeConfiguration.class);
         configuration = Optional.of(config);
         if (!EMPTY.equals(config.apiKey)) {
             updateStatus(ThingStatus.ONLINE);
-            getData();
             startSchedule(configuration.get().channelRefreshInterval);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "API Key is mandatory");
@@ -77,23 +79,39 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        logger.trace("Handle command {} for channel {}", channelUID, command);
+        if (command instanceof RefreshType) {
+            getData();
+        }
     }
 
     private void startSchedule(int interval) {
+        /**
+         * Interval given in minutes so seconds needs multiplier. Wait for 10 seconds until attached planes are created
+         * and registered. If now waiting time is defined user will see some glitches e.g. after restart if no or not
+         * all planes are initialized
+         */
         refreshJob.ifPresentOrElse(job -> {
             if (job.isCancelled()) {
                 refreshJob = Optional
-                        .of(scheduler.scheduleWithFixedDelay(this::getData, 0, interval, TimeUnit.MINUTES));
+                        .of(scheduler.scheduleWithFixedDelay(this::getData, 10, interval * 60, TimeUnit.SECONDS));
             } // else - scheduler is already running!
         }, () -> {
-            refreshJob = Optional.of(scheduler.scheduleWithFixedDelay(this::getData, 0, interval, TimeUnit.MINUTES));
+            refreshJob = Optional
+                    .of(scheduler.scheduleWithFixedDelay(this::getData, 10, interval * 60, TimeUnit.SECONDS));
         });
+    }
+
+    @Override
+    public void dispose() {
+        refreshJob.ifPresent(job -> job.cancel(true));
     }
 
     /**
      * Get data for all planes. Protect parts map from being modified during update
      */
     private synchronized void getData() {
+        logger.debug("{} getData for {} planes", thing.getLabel(), parts.size());
         if (parts.isEmpty()) {
             logger.debug("No PV plane defined yet");
             return;
@@ -172,14 +190,8 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
         updateState(CHANNEL_DAY6_LOW, Utils.getEnergyState(day6SumLow));
     }
 
-    @Override
-    public void dispose() {
-        refreshJob.ifPresent(job -> job.cancel(true));
-    }
-
     synchronized void addPlane(SolcastPlaneHandler sph) {
         parts.add(sph);
-        getData();
     }
 
     synchronized void removePlane(SolcastPlaneHandler sph) {

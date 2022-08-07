@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.solarforecast.internal;
 
+import java.time.ZonedDateTime;
+
 import javax.measure.MetricPrefix;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -21,7 +23,7 @@ import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
 /**
- * The {@link Utils} Some helpers for all
+ * The {@link Utils} Helpers for Solcast and ForecastSolar
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -31,7 +33,7 @@ public class Utils {
         if (d < 0) {
             return UnDefType.UNDEF;
         } else {
-            return QuantityType.valueOf(d, Units.KILOWATT_HOUR);
+            return QuantityType.valueOf(Math.round(d * 1000) / 1000.0, Units.KILOWATT_HOUR);
         }
     }
 
@@ -39,7 +41,35 @@ public class Utils {
         if (d < 0) {
             return UnDefType.UNDEF;
         } else {
-            return QuantityType.valueOf(d, MetricPrefix.KILO(Units.WATT));
+            return QuantityType.valueOf(Math.round(d * 1000) / 1000.0, MetricPrefix.KILO(Units.WATT));
         }
+    }
+
+    /**
+     * Get time frames in 15 minutes intervals
+     *
+     * @return
+     */
+    public static ZonedDateTime getNextTimeframe(ZonedDateTime now) {
+        ZonedDateTime nextTime;
+        int quarter = now.getMinute() / 15;
+        switch (quarter) {
+            case 0:
+                nextTime = now.withMinute(15).withSecond(0).withNano(0);
+                break;
+            case 1:
+                nextTime = now.withMinute(30).withSecond(0).withNano(0);
+                break;
+            case 2:
+                nextTime = now.withMinute(45).withSecond(0).withNano(0);
+                break;
+            case 3:
+                nextTime = now.withMinute(0).withSecond(0).withNano(0).plusHours(1);
+                break;
+            default:
+                nextTime = now;
+                break;
+        }
+        return nextTime;
     }
 }
