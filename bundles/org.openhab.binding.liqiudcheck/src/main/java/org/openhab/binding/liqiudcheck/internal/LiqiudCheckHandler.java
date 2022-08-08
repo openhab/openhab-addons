@@ -104,27 +104,9 @@ public class LiqiudCheckHandler extends BaseThingHandler {
             // when done do:
             if (thingReachable) {
                 updateStatus(ThingStatus.ONLINE);
-                Runnable runnable = new Runnable() {
-
-                    @Override
-                    public void run() {
-                        try {
-                            String response = httpClient.pollData();
-                            Response json = new Gson().fromJson(response, Response.class);
-                            Map<String, String> properties = createPropertyMap(json);
-                            if (!oldProps.equals(properties)) {
-                                oldProps = properties;
-                                updateProperties(properties);
-                            }
-                            updateState(CONTENT_CHANNEL, new QuantityType<>(json.payload.measure.content, Units.LITRE));
-                            updateState(LEVEL_CHANNEL, new QuantityType<>(json.payload.measure.level, SIUnits.METRE));
-                        } catch (InterruptedException | TimeoutException | ExecutionException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-                        }
-                    }
-                };
-                polling = scheduler.scheduleWithFixedDelay(runnable, 0, config.refreshInterval, TimeUnit.MILLISECONDS);
+                PollingForData pollingRunnable = new PollingForData(httpClient);
+                polling = scheduler.scheduleWithFixedDelay(pollingRunnable, 0, config.refreshInterval,
+                        TimeUnit.MILLISECONDS);
             } else {
                 updateStatus(ThingStatus.OFFLINE);
             }
@@ -157,5 +139,39 @@ public class LiqiudCheckHandler extends BaseThingHandler {
         properties.put(CONFIG_ID_MAC, response.payload.wifi.station.mac);
         properties.put(CONFIG_ID_SSID, response.payload.wifi.accessPoint.ssid);
         return properties;
+    }
+
+    @Override
+    public void dispose() {
+        polling.cancel(true);
+    }
+
+    private class PollingForData implements Runnable {
+
+        private final LiquidCheckHttpClient client;
+
+        public PollingForData(LiquidCheckHttpClient client) {
+            this.client = client;
+        }
+
+        @Override
+        public void run() {
+            try {
+                String response = client.pollData();
+                Response json = new Gson().fromJson(response, Response.class);
+                if (null != json) {
+                    Map<String, String> properties = createPropertyMap(json);
+                    if (!oldProps.equals(properties)) {
+                        oldProps = properties;
+                        updateProperties(properties);
+                    }
+                }
+
+                updateState(CONTENT_CHANNEL, new QuantityType<>(json.payload.measure.content, Units.LITRE));
+                updateState(LEVEL_CHANNEL, new QuantityType<>(json.payload.measure.level, SIUnits.METRE));
+            } catch (InterruptedException | TimeoutException | ExecutionException e) {
+                logger.error("This went wrong: {}", e);
+            }
+        }
     }
 }

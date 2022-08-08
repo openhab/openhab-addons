@@ -35,6 +35,7 @@ public class LiqiudCheckBindingConstants {
     // List of all Channel ids
     public static final String CONTENT_CHANNEL = "content";
     public static final String LEVEL_CHANNEL = "level";
+    public static final String MEASURE_CHANNEL = "measure";
 
     // List of all Property ids
     public static final String CONFIG_ID_FIRMWARE = "firmware";
