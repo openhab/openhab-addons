@@ -32,7 +32,7 @@
 		<config-description>
 			<parameter name="hostname" type="text">
 				<label>Hostname</label>
-				<description>The host name or IP address of the myStrom plug.</description>
+				<description>The hostname or IP address of the myStrom plug.</description>
 				<context>network-address</context>
 				<default>localhost</default>
 			</parameter>
@@ -43,7 +43,7 @@
 			</parameter>
 			<parameter name="apiToken" type="text">
 				<label>API Token</label>
-				<description>Specifies the API Token, if required(optional).</description>
+				<description>Specifies the API token, if required (optional).</description>
 			</parameter>
 		</config-description>
 
@@ -81,7 +81,7 @@
 		<config-description>
 			<parameter name="hostname" type="text" required="true">
 				<label>Hostname</label>
-				<description>The host name or IP address of the myStrom bulb.</description>
+				<description>The hostname or IP address of the myStrom bulb.</description>
 				<context>network-address</context>
 				<default>localhost</default>
 			</parameter>
@@ -92,7 +92,7 @@
 			</parameter>
 			<parameter name="apiToken" type="text">
 				<label>API Token</label>
-				<description>Specifies the API Token, if required(optional).</description>
+				<description>Specifies the API token, if required (optional).</description>
 			</parameter>
 		</config-description>
 
@@ -103,8 +103,8 @@
 		<label>myStrom Motion Sensor</label>
 		<channels>
 			<channel id="motion" typeId="system.motion"/>
-			<channel typeId="system.indoor-temperature" id="temperature"></channel>
-			<channel typeId="system.brightness" id="light"></channel>
+			<channel id="temperature" typeId="system.indoor-temperature"></channel>
+			<channel id="light" typeId="system.brightness"></channel>
 		</channels>
 		<properties>
 			<property name="mac"/>
@@ -124,7 +124,7 @@
 		<config-description>
 			<parameter name="hostname" type="text">
 				<label>Hostname</label>
-				<description>The host name or IP address of the myStrom sensor.</description>
+				<description>The hostname or IP address of the myStrom sensor.</description>
 				<context>network-address</context>
 				<default>localhost</default>
 			</parameter>
@@ -135,17 +135,17 @@
 			</parameter>
 			<parameter name="apiToken" type="text">
 				<label>API Token</label>
-				<description>Specifies the API Token, if required(optional).</description>
+				<description>Specifies the API token, if required (optional).</description>
 			</parameter>
-			<parameter name="backoff_time" type="integer" unit="s" min="1">
+			<parameter name="backoffTime" type="integer" unit="s" min="1">
 				<default>10</default>
 				<label>Backoff Time</label>
 				<description>Specifies the minimum frequency between successive motion detections in seconds.</description>
 			</parameter>
-			<parameter name="led_enable" type="boolean">
+			<parameter name="ledEnable" type="boolean">
 				<default>true</default>
 				<label>LED Enabled</label>
-				<description>Enables the Status LED on the Device.</description>
+				<description>Enables the status LED on the device.</description>
 			</parameter>
 		</config-description>
 	</thing-type>

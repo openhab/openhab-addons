@@ -25,7 +25,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class MyStromConfiguration {
 
-    private final String url_prefix = "http://";
+    private final String urlPrefix = "http://";
 
     private String hostname = "localhost";
 
@@ -33,9 +33,9 @@ public class MyStromConfiguration {
 
     private int refresh = DEFAULT_REFRESH_RATE_SECONDS;
 
-    private int backoff_time = DEFAULT_BACKOFF_TIME_SECONDS;
+    private int backoffTime = DEFAULT_BACKOFF_TIME_SECONDS;
 
-    private boolean led_enable = true;
+    private boolean ledEnable = true;
 
     /**
      * Returns the hostname with http prefix if missing.
@@ -44,8 +44,8 @@ public class MyStromConfiguration {
      */
     public String getHostname() {
         String prefix = "";
-        if (!this.hostname.contains(url_prefix)) {
-            prefix = url_prefix;
+        if (!this.hostname.contains(urlPrefix)) {
+            prefix = urlPrefix;
         }
         return prefix + this.hostname;
     }
@@ -74,7 +74,7 @@ public class MyStromConfiguration {
      * @return backoff_time
      */
     public int getBackoffTime() {
-        return backoff_time;
+        return backoffTime;
     }
 
     /**
@@ -83,6 +83,6 @@ public class MyStromConfiguration {
      * @return led_enable
      */
     public boolean getLedEnable() {
-        return led_enable;
+        return ledEnable;
     }
 }
