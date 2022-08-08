@@ -137,14 +137,18 @@ public class DaikinWebTargets {
         return EnergyInfoDayAndWeek.parse(response);
     }
 
-    public void setSpecialMode(SpecialMode specialMode) throws DaikinCommunicationException {
+    public void setSpecialMode(SpecialMode newMode) throws DaikinCommunicationException {
         Map<String, String> queryParams = new HashMap<>();
-        if (specialMode == SpecialMode.NORMAL) {
+        if (newMode == SpecialMode.NORMAL) {
             queryParams.put("set_spmode", "0");
-            queryParams.put("spmode_kind", "1");
+
+            ControlInfo controlInfo = getControlInfo();
+            if (!controlInfo.advancedMode.isUndefined()) {
+                queryParams.put("spmode_kind", controlInfo.getSpecialMode().getValue());
+            }
         } else {
             queryParams.put("set_spmode", "1");
-            queryParams.put("spmode_kind", Integer.toString(specialMode.getValue()));
+            queryParams.put("spmode_kind", newMode.getValue());
         }
         String response = invoke(setSpecialModeUri, queryParams);
         if (!response.contains("ret=OK")) {
