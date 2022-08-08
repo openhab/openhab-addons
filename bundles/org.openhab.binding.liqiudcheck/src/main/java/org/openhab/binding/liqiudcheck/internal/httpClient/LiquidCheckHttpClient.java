@@ -51,7 +51,7 @@ public class LiquidCheckHttpClient {
         try {
             client.setFollowRedirects(false);
             client.setName("LiquidCheckHttpClient");
-            client.setIdleTimeout(config.connecionTimeOut);
+            client.setIdleTimeout(config.connecionTimeOut * 1000);
             client.start();
         } catch (Exception e) {
             logger.error("Couldn't start Client! Exception: " + e.toString());
@@ -67,7 +67,7 @@ public class LiquidCheckHttpClient {
      * @throws ExecutionException
      */
     public String pollData() throws InterruptedException, TimeoutException, ExecutionException {
-        String uri = "http://" + config.hostname + "/infos.json";
+        String uri = "http://" + config.ip + "/infos.json";
         Request request = client.newRequest(uri);
         request.method(HttpMethod.GET);
         ContentResponse response = request.send();

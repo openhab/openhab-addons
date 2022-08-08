@@ -106,7 +106,7 @@ public class LiqiudCheckHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.ONLINE);
                 PollingForData pollingRunnable = new PollingForData(httpClient);
                 polling = scheduler.scheduleWithFixedDelay(pollingRunnable, 0, config.refreshInterval,
-                        TimeUnit.MILLISECONDS);
+                        TimeUnit.SECONDS);
             } else {
                 updateStatus(ThingStatus.OFFLINE);
             }
