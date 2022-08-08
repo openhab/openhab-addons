@@ -147,8 +147,8 @@ public class HomekitAccessoryFactory {
             characteristics.addAll(Arrays.asList(MANDATORY_CHARACTERISTICS.get(taggedItem.getAccessoryType())));
         }
         if (taggedItem.getAccessoryType() == BATTERY) {
-            final String isChargeable = taggedItem.getConfiguration(HomekitBatteryImpl.BATTERY_TYPE, "false");
-            if ("true".equalsIgnoreCase(isChargeable) || "yes".equalsIgnoreCase(isChargeable)) {
+            final boolean isChargeable = taggedItem.getConfigurationAsBoolean(HomekitBatteryImpl.BATTERY_TYPE, false);
+            if (isChargeable) {
                 characteristics.add(BATTERY_CHARGING_STATE);
             }
         }
