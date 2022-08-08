@@ -12,6 +12,7 @@
 		<channels>
 			<channel id="content" typeId="content-channel"/>
 			<channel id="level" typeId="level-channel"/>
+			<channel id="measure" typeId="measure-channel"/>
 		</channels>
 
 		<properties>
@@ -51,14 +52,22 @@
 		</config-description>
 	</thing-type>
 
+
 	<channel-type id="content-channel">
-		<item-type>Number</item-type>
-		<label>Content</label><!-- Use uppercase words, except prepositions. 2-3 words, max 25 chars -->
+		<item-type>Number:Volume</item-type>
+		<label>Content</label>
 		<description>Content in the container</description>
+		<state readOnly="true" pattern="%d l"></state>
 	</channel-type>
 	<channel-type id="level-channel">
-		<item-type>Number</item-type>
+		<item-type>Number:Length</item-type>
 		<label>Level</label>
 		<description>Level in the container</description>
+		<state readOnly="true" pattern="%.1f m"></state>
+	</channel-type>
+	<channel-type id="measure-channel">
+		<item-type>Switch</item-type>
+		<label>Measure</label>
+		<description>Triggers a measurement</description>
 	</channel-type>
 </thing:thing-descriptions>
