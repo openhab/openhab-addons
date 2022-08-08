@@ -126,10 +126,10 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
             actualSum += fo.getActualValue(now);
             actualPowerSum += fo.getActualPowerValue(now);
             remainSum += fo.getRemainingProduction(now);
-            todaySum += fo.getDayTotal(now, 0);
-            day1Sum += fo.getDayTotal(now, 1);
-            day2Sum += fo.getDayTotal(now, 2);
-            day3Sum += fo.getDayTotal(now, 3);
+            todaySum += fo.getDayTotal(now.toLocalDate());
+            day1Sum += fo.getDayTotal(now.plusDays(1).toLocalDate());
+            day2Sum += fo.getDayTotal(now.plusDays(2).toLocalDate());
+            day3Sum += fo.getDayTotal(now.plusDays(3).toLocalDate());
         }
         updateState(CHANNEL_ACTUAL, Utils.getEnergyState(actualSum));
         updateState(CHANNEL_ACTUAL_POWER, Utils.getPowerState(actualPowerSum));

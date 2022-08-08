@@ -140,7 +140,7 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
                     ContentResponse cr = httpClient.GET(url);
                     if (cr.getStatus() == 200) {
                         ForecastSolarObject localForecast = new ForecastSolarObject(cr.getContentAsString(),
-                                LocalDateTime.now(),
+
                                 LocalDateTime.now().plusMinutes(configuration.get().refreshInterval));
                         setForecast(localForecast);
                         logger.debug("{} Fetched data {}", thing.getLabel(), forecast.toString());
@@ -170,10 +170,10 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
         updateState(CHANNEL_ACTUAL, Utils.getEnergyState(f.getActualValue(now)));
         updateState(CHANNEL_ACTUAL_POWER, Utils.getPowerState(f.getActualPowerValue(now)));
         updateState(CHANNEL_REMAINING, Utils.getEnergyState(f.getRemainingProduction(now)));
-        updateState(CHANNEL_TODAY, Utils.getEnergyState(f.getDayTotal(now, 0)));
-        updateState(CHANNEL_DAY1, Utils.getEnergyState(f.getDayTotal(now, 1)));
-        updateState(CHANNEL_DAY2, Utils.getEnergyState(f.getDayTotal(now, 2)));
-        updateState(CHANNEL_DAY3, Utils.getEnergyState(f.getDayTotal(now, 3)));
+        updateState(CHANNEL_TODAY, Utils.getEnergyState(f.getDayTotal(now.toLocalDate())));
+        updateState(CHANNEL_DAY1, Utils.getEnergyState(f.getDayTotal(now.plusDays(1).toLocalDate())));
+        updateState(CHANNEL_DAY2, Utils.getEnergyState(f.getDayTotal(now.plusDays(2).toLocalDate())));
+        updateState(CHANNEL_DAY3, Utils.getEnergyState(f.getDayTotal(now.plusDays(3).toLocalDate())));
     }
 
     /**
