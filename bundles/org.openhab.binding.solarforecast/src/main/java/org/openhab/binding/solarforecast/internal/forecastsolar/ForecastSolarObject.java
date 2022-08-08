@@ -228,7 +228,7 @@ public class ForecastSolarObject implements SolarForecast {
             }
             double lastDay = getActualValue(localDateTimeEnd);
             if (lastDay >= 0) {
-                measure += getActualValue(localDateTimeEnd);
+                measure += lastDay;
             }
         }
         return Utils.getEnergyState(measure);

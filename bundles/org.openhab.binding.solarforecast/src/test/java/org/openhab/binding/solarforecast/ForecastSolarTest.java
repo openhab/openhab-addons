@@ -34,8 +34,10 @@ import org.openhab.core.types.State;
  */
 @NonNullByDefault
 class ForecastSolarTest {
-    public static final String DATE_INPUT_PATTERN_STRING = "yyyy-MM-dd'T'HH:mm:ss";
-    public static final DateTimeFormatter DATE_INPUT_PATTERN = DateTimeFormatter.ofPattern(DATE_INPUT_PATTERN_STRING);
+    // double comparison tolerance = 1 Watt
+    private static final double TOLERANCE = 0.001;
+    private static final String DATE_INPUT_PATTERN_STRING = "yyyy-MM-dd'T'HH:mm:ss";
+    private static final DateTimeFormatter DATE_INPUT_PATTERN = DateTimeFormatter.ofPattern(DATE_INPUT_PATTERN_STRING);
 
     @Test
     void testForecastObject() {
@@ -44,21 +46,21 @@ class ForecastSolarTest {
         ForecastSolarObject fo = new ForecastSolarObject(content, queryDateTime);
 
         // "2022-07-17 21:32:00": 63583,
-        assertEquals(63.583, fo.getDayTotal(queryDateTime.toLocalDate()), 0.001, "Total production");
+        assertEquals(63.583, fo.getDayTotal(queryDateTime.toLocalDate()), TOLERANCE, "Total production");
         // "2022-07-17 17:00:00": 52896,
-        assertEquals(52.896, fo.getActualValue(queryDateTime), 0.001, "Current Production");
+        assertEquals(52.896, fo.getActualValue(queryDateTime), TOLERANCE, "Current Production");
         // 63583 - 52896 = 10687
-        assertEquals(10.687, fo.getRemainingProduction(queryDateTime), 0.001, "Current Production");
+        assertEquals(10.687, fo.getRemainingProduction(queryDateTime), TOLERANCE, "Current Production");
         // sum cross check
         assertEquals(fo.getDayTotal(queryDateTime.toLocalDate()),
-                fo.getActualValue(queryDateTime) + fo.getRemainingProduction(queryDateTime), 0.001,
+                fo.getActualValue(queryDateTime) + fo.getRemainingProduction(queryDateTime), TOLERANCE,
                 "actual + remain = total");
 
         queryDateTime = LocalDateTime.of(2022, 7, 18, 19, 00);
         // "2022-07-18 19:00:00": 63067,
-        assertEquals(63.067, fo.getActualValue(queryDateTime), 0.001, "Actual production");
+        assertEquals(63.067, fo.getActualValue(queryDateTime), TOLERANCE, "Actual production");
         // "2022-07-18 21:31:00": 65554
-        assertEquals(65.554, fo.getDayTotal(queryDateTime.toLocalDate()), 0.001, "Total production");
+        assertEquals(65.554, fo.getDayTotal(queryDateTime.toLocalDate()), TOLERANCE, "Total production");
     }
 
     @Test
@@ -67,11 +69,11 @@ class ForecastSolarTest {
         LocalDateTime queryDateTime = LocalDateTime.of(2022, 7, 17, 10, 00);
         ForecastSolarObject fo = new ForecastSolarObject(content, queryDateTime);
         // "2022-07-17 10:00:00": 4874,
-        assertEquals(4.874, fo.getActualPowerValue(queryDateTime), 0.001, "Actual estimation");
+        assertEquals(4.874, fo.getActualPowerValue(queryDateTime), TOLERANCE, "Actual estimation");
 
         queryDateTime = LocalDateTime.of(2022, 7, 18, 14, 00);
         // "2022-07-18 14:00:00": 7054,
-        assertEquals(7.054, fo.getActualPowerValue(queryDateTime), 0.001, "Actual estimation");
+        assertEquals(7.054, fo.getActualPowerValue(queryDateTime), TOLERANCE, "Actual estimation");
     }
 
     @Test
@@ -104,9 +106,9 @@ class ForecastSolarTest {
         State st = Utils.getEnergyState(fo.getActualValue(queryDateTime));
         assertTrue(st instanceof QuantityType);
         actual = actual.add((QuantityType<Energy>) st);
-        assertEquals(49.431, actual.floatValue(), 0.001, "Current Production");
+        assertEquals(49.431, actual.floatValue(), TOLERANCE, "Current Production");
         actual = actual.add((QuantityType<Energy>) st);
-        assertEquals(98.862, actual.floatValue(), 0.001, "Doubled Current Production");
+        assertEquals(98.862, actual.floatValue(), TOLERANCE, "Doubled Current Production");
     }
 
     @Test
@@ -115,52 +117,52 @@ class ForecastSolarTest {
         ForecastSolarObject fo = new ForecastSolarObject();
         assertFalse(fo.isValid());
         LocalDateTime query = LocalDateTime.of(2022, 7, 17, 16, 23);
-        assertEquals(-1.0, fo.getActualValue(query), 0.001, "Actual Production");
-        assertEquals(-1.0, fo.getDayTotal(query.toLocalDate()), 0.001, "Today Production");
-        assertEquals(-1.0, fo.getRemainingProduction(query), 0.001, "Remaining Production");
-        assertEquals(-1.0, fo.getDayTotal(query.plusDays(1).toLocalDate()), 0.001, "Tomorrow Production");
+        assertEquals(-1.0, fo.getActualValue(query), TOLERANCE, "Actual Production");
+        assertEquals(-1.0, fo.getDayTotal(query.toLocalDate()), TOLERANCE, "Today Production");
+        assertEquals(-1.0, fo.getRemainingProduction(query), TOLERANCE, "Remaining Production");
+        assertEquals(-1.0, fo.getDayTotal(query.plusDays(1).toLocalDate()), TOLERANCE, "Tomorrow Production");
 
         // valid object - query date one day too early
         String content = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
         query = LocalDateTime.of(2022, 7, 16, 23, 59);
         fo = new ForecastSolarObject(content, query);
-        assertEquals(-1.0, fo.getDayTotal(query.toLocalDate()), 0.001, "Actual out of scope");
-        assertEquals(-1.0, fo.getActualValue(query), 0.001, "Actual out of scope");
-        assertEquals(-1.0, fo.getRemainingProduction(query), 0.001, "Remain out of scope");
-        assertEquals(-1.0, fo.getActualPowerValue(query), 0.001, "Remain out of scope");
+        assertEquals(-1.0, fo.getDayTotal(query.toLocalDate()), TOLERANCE, "Actual out of scope");
+        assertEquals(-1.0, fo.getActualValue(query), TOLERANCE, "Actual out of scope");
+        assertEquals(-1.0, fo.getRemainingProduction(query), TOLERANCE, "Remain out of scope");
+        assertEquals(-1.0, fo.getActualPowerValue(query), TOLERANCE, "Remain out of scope");
 
         // one minute later we reach a valid date
         query = query.plusMinutes(1);
-        assertEquals(63.583, fo.getDayTotal(query.toLocalDate()), 0.001, "Actual out of scope");
-        assertEquals(0.0, fo.getActualValue(query), 0.001, "Actual out of scope");
-        assertEquals(63.583, fo.getRemainingProduction(query), 0.001, "Remain out of scope");
-        assertEquals(0.0, fo.getActualPowerValue(query), 0.001, "Remain out of scope");
+        assertEquals(63.583, fo.getDayTotal(query.toLocalDate()), TOLERANCE, "Actual out of scope");
+        assertEquals(0.0, fo.getActualValue(query), TOLERANCE, "Actual out of scope");
+        assertEquals(63.583, fo.getRemainingProduction(query), TOLERANCE, "Remain out of scope");
+        assertEquals(0.0, fo.getActualPowerValue(query), TOLERANCE, "Remain out of scope");
 
         // valid object - query date one day too late
         query = LocalDateTime.of(2022, 7, 19, 0, 0);
-        assertEquals(-1.0, fo.getDayTotal(query.toLocalDate()), 0.001, "Actual out of scope");
-        assertEquals(-1.0, fo.getActualValue(query), 0.001, "Actual out of scope");
-        assertEquals(-1.0, fo.getRemainingProduction(query), 0.001, "Remain out of scope");
-        assertEquals(-1.0, fo.getActualPowerValue(query), 0.001, "Remain out of scope");
+        assertEquals(-1.0, fo.getDayTotal(query.toLocalDate()), TOLERANCE, "Actual out of scope");
+        assertEquals(-1.0, fo.getActualValue(query), TOLERANCE, "Actual out of scope");
+        assertEquals(-1.0, fo.getRemainingProduction(query), TOLERANCE, "Remain out of scope");
+        assertEquals(-1.0, fo.getActualPowerValue(query), TOLERANCE, "Remain out of scope");
 
         // one minute earlier we reach a valid date
         query = query.minusMinutes(1);
-        assertEquals(65.554, fo.getDayTotal(query.toLocalDate()), 0.001, "Actual out of scope");
-        assertEquals(65.554, fo.getActualValue(query), 0.001, "Actual out of scope");
-        assertEquals(0.0, fo.getRemainingProduction(query), 0.001, "Remain out of scope");
-        assertEquals(0.0, fo.getActualPowerValue(query), 0.001, "Remain out of scope");
+        assertEquals(65.554, fo.getDayTotal(query.toLocalDate()), TOLERANCE, "Actual out of scope");
+        assertEquals(65.554, fo.getActualValue(query), TOLERANCE, "Actual out of scope");
+        assertEquals(0.0, fo.getRemainingProduction(query), TOLERANCE, "Remain out of scope");
+        assertEquals(0.0, fo.getActualPowerValue(query), TOLERANCE, "Remain out of scope");
 
         // test times between 2 dates
         query = LocalDateTime.of(2022, 7, 17, 23, 59);
-        assertEquals(63.583, fo.getDayTotal(query.toLocalDate()), 0.001, "Actual out of scope");
-        assertEquals(63.583, fo.getActualValue(query), 0.001, "Actual out of scope");
-        assertEquals(0.0, fo.getRemainingProduction(query), 0.001, "Remain out of scope");
-        assertEquals(0.0, fo.getActualPowerValue(query), 0.001, "Remain out of scope");
+        assertEquals(63.583, fo.getDayTotal(query.toLocalDate()), TOLERANCE, "Actual out of scope");
+        assertEquals(63.583, fo.getActualValue(query), TOLERANCE, "Actual out of scope");
+        assertEquals(0.0, fo.getRemainingProduction(query), TOLERANCE, "Remain out of scope");
+        assertEquals(0.0, fo.getActualPowerValue(query), TOLERANCE, "Remain out of scope");
         query = query.plusMinutes(1);
-        assertEquals(65.554, fo.getDayTotal(query.toLocalDate()), 0.001, "Actual out of scope");
-        assertEquals(0.0, fo.getActualValue(query), 0.001, "Actual out of scope");
-        assertEquals(65.554, fo.getRemainingProduction(query), 0.001, "Remain out of scope");
-        assertEquals(0.0, fo.getActualPowerValue(query), 0.001, "Remain out of scope");
+        assertEquals(65.554, fo.getDayTotal(query.toLocalDate()), TOLERANCE, "Actual out of scope");
+        assertEquals(0.0, fo.getActualValue(query), TOLERANCE, "Actual out of scope");
+        assertEquals(65.554, fo.getRemainingProduction(query), TOLERANCE, "Remain out of scope");
+        assertEquals(0.0, fo.getActualPowerValue(query), TOLERANCE, "Remain out of scope");
     }
 
     @Test
