@@ -63,7 +63,7 @@
 		<item-type>Number:Length</item-type>
 		<label>Level</label>
 		<description>Level in the container</description>
-		<state readOnly="true" pattern="%.1f m"></state>
+		<state readOnly="true" pattern="%.2f m"></state>
 	</channel-type>
 	<channel-type id="measure-channel">
 		<item-type>Switch</item-type>
