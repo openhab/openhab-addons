@@ -92,6 +92,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     private static final String STREAM_URI = "x-sonosapi-stream:";
     private static final String RADIO_URI = "x-sonosapi-radio:";
     private static final String RADIO_MP3_URI = "x-rincon-mp3radio:";
+    private static final String RADIOAPP_URI = "x-sonosapi-hls:radioapp_";
     private static final String OPML_TUNE = "http://opml.radiotime.com/Tune.ashx";
     private static final String FILE_URI = "x-file-cifs:";
     private static final String SPDIF = ":spdif";
@@ -1300,6 +1301,41 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                 }
             }
 
+            else if (isPlayingRadioApp(currentURI)) {
+                if (currentUriMetaData != null) {
+                    title = currentUriMetaData.getTitle();
+                    resultString = title;
+                    if (currentTrack != null) {
+                        String[] contents = currentTrack.getStreamContent().split("\\|");
+                        String songTitle = null;
+                        for (int i = 0; i < contents.length; i++) {
+                            if (contents[i].startsWith("TITLE ")) {
+                                String val = contents[i].substring(6).trim();
+                                if (!val.startsWith("Advertisement_")) {
+                                    songTitle = val;
+                                }
+                            }
+                            if (contents[i].startsWith("ARTIST ")) {
+                                artist = contents[i].substring(7).trim();
+                            }
+                            if (contents[i].startsWith("ALBUM ")) {
+                                album = contents[i].substring(6).trim();
+                            }
+                        }
+                        if (artist != null && !artist.isEmpty()) {
+                            resultString += " - " + artist;
+                        }
+                        if (album != null && !album.isEmpty()) {
+                            resultString += " - " + album;
+                        }
+                        if (songTitle != null && !songTitle.isEmpty()) {
+                            resultString += " - " + songTitle;
+                        }
+                    }
+                    needsUpdating = true;
+                }
+            }
+
             else if (isPlayingLineIn(currentURI)) {
                 if (currentTrack != null) {
                     title = currentTrack.getTitle();
@@ -1310,7 +1346,6 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
 
             else if (isPlayingRadio(currentURI)
                     || (!currentURI.contains("x-rincon-mp3") && !currentURI.contains("x-sonosapi"))) {
-                // isPlayingRadio(currentURI) is true for Google Play Music radio or Apple Music radio
                 if (currentTrack != null) {
                     artist = !currentTrack.getAlbumArtist().isEmpty() ? currentTrack.getAlbumArtist()
                             : currentTrack.getCreator();
@@ -1712,7 +1747,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
 
             if (currentURI != null) {
                 if (isPlayingStream(currentURI) || isPlayingRadioStartedByAmazonEcho(currentURI)
-                        || isPlayingRadio(currentURI)) {
+                        || isPlayingRadio(currentURI) || isPlayingRadioApp(currentURI)) {
                     // we are streaming music, like tune-in radio or Google Play Music radio
                     SonosMetaData track = getTrackMetadata();
                     SonosMetaData current = getCurrentURIMetadata();
@@ -2654,7 +2689,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                         coordinator.getCurrentURIMetadataAsString());
 
                 if (isPlayingStream(currentURI) || isPlayingRadioStartedByAmazonEcho(currentURI)
-                        || isPlayingRadio(currentURI)) {
+                        || isPlayingRadio(currentURI) || isPlayingRadioApp(currentURI)) {
                     handleNotifForRadioStream(currentURI, notificationURL, coordinator);
                 } else if (isPlayingLineIn(currentURI)) {
                     handleNotifForLineIn(currentURI, notificationURL, coordinator);
@@ -2692,7 +2727,13 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     }
 
     private boolean isPlayingRadio(@Nullable String currentURI) {
+        // Google Play Music radio or Apple Music radio
         return currentURI != null && currentURI.contains(RADIO_URI);
+    }
+
+    private boolean isPlayingRadioApp(@Nullable String currentURI) {
+        // RadioApp music service
+        return currentURI != null && currentURI.contains(RADIOAPP_URI);
     }
 
     private boolean isPlayingRadioStartedByAmazonEcho(@Nullable String currentURI) {
