@@ -62,6 +62,7 @@ public abstract class AbstractMyStromHandler extends BaseThingHandler {
 
     public AbstractMyStromHandler(Thing thing, HttpClient httpClient) {
         super(thing);
+        config = getConfigAs(MyStromConfiguration.class);
         this.httpClient = httpClient;
     }
 
