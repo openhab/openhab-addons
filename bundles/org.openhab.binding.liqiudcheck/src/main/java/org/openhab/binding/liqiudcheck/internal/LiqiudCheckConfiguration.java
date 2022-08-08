@@ -25,7 +25,7 @@ public class LiqiudCheckConfiguration {
     /**
      * Sample configuration parameters. Replace with your own.
      */
-    public String hostname = "";
+    public String ip = "";
     public int refreshInterval = 600;
     public int maxContent = 1;
     public long connecionTimeOut = 5000;

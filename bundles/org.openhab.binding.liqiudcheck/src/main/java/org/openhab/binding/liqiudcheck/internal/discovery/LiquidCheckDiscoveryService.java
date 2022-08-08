@@ -50,7 +50,6 @@ public class LiquidCheckDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startScan() {
-        // TODO Auto-generated method stub
         try {
             List<InetAddress> addresses = getIPv4Adresses();
             List<InetAddress> hosts = findActiveHosts(addresses);
@@ -175,15 +174,15 @@ public class LiquidCheckDiscoveryService extends AbstractDiscoveryService {
     private void buildDiscoveryResult(Response response) {
         LiquidCheckProperties lcproperties = new LiquidCheckProperties(response);
         Map<String, Object> properties = new HashMap<>();
-        properties.put(CONFIG_ID_FIRMWARE, lcproperties.firmware);
-        properties.put(CONFIG_ID_HARDWARE, lcproperties.hardware);
-        properties.put(CONFIG_ID_NAME, lcproperties.name);
-        properties.put(CONFIG_ID_MANUFACTURER, lcproperties.manufacturer);
-        properties.put(CONFIG_ID_UUID, lcproperties.uuid);
-        properties.put(CONFIG_ID_SECURITY_CODE, lcproperties.code);
-        properties.put(CONFIG_ID_IP, lcproperties.ip);
-        properties.put(CONFIG_ID_MAC, lcproperties.mac);
-        properties.put(CONFIG_ID_SSID, lcproperties.ssid);
+        properties.put(CONFIG_ID_FIRMWARE, response.payload.device.firmware);
+        properties.put(CONFIG_ID_HARDWARE, response.payload.device.hardware);
+        properties.put(CONFIG_ID_NAME, response.payload.device.name);
+        properties.put(CONFIG_ID_MANUFACTURER, response.payload.device.manufacturer);
+        properties.put(CONFIG_ID_UUID, response.payload.device.uuid);
+        properties.put(CONFIG_ID_SECURITY_CODE, response.payload.device.security.code);
+        properties.put(CONFIG_ID_IP, response.payload.wifi.station.ip);
+        properties.put(CONFIG_ID_MAC, response.payload.wifi.station.mac);
+        properties.put(CONFIG_ID_SSID, response.payload.wifi.accessPoint.ssid);
         ThingUID thingUID = new ThingUID(THING_TYPE_LIQUID_CHEK, lcproperties.uuid);
         DiscoveryResult dResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
                 .withLabel(lcproperties.name + "_DEBUG").build();
