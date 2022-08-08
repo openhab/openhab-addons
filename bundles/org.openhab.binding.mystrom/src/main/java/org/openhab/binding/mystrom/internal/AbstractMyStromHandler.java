@@ -68,8 +68,8 @@ public abstract class AbstractMyStromHandler extends BaseThingHandler {
 
     @Override
     public final void initialize() {
-        updateStatus(ThingStatus.UNKNOWN);
         config = getConfigAs(MyStromConfiguration.class);
+        updateStatus(ThingStatus.UNKNOWN);
         scheduler.schedule(this::initializeInternal, 0, TimeUnit.SECONDS);
     }
 
@@ -149,7 +149,6 @@ public abstract class AbstractMyStromHandler extends BaseThingHandler {
             updateProperties();
             checkRequiredInfo();
             pollingJob = scheduler.scheduleWithFixedDelay(this::pollDevice, 0, config.getRefresh(), TimeUnit.SECONDS);
-            updateStatus(ThingStatus.ONLINE);
         } catch (MyStromException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         }
