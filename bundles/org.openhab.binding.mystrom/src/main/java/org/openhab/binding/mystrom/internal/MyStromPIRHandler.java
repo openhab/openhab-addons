@@ -77,10 +77,7 @@ public class MyStromPIRHandler extends AbstractMyStromHandler {
             MyStromReport report = gson.fromJson(json, MyStromReport.class);
             updateStatus(ThingStatus.ONLINE);
             return report;
-        } catch (MyStromException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            return null;
-        } catch (JsonParseException e) {
+        } catch (MyStromException | JsonParseException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             return null;
         }
