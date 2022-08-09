@@ -336,10 +336,6 @@ rule "Forecast Solar Actions"
         logInfo("SF Tests","Forecast 2 days state: "+ twoDaysForecastFromNowState.toString)
         val twoDaysForecastFromNowValue = (twoDaysForecastFromNowState as Number).doubleValue
         logInfo("SF Tests","Forecast 2 days value: "+ twoDaysForecastFromNowValue)
-        
-        /*
-        val solarforecastActions = getActions("solarforecast","solarforecast:fs-site:homeSite")
-        */
 end
 ````
 
@@ -355,15 +351,23 @@ shall produce following output
 2022-08-07 18:02:19.892 [INFO ] [g.openhab.core.model.script.SF Tests] - Forecast 2 days value: 112.483
 ````
 
-Call with Arguments
+### Actions rule with Arguments
+
+Only Solcast is deliering `optimistic` and `pessimistic` scenario data.
+If arguments are used on ForecastSolar `UNDEF` state is returned
 
 ````
+rule "Solcast Actions"
+    when
+        Time cron "0 0 23 * * ?" // trigger whatever you like
+    then 
         val sixDayForecast = solarforecastActions.getEnergy(LocalDateTime.now,LocalDateTime.now.plusDays(6))
         logInfo("SF Tests","Forecast Estimate  6 days "+ sixDayForecast)
         val sixDayOptimistic = solarforecastActions.getEnergy(LocalDateTime.now,LocalDateTime.now.plusDays(6),"optimistic")
         logInfo("SF Tests","Forecast Optimist  6 days "+ sixDayOptimistic)
         val sixDayPessimistic = solarforecastActions.getEnergy(LocalDateTime.now,LocalDateTime.now.plusDays(6),"pessimistic")
         logInfo("SF Tests","Forecast Pessimist 6 days "+ sixDayPessimistic)
+end
 ````
 
 shall produce following output
