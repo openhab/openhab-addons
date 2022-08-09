@@ -514,6 +514,11 @@ public class ShellyChannelDefinitions {
         return newChannels;
     }
 
+    public ChannelTypeUID getChannelTypeUID(String channelId) {
+        ShellyChannel channelDef = getDefinition(channelId);
+        return new ChannelTypeUID(BINDING_ID, channelDef.typeId);
+    }
+
     private static void addChannel(Thing thing, Map<String, Channel> newChannels, boolean supported, String group,
             String channelName) throws IllegalArgumentException {
         if (supported) {

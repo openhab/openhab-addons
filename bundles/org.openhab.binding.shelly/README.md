@@ -27,7 +27,7 @@ Also check out the [Shelly Manager](doc/ShellyManager.md), which
 
 ## Supported Devices
 
-### Generation 1:
+### Generation 1
 
 | thing-type         | Model                                                  | Vendor ID |
 |--------------------|--------------------------------------------------------|-----------|
