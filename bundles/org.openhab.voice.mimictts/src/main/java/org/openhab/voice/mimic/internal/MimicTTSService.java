@@ -29,6 +29,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.client.util.InputStreamResponseListener;
 import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.http.HttpHeader;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioStream;
 import org.openhab.core.config.core.ConfigurableService;
@@ -258,7 +259,9 @@ public class MimicTTSService implements TTSService {
         try {
             response = inputStreamResponseListener.get(timeout, TimeUnit.SECONDS);
             if (response.getStatus() == 200) {
-                return new InputStreamAudioStream(inputStreamResponseListener.getInputStream(), AUDIO_FORMAT);
+                String lengthHeader = response.getHeaders().get(HttpHeader.CONTENT_LENGTH);
+                long length = Long.parseLong(lengthHeader);
+                return new InputStreamAudioStream(inputStreamResponseListener.getInputStream(), AUDIO_FORMAT, length);
             } else {
                 String errorMessage = "Cannot get wav from mimic url " + urlTTS + " with HTTP response code "
                         + response.getStatus();
