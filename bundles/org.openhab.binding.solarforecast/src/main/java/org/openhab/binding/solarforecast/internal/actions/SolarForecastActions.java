@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.solarforecast.internal;
+package org.openhab.binding.solarforecast.internal.actions;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -50,7 +50,8 @@ public class SolarForecastActions implements ThingActions {
 
     @RuleAction(label = "@text/actionDayLabel", description = "@text/actionDayDesc")
     public State getDay(
-            @ActionInput(name = "localDate", label = "@text/actionInputDayLabel", description = "@text/actionInputDayDesc") LocalDate localDate) {
+            @ActionInput(name = "localDate", label = "@text/actionInputDayLabel", description = "@text/actionInputDayDesc") LocalDate localDate,
+            String... args) {
         if (thingHandler.isPresent()) {
             List<SolarForecast> l = ((SolarForecastProvider) thingHandler.get()).getSolarForecasts();
             logger.trace("Found {} SolarForecast entries", l.size());

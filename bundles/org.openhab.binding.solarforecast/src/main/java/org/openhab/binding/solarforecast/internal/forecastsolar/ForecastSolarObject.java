@@ -22,10 +22,11 @@ import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONObject;
-import org.openhab.binding.solarforecast.internal.SolarForecast;
 import org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants;
 import org.openhab.binding.solarforecast.internal.Utils;
+import org.openhab.binding.solarforecast.internal.actions.SolarForecast;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -200,16 +201,26 @@ public class ForecastSolarObject implements SolarForecast {
         return "Expiration: " + expirationDateTime + ", Valid: " + valid + ", Data:" + wattHourMap;
     }
 
-    // SolarForecast Interface
+    /**
+     * SolarForecast Interface
+     */
     @Override
-    public State getDay(LocalDate localDate) {
+    public State getDay(LocalDate localDate, String... args) {
+        if (args.length > 0) {
+            logger.debug("ForecastSolar doesn't accept arguments");
+            return UnDefType.UNDEF;
+        }
         double measure = getDayTotal(localDate);
         logger.trace("Actions: deliver measure {}", measure);
         return Utils.getEnergyState(measure);
     }
 
     @Override
-    public State getEnergy(LocalDateTime localDateTimeBegin, LocalDateTime localDateTimeEnd) {
+    public State getEnergy(LocalDateTime localDateTimeBegin, LocalDateTime localDateTimeEnd, String... args) {
+        if (args.length > 0) {
+            logger.debug("ForecastSolar doesn't accept arguments");
+            return UnDefType.UNDEF;
+        }
         LocalDate beginDate = localDateTimeBegin.toLocalDate();
         LocalDate endDate = localDateTimeEnd.toLocalDate();
         double measure = UNDEF;
@@ -235,7 +246,11 @@ public class ForecastSolarObject implements SolarForecast {
     }
 
     @Override
-    public State getPower(LocalDateTime localDateTime) {
+    public State getPower(LocalDateTime localDateTime, String... args) {
+        if (args.length > 0) {
+            logger.debug("ForecastSolar doesn't accept arguments");
+            return UnDefType.UNDEF;
+        }
         double measure = getActualPowerValue(localDateTime);
         logger.trace("Actions: deliver measure {}", measure);
         return Utils.getPowerState(measure);

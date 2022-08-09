@@ -14,6 +14,7 @@ package org.openhab.binding.solarforecast;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -23,10 +24,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.solarforecast.internal.Utils;
+import org.openhab.binding.solarforecast.internal.actions.SolarForecast;
 import org.openhab.binding.solarforecast.internal.solcast.SolcastConstants;
 import org.openhab.binding.solarforecast.internal.solcast.SolcastObject;
+import org.openhab.binding.solarforecast.internal.solcast.SolcastObject.QueryMode;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.types.UnDefType;
 
 /**
  * The {@link SolcastTest} tests responses from forecast solar website
@@ -98,20 +102,20 @@ class SolcastTest {
         scfo.join(content);
 
         // test one day, step ahead in time and cross check channel values
-        double dayTotal = scfo.getDayTotal(now.toLocalDate());
-        double actual = scfo.getActualValue(now);
-        double remain = scfo.getRemainingProduction(now);
+        double dayTotal = scfo.getDayTotal(now.toLocalDate(), QueryMode.Estimation);
+        double actual = scfo.getActualValue(now, QueryMode.Estimation);
+        double remain = scfo.getRemainingProduction(now, QueryMode.Estimation);
         assertEquals(0.0, actual, TOLERANCE, "Begin of day actual");
         assertEquals(23.107, remain, TOLERANCE, "Begin of day remaining");
         assertEquals(23.107, dayTotal, TOLERANCE, "Day total");
-        assertEquals(0.0, scfo.getActualPowerValue(now), TOLERANCE, "Begin of day power");
+        assertEquals(0.0, scfo.getActualPowerValue(now, QueryMode.Estimation), TOLERANCE, "Begin of day power");
         for (int i = 0; i < 47; i++) {
             now = now.plusMinutes(30);
-            double power = scfo.getActualPowerValue(now) / 2.0;
+            double power = scfo.getActualPowerValue(now, QueryMode.Estimation) / 2.0;
             actual += power;
-            assertEquals(actual, scfo.getActualValue(now), TOLERANCE, "Actual at " + now);
+            assertEquals(actual, scfo.getActualValue(now, QueryMode.Estimation), TOLERANCE, "Actual at " + now);
             remain -= power;
-            assertEquals(remain, scfo.getRemainingProduction(now), TOLERANCE, "Remain at " + now);
+            assertEquals(remain, scfo.getRemainingProduction(now, QueryMode.Estimation), TOLERANCE, "Remain at " + now);
             assertEquals(dayTotal, actual + remain, TOLERANCE, "Total sum at " + now);
         }
     }
@@ -139,16 +143,17 @@ class SolcastTest {
          * "period_end": "2022-07-23T14:30:00.0000000Z",
          * "period": "PT30M"
          */
-        assertEquals(1.9176, scfo.getActualPowerValue(now), TOLERANCE, "Estimate power " + now);
-        assertEquals(1.754, scfo.getActualPowerValue(now.plusMinutes(30)), TOLERANCE,
+        assertEquals(1.9176, scfo.getActualPowerValue(now, QueryMode.Estimation), TOLERANCE, "Estimate power " + now);
+        assertEquals(1.754, scfo.getActualPowerValue(now.plusMinutes(30), QueryMode.Estimation), TOLERANCE,
                 "Estimate power " + now.plusMinutes(30));
 
-        assertEquals(2.046, scfo.getOptimisticPowerValue(now), TOLERANCE, "Optimistic power " + now);
-        assertEquals(1.864, scfo.getOptimisticPowerValue(now.plusMinutes(30)), TOLERANCE,
+        assertEquals(2.046, scfo.getActualPowerValue(now, QueryMode.Optimistic), TOLERANCE, "Optimistic power " + now);
+        assertEquals(1.864, scfo.getActualPowerValue(now.plusMinutes(30), QueryMode.Optimistic), TOLERANCE,
                 "Optimistic power " + now.plusMinutes(30));
 
-        assertEquals(0.864, scfo.getPessimisticPowerValue(now), TOLERANCE, "Pessimistic power " + now);
-        assertEquals(0.771, scfo.getPessimisticPowerValue(now.plusMinutes(30)), TOLERANCE,
+        assertEquals(0.864, scfo.getActualPowerValue(now, QueryMode.Pessimistic), TOLERANCE,
+                "Pessimistic power " + now);
+        assertEquals(0.771, scfo.getActualPowerValue(now.plusMinutes(30), QueryMode.Pessimistic), TOLERANCE,
                 "Pessimistic power " + now.plusMinutes(30));
 
         /**
@@ -165,16 +170,18 @@ class SolcastTest {
          **/
         // get same values for optimistic / pessimistic and estimate in the past
         ZonedDateTime past = LocalDateTime.of(2022, 7, 17, 16, 30).atZone(TEST_ZONE);
-        assertEquals(1.932, scfo.getActualPowerValue(past), TOLERANCE, "Estimate power " + past);
-        assertEquals(1.724, scfo.getActualPowerValue(past.plusMinutes(30)), TOLERANCE,
+        assertEquals(1.932, scfo.getActualPowerValue(past, QueryMode.Estimation), TOLERANCE, "Estimate power " + past);
+        assertEquals(1.724, scfo.getActualPowerValue(past.plusMinutes(30), QueryMode.Estimation), TOLERANCE,
                 "Estimate power " + now.plusMinutes(30));
 
-        assertEquals(1.932, scfo.getOptimisticPowerValue(past), TOLERANCE, "Optimistic power " + past);
-        assertEquals(1.724, scfo.getOptimisticPowerValue(past.plusMinutes(30)), TOLERANCE,
+        assertEquals(1.932, scfo.getActualPowerValue(past, QueryMode.Optimistic), TOLERANCE,
+                "Optimistic power " + past);
+        assertEquals(1.724, scfo.getActualPowerValue(past.plusMinutes(30), QueryMode.Optimistic), TOLERANCE,
                 "Optimistic power " + past.plusMinutes(30));
 
-        assertEquals(1.932, scfo.getPessimisticPowerValue(past), TOLERANCE, "Pessimistic power " + past);
-        assertEquals(1.724, scfo.getPessimisticPowerValue(past.plusMinutes(30)), TOLERANCE,
+        assertEquals(1.932, scfo.getActualPowerValue(past, QueryMode.Pessimistic), TOLERANCE,
+                "Pessimistic power " + past);
+        assertEquals(1.724, scfo.getActualPowerValue(past.plusMinutes(30), QueryMode.Pessimistic), TOLERANCE,
                 "Pessimistic power " + past.plusMinutes(30));
     }
 
@@ -225,8 +232,8 @@ class SolcastTest {
         String content = FileReader.readFileInString("src/test/resources/solcast/estimated-actuals.json");
         ZonedDateTime now = LocalDateTime.of(2022, 7, 17, 7, 0).atZone(TEST_ZONE);
         SolcastObject scfo = new SolcastObject(content, now);
-        assertEquals(0.614, scfo.getActualValue(now), TOLERANCE, "Actual estimation");
-        assertEquals(25.413, scfo.getDayTotal(now.toLocalDate()), TOLERANCE, "Day total");
+        assertEquals(0.614, scfo.getActualValue(now, QueryMode.Estimation), TOLERANCE, "Actual estimation");
+        assertEquals(25.413, scfo.getDayTotal(now.toLocalDate(), QueryMode.Estimation), TOLERANCE, "Day total");
     }
 
     @Test
@@ -234,11 +241,11 @@ class SolcastTest {
         String content = FileReader.readFileInString("src/test/resources/solcast/estimated-actuals.json");
         ZonedDateTime now = LocalDateTime.of(2022, 7, 18, 16, 23).atZone(TEST_ZONE);
         SolcastObject scfo = new SolcastObject(content, now);
-        assertEquals(-1.0, scfo.getActualValue(now), 0.01, "Invalid");
+        assertEquals(-1.0, scfo.getActualValue(now, QueryMode.Estimation), 0.01, "Invalid");
         content = FileReader.readFileInString("src/test/resources/solcast/forecasts.json");
         scfo.join(content);
-        assertEquals(19.408, scfo.getActualValue(now), 0.01, "Actual data");
-        assertEquals(23.107, scfo.getDayTotal(now.toLocalDate()), 0.01, "Today data");
+        assertEquals(19.408, scfo.getActualValue(now, QueryMode.Estimation), 0.01, "Actual data");
+        assertEquals(23.107, scfo.getDayTotal(now.toLocalDate(), QueryMode.Estimation), 0.01, "Today data");
         JSONObject rawJson = new JSONObject(scfo.getRaw());
         assertTrue(rawJson.has("forecasts"));
         assertTrue(rawJson.has("estimated_actuals"));
@@ -249,7 +256,7 @@ class SolcastTest {
         String content = FileReader.readFileInString("src/test/resources/solcast/estimated-actuals.json");
         ZonedDateTime now = LocalDateTime.of(2022, 7, 18, 16, 23).atZone(TEST_ZONE);
         SolcastObject scfo = new SolcastObject(content, now);
-        assertEquals(-1.0, scfo.getActualValue(now), 0.01, "Invalid");
+        assertEquals(-1.0, scfo.getActualValue(now, QueryMode.Estimation), 0.01, "Invalid");
         content = FileReader.readFileInString("src/test/resources/solcast/forecasts.json");
         scfo.join(content);
 
@@ -260,7 +267,7 @@ class SolcastTest {
         LocalDateTime ldtStartTime = LocalDateTime.of(2022, 7, 18, 0, 0);
         ZonedDateTime zdtStartTime = LocalDateTime.of(2022, 7, 18, 0, 0).atZone(TEST_ZONE);
         for (int i = 0; i < 7; i++) {
-            double day = scfo.getDayTotal(zdtStartTime.toLocalDate().plusDays(i));
+            double day = scfo.getDayTotal(zdtStartTime.toLocalDate().plusDays(i), QueryMode.Estimation);
             QuantityType qt = (QuantityType<?>) scfo.getDay(ldtStartTime.toLocalDate().plusDays(i));
             QuantityType eqt = (QuantityType<?>) scfo.getEnergy(ldtStartTime.plusDays(i), ldtStartTime.plusDays(i + 1));
             // System.out.println("Day: " + day + " ADay: " + qt.doubleValue() + " EDay: " + eqt.doubleValue());
@@ -280,9 +287,25 @@ class SolcastTest {
         SolcastObject scfo = new SolcastObject(content, now);
         content = FileReader.readFileInString("src/test/resources/solcast/forecasts.json");
         scfo.join(content);
-        assertEquals(19.389, scfo.getDayTotal(now.toLocalDate().plusDays(2)), TOLERANCE, "Estimation");
-        assertEquals(7.358, scfo.getPessimisticDayTotal(now.toLocalDate().plusDays(2)), TOLERANCE, "Estimation");
-        assertEquals(22.283, scfo.getOptimisticDayTotal(now.toLocalDate().plusDays(2)), TOLERANCE, "Estimation");
+        assertEquals(19.389, scfo.getDayTotal(now.toLocalDate().plusDays(2), QueryMode.Estimation), TOLERANCE,
+                "Estimation");
+        assertEquals(7.358, scfo.getDayTotal(now.toLocalDate().plusDays(2), QueryMode.Pessimistic), TOLERANCE,
+                "Estimation");
+        assertEquals(22.283, scfo.getDayTotal(now.toLocalDate().plusDays(2), QueryMode.Optimistic), TOLERANCE,
+                "Estimation");
+
+        // access in past shall be rejected
+        LocalDateTime past = LocalDateTime.now().minusMinutes(5);
+        assertEquals(UnDefType.UNDEF, scfo.getPower(past, SolarForecast.OPTIMISTIC), "Optimistic Power");
+        assertEquals(UnDefType.UNDEF, scfo.getPower(past, SolarForecast.PESSIMISTIC), "Pessimistic Power");
+        assertEquals(UnDefType.UNDEF, scfo.getPower(past, "total", "rubbish"), "Rubbish arguments");
+        assertEquals(UnDefType.UNDEF, scfo.getPower(past.plusHours(2), "total", "rubbish"), "Rubbish arguments");
+        assertEquals(UnDefType.UNDEF, scfo.getPower(past), "Normal Power");
+
+        LocalDate ld = LocalDate.of(2022, 7, 20);
+        System.out.println(scfo.getDayTotal(ld, QueryMode.Estimation));
+        System.out.println(scfo.getDayTotal(ld, QueryMode.Optimistic));
+        System.out.println(scfo.getDayTotal(ld, QueryMode.Pessimistic));
     }
 
     @Test
@@ -290,11 +313,13 @@ class SolcastTest {
         String content = FileReader.readFileInString("src/test/resources/solcast/estimated-actuals.json");
         ZonedDateTime now = ZonedDateTime.now(TEST_ZONE);
         SolcastObject scfo = new SolcastObject(content, now);
-        assertEquals(-1.0, scfo.getActualValue(now), 0.01, "Data available - day not in");
+        assertEquals(-1.0, scfo.getActualValue(now, QueryMode.Estimation), 0.01, "Data available - day not in");
         content = FileReader.readFileInString("src/test/resources/solcast/forecasts.json");
         scfo.join(content);
-        assertEquals(-1.0, scfo.getActualValue(now), 0.01, "Data available after merge - day not in");
-        assertEquals(-1.0, scfo.getDayTotal(now.toLocalDate()), 0.01, "Data available after merge - day not in");
+        assertEquals(-1.0, scfo.getActualValue(now, QueryMode.Estimation), 0.01,
+                "Data available after merge - day not in");
+        assertEquals(-1.0, scfo.getDayTotal(now.toLocalDate(), QueryMode.Estimation), 0.01,
+                "Data available after merge - day not in");
     }
 
     @Test

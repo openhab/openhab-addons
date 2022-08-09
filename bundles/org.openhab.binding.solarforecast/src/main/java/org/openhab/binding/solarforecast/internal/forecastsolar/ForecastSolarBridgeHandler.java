@@ -25,11 +25,11 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.solarforecast.internal.SolarForecast;
-import org.openhab.binding.solarforecast.internal.SolarForecastActions;
 import org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants;
-import org.openhab.binding.solarforecast.internal.SolarForecastProvider;
 import org.openhab.binding.solarforecast.internal.Utils;
+import org.openhab.binding.solarforecast.internal.actions.SolarForecast;
+import org.openhab.binding.solarforecast.internal.actions.SolarForecastActions;
+import org.openhab.binding.solarforecast.internal.actions.SolarForecastProvider;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.thing.Bridge;

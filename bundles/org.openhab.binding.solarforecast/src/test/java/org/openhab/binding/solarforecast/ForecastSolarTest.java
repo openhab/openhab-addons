@@ -26,6 +26,7 @@ import org.openhab.binding.solarforecast.internal.forecastsolar.ForecastSolarObj
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 
 /**
  * The {@link ForecastSolarTest} tests responses from forecast solar object
@@ -36,15 +37,12 @@ import org.openhab.core.types.State;
 class ForecastSolarTest {
     // double comparison tolerance = 1 Watt
     private static final double TOLERANCE = 0.001;
-    private static final String DATE_INPUT_PATTERN_STRING = "yyyy-MM-dd'T'HH:mm:ss";
-    private static final DateTimeFormatter DATE_INPUT_PATTERN = DateTimeFormatter.ofPattern(DATE_INPUT_PATTERN_STRING);
 
     @Test
     void testForecastObject() {
         String content = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
         LocalDateTime queryDateTime = LocalDateTime.of(2022, 7, 17, 17, 00);
         ForecastSolarObject fo = new ForecastSolarObject(content, queryDateTime);
-
         // "2022-07-17 21:32:00": 63583,
         assertEquals(63.583, fo.getDayTotal(queryDateTime.toLocalDate()), TOLERANCE, "Total production");
         // "2022-07-17 17:00:00": 52896,
@@ -184,5 +182,9 @@ class ForecastSolarTest {
         // }
         assertEquals(QuantityType.valueOf(129.137, Units.KILOWATT_HOUR).toString(),
                 fo.getEnergy(query, query.plusDays(2)).toFullString(), "Actual out of scope");
+
+        assertEquals(UnDefType.UNDEF, fo.getDay(query.toLocalDate(), "optimistic"));
+        assertEquals(UnDefType.UNDEF, fo.getDay(query.toLocalDate(), "pessimistic"));
+        assertEquals(UnDefType.UNDEF, fo.getDay(query.toLocalDate(), "total", "rubbish"));
     }
 }

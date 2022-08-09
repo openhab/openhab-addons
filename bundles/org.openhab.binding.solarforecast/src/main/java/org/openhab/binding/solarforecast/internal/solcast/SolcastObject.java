@@ -16,6 +16,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
+import java.util.Arrays;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
@@ -24,10 +25,11 @@ import java.util.TreeMap;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.openhab.binding.solarforecast.internal.SolarForecast;
 import org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants;
 import org.openhab.binding.solarforecast.internal.Utils;
+import org.openhab.binding.solarforecast.internal.actions.SolarForecast;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,14 +40,35 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SolcastObject implements SolarForecast {
-    private final Logger logger = LoggerFactory.getLogger(SolcastObject.class);
     private static final double UNDEF = -1;
+    private static final TreeMap<ZonedDateTime, Double> EMPTY_MAP = new TreeMap<ZonedDateTime, Double>();
+
+    private final Logger logger = LoggerFactory.getLogger(SolcastObject.class);
     private final TreeMap<LocalDate, TreeMap<ZonedDateTime, Double>> estimationDataMap = new TreeMap<LocalDate, TreeMap<ZonedDateTime, Double>>();
     private final TreeMap<LocalDate, TreeMap<ZonedDateTime, Double>> optimisticDataMap = new TreeMap<LocalDate, TreeMap<ZonedDateTime, Double>>();
     private final TreeMap<LocalDate, TreeMap<ZonedDateTime, Double>> pessimisticDataMap = new TreeMap<LocalDate, TreeMap<ZonedDateTime, Double>>();
+
     private Optional<JSONObject> rawData = Optional.of(new JSONObject());
     private ZonedDateTime expirationDateTime;
     private boolean valid = false;
+
+    public enum QueryMode {
+        Estimation("Estimation"),
+        Optimistic(SolarForecast.OPTIMISTIC),
+        Pessimistic(SolarForecast.PESSIMISTIC),
+        Error("Error");
+
+        String modeDescirption;
+
+        QueryMode(String description) {
+            modeDescirption = description;
+        }
+
+        @Override
+        public String toString() {
+            return modeDescirption;
+        }
+    }
 
     public SolcastObject() {
         // invalid forecast object
@@ -132,13 +155,10 @@ public class SolcastObject implements SolarForecast {
         return false;
     }
 
-    public double getActualValue(ZonedDateTime query) {
-        if (estimationDataMap.isEmpty()) {
-            return UNDEF;
-        }
+    public double getActualValue(ZonedDateTime query, QueryMode mode) {
         LocalDate ld = query.toLocalDate();
-        TreeMap<ZonedDateTime, Double> dtm = estimationDataMap.get(ld);
-        if (dtm == null) {
+        TreeMap<ZonedDateTime, Double> dtm = getDataMap(ld, mode);
+        if (dtm.isEmpty()) {
             return UNDEF;
         }
         double forecastValue = 0;
@@ -178,43 +198,12 @@ public class SolcastObject implements SolarForecast {
      * Get power values
      */
 
-    public double getActualPowerValue(ZonedDateTime query) {
-        if (estimationDataMap.isEmpty()) {
-            return UNDEF;
-        }
+    public double getActualPowerValue(ZonedDateTime query, QueryMode mode) {
         LocalDate ld = query.toLocalDate();
-        TreeMap<ZonedDateTime, Double> dtm = estimationDataMap.get(ld);
-        if (dtm == null) {
+        TreeMap<ZonedDateTime, Double> dtm = getDataMap(ld, mode);
+        if (dtm.isEmpty()) {
             return UNDEF;
         }
-        return getPowerFromTreemap(dtm, query);
-    }
-
-    public double getOptimisticPowerValue(ZonedDateTime query) {
-        if (optimisticDataMap.isEmpty()) {
-            return UNDEF;
-        }
-        LocalDate ld = query.toLocalDate();
-        TreeMap<ZonedDateTime, Double> dtm = optimisticDataMap.get(ld);
-        if (dtm == null) {
-            return UNDEF;
-        }
-        return getPowerFromTreemap(dtm, query);
-    }
-
-    public double getPessimisticPowerValue(ZonedDateTime query) {
-        if (pessimisticDataMap.isEmpty()) {
-            return UNDEF;
-        }
-        LocalDate ld = query.toLocalDate();
-        TreeMap<ZonedDateTime, Double> dtm = pessimisticDataMap.get(ld);
-        if (dtm == null) {
-            return UNDEF;
-        }
-        return getPowerFromTreemap(dtm, query);
-    }
-
-    private double getPowerFromTreemap(TreeMap<ZonedDateTime, Double> dtm, ZonedDateTime query) {
         double actualPowerValue = 0;
         Entry<ZonedDateTime, Double> f = dtm.floorEntry(query);
         Entry<ZonedDateTime, Double> c = dtm.ceilingEntry(query);
@@ -242,42 +231,17 @@ public class SolcastObject implements SolarForecast {
      * Daily totals
      */
 
-    public double getDayTotal(LocalDate query) {
-        TreeMap<ZonedDateTime, Double> dtm = estimationDataMap.get(query);
-        if (dtm != null) {
-            // JSONObject jot = new JSONObject(dtm);
-            // System.out.println(jot);
-            return getTotalValue(dtm);
-        } else {
+    public double getDayTotal(LocalDate query, QueryMode mode) {
+        TreeMap<ZonedDateTime, Double> dtm = getDataMap(query, mode);
+        if (dtm.isEmpty()) {
             return UNDEF;
         }
-    }
-
-    public double getOptimisticDayTotal(LocalDate query) {
-        TreeMap<ZonedDateTime, Double> dtm = optimisticDataMap.get(query);
-        if (dtm != null) {
-            return getTotalValue(dtm);
-        } else {
-            return UNDEF;
-        }
-    }
-
-    public double getPessimisticDayTotal(LocalDate query) {
-        TreeMap<ZonedDateTime, Double> dtm = pessimisticDataMap.get(query);
-        if (dtm != null) {
-            return getTotalValue(dtm);
-        } else {
-            return UNDEF;
-        }
-    }
-
-    private double getTotalValue(TreeMap<ZonedDateTime, Double> map) {
         double forecastValue = 0;
-        Set<ZonedDateTime> keySet = map.keySet();
+        Set<ZonedDateTime> keySet = dtm.keySet();
         for (ZonedDateTime key : keySet) {
             // value are reported in PT30M = 30 minutes interval with kw value
             // for kw/h it's half the value
-            Double addedValue = map.get(key);
+            Double addedValue = dtm.get(key);
             if (addedValue != null) {
                 forecastValue += addedValue.doubleValue() / 2.0;
             }
@@ -285,11 +249,13 @@ public class SolcastObject implements SolarForecast {
         return forecastValue;
     }
 
-    public double getRemainingProduction(ZonedDateTime query) {
-        if (estimationDataMap.isEmpty()) {
+    public double getRemainingProduction(ZonedDateTime query, QueryMode mode) {
+        LocalDate ld = query.toLocalDate();
+        TreeMap<ZonedDateTime, Double> dtm = getDataMap(ld, mode);
+        if (dtm.isEmpty()) {
             return UNDEF;
         }
-        return getDayTotal(query.toLocalDate()) - getActualValue(query);
+        return getDayTotal(query.toLocalDate(), mode) - getActualValue(query, mode);
     }
 
     @Override
@@ -306,35 +272,83 @@ public class SolcastObject implements SolarForecast {
         return timestamp.atZone(SolcastConstants.zonedId);
     }
 
+    private TreeMap<ZonedDateTime, Double> getDataMap(LocalDate ld, QueryMode mode) {
+        TreeMap<ZonedDateTime, Double> returnMap = EMPTY_MAP;
+        switch (mode) {
+            case Estimation:
+                returnMap = estimationDataMap.get(ld);
+                break;
+            case Optimistic:
+                returnMap = optimisticDataMap.get(ld);
+                break;
+            case Pessimistic:
+                returnMap = pessimisticDataMap.get(ld);
+                break;
+            case Error:
+                // nothing to do
+                break;
+            default:
+                // nothing to do
+                break;
+        }
+        if (returnMap == null) {
+            return EMPTY_MAP;
+        }
+        return returnMap;
+    }
+
     /**
      * SolarForecast Interface
      */
     @Override
-    public State getDay(LocalDate localDate) {
-        double measure = getDayTotal(localDate);
+    public State getDay(LocalDate localDate, String... args) {
+        QueryMode mode = evalArguments(args);
+        if (mode.equals(QueryMode.Error)) {
+            return UnDefType.UNDEF;
+        } else if (mode.equals(QueryMode.Optimistic) || mode.equals(QueryMode.Pessimistic)) {
+            if (localDate.isBefore(LocalDate.now())) {
+                logger.debug("{} forecasts only available for future", mode);
+                return UnDefType.UNDEF;
+            }
+        }
+        double measure = getDayTotal(localDate, mode);
         return Utils.getEnergyState(measure);
     }
 
     @Override
-    public State getEnergy(LocalDateTime localDateTimeBegin, LocalDateTime localDateTimeEnd) {
+    public State getEnergy(LocalDateTime localDateTimeBegin, LocalDateTime localDateTimeEnd, String... args) {
+        if (localDateTimeEnd.isBefore(localDateTimeBegin)) {
+            logger.debug("End {} defined before Start {}", localDateTimeEnd, localDateTimeBegin);
+            return UnDefType.UNDEF;
+        }
+        QueryMode mode = evalArguments(args);
+        if (mode.equals(QueryMode.Error)) {
+            return UnDefType.UNDEF;
+        } else if (mode.equals(QueryMode.Optimistic) || mode.equals(QueryMode.Pessimistic)) {
+            if (localDateTimeEnd.isBefore(LocalDateTime.now())) {
+                logger.debug("{} forecasts only available for future", mode);
+                return UnDefType.UNDEF;
+            }
+        }
         ZonedDateTime zdtBegin = localDateTimeBegin.atZone(SolcastConstants.zonedId);
         ZonedDateTime zdtEnd = localDateTimeEnd.atZone(SolcastConstants.zonedId);
         LocalDate beginDate = zdtBegin.toLocalDate();
         LocalDate endDate = zdtEnd.toLocalDate();
         double measure = UNDEF;
         if (beginDate.isEqual(endDate)) {
-            measure = getDayTotal(zdtEnd.toLocalDate()) - getActualValue(zdtBegin) - getRemainingProduction(zdtEnd);
+            measure = getDayTotal(zdtEnd.toLocalDate(), mode) - getActualValue(zdtBegin, mode)
+                    - getRemainingProduction(zdtEnd, mode);
         } else {
-            measure = getRemainingProduction(zdtBegin);
+            measure = getRemainingProduction(zdtBegin, mode);
             beginDate = beginDate.plusDays(1);
             while (beginDate.isBefore(endDate) && measure >= 0) {
-                double day = getDayTotal(beginDate);
+                double day = getDayTotal(beginDate, mode);
                 if (day > 0) {
                     measure += day;
                 }
                 beginDate = beginDate.plusDays(1);
             }
-            double lastDay = getActualValue(zdtEnd);
+            double lastDay = getActualValue(zdtEnd, mode);
             if (lastDay >= 0) {
                 measure += lastDay;
             }
@@ -343,9 +357,20 @@ public class SolcastObject implements SolarForecast {
     }
 
     @Override
-    public State getPower(LocalDateTime localDateTime) {
-        ZonedDateTime zdt = localDateTime.atZone(SolcastConstants.zonedId);
-        double measure = getActualPowerValue(zdt);
+    public State getPower(LocalDateTime queryDateTime, String... args) {
+        // eliminate error cases and return immediately
+        QueryMode mode = evalArguments(args);
+        if (mode.equals(QueryMode.Error)) {
+            return UnDefType.UNDEF;
+        } else if (mode.equals(QueryMode.Optimistic) || mode.equals(QueryMode.Pessimistic)) {
+            if (queryDateTime.isBefore(LocalDateTime.now().minusMinutes(1))) {
+                logger.debug("{} forecasts only available for future", mode);
+                return UnDefType.UNDEF;
+            }
+        }
+
+        ZonedDateTime zdt = queryDateTime.atZone(SolcastConstants.zonedId);
+        double measure = getActualPowerValue(zdt, mode);
         return Utils.getPowerState(measure);
     }
 
@@ -365,5 +390,25 @@ public class SolcastObject implements SolarForecast {
             return zdt.toLocalDateTime();
         }
         return LocalDateTime.MIN;
+    }
+
+    private QueryMode evalArguments(String[] args) {
+        if (args.length > 0) {
+            if (args.length > 1) {
+                logger.debug("Too many arguments {}", Arrays.toString(args));
+                return QueryMode.Error;
+            }
+
+            if (SolarForecast.OPTIMISTIC.equals(args[0])) {
+                return QueryMode.Optimistic;
+            } else if (SolarForecast.PESSIMISTIC.equals(args[0])) {
+                return QueryMode.Pessimistic;
+            } else {
+                logger.debug("Argument {} not supported", args[0]);
+                return QueryMode.Error;
+            }
+        } else {
+            return QueryMode.Estimation;
+        }
     }
 }

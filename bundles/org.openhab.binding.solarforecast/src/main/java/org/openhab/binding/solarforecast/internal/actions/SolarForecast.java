@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.solarforecast.internal;
+package org.openhab.binding.solarforecast.internal.actions;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -25,31 +25,42 @@ import org.openhab.core.types.State;
  */
 @NonNullByDefault
 public interface SolarForecast {
+    /**
+     * Argument can be used to query an optimistic forecast scenario
+     */
+    public static final String OPTIMISTIC = "optimistic";
+    /**
+     * Argument can be used to query a pessimistic forecast scenario
+     */
+    public static final String PESSIMISTIC = "pessimistic";
 
     /**
      * Returns electric energy production for one day
      *
-     * @param dateString
-     * @return QuaatityType<Energy> in kW/h
+     * @param localDate
+     * @param args possible arguments from this interface
+     * @return QuantityType<Energy> in kW/h
      */
-    public State getDay(LocalDate localDate);
+    public State getDay(LocalDate localDate, String... args);
 
     /**
      * Returns electric energy between two timestamps
      *
-     * @param dateTimeFrom
-     * @param dateTimeTo
+     * @param localDateTimeBegin
+     * @param localDateTimeEnd
+     * @param args possible arguments from this interface
      * @return QuantityType<Energy> in kW/h
      */
-    public State getEnergy(LocalDateTime localDateTimeBegin, LocalDateTime localDateTimeEnd);
+    public State getEnergy(LocalDateTime localDateTimeBegin, LocalDateTime localDateTimeEnd, String... args);
 
     /**
-     * Returns electric power at one specific timepoint
+     * Returns electric power at one specific point of time
      *
-     * @param dateTimeString
+     * @param localDateTime
+     * @param args possible arguments from this interface
      * @return QuantityType<Power> in kW
      */
-    public State getPower(LocalDateTime localDateTime);
+    public State getPower(LocalDateTime localDateTime, String... args);
 
     /**
      * Get the first date and time of forecast data
