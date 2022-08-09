@@ -496,8 +496,8 @@ public enum RotelCommand {
     HDMI_TV_MODE("HDMI TV Mode", PRIMARY_CMD, (byte) 0x79),
     ROOM_EQ_TOGGLE("Temporary Room EQ Toggle", PRIMARY_CMD, (byte) 0x67),
     SPEAKER_SETTING_TOGGLE("Speaker Level Setting Toggle", PRIMARY_CMD, (byte) 0xA1),
-    MODEL("Request the model number", null, "model?"),
-    VERSION("Request the main CPU software version", null, "version?");
+    MODEL("Request the model number", "get_product_type", "model?"),
+    VERSION("Request the main CPU software version", "get_product_version", "version?");
 
     public static final List<RotelCommand> DSP_CMDS_SET1 = List.of(DSP_TOGGLE, PROLOGIC_TOGGLE, DOLBY_TOGGLE,
             PLII_PANORAMA_TOGGLE, PLII_DIMENSION_UP, PLII_DIMENSION_DOWN, PLII_CENTER_WIDTH_UP, PLII_CENTER_WIDTH_DOWN,

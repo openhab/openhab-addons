@@ -56,10 +56,10 @@ public abstract class RotelAbstractAsciiProtocolHandler extends RotelAbstractPro
     /** Empty table of special characters */
     public static final byte[][] NO_SPECIAL_CHARACTERS = {};
 
+    private static final int MAX_SIZE_RESPONSE = 128;
+
     private final Logger logger = LoggerFactory.getLogger(RotelAbstractAsciiProtocolHandler.class);
 
-    private final char terminatingChar;
-    private final int size;
     private final byte[] dataBuffer;
 
     private int index;
@@ -68,31 +68,31 @@ public abstract class RotelAbstractAsciiProtocolHandler extends RotelAbstractPro
      * Constructor
      *
      * @param model the Rotel model in use
-     * @param protocol the protocol to be used
      */
-    public RotelAbstractAsciiProtocolHandler(RotelModel model, char terminatingChar) {
+    public RotelAbstractAsciiProtocolHandler(RotelModel model) {
         super(model);
-        this.terminatingChar = terminatingChar;
-        this.size = 64;
-        this.dataBuffer = new byte[size];
+        this.dataBuffer = new byte[MAX_SIZE_RESPONSE];
         this.index = 0;
     }
 
-    @Override
-    public void handleIncomingData(byte[] inDataBuffer, int length) {
-        for (int i = 0; i < length; i++) {
-            if (index < size) {
-                dataBuffer[index++] = inDataBuffer[i];
-            }
-            if (inDataBuffer[i] == terminatingChar) {
-                if (index >= size) {
-                    dataBuffer[index - 1] = (byte) terminatingChar;
-                }
-                byte[] msg = Arrays.copyOf(dataBuffer, index);
-                handleIncomingMessage(msg);
-                index = 0;
-            }
+    protected boolean fillDataBuffer(byte data) {
+        if (index < MAX_SIZE_RESPONSE) {
+            dataBuffer[index++] = data;
+            return true;
         }
+        return false;
+    }
+
+    protected byte[] getDataBuffer() {
+        return Arrays.copyOf(dataBuffer, index);
+    }
+
+    protected void resetDataBuffer() {
+        index = 0;
+    }
+
+    protected int getRemainingSizeInDataBuffer() {
+        return MAX_SIZE_RESPONSE - index;
     }
 
     /**
@@ -108,12 +108,6 @@ public abstract class RotelAbstractAsciiProtocolHandler extends RotelAbstractPro
         if (responseMessage.length < 1) {
             logger.debug("Unexpected message length: {}", responseMessage.length);
             throw new RotelException("Unexpected message length");
-        }
-
-        if (responseMessage[responseMessage.length - 1] != '!' && responseMessage[responseMessage.length - 1] != '$') {
-            logger.debug("Unexpected ending character in response: {}",
-                    Integer.toHexString(responseMessage[responseMessage.length - 1] & 0x000000FF));
-            throw new RotelException("Unexpected ending character in response");
         }
     }
 
@@ -133,18 +127,19 @@ public abstract class RotelAbstractAsciiProtocolHandler extends RotelAbstractPro
             }
         }
 
-        String value = new String(message, 0, message.length - 1, StandardCharsets.US_ASCII);
+        String value = new String(message, 0, message.length, StandardCharsets.US_ASCII);
         logger.debug("handleValidAsciiMessage: chars *{}*", value);
         value = value.trim();
         if (value.isEmpty()) {
             return;
         }
         try {
-            String[] splittedValue = value.split("=");
-            if (splittedValue.length != 2) {
+            int idxSeparator = value.indexOf("=");
+            if (idxSeparator < 0) {
                 logger.debug("handleValidAsciiMessage: ignored message {}", value);
             } else {
-                dispatchKeyValue(splittedValue[0].trim().toLowerCase(), splittedValue[1]);
+                dispatchKeyValue(value.substring(0, idxSeparator).trim().toLowerCase(),
+                        value.substring(idxSeparator + 1));
             }
         } catch (PatternSyntaxException e) {
             logger.debug("handleValidAsciiMessage: ignored message {}", value);
