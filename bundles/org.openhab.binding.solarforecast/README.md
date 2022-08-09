@@ -11,6 +11,14 @@ Supported Services
 - [Forecast.Solar](https://forecast.solar/)
     - Public, Personal and Professional [plans](https://forecast.solar/#accounts) available 
 
+Display Forecast *Power values* and measures of *PV innverter* item
+
+<img src="./doc/SolcastPower.png" width="400" height="250"/>
+
+Display added up values during the day of *Forecast* and *PV inverter* item.
+Yellow line shows *Daily Total Forecast*.
+
+<img src="./doc/SolcastCumulated.png" width="400" height="250"/>
 
 ## Supported Things
 
@@ -214,8 +222,8 @@ Respect `getForecastBegin` and `getForecastEnd` to get a valid value.
 Check for `UndefType.UNDEF` in case of errors.
 
 Solcast things are supporting arguments.
-Chosse ´optimistic´ or ´pessimistic´ to get values for a positive or negative future scenario.
-For these scenarios `localDateTime` needs to be located between `now` and ´getForecastEnd´.
+Choose `optimistic` or `pessimistic` to get values for a positive or negative future scenario.
+For these scenarios `localDateTime` needs to be located between `now` and `getForecastEnd`.
 
 ### Get Day
 
@@ -235,8 +243,8 @@ Respect `getForecastBegin` and `getForecastEnd` to avoid ambigouos values.
 Check for `UndefType.UNDEF` in case of errors.
 
 Solcast things are supporting arguments.
-Chosse ´optimistic´ or ´pessimistic´ to get values for a positive or negative future scenario.
-For these scenarios `localDate` needs to be today and ´getForecastEnd´.
+Choose `optimistic` or `pessimistic` to get values for a positive or negative future scenario.
+For these scenarios `localDate` needs to be between *today* and `getForecastEnd`.
 
 ### Get Energy
 
@@ -257,8 +265,8 @@ Respect `getForecastBegin` and `getForecastEnd` to avoid ambigouos values.
 Check for `UndefType.UNDEF` in case of errors.
 
 Solcast things are supporting arguments.
-Chosse ´optimistic´ or ´pessimistic´ to get values for a positive or negative future scenario.
-For these scenarios `localDateTimeEnd` needs to be located between `now` and ´getForecastEnd´.
+Choose `optimistic` or `pessimistic` to get values for a positive or negative future scenario.
+For these scenarios `localDateTimeEnd` needs to be located between `now` and `getForecastEnd`.
 
 ## Example
 
