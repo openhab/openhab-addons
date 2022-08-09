@@ -207,7 +207,7 @@ public class ForecastSolarObject implements SolarForecast {
     @Override
     public State getDay(LocalDate localDate, String... args) {
         if (args.length > 0) {
-            logger.debug("ForecastSolar doesn't accept arguments");
+            logger.info("ForecastSolar doesn't accept arguments");
             return UnDefType.UNDEF;
         }
         double measure = getDayTotal(localDate);
@@ -218,7 +218,7 @@ public class ForecastSolarObject implements SolarForecast {
     @Override
     public State getEnergy(LocalDateTime localDateTimeBegin, LocalDateTime localDateTimeEnd, String... args) {
         if (args.length > 0) {
-            logger.debug("ForecastSolar doesn't accept arguments");
+            logger.info("ForecastSolar doesn't accept arguments");
             return UnDefType.UNDEF;
         }
         LocalDate beginDate = localDateTimeBegin.toLocalDate();
@@ -248,7 +248,7 @@ public class ForecastSolarObject implements SolarForecast {
     @Override
     public State getPower(LocalDateTime localDateTime, String... args) {
         if (args.length > 0) {
-            logger.debug("ForecastSolar doesn't accept arguments");
+            logger.info("ForecastSolar doesn't accept arguments");
             return UnDefType.UNDEF;
         }
         double measure = getActualPowerValue(localDateTime);

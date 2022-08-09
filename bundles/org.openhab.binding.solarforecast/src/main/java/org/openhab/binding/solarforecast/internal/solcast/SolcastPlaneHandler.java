@@ -197,7 +197,7 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
                 logger.info("{} Call {} failed {}", thing.getLabel(), currentEstimateUrl, e.getMessage());
             }
         } else {
-            logger.debug("{} use available forecast {}", thing.getLabel(), forecast);
+            logger.trace("{} use available forecast", thing.getLabel());
         }
         updateChannels(forecast);
         if (ZonedDateTime.now(timeZoneProvider.getTimeZone()).isAfter(nextMeasurement)) {
@@ -303,7 +303,7 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
     private void updateChannels(SolcastObject f) {
         ZonedDateTime now = ZonedDateTime.now(timeZoneProvider.getTimeZone());
         updateState(CHANNEL_ACTUAL, Utils.getEnergyState(f.getActualValue(now, QueryMode.Estimation)));
-        updateState(CHANNEL_ACTUAL_POWER, Utils.getEnergyState(f.getActualPowerValue(now, QueryMode.Estimation)));
+        updateState(CHANNEL_ACTUAL_POWER, Utils.getPowerState(f.getActualPowerValue(now, QueryMode.Estimation)));
         updateState(CHANNEL_REMAINING, Utils.getEnergyState(f.getRemainingProduction(now, QueryMode.Estimation)));
         LocalDate nowDate = now.toLocalDate();
         updateState(CHANNEL_TODAY, Utils.getEnergyState(f.getDayTotal(nowDate, QueryMode.Estimation)));

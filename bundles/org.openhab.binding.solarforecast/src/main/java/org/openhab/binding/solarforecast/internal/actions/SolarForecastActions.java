@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
 @ThingActionsScope(name = "solarforecast")
 @NonNullByDefault
 public class SolarForecastActions implements ThingActions {
-    private static final Logger logger = LoggerFactory.getLogger(SolarForecastActions.class);
+    private final Logger logger = LoggerFactory.getLogger(SolarForecastActions.class);
     private Optional<ThingHandler> thingHandler = Optional.empty();
 
     @RuleAction(label = "@text/actionDayLabel", description = "@text/actionDayDesc")
@@ -59,7 +59,7 @@ public class SolarForecastActions implements ThingActions {
                 QuantityType<Energy> measure = QuantityType.valueOf(0, Units.KILOWATT_HOUR);
                 for (Iterator<SolarForecast> iterator = l.iterator(); iterator.hasNext();) {
                     SolarForecast solarForecast = iterator.next();
-                    State s = solarForecast.getDay(localDate);
+                    State s = solarForecast.getDay(localDate, args);
                     logger.trace("Found measure {}", s);
                     if (s instanceof QuantityType<?>) {
                         measure = measure.add((QuantityType<Energy>) s);
@@ -77,7 +77,8 @@ public class SolarForecastActions implements ThingActions {
 
     @RuleAction(label = "@text/actionPowerLabel", description = "@text/actionPowerDesc")
     public State getPower(
-            @ActionInput(name = "localDateTime", label = "@text/actionInputDateTimeLabel", description = "@text/actionInputDateTimeDesc") LocalDateTime localDateTime) {
+            @ActionInput(name = "localDateTime", label = "@text/actionInputDateTimeLabel", description = "@text/actionInputDateTimeDesc") LocalDateTime localDateTime,
+            String... args) {
         if (thingHandler.isPresent()) {
             List<SolarForecast> l = ((SolarForecastProvider) thingHandler.get()).getSolarForecasts();
             logger.trace("Found {} SolarForecast entries", l.size());
@@ -85,7 +86,7 @@ public class SolarForecastActions implements ThingActions {
                 QuantityType<Power> measure = QuantityType.valueOf(0, MetricPrefix.KILO(Units.WATT));
                 for (Iterator<SolarForecast> iterator = l.iterator(); iterator.hasNext();) {
                     SolarForecast solarForecast = iterator.next();
-                    State s = solarForecast.getPower(localDateTime);
+                    State s = solarForecast.getPower(localDateTime, args);
                     logger.trace("Found measure {}", s);
                     if (s instanceof QuantityType<?>) {
                         measure = measure.add((QuantityType<Power>) s);
@@ -104,7 +105,8 @@ public class SolarForecastActions implements ThingActions {
     @RuleAction(label = "@text/actionEnergyLabel", description = "@text/actionEnergyDesc")
     public State getEnergy(
             @ActionInput(name = "localDateTimeBegin", label = "@text/actionInputDateTimeBeginLabel", description = "@text/actionInputDateTimeBeginDesc") LocalDateTime localDateTimeBegin,
-            @ActionInput(name = "localDateTimeEnd", label = "@text/actionInputDateTimeEndLabel", description = "@text/actionInputDateTimeEndDesc") LocalDateTime localDateTimeEnd) {
+            @ActionInput(name = "localDateTimeEnd", label = "@text/actionInputDateTimeEndLabel", description = "@text/actionInputDateTimeEndDesc") LocalDateTime localDateTimeEnd,
+            String... args) {
         if (thingHandler.isPresent()) {
             List<SolarForecast> l = ((SolarForecastProvider) thingHandler.get()).getSolarForecasts();
             logger.trace("Found {} SolarForecast entries", l.size());
@@ -112,7 +114,7 @@ public class SolarForecastActions implements ThingActions {
                 QuantityType<Energy> measure = QuantityType.valueOf(0, Units.KILOWATT_HOUR);
                 for (Iterator<SolarForecast> iterator = l.iterator(); iterator.hasNext();) {
                     SolarForecast solarForecast = iterator.next();
-                    State s = solarForecast.getEnergy(localDateTimeBegin, localDateTimeEnd);
+                    State s = solarForecast.getEnergy(localDateTimeBegin, localDateTimeEnd, args);
                     logger.trace("Found measure {}", s);
                     if (s instanceof QuantityType<?>) {
                         measure = measure.add((QuantityType<Energy>) s);
@@ -179,16 +181,16 @@ public class SolarForecastActions implements ThingActions {
         return LocalDateTime.MAX;
     }
 
-    public static State getDay(ThingActions actions, LocalDate ld) {
-        return ((SolarForecastActions) actions).getDay(ld);
+    public static State getDay(ThingActions actions, LocalDate ld, String... args) {
+        return ((SolarForecastActions) actions).getDay(ld, args);
     }
 
-    public static State getPower(ThingActions actions, LocalDateTime dateTime) {
-        return ((SolarForecastActions) actions).getPower(dateTime);
+    public static State getPower(ThingActions actions, LocalDateTime dateTime, String... args) {
+        return ((SolarForecastActions) actions).getPower(dateTime, args);
     }
 
-    public static State getEnergy(ThingActions actions, LocalDateTime begin, LocalDateTime end) {
-        return ((SolarForecastActions) actions).getEnergy(begin, end);
+    public static State getEnergy(ThingActions actions, LocalDateTime begin, LocalDateTime end, String... args) {
+        return ((SolarForecastActions) actions).getEnergy(begin, end, args);
     }
 
     public static LocalDateTime getForecastBegin(ThingActions actions) {

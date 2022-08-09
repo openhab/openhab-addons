@@ -311,7 +311,7 @@ public class SolcastObject implements SolarForecast {
             return UnDefType.UNDEF;
         } else if (mode.equals(QueryMode.Optimistic) || mode.equals(QueryMode.Pessimistic)) {
             if (localDate.isBefore(LocalDate.now())) {
-                logger.debug("{} forecasts only available for future", mode);
+                logger.info("{} forecasts only available for future", mode);
                 return UnDefType.UNDEF;
             }
         }
@@ -322,7 +322,7 @@ public class SolcastObject implements SolarForecast {
     @Override
     public State getEnergy(LocalDateTime localDateTimeBegin, LocalDateTime localDateTimeEnd, String... args) {
         if (localDateTimeEnd.isBefore(localDateTimeBegin)) {
-            logger.debug("End {} defined before Start {}", localDateTimeEnd, localDateTimeBegin);
+            logger.info("End {} defined before Start {}", localDateTimeEnd, localDateTimeBegin);
             return UnDefType.UNDEF;
         }
         QueryMode mode = evalArguments(args);
@@ -330,7 +330,7 @@ public class SolcastObject implements SolarForecast {
             return UnDefType.UNDEF;
         } else if (mode.equals(QueryMode.Optimistic) || mode.equals(QueryMode.Pessimistic)) {
             if (localDateTimeEnd.isBefore(LocalDateTime.now())) {
-                logger.debug("{} forecasts only available for future", mode);
+                logger.info("{} forecasts only available for future", mode);
                 return UnDefType.UNDEF;
             }
         }
@@ -368,7 +368,7 @@ public class SolcastObject implements SolarForecast {
             return UnDefType.UNDEF;
         } else if (mode.equals(QueryMode.Optimistic) || mode.equals(QueryMode.Pessimistic)) {
             if (queryDateTime.isBefore(LocalDateTime.now().minusMinutes(1))) {
-                logger.debug("{} forecasts only available for future", mode);
+                logger.info("{} forecasts only available for future", mode);
                 return UnDefType.UNDEF;
             }
         }
@@ -399,7 +399,7 @@ public class SolcastObject implements SolarForecast {
     private QueryMode evalArguments(String[] args) {
         if (args.length > 0) {
             if (args.length > 1) {
-                logger.debug("Too many arguments {}", Arrays.toString(args));
+                logger.info("Too many arguments {}", Arrays.toString(args));
                 return QueryMode.Error;
             }
 
@@ -408,7 +408,7 @@ public class SolcastObject implements SolarForecast {
             } else if (SolarForecast.PESSIMISTIC.equals(args[0])) {
                 return QueryMode.Pessimistic;
             } else {
-                logger.debug("Argument {} not supported", args[0]);
+                logger.info("Argument {} not supported", args[0]);
                 return QueryMode.Error;
             }
         } else {

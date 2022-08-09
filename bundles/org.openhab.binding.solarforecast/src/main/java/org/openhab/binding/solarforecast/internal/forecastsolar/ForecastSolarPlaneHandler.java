@@ -143,9 +143,8 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
 
                                 LocalDateTime.now().plusMinutes(configuration.get().refreshInterval));
                         setForecast(localForecast);
-                        logger.debug("{} Fetched data {}", thing.getLabel(), forecast.toString());
-                        logger.debug("{} {} HTTP errors since last successful update", thing.getLabel(),
-                                failureCounter);
+                        logger.debug("Fetched new data. {} {} HTTP errors since last successful update",
+                                thing.getLabel(), failureCounter);
                         failureCounter = 0;
                         updateState(CHANNEL_RAW, StringType.valueOf(cr.getContentAsString()));
                     } else {
@@ -156,7 +155,7 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
                     logger.debug("{} Call {} failed {}", thing.getLabel(), url, e.getMessage());
                 }
             } else {
-                logger.debug("{} use available forecast {}", thing.getLabel(), forecast);
+                logger.trace("{} use available forecast", thing.getLabel());
             }
             updateChannels(forecast);
         } else {
