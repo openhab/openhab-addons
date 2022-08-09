@@ -13,12 +13,12 @@ Supported Services
 
 Display Forecast *Power values* and measures of *PV innverter* item
 
-<img src="./doc/SolcastPower.png" width="400" height="250"/>
+<img src="./doc/SolcastPower.png" width="640" height="400"/>
 
 Display added up values during the day of *Forecast* and *PV inverter* item.
 Yellow line shows *Daily Total Forecast*.
 
-<img src="./doc/SolcastCumulated.png" width="400" height="250"/>
+<img src="./doc/SolcastCumulated.png" width="640" height="400"/>
 
 ## Supported Things
 
