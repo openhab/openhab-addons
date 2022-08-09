@@ -31,6 +31,7 @@ import org.openhab.binding.solarforecast.internal.actions.SolarForecast;
 import org.openhab.binding.solarforecast.internal.actions.SolarForecastActions;
 import org.openhab.binding.solarforecast.internal.actions.SolarForecastProvider;
 import org.openhab.binding.solarforecast.internal.solcast.SolcastObject.QueryMode;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -49,14 +50,16 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarForecastProvider {
-
     private final Logger logger = LoggerFactory.getLogger(SolcastBridgeHandler.class);
+    private final TimeZoneProvider timeZoneProvider;
+
     private List<SolcastPlaneHandler> parts = new ArrayList<SolcastPlaneHandler>();
     private Optional<SolcastBridgeConfiguration> configuration = Optional.empty();
     private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
 
-    public SolcastBridgeHandler(Bridge bridge) {
+    public SolcastBridgeHandler(Bridge bridge, TimeZoneProvider tzp) {
         super(bridge);
+        timeZoneProvider = tzp;
         logger.debug("{} Constructor", bridge.getLabel());
     }
 
@@ -118,7 +121,7 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
             logger.debug("No PV plane defined yet");
             return;
         }
-        ZonedDateTime now = ZonedDateTime.now(SolcastConstants.zonedId);
+        ZonedDateTime now = ZonedDateTime.now(timeZoneProvider.getTimeZone());
         double actualSum = 0;
         double actualPowerSum = 0;
         double remainSum = 0;

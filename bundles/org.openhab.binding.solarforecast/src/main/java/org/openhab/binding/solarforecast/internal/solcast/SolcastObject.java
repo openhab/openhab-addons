@@ -28,6 +28,7 @@ import org.json.JSONObject;
 import org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants;
 import org.openhab.binding.solarforecast.internal.Utils;
 import org.openhab.binding.solarforecast.internal.actions.SolarForecast;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
@@ -47,6 +48,7 @@ public class SolcastObject implements SolarForecast {
     private final TreeMap<LocalDate, TreeMap<ZonedDateTime, Double>> estimationDataMap = new TreeMap<LocalDate, TreeMap<ZonedDateTime, Double>>();
     private final TreeMap<LocalDate, TreeMap<ZonedDateTime, Double>> optimisticDataMap = new TreeMap<LocalDate, TreeMap<ZonedDateTime, Double>>();
     private final TreeMap<LocalDate, TreeMap<ZonedDateTime, Double>> pessimisticDataMap = new TreeMap<LocalDate, TreeMap<ZonedDateTime, Double>>();
+    private final TimeZoneProvider timeZoneProvider;
 
     private Optional<JSONObject> rawData = Optional.of(new JSONObject());
     private ZonedDateTime expirationDateTime;
@@ -70,13 +72,15 @@ public class SolcastObject implements SolarForecast {
         }
     }
 
-    public SolcastObject() {
+    public SolcastObject(TimeZoneProvider tzp) {
         // invalid forecast object
-        expirationDateTime = ZonedDateTime.now(SolcastConstants.zonedId);
+        timeZoneProvider = tzp;
+        expirationDateTime = ZonedDateTime.now(timeZoneProvider.getTimeZone());
     }
 
-    public SolcastObject(String content, ZonedDateTime expiration) {
+    public SolcastObject(String content, ZonedDateTime expiration, TimeZoneProvider tzp) {
         expirationDateTime = expiration;
+        timeZoneProvider = tzp;
         add(content);
     }
 
@@ -141,7 +145,7 @@ public class SolcastObject implements SolarForecast {
     public boolean isValid() {
         if (valid) {
             if (!estimationDataMap.isEmpty()) {
-                if (expirationDateTime.isAfter(ZonedDateTime.now(SolcastConstants.zonedId))) {
+                if (expirationDateTime.isAfter(ZonedDateTime.now(timeZoneProvider.getTimeZone()))) {
                     return true;
                 } else {
                     logger.debug("Forecast data expired");
@@ -267,9 +271,9 @@ public class SolcastObject implements SolarForecast {
         return rawData.get().toString();
     }
 
-    public static ZonedDateTime getZdtFromUTC(String utc) {
+    public ZonedDateTime getZdtFromUTC(String utc) {
         Instant timestamp = Instant.parse(utc);
-        return timestamp.atZone(SolcastConstants.zonedId);
+        return timestamp.atZone(timeZoneProvider.getTimeZone());
     }
 
     private TreeMap<ZonedDateTime, Double> getDataMap(LocalDate ld, QueryMode mode) {
@@ -330,8 +334,8 @@ public class SolcastObject implements SolarForecast {
                 return UnDefType.UNDEF;
             }
         }
-        ZonedDateTime zdtBegin = localDateTimeBegin.atZone(SolcastConstants.zonedId);
-        ZonedDateTime zdtEnd = localDateTimeEnd.atZone(SolcastConstants.zonedId);
+        ZonedDateTime zdtBegin = localDateTimeBegin.atZone(timeZoneProvider.getTimeZone());
+        ZonedDateTime zdtEnd = localDateTimeEnd.atZone(timeZoneProvider.getTimeZone());
         LocalDate beginDate = zdtBegin.toLocalDate();
         LocalDate endDate = zdtEnd.toLocalDate();
         double measure = UNDEF;
@@ -369,7 +373,7 @@ public class SolcastObject implements SolarForecast {
             }
         }
 
-        ZonedDateTime zdt = queryDateTime.atZone(SolcastConstants.zonedId);
+        ZonedDateTime zdt = queryDateTime.atZone(timeZoneProvider.getTimeZone());
         double measure = getActualPowerValue(zdt, mode);
         return Utils.getPowerState(measure);
     }

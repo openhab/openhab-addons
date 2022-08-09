@@ -39,6 +39,7 @@ import org.openhab.binding.solarforecast.internal.actions.SolarForecast;
 import org.openhab.binding.solarforecast.internal.actions.SolarForecastActions;
 import org.openhab.binding.solarforecast.internal.actions.SolarForecastProvider;
 import org.openhab.binding.solarforecast.internal.solcast.SolcastObject.QueryMode;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.library.types.DecimalType;
@@ -74,19 +75,23 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
     private final Logger logger = LoggerFactory.getLogger(SolcastPlaneHandler.class);
     private final HttpClient httpClient;
     private final ItemRegistry itemRegistry;
+    private final TimeZoneProvider timeZoneProvider;
     private Optional<SolcastPlaneConfiguration> configuration = Optional.empty();
     private Optional<SolcastBridgeHandler> bridgeHandler = Optional.empty();
     private Optional<Item> powerItem = Optional.empty();
     private Optional<QueryablePersistenceService> persistenceService;
-    private SolcastObject forecast = new SolcastObject();
+    private SolcastObject forecast;
     private ZonedDateTime nextMeasurement;
 
-    public SolcastPlaneHandler(Thing thing, HttpClient hc, Optional<QueryablePersistenceService> qps, ItemRegistry ir) {
+    public SolcastPlaneHandler(Thing thing, HttpClient hc, Optional<QueryablePersistenceService> qps, ItemRegistry ir,
+            TimeZoneProvider tzp) {
         super(thing);
         httpClient = hc;
         persistenceService = qps;
         itemRegistry = ir;
-        nextMeasurement = Utils.getNextTimeframe(ZonedDateTime.now(SolcastConstants.zonedId));
+        timeZoneProvider = tzp;
+        forecast = new SolcastObject(timeZoneProvider);
+        nextMeasurement = Utils.getNextTimeframe(ZonedDateTime.now(timeZoneProvider.getTimeZone()));
         logger.debug("{} Constructor", thing.getLabel());
     }
 
@@ -167,7 +172,8 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
                 ContentResponse crEstimate = estimateRequest.send();
                 if (crEstimate.getStatus() == 200) {
                     SolcastObject localForecast = new SolcastObject(crEstimate.getContentAsString(), ZonedDateTime
-                            .now(SolcastConstants.zonedId).plusMinutes(configuration.get().refreshInterval));
+                            .now(timeZoneProvider.getTimeZone()).plusMinutes(configuration.get().refreshInterval),
+                            timeZoneProvider);
                     logger.trace("{} Fetched data {}", thing.getLabel(), localForecast.toString());
 
                     // get forecast
@@ -194,7 +200,7 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
             logger.debug("{} use available forecast {}", thing.getLabel(), forecast);
         }
         updateChannels(forecast);
-        if (ZonedDateTime.now(SolcastConstants.zonedId).isAfter(nextMeasurement)) {
+        if (ZonedDateTime.now(timeZoneProvider.getTimeZone()).isAfter(nextMeasurement)) {
             sendMeasure();
         }
         return forecast;
@@ -291,11 +297,11 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
             }
         }
         updateState(CHANNEL_RAW_TUNING, updateState);
-        nextMeasurement = Utils.getNextTimeframe(ZonedDateTime.now(SolcastConstants.zonedId));
+        nextMeasurement = Utils.getNextTimeframe(ZonedDateTime.now(timeZoneProvider.getTimeZone()));
     }
 
     private void updateChannels(SolcastObject f) {
-        ZonedDateTime now = ZonedDateTime.now(SolcastConstants.zonedId);
+        ZonedDateTime now = ZonedDateTime.now(timeZoneProvider.getTimeZone());
         updateState(CHANNEL_ACTUAL, Utils.getEnergyState(f.getActualValue(now, QueryMode.Estimation)));
         updateState(CHANNEL_ACTUAL_POWER, Utils.getEnergyState(f.getActualPowerValue(now, QueryMode.Estimation)));
         updateState(CHANNEL_REMAINING, Utils.getEnergyState(f.getRemainingProduction(now, QueryMode.Estimation)));

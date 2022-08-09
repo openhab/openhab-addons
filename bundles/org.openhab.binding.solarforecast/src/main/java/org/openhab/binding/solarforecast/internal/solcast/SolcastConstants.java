@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.solarforecast.internal.solcast;
 
-import java.time.ZoneId;
-
 import javax.measure.Unit;
 import javax.measure.quantity.Power;
 
@@ -36,7 +34,6 @@ public class SolcastConstants {
     public static final String BEARER = "Bearer ";
 
     public static final Unit<Power> KILOWATT_UNIT = MetricPrefix.KILO(Units.WATT);
-    public static ZoneId zonedId = ZoneId.systemDefault();
 
     public static final double UNDEF_DOUBLE = -1.0;
 }

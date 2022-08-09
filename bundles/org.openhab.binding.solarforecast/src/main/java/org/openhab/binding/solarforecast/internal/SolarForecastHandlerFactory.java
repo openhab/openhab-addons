@@ -22,7 +22,6 @@ import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.solarforecast.internal.forecastsolar.ForecastSolarBridgeHandler;
 import org.openhab.binding.solarforecast.internal.forecastsolar.ForecastSolarPlaneHandler;
 import org.openhab.binding.solarforecast.internal.solcast.SolcastBridgeHandler;
-import org.openhab.binding.solarforecast.internal.solcast.SolcastConstants;
 import org.openhab.binding.solarforecast.internal.solcast.SolcastPlaneHandler;
 import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
@@ -54,6 +53,7 @@ import org.slf4j.LoggerFactory;
 @Component(configurationPid = "binding.solarforecast", service = ThingHandlerFactory.class)
 public class SolarForecastHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(SolarForecastHandlerFactory.class);
+    private final TimeZoneProvider timeZoneProvider;
     private final ItemRegistry itemRegistry;
     private final HttpClient httpClient;
     private final PointType location;
@@ -65,7 +65,7 @@ public class SolarForecastHandlerFactory extends BaseThingHandlerFactory {
             final @Reference PersistenceServiceRegistry psr, final @Reference ItemRegistry ir,
             final @Reference TimeZoneProvider tzp) {
         itemRegistry = ir;
-        SolcastConstants.zonedId = tzp.getTimeZone();
+        timeZoneProvider = tzp;
         httpClient = hcf.getCommonHttpClient();
         PointType pt = lp.getLocation();
         if (pt != null) {
@@ -95,9 +95,9 @@ public class SolarForecastHandlerFactory extends BaseThingHandlerFactory {
         } else if (FORECAST_SOLAR_PART_STRING.equals(thingTypeUID)) {
             return new ForecastSolarPlaneHandler(thing, httpClient);
         } else if (SOLCAST_BRIDGE_STRING.equals(thingTypeUID)) {
-            return new SolcastBridgeHandler((Bridge) thing);
+            return new SolcastBridgeHandler((Bridge) thing, timeZoneProvider);
         } else if (SOLCAST_PART_STRING.equals(thingTypeUID)) {
-            return new SolcastPlaneHandler(thing, httpClient, qps, itemRegistry);
+            return new SolcastPlaneHandler(thing, httpClient, qps, itemRegistry, timeZoneProvider);
         }
         return null;
     }
