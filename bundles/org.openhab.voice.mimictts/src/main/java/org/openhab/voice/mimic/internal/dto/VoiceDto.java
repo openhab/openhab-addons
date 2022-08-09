@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Mimic Voice DTO.
@@ -28,5 +29,6 @@ public class VoiceDto {
     public String key = "UNDEFINED";
     public String language = "UNDEFINED";
     public String name = "UNDEFINED";
+    @Nullable
     public List<String> speakers = new ArrayList<>();
 }
