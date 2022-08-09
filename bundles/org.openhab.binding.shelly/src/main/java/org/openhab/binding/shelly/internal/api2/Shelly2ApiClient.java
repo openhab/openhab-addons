@@ -184,8 +184,9 @@ public class Shelly2ApiClient extends ShellyHttpClient {
     private boolean updateCommonStatus(ShellySettingsStatus status, boolean channelUpdate) throws ShellyApiException {
         boolean updated = false;
         if (channelUpdate) {
-            ShellyComponents.updateMeters(getThing(), status);
-            updated |= updateSensors(getThing(), status);
+            ShellyThingInterface thing = getThing();
+            updated |= ShellyComponents.updateMeters(thing, status);
+            updated |= updateSensors(thing, status);
         }
         return updated;
     }
@@ -450,24 +451,24 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         if (is == null) {
             return false;
         }
-        if (is.id == null || is.id > getProfile().numInputs) {
+        ShellyDeviceProfile profile = getProfile();
+        if (is.id == null || is.id > profile.numInputs) {
             logger.debug("{}: Invalid input id: {}", thingName, is.id);
             return false;
         }
 
-        String group = getProfile().getInputGroup(is.id);
+        String group = profile.getInputGroup(is.id);
         ShellyInputState input = relayStatus.inputs.size() > is.id ? relayStatus.inputs.get(is.id)
                 : new ShellyInputState();
         boolean updated = false;
         input.input = getBool(is.state) ? 1 : 0; // old format Integer, new one Boolean
-        if (input.event == null && getProfile().inButtonMode(is.id)) {
+        if (input.event == null && profile.inButtonMode(is.id)) {
             input.event = "";
             input.eventCount = 0;
         }
         relayStatus.inputs.set(is.id, input);
         if (updateChannels) {
-            updated |= updateChannel(group, CHANNEL_INPUT + getProfile().getInputSuffix(is.id),
-                    getOnOff(getBool(is.state)));
+            updated |= updateChannel(group, CHANNEL_INPUT + profile.getInputSuffix(is.id), getOnOff(getBool(is.state)));
         }
         return updated;
     }
@@ -523,6 +524,6 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         if (thing != null) {
             return thing.getProfile();
         }
-        throw new ShellyApiException("Thing/profile not initialized!");
+        throw new ShellyApiException("Unable to get profile, thing not initialized!");
     }
 }

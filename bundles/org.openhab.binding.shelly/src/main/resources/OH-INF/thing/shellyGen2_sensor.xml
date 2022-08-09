@@ -9,13 +9,13 @@
 		<description>@text/thing-type.shelly.shellypludht.description</description>
 		<category>Sensor</category>
 		<channel-groups>
-			<channel-group id="sensors" typeId="sensorData" />
-			<channel-group id="battery" typeId="batteryStatus" />
-			<channel-group id="device" typeId="deviceStatus" />
+			<channel-group id="sensors" typeId="sensorData"/>
+			<channel-group id="battery" typeId="batteryStatus"/>
+			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
-		<config-description-ref uri="thing-type:shelly:battery-gen2" />
+		<config-description-ref uri="thing-type:shelly:battery-gen2"/>
 	</thing-type>
 
 </thing:thing-descriptions>

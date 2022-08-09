@@ -266,7 +266,6 @@ public class Shelly1ApiJsonDTO {
         public String fw;
         public Boolean auth;
         public Integer gen;
-
         public String coiot;
         public Integer longid;
 
