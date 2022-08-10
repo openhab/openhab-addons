@@ -1307,13 +1307,10 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                     resultString = title;
                     if (currentTrack != null) {
                         String[] contents = currentTrack.getStreamContent().split("\\|");
-                        String songTitle = null;
+                        String contentTitle = null;
                         for (int i = 0; i < contents.length; i++) {
                             if (contents[i].startsWith("TITLE ")) {
-                                String val = contents[i].substring(6).trim();
-                                if (!val.startsWith("Advertisement_")) {
-                                    songTitle = val;
-                                }
+                                contentTitle = contents[i].substring(6).trim();
                             }
                             if (contents[i].startsWith("ARTIST ")) {
                                 artist = contents[i].substring(7).trim();
@@ -1322,14 +1319,26 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                                 album = contents[i].substring(6).trim();
                             }
                         }
+                        if ((artist == null || artist.isEmpty()) && contentTitle != null && !contentTitle.isEmpty()
+                                && !contentTitle.startsWith("Advertisement_")) {
+                            // Try to extract artist and song title from contentTitle
+                            int idx = contentTitle.indexOf(" - ");
+                            if (idx > 0) {
+                                artist = contentTitle.substring(0, idx);
+                                title = contentTitle.substring(idx + 3);
+                            }
+                        }
                         if (artist != null && !artist.isEmpty()) {
                             resultString += " - " + artist;
                         }
                         if (album != null && !album.isEmpty()) {
                             resultString += " - " + album;
                         }
-                        if (songTitle != null && !songTitle.isEmpty()) {
-                            resultString += " - " + songTitle;
+                        if (!title.equals(currentUriMetaData.getTitle())) {
+                            resultString += " - " + title;
+                        } else if (contentTitle != null && !contentTitle.isEmpty()
+                                && !contentTitle.startsWith("Advertisement_")) {
+                            resultString += " - " + contentTitle;
                         }
                     }
                     needsUpdating = true;
