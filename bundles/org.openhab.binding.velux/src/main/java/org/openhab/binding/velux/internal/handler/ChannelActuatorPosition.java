@@ -175,7 +175,7 @@ final class ChannelActuatorPosition extends ChannelHandlerTemplate {
                         if (statusReply.isCriticalError()) {
                             LOGGER.warn("Product Id:{} encountered an error with StatusReply:{}", id, statusReply);
                         } else {
-                            LOGGER.debug("Product Id:{} encountered an error with StatusReply:{}", id, statusReply);
+                            LOGGER.info("Product Id:{} encountered an error with StatusReply:{}", id, statusReply);
                         }
                     }
                 default:
