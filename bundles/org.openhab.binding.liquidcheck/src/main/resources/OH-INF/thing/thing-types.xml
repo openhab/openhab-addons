@@ -9,13 +9,20 @@
 		<description></description>
 		<category>Sensor</category>
 
-		<channels>
-			<channel id="content" typeId="content-channel"/>
-			<channel id="raw-content" typeId="raw-content-channel"/>
-			<channel id="level" typeId="level-channel"/>
-			<channel id="raw-level" typeId="raw-level-channel"/>
-			<channel id="measure" typeId="measure-channel"/>
-		</channels>
+		<channel-groups>
+			<channel-group id="data" typeId="data-group">
+				<label>Data</label>
+			</channel-group>
+			<channel-group id="raw-data" typeId="raw-data-group">
+				<label>Raw data</label>
+			</channel-group>
+			<channel-group id="pump" typeId="pump-group">
+				<label>Pump</label>
+			</channel-group>
+			<channel-group id="mesure" typeId="measure-group">
+				<label>Measure</label>
+			</channel-group>
+		</channel-groups>
 
 		<properties>
 			<property name="firmware">Firmware</property>
@@ -54,6 +61,37 @@
 		</config-description>
 	</thing-type>
 
+	<channel-group-type id="data-group">
+		<label>data-group</label>
+		<channels>
+			<channel id="content" typeId="content-channel"/>
+			<channel id="level" typeId="level-channel"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="raw-data-group">
+		<label>raw-data-group</label>
+		<channels>
+			<channel id="raw-content" typeId="raw-content-channel"/>
+			<channel id="raw-level" typeId="raw-level-channel"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="pump-group">
+		<label>pump-group</label>
+		<channels>
+			<channel id="pump-runs" typeId="pump-runs-channel"></channel>
+			<channel id="pump-runtime" typeId="pump-runtime-channel"></channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="measure-group">
+		<label>measure-group</label>
+		<channels>
+			<channel id="measure" typeId="measure-channel"/>
+		</channels>
+	</channel-group-type>
+
 
 	<channel-type id="content-channel">
 		<item-type>Number:Volume</item-type>
@@ -63,7 +101,7 @@
 	</channel-type>
 	<channel-type id="raw-content-channel">
 		<item-type>Number:Volume</item-type>
-		<label>Content</label>
+		<label>Content raw data</label>
 		<description>Content in the container</description>
 		<state readOnly="true" pattern="%.4f l"></state>
 	</channel-type>
@@ -75,7 +113,7 @@
 	</channel-type>
 	<channel-type id="raw-level-channel">
 		<item-type>Number:Length</item-type>
-		<label>Level</label>
+		<label>Level raw data</label>
 		<description>Level in the container</description>
 		<state readOnly="true" pattern="%.4f m"></state>
 	</channel-type>
@@ -83,5 +121,15 @@
 		<kind>trigger</kind>
 		<label>Measure</label>
 		<description>Triggers a measurement</description>
+	</channel-type>
+	<channel-type id="pump-runs-channel">
+		<item-type>Number</item-type>
+		<label>Pump total runs</label>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="pump-runtime-channel">
+		<item-type>Number:Time</item-type>
+		<label>Pump total runtime</label>
+		<state readOnly="true" pattern="%i s"></state>
 	</channel-type>
 </thing:thing-descriptions>

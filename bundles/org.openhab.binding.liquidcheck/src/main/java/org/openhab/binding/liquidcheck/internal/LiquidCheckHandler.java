@@ -25,6 +25,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.liquidcheck.internal.httpClient.LiquidCheckHttpClient;
 import org.openhab.binding.liquidcheck.internal.json.Response;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
@@ -172,7 +173,11 @@ public class LiquidCheckHandler extends BaseThingHandler {
                     updateState(LEVEL_CHANNEL, new QuantityType<>(response.payload.measure.level, SIUnits.METRE));
                     updateState(RAW_CONTENT_CHANNEL,
                             new QuantityType<>(response.payload.measure.raw.content, Units.LITRE));
-                    updateState(RAW_LEVEL_CHANNEL, new QuantityType<>(response.payload.measure.raw.level, Units.LITRE));
+                    updateState(RAW_LEVEL_CHANNEL,
+                            new QuantityType<>(response.payload.measure.raw.level, SIUnits.METRE));
+                    updateState(PUMP_TOTAL_RUNS_CHANNEL, new DecimalType(response.payload.system.pump.totalRuns));
+                    updateState(PUMP_TOTAl_RUNTIME_CHANNEL,
+                            new QuantityType<>(response.payload.system.pump.totalRuntime, Units.SECOND));
                 } else {
                     logger.debug("Json is null");
                 }
