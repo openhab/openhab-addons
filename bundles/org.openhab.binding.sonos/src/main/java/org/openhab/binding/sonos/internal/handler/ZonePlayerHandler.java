@@ -1229,18 +1229,13 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         SonosMetaData currentTrack = getTrackMetadata();
         SonosMetaData currentUriMetaData = getCurrentURIMetadata();
 
-        String artist = null;
-        String album = null;
-        String title = null;
-        String resultString = null;
-        String stationID = null;
-        boolean needsUpdating = false;
+        ResultMediaParsing resultParsing = new ResultMediaParsing();
 
         // if currentURI == null, we do nothing
         if (currentURI != null) {
             if (currentURI.isEmpty()) {
                 // Reset data
-                needsUpdating = true;
+                resultParsing = new ResultMediaParsing(true);
             }
 
             // if (currentURI.contains(GROUP_URI)) we do nothing, because
@@ -1250,118 +1245,33 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
 
             else if (isPlayingStream(currentURI) || isPlayingRadioStartedByAmazonEcho(currentURI)) {
                 // Radio stream (tune-in)
-                boolean opmlUrlSucceeded = false;
-                stationID = extractStationId(currentURI);
-                String url = opmlUrl;
-                if (url != null) {
-                    String mac = getMACAddress();
-                    if (stationID != null && !stationID.isEmpty() && mac != null && !mac.isEmpty()) {
-                        url = url.replace("%id", stationID);
-                        url = url.replace("%serial", mac);
-
-                        String response = null;
-                        try {
-                            response = HttpUtil.executeUrl("GET", url, SOCKET_TIMEOUT);
-                        } catch (IOException e) {
-                            logger.debug("Request to device failed", e);
-                        }
-
-                        if (response != null) {
-                            List<String> fields = SonosXMLParser.getRadioTimeFromXML(response);
-
-                            if (!fields.isEmpty()) {
-                                opmlUrlSucceeded = true;
-
-                                resultString = "";
-                                for (String field : fields) {
-                                    if (resultString.isEmpty()) {
-                                        // radio name should be first field
-                                        title = field;
-                                    } else {
-                                        resultString += " - ";
-                                    }
-                                    resultString += field;
-                                }
-
-                                needsUpdating = true;
-                            }
-                        }
-                    }
-                }
-                if (!opmlUrlSucceeded) {
-                    if (currentUriMetaData != null) {
-                        title = currentUriMetaData.getTitle();
-                        if (currentTrack == null || currentTrack.getStreamContent().isEmpty()) {
-                            resultString = title;
-                        } else {
-                            resultString = title + " - " + currentTrack.getStreamContent();
-                        }
-                        needsUpdating = true;
-                    }
-                }
+                resultParsing = parseTuneInMediaInfo(currentURI,
+                        currentUriMetaData != null ? currentUriMetaData.getTitle() : null,
+                        currentTrack != null ? currentTrack.getStreamContent() : null);
             }
 
             else if (isPlayingRadioApp(currentURI)) {
-                if (currentUriMetaData != null) {
-                    title = currentUriMetaData.getTitle();
-                    resultString = title;
-                    if (currentTrack != null) {
-                        String[] contents = currentTrack.getStreamContent().split("\\|");
-                        String contentTitle = null;
-                        for (int i = 0; i < contents.length; i++) {
-                            if (contents[i].startsWith("TITLE ")) {
-                                contentTitle = contents[i].substring(6).trim();
-                            }
-                            if (contents[i].startsWith("ARTIST ")) {
-                                artist = contents[i].substring(7).trim();
-                            }
-                            if (contents[i].startsWith("ALBUM ")) {
-                                album = contents[i].substring(6).trim();
-                            }
-                        }
-                        if ((artist == null || artist.isEmpty()) && contentTitle != null && !contentTitle.isEmpty()
-                                && !contentTitle.startsWith("Advertisement_")) {
-                            // Try to extract artist and song title from contentTitle
-                            int idx = contentTitle.indexOf(" - ");
-                            if (idx > 0) {
-                                artist = contentTitle.substring(0, idx);
-                                title = contentTitle.substring(idx + 3);
-                            }
-                        }
-                        if (artist != null && !artist.isEmpty()) {
-                            resultString += " - " + artist;
-                        }
-                        if (album != null && !album.isEmpty()) {
-                            resultString += " - " + album;
-                        }
-                        if (!title.equals(currentUriMetaData.getTitle())) {
-                            resultString += " - " + title;
-                        } else if (contentTitle != null && !contentTitle.isEmpty()
-                                && !contentTitle.startsWith("Advertisement_")) {
-                            resultString += " - " + contentTitle;
-                        }
-                    }
-                    needsUpdating = true;
-                }
+                resultParsing = parseRadioAppMediaInfo(
+                        currentUriMetaData != null ? currentUriMetaData.getTitle() : null,
+                        currentTrack != null ? currentTrack.getStreamContent() : null);
             }
 
             else if (isPlayingLineIn(currentURI)) {
                 if (currentTrack != null) {
-                    title = currentTrack.getTitle();
-                    resultString = title;
-                    needsUpdating = true;
+                    String title = currentTrack.getTitle();
+                    resultParsing = new ResultMediaParsing(null, null, title, title, null, true);
                 }
             }
 
             else if (isPlayingRadio(currentURI)
                     || (!currentURI.contains("x-rincon-mp3") && !currentURI.contains("x-sonosapi"))) {
                 if (currentTrack != null) {
-                    artist = !currentTrack.getAlbumArtist().isEmpty() ? currentTrack.getAlbumArtist()
+                    String artist = !currentTrack.getAlbumArtist().isEmpty() ? currentTrack.getAlbumArtist()
                             : currentTrack.getCreator();
-                    album = currentTrack.getAlbum();
-                    title = currentTrack.getTitle();
-                    resultString = artist + " - " + album + " - " + title;
-                    needsUpdating = true;
+                    String album = currentTrack.getAlbum();
+                    String title = currentTrack.getTitle();
+                    resultParsing = new ResultMediaParsing(artist, album, title, artist + " - " + album + " - " + title,
+                            null, true);
                 }
             }
         }
@@ -1379,16 +1289,21 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                             && hasValueChanged(albumArtURI, memberHandler.stateMap.get("CurrentAlbumArtURI"))) {
                         handlerForImageUpdate = memberHandler;
                     }
-                    memberHandler.onValueReceived("CurrentTuneInStationId", (stationID != null) ? stationID : "",
+                    String station = resultParsing.getStationId();
+                    memberHandler.onValueReceived("CurrentTuneInStationId", (station != null) ? station : "",
                             SERVICE_AV_TRANSPORT);
-                    if (needsUpdating) {
+                    if (resultParsing.needsUpdate()) {
+                        String artist = resultParsing.getArtist();
+                        String album = resultParsing.getAlbum();
+                        String title = resultParsing.getTitle();
+                        String info = resultParsing.getInformation();
                         memberHandler.onValueReceived("CurrentArtist", (artist != null) ? artist : "",
                                 SERVICE_AV_TRANSPORT);
                         memberHandler.onValueReceived("CurrentAlbum", (album != null) ? album : "",
                                 SERVICE_AV_TRANSPORT);
                         memberHandler.onValueReceived("CurrentTitle", (title != null) ? title : "",
                                 SERVICE_AV_TRANSPORT);
-                        memberHandler.onValueReceived("CurrentURIFormatted", (resultString != null) ? resultString : "",
+                        memberHandler.onValueReceived("CurrentURIFormatted", (info != null) ? info : "",
                                 SERVICE_AV_TRANSPORT);
                         memberHandler.onValueReceived("CurrentAlbumArtURI", albumArtURI, SERVICE_AV_TRANSPORT);
                     }
@@ -1397,9 +1312,116 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                 logger.debug("Cannot update media data for group member ({})", e.getMessage());
             }
         }
-        if (needsUpdating && handlerForImageUpdate != null) {
+        if (resultParsing.needsUpdate() && handlerForImageUpdate != null) {
             handlerForImageUpdate.updateAlbumArtChannel(true);
         }
+    }
+
+    private ResultMediaParsing parseTuneInMediaInfo(String uri, @Nullable String radioTitle,
+            @Nullable String trackStreamContent) {
+        String title = null;
+        String information = null;
+        String stationId = extractStationId(uri);
+        boolean needsUpdate = false;
+        boolean opmlUrlSucceeded = false;
+        String url = opmlUrl;
+        if (url != null) {
+            String mac = getMACAddress();
+            if (stationId != null && !stationId.isEmpty() && mac != null && !mac.isEmpty()) {
+                url = url.replace("%id", stationId);
+                url = url.replace("%serial", mac);
+
+                String response = null;
+                try {
+                    response = HttpUtil.executeUrl("GET", url, SOCKET_TIMEOUT);
+                } catch (IOException e) {
+                    logger.debug("Request to device failed", e);
+                }
+
+                if (response != null) {
+                    List<String> fields = SonosXMLParser.getRadioTimeFromXML(response);
+
+                    if (!fields.isEmpty()) {
+                        opmlUrlSucceeded = true;
+
+                        information = "";
+                        for (String field : fields) {
+                            if (information.isEmpty()) {
+                                // radio name should be first field
+                                title = field;
+                            } else {
+                                information += " - ";
+                            }
+                            information += field;
+                        }
+
+                        needsUpdate = true;
+                    }
+                }
+            }
+        }
+        if (!opmlUrlSucceeded) {
+            if (radioTitle != null && !radioTitle.isEmpty()) {
+                title = radioTitle;
+                information = title;
+                if (trackStreamContent != null && !trackStreamContent.isEmpty()) {
+                    information += " - " + trackStreamContent;
+                }
+                needsUpdate = true;
+            }
+        }
+        return new ResultMediaParsing(null, null, title, information, stationId, needsUpdate);
+    }
+
+    private ResultMediaParsing parseRadioAppMediaInfo(@Nullable String radioTitle,
+            @Nullable String trackStreamContent) {
+        String artist = null;
+        String album = null;
+        String title = null;
+        String information = null;
+        boolean needsUpdate = false;
+        if (radioTitle != null && !radioTitle.isEmpty()) {
+            title = radioTitle;
+            information = title;
+            if (trackStreamContent != null && !trackStreamContent.isEmpty()) {
+                String[] contents = trackStreamContent.split("\\|");
+                String contentTitle = null;
+                for (int i = 0; i < contents.length; i++) {
+                    if (contents[i].startsWith("TITLE ")) {
+                        contentTitle = contents[i].substring(6).trim();
+                    }
+                    if (contents[i].startsWith("ARTIST ")) {
+                        artist = contents[i].substring(7).trim();
+                    }
+                    if (contents[i].startsWith("ALBUM ")) {
+                        album = contents[i].substring(6).trim();
+                    }
+                }
+                if ((artist == null || artist.isEmpty()) && contentTitle != null && !contentTitle.isEmpty()
+                        && !contentTitle.startsWith("Advertisement_")) {
+                    // Try to extract artist and song title from contentTitle
+                    int idx = contentTitle.indexOf(" - ");
+                    if (idx > 0) {
+                        artist = contentTitle.substring(0, idx);
+                        title = contentTitle.substring(idx + 3);
+                    }
+                }
+                if (artist != null && !artist.isEmpty()) {
+                    information += " - " + artist;
+                }
+                if (album != null && !album.isEmpty()) {
+                    information += " - " + album;
+                }
+                if (!radioTitle.equals(title)) {
+                    information += " - " + title;
+                } else if (contentTitle != null && !contentTitle.isEmpty()
+                        && !contentTitle.startsWith("Advertisement_")) {
+                    information += " - " + contentTitle;
+                }
+            }
+            needsUpdate = true;
+        }
+        return new ResultMediaParsing(artist, album, title, information, null, needsUpdate);
     }
 
     private @Nullable String extractStationId(String uri) {
@@ -3430,4 +3452,55 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         }
         return null;
     }
+
+    private class ResultMediaParsing {
+        private @Nullable String artist;
+        private @Nullable String album;
+        private @Nullable String title;
+        private @Nullable String information;
+        private @Nullable String stationId;
+        private boolean needsUpdate;
+
+        public ResultMediaParsing() {
+            this(false);
+        }
+
+        public ResultMediaParsing(boolean needsUpdate) {
+            this(null, null, null, null, null, needsUpdate);
+        }
+
+        public ResultMediaParsing(@Nullable String artist, @Nullable String album, @Nullable String title,
+                @Nullable String information, @Nullable String stationId, boolean needsUpdate) {
+            this.artist = artist;
+            this.album = album;
+            this.title = title;
+            this.information = information;
+            this.stationId = stationId;
+            this.needsUpdate = needsUpdate;
+        }
+
+        public @Nullable String getArtist() {
+            return artist;
+        }
+
+        public @Nullable String getAlbum() {
+            return album;
+        }
+
+        public @Nullable String getTitle() {
+            return title;
+        }
+
+        public @Nullable String getInformation() {
+            return information;
+        }
+
+        public @Nullable String getStationId() {
+            return stationId;
+        }
+
+        public boolean needsUpdate() {
+            return needsUpdate;
+        }
+    };
 }
