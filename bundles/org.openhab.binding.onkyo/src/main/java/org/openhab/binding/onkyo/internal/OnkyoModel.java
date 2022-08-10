@@ -24,6 +24,7 @@ public enum OnkyoModel {
 
     // Please also add new supported models to README.md
 
+    HT_RC440("HT-RC440"),
     HT_RC560("HT-RC560"),
     TX_NR414("TX-NR414"),
     TX_NR474("TX-NR474"),
@@ -49,6 +50,7 @@ public enum OnkyoModel {
     TX_NR737("TX-NR737"),
     TX_NR747("TX-NR747"),
     TX_NR757("TX-NR757"),
+    TX_NR807("TX-NR807"),
     TX_NR809("TX-NR809"),
     TX_NR818("TX-NR818"),
     TX_NR828("TX-NR828"),

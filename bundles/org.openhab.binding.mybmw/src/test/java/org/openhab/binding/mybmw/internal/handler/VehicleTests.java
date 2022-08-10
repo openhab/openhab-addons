@@ -28,6 +28,8 @@ import org.openhab.binding.mybmw.internal.VehicleConfiguration;
 import org.openhab.binding.mybmw.internal.dto.StatusWrapper;
 import org.openhab.binding.mybmw.internal.util.FileReader;
 import org.openhab.binding.mybmw.internal.utils.Constants;
+import org.openhab.core.i18n.LocationProvider;
+import org.openhab.core.library.types.PointType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
@@ -57,10 +59,10 @@ public class VehicleTests {
     private static final int CHECK_AVAILABLE = 3;
     private static final int SERVICE_AVAILABLE = 3;
     private static final int SERVICE_EMPTY = 3;
-    private static final int LOCATION = 3;
+    private static final int LOCATION = 4;
     private static final int CHARGE_PROFILE = 44;
     private static final int TIRES = 8;
-
+    public static final PointType HOME_LOCATION = new PointType("54.321,9.876");
     @Nullable
     ArgumentCaptor<ChannelUID> channelCaptor;
     @Nullable
@@ -83,7 +85,9 @@ public class VehicleTests {
         Thing thing = mock(Thing.class);
         when(thing.getUID()).thenReturn(new ThingUID("testbinding", "test"));
         MyBMWCommandOptionProvider cop = mock(MyBMWCommandOptionProvider.class);
-        cch = new VehicleHandler(thing, cop, type);
+        LocationProvider locationProvider = mock(LocationProvider.class);
+        when(locationProvider.getLocation()).thenReturn(HOME_LOCATION);
+        cch = new VehicleHandler(thing, cop, locationProvider, type);
         VehicleConfiguration vc = new VehicleConfiguration();
         vc.vin = vin;
         Optional<VehicleConfiguration> ovc = Optional.of(vc);
@@ -332,9 +336,7 @@ public class VehicleTests {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(VehicleType.MILD_HYBRID.toString(), "anonymous");
         String content = FileReader.readFileInString("src/test/resources/responses/G21/340i.json");
-        assertTrue(testVehicle(content, 38, Optional.empty()));
-        // assertTrue(testVehicle(content,
-        // STATUS_CONV + DOORS + RANGE_CONV + SERVICE_AVAILABLE + CHECK_EMPTY + LOCATION + TIRES,
-        // Optional.empty()));
+        assertTrue(testVehicle(content,
+                STATUS_CONV + DOORS + RANGE_CONV + LOCATION + SERVICE_EMPTY + CHECK_EMPTY + TIRES, Optional.empty()));
     }
 }

@@ -23,29 +23,46 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public enum EventSubType {
-    SD_CARD_MISSING(List.of(EventType.SD), 1),
-    SD_CARD_INSERTED(List.of(EventType.SD), 2),
-    SD_CARD_FORMATTED(List.of(EventType.SD), 3),
-    SD_CARD_WORKING(List.of(EventType.SD), 4),
-    SD_CARD_DEFECTIVE(List.of(EventType.SD), 5),
-    SD_CARD_INCOMPATIBLE_SPEED(List.of(EventType.SD), 6),
-    SD_CARD_INSUFFICIENT_SPACE(List.of(EventType.SD), 7),
-    ALIM_INCORRECT_POWER(List.of(EventType.ALIM), 1),
-    ALIM_CORRECT_POWER(List.of(EventType.ALIM), 2),
+    // SD Card sub events
+    SD_CARD_MISSING(1, EventType.SD),
+    SD_CARD_INSERTED(2, EventType.SD),
+    SD_CARD_FORMATTED(3, EventType.SD),
+    SD_CARD_WORKING(4, EventType.SD),
+    SD_CARD_DEFECTIVE(5, EventType.SD),
+    SD_CARD_INCOMPATIBLE_SPEED(6, EventType.SD),
+    SD_CARD_INSUFFICIENT_SPACE(7, EventType.SD),
+
+    // Alimentation sub events
+    ALIM_INCORRECT_POWER(1, EventType.ALIM),
+    ALIM_CORRECT_POWER(2, EventType.ALIM),
+
+    // Smoke detector sub events
+    DETECTION_CHAMBER_CLEAN(0, EventType.DETECTION_CHAMBER_STATUS),
+    DETECTION_CHAMBER_DIRTY(1, EventType.DETECTION_CHAMBER_STATUS),
+    BATTERY_LOW(0, EventType.BATTERY_STATUS),
+    BATTERY_VERY_LOW(1, EventType.BATTERY_STATUS),
+    SMOKE_CLEARED(0, EventType.SMOKE),
+    SMOKE_DETECTED(1, EventType.SMOKE),
+    SOUND_TEST_OK(0, EventType.SOUND_TEST),
+    SOUND_TEST_ERROR(1, EventType.SOUND_TEST),
+    DETECTOR_READY(0, EventType.TAMPERED),
+    DETECTOR_TAMPERED(1, EventType.TAMPERED),
+    WIFI_STATUS_OK(1, EventType.WIFI_STATUS),
+    WIFI_STATUS_ERROR(0, EventType.WIFI_STATUS),
 
     // Artificially implemented by the binding subtypes
-    PERSON_ARRIVAL(List.of(EventType.PERSON, EventType.PERSON_HOME), 1),
-    PERSON_SEEN(List.of(EventType.PERSON), 2),
-    PERSON_DEPARTURE(List.of(EventType.PERSON_AWAY), 1),
-    MOVEMENT_HUMAN(List.of(EventType.MOVEMENT, EventType.HUMAN), 1),
-    MOVEMENT_VEHICLE(List.of(EventType.MOVEMENT), 2),
-    MOVEMENT_ANIMAL(List.of(EventType.MOVEMENT, EventType.ANIMAL), 3);
+    PERSON_ARRIVAL(1, EventType.PERSON, EventType.PERSON_HOME),
+    PERSON_SEEN(2, EventType.PERSON),
+    PERSON_DEPARTURE(1, EventType.PERSON_AWAY),
+    MOVEMENT_HUMAN(1, EventType.MOVEMENT, EventType.HUMAN),
+    MOVEMENT_VEHICLE(2, EventType.MOVEMENT),
+    MOVEMENT_ANIMAL(3, EventType.MOVEMENT, EventType.ANIMAL);
 
     public final List<EventType> types;
     public final int subType;
 
-    EventSubType(List<EventType> types, int i) {
-        this.types = types;
+    EventSubType(int i, EventType... types) {
+        this.types = List.of(types);
         this.subType = i;
     }
 }

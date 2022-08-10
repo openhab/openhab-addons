@@ -51,7 +51,7 @@ public class PersonCapability extends HomeSecurityThingCapability {
     public PersonCapability(CommonInterface handler, NetatmoDescriptionProvider descriptionProvider,
             List<ChannelHelper> channelHelpers) {
         super(handler, descriptionProvider, channelHelpers);
-        this.cameraChannelUID = new ChannelUID(thing.getUID(), GROUP_PERSON_EVENT, CHANNEL_EVENT_CAMERA_ID);
+        this.cameraChannelUID = new ChannelUID(thing.getUID(), GROUP_PERSON_LAST_EVENT, CHANNEL_EVENT_CAMERA_ID);
     }
 
     @Override
@@ -78,7 +78,7 @@ public class PersonCapability extends HomeSecurityThingCapability {
         EventType eventType = event.getEventType();
         ZonedDateTime localLast = lastEventTime;
         ZonedDateTime eventTime = event.getTime();
-        if ((localLast != null && !eventTime.isAfter(localLast)) || !eventType.appliesOn(ModuleType.PERSON)) {
+        if ((localLast != null && !eventTime.isAfter(localLast)) || !eventType.validFor(ModuleType.PERSON)) {
             return; // ignore incoming events if they are deprecated
         }
         lastEventTime = eventTime;

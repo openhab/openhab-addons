@@ -114,6 +114,7 @@ public class MyBMWConstants {
     public static final String GPS = "gps";
     public static final String HEADING = "heading";
     public static final String ADDRESS = "address";
+    public static final String HOME_DISTANCE = "home-distance";
 
     // Status
     public static final String DOORS = "doors";

@@ -127,10 +127,11 @@ public final class CreateBridgeServlet extends AbstractRedirectionServlet {
                 .withProperty(Thing.PROPERTY_MODEL_ID, MIELE_CLOUD_BRIDGE_NAME)
                 .withProperty(MieleCloudBindingConstants.CONFIG_PARAM_LOCALE, locale)
                 .withProperty(MieleCloudBindingConstants.CONFIG_PARAM_EMAIL, email).build();
-        if (inbox.add(result)) {
-            return pairBridge(bridgeUid);
-        } else {
+        if (thingRegistry.get(bridgeUid) != null) {
             return reconfigureBridge(bridgeUid);
+        } else {
+            inbox.add(result);
+            return pairBridge(bridgeUid);
         }
     }
 

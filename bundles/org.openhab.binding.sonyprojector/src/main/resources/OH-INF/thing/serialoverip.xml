@@ -46,15 +46,15 @@
 			<parameter name="host" type="text" required="true">
 				<context>network-address</context>
 				<label>Address</label>
-				<description>Host name or IP address of the machine connected to the projector</description>
+				<description>Host name or IP address of the machine connected to the projector.</description>
 			</parameter>
 			<parameter name="port" type="integer" required="true">
 				<label>Port</label>
-				<description>Communication port</description>
+				<description>Communication port.</description>
 			</parameter>
 			<parameter name="model" type="text" required="true">
 				<label>Model</label>
-				<description>Projector model to be controlled</description>
+				<description>Projector model to be controlled.</description>
 				<limitToOptions>true</limitToOptions>
 				<options>
 					<option value="VPL-HW10">VPL-HW10</option>

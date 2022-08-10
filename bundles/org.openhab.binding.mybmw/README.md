@@ -339,12 +339,12 @@ GPS location and heading of the vehicle.
 * Available for all vehicles with built-in GPS sensor. Function can be enabled/disabled in the head unit
 * Read-only values
 
-| Channel Label   | Channel ID          | Type         | 
-|-----------------|---------------------|--------------|
-| GPS Coordinates | gps                 | Location     | 
-| Heading         | heading             | Number:Angle | 
-| Address         | address             | String       | 
-
+| Channel Label       | Channel ID          | Type          | 
+|---------------------|---------------------|---------------|
+| GPS Coordinates     | gps                 | Location      | 
+| Heading             | heading             | Number:Angle  | 
+| Address             | address             | String        | 
+| Distance from Home  | home-distance       | Number:Length | 
 
 #### Remote Services
 

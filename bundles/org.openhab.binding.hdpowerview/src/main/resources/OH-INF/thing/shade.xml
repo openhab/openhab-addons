@@ -23,6 +23,14 @@
 			<channel id="batteryLevel" typeId="system.battery-level"/>
 			<channel id="batteryVoltage" typeId="battery-voltage"/>
 			<channel id="signalStrength" typeId="system.signal-strength"/>
+			<channel id="hubRssi" typeId="rssi">
+				<label>Hub RSSI</label>
+				<description>Received Signal Strength Indicator for Hub</description>
+			</channel>
+			<channel id="repeaterRssi" typeId="rssi">
+				<label>Repeater RSSI</label>
+				<description>Received Signal Strength Indicator for Repeater</description>
+			</channel>
 		</channels>
 
 		<properties>

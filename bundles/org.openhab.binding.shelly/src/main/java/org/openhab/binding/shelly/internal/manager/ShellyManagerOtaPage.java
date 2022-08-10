@@ -33,9 +33,9 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.shelly.internal.ShellyHandlerFactory;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsUpdate;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
-import org.openhab.binding.shelly.internal.api.ShellyHttpApi;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsUpdate;
+import org.openhab.binding.shelly.internal.api1.Shelly1HttpApi;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyManagerInterface;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
@@ -122,7 +122,7 @@ public class ShellyManagerOtaPage extends ShellyManagerPage {
 
                 new Thread(() -> { // schedule asynchronous reboot
                     try {
-                        ShellyHttpApi api = new ShellyHttpApi(uid, config, httpClient);
+                        Shelly1HttpApi api = new Shelly1HttpApi(uid, config, httpClient);
                         ShellySettingsUpdate result = api.firmwareUpdate(updateUrl);
                         String status = getString(result.status);
                         logger.info("{}: {}", th.getThingName(), getMessage("fwupdate.initiated", status));

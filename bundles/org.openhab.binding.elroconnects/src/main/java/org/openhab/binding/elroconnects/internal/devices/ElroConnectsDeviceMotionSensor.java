@@ -87,15 +87,16 @@ public class ElroConnectsDeviceMotionSensor extends ElroConnectsDevice {
                 handler.updateState(SIGNAL_STRENGTH, UnDefType.UNDEF);
                 handler.updateState(BATTERY_LEVEL, UnDefType.UNDEF);
                 handler.updateState(LOW_BATTERY, UnDefType.UNDEF);
-                handler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Device " + deviceId + " is not syncing with K1 hub");
+                String msg = String.format("@text/offline.device-not-syncing [ \"%d\" ]", deviceId);
+                handler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msg);
                 break;
             case FAULT:
                 handler.updateState(MOTION, UnDefType.UNDEF);
                 handler.updateState(SIGNAL_STRENGTH, UnDefType.UNDEF);
                 handler.updateState(BATTERY_LEVEL, UnDefType.UNDEF);
                 handler.updateState(LOW_BATTERY, UnDefType.UNDEF);
-                handler.updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "Device " + deviceId + " has a fault");
+                msg = String.format("@text/offline.device-fault [ \"%d\" ]", deviceId);
+                handler.updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, msg);
                 break;
             default:
                 handler.updateState(MOTION,

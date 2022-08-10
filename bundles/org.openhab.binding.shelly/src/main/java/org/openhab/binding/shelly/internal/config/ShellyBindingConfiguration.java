@@ -38,6 +38,7 @@ public class ShellyBindingConfiguration {
     public String defaultUserId = "admin"; // default for http basic user id
     public String defaultPassword = "admin"; // default for http basic auth password
     public String localIP = ""; // default:use OH network config
+    public int httpPort = -1;
     public boolean autoCoIoT = true;
 
     public void updateFromProperties(Map<String, Object> properties) {

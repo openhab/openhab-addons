@@ -161,13 +161,16 @@
 			<bridge-type-ref id="bridge"/>
 			<bridge-type-ref id="bridge2"/>
 		</supported-bridge-type-refs>
-		<label>@textThermostatLabel</label>
-		<description>@textThermostatDescription</description>
+		<label>@text/thermostatLabel</label>
+		<description>@text/thermostatDescription</description>
 		<channels>
 			<channel id="measured" typeId="measured"/>
+			<channel id="heatingmode" typeId="heatingmode"/>
 			<channel id="mode" typeId="mode"/>
 			<channel id="setpoint" typeId="setpoint"/>
 			<channel id="overruletime" typeId="overruletime"/>
+			<channel id="heatingdemand" typeId="heatingdemand"/>
+			<channel id="demand" typeId="demand"/>
 		</channels>
 		<config-description>
 			<parameter name="thermostatId" type="text" required="true">
@@ -244,11 +247,27 @@
 		<category>Number</category>
 		<state min="0" max="1440" step="5"/>
 	</channel-type>
-	<channel-type id="mode">
+	<channel-type id="heatingmode">
+		<item-type>String</item-type>
+		<label>@text/channelModeLabel</label>
+		<description>@text/channelModeDescription</description>
+		<state>
+			<options>
+				<option value="Day">@text/channelModeOption0</option>
+				<option value="Night">@text/channelModeOption1</option>
+				<option value="Eco">@text/channelModeOption2</option>
+				<option value="Off">@text/channelModeOption3</option>
+				<option value="Cool">@text/channelModeOption4</option>
+				<option value="Prog1">@text/channelModeOption5</option>
+				<option value="Prog2">@text/channelModeOption6</option>
+				<option value="Prog3">@text/channelModeOption7</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="mode" advanced="true">
 		<item-type>Number</item-type>
 		<label>@text/channelModeLabel</label>
 		<description>@text/channelModeDescription</description>
-		<category>Number</category>
 		<state>
 			<options>
 				<option value="0">@text/channelModeOption0</option>
@@ -262,6 +281,31 @@
 			</options>
 		</state>
 	</channel-type>
+	<channel-type id="heatingdemand">
+		<item-type>String</item-type>
+		<label>@text/channelDemandLabel</label>
+		<description>@text/channelDemandDescription</description>
+		<state readOnly="true">
+			<options>
+				<option value="Cooling">@text/channelDemand-1</option>
+				<option value="None">@text/channelDemand0</option>
+				<option value="Heating">@text/channelDemand1</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="demand" advanced="true">
+		<item-type>Number</item-type>
+		<label>@text/channelDemandLabel</label>
+		<description>@text/channelDemandDescription</description>
+		<state readOnly="true">
+			<options>
+				<option value="-1">@text/channelDemand-1</option>
+				<option value="0">@text/channelDemand0</option>
+				<option value="1">@text/channelDemand1</option>
+			</options>
+		</state>
+	</channel-type>
+
 	<channel-type id="power">
 		<item-type>Number:Power</item-type>
 		<label>@text/channelPowerLabel</label>

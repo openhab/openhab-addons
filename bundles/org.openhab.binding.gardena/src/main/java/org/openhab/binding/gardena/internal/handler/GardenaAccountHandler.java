@@ -12,12 +12,24 @@
  */
 package org.openhab.binding.gardena.internal.handler;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.format.FormatStyle;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.http.HttpStatus;
+import org.openhab.binding.gardena.internal.GardenaBindingConstants;
 import org.openhab.binding.gardena.internal.GardenaSmart;
 import org.openhab.binding.gardena.internal.GardenaSmartEventListener;
 import org.openhab.binding.gardena.internal.GardenaSmartImpl;
@@ -26,6 +38,7 @@ import org.openhab.binding.gardena.internal.discovery.GardenaDeviceDiscoveryServ
 import org.openhab.binding.gardena.internal.exception.GardenaException;
 import org.openhab.binding.gardena.internal.model.dto.Device;
 import org.openhab.binding.gardena.internal.util.UidUtils;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.io.net.http.WebSocketFactory;
 import org.openhab.core.thing.Bridge;
@@ -36,9 +49,9 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,25 +63,83 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaSmartEventListener {
     private final Logger logger = LoggerFactory.getLogger(GardenaAccountHandler.class);
-    private final long REINITIALIZE_DELAY_SECONDS = 10;
 
+    // timing constants
+    private static final Duration REINITIALIZE_DELAY_SECONDS = Duration.ofSeconds(120);
+    private static final Duration REINITIALIZE_DELAY_MINUTES_BACK_OFF = Duration.ofMinutes(15).plusSeconds(10);
+    private static final Duration REINITIALIZE_DELAY_HOURS_LIMIT_EXCEEDED = Duration.ofHours(24).plusSeconds(10);
+
+    // assets
     private @Nullable GardenaDeviceDiscoveryService discoveryService;
-
     private @Nullable GardenaSmart gardenaSmart;
-    private HttpClientFactory httpClientFactory;
-    private WebSocketFactory webSocketFactory;
+    private final HttpClientFactory httpClientFactory;
+    private final WebSocketFactory webSocketFactory;
+    private final TimeZoneProvider timeZoneProvider;
 
-    public GardenaAccountHandler(Bridge bridge, HttpClientFactory httpClientFactory,
-            WebSocketFactory webSocketFactory) {
+    // re- initialisation stuff
+    private final Object reInitializationCodeLock = new Object();
+    private @Nullable ScheduledFuture<?> reInitializationTask;
+    private @Nullable Instant apiCallSuppressionUntil;
+
+    public GardenaAccountHandler(Bridge bridge, HttpClientFactory httpClientFactory, WebSocketFactory webSocketFactory,
+            TimeZoneProvider timeZoneProvider) {
         super(bridge);
         this.httpClientFactory = httpClientFactory;
         this.webSocketFactory = webSocketFactory;
+        this.timeZoneProvider = timeZoneProvider;
+    }
+
+    /**
+     * Load the api call suppression until property.
+     */
+    private void loadApiCallSuppressionUntil() {
+        try {
+            Map<String, String> properties = getThing().getProperties();
+            apiCallSuppressionUntil = Instant
+                    .parse(properties.getOrDefault(GardenaBindingConstants.API_CALL_SUPPRESSION_UNTIL, ""));
+        } catch (DateTimeParseException e) {
+            apiCallSuppressionUntil = null;
+        }
+    }
+
+    /**
+     * Get the duration remaining until the end of the api call suppression window, or Duration.ZERO if we are outside
+     * the call suppression window.
+     *
+     * @return the duration until the end of the suppression window, or zero.
+     */
+    private Duration apiCallSuppressionDelay() {
+        Instant now = Instant.now();
+        Instant until = apiCallSuppressionUntil;
+        return (until != null) && now.isBefore(until) ? Duration.between(now, until) : Duration.ZERO;
+    }
+
+    /**
+     * Updates the time when api call suppression ends to now() plus the given delay. If delay is zero or negative, the
+     * suppression time is nulled. Saves the value as a property to ensure consistent behaviour across restarts.
+     *
+     * @param delay the delay until the end of the suppression window.
+     */
+    private void apiCallSuppressionUpdate(Duration delay) {
+        Instant until = (delay.isZero() || delay.isNegative()) ? null : Instant.now().plus(delay);
+        getThing().setProperty(GardenaBindingConstants.API_CALL_SUPPRESSION_UNTIL,
+                until == null ? null : until.toString());
+        apiCallSuppressionUntil = until;
     }
 
     @Override
     public void initialize() {
         logger.debug("Initializing Gardena account '{}'", getThing().getUID().getId());
-        initializeGardena();
+        loadApiCallSuppressionUntil();
+        Duration delay = apiCallSuppressionDelay();
+        if (delay.isZero()) {
+            // do immediate initialisation
+            scheduler.submit(() -> initializeGardena());
+        } else {
+            // delay the initialisation
+            scheduleReinitialize(delay);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, getUiText());
+        }
     }
 
     public void setDiscoveryService(GardenaDeviceDiscoveryService discoveryService) {
@@ -76,47 +147,94 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
     }
 
     /**
-     * Initializes the GardenaSmart account.
+     * Format a localized explanatory description regarding active call suppression.
+     *
+     * @return the localized description text, or null if call suppression is not active.
      */
-    private void initializeGardena() {
-        final GardenaAccountHandler instance = this;
-        scheduler.execute(() -> {
-            try {
-                GardenaConfig gardenaConfig = getThing().getConfiguration().as(GardenaConfig.class);
-                logger.debug("{}", gardenaConfig);
+    private @Nullable String getUiText() {
+        Instant until = apiCallSuppressionUntil;
+        if (until != null) {
+            ZoneId zone = timeZoneProvider.getTimeZone();
+            boolean isToday = LocalDate.now(zone).equals(LocalDate.ofInstant(until, zone));
+            DateTimeFormatter formatter = isToday ? DateTimeFormatter.ofLocalizedTime(FormatStyle.MEDIUM)
+                    : DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM);
+            return "@text/accounthandler.waiting-until-to-reconnect [\""
+                    + formatter.format(ZonedDateTime.ofInstant(until, zone)) + "\"]";
+        }
+        return null;
+    }
 
-                String id = getThing().getUID().getId();
-                gardenaSmart = new GardenaSmartImpl(id, gardenaConfig, instance, scheduler, httpClientFactory,
-                        webSocketFactory);
-                final GardenaDeviceDiscoveryService discoveryService = this.discoveryService;
-                if (discoveryService != null) {
-                    discoveryService.startScan(null);
-                    discoveryService.waitForScanFinishing();
-                }
-                updateStatus(ThingStatus.ONLINE);
-            } catch (GardenaException ex) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
-                disposeGardena();
-                scheduleReinitialize();
-                logger.warn("{}", ex.getMessage());
+    /**
+     * Initializes the GardenaSmart account.
+     * This method is called on a background thread.
+     */
+    private synchronized void initializeGardena() {
+        try {
+            GardenaConfig gardenaConfig = getThing().getConfiguration().as(GardenaConfig.class);
+            logger.debug("{}", gardenaConfig);
+
+            String id = getThing().getUID().getId();
+            gardenaSmart = new GardenaSmartImpl(id, gardenaConfig, this, scheduler, httpClientFactory,
+                    webSocketFactory);
+            final GardenaDeviceDiscoveryService discoveryService = this.discoveryService;
+            if (discoveryService != null) {
+                discoveryService.startScan(null);
+                discoveryService.waitForScanFinishing();
             }
-        });
+            apiCallSuppressionUpdate(Duration.ZERO);
+            updateStatus(ThingStatus.ONLINE);
+        } catch (GardenaException ex) {
+            logger.warn("{}", ex.getMessage());
+            synchronized (reInitializationCodeLock) {
+                Duration delay;
+                int status = ex.getStatus();
+                if (status <= 0) {
+                    delay = REINITIALIZE_DELAY_SECONDS;
+                } else if (status == HttpStatus.TOO_MANY_REQUESTS_429) {
+                    delay = REINITIALIZE_DELAY_HOURS_LIMIT_EXCEEDED;
+                } else {
+                    delay = apiCallSuppressionDelay().plus(REINITIALIZE_DELAY_MINUTES_BACK_OFF);
+                }
+                scheduleReinitialize(delay);
+                apiCallSuppressionUpdate(delay);
+            }
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, getUiText());
+            disposeGardena();
+        }
+    }
+
+    /**
+     * Re-initializes the GardenaSmart account.
+     * This method is called on a background thread.
+     */
+    private synchronized void reIninitializeGardena() {
+        if (getThing().getStatus() != ThingStatus.UNINITIALIZED) {
+            initializeGardena();
+        }
     }
 
     /**
      * Schedules a reinitialization, if Gardena smart system account is not reachable.
      */
-    private void scheduleReinitialize() {
-        scheduler.schedule(() -> {
-            if (getThing().getStatus() != ThingStatus.UNINITIALIZED) {
-                initializeGardena();
-            }
-        }, REINITIALIZE_DELAY_SECONDS, TimeUnit.SECONDS);
+    private void scheduleReinitialize(Duration delay) {
+        ScheduledFuture<?> reInitializationTask = this.reInitializationTask;
+        if (reInitializationTask != null) {
+            reInitializationTask.cancel(false);
+        }
+        this.reInitializationTask = scheduler.schedule(() -> reIninitializeGardena(), delay.getSeconds(),
+                TimeUnit.SECONDS);
     }
 
     @Override
     public void dispose() {
         super.dispose();
+        synchronized (reInitializationCodeLock) {
+            ScheduledFuture<?> reInitializeTask = this.reInitializationTask;
+            if (reInitializeTask != null) {
+                reInitializeTask.cancel(true);
+            }
+            this.reInitializationTask = null;
+        }
         disposeGardena();
     }
 
@@ -133,6 +251,7 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
         if (gardenaSmart != null) {
             gardenaSmart.dispose();
         }
+        this.gardenaSmart = null;
     }
 
     /**
@@ -149,30 +268,32 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (RefreshType.REFRESH == command) {
-            logger.debug("Refreshing Gardena account '{}'", getThing().getUID().getId());
-            disposeGardena();
-            initializeGardena();
-        }
+        // nothing to do here because the thing has no channels
     }
 
     @Override
     public void onDeviceUpdated(Device device) {
         for (ThingUID thingUID : UidUtils.getThingUIDs(device, getThing())) {
-            final Thing gardenaThing;
-            final GardenaThingHandler gardenaThingHandler;
-            if ((gardenaThing = getThing().getThing(thingUID)) != null
-                    && (gardenaThingHandler = (GardenaThingHandler) gardenaThing.getHandler()) != null) {
-                try {
-                    gardenaThingHandler.updateProperties(device);
-                    for (Channel channel : gardenaThing.getChannels()) {
-                        gardenaThingHandler.updateChannel(channel.getUID());
-                    }
-                    gardenaThingHandler.updateStatus(device);
-                } catch (GardenaException ex) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, ex.getMessage());
-                } catch (AccountHandlerNotAvailableException ignore) {
+            final Thing gardenaThing = getThing().getThing(thingUID);
+            if (gardenaThing == null) {
+                logger.debug("No thing exists for thingUID:{}", thingUID);
+                continue;
+            }
+            final ThingHandler thingHandler = gardenaThing.getHandler();
+            if (!(thingHandler instanceof GardenaThingHandler)) {
+                logger.debug("Handler for thingUID:{} is not a 'GardenaThingHandler' ({})", thingUID, thingHandler);
+                continue;
+            }
+            final GardenaThingHandler gardenaThingHandler = (GardenaThingHandler) thingHandler;
+            try {
+                gardenaThingHandler.updateProperties(device);
+                for (Channel channel : gardenaThing.getChannels()) {
+                    gardenaThingHandler.updateChannel(channel.getUID());
                 }
+                gardenaThingHandler.updateStatus(device);
+            } catch (GardenaException ex) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, ex.getMessage());
+            } catch (AccountHandlerNotAvailableException ignore) {
             }
         }
     }
@@ -188,8 +309,12 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
 
     @Override
     public void onError() {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Connection lost");
+        Duration delay = REINITIALIZE_DELAY_SECONDS;
+        synchronized (reInitializationCodeLock) {
+            scheduleReinitialize(delay);
+        }
+        apiCallSuppressionUpdate(delay);
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, getUiText());
         disposeGardena();
-        scheduleReinitialize();
     }
 }

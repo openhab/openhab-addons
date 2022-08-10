@@ -55,6 +55,7 @@ import org.openhab.binding.velux.internal.things.VeluxExistingScenes;
 import org.openhab.binding.velux.internal.things.VeluxProduct;
 import org.openhab.binding.velux.internal.things.VeluxProduct.ProductBridgeIndex;
 import org.openhab.binding.velux.internal.things.VeluxProductPosition;
+import org.openhab.binding.velux.internal.things.VeluxProductPosition.PositionType;
 import org.openhab.binding.velux.internal.utils.Localization;
 import org.openhab.core.common.AbstractUID;
 import org.openhab.core.common.NamedThreadFactory;
@@ -541,20 +542,27 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
                 if (!channelPbi.equals(productPbi)) {
                     continue;
                 }
-                // Handle value inversion
-                boolean isInverted = actuator.isInverted();
-                logger.trace("syncChannelsWithProducts(): isInverted is {}.", isInverted);
-                VeluxProductPosition position = new VeluxProductPosition(product.getDisplayPosition());
+                boolean isInverted;
+                VeluxProductPosition position;
+                if (channelUID.getId().equals(VeluxBindingConstants.CHANNEL_VANE_POSITION)) {
+                    isInverted = false;
+                    position = new VeluxProductPosition(product.getVanePosition());
+                } else {
+                    // Handle value inversion
+                    isInverted = actuator.isInverted();
+                    logger.trace("syncChannelsWithProducts(): isInverted is {}.", isInverted);
+                    position = new VeluxProductPosition(product.getDisplayPosition());
+                }
                 if (position.isValid()) {
                     PercentType positionAsPercent = position.getPositionAsPercentType(isInverted);
                     logger.debug("syncChannelsWithProducts(): updating channel {} to position {}%.", channelUID,
                             positionAsPercent);
                     updateState(channelUID, positionAsPercent);
-                    break;
+                    continue;
                 }
-                logger.trace("syncChannelsWithProducts(): update channel {} to 'UNDEFINED'.", channelUID);
+                logger.trace("syncChannelsWithProducts(): updating channel {} to 'UNDEFINED'.", channelUID);
                 updateState(channelUID, UnDefType.UNDEF);
-                break;
+                continue;
             }
         }
         logger.trace("syncChannelsWithProducts(): resetting dirty flag.");
@@ -674,6 +682,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
                         case ACTUATOR_STATE:
                         case ROLLERSHUTTER_POSITION:
                         case WINDOW_POSITION:
+                        case ROLLERSHUTTER_VANE_POSITION:
                             newState = ChannelActuatorPosition.handleRefresh(channelUID, channelId, this);
                             break;
                         case ACTUATOR_LIMIT_MINIMUM:
@@ -694,9 +703,8 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
                             break;
 
                         default:
-                            logger.trace(
-                                    "handleCommandCommsJob(): cannot handle REFRESH on channel {} as it is of type {}.",
-                                    itemName, channelId);
+                            logger.warn("{} Cannot handle REFRESH on channel {} as it is of type {}.",
+                                    VeluxBindingConstants.LOGGING_CONTACT, itemName, channelId);
                     }
                 } catch (IllegalArgumentException e) {
                     logger.warn("Cannot handle REFRESH on channel {} as it isn't (yet) known to the bridge.", itemName);
@@ -769,6 +777,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
                     case ACTUATOR_STATE:
                     case ROLLERSHUTTER_POSITION:
                     case WINDOW_POSITION:
+                    case ROLLERSHUTTER_VANE_POSITION:
                         newValue = ChannelActuatorPosition.handleCommand(channelUID, channelId, command, this);
                         break;
                     case ACTUATOR_LIMIT_MINIMUM:
@@ -845,13 +854,17 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
         logger.trace("moveRelative() called on {}", getThing().getUID());
         RunProductCommand bcp = thisBridge.bridgeAPI().runProductCommand();
         if (bcp != null) {
-            bcp.setNodeAndMainParameter(nodeId, new VeluxProductPosition(new PercentType(Math.abs(relativePercent)))
-                    .getAsRelativePosition((relativePercent >= 0)));
             // background execution of moveRelative
             submitCommunicationsJob(() -> {
-                if (thisBridge.bridgeCommunicate(bcp)) {
-                    logger.trace("moveRelative() command {}sucessfully sent to {}",
-                            bcp.isCommunicationSuccessful() ? "" : "un", getThing().getUID());
+                synchronized (bcp) {
+                    bcp.setNodeIdAndParameters(nodeId,
+                            new VeluxProductPosition(new PercentType(Math.abs(relativePercent))).overridePositionType(
+                                    relativePercent > 0 ? PositionType.OFFSET_POSITIVE : PositionType.OFFSET_NEGATIVE),
+                            null);
+                    if (thisBridge.bridgeCommunicate(bcp)) {
+                        logger.trace("moveRelative() command {}sucessfully sent to {}",
+                                bcp.isCommunicationSuccessful() ? "" : "un", getThing().getUID());
+                    }
                 }
             });
             return true;

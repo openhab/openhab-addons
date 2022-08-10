@@ -16,12 +16,9 @@ import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConst
 import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_PRIVACY_MODE;
 
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
+import org.openhab.binding.boschshc.internal.devices.BoschSHCDeviceHandler;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.services.cameranotification.CameraNotificationService;
 import org.openhab.binding.boschshc.internal.services.cameranotification.CameraNotificationState;
@@ -54,7 +51,7 @@ import org.openhab.core.types.Command;
  *
  */
 @NonNullByDefault
-public class CameraHandler extends BoschSHCHandler {
+public class CameraHandler extends BoschSHCDeviceHandler {
 
     private PrivacyModeService privacyModeService;
     private CameraNotificationService cameraNotificationService;
@@ -69,60 +66,9 @@ public class CameraHandler extends BoschSHCHandler {
     protected void initializeServices() throws BoschSHCException {
         super.initializeServices();
 
-        this.registerService(this.privacyModeService, this::updateChannels, List.of(CHANNEL_PRIVACY_MODE));
-        this.registerService(this.cameraNotificationService, this::updateChannels,
-                List.of(CHANNEL_CAMERA_NOTIFICATION));
-    }
-
-    @Override
-    public void initialize() {
-        super.initialize();
-        requestInitialStates();
-    }
-
-    /**
-     * Requests the initial states for relevant services.
-     * <p>
-     * If this is not done, items associated with the corresponding channels with stay in an uninitialized state
-     * (<code>null</code>).
-     * This in turn leads to events not being fired properly when switches are used in the UI.
-     * <p>
-     * Unfortunately the long poll results do not contain camera-related updates, so this is the current approach
-     * to get the initial states.
-     */
-    private void requestInitialStates() {
-        requestInitialPrivacyState();
-        requestInitialNotificationState();
-    }
-
-    private void requestInitialPrivacyState() {
-        try {
-            @Nullable
-            PrivacyModeServiceState serviceState = privacyModeService.getState();
-            if (serviceState != null) {
-                super.updateState(CHANNEL_PRIVACY_MODE, serviceState.value.toOnOffType());
-            }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            logger.debug("Could not retrieve the initial privacy state of camera {}", getBoschID());
-        } catch (TimeoutException | ExecutionException | BoschSHCException e) {
-            logger.debug("Could not retrieve the initial privacy state of camera {}", getBoschID());
-        }
-    }
-
-    private void requestInitialNotificationState() {
-        try {
-            @Nullable
-            CameraNotificationServiceState serviceState = cameraNotificationService.getState();
-            if (serviceState != null) {
-                super.updateState(CHANNEL_CAMERA_NOTIFICATION, serviceState.value.toOnOffType());
-            }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            logger.debug("Could not retrieve the initial notification state of camera {}", getBoschID());
-        } catch (TimeoutException | ExecutionException | BoschSHCException e) {
-            logger.debug("Could not retrieve the initial notification state of camera {}", getBoschID());
-        }
+        this.registerService(this.privacyModeService, this::updateChannels, List.of(CHANNEL_PRIVACY_MODE), true);
+        this.registerService(this.cameraNotificationService, this::updateChannels, List.of(CHANNEL_CAMERA_NOTIFICATION),
+                true);
     }
 
     @Override

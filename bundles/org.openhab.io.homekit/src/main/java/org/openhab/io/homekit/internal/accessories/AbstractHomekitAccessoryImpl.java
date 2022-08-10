@@ -197,6 +197,18 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
     }
 
     /**
+     * return configuration attached to the root accessory, e.g. groupItem.
+     *
+     * @param key configuration key
+     * @param defaultValue default value
+     * @return configuration value
+     */
+    @NonNullByDefault
+    protected boolean getAccessoryConfigurationAsBoolean(String key, boolean defaultValue) {
+        return accessory.getConfigurationAsBoolean(key, defaultValue);
+    }
+
+    /**
      * return configuration of the characteristic item, e.g. currentTemperature.
      * Note: result will be casted to the type of the default value.
      * The type for number is BigDecimal.

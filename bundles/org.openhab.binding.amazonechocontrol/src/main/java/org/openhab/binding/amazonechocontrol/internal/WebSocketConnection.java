@@ -30,6 +30,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
@@ -73,10 +74,11 @@ public class WebSocketConnection {
             IWebSocketCommandHandler webSocketCommandHandler) throws IOException {
         this.webSocketCommandHandler = webSocketCommandHandler;
         amazonEchoControlWebSocket = new AmazonEchoControlWebSocket();
-        webSocketClient = new WebSocketClient(new SslContextFactory.Client());
+        HttpClient httpClient = new HttpClient(new SslContextFactory.Client());
+        webSocketClient = new WebSocketClient(httpClient);
         try {
             String host;
-            if (amazonSite.equalsIgnoreCase("amazon.com")) {
+            if ("amazon.com".equalsIgnoreCase(amazonSite)) {
                 host = "dp-gw-na-js." + amazonSite;
             } else {
                 host = "dp-gw-na." + amazonSite;

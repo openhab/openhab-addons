@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Test;
 import org.openhab.binding.mielecloud.internal.MieleCloudBindingConstants;
 import org.openhab.binding.mielecloud.internal.auth.OAuthTokenRefresher;
 import org.openhab.binding.mielecloud.internal.config.MieleCloudConfigService;
+import org.openhab.binding.mielecloud.internal.config.exception.BridgeReconfigurationFailedException;
 import org.openhab.binding.mielecloud.internal.util.AbstractConfigFlowTest;
 import org.openhab.binding.mielecloud.internal.util.MieleCloudBindingIntegrationTestConstants;
 import org.openhab.binding.mielecloud.internal.util.Website;
@@ -48,7 +49,6 @@ public class CreateBridgeServletTest extends AbstractConfigFlowTest {
         assertNotNull(createBridgeServlet);
 
         Inbox inbox = mock(Inbox.class);
-        when(inbox.add(any())).thenReturn(true);
         when(inbox.approve(any(), anyString(), anyString())).thenReturn(null);
         setPrivate(Objects.requireNonNull(createBridgeServlet), "inbox", inbox);
 
@@ -74,11 +74,10 @@ public class CreateBridgeServletTest extends AbstractConfigFlowTest {
         assertNotNull(createBridgeServlet);
 
         Inbox inbox = mock(Inbox.class);
-        when(inbox.add(any())).thenReturn(false);
         setPrivate(Objects.requireNonNull(createBridgeServlet), "inbox", inbox);
 
         ThingRegistry thingRegistry = mock(ThingRegistry.class);
-        when(thingRegistry.get(any())).thenReturn(null);
+        when(thingRegistry.get(any())).thenThrow(new BridgeReconfigurationFailedException(""));
         setPrivate(Objects.requireNonNull(createBridgeServlet), "thingRegistry", thingRegistry);
 
         // when:
@@ -104,7 +103,6 @@ public class CreateBridgeServletTest extends AbstractConfigFlowTest {
         assertNotNull(createBridgeServlet);
 
         Inbox inbox = mock(Inbox.class);
-        when(inbox.add(any())).thenReturn(false);
         setPrivate(Objects.requireNonNull(createBridgeServlet), "inbox", inbox);
 
         Thing bridge = mock(Thing.class);

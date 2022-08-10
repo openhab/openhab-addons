@@ -407,14 +407,20 @@ The following channels are available on the Ecobee Remote Sensor.
 
 Some or all of the following Remote Sensor channels will be added dynamically depending on the capabilities of the sensor.
 
-| Channel      | Type                  | ReadWrite | Description  |
-|--------------|-----------------------|-----------|--------------|
-| temperature  | Number:Temperature    |           | Temperature reported by the sensor  |
-| humidity     | Number:Dimensionless  |           | Humidity reported by the sensor  |
-| occupancy    | Switch                |           | Occupancy status reported by the sensor  |
-| co2          | String                |           | CO2 reported by the sensor  |
-| dryContact   | String                |           | Dry contact status reported by the sensor  |
-| adc          | String                |           | ADC reported by the sensor  |
+| Channel            | Type                  | ReadWrite | Description  |
+|--------------------|-----------------------|-----------|--------------|
+| temperature        | Number:Temperature    |           | Temperature reported by the sensor  |
+| humidity           | Number:Dimensionless  |           | Humidity reported by the sensor  |
+| occupancy          | Switch                |           | Occupancy status reported by the sensor  |
+| adc                | String                |           | ADC reported by the sensor  |
+| airPressure        | String                |           | Air Pressure reported by the sensor  |
+| airQuality         | String                |           | Air Quality reported by the sensor (clean-poor)  |
+| airQualityAccuracy | String                |           | Air Quality Accuracy reported by the sensor  |
+| co2                | String                |           | CO2 reported by the sensor  |
+| co2PPM             | String                |           | CO2 level reported by the sensor (low-high)  |
+| dryContact         | String                |           | Dry contact status reported by the sensor  |
+| vocPPM             | String                |           | Volatile organic compounds (VOC) reported by the sensor (low-high)  |
+
 
 ## Thing Actions
 

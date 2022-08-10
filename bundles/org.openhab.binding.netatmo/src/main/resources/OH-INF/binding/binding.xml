@@ -9,19 +9,6 @@
 
 
 	<config-description>
-		<parameter name="features" type="text" required="true" multiple="true">
-			<label>Feature Area</label>
-			<description>Defines the set of capabilities you want to operate on.</description>
-			<options>
-				<option value="AIR_CARE">Air Care</option>
-				<option value="WEATHER">Weather</option>
-				<option value="ENERGY">Energy</option>
-				<option value="SECURITY">Security</option>
-			</options>
-			<limitToOptions>true</limitToOptions>
-			<default>WEATHER</default>
-		</parameter>
-
 		<parameter name="readFriends" type="boolean">
 			<label>Access Guests</label>
 			<description>For Weather Stations: A friend gave you access to their Netatmo Weather Station.</description>

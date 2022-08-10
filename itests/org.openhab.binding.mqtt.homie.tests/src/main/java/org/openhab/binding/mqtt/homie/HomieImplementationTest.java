@@ -30,6 +30,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -171,6 +172,7 @@ public class HomieImplementationTest extends MqttOSGiTest {
     }
 
     @SuppressWarnings("null")
+    @Disabled("Temporarily disabled: unstable")
     @Test
     public void retrieveAttributes() throws Exception {
         assertThat(homieConnection.hasSubscribers(), is(false));
@@ -228,6 +230,7 @@ public class HomieImplementationTest extends MqttOSGiTest {
     }
 
     @SuppressWarnings("null")
+    @Disabled("Temporarily disabled: unstable")
     @Test
     public void parseHomieTree() throws Exception {
         // Create a Homie Device object. Because spied Nodes are required for call verification,

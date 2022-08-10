@@ -12,36 +12,47 @@
  */
 package org.openhab.binding.tado.internal.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tado.internal.api.client.HomeApi;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.BridgeHandler;
 
 /**
  * Common base class for home-based thing-handler.
  *
  * @author Dennis Frommknecht - Initial contribution
  */
+@NonNullByDefault
 public abstract class BaseHomeThingHandler extends BaseThingHandler {
 
     public BaseHomeThingHandler(Thing thing) {
         super(thing);
     }
 
-    public Long getHomeId() {
+    public @Nullable Long getHomeId() {
         TadoHomeHandler handler = getHomeHandler();
-        return handler != null ? handler.getHomeId() : Long.valueOf(0);
+        return handler.getHomeId();
     }
 
     protected TadoHomeHandler getHomeHandler() {
         Bridge bridge = getBridge();
-        return bridge != null ? (TadoHomeHandler) bridge.getHandler() : null;
+        if (bridge == null) {
+            throw new IllegalStateException("Bridge not initialized");
+        }
+        BridgeHandler handler = bridge.getHandler();
+        if (!(handler instanceof TadoHomeHandler)) {
+            throw new IllegalStateException("Handler not initialized");
+        }
+        return (TadoHomeHandler) handler;
     }
 
     protected HomeApi getApi() {
         TadoHomeHandler handler = getHomeHandler();
-        return handler != null ? handler.getApi() : null;
+        return handler.getApi();
     }
 
     protected void onSuccessfulOperation() {

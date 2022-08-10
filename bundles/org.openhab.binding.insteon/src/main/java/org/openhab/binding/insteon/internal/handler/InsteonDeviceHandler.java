@@ -26,7 +26,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.insteon.internal.InsteonBinding;
 import org.openhab.binding.insteon.internal.InsteonBindingConstants;
 import org.openhab.binding.insteon.internal.config.InsteonChannelConfiguration;
@@ -125,7 +124,8 @@ public class InsteonDeviceHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(InsteonDeviceHandler.class);
 
-    private @Nullable InsteonDeviceConfiguration config;
+    private @NonNullByDefault({}) InsteonDeviceConfiguration config;
+    private boolean deviceLinked = true;
 
     public InsteonDeviceHandler(Thing thing) {
         super(thing);
@@ -134,9 +134,11 @@ public class InsteonDeviceHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         config = getConfigAs(InsteonDeviceConfiguration.class);
+        deviceLinked = true;
 
         scheduler.execute(() -> {
-            if (getBridge() == null) {
+            final Bridge bridge = getBridge();
+            if (bridge == null) {
                 String msg = "An Insteon network bridge has not been selected for this device.";
                 logger.warn("{} {}", thing.getUID().getAsString(), msg);
 
@@ -371,7 +373,13 @@ public class InsteonDeviceHandler extends BaseThingHandler {
                     }
                 });
 
-                updateStatus(ThingStatus.ONLINE);
+                if (ThingStatus.ONLINE == bridge.getStatus()) {
+                    if (deviceLinked) {
+                        updateStatus(ThingStatus.ONLINE);
+                    }
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                }
             } else {
                 String msg = "Product key '" + productKey
                         + "' does not have any features that match existing channels.";
@@ -410,9 +418,14 @@ public class InsteonDeviceHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("channel {} was triggered with the command {}", channelUID.getAsString(), command);
+        if (ThingStatus.ONLINE == getThing().getStatus()) {
+            logger.debug("channel {} was triggered with the command {}", channelUID.getAsString(), command);
 
-        getInsteonBinding().sendCommand(channelUID.getAsString(), command);
+            getInsteonBinding().sendCommand(channelUID.getAsString(), command);
+        } else {
+            logger.debug("the command {} for channel {} was ignored because the thing is not ONLINE", command,
+                    channelUID.getAsString());
+        }
     }
 
     @Override
@@ -521,6 +534,18 @@ public class InsteonDeviceHandler extends BaseThingHandler {
         getInsteonNetworkHandler().unlinked(channelUID);
 
         logger.debug("channel {} unlinked ", channelUID.getAsString());
+    }
+
+    public InsteonAddress getInsteonAddress() {
+        return new InsteonAddress(config.getAddress());
+    }
+
+    public void deviceNotLinked() {
+        String msg = "device with the address '" + config.getAddress()
+                + "' was not found in the modem database. Did you forget to link?";
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
+
+        deviceLinked = false;
     }
 
     private InsteonNetworkHandler getInsteonNetworkHandler() {

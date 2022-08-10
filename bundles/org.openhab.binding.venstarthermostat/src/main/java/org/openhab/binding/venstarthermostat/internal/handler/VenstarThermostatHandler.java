@@ -382,13 +382,42 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
     }
 
     private void setAwayMode(VenstarAwayMode away) {
-        VenstarScheduleMode schedule = infoData.getScheduleMode();
-        updateSettings(away, schedule);
+        // This function updates the away mode via a POST to the thermostat's local API's /settings endpoint.
+        //
+        // The /settings endpoint supports a number of additional parameters (tempunits, de/humedifier
+        // setpoints, etc). However, newer Venstar firmwares will reject any POST to /settings that
+        // contains a `schedule` parameter when the thermostat is currently in away mode.
+        //
+        // Separating the updates to change `schedule` and `away` ensures that the thermostat will not
+        // reject attempts to un-set away mode due to the presence of the `schedule` parameter.
+        Map<String, String> params = new HashMap<>();
+        params.put("away", String.valueOf(away.mode()));
+        VenstarResponse res = updateThermostat("/settings", params);
+        if (res != null) {
+            log.debug("Updated thermostat");
+            // update our local copy until the next refresh occurs
+            infoData.setAwayMode(away);
+        }
     }
 
     private void setScheduleMode(VenstarScheduleMode schedule) {
-        VenstarAwayMode away = infoData.getAwayMode();
-        updateSettings(away, schedule);
+        // This function updates the schedule mode via a POST to the thermostat's local API's /settings endpoint.
+        //
+        // The /settings endpoint supports a number of additional parameters (tempunits, de/humedifier
+        // setpoints, etc). However, newer Venstar firmwares will reject any POST to /settings that
+        // contains a `schedule` parameter when the thermostat is currently in away mode.
+        //
+        // Separating the updates to change `schedule` and `away` ensures that the thermostat will not
+        // reject attempts to un-set away mode due to the presence of the `schedule` parameter.
+        Map<String, String> params = new HashMap<>();
+        params.put("schedule", String.valueOf(schedule.mode()));
+        VenstarResponse res = updateThermostat("/settings", params);
+        if (res != null) {
+            log.debug("Updated thermostat");
+            // update our local copy until the next refresh occurs
+            infoData.setScheduleMode(schedule);
+            // add other parameters here in the same way
+        }
     }
 
     private QuantityType<Temperature> getCoolingSetpoint() {
@@ -407,23 +436,7 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
         return z;
     }
 
-    private void updateSettings(VenstarAwayMode away, VenstarScheduleMode schedule) {
-        // this function corresponds to the thermostat local API POST /settings instruction
-        // the function can be expanded with other parameters which are changed via POST /settings
-        // settings that can be included are tempunits, away mode, schedule mode, humidifier setpoint, dehumidifier
-        // setpoint
-        // (hum/dehum are the only ones missing)
-        Map<String, String> params = new HashMap<>();
-        params.put("away", String.valueOf(away.mode()));
-        params.put("schedule", String.valueOf(schedule.mode()));
-        VenstarResponse res = updateThermostat("/settings", params);
-        if (res != null) {
-            log.debug("Updated thermostat");
-            // update our local copy until the next refresh occurs
-            infoData.setAwayMode(away);
-            infoData.setScheduleMode(schedule);
-            // add other parameters here in the same way
-        }
+    private void updateScheduleMode(VenstarScheduleMode schedule) {
     }
 
     private void updateControls(double heat, double cool, VenstarSystemMode mode, VenstarFanMode fanmode) {

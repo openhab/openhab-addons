@@ -14,14 +14,18 @@ The information are requested from the timetable api of Deutsche Bahn developer 
 
 To configure a timetable you first need to register at Deutsche Bahn developer portal and register for timetable API to get an access key.
 
-1. Go to [Deutsche Bahn Developer](https://developer.deutschebahn.com)
+1. Go to [DB API Marketplace](https://developers.deutschebahn.com/)
 2. Register new account or login with an existing one
-3. If no application is configured yet (check Tab "Meine Anwendungen") create a new application. Only the name is required, any other fields can be left blank.
-4. Go to APIs - Timetables v1 (may be displayed on second page)
-5. Choose your previously created application and hit "Abonnieren"
-6. In confirmation-dialog choose "Wechsel zu meine Abonnements"
-7. Create an access key for the production environment by hitting "Schlüssel Erstellen"
-8. Copy the "Zugangstoken". This is required to access the api from openHAB.
+3. If no application is configured yet (check Tab "Anwendungen" at top) create a new application. Only the name is required, for example openHAB, any other fields can be left blank.
+4. Remember the shown **Client ID** and **Client Secret**.
+5. Go to **Katalog** and search for **Timetables** api.
+6. Within **Zugehörige APIs** select the Timetables api.
+7. Select **Abonnieren** at top left of the page.
+8. Select the Nutzungsplan **Free** by clicking **Abonnieren**.
+9. Select the previously created application.
+10. Click **Next**.
+11. Click **Fertig**.
+12. Now you have successfully registered the api within an application. The **Client ID** and **Client Secret** can now be used during bridge configuration.
 
 ### Determine the EVA-No of your station
 
@@ -31,13 +35,14 @@ You can look up the number within the csv file available at [Haltestellendaten](
 ### Configure timetable bridge
 
 With access key for developer portal and eva no. of your station you're ready to configure a timetable (bridge) for this station.
-In addition you can configure if only arrivals, only departures or all trains should be contained within the timetable.
+In addition, you can configure if only arrivals, only departures or all trains should be contained within the timetable.
 
 **timetable** parameters:
 
 | Property | Default | Required | Description |
 |-|-|-|-|
-| `accessToken` | | Yes | The access token for the timetable api within the developer portal of Deutsche Bahn. |
+| `clientId` | | Yes | The Client ID for the application with registered timetable api within the DB API Marketplace. |
+| `clientSecret` | | Yes | The Client Secret (API Key) for the application with registered timetable api within the DB API Marketplace. |
 | `evaNo` | | Yes | The eva nr. of the train station for which the timetable will be requested.|
 | `trainFilter` |  | Yes | Selects the trains that will be displayed in the timetable. Either only arrivals, only departures or all trains can be displayed. |
 | `additionalFilter` | | No | Specifies additional filters for trains, that should be displayed within the timetable. |
@@ -48,7 +53,7 @@ and only trains that matches the given filter will be contained within the timet
 
 To specify an advanced filter you can
 
-- specify a filter for the value of a given channel. Therefore you must specify the channel name (with channel group) and specify a compare value like this: 
+- specify a filter for the value of a given channel. Therefore, you must specify the channel name (with channel group) and specify a compare value like this: 
 `departure#line="RE60"` this will select all trains with line RE60
 - use regular expressions for expected channel values, for example:  `departure#line="RE.*"`, this will match all lines starting with "RE".
 - combine multiple statements as "and" conjunction by using `&`. If used, both parts must match, for example: `departure#line="RE60" & trip#category="WFB"`
@@ -82,10 +87,10 @@ train things, the channels of these trains will be undefined.
 ## Channels
 
 Each train has a set of channels, that provides access to any information served by the timetable API. A detailed description of the values and their meaning can be found within
-the [Timetables V1 API Description](https://developer.deutschebahn.com/store/apis/info?name=Timetables&version=v1&provider=DBOpenData&).
+the [Timetables V1 API Description](https://developers.deutschebahn.com/db-api-marketplace/apis/product/timetables).
 The information are grouped into three channel-groups:
 The first channel group (trip) contains all information for the trip of the train, for example the category (like ICE, RE, S).
-The second and third channel group contains information about the the arrival and the departure of the train at the given station. 
+The second and third channel group contains information about the arrival and the departure of the train at the given station. 
 Both of the groups may provide an 'UNDEF' channel value, when the train does not arrive / depart at this station
 (due it starts or ends at the given station). If you have configured your timetable to contain only departures (with property trainFilter) the departure channel values will always be defined 
 and if you have selected only arrivals the arrival channel values will always be defined.

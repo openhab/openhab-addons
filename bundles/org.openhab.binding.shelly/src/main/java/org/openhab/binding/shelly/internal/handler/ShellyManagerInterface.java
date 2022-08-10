@@ -14,8 +14,8 @@ package org.openhab.binding.shelly.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
+import org.openhab.binding.shelly.internal.api.ShellyApiInterface;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
-import org.openhab.binding.shelly.internal.api.ShellyHttpApi;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.State;
@@ -36,7 +36,7 @@ public interface ShellyManagerInterface {
 
     public ShellyDeviceProfile getProfile(boolean forceRefresh) throws ShellyApiException;
 
-    public ShellyHttpApi getApi();
+    public ShellyApiInterface getApi();
 
     public ShellyDeviceStats getStats();
 

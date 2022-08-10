@@ -51,6 +51,14 @@
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
+	<channel-type id="rssi" advanced="true">
+		<item-type>Number:Power</item-type>
+		<label>RSSI</label>
+		<description>Received Signal Strength Indicator</description>
+		<category>QualityOfService</category>
+		<state readOnly="true" pattern="%d %unit%"></state>
+	</channel-type>
+
 	<channel-type id="repeater-identify">
 		<item-type>String</item-type>
 		<label>Identify</label>

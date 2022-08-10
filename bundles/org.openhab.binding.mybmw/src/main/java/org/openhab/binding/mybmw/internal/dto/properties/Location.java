@@ -20,5 +20,5 @@ package org.openhab.binding.mybmw.internal.dto.properties;
 public class Location {
     public Coordinates coordinates;
     public Address address;
-    public int heading;// ": 222
+    public int heading;
 }

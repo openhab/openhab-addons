@@ -25,6 +25,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tado.internal.TadoBindingConstants;
 import org.openhab.binding.tado.internal.api.ApiException;
 import org.openhab.binding.tado.internal.api.model.MobileDevice;
@@ -43,13 +45,14 @@ import org.slf4j.LoggerFactory;
  *
  * @author Dennis Frommknecht - Initial contribution
  */
+@NonNullByDefault
 public class TadoDiscoveryService extends AbstractDiscoveryService {
     private static final int TIMEOUT = 5;
     private static final long REFRESH = 600;
 
     private final Logger logger = LoggerFactory.getLogger(TadoDiscoveryService.class);
 
-    private ScheduledFuture<?> discoveryFuture;
+    private @Nullable ScheduledFuture<?> discoveryFuture;
 
     public static final Set<ThingTypeUID> DISCOVERABLE_THING_TYPES_UIDS = Collections
             .unmodifiableSet(Stream.of(THING_TYPE_ZONE, THING_TYPE_MOBILE_DEVICE).collect(Collectors.toSet()));
@@ -83,23 +86,30 @@ public class TadoDiscoveryService extends AbstractDiscoveryService {
     @Override
     protected void startBackgroundDiscovery() {
         logger.debug("Start Tado background discovery");
+        ScheduledFuture<?> discoveryFuture = this.discoveryFuture;
         if (discoveryFuture == null || discoveryFuture.isCancelled()) {
             logger.debug("Start Scan");
-            discoveryFuture = scheduler.scheduleWithFixedDelay(this::startScan, 30, REFRESH, TimeUnit.SECONDS);
+            this.discoveryFuture = scheduler.scheduleWithFixedDelay(this::startScan, 30, REFRESH, TimeUnit.SECONDS);
         }
     }
 
     @Override
     protected void stopBackgroundDiscovery() {
         logger.debug("Stop Tado background discovery");
+        ScheduledFuture<?> discoveryFuture = this.discoveryFuture;
         if (discoveryFuture != null && !discoveryFuture.isCancelled()) {
             discoveryFuture.cancel(true);
-            discoveryFuture = null;
         }
     }
 
     private void discoverZones() {
         Long homeId = homeHandler.getHomeId();
+
+        if (homeId == null) {
+            logger.debug("Could not discover tado zones: Missing home id");
+            return;
+        }
+
         try {
             List<Zone> zoneList = homeHandler.getApi().listZones(homeId);
 
@@ -132,6 +142,12 @@ public class TadoDiscoveryService extends AbstractDiscoveryService {
 
     private void discoverMobileDevices() {
         Long homeId = homeHandler.getHomeId();
+
+        if (homeId == null) {
+            logger.debug("Could not discover mobile devices: Missing home id");
+            return;
+        }
+
         try {
             List<MobileDevice> mobileDeviceList = homeHandler.getApi().listMobileDevices(homeId);
 
@@ -143,7 +159,7 @@ public class TadoDiscoveryService extends AbstractDiscoveryService {
                 }
             }
         } catch (IOException | ApiException e) {
-            logger.debug("Could not discover tado zones: {}", e.getMessage(), e);
+            logger.debug("Could not discover mobile devices: {}", e.getMessage(), e);
         }
     }
 

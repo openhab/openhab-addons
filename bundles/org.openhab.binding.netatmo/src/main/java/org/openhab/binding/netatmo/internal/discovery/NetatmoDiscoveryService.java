@@ -12,9 +12,10 @@
  */
 package org.openhab.binding.netatmo.internal.discovery;
 
-import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.EQUIPMENT_ID;
+import static java.util.Comparator.*;
 
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -26,9 +27,10 @@ import org.openhab.binding.netatmo.internal.api.NetatmoException;
 import org.openhab.binding.netatmo.internal.api.WeatherApi;
 import org.openhab.binding.netatmo.internal.api.data.ModuleType;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureArea;
+import org.openhab.binding.netatmo.internal.api.dto.HomeDataModule;
 import org.openhab.binding.netatmo.internal.api.dto.NAMain;
 import org.openhab.binding.netatmo.internal.api.dto.NAModule;
-import org.openhab.binding.netatmo.internal.config.BindingConfiguration;
+import org.openhab.binding.netatmo.internal.config.NAThingConfiguration;
 import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -48,64 +50,70 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class NetatmoDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService, DiscoveryService {
-    private static final Set<ModuleType> SKIPPED_TYPES = Set.of(ModuleType.UNKNOWN, ModuleType.ACCOUNT);
-    private static final int DISCOVER_TIMEOUT_SECONDS = 5;
+    private static final int DISCOVER_TIMEOUT_SECONDS = 3;
     private final Logger logger = LoggerFactory.getLogger(NetatmoDiscoveryService.class);
+
     private @Nullable ApiBridgeHandler handler;
-    private @Nullable BindingConfiguration config;
 
     public NetatmoDiscoveryService() {
-        super(ModuleType.AS_SET.stream().filter(mt -> !SKIPPED_TYPES.contains(mt)).map(mt -> mt.thingTypeUID)
+        super(ModuleType.AS_SET.stream().filter(mt -> !mt.apiName.isBlank()).map(mt -> mt.thingTypeUID)
                 .collect(Collectors.toSet()), DISCOVER_TIMEOUT_SECONDS);
     }
 
     @Override
     public void startScan() {
-        BindingConfiguration localConf = config;
         ApiBridgeHandler localHandler = handler;
-        if (localHandler != null && localConf != null) {
-            ThingUID apiBridgeUID = localHandler.getThing().getUID();
+        if (localHandler != null) {
+            ThingUID accountUID = localHandler.getThing().getUID();
             try {
                 AircareApi airCareApi = localHandler.getRestManager(AircareApi.class);
                 if (airCareApi != null) { // Search Healthy Home Coaches
                     ListBodyResponse<NAMain> body = airCareApi.getHomeCoachData(null).getBody();
                     if (body != null) {
-                        body.getElements().stream().forEach(homeCoach -> createThing(homeCoach, apiBridgeUID));
+                        body.getElements().stream().forEach(homeCoach -> createThing(homeCoach, accountUID));
                     }
                 }
-                if (localConf.readFriends) {
-                    WeatherApi weatherApi = localHandler.getRestManager(WeatherApi.class);
-                    if (weatherApi != null) { // Search favorite stations
-                        ListBodyResponse<NAMain> body = weatherApi.getStationsData(null, true).getBody();
-                        if (body != null) {
-                            body.getElements().stream().filter(NAMain::isReadOnly).forEach(station -> {
-                                ThingUID bridgeUID = createThing(station, apiBridgeUID);
-                                station.getModules().values().stream()
-                                        .forEach(module -> createThing(module, bridgeUID));
-                            });
+                WeatherApi weatherApi = localHandler.getRestManager(WeatherApi.class);
+                if (weatherApi != null) { // Search owned or favorite stations
+                    weatherApi.getFavoriteAndGuestStationsData().stream().forEach(station -> {
+                        if (!station.isReadOnly() || localHandler.getReadFriends()) {
+                            ThingUID stationUID = createThing(station, accountUID);
+                            station.getModules().values().stream().forEach(module -> createThing(module, stationUID));
                         }
-                    }
+                    });
                 }
                 HomeApi homeApi = localHandler.getRestManager(HomeApi.class);
-                if (homeApi != null) { // Search all the rest
-                    homeApi.getHomesData(null, null).stream().filter(h -> !h.getFeatures().isEmpty()).forEach(home -> {
-                        ThingUID homeUID = createThing(home, apiBridgeUID);
-                        home.getKnownPersons().forEach(person -> createThing(person, homeUID));
-                        home.getModules().values().stream().forEach(device -> {
-                            ModuleType deviceType = device.getType();
-                            String deviceBridge = device.getBridge();
-                            ThingUID bridgeUID = deviceBridge != null && deviceType.getBridge() != ModuleType.HOME
-                                    ? findThingUID(deviceType.getBridge(), deviceBridge, apiBridgeUID)
-                                    : deviceType.getBridge() == ModuleType.HOME ? homeUID : apiBridgeUID;
-                            createThing(device, bridgeUID);
-                        });
-                        home.getRooms().values().stream().forEach(room -> {
-                            room.getModuleIds().stream().map(id -> home.getModules().get(id))
-                                    .map(m -> m != null ? m.getType().feature : FeatureArea.NONE)
-                                    .filter(f -> FeatureArea.ENERGY.equals(f)).findAny()
-                                    .ifPresent(f -> createThing(room, homeUID));
-                        });
-                    });
+                if (homeApi != null) { // Search those depending from a home that has modules + not only weather modules
+                    homeApi.getHomesData(null, null).stream()
+                            .filter(h -> !(h.getFeatures().isEmpty()
+                                    || h.getFeatures().contains(FeatureArea.WEATHER) && h.getFeatures().size() == 1))
+                            .forEach(home -> {
+                                ThingUID homeUID = createThing(home, accountUID);
+
+                                home.getKnownPersons().forEach(person -> createThing(person, homeUID));
+
+                                Map<String, ThingUID> bridgesUids = new HashMap<>();
+
+                                home.getRooms().values().stream().forEach(room -> {
+                                    room.getModuleIds().stream().map(id -> home.getModules().get(id))
+                                            .map(m -> m != null ? m.getType().feature : FeatureArea.NONE)
+                                            .filter(f -> FeatureArea.ENERGY.equals(f)).findAny()
+                                            .ifPresent(f -> bridgesUids.put(room.getId(), createThing(room, homeUID)));
+                                });
+
+                                // Creating modules that have no bridge first, avoiding weather station itself
+                                home.getModules().values().stream()
+                                        .filter(module -> module.getType().feature != FeatureArea.WEATHER)
+                                        .sorted(comparing(HomeDataModule::getBridge, nullsFirst(naturalOrder())))
+                                        .forEach(module -> {
+                                            String bridgeId = module.getBridge();
+                                            if (bridgeId == null) {
+                                                bridgesUids.put(module.getId(), createThing(module, homeUID));
+                                            } else {
+                                                createThing(module, bridgesUids.getOrDefault(bridgeId, homeUID));
+                                            }
+                                        });
+                            });
                 }
             } catch (NetatmoException e) {
                 logger.warn("Error during discovery process : {}", e.getMessage());
@@ -113,25 +121,19 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
         }
     }
 
-    private ThingUID findThingUID(ModuleType thingType, String thingId, @Nullable ThingUID brigdeUID) {
-        for (ThingTypeUID supported : getSupportedThingTypes()) {
-            ThingTypeUID thingTypeUID = thingType.thingTypeUID;
-            if (supported.equals(thingTypeUID)) {
-                String id = thingId.replaceAll("[^a-zA-Z0-9_]", "");
-                return brigdeUID == null ? new ThingUID(supported, id) : new ThingUID(supported, brigdeUID, id);
-            }
-        }
-        throw new IllegalArgumentException("Unsupported device type discovered : " + thingType);
+    private ThingUID findThingUID(ModuleType thingType, String thingId, ThingUID bridgeUID) {
+        ThingTypeUID thingTypeUID = thingType.thingTypeUID;
+        return getSupportedThingTypes().stream().filter(supported -> supported.equals(thingTypeUID)).findFirst()
+                .map(supported -> new ThingUID(supported, bridgeUID, thingId.replaceAll("[^a-zA-Z0-9_]", "")))
+                .orElseThrow(() -> new IllegalArgumentException("Unsupported device type discovered : " + thingType));
     }
 
-    private ThingUID createThing(NAModule module, @Nullable ThingUID bridgeUID) {
+    private ThingUID createThing(NAModule module, ThingUID bridgeUID) {
         ThingUID moduleUID = findThingUID(module.getType(), module.getId(), bridgeUID);
         DiscoveryResultBuilder resultBuilder = DiscoveryResultBuilder.create(moduleUID)
-                .withProperty(EQUIPMENT_ID, module.getId()).withRepresentationProperty(EQUIPMENT_ID)
-                .withLabel(module.getName() != null ? module.getName() : module.getId());
-        if (bridgeUID != null) {
-            resultBuilder.withBridge(bridgeUID);
-        }
+                .withProperty(NAThingConfiguration.ID, module.getId())
+                .withRepresentationProperty(NAThingConfiguration.ID)
+                .withLabel(module.getName() != null ? module.getName() : module.getId()).withBridge(bridgeUID);
         thingDiscovered(resultBuilder.build());
         return moduleUID;
     }
@@ -140,7 +142,6 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
     public void setThingHandler(ThingHandler handler) {
         if (handler instanceof ApiBridgeHandler) {
             this.handler = (ApiBridgeHandler) handler;
-            this.config = ((ApiBridgeHandler) handler).getConfiguration();
         }
     }
 

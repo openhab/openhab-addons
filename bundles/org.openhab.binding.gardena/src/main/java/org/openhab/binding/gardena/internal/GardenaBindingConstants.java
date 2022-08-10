@@ -37,4 +37,6 @@ public class GardenaBindingConstants {
     public static final String DEVICE_TYPE_WATER_CONTROL = "water_control";
     public static final String DEVICE_TYPE_SENSOR = "sensor";
     public static final String DEVICE_TYPE_POWER = "power";
+
+    public static final String API_CALL_SUPPRESSION_UNTIL = "apiCallSuppressionUntil";
 }

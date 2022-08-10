@@ -102,6 +102,7 @@
 		<item-type>Switch</item-type>
 		<label>Stop</label>
 		<description>Stop the appliance</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="step" advanced="true">
