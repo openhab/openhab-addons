@@ -54,8 +54,7 @@ public class EchonetChannel {
         channel.register(selector, SelectionKey.OP_READ);
     }
 
-    private boolean hasIpV4Address(final NetworkInterface networkInterface)
-    {
+    private boolean hasIpV4Address(final NetworkInterface networkInterface) {
         return networkInterface.inetAddresses().anyMatch(ia -> ia instanceof Inet4Address);
     }
 
