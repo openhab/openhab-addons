@@ -212,13 +212,37 @@ public class HomekitTaggedItem {
     }
 
     /**
+     * Returns configuration value as boolean if its exists otherwise returns defaultValue
+     *
+     * @param key configuration key
+     * @param defaultValue default value
+     * @return configuration value as boolean
+     */
+    public boolean getConfigurationAsBoolean(String key, boolean defaultValue) {
+        if (configuration == null) {
+            return defaultValue;
+        }
+        final @Nullable Object value = configuration.get(key);
+        if (value == null) {
+            return defaultValue;
+        }
+        if (value instanceof Boolean) {
+            return (Boolean) value;
+        }
+        if (value instanceof String) {
+            final String valueString = (String) value;
+            return valueString.equalsIgnoreCase("yes") || valueString.equalsIgnoreCase("true");
+        }
+        return defaultValue;
+    }
+
+    /**
      * returns true if inverted flag is set, i.e. item has the configuration "inverted=true"
      * 
      * @return true if inverted flag is set to true
      */
     public boolean isInverted() {
-        final String invertedConfig = getConfiguration(HomekitTaggedItem.INVERTED, "false");
-        return invertedConfig.equalsIgnoreCase("yes") || invertedConfig.equalsIgnoreCase("true");
+        return getConfigurationAsBoolean(HomekitTaggedItem.INVERTED, false);
     }
 
     /**

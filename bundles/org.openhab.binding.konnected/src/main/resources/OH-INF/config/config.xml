@@ -40,6 +40,17 @@
 			<default>30</default>
 			<advanced>true</advanced>
 		</parameter>
+
+		<parameter name="callback_uri" type="text">
+			<label>Callback URI</label>
+			<description>The URI where the Konnected panel will make callbacks. The default is to auto detect the port and IP
+				address of openHAB. This may not work in case you use a reverse proxy or openHAB
+				is running in Docker. Then the
+				plugin
+				is bound to the /konnected http context.</description>
+			<advanced>true</advanced>
+		</parameter>
+
 		<parameter name="controller_softreset" type="boolean" groupName="actions">
 			<label>Soft Reset Module</label>
 			<description>Send A Restart Command to the Module.</description>

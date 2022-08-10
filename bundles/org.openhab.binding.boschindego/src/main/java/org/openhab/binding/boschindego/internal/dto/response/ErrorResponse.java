@@ -10,17 +10,13 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.atlona.internal.handler;
-
-import org.eclipse.jdt.annotation.NonNullByDefault;
+package org.openhab.binding.boschindego.internal.dto.response;
 
 /**
- * Any model specific capabilities class should inherit from this base class. Currently doesn't provide any generic
- * functionality.
- *
- * @author Tim Roberts - Initial contribution
+ * Response from PUT request.
+ * 
+ * @author Jacob Laursen - Initial contribution
  */
-@NonNullByDefault
-public abstract class AtlonaCapabilities {
-
+public class ErrorResponse {
+    public int error;
 }

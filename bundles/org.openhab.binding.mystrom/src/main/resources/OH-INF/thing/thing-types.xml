@@ -32,7 +32,7 @@
 		<config-description>
 			<parameter name="hostname" type="text">
 				<label>Hostname</label>
-				<description>The host name or IP address of the myStrom plug.</description>
+				<description>The hostname or IP address of the myStrom plug.</description>
 				<context>network-address</context>
 				<default>localhost</default>
 			</parameter>
@@ -40,6 +40,10 @@
 				<label>Refresh Interval</label>
 				<description>Specifies the refresh interval in seconds.</description>
 				<default>10</default>
+			</parameter>
+			<parameter name="apiToken" type="text">
+				<label>API Token</label>
+				<description>Specifies the API token, if required (optional).</description>
 			</parameter>
 		</config-description>
 
@@ -77,7 +81,7 @@
 		<config-description>
 			<parameter name="hostname" type="text" required="true">
 				<label>Hostname</label>
-				<description>The host name or IP address of the myStrom bulb.</description>
+				<description>The hostname or IP address of the myStrom bulb.</description>
 				<context>network-address</context>
 				<default>localhost</default>
 			</parameter>
@@ -86,10 +90,65 @@
 				<description>Specifies the refresh interval in seconds.</description>
 				<default>10</default>
 			</parameter>
+			<parameter name="apiToken" type="text">
+				<label>API Token</label>
+				<description>Specifies the API token, if required (optional).</description>
+			</parameter>
 		</config-description>
 
 	</thing-type>
 
+	<thing-type id="mystrompir">
+
+		<label>myStrom Motion Sensor</label>
+		<channels>
+			<channel id="motion" typeId="system.motion"/>
+			<channel id="temperature" typeId="system.indoor-temperature"></channel>
+			<channel id="light" typeId="system.brightness"></channel>
+		</channels>
+		<properties>
+			<property name="mac"/>
+			<property name="version"/>
+			<property name="type"/>
+			<property name="ssid"/>
+			<property name="ip"/>
+			<property name="mask"/>
+			<property name="gw"/>
+			<property name="dns"/>
+			<property name="static"/>
+			<property name="connected"/>
+		</properties>
+
+		<representation-property>mac</representation-property>
+
+		<config-description>
+			<parameter name="hostname" type="text">
+				<label>Hostname</label>
+				<description>The hostname or IP address of the myStrom sensor.</description>
+				<context>network-address</context>
+				<default>localhost</default>
+			</parameter>
+			<parameter name="refresh" type="integer" unit="s" min="1">
+				<label>Refresh Interval</label>
+				<description>Specifies the refresh interval in seconds.</description>
+				<default>10</default>
+			</parameter>
+			<parameter name="apiToken" type="text">
+				<label>API Token</label>
+				<description>Specifies the API token, if required (optional).</description>
+			</parameter>
+			<parameter name="backoffTime" type="integer" unit="s" min="1">
+				<default>10</default>
+				<label>Backoff Time</label>
+				<description>Specifies the minimum frequency between successive motion detections in seconds.</description>
+			</parameter>
+			<parameter name="ledEnable" type="boolean">
+				<default>true</default>
+				<label>LED Enabled</label>
+				<description>Enables the status LED on the device.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
 
 	<channel-type id="power-channel">
 		<item-type>Number:Power</item-type>

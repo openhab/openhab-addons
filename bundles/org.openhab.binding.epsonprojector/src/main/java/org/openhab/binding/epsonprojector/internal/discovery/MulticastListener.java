@@ -14,7 +14,6 @@ package org.openhab.binding.epsonprojector.internal.discovery;
 
 import static org.openhab.binding.epsonprojector.internal.EpsonProjectorBindingConstants.DEFAULT_PORT;
 import static org.openhab.binding.epsonprojector.internal.EpsonProjectorBindingConstants.THING_PROPERTY_HOST;
-import static org.openhab.binding.epsonprojector.internal.EpsonProjectorBindingConstants.THING_PROPERTY_MAC;
 import static org.openhab.binding.epsonprojector.internal.EpsonProjectorBindingConstants.THING_PROPERTY_PORT;
 
 import java.io.IOException;
@@ -31,6 +30,7 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.thing.Thing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,9 +47,9 @@ public class MulticastListener {
 
     private MulticastSocket socket;
 
-    // Epson projector devices announce themselves on a multicast port
-    private static final String EPSON_MULTICAST_GROUP = "239.255.250.250";
-    private static final int EPSON_MULTICAST_PORT = 9131;
+    // Epson projector devices announce themselves on the AMX DDD multicast port
+    private static final String AMX_MULTICAST_GROUP = "239.255.250.250";
+    private static final int AMX_MULTICAST_PORT = 9131;
 
     // How long to wait in milliseconds for a discovery beacon
     public static final int DEFAULT_SOCKET_TIMEOUT_SEC = 3000;
@@ -61,12 +61,12 @@ public class MulticastListener {
         InetAddress ifAddress = InetAddress.getByName(ipv4Address);
         logger.debug("Discovery job using address {} on network interface {}", ifAddress.getHostAddress(),
                 NetworkInterface.getByInetAddress(ifAddress).getName());
-        socket = new MulticastSocket(EPSON_MULTICAST_PORT);
+        socket = new MulticastSocket(AMX_MULTICAST_PORT);
         socket.setInterface(ifAddress);
         socket.setSoTimeout(DEFAULT_SOCKET_TIMEOUT_SEC);
-        InetAddress mcastAddress = InetAddress.getByName(EPSON_MULTICAST_GROUP);
+        InetAddress mcastAddress = InetAddress.getByName(AMX_MULTICAST_GROUP);
         socket.joinGroup(mcastAddress);
-        logger.debug("Multicast listener joined multicast group {}:{}", EPSON_MULTICAST_GROUP, EPSON_MULTICAST_PORT);
+        logger.debug("Multicast listener joined multicast group {}:{}", AMX_MULTICAST_GROUP, AMX_MULTICAST_PORT);
     }
 
     public void shutdown() {
@@ -120,7 +120,7 @@ public class MulticastListener {
 
                 if (keyValue.length == 2 && keyValue[0].contains("UUID") && !keyValue[1].isEmpty()) {
                     Map<String, Object> properties = new HashMap<>();
-                    properties.put(THING_PROPERTY_MAC, keyValue[1]);
+                    properties.put(Thing.PROPERTY_MAC_ADDRESS, keyValue[1]);
                     properties.put(THING_PROPERTY_HOST, packet.getAddress().getHostAddress());
                     properties.put(THING_PROPERTY_PORT, DEFAULT_PORT);
                     return properties;

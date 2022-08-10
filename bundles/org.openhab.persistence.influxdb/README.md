@@ -34,7 +34,8 @@ This is very easy and you will find good documentation on it on the
 
 ## Configuration
 
-This service can be configured in the file `services/influxdb.cfg`.
+This service can be configured in the UI under `Settings` → `Other Services` → `InfluxDB Persistence Service` or in the file `services/influxdb.cfg`.
+Attention: The file-based configuration overrides the UI configuration.
 
 | Property        | Default               | Required | Description                                                                                                                                               |
 | --------------- | --------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
