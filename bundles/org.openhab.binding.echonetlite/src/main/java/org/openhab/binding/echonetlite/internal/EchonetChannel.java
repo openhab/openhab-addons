@@ -13,10 +13,7 @@
 package org.openhab.binding.echonetlite.internal;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.NetworkInterface;
-import java.net.SocketAddress;
-import java.net.StandardProtocolFamily;
+import java.net.*;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
@@ -49,12 +46,17 @@ public class EchonetChannel {
         final Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
         while (networkInterfaces.hasMoreElements()) {
             final NetworkInterface networkInterface = networkInterfaces.nextElement();
-            if (networkInterface.supportsMulticast()) {
+            if (networkInterface.supportsMulticast() && hasIpV4Address(networkInterface)) {
                 channel.join(discoveryAddress.getAddress(), networkInterface);
             }
         }
         channel.configureBlocking(false);
         channel.register(selector, SelectionKey.OP_READ);
+    }
+
+    private boolean hasIpV4Address(final NetworkInterface networkInterface)
+    {
+        return networkInterface.inetAddresses().anyMatch(ia -> ia instanceof Inet4Address);
     }
 
     public void close() {
