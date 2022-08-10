@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.velux.internal.things;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -83,9 +82,9 @@ public enum StatusReply {
     /*
      * List of critical errors
      */
-    private static final List<StatusReply> CRITICAL_ERRORS = Arrays.asList(new StatusReply[] { BLOCKED,
-            POWER_CONSUMPTION_TOO_HIGH, THERMAL_PROTECTION, LOCK_POSITION_OPEN, PRODUCT_NOT_OPERATIONAL,
-            DEAD_BOLT_ERROR, FILTER_MAINTENANCE_NEEDED, BATTERY_LEVEL, NODE_WAITING_FOR_POWER });
+    private static final List<StatusReply> CRITICAL_ERRORS = List.of(BLOCKED, POWER_CONSUMPTION_TOO_HIGH,
+            THERMAL_PROTECTION, LOCK_POSITION_OPEN, PRODUCT_NOT_OPERATIONAL, DEAD_BOLT_ERROR, FILTER_MAINTENANCE_NEEDED,
+            BATTERY_LEVEL, NODE_WAITING_FOR_POWER);
 
     public int getCode() {
         return code;
