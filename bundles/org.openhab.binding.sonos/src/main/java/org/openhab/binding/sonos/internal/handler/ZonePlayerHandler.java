@@ -1746,8 +1746,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
             savedState.volume = getVolume();
 
             if (currentURI != null) {
-                if (isPlayingStream(currentURI) || isPlayingRadioStartedByAmazonEcho(currentURI)
-                        || isPlayingRadio(currentURI) || isPlayingRadioApp(currentURI)) {
+                if (isPlayingStreamOrRadio(currentURI)) {
                     // we are streaming music, like tune-in radio or Google Play Music radio
                     SonosMetaData track = getTrackMetadata();
                     SonosMetaData current = getCurrentURIMetadata();
@@ -2688,8 +2687,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                 logger.debug("playNotificationSoundURI: currentURI {} metadata {}", currentURI,
                         coordinator.getCurrentURIMetadataAsString());
 
-                if (isPlayingStream(currentURI) || isPlayingRadioStartedByAmazonEcho(currentURI)
-                        || isPlayingRadio(currentURI) || isPlayingRadioApp(currentURI)) {
+                if (isPlayingStreamOrRadio(currentURI)) {
                     handleNotifForRadioStream(currentURI, notificationURL, coordinator);
                 } else if (isPlayingLineIn(currentURI)) {
                     handleNotifForLineIn(currentURI, notificationURL, coordinator);
@@ -2738,6 +2736,11 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
 
     private boolean isPlayingRadioStartedByAmazonEcho(@Nullable String currentURI) {
         return currentURI != null && currentURI.contains(RADIO_MP3_URI) && currentURI.contains(OPML_TUNE);
+    }
+
+    private boolean isPlayingStreamOrRadio(@Nullable String currentURI) {
+        return isPlayingStream(currentURI) || isPlayingRadioStartedByAmazonEcho(currentURI)
+                || isPlayingRadio(currentURI) || isPlayingRadioApp(currentURI);
     }
 
     private boolean isPlayingLineIn(@Nullable String currentURI) {
