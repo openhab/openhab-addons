@@ -100,6 +100,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     private static final String STATE_PLAYING = "PLAYING";
     private static final String STATE_PAUSED_PLAYBACK = "PAUSED_PLAYBACK";
     private static final String STATE_STOPPED = "STOPPED";
+    private static final String STATE_TRANSITIONING = "TRANSITIONING";
 
     private static final String LINEINCONNECTED = "LineInConnected";
     private static final String TOSLINEINCONNECTED = "TOSLinkConnected";
@@ -763,7 +764,8 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
             case STATE:
                 value = getTransportState();
                 if (value != null) {
-                    newState = new StringType(value);
+                    // Ignoring state TRANSITIONING
+                    newState = STATE_TRANSITIONING.equals(value) ? null : new StringType(value);
                 }
                 break;
             case CONTROL:
@@ -774,12 +776,15 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                     newState = PlayPauseType.PAUSE;
                 } else if (STATE_PAUSED_PLAYBACK.equals(value)) {
                     newState = PlayPauseType.PAUSE;
+                } else if (STATE_TRANSITIONING.equals(value)) {
+                    // Ignoring state TRANSITIONING
+                    newState = null;
                 }
                 break;
             case STOP:
                 value = getTransportState();
                 if (value != null) {
-                    newState = OnOffType.from(STATE_STOPPED.equals(value));
+                    newState = STATE_TRANSITIONING.equals(value) ? null : OnOffType.from(STATE_STOPPED.equals(value));
                 }
                 break;
             case SHUFFLE:
