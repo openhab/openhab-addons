@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class SonosMediaInformation {
 
-    private static final int SOCKET_TIMEOUT = 5000;
+    private static final int HTTP_TIMEOUT = 5000;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SonosMediaInformation.class);
 
@@ -86,7 +86,7 @@ public class SonosMediaInformation {
         if (opmlUrl != null) {
             String response = null;
             try {
-                response = HttpUtil.executeUrl("GET", opmlUrl, SOCKET_TIMEOUT);
+                response = HttpUtil.executeUrl("GET", opmlUrl, HTTP_TIMEOUT);
             } catch (IOException e) {
                 LOGGER.debug("Request to device failed", e);
             }
