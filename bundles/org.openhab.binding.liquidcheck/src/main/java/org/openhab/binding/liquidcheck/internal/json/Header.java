@@ -6,7 +6,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class Header {
     public String namespace = "";
     public String name = "";
-    public String messagId = "";
+    public String messageId = "";
     public String payloadVersion = "";
     public String authorization = "";
 }
