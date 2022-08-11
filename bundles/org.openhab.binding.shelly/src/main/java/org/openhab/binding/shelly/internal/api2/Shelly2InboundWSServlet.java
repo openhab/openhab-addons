@@ -47,11 +47,13 @@ import org.slf4j.LoggerFactory;
 public class Shelly2InboundWSServlet extends WebSocketServlet {
     private static final long serialVersionUID = -1210354558091063207L;
     private final Logger logger = LoggerFactory.getLogger(Shelly2InboundWSServlet.class);
+    private @Nullable HttpService httpService;
     private final ShellyThingTable thingTable;
 
     @Activate
     public Shelly2InboundWSServlet(@Reference HttpService httpService, @Reference ShellyThingTable thingTable) {
         this.thingTable = thingTable;
+        this.httpService = httpService;
         try {
             httpService.registerServlet("/shelly/wsevent", this, null, httpService.createDefaultHttpContext());
         } catch (NamespaceException | ServletException | IllegalArgumentException e) {
@@ -86,6 +88,13 @@ public class Shelly2InboundWSServlet extends WebSocketServlet {
         public Object createWebSocket(@Nullable ServletUpgradeRequest req, @Nullable ServletUpgradeResponse resp) {
             logger.debug("WebSocket: Create socket from servlet");
             return new Shelly2WebSocket(thingTable, true);
+        }
+    }
+
+    public void dispose() {
+        if (httpService != null) {
+            httpService.unregister("/shelly/wsevent");
+            httpService = null;
         }
     }
 }

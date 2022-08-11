@@ -75,7 +75,7 @@ import org.slf4j.LoggerFactory;
 public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterface, Shelly2WebSocketInterface {
     private final Logger logger = LoggerFactory.getLogger(Shelly2ApiRpc.class);
     private final @Nullable ShellyThingTable thingTable;
-    private final Shelly2WebSocket rpcSocket;
+    private Shelly2WebSocket rpcSocket = new Shelly2WebSocket();
 
     private boolean initialized = false;
     private boolean discovery = false;
@@ -89,19 +89,14 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
      */
     public Shelly2ApiRpc(String thingName, ShellyThingTable thingTable, ShellyThingInterface thing) {
         super(thingName, thing);
+        this.thingName = thingName;
         this.thing = thing;
         this.thingTable = thingTable;
-        if (thing == null || thingTable == null) {
-            int i = 1;
-        }
         try {
             getProfile().initFromThingType(thingName);
         } catch (ShellyApiException e) {
             logger.info("{}: Shelly2 API initialization failed!", thingName, e);
         }
-
-        rpcSocket = new Shelly2WebSocket(thingTable, config.deviceIp);
-        rpcSocket.addMessageHandler(this);
     }
 
     /**
@@ -113,17 +108,18 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
      */
     public Shelly2ApiRpc(String thingName, ShellyThingConfiguration config, HttpClient httpClient) {
         super(thingName, config, httpClient);
+        this.thingName = thingName;
         this.thingTable = null;
         this.discovery = true;
-        rpcSocket = new Shelly2WebSocket(thingTable, config.deviceIp);
-        rpcSocket.addMessageHandler(this);
     }
 
     @Override
     public void initialize() throws ShellyApiException {
-        disconnect();
-        rpcSocket.connect();
-        initialized = true;
+        if (!initialized) {
+            rpcSocket = new Shelly2WebSocket(thingTable, config.deviceIp);
+            rpcSocket.addMessageHandler(this);
+            initialized = true;
+        }
     }
 
     @Override
@@ -199,22 +195,26 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             }
         }
 
-        profile.status.inputs = new ArrayList<>();
-        relayStatus.inputs = new ArrayList<>();
-        for (int i = 0; i < profile.numInputs; i++) {
-            ShellyInputState input = new ShellyInputState();
-            input.input = 0;
-            input.event = "";
-            input.eventCount = 0;
-            profile.status.inputs.add(input);
-            relayStatus.inputs.add(input);
+        if (profile.numInputs > 0) {
+            profile.status.inputs = new ArrayList<>();
+            relayStatus.inputs = new ArrayList<>();
+            for (int i = 0; i < profile.numInputs; i++) {
+                ShellyInputState input = new ShellyInputState();
+                input.input = 0;
+                input.event = "";
+                input.eventCount = 0;
+                profile.status.inputs.add(input);
+                relayStatus.inputs.add(input);
+            }
         }
 
-        profile.status.rollers = new ArrayList<>();
-        for (int i = 0; i < profile.numRollers; i++) {
-            ShellyRollerStatus rs = new ShellyRollerStatus();
-            profile.status.rollers.add(rs);
-            rollerStatus.add(rs);
+        if (profile.isRoller) {
+            profile.status.rollers = new ArrayList<>();
+            for (int i = 0; i < profile.numRollers; i++) {
+                ShellyRollerStatus rs = new ShellyRollerStatus();
+                profile.status.rollers.add(rs);
+                rollerStatus.add(rs);
+            }
         }
 
         profile.status.dimmers = profile.isDimmer ? new ArrayList<>() : null;
@@ -230,8 +230,8 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
         profile.initialized = true;
         if (!discovery) {
-            // request status update, this triggers WebSocket updates
-            asyncApiRequest(SHELLYRPC_METHOD_GETSTATUS);
+            getStatus(); // make sure profile.status is initialized (e.g,. relay/meter status)
+            asyncApiRequest(SHELLYRPC_METHOD_GETSTATUS); // request periodic status updates from device
         }
 
         return profile;
@@ -271,12 +271,12 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         logger.debug("{}: NotifyStatus update received: {}", thingName, gson.toJson(message));
         try {
             if (thing == null) {
-                logger.debug("{}: No matching thing on NotifyStatus for {}, ignore (discovery={})", thingName,
-                        message.dst, discovery);
+                logger.debug("{}: No matching thing on NotifyStatus for {}, ignore (src={}, dst={}, discovery={})",
+                        thingName, thingName, message.src, message.dst, discovery);
                 return;
             }
             if (!thing.isThingOnline() && thing.getThingStatusDetail() != ThingStatusDetail.CONFIGURATION_PENDING) {
-                boolean online = !thing.isThingOnline();
+                boolean online = thing.isThingOnline();
                 ThingStatus status = thing.getThingStatus();
                 ThingStatusDetail detail = thing.getThingStatusDetail();
                 logger.debug(
@@ -288,7 +288,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                 if (message.error.code == HttpStatus.UNAUTHORIZED_401 && !getString(message.error.message).isEmpty()) {
                     // Save nonce for notification
                     Shelly2AuthResponse auth = gson.fromJson(message.error.message, Shelly2AuthResponse.class);
-                    if (auth != null) {
+                    if (auth != null && auth.realm == null) {
                         logger.debug("{}: Authentication data received: {}", thingName, message.error.message);
                         authInfo = auth;
                     }
@@ -673,6 +673,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
     private void asyncApiRequest(String method) throws ShellyApiException {
         Shelly2RpcBaseMessage request = buildRequest(method, null);
+        reconnect();
         rpcSocket.sendMessage(gson.toJson(request)); // submit, result wull be async
     }
 
@@ -680,6 +681,8 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         String json = "";
         Shelly2RpcBaseMessage req = buildRequest(method, params);
         try {
+            reconnect(); // make sure WS is connected
+
             if (authInfo.realm != null) {
                 req.auth = buildAuthRequest(authInfo, config.userId, config.serviceName, config.password);
             }
@@ -732,6 +735,13 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
     private String rpcPost(String postData) throws ShellyApiException {
         return httpPost("/rpc", postData);
+    }
+
+    private void reconnect() throws ShellyApiException {
+        if (!rpcSocket.isConnected()) {
+            logger.debug("{}: Connect Rpc Socket (discovery = {})", thingName, discovery);
+            rpcSocket.connect();
+        }
     }
 
     private void disconnect() {

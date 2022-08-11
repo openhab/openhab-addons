@@ -17,6 +17,7 @@ import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.concurrent.CountDownLatch;
 
 import javax.ws.rs.core.HttpHeaders;
 
@@ -58,6 +59,7 @@ public class Shelly2WebSocket {
 
     private String deviceIp = "";
     private boolean inbound = false;
+    private CountDownLatch connectLatch = new CountDownLatch(1);
 
     private @Nullable Session session;
     private @Nullable Shelly2WebSocketInterface websocketHandler;
@@ -92,8 +94,9 @@ public class Shelly2WebSocket {
             request.setHeader("Cache-Control", "no-cache");
 
             logger.debug("WebSocket: Connect WebSocket, URI={}", uri);
+            connectLatch = new CountDownLatch(1);
             client.start();
-            client.setMaxIdleTimeout(15000);
+            // client.setMaxIdleTimeout(15000);
             client.connect(this, uri, request);
         } catch (Exception e) {
             throw new ShellyApiException("Unable to initialize WebSocket", e);
@@ -118,12 +121,14 @@ public class Shelly2WebSocket {
                     websocketHandler = api.getRpcHandler();
                 }
             }
+            connectLatch.countDown();
 
             if (websocketHandler != null) {
                 websocketHandler.onConnect(deviceIp, true);
                 return;
             }
         } catch (IllegalArgumentException e) { // unknown thing
+            // debug is below
         }
 
         if (websocketHandler == null && thingTable != null) {
@@ -132,12 +137,14 @@ public class Shelly2WebSocket {
         }
     }
 
+    @SuppressWarnings("null")
     public void sendMessage(String str) throws ShellyApiException {
         if (session != null) {
             try {
+                connectLatch.await();
                 session.getRemote().sendString(str);
                 return;
-            } catch (IOException e) {
+            } catch (IOException | InterruptedException e) {
                 throw new ShellyApiException("Error WebSocketSend failed", e);
             }
         }
@@ -186,31 +193,20 @@ public class Shelly2WebSocket {
         return inbound;
     }
 
-    public void closeWebsocketSession() throws ShellyApiException {
-        disconnect();
-        try {
-            client.stop();
-        } catch (Exception e) {
-            throw new ShellyApiException("Unable to close WebSocket session", e);
-        }
-    }
-
     public void disconnect() {
         try {
             if (session != null) {
                 Session s = session;
                 if (s.isOpen()) {
                     logger.debug("WebSocket: Disconnecting WebSocket");
-                    ;
                     s.disconnect();
                 }
                 logger.debug("WebSocket: Closing WebSocket");
                 s.close();
+                session = null;
             }
         } catch (IOException e) {
             logger.debug("Unable to close WebSocket", e);
-        } finally {
-            session = null;
         }
     }
 
@@ -238,5 +234,9 @@ public class Shelly2WebSocket {
         if (websocketHandler != null) {
             websocketHandler.onError(cause);
         }
+    }
+
+    public void dispose() {
+        disconnect();
     }
 }
