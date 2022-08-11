@@ -145,8 +145,7 @@ public class LiquidCheckHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         if (null != polling) {
-            ScheduledFuture<?> Notnull = polling;
-            Notnull.cancel(true);
+            polling.cancel(true);
         }
     }
 
