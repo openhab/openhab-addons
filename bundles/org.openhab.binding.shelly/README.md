@@ -77,7 +77,8 @@ Also check out the [Shelly Manager](doc/ShellyManager.md), which
 | shellyplus1pm       | Shelly Plus 1PM with 1x relay + power meter              | SNSW-001P16EU  |
 | shellyplus2pm-relay | Shelly Plus 2PM with 2x relay + power meter, relay mode  | SNSW-002P16EU  |
 | shellyplus2pm-roller| Shelly Plus 2PM with 2x relay + power meter, roller mode | SNSW-002P16EU  |
-| shellyplusi4        | Shelly Plus i4 with 4xinput                              | SNSN-0024X     |
+| shellyplusi4        | Shelly Plus i4 with 4x AC Input                          | SNSN-0024X     |
+| shellyplusi4dc      | Shelly Plus i4 with 4x DC Input                          | SNSN-0D24X     |
 | shellyplusht        | Shelly Plus HT with temp + humidity sensori              | SNSN-0013A     |
 
 ### Generation 2 Pro series:
@@ -987,6 +988,18 @@ You should calibrate the valve using the device Web UI or Shelly App before star
 |          |lastUpdate   |DateTime |yes      |Timestamp of the last update (any sensor value changed)                |
 |battery   |batteryLevel |Number   |yes      |Battery Level in %                                                     |
 |          |batteryAlert |Switch   |yes      |Low battery alert                                                      |
+
+
+### Shelly Plus i4, i4DC (thing-types: shellyplusi4, shellyplusi4dc)
+
+|Group     |Channel      |Type     |read-only|Description                                                            |
+|----------|-------------|---------|---------|-----------------------------------------------------------------------|
+|status    |input1       |Switch   |yes      |State of Input 1                                                       |
+|          |input2       |Switch   |yes      |State of Input 2                                                       |
+|          |input3       |Switch   |yes      |State of Input 3                                                       |
+|          |button       |Trigger  |yes      |Event trigger: Event trigger, see section Button Events                |
+|          |lastEvent    |String   |yes      |S/SS/SSS for 1/2/3x Shortpush or L for Longpush                        |
+|          |eventCount   |Number   |yes      |Counter gets incremented every time the device issues a button event.  |
 
 
 ## Full Example

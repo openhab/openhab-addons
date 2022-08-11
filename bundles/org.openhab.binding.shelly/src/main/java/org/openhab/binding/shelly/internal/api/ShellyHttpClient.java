@@ -65,7 +65,6 @@ public class ShellyHttpClient {
     public ShellyHttpClient(String thingName, ShellyThingInterface thing) {
         this(thingName, thing.getThingConfig(), thing.getHttpClient());
         this.profile = thing.getProfile();
-        profile.initFromThingType(thingName);
     }
 
     public ShellyHttpClient(String thingName, ShellyThingConfiguration config, HttpClient httpClient) {

@@ -53,6 +53,8 @@ public interface ShellyThingInterface {
 
     public void setThingOffline(ThingStatusDetail detail, String messageKey);
 
+    public String getThingType();
+
     public ThingStatus getThingStatus();
 
     public ThingStatusDetail getThingStatusDetail();

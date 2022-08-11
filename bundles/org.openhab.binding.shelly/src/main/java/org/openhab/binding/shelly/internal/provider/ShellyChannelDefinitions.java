@@ -375,7 +375,8 @@ public class ShellyChannelDefinitions {
         if (status.inputs != null) {
             // Create channels per input. For devices with more than 1 input (Dimmer, 1L) multiple channel sets are
             // created by adding the index to the channel name
-            boolean multi = (profile.numRelays == 1 || profile.isDimmer || profile.isRoller) && profile.numInputs >= 2;
+            boolean multi = profile.isIX || profile.isDimmer || profile.isRoller
+                    || (profile.numRelays == 1 && profile.numInputs >= 2);
             for (int i = 0; i < profile.numInputs; i++) {
                 String suffix = multi ? String.valueOf(i + 1) : "";
                 ShellyInputState input = status.inputs.get(i);

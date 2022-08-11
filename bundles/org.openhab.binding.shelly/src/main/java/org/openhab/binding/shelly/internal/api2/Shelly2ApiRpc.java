@@ -93,7 +93,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         this.thing = thing;
         this.thingTable = thingTable;
         try {
-            getProfile().initFromThingType(thingName);
+            getProfile().initFromThingType(thing.getThingType());
         } catch (ShellyApiException e) {
             logger.info("{}: Shelly2 API initialization failed!", thingName, e);
         }
