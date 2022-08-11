@@ -12,8 +12,16 @@
  */
 package org.openhab.binding.liquidcheck.internal.json;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
+/**
+ * The {@link Response} .
+ *
+ * @author Marcel Goerentz - Initial contribution
+ */
+@NonNullByDefault
 public class Response {
 
-    public Header header;
-    public Payload payload;
+    public Header header = new Header();
+    public Payload payload = new Payload();
 }

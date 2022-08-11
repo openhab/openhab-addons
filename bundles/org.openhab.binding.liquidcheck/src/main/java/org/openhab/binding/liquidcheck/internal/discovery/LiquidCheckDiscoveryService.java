@@ -86,19 +86,14 @@ public class LiquidCheckDiscoveryService extends AbstractDiscoveryService {
                     }
                 }
             }
-
         } catch (SocketException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.debug("Socket Exception {}", e.toString());
         } catch (UnknownHostException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.debug("UnknownHostException {}", e.toString());
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.debug("IOException {}", e.toString());
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.debug("Exception {}", e.toString());
         }
     }
 

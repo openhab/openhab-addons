@@ -15,6 +15,12 @@ package org.openhab.binding.liquidcheck.internal.discovery;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.liquidcheck.internal.json.Response;
 
+/**
+ * The {@link LiquidCheckProperties} class defines common constants, which are
+ * used across the whole binding.
+ *
+ * @author Marcel Goerentz - Initial contribution
+ */
 @NonNullByDefault
 public class LiquidCheckProperties {
     public final String firmware;

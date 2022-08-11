@@ -12,8 +12,16 @@
  */
 package org.openhab.binding.liquidcheck.internal.json;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
+/**
+ * The {@link System} .
+ *
+ * @author Marcel Goerentz - Initial contribution
+ */
+@NonNullByDefault
 public class System {
     public int error = 0;
     public int uptime = 0;
-    public Pump pump;
+    public Pump pump = new Pump();
 }

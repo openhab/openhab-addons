@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.liquidcheck.internal.httpClient;
+package org.openhab.binding.liquidcheck.internal.httpclient;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -23,7 +23,6 @@ import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.liquidcheck.internal.LiquidCheckConfiguration;
-import org.openhab.binding.liquidcheck.internal.LiquidCheckHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +35,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class LiquidCheckHttpClient {
 
-    private final Logger logger = LoggerFactory.getLogger(LiquidCheckHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(LiquidCheckHttpClient.class);
     private final HttpClient client;
     private final LiquidCheckConfiguration config;
 
@@ -56,7 +55,7 @@ public class LiquidCheckHttpClient {
             client.setIdleTimeout(config.connecionTimeOut * 1000);
             client.start();
         } catch (Exception e) {
-            logger.error("Couldn't start Client! Exception: " + e.toString());
+            logger.error("Couldn't start Client! Exception: {}", e.toString());
             return;
         }
     }
@@ -76,7 +75,7 @@ public class LiquidCheckHttpClient {
         return response.getContentAsString();
     }
 
-    public String measureCommand() {
+    public String measureCommand() throws InterruptedException, TimeoutException, ExecutionException {
         String uri = "http://" + config.ip + "/command";
         Request request = client.newRequest(uri);
         request.method(HttpMethod.POST);

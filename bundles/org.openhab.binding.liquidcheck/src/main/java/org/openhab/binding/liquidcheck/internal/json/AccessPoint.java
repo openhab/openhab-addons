@@ -13,6 +13,14 @@
 
 package org.openhab.binding.liquidcheck.internal.json;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
+/**
+ * The {@link AccessPoint} .
+ *
+ * @author Marcel Goerentz - Initial contribution
+ */
+@NonNullByDefault
 public class AccessPoint {
     public String ssid = "";
     public String bssid = "";
