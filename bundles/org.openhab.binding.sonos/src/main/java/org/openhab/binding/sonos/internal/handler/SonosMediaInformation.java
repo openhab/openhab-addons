@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.sonos.internal.handler;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,9 +19,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.sonos.internal.SonosMetaData;
 import org.openhab.binding.sonos.internal.SonosXMLParser;
-import org.openhab.core.io.net.http.HttpUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link SonosMediaInformation} is responsible for extracting media information from XML metadata
@@ -31,10 +27,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SonosMediaInformation {
-
-    private static final int HTTP_TIMEOUT = 5000;
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(SonosMediaInformation.class);
 
     private @Nullable String artist;
     private @Nullable String album;
@@ -79,34 +71,16 @@ public class SonosMediaInformation {
         return needsUpdate;
     }
 
-    public static SonosMediaInformation parseTuneInMediaInfo(@Nullable String opmlUrl, @Nullable String radioTitle,
+    public static SonosMediaInformation parseTuneInMediaInfo(@Nullable String opmlData, @Nullable String radioTitle,
             @Nullable SonosMetaData trackMetaData) {
         String title = null;
         String combinedInfo = null;
-        if (opmlUrl != null) {
-            String response = null;
-            try {
-                response = HttpUtil.executeUrl("GET", opmlUrl, HTTP_TIMEOUT);
-            } catch (IOException e) {
-                LOGGER.debug("Request to device failed", e);
-            }
-
-            if (response != null) {
-                List<String> fields = SonosXMLParser.getRadioTimeFromXML(response);
-
-                if (!fields.isEmpty()) {
-                    combinedInfo = "";
-                    for (String field : fields) {
-                        if (combinedInfo.isEmpty()) {
-                            // radio name should be first field
-                            title = field;
-                        } else {
-                            combinedInfo += " - ";
-                        }
-                        combinedInfo += field;
-                    }
-                    return new SonosMediaInformation(null, null, title, combinedInfo, true);
-                }
+        if (opmlData != null) {
+            List<String> fields = SonosXMLParser.getRadioTimeFromXML(opmlData);
+            if (!fields.isEmpty()) {
+                title = fields.get(0);
+                combinedInfo = String.join(" - ", fields);
+                return new SonosMediaInformation(null, null, title, combinedInfo, true);
             }
         }
         if (radioTitle != null && !radioTitle.isEmpty()) {

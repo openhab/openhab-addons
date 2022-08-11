@@ -14,6 +14,7 @@ package org.openhab.binding.sonos.internal.handler;
 
 import static org.openhab.binding.sonos.internal.SonosBindingConstants.*;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
@@ -163,6 +164,8 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     private static final int MAX_SURROUND_LEVEL = 15;
     private static final int MIN_HEIGHT_LEVEL = -10;
     private static final int MAX_HEIGHT_LEVEL = 10;
+
+    private static final int HTTP_TIMEOUT = 5000;
 
     private final Logger logger = LoggerFactory.getLogger(ZonePlayerHandler.class);
 
@@ -1249,7 +1252,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
             else if (isPlayingStream(currentURI) || isPlayingRadioStartedByAmazonEcho(currentURI)) {
                 // Radio stream (tune-in)
                 stationID = extractStationId(currentURI);
-                mediaInfo = SonosMediaInformation.parseTuneInMediaInfo(buildOpmlUrl(stationID),
+                mediaInfo = SonosMediaInformation.parseTuneInMediaInfo(getOpmlData(stationID),
                         currentUriMetaData != null ? currentUriMetaData.getTitle() : null, currentTrack);
             }
 
@@ -1308,14 +1311,21 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         }
     }
 
-    private @Nullable String buildOpmlUrl(@Nullable String stationId) {
+    private @Nullable String getOpmlData(@Nullable String stationId) {
         String url = opmlUrl;
         if (url != null && stationId != null && !stationId.isEmpty()) {
             String mac = getMACAddress();
             if (mac != null && !mac.isEmpty()) {
                 url = url.replace("%id", stationId);
                 url = url.replace("%serial", mac);
-                return url;
+                String response = null;
+                try {
+                    response = HttpUtil.executeUrl("GET", url, HTTP_TIMEOUT);
+                } catch (IOException e) {
+                    logger.debug("OPML request failed ({})", url, e);
+                }
+                logger.trace("OPML response = {}", response);
+                return response;
             }
         }
         return null;
