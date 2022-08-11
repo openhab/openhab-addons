@@ -23,7 +23,7 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.liquidcheck.internal.httpClient.LiquidCheckHttpClient;
+import org.openhab.binding.liquidcheck.internal.httpclient.LiquidCheckHttpClient;
 import org.openhab.binding.liquidcheck.internal.json.Response;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
@@ -64,9 +64,13 @@ public class LiquidCheckHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (MEASURE_CHANNEL.equals(channelUID.getAsString())) {
-            LiquidCheckHttpClient client = new LiquidCheckHttpClient(config);
-            String response = client.measureCommand();
-            logger.debug("This is the response: {}", response);
+            try {
+                LiquidCheckHttpClient client = new LiquidCheckHttpClient(config);
+                String response = client.measureCommand();
+                logger.debug("This is the response: {}", response);
+            } catch (InterruptedException | TimeoutException | ExecutionException e) {
+                logger.error("This went wrong in handleCommand: ", e);
+            }
         }
     }
 
@@ -138,7 +142,7 @@ public class LiquidCheckHandler extends BaseThingHandler {
                     updateState(RAW_LEVEL_CHANNEL,
                             new QuantityType<>(response.payload.measure.raw.level, SIUnits.METRE));
                     updateState(PUMP_TOTAL_RUNS_CHANNEL, new DecimalType(response.payload.system.pump.totalRuns));
-                    updateState(PUMP_TOTAl_RUNTIME_CHANNEL,
+                    updateState(PUMP_TOTAL_RUNTIME_CHANNEL,
                             new QuantityType<>(response.payload.system.pump.totalRuntime, Units.SECOND));
                 } else {
                     logger.debug("Json is null");

@@ -15,24 +15,43 @@ package org.openhab.binding.liquidcheck.internal.json;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import java.nio.charset.StandardCharsets;
+import java.nio.file.*;
+import java.util.List;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.google.gson.Gson;
 
+/**
+ * The {@link ResponseTest} .
+ *
+ * @author Marcel Goerentz - Initial contribution
+ */
+@NonNullByDefault
 public class ResponseTest {
 
-    Response response;
+    Response response = new Response();
 
     @BeforeEach
     void setUp() {
-        String json = "{\"header\":{\"namespace\":\"Device\",\"name\":\"Response\",\"messageId\":\"499C7D21-F9579A3C\",   \"payloadVersion\":\"1\",\"authorization\":\"1C9DC262BE70-00038BC8-TX0K103HIXCXVLTBMVKVXFF\"},\"payload\":{\"measure\":{\"level\":2.23,\"content\":9265,\"raw\":{\"level\":2.2276,\"content\":9255.3193},\"age\":1981},\"expansion\":{\"boardType\":-1,\"oneWire\":null,\"board\":null},\"device\":{\"firmware\":\"1.60\",\"hardware\":\"B5\",\"name\":\"Liquid-Check\",\"model\":{\"name\":\"\",\"number\":1},\"manufacturer\":\"SI-Elektronik GmbH\",\"uuid\":\"0ba64a0c-7a88b168-0001\",\"security\":{\"code\":\"gkzQ5uGo6ElSdUsDWKQu2A==\"}},\"system\":{\"error\":0,\"uptime\":232392,\"pump\":{\"totalRuns\":351,\"totalRuntime\":1249}},\"wifi\":{\"station\":{\"hostname\":\"Liquid-Check\",\"ip\":\"192.168.2.102\",\"gateway\":\"192.168.2.1\",\"netmask\":\"255.255.255.0\",\"mac\":\"1C:9D:C2:62:BE:70\"},\"accessPoint\":{\"ssid\":\"WLAN-267994\",\"bssid\":\"4C:09:D4:2B:C3:97\",\"rssi\":-45}}}}";
-        response = new Gson().fromJson(json, Response.class);
+        try {
+            List<String> lines = Files.readAllLines(Paths.get("src/test/resources/Example.json"),
+                    StandardCharsets.UTF_8);
+            StringBuilder sb = new StringBuilder();
+            for (String line : lines) {
+                sb.append(line);
+            }
+            response = new Gson().fromJson(sb.toString(), Response.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Test
     public void jsonTest() {
-
         assertThat(response.header.namespace, is(equalTo("Device")));
         assertThat(response.header.name, is(equalTo("Response")));
         assertThat(response.header.messageId, is(equalTo("499C7D21-F9579A3C")));
@@ -44,8 +63,8 @@ public class ResponseTest {
         assertThat(response.payload.measure.raw.level, is(equalTo(2.2276)));
         assertThat(response.payload.measure.raw.content, is(equalTo(9255.3193)));
         assertThat(response.payload.expansion.boardType, is(equalTo(-1)));
-        assertThat(response.payload.expansion.oneWire, is(equalTo(null)));
-        assertThat(response.payload.expansion.board, is(equalTo(null)));
+        assertThat(response.payload.expansion.oneWire, is(nullValue()));
+        assertThat(response.payload.expansion.board, is(nullValue()));
         assertThat(response.payload.device.firmware, is(equalTo("1.60")));
         assertThat(response.payload.device.hardware, is(equalTo("B5")));
         assertThat(response.payload.device.name, is(equalTo("Liquid-Check")));

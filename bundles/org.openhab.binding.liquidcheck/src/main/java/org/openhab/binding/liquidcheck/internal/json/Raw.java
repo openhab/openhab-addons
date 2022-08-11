@@ -12,6 +12,14 @@
  */
 package org.openhab.binding.liquidcheck.internal.json;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
+/**
+ * The {@link Raw} .
+ *
+ * @author Marcel Goerentz - Initial contribution
+ */
+@NonNullByDefault
 public class Raw {
     public double level = 0.0000;
     public double content = 0.0000;

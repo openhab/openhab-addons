@@ -12,6 +12,14 @@
  */
 package org.openhab.binding.liquidcheck.internal.json;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
+/**
+ * The {@link Station} .
+ *
+ * @author Marcel Goerentz - Initial contribution
+ */
+@NonNullByDefault
 public class Station {
     public String hostname = "";
     public String ip = "";

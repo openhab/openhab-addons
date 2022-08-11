@@ -12,7 +12,15 @@
  */
 package org.openhab.binding.liquidcheck.internal.json;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
+/**
+ * The {@link Wifi} .
+ *
+ * @author Marcel Goerentz - Initial contribution
+ */
+@NonNullByDefault
 public class Wifi {
-    public Station station;
-    public AccessPoint accessPoint;
+    public Station station = new Station();
+    public AccessPoint accessPoint = new AccessPoint();
 }

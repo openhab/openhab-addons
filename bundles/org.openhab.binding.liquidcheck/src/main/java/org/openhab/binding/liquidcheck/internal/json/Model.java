@@ -12,6 +12,14 @@
  */
 package org.openhab.binding.liquidcheck.internal.json;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
+/**
+ * The {@link Model} .
+ *
+ * @author Marcel Goerentz - Initial contribution
+ */
+@NonNullByDefault
 public class Model {
     public String name = "";
     public int number = 0;

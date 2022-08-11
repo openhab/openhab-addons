@@ -12,8 +12,16 @@
  */
 package org.openhab.binding.liquidcheck.internal.json;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
+/**
+ * The {@link Expansion} .
+ *
+ * @author Marcel Goerentz - Initial contribution
+ */
+@NonNullByDefault
 public class Expansion {
     public int boardType = -1;
-    public String oneWire = null;
-    public String board = null;
+    public String oneWire = "null";
+    public String board = "null";
 }

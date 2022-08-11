@@ -12,10 +12,18 @@
  */
 package org.openhab.binding.liquidcheck.internal.json;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
+/**
+ * The {@link Payload} .
+ *
+ * @author Marcel Goerentz - Initial contribution
+ */
+@NonNullByDefault
 public class Payload {
-    public Measure measure;
-    public Expansion expansion;
-    public Device device;
-    public System system;
-    public Wifi wifi;
+    public Measure measure = new Measure();
+    public Expansion expansion = new Expansion();
+    public Device device = new Device();
+    public System system = new System();
+    public Wifi wifi = new Wifi();
 }

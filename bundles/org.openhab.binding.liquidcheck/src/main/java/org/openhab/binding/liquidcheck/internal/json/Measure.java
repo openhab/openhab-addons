@@ -12,9 +12,17 @@
  */
 package org.openhab.binding.liquidcheck.internal.json;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
+/**
+ * The {@link Measure} .
+ *
+ * @author Marcel Goerentz - Initial contribution
+ */
+@NonNullByDefault
 public class Measure {
-    public double level;
-    public int content;
-    public Raw raw;
-    public int age;
+    public double level = 0.0;
+    public int content = 0;
+    public Raw raw = new Raw();
+    public int age = 0;
 }

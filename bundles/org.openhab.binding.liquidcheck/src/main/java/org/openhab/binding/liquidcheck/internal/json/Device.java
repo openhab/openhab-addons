@@ -12,12 +12,20 @@
  */
 package org.openhab.binding.liquidcheck.internal.json;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
+/**
+ * The {@link Device} .
+ *
+ * @author Marcel Goerentz - Initial contribution
+ */
+@NonNullByDefault
 public class Device {
     public String firmware = "";
     public String hardware = "";
     public String name = "";
-    public Model model;
+    public Model model = new Model();
     public String manufacturer = "";
     public String uuid = "";
-    public Security security;
+    public Security security = new Security();
 }
