@@ -16,10 +16,12 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.nio.charset.StandardCharsets;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -33,7 +35,8 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public class ResponseTest {
 
-    Response response = new Response();
+    @Nullable
+    Response response;
 
     @BeforeEach
     void setUp() {
@@ -44,9 +47,10 @@ public class ResponseTest {
             for (String line : lines) {
                 sb.append(line);
             }
-            response = new Gson().fromJson(sb.toString(), Response.class);
+            String json = sb.toString();
+            response = new Gson().fromJson(json, Response.class);
         } catch (Exception e) {
-            e.printStackTrace();
+            return;
         }
     }
 
