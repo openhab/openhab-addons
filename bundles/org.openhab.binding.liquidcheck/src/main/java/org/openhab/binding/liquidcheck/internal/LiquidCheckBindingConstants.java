@@ -38,7 +38,7 @@ public class LiquidCheckBindingConstants {
     public static final String LEVEL_CHANNEL = "level";
     public static final String RAW_LEVEL_CHANNEL = "raw-level";
     public static final String PUMP_TOTAL_RUNS_CHANNEL = "pump-runs";
-    public static final String PUMP_TOTAl_RUNTIME_CHANNEL = "pump-runtime";
+    public static final String PUMP_TOTAL_RUNTIME_CHANNEL = "pump-runtime";
     public static final String MEASURE_CHANNEL = "measure";
 
     // List of all Property ids

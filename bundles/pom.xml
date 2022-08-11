@@ -582,8 +582,11 @@
             
     
     <module>org.openhab.binding.linuxinput</module>
-            
-    
+			
+	
+	<module>org.openhab.binding.liquidcheck</module>
+			
+			
     <module>org.openhab.binding.lirc</module>
             
     

@@ -19,6 +19,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.liquidcheck.internal.LiquidCheckConfiguration;
 import org.openhab.binding.liquidcheck.internal.LiquidCheckHandler;
@@ -26,7 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link liquidCheckBindingConstants} class defines common constants, which are
+ * The {@link LiquidCheckHttpClient} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Marcel Goerentz - Initial contribution
@@ -70,6 +72,17 @@ public class LiquidCheckHttpClient {
         String uri = "http://" + config.ip + "/infos.json";
         Request request = client.newRequest(uri);
         request.method(HttpMethod.GET);
+        ContentResponse response = request.send();
+        return response.getContentAsString();
+    }
+
+    public String measureCommand() {
+        String uri = "http://" + config.ip + "/command";
+        Request request = client.newRequest(uri);
+        request.method(HttpMethod.POST);
+        request.header(HttpHeader.CONTENT_TYPE, "applicaton/json");
+        request.content(new StringContentProvider(
+                "{\"header\":{\"namespace\":\"Device.Control\",\"name\":\"StartMeasure\",\"messageId\":\"1\",\"payloadVersion\":\"1\"},\"payload\":null}"));
         ContentResponse response = request.send();
         return response.getContentAsString();
     }
