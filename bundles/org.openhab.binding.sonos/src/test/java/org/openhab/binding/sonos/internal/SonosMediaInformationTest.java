@@ -14,6 +14,10 @@ package org.openhab.binding.sonos.internal;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.sonos.internal.handler.SonosMediaInformation;
@@ -26,23 +30,47 @@ import org.openhab.binding.sonos.internal.handler.SonosMediaInformation;
 @NonNullByDefault
 public class SonosMediaInformationTest {
 
+    private static final SonosMetaData METADATA_STREAM_CONTENT = new SonosMetaData("yyy", "yyy", "yyy", "Morning Live",
+            "yyy", "yyy", "yyy", "yyy", "yyy", "yyy");
+    private static final SonosMetaData METADATA_EMPTY_STREAM_CONTENT = new SonosMetaData("yyy", "yyy", "yyy", "", "yyy",
+            "yyy", "yyy", "yyy", "yyy", "yyy");
+
+    private static final SonosMetaData METADATA_RADIOAPP_1 = new SonosMetaData("yyy", "yyy", "yyy",
+            "TYPE=SNG|TITLE Green Day - Time Of Your Life (Good Riddance)|ARTIST |ALBUM ", "yyy", "yyy", "yyy", "yyy",
+            "yyy", "yyy");
+    private static final SonosMetaData METADATA_RADIOAPP_2 = new SonosMetaData("yyy", "yyy", "yyy",
+            "TYPE=SNG|TITLE Time Of Your Life (Good Riddance)|ARTIST Green Day|ALBUM Nimrod", "yyy", "yyy", "yyy",
+            "yyy", "yyy", "yyy");
+    private static final SonosMetaData METADATA_RADIOAPP_ADVERTISEMENT = new SonosMetaData("yyy", "yyy", "yyy",
+            "TYPE=SNG|TITLE Advertisement_Stop|ARTIST |ALBUM ", "yyy", "yyy", "yyy", "yyy", "yyy", "yyy");
+
+    private static final SonosMetaData METADATA_ARTIST_ALBUM_TITLE = new SonosMetaData("xxx", "xxx", "xxx", "xxx",
+            "xxx", "Time Of Your Life (Good Riddance)", "xxx", "xxx", "Nimrod", "Green Day");
+    private static final SonosMetaData METADATA_EMPTY_CREATOR_ARTIST = new SonosMetaData("xxx", "xxx", "xxx", "xxx",
+            "xxx", "Time Of Your Life (Good Riddance)", "xxx", "", "Nimrod", "");
+    private static final SonosMetaData METADATA_EMPTY_ALBUM = new SonosMetaData("xxx", "xxx", "xxx", "xxx", "xxx",
+            "Time Of Your Life (Good Riddance)", "xxx", "Green Day", "", "");
+    private static final SonosMetaData METADATA_EMPTY_TITLE = new SonosMetaData("xxx", "xxx", "xxx", "xxx", "xxx", "",
+            "xxx", "xxx", "Nimrod", "Green Day");
+    private static final SonosMetaData METADATA_ONLY_TITLE = new SonosMetaData("", "", "", "", "",
+            "Time Of Your Life (Good Riddance)", "", "", "", "");
+    private static final SonosMetaData METADATA_EMPTY = new SonosMetaData("", "", "", "", "", "", "", "", "", "");
+
     @Test
     public void parseTuneInMediaInfoWithStreamContent() {
-        SonosMetaData trackMetaData = new SonosMetaData("yyy", "yyy", "yyy", "Mroning Live", "yyy", "yyy", "yyy", "yyy",
-                "yyy", "yyy");
-        SonosMediaInformation result = SonosMediaInformation.parseTuneInMediaInfo(null, "Radio One", trackMetaData);
+        SonosMediaInformation result = SonosMediaInformation.parseTuneInMediaInfo(null, "Radio One",
+                METADATA_STREAM_CONTENT);
         assertNull(result.getArtist());
         assertNull(result.getAlbum());
         assertEquals("Radio One", result.getTitle());
-        assertEquals("Radio One - Mroning Live", result.getCombinedInfo());
+        assertEquals("Radio One - Morning Live", result.getCombinedInfo());
         assertEquals(true, result.needsUpdate());
     }
 
     @Test
     public void parseTuneInMediaInfoWithoutStreamContent() {
-        SonosMetaData trackMetaData = new SonosMetaData("yyy", "yyy", "yyy", "", "yyy", "yyy", "yyy", "yyy", "yyy",
-                "yyy");
-        SonosMediaInformation result = SonosMediaInformation.parseTuneInMediaInfo(null, "Radio One", trackMetaData);
+        SonosMediaInformation result = SonosMediaInformation.parseTuneInMediaInfo(null, "Radio One",
+                METADATA_EMPTY_STREAM_CONTENT);
         assertNull(result.getArtist());
         assertNull(result.getAlbum());
         assertEquals("Radio One", result.getTitle());
@@ -52,9 +80,7 @@ public class SonosMediaInformationTest {
 
     @Test
     public void parseTuneInMediaInfoWithoutTitle() {
-        SonosMetaData trackMetaData = new SonosMetaData("yyy", "yyy", "yyy", "Mroning Live", "yyy", "yyy", "yyy", "yyy",
-                "yyy", "yyy");
-        SonosMediaInformation result = SonosMediaInformation.parseTuneInMediaInfo(null, "", trackMetaData);
+        SonosMediaInformation result = SonosMediaInformation.parseTuneInMediaInfo(null, "", METADATA_STREAM_CONTENT);
         assertNull(result.getArtist());
         assertNull(result.getAlbum());
         assertNull(result.getTitle());
@@ -73,11 +99,22 @@ public class SonosMediaInformationTest {
     }
 
     @Test
+    public void parseTuneInMediaInfoWithOPMLRequest() throws IOException {
+        InputStream resourceStream = getClass().getResourceAsStream("/OPML.xml");
+        assertNotNull(resourceStream);
+        final String opmlResult = new String(resourceStream.readAllBytes(), StandardCharsets.UTF_8);
+        SonosMediaInformation result = SonosMediaInformation.parseTuneInMediaInfo(opmlResult, "Radio One",
+                METADATA_STREAM_CONTENT);
+        assertNull(result.getArtist());
+        assertNull(result.getAlbum());
+        assertEquals("RTL2 105.9", result.getTitle());
+        assertEquals("RTL2 105.9 - Le Son Pop-Rock - Paris, France", result.getCombinedInfo());
+        assertEquals(true, result.needsUpdate());
+    }
+
+    @Test
     public void parseRadioAppMediaInfoWithSongTitle() {
-        SonosMetaData trackMetaData = new SonosMetaData("yyy", "yyy", "yyy",
-                "TYPE=SNG|TITLE Green Day - Time Of Your Life (Good Riddance)|ARTIST |ALBUM ", "yyy", "yyy", "yyy",
-                "yyy", "yyy", "yyy");
-        SonosMediaInformation result = SonosMediaInformation.parseRadioAppMediaInfo("Radio Two", trackMetaData);
+        SonosMediaInformation result = SonosMediaInformation.parseRadioAppMediaInfo("Radio Two", METADATA_RADIOAPP_1);
         assertEquals("Green Day", result.getArtist());
         assertEquals("", result.getAlbum());
         assertEquals("Time Of Your Life (Good Riddance)", result.getTitle());
@@ -87,10 +124,7 @@ public class SonosMediaInformationTest {
 
     @Test
     public void parseRadioAppMediaInfoWithSongTitleArtistAlbum() {
-        SonosMetaData trackMetaData = new SonosMetaData("yyy", "yyy", "yyy",
-                "TYPE=SNG|TITLE Time Of Your Life (Good Riddance)|ARTIST Green Day|ALBUM Nimrod", "yyy", "yyy", "yyy",
-                "yyy", "yyy", "yyy");
-        SonosMediaInformation result = SonosMediaInformation.parseRadioAppMediaInfo("Radio Two", trackMetaData);
+        SonosMediaInformation result = SonosMediaInformation.parseRadioAppMediaInfo("Radio Two", METADATA_RADIOAPP_2);
         assertEquals("Green Day", result.getArtist());
         assertEquals("Nimrod", result.getAlbum());
         assertEquals("Time Of Your Life (Good Riddance)", result.getTitle());
@@ -100,9 +134,8 @@ public class SonosMediaInformationTest {
 
     @Test
     public void parseRadioAppMediaInfoWithdvertisement() {
-        SonosMetaData trackMetaData = new SonosMetaData("yyy", "yyy", "yyy",
-                "TYPE=SNG|TITLE Advertisement_Stop|ARTIST |ALBUM ", "yyy", "yyy", "yyy", "yyy", "yyy", "yyy");
-        SonosMediaInformation result = SonosMediaInformation.parseRadioAppMediaInfo("Radio Two", trackMetaData);
+        SonosMediaInformation result = SonosMediaInformation.parseRadioAppMediaInfo("Radio Two",
+                METADATA_RADIOAPP_ADVERTISEMENT);
         assertEquals("", result.getArtist());
         assertEquals("", result.getAlbum());
         assertEquals("Radio Two", result.getTitle());
@@ -112,9 +145,8 @@ public class SonosMediaInformationTest {
 
     @Test
     public void parseRadioAppMediaInfoWithoutStreamContent() {
-        SonosMetaData trackMetaData = new SonosMetaData("yyy", "yyy", "yyy", "", "yyy", "yyy", "yyy", "yyy", "yyy",
-                "yyy");
-        SonosMediaInformation result = SonosMediaInformation.parseRadioAppMediaInfo("Radio Two", trackMetaData);
+        SonosMediaInformation result = SonosMediaInformation.parseRadioAppMediaInfo("Radio Two",
+                METADATA_EMPTY_STREAM_CONTENT);
         assertNull(result.getArtist());
         assertNull(result.getAlbum());
         assertEquals("Radio Two", result.getTitle());
@@ -124,10 +156,7 @@ public class SonosMediaInformationTest {
 
     @Test
     public void parseRadioAppMediaInfoWithoutTitle() {
-        SonosMetaData trackMetaData = new SonosMetaData("yyy", "yyy", "yyy",
-                "TYPE=SNG|TITLE Green Day - Time Of Your Life (Good Riddance)|ARTIST |ALBUM ", "yyy", "yyy", "yyy",
-                "yyy", "yyy", "yyy");
-        SonosMediaInformation result = SonosMediaInformation.parseRadioAppMediaInfo("", trackMetaData);
+        SonosMediaInformation result = SonosMediaInformation.parseRadioAppMediaInfo("", METADATA_RADIOAPP_1);
         assertNull(result.getArtist());
         assertNull(result.getAlbum());
         assertNull(result.getTitle());
@@ -147,9 +176,7 @@ public class SonosMediaInformationTest {
 
     @Test
     public void parseTrack() {
-        SonosMetaData trackMetaData = new SonosMetaData("xxx", "xxx", "xxx", "xxx", "xxx",
-                "Time Of Your Life (Good Riddance)", "xxx", "xxx", "Nimrod", "Green Day");
-        SonosMediaInformation result = SonosMediaInformation.parseTrack(trackMetaData);
+        SonosMediaInformation result = SonosMediaInformation.parseTrack(METADATA_ARTIST_ALBUM_TITLE);
         assertEquals("Green Day", result.getArtist());
         assertEquals("Nimrod", result.getAlbum());
         assertEquals("Time Of Your Life (Good Riddance)", result.getTitle());
@@ -159,9 +186,7 @@ public class SonosMediaInformationTest {
 
     @Test
     public void parseTrackWithoutArtist() {
-        SonosMetaData trackMetaData = new SonosMetaData("xxx", "xxx", "xxx", "xxx", "xxx",
-                "Time Of Your Life (Good Riddance)", "xxx", "", "Nimrod", "");
-        SonosMediaInformation result = SonosMediaInformation.parseTrack(trackMetaData);
+        SonosMediaInformation result = SonosMediaInformation.parseTrack(METADATA_EMPTY_CREATOR_ARTIST);
         assertEquals("", result.getArtist());
         assertEquals("Nimrod", result.getAlbum());
         assertEquals("Time Of Your Life (Good Riddance)", result.getTitle());
@@ -171,9 +196,7 @@ public class SonosMediaInformationTest {
 
     @Test
     public void parseTrackWithoutAlbum() {
-        SonosMetaData trackMetaData = new SonosMetaData("xxx", "xxx", "xxx", "xxx", "xxx",
-                "Time Of Your Life (Good Riddance)", "xxx", "Green Day", "", "");
-        SonosMediaInformation result = SonosMediaInformation.parseTrack(trackMetaData);
+        SonosMediaInformation result = SonosMediaInformation.parseTrack(METADATA_EMPTY_ALBUM);
         assertEquals("Green Day", result.getArtist());
         assertEquals("", result.getAlbum());
         assertEquals("Time Of Your Life (Good Riddance)", result.getTitle());
@@ -183,9 +206,7 @@ public class SonosMediaInformationTest {
 
     @Test
     public void parseTrackWithoutTitle() {
-        SonosMetaData trackMetaData = new SonosMetaData("xxx", "xxx", "xxx", "xxx", "xxx", "", "xxx", "xxx", "Nimrod",
-                "Green Day");
-        SonosMediaInformation result = SonosMediaInformation.parseTrack(trackMetaData);
+        SonosMediaInformation result = SonosMediaInformation.parseTrack(METADATA_EMPTY_TITLE);
         assertEquals("Green Day", result.getArtist());
         assertEquals("Nimrod", result.getAlbum());
         assertEquals("", result.getTitle());
@@ -195,9 +216,7 @@ public class SonosMediaInformationTest {
 
     @Test
     public void parseTrackWithOnlyTitle() {
-        SonosMetaData trackMetaData = new SonosMetaData("", "", "", "", "", "Time Of Your Life (Good Riddance)", "", "",
-                "", "");
-        SonosMediaInformation result = SonosMediaInformation.parseTrack(trackMetaData);
+        SonosMediaInformation result = SonosMediaInformation.parseTrack(METADATA_ONLY_TITLE);
         assertEquals("", result.getArtist());
         assertEquals("", result.getAlbum());
         assertEquals("Time Of Your Life (Good Riddance)", result.getTitle());
@@ -207,8 +226,7 @@ public class SonosMediaInformationTest {
 
     @Test
     public void parseTrackWithEmptyMetaData() {
-        SonosMetaData trackMetaData = new SonosMetaData("", "", "", "", "", "", "", "", "", "");
-        SonosMediaInformation result = SonosMediaInformation.parseTrack(trackMetaData);
+        SonosMediaInformation result = SonosMediaInformation.parseTrack(METADATA_EMPTY);
         assertEquals("", result.getArtist());
         assertEquals("", result.getAlbum());
         assertEquals("", result.getTitle());
@@ -228,9 +246,7 @@ public class SonosMediaInformationTest {
 
     @Test
     public void parseTrackTitle() {
-        SonosMetaData trackMetaData = new SonosMetaData("xxx", "xxx", "xxx", "xxx", "xxx",
-                "Time Of Your Life (Good Riddance)", "xxx", "xxx", "Nimrod", "Green Day");
-        SonosMediaInformation result = SonosMediaInformation.parseTrackTitle(trackMetaData);
+        SonosMediaInformation result = SonosMediaInformation.parseTrackTitle(METADATA_ARTIST_ALBUM_TITLE);
         assertNull(result.getArtist());
         assertNull(result.getAlbum());
         assertEquals("Time Of Your Life (Good Riddance)", result.getTitle());
