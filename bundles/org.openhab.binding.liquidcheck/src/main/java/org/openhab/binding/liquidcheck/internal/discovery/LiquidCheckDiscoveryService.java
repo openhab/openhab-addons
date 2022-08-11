@@ -1,3 +1,15 @@
+/**
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.liquidcheck.internal.discovery;
 
 import static org.openhab.binding.liquidcheck.internal.LiquidCheckBindingConstants.*;
@@ -33,6 +45,12 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
+/**
+ * The {@link LiquidCheckDiscoveryService} class defines common constants, which are
+ * used across the whole binding.
+ *
+ * @author Marcel Goerentz - Initial contribution
+ */
 @NonNullByDefault
 @Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.liquidcheck")
 public class LiquidCheckDiscoveryService extends AbstractDiscoveryService {
