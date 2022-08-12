@@ -34,7 +34,6 @@
     <!-- transformations -->
     <module>org.openhab.transform.bin2json</module>
     <module>org.openhab.transform.exec</module>
-    <module>org.openhab.transform.javascript</module>
     <module>org.openhab.transform.jinja</module>
     <module>org.openhab.transform.jsonpath</module>
     <module>org.openhab.transform.map</module>
