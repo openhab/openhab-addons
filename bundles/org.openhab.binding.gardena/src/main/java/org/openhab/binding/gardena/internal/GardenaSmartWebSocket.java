@@ -168,7 +168,7 @@ public class GardenaSmartWebSocket {
     /**
      * Sends a ping to tell the Gardena smart system that the client is alive.
      */
-    private void sendKeepAlivePing() {
+    private synchronized void sendKeepAlivePing() {
         final PostOAuth2Response accessToken = token;
         if ((Instant.now().getEpochSecond() - lastPong.getEpochSecond() > WEBSOCKET_IDLE_TIMEOUT) || accessToken == null
                 || accessToken.isAccessTokenExpired()) {
