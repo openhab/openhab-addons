@@ -9,6 +9,10 @@
 			<label>Actions</label>
 			<description/>
 		</parameter-group>
+		<parameter name="base_url" type="text" required="true">
+			<label>Base URL</label>
+			<description>The base URL of the Konnected Alarm Panel.</description>
+		</parameter>
 		<parameter name="blink" type="boolean">
 			<label>Blink</label>
 			<description> When set to false the Led on the device won't blink during transmission.</description>
