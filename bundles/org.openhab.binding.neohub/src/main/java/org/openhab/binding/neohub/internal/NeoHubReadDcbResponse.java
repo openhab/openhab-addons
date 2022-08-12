@@ -59,9 +59,11 @@ public class NeoHubReadDcbResponse {
     }
 
     public @Nullable String getFirmwareVersion() {
+        BigDecimal firmwareVersionNew = this.firmwareVersionNew;
         if (firmwareVersionNew != null) {
             return firmwareVersionNew.toString();
         }
+        BigDecimal firmwareVersionOld = this.firmwareVersionOld;
         if (firmwareVersionOld != null) {
             return firmwareVersionOld.toString();
         }

@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.rotel.internal.RotelException;
@@ -37,6 +36,9 @@ public enum RotelCommand {
     POWER_ON("Power On", PRIMARY_CMD, (byte) 0x4B, "power_on", "power_on"),
     POWER_OFF_ALL_ZONES("Power Off All Zones", PRIMARY_CMD, (byte) 0x71),
     POWER("Request current power status", "get_current_power", "power?"),
+    POWER_MODE_QUICK("Set power mode to quick", "power_mode_quick", null),
+    POWER_MODE_NORMAL("Set power mode to normal", "power_mode_normal", null),
+    POWER_MODE("Request current power mode", "get_power_mode", null),
     ZONE_SELECT("Zone Select", PRIMARY_CMD, (byte) 0x23),
     MAIN_ZONE_POWER_TOGGLE("Main Zone Power Toggle", MAIN_ZONE_CMD, (byte) 0x0A),
     MAIN_ZONE_POWER_OFF("Main Zone Power Off", MAIN_ZONE_CMD, (byte) 0x4A),
@@ -216,17 +218,19 @@ public enum RotelCommand {
     ZONE4_SOURCE_INPUT_C("Zone 4 Source Input C", null, "z4:input_c"),
     ZONE4_SOURCE_INPUT_D("Zone 4 Source Input D", null, "z4:input_d"),
     STEREO("Stereo", PRIMARY_CMD, (byte) 0x11, "2channel", "2channel"),
+    STEREO_BYPASS_TOGGLE("Stereo / Bypass Toggle", PRIMARY_CMD, (byte) 0x11),
     STEREO3("Dolby 3 Stereo ", PRIMARY_CMD, (byte) 0x12, "3channel", "3channel"),
     STEREO5("5 Channel Stereo", PRIMARY_CMD, (byte) 0x5B, "5channel", "5channel"),
     STEREO7("7 Channel Stereo", PRIMARY_CMD, (byte) 0x5C, "7channel", "7channel"),
     STEREO9("9 Channel Stereo", "9channel", "9channel"),
     STEREO11("11 Channel Stereo", "11channel", "11channel"),
-    DSP_TOGGLE("DSP Mode Toggle", PRIMARY_CMD, (byte) 0x14),
+    PROLOGIC_TOGGLE("Dolby Pro Logic Toggle", PRIMARY_CMD, (byte) 0x13),
+    DSP_TOGGLE("DSP Music Mode Toggle", PRIMARY_CMD, (byte) 0x14),
     DSP1("DSP 1", PRIMARY_CMD, (byte) 0x57),
     DSP2("DSP 2", PRIMARY_CMD, (byte) 0x58),
     DSP3("DSP 3", PRIMARY_CMD, (byte) 0x59),
     DSP4("DSP 4", PRIMARY_CMD, (byte) 0x5A),
-    PROLOGIC_TOGGLE("Dolby 3 Stereo / Pro Logic Toggle", PRIMARY_CMD, (byte) 0x53),
+    DOLBY_TOGGLE("Dolby 3 Stereo / Pro Logic Toggle", PRIMARY_CMD, (byte) 0x53),
     PROLOGIC("Dolby Pro Logic", PRIMARY_CMD, (byte) 0x5F),
     PLII_CINEMA("Dolby PLII Cinema", PRIMARY_CMD, (byte) 0x5D, "prologic_movie", "prologic_movie"),
     PLII_MUSIC("Dolby PLII Music", PRIMARY_CMD, (byte) 0x5E, "prologic_music", "prologic_music"),
@@ -243,8 +247,8 @@ public enum RotelCommand {
     NEO6_CINEMA("dts Neo:6 Cinema", PRIMARY_CMD, (byte) 0x61, "neo6_cinema", "neo6_cinema"),
     ATMOS("Dolby Atmos", "dolby_atmos", "dolby_atmos"),
     NEURAL_X("dts Neural:X", "dts_neural", "dts_neural"),
-    BYPASS("Analog Bypass", PRIMARY_CMD, (byte) 0x11, "bypass", "bypass"),
-    NEXT_MODE("Next Surround Mode", PRIMARY_CMD, (byte) 0x22),
+    BYPASS("Analog Bypass", "bypass", "bypass"),
+    NEXT_MODE("Next Surround Mode", PRIMARY_CMD, (byte) 0x22, "surround_next", null),
     DSP_MODE("Request current DSP mode", "get_dsp_mode", null),
     TONE_MAX("Request Max tone level", "get_tone_max", null),
     TONE_CONTROL_SELECT("Tone Control Select", PRIMARY_CMD, (byte) 0x67),
@@ -452,7 +456,7 @@ public enum RotelCommand {
     PROGRAM("Program Key", "program", null),
     PCUSB_CLASS_1("Set PC-USB Audio Class to 1.0", "pcusb_class_1", "pcusb_class_1"),
     PCUSB_CLASS_2("Set PC-USB Audio Class to 2.0", "pcusb_class_2", "pcusb_class_2"),
-    PCUSB_CLASS_GET("Request current PC-USB class", "get_pcusb_class", "pcusb?"),
+    PCUSB_CLASS("Request current PC-USB class", "get_pcusb_class", "pcusb?"),
     RESET_FACTORY("Reset unit to factory defaults", PRIMARY_CMD, (byte) 0x93, "factory_default_on",
             "factory_default_on"),
     DYNAMIC_RANGE("Dynamic Range", PRIMARY_CMD, (byte) 0x16),
@@ -461,6 +465,26 @@ public enum RotelCommand {
     CENTER_TRIM("Temporary Center Trim", PRIMARY_CMD, (byte) 0x4C),
     SUB_TRIM("Temporary Subwoofer  Trim", PRIMARY_CMD, (byte) 0x4D),
     SURROUND_TRIM("Temporary Surround  Trim", PRIMARY_CMD, (byte) 0x4E),
+    SUB_LEVEL_UP("Temporary increase sub level", "subwoofer_up", null),
+    SUB_LEVEL_DOWN("Temporary decrease sub level", "subwoofer_down", null),
+    C_LEVEL_UP("Temporary increase center level", "center_up", null),
+    C_LEVEL_DOWN("Temporary decrease center level", "center_down", null),
+    SR_LEVEL_UP("Temporary increase surround right level", "surround_right_up", null),
+    SR_LEVEL_DOWN("Temporary decrease surround right level", "surround_right_down", null),
+    SL_LEVEL_UP("Temporary increase surround left level", "surround_left_up", null),
+    SL_LEVEL_DOWN("Temporary decrease surround left level", "surround_left_down", null),
+    CBR_LEVEL_UP("Temporary increase center back right level", "center_back_right_up", null),
+    CBR_LEVEL_DOWN("Temporary decrease center back right level", "center_back_right_down", null),
+    CBL_LEVEL_UP("Temporary increase center back left level", "center_back_left_up", null),
+    CBL_LEVEL_DOWN("Temporary decrease center back left level", "center_back_left_down", null),
+    CFR_LEVEL_UP("Temporary increase ceiling front right level", "ceiling_front_right_up", null),
+    CFR_LEVEL_DOWN("Temporary decrease ceiling front right level", "ceiling_front_right_down", null),
+    CFL_LEVEL_UP("Temporary increase ceiling front left level", "ceiling_front_left_up", null),
+    CFL_LEVEL_DOWN("Temporary decrease ceiling front left level", "ceiling_front_left_down", null),
+    CRR_LEVEL_UP("Temporary increase ceiling rear right level", "ceiling_rear_right_up", null),
+    CRR_LEVEL_DOWN("Temporary decrease ceiling rear right level", "ceiling_rear_right_down", null),
+    CRL_LEVEL_UP("Temporary increase ceiling rear left level", "ceiling_rear_left_up", null),
+    CRL_LEVEL_DOWN("Temporary decrease ceiling rear left level", "ceiling_rear_left_down", null),
     CINEMA_EQ_TOGGLE("Cinema EQ Toggle", PRIMARY_CMD, (byte) 0x4F),
     DISPLAY_TOGGLE("Front Display On/Off", PRIMARY_CMD, (byte) 0x52),
     PARTY_MODE_TOGGLE("Party Mode Toggle", PRIMARY_CMD, (byte) 0x6E),
@@ -475,14 +499,15 @@ public enum RotelCommand {
     MODEL("Request the model number", null, "model?"),
     VERSION("Request the main CPU software version", null, "version?");
 
-    public static final List<RotelCommand> DSP_CMDS_SET1 = List.of(DSP_TOGGLE, PROLOGIC_TOGGLE, PLII_PANORAMA_TOGGLE,
-            PLII_DIMENSION_UP, PLII_DIMENSION_DOWN, PLII_CENTER_WIDTH_UP, PLII_CENTER_WIDTH_DOWN, DDEX_TOGGLE,
-            NEO6_TOGGLE, NEXT_MODE);
+    public static final List<RotelCommand> DSP_CMDS_SET1 = List.of(DSP_TOGGLE, PROLOGIC_TOGGLE, DOLBY_TOGGLE,
+            PLII_PANORAMA_TOGGLE, PLII_DIMENSION_UP, PLII_DIMENSION_DOWN, PLII_CENTER_WIDTH_UP, PLII_CENTER_WIDTH_DOWN,
+            DDEX_TOGGLE, NEO6_TOGGLE, NEXT_MODE);
+    public static final List<RotelCommand> DSP_CMDS_SET2 = List.of(STEREO_BYPASS_TOGGLE);
 
     public static final List<RotelCommand> SRC_CTRL_CMDS_SET1 = List.of(PLAY, STOP, PAUSE, TRACK_FWD, TRACK_BACK);
-    public static final List<RotelCommand> SRC_CTRL_CMDS_SET2 = List.of(FAST_FWD, FAST_BACK, RANDOM_TOGGLE,
-            REPEAT_TOGGLE);
-    public static final List<RotelCommand> SRC_CTRL_CMDS_SET3 = List.of(FAST_FWD, FAST_BACK, EJECT, TIME_TOGGLE);
+    public static final List<RotelCommand> SRC_CTRL_CMDS_SET2 = List.of(FAST_FWD, FAST_BACK);
+    public static final List<RotelCommand> SRC_CTRL_CMDS_SET3 = List.of(RANDOM_TOGGLE, REPEAT_TOGGLE);
+    public static final List<RotelCommand> SRC_CTRL_CMDS_SET4 = List.of(EJECT, TIME_TOGGLE);
 
     public static final List<RotelCommand> TUNER_CMDS_SET1 = List.of(TUNE_UP, TUNE_DOWN, MEMORY, BAND_TOGGLE, AM, FM,
             TUNE_PRESET_TOGGLE, TUNING_MODE_SELECT, PRESET_MODE_SELECT, FREQUENCY_DIRECT, PRESET_SCAN, TUNER_DISPLAY,
@@ -521,7 +546,13 @@ public enum RotelCommand {
             ZONE3_KEY3, ZONE3_KEY4, ZONE3_KEY5, ZONE3_KEY6, ZONE3_KEY7, ZONE3_KEY8, ZONE3_KEY9, ZONE3_KEY0, ZONE4_KEY1,
             ZONE4_KEY2, ZONE4_KEY3, ZONE4_KEY4, ZONE4_KEY5, ZONE4_KEY6, ZONE4_KEY7, ZONE4_KEY8, ZONE4_KEY9, ZONE4_KEY0);
 
-    public static final List<RotelCommand> PCUSB_CLASS_CMDS = List.of(PCUSB_CLASS_1, PCUSB_CLASS_2);
+    public static final List<RotelCommand> PCUSB_CLASS_CMDS = List.of(PCUSB_CLASS, PCUSB_CLASS_1, PCUSB_CLASS_2);
+
+    public static final List<RotelCommand> LEVEL_TRIM_CMDS_SET1 = List.of(SUB_LEVEL_UP, SUB_LEVEL_DOWN, C_LEVEL_UP,
+            C_LEVEL_DOWN, SR_LEVEL_UP, SR_LEVEL_DOWN, SL_LEVEL_UP, SL_LEVEL_DOWN, CBR_LEVEL_UP, CBR_LEVEL_DOWN,
+            CBL_LEVEL_UP, CBL_LEVEL_DOWN);
+    public static final List<RotelCommand> LEVEL_TRIM_CMDS_SET2 = List.of(CFR_LEVEL_UP, CFR_LEVEL_DOWN, CFL_LEVEL_UP,
+            CFL_LEVEL_DOWN, CRR_LEVEL_UP, CRR_LEVEL_DOWN, CRL_LEVEL_UP, CRL_LEVEL_DOWN);
 
     public static final List<RotelCommand> OTHER_CMDS_SET1 = List.of(RECORD_FONCTION_SELECT, TONE_CONTROL_SELECT,
             DYNAMIC_RANGE, DIGITAL_INPUT_SELECT, ZONE_TOGGLE, CENTER_TRIM, SUB_TRIM, SURROUND_TRIM, CINEMA_EQ_TOGGLE);
@@ -533,6 +564,10 @@ public enum RotelCommand {
     public static final List<RotelCommand> OTHER_CMDS_SET4 = List.of(POWER_OFF_ALL_ZONES, PARTY_MODE_TOGGLE,
             ZONE2_PARTY_MODE_TOGGLE, ZONE3_PARTY_MODE_TOGGLE, ZONE4_PARTY_MODE_TOGGLE, OUTPUT_RESOLUTION, HDMI_AMP_MODE,
             HDMI_TV_MODE, ROOM_EQ_TOGGLE, SPEAKER_SETTING_TOGGLE, RESET_FACTORY);
+    public static final List<RotelCommand> OTHER_CMDS_SET5 = List.of(POWER_MODE, POWER_MODE_QUICK, POWER_MODE_NORMAL,
+            RESET_FACTORY);
+    public static final List<RotelCommand> OTHER_CMDS_SET6 = List.of(POWER_MODE, RESET_FACTORY);
+    public static final List<RotelCommand> OTHER_CMDS_SET7 = List.of(NEXT_MODE, RESET_FACTORY);
 
     public static final byte PRIMARY_COMMAND = (byte) 0x10;
 
@@ -640,7 +675,7 @@ public enum RotelCommand {
     }
 
     @Override
-    public @NonNull String toString() {
+    public String toString() {
         return label;
     }
 

@@ -26,6 +26,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.neohub.internal.NeoHubAbstractDeviceData;
 import org.openhab.binding.neohub.internal.NeoHubAbstractDeviceData.AbstractRecord;
+import org.openhab.binding.neohub.internal.NeoHubConfiguration;
 import org.openhab.binding.neohub.internal.NeoHubGetEngineersData;
 import org.openhab.binding.neohub.internal.NeoHubInfoResponse;
 import org.openhab.binding.neohub.internal.NeoHubInfoResponse.InfoRecord;
@@ -36,25 +37,24 @@ import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
 
 /**
- * The {@link NeoHubTestData} class defines common constants, which are used
- * across the whole binding.
+ * JUnit for testing JSON parsing.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class NeoHubTestData {
+public class NeoHubJsonTests {
 
     /*
      * to actually run tests on a physical device you must have a hub physically available, and its IP address must be
      * correctly configured in the "hubIPAddress" string constant e.g. "192.168.1.123"
      * note: only run the test if such a device is actually available
      */
-    private static final String hubIpAddress = "192.168.1.xxx";
+    private static final String HUB_IP_ADDRESS = "192.168.1.xxx";
 
-    private static final Pattern VALID_IP_V4_ADDRESS = Pattern
+    public static final Pattern VALID_IP_V4_ADDRESS = Pattern
             .compile("\\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\\.|$)){4}\\b");
 
-    /*
+    /**
      * Load the test JSON payload string from a file
      */
     private String load(String fileName) {
@@ -72,10 +72,9 @@ public class NeoHubTestData {
         return "";
     }
 
-    /*
+    /**
      * Test an INFO JSON response string as produced by older firmware versions
      */
-    @SuppressWarnings("null")
     @Test
     public void testInfoJsonOld() {
         // load INFO JSON response string in old JSON format
@@ -133,10 +132,9 @@ public class NeoHubTestData {
         assertFalse(device.stateManual());
     }
 
-    /*
+    /**
      * Test an INFO JSON response string as produced by newer firmware versions
      */
-    @SuppressWarnings("null")
     @Test
     public void testInfoJsonNew() {
         // load INFO JSON response string in new JSON format
@@ -158,10 +156,9 @@ public class NeoHubTestData {
         assertEquals(new BigDecimal("255.255"), device.getActualTemperature());
     }
 
-    /*
+    /**
      * Test for a READ_DCB JSON string that has valid CORF C response
      */
-    @SuppressWarnings("null")
     @Test
     public void testReadDcbJson() {
         // load READ_DCB JSON response string with valid CORF C response
@@ -186,10 +183,9 @@ public class NeoHubTestData {
         assertEquals(SIUnits.CELSIUS, dcbResponse.getTemperatureUnit());
     }
 
-    /*
+    /**
      * Test an INFO JSON string that has a door contact and a temperature sensor
      */
-    @SuppressWarnings("null")
     @Test
     public void testInfoJsonWithSensors() {
         /*
@@ -240,11 +236,10 @@ public class NeoHubTestData {
         assertTrue(device.isBatteryLow());
     }
 
-    /*
+    /**
      * From NeoHub rev2.6 onwards the READ_DCB command is "deprecated" so we can
      * also test the replacement GET_SYSTEM command (valid CORF response)
      */
-    @SuppressWarnings("null")
     @Test
     public void testGetSystemJson() {
         // load GET_SYSTEM JSON response string
@@ -255,11 +250,10 @@ public class NeoHubTestData {
         assertEquals("2134", dcbResponse.getFirmwareVersion());
     }
 
-    /*
+    /**
      * From NeoHub rev2.6 onwards the INFO command is "deprecated" so we must test
      * the replacement GET_LIVE_DATA command
      */
-    @SuppressWarnings("null")
     @Test
     public void testGetLiveDataJson() {
         // load GET_LIVE_DATA JSON response string
@@ -343,12 +337,11 @@ public class NeoHubTestData {
         assertTrue(MATCHER_HEATMISER_REPEATER.matcher(device.getDeviceName()).matches());
     }
 
-    /*
+    /**
      * From NeoHub rev2.6 onwards the INFO command is "deprecated" and the DEVICE_ID
      * element is not returned in the GET_LIVE_DATA call so we must test the
      * replacement GET_ENGINEERS command
      */
-    @SuppressWarnings("null")
     @Test
     public void testGetEngineersJson() {
         // load GET_ENGINEERS JSON response string
@@ -362,31 +355,34 @@ public class NeoHubTestData {
         assertEquals(6, engResponse.getDeviceType("Living Room South"));
     }
 
-    /*
+    /**
      * send JSON request to the socket and retrieve JSON response
      */
     private String testCommunicationInner(String requestJson) {
-        NeoHubSocket socket = new NeoHubSocket(hubIpAddress, 4242, 5);
-        String responseJson = "";
+        NeoHubConfiguration config = new NeoHubConfiguration();
+        config.hostName = HUB_IP_ADDRESS;
+        config.socketTimeout = 5;
         try {
-            responseJson = socket.sendMessage(requestJson);
+            NeoHubSocket socket = new NeoHubSocket(config);
+            String responseJson = socket.sendMessage(requestJson);
+            socket.close();
+            return responseJson;
         } catch (Exception e) {
             assertTrue(false);
         }
-        return responseJson;
+        return "";
     }
 
-    /*
+    /**
      * Test the communications
      */
-    @SuppressWarnings("null")
     @Test
     public void testCommunications() {
         /*
          * tests the actual communication with a real physical device on 'hubIpAddress'
          * note: only run the test if such a device is actually available
          */
-        if (!VALID_IP_V4_ADDRESS.matcher(hubIpAddress).matches()) {
+        if (!VALID_IP_V4_ADDRESS.matcher(HUB_IP_ADDRESS).matches()) {
             return;
         }
 

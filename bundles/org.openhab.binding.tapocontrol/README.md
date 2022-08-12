@@ -6,13 +6,13 @@ This binding adds support to control Tapo (Copyright © TP-Link Corporation Limi
 
 The following Tapo-Devices are supported
 
-### P100/P105 SmartPlug (WiFi)
+### P100/P105 SmartPlug (Wi-Fi)
 
 * Power On/Off
 * Wi-Fi signal (SignalStrength)
 * On-Time (Time in seconds device is switched on)
 
-### P110 EnergyMonitoring SmartPlug (WiFi)
+### P110/P115 EnergyMonitoring SmartPlug (Wi-Fi)
 
 * Power On/Off
 * Wi-Fi signal (SignalStrength)
@@ -21,7 +21,7 @@ The following Tapo-Devices are supported
 * today EnergyUsage (Wh)
 * today Runtime (Time in seconds device was on today)
 
-### L510(Series) dimmable SmartBulb (WiFi)
+### L510(Series) dimmable SmartBulb (Wi-Fi)
 
 * Light On/Off
 * Brightnes (Dimmer)  0-100 %
@@ -29,7 +29,7 @@ The following Tapo-Devices are supported
 * Wi-Fi signal (SignalStrength)
 * On-Time (Time in seconds device is switched on)
 
-### L530(Series) MultiColor SmartBulb (WiFi)
+### L530(Series) MultiColor SmartBulb (Wi-Fi)
 
 * Light On/Off
 * Brightnes (Dimmer)  0-100 %
@@ -38,7 +38,7 @@ The following Tapo-Devices are supported
 * Wi-Fi signal (SignalStrength)
 * On-Time (Time in seconds device is switched on)
 
-### L900/L920 LED-LightStrip (WiFi)
+### L900/L920 LED-LightStrip (Wi-Fi)
 
 * Light On/Off
 * Brightnes (Dimmer)  0-100 %
@@ -91,17 +91,17 @@ The thing has the following configuration parameters:
 
 All devices support some of the following channels:
 
-| group     | channel          |type                    | description                  | things supporting this channel              |
-|-----------|----------------- |------------------------|------------------------------|---------------------------------------------|
-| actuator  | output           | Switch                 | Power device on or off       | P100, P105, P110, L510, L530, L900, L920    |
-|           | brightness       | Dimmer                 | Brightness 0-100%            | L510, L530, L900                            |
-|           | colorTemperature | Number                 | White-Color-Temp 2500-6500K  | L510, L530, L900                            |
-|           | color            | Color                  | Color                        | L530, L900                                  |
-| device    | wifiSignal       | system.signal-strength | WiFi-quality-level           | P100, P105, P110, L510, L530, L900, L920    |
-|           | onTime           | Number:Time            | seconds output is on         | P100, P105, P110, L510, L530, L900, L920    |
-| energy    | actualPower      | Number:Power           | actual Power (Watt)          | P110                                        |
-|           | todayEnergyUsage | Number:Energy          | used energy today (Wh)       | P110                                        |
-|           | todayRuntime      | Number:Time            | seconds output was on today  | P110                                        |
+| group     | channel          |type                    | description                  | things supporting this channel                 |
+|-----------|----------------- |------------------------|------------------------------|------------------------------------------------|
+| actuator  | output           | Switch                 | Power device on or off       | P100, P105, P110, P115, L510, L530, L900, L920 |
+|           | brightness       | Dimmer                 | Brightness 0-100%            | L510, L530, L900                               |
+|           | colorTemperature | Number                 | White-Color-Temp 2500-6500K  | L510, L530, L900                               |
+|           | color            | Color                  | Color                        | L530, L900                                     |
+| device    | wifiSignal       | system.signal-strength | WiFi-quality-level           | P100, P105, P110, P115, L510, L530, L900, L920 |
+|           | onTime           | Number:Time            | seconds output is on         | P100, P105, P110, P115, L510, L530, L900, L920 |
+| energy    | actualPower      | Number:Power           | actual Power (Watt)          | P110, P115                                     |
+|           | todayEnergyUsage | Number:Energy          | used energy today (Wh)       | P110, P115                                     |
+|           | todayRuntime     | Number:Time            | seconds output was on today  | P110, P115                                     |
 
 
 ## Channel Refresh

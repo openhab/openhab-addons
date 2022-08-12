@@ -150,6 +150,28 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
     public void initialize() {
         logger.debug("Start initializing handler for thing {}", getThing().getUID());
 
+        RotelThingConfiguration config = getConfigAs(RotelThingConfiguration.class);
+
+        protocol = RotelProtocol.HEX;
+        if (config.protocol != null && !config.protocol.isEmpty()) {
+            try {
+                protocol = RotelProtocol.getFromName(config.protocol);
+            } catch (RotelException e) {
+                // Invalid protocol name in configuration, HEX will be considered by default
+            }
+        } else {
+            Map<String, String> properties = editProperties();
+            String property = properties.get(RotelBindingConstants.PROPERTY_PROTOCOL);
+            if (property != null && !property.isEmpty()) {
+                try {
+                    protocol = RotelProtocol.getFromName(property);
+                } catch (RotelException e) {
+                    // Invalid protocol name in thing property, HEX will be considered by default
+                }
+            }
+        }
+        logger.debug("rotelProtocol {}", protocol.getName());
+
         switch (getThing().getThingTypeUID().getId()) {
             case THING_TYPE_ID_RSP1066:
                 model = RotelModel.RSP1066;
@@ -224,7 +246,11 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                 model = RotelModel.RA1572;
                 break;
             case THING_TYPE_ID_RA1592:
-                model = RotelModel.RA1592;
+                if (protocol == RotelProtocol.ASCII_V1) {
+                    model = RotelModel.RA1592_V1;
+                } else {
+                    model = RotelModel.RA1592_V2;
+                }
                 break;
             case THING_TYPE_ID_RAP1580:
                 model = RotelModel.RAP1580;
@@ -236,7 +262,11 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                 model = RotelModel.RC1572;
                 break;
             case THING_TYPE_ID_RC1590:
-                model = RotelModel.RC1590;
+                if (protocol == RotelProtocol.ASCII_V1) {
+                    model = RotelModel.RC1590_V1;
+                } else {
+                    model = RotelModel.RC1590_V2;
+                }
                 break;
             case THING_TYPE_ID_RCD1570:
                 model = RotelModel.RCD1570;
@@ -294,28 +324,6 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                 model = DEFAULT_MODEL;
                 break;
         }
-
-        RotelThingConfiguration config = getConfigAs(RotelThingConfiguration.class);
-
-        protocol = RotelProtocol.HEX;
-        if (config.protocol != null && !config.protocol.isEmpty()) {
-            try {
-                protocol = RotelProtocol.getFromName(config.protocol);
-            } catch (RotelException e) {
-                // Invalid protocol name in configuration, HEX will be considered by default
-            }
-        } else {
-            Map<String, String> properties = editProperties();
-            String property = properties.get(RotelBindingConstants.PROPERTY_PROTOCOL);
-            if (property != null && !property.isEmpty()) {
-                try {
-                    protocol = RotelProtocol.getFromName(property);
-                } catch (RotelException e) {
-                    // Invalid protocol name in thing property, HEX will be considered by default
-                }
-            }
-        }
-        logger.debug("rotelProtocol {}", protocol.getName());
 
         Map<RotelSource, String> sourcesCustomLabels = new HashMap<>();
         Map<RotelSource, String> sourcesLabels = new HashMap<>();
@@ -1368,6 +1376,9 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                         throw new RotelException("Invalid value");
                     }
                     break;
+                case KEY_POWER_MODE:
+                    logger.debug("Power mode is set to {}", value);
+                    break;
                 case KEY_VOLUME_MIN:
                     minVolume = Integer.parseInt(value);
                     if (!model.hasDirectVolumeControl()) {
@@ -1651,6 +1662,39 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                     } else {
                         throw new RotelException("Invalid value");
                     }
+                    break;
+                case KEY_SUB_LEVEL:
+                    logger.debug("Sub level is set to {}", value);
+                    break;
+                case KEY_CENTER_LEVEL:
+                    logger.debug("Center level is set to {}", value);
+                    break;
+                case KEY_SURROUND_RIGHT_LEVEL:
+                    logger.debug("Surround right level is set to {}", value);
+                    break;
+                case KEY_SURROUND_LEFT_LEVEL:
+                    logger.debug("Surround left level is set to {}", value);
+                    break;
+                case KEY_CENTER_BACK_RIGHT_LEVEL:
+                    logger.debug("Center back right level is set to {}", value);
+                    break;
+                case KEY_CENTER_BACK_LEFT_LEVEL:
+                    logger.debug("Center back left level is set to {}", value);
+                    break;
+                case KEY_CEILING_FRONT_RIGHT_LEVEL:
+                    logger.debug("Ceiling front right level is set to {}", value);
+                    break;
+                case KEY_CEILING_FRONT_LEFT_LEVEL:
+                    logger.debug("Ceiling front left level is set to {}", value);
+                    break;
+                case KEY_CEILING_REAR_RIGHT_LEVEL:
+                    logger.debug("Ceiling rear right level is set to {}", value);
+                    break;
+                case KEY_CEILING_REAR_LEFT_LEVEL:
+                    logger.debug("Ceiling rear left level is set to {}", value);
+                    break;
+                case KEY_PCUSB_CLASS:
+                    logger.debug("PC-USB Audio Class is set to {}", value);
                     break;
                 case KEY_MODEL:
                     getThing().setProperty(Thing.PROPERTY_MODEL_ID, value);
