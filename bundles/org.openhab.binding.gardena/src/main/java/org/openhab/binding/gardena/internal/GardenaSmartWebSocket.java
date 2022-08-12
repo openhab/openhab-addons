@@ -87,7 +87,6 @@ public class GardenaSmartWebSocket {
         final ScheduledFuture<?> connectionTracker = this.connectionTracker;
         if (connectionTracker != null) {
             connectionTracker.cancel(true);
-            this.connectionTracker = null;
         }
 
         logger.debug("Closing Gardena Webservice ({})", socketId);
@@ -123,7 +122,6 @@ public class GardenaSmartWebSocket {
         ScheduledFuture<?> connectionTracker = this.connectionTracker;
         if (connectionTracker != null && !connectionTracker.isCancelled()) {
             connectionTracker.cancel(true);
-            this.connectionTracker = null;
         }
 
         // start sending PING every two minutes
