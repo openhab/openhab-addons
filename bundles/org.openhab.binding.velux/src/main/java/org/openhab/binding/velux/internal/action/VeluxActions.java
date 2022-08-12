@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  */
 @ThingActionsScope(name = "velux")
 @NonNullByDefault
-public class VeluxActions implements ThingActions, IVeluxActions {
+public class VeluxActions implements ThingActions {
 
     private final Logger logger = LoggerFactory.getLogger(VeluxActions.class);
 
@@ -51,27 +51,25 @@ public class VeluxActions implements ThingActions, IVeluxActions {
         return this.bridgeHandler;
     }
 
-    @Override
-    @RuleAction(label = "reboot Bridge", description = "issues a reboot command to the KLF200 bridge")
-    public @ActionOutput(name = "executing", type = "java.lang.Boolean", label = "executing", description = "indicates the command was issued") Boolean rebootBridge()
+    @RuleAction(label = "@text/action.reboot.label", description = "@text/action.reboot.descr")
+    public @ActionOutput(name = "running", type = "java.lang.Boolean", label = "@text/action.run.label", description = "@text/action.run.descr") Boolean rebootBridge()
             throws IllegalStateException {
         logger.trace("rebootBridge(): action called");
-        VeluxBridgeHandler bridge = bridgeHandler;
-        if (bridge == null) {
+        VeluxBridgeHandler bridgeHandler = this.bridgeHandler;
+        if (bridgeHandler == null) {
             throw new IllegalStateException("Bridge instance is null");
         }
-        return bridge.runReboot();
+        return bridgeHandler.rebootBridge();
     }
 
-    @Override
-    @RuleAction(label = "move relative", description = "issues a relative move command to an actuator")
-    public @ActionOutput(name = "executing", type = "java.lang.Boolean", label = "executing", description = "indicates the command was issued") Boolean moveRelative(
-            @ActionInput(name = "nodeId", required = true, label = "nodeId", description = "actuator id in the bridge", type = "java.lang.String") String nodeId,
-            @ActionInput(name = "relativePercent", required = true, label = "relativePercent", description = "position delta from current", type = "java.lang.String") String relativePercent)
+    @RuleAction(label = "@text/action.moveRelative.label", description = "@text/action.moveRelative.descr")
+    public @ActionOutput(name = "running", type = "java.lang.Boolean", label = "@text/action.run.label", description = "@text/action.run.descr") Boolean moveRelative(
+            @ActionInput(name = "nodeId", label = "@text/action.node.label", description = "@text/action.node.descr") String nodeId,
+            @ActionInput(name = "relativePercent", label = "@text/action.relative.label", description = "@text/action.relative.descr") String relativePercent)
             throws NumberFormatException, IllegalStateException {
         logger.trace("moveRelative(): action called");
-        VeluxBridgeHandler bridge = bridgeHandler;
-        if (bridge == null) {
+        VeluxBridgeHandler bridgeHandler = this.bridgeHandler;
+        if (bridgeHandler == null) {
             throw new IllegalStateException("Bridge instance is null");
         }
         int node = Integer.parseInt(nodeId);
@@ -82,7 +80,7 @@ public class VeluxActions implements ThingActions, IVeluxActions {
         if (Math.abs(relPct) > 100) {
             throw new NumberFormatException("Relative Percent out of range");
         }
-        return bridge.moveRelative(node, relPct);
+        return bridgeHandler.moveRelative(node, relPct);
     }
 
     /**
@@ -93,12 +91,8 @@ public class VeluxActions implements ThingActions, IVeluxActions {
      * @throws IllegalArgumentException if actions is invalid
      * @throws IllegalStateException if anything else is wrong
      */
-    public static Boolean rebootBridge(@Nullable ThingActions actions)
-            throws IllegalArgumentException, IllegalStateException {
-        if (!(actions instanceof IVeluxActions)) {
-            throw new IllegalArgumentException("Unsupported action");
-        }
-        return ((IVeluxActions) actions).rebootBridge();
+    public static Boolean rebootBridge(ThingActions actions) throws IllegalArgumentException, IllegalStateException {
+        return ((VeluxActions) actions).rebootBridge();
     }
 
     /**
@@ -112,34 +106,30 @@ public class VeluxActions implements ThingActions, IVeluxActions {
      * @throws IllegalStateException if anything else is wrong
      * @throws NumberFormatException if either of nodeId or relativePercent is not an integer, or out of range
      */
-    public static Boolean moveRelative(@Nullable ThingActions actions, String nodeId, String relativePercent)
+    public static Boolean moveRelative(ThingActions actions, String nodeId, String relativePercent)
             throws IllegalArgumentException, NumberFormatException, IllegalStateException {
-        if (!(actions instanceof IVeluxActions)) {
-            throw new IllegalArgumentException("Unsupported action");
-        }
-        return ((IVeluxActions) actions).moveRelative(nodeId, relativePercent);
+        return ((VeluxActions) actions).moveRelative(nodeId, relativePercent);
     }
 
-    @Override
-    @RuleAction(label = "Move main and vane position simultaneoulsy", description = "Issues a simultaneous command to move both the main position and the vane position of a shade")
-    public @ActionOutput(name = "executing", type = "java.lang.Boolean", label = "executing", description = "Indicates the command was issued") Boolean moveMainAndVane(
-            @ActionInput(name = "thingName", required = true, label = "thingName", description = "UID of the actuator thing to be moved", type = "java.lang.String") String thingName,
-            @ActionInput(name = "mainPercent", required = true, label = "mainPercent", description = "Position percentage to move to", type = "java.lang.Integer") Integer mainPercent,
-            @ActionInput(name = "vanePercent", required = true, label = "vanePercent", description = "Vane position percentage to move to", type = "java.lang.Integer") Integer vanePercent)
+    @RuleAction(label = "@text/action.moveMainAndVane.label", description = "@text/action.moveMainAndVane.descr")
+    public @ActionOutput(name = "running", type = "java.lang.Boolean", label = "@text/action.run.label", description = "@text/action.run.descr") Boolean moveMainAndVane(
+            @ActionInput(name = "thingName", label = "@text/action.thing.label", description = "@text/action.thing.descr") String thingName,
+            @ActionInput(name = "mainPercent", label = "@text/action.main.label", description = "@text/action.main.descr") Integer mainPercent,
+            @ActionInput(name = "vanePercent", label = "@text/action.vane.label", description = "@text/action.vane.descr") Integer vanePercent)
             throws NumberFormatException, IllegalArgumentException, IllegalStateException {
-        logger.trace("moveMainAndVane(thingName:{}, mainPercent:{}, vanePercent:{}) action called", thingName,
+        logger.trace("moveMainAndVane(thingName:'{}', mainPercent:{}, vanePercent:{}) action called", thingName,
                 mainPercent, vanePercent);
         VeluxBridgeHandler bridgeHandler = this.bridgeHandler;
         if (bridgeHandler == null) {
             throw new IllegalStateException("Bridge instance is null");
         }
-        ProductBridgeIndex productBridgeIndex = bridgeHandler.getProductBridgeIndex(thingName);
-        if (ProductBridgeIndex.UNKNOWN.equals(productBridgeIndex)) {
-            throw new IllegalArgumentException("Bridge does not contain a thing with the given name");
+        ProductBridgeIndex node = bridgeHandler.getProductBridgeIndex(thingName);
+        if (ProductBridgeIndex.UNKNOWN.equals(node)) {
+            throw new IllegalArgumentException("Bridge does not contain a thing with name " + thingName);
         }
         PercentType mainPercentType = new PercentType(mainPercent);
         PercentType vanePercenType = new PercentType(vanePercent);
-        return bridgeHandler.moveMainAndVane(productBridgeIndex, mainPercentType, vanePercenType);
+        return bridgeHandler.moveMainAndVane(node, mainPercentType, vanePercenType);
     }
 
     /**
@@ -155,11 +145,8 @@ public class VeluxActions implements ThingActions, IVeluxActions {
      * @throws IllegalArgumentException if any of the arguments are invalid
      * @throws IllegalStateException if anything else is wrong
      */
-    public static Boolean moveMainAndVane(@Nullable ThingActions actions, String thingName, Integer mainPercent,
+    public static Boolean moveMainAndVane(ThingActions actions, String thingName, Integer mainPercent,
             Integer vanePercent) throws NumberFormatException, IllegalArgumentException, IllegalStateException {
-        if (!(actions instanceof IVeluxActions)) {
-            throw new IllegalArgumentException("Unsupported action");
-        }
-        return ((IVeluxActions) actions).moveMainAndVane(thingName, mainPercent, vanePercent);
+        return ((VeluxActions) actions).moveMainAndVane(thingName, mainPercent, vanePercent);
     }
 }
