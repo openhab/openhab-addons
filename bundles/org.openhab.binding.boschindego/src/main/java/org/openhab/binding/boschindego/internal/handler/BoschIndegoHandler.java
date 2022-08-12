@@ -35,7 +35,8 @@ import org.openhab.binding.boschindego.internal.dto.response.DeviceStateResponse
 import org.openhab.binding.boschindego.internal.dto.response.OperatingDataResponse;
 import org.openhab.binding.boschindego.internal.exceptions.IndegoAuthenticationException;
 import org.openhab.binding.boschindego.internal.exceptions.IndegoException;
-import org.openhab.binding.boschindego.internal.exceptions.IndegoUnreachableException;
+import org.openhab.binding.boschindego.internal.exceptions.IndegoInvalidCommandException;
+import org.openhab.binding.boschindego.internal.exceptions.IndegoTimeoutException;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -73,6 +74,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
 
     private static final Duration MAP_REFRESH_INTERVAL = Duration.ofDays(1);
     private static final Duration OPERATING_DATA_INACTIVE_REFRESH_INTERVAL = Duration.ofHours(6);
+    private static final Duration OPERATING_DATA_OFFLINE_REFRESH_INTERVAL = Duration.ofMinutes(30);
     private static final Duration OPERATING_DATA_ACTIVE_REFRESH_INTERVAL = Duration.ofMinutes(2);
     private static final Duration MAP_REFRESH_SESSION_DURATION = Duration.ofMinutes(5);
     private static final Duration COMMAND_STATE_REFRESH_TIMEOUT = Duration.ofSeconds(10);
@@ -92,6 +94,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
     private Instant cachedMapTimestamp = Instant.MIN;
     private Instant operatingDataTimestamp = Instant.MIN;
     private Instant mapRefreshStartedTimestamp = Instant.MIN;
+    private ThingStatus lastOperatingDataStatus = ThingStatus.UNINITIALIZED;
     private int stateInactiveRefreshIntervalSeconds;
     private int stateActiveRefreshIntervalSeconds;
     private int currentRefreshIntervalSeconds;
@@ -193,16 +196,21 @@ public class BoschIndegoHandler extends BaseThingHandler {
         } catch (IndegoAuthenticationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.comm-error.authentication-failure");
-        } catch (IndegoUnreachableException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+        } catch (IndegoTimeoutException e) {
+            updateStatus(lastOperatingDataStatus = ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.comm-error.unreachable");
+        } catch (IndegoInvalidCommandException e) {
+            logger.warn("Invalid command: {}", e.getMessage());
+            if (e.hasErrorCode()) {
+                updateState(ERRORCODE, new DecimalType(e.getErrorCode()));
+            }
         } catch (IndegoException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            logger.warn("Command failed: {}", e.getMessage());
         }
     }
 
     private void handleRefreshCommand(String channelId)
-            throws IndegoAuthenticationException, IndegoUnreachableException, IndegoException {
+            throws IndegoAuthenticationException, IndegoTimeoutException, IndegoException {
         switch (channelId) {
             case GARDEN_MAP:
                 // Force map refresh and fall through to state update.
@@ -274,8 +282,8 @@ public class BoschIndegoHandler extends BaseThingHandler {
         } catch (IndegoAuthenticationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.comm-error.authentication-failure");
-        } catch (IndegoUnreachableException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+        } catch (IndegoTimeoutException e) {
+            updateStatus(lastOperatingDataStatus = ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.comm-error.unreachable");
         } catch (IndegoException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
@@ -322,6 +330,15 @@ public class BoschIndegoHandler extends BaseThingHandler {
         refreshOperatingDataConditionally(
                 previousDeviceStatus.isCharging() || deviceStatus.isCharging() || deviceStatus.isActive());
 
+        if (lastOperatingDataStatus == ThingStatus.ONLINE && thing.getStatus() != ThingStatus.ONLINE) {
+            // Revert temporary offline status caused by disruptions other than unreachable device.
+            updateStatus(ThingStatus.ONLINE);
+        } else if (lastOperatingDataStatus == ThingStatus.OFFLINE) {
+            // Update description to reflect why thing is still offline.
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.comm-error.unreachable");
+        }
+
         rescheduleStatePollAccordingToState(deviceStatus);
     }
 
@@ -342,21 +359,23 @@ public class BoschIndegoHandler extends BaseThingHandler {
     }
 
     private void refreshOperatingDataConditionally(boolean isActive)
-            throws IndegoAuthenticationException, IndegoUnreachableException, IndegoException {
+            throws IndegoAuthenticationException, IndegoTimeoutException, IndegoException {
         // Refresh operating data only occationally or when robot is active/charging.
         // This will contact the robot directly through cellular network and wake it up
-        // when sleeping.
+        // when sleeping. Additionally, refresh more often after being offline to try to get
+        // back online as soon as possible without putting too much stress on the service.
         if ((isActive && operatingDataTimestamp.isBefore(Instant.now().minus(OPERATING_DATA_ACTIVE_REFRESH_INTERVAL)))
+                || (lastOperatingDataStatus != ThingStatus.ONLINE && operatingDataTimestamp
+                        .isBefore(Instant.now().minus(OPERATING_DATA_OFFLINE_REFRESH_INTERVAL)))
                 || operatingDataTimestamp.isBefore(Instant.now().minus(OPERATING_DATA_INACTIVE_REFRESH_INTERVAL))) {
             refreshOperatingData();
         }
     }
 
-    private void refreshOperatingData()
-            throws IndegoAuthenticationException, IndegoUnreachableException, IndegoException {
+    private void refreshOperatingData() throws IndegoAuthenticationException, IndegoTimeoutException, IndegoException {
         updateOperatingData(controller.getOperatingData());
         operatingDataTimestamp = Instant.now();
-        updateStatus(ThingStatus.ONLINE);
+        updateStatus(lastOperatingDataStatus = ThingStatus.ONLINE);
     }
 
     private void refreshCuttingTimesWithExceptionHandling() {

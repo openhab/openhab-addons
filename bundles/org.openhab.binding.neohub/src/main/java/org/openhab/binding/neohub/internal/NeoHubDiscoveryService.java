@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
  * Discovery service for neo devices
  *
  * @author Andrew Fiddian-Green - Initial contribution
- * 
+ *
  */
 @NonNullByDefault
 public class NeoHubDiscoveryService extends AbstractDiscoveryService {
@@ -113,11 +113,11 @@ public class NeoHubDiscoveryService extends AbstractDiscoveryService {
                     // the record came from the legacy API (deviceType included)
                     if (deviceRecord instanceof InfoRecord) {
                         deviceType = ((InfoRecord) deviceRecord).getDeviceType();
-                        publishDevice((InfoRecord) deviceRecord, deviceType);
+                        publishDevice(deviceRecord, deviceType);
                         continue;
                     }
 
-                    // the record came from the now API (deviceType NOT included)
+                    // the record came from the new API (deviceType NOT included)
                     if (deviceRecord instanceof LiveDataRecord) {
                         if (engineerData == null) {
                             break;
@@ -128,7 +128,7 @@ public class NeoHubDiscoveryService extends AbstractDiscoveryService {
                             continue;
                         }
                         deviceType = engineerData.getDeviceType(deviceName);
-                        publishDevice((LiveDataRecord) deviceRecord, deviceType);
+                        publishDevice(deviceRecord, deviceType);
                     }
                 }
             }

@@ -12,7 +12,12 @@
  */
 package org.openhab.binding.sonos.internal;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
@@ -59,5 +64,19 @@ public class SonosXMLParserTest {
     @Test
     public void buildThingTypeIdFromModelWithAdditionalTextInParenthesis() {
         assertEquals("OneSL", SonosXMLParser.buildThingTypeIdFromModelName("Sonos One SL (OpenHome)"));
+    }
+
+    @Test
+    public void getRadioTimeFromXML() throws IOException {
+        InputStream resourceStream = getClass().getResourceAsStream("/OPML.xml");
+        assertNotNull(resourceStream);
+        final String opmlResult = new String(resourceStream.readAllBytes(), StandardCharsets.UTF_8);
+        List<String> result = SonosXMLParser.getRadioTimeFromXML(opmlResult);
+        assertEquals(3, result.size());
+        if (result.size() == 3) {
+            assertEquals("RTL2 105.9", result.get(0));
+            assertEquals("Le Son Pop-Rock", result.get(1));
+            assertEquals("Paris, France", result.get(2));
+        }
     }
 }

@@ -28,7 +28,8 @@ public class CreateWebSocketRequest {
         data = new CreateWebSocketDataItem();
         data.id = "wsreq-" + locationId;
         data.type = "WEBSOCKET";
-        data.attributes = new CreateWebSocket();
-        data.attributes.locationId = locationId;
+        CreateWebSocket attributes = new CreateWebSocket();
+        attributes.locationId = locationId;
+        data.attributes = attributes;
     }
 }

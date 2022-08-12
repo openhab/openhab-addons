@@ -88,7 +88,7 @@ public class StatefulHandlerCallback implements AtlonaHandlerCallback {
      */
     @Override
     public void stateChanged(String channelId, State state) {
-        if (channelId == null || "".equals(channelId)) {
+        if ("".equals(channelId)) {
             return;
         }
 

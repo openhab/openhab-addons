@@ -50,8 +50,8 @@ public class SerialBridgeThingHandler extends KNXBridgeBaseThingHandler {
 
     @Override
     public void dispose() {
-        super.dispose();
         client.dispose();
+        super.dispose();
     }
 
     @Override

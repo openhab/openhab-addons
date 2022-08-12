@@ -44,6 +44,7 @@ import org.slf4j.LoggerFactory;
 public class RotelSimuConnector extends RotelConnector {
 
     private static final int STEP_TONE_LEVEL = 1;
+    private static final double STEP_DECIBEL = 0.5;
 
     private final Logger logger = LoggerFactory.getLogger(RotelSimuConnector.class);
 
@@ -57,10 +58,12 @@ public class RotelSimuConnector extends RotelConnector {
     private int idxInFeedbackMsg = feedbackMsg.length;
 
     private boolean[] powers = { false, false, false, false, false };
+    private String powerMode = POWER_NORMAL;
     private RotelSource[] sources;
     private RotelSource recordSource;
     private boolean multiinput;
     private RotelDsp dsp = RotelDsp.CAT4_NONE;
+    private boolean bypass = false;
     private int[] volumes = { 50, 10, 20, 30, 40 };
     private boolean[] mutes = { false, false, false, false, false };
     private boolean tcbypass;
@@ -77,6 +80,17 @@ public class RotelSimuConnector extends RotelConnector {
     private boolean selectingRecord;
     private int showZone;
     private int dimmer;
+    private int pcUsbClass = 1;
+    private double subLevel;
+    private double centerLevel;
+    private double surroundRightLevel;
+    private double surroundLefLevel;
+    private double centerBackRightLevel;
+    private double centerBackLefLevel;
+    private double ceilingFrontRightLevel;
+    private double ceilingFrontLefLevel;
+    private double ceilingRearRightLevel;
+    private double ceilingRearLefLevel;
 
     private int minVolume;
     private int maxVolume;
@@ -550,6 +564,17 @@ public class RotelSimuConnector extends RotelConnector {
                     textAscii = buildAsciiResponse(
                             protocol == RotelProtocol.ASCII_V1 ? KEY_DISPLAY_UPDATE : KEY_UPDATE_MODE, MANUAL);
                     break;
+                case POWER_MODE_QUICK:
+                    powerMode = POWER_QUICK;
+                    textAscii = buildAsciiResponse(KEY_POWER_MODE, powerMode);
+                    break;
+                case POWER_MODE_NORMAL:
+                    powerMode = POWER_NORMAL;
+                    textAscii = buildAsciiResponse(KEY_POWER_MODE, powerMode);
+                    break;
+                case POWER_MODE:
+                    textAscii = buildAsciiResponse(KEY_POWER_MODE, powerMode);
+                    break;
                 case VOLUME_GET_MIN:
                     textAscii = buildAsciiResponse(KEY_VOLUME_MIN, minVolume);
                     break;
@@ -824,7 +849,7 @@ public class RotelSimuConnector extends RotelConnector {
                     break;
                 case STEREO:
                     dsp = RotelDsp.CAT4_NONE;
-                    textLine2 = "STEREO";
+                    textLine2 = bypass ? "BYPASS" : "STEREO";
                     textAscii = buildDspAsciiResponse();
                     break;
                 case STEREO3:
@@ -914,16 +939,107 @@ public class RotelSimuConnector extends RotelConnector {
                     textAscii = buildDspAsciiResponse();
                     break;
                 case BYPASS:
-                    dsp = RotelDsp.CAT4_BYPASS;
-                    textLine2 = "BYPASS";
+                    dsp = RotelDsp.CAT5_BYPASS;
                     textAscii = buildDspAsciiResponse();
                     break;
                 case DSP_MODE:
                     textAscii = buildDspAsciiResponse();
                     break;
+                case STEREO_BYPASS_TOGGLE:
+                    bypass = !bypass;
+                    textLine2 = bypass ? "BYPASS" : "STEREO";
+                    break;
                 case FREQUENCY:
                     textAscii = model.getNumberOfZones() > 1 ? buildAsciiResponse(KEY_FREQ, "44.1,48,none,176.4")
                             : buildAsciiResponse(KEY_FREQ, "44.1");
+                    break;
+                case SUB_LEVEL_UP:
+                    subLevel += STEP_DECIBEL;
+                    textAscii = buildAsciiResponse(KEY_SUB_LEVEL, buildDecibelValue(subLevel));
+                    break;
+                case SUB_LEVEL_DOWN:
+                    subLevel -= STEP_DECIBEL;
+                    textAscii = buildAsciiResponse(KEY_SUB_LEVEL, buildDecibelValue(subLevel));
+                    break;
+                case C_LEVEL_UP:
+                    centerLevel += STEP_DECIBEL;
+                    textAscii = buildAsciiResponse(KEY_CENTER_LEVEL, buildDecibelValue(centerLevel));
+                    break;
+                case C_LEVEL_DOWN:
+                    centerLevel -= STEP_DECIBEL;
+                    textAscii = buildAsciiResponse(KEY_CENTER_LEVEL, buildDecibelValue(centerLevel));
+                    break;
+                case SR_LEVEL_UP:
+                    surroundRightLevel += STEP_DECIBEL;
+                    textAscii = buildAsciiResponse(KEY_SURROUND_RIGHT_LEVEL, buildDecibelValue(surroundRightLevel));
+                    break;
+                case SR_LEVEL_DOWN:
+                    surroundRightLevel -= STEP_DECIBEL;
+                    textAscii = buildAsciiResponse(KEY_SURROUND_RIGHT_LEVEL, buildDecibelValue(surroundRightLevel));
+                    break;
+                case SL_LEVEL_UP:
+                    surroundLefLevel += STEP_DECIBEL;
+                    textAscii = buildAsciiResponse(KEY_SURROUND_LEFT_LEVEL, buildDecibelValue(surroundLefLevel));
+                    break;
+                case SL_LEVEL_DOWN:
+                    surroundLefLevel -= STEP_DECIBEL;
+                    textAscii = buildAsciiResponse(KEY_SURROUND_LEFT_LEVEL, buildDecibelValue(surroundLefLevel));
+                    break;
+                case CBR_LEVEL_UP:
+                    centerBackRightLevel += STEP_DECIBEL;
+                    textAscii = buildAsciiResponse(KEY_CENTER_BACK_RIGHT_LEVEL,
+                            buildDecibelValue(centerBackRightLevel));
+                    break;
+                case CBR_LEVEL_DOWN:
+                    centerBackRightLevel -= STEP_DECIBEL;
+                    textAscii = buildAsciiResponse(KEY_CENTER_BACK_RIGHT_LEVEL,
+                            buildDecibelValue(centerBackRightLevel));
+                    break;
+                case CBL_LEVEL_UP:
+                    centerBackLefLevel += STEP_DECIBEL;
+                    textAscii = buildAsciiResponse(KEY_CENTER_BACK_LEFT_LEVEL, buildDecibelValue(centerBackLefLevel));
+                    break;
+                case CBL_LEVEL_DOWN:
+                    centerBackLefLevel -= STEP_DECIBEL;
+                    textAscii = buildAsciiResponse(KEY_CENTER_BACK_LEFT_LEVEL, buildDecibelValue(centerBackLefLevel));
+                    break;
+                case CFR_LEVEL_UP:
+                    ceilingFrontRightLevel += STEP_DECIBEL;
+                    textAscii = buildAsciiResponse(KEY_CEILING_FRONT_RIGHT_LEVEL,
+                            buildDecibelValue(ceilingFrontRightLevel));
+                    break;
+                case CFR_LEVEL_DOWN:
+                    ceilingFrontRightLevel -= STEP_DECIBEL;
+                    textAscii = buildAsciiResponse(KEY_CEILING_FRONT_RIGHT_LEVEL,
+                            buildDecibelValue(ceilingFrontRightLevel));
+                    break;
+                case CFL_LEVEL_UP:
+                    ceilingFrontLefLevel += STEP_DECIBEL;
+                    textAscii = buildAsciiResponse(KEY_CEILING_FRONT_LEFT_LEVEL,
+                            buildDecibelValue(ceilingFrontLefLevel));
+                    break;
+                case CFL_LEVEL_DOWN:
+                    ceilingFrontLefLevel -= STEP_DECIBEL;
+                    textAscii = buildAsciiResponse(KEY_CEILING_FRONT_LEFT_LEVEL,
+                            buildDecibelValue(ceilingFrontLefLevel));
+                    break;
+                case CRR_LEVEL_UP:
+                    ceilingRearRightLevel += STEP_DECIBEL;
+                    textAscii = buildAsciiResponse(KEY_CEILING_REAR_RIGHT_LEVEL,
+                            buildDecibelValue(ceilingRearRightLevel));
+                    break;
+                case CRR_LEVEL_DOWN:
+                    ceilingRearRightLevel -= STEP_DECIBEL;
+                    textAscii = buildAsciiResponse(KEY_CEILING_REAR_RIGHT_LEVEL,
+                            buildDecibelValue(ceilingRearRightLevel));
+                    break;
+                case CRL_LEVEL_UP:
+                    ceilingRearLefLevel += STEP_DECIBEL;
+                    textAscii = buildAsciiResponse(KEY_CEILING_REAR_LEFT_LEVEL, buildDecibelValue(ceilingRearLefLevel));
+                    break;
+                case CRL_LEVEL_DOWN:
+                    ceilingRearLefLevel -= STEP_DECIBEL;
+                    textAscii = buildAsciiResponse(KEY_CEILING_REAR_LEFT_LEVEL, buildDecibelValue(ceilingRearLefLevel));
                     break;
                 case DIMMER_LEVEL_SET:
                     if (value != null) {
@@ -933,6 +1049,17 @@ public class RotelSimuConnector extends RotelConnector {
                     break;
                 case DIMMER_LEVEL_GET:
                     textAscii = buildAsciiResponse(KEY_DIMMER, dimmer);
+                    break;
+                case PCUSB_CLASS_1:
+                    pcUsbClass = 1;
+                    textAscii = buildAsciiResponse(KEY_PCUSB_CLASS, pcUsbClass);
+                    break;
+                case PCUSB_CLASS_2:
+                    pcUsbClass = 2;
+                    textAscii = buildAsciiResponse(KEY_PCUSB_CLASS, pcUsbClass);
+                    break;
+                case PCUSB_CLASS:
+                    textAscii = buildAsciiResponse(KEY_PCUSB_CLASS, pcUsbClass);
                     break;
                 case MODEL:
                     textAscii = buildAsciiResponse(KEY_MODEL, model.getName());
@@ -1250,6 +1377,14 @@ public class RotelSimuConnector extends RotelConnector {
 
     private String buildDspAsciiResponse() {
         return buildAsciiResponse(KEY_DSP_MODE, dsp.getFeedback());
+    }
+
+    private String buildDecibelValue(double value) {
+        if (value == 0.0) {
+            return "000.0db";
+        } else {
+            return String.format("%+05.1fdb", value).replace(",", ".");
+        }
     }
 
     private String buildSourceLine1Response() {

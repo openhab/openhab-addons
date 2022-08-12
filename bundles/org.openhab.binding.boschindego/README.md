@@ -28,15 +28,16 @@ Currently the binding supports  ***indego***  mowers as a thing type with these 
 | mowed              | Dimmer                   | Cut grass in percent                                                                                                                |           |
 | lastCutting        | DateTime                 | Last cutting time                                                                                                                   |           |
 | nextCutting        | DateTime                 | Next scheduled cutting time                                                                                                         |           |
-| batteryVoltage     | Number:ElectricPotential | Battery voltage reported by the device [^1]                                                                                         |           |
-| batteryLevel       | Number                   | Battery level as a percentage (0-100%) [^1]                                                                                         |           |
-| lowBattery         | Switch                   | Low battery warning with possible values on (low battery) and off (battery ok) [^1]                                                 |           |
-| batteryTemperature | Number:Temperature       | Battery temperature reported by the device [^1]                                                                                     |           |
+| batteryVoltage     | Number:ElectricPotential | Battery voltage reported by the device<sup>1</sup>                                                                                  |           |
+| batteryLevel       | Number                   | Battery level as a percentage (0-100%)<sup>1</sup>                                                                                  |           |
+| lowBattery         | Switch                   | Low battery warning with possible values on (low battery) and off (battery ok)<sup>1</sup>                                          |           |
+| batteryTemperature | Number:Temperature       | Battery temperature reported by the device<sup>1</sup>                                                                              |           |
 | gardenSize         | Number:Area              | Garden size mapped by the device                                                                                                    |           |
-| gardenMap          | Image                    | Garden map created by the device [^2]                                                                                               |           |
+| gardenMap          | Image                    | Garden map created by the device<sup>2</sup>                                                                                        |           |
 
-[^1]: This will be updated every six hours when the device is idle. It will wake up the device, which can include turning on its display. When the device is active or charging, this will be updated every two minutes.
-[^2]: This will be updated as often as specified by the `stateActiveRefresh` thing parameter.
+<sup>1)</sup> This will be updated every six hours when the device is idle. It will wake up the device, which can include turning on its display. When the device is active or charging, this will be updated every two minutes.
+
+<sup>2)</sup> This will be updated as often as specified by the `stateActiveRefresh` thing parameter.
 
 ### State Codes
 

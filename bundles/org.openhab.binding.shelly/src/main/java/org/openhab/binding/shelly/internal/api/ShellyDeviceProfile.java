@@ -30,6 +30,7 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettings
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRelay;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRgbwLight;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyThermnostat;
 import org.openhab.binding.shelly.internal.util.ShellyVersionDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,6 +61,7 @@ public class ShellyDeviceProfile {
 
     public String hostname = "";
     public String name = "";
+    public String model = "";
     public String mode = "";
     public boolean discoverable = true;
     public boolean auth = false;
@@ -154,18 +156,6 @@ public class ShellyDeviceProfile {
             numMeters = inColor ? 1 : getInteger(settings.device.numOutputs);
         }
 
-        if (settings.sleepMode != null) {
-            // Sensor, usually 12h, H&T in USB mode 10min
-            updatePeriod = getString(settings.sleepMode.unit).equalsIgnoreCase("m") ? settings.sleepMode.period * 60 // minutes
-                    : settings.sleepMode.period * 3600; // hours
-            updatePeriod += 60; // give 1min extra
-        } else if ((settings.coiot != null) && settings.coiot.updatePeriod != null && !isTRV) {
-            // Derive from CoAP update interval, usually 2*15+10s=40sec -> 70sec
-            updatePeriod = Math.max(UPDATE_SETTINGS_INTERVAL_SECONDS, 2 * getInteger(settings.coiot.updatePeriod)) + 10;
-        } else {
-            updatePeriod = UPDATE_SETTINGS_INTERVAL_SECONDS + 10;
-        }
-
         initialized = true;
         return this;
     }
@@ -244,8 +234,11 @@ public class ShellyDeviceProfile {
             return CHANNEL_GROUP_RELAY_CONTROL;
         } else if (hasRelays) {
             return numRelays <= 1 ? CHANNEL_GROUP_RELAY_CONTROL : CHANNEL_GROUP_RELAY_CONTROL + idx;
+        } else if (isRGBW2) {
+            return settings.lights == null || settings.lights.size() <= 1 ? CHANNEL_GROUP_LIGHT_CONTROL
+                    : CHANNEL_GROUP_LIGHT_CHANNEL + idx;
         } else if (isLight) {
-            return numRelays <= 1 ? CHANNEL_GROUP_LIGHT_CONTROL : CHANNEL_GROUP_LIGHT_CONTROL + idx;
+            return CHANNEL_GROUP_LIGHT_CONTROL;
         } else if (isButton) {
             return CHANNEL_GROUP_STATUS;
         } else if (isSensor) {
@@ -335,6 +328,22 @@ public class ShellyDeviceProfile {
             return settings.favorites.get(id).pos;
         }
         return -1;
+    }
+
+    public String[] getValveProfileList(int valveId) {
+        if (isTRV && settings.thermostats != null && valveId <= settings.thermostats.size()) {
+            ShellyThermnostat t = settings.thermostats.get(valveId);
+            return t.profileNames;
+        }
+        return new String[0];
+    }
+
+    public String getValueProfile(int valveId, int profileId) {
+        int id = profileId;
+        if (id <= 0 && settings.thermostats != null) {
+            id = settings.thermostats.get(0).profile;
+        }
+        return "" + id;
     }
 
     public static String extractFwVersion(@Nullable String version) {
