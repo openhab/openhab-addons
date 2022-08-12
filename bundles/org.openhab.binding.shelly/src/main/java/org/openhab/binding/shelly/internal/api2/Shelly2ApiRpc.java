@@ -72,10 +72,10 @@ import org.slf4j.LoggerFactory;
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterface, Shelly2WebSocketInterface {
+public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterface, Shelly2RpctInterface {
     private final Logger logger = LoggerFactory.getLogger(Shelly2ApiRpc.class);
     private final @Nullable ShellyThingTable thingTable;
-    private Shelly2WebSocket rpcSocket = new Shelly2WebSocket();
+    private Shelly2RpcSocket rpcSocket = new Shelly2RpcSocket();
 
     private boolean initialized = false;
     private boolean discovery = false;
@@ -116,7 +116,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     @Override
     public void initialize() throws ShellyApiException {
         if (!initialized) {
-            rpcSocket = new Shelly2WebSocket(thingTable, config.deviceIp);
+            rpcSocket = new Shelly2RpcSocket(thingTable, config.deviceIp);
             rpcSocket.addMessageHandler(this);
             initialized = true;
         }
@@ -307,7 +307,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                     if (getBool(params.sys.restartRequired)) {
                         logger.warn("{}: Device requires restart to activate changes", thingName);
                     }
-                    status.uptime = getLong(params.sys.uptime);
+                    status.uptime = params.sys.uptime;
                 }
 
                 status.temperature = SHELLY_API_INVTEMP; // mark invalid
@@ -443,7 +443,8 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     public ShellySettingsStatus getStatus() throws ShellyApiException {
         ShellySettingsStatus status = getProfile().status;
         Shelly2DeviceStatusResult ds = apiRequest(SHELLYRPC_METHOD_GETSTATUS, null, Shelly2DeviceStatusResult.class);
-        status.time = getString(ds.sys.time);
+        status.time = ds.sys.time;
+        status.uptime = ds.sys.uptime;
         status.cloud.connected = getBool(ds.cloud.connected);
         status.mqtt.connected = getBool(ds.mqtt.connected);
         status.wifiSta.ssid = getString(ds.wifi.ssid);
@@ -750,7 +751,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         }
     }
 
-    public Shelly2WebSocketInterface getRpcHandler() {
+    public Shelly2RpctInterface getRpcHandler() {
         return this;
     }
 

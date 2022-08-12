@@ -22,10 +22,8 @@ import static org.openhab.core.thing.Thing.*;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
@@ -53,7 +51,6 @@ import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.discovery.ShellyThingCreator;
 import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
-import org.openhab.binding.shelly.internal.provider.ShellyStateDescriptionProvider;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
 import org.openhab.binding.shelly.internal.util.ShellyChannelCache;
 import org.openhab.binding.shelly.internal.util.ShellyVersionDTO;
@@ -68,7 +65,6 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
@@ -180,11 +176,6 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     public boolean checkRepresentation(String key) {
         return key.equalsIgnoreCase(getUID()) || key.equalsIgnoreCase(config.deviceIp)
                 || key.equalsIgnoreCase(config.serviceName) || key.equalsIgnoreCase(getThingName());
-    }
-
-    @Override
-    public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Set.of(ShellyStateDescriptionProvider.class);
     }
 
     public String getUID() {
@@ -539,6 +530,9 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 }
                 // Get profile, if refreshSettings == true reload settings from device
                 ShellySettingsStatus status = api.getStatus();
+                if (status.uptime != null && status.uptime == 0 && profile.alwaysOn) {
+                    status = api.getStatus();
+                }
                 boolean restarted = checkRestarted(status);
                 profile = getProfile(refreshSettings || restarted);
                 profile.status = status;
@@ -609,6 +603,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         }
     }
 
+    @Override
     public String getThingType() {
         return thing.getThingTypeUID().getId();
     }

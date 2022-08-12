@@ -81,9 +81,7 @@ public class ShellyThingCreator {
     public static final String SHELLYDT_PRO1PM_ = "SPSW-201PE16EU";
     public static final String SHELLYDT_PRO1PM_2 = "SPSW-101PE16EU";
     public static final String SHELLYDT_PRO2_RELAY = "SPSW-002XE16EU-relay";
-    public static final String SHELLYDT_PRO2_ROLLER = "SPSW-002XE16EU-roller";
     public static final String SHELLYDT_PRO2_RELAY_2 = "SPSW-102XE16EU-relay";
-    public static final String SHELLYDT_PRO2_ROLLER_2 = "SPSW-102XE16EU-roller";
     public static final String SHELLYDT_PRO2PM_RELAY = "SPSW-002PE16EU-relay";
     public static final String SHELLYDT_PRO2PM_ROLLER = "SPSW-002PE16EU-roller";
     public static final String SHELLYDT_PRO2PM_RELAY_2 = "SPSW-002PE16EU-relay";
@@ -147,7 +145,6 @@ public class ShellyThingCreator {
     public static final String THING_TYPE_SHELLYPRO1_STR = "shellypro1";
     public static final String THING_TYPE_SHELLYPRO1PM_STR = "shellypro1pm";
     public static final String THING_TYPE_SHELLYPRO2_RELAY_STR = "shellypro2-relay";
-    public static final String THING_TYPE_SHELLYPRO2_ROLLER_STR = "shellypro2-roller";
     public static final String THING_TYPE_SHELLYPRO2PM_RELAY_STR = "shellypro2pm-relay";
     public static final String THING_TYPE_SHELLYPRO2PM_ROLLER_STR = "shellypro2pm-roller";
     public static final String THING_TYPE_SHELLYPRO3_STR = "shellypro3";
@@ -233,8 +230,6 @@ public class ShellyThingCreator {
             THING_TYPE_SHELLYPRO1PM_STR);
     public static final ThingTypeUID THING_TYPE_SHELLYPRO2_RELAY = new ThingTypeUID(BINDING_ID,
             THING_TYPE_SHELLYPRO2_RELAY_STR);
-    public static final ThingTypeUID THING_TYPE_SHELLYPRO2_ROLLER = new ThingTypeUID(BINDING_ID,
-            THING_TYPE_SHELLYPRO2_ROLLER_STR);
     public static final ThingTypeUID THING_TYPE_SHELLYPRO2PM_RELAY = new ThingTypeUID(BINDING_ID,
             THING_TYPE_SHELLYPRO2PM_RELAY_STR);
     public static final ThingTypeUID THING_TYPE_SHELLYPRO2PM_ROLLER = new ThingTypeUID(BINDING_ID,
@@ -289,8 +284,6 @@ public class ShellyThingCreator {
         THING_TYPE_MAPPING.put(SHELLYDT_PRO1PM_2, THING_TYPE_SHELLYPRO1PM_STR);
         THING_TYPE_MAPPING.put(SHELLYDT_PRO2_RELAY, THING_TYPE_SHELLYPRO2_RELAY_STR);
         THING_TYPE_MAPPING.put(SHELLYDT_PRO2_RELAY_2, THING_TYPE_SHELLYPRO2_RELAY_STR);
-        THING_TYPE_MAPPING.put(SHELLYDT_PRO2_ROLLER, THING_TYPE_SHELLYPRO2_ROLLER_STR);
-        THING_TYPE_MAPPING.put(SHELLYDT_PRO2_ROLLER_2, THING_TYPE_SHELLYPRO2_ROLLER_STR);
         THING_TYPE_MAPPING.put(SHELLYDT_PRO2PM_RELAY, THING_TYPE_SHELLYPRO2PM_RELAY_STR);
         THING_TYPE_MAPPING.put(SHELLYDT_PRO2PM_RELAY_2, THING_TYPE_SHELLYPRO2PM_RELAY_STR);
         THING_TYPE_MAPPING.put(SHELLYDT_PRO2PM_ROLLER, THING_TYPE_SHELLYPRO2PM_ROLLER_STR);

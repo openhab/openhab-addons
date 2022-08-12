@@ -989,6 +989,27 @@ You should calibrate the valve using the device Web UI or Shelly App before star
 |battery   |batteryLevel |Number   |yes      |Battery Level in %                                                     |
 |          |batteryAlert |Switch   |yes      |Low battery alert                                                      |
 
+## Shelly Plus Series
+
+### Shelly Plus 1 (thing-type: shellyplus1)
+
+|Group     |Channel      |Type     |read-only|Description                                                            |
+|----------|-------------|---------|---------|-----------------------------------------------------------------------|
+
+### Shelly Plus 1PM (thing-type: shellyplus1pm)
+
+|Group     |Channel      |Type     |read-only|Description                                                            |
+|----------|-------------|---------|---------|-----------------------------------------------------------------------|
+
+### Shelly Plus 2PM - relay mode (thing-type: shellyplus2pm-relay)
+
+|Group     |Channel      |Type     |read-only|Description                                                            |
+|----------|-------------|---------|---------|-----------------------------------------------------------------------|
+
+### Shelly Plus 2PM - roller mode (thing-type: shellyplus2pm-roller)
+
+|Group     |Channel      |Type     |read-only|Description                                                            |
+|----------|-------------|---------|---------|-----------------------------------------------------------------------|
 
 ### Shelly Plus i4, i4DC (thing-types: shellyplusi4, shellyplusi4dc)
 
@@ -1000,6 +1021,49 @@ You should calibrate the valve using the device Web UI or Shelly App before star
 |          |button       |Trigger  |yes      |Event trigger: Event trigger, see section Button Events                |
 |          |lastEvent    |String   |yes      |S/SS/SSS for 1/2/3x Shortpush or L for Longpush                        |
 |          |eventCount   |Number   |yes      |Counter gets incremented every time the device issues a button event.  |
+
+### Shelly Plus HT (thing-type: shellyplusht)
+
+|Group     |Channel      |Type     |read-only|Description                                                            |
+|----------|-------------|---------|---------|-----------------------------------------------------------------------|
+
+## Shelly Pro Series
+
+### Shelly Pro 1 (thing-type: shellypro1)
+
+|Group     |Channel      |Type     |read-only|Description                                                            |
+|----------|-------------|---------|---------|-----------------------------------------------------------------------|
+
+### Shelly Pro 1 PM (thing-type: shellypro1pm)
+
+|Group     |Channel      |Type     |read-only|Description                                                            |
+|----------|-------------|---------|---------|-----------------------------------------------------------------------|
+
+### Shelly Pro 2 (thing-type: shellypro2-relay)
+
+|Group     |Channel      |Type     |read-only|Description                                                            |
+|----------|-------------|---------|---------|-----------------------------------------------------------------------|
+
+### Shelly Pro 2 PM - relay mode (thing-type: shellypro2pm-relay)
+
+|Group     |Channel      |Type     |read-only|Description                                                            |
+|----------|-------------|---------|---------|-----------------------------------------------------------------------|
+
+### Shelly Pro 2 PM - roller mode (thing-type: shellypro2pm-roller)
+
+|Group     |Channel      |Type     |read-only|Description                                                            |
+|----------|-------------|---------|---------|-----------------------------------------------------------------------|
+
+### Shelly Pro 3 (thing-type: shellypro3)
+
+|Group     |Channel      |Type     |read-only|Description                                                            |
+|----------|-------------|---------|---------|-----------------------------------------------------------------------|
+
+### Shelly Pro 4 PM (thing-type: shellypro4pm)
+
+|Group     |Channel      |Type     |read-only|Description                                                            |
+|----------|-------------|---------|---------|-----------------------------------------------------------------------|
+
 
 
 ## Full Example

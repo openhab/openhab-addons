@@ -18,12 +18,19 @@ import java.util.Locale;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
+import org.openhab.core.events.EventPublisher;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.binding.BaseDynamicStateDescriptionProvider;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
+import org.openhab.core.thing.i18n.ChannelTypeI18nLocalizationService;
+import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 import org.openhab.core.thing.type.ChannelTypeUID;
+import org.openhab.core.thing.type.DynamicStateDescriptionProvider;
 import org.openhab.core.types.StateDescription;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * This class provides the list of valid inputs for the input channel of a source.
@@ -32,8 +39,18 @@ import org.openhab.core.types.StateDescription;
  *
  */
 @NonNullByDefault
+@Component(service = { DynamicStateDescriptionProvider.class, ShellyStateDescriptionProvider.class })
 public class ShellyStateDescriptionProvider extends BaseDynamicStateDescriptionProvider implements ThingHandlerService {
     private @Nullable ShellyThingInterface handler;
+
+    @Activate
+    public ShellyStateDescriptionProvider(final @Reference EventPublisher eventPublisher, //
+            final @Reference ItemChannelLinkRegistry itemChannelLinkRegistry, //
+            final @Reference ChannelTypeI18nLocalizationService channelTypeI18nLocalizationService) {
+        this.eventPublisher = eventPublisher;
+        this.itemChannelLinkRegistry = itemChannelLinkRegistry;
+        this.channelTypeI18nLocalizationService = channelTypeI18nLocalizationService;
+    }
 
     @Override
     public void setThingHandler(ThingHandler handler) {

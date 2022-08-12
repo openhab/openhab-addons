@@ -52,9 +52,9 @@ import com.google.gson.Gson;
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-@WebSocket
-public class Shelly2WebSocket {
-    private final Logger logger = LoggerFactory.getLogger(Shelly2WebSocket.class);
+@WebSocket(maxIdleTime = Integer.MAX_VALUE)
+public class Shelly2RpcSocket {
+    private final Logger logger = LoggerFactory.getLogger(Shelly2RpcSocket.class);
     private final Gson gson = new Gson();
 
     private String deviceIp = "";
@@ -62,25 +62,25 @@ public class Shelly2WebSocket {
     private CountDownLatch connectLatch = new CountDownLatch(1);
 
     private @Nullable Session session;
-    private @Nullable Shelly2WebSocketInterface websocketHandler;
+    private @Nullable Shelly2RpctInterface websocketHandler;
     private final WebSocketClient client = new WebSocketClient();
     private @Nullable ShellyThingTable thingTable;
 
-    public Shelly2WebSocket() {
+    public Shelly2RpcSocket() {
     }
 
-    public Shelly2WebSocket(@Nullable ShellyThingTable thingTable, String deviceIp) {
+    public Shelly2RpcSocket(@Nullable ShellyThingTable thingTable, String deviceIp) {
         this.deviceIp = deviceIp;
         this.thingTable = thingTable;
     }
 
-    public Shelly2WebSocket(ShellyThingTable thingTable, boolean inbound) {
+    public Shelly2RpcSocket(ShellyThingTable thingTable, boolean inbound) {
         logger.debug("Create WebSocket, inbound={}", inbound);
         this.thingTable = thingTable;
         this.inbound = inbound;
     }
 
-    public void addMessageHandler(Shelly2WebSocketInterface interfacehandler) {
+    public void addMessageHandler(Shelly2RpctInterface interfacehandler) {
         this.websocketHandler = interfacehandler;
     }
 
@@ -154,7 +154,7 @@ public class Shelly2WebSocket {
     @OnWebSocketMessage
     public void onText(Session session, String receivedMessage) {
         try {
-            Shelly2WebSocketInterface handler = websocketHandler;
+            Shelly2RpctInterface handler = websocketHandler;
             Shelly2RpcBaseMessage message = fromJson(gson, receivedMessage, Shelly2RpcBaseMessage.class);
             logger.trace("{}: Inbound WebSocket message: {}", message.src, receivedMessage);
             if (handler != null) {

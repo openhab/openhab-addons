@@ -37,21 +37,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link Shelly2InboundWSServlet} implements the WebSocket callback for Gen2 devices
+ * {@link Shelly2RpcServlet} implements the WebSocket callback for Gen2 devices
  *
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
 @WebServlet(name = "Shelly WebSocket Servlet", urlPatterns = { "/shelly/wsevent" })
-@Component(service = Shelly2InboundWSServlet.class, configurationPolicy = ConfigurationPolicy.OPTIONAL)
-public class Shelly2InboundWSServlet extends WebSocketServlet {
+@Component(service = Shelly2RpcServlet.class, configurationPolicy = ConfigurationPolicy.OPTIONAL)
+public class Shelly2RpcServlet extends WebSocketServlet {
     private static final long serialVersionUID = -1210354558091063207L;
-    private final Logger logger = LoggerFactory.getLogger(Shelly2InboundWSServlet.class);
+    private final Logger logger = LoggerFactory.getLogger(Shelly2RpcServlet.class);
     private @Nullable HttpService httpService;
     private final ShellyThingTable thingTable;
 
     @Activate
-    public Shelly2InboundWSServlet(@Reference HttpService httpService, @Reference ShellyThingTable thingTable) {
+    public Shelly2RpcServlet(@Reference HttpService httpService, @Reference ShellyThingTable thingTable) {
         this.thingTable = thingTable;
         this.httpService = httpService;
         try {
@@ -71,7 +71,7 @@ public class Shelly2InboundWSServlet extends WebSocketServlet {
         if (factory != null) {
             factory.getPolicy().setIdleTimeout(15000);
             factory.setCreator(new Shelly2WebSocketCreator(thingTable));
-            factory.register(Shelly2WebSocket.class);
+            factory.register(Shelly2RpcSocket.class);
         }
     }
 
@@ -87,7 +87,7 @@ public class Shelly2InboundWSServlet extends WebSocketServlet {
         @Override
         public Object createWebSocket(@Nullable ServletUpgradeRequest req, @Nullable ServletUpgradeResponse resp) {
             logger.debug("WebSocket: Create socket from servlet");
-            return new Shelly2WebSocket(thingTable, true);
+            return new Shelly2RpcSocket(thingTable, true);
         }
     }
 

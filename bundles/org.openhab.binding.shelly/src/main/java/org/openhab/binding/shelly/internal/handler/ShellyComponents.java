@@ -146,7 +146,7 @@ public class ShellyComponents {
             }
 
             String state = getString(control.state);
-            if (profile.isGen2 || (control.currentPos != null && state.equals(SHELLY_ALWD_ROLLER_TURN_STOP))) {
+            if (control.currentPos != null && (profile.isGen2 || state.equals(SHELLY_ALWD_ROLLER_TURN_STOP))) {
                 // only valid in stop state
                 int pos = Math.max(SHELLY_MIN_ROLLER_POS, Math.min(control.currentPos, SHELLY_MAX_ROLLER_POS));
                 updated |= thingHandler.updateChannel(groupName, CHANNEL_ROL_CONTROL_CONTROL,
