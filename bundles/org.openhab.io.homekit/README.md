@@ -97,6 +97,7 @@ org.openhab.homekit:networkInterface=192.168.0.6
 org.openhab.homekit:useOHmDNS=false
 org.openhab.homekit:blockUserDeletion=false
 org.openhab.homekit:name=openHAB
+org.openhab.homekit:instances=1
 ```
 
 ### Overview of all settings
@@ -110,11 +111,12 @@ org.openhab.homekit:name=openHAB
 | pin                      | Pin code used for pairing with iOS devices. Apparently, pin codes are provided by Apple and represent specific device types, so they cannot be chosen freely. The pin code 031-45-154 is used in sample applications and known to work. | 031-45-154    |
 | startDelay               | HomeKit start delay in seconds in case the number of accessories is lower than last time. This helps to avoid resetting home app in case not all items have been initialised properly before HomeKit integration start.                 | 30            |
 | useFahrenheitTemperature | Set to true to use Fahrenheit degrees, or false to use Celsius degrees. Note if an item has a QuantityType as its state, this configuration is ignored and it's always converted properly.                                              | false         |
-| thermostatTargetModeCool | Word used for activating the cooling mode of the device (if applicable). It can be overwritten at item level.                                                                                                                                                               | CoolOn        |
-| thermostatTargetModeHeat | Word used for activating the heating mode of the device (if applicable). It can be overwritten at item level.                                                                                                                                                                | HeatOn        |
-| thermostatTargetModeAuto | Word used for activating the automatic mode of the device (if applicable). It can be overwritten at item level.                                                                                                                                                               | Auto          |
-| thermostatTargetModeOff  | Word used to set the thermostat mode of the device to off (if applicable).  It can be overwritten at item level.                                                                                                                                                             | Off           |
+| thermostatTargetModeCool | Word used for activating the cooling mode of the device (if applicable). It can be overwritten at item level.                                                                                                                           | CoolOn        |
+| thermostatTargetModeHeat | Word used for activating the heating mode of the device (if applicable). It can be overwritten at item level.                                                                                                                           | HeatOn        |
+| thermostatTargetModeAuto | Word used for activating the automatic mode of the device (if applicable). It can be overwritten at item level.                                                                                                                         | Auto          |
+| thermostatTargetModeOff  | Word used to set the thermostat mode of the device to off (if applicable).  It can be overwritten at item level.                                                                                                                        | Off           |
 | name                     | Name under which this HomeKit bridge is announced on the network. This is also the name displayed on the iOS device when searching for available bridges.                                                                               | openHAB       |
+| instances                | Defines how many bridges to expose. Necessary if you have more than 149 accessories. Accessories must be assigned to additional instances via metadata. Additional bridges will use incrementing port numbers.                          | 1             |
 
 ## Item Configuration
 
@@ -834,6 +836,29 @@ String          cooler_current_mode        "Cooler Current Mode"                
 String          cooler_target_mode         "Cooler Target Mode"                   (gCooler)            {homekit="TargetHeaterCoolerState"}
 Number          cooler_cool_thrs           "Cooler Cool Threshold Temp [%.1f °C]" (gCooler)            {homekit="CoolingThresholdTemperature" [minValue=10.5, maxValue=50]}
 Number          cooler_heat_thrs           "Cooler Heat Threshold Temp [%.1f °C]" (gCooler)            {homekit="HeatingThresholdTemperature" [minValue=0.5, maxValue=20]}
+```
+
+## Multiple Instances
+
+Homekit has a limitation of 150 accessories per bridge.
+The bridge itself counts as an accessory, so in practice it's 149.
+In order to overcome this limitation, you can instruct OpenHAB to expose multiple bridges to Homekit, and then manually assign specific accessories to different instances.
+You will need to manually add each additional bridge in the Home app, since the QR Code in settings will only be for the primary bridge; however the same PIN is still used.
+In order to assign a particular accessory to a different bridge, set the `instance` metadata parameter:
+
+```
+Switch kitchen_light {homekit="Lighting" [instance=2]}
+```
+
+Note that instances are numbered starting at 1.
+If you reference an instance that doesn't exist, then that accessory won't be exposed on _any_ bridge.
+
+For complex items, only the root group needs to be tagged for the specific instance:
+
+```
+Group           gSecuritySystem            "Security System Group"                                     {homekit="SecuritySystem" [instance=2]}
+String          security_current_state     "Security Current State"               (gSecuritySystem)    {homekit="SecuritySystem.CurrentSecuritySystemState"}
+String          security_target_state      "Security Target State"                (gSecuritySystem)    {homekit="SecuritySystem.TargetSecuritySystemState"}
 ```
 
 ## Additional Notes
