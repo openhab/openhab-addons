@@ -181,8 +181,6 @@ The supported Channels and their associated channel types are shown below.
 The `position`, `limitMinimum`, and `limitMaximum` are the same as described above for "window" Things.
 
 The `vanePosition` Channel only applies to Venetian blinds that have tiltable slats.
-It can only have a valid position value if the main `position` of the Thing is fully down.
-So, if `vanePosition` is commanded to a new value, this will automatically cause the main `position` to move to the fully down position.
 
 ### Channels for "actuator" Things
 
