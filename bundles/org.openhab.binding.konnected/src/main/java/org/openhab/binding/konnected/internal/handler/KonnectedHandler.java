@@ -56,7 +56,7 @@ public class KonnectedHandler extends BaseThingHandler {
     private final String konnectedServletPath;
     private final KonnectedHTTPUtils http = new KonnectedHTTPUtils(30);
     private String callbackIpAddress = null;
-    private String baseUri;
+    private String baseUrl;
     private final Gson gson = new GsonBuilder().create();
     private int retryCount;
     private final String thingID;
@@ -177,9 +177,10 @@ public class KonnectedHandler extends BaseThingHandler {
         Configuration testConfig = this.getConfig();
         String testRetryCount = testConfig.get(RETRY_COUNT).toString();
         String testRequestTimeout = testConfig.get(REQUEST_TIMEOUT).toString();
-        baseUri = testConfig.get(BASE_URL) != null ? testConfig.get(BASE_URL).toString() : null;
+        baseUrl = testConfig.get(BASE_URL).toString();
         logger.debug("The RequestTimeout Parameter is Configured as: {}", testRequestTimeout);
         logger.debug("The Retry Count Parameter is Configured as: {}", testRetryCount);
+        logger.debug("Base URL is Configured as: {}", baseUrl);
         try {
             this.retryCount = Integer.parseInt(testRetryCount);
         } catch (NumberFormatException e) {
@@ -225,7 +226,7 @@ public class KonnectedHandler extends BaseThingHandler {
                 if (cfg[1].equals("softreset") && value instanceof Boolean && (Boolean) value) {
                     scheduler.execute(() -> {
                         try {
-                            http.doGet(baseUri + "/settings?restart=true", null, retryCount);
+                            http.doGet(baseUrl + "/settings?restart=true", null, retryCount);
                         } catch (KonnectedHttpRetryExceeded e) {
                             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                         }
@@ -234,7 +235,7 @@ public class KonnectedHandler extends BaseThingHandler {
                 } else if (cfg[1].equals("removewifi") && value instanceof Boolean && (Boolean) value) {
                     scheduler.execute(() -> {
                         try {
-                            http.doGet(baseUri + "/settings?restore=true", null, retryCount);
+                            http.doGet(baseUrl + "/settings?restore=true", null, retryCount);
                         } catch (KonnectedHttpRetryExceeded e) {
                             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                         }
@@ -288,9 +289,6 @@ public class KonnectedHandler extends BaseThingHandler {
             checkConfiguration();
         } catch (ConfigValidationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
-        }
-        if (baseUri == null) {
-            this.baseUri = this.getThing().getProperties().get(BASE_URL);
         }
         scheduler.execute(() -> {
             try {
@@ -407,7 +405,7 @@ public class KonnectedHandler extends BaseThingHandler {
      */
     private String updateKonnectedModule() throws KonnectedHttpRetryExceeded {
         String payload = constructSettingsPayload();
-        String response = http.doPut(baseUri + "/settings", payload, retryCount);
+        String response = http.doPut(baseUrl + "/settings", payload, retryCount);
         logger.debug("The response of the put request was: {}", response);
         return response;
     }
@@ -472,7 +470,7 @@ public class KonnectedHandler extends BaseThingHandler {
                         path = "/device";
                         break;
                 }
-                http.doPut(baseUri + path, payloadString, retryCount);
+                http.doPut(baseUrl + path, payloadString, retryCount);
             } else {
                 logger.debug("The channel {} returned null for channelId.getID(): {}", channelId.toString(),
                         channelId.getId());
@@ -518,7 +516,7 @@ public class KonnectedHandler extends BaseThingHandler {
 
     private void sendSetSwitchState(String thingId, String payloadString) throws KonnectedHttpRetryExceeded {
         String path = thingId.equals(WIFI_MODULE) ? "/device" : "/zone";
-        String response = http.doGet(baseUri + path, payloadString, retryCount);
+        String response = http.doGet(baseUrl + path, payloadString, retryCount);
         KonnectedModuleGson[] events = gson.fromJson(response, KonnectedModuleGson[].class);
         for (KonnectedModuleGson event : events) {
             this.handleWebHookEvent(event);
