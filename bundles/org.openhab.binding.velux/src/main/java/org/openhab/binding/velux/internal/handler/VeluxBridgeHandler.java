@@ -13,8 +13,9 @@
 package org.openhab.binding.velux.internal.handler;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -152,7 +153,6 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
      * Mapping from ChannelUID to class Thing2VeluxActuator, which return Velux device information, probably cached.
      */
     public final Map<ChannelUID, Thing2VeluxActuator> channel2VeluxActuator = new ConcurrentHashMap<>();
-    private final Map<String, Thing2VeluxActuator> thingName2VeluxActuator = new ConcurrentHashMap<>();
 
     /**
      * Information retrieved by {@link VeluxBinding#VeluxBinding}.
@@ -394,8 +394,6 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
     @Override
     public void channelLinked(ChannelUID channelUID) {
         if (thing.getStatus() == ThingStatus.ONLINE) {
-            Thing2VeluxActuator actuator = new Thing2VeluxActuator(this, channelUID);
-            thingName2VeluxActuator.put(channelUID.getThingUID().toString(), actuator);
             channel2VeluxActuator.put(channelUID, new Thing2VeluxActuator(this, channelUID));
             logger.trace("channelLinked({}) refreshing channel value with help of handleCommand as Thing is online.",
                     channelUID.getAsString());
@@ -823,7 +821,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
      */
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singletonList(VeluxActions.class);
+        return Set.of(VeluxActions.class);
     }
 
     /**
@@ -831,7 +829,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
      *
      * @return true if the command could be issued
      */
-    public boolean runReboot() {
+    public boolean rebootBridge() {
         logger.trace("runReboot() called on {}", getThing().getUID());
         RunReboot bcp = thisBridge.bridgeAPI().runReboot();
         if (bcp != null) {
@@ -916,25 +914,24 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
      * Exported method (called by an OpenHAB Rules Action) to simultaneously move the shade main position and the vane
      * position.
      *
-     * @param productBridgeIndex the node index in the bridge.
-     * @param mainPercentType the desired main position.
-     * @param vanePercentType the desired vane position.
+     * @param node the node index in the bridge.
+     * @param mainPosition the desired main position.
+     * @param vanePosition the desired vane position.
      * @return true if the command could be issued.
      */
-    public Boolean moveMainAndVane(ProductBridgeIndex productBridgeIndex, PercentType mainPercentType,
-            PercentType vanePercentType) {
+    public Boolean moveMainAndVane(ProductBridgeIndex node, PercentType mainPosition, PercentType vanePosition) {
         logger.trace("setMainAndVanePosition() called on {}", getThing().getUID());
         RunProductCommand bcp = thisBridge.bridgeAPI().runProductCommand();
         if (bcp != null) {
-            VeluxProduct product = existingProducts().get(productBridgeIndex).clone();
+            VeluxProduct product = existingProducts().get(node).clone();
             FunctionalParameters functionalParameters = null;
             if (product.supportsVanePosition()) {
-                int vanePosition = new VeluxProductPosition(vanePercentType).getPositionAsVeluxType();
-                product.setVanePosition(vanePosition);
+                int vanePos = new VeluxProductPosition(vanePosition).getPositionAsVeluxType();
+                product.setVanePosition(vanePos);
                 functionalParameters = product.getFunctionalParameters();
             }
-            VeluxProductPosition mainPosition = new VeluxProductPosition(mainPercentType);
-            bcp.setNodeIdAndParameters(productBridgeIndex.toInt(), mainPosition, functionalParameters);
+            VeluxProductPosition mainPos = new VeluxProductPosition(mainPosition);
+            bcp.setNodeIdAndParameters(node.toInt(), mainPos, functionalParameters);
             submitCommunicationsJob(() -> {
                 if (thisBridge.bridgeCommunicate(bcp)) {
                     logger.trace("setMainAndVanePosition() command {}sucessfully sent to {}",
@@ -953,7 +950,11 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
      * @return the the bridge product index or ProductBridgeIndex.UNKNOWN if not found.
      */
     public ProductBridgeIndex getProductBridgeIndex(String thingName) {
-        Thing2VeluxActuator actuator = thingName2VeluxActuator.get(thingName);
-        return actuator != null ? actuator.getProductBridgeIndex() : ProductBridgeIndex.UNKNOWN;
+        for (Entry<ChannelUID, Thing2VeluxActuator> entry : channel2VeluxActuator.entrySet()) {
+            if (thingName.equals(entry.getKey().getThingUID().getAsString())) {
+                return entry.getValue().getProductBridgeIndex();
+            }
+        }
+        return ProductBridgeIndex.UNKNOWN;
     }
 }
