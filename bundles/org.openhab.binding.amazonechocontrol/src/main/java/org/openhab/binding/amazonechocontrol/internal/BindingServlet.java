@@ -97,7 +97,7 @@ public class BindingServlet extends HttpServlet {
         }
         logger.debug("doGet {}", uri);
 
-        if (!uri.equals("/")) {
+        if (!"/".equals(uri)) {
             String newUri = req.getServletPath() + "/";
             resp.sendRedirect(newUri);
             return;

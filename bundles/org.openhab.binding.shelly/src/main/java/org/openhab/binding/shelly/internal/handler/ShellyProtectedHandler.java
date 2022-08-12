@@ -36,9 +36,9 @@ public class ShellyProtectedHandler extends ShellyBaseHandler {
      * @param httpPort port of the openHAB HTTP API
      */
     public ShellyProtectedHandler(final Thing thing, final ShellyTranslationProvider translationProvider,
-            final ShellyBindingConfiguration bindingConfig, final Shelly1CoapServer coapServer, final String localIP,
-            int httpPort, final HttpClient httpClient) {
-        super(thing, translationProvider, bindingConfig, coapServer, localIP, httpPort, httpClient);
+            final ShellyBindingConfiguration bindingConfig, ShellyThingTable thingTable,
+            final Shelly1CoapServer coapService, final HttpClient httpClient) {
+        super(thing, translationProvider, bindingConfig, thingTable, coapService, httpClient);
     }
 
     @Override

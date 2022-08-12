@@ -14,12 +14,15 @@ package org.openhab.binding.atlona.internal.net;
 
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * This is a socket session interface that defines the contract for a socket session. A socket session will initiate
  * communications with the underlying device and provide message back via the {@link SocketSessionListener}
  *
  * @author Tim Roberts - Initial contribution
  */
+@NonNullByDefault
 public interface SocketSession {
 
     /**

@@ -56,7 +56,7 @@
 		<category>Lightbulb</category>
 		<channel-groups>
 			<channel-group id="control" typeId="duoControl"/>
-			<channel-group id="white" typeId="whiteSettingsSimple"/>
+			<channel-group id="white" typeId="whiteSettings"/>
 			<channel-group id="meter" typeId="meter"/>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
@@ -112,20 +112,12 @@
 		<channels>
 			<channel id="power" typeId="system.power"/>
 			<channel id="mode" typeId="colorMode"/>
-			<channel id="autoOn" typeId="timerAutoOn"/>
-			<channel id="autoOff" typeId="timerAutoOff"/>
-			<channel id="timerActive" typeId="timerActive"/>
 		</channels>
 	</channel-group-type>
 
 	<channel-group-type id="duoControl">
 		<label>@text/channel-group-type.shelly.duoControl.label</label>
 		<description>@text/channel-group-type.shelly.duoControl.description</description>
-		<channels>
-			<channel id="autoOn" typeId="timerAutoOn"/>
-			<channel id="autoOff" typeId="timerAutoOff"/>
-			<channel id="timerActive" typeId="timerActive"/>
-		</channels>
 	</channel-group-type>
 
 	<channel-group-type id="rgbw2ColorControl">
@@ -171,31 +163,12 @@
 	<channel-group-type id="whiteSettings">
 		<label>@text/channel-group-type.shelly.whiteSettings.label</label>
 		<description>@text/channel-group-type.shelly.whiteSettings.description</description>
-		<channels>
-			<channel id="brightness" typeId="whiteBrightness"/>
-			<channel id="temperature" typeId="whiteTemp"/>
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="whiteSettingsSimple">
-		<label>@text/channel-group-type.shelly.whiteSettingsSimple.label</label>
-		<description>@text/channel-group-type.shelly.whiteSettingsSimple.description</description>
-		<channels>
-			<channel id="brightness" typeId="whiteBrightness"/>
-		</channels>
 	</channel-group-type>
 
 	<channel-group-type id="rgbw2Channel">
 		<label>@text/channel-group-type.shelly.rgbw2Channel.label</label>
 		<description>@text/channel-group-type.shelly.rgbw2Channel.description</description>
-		<channels>
-			<channel id="autoOn" typeId="timerAutoOn"/>
-			<channel id="autoOff" typeId="timerAutoOff"/>
-			<channel id="timerActive" typeId="timerActive"/>
-			<channel id="brightness" typeId="whiteBrightness"/>
-		</channels>
 	</channel-group-type>
-
 
 	<channel-type id="colorMode">
 		<item-type>Switch</item-type>
@@ -298,5 +271,4 @@
 			</options>
 		</state>
 	</channel-type>
-
 </thing:thing-descriptions>

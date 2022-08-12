@@ -23,8 +23,22 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class IndegoInvalidCommandException extends IndegoException {
 
     private static final long serialVersionUID = -2946398731437793113L;
+    private int errorCode = 0;
 
     public IndegoInvalidCommandException(String message) {
         super(message);
+    }
+
+    public IndegoInvalidCommandException(String message, int errorCode) {
+        super(message);
+        this.errorCode = errorCode;
+    }
+
+    public boolean hasErrorCode() {
+        return errorCode != 0;
+    }
+
+    public int getErrorCode() {
+        return errorCode;
     }
 }

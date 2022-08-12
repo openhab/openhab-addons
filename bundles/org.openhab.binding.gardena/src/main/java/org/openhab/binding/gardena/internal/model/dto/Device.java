@@ -152,8 +152,12 @@ public class Device {
             throw new GardenaException("Unknown dataItem with id: " + dataItem.id);
         }
 
-        if (common != null && common.attributes != null) {
-            common.attributes.lastUpdate.timestamp = new Date();
+        if (common != null) {
+            CommonService attributes = common.attributes;
+            if (attributes != null) {
+                attributes.lastUpdate.timestamp = new Date();
+            }
+            common.attributes = attributes;
         }
     }
 
