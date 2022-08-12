@@ -45,6 +45,7 @@ public class RotelSimuConnector extends RotelConnector {
 
     private static final int STEP_TONE_LEVEL = 1;
     private static final double STEP_DECIBEL = 0.5;
+    private static final String FIRMWARE = "V1.1.8";
 
     private final Logger logger = LoggerFactory.getLogger(RotelSimuConnector.class);
 
@@ -175,6 +176,7 @@ public class RotelSimuConnector extends RotelConnector {
         String textLine1Right = buildVolumeLine1RightResponse();
         String textLine2 = "";
         String textAscii = "";
+        boolean variableLength = false;
         boolean accepted = true;
         boolean resetZone = true;
         int numZone = 0;
@@ -1062,10 +1064,22 @@ public class RotelSimuConnector extends RotelConnector {
                     textAscii = buildAsciiResponse(KEY_PCUSB_CLASS, pcUsbClass);
                     break;
                 case MODEL:
-                    textAscii = buildAsciiResponse(KEY_MODEL, model.getName());
+                    if (protocol == RotelProtocol.ASCII_V1) {
+                        variableLength = true;
+                        textAscii = buildAsciiResponse(KEY_PRODUCT_TYPE,
+                                String.format("%d,%s", model.getName().length(), model.getName()));
+                    } else {
+                        textAscii = buildAsciiResponse(KEY_MODEL, model.getName());
+                    }
                     break;
                 case VERSION:
-                    textAscii = buildAsciiResponse(KEY_VERSION, "1.00");
+                    if (protocol == RotelProtocol.ASCII_V1) {
+                        variableLength = true;
+                        textAscii = buildAsciiResponse(KEY_PRODUCT_VERSION,
+                                String.format("%d,%s", FIRMWARE.length(), FIRMWARE));
+                    } else {
+                        textAscii = buildAsciiResponse(KEY_VERSION, FIRMWARE);
+                    }
                     break;
                 default:
                     accepted = false;
@@ -1186,7 +1200,14 @@ public class RotelSimuConnector extends RotelConnector {
                 idxInFeedbackMsg = 0;
             }
         } else {
-            String command = textAscii + (protocol == RotelProtocol.ASCII_V1 ? "!" : "$");
+            String command = textAscii;
+            if (protocol == RotelProtocol.ASCII_V1 && !variableLength) {
+                command += "!";
+            } else if (protocol == RotelProtocol.ASCII_V2 && !variableLength) {
+                command += "$";
+            } else if (protocol == RotelProtocol.ASCII_V2 && variableLength) {
+                command += "$$";
+            }
             synchronized (lock) {
                 feedbackMsg = command.getBytes(StandardCharsets.US_ASCII);
                 idxInFeedbackMsg = 0;
