@@ -97,6 +97,7 @@ org.openhab.homekit:networkInterface=192.168.0.6
 org.openhab.homekit:useOHmDNS=false
 org.openhab.homekit:blockUserDeletion=false
 org.openhab.homekit:name=openHAB
+org.openhab.homekit:instances=1
 ```
 
 ### Overview of all settings
@@ -110,11 +111,12 @@ org.openhab.homekit:name=openHAB
 | pin                      | Pin code used for pairing with iOS devices. Apparently, pin codes are provided by Apple and represent specific device types, so they cannot be chosen freely. The pin code 031-45-154 is used in sample applications and known to work. | 031-45-154    |
 | startDelay               | HomeKit start delay in seconds in case the number of accessories is lower than last time. This helps to avoid resetting home app in case not all items have been initialised properly before HomeKit integration start.                 | 30            |
 | useFahrenheitTemperature | Set to true to use Fahrenheit degrees, or false to use Celsius degrees. Note if an item has a QuantityType as its state, this configuration is ignored and it's always converted properly.                                              | false         |
-| thermostatTargetModeCool | Word used for activating the cooling mode of the device (if applicable). It can be overwritten at item level.                                                                                                                                                               | CoolOn        |
-| thermostatTargetModeHeat | Word used for activating the heating mode of the device (if applicable). It can be overwritten at item level.                                                                                                                                                                | HeatOn        |
-| thermostatTargetModeAuto | Word used for activating the automatic mode of the device (if applicable). It can be overwritten at item level.                                                                                                                                                               | Auto          |
-| thermostatTargetModeOff  | Word used to set the thermostat mode of the device to off (if applicable).  It can be overwritten at item level.                                                                                                                                                             | Off           |
+| thermostatTargetModeCool | Word used for activating the cooling mode of the device (if applicable). It can be overwritten at item level.                                                                                                                           | CoolOn        |
+| thermostatTargetModeHeat | Word used for activating the heating mode of the device (if applicable). It can be overwritten at item level.                                                                                                                           | HeatOn        |
+| thermostatTargetModeAuto | Word used for activating the automatic mode of the device (if applicable). It can be overwritten at item level.                                                                                                                         | Auto          |
+| thermostatTargetModeOff  | Word used to set the thermostat mode of the device to off (if applicable).  It can be overwritten at item level.                                                                                                                        | Off           |
 | name                     | Name under which this HomeKit bridge is announced on the network. This is also the name displayed on the iOS device when searching for available bridges.                                                                               | openHAB       |
+| instances                | Defines how many bridges to expose. Necessary if you have more than 149 accessories. Accessories must be assigned to additional instances via metadata. Additional bridges will use incrementing port numbers.                          | 1             |
 
 ## Item Configuration
 
@@ -270,12 +272,12 @@ In contrast, HomeKit window covering/door/window have inverted mapping
 - CLOSED if position is 0%
 
 Therefore, HomeKit integration inverts by default the values between openHAB and HomeKit, e.g. if openHAB current position is 30% then it will send 70% to HomeKit app.
-In case you need to disable this logic you can do it with configuration parameter inverted="false", e.g.
+In case you need to disable this logic you can do it with configuration parameter inverted=false, e.g.
 
 ```xtend
-Rollershutter window_covering "Window Rollershutter" {homekit = "WindowCovering"  [inverted="false"]}
-Rollershutter window          "Window"               {homekit = "Window" [inverted="false"]}
-Rollershutter door            "Door"                 {homekit = "Door" [inverted="false"]}
+Rollershutter window_covering "Window Rollershutter" {homekit = "WindowCovering"  [inverted=false]}
+Rollershutter window          "Window"               {homekit = "Window" [inverted=false]}
+Rollershutter door            "Door"                 {homekit = "Door" [inverted=false]}
 
  ```
 
@@ -425,7 +427,7 @@ Following table summarizes the optional characteristics supported by sensors.
 | BatteryLowStatus             | Switch, Contact          | Accessory battery status. "ON"/"OPEN" indicates that the battery level of the accessory is low. Value should return to "OFF"/"CLOSED" when the battery charges to a level thats above the low threshold.                 |
 
 Switch and Contact items support inversion of the state mapping, e.g. by default the openHAB switch state "ON" is mapped to HomeKit contact sensor state "Open", and "OFF" to "Closed". 
-The configuration "inverted='true'" inverts this mapping, so that "ON" will be mapped to "Closed" and "OFF" to "Open".  
+The configuration "inverted=true" inverts this mapping, so that "ON" will be mapped to "Closed" and "OFF" to "Open".  
 
 Examples of sensor definitions.
 Sensors without optional characteristics:
@@ -435,7 +437,7 @@ Switch  leaksensor_single    "Leak Sensor"                   {homekit="LeakSenso
 Number  light_sensor         "Light Sensor"                  {homekit="LightSensor"}
 Number  temperature_sensor   "Temperature Sensor [%.1f °C]"  {homekit="TemperatureSensor"}
 Contact contact_sensor       "Contact Sensor"                {homekit="ContactSensor"}
-Contact contact_sensor       "Contact Sensor"                {homekit="ContactSensor" [inverted="true"]}
+Contact contact_sensor       "Contact Sensor"                {homekit="ContactSensor" [inverted=true]}
 
 Switch  occupancy_sensor     "Occupancy Sensor"              {homekit="OccupancyDetectedState"}
 Switch  motion_sensor        "Motion Sensor"                 {homekit="MotionSensor"}
@@ -448,13 +450,13 @@ Sensors with optional characteristics:
 Group           gLeakSensor                "Leak Sensor"                                             {homekit="LeakSensor"}
 Switch          leaksensor                 "Leak Sensor State"                  (gLeakSensor)        {homekit="LeakDetectedState"}
 Switch          leaksensor_bat             "Leak Sensor Battery"                (gLeakSensor)        {homekit="BatteryLowStatus" }
-Switch          leaksensor_active          "Leak Sensor Active"                 (gLeakSensor)        {homekit="ActiveStatus" [inverted="true"]}
+Switch          leaksensor_active          "Leak Sensor Active"                 (gLeakSensor)        {homekit="ActiveStatus" [inverted=true]}
 Switch          leaksensor_fault           "Leak Sensor Fault"                  (gLeakSensor)        {homekit="FaultStatus"}
 Switch          leaksensor_tampered        "Leak Sensor Tampered"               (gLeakSensor)        {homekit="TamperedStatus"}
 
 Group           gMotionSensor              "Motion Sensor"                                           {homekit="MotionSensor"}
 Switch          motionsensor               "Motion Sensor State"                (gMotionSensor)      {homekit="MotionDetectedState"}
-Switch          motionsensor_bat           "Motion Sensor Battery"              (gMotionSensor)      {homekit="BatteryLowStatus" [inverted="true"]}
+Switch          motionsensor_bat           "Motion Sensor Battery"              (gMotionSensor)      {homekit="BatteryLowStatus" [inverted=true]}
 Switch          motionsensor_active        "Motion Sensor Active"               (gMotionSensor)      {homekit="ActiveStatus"}
 Switch          motionsensor_fault         "Motion Sensor Fault"                (gMotionSensor)      {homekit="FaultStatus"}
 Switch          motionsensor_tampered      "Motion Sensor Tampered"             (gMotionSensor)      {homekit="TamperedStatus"}
@@ -676,11 +678,11 @@ Support for this is planned for the future release of openHAB HomeKit binding.
 | Fan                  |                             |                              |                               | Fan                                                                                                                                                                                                                                                                                                                                                 |
 |                      | ActiveStatus                |                              | Switch                        | Accessory current working status. A value of "ON"/"OPEN" indicates that the accessory is active and is functioning without any errors.                                                                                                                                                                                                              |
 |                      |                             | CurrentFanState              | Number                        | Current fan state.  values: 0=INACTIVE, 1=IDLE, 2=BLOWING AIR                                                                                                                                                                                                                                                                                       |
-|                      |                             | TargetFanState               | Number, Switch                | Target fan state.  values: 0/OFF=MANUAL, 1/ON=AUTO. Flag [inverted="true"] swaps the default mapping                                                                                                                                                                                                                                                |
-|                      |                             | RotationDirection            | Number, Switch                | Rotation direction.  values: 0/OFF=CLOCKWISE, 1/ON=COUNTER CLOCKWISE. Flag [inverted="true"] swaps the default mapping                                                                                                                                                                                                                              |
+|                      |                             | TargetFanState               | Number, Switch                | Target fan state.  values: 0/OFF=MANUAL, 1/ON=AUTO. Flag [inverted=true] swaps the default mapping                                                                                                                                                                                                                                                |
+|                      |                             | RotationDirection            | Number, Switch                | Rotation direction.  values: 0/OFF=CLOCKWISE, 1/ON=COUNTER CLOCKWISE. Flag [inverted=true] swaps the default mapping                                                                                                                                                                                                                              |
 |                      |                             | RotationSpeed                | Number, Dimmer                | Fan rotation speed in % (1-100)                                                                                                                                                                                                                                                                                                                     |
-|                      |                             | SwingMode                    | Number, Switch                | Swing mode.  values: 0/OFF=SWING DISABLED, 1/ON=SWING ENABLED. Flag [inverted="true"] swaps the default mapping                                                                                                                                                                                                                                     |
-|                      |                             | LockControl                  | Number, Switch                | Status of physical control lock.  values: 0/OFF=CONTROL LOCK DISABLED, 1/ON=CONTROL LOCK ENABLED.Flag [inverted="true"] swaps the default mapping                                                                                                                                                                                                                                                   |
+|                      |                             | SwingMode                    | Number, Switch                | Swing mode.  values: 0/OFF=SWING DISABLED, 1/ON=SWING ENABLED. Flag [inverted=true] swaps the default mapping                                                                                                                                                                                                                                     |
+|                      |                             | LockControl                  | Number, Switch                | Status of physical control lock.  values: 0/OFF=CONTROL LOCK DISABLED, 1/ON=CONTROL LOCK ENABLED.Flag [inverted=true] swaps the default mapping                                                                                                                                                                                                                                                   |
 | Thermostat           |                             |                              |                               | A thermostat requires all mandatory characteristics defined below                                                                                                                                                                                                                                                                                   |
 |                      | CurrentTemperature          |                              | Number                        | Current temperature. supported configuration: minValue, maxValue, step                                                                                                                                                                                                                                                                              |
 |                      | TargetTemperature           |                              | Number                        | Target temperature. supported configuration: minValue, maxValue, step                                                                                                                                                                                                                                                                               |
@@ -700,7 +702,7 @@ Support for this is planned for the future release of openHAB HomeKit binding.
 |                      |                             | LockControl                  | Number, Switch                | Status of physical control lock.  values: 0/OFF=CONTROL LOCK DISABLED, 1/ON=CONTROL LOCK ENABLED                                                                                                                                                                                                                                                    |
 |                      |                             | CoolingThresholdTemperature  | Number                        | Maximum temperature that must be reached before cooling is turned on. min/max/step can configured at item level, e.g. minValue=10.5, maxValue=50, step=2]                                                                                                                                                                                           |
 |                      |                             | HeatingThresholdTemperature  | Number                        | Minimum temperature that must be reached before heating is turned on. min/max/step can configured at item level, e.g. minValue=10.5, maxValue=50, step=2]                                                                                                                                                                                           |
-| Lock                 |                             |                              |                               | A Lock Mechanism. with flag [inverted="true"] the default mapping to switch ON/OFF can be inverted.                                                                                                                                                                                                                                                 |
+| Lock                 |                             |                              |                               | A Lock Mechanism. with flag [inverted=true] the default mapping to switch ON/OFF can be inverted.                                                                                                                                                                                                                                                 |
 |                      | LockCurrentState            |                              | Switch, Number                | Current state of lock mechanism (1/ON=SECURED, 0/OFF=UNSECURED, 2=JAMMED, 3=UNKNOWN)                                                                                                                                                                                                                                                                |
 |                      | LockTargetState             |                              | Switch                        | Target state of lock mechanism (ON=SECURED, OFF=UNSECURED)                                                                                                                                                                                                                                                                                          |
 |                      |                             | Name                         | String                        | Name of the lock                                                                                                                                                                                                                                                                                                                                    |
@@ -834,6 +836,29 @@ String          cooler_current_mode        "Cooler Current Mode"                
 String          cooler_target_mode         "Cooler Target Mode"                   (gCooler)            {homekit="TargetHeaterCoolerState"}
 Number          cooler_cool_thrs           "Cooler Cool Threshold Temp [%.1f °C]" (gCooler)            {homekit="CoolingThresholdTemperature" [minValue=10.5, maxValue=50]}
 Number          cooler_heat_thrs           "Cooler Heat Threshold Temp [%.1f °C]" (gCooler)            {homekit="HeatingThresholdTemperature" [minValue=0.5, maxValue=20]}
+```
+
+## Multiple Instances
+
+Homekit has a limitation of 150 accessories per bridge.
+The bridge itself counts as an accessory, so in practice it's 149.
+In order to overcome this limitation, you can instruct OpenHAB to expose multiple bridges to Homekit, and then manually assign specific accessories to different instances.
+You will need to manually add each additional bridge in the Home app, since the QR Code in settings will only be for the primary bridge; however the same PIN is still used.
+In order to assign a particular accessory to a different bridge, set the `instance` metadata parameter:
+
+```
+Switch kitchen_light {homekit="Lighting" [instance=2]}
+```
+
+Note that instances are numbered starting at 1.
+If you reference an instance that doesn't exist, then that accessory won't be exposed on _any_ bridge.
+
+For complex items, only the root group needs to be tagged for the specific instance:
+
+```
+Group           gSecuritySystem            "Security System Group"                                     {homekit="SecuritySystem" [instance=2]}
+String          security_current_state     "Security Current State"               (gSecuritySystem)    {homekit="SecuritySystem.CurrentSecuritySystemState"}
+String          security_target_state      "Security Target State"                (gSecuritySystem)    {homekit="SecuritySystem.TargetSecuritySystemState"}
 ```
 
 ## Additional Notes

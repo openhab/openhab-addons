@@ -29,7 +29,7 @@ The IP Gateway is the most commonly used way to connect to the KNX bus. At its b
 
 | Name                | Required     | Description                                                                                                  | Default value                                        |
 |---------------------|--------------|--------------------------------------------------------------------------------------------------------------|------------------------------------------------------|
-| type                | Yes          | The IP connection type for connecting to the KNX bus (`TUNNEL` or `ROUTER`)                                  | -                                                    |
+| type                | Yes          | The IP connection type for connecting to the KNX bus (`TUNNEL`, `ROUTER`, `SECURETUNNEL` or `SECUREROUTER`)  | -                                                    |
 | ipAddress           | for `TUNNEL` | Network address of the KNX/IP gateway. If type `ROUTER` is set, the IPv4 Multicast Address can be set.       | for `TUNNEL`: \<nothing\>, for `ROUTER`: 224.0.23.12 |
 | portNumber          | for `TUNNEL` | Port number of the KNX/IP gateway                                                                            | 3671                                                 |
 | localIp             | No           | Network address of the local host to be used to set up the connection to the KNX/IP gateway                  | the system-wide configured primary interface address |
@@ -39,6 +39,10 @@ The IP Gateway is the most commonly used way to connect to the KNX bus. At its b
 | responseTimeout     | No           | Timeout in seconds to wait for a response from the KNX bus                                                   | 10                                                   |
 | readRetriesLimit    | No           | Limits the read retries while initialization from the KNX bus                                                | 3                                                    |
 | autoReconnectPeriod | No           | Seconds between connect retries when KNX link has been lost (0 means never).                                 | 0                                                    |
+| routerBackboneKey   | No           | KNX secure: Backbone key for secure router mode                                                              | -                                                    |
+| tunnelUserId        | No           | KNX secure: Tunnel user id for secure tunnel mode (if specified, it must be a number >0)                     | -                                                    |
+| tunnelUserPassword  | No           | KNX secure: Tunnel user key for secure tunnel mode                                                           | -                                                    |
+| tunnelDeviceAuthentication  | No   | KNX secure: Tunnel device authentication for secure tunnel mode                                              | -                                                    |
 
 
 ### Serial Gateway
@@ -206,6 +210,35 @@ With `*-control` channels, the state is not owned by any device on the KNX bus, 
 Each configuration parameter has a `mainGA` where commands are written to and optionally several `listeningGA`s.
 
 The `dpt` element is optional. If omitted, the corresponding default value will be used (see the channel descriptions above).
+
+
+## KNX Secure
+
+> NOTE: Support for KNX Secure is partly implemented for openHAB and should be considered as experimental.
+
+### KNX IP Secure
+
+KNX IP Secure protects the traffic between openHAB and your KNX installation.
+It **requires a KNX Secure Router or a Secure IP Interface** and a KNX installation **with security features enabled in ETS tool**.
+
+For *Secure routing* mode, the so called `backbone key` needs to be configured in openHAB.
+It is created by the ETS tool and cannot be changed via the ETS user interface.
+
+- The backbone key can be extracted from Security report (ETS, Reports, Security, look for a 32-digit key) and specified in parameter `routerBackboneKey`.
+
+For *Secure tunneling* with a Secure IP Interface (or a router in tunneling mode), more parameters are required.
+A unique device authentication key, and a specific tunnel identifier and password need to be available.
+
+- All information can be looked up in ETS and provided separately: `tunnelDeviceAuthentication`, `tunnelUserPassword`.
+`tunnelUserId` is a number which is not directly visible in ETS, but can be looked up in keyring export or deduced (typically 2 for the first tunnel of a device, 3 for the second one, ...).
+`tunnelUserPasswort` is set in ETS in the properties of the tunnel (below the IP interface you will see the different tunnels listed) denoted as "Password". `tunnelDeviceAuthentication` is set in the properties of the IP interface itself, check for a tab "IP" and a description "Authentication Code".
+
+### KNX Data Secure
+
+KNX Data Secure protects the content of messages on the KNX bus. In a KNX installation, both classic and secure group addresses can coexist.
+Data Secure does _not_ necessarily require a KNX Secure Router or a Secure IP Interface, but a KNX installation with newer KNX devices which support Data Secure and with **security features enabled in ETS tool**.
+
+> NOTE: **openHAB currently ignores messages with secure group addresses.**
 
 
 ## Examples

@@ -16,6 +16,7 @@
 			<channel id="random" typeId="random"/>
 			<channel id="repeat" typeId="repeat"/>
 			<channel id="brightness" typeId="brightness"/>
+			<channel id="otherCommand" typeId="otherCommand"/>
 		</channels>
 
 		<config-description-ref uri="thing-type:rotel:serialandprotocol"/>

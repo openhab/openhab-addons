@@ -66,9 +66,9 @@ public class ShellyLightHandler extends ShellyBaseHandler {
      * @param httpPort port of the openHAB HTTP API
      */
     public ShellyLightHandler(final Thing thing, final ShellyTranslationProvider translationProvider,
-            final ShellyBindingConfiguration bindingConfig, final Shelly1CoapServer coapServer, final String localIP,
-            int httpPort, final HttpClient httpClient) {
-        super(thing, translationProvider, bindingConfig, coapServer, localIP, httpPort, httpClient);
+            final ShellyBindingConfiguration bindingConfig, final ShellyThingTable thingTable,
+            final Shelly1CoapServer coapServer, final HttpClient httpClient) {
+        super(thing, translationProvider, bindingConfig, thingTable, coapServer, httpClient);
         channelColors = new TreeMap<>();
     }
 
@@ -350,8 +350,11 @@ public class ShellyLightHandler extends ShellyBaseHandler {
             if (profile.settings.lights != null) {
                 // Channel control/timer
                 ShellySettingsRgbwLight ls = profile.settings.lights.get(lightId);
-                updated |= updateChannel(controlGroup, CHANNEL_TIMER_AUTOON, getDecimal(ls.autoOn));
-                updated |= updateChannel(controlGroup, CHANNEL_TIMER_AUTOOFF, getDecimal(ls.autoOff));
+                updated |= updateChannel(controlGroup, CHANNEL_TIMER_AUTOON,
+                        toQuantityType(getDouble(ls.autoOn), Units.SECOND));
+                updated |= updateChannel(controlGroup, CHANNEL_TIMER_AUTOOFF,
+                        toQuantityType(getDouble(ls.autoOff), Units.SECOND));
+                updated |= updateChannel(controlGroup, CHANNEL_LIGHT_POWER, col.power);
                 updated |= updateChannel(controlGroup, CHANNEL_TIMER_ACTIVE, getOnOff(light.hasTimer));
                 updated |= updateChannel(controlGroup, CHANNEL_LIGHT_POWER, col.power);
             }

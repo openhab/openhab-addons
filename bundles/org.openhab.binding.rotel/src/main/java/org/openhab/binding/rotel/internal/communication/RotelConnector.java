@@ -148,26 +148,26 @@ public abstract class RotelConnector {
     /**
      * Request the Rotel device to execute a command
      *
-     * @param cmdName the command name
+     * @param cmd the command to execute
      * @param dataBuffer the data buffer containing the encoded command
      *
      * @throws RotelException - In case of any problem
      */
-    public void writeOutput(String cmdName, byte[] dataBuffer) throws RotelException {
+    public void writeOutput(RotelCommand cmd, byte[] dataBuffer) throws RotelException {
         if (simu) {
             return;
         }
         OutputStream dataOut = this.dataOut;
         if (dataOut == null) {
-            throw new RotelException("Send command \"" + cmdName + "\" failed: output stream is null");
+            throw new RotelException("Send command \"" + cmd.getLabel() + "\" failed: output stream is null");
         }
         try {
             dataOut.write(dataBuffer);
             dataOut.flush();
         } catch (IOException e) {
-            logger.debug("Send command \"{}\" failed: {}", cmdName, e.getMessage());
-            throw new RotelException("Send command \"" + cmdName + "\" failed", e);
+            logger.debug("Send command \"{}\" failed: {}", cmd, e.getMessage());
+            throw new RotelException("Send command \"" + cmd.getLabel() + "\" failed", e);
         }
-        logger.debug("Send command \"{}\" succeeded", cmdName);
+        logger.debug("Send command \"{}\" succeeded", cmd);
     }
 }
