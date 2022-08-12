@@ -1696,9 +1696,11 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                 case KEY_PCUSB_CLASS:
                     logger.debug("PC-USB Audio Class is set to {}", value);
                     break;
+                case KEY_PRODUCT_TYPE:
                 case KEY_MODEL:
                     getThing().setProperty(Thing.PROPERTY_MODEL_ID, value);
                     break;
+                case KEY_PRODUCT_VERSION:
                 case KEY_VERSION:
                     getThing().setProperty(Thing.PROPERTY_FIRMWARE_VERSION, value);
                     break;
@@ -1942,6 +1944,13 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                             }
                             if (model.hasSpeakerGroups()) {
                                 sendCommand(RotelCommand.SPEAKER);
+                                Thread.sleep(SLEEP_INTV);
+                            }
+                            if (model != RotelModel.RAP1580 && model != RotelModel.RSP1576
+                                    && model != RotelModel.RSP1582) {
+                                sendCommand(RotelCommand.MODEL);
+                                Thread.sleep(SLEEP_INTV);
+                                sendCommand(RotelCommand.VERSION);
                                 Thread.sleep(SLEEP_INTV);
                             }
                             break;
