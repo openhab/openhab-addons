@@ -321,7 +321,7 @@ public class KonnectedHandler extends BaseThingHandler {
      * @return a json settings payload which can be sent to the Konnected Module based on the Thing
      */
     private String constructSettingsPayload() {
-        String apiUrl = (String) getThing().getConfiguration().get(CALLBACK_URI);
+        String apiUrl = (String) getThing().getConfiguration().get(CALLBACK_URL);
         if (apiUrl == null) {
             apiUrl = "http://" + callbackIpAddress + this.konnectedServletPath;
         }
