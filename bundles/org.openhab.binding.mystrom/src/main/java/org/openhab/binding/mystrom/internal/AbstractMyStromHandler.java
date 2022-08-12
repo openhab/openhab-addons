@@ -12,17 +12,7 @@
  */
 package org.openhab.binding.mystrom.internal;
 
-import static org.openhab.binding.mystrom.internal.MyStromBindingConstants.PROPERTY_CONNECTED;
-import static org.openhab.binding.mystrom.internal.MyStromBindingConstants.PROPERTY_DNS;
-import static org.openhab.binding.mystrom.internal.MyStromBindingConstants.PROPERTY_GW;
-import static org.openhab.binding.mystrom.internal.MyStromBindingConstants.PROPERTY_IP;
-import static org.openhab.binding.mystrom.internal.MyStromBindingConstants.PROPERTY_LAST_REFRESH;
-import static org.openhab.binding.mystrom.internal.MyStromBindingConstants.PROPERTY_MAC;
-import static org.openhab.binding.mystrom.internal.MyStromBindingConstants.PROPERTY_MASK;
-import static org.openhab.binding.mystrom.internal.MyStromBindingConstants.PROPERTY_SSID;
-import static org.openhab.binding.mystrom.internal.MyStromBindingConstants.PROPERTY_STATIC;
-import static org.openhab.binding.mystrom.internal.MyStromBindingConstants.PROPERTY_TYPE;
-import static org.openhab.binding.mystrom.internal.MyStromBindingConstants.PROPERTY_VERSION;
+import static org.openhab.binding.mystrom.internal.MyStromBindingConstants.*;
 
 import java.text.DateFormat;
 import java.util.Calendar;
@@ -61,10 +51,9 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 public abstract class AbstractMyStromHandler extends BaseThingHandler {
     protected static final String COMMUNICATION_ERROR = "Error while communicating to the myStrom plug: ";
-    protected static final String HTTP_REQUEST_URL_PREFIX = "http://";
+    protected MyStromConfiguration config;
 
     protected final HttpClient httpClient;
-    protected String hostname = "";
     protected String mac = "";
 
     private final Logger logger = LoggerFactory.getLogger(AbstractMyStromHandler.class);
@@ -73,14 +62,13 @@ public abstract class AbstractMyStromHandler extends BaseThingHandler {
 
     public AbstractMyStromHandler(Thing thing, HttpClient httpClient) {
         super(thing);
+        config = getConfigAs(MyStromConfiguration.class);
         this.httpClient = httpClient;
     }
 
     @Override
     public final void initialize() {
-        MyStromConfiguration config = getConfigAs(MyStromConfiguration.class);
-        this.hostname = HTTP_REQUEST_URL_PREFIX + config.hostname;
-
+        config = getConfigAs(MyStromConfiguration.class);
         updateStatus(ThingStatus.UNKNOWN);
         scheduler.schedule(this::initializeInternal, 0, TimeUnit.SECONDS);
     }
@@ -135,9 +123,12 @@ public abstract class AbstractMyStromHandler extends BaseThingHandler {
      */
     protected final String sendHttpRequest(HttpMethod method, String path, @Nullable String requestData)
             throws MyStromException {
-        String url = hostname + path;
+        String url = config.getHostname() + path;
         try {
             Request request = httpClient.newRequest(url).timeout(10, TimeUnit.SECONDS).method(method);
+            if (!config.getApiToken().isEmpty()) {
+                request.getHeaders().add("Token", config.getApiToken());
+            }
             if (requestData != null) {
                 request = request.content(new StringContentProvider(requestData)).header(HttpHeader.CONTENT_TYPE,
                         "application/x-www-form-urlencoded");
@@ -157,9 +148,7 @@ public abstract class AbstractMyStromHandler extends BaseThingHandler {
         try {
             updateProperties();
             checkRequiredInfo();
-            updateStatus(ThingStatus.ONLINE);
-            MyStromConfiguration config = getConfigAs(MyStromConfiguration.class);
-            pollingJob = scheduler.scheduleWithFixedDelay(this::pollDevice, 0, config.refresh, TimeUnit.SECONDS);
+            pollingJob = scheduler.scheduleWithFixedDelay(this::pollDevice, 0, config.getRefresh(), TimeUnit.SECONDS);
         } catch (MyStromException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         }

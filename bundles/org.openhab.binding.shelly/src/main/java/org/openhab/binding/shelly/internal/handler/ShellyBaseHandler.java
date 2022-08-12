@@ -21,9 +21,13 @@ import static org.openhab.core.thing.Thing.*;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -39,7 +43,6 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyInputSta
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyOtaCheckResult;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDevice;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
-import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyThermnostat;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapHandler;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapServer;
@@ -48,6 +51,7 @@ import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.discovery.ShellyThingCreator;
 import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
+import org.openhab.binding.shelly.internal.provider.ShellyStateDescriptionProvider;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
 import org.openhab.binding.shelly.internal.util.ShellyChannelCache;
 import org.openhab.binding.shelly.internal.util.ShellyVersionDTO;
@@ -62,10 +66,13 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
+import org.openhab.core.types.StateOption;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,8 +86,21 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class ShellyBaseHandler extends BaseThingHandler
         implements ShellyDeviceListener, ShellyManagerInterface, ShellyThingInterface {
+    private class OptionEntry {
+        public ChannelTypeUID uid;
+        public String key;
+        public String value;
+
+        public OptionEntry(ChannelTypeUID uid, String key, String value) {
+            this.uid = uid;
+            this.key = key;
+            this.value = value;
+        }
+    }
+
     protected final Logger logger = LoggerFactory.getLogger(ShellyBaseHandler.class);
     protected final ShellyChannelDefinitions channelDefinitions;
+    private final CopyOnWriteArrayList<OptionEntry> stateOptions = new CopyOnWriteArrayList<>();
 
     public String thingName = "";
     public String thingType = "";
@@ -111,9 +131,6 @@ public class ShellyBaseHandler extends BaseThingHandler
     private final int cacheCount = UPDATE_SETTINGS_INTERVAL_SECONDS / UPDATE_STATUS_INTERVAL_SECONDS;
     private final ShellyChannelCache cache;
 
-    private String localIP = "";
-    private String localPort = "";
-
     private String lastWakeupReason = "";
     private int vibrationFilter = 0;
 
@@ -128,8 +145,8 @@ public class ShellyBaseHandler extends BaseThingHandler
      * @param httpPort from httpService
      */
     public ShellyBaseHandler(final Thing thing, final ShellyTranslationProvider translationProvider,
-            final ShellyBindingConfiguration bindingConfig, final Shelly1CoapServer coapServer, final String localIP,
-            int httpPort, final HttpClient httpClient) {
+            final ShellyBindingConfiguration bindingConfig, ShellyThingTable thingTable,
+            final Shelly1CoapServer coapServer, final HttpClient httpClient) {
         super(thing);
 
         this.thingName = getString(thing.getLabel());
@@ -140,8 +157,6 @@ public class ShellyBaseHandler extends BaseThingHandler
         this.config = getConfigAs(ShellyThingConfiguration.class);
 
         this.httpClient = httpClient;
-        this.localIP = localIP;
-        this.localPort = String.valueOf(httpPort);
         this.api = new Shelly1HttpApi(thingName, config, httpClient);
 
         coap = new Shelly1CoapHandler(this, coapServer);
@@ -151,6 +166,11 @@ public class ShellyBaseHandler extends BaseThingHandler
     public boolean checkRepresentation(String key) {
         return key.equalsIgnoreCase(getUID()) || key.equalsIgnoreCase(config.deviceIp)
                 || key.equalsIgnoreCase(config.serviceName) || key.equalsIgnoreCase(thing.getUID().getAsString());
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Set.of(ShellyStateDescriptionProvider.class);
     }
 
     public String getUID() {
@@ -213,7 +233,9 @@ public class ShellyBaseHandler extends BaseThingHandler
     public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
         super.handleConfigurationUpdate(configurationParameters);
         logger.debug("{}: Thing config updated, re-initialize", thingName);
-        coap.stop();
+        if (coap != null) {
+            coap.stop();
+        }
         requestUpdates(1, true);// force re-initialization
     }
 
@@ -231,8 +253,6 @@ public class ShellyBaseHandler extends BaseThingHandler
         stopping = false;
         refreshSettings = false;
         lastWakeupReason = "";
-        profile.initFromThingType(thingType);
-        api.setConfig(thingName, config);
         cache.setThingName(thingName);
         cache.clear();
 
@@ -260,6 +280,8 @@ public class ShellyBaseHandler extends BaseThingHandler
             config.serviceName = getString(profile.hostname).toLowerCase();
         }
 
+        api.setConfig(thingName, config);
+        api.initialize();
         ShellyDeviceProfile tmpPrf = api.getDeviceProfile(thingType);
         if (this.getThing().getThingTypeUID().equals(THING_TYPE_SHELLYPROTECTED)) {
             changeThingType(thingName, tmpPrf.mode);
@@ -293,8 +315,18 @@ public class ShellyBaseHandler extends BaseThingHandler
         tmpPrf.status = api.getStatus();
         tmpPrf.updateFromStatus(tmpPrf.status);
 
+        if (tmpPrf.isTRV) {
+            String[] profileNames = tmpPrf.getValveProfileList(0);
+            String channelId = mkChannelId(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_PROFILE);
+            logger.debug("{}: Adding TRV profile names to channel description: {}", thingName, profileNames);
+            clearStateOptions(channelId);
+            addStateOption(channelId, "0", "DISABLED");
+            for (int i = 0; i < profileNames.length; i++) {
+                addStateOption(channelId, "" + (i + 1), profileNames[i]);
+            }
+        }
+
         showThingConfig(tmpPrf);
-        // update thing properties
         checkVersion(tmpPrf, tmpPrf.status);
 
         if (config.eventsCoIoT && (tmpPrf.settings.coiot != null) && (tmpPrf.settings.coiot.enabled != null)) {
@@ -411,24 +443,8 @@ public class ShellyBaseHandler extends BaseThingHandler
                     break;
                 case CHANNEL_CONTROL_PROFILE:
                     logger.debug("{}: Select profile {}", thingName, command);
-                    int id = -1;
-                    if (command instanceof Number) {
-                        id = (int) getNumber(command);
-                    } else {
-                        String cmd = command.toString();
-                        if (isDigit(cmd.charAt(0))) {
-                            id = Integer.parseInt(cmd);
-                        } else if (cmd.equalsIgnoreCase("DISABLED")) {
-                            id = 0;
-                        } else if (profile.settings.thermostats != null) {
-                            ShellyThermnostat t = profile.settings.thermostats.get(0);
-                            for (int i = 0; i < t.profileNames.length; i++) {
-                                if (t.profileNames[i].equalsIgnoreCase(cmd)) {
-                                    id = i + 1;
-                                }
-                            }
-                        }
-                    }
+                    String cmd = command.toString();
+                    int id = Integer.parseInt(cmd);
                     if (id < 0 || id > 5) {
                         logger.warn("{}: Invalid profile Id {} requested", thingName, profile);
                     } else {
@@ -463,7 +479,6 @@ public class ShellyBaseHandler extends BaseThingHandler
 
             restartWatchdog();
             if (update && !autoCoIoT && !isUpdateScheduled()) {
-                logger.debug("{}: Command processed, request status update", thingName);
                 requestUpdates(1, false);
             }
         } catch (ShellyApiException e) {
@@ -517,8 +532,6 @@ public class ShellyBaseHandler extends BaseThingHandler
                     initializeThing(); // may fire an exception if initialization failed
                 }
                 // Get profile, if refreshSettings == true reload settings from device
-                logger.trace("{}: Updating status (scheduledUpdates={}, refreshSettings={})", thingName,
-                        scheduledUpdates, refreshSettings);
                 ShellySettingsStatus status = api.getStatus();
                 boolean restarted = checkRestarted(status);
                 profile = getProfile(refreshSettings || restarted);
@@ -590,6 +603,17 @@ public class ShellyBaseHandler extends BaseThingHandler
         }
     }
 
+    @Override
+    public ThingStatus getThingStatus() {
+        return getThing().getStatus();
+    }
+
+    @Override
+    public ThingStatusDetail getThingStatusDetail() {
+        return getThing().getStatusInfo().getStatusDetail();
+    }
+
+    @Override
     public boolean isThingOnline() {
         return getThing().getStatus() == ThingStatus.ONLINE;
     }
@@ -699,9 +723,10 @@ public class ShellyBaseHandler extends BaseThingHandler
         if (status.uptime != null) {
             stats.lastUptime = getLong(status.uptime);
         }
-        stats.coiotMessages = coap.getMessageCount();
-        stats.coiotErrors = coap.getErrorCount();
-
+        if (coap != null) {
+            stats.coiotMessages = coap.getMessageCount();
+            stats.coiotErrors = coap.getErrorCount();
+        }
         if (!alarm.isEmpty()) {
             postEvent(alarm, false);
         }
@@ -911,7 +936,7 @@ public class ShellyBaseHandler extends BaseThingHandler
             InetAddress addr = InetAddress.getByName(config.deviceIp);
             String saddr = addr.getHostAddress();
             if (!config.deviceIp.equals(saddr)) {
-                logger.debug("{}: hostname {} resolved to IP address {}", thingName, config.deviceIp, saddr);
+                logger.debug("{}: hostname {} resolved to IP address {}", thingName, config.deviceIp, saddr);
                 config.deviceIp = saddr;
             }
         } catch (UnknownHostException e) {
@@ -919,8 +944,8 @@ public class ShellyBaseHandler extends BaseThingHandler
         }
 
         config.serviceName = getString(properties.get(PROPERTY_SERVICE_NAME));
-        config.localIp = localIP;
-        config.localPort = localPort;
+        config.localIp = bindingConfig.localIP;
+        config.localPort = String.valueOf(bindingConfig.httpPort);
         if (config.userId.isEmpty() && !bindingConfig.defaultUserId.isEmpty()) {
             config.userId = bindingConfig.defaultUserId;
             config.password = bindingConfig.defaultPassword;
@@ -1221,8 +1246,7 @@ public class ShellyBaseHandler extends BaseThingHandler
      * @param profile The device profile
      * @param status the /status result
      */
-    protected void updateProperties(ShellyDeviceProfile profile, ShellySettingsStatus status) {
-        logger.debug("{}: Update properties", thingName);
+    public void updateProperties(ShellyDeviceProfile profile, ShellySettingsStatus status) {
         Map<String, Object> properties = fillDeviceProperties(profile);
         String deviceName = getString(profile.settings.name);
         properties.put(PROPERTY_SERVICE_NAME, config.serviceName);
@@ -1347,6 +1371,35 @@ public class ShellyBaseHandler extends BaseThingHandler
         return profile;
     }
 
+    @Override
+    public List<StateOption> getStateOptions(ChannelTypeUID uid) {
+        List<StateOption> options = new ArrayList<>();
+        for (OptionEntry oe : stateOptions) {
+            if (oe.uid.equals(uid)) {
+                options.add(new StateOption(oe.key, oe.value));
+            }
+        }
+
+        if (!options.isEmpty()) {
+            logger.debug("{}: Return {} state options for channel uid {}", thingName, options.size(), uid.getId());
+        }
+        return options;
+    }
+
+    private void addStateOption(String channelId, String key, String value) {
+        ChannelTypeUID uid = channelDefinitions.getChannelTypeUID(channelId);
+        stateOptions.addIfAbsent(new OptionEntry(uid, key, value));
+    }
+
+    private void clearStateOptions(String channelId) {
+        ChannelTypeUID uid = channelDefinitions.getChannelTypeUID(channelId);
+        for (OptionEntry oe : stateOptions) {
+            if (oe.uid.equals(uid)) {
+                stateOptions.remove(oe);
+            }
+        }
+    }
+
     protected ShellyDeviceProfile getDeviceProfile() {
         return profile;
     }
@@ -1361,7 +1414,7 @@ public class ShellyBaseHandler extends BaseThingHandler
                 logger.debug("{}: Duplicate vibration events will be absorbed for the next {} sec", thingName,
                         vibrationFilter * UPDATE_STATUS_INTERVAL_SECONDS);
             } else {
-                logger.debug("{}: Vibration event absorbed, {} sec remaining", thingName,
+                logger.debug("{}: Vibration event absorbed, {} sec remaining", thingName,
                         vibrationFilter * UPDATE_STATUS_INTERVAL_SECONDS);
                 return;
             }
@@ -1379,7 +1432,9 @@ public class ShellyBaseHandler extends BaseThingHandler
             logger.debug("{}: Shelly statusJob stopped", thingName);
         }
 
-        coap.stop();
+        if (coap != null) {
+            coap.stop();
+        }
         profile.initialized = false;
     }
 

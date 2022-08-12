@@ -1143,7 +1143,7 @@ public class Shelly1ApiJsonDTO {
 
     /**
      * Shelly Dimmer returns light[]. However, the structure doesn't match the lights[] of a Bulb/RGBW2.
-     * The tag lights[] will be replaced with dimmers[] so this could be mapped to a different Gson structure.
+     * The tag lights[] will be replaced with dimmers[] so this could be mapped to a different Gson structure.
      * The function requires that it's only called when the device is a dimmer - on get settings and get status
      *
      * @param json Input Json as received by the API

@@ -62,6 +62,7 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
     private HomekitAccessoryUpdater updater = new HomekitAccessoryUpdater();
     private HomekitSettings settings;
     private int lastAccessoryCount;
+    private int instance;
 
     private final Set<String> pendingUpdates = new HashSet<>();
 
@@ -79,11 +80,12 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
     private final Debouncer applyUpdatesDebouncer;
 
     HomekitChangeListener(ItemRegistry itemRegistry, HomekitSettings settings, MetadataRegistry metadataRegistry,
-            Storage<String> storage) {
+            Storage<String> storage, int instance) {
         this.itemRegistry = itemRegistry;
         this.settings = settings;
         this.metadataRegistry = metadataRegistry;
         this.storage = storage;
+        this.instance = instance;
         this.applyUpdatesDebouncer = new Debouncer("update-homekit-devices", scheduler, Duration.ofMillis(1000),
                 Clock.systemUTC(), this::applyUpdates);
         metadataChangeListener = new RegistryChangeListener<Metadata>() {
@@ -131,7 +133,7 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
         itemRegistry.getItems().forEach(this::createRootAccessories);
         initialiseRevision();
         makeNewConfigurationRevision();
-        logger.info("Created {} HomeKit items.", accessoryRegistry.getAllAccessories().size());
+        logger.info("Created {} HomeKit items in instance {}.", accessoryRegistry.getAllAccessories().size(), instance);
     }
 
     private void initialiseRevision() {
@@ -297,17 +299,14 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
      * @return primary accessory type
      */
     private HomekitAccessoryType getPrimaryAccessoryType(Item item,
-            List<Entry<HomekitAccessoryType, HomekitCharacteristicType>> accessoryTypes) {
-        if (accessoryTypes.size() > 1) {
-            final @Nullable Map<String, Object> configuration = HomekitAccessoryFactory.getItemConfiguration(item,
-                    metadataRegistry);
-            if (configuration != null) {
-                final @Nullable Object value = configuration.get(HomekitTaggedItem.PRIMARY_SERVICE);
-                if (value instanceof String) {
-                    return accessoryTypes.stream()
-                            .filter(aType -> ((String) value).equalsIgnoreCase(aType.getKey().getTag())).findAny()
-                            .orElse(accessoryTypes.get(0)).getKey();
-                }
+            List<Entry<HomekitAccessoryType, HomekitCharacteristicType>> accessoryTypes,
+            @Nullable Map<String, Object> configuration) {
+        if (accessoryTypes.size() > 1 && configuration != null) {
+            final @Nullable Object value = configuration.get(HomekitTaggedItem.PRIMARY_SERVICE);
+            if (value instanceof String) {
+                return accessoryTypes.stream()
+                        .filter(aType -> ((String) value).equalsIgnoreCase(aType.getKey().getTag())).findAny()
+                        .orElse(accessoryTypes.get(0)).getKey();
             }
         }
         // no primary accessory found or there is only one type, so return the first type from the list
@@ -358,35 +357,57 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
         final List<Entry<HomekitAccessoryType, HomekitCharacteristicType>> accessoryTypes = HomekitAccessoryFactory
                 .getAccessoryTypes(item, metadataRegistry);
         final List<GroupItem> groups = HomekitAccessoryFactory.getAccessoryGroups(item, itemRegistry, metadataRegistry);
-        if (!accessoryTypes.isEmpty()
-                && (groups.isEmpty() || groups.stream().noneMatch(g -> g.getBaseItem() == null))) {
-            final HomekitAccessoryType primaryAccessoryType = getPrimaryAccessoryType(item, accessoryTypes);
-            logger.trace("Item {} is a HomeKit accessory of types {}. Primary type is {}", item.getName(),
-                    accessoryTypes, primaryAccessoryType);
-            final HomekitOHItemProxy itemProxy = new HomekitOHItemProxy(item);
-            final HomekitTaggedItem taggedItem = new HomekitTaggedItem(new HomekitOHItemProxy(item),
-                    primaryAccessoryType, HomekitAccessoryFactory.getItemConfiguration(item, metadataRegistry));
-            try {
-                final HomekitAccessory accessory = HomekitAccessoryFactory.create(taggedItem, metadataRegistry, updater,
-                        settings);
-
-                accessoryTypes.stream().filter(aType -> !primaryAccessoryType.equals(aType.getKey()))
-                        .forEach(additionalAccessoryType -> {
-                            final HomekitTaggedItem additionalTaggedItem = new HomekitTaggedItem(itemProxy,
-                                    additionalAccessoryType.getKey(),
-                                    HomekitAccessoryFactory.getItemConfiguration(item, metadataRegistry));
-                            try {
-                                final HomekitAccessory additionalAccessory = HomekitAccessoryFactory
-                                        .create(additionalTaggedItem, metadataRegistry, updater, settings);
-                                accessory.getServices().add(additionalAccessory.getPrimaryService());
-                            } catch (HomekitException e) {
-                                logger.warn("Cannot create additional accessory {}", additionalTaggedItem);
-                            }
-                        });
-                accessoryRegistry.addRootAccessory(taggedItem.getName(), accessory);
-            } catch (HomekitException e) {
-                logger.warn("Cannot create accessory {}", taggedItem);
-            }
+        final @Nullable Map<String, Object> itemConfiguration = HomekitAccessoryFactory.getItemConfiguration(item,
+                metadataRegistry);
+        if (accessoryTypes.isEmpty() || !(groups.isEmpty() || groups.stream().noneMatch(g -> g.getBaseItem() == null))
+                || !itemIsForThisBridge(item, itemConfiguration)) {
+            return;
         }
+
+        final HomekitAccessoryType primaryAccessoryType = getPrimaryAccessoryType(item, accessoryTypes,
+                itemConfiguration);
+        logger.trace("Item {} is a HomeKit accessory of types {}. Primary type is {}", item.getName(), accessoryTypes,
+                primaryAccessoryType);
+        final HomekitOHItemProxy itemProxy = new HomekitOHItemProxy(item);
+        final HomekitTaggedItem taggedItem = new HomekitTaggedItem(new HomekitOHItemProxy(item), primaryAccessoryType,
+                itemConfiguration);
+        try {
+            final HomekitAccessory accessory = HomekitAccessoryFactory.create(taggedItem, metadataRegistry, updater,
+                    settings);
+
+            accessoryTypes.stream().filter(aType -> !primaryAccessoryType.equals(aType.getKey()))
+                    .forEach(additionalAccessoryType -> {
+                        final HomekitTaggedItem additionalTaggedItem = new HomekitTaggedItem(itemProxy,
+                                additionalAccessoryType.getKey(), itemConfiguration);
+                        try {
+                            final HomekitAccessory additionalAccessory = HomekitAccessoryFactory
+                                    .create(additionalTaggedItem, metadataRegistry, updater, settings);
+                            accessory.getServices().add(additionalAccessory.getPrimaryService());
+                        } catch (HomekitException e) {
+                            logger.warn("Cannot create additional accessory {}", additionalTaggedItem);
+                        }
+                    });
+            accessoryRegistry.addRootAccessory(taggedItem.getName(), accessory);
+        } catch (HomekitException e) {
+            logger.warn("Cannot create accessory {}", taggedItem);
+        }
+    }
+
+    private boolean itemIsForThisBridge(Item item, @Nullable Map<String, Object> configuration) {
+        // non-tagged accessories belong to the first instance
+        if (configuration == null) {
+            return (instance == 1);
+        }
+
+        final @Nullable Object value = configuration.get(HomekitTaggedItem.INSTANCE);
+        if (value == null) {
+            return (instance == 1);
+        }
+        if (value instanceof Number) {
+            return (instance == ((Number) value).intValue());
+        }
+        logger.warn("Unrecognized instance tag {} ({}) for item {}; assigning to default instance.", value,
+                value.getClass(), item.getName());
+        return (instance == 1);
     }
 }

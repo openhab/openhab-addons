@@ -15,6 +15,7 @@ package org.openhab.binding.rotel.internal.protocol.ascii;
 import static org.openhab.binding.rotel.internal.RotelBindingConstants.*;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -35,7 +36,14 @@ public class RotelAsciiV2ProtocolHandler extends RotelAbstractAsciiProtocolHandl
 
     private static final char CHAR_END_RESPONSE = '$';
 
+    private static final Set<String> KEYSET = Set.of(KEY_DISC_NAME, KEY_DISC_TYPE, KEY_TRACK_NAME, KEY_TIME, KEY_FM_RDS,
+            KEY_DAB_STATION);
+
     private final Logger logger = LoggerFactory.getLogger(RotelAsciiV2ProtocolHandler.class);
+
+    private boolean searchKey = true;
+    private boolean variableLength;
+    private boolean prevIsEndCharacter;
 
     /**
      * Constructor
@@ -43,7 +51,7 @@ public class RotelAsciiV2ProtocolHandler extends RotelAbstractAsciiProtocolHandl
      * @param model the Rotel model in use
      */
     public RotelAsciiV2ProtocolHandler(RotelModel model) {
-        super(model, CHAR_END_RESPONSE);
+        super(model);
     }
 
     @Override
@@ -114,6 +122,44 @@ public class RotelAsciiV2ProtocolHandler extends RotelAbstractAsciiProtocolHandl
         byte[] message = messageStr.getBytes(StandardCharsets.US_ASCII);
         logger.debug("Command \"{}\" => {}", cmd, messageStr);
         return message;
+    }
+
+    @Override
+    public void handleIncomingData(byte[] inDataBuffer, int length) {
+        for (int i = 0; i < length; i++) {
+            boolean end = false;
+            if (searchKey && inDataBuffer[i] == '=') {
+                // End of key reading, check if the value is a fixed or variable length
+                searchKey = false;
+                byte[] dataKey = getDataBuffer();
+                String key = new String(dataKey, 0, dataKey.length, StandardCharsets.US_ASCII).trim();
+                variableLength = KEYSET.contains(key);
+                logger.trace("handleIncomingData: key = *{}* {}", key, variableLength ? "variable" : "fixed");
+                fillDataBuffer(inDataBuffer[i]);
+            } else if (searchKey) {
+                // Reading key
+                fillDataBuffer(inDataBuffer[i]);
+            } else if (inDataBuffer[i] == CHAR_END_RESPONSE) {
+                end = !variableLength || prevIsEndCharacter;
+            } else {
+                if (prevIsEndCharacter) {
+                    // End character inside a variable length value
+                    fillDataBuffer((byte) CHAR_END_RESPONSE);
+                }
+                // Reading value
+                fillDataBuffer(inDataBuffer[i]);
+            }
+            if (end) {
+                // End of value reading
+                handleIncomingMessage(getDataBuffer());
+                resetDataBuffer();
+                searchKey = true;
+                variableLength = false;
+                prevIsEndCharacter = false;
+            } else {
+                prevIsEndCharacter = inDataBuffer[i] == CHAR_END_RESPONSE;
+            }
+        }
     }
 
     @Override
