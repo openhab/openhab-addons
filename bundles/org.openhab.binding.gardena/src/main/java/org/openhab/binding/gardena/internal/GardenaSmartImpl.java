@@ -215,7 +215,6 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
                 final PostOAuth2Response token = this.token;
                 if (token != null) {
                     request.header("Authorization", token.tokenType + " " + token.accessToken);
-                    request.header("Authorization-provider", token.provider);
                 }
                 request.header("X-Api-Key", config.getApiKey());
             }
