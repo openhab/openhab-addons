@@ -81,7 +81,7 @@
 		<state readOnly="true" pattern="%.4f m"></state>
 	</channel-type>
 	<channel-type id="measure-channel">
-		<kind>trigger</kind>
+		<item-type>Switch</item-type>
 		<label>Measure</label>
 		<description>Triggers a measurement</description>
 	</channel-type>

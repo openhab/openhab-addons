@@ -26,6 +26,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.liquidcheck.internal.httpclient.LiquidCheckHttpClient;
 import org.openhab.binding.liquidcheck.internal.json.Response;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
@@ -55,6 +56,7 @@ public class LiquidCheckHandler extends BaseThingHandler {
     private LiquidCheckConfiguration config = getConfigAs(LiquidCheckConfiguration.class);
 
     private @Nullable ScheduledFuture<?> polling;
+    private LiquidCheckHttpClient client = new LiquidCheckHttpClient(config);
 
     public LiquidCheckHandler(Thing thing) {
         super(thing);
@@ -64,12 +66,18 @@ public class LiquidCheckHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (MEASURE_CHANNEL.equals(channelUID.getAsString())) {
-            try {
-                LiquidCheckHttpClient client = new LiquidCheckHttpClient(config);
-                String response = client.measureCommand();
-                logger.debug("This is the response: {}", response);
-            } catch (InterruptedException | TimeoutException | ExecutionException e) {
-                logger.error("This went wrong in handleCommand: ", e);
+            if (command instanceof OnOffType) {
+                if (command == OnOffType.ON) {
+                    synchronized (this) {
+                        try {
+                            String response = client.measureCommand();
+                            logger.debug("This is the response: {}", response);
+                        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+                            logger.error("This went wrong in handleCommand: ", e);
+                        }
+                    }
+                    updateState(channelUID, OnOffType.OFF);
+                }
             }
         }
     }
@@ -83,10 +91,11 @@ public class LiquidCheckHandler extends BaseThingHandler {
         scheduler.execute(() -> {
 
             LiquidCheckHttpClient httpClient = new LiquidCheckHttpClient(config);
-            boolean thingReachable = httpClient.isConnected();
+            client = httpClient;
+            boolean thingReachable = client.isConnected();
             if (thingReachable) {
                 updateStatus(ThingStatus.ONLINE);
-                PollingForData pollingRunnable = new PollingForData(httpClient);
+                PollingForData pollingRunnable = new PollingForData();
                 polling = scheduler.scheduleWithFixedDelay(pollingRunnable, 0, config.refreshInterval,
                         TimeUnit.SECONDS);
             } else {
@@ -111,44 +120,42 @@ public class LiquidCheckHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        if (null != polling) {
+        ScheduledFuture<?> polling = this.polling;
+        if (polling != null) {
             polling.cancel(true);
+            client.close();
         }
     }
 
     private class PollingForData implements Runnable {
 
-        private final LiquidCheckHttpClient client;
-
-        public PollingForData(LiquidCheckHttpClient client) {
-            this.client = client;
-        }
-
         @Override
         public void run() {
-            try {
-                String jsonString = client.pollData();
-                Response response = new Gson().fromJson(jsonString, Response.class);
-                if (null != response) {
-                    Map<String, String> properties = createPropertyMap(response);
-                    if (!oldProps.equals(properties)) {
-                        oldProps = properties;
-                        updateProperties(properties);
+            synchronized (this) {
+                try {
+                    String jsonString = client.pollData();
+                    Response response = new Gson().fromJson(jsonString, Response.class);
+                    if (null != response) {
+                        Map<String, String> properties = createPropertyMap(response);
+                        if (!oldProps.equals(properties)) {
+                            oldProps = properties;
+                            updateProperties(properties);
+                        }
+                        updateState(CONTENT_CHANNEL, new QuantityType<>(response.payload.measure.content, Units.LITRE));
+                        updateState(LEVEL_CHANNEL, new QuantityType<>(response.payload.measure.level, SIUnits.METRE));
+                        updateState(RAW_CONTENT_CHANNEL,
+                                new QuantityType<>(response.payload.measure.raw.content, Units.LITRE));
+                        updateState(RAW_LEVEL_CHANNEL,
+                                new QuantityType<>(response.payload.measure.raw.level, SIUnits.METRE));
+                        updateState(PUMP_TOTAL_RUNS_CHANNEL, new DecimalType(response.payload.system.pump.totalRuns));
+                        updateState(PUMP_TOTAL_RUNTIME_CHANNEL,
+                                new QuantityType<>(response.payload.system.pump.totalRuntime, Units.SECOND));
+                    } else {
+                        logger.debug("Json is null");
                     }
-                    updateState(CONTENT_CHANNEL, new QuantityType<>(response.payload.measure.content, Units.LITRE));
-                    updateState(LEVEL_CHANNEL, new QuantityType<>(response.payload.measure.level, SIUnits.METRE));
-                    updateState(RAW_CONTENT_CHANNEL,
-                            new QuantityType<>(response.payload.measure.raw.content, Units.LITRE));
-                    updateState(RAW_LEVEL_CHANNEL,
-                            new QuantityType<>(response.payload.measure.raw.level, SIUnits.METRE));
-                    updateState(PUMP_TOTAL_RUNS_CHANNEL, new DecimalType(response.payload.system.pump.totalRuns));
-                    updateState(PUMP_TOTAL_RUNTIME_CHANNEL,
-                            new QuantityType<>(response.payload.system.pump.totalRuntime, Units.SECOND));
-                } else {
-                    logger.debug("Json is null");
+                } catch (InterruptedException | TimeoutException | ExecutionException e) {
+                    logger.error("This went wrong: ", e);
                 }
-            } catch (InterruptedException | TimeoutException | ExecutionException e) {
-                logger.error("This went wrong: ", e);
             }
         }
     }
