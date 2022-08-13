@@ -16,7 +16,7 @@ package org.openhab.binding.liquidcheck.internal.json;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link AccessPoint} .
+ * The {@link AccessPoint} class contains the access point data
  *
  * @author Marcel Goerentz - Initial contribution
  */

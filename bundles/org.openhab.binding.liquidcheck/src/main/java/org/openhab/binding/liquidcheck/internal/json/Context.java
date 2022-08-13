@@ -15,11 +15,11 @@ package org.openhab.binding.liquidcheck.internal.json;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link Security} contains the securtiy code for cloud access.
+ * The {@link Context} contains the status of the command.
  *
  * @author Marcel Goerentz - Initial contribution
  */
 @NonNullByDefault
-public class Security {
-    public String code = "";
+public class Context {
+    String status = "";
 }

@@ -15,7 +15,7 @@ package org.openhab.binding.liquidcheck.internal.json;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link System} .
+ * The {@link System} contains the data about the system.
  *
  * @author Marcel Goerentz - Initial contribution
  */

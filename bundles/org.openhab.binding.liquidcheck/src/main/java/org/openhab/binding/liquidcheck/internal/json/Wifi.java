@@ -15,7 +15,7 @@ package org.openhab.binding.liquidcheck.internal.json;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link Wifi} .
+ * The {@link Wifi} contains the data about the wireless connection.
  *
  * @author Marcel Goerentz - Initial contribution
  */

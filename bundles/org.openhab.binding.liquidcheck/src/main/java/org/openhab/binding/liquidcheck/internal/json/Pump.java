@@ -15,7 +15,7 @@ package org.openhab.binding.liquidcheck.internal.json;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link Pump} .
+ * The {@link Pump} contains the pump data.
  *
  * @author Marcel Goerentz - Initial contribution
  */

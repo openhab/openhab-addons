@@ -15,7 +15,7 @@ package org.openhab.binding.liquidcheck.internal.json;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link Measure} .
+ * The {@link Measure} contains the measure data inklusive the raw class.
  *
  * @author Marcel Goerentz - Initial contribution
  */

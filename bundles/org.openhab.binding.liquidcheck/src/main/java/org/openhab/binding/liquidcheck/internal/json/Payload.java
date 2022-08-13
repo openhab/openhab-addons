@@ -15,7 +15,7 @@ package org.openhab.binding.liquidcheck.internal.json;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link Payload} .
+ * The {@link Payload} contains the all data from the payload.
  *
  * @author Marcel Goerentz - Initial contribution
  */
@@ -26,4 +26,5 @@ public class Payload {
     public Device device = new Device();
     public System system = new System();
     public Wifi wifi = new Wifi();
+    public Context context = new Context();
 }

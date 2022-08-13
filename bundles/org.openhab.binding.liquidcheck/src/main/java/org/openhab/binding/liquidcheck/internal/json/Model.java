@@ -15,7 +15,7 @@ package org.openhab.binding.liquidcheck.internal.json;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link Model} .
+ * The {@link Model} class contains the model data.
  *
  * @author Marcel Goerentz - Initial contribution
  */

@@ -65,12 +65,13 @@ public class LiquidCheckHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (MEASURE_CHANNEL.equals(channelUID.getAsString())) {
+        if (channelUID.getAsString().contains(MEASURE_CHANNEL)) {
             if (command instanceof OnOffType) {
                 if (command == OnOffType.ON) {
                     synchronized (this) {
                         try {
                             String response = client.measureCommand();
+                            logger.info("{}", response);
                             logger.debug("This is the response: {}", response);
                         } catch (InterruptedException | TimeoutException | ExecutionException e) {
                             logger.error("This went wrong in handleCommand: ", e);
@@ -104,6 +105,12 @@ public class LiquidCheckHandler extends BaseThingHandler {
         });
     }
 
+    /**
+     * This method creates a property map that contains the properties of the device.
+     * 
+     * @param response
+     * @return
+     */
     private Map<String, String> createPropertyMap(Response response) {
         Map<String, String> properties = new HashMap<>();
         properties.put(CONFIG_ID_FIRMWARE, response.payload.device.firmware);
@@ -127,6 +134,10 @@ public class LiquidCheckHandler extends BaseThingHandler {
         }
     }
 
+    /**
+     * Private class that implements the runnable interface.
+     * It is used for polling the data from the device.
+     */
     private class PollingForData implements Runnable {
 
         @Override

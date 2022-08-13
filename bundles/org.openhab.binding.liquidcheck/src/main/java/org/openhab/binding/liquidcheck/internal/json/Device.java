@@ -15,7 +15,7 @@ package org.openhab.binding.liquidcheck.internal.json;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link Device} .
+ * The {@link Device} contains the data of the device inklusive the model and security class.
  *
  * @author Marcel Goerentz - Initial contribution
  */

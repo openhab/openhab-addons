@@ -66,6 +66,9 @@ public class LiquidCheckDiscoveryService extends AbstractDiscoveryService {
         super(SUPPORTED_THING_TYPES_UIDS, DISCOVER_TIMEOUT_SECONDS);
     }
 
+    /**
+     * This method starts the scan
+     */
     @Override
     protected void startScan() {
         try {
@@ -131,7 +134,7 @@ public class LiquidCheckDiscoveryService extends AbstractDiscoveryService {
     }
 
     /**
-     * Method for starting the scan
+     * Method for setting up a runnable
      */
     protected Runnable liquidCheckDiscoveryRunnable() {
         Runnable runnable = new Runnable() {
@@ -144,7 +147,7 @@ public class LiquidCheckDiscoveryService extends AbstractDiscoveryService {
     }
 
     /**
-     * This Method retrieves all IPv4 addresses of the server
+     * This method retrieves all IPv4 addresses of the server
      * 
      * @return A list of all available IPv4 Adresses that are registered
      * @throws SocketException
@@ -168,13 +171,21 @@ public class LiquidCheckDiscoveryService extends AbstractDiscoveryService {
         return addresses;
     }
 
+    /**
+     * This method returns a list with the active hosts that have been found
+     * 
+     * @param addresses List with ip addresses
+     * @return list with active Hosts
+     * @throws UnknownHostException
+     * @throws IOException
+     */
     private List<InetAddress> findActiveHosts(List<InetAddress> addresses) throws UnknownHostException, IOException {
         List<InetAddress> hosts = new ArrayList<>();
         for (InetAddress inetAddress : addresses) {
             String[] adresStrings = inetAddress.getHostAddress().split("[.]");
             String subnet = adresStrings[0] + "." + adresStrings[1] + "." + adresStrings[2];
             int timeout = 50;
-            for (int i = 1; i < 255; i++) {
+            for (int i = 1; i < 255; i++) { // search for every ip in the given subnet
                 String host = subnet + "." + i;
                 if (InetAddress.getByName(host).isReachable(timeout)) {
                     hosts.add(InetAddress.getByName(host));
@@ -184,8 +195,11 @@ public class LiquidCheckDiscoveryService extends AbstractDiscoveryService {
         return hosts;
     }
 
+    /**
+     * 
+     * @param response
+     */
     private void buildDiscoveryResult(Response response) {
-        LiquidCheckProperties lcproperties = new LiquidCheckProperties(response);
         Map<String, Object> properties = new HashMap<>();
         properties.put(CONFIG_ID_FIRMWARE, response.payload.device.firmware);
         properties.put(CONFIG_ID_HARDWARE, response.payload.device.hardware);
@@ -196,9 +210,9 @@ public class LiquidCheckDiscoveryService extends AbstractDiscoveryService {
         properties.put(CONFIG_ID_IP, response.payload.wifi.station.ip);
         properties.put(CONFIG_ID_MAC, response.payload.wifi.station.mac);
         properties.put(CONFIG_ID_SSID, response.payload.wifi.accessPoint.ssid);
-        ThingUID thingUID = new ThingUID(THING_TYPE_LIQUID_CHEK, lcproperties.uuid);
+        ThingUID thingUID = new ThingUID(THING_TYPE_LIQUID_CHEK, response.payload.device.uuid);
         DiscoveryResult dResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                .withLabel(lcproperties.name + "_DEBUG").build();
+                .withLabel(response.payload.device.name + "_DEBUG").build();
         thingDiscovered(dResult);
     }
 }

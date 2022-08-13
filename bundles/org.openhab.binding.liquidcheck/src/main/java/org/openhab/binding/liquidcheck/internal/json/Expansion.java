@@ -15,7 +15,7 @@ package org.openhab.binding.liquidcheck.internal.json;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link Expansion} .
+ * The {@link Expansion} contains the expansion data.
  *
  * @author Marcel Goerentz - Initial contribution
  */

@@ -15,7 +15,7 @@ package org.openhab.binding.liquidcheck.internal.json;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link Response} .
+ * The {@link Response} class contains the data that the device sends.
  *
  * @author Marcel Goerentz - Initial contribution
  */
