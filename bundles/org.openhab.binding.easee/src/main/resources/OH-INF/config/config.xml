@@ -34,7 +34,7 @@
 			groupName="connection">
 			<label>Polling Interval</label>
 			<description>Interval in which data is polled from EaseeCloud (in seconds).</description>
-			<default>5</default>
+			<default>60</default>
 		</parameter>
 	</config-description>
 	<config-description uri="thing-type:easee:charger">
