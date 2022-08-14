@@ -33,6 +33,7 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
@@ -71,8 +72,13 @@ public class LiquidCheckHandler extends BaseThingHandler {
                     synchronized (this) {
                         try {
                             String response = client.measureCommand();
-                            logger.info("{}", response);
-                            logger.debug("This is the response: {}", response);
+                            Response commandResponse = new Gson().fromJson(response, Response.class);
+                            if (null != commandResponse) {
+                                if (!"success".equals(commandResponse.context.status)) {
+                                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                            "Start of measurement was not successful!");
+                                }
+                            }
                         } catch (InterruptedException | TimeoutException | ExecutionException e) {
                             logger.error("This went wrong in handleCommand: ", e);
                         }

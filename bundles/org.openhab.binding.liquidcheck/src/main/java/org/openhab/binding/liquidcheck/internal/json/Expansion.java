@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class Expansion {
-    public int boardType = -1;
+    public int boardType = 0;
     public String oneWire = "null";
     public String board = "null";
 }

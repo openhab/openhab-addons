@@ -26,5 +26,4 @@ public class Payload {
     public Device device = new Device();
     public System system = new System();
     public Wifi wifi = new Wifi();
-    public Context context = new Context();
 }

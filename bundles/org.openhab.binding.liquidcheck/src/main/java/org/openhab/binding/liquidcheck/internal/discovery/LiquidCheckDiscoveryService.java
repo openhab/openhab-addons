@@ -210,7 +210,7 @@ public class LiquidCheckDiscoveryService extends AbstractDiscoveryService {
         properties.put(CONFIG_ID_IP, response.payload.wifi.station.ip);
         properties.put(CONFIG_ID_MAC, response.payload.wifi.station.mac);
         properties.put(CONFIG_ID_SSID, response.payload.wifi.accessPoint.ssid);
-        ThingUID thingUID = new ThingUID(THING_TYPE_LIQUID_CHEK, response.payload.device.uuid);
+        ThingUID thingUID = new ThingUID(THING_TYPE_LIQUID_CHECK, response.payload.device.uuid);
         DiscoveryResult dResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
                 .withLabel(response.payload.device.name + "_DEBUG").build();
         thingDiscovered(dResult);

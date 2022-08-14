@@ -24,4 +24,5 @@ public class Response {
 
     public Header header = new Header();
     public Payload payload = new Payload();
+    public Context context = new Context();
 }
