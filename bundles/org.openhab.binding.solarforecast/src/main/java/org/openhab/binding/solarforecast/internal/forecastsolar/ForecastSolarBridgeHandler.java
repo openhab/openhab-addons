@@ -26,10 +26,10 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants;
-import org.openhab.binding.solarforecast.internal.Utils;
 import org.openhab.binding.solarforecast.internal.actions.SolarForecast;
 import org.openhab.binding.solarforecast.internal.actions.SolarForecastActions;
 import org.openhab.binding.solarforecast.internal.actions.SolarForecastProvider;
+import org.openhab.binding.solarforecast.internal.utils.Utils;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.thing.Bridge;
@@ -78,7 +78,6 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
         }
         configuration = Optional.of(config);
         updateStatus(ThingStatus.ONLINE);
-        getData();
         startSchedule(configuration.get().channelRefreshInterval);
     }
 

@@ -26,8 +26,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants;
-import org.openhab.binding.solarforecast.internal.Utils;
 import org.openhab.binding.solarforecast.internal.actions.SolarForecast;
+import org.openhab.binding.solarforecast.internal.utils.Utils;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -165,15 +165,23 @@ public class SolcastObject implements SolarForecast {
         if (dtm.isEmpty()) {
             return UNDEF;
         }
+        double previousEstimate = 0;
         double forecastValue = 0;
         Set<ZonedDateTime> keySet = dtm.keySet();
         for (ZonedDateTime key : keySet) {
-            if (key.isBefore(query) || key.isEqual(query)) {
+            if (key.isBefore(query) || query.isEqual(key)) {
                 // value are reported in PT30M = 30 minutes interval with kw value
                 // for kw/h it's half the value
-                Double addedValue = dtm.get(key);
-                if (addedValue != null) {
-                    forecastValue += addedValue.doubleValue() / 2;
+                Double endValue = dtm.get(key);
+                // production during period is half of previous and next value
+                if (endValue != null) {
+                    double addedValue = (endValue.doubleValue() + previousEstimate) / 2.0 / 2.0;
+                    // System.out.println(
+                    // "End " + endValue.doubleValue() + " Prev: " + previousEstimate + " Add " + addedValue);
+                    forecastValue += addedValue;
+                    previousEstimate = endValue.doubleValue();
+                } else {
+                    logger.info("No estimation found for {}", key);
                 }
             }
         }
@@ -182,18 +190,22 @@ public class SolcastObject implements SolarForecast {
         Entry<ZonedDateTime, Double> c = dtm.ceilingEntry(query);
         if (f != null) {
             if (c != null) {
-                // we're during suntime!
-                double production = c.getValue();
-                int interpolation = query.getMinute() - f.getKey().getMinute();
-                double interpolationProduction = production * interpolation / 60;
-                forecastValue += interpolationProduction;
-                return forecastValue;
+                if (c.getValue() > 0) {
+                    int interpolation = query.getMinute() - f.getKey().getMinute();
+                    double interpolationProduction = getActualPowerValue(query, mode) * interpolation / 30.0 / 2.0;
+                    forecastValue += interpolationProduction;
+                    // System.out.println(interpolationProduction);
+                    return forecastValue;
+                } else {
+                    // if ceiling value is 0 there's no further production in this period
+                    return forecastValue;
+                }
             } else {
-                // sun is down
+                // if ceiling is null we're at the very end of the day
                 return forecastValue;
             }
         } else {
-            // no floor - sun not rised yet
+            // if floor is null we're at the very beginning of the day => 0
             return 0;
         }
     }
@@ -213,20 +225,24 @@ public class SolcastObject implements SolarForecast {
         Entry<ZonedDateTime, Double> c = dtm.ceilingEntry(query);
         if (f != null) {
             if (c != null) {
-                // we're during suntime!
                 double powerCeiling = c.getValue();
-                double powerFloor = f.getValue();
-                // calculate in minutes from floor to now, e.g. 20 minutes
-                // => take 2/3 of floor and 1/3 of ceiling
-                double interpolation = (query.getMinute() - f.getKey().getMinute()) / 60.0;
-                actualPowerValue = ((1 - interpolation) * powerFloor) + (interpolation * powerCeiling);
-                return actualPowerValue;
+                if (powerCeiling > 0) {
+                    double powerFloor = f.getValue();
+                    // calculate in minutes from floor to now, e.g. 20 minutes from PT30M 30 minutes
+                    // => take 1/3 of floor and 2/3 of ceiling
+                    double interpolation = (query.getMinute() - f.getKey().getMinute()) / 30.0;
+                    actualPowerValue = ((1 - interpolation) * powerFloor) + (interpolation * powerCeiling);
+                    return actualPowerValue;
+                } else {
+                    // if power ceiling == 0 there's no production in this period
+                    return 0;
+                }
             } else {
-                // sun is down
+                // if ceiling is null we're at the very end of this day => 0
                 return 0;
             }
         } else {
-            // no floor - sun not rised yet
+            // if floor is null we're at the very beginning of this day => 0
             return 0;
         }
     }
@@ -240,14 +256,20 @@ public class SolcastObject implements SolarForecast {
         if (dtm.isEmpty()) {
             return UNDEF;
         }
+        double previousEstimate = 0;
         double forecastValue = 0;
         Set<ZonedDateTime> keySet = dtm.keySet();
         for (ZonedDateTime key : keySet) {
             // value are reported in PT30M = 30 minutes interval with kw value
             // for kw/h it's half the value
-            Double addedValue = dtm.get(key);
-            if (addedValue != null) {
-                forecastValue += addedValue.doubleValue() / 2.0;
+            Double endValue = dtm.get(key);
+            // production during period is half of previous and next value
+            if (endValue != null) {
+                double addedValue = (endValue.doubleValue() + previousEstimate) / 2.0 / 2.0;
+                forecastValue += addedValue;
+                previousEstimate = endValue.doubleValue();
+            } else {
+                logger.info("No estimation found for {}", key);
             }
         }
         return forecastValue;

@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.solarforecast.internal;
+package org.openhab.binding.solarforecast.internal.utils;
 
 import java.time.ZonedDateTime;
 

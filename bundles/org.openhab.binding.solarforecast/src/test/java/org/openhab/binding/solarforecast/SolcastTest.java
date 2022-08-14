@@ -22,11 +22,11 @@ import java.time.ZonedDateTime;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.solarforecast.internal.Utils;
 import org.openhab.binding.solarforecast.internal.actions.SolarForecast;
 import org.openhab.binding.solarforecast.internal.solcast.SolcastConstants;
 import org.openhab.binding.solarforecast.internal.solcast.SolcastObject;
 import org.openhab.binding.solarforecast.internal.solcast.SolcastObject.QueryMode;
+import org.openhab.binding.solarforecast.internal.utils.Utils;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.UnDefType;
@@ -100,7 +100,6 @@ class SolcastTest {
         SolcastObject scfo = new SolcastObject(content, now, TIMEZONEPROVIDER);
         content = FileReader.readFileInString("src/test/resources/solcast/estimated-actuals.json");
         scfo.join(content);
-
         // test one day, step ahead in time and cross check channel values
         double dayTotal = scfo.getDayTotal(now.toLocalDate(), QueryMode.Estimation);
         double actual = scfo.getActualValue(now, QueryMode.Estimation);
@@ -109,14 +108,17 @@ class SolcastTest {
         assertEquals(23.107, remain, TOLERANCE, "Begin of day remaining");
         assertEquals(23.107, dayTotal, TOLERANCE, "Day total");
         assertEquals(0.0, scfo.getActualPowerValue(now, QueryMode.Estimation), TOLERANCE, "Begin of day power");
+        double previousPower = 0;
         for (int i = 0; i < 47; i++) {
             now = now.plusMinutes(30);
             double power = scfo.getActualPowerValue(now, QueryMode.Estimation) / 2.0;
-            actual += power;
+            double powerAddOn = ((power + previousPower) / 2.0);
+            actual += powerAddOn;
             assertEquals(actual, scfo.getActualValue(now, QueryMode.Estimation), TOLERANCE, "Actual at " + now);
-            remain -= power;
+            remain -= powerAddOn;
             assertEquals(remain, scfo.getRemainingProduction(now, QueryMode.Estimation), TOLERANCE, "Remain at " + now);
             assertEquals(dayTotal, actual + remain, TOLERANCE, "Total sum at " + now);
+            previousPower = power;
         }
     }
 
@@ -232,7 +234,7 @@ class SolcastTest {
         String content = FileReader.readFileInString("src/test/resources/solcast/estimated-actuals.json");
         ZonedDateTime now = LocalDateTime.of(2022, 7, 17, 7, 0).atZone(TEST_ZONE);
         SolcastObject scfo = new SolcastObject(content, now, TIMEZONEPROVIDER);
-        assertEquals(0.614, scfo.getActualValue(now, QueryMode.Estimation), TOLERANCE, "Actual estimation");
+        assertEquals(0.42, scfo.getActualValue(now, QueryMode.Estimation), TOLERANCE, "Actual estimation");
         assertEquals(25.413, scfo.getDayTotal(now.toLocalDate(), QueryMode.Estimation), TOLERANCE, "Day total");
     }
 
@@ -244,7 +246,7 @@ class SolcastTest {
         assertEquals(-1.0, scfo.getActualValue(now, QueryMode.Estimation), 0.01, "Invalid");
         content = FileReader.readFileInString("src/test/resources/solcast/forecasts.json");
         scfo.join(content);
-        assertEquals(19.408, scfo.getActualValue(now, QueryMode.Estimation), 0.01, "Actual data");
+        assertEquals(18.946, scfo.getActualValue(now, QueryMode.Estimation), 0.01, "Actual data");
         assertEquals(23.107, scfo.getDayTotal(now.toLocalDate(), QueryMode.Estimation), 0.01, "Today data");
         JSONObject rawJson = new JSONObject(scfo.getRaw());
         assertTrue(rawJson.has("forecasts"));
@@ -338,6 +340,51 @@ class SolcastTest {
         assertEquals("18:00", Utils.getNextTimeframe(zdt).toLocalTime().toString(), "Q4");
         zdt = zdt.plusMinutes(6);
         assertEquals("18:15", Utils.getNextTimeframe(zdt).toLocalTime().toString(), "Q4");
+    }
+
+    @Test
+    void testPowerInterpolation() {
+        String content = FileReader.readFileInString("src/test/resources/solcast/estimated-actuals.json");
+        ZonedDateTime now = LocalDateTime.of(2022, 7, 18, 15, 0).atZone(TEST_ZONE);
+        SolcastObject sco = new SolcastObject(content, now, TIMEZONEPROVIDER);
+        content = FileReader.readFileInString("src/test/resources/solcast/forecasts.json");
+        sco.join(content);
+
+        double startValue = sco.getActualPowerValue(now, QueryMode.Estimation);
+        double endValue = sco.getActualPowerValue(now.plusMinutes(30), QueryMode.Estimation);
+        for (int i = 0; i < 31; i++) {
+            // System.out.println(i + " : " + sco.getActualPowerValue(now.plusMinutes(i), QueryMode.Estimation));
+            double interpolation = i / 30.0;
+            double expected = ((1 - interpolation) * startValue) + (interpolation * endValue);
+            assertEquals(expected, sco.getActualPowerValue(now.plusMinutes(i), QueryMode.Estimation), TOLERANCE,
+                    "Step " + i);
+        }
+    }
+
+    @Test
+    void testEnergyInterpolation() {
+        String content = FileReader.readFileInString("src/test/resources/solcast/estimated-actuals.json");
+        ZonedDateTime now = LocalDateTime.of(2022, 7, 18, 5, 30).atZone(TEST_ZONE);
+        SolcastObject sco = new SolcastObject(content, now, TIMEZONEPROVIDER);
+        content = FileReader.readFileInString("src/test/resources/solcast/forecasts.json");
+        sco.join(content);
+
+        double maxDiff = 0;
+        double productionExpected = 0;
+        for (int i = 0; i < 1000; i++) {
+            double forecast = sco.getActualValue(now.plusMinutes(i), QueryMode.Estimation);
+            int hour = now.plusMinutes(i).getHour();
+            int minute = now.plusMinutes(i).getMinute();
+            double addOnExpected = sco.getActualPowerValue(now.plusMinutes(i), QueryMode.Estimation) / 60.0;
+            productionExpected += addOnExpected;
+            double diff = forecast - productionExpected;
+            maxDiff = Math.max(diff, maxDiff);
+            System.out.println(hour + ":" + minute + " : " + Math.round(forecast * 1000) / 1000.0 + " - "
+                    + Math.round(productionExpected * 1000) / 1000.0 + " - " + Math.round(diff * 1000) / 1000.0);
+            // assertEquals(productionExpected, sco.getActualValue(now.plusMinutes(i), QueryMode.Estimation),
+            // 100 * TOLERANCE, "Step " + i);
+        }
+        System.out.println(maxDiff);
     }
 
     @Test
