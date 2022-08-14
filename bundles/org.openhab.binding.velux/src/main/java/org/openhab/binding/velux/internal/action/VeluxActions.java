@@ -92,6 +92,9 @@ public class VeluxActions implements ThingActions {
      * @throws IllegalStateException if anything else is wrong
      */
     public static Boolean rebootBridge(ThingActions actions) throws IllegalArgumentException, IllegalStateException {
+        if (!(actions instanceof VeluxActions)) {
+            throw new IllegalArgumentException("Unsupported action");
+        }
         return ((VeluxActions) actions).rebootBridge();
     }
 
@@ -108,6 +111,9 @@ public class VeluxActions implements ThingActions {
      */
     public static Boolean moveRelative(ThingActions actions, String nodeId, String relativePercent)
             throws IllegalArgumentException, NumberFormatException, IllegalStateException {
+        if (!(actions instanceof VeluxActions)) {
+            throw new IllegalArgumentException("Unsupported action");
+        }
         return ((VeluxActions) actions).moveRelative(nodeId, relativePercent);
     }
 
@@ -147,6 +153,9 @@ public class VeluxActions implements ThingActions {
      */
     public static Boolean moveMainAndVane(ThingActions actions, String thingName, Integer mainPercent,
             Integer vanePercent) throws NumberFormatException, IllegalArgumentException, IllegalStateException {
+        if (!(actions instanceof VeluxActions)) {
+            throw new IllegalArgumentException("Unsupported action");
+        }
         return ((VeluxActions) actions).moveMainAndVane(thingName, mainPercent, vanePercent);
     }
 }

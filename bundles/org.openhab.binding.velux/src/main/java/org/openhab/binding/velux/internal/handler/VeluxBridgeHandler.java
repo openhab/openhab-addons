@@ -920,7 +920,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
      * @return true if the command could be issued.
      */
     public Boolean moveMainAndVane(ProductBridgeIndex node, PercentType mainPosition, PercentType vanePosition) {
-        logger.trace("setMainAndVanePosition() called on {}", getThing().getUID());
+        logger.trace("moveMainAndVane() called on {}", getThing().getUID());
         RunProductCommand bcp = thisBridge.bridgeAPI().runProductCommand();
         if (bcp != null) {
             VeluxProduct product = existingProducts().get(node).clone();
@@ -934,7 +934,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
             bcp.setNodeIdAndParameters(node.toInt(), mainPos, functionalParameters);
             submitCommunicationsJob(() -> {
                 if (thisBridge.bridgeCommunicate(bcp)) {
-                    logger.trace("setMainAndVanePosition() command {}sucessfully sent to {}",
+                    logger.trace("moveMainAndVane() command {}sucessfully sent to {}",
                             bcp.isCommunicationSuccessful() ? "" : "un", getThing().getUID());
                 }
             });
@@ -947,7 +947,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
      * Get the bridge product index for a given thing name.
      *
      * @param thingName the thing name
-     * @return the the bridge product index or ProductBridgeIndex.UNKNOWN if not found.
+     * @return the bridge product index or ProductBridgeIndex.UNKNOWN if not found.
      */
     public ProductBridgeIndex getProductBridgeIndex(String thingName) {
         for (Entry<ChannelUID, Thing2VeluxActuator> entry : channel2VeluxActuator.entrySet()) {
