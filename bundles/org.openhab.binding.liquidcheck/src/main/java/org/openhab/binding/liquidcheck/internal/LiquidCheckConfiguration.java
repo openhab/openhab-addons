@@ -25,9 +25,5 @@ public class LiquidCheckConfiguration {
     public String ip = "";
     public int refreshInterval = 600;
     public int maxContent = 1;
-<<<<<<< HEAD
-    public long connecionTimeOut = 5000;
-=======
     public long connecionTimeOut = 5;
->>>>>>> eac3c23fa09d0130ae16dbdc99ddb83d1743b51d
 }

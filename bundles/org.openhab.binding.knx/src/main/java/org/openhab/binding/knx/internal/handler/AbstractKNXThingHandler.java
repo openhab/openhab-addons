@@ -162,7 +162,8 @@ public abstract class AbstractKNXThingHandler extends BaseThingHandler implement
                 }
             }
         } catch (KNXException e) {
-            logger.debug("An error occurred while testing the reachability of a thing '{}'", getThing().getUID(), e);
+            logger.debug("An error occurred while testing the reachability of a thing '{}': {}", getThing().getUID(),
+                    e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
         }
     }
@@ -191,7 +192,8 @@ public abstract class AbstractKNXThingHandler extends BaseThingHandler implement
                 updateStatus(ThingStatus.ONLINE);
             }
         } catch (KNXFormatException e) {
-            logger.debug("An exception occurred while setting the individual address '{}'", config.getAddress(), e);
+            logger.debug("An exception occurred while setting the individual address '{}': {}", config.getAddress(),
+                    e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getLocalizedMessage());
         }
         getClient().registerGroupAddressListener(this);

@@ -121,11 +121,11 @@ public class GardenaSmartWebSocket {
 
         ScheduledFuture<?> connectionTracker = this.connectionTracker;
         if (connectionTracker != null && !connectionTracker.isCancelled()) {
-            connectionTracker.cancel(false);
+            connectionTracker.cancel(true);
         }
 
         // start sending PING every two minutes
-        this.connectionTracker = scheduler.scheduleWithFixedDelay(this::sendKeepAlivePing, 2, 2, TimeUnit.MINUTES);
+        this.connectionTracker = scheduler.scheduleWithFixedDelay(this::sendKeepAlivePing, 1, 2, TimeUnit.MINUTES);
     }
 
     @OnWebSocketFrame
@@ -168,7 +168,7 @@ public class GardenaSmartWebSocket {
     /**
      * Sends a ping to tell the Gardena smart system that the client is alive.
      */
-    private void sendKeepAlivePing() {
+    private synchronized void sendKeepAlivePing() {
         final PostOAuth2Response accessToken = token;
         if ((Instant.now().getEpochSecond() - lastPong.getEpochSecond() > WEBSOCKET_IDLE_TIMEOUT) || accessToken == null
                 || accessToken.isAccessTokenExpired()) {

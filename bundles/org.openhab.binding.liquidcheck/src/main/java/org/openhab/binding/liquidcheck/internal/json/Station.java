@@ -15,11 +15,8 @@ package org.openhab.binding.liquidcheck.internal.json;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
-<<<<<<< HEAD
- * The {@link Station} .
-=======
+ * 
  * The {@link Station} contains the connection data like hostnanme, IP adress, gateway and so on.
->>>>>>> eac3c23fa09d0130ae16dbdc99ddb83d1743b51d
  *
  * @author Marcel Goerentz - Initial contribution
  */

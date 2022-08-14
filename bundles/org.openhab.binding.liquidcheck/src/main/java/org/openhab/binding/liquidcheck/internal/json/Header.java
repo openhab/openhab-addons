@@ -15,12 +15,8 @@ package org.openhab.binding.liquidcheck.internal.json;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
-<<<<<<< HEAD
- * The {@link Header} class defines common constants, which are
- * used across the whole binding.
-=======
+ * 
  * The {@link Header} class contains the header data.
->>>>>>> eac3c23fa09d0130ae16dbdc99ddb83d1743b51d
  *
  * @author Marcel Goerentz - Initial contribution
  */

@@ -9,7 +9,6 @@
  * http://www.eclipse.org/legal/epl-2.0
  *
  * SPDX-License-Identifier: EPL-2.0
- */
 =======
  * Copyright (c) 2014-2019 by the respective copyright holders.
  * All rights reserved. This program and the accompanying materials
