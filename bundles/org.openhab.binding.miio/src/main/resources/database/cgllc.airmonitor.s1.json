@@ -13,6 +13,7 @@
 				"channelType": "system:battery-level",
 				"type": "Number",
 				"refresh": true,
+				"customRefreshCommand": "get_value[\"battery\"]",
 				"ChannelGroup": "Status",
 				"actions": []
 			},
