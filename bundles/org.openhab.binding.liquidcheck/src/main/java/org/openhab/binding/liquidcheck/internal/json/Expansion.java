@@ -15,13 +15,21 @@ package org.openhab.binding.liquidcheck.internal.json;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
+<<<<<<< HEAD
  * The {@link Expansion} .
+=======
+ * The {@link Expansion} contains the expansion data.
+>>>>>>> eac3c23fa09d0130ae16dbdc99ddb83d1743b51d
  *
  * @author Marcel Goerentz - Initial contribution
  */
 @NonNullByDefault
 public class Expansion {
+<<<<<<< HEAD
     public int boardType = -1;
+=======
+    public int boardType = 0;
+>>>>>>> eac3c23fa09d0130ae16dbdc99ddb83d1743b51d
     public String oneWire = "null";
     public String board = "null";
 }

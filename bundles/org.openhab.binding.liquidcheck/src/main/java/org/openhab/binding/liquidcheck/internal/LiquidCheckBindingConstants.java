@@ -30,7 +30,11 @@ public class LiquidCheckBindingConstants {
     private static final String BINDING_ID = "liquidcheck";
 
     // List of all Thing Type UIDs
+<<<<<<< HEAD
     public static final ThingTypeUID THING_TYPE_LIQUID_CHEK = new ThingTypeUID(BINDING_ID, "liquidCheckDevice");
+=======
+    public static final ThingTypeUID THING_TYPE_LIQUID_CHECK = new ThingTypeUID(BINDING_ID, "liquidCheckDevice");
+>>>>>>> eac3c23fa09d0130ae16dbdc99ddb83d1743b51d
 
     // List of all Channel ids
     public static final String CONTENT_CHANNEL = "content";
