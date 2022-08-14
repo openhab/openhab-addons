@@ -42,7 +42,6 @@ public class LiquidCheckHttpClient {
     public boolean isClosed = false;
 
     /**
-     * Sets up the client that polls the data from the device
      * 
      * @param config
      */
@@ -63,9 +62,7 @@ public class LiquidCheckHttpClient {
 
     /**
      * 
-     * This method gets the data from the device
-     * 
-     * @return the response string
+     * @return
      * @throws InterruptedException
      * @throws TimeoutException
      * @throws ExecutionException
@@ -78,15 +75,6 @@ public class LiquidCheckHttpClient {
         return response.getContentAsString();
     }
 
-    /**
-     * 
-     * This method sends the command to start the measurement
-     * 
-     * @return the string of the response
-     * @throws InterruptedException
-     * @throws TimeoutException
-     * @throws ExecutionException
-     */
     public String measureCommand() throws InterruptedException, TimeoutException, ExecutionException {
         String uri = "http://" + config.ip + "/command";
         Request request = client.newRequest(uri);
@@ -100,7 +88,7 @@ public class LiquidCheckHttpClient {
 
     /**
      * 
-     * @return true when the client is connected
+     * @return
      */
     public boolean isConnected() {
         String state = this.client.getState();
@@ -108,7 +96,7 @@ public class LiquidCheckHttpClient {
     }
 
     /**
-     * This method closes the client
+     * 
      */
     public void close() {
         this.isClosed = true;
