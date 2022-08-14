@@ -148,7 +148,7 @@ public class PWMTriggerHandler extends BaseTriggerModuleHandler implements Event
                     }
                 }).orElse(newDutycycle);
 
-                // set duty cycle to 100% if it is 100% or it is larger then max duty cycle and euqateMaxToHundred is
+                // set duty cycle to 100% if it is 100% or it is larger then max duty cycle and equateMaxToHundred is
                 // true
                 // set duty cycle to max duty cycle if it is larger then max duty cycle
                 final double newDutyCycleFinal2 = newDutycycle;
