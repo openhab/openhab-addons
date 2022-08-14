@@ -136,7 +136,7 @@ public class PWMTriggerHandler extends BaseTriggerModuleHandler implements Event
 
                 restartDeadManSwitchTimer();
 
-                // set duty cycle to 0% if it is 0% or it is smaller than min duty cycle and euqateMinToZero is true
+                // set duty cycle to 0% if it is 0% or it is smaller than min duty cycle and equateMinToZero is true
                 // set duty cycle to min duty cycle if it is smaller than min duty cycle
                 final double newDutyCycleFinal1 = newDutycycle;
                 newDutycycle = minDutyCycle.map(minDutycycle -> {
