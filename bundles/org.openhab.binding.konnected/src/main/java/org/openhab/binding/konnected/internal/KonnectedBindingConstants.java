@@ -36,11 +36,11 @@ public class KonnectedBindingConstants {
     public static final ThingTypeUID THING_TYPE_PROMODULE = new ThingTypeUID(BINDING_ID, PRO_MODULE);
 
     // Thing config properties
-    public static final String HOST = "ipAddress";
+    public static final String BASE_URL = "baseUrl";
     public static final String MAC_ADDR = "macAddress";
-    public static final String REQUEST_TIMEOUT = "request_timeout";
-    public static final String RETRY_COUNT = "retry_count";
-    public static final String CALLBACK_URI = "callback_uri";
+    public static final String REQUEST_TIMEOUT = "requestTimeout";
+    public static final String RETRY_COUNT = "retryCount";
+    public static final String CALLBACK_URL = "callbackUrl";
 
     // ESP8266_ZONE_TO_PIN map, this maps a zone to a pin for ESP8266 based devices
     // Source: https://help.konnected.io/support/solutions/articles/32000026808-zone-to-gpio-pin-mapping
