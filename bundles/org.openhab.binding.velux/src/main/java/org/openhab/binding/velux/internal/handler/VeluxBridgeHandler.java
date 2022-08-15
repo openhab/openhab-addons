@@ -1044,8 +1044,6 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
          * that it uses the newly modified channel list instead of the original one.
          */
         final Thing newThing = veluxHandler.editThing().withChannels(channels).build();
-        scheduler.submit(() -> {
-            veluxHandler.updateThing(newThing);
-        });
+        scheduler.submit(() -> veluxHandler.updateThing(newThing));
     }
 }
