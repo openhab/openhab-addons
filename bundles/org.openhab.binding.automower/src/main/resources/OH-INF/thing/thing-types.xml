@@ -12,19 +12,17 @@
 		<config-description>
 			<parameter name="appKey" type="text" required="true">
 				<label>Application Key</label>
-				<description>The Application Key is required to communication with the Automower Connect Api at
+				<description>The Application Key is required to communicate with the Automower Connect API at
 					https://developer.husqvarnagroup.cloud/. It can be obtained by
 					registering an Application on the Husqvarna Website.
 					This application also needs to be connected to the
 					"Authentication API" and the "Automower Connect API"</description>
 			</parameter>
-			<parameter name="userName" type="text" required="true">
-				<label>User Name</label>
-				<description>The user name for which the application key has been issued</description>
-			</parameter>
-			<parameter name="password" type="text" required="true">
-				<context>password</context>
-				<description>The password for the given user</description>
+			<parameter name="appSecret" type="text" required="true">
+				<label>Application Secret</label>
+				<description>The Application Secret is required to communicate with the Automower Connect API at
+					https://developer.husqvarnagroup.cloud/. It can be obtained by
+					registering an Application on the Husqvarna Website.</description>
 			</parameter>
 			<parameter name="pollingInterval" type="integer" required="false" unit="s">
 				<label>Polling Interval</label>
