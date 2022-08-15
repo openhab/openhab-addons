@@ -15,21 +15,21 @@ package org.openhab.binding.boschindego.internal.exceptions;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * {@link IndegoUnreachableException} is thrown on gateway timeout, which
+ * {@link IndegoTimeoutException} is thrown on gateway timeout, which
  * means that Bosch services cannot connect to the device.
  * 
  * @author Jacob Laursen - Initial contribution
  */
 @NonNullByDefault
-public class IndegoUnreachableException extends IndegoException {
+public class IndegoTimeoutException extends IndegoException {
 
     private static final long serialVersionUID = -7952585411438042139L;
 
-    public IndegoUnreachableException(String message) {
+    public IndegoTimeoutException(String message) {
         super(message);
     }
 
-    public IndegoUnreachableException(String message, Throwable cause) {
+    public IndegoTimeoutException(String message, Throwable cause) {
         super(message, cause);
     }
 }

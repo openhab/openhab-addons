@@ -25,5 +25,8 @@ public interface SmartHomeBaseDevice {
     @Nullable
     String findId();
 
+    @Nullable
+    String findEntityId();
+
     boolean isGroup();
 }

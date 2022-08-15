@@ -18,6 +18,7 @@
 			<channel id="treble" typeId="treble"/>
 			<channel id="line1" typeId="frontPanelLine"/>
 			<channel id="line2" typeId="frontPanelLine"/>
+			<channel id="otherCommand" typeId="otherCommand"/>
 		</channels>
 	</channel-group-type>
 
@@ -33,6 +34,7 @@
 			<channel id="mute" typeId="system.mute"/>
 			<channel id="line1" typeId="frontPanelLine"/>
 			<channel id="line2" typeId="frontPanelLine"/>
+			<channel id="otherCommand" typeId="otherCommand"/>
 		</channels>
 	</channel-group-type>
 
@@ -49,6 +51,7 @@
 			<channel id="bass" typeId="bass"/>
 			<channel id="treble" typeId="treble"/>
 			<channel id="line1" typeId="frontPanelLine"/>
+			<channel id="otherCommand" typeId="otherCommand"/>
 		</channels>
 	</channel-group-type>
 
@@ -66,6 +69,7 @@
 			<channel id="treble" typeId="treble"/>
 			<channel id="line1" typeId="frontPanelLine"/>
 			<channel id="line2" typeId="frontPanelLine"/>
+			<channel id="otherCommand" typeId="otherCommand"/>
 		</channels>
 	</channel-group-type>
 
@@ -82,6 +86,7 @@
 			<channel id="bass" typeId="bass"/>
 			<channel id="treble" typeId="treble"/>
 			<channel id="line1" typeId="frontPanelLine"/>
+			<channel id="otherCommand" typeId="otherCommand"/>
 		</channels>
 	</channel-group-type>
 
@@ -266,5 +271,11 @@
 		<item-type>Switch</item-type>
 		<label>Speaker-B Adjustment</label>
 		<description>Turn on/off the speaker group B</description>
+	</channel-type>
+
+	<channel-type id="otherCommand" advanced="true">
+		<item-type>String</item-type>
+		<label>Other Command</label>
+		<description>Choose the command to send to the device</description>
 	</channel-type>
 </thing:thing-descriptions>

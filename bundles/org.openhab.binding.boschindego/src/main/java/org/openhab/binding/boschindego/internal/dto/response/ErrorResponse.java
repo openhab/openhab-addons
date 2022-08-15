@@ -10,21 +10,13 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.hdpowerview;
-
-import java.util.Locale;
-
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.i18n.LocaleProvider;
+package org.openhab.binding.boschindego.internal.dto.response;
 
 /**
- * Locale provider for unit tests.
- *
+ * Response from PUT request.
+ * 
  * @author Jacob Laursen - Initial contribution
  */
-@NonNullByDefault
-public class LocaleProviderForTests implements LocaleProvider {
-    public Locale getLocale() {
-        return Locale.ENGLISH;
-    }
+public class ErrorResponse {
+    public int error;
 }

@@ -26,6 +26,8 @@ import org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewTranslationProvider;
 import org.openhab.binding.hdpowerview.internal.api.responses.SceneCollections.SceneCollection;
 import org.openhab.binding.hdpowerview.internal.builders.SceneGroupChannelBuilder;
+import org.openhab.binding.hdpowerview.providers.MockedLocaleProvider;
+import org.openhab.binding.hdpowerview.providers.MockedTranslationProvider;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ThingUID;
@@ -44,13 +46,14 @@ public class SceneGroupChannelBuilderTest {
             new ThingUID(HDPowerViewBindingConstants.BINDING_ID, SceneGroupChannelBuilderTest.class.getSimpleName()),
             HDPowerViewBindingConstants.CHANNELTYPE_SCENE_GROUP_ACTIVATE);
 
-    private static final HDPowerViewTranslationProvider translationProvider = new HDPowerViewTranslationProvider(
-            mock(Bundle.class), new TranslationProviderForTests(), new LocaleProviderForTests());
-    private SceneGroupChannelBuilder builder = SceneGroupChannelBuilder.create(translationProvider, CHANNEL_GROUP_UID);
+    private static final HDPowerViewTranslationProvider TRANSLATION_PROVIDER = new HDPowerViewTranslationProvider(
+            mock(Bundle.class), new MockedTranslationProvider(), new MockedLocaleProvider());
+
+    private SceneGroupChannelBuilder builder = SceneGroupChannelBuilder.create(TRANSLATION_PROVIDER, CHANNEL_GROUP_UID);
 
     @BeforeEach
     private void setUp() {
-        builder = SceneGroupChannelBuilder.create(translationProvider, CHANNEL_GROUP_UID);
+        builder = SceneGroupChannelBuilder.create(TRANSLATION_PROVIDER, CHANNEL_GROUP_UID);
     }
 
     @Test

@@ -34,9 +34,15 @@
 				<description>Password for the Bosch Indego account.</description>
 			</parameter>
 			<parameter name="refresh" type="integer" min="60">
-				<label>Refresh Interval</label>
-				<description>The number of seconds between refreshing device state.</description>
+				<label>Idle Refresh Interval</label>
+				<description>The number of seconds between refreshing device state when idle.</description>
 				<default>180</default>
+			</parameter>
+			<parameter name="stateActiveRefresh" type="integer" min="6">
+				<label>Active Refresh Interval</label>
+				<description>The number of seconds between refreshing device state when active.</description>
+				<advanced>true</advanced>
+				<default>30</default>
 			</parameter>
 			<parameter name="cuttingTimeRefresh" type="integer" min="1">
 				<label>Cutting Time Refresh Interval</label>
@@ -165,7 +171,7 @@
 	<channel-type id="gardenMap">
 		<item-type>Image</item-type>
 		<label>Garden Map</label>
-		<description>Garden map mapped by the device</description>
+		<description>Garden map created by the device</description>
 		<state readOnly="true"/>
 	</channel-type>
 

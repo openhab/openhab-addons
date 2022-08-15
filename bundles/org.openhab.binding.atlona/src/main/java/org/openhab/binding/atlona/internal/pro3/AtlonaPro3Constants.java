@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.atlona.internal.pro3;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link AtlonaPro3Binding} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Tim Roberts - Initial contribution
  */
+@NonNullByDefault
 class AtlonaPro3Constants {
 
     // Properties
@@ -44,7 +47,6 @@ class AtlonaPro3Constants {
 
     static final String CHANNEL_VOLUME = "volume";
     static final String CHANNEL_VOLUME_MUTE = "volumemute";
-    // static final String CHANNEL_RS232 = "rs232cmd";
 
     static final String CONFIG_HOSTNAME = "hostname";
     static final String CONFIG_OUTPUT = "output";

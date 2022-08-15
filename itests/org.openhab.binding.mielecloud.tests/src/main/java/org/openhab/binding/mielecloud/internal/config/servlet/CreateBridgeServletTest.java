@@ -19,13 +19,15 @@ import static org.openhab.binding.mielecloud.internal.util.ReflectionUtil.setPri
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mielecloud.internal.MieleCloudBindingConstants;
 import org.openhab.binding.mielecloud.internal.auth.OAuthTokenRefresher;
 import org.openhab.binding.mielecloud.internal.config.MieleCloudConfigService;
-import org.openhab.binding.mielecloud.internal.config.exception.BridgeReconfigurationFailedException;
 import org.openhab.binding.mielecloud.internal.util.AbstractConfigFlowTest;
 import org.openhab.binding.mielecloud.internal.util.MieleCloudBindingIntegrationTestConstants;
 import org.openhab.binding.mielecloud.internal.util.Website;
@@ -39,8 +41,8 @@ import org.openhab.core.thing.binding.ThingHandler;
  */
 @NonNullByDefault
 public class CreateBridgeServletTest extends AbstractConfigFlowTest {
-    @Test
-    public void whenBridgeCreationFailsThenAWarningIsShownOnTheSuccessPage() throws Exception {
+    private void whenBridgeCreationFailsThenAWarningIsShownOnTheSuccessPage(
+            CompletableFuture<Boolean> addInboxEntryResult) throws Exception {
         // given:
         MieleCloudConfigService configService = getService(MieleCloudConfigService.class);
         assertNotNull(configService);
@@ -48,8 +50,12 @@ public class CreateBridgeServletTest extends AbstractConfigFlowTest {
         CreateBridgeServlet createBridgeServlet = configService.getCreateBridgeServlet();
         assertNotNull(createBridgeServlet);
 
+        ThingRegistry thingRegistry = mock(ThingRegistry.class);
+        when(thingRegistry.get(MieleCloudBindingIntegrationTestConstants.BRIDGE_THING_UID)).thenReturn(null);
+        setPrivate(Objects.requireNonNull(createBridgeServlet), "thingRegistry", thingRegistry);
+
         Inbox inbox = mock(Inbox.class);
-        when(inbox.approve(any(), anyString(), anyString())).thenReturn(null);
+        when(inbox.add(any())).thenReturn(addInboxEntryResult);
         setPrivate(Objects.requireNonNull(createBridgeServlet), "inbox", inbox);
 
         // when:
@@ -65,7 +71,51 @@ public class CreateBridgeServletTest extends AbstractConfigFlowTest {
     }
 
     @Test
-    public void whenBridgeReconfigurationFailsDueToMissingBridgeThenAWarningIsShownOnTheSuccessPage() throws Exception {
+    public void whenBridgeCreationFailsBecauseInboxEntryCannotBeAddedThenAWarningIsShownOnTheSuccessPage()
+            throws Exception {
+        whenBridgeCreationFailsThenAWarningIsShownOnTheSuccessPage(CompletableFuture.completedFuture(false));
+    }
+
+    @Test
+    public void whenBridgeCreationFailsBecauseInboxEntryAddResultIsNullThenAWarningIsShownOnTheSuccessPage()
+            throws Exception {
+        whenBridgeCreationFailsThenAWarningIsShownOnTheSuccessPage(CompletableFuture.completedFuture(null));
+    }
+
+    @SuppressWarnings("unchecked")
+    private CompletableFuture<Boolean> mockBooleanResultCompletableFuture() {
+        return mock(CompletableFuture.class);
+    }
+
+    @Test
+    public void whenBridgeCreationFailBecauseInboxEntryCreationIsInterruptedThenAWarningIsShownOnTheSuccessPage()
+            throws Exception {
+        CompletableFuture<Boolean> future = mockBooleanResultCompletableFuture();
+        when(future.get(anyLong(), any())).thenThrow(new InterruptedException());
+
+        whenBridgeCreationFailsThenAWarningIsShownOnTheSuccessPage(future);
+    }
+
+    @Test
+    public void whenBridgeCreationFailBecauseInboxEntryCreationFailsThenAWarningIsShownOnTheSuccessPage()
+            throws Exception {
+        CompletableFuture<Boolean> future = mockBooleanResultCompletableFuture();
+        when(future.get(anyLong(), any())).thenThrow(new ExecutionException(new NullPointerException()));
+
+        whenBridgeCreationFailsThenAWarningIsShownOnTheSuccessPage(future);
+    }
+
+    @Test
+    public void whenBridgeCreationFailBecauseInboxEntryCreationTimesOutThenAWarningIsShownOnTheSuccessPage()
+            throws Exception {
+        CompletableFuture<Boolean> future = mockBooleanResultCompletableFuture();
+        when(future.get(anyLong(), any())).thenThrow(new TimeoutException());
+
+        whenBridgeCreationFailsThenAWarningIsShownOnTheSuccessPage(future);
+    }
+
+    @Test
+    public void whenBridgeCreationFailBecauseInboxApprovalFailsThenAWarningIsShownOnTheSuccessPage() throws Exception {
         // given:
         MieleCloudConfigService configService = getService(MieleCloudConfigService.class);
         assertNotNull(configService);
@@ -73,12 +123,14 @@ public class CreateBridgeServletTest extends AbstractConfigFlowTest {
         CreateBridgeServlet createBridgeServlet = configService.getCreateBridgeServlet();
         assertNotNull(createBridgeServlet);
 
-        Inbox inbox = mock(Inbox.class);
-        setPrivate(Objects.requireNonNull(createBridgeServlet), "inbox", inbox);
-
         ThingRegistry thingRegistry = mock(ThingRegistry.class);
-        when(thingRegistry.get(any())).thenThrow(new BridgeReconfigurationFailedException(""));
+        when(thingRegistry.get(MieleCloudBindingIntegrationTestConstants.BRIDGE_THING_UID)).thenReturn(null);
         setPrivate(Objects.requireNonNull(createBridgeServlet), "thingRegistry", thingRegistry);
+
+        Inbox inbox = mock(Inbox.class);
+        when(inbox.add(any())).thenReturn(CompletableFuture.completedFuture(true));
+        when(inbox.approve(any(), anyString(), anyString())).thenReturn(null);
+        setPrivate(Objects.requireNonNull(createBridgeServlet), "inbox", inbox);
 
         // when:
         Website website = getCrawler().doGetRelative("/mielecloud/createBridgeThing?"
@@ -89,7 +141,7 @@ public class CreateBridgeServletTest extends AbstractConfigFlowTest {
         // then:
         assertTrue(website.contains("Pairing successful!"));
         assertTrue(website.contains(
-                "Could not auto reconfigure the bridge. Bridge thing or thing handler is not available. Please try the configuration flow again."));
+                "Could not auto configure the bridge. Failed to approve the bridge from the inbox. Please try the configuration flow again."));
     }
 
     @Test

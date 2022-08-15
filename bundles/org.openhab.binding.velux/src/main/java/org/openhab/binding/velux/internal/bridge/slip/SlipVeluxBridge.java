@@ -28,7 +28,6 @@ import org.openhab.binding.velux.internal.bridge.slip.utils.SlipRFC1055;
 import org.openhab.binding.velux.internal.development.Threads;
 import org.openhab.binding.velux.internal.handler.VeluxBridgeHandler;
 import org.openhab.binding.velux.internal.things.VeluxKLFAPI.Command;
-import org.openhab.binding.velux.internal.things.VeluxProduct.ProductBridgeIndex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -206,15 +205,15 @@ public class SlipVeluxBridge extends VeluxBridge implements Closeable {
         final boolean isProtocolTraceEnabled = this.bridgeInstance.veluxBridgeConfiguration().isProtocolTraceEnabled;
         final long expiryTime = System.currentTimeMillis() + COMMUNICATION_TIMEOUT_MSECS;
 
-        // logger format string
-        final String loggerFmt = String.format("bridgeDirectCommunicate() [%s] %s => {} {} {}",
-                this.bridgeInstance.veluxBridgeConfiguration().ipAddress, txName);
+        // logger messages
+        final String logMsg = "bridgeDirectCommunicate() [{}] {} => {} {} {}";
+        final String ipAddr = bridgeInstance.veluxBridgeConfiguration().ipAddress;
 
         if (isProtocolTraceEnabled) {
             Threads.findDeadlocked();
         }
 
-        logger.debug(loggerFmt, "started =>", Thread.currentThread(), "");
+        logger.debug(logMsg, ipAddr, txName, "started =>", Thread.currentThread(), "");
 
         boolean looping = false;
         boolean success = false;
@@ -225,41 +224,41 @@ public class SlipVeluxBridge extends VeluxBridge implements Closeable {
         // handling of the requests
         switch (txEnum) {
             case GW_OPENHAB_CLOSE:
-                logger.trace(loggerFmt, "shut down command", "=> executing", "");
+                logger.trace(logMsg, ipAddr, txName, "shut down command", "=> executing", "");
                 connection.resetConnection();
                 success = true;
                 break;
 
             case GW_OPENHAB_RECEIVEONLY:
-                logger.trace(loggerFmt, "receive-only mode", "=> checking messages", "");
+                logger.trace(logMsg, ipAddr, txName, "receive-only mode", "=> checking messages", "");
                 if (!connection.isAlive()) {
-                    logger.trace(loggerFmt, "no connection", "=> opening", "");
+                    logger.trace(logMsg, ipAddr, txName, "no connection", "=> opening", "");
                     looping = true;
                 } else if (connection.isMessageAvailable()) {
-                    logger.trace(loggerFmt, "message(s) waiting", "=> start reading", "");
+                    logger.trace(logMsg, ipAddr, txName, "message(s) waiting", "=> start reading", "");
                     looping = true;
                 } else {
-                    logger.trace(loggerFmt, "no waiting messages", "=> done", "");
+                    logger.trace(logMsg, ipAddr, txName, "no waiting messages", "=> done", "");
                 }
                 rcvonly = true;
                 break;
 
             default:
-                logger.trace(loggerFmt, "send mode", "=> preparing command", "");
+                logger.trace(logMsg, ipAddr, txName, "send mode", "=> preparing command", "");
                 SlipEncoding slipEnc = new SlipEncoding(txCmd, txData);
                 if (!slipEnc.isValid()) {
-                    logger.debug(loggerFmt, "slip encoding error", "=> aborting", "");
+                    logger.debug(logMsg, ipAddr, txName, "slip encoding error", "=> aborting", "");
                     break;
                 }
                 txPacket = new SlipRFC1055().encode(slipEnc.toMessage());
-                logger.trace(loggerFmt, "command ready", "=> start sending", "");
+                logger.trace(logMsg, ipAddr, txName, "command ready", "=> start sending", "");
                 looping = sending = true;
         }
 
         while (looping) {
             // timeout
             if (System.currentTimeMillis() > expiryTime) {
-                logger.warn(loggerFmt, "process loop time out", "=> aborting", "=> PLEASE REPORT !!");
+                logger.warn(logMsg, ipAddr, txName, "process loop time out", "=> aborting", "=> PLEASE REPORT !!");
                 // abort the processing loop
                 break;
             }
@@ -272,9 +271,9 @@ public class SlipVeluxBridge extends VeluxBridge implements Closeable {
                         logger.info("sending command {}", txName);
                     }
                     if (logger.isTraceEnabled()) {
-                        logger.trace(loggerFmt, txName, "=> sending data =>", new Packet(txData));
+                        logger.trace(logMsg, ipAddr, txName, txName, "=> sending data =>", new Packet(txData));
                     } else {
-                        logger.debug(loggerFmt, txName, "=> sending data length =>", txData.length);
+                        logger.debug(logMsg, ipAddr, txName, txName, "=> sending data length =>", txData.length);
                     }
                 }
                 rxPacket = connection.io(this.bridgeInstance, sending ? txPacket : emptyPacket);
@@ -283,13 +282,13 @@ public class SlipVeluxBridge extends VeluxBridge implements Closeable {
                 if (rxPacket.length == 0) {
                     // only log in send mode (in receive-only mode, no response is ok)
                     if (!rcvonly) {
-                        logger.debug(loggerFmt, "no response", "=> aborting", "");
+                        logger.debug(logMsg, ipAddr, txName, "no response", "=> aborting", "");
                     }
                     // abort the processing loop
                     break;
                 }
             } catch (IOException e) {
-                logger.debug(loggerFmt, "i/o error =>", e.getMessage(), "=> aborting");
+                logger.debug(logMsg, ipAddr, txName, "i/o error =>", e.getMessage(), "=> aborting");
                 // abort the processing loop
                 break;
             }
@@ -299,7 +298,7 @@ public class SlipVeluxBridge extends VeluxBridge implements Closeable {
             try {
                 rfc1055 = new SlipRFC1055().decode(rxPacket);
             } catch (ParseException e) {
-                logger.debug(loggerFmt, "parsing error =>", e.getMessage(), "=> aborting");
+                logger.debug(logMsg, ipAddr, txName, "parsing error =>", e.getMessage(), "=> aborting");
                 // abort the processing loop
                 break;
             }
@@ -307,7 +306,7 @@ public class SlipVeluxBridge extends VeluxBridge implements Closeable {
             // SLIP decode response
             SlipEncoding slipEnc = new SlipEncoding(rfc1055);
             if (!slipEnc.isValid()) {
-                logger.debug(loggerFmt, "slip decode error", "=> aborting", "");
+                logger.debug(logMsg, ipAddr, txName, "slip decode error", "=> aborting", "");
                 // abort the processing loop
                 break;
             }
@@ -320,9 +319,9 @@ public class SlipVeluxBridge extends VeluxBridge implements Closeable {
 
             // logging
             if (logger.isTraceEnabled()) {
-                logger.trace(loggerFmt, rxName, "=> received data =>", new Packet(rxData));
+                logger.trace(logMsg, ipAddr, txName, rxName, "=> received data =>", new Packet(rxData));
             } else {
-                logger.debug(loggerFmt, rxName, "=> received data length =>", rxData.length);
+                logger.debug(logMsg, ipAddr, txName, rxName, "=> received data length =>", rxData.length);
             }
             if (isProtocolTraceEnabled) {
                 logger.info("received message {} => {}", rxName, new Packet(rxData));
@@ -334,53 +333,52 @@ public class SlipVeluxBridge extends VeluxBridge implements Closeable {
                     byte code = rxData[0];
                     switch (code) {
                         case 7: // busy
-                            logger.trace(loggerFmt, rxName, getErrorText(code), "=> retrying");
+                            logger.trace(logMsg, ipAddr, txName, rxName, getErrorText(code), "=> retrying");
                             sending = true;
                             break;
                         case 12: // authentication failed
-                            logger.debug(loggerFmt, rxName, getErrorText(code), "=> aborting");
+                            logger.debug(logMsg, ipAddr, txName, rxName, getErrorText(code), "=> aborting");
                             resetAuthentication();
                             looping = false;
                             break;
                         default:
-                            logger.warn(loggerFmt, rxName, getErrorText(code), "=> aborting");
+                            logger.warn(logMsg, ipAddr, txName, rxName, getErrorText(code), "=> aborting");
                             looping = false;
                     }
                     break;
 
                 case GW_NODE_INFORMATION_CHANGED_NTF:
                 case GW_ACTIVATION_LOG_UPDATED_NTF:
-                    logger.trace(loggerFmt, rxName, "=> ignorable command", "=> continuing");
+                    logger.trace(logMsg, ipAddr, txName, rxName, "=> ignorable command", "=> continuing");
                     break;
 
                 case GW_NODE_STATE_POSITION_CHANGED_NTF:
-                    logger.trace(loggerFmt, rxName, "=> special command", "=> starting");
-                    SCgetHouseStatus receiver = new SCgetHouseStatus();
+                    logger.trace(logMsg, ipAddr, txName, rxName, "=> special command", "=> starting");
+                    SCgetHouseStatus receiver = new SCgetHouseStatus().setCreatorCommand(txEnum);
                     receiver.setResponse(rxCmd, rxData, isSequentialEnforced);
                     if (receiver.isCommunicationSuccessful()) {
-                        bridgeInstance.existingProducts().update(new ProductBridgeIndex(receiver.getNtfNodeID()),
-                                receiver.getNtfState(), receiver.getNtfCurrentPosition(), receiver.getNtfTarget());
-                        logger.trace(loggerFmt, rxName, "=> special command", "=> product updated");
+                        bridgeInstance.existingProducts().update(receiver.getProduct());
+                        logger.trace(logMsg, ipAddr, txName, rxName, "=> special command", "=> update submitted");
                         if (rcvonly) {
                             // receive-only: return success to confirm that product(s) were updated
                             success = true;
                         }
                     }
-                    logger.trace(loggerFmt, rxName, "=> special command", "=> continuing");
+                    logger.trace(logMsg, ipAddr, txName, rxName, "=> special command", "=> continuing");
                     break;
 
                 case GW_COMMAND_RUN_STATUS_NTF:
                 case GW_COMMAND_REMAINING_TIME_NTF:
                 case GW_SESSION_FINISHED_NTF:
                     if (!isSequentialEnforced) {
-                        logger.trace(loggerFmt, rxName, "=> parallelism allowed", "=> continuing");
+                        logger.trace(logMsg, ipAddr, txName, rxName, "=> parallelism allowed", "=> continuing");
                         break;
                     }
-                    logger.trace(loggerFmt, rxName, "=> serialism enforced", "=> default processing");
+                    logger.trace(logMsg, ipAddr, txName, rxName, "=> serialism enforced", "=> default processing");
                     // fall through => execute default processing
 
                 default:
-                    logger.trace(loggerFmt, rxName, "=> applying data length =>", rxData.length);
+                    logger.trace(logMsg, ipAddr, txName, rxName, "=> applying data length =>", rxData.length);
                     communication.setResponse(rxCmd, rxData, isSequentialEnforced);
                     looping = !communication.isCommunicationFinished();
                     success = communication.isCommunicationSuccessful();
@@ -388,7 +386,7 @@ public class SlipVeluxBridge extends VeluxBridge implements Closeable {
 
         }
         // in receive-only mode 'failure` just means that no products were updated, so don't log it as a failure..
-        logger.debug(loggerFmt, "finished", "=>", ((success || rcvonly) ? "success" : "failure"));
+        logger.debug(logMsg, ipAddr, txName, "finished", "=>", ((success || rcvonly) ? "success" : "failure"));
         return success;
     }
 

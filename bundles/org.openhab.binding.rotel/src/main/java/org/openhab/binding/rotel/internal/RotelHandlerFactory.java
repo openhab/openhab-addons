@@ -56,12 +56,15 @@ public class RotelHandlerFactory extends BaseThingHandlerFactory {
 
     private final SerialPortManager serialPortManager;
     private final RotelStateDescriptionOptionProvider stateDescriptionProvider;
+    private final RotelCommandDescriptionOptionProvider commandDescriptionProvider;
 
     @Activate
     public RotelHandlerFactory(final @Reference SerialPortManager serialPortManager,
-            final @Reference RotelStateDescriptionOptionProvider stateDescriptionProvider) {
+            final @Reference RotelStateDescriptionOptionProvider stateDescriptionProvider,
+            final @Reference RotelCommandDescriptionOptionProvider commandDescriptionProvider) {
         this.serialPortManager = serialPortManager;
         this.stateDescriptionProvider = stateDescriptionProvider;
+        this.commandDescriptionProvider = commandDescriptionProvider;
     }
 
     @Override
@@ -74,7 +77,7 @@ public class RotelHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
-            return new RotelHandler(thing, stateDescriptionProvider, serialPortManager);
+            return new RotelHandler(thing, stateDescriptionProvider, commandDescriptionProvider, serialPortManager);
         }
 
         return null;

@@ -59,14 +59,15 @@ The Nibe Heat Pump binding will listen to a UDP port and parse register data fro
 ### Arduino
 
 An Arduino-based solution has been tested with Arduino uno + RS485 and Ethernet shields.
-The [ProDiNo](https://www.kmpelectronics.eu/en-us/products/prodinoethernet.aspx) NetBoards are also supported.
-A ProDiNo has an Ethernet and RS-485 port on the board.
+[PRODINo ESP32 Ethernet v1](https://kmpelectronics.eu/products/prodino-esp32-ethernet-v1/) and [ProDiNo Ethernet V2](https://kmpelectronics.eu/products/prodino-ethernet-v2/) boards are also supported.
+PRODINo boards have built-in Ethernet and RS-485 ports.
 
 Arduino code is available [here](https://github.com/openhab/openhab-addons/tree/main/bundles/org.openhab.binding.nibeheatpump/contrib/NibeGW/Arduino/NibeGW).
 
 Arduino code can be build via Arduino IDE.
 For more details see [www.arduino.cc](https://www.arduino.cc/en/Main/Software). 
 NibeGW configuration (such IP addresses, ports, etc) can be adapted directly by editing the code files.
+PRODINo ESP32 Ethernet v1 also supports dynamic configuration and OTA updates via Wi-Fi access point.
 
 ### Raspberry Pi (or other Linux/Unix based boards)
 

@@ -26,12 +26,14 @@ import org.openhab.core.thing.ThingTypeUID;
 public class MyStromBindingConstants {
 
     public static final int DEFAULT_REFRESH_RATE_SECONDS = 10;
+    public static final int DEFAULT_BACKOFF_TIME_SECONDS = 10;
 
     private static final String BINDING_ID = "mystrom";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_PLUG = new ThingTypeUID(BINDING_ID, "mystromplug");
     public static final ThingTypeUID THING_TYPE_BULB = new ThingTypeUID(BINDING_ID, "mystrombulb");
+    public static final ThingTypeUID THING_TYPE_PIR = new ThingTypeUID(BINDING_ID, "mystrompir");
 
     // List of all Channel ids
     public static final String CHANNEL_SWITCH = "switch";
@@ -42,6 +44,8 @@ public class MyStromBindingConstants {
     public static final String CHANNEL_MODE = "mode";
     public static final String CHANNEL_COLOR_TEMPERATURE = "colorTemperature";
     public static final String CHANNEL_BRIGHTNESS = "brightness";
+    public static final String CHANNEL_MOTION = "motion";
+    public static final String CHANNEL_LIGHT = "light";
 
     // Config
     public static final String CONFIG_MAC = "mac";

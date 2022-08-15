@@ -63,11 +63,8 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
     private final HttpClient httpClient;
     private final ShellyTranslationProvider messages;
     private final Shelly1CoapServer coapServer;
-
     private final ShellyThingTable thingTable;
     private ShellyBindingConfiguration bindingConfig = new ShellyBindingConfiguration();
-    private String localIP = "";
-    private int httpPort = -1;
 
     /**
      * Activate the bundle: save properties
@@ -82,11 +79,11 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
             @Reference HttpClientFactory httpClientFactory, ComponentContext componentContext,
             Map<String, Object> configProperties) {
         super.activate(componentContext);
-        messages = translationProvider;
-        // Save bindingConfig & pass it to all registered listeners
-        bindingConfig.updateFromProperties(configProperties);
+        this.messages = translationProvider;
+        this.thingTable = thingTable;
 
-        localIP = bindingConfig.localIP;
+        bindingConfig.updateFromProperties(configProperties);
+        String localIP = bindingConfig.localIP;
         if (localIP.isEmpty()) {
             localIP = ShellyUtils.getString(networkAddressService.getPrimaryIpv4HostAddress());
         }
@@ -95,13 +92,14 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
         }
 
         this.httpClient = httpClientFactory.getCommonHttpClient();
-        httpPort = HttpServiceUtil.getHttpServicePort(componentContext.getBundleContext());
+        int httpPort = HttpServiceUtil.getHttpServicePort(componentContext.getBundleContext());
         if (httpPort == -1) {
             httpPort = 8080;
         }
         logger.debug("Using OH HTTP port {}", httpPort);
+        bindingConfig.localIP = localIP;
+        bindingConfig.httpPort = httpPort;
 
-        this.thingTable = thingTable;
         this.coapServer = new Shelly1CoapServer();
     }
 
@@ -119,19 +117,19 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
         if (thingType.equals(THING_TYPE_SHELLYPROTECTED_STR)) {
             logger.debug("{}: Create new thing of type {} using ShellyProtectedHandler", thing.getLabel(),
                     thingTypeUID.toString());
-            handler = new ShellyProtectedHandler(thing, messages, bindingConfig, coapServer, localIP, httpPort,
-                    httpClient);
+            handler = new ShellyProtectedHandler(thing, messages, bindingConfig, thingTable, coapServer, httpClient);
         } else if (thingType.equals(THING_TYPE_SHELLYBULB_STR) || thingType.equals(THING_TYPE_SHELLYDUO_STR)
                 || thingType.equals(THING_TYPE_SHELLYRGBW2_COLOR_STR)
                 || thingType.equals(THING_TYPE_SHELLYRGBW2_WHITE_STR)
-                || thingType.equals(THING_TYPE_SHELLYDUORGBW_STR)) {
+                || thingType.equals(THING_TYPE_SHELLYRGBW2_WHITE_STR) || thingType.equals(THING_TYPE_SHELLYDUORGBW_STR)
+                || thingType.equals(THING_TYPE_SHELLYVINTAGE_STR)) {
             logger.debug("{}: Create new thing of type {} using ShellyLightHandler", thing.getLabel(),
                     thingTypeUID.toString());
-            handler = new ShellyLightHandler(thing, messages, bindingConfig, coapServer, localIP, httpPort, httpClient);
+            handler = new ShellyLightHandler(thing, messages, bindingConfig, thingTable, coapServer, httpClient);
         } else if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
             logger.debug("{}: Create new thing of type {} using ShellyRelayHandler", thing.getLabel(),
                     thingTypeUID.toString());
-            handler = new ShellyRelayHandler(thing, messages, bindingConfig, coapServer, localIP, httpPort, httpClient);
+            handler = new ShellyRelayHandler(thing, messages, bindingConfig, thingTable, coapServer, httpClient);
         }
 
         if (handler != null) {

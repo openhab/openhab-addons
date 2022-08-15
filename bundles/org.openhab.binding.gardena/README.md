@@ -115,6 +115,20 @@ DateTime LastUpdate "LastUpdate [%1$td.%1$tm.%1$tY %1$tH:%1$tM]" { channel="gard
 openhab:send LastUpdate REFRESH
 ```
 
+### Server Call Rate Limitation
+
+The Gardena server imposes call rate limits to prevent malicious use of its API.
+The limits are:
+
+- On average not more than one call every 15 minutes.
+- 3000 calls per month.
+
+Normally the binding does not exceed these limits.
+But from time to time the server may nevertheless consider the limits to have been exceeded, in which case it reports an HTTP 429 Error (Limit Exceeded).
+If such an error occurs you will be locked out of your Gardena account for 24 hours.
+In this case the binding will wait in an offline state for the respective 24 hours, after which it will automatically try to reconnect again.
+Attempting to force reconnect within the 24 hours causes the call rate to be exceeded further, and therefore just exacerbates the problem.
+
 ### Debugging and Tracing
 
 If you want to see what's going on in the binding, switch the loglevel to TRACE in the Karaf console
