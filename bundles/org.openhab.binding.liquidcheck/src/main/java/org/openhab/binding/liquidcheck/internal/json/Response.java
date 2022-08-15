@@ -10,20 +10,19 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.liquidcheck.internal;
+package org.openhab.binding.liquidcheck.internal.json;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link LiquidCheckConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link Response} .
  *
  * @author Marcel Goerentz - Initial contribution
  */
 @NonNullByDefault
-public class LiquidCheckConfiguration {
+public class Response {
 
-    public String ip = "";
-    public int refreshInterval = 600;
-    public int maxContent = 1;
-    public long connecionTimeOut = 5000;
+    public Header header = new Header();
+    public Payload payload = new Payload();
+    public Context context = new Context();
 }

@@ -4,45 +4,97 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Sample Thing Type -->
-	<thing-type id="sample">
-		<!-- Comment this in for Things which need a Bridge to function.
-			<supported-bridge-type-refs>
-			<bridge-type-ref id="LiquidCheckBridge" />
-			</supported-bridge-type-refs>
-		-->
-
-		<label>LiquidCheck Binding Thing</label>
-		<description>Sample thing for LiquidCheck Binding</description>
+	<thing-type id="liquidCheckDevice">
+		<label>Liquid Check Device</label>
+		<description></description>
+		<category>Sensor</category>
 
 		<channels>
-			<channel id="channel1" typeId="sample-channel"/>
+			<channel id="content" typeId="content-channel"/>
+			<channel id="level" typeId="level-channel"/>
+			<channel id="raw-content" typeId="raw-content-channel"/>
+			<channel id="raw-level" typeId="raw-level-channel"/>
+			<channel id="pump-runs" typeId="pump-runs-channel"></channel>
+			<channel id="pump-runtime" typeId="pump-runtime-channel"></channel>
+			<channel id="measure" typeId="measure-channel"/>
 		</channels>
 
+		<properties>
+			<property name="firmware">Firmware</property>
+			<property name="hardware">Hardware</property>
+			<property name="name">Name</property>
+			<property name="manufacturer">Manufacturer</property>
+			<property name="uuid">UUID</property>
+			<property name="securityCode">Security Code</property>
+			<property name="ip">IP</property>
+			<property name="mac">MAC-Address</property>
+			<property name="ssid">SSID</property>
+		</properties>
+
 		<config-description>
-			<parameter name="hostname" type="text" required="true">
+			<parameter name="ip" type="text" required="true">
 				<context>network-address</context>
 				<label>Hostname</label>
-				<description>Hostname or IP address of the device</description>
+				<description>Hostname or IP address of the device.</description>
 			</parameter>
-			<parameter name="password" type="text" required="true">
-				<context>password</context>
-				<label>Password</label>
-				<description>Password to access the device</description>
+			<parameter name="maxContent" type="integer" unit="l" min="1">
+				<label>Maximal Content</label>
+				<description>Maximal conten in the container.</description>
 			</parameter>
-			<parameter name="refreshInterval" type="integer" unit="s" min="1">
+			<parameter name="refreshInterval" type="integer" unit="s" min="1" max="3600">
 				<label>Refresh Interval</label>
 				<description>Interval the device is polled in sec.</description>
-				<default>600</default>
+				<default>60</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="connecionTimeOut" type="integer" unit="s" min="1" max="120">
+				<label>Connection Timeout</label>
+				<description>After the given amout of seconds without a response, the connection will be seen as timed out!</description>
+				<default>5</default>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</thing-type>
 
-	<!-- Sample Channel Type -->
-	<channel-type id="sample-channel">
-		<item-type>Number:Temperature</item-type>
-		<label>Example Temperature</label><!-- Use uppercase words, except prepositions. 2-3 words, max 25 chars -->
-		<description>Sample channel for LiquidCheck Binding</description>
+	<channel-type id="content-channel">
+		<item-type>Number:Volume</item-type>
+		<label>Content</label>
+		<description>Content in the container</description>
+		<state readOnly="true" pattern="%d l"></state>
+	</channel-type>
+	<channel-type id="raw-content-channel">
+		<item-type>Number:Volume</item-type>
+		<label>Content raw data</label>
+		<description>Content in the container as measured by the device</description>
+		<state readOnly="true" pattern="%.4f l"></state>
+	</channel-type>
+	<channel-type id="level-channel">
+		<item-type>Number:Length</item-type>
+		<label>Level</label>
+		<description>Level in the container</description>
+		<state readOnly="true" pattern="%.2f m"></state>
+	</channel-type>
+	<channel-type id="raw-level-channel">
+		<item-type>Number:Length</item-type>
+		<label>Level raw data</label>
+		<description>Level in the container as measured by the device</description>
+		<state readOnly="true" pattern="%.4f m"></state>
+	</channel-type>
+	<channel-type id="measure-channel">
+		<kind>trigger</kind>
+		<label>Measure</label>
+		<description>Triggers a measurement</description>
+	</channel-type>
+	<channel-type id="pump-runs-channel">
+		<item-type>Number</item-type>
+		<label>Pump total runs</label>
+		<description>Number of pump starts in total</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="pump-runtime-channel">
+		<item-type>Number:Time</item-type>
+		<label>Pump total runtime</label>
+		<description>Seconds the pump has runned since manufacturing</description>
+		<state readOnly="true" pattern="%i s"></state>
 	</channel-type>
 </thing:thing-descriptions>
