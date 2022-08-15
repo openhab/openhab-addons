@@ -1004,8 +1004,6 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
         final boolean vaneChannelExisting = channels.stream().anyMatch(vaneChannelFilter);
         final boolean vaneChannelRequired = product.supportsVanePosition();
 
-        logger.warn("channelExisting:{} channelRequired:{}", vaneChannelExisting, vaneChannelRequired);
-
         if (vaneChannelExisting == vaneChannelRequired) {
             // no change needed
             return;
