@@ -26,6 +26,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BridgeHandler;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
@@ -124,5 +125,21 @@ public class VeluxHandler extends ExtendedBaseThingHandler {
         } else {
             super.handleConfigurationUpdate(configurationParameters);
         }
+    }
+
+    /**
+     * Set public visibility on the protected super.editThing() method.
+     */
+    @Override
+    public ThingBuilder editThing() {
+        return super.editThing();
+    }
+
+    /**
+     * Set public visibility on the protected super.updateThing() method.
+     */
+    @Override
+    public void updateThing(Thing thing) {
+        super.updateThing(thing);
     }
 }

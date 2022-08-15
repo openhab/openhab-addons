@@ -176,11 +176,12 @@ The supported Channels and their associated channel types are shown below.
 | position     | Rollershutter | Actual position of the window or device.        |
 | limitMinimum | Rollershutter | Minimum limit position of the window or device. |
 | limitMaximum | Rollershutter | Maximum limit position of the window or device. |
-| vanePosition | Dimmer        | Vane position of a Venetian blind.              |
+| vanePosition | Dimmer        | Vane position of a Venetian blind. (optional)   |
 
 The `position`, `limitMinimum`, and `limitMaximum` are the same as described above for "window" Things.
 
 The `vanePosition` Channel only applies to Venetian blinds that have tiltable slats.
+The binding detects whether the device supports a vane position, and if so, it adds the `vanePosition` Channel automatically.
 
 ### Channels for "actuator" Things
 
