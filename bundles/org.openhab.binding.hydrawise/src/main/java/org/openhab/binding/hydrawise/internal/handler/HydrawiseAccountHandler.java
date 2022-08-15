@@ -117,7 +117,9 @@ public class HydrawiseAccountHandler extends BaseBridgeHandler implements Access
     }
 
     public void removeControllerListeners(HydrawiseControllerListener listener) {
-        this.controllerListeners.remove(listener);
+        synchronized (controllerListeners) {
+            this.controllerListeners.remove(listener);
+        }
     }
 
     public @Nullable HydrawiseGraphQLClient graphQLClient() {
