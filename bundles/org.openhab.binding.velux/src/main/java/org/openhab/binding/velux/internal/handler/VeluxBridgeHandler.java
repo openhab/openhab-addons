@@ -989,7 +989,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
         final VeluxProduct product = existingProducts()
                 .get((new Thing2VeluxActuator(this, vaneChannelUID)).getProductBridgeIndex());
         if (product.equals(VeluxProduct.UNKNOWN)) {
-            // product unknown");
+            // product unknown
             return;
         }
 
