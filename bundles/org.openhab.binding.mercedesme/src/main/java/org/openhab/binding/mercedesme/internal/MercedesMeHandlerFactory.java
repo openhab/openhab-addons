@@ -25,7 +25,6 @@ import org.openhab.binding.mercedesme.internal.handler.VehicleHandler;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
-import org.openhab.core.storage.Storage;
 import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -55,7 +54,6 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(MercedesMeHandlerFactory.class);
     private final OAuthFactory oAuthFactory;
     private final HttpClient httpClient;
-    private final Storage<String> tokenStorage;
     private final MercedesMeCommandOptionProvider mmcop;
     private final MercedesMeStateOptionProvider mmsop;
     private final StorageService storageService;
@@ -70,7 +68,6 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
         mmcop = cop;
         mmsop = sop;
         timeZoneProvider = tzp;
-        tokenStorage = storageService.getStorage(Constants.BINDING_ID);
         httpClient = hcf.createHttpClient(Constants.BINDING_ID);
         // https://github.com/jetty-project/jetty-reactive-httpclient/issues/33
         httpClient.getProtocolHandlers().remove(WWWAuthenticationProtocolHandler.NAME);
@@ -90,7 +87,7 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (THING_TYPE_ACCOUNT.equals(thingTypeUID)) {
-            return new AccountHandler((Bridge) thing, httpClient, oAuthFactory, tokenStorage);
+            return new AccountHandler((Bridge) thing, httpClient, oAuthFactory);
         }
         return new VehicleHandler(thing, httpClient, thingTypeUID.getId(), storageService, mmcop, mmsop,
                 timeZoneProvider);

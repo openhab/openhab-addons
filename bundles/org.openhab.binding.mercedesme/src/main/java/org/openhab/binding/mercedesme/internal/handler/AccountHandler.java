@@ -24,7 +24,6 @@ import org.openhab.core.auth.client.oauth2.AccessTokenRefreshListener;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.storage.Storage;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -43,17 +42,15 @@ import org.slf4j.LoggerFactory;
 public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefreshListener {
     private final Logger logger = LoggerFactory.getLogger(AccountHandler.class);
     private final OAuthFactory oAuthFactory;
-    private final Storage<String> storage;
     private final HttpClient httpClient;
     private Optional<CallbackServer> server = Optional.empty();
 
     Optional<AccountConfiguration> config = Optional.empty();
 
-    public AccountHandler(Bridge bridge, HttpClient hc, OAuthFactory oaf, Storage<String> storage) {
+    public AccountHandler(Bridge bridge, HttpClient hc, OAuthFactory oaf) {
         super(bridge);
         httpClient = hc;
         oAuthFactory = oaf;
-        this.storage = storage;
     }
 
     @Override
@@ -71,8 +68,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
         } else {
             String callbackUrl = Utils.getCallbackAddress(config.get().callbackIP, config.get().callbackPort);
             thing.setProperty("callbackUrl", callbackUrl);
-            server = Optional
-                    .of(new CallbackServer(this, httpClient, oAuthFactory, config.get(), callbackUrl, storage));
+            server = Optional.of(new CallbackServer(this, httpClient, oAuthFactory, config.get(), callbackUrl));
             if (!server.get().start()) {
                 String textKey = Constants.PREFIX + thing.getThingTypeUID().getId() + Constants.STATUS_SERVER_RESTART;
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, textKey);
@@ -135,8 +131,8 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     @Override
     public void onAccessTokenResponse(AccessTokenResponse tokenResponse) {
         logger.debug("{} received new Access Token", config.get().callbackPort);
-        if (tokenResponse.getAccessToken() != null) {
-            // token not null - fine
+        if (!tokenResponse.getAccessToken().isEmpty()) {
+            // token not empty - fine
             updateStatus(ThingStatus.ONLINE);
         } else if (server.isEmpty()) {
             // server not running - fix first

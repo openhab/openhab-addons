@@ -401,12 +401,12 @@ public class VehicleHandler extends BaseThingHandler {
         req.header(HttpHeader.AUTHORIZATION, "Bearer " + accountHandler.get().getToken());
         try {
             ContentResponse cr = req.send();
-            logger.debug("{} Response {} {}", debugPrefix, cr.getStatus(), cr.getContentAsString());
+            logger.trace("{} Response {} {}", debugPrefix, cr.getStatus(), cr.getContentAsString());
             if (cr.getStatus() == 200) {
                 distributeContent(cr.getContentAsString().trim());
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logger.warn("{} Error getting data {}", debugPrefix, e.getMessage());
+            logger.info("{} Error getting data {}", debugPrefix, e.getMessage());
             fallbackCall(requestUrl);
         }
     }

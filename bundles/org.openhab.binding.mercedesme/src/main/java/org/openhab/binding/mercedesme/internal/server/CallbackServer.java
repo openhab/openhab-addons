@@ -13,7 +13,6 @@
 package org.openhab.binding.mercedesme.internal.server;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -32,7 +31,6 @@ import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthException;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.auth.client.oauth2.OAuthResponseException;
-import org.openhab.core.storage.Storage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,30 +44,25 @@ public class CallbackServer {
     private static final Logger LOGGER = LoggerFactory.getLogger(CallbackServer.class);
     private static final Map<Integer, OAuthClientService> AUTH_MAP = new HashMap<Integer, OAuthClientService>();
     private static final Map<Integer, CallbackServer> SERVER_MAP = new HashMap<Integer, CallbackServer>();
-    public static final AccessTokenResponse INVALID_ACCESS_TOKEN = new AccessTokenResponse();
+    private static final AccessTokenResponse INVALID_ACCESS_TOKEN = new AccessTokenResponse();
 
     private Optional<Server> server = Optional.empty();
-    private Optional<AccessTokenResponse> token = Optional.empty();
-    private Optional<String> tokenStorageKey = Optional.empty();
     private AccessTokenRefreshListener listener;
     private AccountConfiguration config;
     private OAuthClientService oacs;
-    private final Storage<String> storage;
     private String callbackUrl;
 
     public CallbackServer(AccessTokenRefreshListener l, HttpClient hc, OAuthFactory oAuthFactory,
-            AccountConfiguration config, String callbackUrl, Storage<String> storage) {
-        oacs = oAuthFactory.createOAuthClientService(Constants.OAUTH_CLIENT_NAME + config.callbackPort,
-                Constants.MB_TOKEN_URL, Constants.MB_AUTH_URL, config.clientId, config.clientSecret, config.getScope(),
-                false);
+            AccountConfiguration config, String callbackUrl) {
+        oacs = oAuthFactory.createOAuthClientService(config.clientId, Constants.MB_TOKEN_URL, Constants.MB_AUTH_URL,
+                config.clientId, config.clientSecret, config.getScope(), false);
+        oacs.addAccessTokenRefreshListener(l);
+        listener = l;
         AUTH_MAP.put(Integer.valueOf(config.callbackPort), oacs);
         SERVER_MAP.put(Integer.valueOf(config.callbackPort), this);
-        listener = l;
         this.config = config;
         this.callbackUrl = callbackUrl;
-        this.storage = storage;
         INVALID_ACCESS_TOKEN.setAccessToken(Constants.EMPTY);
-        restoreToken();
     }
 
     public String getAuthorizationUrl() {
@@ -120,27 +113,25 @@ public class CallbackServer {
     }
 
     public String getToken() {
-        if (token.isEmpty()) {
+        AccessTokenResponse atr = null;
+        try {
+            /*
+             * this will automatically trigger
+             * - return last stored token if it's still valid
+             * - refreshToken if current token is expired
+             * - inform listeners if refresh delivered new token
+             * - store new token in persistence
+             */
+            atr = oacs.getAccessTokenResponse();
+        } catch (OAuthException | IOException | OAuthResponseException e) {
+            LOGGER.warn("Exception getting token {}", e.getMessage());
+        }
+        if (atr == null) {
             LOGGER.debug("Token empty - Manual Authorization needed at {}", callbackUrl);
             listener.onAccessTokenResponse(INVALID_ACCESS_TOKEN);
-            token = Optional.of(INVALID_ACCESS_TOKEN);
-        } else {
-            if (token.get().isExpired(LocalDateTime.now(), 10)) {
-                LOGGER.trace("Token expired - start refreshing");
-                try {
-                    AccessTokenResponse atr = oacs.refreshToken();
-                    token = Optional.of(atr);
-                    listener.onAccessTokenResponse(atr);
-                    storeToken(atr);
-                } catch (OAuthException | IOException | OAuthResponseException e) {
-                    LOGGER.warn("Error refreshing token. Reason: {} Manual Authorization needed at {}", e.getMessage(),
-                            callbackUrl);
-                    listener.onAccessTokenResponse(INVALID_ACCESS_TOKEN);
-                    return Constants.EMPTY;
-                }
-            } // else token is valid
+            return INVALID_ACCESS_TOKEN.getAccessToken();
         }
-        return token.get().getAccessToken();
+        return atr.getAccessToken();
     }
 
     /**
@@ -158,8 +149,9 @@ public class CallbackServer {
             CallbackServer srv = SERVER_MAP.get(port);
             LOGGER.trace("Deliver token to {}", srv);
             if (srv != null && oacs != null) {
+                // token stored and persisted inside oacs
                 AccessTokenResponse atr = oacs.getAccessTokenResponseByAuthorizationCode(code, srv.callbackUrl);
-                srv.storeToken(atr);
+                // inform listener - not done by oacs
                 srv.listener.onAccessTokenResponse(atr);
             } else {
                 LOGGER.warn("Either Callbackserver  {} or Authorization Service {} not found", srv, oacs);
@@ -186,29 +178,6 @@ public class CallbackServer {
         } else {
             LOGGER.debug("No Callbackserver found for {}", port);
             return Constants.EMPTY;
-        }
-    }
-
-    private void storeToken(AccessTokenResponse atr) {
-        token = Optional.of(atr);
-        String tokenSerial = Utils.toString(atr);
-        storage.put(tokenStorageKey.get(), tokenSerial);
-    }
-
-    /**
-     * restore token from persistence after startup
-     */
-    private void restoreToken() {
-        tokenStorageKey = Optional.of(config.clientId + ":token");
-        if (storage.containsKey(tokenStorageKey.get())) {
-            String tokenSerial = storage.get(tokenStorageKey.get());
-            if (tokenSerial != null) {
-                AccessTokenResponse atr = (AccessTokenResponse) Utils.fromString(tokenSerial);
-                token = Optional.of(atr);
-                listener.onAccessTokenResponse(atr);
-            } else {
-                LOGGER.debug("Token cannot be restored from storage - manual authorization needed");
-            }
         }
     }
 }

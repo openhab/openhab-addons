@@ -371,7 +371,7 @@ My personal experience during limited testing
 
 Data is stored in directory `%USER_DATA%/jsondb` for handling tokens and vehicle images.
 
- * _mercedesme.json_ - token is stored with key `clientId` which is provided by `account` [Brige Configuration Parameters](#bridge-configuration-parameters)
+ * _StorageHandler.For.OAuthClientService.json_ - token is stored with key `clientId` which is provided by `account` [Brige Configuration Parameters](#bridge-configuration-parameters)
  * _mercedesme_%VEHICLE_VIN%.json_ - images are stored per vehicle. File name contains `vin` configured by [vehicle Thing Configuration](#thing-configuration)
 
 With this data the binding is able to operate without new authorization towards Mercedes each startup and reduces the restricted calls towards image API.

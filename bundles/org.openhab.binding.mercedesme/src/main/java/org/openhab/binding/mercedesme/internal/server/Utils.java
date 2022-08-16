@@ -12,16 +12,9 @@
  */
 package org.openhab.binding.mercedesme.internal.server;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -88,33 +81,5 @@ public class Utils {
 
     public static String getCallbackAddress(String callbackIP, int callbackPort) {
         return Constants.HTTP + callbackIP + Constants.COLON + callbackPort + Constants.CALLBACK_ENDPOINT;
-    }
-
-    public static Object fromString(String s) {
-        try {
-            byte[] data = Base64.getDecoder().decode(s);
-            ObjectInputStream ois;
-            ois = new ObjectInputStream(new ByteArrayInputStream(data));
-            Object o = ois.readObject();
-            ois.close();
-            return o;
-        } catch (IOException | ClassNotFoundException e) {
-            LOGGER.debug("Exception Token deserialization {}", e.getMessage());
-        }
-        return Constants.EMPTY;
-    }
-
-    public static String toString(Serializable o) {
-        try {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ObjectOutputStream oos;
-            oos = new ObjectOutputStream(baos);
-            oos.writeObject(o);
-            oos.close();
-            return Base64.getEncoder().encodeToString(baos.toByteArray());
-        } catch (IOException e) {
-            LOGGER.debug("Exception Token serialization {}", e.getMessage());
-        }
-        return Constants.EMPTY;
     }
 }
