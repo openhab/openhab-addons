@@ -56,7 +56,6 @@ public class CallbackServer {
             AccountConfiguration config, String callbackUrl) {
         oacs = oAuthFactory.createOAuthClientService(config.clientId, Constants.MB_TOKEN_URL, Constants.MB_AUTH_URL,
                 config.clientId, config.clientSecret, config.getScope(), false);
-        oacs.addAccessTokenRefreshListener(l);
         listener = l;
         AUTH_MAP.put(Integer.valueOf(config.callbackPort), oacs);
         SERVER_MAP.put(Integer.valueOf(config.callbackPort), this);
@@ -131,6 +130,7 @@ public class CallbackServer {
             listener.onAccessTokenResponse(INVALID_ACCESS_TOKEN);
             return INVALID_ACCESS_TOKEN.getAccessToken();
         }
+        listener.onAccessTokenResponse(atr);
         return atr.getAccessToken();
     }
 
