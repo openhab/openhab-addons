@@ -92,8 +92,8 @@ All of these channels appear in the binding, but only those which have a physica
 | Channel        | Item Type                | Description |
 |----------------|--------------------------|-------------|
 | position       | Rollershutter            | The vertical position of the shade's rail -- see [next chapter](#Roller-Shutter-Up/Down-Position-vs.-Open/Close-State). Up/Down commands will move the rail completely up or completely down. Percentage commands will move the rail to an intermediate position. Stop commands will halt any current movement of the rail. |
-| secondary      | Rollershutter            | The vertical position of the secondary rail (if any). Its function is similar to the `position` channel above -- but see [next chapter](#Roller-Shutter-Up/Down-Position-vs.-Open/Close-State). |
-| vane           | Dimmer                   | The degree of opening of the slats or vanes. Setting this to a non-zero value will first move the shade `position` fully down, since the slats or vanes can only have a defined state if the shade is in its down position -- see [Interdependency between Channel positions](#Interdependency-between-Channel-positions). |
+| secondary      | Rollershutter            | The vertical position of the secondary rail (if any). Its function is similar to the `position` channel above -- but see [next chapter](#Roller-Shutter-Up/Down-Position-vs.-Open/Close-State). (optional) |
+| vane           | Dimmer                   | The degree of opening of the slats or vanes. Setting this to a non-zero value will first move the shade `position` fully down, since the slats or vanes can only have a defined state if the shade is in its down position -- see [Interdependency between Channel positions](#Interdependency-between-Channel-positions). (optional) |
 | command        | String                   | Send a command to the shade. Valid values are: `CALIBRATE`, `IDENTIFY` |
 | lowBattery     | Switch                   | Indicates ON when the battery level of the shade is low, as determined by the hub's internal rules. |
 | batteryLevel   | Number                   | Battery level (10% = low, 50% = medium, 100% = high)
@@ -103,6 +103,10 @@ All of these channels appear in the binding, but only those which have a physica
 | repeaterRssi   | Number:Power             | Received Signal Strength Indicator for Repeater |
 
 Please note that RSSI values will only be updated upon manual request by a `REFRESH` command (e.g. in a rule).
+
+The channels `secondary` and `vane` only provide useful data if the shade physically supports such channels.
+The binding queries the shade capabilities if they would support such channels, and if necessary it creates those channels automatically.
+The remainin channels in the above table always provide useful data, so they are always created.
 
 ### Channels for Repeaters (Thing type `repeater`)
 
