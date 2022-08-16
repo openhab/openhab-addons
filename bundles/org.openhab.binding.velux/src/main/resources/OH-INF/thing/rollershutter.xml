@@ -8,7 +8,7 @@
 	<!-- -->
 	<!-- Velux rollershutter Binding -->
 	<!-- -->
-	<thing-type id="rollershutter">
+	<thing-type id="rollershutter" extensible="position, limitMinimum, limitMaximum, vanePosition">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="klf200"/>
 		</supported-bridge-type-refs>

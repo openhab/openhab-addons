@@ -1021,8 +1021,8 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
 
         if (vaneChannelRequired) {
             // build the vane channel
-            Channel newChannel = ChannelBuilder.create(vaneChannelUID).withAcceptedItemType(CoreItemFactory.DIMMER)
-                    .withKind(ChannelKind.STATE)
+            Channel newChannel = ChannelBuilder.create(vaneChannelUID).withType(VeluxBindingConstants.CHANNEL_TYPE_VANE)
+                    .withKind(ChannelKind.STATE).withAcceptedItemType(CoreItemFactory.DIMMER)
                     .withDescription(localization.getText("channel-type.velux.vanePosition.description"))
                     .withLabel(localization.getText("channel-type.velux.vanePosition.label")).build();
 
