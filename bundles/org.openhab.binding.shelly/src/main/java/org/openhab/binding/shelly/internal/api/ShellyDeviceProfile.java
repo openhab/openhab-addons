@@ -112,12 +112,18 @@ public class ShellyDeviceProfile {
     public ShellyDeviceProfile() {
     }
 
-    public ShellyDeviceProfile initialize(String thingType, String json) throws ShellyApiException {
+    public ShellyDeviceProfile initialize(String thingType, String jsonIn) throws ShellyApiException {
         Gson gson = new Gson();
 
         initialized = false;
 
         initFromThingType(thingType);
+
+        String json = jsonIn;
+        if (json.contains("\"ext_temperature\":{\"0\":[{")) {
+            // Shelly UNI uses ext_temperature array, reformat to avoid GSON exception
+            json = json.replace("ext_temperature", "ext_temperature_array");
+        }
         settingsJson = json;
         ShellySettingsGlobal gs = fromJson(gson, json, ShellySettingsGlobal.class);
         settings = gs; // only update when no exception

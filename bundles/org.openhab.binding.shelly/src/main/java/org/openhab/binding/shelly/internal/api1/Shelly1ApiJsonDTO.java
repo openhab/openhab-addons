@@ -966,6 +966,7 @@ public class Shelly1ApiJsonDTO {
 
         public static class ShellyExtTemperature {
             public static class ShellyShortTemp {
+                public String hwID; // e.g. "2882379497020381",
                 public Double tC; // temperature in deg C
                 public Double tF; // temperature in deg F
             }

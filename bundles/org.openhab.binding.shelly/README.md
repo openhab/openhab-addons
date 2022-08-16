@@ -88,7 +88,6 @@ Also check out the [Shelly Manager](doc/ShellyManager.md), which
 | shellypro1          | Shelly Pro 1 with 1xrelay                                | SPSW-001XE16EU |
 | shellypro1pm        | Shelly Pro 1 PM with 1xrelay + power meter               | SPSW-001PE16EU |
 | shellypro2-relay    | Shelly Pro 2 with 2xrelay, relay mode                    | SPSW-002XE16EU |
-| shellypro2-roller   | Shelly Pro 2 with 2xrelay, roller mode                   | SPSW-002XE16EU |
 | shellypro2pm-relay  | Shelly Pro 2 PM with 2xrelay + power meter, relay mode   | SPSW-002PE16EU |
 | shellypro2pm-roller | Shelly Pro 2 PM with 2xrelay + power meter, roller mode  | SPSW-002PE16EU |
 | shellypro4pm        | Shelly Pro 4 PM with 4xrelay + power meter               | SPSW-004PE16EU |
@@ -414,7 +413,6 @@ In this case the is no real measurement based on power consumption, but the Shel
 |          |outputName   |String   |yes      |Logical name of this relay output as configured in the Shelly App                |
 |          |input        |Switch   |yes      |ON: Input/Button is powered, see General Notes on Channels                       |
 |          |button       |Trigger  |yes      |Event trigger, see section Button Events                                         |
-|          |outputName   |String   |yes      |Logical name of this relay output as configured in the Shelly App                |
 |meter     |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
 |          |lastPower1   |Number   |yes      |Energy consumption for a round minute, 1 minute  ago                   |
 |          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (resets on restart)|
@@ -505,7 +503,6 @@ The Thing id is derived from the service name, so that's the reason why the Thin
 |          |autoOff      |Number   |r/w      |Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds|
 |          |timerActive  |Switch   |yes      |Relay #1: ON: An auto-on/off timer is active                                     |
 |          |button       |Trigger  |yes      |Event trigger, see section Button Events                                         |
-|          |outputName   |String   |yes      |Logical name of this relay output as configured in the Shelly App                |
 |relay2    |output       |Switch   |r/w      |Relay #2: Controls the relay's output channel (on/off)                           |
 |          |outputName   |String   |yes      |Logical name of this relay output as configured in the Shelly App                |
 |          |input        |Switch   |yes      |ON: Input/Button is powered, see General Notes on Channels                       |
@@ -513,33 +510,10 @@ The Thing id is derived from the service name, so that's the reason why the Thin
 |          |autoOff      |Number   |r/w      |Relay #2: Sets a  timer to turn the device OFF after every ON command; in seconds|
 |          |timerActive  |Switch   |yes      |Relay #2: ON: An auto-on/off timer is active                                     |
 |          |button       |Trigger  |yes      |Event trigger, see section Button Events                                         |
-|          |outputName   |String   |yes      |Logical name of this relay output as configured in the Shelly App                |
 |meter     |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
 |          |lastPower1   |Number   |yes      |Energy consumption for a round minute, 1 minute  ago                             |
 |          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (resets on restart)|
 |          |lastUpdate   |DateTime |yes      |Timestamp of the last measurement                                                |
-
-### Shelly 2 - roller mode thing-type: shelly2-roller)
-
-|Group     |Channel      |Type     |read-only|Description                                                                           |
-|----------|-------------|---------|---------|--------------------------------------------------------------------------------------|
-|roller    |control      |Rollershutter|r/w  |can be open (0%), stop, or close (100%); could also handle ON (open) and OFF (close)  |
-|          |input        |Switch   |yes      |ON: Input/Button is powered, see General Notes on Channels                            |
-|          |event        |Trigger  |yes      |Roller event/trigger with payload ROLLER_OPEN / ROLLER_CLOSE / ROLLER_STOP            |
-|          |rollerpos    |Number   |r/w      |Roller position: 100%=open...0%=closed; gets updated when the roller stops, see Notes |
-|          |rollerFav    |Number   |r/w      |Select roller position favorite (1-4, 0=no), see Notes                                |
-|          |state        |String   |yes      |Roller state: open/close/stop                                                         |
-|          |stopReason   |String   |yes      |Last stop reasons: normal, safety_switch or obstacle                                  |
-|          |safety       |Switch   |yes      |Indicates status of the Safety Switch, ON=problem detected, powered off               |
-|meter     |currentWatts |Number   |yes      |Current power consumption in Watts                                                    |
-|          |lastPower1   |Number   |yes      |Accumulated energy consumption in Watts for the full last minute                      |
-|          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (reset on restart)      |
-|          |lastUpdate   |DateTime |yes      |Timestamp of the last measurement                                                     |
-
-`Note: The Roller should be calibrated using the device Web UI or Shelly App, otherwise the position can .`
-
-The roller positioning calibration has to be performed using the Shelly Web UI or App before the position can be set in percent.
-Refer to [Smartify Roller Shutters with openHAB and Shelly](doc/UseCaseSmartRoller.md) for more information on roller integration. 
 
 ### Shelly 2.5 - relay mode (thing-type:shelly25-relay) 
 
@@ -630,12 +604,14 @@ Using the Thing configuration option `brightnessAutoOn` you could decide if the 
 
 |Group     |Channel      |Type     |read-only|Description                                                            |
 |----------|-------------|---------|---------|-----------------------------------------------------------------------|
-|status    |input1       |Switch   |yes      |State of Input 1                                                       |
-|          |input2       |Switch   |yes      |State of Input 2                                                       |
-|          |input3       |Switch   |yes      |State of Input 3                                                       |
+|status1   |input        |Switch   |yes      |State of Input 1                                                       |
 |          |button       |Trigger  |yes      |Event trigger: Event trigger, see section Button Events                |
 |          |lastEvent    |String   |yes      |S/SS/SSS for 1/2/3x Shortpush or L for Longpush                        |
 |          |eventCount   |Number   |yes      |Counter gets incremented every time the device issues a button event.  |
+|status2   |             |         |         |Same for Input 2                                                       |
+|status3   |             |         |         |Same for Input 3                                                       |
+
+Channels lastEvent and eventCount are only available if input type is set to momentary button
 
 ### Shelly UNI - Low voltage sensor/actor: shellyuni)
 
@@ -1008,61 +984,173 @@ You should calibrate the valve using the device Web UI or Shelly App before star
 
 ### Shelly Plus 2PM - roller mode (thing-type: shellyplus2pm-roller)
 
-|Group     |Channel      |Type     |read-only|Description                                                            |
-|----------|-------------|---------|---------|-----------------------------------------------------------------------|
+|Group     |Channel      |Type     |read-only|Description                                                                          |
+|----------|-------------|---------|---------|-------------------------------------------------------------------------------------|
+|roller    |control      |Rollershutter |r/w |can be open (0%), stop, or close (100%); could also handle ON (open) and OFF (close) |
+|          |rollerPos    |Dimmer   |r/w      |Roller position: 100%=open...0%=closed; gets updated when the roller stopped         |
+|          |input        |Switch   |yes      |ON: Input/Button is powered, see General Notes on Channels                           |
+|          |state        |String   |yes      |Roller state: open/close/stop                                                        |
+|          |stopReason   |String   |yes      |Last stop reasons: normal, safety_switch or obstacle                                 |
+|          |safety       |Switch   |yes      |Indicates status of the Safety Switch, ON=problem detected, powered off              |
+|          |event        |Trigger  |yes      |Roller event/trigger with payload ROLLER_OPEN / ROLLER_CLOSE / ROLLER_STOP           |
+|meter     |             |         |         |See group meter description                                                          |
+
+The roller positioning calibration has to be performed using the Shelly Web UI or App before the position can be set in percent.
+Refer to [Smartify Roller Shutters with openHAB and Shelly](doc/UseCaseSmartRoller.md) for more information on roller integration. 
 
 ### Shelly Plus i4, i4DC (thing-types: shellyplusi4, shellyplusi4dc)
 
 |Group     |Channel      |Type     |read-only|Description                                                            |
 |----------|-------------|---------|---------|-----------------------------------------------------------------------|
-|status    |input1       |Switch   |yes      |State of Input 1                                                       |
-|          |input2       |Switch   |yes      |State of Input 2                                                       |
-|          |input3       |Switch   |yes      |State of Input 3                                                       |
+|status1   |input        |Switch   |yes      |State of Input 1                                                       |
 |          |button       |Trigger  |yes      |Event trigger: Event trigger, see section Button Events                |
 |          |lastEvent    |String   |yes      |S/SS/SSS for 1/2/3x Shortpush or L for Longpush                        |
 |          |eventCount   |Number   |yes      |Counter gets incremented every time the device issues a button event.  |
+|status2   |             |         |         |Same for Input 2                                                       |
+|status3   |             |         |         |Same for Input 3                                                       |
+|status4   |             |         |         |Same for Input 4                                                       |
+
+Channels lastEvent and eventCount are only available if input type is set to momentary button
 
 ### Shelly Plus HT (thing-type: shellyplusht)
 
 |Group     |Channel      |Type     |read-only|Description                                                            |
 |----------|-------------|---------|---------|-----------------------------------------------------------------------|
+|sensors   |temperature  |Number   |yes      |Temperature, unit is reported by tempUnit                              |
+|          |humidity     |Number   |yes      |Relative humidity in %                                                 |
+|          |lastUpdate   |DateTime |yes      |Timestamp of the last update (any sensor value changed)                |
+|battery   |batteryLevel |Number   |yes      |Battery Level in %                                                     |
+|          |lowBattery   |Switch   |yes      |Low battery alert (< 20%)                                              |
+
 
 ## Shelly Pro Series
 
 ### Shelly Pro 1 (thing-type: shellypro1)
 
-|Group     |Channel      |Type     |read-only|Description                                                            |
-|----------|-------------|---------|---------|-----------------------------------------------------------------------|
+|Group     |Channel      |Type     |read-only|Description                                                                      |
+|----------|-------------|---------|---------|---------------------------------------------------------------------------------|
+|relay     |output       |Switch   |r/w      |Controls the relay's output channel (on/off)                                     |
+|          |outputName   |String   |yes      |Logical name of this relay output as configured in the Shelly App                |
+|          |input1       |Switch   |yes      |ON: Input/Button for input 1 is powered, see general notes on channels           |
+|          |button1      |Trigger  |yes      |Event trigger, see section Button Events                                         |
+|          |lastEvent1   |String   |yes      |Last event type (S/SS/SSS/L) for input 1                                         |
+|          |eventCount1  |Number   |yes      |Counter gets incremented every time the device issues a button event.            |
+|          |input2       |Switch   |yes      |ON: Input/Button for channel 2 is powered, see general notes on channels         |
+|          |button2      |Trigger  |yes      |Event trigger, see section Button Events                                         |
+|          |lastEvent2   |String   |yes      |Last event type (S/SS/SSS/L) for input 2                                         |
+|          |eventCount2  |Number   |yes      |Counter gets incremented every time the device issues a button event.            |
+|          |autoOn       |Number   |r/w      |Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds|
+|          |autoOff      |Number   |r/w      |Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds|
+|          |timerActive  |Switch   |yes      |Relay #1: ON: An auto-on/off timer is active                                     |
 
 ### Shelly Pro 1 PM (thing-type: shellypro1pm)
 
-|Group     |Channel      |Type     |read-only|Description                                                            |
-|----------|-------------|---------|---------|-----------------------------------------------------------------------|
+|Group     |Channel      |Type     |read-only|Description                                                                      |
+|----------|-------------|---------|---------|---------------------------------------------------------------------------------|
+|relay     |output       |Switch   |r/w      |Controls the relay's output channel (on/off)                                     |
+|          |outputName   |String   |yes      |Logical name of this relay output as configured in the Shelly App                |
+|          |input1       |Switch   |yes      |ON: Input/Button for input 1 is powered, see general notes on channels           |
+|          |button1      |Trigger  |yes      |Event trigger, see section Button Events                                         |
+|          |lastEvent1   |String   |yes      |Last event type (S/SS/SSS/L) for input 1                                         |
+|          |eventCount1  |Number   |yes      |Counter gets incremented every time the device issues a button event.            |
+|          |input2       |Switch   |yes      |ON: Input/Button for channel 2 is powered, see general notes on channels         |
+|          |button2      |Trigger  |yes      |Event trigger, see section Button Events                                         |
+|          |lastEvent2   |String   |yes      |Last event type (S/SS/SSS/L) for input 2                                         |
+|          |eventCount2  |Number   |yes      |Counter gets incremented every time the device issues a button event.            |
+|          |autoOn       |Number   |r/w      |Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds|
+|          |autoOff      |Number   |r/w      |Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds|
+|          |timerActive  |Switch   |yes      |Relay #1: ON: An auto-on/off timer is active                                     |
+|meter     |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
+|          |lastPower1   |Number   |yes      |Energy consumption for a round minute, 1 minute  ago                             |
+|          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (resets on restart)|
+|          |lastUpdate   |DateTime |yes      |Timestamp of the last measurement                                                |
+
 
 ### Shelly Pro 2 (thing-type: shellypro2-relay)
 
-|Group     |Channel      |Type     |read-only|Description                                                            |
-|----------|-------------|---------|---------|-----------------------------------------------------------------------|
+|Group     |Channel      |Type     |read-only|Description                                                                      |
+|----------|-------------|---------|---------|---------------------------------------------------------------------------------|
+|relay1    |output       |Switch   |r/w      |Relay #1: Controls the relay's output channel (on/off)                           |
+|          |outputName   |String   |yes      |Logical name of this relay output as configured in the Shelly App                |
+|          |input        |Switch   |yes      |ON: Input/Button is powered, see General Notes on Channels                       |
+|          |autoOn       |Number   |r/w      |Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds|
+|          |autoOff      |Number   |r/w      |Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds|
+|          |timerActive  |Switch   |yes      |Relay #1: ON: An auto-on/off timer is active                                     |
+|          |button       |Trigger  |yes      |Event trigger, see section Button Events                                         |
+|relay2    |output       |Switch   |r/w      |Relay #2: Controls the relay's output channel (on/off)                           |
+|          |outputName   |String   |yes      |Logical name of this relay output as configured in the Shelly App                |
+|          |input        |Switch   |yes      |ON: Input/Button is powered, see General Notes on Channels                       |
+|          |autoOn       |Number   |r/w      |Relay #2: Sets a  timer to turn the device ON after every OFF command; in seconds|
+|          |autoOff      |Number   |r/w      |Relay #2: Sets a  timer to turn the device OFF after every ON command; in seconds|
+|          |timerActive  |Switch   |yes      |Relay #2: ON: An auto-on/off timer is active                                     |
+|          |button       |Trigger  |yes      |Event trigger, see section Button Events                                         |
+
 
 ### Shelly Pro 2 PM - relay mode (thing-type: shellypro2pm-relay)
 
-|Group     |Channel      |Type     |read-only|Description                                                            |
-|----------|-------------|---------|---------|-----------------------------------------------------------------------|
+|Group     |Channel      |Type     |read-only|Description                                                                      |
+|----------|-------------|---------|---------|---------------------------------------------------------------------------------|
+|relay1    |output       |Switch   |r/w      |Relay #1: Controls the relay's output channel (on/off)                           |
+|          |outputName   |String   |yes      |Logical name of this relay output as configured in the Shelly App                |
+|          |input        |Switch   |yes      |ON: Input/Button is powered, see General Notes on Channels                       |
+|          |autoOn       |Number   |r/w      |Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds|
+|          |autoOff      |Number   |r/w      |Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds|
+|          |timerActive  |Switch   |yes      |Relay #1: ON: An auto-on/off timer is active                                     |
+|          |button       |Trigger  |yes      |Event trigger, see section Button Events                                         |
+|relay2    |output       |Switch   |r/w      |Relay #2: Controls the relay's output channel (on/off)                           |
+|          |outputName   |String   |yes      |Logical name of this relay output as configured in the Shelly App                |
+|          |input        |Switch   |yes      |ON: Input/Button is powered, see General Notes on Channels                       |
+|          |autoOn       |Number   |r/w      |Relay #2: Sets a  timer to turn the device ON after every OFF command; in seconds|
+|          |autoOff      |Number   |r/w      |Relay #2: Sets a  timer to turn the device OFF after every ON command; in seconds|
+|          |timerActive  |Switch   |yes      |Relay #2: ON: An auto-on/off timer is active                                     |
+|          |button       |Trigger  |yes      |Event trigger, see section Button Events                                         |
+|meter     |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
+|          |lastPower1   |Number   |yes      |Energy consumption for a round minute, 1 minute  ago                             |
+|          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (resets on restart)|
+|          |lastUpdate   |DateTime |yes      |Timestamp of the last measurement                                                |
 
 ### Shelly Pro 2 PM - roller mode (thing-type: shellypro2pm-roller)
 
-|Group     |Channel      |Type     |read-only|Description                                                            |
-|----------|-------------|---------|---------|-----------------------------------------------------------------------|
+|Group     |Channel      |Type     |read-only|Description                                                                          |
+|----------|-------------|---------|---------|-------------------------------------------------------------------------------------|
+|roller    |control      |Rollershutter |r/w |can be open (0%), stop, or close (100%); could also handle ON (open) and OFF (close) |
+|          |rollerPos    |Dimmer   |r/w      |Roller position: 100%=open...0%=closed; gets updated when the roller stopped         |
+|          |input        |Switch   |yes      |ON: Input/Button is powered, see General Notes on Channels                           |
+|          |state        |String   |yes      |Roller state: open/close/stop                                                        |
+|          |stopReason   |String   |yes      |Last stop reasons: normal, safety_switch or obstacle                                 |
+|          |safety       |Switch   |yes      |Indicates status of the Safety Switch, ON=problem detected, powered off              |
+|          |event        |Trigger  |yes      |Roller event/trigger with payload ROLLER_OPEN / ROLLER_CLOSE / ROLLER_STOP           |
+|meter     |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
+|          |lastPower1   |Number   |yes      |Energy consumption for a round minute, 1 minute  ago                             |
+|          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (resets on restart)|
+|          |lastUpdate   |DateTime |yes      |Timestamp of the last measurement                                                |
+
 
 ### Shelly Pro 3 (thing-type: shellypro3)
 
-|Group     |Channel      |Type     |read-only|Description                                                            |
-|----------|-------------|---------|---------|-----------------------------------------------------------------------|
-
-### Shelly Pro 4 PM (thing-type: shellypro4pm)
-
-|Group     |Channel      |Type     |read-only|Description                                                            |
-|----------|-------------|---------|---------|-----------------------------------------------------------------------|
+|Group     |Channel      |Type     |read-only|Description                                                                      |
+|----------|-------------|---------|---------|---------------------------------------------------------------------------------|
+|relay1    |output       |Switch   |r/w      |Relay #1: Controls the relay's output channel (on/off)                           |
+|          |outputName   |String   |yes      |Logical name of this relay output as configured in the Shelly App                |
+|          |input        |Switch   |yes      |ON: Input/Button is powered, see General Notes on Channels                       |
+|          |autoOn       |Number   |r/w      |Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds|
+|          |autoOff      |Number   |r/w      |Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds|
+|          |timerActive  |Switch   |yes      |Relay #1: ON: An auto-on/off timer is active                                     |
+|          |button       |Trigger  |yes      |Event trigger, see section Button Events                                         |
+|relay2    |output       |Switch   |r/w      |Relay #2: Controls the relay's output channel (on/off)                           |
+|          |outputName   |String   |yes      |Logical name of this relay output as configured in the Shelly App                |
+|          |input        |Switch   |yes      |ON: Input/Button is powered, see General Notes on Channels                       |
+|          |autoOn       |Number   |r/w      |Relay #2: Sets a  timer to turn the device ON after every OFF command; in seconds|
+|          |autoOff      |Number   |r/w      |Relay #2: Sets a  timer to turn the device OFF after every ON command; in seconds|
+|          |timerActive  |Switch   |yes      |Relay #2: ON: An auto-on/off timer is active                                     |
+|          |button       |Trigger  |yes      |Event trigger, see section Button Events                                         |
+|relay3    |output       |Switch   |r/w      |Relay #3: Controls the relay's output channel (on/off)                           |
+|          |outputName   |String   |yes      |Logical name of this relay output as configured in the Shelly App                |
+|          |input        |Switch   |yes      |ON: Input/Button is powered, see General Notes on Channels                       |
+|          |autoOn       |Number   |r/w      |Relay #3: Sets a  timer to turn the device ON after every OFF command; in seconds|
+|          |autoOff      |Number   |r/w      |Relay #3: Sets a  timer to turn the device OFF after every ON command; in seconds|
+|          |timerActive  |Switch   |yes      |Relay #3: ON: An auto-on/off timer is active                                     |
+|          |button       |Trigger  |yes      |Relay #3:  Event trigger, see section Button Events                                         |
 
 
 

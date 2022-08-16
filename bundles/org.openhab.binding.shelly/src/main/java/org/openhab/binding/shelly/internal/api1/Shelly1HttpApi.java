@@ -560,7 +560,7 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
                 // H&T adds the type=xx to report_url itself, so we need to ommit here
                 String eclass = profile.isSensor ? EVENT_TYPE_SENSORDATA : eventType;
                 String urlParm = eventType.contains("temp") || profile.isHT ? "" : "?type=" + eventType;
-                String callBackUrl = "http://" + config.localIp + ":" + config.localPort + SHELLY_CALLBACK_URI + "/"
+                String callBackUrl = "http://" + config.localIp + ":" + config.localPort + SHELLY1_CALLBACK_URI + "/"
                         + profile.thingName + "/" + eclass + urlParm;
                 String newUrl = enabled ? callBackUrl : SHELLY_NULL_URL;
                 String testUrl = "\"" + mkEventUrl(eventType) + "\":\"" + newUrl + "\"";
@@ -582,7 +582,7 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
             throws ShellyApiException {
         for (String eventType : eventTypes) {
             if (profile.containsEventUrl(eventType)) {
-                String callBackUrl = "http://" + config.localIp + ":" + config.localPort + SHELLY_CALLBACK_URI + "/"
+                String callBackUrl = "http://" + config.localIp + ":" + config.localPort + SHELLY1_CALLBACK_URI + "/"
                         + profile.thingName + "/" + deviceClass + "/" + index + "?type=" + eventType;
                 String newUrl = enabled ? callBackUrl : SHELLY_NULL_URL;
                 String test = "\"" + mkEventUrl(eventType) + "\":\"" + callBackUrl + "\"";

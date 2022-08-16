@@ -57,6 +57,7 @@ public class Shelly2RpcSocket {
     private final Logger logger = LoggerFactory.getLogger(Shelly2RpcSocket.class);
     private final Gson gson = new Gson();
 
+    private String thingName = "";
     private String deviceIp = "";
     private boolean inbound = false;
     private CountDownLatch connectLatch = new CountDownLatch(1);
@@ -69,21 +70,44 @@ public class Shelly2RpcSocket {
     public Shelly2RpcSocket() {
     }
 
-    public Shelly2RpcSocket(@Nullable ShellyThingTable thingTable, String deviceIp) {
+    /**
+     * Regular constructor for Thing and Discover handler
+     *
+     * @param thingName Thing/Service name
+     * @param thingTable
+     * @param deviceIp IP address for the device
+     */
+    public Shelly2RpcSocket(String thingName, @Nullable ShellyThingTable thingTable, String deviceIp) {
+        this.thingName = thingName;
         this.deviceIp = deviceIp;
         this.thingTable = thingTable;
     }
 
+    /**
+     * Constructor called from Servlet handler
+     *
+     * @param thingTable
+     * @param inbound
+     */
     public Shelly2RpcSocket(ShellyThingTable thingTable, boolean inbound) {
-        logger.debug("Create WebSocket, inbound={}", inbound);
         this.thingTable = thingTable;
         this.inbound = inbound;
     }
 
+    /**
+     * Add listener for inbound messages implementing Shelly2RpctInterface
+     *
+     * @param interfacehandler
+     */
     public void addMessageHandler(Shelly2RpctInterface interfacehandler) {
         this.websocketHandler = interfacehandler;
     }
 
+    /**
+     * Connect outbound Web Socket
+     *
+     * @throws ShellyApiException
+     */
     public void connect() throws ShellyApiException {
         try {
             URI uri = new URI("ws://" + deviceIp + "/rpc");
@@ -93,7 +117,7 @@ public class Shelly2RpcSocket {
             request.setHeader("Pragma", "no-cache");
             request.setHeader("Cache-Control", "no-cache");
 
-            logger.debug("WebSocket: Connect WebSocket, URI={}", uri);
+            logger.debug("{}: Connect WebSocket, URI={}", thingName, uri);
             connectLatch = new CountDownLatch(1);
             client.start();
             // client.setMaxIdleTimeout(15000);
@@ -103,22 +127,27 @@ public class Shelly2RpcSocket {
         }
     }
 
+    /**
+     * Web Socket is connected, lookup thing and create connectLatch to synchronize first sendMessage()
+     *
+     * @param session Newly created WebSocket connection
+     */
     @OnWebSocketConnect
     public void onConnect(Session session) {
         try {
-            logger.debug("WebSocket: WebSocket connected {}<-{}, Idle Timeout={}", session.getLocalAddress(),
+            logger.debug("Rpc: WebSocket connected {}<-{}, Idle Timeout={}", session.getLocalAddress(),
                     session.getRemoteAddress(), session.getIdleTimeout());
             this.session = session;
             if (deviceIp.isEmpty()) {
                 // This is the inbound event web socket
                 deviceIp = session.getRemoteAddress().getAddress().getHostAddress();
-                logger.debug("WebSocket: Inbound socket with IP {}", deviceIp);
             }
             if (websocketHandler == null) {
                 if (thingTable != null) {
                     ShellyThingInterface thing = thingTable.getThing(deviceIp);
                     Shelly2ApiRpc api = (Shelly2ApiRpc) thing.getApi();
                     websocketHandler = api.getRpcHandler();
+                    logger.debug("{}: Rpc WebSocket connected", thing.getThing().getUID().getId());
                 }
             }
             connectLatch.countDown();
@@ -132,11 +161,18 @@ public class Shelly2RpcSocket {
         }
 
         if (websocketHandler == null && thingTable != null) {
-            logger.debug("WebSocket: Unable to handle WebSocket connection (unknown thing), close socket");
+            logger.debug("Rpc: Unable to handle Rpc connection from {} (unknown/disabled thing), closing socket",
+                    deviceIp);
             session.close(StatusCode.SHUTDOWN, "Thing not active");
         }
     }
 
+    /**
+     * Send request over WebSocket
+     *
+     * @param str API request message
+     * @throws ShellyApiException
+     */
     @SuppressWarnings("null")
     public void sendMessage(String str) throws ShellyApiException {
         if (session != null) {
@@ -145,19 +181,48 @@ public class Shelly2RpcSocket {
                 session.getRemote().sendString(str);
                 return;
             } catch (IOException | InterruptedException e) {
-                throw new ShellyApiException("Error WebSocketSend failed", e);
+                throw new ShellyApiException("Error RpcSend failed", e);
             }
         }
-        throw new ShellyApiException("Unable to send API request (No WebSocket session)");
+        throw new ShellyApiException("Unable to send API request (No Rpc session)");
     }
 
+    /**
+     * Close WebSocket session
+     */
+    public void disconnect() {
+        try {
+            if (session != null) {
+                Session s = session;
+                if (s.isOpen()) {
+                    logger.debug("{}: Disconnecting WebSocket", thingName);
+                    s.disconnect();
+                }
+                logger.debug("{}: Closing WebSocket", thingName);
+                s.close();
+                session = null;
+            }
+        } catch (IOException e) {
+            logger.debug("{}: Unable to close socket", thingName, e);
+        }
+    }
+
+    /**
+     * Inbound WebSocket message
+     *
+     * @param session WebSpcket session
+     * @param receivedMessage Textial API message
+     */
     @OnWebSocketMessage
     public void onText(Session session, String receivedMessage) {
         try {
             Shelly2RpctInterface handler = websocketHandler;
             Shelly2RpcBaseMessage message = fromJson(gson, receivedMessage, Shelly2RpcBaseMessage.class);
-            logger.trace("{}: Inbound WebSocket message: {}", message.src, receivedMessage);
+            logger.trace("{}: Inbound Rpc message: {}", thingName, receivedMessage);
             if (handler != null) {
+                if (thingName.isEmpty()) {
+                    thingName = getString(message.src);
+                }
                 if (message.method == null) {
                     message.method = SHELLYRPC_METHOD_NOTIFYFULLSTATUS;
                 }
@@ -177,11 +242,11 @@ public class Shelly2RpcSocket {
                         handler.onMessage(receivedMessage);
                 }
             } else {
-                logger.debug("{}: No WebSocket listener registered, skip message: {}", getString(message.src),
-                        receivedMessage);
+                logger.debug("{}: No Rpc listener registered for device {}, skip message: {}", thingName,
+                        getString(message.src), receivedMessage);
             }
         } catch (ShellyApiException | IllegalArgumentException | NullPointerException e) {
-            logger.warn("Unable to process WebSocket message: {}", receivedMessage, e);
+            logger.debug("{}: Unable to process Rpc message: {}", thingName, receivedMessage, e);
         }
     }
 
@@ -193,27 +258,16 @@ public class Shelly2RpcSocket {
         return inbound;
     }
 
-    public void disconnect() {
-        try {
-            if (session != null) {
-                Session s = session;
-                if (s.isOpen()) {
-                    logger.debug("WebSocket: Disconnecting WebSocket");
-                    s.disconnect();
-                }
-                logger.debug("WebSocket: Closing WebSocket");
-                s.close();
-                session = null;
-            }
-        } catch (IOException e) {
-            logger.debug("Unable to close WebSocket", e);
-        }
-    }
-
+    /**
+     * Web Socket closed, notify thing handler
+     *
+     * @param statusCode StatusCode
+     * @param reason Textual reason
+     */
     @OnWebSocketClose
     public void onClose(int statusCode, String reason) {
         if (statusCode != StatusCode.NORMAL) {
-            logger.debug("WebSocket Connection closed: {} - {}", statusCode, getString(reason));
+            logger.debug("{}: Rpc connection closed: {} - {}", thingName, statusCode, getString(reason));
         }
         if (inbound) {
             // Ignore disconnect: Device establishes the socket, sends NotifyxFullStatus and disconnects
@@ -225,6 +279,11 @@ public class Shelly2RpcSocket {
         }
     }
 
+    /**
+     * WebSocket error handler
+     *
+     * @param cause WebSocket error/Exception
+     */
     @OnWebSocketError
     public void onError(Throwable cause) {
         if (inbound) {
@@ -234,9 +293,5 @@ public class Shelly2RpcSocket {
         if (websocketHandler != null) {
             websocketHandler.onError(cause);
         }
-    }
-
-    public void dispose() {
-        disconnect();
     }
 }

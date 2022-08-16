@@ -63,8 +63,8 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLY2_BTNT_DETACHED = "detached";
 
     // Input types
-    public static final String SHELLY2__INPUTT_SWITCH = "switch";
-    public static final String SHELLY2__INPUTT_BUTTON = "button";
+    public static final String SHELLY2_INPUTT_SWITCH = "switch";
+    public static final String SHELLY2_INPUTT_BUTTON = "button";
 
     // Switcm modes
     public static final String SHELLY2_API_MODE_DETACHED = "detached";
@@ -108,6 +108,19 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLY2_ERROR_OVERPOWER = "overpower";
     public static final String SHELLY2_ERROR_OVERTEMP = "overtemp";
     public static final String SHELLY2_ERROR_OVERVOLTAGE = "overvoltage";
+
+    // Wakeup reasons (e.g. Plus HT)
+    public static final String SHELLY2_WAKEUPO_BOOT_POWERON = "poweron";
+    public static final String SHELLY2_WAKEUPO_BOOT_RESTART = "software_restart";
+    public static final String SHELLY2_WAKEUPO_BOOT_WAKEUP = "deepsleep_wake";
+    public static final String SHELLY2_WAKEUPO_BOOT_INTERNAL = "internal";
+    public static final String SHELLY2_WAKEUPO_BOOT_UNKNOWN = "unknown";
+
+    public static final String SHELLY2_WAKEUPOCAUSE_BUTTON = "button";
+    public static final String SHELLY2_WAKEUPOCAUSE_USB = "usb";
+    public static final String SHELLY2_WAKEUPOCAUSE_PERIODIC = "periodic";
+    public static final String SHELLY2_WAKEUPOCAUSE_UPDATE = "status_update";
+    public static final String SHELLY2_WAKEUPOCAUSE_UNDEFINED = "undefined";
 
     public static class Shelly2DeviceSettings {
         public String name;
@@ -475,6 +488,11 @@ public class Shelly2ApiJsonDTO {
                 public Shelly2DeviceStatusSysUpdate beta;
             }
 
+            public class Shelly2DeviceStatusWakeup {
+                public String boot;
+                public String cause;
+            }
+
             public String mac;
             @SerializedName("restart_required")
             public Boolean restartRequired;
@@ -493,6 +511,12 @@ public class Shelly2ApiJsonDTO {
             public Integer cfg_rev;
             @SerializedName("available_updates")
             public Shelly2DeviceStatusSysAvlUpdate availableUpdates;
+            @SerializedName("webhook_rev")
+            public Integer webHookRev;
+            @SerializedName("wakeup_reason")
+            public Shelly2DeviceStatusWakeup wakeUpReason;
+            @SerializedName("wakeup_period")
+            public Integer wakeupPeriod;
         }
 
         public class Shelly2DeviceStatusSysWiFi {

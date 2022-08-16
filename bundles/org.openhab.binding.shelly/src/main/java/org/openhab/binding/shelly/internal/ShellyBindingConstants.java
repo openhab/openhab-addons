@@ -242,7 +242,8 @@ public class ShellyBindingConstants {
     public static final String EVENT_TYPE_SENSORDATA = "report";
 
     // URI for the EventServlet
-    public static final String SHELLY_CALLBACK_URI = "/shelly/event";
+    public static final String SHELLY1_CALLBACK_URI = "/shelly/event";
+    public static final String SHELLY2_CALLBACK_URI = "/shelly/wsevent";
 
     public static final int DIM_STEPSIZE = 5;
 

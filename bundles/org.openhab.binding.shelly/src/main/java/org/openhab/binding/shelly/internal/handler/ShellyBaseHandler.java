@@ -1151,16 +1151,15 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         boolean updated = false;
 
         if (status.inputs != null) {
+            if (!areChannelsCreated()) {
+                updateChannelDefinitions(ShellyChannelDefinitions.createInputChannels(thing, profile, status));
+            }
+
             int idx = 0;
-            boolean multiInput = status.inputs.size() >= 2; // device has multiple SW (inputs)
+            boolean multiInput = !profile.isIX && status.inputs.size() >= 2; // device has multiple SW (inputs)
             for (ShellyInputState input : status.inputs) {
                 String group = profile.getInputGroup(idx);
                 String suffix = multiInput ? profile.getInputSuffix(idx) : "";
-                if (!areChannelsCreated()) {
-                    updateChannelDefinitions(
-                            ShellyChannelDefinitions.createInputChannels(thing, profile, status, group));
-                }
-
                 updated |= updateChannel(group, CHANNEL_INPUT + suffix, getOnOff(input.input));
                 if (input.event != null) {
                     updated |= updateChannel(group, CHANNEL_STATUS_EVENTTYPE + suffix, getStringType(input.event));
@@ -1494,6 +1493,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
      */
     @Override
     public void dispose() {
+        logger.debug("{}: Stopping Thing", thingName);
         stopping = true;
         stop();
         super.dispose();

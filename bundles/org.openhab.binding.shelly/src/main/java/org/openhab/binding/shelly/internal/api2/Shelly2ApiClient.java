@@ -15,7 +15,6 @@ package org.openhab.binding.shelly.internal.api2;
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.CHANNEL_INPUT;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
-import static org.openhab.binding.shelly.internal.handler.ShellyComponents.updateSensors;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.ArrayList;
@@ -128,10 +127,10 @@ public class Shelly2ApiClient extends ShellyHttpClient {
 
     protected static final Map<String, String> MAP_ROLLER_STATE = new HashMap<>();
     static {
-        MAP_ROLLER_STATE.put(SHELLY2_RSTATE_OPENING, SHELLY2_RSTATE_OPENING); // Gen2-only
         MAP_ROLLER_STATE.put(SHELLY2_RSTATE_OPEN, SHELLY_RSTATE_OPEN);
-        MAP_ROLLER_STATE.put(SHELLY2_RSTATE_CLOSING, SHELLY2_RSTATE_CLOSING); // Gen2-only
         MAP_ROLLER_STATE.put(SHELLY2_RSTATE_CLOSED, SHELLY_RSTATE_CLOSE);
+        MAP_ROLLER_STATE.put(SHELLY2_RSTATE_OPENING, SHELLY2_RSTATE_OPENING); // Gen2-only
+        MAP_ROLLER_STATE.put(SHELLY2_RSTATE_CLOSING, SHELLY2_RSTATE_CLOSING); // Gen2-only
         MAP_ROLLER_STATE.put(SHELLY2_RSTATE_STOPPED, SHELLY_RSTATE_STOP);
         MAP_ROLLER_STATE.put(SHELLY2_RSTATE_CALIB, SHELLY2_RSTATE_CALIB); // Gen2-only
     }
@@ -168,26 +167,22 @@ public class Shelly2ApiClient extends ShellyHttpClient {
     protected boolean fillDeviceStatus(ShellySettingsStatus status, Shelly2DeviceStatusResult result,
             boolean channelUpdate) throws ShellyApiException {
         boolean updated = false;
+
+        updated |= updateInputStatus(status, result, channelUpdate);
         updated |= updateRelayStatus(status, result.switch0, channelUpdate);
         updated |= updateRelayStatus(status, result.switch1, channelUpdate);
         updated |= updateRelayStatus(status, result.switch2, channelUpdate);
         updated |= updateRelayStatus(status, result.switch3, channelUpdate);
         updated |= updateRollerStatus(status, result.cover0, channelUpdate);
-        updated |= updateInputStatus(status, result, channelUpdate);
+        if (channelUpdate) {
+            updated |= ShellyComponents.updateMeters(getThing(), status);
+        }
 
         updateHumidityStatus(sensorData, result.humidity0);
         updateTemperatureStatus(sensorData, result.temperature0);
         updateBatteryStatus(sensorData, result.devicepower0);
-        return updated | updateCommonStatus(status, channelUpdate);
-    }
+        updated |= ShellyComponents.updateSensors(getThing(), status);
 
-    private boolean updateCommonStatus(ShellySettingsStatus status, boolean channelUpdate) throws ShellyApiException {
-        boolean updated = false;
-        if (channelUpdate) {
-            ShellyThingInterface thing = getThing();
-            updated |= ShellyComponents.updateMeters(thing, status);
-            updated |= updateSensors(thing, status);
-        }
         return updated;
     }
 
@@ -312,11 +307,16 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         if (cs == null) {
             return false;
         }
+
         ShellyRollerStatus rs = status.rollers.get(cs.id);
         ShellySettingsMeter sm = status.meters.get(cs.id);
         ShellySettingsEMeter emeter = status.emeters.get(cs.id);
         rs.isValid = sm.isValid = emeter.isValid = true;
         if (cs.state != null) {
+            if (!getString(rs.state).equals(cs.state)) {
+                logger.debug("{}: Roller status changed from {} to {}, updateChannels={}", thingName, rs.state,
+                        mapValue(MAP_ROLLER_STATE, cs.state), updateChannels);
+            }
             rs.state = mapValue(MAP_ROLLER_STATE, cs.state);
             rs.calibrating = SHELLY2_RSTATE_CALIB.equals(cs.state);
         }
@@ -431,7 +431,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         }
 
         ShellySettingsInput settings = new ShellySettingsInput();
-        settings.btnType = getString(ic.type).equalsIgnoreCase(SHELLY2_BTNT_DETACHED) ? SHELLY_BTNT_MOMENTARY
+        settings.btnType = getString(ic.type).equalsIgnoreCase(SHELLY2_INPUTT_BUTTON) ? SHELLY_BTNT_MOMENTARY
                 : SHELLY_BTNT_EDGE;
         inputs.add(settings);
     }

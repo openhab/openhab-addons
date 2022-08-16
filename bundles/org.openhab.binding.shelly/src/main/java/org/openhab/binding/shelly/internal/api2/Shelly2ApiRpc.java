@@ -18,6 +18,7 @@ import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -61,7 +62,6 @@ import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,10 +75,10 @@ import org.slf4j.LoggerFactory;
 public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterface, Shelly2RpctInterface {
     private final Logger logger = LoggerFactory.getLogger(Shelly2ApiRpc.class);
     private final @Nullable ShellyThingTable thingTable;
-    private Shelly2RpcSocket rpcSocket = new Shelly2RpcSocket();
 
     private boolean initialized = false;
     private boolean discovery = false;
+    private Shelly2RpcSocket rpcSocket = new Shelly2RpcSocket();
     private Shelly2AuthResponse authInfo = new Shelly2AuthResponse();
 
     /**
@@ -116,7 +116,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     @Override
     public void initialize() throws ShellyApiException {
         if (!initialized) {
-            rpcSocket = new Shelly2RpcSocket(thingTable, config.deviceIp);
+            rpcSocket = new Shelly2RpcSocket(thingName, thingTable, config.deviceIp);
             rpcSocket.addMessageHandler(this);
             initialized = true;
         }
@@ -130,9 +130,9 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     @Override
     public ShellyDeviceProfile getDeviceProfile(String thingType) throws ShellyApiException {
         ShellyDeviceProfile profile = thing != null ? getProfile() : new ShellyDeviceProfile();
-        profile.isGen2 = true;
 
         Shelly2GetConfigResult dc = apiRequest(SHELLYRPC_METHOD_GETCONFIG, null, Shelly2GetConfigResult.class);
+        profile.isGen2 = true;
         profile.settingsJson = gson.toJson(dc);
         profile.thingName = thingName;
         profile.settings.name = profile.status.name = dc.sys.device.name;
@@ -262,6 +262,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     public void onConnect(String deviceIp, boolean connected) {
         logger.debug("{}: WebSocket {}", thingName, connected ? "connected successful" : "failed to connect!");
         if (thing == null && thingTable != null) {
+            logger.debug("{}: Get thing from thingTable", thingName);
             thing = thingTable.getThing(deviceIp);
         }
     }
@@ -276,12 +277,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                 return;
             }
             if (!thing.isThingOnline() && thing.getThingStatusDetail() != ThingStatusDetail.CONFIGURATION_PENDING) {
-                boolean online = thing.isThingOnline();
-                ThingStatus status = thing.getThingStatus();
-                ThingStatusDetail detail = thing.getThingStatusDetail();
-                logger.debug(
-                        "{}: Thing is not in online state/connectable, ignore NotifyStatus (online={}, status={}, detail={}",
-                        thingName, online, status, detail);
+                logger.debug("{}: Thing is not in online state/connectable, ignore NotifyStatus", thingName);
                 return;
             }
             if (message.error != null) {
@@ -300,6 +296,8 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
             Shelly2NotifyStatus params = message.params;
             if (params != null) {
+                thing.setThingOnline();
+
                 boolean updated = false;
                 ShellyDeviceProfile profile = getProfile();
                 ShellySettingsStatus status = profile.status;
@@ -309,7 +307,6 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                     }
                     status.uptime = params.sys.uptime;
                 }
-
                 status.temperature = SHELLY_API_INVTEMP; // mark invalid
                 updated |= fillDeviceStatus(status, message.params, true);
                 if (getDouble(status.temperature) == SHELLY_API_INVTEMP) {
@@ -441,7 +438,8 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
     @Override
     public ShellySettingsStatus getStatus() throws ShellyApiException {
-        ShellySettingsStatus status = getProfile().status;
+        ShellyDeviceProfile profile = getProfile();
+        ShellySettingsStatus status = profile.status;
         Shelly2DeviceStatusResult ds = apiRequest(SHELLYRPC_METHOD_GETSTATUS, null, Shelly2DeviceStatusResult.class);
         status.time = ds.sys.time;
         status.uptime = ds.sys.uptime;
@@ -452,6 +450,9 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         status.wifiSta.rssi = getInteger(ds.wifi.rssi);
         status.fsFree = ds.sys.fsFree;
         status.fsSize = ds.sys.fsSize;
+        if (ds.sys.wakeupPeriod != null) {
+            profile.settings.sleepMode.period = ds.sys.wakeupPeriod / 60;
+        }
         status.discoverable = true;
         status.hasUpdate = status.update.hasUpdate = false;
         status.update.oldVersion = getProfile().fwVersion;
@@ -463,6 +464,19 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             if (ds.sys.availableUpdates.beta != null) {
                 status.update.betaVersion = "v" + getString(ds.sys.availableUpdates.beta.version);
             }
+        }
+
+        if (ds.sys.wakeUpReason != null && ds.sys.wakeUpReason.boot != null) {
+            List<Object> values = new ArrayList<>();
+            String boot = getString(ds.sys.wakeUpReason.boot);
+            String cause = getString(ds.sys.wakeUpReason.cause);
+
+            // Index 0 is aggregated status, 1 boot, 2 cause
+            String reason = boot.equals(SHELLY2_WAKEUPO_BOOT_RESTART) ? ALARM_TYPE_RESTARTED : cause;
+            values.add(reason);
+            values.add(ds.sys.wakeUpReason.boot);
+            values.add(ds.sys.wakeUpReason.cause);
+            getThing().updateWakeupReason(values);
         }
 
         fillDeviceStatus(status, ds, false);

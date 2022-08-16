@@ -111,7 +111,9 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                         channelUID.getIdWithoutGroup().equals(CHANNEL_ROL_CONTROL_CONTROL));
 
                 // request updates the next 45sec to update roller position after it stopped
-                requestUpdates(autoCoIoT || profile.isGen2 ? 1 : 45 / UPDATE_STATUS_INTERVAL_SECONDS, false);
+                if (!autoCoIoT && !profile.isGen2) {
+                    requestUpdates(45 / UPDATE_STATUS_INTERVAL_SECONDS, false);
+                }
                 break;
 
             case CHANNEL_ROL_CONTROL_FAV:
@@ -241,7 +243,6 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                     position = shpos;
                 } else {
                     api.setRollerTurn(index, SHELLY_ALWD_ROLLER_TURN_OPEN);
-                    position = SHELLY_MIN_ROLLER_POS;
                 }
             } else if (command == UpDownType.DOWN || command == OnOffType.OFF
                     || ((command instanceof DecimalType) && (((DecimalType) command).intValue() == 0))) {
@@ -255,7 +256,6 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                     position = shpos;
                 } else {
                     api.setRollerTurn(index, SHELLY_ALWD_ROLLER_TURN_CLOSE);
-                    position = SHELLY_MAX_ROLLER_POS;
                 }
             }
         } else if (command == StopMoveType.STOP) {

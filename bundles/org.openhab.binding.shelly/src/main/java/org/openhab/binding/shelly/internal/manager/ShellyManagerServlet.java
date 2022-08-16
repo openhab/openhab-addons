@@ -13,7 +13,7 @@
 package org.openhab.binding.shelly.internal.manager;
 
 import static org.openhab.binding.shelly.internal.manager.ShellyManagerConstants.*;
-import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
+import static org.openhab.binding.shelly.internal.util.ShellyUtils.getString;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -21,6 +21,7 @@ import java.io.PrintWriter;
 import java.util.Map;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -41,8 +42,6 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.http.HttpService;
-import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,43 +51,31 @@ import org.slf4j.LoggerFactory;
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
+@WebServlet(name = "ShellyManagerServlet", urlPatterns = { SHELLY_MANAGER_URI })
 @Component(service = HttpServlet.class, configurationPolicy = ConfigurationPolicy.OPTIONAL)
 public class ShellyManagerServlet extends HttpServlet {
     private static final long serialVersionUID = 1393403713585449126L;
     private final Logger logger = LoggerFactory.getLogger(ShellyManagerServlet.class);
 
-    private static final String SERVLET_URI = SHELLY_MANAGER_URI;
     private final ShellyManager manager;
-    private final String className;
-
-    private final HttpService httpService;
 
     @Activate
     public ShellyManagerServlet(@Reference ConfigurationAdmin configurationAdmin,
-            @Reference NetworkAddressService networkAddressService, @Reference HttpService httpService,
-            @Reference HttpClientFactory httpClientFactory, @Reference ShellyHandlerFactory handlerFactory,
-            @Reference ShellyTranslationProvider translationProvider, ComponentContext componentContext,
-            Map<String, Object> config) {
-        className = substringAfterLast(getClass().toString(), ".");
-        this.httpService = httpService;
+            @Reference NetworkAddressService networkAddressService, @Reference HttpClientFactory httpClientFactory,
+            @Reference ShellyHandlerFactory handlerFactory, @Reference ShellyTranslationProvider translationProvider,
+            ComponentContext componentContext, Map<String, Object> config) {
         String localIp = getString(networkAddressService.getPrimaryIpv4HostAddress());
         Integer localPort = HttpServiceUtil.getHttpServicePort(componentContext.getBundleContext());
         this.manager = new ShellyManager(configurationAdmin, translationProvider,
                 httpClientFactory.getCommonHttpClient(), localIp, localPort, handlerFactory);
 
-        try {
-            httpService.registerServlet(SERVLET_URI, this, null, httpService.createDefaultHttpContext());
-            // Promote Shelly Manager usage
-            logger.info("{}", translationProvider.get("status.managerstarted", localIp, localPort.toString()));
-        } catch (NamespaceException | ServletException | IllegalArgumentException e) {
-            logger.warn("{}: Unable to initialize bindingConfig", className, e);
-        }
+        // Promote Shelly Manager usage
+        logger.info("{}", translationProvider.get("status.managerstarted", localIp, localPort.toString()));
     }
 
     @Deactivate
     protected void deactivate() {
-        httpService.unregister(SERVLET_URI);
-        logger.debug("{} stopped", className);
+        logger.debug("ShellyManagerServlet: stopped");
     }
 
     @Override
@@ -109,10 +96,10 @@ public class ShellyManagerServlet extends HttpServlet {
                 ipAddress = request.getRemoteAddr();
             }
             Map<String, String[]> parameters = request.getParameterMap();
-            logger.debug("{}: {} Request from {}:{}{}?{}", className, request.getProtocol(), ipAddress,
+            logger.debug("ShellyManagerServlet: {} Request from {}:{}{}?{}", request.getProtocol(), ipAddress,
                     request.getRemotePort(), path, parameters.toString());
-            if (!path.toLowerCase().startsWith(SERVLET_URI)) {
-                logger.warn("{} received unknown request: path = {}", className, path);
+            if (!path.toLowerCase().startsWith(SHELLY_MANAGER_URI)) {
+                logger.warn("ShellyManagerServlet: Received unknown request: path = {}", path);
                 return;
             }
 
@@ -133,13 +120,13 @@ public class ShellyManagerServlet extends HttpServlet {
                 }
             }
         } catch (ShellyApiException | RuntimeException e) {
-            logger.debug("{}: Exception uri={}, parameters={}", className, path, request.getParameterMap().toString(),
-                    e);
+            logger.debug("ShellyManagerServlet: Exception uri={}, parameters={}", path,
+                    request.getParameterMap().toString(), e);
             response.setContentType("text/html");
             print = response.getWriter();
             print.write("Exception:" + e.toString() + "<br/>Check openHAB.log for details."
                     + "<p/><a href=\"/shelly/manager\">Return to Overview</a>");
-            logger.debug("{}: {}", className, output);
+            logger.debug("ShellyManagerServlet: {}", output);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         } finally {
             if (print != null) {

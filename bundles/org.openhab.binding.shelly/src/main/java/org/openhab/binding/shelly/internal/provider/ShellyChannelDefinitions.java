@@ -370,26 +370,26 @@ public class ShellyChannelDefinitions {
     }
 
     public static Map<String, Channel> createInputChannels(final Thing thing, final ShellyDeviceProfile profile,
-            final ShellySettingsStatus status, String group) {
+            final ShellySettingsStatus status) {
         Map<String, Channel> add = new LinkedHashMap<>();
         if (status.inputs != null) {
             // Create channels per input. For devices with more than 1 input (Dimmer, 1L) multiple channel sets are
             // created by adding the index to the channel name
-            boolean multi = profile.isIX || profile.isDimmer || profile.isRoller
-                    || (profile.numRelays == 1 && profile.numInputs >= 2);
             for (int i = 0; i < profile.numInputs; i++) {
-                String suffix = multi ? String.valueOf(i + 1) : "";
-                ShellyInputState input = status.inputs.get(i);
+                String group = profile.getInputGroup(i);
+                String suffix = profile.getInputSuffix(i); // multi ? String.valueOf(i + 1) : "";
                 addChannel(thing, add, true, group, CHANNEL_INPUT + suffix);
+                addChannel(thing, add, true, group,
+                        (!profile.isRoller ? CHANNEL_BUTTON_TRIGGER + suffix : CHANNEL_EVENT_TRIGGER));
                 if (profile.inButtonMode(i)) {
+                    ShellyInputState input = status.inputs.get(i);
                     addChannel(thing, add, input.event != null, group, CHANNEL_STATUS_EVENTTYPE + suffix);
                     addChannel(thing, add, input.eventCount != null, group, CHANNEL_STATUS_EVENTCOUNT + suffix);
                 }
-                addChannel(thing, add, true, group,
-                        (!profile.isRoller ? CHANNEL_BUTTON_TRIGGER + suffix : CHANNEL_EVENT_TRIGGER));
             }
         } else if (status.input != null) {
             // old RGBW2 firmware
+            String group = profile.getInputGroup(0);
             addChannel(thing, add, true, group, CHANNEL_INPUT);
             addChannel(thing, add, true, group, CHANNEL_BUTTON_TRIGGER);
         }
