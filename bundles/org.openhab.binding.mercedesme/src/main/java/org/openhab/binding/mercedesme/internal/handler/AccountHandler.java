@@ -10,13 +10,14 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.mercedesme.internal;
+package org.openhab.binding.mercedesme.internal.handler;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.mercedesme.internal.Constants;
+import org.openhab.binding.mercedesme.internal.config.AccountConfiguration;
 import org.openhab.binding.mercedesme.internal.server.CallbackServer;
 import org.openhab.binding.mercedesme.internal.server.Utils;
 import org.openhab.core.auth.client.oauth2.AccessTokenRefreshListener;
@@ -45,7 +46,6 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     private final Storage<String> storage;
     private final HttpClient httpClient;
     private Optional<CallbackServer> server = Optional.empty();
-    private Optional<String> tokenStorageKey = Optional.empty();
 
     Optional<AccountConfiguration> config = Optional.empty();
 
@@ -66,35 +66,19 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
         config = Optional.of(getConfigAs(AccountConfiguration.class));
         handleConfig();
         String configValidReason = configValid();
-        if (!configValidReason.equals(Constants.EMPTY)) {
+        if (!configValidReason.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, configValidReason);
         } else {
             String callbackUrl = Utils.getCallbackAddress(config.get().callbackIP, config.get().callbackPort);
             thing.setProperty("callbackUrl", callbackUrl);
-
-            server = Optional.of(new CallbackServer(this, httpClient, oAuthFactory, config.get(), callbackUrl));
-            tokenStorageKey = Optional.of(config.get().clientId + ":token");
-            if (storage.containsKey(tokenStorageKey.get())) {
-                String tokenSerial = storage.get(tokenStorageKey.get());
-                if (tokenSerial != null) {
-                    AccessTokenResponse atr = (AccessTokenResponse) Utils.fromString(tokenSerial);
-                    server.get().setToken(atr);
-                } else {
-                    logger.debug("Token cannot be restored from storage - manual authorization needed");
-                }
+            server = Optional
+                    .of(new CallbackServer(this, httpClient, oAuthFactory, config.get(), callbackUrl, storage));
+            if (!server.get().start()) {
+                String textKey = Constants.PREFIX + thing.getThingTypeUID().getId() + Constants.STATUS_SERVER_RESTART;
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, textKey);
             } else {
-                if (!keyMigration()) {
-                    logger.debug("Token not found in storage - manual authorization needed");
-                }
-            }
-
-            server.get().start();
-            String token = server.get().getToken();
-            if (!token.equals(Constants.EMPTY)) {
-                updateStatus(ThingStatus.ONLINE);
-            } else {
-                String textKey = Constants.PREFIX + thing.getThingTypeUID().getId() + Constants.STATUS_AUTH_NEEDED;
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, textKey + " [\"" + callbackUrl + "\"]");
+                // get fresh token
+                this.getToken();
             }
         }
     }
@@ -151,22 +135,23 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     @Override
     public void onAccessTokenResponse(AccessTokenResponse tokenResponse) {
         logger.debug("{} received new Access Token", config.get().callbackPort);
-        if (!tokenResponse.isExpired(LocalDateTime.now(), 10)) {
+        if (tokenResponse.getAccessToken() != null) {
+            // token not null - fine
             updateStatus(ThingStatus.ONLINE);
-        }
-        if (tokenResponse.getRefreshToken() != null) {
-            logger.debug("{} store token in {}", config.get().callbackPort, tokenStorageKey.get());
-            String tokenSerial = Utils.toString(tokenResponse);
-            storage.put(tokenStorageKey.get(), tokenSerial);
+        } else if (server.isEmpty()) {
+            // server not running - fix first
+            String textKey = Constants.PREFIX + thing.getThingTypeUID().getId() + Constants.STATUS_SERVER_RESTART;
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, textKey);
+        } else {
+            // all failed - start manual authorization
+            String textKey = Constants.PREFIX + thing.getThingTypeUID().getId() + Constants.STATUS_AUTH_NEEDED;
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+                    textKey + " [\"" + thing.getProperties().get("callbackUrl") + "\"]");
         }
     }
 
     public String getToken() {
-        if (server.isEmpty()) {
-            return Constants.EMPTY;
-        } else {
-            return server.get().getToken();
-        }
+        return server.get().getToken();
     }
 
     public String getImageApiKey() {
@@ -176,34 +161,5 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     @Override
     public String toString() {
         return Integer.toString(config.get().callbackPort);
-    }
-
-    /**
-     * Will help early adopters of this binding not too loose their already stored token
-     * Before token was stored with unique key bridge.getUUID now token is stored with key clientId.
-     * With this change you're able to delete and create bridges in openHAB without loosing token data if the same
-     * clientId is configured
-     */
-    private boolean keyMigration() {
-        String oldTokenStorageKey = super.getThing().getUID() + ":token";
-        if (storage.containsKey(oldTokenStorageKey)) {
-            String tokenSerial = storage.get(oldTokenStorageKey);
-            if (tokenSerial != null) {
-                AccessTokenResponse atr = (AccessTokenResponse) Utils.fromString(tokenSerial);
-                server.get().setToken(atr);
-                logger.debug("Token migration successful");
-                // put migration token with adjusted key
-                storage.put(tokenStorageKey.get(), tokenSerial);
-                // remove migration token from storage
-                storage.remove(oldTokenStorageKey);
-                return true;
-            } else {
-                logger.debug("Cannot restore Token for migration");
-                return false;
-            }
-        } else {
-            logger.debug("No Token for migration found");
-            return false;
-        }
     }
 }

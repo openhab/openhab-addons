@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.mercedesme.internal;
+package org.openhab.binding.mercedesme.internal.config;
 
 import static org.openhab.binding.mercedesme.internal.Constants.*;
 

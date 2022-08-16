@@ -14,6 +14,7 @@ package org.openhab.binding.mercedesme;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -27,6 +28,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.mercedesme.internal.server.CallbackServer;
 import org.openhab.binding.mercedesme.internal.utils.ChannelStateMap;
 import org.openhab.binding.mercedesme.internal.utils.Mapper;
 
@@ -243,5 +245,11 @@ class JsonTest {
             }
         });
         assertEquals(0, expectedResults.size(), "All content delivered");
+    }
+
+    @Test
+    public void testInvalidATR() {
+        System.out.println(CallbackServer.INVALID_ACCESS_TOKEN.getAccessToken());
+        System.out.println(CallbackServer.INVALID_ACCESS_TOKEN.isExpired(LocalDateTime.now(), 0));
     }
 }

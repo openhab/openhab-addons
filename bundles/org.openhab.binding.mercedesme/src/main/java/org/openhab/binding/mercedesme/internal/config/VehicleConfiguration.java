@@ -10,9 +10,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.mercedesme.internal;
+package org.openhab.binding.mercedesme.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.mercedesme.internal.Constants;
 
 /**
  * The {@link VehicleConfiguration} class contains fields mapping thing configuration parameters.

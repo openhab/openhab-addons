@@ -24,14 +24,15 @@ import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletHandler;
-import org.openhab.binding.mercedesme.internal.AccountConfiguration;
 import org.openhab.binding.mercedesme.internal.Constants;
+import org.openhab.binding.mercedesme.internal.config.AccountConfiguration;
 import org.openhab.core.auth.client.oauth2.AccessTokenRefreshListener;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthException;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.auth.client.oauth2.OAuthResponseException;
+import org.openhab.core.storage.Storage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,16 +46,19 @@ public class CallbackServer {
     private static final Logger LOGGER = LoggerFactory.getLogger(CallbackServer.class);
     private static final Map<Integer, OAuthClientService> AUTH_MAP = new HashMap<Integer, OAuthClientService>();
     private static final Map<Integer, CallbackServer> SERVER_MAP = new HashMap<Integer, CallbackServer>();
+    public static final AccessTokenResponse INVALID_ACCESS_TOKEN = new AccessTokenResponse();
 
     private Optional<Server> server = Optional.empty();
     private Optional<AccessTokenResponse> token = Optional.empty();
+    private Optional<String> tokenStorageKey = Optional.empty();
     private AccessTokenRefreshListener listener;
     private AccountConfiguration config;
     private OAuthClientService oacs;
+    private final Storage<String> storage;
     private String callbackUrl;
 
     public CallbackServer(AccessTokenRefreshListener l, HttpClient hc, OAuthFactory oAuthFactory,
-            AccountConfiguration config, String callbackUrl) {
+            AccountConfiguration config, String callbackUrl, Storage<String> storage) {
         oacs = oAuthFactory.createOAuthClientService(Constants.OAUTH_CLIENT_NAME + config.callbackPort,
                 Constants.MB_TOKEN_URL, Constants.MB_AUTH_URL, config.clientId, config.clientSecret, config.getScope(),
                 false);
@@ -63,13 +67,16 @@ public class CallbackServer {
         listener = l;
         this.config = config;
         this.callbackUrl = callbackUrl;
+        this.storage = storage;
+        INVALID_ACCESS_TOKEN.setAccessToken(Constants.EMPTY);
+        restoreToken();
     }
 
     public String getAuthorizationUrl() {
         try {
             return oacs.getAuthorizationUrl(callbackUrl, null, null);
         } catch (OAuthException e) {
-            LOGGER.error("Error creating Authorization URL {}", e.getMessage());
+            LOGGER.warn("Error creating Authorization URL {}", e.getMessage());
             return Constants.EMPTY;
         }
     }
@@ -78,11 +85,11 @@ public class CallbackServer {
         return config.getScope();
     }
 
-    public void start() {
+    public boolean start() {
         LOGGER.debug("Start Callback Server for port {}", config.callbackPort);
         if (!server.isEmpty()) {
             LOGGER.debug("Callback server for port {} already started", config.callbackPort);
-            return;
+            return true;
         }
         server = Optional.of(new Server());
         ServerConnector connector = new ServerConnector(server.get());
@@ -95,7 +102,9 @@ public class CallbackServer {
             server.get().start();
         } catch (Exception e) {
             LOGGER.warn("Cannot start Callback Server for port {}, Error {}", config.callbackPort, e.getMessage());
+            return false;
         }
+        return true;
     }
 
     public void stop() {
@@ -113,33 +122,25 @@ public class CallbackServer {
     public String getToken() {
         if (token.isEmpty()) {
             LOGGER.debug("Token empty - Manual Authorization needed at {}", callbackUrl);
-            return Constants.EMPTY;
+            listener.onAccessTokenResponse(INVALID_ACCESS_TOKEN);
+            token = Optional.of(INVALID_ACCESS_TOKEN);
         } else {
             if (token.get().isExpired(LocalDateTime.now(), 10)) {
                 LOGGER.trace("Token expired - start refreshing");
                 try {
-                    AccessTokenResponse act = oacs.refreshToken();
-                    token = Optional.of(act);
-                    listener.onAccessTokenResponse(act);
+                    AccessTokenResponse atr = oacs.refreshToken();
+                    token = Optional.of(atr);
+                    listener.onAccessTokenResponse(atr);
+                    storeToken(atr);
                 } catch (OAuthException | IOException | OAuthResponseException e) {
                     LOGGER.warn("Error refreshing token. Reason: {} Manual Authorization needed at {}", e.getMessage(),
                             callbackUrl);
+                    listener.onAccessTokenResponse(INVALID_ACCESS_TOKEN);
+                    return Constants.EMPTY;
                 }
-            } else {
-                LOGGER.trace("Token valid - do nothing");
-            }
+            } // else token is valid
         }
         return token.get().getAccessToken();
-    }
-
-    /**
-     * Function is used to restore last tokenResponse from Persistence.
-     * Use case e.g. is startup
-     *
-     * @param accessTokenResponse
-     */
-    public void setToken(AccessTokenResponse accessTokenResponse) {
-        token = Optional.of(accessTokenResponse);
     }
 
     /**
@@ -158,7 +159,7 @@ public class CallbackServer {
             LOGGER.trace("Deliver token to {}", srv);
             if (srv != null && oacs != null) {
                 AccessTokenResponse atr = oacs.getAccessTokenResponseByAuthorizationCode(code, srv.callbackUrl);
-                srv.token = Optional.of(atr);
+                srv.storeToken(atr);
                 srv.listener.onAccessTokenResponse(atr);
             } else {
                 LOGGER.warn("Either Callbackserver  {} or Authorization Service {} not found", srv, oacs);
@@ -185,6 +186,29 @@ public class CallbackServer {
         } else {
             LOGGER.debug("No Callbackserver found for {}", port);
             return Constants.EMPTY;
+        }
+    }
+
+    private void storeToken(AccessTokenResponse atr) {
+        token = Optional.of(atr);
+        String tokenSerial = Utils.toString(atr);
+        storage.put(tokenStorageKey.get(), tokenSerial);
+    }
+
+    /**
+     * restore token from persistence after startup
+     */
+    private void restoreToken() {
+        tokenStorageKey = Optional.of(config.clientId + ":token");
+        if (storage.containsKey(tokenStorageKey.get())) {
+            String tokenSerial = storage.get(tokenStorageKey.get());
+            if (tokenSerial != null) {
+                AccessTokenResponse atr = (AccessTokenResponse) Utils.fromString(tokenSerial);
+                token = Optional.of(atr);
+                listener.onAccessTokenResponse(atr);
+            } else {
+                LOGGER.debug("Token cannot be restored from storage - manual authorization needed");
+            }
         }
     }
 }

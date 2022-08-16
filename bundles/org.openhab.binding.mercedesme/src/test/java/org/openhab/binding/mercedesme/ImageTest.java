@@ -20,7 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.util.MultiMap;
 import org.eclipse.jetty.util.UrlEncoded;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.mercedesme.internal.VehicleConfiguration;
+import org.openhab.binding.mercedesme.internal.config.VehicleConfiguration;
 
 /**
  * The {@link ImageTest} Test Image conversions

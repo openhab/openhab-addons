@@ -19,6 +19,9 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.WWWAuthenticationProtocolHandler;
+import org.openhab.binding.mercedesme.internal.handler.AccountHandler;
+import org.openhab.binding.mercedesme.internal.handler.VehicleHandler;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -56,6 +59,7 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
     private final MercedesMeCommandOptionProvider mmcop;
     private final MercedesMeStateOptionProvider mmsop;
     private final StorageService storageService;
+    private final TimeZoneProvider timeZoneProvider;
 
     @Activate
     public MercedesMeHandlerFactory(@Reference OAuthFactory oAuthFactory, @Reference HttpClientFactory hcf,
@@ -63,11 +67,13 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
             final @Reference MercedesMeStateOptionProvider sop, final @Reference TimeZoneProvider tzp) {
         this.oAuthFactory = oAuthFactory;
         this.storageService = storageService;
-        Constants.zoneId = tzp.getTimeZone();
         mmcop = cop;
         mmsop = sop;
+        timeZoneProvider = tzp;
         tokenStorage = storageService.getStorage(Constants.BINDING_ID);
         httpClient = hcf.createHttpClient(Constants.BINDING_ID);
+        // https://github.com/jetty-project/jetty-reactive-httpclient/issues/33
+        httpClient.getProtocolHandlers().remove(WWWAuthenticationProtocolHandler.NAME);
         try {
             httpClient.start();
         } catch (Exception e) {
@@ -86,7 +92,8 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
         if (THING_TYPE_ACCOUNT.equals(thingTypeUID)) {
             return new AccountHandler((Bridge) thing, httpClient, oAuthFactory, tokenStorage);
         }
-        return new VehicleHandler(thing, httpClient, thingTypeUID.getId(), storageService, mmcop, mmsop);
+        return new VehicleHandler(thing, httpClient, thingTypeUID.getId(), storageService, mmcop, mmsop,
+                timeZoneProvider);
     }
 
     @Override

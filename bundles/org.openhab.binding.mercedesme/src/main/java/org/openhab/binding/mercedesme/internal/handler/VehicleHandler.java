@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.mercedesme.internal;
+package org.openhab.binding.mercedesme.internal.handler;
 
 import static org.openhab.binding.mercedesme.internal.Constants.*;
 
@@ -20,12 +20,10 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -41,7 +39,6 @@ import javax.measure.quantity.Length;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.WWWAuthenticationProtocolHandler;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpHeader;
@@ -49,8 +46,13 @@ import org.eclipse.jetty.util.MultiMap;
 import org.eclipse.jetty.util.UrlEncoded;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.openhab.binding.mercedesme.internal.Constants;
+import org.openhab.binding.mercedesme.internal.MercedesMeCommandOptionProvider;
+import org.openhab.binding.mercedesme.internal.MercedesMeStateOptionProvider;
+import org.openhab.binding.mercedesme.internal.config.VehicleConfiguration;
 import org.openhab.binding.mercedesme.internal.utils.ChannelStateMap;
 import org.openhab.binding.mercedesme.internal.utils.Mapper;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -81,7 +83,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class VehicleHandler extends BaseThingHandler {
-    private static final DateTimeFormatter DATE_INPUT_PATTERN = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
     private static final String EXT_IMG_RES = "ExtImageResources_";
     private static final String INITIALIZE_COMMAND = "Initialze";
 
@@ -89,6 +90,7 @@ public class VehicleHandler extends BaseThingHandler {
     private final Map<String, Long> timeHash = new HashMap<String, Long>();
     private final MercedesMeCommandOptionProvider mmcop;
     private final MercedesMeStateOptionProvider mmsop;
+    private final TimeZoneProvider timeZoneProvider;
     private final StorageService storageService;
     private final HttpClient httpClient;
     private final String uid;
@@ -99,28 +101,27 @@ public class VehicleHandler extends BaseThingHandler {
     private Optional<Storage<String>> imageStorage = Optional.empty();
     private Optional<VehicleConfiguration> config = Optional.empty();
     private Optional<QuantityType<?>> rangeFuel = Optional.empty();
-    private LocalDateTime nextRefresh;
+    private Instant nextRefresh;
     private boolean online = false;
 
     public VehicleHandler(Thing thing, HttpClient hc, String uid, StorageService storageService,
-            MercedesMeCommandOptionProvider mmcop, MercedesMeStateOptionProvider mmsop) {
+            MercedesMeCommandOptionProvider mmcop, MercedesMeStateOptionProvider mmsop, TimeZoneProvider tzp) {
         super(thing);
         httpClient = hc;
         this.uid = uid;
         this.mmcop = mmcop;
         this.mmsop = mmsop;
+        timeZoneProvider = tzp;
         this.storageService = storageService;
-        // https://github.com/jetty-project/jetty-reactive-httpclient/issues/33
-        httpClient.getProtocolHandlers().remove(WWWAuthenticationProtocolHandler.NAME);
-        nextRefresh = LocalDateTime.now();
+        nextRefresh = Instant.now();
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.trace("Received {} {} {}", channelUID.getAsString(), command.toFullString(), channelUID.getId());
         if (command instanceof RefreshType) {
-            if (LocalDateTime.now().isAfter(nextRefresh)) {
-                nextRefresh = LocalDateTime.now().plus(Duration.ofSeconds(10));
+            if (Instant.now().isAfter(nextRefresh)) {
+                nextRefresh = Instant.now().plus(Duration.ofSeconds(10));
                 logger.trace("Refresh granted - next at {}", nextRefresh);
                 getData();
             } else {
@@ -139,11 +140,11 @@ public class VehicleHandler extends BaseThingHandler {
                 } else {
                     logger.trace("Request Image {} ", key);
                     encodedImage = getImage(command.toFullString());
-                    if (!encodedImage.equals(EMPTY)) {
+                    if (!encodedImage.isEmpty()) {
                         imageStorage.get().put(key, encodedImage);
                     }
                 }
-                if (encodedImage != null && !EMPTY.equals(encodedImage)) {
+                if (encodedImage != null && !encodedImage.isEmpty()) {
                     RawType image = new RawType(Base64.getDecoder().decode(encodedImage),
                             MIME_PREFIX + config.get().format);
                     updateState(new ChannelUID(thing.getUID(), GROUP_IMAGE, "image-data"), image);
@@ -186,7 +187,7 @@ public class VehicleHandler extends BaseThingHandler {
                 updateState(new ChannelUID(thing.getUID(), GROUP_IMAGE, "clear-cache"), OnOffType.OFF);
             } else {
                 String textKey = Constants.PREFIX + "vehicle" + Constants.STATUS_BRIDGEHANDLER_MISSING;
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, textKey);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_MISSING_ERROR, textKey);
             }
         } else {
             String textKey = Constants.PREFIX + "vehicle" + Constants.STATUS_BRIDGE_MISSING;
@@ -213,8 +214,9 @@ public class VehicleHandler extends BaseThingHandler {
     public void getData() {
         if (!accountHandler.isEmpty()) {
             String token = accountHandler.get().getToken();
-            if (EMPTY.equals(token)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Check Bridge Authorization");
+            if (token.isEmpty()) {
+                String textKey = Constants.PREFIX + "vehicle" + Constants.STATUS_BRIDGE_ATHORIZATION;
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, textKey);
                 return;
             } else if (!online) { // only update if thing isn't already ONLINE
                 updateStatus(ThingStatus.ONLINE);
@@ -561,9 +563,7 @@ public class VehicleHandler extends BaseThingHandler {
         }
         if (updateTime) {
             timeHash.put(group, timestamp);
-            Date d = new Date(timestamp);
-            LocalDateTime ld = d.toInstant().atZone(Constants.zoneId).toLocalDateTime();
-            DateTimeType dtt = DateTimeType.valueOf(ld.format(DATE_INPUT_PATTERN));
+            DateTimeType dtt = new DateTimeType(Instant.ofEpochMilli(timestamp).atZone(timeZoneProvider.getTimeZone()));
             updateState(new ChannelUID(thing.getUID(), group, "last-update"), dtt);
         }
     }

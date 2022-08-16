@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.mercedesme.internal;
 
-import java.time.ZoneId;
-
 import javax.measure.Unit;
 import javax.measure.quantity.Length;
 
@@ -84,8 +82,10 @@ public class Constants {
     public static final String STATUS_PORT_MISSING = ".status.port-missing";
     public static final String STATUS_CLIENT_ID_MISSING = ".status.client-id-missing";
     public static final String STATUS_CLIENT_SECRET_MISSING = ".status.client-secret-missing";
+    public static final String STATUS_SERVER_RESTART = ".status.server-restart";
     public static final String STATUS_BRIDGE_MISSING = ".status.bridge-missing";
     public static final String STATUS_BRIDGEHANDLER_MISSING = ".status.bridge-handler-missing";
+    public static final String STATUS_BRIDGE_ATHORIZATION = ".status.bridge-authoriziation";
 
     public static final String SPACE = " ";
     public static final String EMPTY = "";
@@ -99,6 +99,4 @@ public class Constants {
     public static final String MIME_PREFIX = "image/";
 
     public static final Unit<Length> KILOMETRE_UNIT = MetricPrefix.KILO(SIUnits.METRE);
-
-    public static ZoneId zoneId = ZoneId.systemDefault();
 }

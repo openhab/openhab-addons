@@ -13,7 +13,6 @@
 package org.openhab.binding.mercedesme.internal.utils;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.mercedesme.internal.Constants;
 import org.openhab.core.types.State;
 
 /**
@@ -57,6 +56,6 @@ public class ChannelStateMap {
     }
 
     public boolean isValid() {
-        return !channel.equals(Constants.EMPTY);
+        return !channel.isEmpty();
     }
 }
