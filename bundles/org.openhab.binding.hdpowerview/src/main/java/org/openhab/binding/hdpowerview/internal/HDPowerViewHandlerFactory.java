@@ -73,7 +73,7 @@ public class HDPowerViewHandlerFactory extends BaseThingHandlerFactory {
             registerService(new HDPowerViewDeviceDiscoveryService(handler));
             return handler;
         } else if (HDPowerViewBindingConstants.THING_TYPE_SHADE.equals(thingTypeUID)) {
-            return new HDPowerViewShadeHandler(thing);
+            return new HDPowerViewShadeHandler(thing, translationProvider);
         } else if (HDPowerViewBindingConstants.THING_TYPE_REPEATER.equals(thingTypeUID)) {
             return new HDPowerViewRepeaterHandler(thing);
         }

@@ -13,11 +13,14 @@
 
 		<channels>
 			<channel id="position" typeId="shade-position"/>
-			<channel id="secondary" typeId="shade-position">
-				<label>Secondary Position</label>
-				<description>The secondary vertical position (on top-down/bottom-up shades)</description>
-			</channel>
-			<channel id="vane" typeId="shade-vane"/>
+
+			<!-- these channels now created dynamically
+
+				<channel id="secondary" typeId="shade-secondary"/>
+				<channel id="vane" typeId="shade-vane"/>
+
+			-->
+
 			<channel id="command" typeId="shade-command"/>
 			<channel id="lowBattery" typeId="system.low-battery"/>
 			<channel id="batteryLevel" typeId="system.battery-level"/>

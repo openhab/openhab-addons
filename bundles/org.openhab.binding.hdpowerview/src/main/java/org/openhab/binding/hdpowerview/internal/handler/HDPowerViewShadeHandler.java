@@ -15,18 +15,22 @@ package org.openhab.binding.hdpowerview.internal.handler;
 import static org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants.*;
 import static org.openhab.binding.hdpowerview.internal.api.CoordinateSystem.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import javax.ws.rs.NotSupportedException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants;
+import org.openhab.binding.hdpowerview.internal.HDPowerViewTranslationProvider;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewWebTargets;
 import org.openhab.binding.hdpowerview.internal.api.CoordinateSystem;
 import org.openhab.binding.hdpowerview.internal.api.Firmware;
@@ -41,6 +45,7 @@ import org.openhab.binding.hdpowerview.internal.exceptions.HubInvalidResponseExc
 import org.openhab.binding.hdpowerview.internal.exceptions.HubMaintenanceException;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubProcessingException;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubShadeTimeoutException;
+import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
@@ -50,10 +55,13 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.UnDefType;
@@ -83,7 +91,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
     private final Map<String, String> detectedCapabilities = new HashMap<>();
 
     private final Logger logger = LoggerFactory.getLogger(HDPowerViewShadeHandler.class);
-    private final ShadeCapabilitiesDatabase db = new ShadeCapabilitiesDatabase();
+    private static final ShadeCapabilitiesDatabase DB = new ShadeCapabilitiesDatabase();
 
     private @Nullable ScheduledFuture<?> refreshPositionFuture = null;
     private @Nullable ScheduledFuture<?> refreshSignalFuture = null;
@@ -91,9 +99,12 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
     private @Nullable Capabilities capabilities;
     private int shadeId;
     private boolean isDisposing;
+    private boolean dynamicChannelsInitialized;
+    private final HDPowerViewTranslationProvider translater;
 
-    public HDPowerViewShadeHandler(Thing thing) {
+    public HDPowerViewShadeHandler(Thing thing, HDPowerViewTranslationProvider translationProvider) {
         super(thing);
+        translater = translationProvider;
     }
 
     @Override
@@ -107,7 +118,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
                     "@text/offline.conf-error.invalid-bridge-handler");
             return;
         }
-
+        dynamicChannelsInitialized = false;
         updateStatus(ThingStatus.UNKNOWN);
     }
 
@@ -131,6 +142,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         }
         refreshBatteryLevelFuture = null;
         capabilities = null;
+        dynamicChannelsInitialized = false;
     }
 
     @Override
@@ -250,6 +262,8 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
     protected void onReceiveUpdate(ShadeData shadeData) {
         updateStatus(ThingStatus.ONLINE);
         updateCapabilities(shadeData);
+        // note: updateDynamicChannels() requires updateCapabilities() to have been called first
+        updateDynamicChannels();
         updateSoftProperties(shadeData);
         updateFirmwareProperties(shadeData);
         ShadePosition shadePosition = shadeData.positions;
@@ -265,12 +279,13 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
             // Already cached.
             return;
         }
-        Capabilities capabilities = db.getCapabilities(shade.type, shade.capabilities);
+        Capabilities capabilities = DB.getCapabilities(shade.type, shade.capabilities);
         if (capabilities.getValue() < 0) {
             logger.debug("Unable to set capabilities for shade {}", shade.id);
             return;
         }
         logger.debug("Caching capabilities {} for shade {}", capabilities.getValue(), shade.id);
+        dynamicChannelsInitialized = false;
         this.capabilities = capabilities;
     }
 
@@ -298,17 +313,17 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         final int type = shadeData.type;
         String propKey = HDPowerViewBindingConstants.PROPERTY_SHADE_TYPE;
         String propOldVal = properties.getOrDefault(propKey, "");
-        String propNewVal = db.getType(type).toString();
+        String propNewVal = DB.getType(type).toString();
         if (!propNewVal.equals(propOldVal)) {
             propChanged = true;
             getThing().setProperty(propKey, propNewVal);
-            if ((type > 0) && !db.isTypeInDatabase(type)) {
-                db.logTypeNotInDatabase(type);
+            if ((type > 0) && !DB.isTypeInDatabase(type)) {
+                DB.logTypeNotInDatabase(type);
             }
         }
 
         // update 'capabilities' property
-        Capabilities capabilities = db.getCapabilities(shadeData.capabilities);
+        Capabilities capabilities = DB.getCapabilities(shadeData.capabilities);
         final int capabilitiesVal = capabilities.getValue();
         propKey = HDPowerViewBindingConstants.PROPERTY_SHADE_CAPABILITIES;
         propOldVal = properties.getOrDefault(propKey, "");
@@ -316,14 +331,14 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         if (!propNewVal.equals(propOldVal)) {
             propChanged = true;
             getThing().setProperty(propKey, propNewVal);
-            if ((capabilitiesVal >= 0) && !db.isCapabilitiesInDatabase(capabilitiesVal)) {
-                db.logCapabilitiesNotInDatabase(type, capabilitiesVal);
+            if ((capabilitiesVal >= 0) && !DB.isCapabilitiesInDatabase(capabilitiesVal)) {
+                DB.logCapabilitiesNotInDatabase(type, capabilitiesVal);
             }
         }
 
-        if (propChanged && db.isCapabilitiesInDatabase(capabilitiesVal) && db.isTypeInDatabase(type)
-                && (capabilitiesVal != db.getType(type).getCapabilities()) && (shadeData.capabilities != null)) {
-            db.logCapabilitiesMismatch(type, capabilitiesVal);
+        if (propChanged && DB.isCapabilitiesInDatabase(capabilitiesVal) && DB.isTypeInDatabase(type)
+                && (capabilitiesVal != DB.getType(type).getCapabilities()) && (shadeData.capabilities != null)) {
+            DB.logCapabilitiesMismatch(type, capabilitiesVal);
         }
     }
 
@@ -364,7 +379,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         if (!capsNewVal.equals(capsOldVal)) {
             detectedCapabilities.put(capsKey, capsNewVal);
             if (capsNewBool != capabilities.supportsSecondary()) {
-                db.logPropertyMismatch(capsKey, shadeData.type, capabilities.getValue(), capsNewBool);
+                DB.logPropertyMismatch(capsKey, shadeData.type, capabilities.getValue(), capsNewBool);
             }
         }
 
@@ -376,7 +391,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         if (!capsNewVal.equals(capsOldVal)) {
             detectedCapabilities.put(capsKey, capsNewVal);
             if (capsNewBool != capabilities.supportsTiltAnywhere()) {
-                db.logPropertyMismatch(capsKey, shadeData.type, capabilities.getValue(), capsNewBool);
+                DB.logPropertyMismatch(capsKey, shadeData.type, capabilities.getValue(), capsNewBool);
             }
         }
     }
@@ -595,5 +610,101 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
                 logger.warn("Unexpected error: {}", e.getMessage());
             }
         }
+    }
+
+    /**
+     * Initialize the dynamic channels if the respective device supports them.
+     */
+    private void updateDynamicChannels() {
+        if (!dynamicChannelsInitialized) {
+            dynamicChannelsInitialized = dynamicChannelsInitializer();
+        }
+    }
+
+    /**
+     * Helper to do the actual work of initializing the dynamic channels if the respective device supports them.
+     *
+     * @return true if all channels were successfully initialised.
+     */
+    private boolean dynamicChannelsInitializer() {
+        final Capabilities capabilities = this.capabilities;
+        if (capabilities == null) {
+            // stuff not initialised
+            return false;
+        }
+
+        // note: this is an immutable list
+        List<Channel> channels = thing.getChannels();
+        final Stream<Channel> channelStream = channels.stream();
+
+        // predicate to filter the vane channel
+        final Predicate<Channel> vaneChannelFilter = c -> HDPowerViewBindingConstants.CHANNEL_TYPE_VANE
+                .equals(c.getChannelTypeUID());
+
+        // predicate to filter the secondary channel
+        final Predicate<Channel> secChannelFilter = c -> HDPowerViewBindingConstants.CHANNEL_TYPE_SECONDARY
+                .equals(c.getChannelTypeUID());
+
+        // current and required state of the vane channel
+        final boolean vaneChannelExisting = channelStream.anyMatch(vaneChannelFilter);
+        final boolean vaneChannelRequired = capabilities.usesVaneChannel();
+
+        final boolean secChannelExisting = channelStream.anyMatch(secChannelFilter);
+        final boolean secChannelRequired = capabilities.usesSecondaryChannel();
+
+        if ((vaneChannelExisting == vaneChannelRequired) && (secChannelExisting == secChannelRequired)) {
+            // nothing to do
+            return true;
+        }
+
+        // make a mutable copy of the original immutable channel list
+        channels = new ArrayList<>(channels);
+
+        boolean error = false;
+        if (vaneChannelRequired) {
+            // build the vane channel
+            Channel vaneChannel = ChannelBuilder
+                    .create(new ChannelUID(thing.getUID(), HDPowerViewBindingConstants.CHANNEL_SHADE_VANE))
+                    .withType(HDPowerViewBindingConstants.CHANNEL_TYPE_VANE).withKind(ChannelKind.STATE)
+                    .withAcceptedItemType(CoreItemFactory.DIMMER)
+                    .withDescription(translater.getText("channel-type.hdpowerview.shade-vane.description"))
+                    .withLabel(translater.getText("channel-type.hdpowerview.shade-vane.label")).build();
+
+            // add the vane channel
+            error |= !channels.add(vaneChannel);
+        } else {
+            // remove the vane channel
+            error |= !channels.removeIf(vaneChannelFilter);
+        }
+
+        if (secChannelRequired) {
+            // build the secondary channel
+            Channel secChannel = ChannelBuilder
+                    .create(new ChannelUID(thing.getUID(),
+                            HDPowerViewBindingConstants.CHANNEL_SHADE_SECONDARY_POSITION))
+                    .withType(HDPowerViewBindingConstants.CHANNEL_TYPE_SECONDARY).withKind(ChannelKind.STATE)
+                    .withAcceptedItemType(CoreItemFactory.DIMMER)
+                    .withDescription(translater.getText("channel-type.hdpowerview.shade-secondary.description"))
+                    .withLabel(translater.getText("channel-type.hdpowerview.shade-secondary.label")).build();
+
+            // add the secondary channel
+            error |= !channels.add(secChannel);
+        } else {
+            // remove the secondary channel
+            error |= !channels.removeIf(secChannelFilter);
+        }
+
+        if (error) {
+            // something went wrong
+            return false;
+        }
+
+        /*
+         * If we got this far then we will update the thing by building an identical copy of the target thing, except
+         * that it uses the newly modified channel list instead of the original one.
+         */
+        final Thing thing = editThing().withChannels(channels).build();
+        scheduler.submit(() -> updateThing(thing));
+        return true;
     }
 }
