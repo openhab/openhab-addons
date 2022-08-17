@@ -37,6 +37,7 @@ public class LiquidCheckBindingConstants {
     public static final String RAW_CONTENT_CHANNEL = "raw-content";
     public static final String LEVEL_CHANNEL = "level";
     public static final String RAW_LEVEL_CHANNEL = "raw-level";
+    public static final String FILL_INDICATOR_CHANNEL = "fill-indicator";
     public static final String PUMP_TOTAL_RUNS_CHANNEL = "pump-runs";
     public static final String PUMP_TOTAL_RUNTIME_CHANNEL = "pump-runtime";
     public static final String MEASURE_CHANNEL = "measure";

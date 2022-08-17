@@ -67,7 +67,7 @@ public class LiquidCheckHttpClient {
      * @throws ExecutionException
      */
     public String pollData() throws InterruptedException, TimeoutException, ExecutionException {
-        String uri = "http://" + config.ip + "/infos.json";
+        String uri = "http://" + config.hostname + "/infos.json";
         Request request = client.newRequest(uri);
         request.method(HttpMethod.GET);
         ContentResponse response = request.send();
@@ -75,7 +75,7 @@ public class LiquidCheckHttpClient {
     }
 
     public String measureCommand() throws InterruptedException, TimeoutException, ExecutionException {
-        String uri = "http://" + config.ip + "/command";
+        String uri = "http://" + config.hostname + "/command";
         Request request = client.newRequest(uri);
         request.method(HttpMethod.POST);
         request.header(HttpHeader.CONTENT_TYPE, "applicaton/json");

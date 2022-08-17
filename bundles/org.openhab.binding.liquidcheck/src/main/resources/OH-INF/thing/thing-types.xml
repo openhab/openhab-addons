@@ -12,6 +12,7 @@
 		<channels>
 			<channel id="content" typeId="content-channel"/>
 			<channel id="level" typeId="level-channel"/>
+			<channel id="fill-indicator" typeId="fill-indicator-channel"/>
 			<channel id="raw-content" typeId="raw-content-channel"/>
 			<channel id="raw-level" typeId="raw-level-channel"/>
 			<channel id="pump-runs" typeId="pump-runs-channel"></channel>
@@ -32,7 +33,7 @@
 		</properties>
 
 		<config-description>
-			<parameter name="ip" type="text" required="true">
+			<parameter name="hostname" type="text" required="true">
 				<context>network-address</context>
 				<label>Hostname</label>
 				<description>Hostname or IP address of the device.</description>
@@ -40,6 +41,7 @@
 			<parameter name="maxContent" type="integer" unit="l" min="1">
 				<label>Maximal Content</label>
 				<description>Maximal conten in the container.</description>
+				<default>0</default>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" unit="s" min="1" max="3600">
 				<label>Refresh Interval</label>
@@ -79,6 +81,12 @@
 		<label>Level raw data</label>
 		<description>Level in the container as measured by the device</description>
 		<state readOnly="true" pattern="%.4f m"></state>
+	</channel-type>
+	<channel-type id="fill-indicator-channel">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Fill indicator</label>
+		<description>Indicates the fill level based on max content and measured content</description>
+		<state readOnly="true" pattern="%.2f %%"></state>
 	</channel-type>
 	<channel-type id="measure-channel">
 		<kind>trigger</kind>

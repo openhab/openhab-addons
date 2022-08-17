@@ -160,6 +160,10 @@ public class LiquidCheckHandler extends BaseThingHandler {
                     updateState(PUMP_TOTAL_RUNS_CHANNEL, new DecimalType(response.payload.system.pump.totalRuns));
                     updateState(PUMP_TOTAL_RUNTIME_CHANNEL,
                             new QuantityType<>(response.payload.system.pump.totalRuntime, Units.SECOND));
+                    if (config.maxContent > 1) {
+                        double fillIndicator = (double) response.payload.measure.content / config.maxContent * 100;
+                        updateState(FILL_INDICATOR_CHANNEL, new QuantityType<>(fillIndicator, Units.PERCENT));
+                    }
                 } else {
                     logger.debug("Json is null");
                 }
