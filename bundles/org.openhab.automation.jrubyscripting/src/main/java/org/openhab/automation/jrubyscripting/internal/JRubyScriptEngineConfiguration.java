@@ -198,9 +198,6 @@ public class JRubyScriptEngineConfiguration {
             engine.eval(gemCommand);
         } catch (ScriptException e) {
             logger.warn("Error installing Gems: {}", e.getMessage());
-        } catch (BootstrapMethodError e) {
-            logger.warn("Error while checking/installing gems: {}. You may need to restart OpenHAB", e.getMessage());
-            logger.debug("Error in configureGems", e);
         }
     }
 
