@@ -86,6 +86,7 @@ public class HubCommunicationThread extends Thread {
 
         try {
             if (stopped) {
+                logger.debug("HubCommunicationThread is stopped, disconnecting from Hub");
                 hubConnection.disconnect();
             }
         } catch (NoboCommunicationException nce) {

@@ -117,8 +117,8 @@ public class HubConnection {
             hubHandler.receivedData(line);
         }
 
-        if (null != line) {
-            String l = Helpers.castToNonNull(line, "line");
+        String l = line;
+        if (null != l) {
             OverridePlan newOverridePlan = OverridePlan.fromH04(l);
             hub.setActiveOverrideId(newOverridePlan.getId());
             sendCommand(hub.generateCommandString("U03"));
@@ -145,8 +145,9 @@ public class HubConnection {
     }
 
     public boolean isConnected() {
-        if (hubConnection != null) {
-            Socket conn = Helpers.castToNonNull(hubConnection, "hubConnection");
+        @Nullable
+        Socket conn = this.hubConnection;
+        if (null != conn) {
             return conn.isConnected();
         }
 
@@ -154,8 +155,9 @@ public class HubConnection {
     }
 
     public boolean hasData() throws NoboCommunicationException {
-        if (null != in) {
-            BufferedReader i = Helpers.castToNonNull(in, "in");
+        @Nullable
+        BufferedReader i = this.in;
+        if (null != i) {
             try {
                 return i.ready();
             } catch (IOException ioex) {
@@ -168,11 +170,11 @@ public class HubConnection {
 
     public void processReads(Duration timeout) throws NoboCommunicationException {
         try {
-            if (null == hubConnection) {
+            @Nullable
+            Socket conn = this.hubConnection;
+            if (null == conn) {
                 throw new NoboCommunicationException("No connection to Hub");
             }
-
-            Socket conn = Helpers.castToNonNull(hubConnection, "hubConnection");
 
             logger.trace("Reading from Hub, waiting maximum {}", Helpers.formatDuration(timeout));
             conn.setSoTimeout((int) timeout.toMillis());
@@ -196,9 +198,10 @@ public class HubConnection {
     }
 
     private @Nullable String readLine() throws NoboCommunicationException {
+        @Nullable
+        BufferedReader reader = this.in;
         try {
-            if (null != in) {
-                BufferedReader reader = Helpers.castToNonNull(in, "in");
+            if (null != reader) {
                 String line = reader.readLine();
                 if (line != null) {
                     logger.trace("Reading raw data string from Nobø Hub: {}", line);
@@ -217,9 +220,10 @@ public class HubConnection {
     }
 
     private void write(String s) {
-        if (null != out) {
+        @Nullable
+        PrintWriter o = this.out;
+        if (null != o) {
             logger.trace("Sending '{}'", s);
-            PrintWriter o = Helpers.castToNonNull(out, "out");
             o.write(s);
             o.flush();
         }
@@ -239,16 +243,22 @@ public class HubConnection {
 
     public void disconnect() throws NoboCommunicationException {
         try {
-            if (out != null) {
-                Helpers.castToNonNull(out, "out").close();
+            @Nullable
+            PrintWriter o = this.out;
+            if (o != null) {
+                o.close();
             }
 
-            if (in != null) {
-                Helpers.castToNonNull(in, "in").close();
+            @Nullable
+            BufferedReader i = this.in;
+            if (i != null) {
+                i.close();
             }
 
-            if (hubConnection != null) {
-                Helpers.castToNonNull(hubConnection, "hubConnection").close();
+            @Nullable
+            Socket conn = this.hubConnection;
+            if (conn != null) {
+                conn.close();
             }
         } catch (IOException ioex) {
             throw new NoboCommunicationException("Error disconnecting from Hub", ioex);

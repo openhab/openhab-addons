@@ -15,7 +15,6 @@ package org.openhab.binding.nobohub.internal;
 import java.time.Duration;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Shows information about a Component in the Nobø Hub.
@@ -25,14 +24,6 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class Helpers {
-
-    public static <T> T castToNonNull(@Nullable T value, @Nullable String msg) {
-        if (null == value) {
-            throw new IllegalArgumentException(msg);
-        }
-
-        return value;
-    }
 
     public static String formatDuration(Duration duration) {
         long seconds = duration.getSeconds();

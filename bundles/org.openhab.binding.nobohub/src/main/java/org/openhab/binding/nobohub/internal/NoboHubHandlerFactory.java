@@ -110,14 +110,12 @@ public class NoboHubHandlerFactory extends BaseThingHandlerFactory {
             ServiceRegistration<?> serviceReg = this.discoveryServiceRegs
                     .remove(bridgeHandler.getThing().getThingTypeUID());
             if (null != serviceReg) {
-                ServiceRegistration<?> sr = Helpers.castToNonNull(serviceReg, "serviceReg");
                 @Nullable
                 NoboThingDiscoveryService service = (NoboThingDiscoveryService) getBundleContext()
-                        .getService(sr.getReference());
-                sr.unregister();
-                if (service != null) {
-                    NoboThingDiscoveryService s = Helpers.castToNonNull(service, "service");
-                    s.deactivate();
+                        .getService(serviceReg.getReference());
+                serviceReg.unregister();
+                if (null != service) {
+                    service.deactivate();
                 }
             }
         } catch (IllegalArgumentException iae) {
