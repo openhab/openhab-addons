@@ -72,6 +72,13 @@ public interface SysteminfoInterface {
     public DecimalType getCpuPhysicalCores();
 
     /**
+     * Returns the system cpu load.
+     *
+     * @return the system cpu load between 0 and 1 or null, if no information is available
+     */
+    public @Nullable DecimalType getSystemCpuLoad();
+
+    /**
      * Returns the system load average for the last minute.
      *
      * @return the load as a number of processes or null, if no information is available

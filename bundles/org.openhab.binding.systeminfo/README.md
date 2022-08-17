@@ -77,7 +77,7 @@ In the list below, you can find, how are channel group and channels id`s related
 *   **group** `battery` (deviceIndex)
   * **channel** `name, remainingCapacity, remainingTime`
 *   **group** `cpu`
-  * **channel** `name, description, load1, load5, load15, uptime`
+  * **channel** `name, description, load, load1, load5, load15, uptime`
 *   **group** `sensors`
   * **channel** `cpuTemp, cpuVoltage, fanSpeed`
 *   **group** `network` (deviceIndex)
@@ -104,6 +104,7 @@ The binding introduces the following channels:
 
 | Channel ID         | Channel Description                                              | Supported item type | Default priority | Advanced |
 |--------------------|------------------------------------------------------------------|---------------------|------------------|----------|
+| load               | CPU Load in %                                                    | Number:Dimensionless| High             | False    |
 | load1              | Load for the last 1 minute                                       | Number              | Medium           | True     |
 | load5              | Load for the last 5 minutes                                      | Number              | Medium           | True     |
 | load15             | Load for the last 15 minutes                                     | Number              | Medium           | True     |
@@ -190,6 +191,7 @@ Number Network_PacketsReceived    "Packets received"    <returnpipe>     { chann
 /* CPU information*/
 String CPU_Name                   "Name"                <none>           { channel="systeminfo:computer:work:cpu#name" }
 String CPU_Description            "Description"         <none>           { channel="systeminfo:computer:work:cpu#description" }
+Number CPU_Load                   "CPU Load"            <none>           { channel="systeminfo:computer:work:cpu#load" }
 Number CPU_Load1                  "Load (1 min)"        <none>           { channel="systeminfo:computer:work:cpu#load1" }
 Number CPU_Load5                  "Load (5 min)"        <none>           { channel="systeminfo:computer:work:cpu#load5" }
 Number CPU_Load15                 "Load (15 min)"       <none>           { channel="systeminfo:computer:work:cpu#load15" }

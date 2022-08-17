@@ -74,6 +74,10 @@ public class OSHISysteminfo implements SysteminfoInterface {
     private @NonNullByDefault({}) List<PowerSource> powerSources;
     private @NonNullByDefault({}) List<HWDiskStore> drives;
 
+    // Array containing cpu tick info, according to oshi doc:
+    // 8 long values representing time spent in User, Nice, System, Idle, IOwait, IRQ, SoftIRQ, and Steal states
+    private long[] ticks = new long[8];
+
     public static final int PRECISION_AFTER_DECIMAL_SIGN = 1;
 
     /**
@@ -485,6 +489,16 @@ public class OSHISysteminfo implements SysteminfoInterface {
         return timeInMinutes;
     }
 
+    @Override
+    public @Nullable DecimalType getSystemCpuLoad() {
+        Double load = null;
+        if (ticks[0] > 0) {
+            load = cpu.getSystemCpuLoadBetweenTicks(ticks);
+        }
+        ticks = cpu.getSystemCpuLoadTicks();
+        return load == null ? null : new DecimalType(load);
+    }
+
     /**
      * {@inheritDoc}
      *
@@ -518,10 +532,10 @@ public class OSHISysteminfo implements SysteminfoInterface {
         return avarageCpuLoad.signum() == -1 ? null : new DecimalType(avarageCpuLoad);
     }
 
-    private BigDecimal getAvarageCpuLoad(int timeInMunutes) {
+    private BigDecimal getAvarageCpuLoad(int timeInMinutes) {
         // This parameter is specified in OSHI Javadoc
         int index;
-        switch (timeInMunutes) {
+        switch (timeInMinutes) {
             case 1:
                 index = 0;
                 break;

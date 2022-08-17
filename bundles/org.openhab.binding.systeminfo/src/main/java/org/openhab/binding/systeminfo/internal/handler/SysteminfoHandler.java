@@ -318,6 +318,13 @@ public class SysteminfoHandler extends BaseThingHandler {
                 case CHANNEL_SENSORS_FAN_SPEED:
                     state = systeminfo.getSensorsFanSpeed(deviceIndex);
                     break;
+                case CHANNEL_CPU_LOAD:
+                    DecimalType load = systeminfo.getSystemCpuLoad();
+                    if (load != null) {
+                        load = new DecimalType(load.doubleValue() * 100);
+                    }
+                    state = load;
+                    break;
                 case CHANNEL_CPU_LOAD_1:
                     state = systeminfo.getCpuLoad1();
                     break;
