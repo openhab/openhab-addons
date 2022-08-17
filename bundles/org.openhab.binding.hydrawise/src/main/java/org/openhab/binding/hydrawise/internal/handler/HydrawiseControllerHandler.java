@@ -96,17 +96,26 @@ public class HydrawiseControllerHandler extends BaseThingHandler implements Hydr
     public void initialize() {
         HydrawiseControllerConfiguration config = getConfigAs(HydrawiseControllerConfiguration.class);
         controllerId = config.controllerId;
-        Bridge bridge = getBridge();
-        if (bridge != null) {
-            HydrawiseAccountHandler handler = (HydrawiseAccountHandler) bridge.getHandler();
-            if (handler != null) {
-                handler.addControllerListeners(this);
+        HydrawiseAccountHandler handler = getAccountHandler();
+        if (handler != null) {
+            handler.addControllerListeners(this);
+            Bridge bridge = getBridge();
+            if (bridge != null) {
                 if (bridge.getStatus() == ThingStatus.ONLINE) {
                     updateStatus(ThingStatus.ONLINE);
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
                 }
             }
+        }
+    }
+
+    @Override
+    public void dispose() {
+        logger.debug("Controller Handler disposed.");
+        HydrawiseAccountHandler handler = getAccountHandler();
+        if (handler != null) {
+            handler.removeControllerListeners(this);
         }
     }
 
