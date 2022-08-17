@@ -12,6 +12,7 @@
 		<channels>
 			<channel id="power" typeId="system.power"/>
 			<channel id="source" typeId="source"/>
+			<channel id="radioPreset" typeId="radioPreset"/>
 			<channel id="brightness" typeId="brightness"/>
 		</channels>
 
