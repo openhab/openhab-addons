@@ -47,7 +47,7 @@
 				<default>60</default>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="connecionTimeOut" type="integer" unit="s" min="1" max="120">
+			<parameter name="connecionTimeout" type="integer" unit="s" min="1" max="120">
 				<label>Connection Timeout</label>
 				<description>After the given amout of seconds without a response, the connection will be seen as timed out!</description>
 				<default>5</default>

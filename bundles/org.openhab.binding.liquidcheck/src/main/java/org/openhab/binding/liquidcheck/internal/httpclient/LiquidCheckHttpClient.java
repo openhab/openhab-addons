@@ -51,7 +51,7 @@ public class LiquidCheckHttpClient {
         try {
             client.setFollowRedirects(false);
             client.setName("LiquidCheckHttpClient");
-            client.setIdleTimeout(config.connecionTimeOut * 1000);
+            client.setIdleTimeout(config.connecionTimeout * 1000);
             client.start();
         } catch (Exception e) {
             logger.error("Couldn't start Client! Exception: {}", e.toString());
