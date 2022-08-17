@@ -17,6 +17,7 @@ import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWe
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -156,7 +157,7 @@ public class FineOffsetGatewayHandler extends BaseBridgeHandler {
         if (disposed) {
             return;
         }
-        List<MeasuredValue> data = query(GatewayQueryService::getMeasuredValues);
+        Collection<MeasuredValue> data = query(GatewayQueryService::getMeasuredValues);
         if (data == null) {
             getThing().getChannels().forEach(c -> updateState(c.getUID(), UnDefType.UNDEF));
             return;
