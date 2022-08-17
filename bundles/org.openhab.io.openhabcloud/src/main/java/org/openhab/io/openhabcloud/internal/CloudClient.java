@@ -335,7 +335,7 @@ public class CloudClient {
      */
 
     public void onConnect() {
-        logger.info("Connected to the openHAB Cloud service (UUID = {}, base URL = {})", sensored(this.uuid),
+        logger.info("Connected to the openHAB Cloud service (UUID = {}, base URL = {})", censored(this.uuid),
                 this.localBaseUrl);
         reconnectBackoff.reset();
         isConnected = true;
@@ -346,7 +346,7 @@ public class CloudClient {
      */
 
     public void onDisconnect() {
-        logger.info("Disconnected from the openHAB Cloud service (UUID = {}, base URL = {})", sensored(this.uuid),
+        logger.info("Disconnected from the openHAB Cloud service (UUID = {}, base URL = {})", censored(this.uuid),
                 this.localBaseUrl);
         isConnected = false;
         // And clean up the list of running requests
@@ -695,7 +695,7 @@ public class CloudClient {
         });
     }
 
-    private static String sensored(String secret) {
+    private static String censored(String secret) {
         if (secret.length() < 4) {
             return "*******";
         }
