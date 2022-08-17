@@ -456,7 +456,7 @@
 		<item-type>Number:ElectricPotential</item-type>
 		<label>@text/channel-type.shelly.sensorADC.label</label>
 		<description>@text/channel-type.shelly.sensorADC.description</description>
-		<state readOnly="true" pattern="%.0f %unit%">
+		<state readOnly="true" pattern="%.3f %unit%">
 		</state>
 	</channel-type>
 

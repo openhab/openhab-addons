@@ -305,7 +305,10 @@ public class ShellyManagerActionPage extends ShellyManagerPage {
         Map<String, String> list = new LinkedHashMap<>();
         list.put(ACTION_RES_STATS, "Reset Statistics");
         list.put(ACTION_RESTART, "Reboot Device");
-        list.put(ACTION_PROTECT, "Protect Device");
+
+        if (!profile.isGen2) {
+            list.put(ACTION_PROTECT, "Protect Device");
+        }
 
         if ((profile.settings.coiot != null) && (profile.settings.coiot.peer != null) && !profile.isMotion) {
             boolean mcast = profile.settings.coiot.peer.isEmpty()
