@@ -58,5 +58,7 @@ public class FineOffsetWeatherStationBindingConstants {
 
     public static final String SENSOR_CHANNEL_SIGNAL = "signal";
     public static final String SENSOR_CHANNEL_BATTERY_LEVEL = "batteryLevel";
+
+    public static final String SENSOR_CHANNEL_BATTERY_VOLTAGE = "batteryVoltage";
     public static final String SENSOR_CHANNEL_LOW_BATTERY = "lowBattery";
 }
