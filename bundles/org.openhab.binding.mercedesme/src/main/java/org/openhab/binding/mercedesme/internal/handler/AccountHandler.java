@@ -130,7 +130,6 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
      */
     @Override
     public void onAccessTokenResponse(AccessTokenResponse tokenResponse) {
-        logger.debug("{} received new Access Token", config.get().callbackPort);
         if (!tokenResponse.getAccessToken().isEmpty()) {
             // token not empty - fine
             updateStatus(ThingStatus.ONLINE);
