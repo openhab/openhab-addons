@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class LiquidCheckConfiguration {
 
     public String hostname = "";
-    public int refreshInterval = 600;
+    public int refreshInterval = 60;
     public int maxContent = 1;
     public byte connecionTimeout = 5;
 }
