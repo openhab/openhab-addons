@@ -285,23 +285,23 @@ Bridge solarforecast:fs-site:homeSite   "ForecastSolar Home" [ location="54.321,
 ### Items file
 
 ````
-Number:Energy           ForecastSolarHome_Actual           "Actual Forecast Today [%3.f %unit%]"             {channel="solarforecast:fs-site:homeSite:actual" }                                                                           
-Number:Power            ForecastSolarHome_Actual_Power     "Actual Power Forecast [%3.f %unit%]"             {channel="solarforecast:fs-site:homeSite:actual-power" }                                                                           
-Number:Energy           ForecastSolarHome_Remaining        "Remaining Forecast Today [%3.f %unit%]"          {channel="solarforecast:fs-site:homeSite:remaining" }                                                                           
-Number:Energy           ForecastSolarHome_Today            "Today Total Forecast [%3.f %unit%]"              {channel="solarforecast:fs-site:homeSite:today" }                                                                           
-Number:Energy           ForecastSolarHome_Day1             "Tomorrow Total Forecast [%3.f %unit%]"           {channel="solarforecast:fs-site:homeSite:day1" }                                                                           
+Number:Energy           ForecastSolarHome_Actual           "Actual Forecast Today [%.3f %unit%]"             {channel="solarforecast:fs-site:homeSite:actual" }                                                                           
+Number:Power            ForecastSolarHome_Actual_Power     "Actual Power Forecast [%.3f %unit%]"             {channel="solarforecast:fs-site:homeSite:actual-power" }                                                                           
+Number:Energy           ForecastSolarHome_Remaining        "Remaining Forecast Today [%.3f %unit%]"          {channel="solarforecast:fs-site:homeSite:remaining" }                                                                           
+Number:Energy           ForecastSolarHome_Today            "Today Total Forecast [%.3f %unit%]"              {channel="solarforecast:fs-site:homeSite:today" }                                                                           
+Number:Energy           ForecastSolarHome_Day1             "Tomorrow Total Forecast [%.3f %unit%]"           {channel="solarforecast:fs-site:homeSite:day1" }                                                                           
 
-Number:Energy           ForecastSolarHome_Actual_NE        "Actual NE Forecast Today [%3.f %unit%]"          {channel="solarforecast:fs-plane:homeSite:homeNorthEast:actual" }                                                                           
-Number:Power            ForecastSolarHome_Actual_Power_NE  "Actual NE Power Forecast [%3.f %unit%]"          {channel="solarforecast:fs-plane:homeSite:homeNorthEast:actual-power" }                                                                           
-Number:Energy           ForecastSolarHome_Remaining_NE     "Remaining NE Forecast Today [%3.f %unit%]"       {channel="solarforecast:fs-plane:homeSite:homeNorthEast:remaining" }                                                                           
-Number:Energy           ForecastSolarHome_Today_NE         "Total NE Forecast Today [%3.f %unit%]"           {channel="solarforecast:fs-plane:homeSite:homeNorthEast:today" }                                                                           
-Number:Energy           ForecastSolarHome_Day_NE           "Tomorrow NE Forecast [%3.f %unit%]"              {channel="solarforecast:fs-plane:homeSite:homeNorthEast:day1" }                                                                           
+Number:Energy           ForecastSolarHome_Actual_NE        "Actual NE Forecast Today [%.3f %unit%]"          {channel="solarforecast:fs-plane:homeSite:homeNorthEast:actual" }                                                                           
+Number:Power            ForecastSolarHome_Actual_Power_NE  "Actual NE Power Forecast [%.3f %unit%]"          {channel="solarforecast:fs-plane:homeSite:homeNorthEast:actual-power" }                                                                           
+Number:Energy           ForecastSolarHome_Remaining_NE     "Remaining NE Forecast Today [%.3f %unit%]"       {channel="solarforecast:fs-plane:homeSite:homeNorthEast:remaining" }                                                                           
+Number:Energy           ForecastSolarHome_Today_NE         "Total NE Forecast Today [%.3f %unit%]"           {channel="solarforecast:fs-plane:homeSite:homeNorthEast:today" }                                                                           
+Number:Energy           ForecastSolarHome_Day_NE           "Tomorrow NE Forecast [%.3f %unit%]"              {channel="solarforecast:fs-plane:homeSite:homeNorthEast:day1" }                                                                           
 
-Number:Energy           ForecastSolarHome_Actual_SW        "Actual SW Forecast Today [%3.f %unit%]"          {channel="solarforecast:fs-plane:homeSite:homeSouthWest:actual" }                                                                           
-Number:Power            ForecastSolarHome_Actual_Power_SW  "Actual SW Power Forecast [%3.f %unit%]"          {channel="solarforecast:fs-plane:homeSite:homeSouthWest:actual-power" }                                                                           
-Number:Energy           ForecastSolarHome_Remaining_SW     "Remaining SW Forecast Today [%3.f %unit%]"       {channel="solarforecast:fs-plane:homeSite:homeSouthWest:remaining" }                                                                           
-Number:Energy           ForecastSolarHome_Today_SW         "Total SW Forecast Today [%3.f %unit%]"           {channel="solarforecast:fs-plane:homeSite:homeSouthWest:today" }                                                                           
-Number:Energy           ForecastSolarHome_Day_SW           "Tomorrow SW Forecast [%3.f %unit%]"              {channel="solarforecast:fs-plane:homeSite:homeSouthWest:day1" }                                                                           
+Number:Energy           ForecastSolarHome_Actual_SW        "Actual SW Forecast Today [%.3f %unit%]"          {channel="solarforecast:fs-plane:homeSite:homeSouthWest:actual" }                                                                           
+Number:Power            ForecastSolarHome_Actual_Power_SW  "Actual SW Power Forecast [%.3f %unit%]"          {channel="solarforecast:fs-plane:homeSite:homeSouthWest:actual-power" }                                                                           
+Number:Energy           ForecastSolarHome_Remaining_SW     "Remaining SW Forecast Today [%.3f %unit%]"       {channel="solarforecast:fs-plane:homeSite:homeSouthWest:remaining" }                                                                           
+Number:Energy           ForecastSolarHome_Today_SW         "Total SW Forecast Today [%.3f %unit%]"           {channel="solarforecast:fs-plane:homeSite:homeSouthWest:today" }                                                                           
+Number:Energy           ForecastSolarHome_Day_SW           "Tomorrow SW Forecast [%.3f %unit%]"              {channel="solarforecast:fs-plane:homeSite:homeSouthWest:day1" }                                                                           
 ````
 
 ### Actions rule
