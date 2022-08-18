@@ -6,7 +6,7 @@ Which can be used to measure level and content of tanks.
 ## Supported Things
 
 - `liquidCheckDevice`: The Liquid-Check device in Hardwareversion B and Firmwareversion 1.60 has been tested and is working.
-You can access the measured data, raw data, the settings as properties and command a measurement. `liquidCheckDevice`
+You can access the measured data, raw data, the settings as properties and command a measurement.
 
 ## Discovery
 
@@ -22,7 +22,7 @@ There is no configuration needed.
 
 You only need to add the IP address of the device or use the auto discovery method.
 
-### `sample` Thing Configuration
+### `liquidCheckDevice` Thing Configuration
 
 | Name            | Type    | Description                           | Default | Required | Advanced |
 |-----------------|---------|---------------------------------------|---------|----------|----------|
@@ -47,14 +47,14 @@ You only need to add the IP address of the device or use the auto discovery meth
 ## Full Example
 
 Thing:
-Thing liquidcheck:liquidCheckDevice: "Label" @ "Location" [ip="XXX.XXX.XXX.XXX", maxContent=9265, refreshInterval=600, connectionTimeout=5]
+- Thing liquidcheck:liquidCheckDevice: "Label" @ "Location" [ip="XXX.XXX.XXX.XXX", maxContent=9265, refreshInterval=600, connectionTimeout=5]
 
 Items:
-Number:Volume ContentLiquidCheck "Content" {liquidcheck:liquidCheckDevice:content}
-Number:Length LevelLiquidCheck "Level" {liquidcheck:liquidCheckDevice:level}
-Number:Volume RawContentLiquidCheck "Raw Content" {liquidcheck:liquidCheckDevice:raw-content}
-Number:Length RawLevelLiquidCheck "Raw Level" {liquidcheck:liquidCheckDevice:raw-level}
-Number:Dimensionless FillIndicator "Fill Indicator" {liquidcheck:liquidCheckDevice:fill-indicator}
-Switch MeasureLiquidCheck "Measure" {liquidcheck:liquidCheckDevice:measure}
-Number PumpRuns "Pump runs" {liquidcheck:liquidCheckDevice:pump-runs}
-Number PumpRuntime "Pump runtime" {liquidcheck:liquidCheckDevice:pump-runtime}
+- Number:Volume ContentLiquidCheck "Content" {liquidcheck:liquidCheckDevice:content}
+- Number:Length LevelLiquidCheck "Level" {liquidcheck:liquidCheckDevice:level}
+- Number:Volume RawContentLiquidCheck "Raw Content" {liquidcheck:liquidCheckDevice:raw-content}
+- Number:Length RawLevelLiquidCheck "Raw Level" {liquidcheck:liquidCheckDevice:raw-level}
+- Number:Dimensionless FillIndicator "Fill Indicator" {liquidcheck:liquidCheckDevice:fill-indicator}
+- Switch MeasureLiquidCheck "Measure" {liquidcheck:liquidCheckDevice:measure}
+- Number PumpRuns "Pump runs" {liquidcheck:liquidCheckDevice:pump-runs}
+- Number PumpRuntime "Pump runtime" {liquidcheck:liquidCheckDevice:pump-runtime}
