@@ -28,6 +28,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api.ShellyHttpClient;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyFavPos;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyInputState;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyRollerStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySensorTmp;
@@ -265,13 +266,15 @@ public class Shelly2ApiClient extends ShellyHttpClient {
     }
 
     protected @Nullable ArrayList<@Nullable ShellySettingsRoller> fillRollerSettings(ShellyDeviceProfile profile,
-            Shelly2GetConfigResult deviceConfig) {
-        if (deviceConfig.cover0 == null) {
+            Shelly2GetConfigResult dc) {
+        if (dc.cover0 == null) {
             return null;
         }
 
         ArrayList<@Nullable ShellySettingsRoller> rollers = new ArrayList<>();
-        addRollerSettings(rollers, deviceConfig.cover0);
+
+        addRollerSettings(rollers, dc.cover0);
+        fillRollerFavorites(profile, dc);
         return rollers;
     }
 
@@ -300,6 +303,22 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             settings.obstaclePower = coverConfig.obstructionDetection.powerThr;
         }
         rollers.add(settings);
+    }
+
+    private void fillRollerFavorites(ShellyDeviceProfile profile, Shelly2GetConfigResult dc) {
+        if (dc.sys.uiData.cover != null) {
+            String[] favorites = dc.sys.uiData.cover.split(",");
+            profile.settings.favorites = new ArrayList<>();
+            for (int i = 0; i < favorites.length; i++) {
+                ShellyFavPos fav = new ShellyFavPos();
+                fav.name = "" + (i + 1);
+                fav.pos = Integer.parseInt(favorites[i]);
+                profile.settings.favorites.add(fav);
+            }
+            profile.settings.favoritesEnabled = profile.settings.favorites.size() > 0;
+            logger.debug("{}: Roller Favorites loaded: {}", thingName,
+                    profile.settings.favoritesEnabled ? profile.settings.favorites.size() : "none");
+        }
     }
 
     private boolean updateRollerStatus(ShellySettingsStatus status, @Nullable Shelly2CoverStatus cs,

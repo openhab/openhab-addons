@@ -39,12 +39,14 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettings
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsMeter;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRelay;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsWiFiNetwork;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyShortLightStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyShortStatusRelay;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusLight;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusRelay;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2AuthResponse;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2DeviceConfigWiFi.Shelly2DeviceConfigSta;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2GetConfigResult;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceSettings;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
@@ -177,6 +179,11 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         profile.status.update.oldVersion = profile.fwVersion;
         profile.status.hasUpdate = profile.status.update.hasUpdate = false;
 
+        profile.settings.wifiSta = new ShellySettingsWiFiNetwork();
+        profile.settings.wifiSta1 = new ShellySettingsWiFiNetwork();
+        fillWiFiSta(dc.wifi.sta, profile.settings.wifiSta);
+        fillWiFiSta(dc.wifi.sta1, profile.settings.wifiSta1);
+
         if (profile.hasRelays) {
             profile.status.relays = new ArrayList<>();
             profile.status.meters = new ArrayList<>();
@@ -235,6 +242,16 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         }
 
         return profile;
+    }
+
+    private void fillWiFiSta(@Nullable Shelly2DeviceConfigSta from, ShellySettingsWiFiNetwork to) {
+        to.enabled = from != null && !getString(from.ssid).isEmpty();
+        if (from != null) {
+            to.ssid = from.ssid;
+            to.ip = from.ip;
+            to.mask = from.netmask;
+            to.dns = from.nameserver;
+        }
     }
 
     private void checkSetWsCallback() throws ShellyApiException {
@@ -446,6 +463,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         status.cloud.connected = getBool(ds.cloud.connected);
         status.mqtt.connected = getBool(ds.mqtt.connected);
         status.wifiSta.ssid = getString(ds.wifi.ssid);
+        status.wifiSta.enabled = !status.wifiSta.ssid.isEmpty();
         status.wifiSta.ip = getString(ds.wifi.staIP);
         status.wifiSta.rssi = getInteger(ds.wifi.rssi);
         status.fsFree = ds.sys.fsFree;

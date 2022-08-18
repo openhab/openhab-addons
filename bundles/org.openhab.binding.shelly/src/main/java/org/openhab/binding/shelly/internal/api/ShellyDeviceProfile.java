@@ -330,8 +330,8 @@ public class ShellyDeviceProfile {
     }
 
     public int getRollerFav(int id) {
-        if ((id >= 0) && getBool(settings.favoritesEnabled) && (settings.favorites != null)
-                && (id < settings.favorites.size())) {
+        if (id >= 0 && getBool(settings.favoritesEnabled) && settings.favorites != null
+                && id < settings.favorites.size()) {
             return settings.favorites.get(id).pos;
         }
         return -1;

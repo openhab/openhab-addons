@@ -184,7 +184,7 @@ public class Shelly2ApiJsonDTO {
             }
 
             public class Shelly2DeviceConfigUiData {
-
+                public String cover; // hold comma seperated list of roller favorites
             }
 
             public class Shelly2DeviceConfigRpcUdp {
