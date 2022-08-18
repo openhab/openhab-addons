@@ -75,82 +75,77 @@ public class NoboThingDiscoveryService extends AbstractDiscoveryService {
     }
 
     public void detectZones(Collection<Zone> zones) {
-        ThingUID bridge = bridgeHandler.getThing().getBridgeUID();
+        ThingUID bridge = bridgeHandler.getThing().getUID();
         List<Thing> things = bridgeHandler.getThing().getThings();
 
         for (Zone zone : zones) {
-            if (bridge != null) {
-                ThingUID discoveredThingId = new ThingUID(THING_TYPE_ZONE, bridge, Integer.toString(zone.getId()));
+            ThingUID discoveredThingId = new ThingUID(THING_TYPE_ZONE, bridge, Integer.toString(zone.getId()));
 
-                boolean addDiscoveredZone = true;
-                for (Thing thing : things) {
-                    if (thing.getUID().equals(discoveredThingId)) {
-                        addDiscoveredZone = false;
-                    }
+            boolean addDiscoveredZone = true;
+            for (Thing thing : things) {
+                if (thing.getUID().equals(discoveredThingId)) {
+                    addDiscoveredZone = false;
                 }
+            }
 
-                if (addDiscoveredZone) {
-                    String label = zone.getName();
+            if (addDiscoveredZone) {
+                String label = zone.getName();
 
-                    Map<String, Object> properties = new HashMap<>(1);
-                    properties.put(PROPERTY_ZONE_ID, Integer.toString(zone.getId()));
-                    properties.put(PROPERTY_NAME, zone.getName());
-                    properties.put(Thing.PROPERTY_VENDOR, PROPERTY_VENDOR_NAME);
+                Map<String, Object> properties = new HashMap<>(1);
+                properties.put(PROPERTY_ZONE_ID, Integer.toString(zone.getId()));
+                properties.put(PROPERTY_NAME, zone.getName());
+                properties.put(Thing.PROPERTY_VENDOR, PROPERTY_VENDOR_NAME);
 
-                    logger.debug("Adding device {} to inbox", discoveredThingId);
-                    DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(discoveredThingId)
-                            .withBridge(bridge).withLabel(label).withProperties(properties)
-                            .withRepresentationProperty("id").build();
-                    thingDiscovered(discoveryResult);
-                }
+                logger.debug("Adding device {} to inbox", discoveredThingId);
+                DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(discoveredThingId).withBridge(bridge)
+                        .withLabel(label).withProperties(properties).withRepresentationProperty("id").build();
+                thingDiscovered(discoveryResult);
             }
         }
     }
 
     public void detectComponents(Collection<Component> components) {
-        ThingUID bridge = bridgeHandler.getThing().getBridgeUID();
+        ThingUID bridge = bridgeHandler.getThing().getUID();
         List<Thing> things = bridgeHandler.getThing().getThings();
 
         for (Component component : components) {
-            if (bridge != null) {
-                ThingUID discoveredThingId = new ThingUID(THING_TYPE_COMPONENT, bridge,
-                        component.getSerialNumber().toString());
+            ThingUID discoveredThingId = new ThingUID(THING_TYPE_COMPONENT, bridge,
+                    component.getSerialNumber().toString());
 
-                boolean addDiscoveredComponent = true;
-                for (Thing thing : things) {
-                    if (thing.getUID().equals(discoveredThingId)) {
-                        addDiscoveredComponent = false;
+            boolean addDiscoveredComponent = true;
+            for (Thing thing : things) {
+                if (thing.getUID().equals(discoveredThingId)) {
+                    addDiscoveredComponent = false;
+                }
+            }
+
+            if (addDiscoveredComponent) {
+                String label = component.getName();
+
+                Map<String, Object> properties = new HashMap<>(1);
+                properties.put(Thing.PROPERTY_SERIAL_NUMBER, component.getSerialNumber().toString());
+                properties.put(PROPERTY_NAME, component.getName());
+                properties.put(Thing.PROPERTY_VENDOR, PROPERTY_VENDOR_NAME);
+                properties.put(PROPERTY_MODEL, component.getSerialNumber().getComponentType());
+
+                String zoneName = getZoneName(component.getZoneId());
+                if (zoneName != null) {
+                    properties.put(PROPERTY_ZONE, zoneName);
+                }
+
+                int zoneId = component.getTemperatureSensorForZoneId();
+                if (zoneId >= 0) {
+                    String tempForZoneName = getZoneName(zoneId);
+                    if (tempForZoneName != null) {
+                        properties.put(PROPERTY_TEMPERATURE_SENSOR_FOR_ZONE, tempForZoneName);
                     }
                 }
 
-                if (addDiscoveredComponent) {
-                    String label = component.getName();
-
-                    Map<String, Object> properties = new HashMap<>(1);
-                    properties.put(Thing.PROPERTY_SERIAL_NUMBER, component.getSerialNumber().toString());
-                    properties.put(PROPERTY_NAME, component.getName());
-                    properties.put(Thing.PROPERTY_VENDOR, PROPERTY_VENDOR_NAME);
-                    properties.put(PROPERTY_MODEL, component.getSerialNumber().getComponentType());
-
-                    String zoneName = getZoneName(component.getZoneId());
-                    if (zoneName != null) {
-                        properties.put(PROPERTY_ZONE, zoneName);
-                    }
-
-                    int zoneId = component.getTemperatureSensorForZoneId();
-                    if (zoneId >= 0) {
-                        String tempForZoneName = getZoneName(zoneId);
-                        if (tempForZoneName != null) {
-                            properties.put(PROPERTY_TEMPERATURE_SENSOR_FOR_ZONE, tempForZoneName);
-                        }
-                    }
-
-                    logger.debug("Adding device {} to inbox", discoveredThingId);
-                    DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(discoveredThingId)
-                            .withBridge(bridge).withLabel(label).withProperties(properties)
-                            .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER).build();
-                    thingDiscovered(discoveryResult);
-                }
+                logger.debug("Adding device {} to inbox", discoveredThingId);
+                DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(discoveredThingId).withBridge(bridge)
+                        .withLabel(label).withProperties(properties)
+                        .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER).build();
+                thingDiscovered(discoveryResult);
             }
         }
     }

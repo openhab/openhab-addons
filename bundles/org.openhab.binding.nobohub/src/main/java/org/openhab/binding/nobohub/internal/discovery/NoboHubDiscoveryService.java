@@ -112,7 +112,7 @@ public class NoboHubDiscoveryService extends AbstractDiscoveryService implements
                             InetAddress.getByName(NOBO_HUB_BROADCAST_ADDRESS));
                     found = waitOnSocket(socket, "broadcast");
                 } catch (IOException ioex) {
-                    logger.error("Failed detecting Nobø Hub broadcast", ioex);
+                    logger.error("Failed detecting Nobø Hub via multicast, will try with Broadcast", ioex);
                 }
             }
         }
@@ -130,7 +130,7 @@ public class NoboHubDiscoveryService extends AbstractDiscoveryService implements
                     received = new String(buffer, 0, data.getLength());
                 }
 
-                logger.debug("Hub detection {}}: Received: {} from {}", type, received, data.getAddress());
+                logger.debug("Hub detection using {}: Received: {} from {}", type, received, data.getAddress());
 
                 String[] parts = received.split("__", 3);
                 if (3 != parts.length) {
