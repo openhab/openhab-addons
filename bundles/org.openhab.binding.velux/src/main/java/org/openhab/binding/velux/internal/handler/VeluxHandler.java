@@ -12,21 +12,30 @@
  */
 package org.openhab.binding.velux.internal.handler;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.Predicate;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.velux.internal.VeluxBindingConstants;
 import org.openhab.binding.velux.internal.config.VeluxThingConfiguration;
 import org.openhab.binding.velux.internal.handler.utils.ExtendedBaseThingHandler;
+import org.openhab.binding.velux.internal.handler.utils.Thing2VeluxActuator;
+import org.openhab.binding.velux.internal.things.VeluxProduct;
 import org.openhab.binding.velux.internal.utils.Localization;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BridgeHandler;
-import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
@@ -42,10 +51,12 @@ import org.slf4j.LoggerFactory;
 public class VeluxHandler extends ExtendedBaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(VeluxHandler.class);
 
-    VeluxThingConfiguration configuration = new VeluxThingConfiguration();
+    private VeluxThingConfiguration configuration = new VeluxThingConfiguration();
+    private final Localization localization;
 
     public VeluxHandler(Thing thing, Localization localization) {
         super(thing);
+        this.localization = localization;
         logger.trace("VeluxHandler(thing={},localization={}) constructor called.", thing, localization);
     }
 
@@ -128,18 +139,62 @@ public class VeluxHandler extends ExtendedBaseThingHandler {
     }
 
     /**
-     * Set public visibility on the protected super.editThing() method.
+     * Initialise the dynamic vane position channel if the respective device supports it.
+     *
+     * @param bridgeHandler the calling bridge handler.
+     * @throws IllegalStateException if something went wrong.
      */
-    @Override
-    public ThingBuilder editThing() {
-        return super.editThing();
-    }
+    public void initializeVanePositionChannel(VeluxBridgeHandler bridgeHandler) throws IllegalStateException {
+        // roller shutters are the only things allowed to have vane support
+        if (!VeluxBindingConstants.THING_TYPE_VELUX_ROLLERSHUTTER.equals(thing.getThingTypeUID())) {
+            return;
+        }
 
-    /**
-     * Set public visibility on the protected super.updateThing() method.
-     */
-    @Override
-    public void updateThing(Thing thing) {
-        super.updateThing(thing);
+        ChannelUID vaneChannelUID = new ChannelUID(thing.getUID(), VeluxBindingConstants.CHANNEL_VANE_POSITION);
+
+        VeluxProduct product = bridgeHandler.existingProducts()
+                .get((new Thing2VeluxActuator(bridgeHandler, vaneChannelUID)).getProductBridgeIndex());
+        if (product.equals(VeluxProduct.UNKNOWN)) {
+            throw new IllegalStateException("initializeVanePositionChannel(): Product unknown in the bridge");
+        }
+
+        // predicate to filter the vane position channel
+        Predicate<Channel> vaneChannelPredicate = c -> VeluxBindingConstants.CHANNEL_TYPE_VANE
+                .equals(c.getChannelTypeUID());
+
+        // note: this is initially an immutable list
+        List<Channel> channels = thing.getChannels();
+
+        // current and required state of the vane channel
+        boolean vaneChannelExisting = channels.stream().anyMatch(vaneChannelPredicate);
+        boolean vaneChannelRequired = product.supportsVanePosition();
+
+        if (vaneChannelExisting == vaneChannelRequired) {
+            // no change is needed
+            return;
+        }
+
+        // make a mutable copy of the original immutable channel list
+        channels = new ArrayList<>(channels);
+
+        if (vaneChannelRequired) {
+            // build and add the vane channel
+            // @formatter:off
+            channels.add(ChannelBuilder.create(vaneChannelUID)
+                    .withType(VeluxBindingConstants.CHANNEL_TYPE_VANE)
+                    .withKind(ChannelKind.STATE)
+                    .withAcceptedItemType(CoreItemFactory.DIMMER)
+                    .withDescription(localization.getText("channel-type.velux.vanePosition.description"))
+                    .withLabel(localization.getText("channel-type.velux.vanePosition.label"))
+                    .build());
+            // @formatter:on
+        } else {
+            // remove the vane channel
+            channels.removeIf(vaneChannelPredicate);
+        }
+
+        // if we got this far, then update the thing
+        Thing thing = editThing().withChannels(channels).build();
+        scheduler.submit(() -> updateThing(thing));
     }
 }
