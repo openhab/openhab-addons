@@ -82,13 +82,11 @@ public final class OverridePlan {
         return type;
     }
 
-    @Nullable
-    public LocalDateTime startTime() {
+    public @Nullable LocalDateTime startTime() {
         return startTime;
     }
 
-    @Nullable
-    public LocalDateTime endTime() {
+    public @Nullable LocalDateTime endTime() {
         return endTime;
     }
 

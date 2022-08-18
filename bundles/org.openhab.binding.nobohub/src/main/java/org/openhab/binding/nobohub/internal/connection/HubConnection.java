@@ -47,24 +47,20 @@ public class HubConnection {
 
     private final Logger logger = LoggerFactory.getLogger(HubConnection.class);
 
-    private final InetAddress host;
+    private final String hostName;
     private final NoboHubBridgeHandler hubHandler;
     private final String serialNumber;
 
+    private @Nullable InetAddress host;
     private @Nullable Socket hubConnection;
     private @Nullable PrintWriter out;
     private @Nullable BufferedReader in;
 
     public HubConnection(String hostName, String serialNumber, NoboHubBridgeHandler hubHandler)
             throws NoboCommunicationException {
-        try {
-            host = InetAddress.getByName(hostName);
-        } catch (IOException ioex) {
-            throw new NoboCommunicationException(String.format("Failed to resolve IP address of %s", hostName));
-        }
-
-        this.hubHandler = hubHandler;
+        this.hostName = hostName;
         this.serialNumber = serialNumber;
+        this.hubHandler = hubHandler;
     }
 
     public void connect() throws NoboCommunicationException {
@@ -73,7 +69,7 @@ public class HubConnection {
         String hello = String.format("HELLO %s %s %s\r", NoboHubBindingConstants.API_VERSION, serialNumber,
                 getDateString());
         write(hello);
-        @Nullable
+
         String helloRes = readLine();
         if (null == helloRes || !helloRes.startsWith("HELLO")) {
             if (helloRes != null && helloRes.startsWith("REJECT")) {
@@ -86,7 +82,7 @@ public class HubConnection {
         }
 
         write("HANDSHAKE\r");
-        @Nullable
+
         String handshakeRes = readLine();
         if (null == handshakeRes || !handshakeRes.startsWith("HANDSHAKE")) {
             throw new NoboCommunicationException("Hub rejects handshake");
@@ -110,7 +106,7 @@ public class HubConnection {
 
         OverridePlan overridePlan = OverridePlan.fromMode(nextMode, LocalDateTime.now());
         sendCommand(overridePlan.generateCommandString("A03"));
-        @Nullable
+
         String line = "";
         while (line != null && !line.startsWith("B03")) {
             line = readLine();
@@ -136,7 +132,6 @@ public class HubConnection {
     private void refreshAllNoReconnect() throws NoboCommunicationException {
         write("G00\r");
 
-        @Nullable
         String line = "";
         while (line != null && !line.startsWith("H05")) {
             line = readLine();
@@ -145,7 +140,7 @@ public class HubConnection {
     }
 
     public boolean isConnected() {
-        @Nullable
+
         Socket conn = this.hubConnection;
         if (null != conn) {
             return conn.isConnected();
@@ -155,7 +150,7 @@ public class HubConnection {
     }
 
     public boolean hasData() throws NoboCommunicationException {
-        @Nullable
+
         BufferedReader i = this.in;
         if (null != i) {
             try {
@@ -170,7 +165,6 @@ public class HubConnection {
 
     public void processReads(Duration timeout) throws NoboCommunicationException {
         try {
-            @Nullable
             Socket conn = this.hubConnection;
             if (null == conn) {
                 throw new NoboCommunicationException("No connection to Hub");
@@ -180,7 +174,6 @@ public class HubConnection {
             conn.setSoTimeout((int) timeout.toMillis());
 
             try {
-                @Nullable
                 String line = readLine();
                 if (line != null && line.startsWith("HANDSHAKE")) {
                     line = readLine();
@@ -198,7 +191,6 @@ public class HubConnection {
     }
 
     private @Nullable String readLine() throws NoboCommunicationException {
-        @Nullable
         BufferedReader reader = this.in;
         try {
             if (null != reader) {
@@ -230,32 +222,36 @@ public class HubConnection {
     }
 
     private void connectSocket() throws NoboCommunicationException {
+
+        if (null == host) {
+            try {
+                host = InetAddress.getByName(hostName);
+            } catch (IOException ioex) {
+                throw new NoboCommunicationException(String.format("Failed to resolve IP address of %s", hostName));
+            }
+        }
         try {
             Socket conn = new Socket(host, NoboHubBindingConstants.NOBO_HUB_TCP_PORT);
             out = new PrintWriter(conn.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             hubConnection = conn;
         } catch (IOException ioex) {
-            throw new NoboCommunicationException(
-                    String.format("Failed connecting to Nobø Hub at %s", host.getHostName()), ioex);
+            throw new NoboCommunicationException(String.format("Failed connecting to Nobø Hub at %s", hostName), ioex);
         }
     }
 
     public void disconnect() throws NoboCommunicationException {
         try {
-            @Nullable
             PrintWriter o = this.out;
             if (o != null) {
                 o.close();
             }
 
-            @Nullable
             BufferedReader i = this.in;
             if (i != null) {
                 i.close();
             }
 
-            @Nullable
             Socket conn = this.hubConnection;
             if (conn != null) {
                 conn.close();

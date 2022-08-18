@@ -82,8 +82,8 @@ Not all devices report this.
 
 ```
 Bridge nobohub:nobohub:controller "Nobø Hub" [ hostName="192.168.1.10", serialNumber="103000000000" ] {
-	Thing zone 1                  "Zone - Kitchen"            	[ id=1 ]
-	Thing component 184000000000  "Heater - Kitchen"         	[ serialNumber="184000000000" ]
+	Thing zone      1               "Zone - Kitchen"      [ id=1 ]
+	Thing component 184000000000    "Heater - Kitchen"    [ serialNumber="184000000000" ]
 }
 ```
 
@@ -91,18 +91,18 @@ Bridge nobohub:nobohub:controller "Nobø Hub" [ hostName="192.168.1.10", serialN
 
 ```
 // Hub
-String	            Nobo_Hub_GlobalOverride         "Global Override %s"                <heating>       {channel="nobohub:nobohub:controller:activeOverrideName"}
+String              Nobo_Hub_GlobalOverride         "Global Override %s"                <heating>       {channel="nobohub:nobohub:controller:activeOverrideName"}
 
 // Panel Heater
-Number:Temperature	PanelHeater_CurrentTemperature  "Setpoint [%.1f °C]"                <temperature>   {channel="nobohub:component:controller:184000000000:currentTemperature"}
+Number:Temperature  PanelHeater_CurrentTemperature  "Setpoint [%.1f °C]"                <temperature>   {channel="nobohub:component:controller:184000000000:currentTemperature"}
 
 // Zone
-String	            Zone_ActiveWeekProfileName      "Active week profile name [%s]"     <calendar>      {channel="nobohub:zone:controller:1:activeWeekProfileName"}
-Number	            Zone_ActiveWeekProfile          "Active week profile [%d]"          <calendar>      {channel="nobohub:zone:controller:1:activeWeekProfile"}
-String	            Zone_ActiveStatus               "Active status %s]"                 <heating>       {channel="nobohub:zone:controller:1:calculatedWeekProfileStatus"}
-Number:Temperature	Zone_ComfortTemperature         "Comfort temperature [%.1f °C]"     <temperature>   {channel="nobohub:zone:controller:1:comfortTemperature"}
-Number:Temperature	Zone_EcoTemperatur              "Eco temperature [%.1f °C]"         <temperature>   {channel="nobohub:zone:controller:1:ecoTemperature"}
-Number:Temperature	Zone_CurrentTemperature         "Current temperature [%.1f °C]"     <temperature>   {channel="nobohub:zone:controller:1:currentTemperature"}
+String              Zone_ActiveWeekProfileName      "Active week profile name [%s]"     <calendar>      {channel="nobohub:zone:controller:1:activeWeekProfileName"}
+Number              Zone_ActiveWeekProfile          "Active week profile [%d]"          <calendar>      {channel="nobohub:zone:controller:1:activeWeekProfile"}
+String              Zone_ActiveStatus               "Active status %s]"                 <heating>       {channel="nobohub:zone:controller:1:calculatedWeekProfileStatus"}
+Number:Temperature  Zone_ComfortTemperature         "Comfort temperature [%.1f °C]"     <temperature>   {channel="nobohub:zone:controller:1:comfortTemperature"}
+Number:Temperature  Zone_EcoTemperatur              "Eco temperature [%.1f °C]"         <temperature>   {channel="nobohub:zone:controller:1:ecoTemperature"}
+Number:Temperature  Zone_CurrentTemperature         "Current temperature [%.1f °C]"     <temperature>   {channel="nobohub:zone:controller:1:currentTemperature"}
 ```
 
 ### nobo.sitemap

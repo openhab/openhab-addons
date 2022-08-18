@@ -106,11 +106,9 @@ public class NoboHubHandlerFactory extends BaseThingHandlerFactory {
 
     private synchronized void unregisterDiscoveryService(NoboHubBridgeHandler bridgeHandler) {
         try {
-            @Nullable
             ServiceRegistration<?> serviceReg = this.discoveryServiceRegs
                     .remove(bridgeHandler.getThing().getThingTypeUID());
             if (null != serviceReg) {
-                @Nullable
                 NoboThingDiscoveryService service = (NoboThingDiscoveryService) getBundleContext()
                         .getService(serviceReg.getReference());
                 serviceReg.unregister();

@@ -52,15 +52,12 @@ public class NoboHubTranslationProvider {
     }
 
     public String getText(String key, @Nullable Object... arguments) {
-        try {
-            Locale locale = localeProvider.getLocale();
-            String message = i18nProvider.getText(bundle, key, this.getDefaultText(key), locale, arguments);
-            if (message != null) {
-                return message;
-            }
-        } catch (IllegalArgumentException e) {
+        Locale locale = localeProvider.getLocale();
+        String message = i18nProvider.getText(bundle, key, this.getDefaultText(key), locale, arguments);
+        if (message != null) {
+            return message;
         }
-        return "Unable to load message for key " + key;
+        return key;
     }
 
     public @Nullable String getDefaultText(String key) {

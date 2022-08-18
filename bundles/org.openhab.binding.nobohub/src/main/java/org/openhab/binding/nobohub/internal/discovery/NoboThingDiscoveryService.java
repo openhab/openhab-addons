@@ -91,7 +91,7 @@ public class NoboThingDiscoveryService extends AbstractDiscoveryService {
             if (addDiscoveredZone) {
                 String label = zone.getName();
 
-                Map<String, Object> properties = new HashMap<>(1);
+                Map<String, Object> properties = new HashMap<>(3);
                 properties.put(PROPERTY_ZONE_ID, Integer.toString(zone.getId()));
                 properties.put(PROPERTY_NAME, zone.getName());
                 properties.put(Thing.PROPERTY_VENDOR, PROPERTY_VENDOR_NAME);
@@ -122,7 +122,7 @@ public class NoboThingDiscoveryService extends AbstractDiscoveryService {
             if (addDiscoveredComponent) {
                 String label = component.getName();
 
-                Map<String, Object> properties = new HashMap<>(1);
+                Map<String, Object> properties = new HashMap<>(4);
                 properties.put(Thing.PROPERTY_SERIAL_NUMBER, component.getSerialNumber().toString());
                 properties.put(PROPERTY_NAME, component.getName());
                 properties.put(Thing.PROPERTY_VENDOR, PROPERTY_VENDOR_NAME);

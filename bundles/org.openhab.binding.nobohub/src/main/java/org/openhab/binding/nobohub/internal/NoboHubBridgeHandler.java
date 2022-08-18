@@ -81,9 +81,7 @@ public class NoboHubBridgeHandler extends BaseBridgeHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.info("Handle command {} for channel {}!", command.toFullString(), channelUID);
 
-        @Nullable
         HubCommunicationThread ht = this.hubThread;
-        @Nullable
         Hub h = this.hub;
         if (command instanceof RefreshType) {
             try {
@@ -192,7 +190,6 @@ public class NoboHubBridgeHandler extends BaseBridgeHandler {
             discoveryService.stopScan();
         }
 
-        @Nullable
         HubCommunicationThread ht = this.hubThread;
         if (ht != null) {
             logger.debug("Stopping communication thread");
@@ -248,7 +245,6 @@ public class NoboHubBridgeHandler extends BaseBridgeHandler {
             return;
         }
 
-        @Nullable
         NoboThingDiscoveryService ds = this.discoveryService;
         if (line.startsWith("H01")) {
             Zone zone = Zone.fromH01(line);
