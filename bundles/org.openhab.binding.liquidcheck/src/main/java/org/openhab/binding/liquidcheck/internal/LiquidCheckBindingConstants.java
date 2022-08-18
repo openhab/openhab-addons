@@ -50,6 +50,7 @@ public class LiquidCheckBindingConstants {
     public static final String CONFIG_ID_UUID = "uuid";
     public static final String CONFIG_ID_SECURITY_CODE = "securityCode";
     public static final String CONFIG_ID_IP = "ip";
+    public static final String CONFIG_ID_HOSTNAME = "hostname";
     public static final String CONFIG_ID_MAC = "mac";
     public static final String CONFIG_ID_SSID = "ssid";
 

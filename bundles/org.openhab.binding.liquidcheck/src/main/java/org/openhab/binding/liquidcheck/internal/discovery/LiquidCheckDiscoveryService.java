@@ -59,6 +59,7 @@ public class LiquidCheckDiscoveryService extends AbstractDiscoveryService {
     private static final int BACKGROUND_DISCOVERY_AFTER_MINUTES = 60;
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private boolean isHostname = false;
 
     private @Nullable ScheduledFuture<?> liquidCheckBackgroundDiscoveryJob;
 
@@ -80,6 +81,9 @@ public class LiquidCheckDiscoveryService extends AbstractDiscoveryService {
                 if (response.getStatus() == 200) {
                     Response json = new Gson().fromJson(response.getContentAsString(), Response.class);
                     if (null != json) {
+                        if (InetAddress.getByName(json.payload.wifi.station.hostname).isReachable(50)) {
+                            isHostname = true;
+                        }
                         buildDiscoveryResult(json);
                     } else {
                         logger.debug("Response Object is null!");
@@ -184,8 +188,25 @@ public class LiquidCheckDiscoveryService extends AbstractDiscoveryService {
         return hosts;
     }
 
+    /**
+     * This method builds a thing based on the response from the device
+     * 
+     * @param response
+     */
     private void buildDiscoveryResult(Response response) {
-        LiquidCheckProperties lcproperties = new LiquidCheckProperties(response);
+        ThingUID thingUID = new ThingUID(THING_TYPE_LIQUID_CHEK, response.payload.device.uuid);
+        DiscoveryResult dResult = DiscoveryResultBuilder.create(thingUID).withProperties(createPropertyMap(response))
+                .withLabel(response.payload.device.name).build();
+        thingDiscovered(dResult);
+    }
+
+    /**
+     * This method creates the property map for the discovery result
+     * 
+     * @param response
+     * @return
+     */
+    private Map<String, Object> createPropertyMap(Response response) {
         Map<String, Object> properties = new HashMap<>();
         properties.put(CONFIG_ID_FIRMWARE, response.payload.device.firmware);
         properties.put(CONFIG_ID_HARDWARE, response.payload.device.hardware);
@@ -196,9 +217,11 @@ public class LiquidCheckDiscoveryService extends AbstractDiscoveryService {
         properties.put(CONFIG_ID_IP, response.payload.wifi.station.ip);
         properties.put(CONFIG_ID_MAC, response.payload.wifi.station.mac);
         properties.put(CONFIG_ID_SSID, response.payload.wifi.accessPoint.ssid);
-        ThingUID thingUID = new ThingUID(THING_TYPE_LIQUID_CHEK, lcproperties.uuid);
-        DiscoveryResult dResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                .withLabel(lcproperties.name + "_DEBUG").build();
-        thingDiscovered(dResult);
+        if (isHostname) {
+            properties.put(CONFIG_ID_HOSTNAME, response.payload.wifi.station.hostname);
+        } else {
+            properties.put(CONFIG_ID_HOSTNAME, response.payload.wifi.station.ip);
+        }
+        return properties;
     }
 }
