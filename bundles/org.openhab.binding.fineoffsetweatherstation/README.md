@@ -23,7 +23,7 @@ This binding works offline by [implementing the wire protocol](https://osswww.ec
 
 ## Supported Things
 
-- `weatherstation`: A Fine Offset gateway device with the ThingTypeUID `fineoffsetweatherstation:weatherstation` wich supports the [wire protocol](https://osswww.ecowitt.net/uploads/20220407/WN1900%20GW1000,1100%20WH2680,2650%20telenet%20v1.6.4.pdf) e.g.:
+- `weatherstation`: A Fine Offset gateway device with the ThingTypeUID `fineoffsetweatherstation:weatherstation` which supports the [wire protocol](https://osswww.ecowitt.net/uploads/20220407/WN1900%20GW1000,1100%20WH2680,2650%20telenet%20v1.6.4.pdf) e.g.:
     - HP2550
     - HP3500
     - GW1000

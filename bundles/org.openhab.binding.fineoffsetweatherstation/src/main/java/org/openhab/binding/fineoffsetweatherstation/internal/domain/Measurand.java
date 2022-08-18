@@ -417,7 +417,7 @@ public enum Measurand {
             } else {
 
                 this.customizations = Collections.unmodifiableMap(
-                        Arrays.stream(customizations).collect(Collectors.toMap(customization -> customization.type,
+                        Arrays.stream(customizations).collect(Collectors.toMap(ParserCustomization::getType,
                                 customization -> customization, (a, b) -> b, HashMap::new)));
             }
         }
