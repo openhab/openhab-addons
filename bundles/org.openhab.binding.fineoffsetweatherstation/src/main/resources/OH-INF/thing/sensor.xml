@@ -6,7 +6,8 @@
 
 	<channel-type id="battery-voltage">
 		<item-type>Number:ElectricPotential</item-type>
-		<label>Voltage</label>
+		<label>Battery Voltage</label>
+		<description>The voltage of the battery</description>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>

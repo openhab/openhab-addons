@@ -259,7 +259,7 @@ Valid sensors:
 
 | Channel        | Type                     | Read/Write | Description                 |
 |----------------|--------------------------|------------|-----------------------------|
-| signal         | Number                   | R          | The sensors signal strenght |
+| signal         | Number                   | R          | The sensors signal strength |
 | batteryLevel   | Number                   | R          | The sensors battery level   |
 | batteryVoltage | Number:ElectricPotential | R          | The sensors battery voltage |
 | lowBattery     | Switch                   | R          | The sensors battery status  |
