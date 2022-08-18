@@ -15,7 +15,6 @@ package org.openhab.binding.solarforecast;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 import javax.measure.quantity.Energy;
