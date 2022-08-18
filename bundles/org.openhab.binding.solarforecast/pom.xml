@@ -14,11 +14,12 @@
 
   <name>openHAB Add-ons :: Bundles :: SolarForecast Binding</name>
   <dependencies>
-    <!-- https://mvnrepository.com/artifact/org.json/json -->
+    <!-- version needs to match with other projects like org.openhab.io.openhabcloud.pom.xml -->
     <dependency>
       <groupId>org.json</groupId>
       <artifactId>json</artifactId>
-      <version>20220320</version>
+      <version>20180813</version>
+      <scope>compile</scope>
     </dependency>
   </dependencies>
 
