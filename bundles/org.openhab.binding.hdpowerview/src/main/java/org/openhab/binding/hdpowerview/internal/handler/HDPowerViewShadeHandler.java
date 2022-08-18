@@ -22,8 +22,6 @@ import java.util.Map;
 import java.util.StringJoiner;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 import javax.ws.rs.NotSupportedException;
 
@@ -37,6 +35,7 @@ import org.openhab.binding.hdpowerview.internal.api.Firmware;
 import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
 import org.openhab.binding.hdpowerview.internal.api.SurveyData;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades.ShadeData;
+import org.openhab.binding.hdpowerview.internal.builders.ShadeChannelBuilder;
 import org.openhab.binding.hdpowerview.internal.config.HDPowerViewShadeConfiguration;
 import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDatabase;
 import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDatabase.Capabilities;
@@ -60,8 +59,6 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.binding.builder.ChannelBuilder;
-import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.UnDefType;
@@ -100,11 +97,11 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
     private int shadeId;
     private boolean isDisposing;
     private boolean dynamicChannelsInitialized;
-    private final HDPowerViewTranslationProvider translater;
+    private final HDPowerViewTranslationProvider translationProvider;
 
     public HDPowerViewShadeHandler(Thing thing, HDPowerViewTranslationProvider translationProvider) {
         super(thing);
-        translater = translationProvider;
+        this.translationProvider = translationProvider;
     }
 
     @Override
@@ -142,7 +139,6 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         }
         refreshBatteryLevelFuture = null;
         capabilities = null;
-        dynamicChannelsInitialized = false;
     }
 
     @Override
@@ -262,8 +258,6 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
     protected void onReceiveUpdate(ShadeData shadeData) {
         updateStatus(ThingStatus.ONLINE);
         updateCapabilities(shadeData);
-        // note: updateDynamicChannels() requires updateCapabilities() to have been called first
-        updateDynamicChannels();
         updateSoftProperties(shadeData);
         updateFirmwareProperties(shadeData);
         ShadePosition shadePosition = shadeData.positions;
@@ -285,8 +279,10 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
             return;
         }
         logger.debug("Caching capabilities {} for shade {}", capabilities.getValue(), shade.id);
-        dynamicChannelsInitialized = false;
         this.capabilities = capabilities;
+
+        dynamicChannelsInitialized = false;
+        updateDynamicChannels();
     }
 
     private Capabilities getCapabilitiesOrDefault() {
@@ -627,84 +623,66 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
      * @return true if all channels were successfully initialised.
      */
     private boolean dynamicChannelsInitializer() {
-        final Capabilities capabilities = this.capabilities;
+        Capabilities capabilities = this.capabilities;
         if (capabilities == null) {
             // stuff not initialised
             return false;
         }
 
-        // note: this is an immutable list
-        List<Channel> channels = thing.getChannels();
-        final Stream<Channel> channelStream = channels.stream();
+        List<ShadeChannelBuilder> channelBuilders = new ArrayList<>();
 
-        // predicate to filter the vane channel
-        final Predicate<Channel> vaneChannelFilter = c -> HDPowerViewBindingConstants.CHANNEL_TYPE_VANE
-                .equals(c.getChannelTypeUID());
+        // @formatter:off
+        // vane
+        channelBuilders.add(new ShadeChannelBuilder(thing)
+                .withChannelTypeUID(CHANNEL_TYPE_VANE)
+                .withChannelId(CHANNEL_SHADE_VANE)
+                .withRequired(capabilities.supportsTiltAnywhere() || capabilities.supportsTiltOnClosed())
+                .withAcceptedItemType(CoreItemFactory.DIMMER)
+                .withTranslationProvider(translationProvider));
 
-        // predicate to filter the secondary channel
-        final Predicate<Channel> secChannelFilter = c -> HDPowerViewBindingConstants.CHANNEL_TYPE_SECONDARY
-                .equals(c.getChannelTypeUID());
+        // secondary
+        channelBuilders.add(new ShadeChannelBuilder(thing)
+                .withChannelTypeUID(CHANNEL_TYPE_SECONDARY)
+                .withChannelId(CHANNEL_SHADE_SECONDARY_POSITION)
+                .withRequired(capabilities.supportsSecondary() || capabilities.supportsSecondaryOverlapped())
+                .withAcceptedItemType(CoreItemFactory.ROLLERSHUTTER)
+                .withTranslationProvider(translationProvider));
 
-        // current and required state of the vane channel
-        final boolean vaneChannelExisting = channelStream.anyMatch(vaneChannelFilter);
-        final boolean vaneChannelRequired = capabilities.usesVaneChannel();
+        // primary
+        channelBuilders.add(new ShadeChannelBuilder(thing)
+                .withChannelTypeUID(CHANNEL_TYPE_POSITION)
+                .withChannelId(CHANNEL_SHADE_POSITION)
+                .withRequired(capabilities.supportsPrimary())
+                .withAcceptedItemType(CoreItemFactory.ROLLERSHUTTER)
+                .withTranslationProvider(translationProvider));
+        // @formatter:on
 
-        final boolean secChannelExisting = channelStream.anyMatch(secChannelFilter);
-        final boolean secChannelRequired = capabilities.usesSecondaryChannel();
+        boolean dirty = false;
+        for (ShadeChannelBuilder channelBuilder : channelBuilders) {
+            try {
+                dirty |= channelBuilder.isDirty();
+            } catch (IllegalStateException e) {
+                // something went wrong
+                return false;
+            }
+        }
 
-        if ((vaneChannelExisting == vaneChannelRequired) && (secChannelExisting == secChannelRequired)) {
+        if (!dirty) {
             // nothing to do
             return true;
         }
 
-        // make a mutable copy of the original immutable channel list
-        channels = new ArrayList<>(channels);
+        List<Channel> channels = new ArrayList<>(thing.getChannels());
 
-        boolean error = false;
-        if (vaneChannelRequired) {
-            // build the vane channel
-            Channel vaneChannel = ChannelBuilder
-                    .create(new ChannelUID(thing.getUID(), HDPowerViewBindingConstants.CHANNEL_SHADE_VANE))
-                    .withType(HDPowerViewBindingConstants.CHANNEL_TYPE_VANE).withKind(ChannelKind.STATE)
-                    .withAcceptedItemType(CoreItemFactory.DIMMER)
-                    .withDescription(translater.getText("channel-type.hdpowerview.shade-vane.description"))
-                    .withLabel(translater.getText("channel-type.hdpowerview.shade-vane.label")).build();
-
-            // add the vane channel
-            error |= !channels.add(vaneChannel);
-        } else {
-            // remove the vane channel
-            error |= !channels.removeIf(vaneChannelFilter);
+        for (ShadeChannelBuilder channelBuilder : channelBuilders) {
+            if (channelBuilder.isAddingRequired()) {
+                channels.add(0, channelBuilder.build());
+            } else if (channelBuilder.isRemovingRequired()) {
+                channels.removeIf(channelBuilder.getPredicate());
+            }
         }
 
-        if (secChannelRequired) {
-            // build the secondary channel
-            Channel secChannel = ChannelBuilder
-                    .create(new ChannelUID(thing.getUID(),
-                            HDPowerViewBindingConstants.CHANNEL_SHADE_SECONDARY_POSITION))
-                    .withType(HDPowerViewBindingConstants.CHANNEL_TYPE_SECONDARY).withKind(ChannelKind.STATE)
-                    .withAcceptedItemType(CoreItemFactory.DIMMER)
-                    .withDescription(translater.getText("channel-type.hdpowerview.shade-secondary.description"))
-                    .withLabel(translater.getText("channel-type.hdpowerview.shade-secondary.label")).build();
-
-            // add the secondary channel
-            error |= !channels.add(secChannel);
-        } else {
-            // remove the secondary channel
-            error |= !channels.removeIf(secChannelFilter);
-        }
-
-        if (error) {
-            // something went wrong
-            return false;
-        }
-
-        /*
-         * If we got this far then we will update the thing by building an identical copy of the target thing, except
-         * that it uses the newly modified channel list instead of the original one.
-         */
-        final Thing thing = editThing().withChannels(channels).build();
-        scheduler.submit(() -> updateThing(thing));
+        updateThing(editThing().withChannels(channels).build());
         return true;
     }
 }

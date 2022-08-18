@@ -289,24 +289,6 @@ public class ShadeCapabilitiesDatabase {
         public boolean supportsSecondaryOverlapped() {
             return supportsSecondaryOverlapped;
         }
-
-        /**
-         * Check if the Capabilities class instance uses a vane channel.
-         *
-         * @return true if the shade supports a vane channel.
-         */
-        public boolean usesVaneChannel() {
-            return supportsTiltOnClosed || supportsTiltAnywhere;
-        }
-
-        /**
-         * Check if the Capabilities class instance uses a secondary channel.
-         *
-         * @return true if the shade supports a secondary channel.
-         */
-        public boolean usesSecondaryChannel() {
-            return supportsSecondary || supportsSecondaryOverlapped;
-        }
     }
 
     /**

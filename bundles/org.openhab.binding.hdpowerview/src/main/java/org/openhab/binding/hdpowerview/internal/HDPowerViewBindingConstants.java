@@ -79,7 +79,7 @@ public class HDPowerViewBindingConstants {
             THING_TYPE_REPEATER);
 
     // Channel Type UIDs
-    public static final ChannelTypeUID CHANNEL_TYPE_SECONDARY = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_SHADE_SECONDARY_POSITION);
-    public static final ChannelTypeUID CHANNEL_TYPE_VANE = new ChannelTypeUID(BINDING_ID, CHANNEL_SHADE_VANE);
+    public static final ChannelTypeUID CHANNEL_TYPE_POSITION = new ChannelTypeUID(BINDING_ID, "shade-position");
+    public static final ChannelTypeUID CHANNEL_TYPE_SECONDARY = new ChannelTypeUID(BINDING_ID, "shade-secondary");
+    public static final ChannelTypeUID CHANNEL_TYPE_VANE = new ChannelTypeUID(BINDING_ID, "shade-vane");
 }

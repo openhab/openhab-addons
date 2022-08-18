@@ -12,15 +12,6 @@
 		<description>Hunter Douglas (Luxaflex) PowerView Shade</description>
 
 		<channels>
-			<channel id="position" typeId="shade-position"/>
-
-			<!-- these channels now created dynamically
-
-				<channel id="secondary" typeId="shade-secondary"/>
-				<channel id="vane" typeId="shade-vane"/>
-
-			-->
-
 			<channel id="command" typeId="shade-command"/>
 			<channel id="lowBattery" typeId="system.low-battery"/>
 			<channel id="batteryLevel" typeId="system.battery-level"/>
