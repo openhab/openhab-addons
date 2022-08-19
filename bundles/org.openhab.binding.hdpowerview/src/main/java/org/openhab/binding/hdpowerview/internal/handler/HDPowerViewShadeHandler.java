@@ -96,7 +96,6 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
     private @Nullable Capabilities capabilities;
     private int shadeId;
     private boolean isDisposing;
-    private boolean dynamicChannelsInitialized;
     private final HDPowerViewTranslationProvider translationProvider;
 
     public HDPowerViewShadeHandler(Thing thing, HDPowerViewTranslationProvider translationProvider) {
@@ -115,7 +114,6 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
                     "@text/offline.conf-error.invalid-bridge-handler");
             return;
         }
-        dynamicChannelsInitialized = false;
         updateStatus(ThingStatus.UNKNOWN);
     }
 
@@ -281,8 +279,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         logger.debug("Caching capabilities {} for shade {}", capabilities.getValue(), shade.id);
         this.capabilities = capabilities;
 
-        dynamicChannelsInitialized = false;
-        updateDynamicChannels();
+        updateDynamicChannels(capabilities);
     }
 
     private Capabilities getCapabilitiesOrDefault() {
@@ -610,29 +607,15 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
 
     /**
      * Initialize the dynamic channels if the respective device supports them.
-     */
-    private void updateDynamicChannels() {
-        if (!dynamicChannelsInitialized) {
-            dynamicChannelsInitialized = dynamicChannelsInitializer();
-        }
-    }
-
-    /**
-     * Helper to do the actual work of initializing the dynamic channels if the respective device supports them.
      *
-     * @return true if all channels were successfully initialised.
+     * @throws IllegalStateException if any of the channel builders fails.
      */
-    private boolean dynamicChannelsInitializer() {
-        Capabilities capabilities = this.capabilities;
-        if (capabilities == null) {
-            // stuff not initialised
-            return false;
-        }
-
+    private void updateDynamicChannels(Capabilities capabilities) throws IllegalStateException {
         List<ShadeChannelBuilder> channelBuilders = new ArrayList<>();
 
         // @formatter:off
-        // vane
+
+        // add the vane channel builder
         channelBuilders.add(new ShadeChannelBuilder(thing)
                 .withChannelTypeUID(CHANNEL_TYPE_VANE)
                 .withChannelId(CHANNEL_SHADE_VANE)
@@ -640,7 +623,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
                 .withAcceptedItemType(CoreItemFactory.DIMMER)
                 .withTranslationProvider(translationProvider));
 
-        // secondary
+        // add the secondary channel builder
         channelBuilders.add(new ShadeChannelBuilder(thing)
                 .withChannelTypeUID(CHANNEL_TYPE_SECONDARY)
                 .withChannelId(CHANNEL_SHADE_SECONDARY_POSITION)
@@ -648,7 +631,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
                 .withAcceptedItemType(CoreItemFactory.ROLLERSHUTTER)
                 .withTranslationProvider(translationProvider));
 
-        // primary
+        // add the primary channel builder
         channelBuilders.add(new ShadeChannelBuilder(thing)
                 .withChannelTypeUID(CHANNEL_TYPE_POSITION)
                 .withChannelId(CHANNEL_SHADE_POSITION)
@@ -659,30 +642,30 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
 
         boolean dirty = false;
         for (ShadeChannelBuilder channelBuilder : channelBuilders) {
-            try {
-                dirty |= channelBuilder.isDirty();
-            } catch (IllegalStateException e) {
-                // something went wrong
-                return false;
-            }
+            dirty |= channelBuilder.isDirty();
         }
 
+        int added = 0;
+        int removed = 0;
+
         if (!dirty) {
-            // nothing to do
-            return true;
+            logger.debug("updateDynamicChannels(): channels added:{}, removed:{}", added, removed);
+            return;
         }
 
         List<Channel> channels = new ArrayList<>(thing.getChannels());
 
         for (ShadeChannelBuilder channelBuilder : channelBuilders) {
             if (channelBuilder.isAddingRequired()) {
+                added++;
                 channels.add(0, channelBuilder.build());
             } else if (channelBuilder.isRemovingRequired()) {
+                removed++;
                 channels.removeIf(channelBuilder.getPredicate());
             }
         }
 
+        logger.debug("updateDynamicChannels(): channels added:{}, removed:{}", added, removed);
         updateThing(editThing().withChannels(channels).build());
-        return true;
     }
 }

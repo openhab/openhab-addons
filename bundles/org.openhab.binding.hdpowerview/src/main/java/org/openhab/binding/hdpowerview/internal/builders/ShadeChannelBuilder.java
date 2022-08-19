@@ -33,7 +33,7 @@ import org.openhab.core.thing.type.ChannelTypeUID;
 @NonNullByDefault
 public class ShadeChannelBuilder {
 
-    private static final String NOT_INITIALIZED = "ShadeChannelBuilder not initialized!";
+    private static final String NOT_INITIALIZED = "ShadeChannelBuilder(): not initialized!";
 
     private final Thing thing;
 
