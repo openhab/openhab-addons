@@ -99,4 +99,12 @@ public class CapabilitiesSupport {
     public boolean heatingPower() {
         return type == TadoSystemType.HEATING;
     }
+
+    public boolean currentTemperature() {
+        return (type == TadoSystemType.AIR_CONDITIONING) || (type == TadoSystemType.HEATING);
+    }
+
+    public boolean humidity() {
+        return (type == TadoSystemType.AIR_CONDITIONING) || (type == TadoSystemType.HEATING);
+    }
 }

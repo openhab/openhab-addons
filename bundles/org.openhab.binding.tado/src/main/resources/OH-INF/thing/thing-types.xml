@@ -36,13 +36,11 @@
 		<description>A zone of a home</description>
 
 		<channels>
-			<channel typeId="currentTemperature" id="currentTemperature"></channel>
-			<channel typeId="humidity" id="humidity"></channel>
 			<channel typeId="hvacMode" id="hvacMode"></channel>
 			<channel typeId="targetTemperature" id="targetTemperature"></channel>
+			<channel typeId="operationMode" id="operationMode"></channel>
 			<channel typeId="overlayExpiry" id="overlayExpiry"></channel>
 			<channel typeId="timerDuration" id="timerDuration"></channel>
-			<channel typeId="operationMode" id="operationMode"></channel>
 			<channel typeId="system.low-battery" id="batteryLowAlarm">
 				<label>Battery Low Alarm</label>
 				<description>ON if one or more devices in the zone have a low battery</description>

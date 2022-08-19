@@ -497,20 +497,13 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
         List<ZoneChannelBuilder> channelBuilders = new ArrayList<>();
 
         // @formatter:off
-        // channel builder for CHAN_TYPE_AC_POWER
-        channelBuilders.add(new ZoneChannelBuilder(thing)
-                .withChannelTypeUID(TadoBindingConstants.CHANNNEL_TYPE_AC_POWER)
-                .withChannelId(TadoBindingConstants.CHANNEL_ZONE_AC_POWER)
-                .withRequired(capabilitiesSupport.acPower())
-                .withAcceptedItemType(CoreItemFactory.SWITCH)
-                .withTranslationProvider(translationProvider));
 
-        // channel builder for CHAN_TYPE_VERTICAL_SWING
+        // channel builder for CHAN_TYPE_LIGHT
         channelBuilders.add(new ZoneChannelBuilder(thing)
-                .withChannelTypeUID(TadoBindingConstants.CHANNNEL_TYPE_VERTICAL_SWING)
-                .withChannelId(TadoBindingConstants.CHANNEL_ZONE_VERTICAL_SWING)
-                .withRequired(capabilitiesSupport.verticalSwing())
-                .withAcceptedItemType(CoreItemFactory.STRING)
+                .withChannelTypeUID(TadoBindingConstants.CHANNNEL_TYPE_LIGHT)
+                .withChannelId(TadoBindingConstants.CHANNEL_ZONE_LIGHT)
+                .withRequired(capabilitiesSupport.light())
+                .withAcceptedItemType(CoreItemFactory.SWITCH)
                 .withTranslationProvider(translationProvider));
 
         // channel builder for CHAN_TYPE_HORIZONTAL_SWING
@@ -521,20 +514,12 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
                 .withAcceptedItemType(CoreItemFactory.STRING)
                 .withTranslationProvider(translationProvider));
 
-        // channel builder for CHAN_TYPE_FAN_LEVEL
+        // channel builder for CHAN_TYPE_VERTICAL_SWING
         channelBuilders.add(new ZoneChannelBuilder(thing)
-                .withChannelTypeUID(TadoBindingConstants.CHANNNEL_TYPE_FAN_LEVEL)
-                .withChannelId(TadoBindingConstants.CHANNEL_ZONE_FAN_LEVEL)
-                .withRequired(capabilitiesSupport.fanLevel())
+                .withChannelTypeUID(TadoBindingConstants.CHANNNEL_TYPE_VERTICAL_SWING)
+                .withChannelId(TadoBindingConstants.CHANNEL_ZONE_VERTICAL_SWING)
+                .withRequired(capabilitiesSupport.verticalSwing())
                 .withAcceptedItemType(CoreItemFactory.STRING)
-                .withTranslationProvider(translationProvider));
-
-        // channel builder for CHAN_TYPE_LIGHT
-        channelBuilders.add(new ZoneChannelBuilder(thing)
-                .withChannelTypeUID(TadoBindingConstants.CHANNNEL_TYPE_LIGHT)
-                .withChannelId(TadoBindingConstants.CHANNEL_ZONE_LIGHT)
-                .withRequired(capabilitiesSupport.light())
-                .withAcceptedItemType(CoreItemFactory.SWITCH)
                 .withTranslationProvider(translationProvider));
 
         // channel builder for CHAN_TYPE_SWING
@@ -545,6 +530,14 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
                 .withAcceptedItemType(CoreItemFactory.SWITCH)
                 .withTranslationProvider(translationProvider));
 
+        // channel builder for CHAN_TYPE_FAN_LEVEL
+        channelBuilders.add(new ZoneChannelBuilder(thing)
+                .withChannelTypeUID(TadoBindingConstants.CHANNNEL_TYPE_FAN_LEVEL)
+                .withChannelId(TadoBindingConstants.CHANNEL_ZONE_FAN_LEVEL)
+                .withRequired(capabilitiesSupport.fanLevel())
+                .withAcceptedItemType(CoreItemFactory.STRING)
+                .withTranslationProvider(translationProvider));
+
         // channel builder for CHAN_TYPE_FAN_SPEED
         channelBuilders.add(new ZoneChannelBuilder(thing)
                 .withChannelTypeUID(TadoBindingConstants.CHANNNEL_TYPE_FAN_SPEED)
@@ -553,11 +546,35 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
                 .withAcceptedItemType(CoreItemFactory.STRING)
                 .withTranslationProvider(translationProvider));
 
+        // channel builder for CHAN_TYPE_AC_POWER
+        channelBuilders.add(new ZoneChannelBuilder(thing)
+                .withChannelTypeUID(TadoBindingConstants.CHANNNEL_TYPE_AC_POWER)
+                .withChannelId(TadoBindingConstants.CHANNEL_ZONE_AC_POWER)
+                .withRequired(capabilitiesSupport.acPower())
+                .withAcceptedItemType(CoreItemFactory.SWITCH)
+                .withTranslationProvider(translationProvider));
+
         // channel builder for CHAN_TYPE_HEATING_POWER
         channelBuilders.add(new ZoneChannelBuilder(thing)
                 .withChannelTypeUID(TadoBindingConstants.CHANNNEL_TYPE_HEATING_POWER)
                 .withChannelId(TadoBindingConstants.CHANNEL_ZONE_HEATING_POWER)
                 .withRequired(capabilitiesSupport.heatingPower())
+                .withAcceptedItemType(CoreItemFactory.NUMBER)
+                .withTranslationProvider(translationProvider));
+
+        // channel builder for CHANNNEL_TYPE_HUMIDITY
+        channelBuilders.add(new ZoneChannelBuilder(thing)
+                .withChannelTypeUID(TadoBindingConstants.CHANNNEL_TYPE_HUMIDITY)
+                .withChannelId(TadoBindingConstants.CHANNEL_ZONE_HUMIDITY)
+                .withRequired(capabilitiesSupport.humidity())
+                .withAcceptedItemType(CoreItemFactory.NUMBER)
+                .withTranslationProvider(translationProvider));
+
+        // channel builder for CHANNNEL_TYPE_CURRENT_TEMPERATURE
+        channelBuilders.add(new ZoneChannelBuilder(thing)
+                .withChannelTypeUID(TadoBindingConstants.CHANNNEL_TYPE_CURRENT_TEMPERATURE)
+                .withChannelId(TadoBindingConstants.CHANNEL_ZONE_CURRENT_TEMPERATURE)
+                .withRequired(capabilitiesSupport.currentTemperature())
                 .withAcceptedItemType(CoreItemFactory.NUMBER)
                 .withTranslationProvider(translationProvider));
         // @formatter:on

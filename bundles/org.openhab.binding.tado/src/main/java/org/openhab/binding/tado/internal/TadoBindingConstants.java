@@ -160,4 +160,7 @@ public class TadoBindingConstants {
     public static final ChannelTypeUID CHANNNEL_TYPE_SWING = new ChannelTypeUID(BINDING_ID, "swing");
     public static final ChannelTypeUID CHANNNEL_TYPE_FAN_SPEED = new ChannelTypeUID(BINDING_ID, "fanspeed");
     public static final ChannelTypeUID CHANNNEL_TYPE_HEATING_POWER = new ChannelTypeUID(BINDING_ID, "heatingPower");
+    public static final ChannelTypeUID CHANNNEL_TYPE_CURRENT_TEMPERATURE = new ChannelTypeUID(BINDING_ID,
+            "currentTemperature");
+    public static final ChannelTypeUID CHANNNEL_TYPE_HUMIDITY = new ChannelTypeUID(BINDING_ID, "humidity");
 }
