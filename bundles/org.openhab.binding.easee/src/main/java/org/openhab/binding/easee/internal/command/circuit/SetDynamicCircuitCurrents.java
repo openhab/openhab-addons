@@ -24,6 +24,7 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.easee.internal.command.AbstractWriteCommand;
 import org.openhab.binding.easee.internal.command.EaseeCommand;
 import org.openhab.binding.easee.internal.handler.EaseeThingHandler;
+import org.openhab.binding.easee.internal.model.ValidationException;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.types.Command;
 
@@ -61,7 +62,8 @@ public class SetDynamicCircuitCurrents extends AbstractWriteCommand implements E
             content.put(PHASE2, tokens[1]);
             content.put(PHASE3, tokens[2]);
         } else {
-            throw new IllegalArgumentException("malformed command string: " + rawCommand);
+            throw new ValidationException(
+                    "malformed command string, expected: '<phase1>;<phase2>;<phase3>', actual: " + rawCommand);
         }
         return gson.toJson(content);
     }
