@@ -69,8 +69,8 @@ public class ZoneChannelBuilder {
         }
         ChannelTypeUID channelTypeUID = this.channelTypeUID;
         if (channelTypeUID != null) {
-            this.predicate = c -> channelTypeUID.equals(c.getChannelTypeUID());
-            Predicate<Channel> predicate = this.predicate;
+            Predicate<Channel> predicate = c -> channelTypeUID.equals(c.getChannelTypeUID());
+            this.predicate = predicate;
             if (channelId != null && translationProvider != null && required != null) {
                 existing = thing.getChannels().stream().anyMatch(predicate);
                 ready = true;

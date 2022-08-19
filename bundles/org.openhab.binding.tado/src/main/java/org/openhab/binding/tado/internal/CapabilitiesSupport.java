@@ -12,10 +12,10 @@
  */
 package org.openhab.binding.tado.internal;
 
-import java.util.Objects;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tado.internal.api.model.AcModeCapabilities;
 import org.openhab.binding.tado.internal.api.model.AirConditioningCapabilities;
 import org.openhab.binding.tado.internal.api.model.GenericZoneCapabilities;
@@ -47,7 +47,7 @@ public class CapabilitiesSupport {
         AirConditioningCapabilities acCapabilities = (AirConditioningCapabilities) capabilities;
 
         // @formatter:off
-        Stream<AcModeCapabilities> stream = Stream.of(
+        Stream<@Nullable AcModeCapabilities> allCapabilities = Stream.of(
                acCapabilities.getCOOL(),
                acCapabilities.getDRY(),
                acCapabilities.getHEAT(),
@@ -55,14 +55,16 @@ public class CapabilitiesSupport {
                acCapabilities.getAUTO());
         // @formatter:on
 
-        // iterate over all (non null) modes and build the superset of supported capabilities
-        stream.filter(Objects::nonNull).forEach(e -> {
-            light |= e.getLight() != null ? e.getLight().size() > 0 : false;
-            swing |= e.getSwings() != null ? e.getSwings().size() > 0 : false;
-            fanLevel |= e.getFanLevel() != null ? e.getFanLevel().size() > 0 : false;
-            fanSpeed |= e.getFanSpeeds() != null ? e.getFanSpeeds().size() > 0 : false;
-            verticalSwing |= e.getVerticalSwing() != null ? e.getVerticalSwing().size() > 0 : false;
-            horizontalSwing |= e.getHorizontalSwing() != null ? e.getHorizontalSwing().size() > 0 : false;
+        // iterate over all mode capability elements and build the superset of their inner capabilities
+        allCapabilities.forEach(e -> {
+            if (e != null) {
+                light |= e.getLight() != null ? e.getLight().size() > 0 : false;
+                swing |= e.getSwings() != null ? e.getSwings().size() > 0 : false;
+                fanLevel |= e.getFanLevel() != null ? e.getFanLevel().size() > 0 : false;
+                fanSpeed |= e.getFanSpeeds() != null ? e.getFanSpeeds().size() > 0 : false;
+                verticalSwing |= e.getVerticalSwing() != null ? e.getVerticalSwing().size() > 0 : false;
+                horizontalSwing |= e.getHorizontalSwing() != null ? e.getHorizontalSwing().size() > 0 : false;
+            }
         });
     }
 
