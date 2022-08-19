@@ -155,7 +155,6 @@ public final class Utils {
     public static String getValidationExpression(Channel channel) {
         String expr = getPropertyOrParameter(channel, PARAMETER_NAME_VALIDATION_REGEXP);
         if (expr == null) {
-            // logger.warn("Channel {} does not have a validation expression configured", channel.getUID().getId());
             throw new ConfigurationException(
                     "channel (" + channel.getUID().getId() + ") does not have a validation expression configured");
         }
@@ -171,7 +170,6 @@ public final class Utils {
     public static String getWriteCommand(Channel channel) {
         String command = getPropertyOrParameter(channel, PARAMETER_NAME_WRITE_COMMAND);
         if (command == null) {
-            // logger.warn("channel {} does not have a write command configured", channel.getUID().getId());
             throw new ConfigurationException(
                     "channel (" + channel.getUID().getId() + ") does not have a write command configured");
         }
