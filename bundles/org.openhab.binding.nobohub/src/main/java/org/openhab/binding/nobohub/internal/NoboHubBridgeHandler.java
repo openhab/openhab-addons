@@ -20,6 +20,7 @@ import static org.openhab.binding.nobohub.internal.NoboHubBindingConstants.RECOM
 
 import java.time.Duration;
 import java.util.Collection;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -161,7 +162,7 @@ public class NoboHubBridgeHandler extends BaseBridgeHandler {
 
                 logger.debug("Starting communication thread to {}", hostName);
 
-                HubCommunicationThread ht = new HubCommunicationThread(conn, timeout);
+                HubCommunicationThread ht = new HubCommunicationThread(conn, this, timeout);
                 ht.start();
                 hubThread = ht;
 
@@ -225,11 +226,13 @@ public class NoboHubBridgeHandler extends BaseBridgeHandler {
             refreshZone(zone);
         }
 
-        updateProperty(PROPERTY_HOSTNAME, hub.getName());
-        updateProperty(Thing.PROPERTY_SERIAL_NUMBER, hub.getSerialNumber().toString());
-        updateProperty(PROPERTY_SOFTWARE_VERSION, hub.getSoftwareVersion());
-        updateProperty(Thing.PROPERTY_HARDWARE_VERSION, hub.getHardwareVersion());
-        updateProperty(PROPERTY_PRODUCTION_DATE, hub.getProductionDate());
+        Map<String, String> properties = editProperties();
+        properties.put(PROPERTY_HOSTNAME, hub.getName());
+        properties.put(Thing.PROPERTY_SERIAL_NUMBER, hub.getSerialNumber().toString());
+        properties.put(PROPERTY_SOFTWARE_VERSION, hub.getSoftwareVersion());
+        properties.put(Thing.PROPERTY_HARDWARE_VERSION, hub.getHardwareVersion());
+        properties.put(PROPERTY_PRODUCTION_DATE, hub.getProductionDate());
+        updateProperties(properties);
     }
 
     public void receivedData(@Nullable String line) {

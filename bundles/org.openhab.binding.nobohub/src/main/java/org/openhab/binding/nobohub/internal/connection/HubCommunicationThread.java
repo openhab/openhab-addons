@@ -17,7 +17,10 @@ import java.time.Instant;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.nobohub.internal.NoboHubBindingConstants;
+import org.openhab.binding.nobohub.internal.NoboHubBridgeHandler;
 import org.openhab.binding.nobohub.internal.model.NoboCommunicationException;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,17 +32,49 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class HubCommunicationThread extends Thread {
 
+    private enum HubCommunicationThreadState {
+        STARTING(ThingStatus.INITIALIZING, ThingStatusDetail.BRIDGE_UNINITIALIZED, ""),
+        CONNECTED(ThingStatus.ONLINE, ThingStatusDetail.NONE, ""),
+        DISCONNECTED(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/message.bridge.status.failed"),
+        STOPPED(ThingStatus.REMOVING, ThingStatusDetail.BRIDGE_OFFLINE, "");
+
+        private final ThingStatus status;
+        private final ThingStatusDetail statusDetail;
+        private final String errorMessage;
+
+        private HubCommunicationThreadState(ThingStatus status, ThingStatusDetail statusDetail, String errorMessage) {
+            this.status = status;
+            this.statusDetail = statusDetail;
+            this.errorMessage = errorMessage;
+        }
+
+        public ThingStatus getThingStatus() {
+            return status;
+        }
+
+        public ThingStatusDetail getThingStatusDetail() {
+            return statusDetail;
+        }
+
+        public String getErrorMessage() {
+            return errorMessage;
+        }
+    }
+
     private final Logger logger = LoggerFactory.getLogger(HubCommunicationThread.class);
 
     private final HubConnection hubConnection;
+    private final NoboHubBridgeHandler hubHandler;
     private final Duration timeout;
     private Instant lastTimeFullScan;
     private Instant lastTimeReadStart;
 
     private volatile boolean stopped = false;
+    private HubCommunicationThreadState currentState = HubCommunicationThreadState.STARTING;
 
-    public HubCommunicationThread(HubConnection hubConnection, Duration timeout) {
+    public HubCommunicationThread(HubConnection hubConnection, NoboHubBridgeHandler hubHandler, Duration timeout) {
         this.hubConnection = hubConnection;
+        this.hubHandler = hubHandler;
         this.timeout = timeout;
         this.lastTimeFullScan = Instant.now();
         this.lastTimeReadStart = Instant.now();
@@ -52,49 +87,78 @@ public class HubCommunicationThread extends Thread {
     @Override
     public void run() {
         while (!stopped) {
-            try {
-                if (hubConnection.hasData()) {
-                    hubConnection.processReads(timeout);
-                }
-
-                if (Instant.now().isAfter(lastTimeFullScan.plus(NoboHubBindingConstants.TIME_BETWEEN_FULL_SCANS))) {
-                    hubConnection.refreshAll();
-                    lastTimeFullScan = Instant.now();
-                } else {
-                    hubConnection.handshake();
-                }
-
-                lastTimeReadStart = Instant.now();
-                hubConnection.processReads(timeout);
-            } catch (NoboCommunicationException nce) {
-                logger.error("Communication error with Hub", nce);
-                try {
-                    Duration readTime = Duration.between(Instant.now(), lastTimeReadStart);
-                    Thread.sleep(NoboHubBindingConstants.TIME_BETWEEN_RETRIES_ON_ERROR.minus(readTime).toMillis());
+            switch (currentState) {
+                case STARTING:
                     try {
-                        logger.debug("Trying to do a hard reconnect");
-                        hubConnection.hardReconnect();
-                    } catch (NoboCommunicationException nce2) {
-                        logger.debug("Failed to reconnect connection", nce2);
+                        hubConnection.refreshAll();
+                        lastTimeFullScan = Instant.now();
+                        setNextState(HubCommunicationThreadState.CONNECTED);
+                    } catch (NoboCommunicationException nce) {
+                        logger.error("Communication error with Hub", nce);
+                        setNextState(HubCommunicationThreadState.DISCONNECTED);
                     }
-                } catch (InterruptedException ie) {
-                    logger.debug("Interrupted from sleep after error");
-                    Thread.currentThread().interrupt();
-                }
+                    break;
+
+                case CONNECTED:
+                    try {
+                        if (hubConnection.hasData()) {
+                            hubConnection.processReads(timeout);
+                        }
+
+                        if (Instant.now()
+                                .isAfter(lastTimeFullScan.plus(NoboHubBindingConstants.TIME_BETWEEN_FULL_SCANS))) {
+                            hubConnection.refreshAll();
+                            lastTimeFullScan = Instant.now();
+                        } else {
+                            hubConnection.handshake();
+                        }
+
+                        hubConnection.processReads(timeout);
+                    } catch (NoboCommunicationException nce) {
+                        logger.error("Communication error with Hub", nce);
+                        setNextState(HubCommunicationThreadState.DISCONNECTED);
+                    }
+                    break;
+
+                case DISCONNECTED:
+                    try {
+                        Thread.sleep(NoboHubBindingConstants.TIME_BETWEEN_RETRIES_ON_ERROR.toMillis());
+                        try {
+                            logger.debug("Trying to do a hard reconnect");
+                            hubConnection.hardReconnect();
+                            setNextState(HubCommunicationThreadState.CONNECTED);
+                        } catch (NoboCommunicationException nce2) {
+                            logger.debug("Failed to reconnect connection", nce2);
+                        }
+                    } catch (InterruptedException ie) {
+                        logger.debug("Interrupted from sleep after error");
+                        Thread.currentThread().interrupt();
+                    }
+                    break;
+
+                case STOPPED:
+                    break;
             }
         }
 
-        try {
-            if (stopped) {
-                logger.debug("HubCommunicationThread is stopped, disconnecting from Hub");
+        if (stopped) {
+            logger.debug("HubCommunicationThread is stopped, disconnecting from Hub");
+            setNextState(HubCommunicationThreadState.STOPPED);
+            try {
                 hubConnection.disconnect();
+            } catch (NoboCommunicationException nce) {
+                logger.debug("Error disconnecting from Hub", nce);
             }
-        } catch (NoboCommunicationException nce) {
-            logger.debug("Error disconnecting from Hub", nce);
         }
     }
 
     public HubConnection getConnection() {
         return hubConnection;
+    }
+
+    private void setNextState(HubCommunicationThreadState newState) {
+        currentState = newState;
+        hubHandler.setStatusInfo(newState.getThingStatus(), newState.getThingStatusDetail(),
+                newState.getErrorMessage());
     }
 }

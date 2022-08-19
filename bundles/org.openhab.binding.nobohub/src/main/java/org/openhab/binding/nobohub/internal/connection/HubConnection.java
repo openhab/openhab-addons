@@ -227,7 +227,8 @@ public class HubConnection {
             try {
                 host = InetAddress.getByName(hostName);
             } catch (IOException ioex) {
-                throw new NoboCommunicationException(String.format("Failed to resolve IP address of %s", hostName));
+                throw new NoboCommunicationException(String.format("Failed to resolve IP address of %s", hostName),
+                        ioex);
             }
         }
         try {

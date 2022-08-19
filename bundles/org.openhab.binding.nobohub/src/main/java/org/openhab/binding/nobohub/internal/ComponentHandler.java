@@ -18,6 +18,8 @@ import static org.openhab.binding.nobohub.internal.NoboHubBindingConstants.PROPE
 import static org.openhab.binding.nobohub.internal.NoboHubBindingConstants.PROPERTY_TEMPERATURE_SENSOR_FOR_ZONE;
 import static org.openhab.binding.nobohub.internal.NoboHubBindingConstants.PROPERTY_ZONE;
 
+import java.util.Map;
+
 import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -66,19 +68,21 @@ public class ComponentHandler extends BaseThingHandler {
             updateState(CHANNEL_COMPONENT_CURRENT_TEMPERATURE, currentTemperature);
         }
 
-        updateProperty(Thing.PROPERTY_SERIAL_NUMBER, component.getSerialNumber().toString());
-        updateProperty(PROPERTY_NAME, component.getName());
-        updateProperty(PROPERTY_MODEL, component.getSerialNumber().getComponentType());
+        Map<String, String> properties = editProperties();
+        properties.put(Thing.PROPERTY_SERIAL_NUMBER, component.getSerialNumber().toString());
+        properties.put(PROPERTY_NAME, component.getName());
+        properties.put(PROPERTY_MODEL, component.getSerialNumber().getComponentType());
 
         String zoneName = getZoneName(component.getZoneId());
         if (zoneName != null) {
-            updateProperty(PROPERTY_ZONE, zoneName);
+            properties.put(PROPERTY_ZONE, zoneName);
         }
 
         String tempForZoneName = getZoneName(component.getTemperatureSensorForZoneId());
         if (tempForZoneName != null) {
-            updateProperty(PROPERTY_TEMPERATURE_SENSOR_FOR_ZONE, tempForZoneName);
+            properties.put(PROPERTY_TEMPERATURE_SENSOR_FOR_ZONE, tempForZoneName);
         }
+        updateProperties(properties);
     }
 
     private @Nullable String getZoneName(int zoneId) {

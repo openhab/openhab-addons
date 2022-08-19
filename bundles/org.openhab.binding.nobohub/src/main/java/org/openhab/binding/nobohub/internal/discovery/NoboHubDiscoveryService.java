@@ -148,7 +148,7 @@ public class NoboHubDiscoveryService extends AbstractDiscoveryService implements
             ThingUID bridge = new ThingUID(THING_TYPE_HUB, serialNumberStart);
             String label = "Nobø Hub " + serialNumberStart;
 
-            Map<String, Object> properties = new HashMap<>(1);
+            Map<String, Object> properties = new HashMap<>(4);
             properties.put(Thing.PROPERTY_SERIAL_NUMBER, serialNumberStart);
             properties.put(PROPERTY_NAME, label);
             properties.put(Thing.PROPERTY_VENDOR, PROPERTY_VENDOR_NAME);

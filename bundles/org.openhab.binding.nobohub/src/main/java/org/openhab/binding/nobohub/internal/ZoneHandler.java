@@ -24,6 +24,7 @@ import static org.openhab.binding.nobohub.internal.NoboHubBindingConstants.PROPE
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.measure.quantity.Temperature;
 
@@ -120,8 +121,10 @@ public class ZoneHandler extends BaseThingHandler {
             }
         }
 
-        updateProperty(PROPERTY_HOSTNAME, zone.getName());
-        updateProperty(PROPERTY_ZONE_ID, Integer.toString(zone.getId()));
+        Map<String, String> properties = editProperties();
+        properties.put(PROPERTY_HOSTNAME, zone.getName());
+        properties.put(PROPERTY_ZONE_ID, Integer.toString(zone.getId()));
+        updateProperties(properties);
     }
 
     @Override
