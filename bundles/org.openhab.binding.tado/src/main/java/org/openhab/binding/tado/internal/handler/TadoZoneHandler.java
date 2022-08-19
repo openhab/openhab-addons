@@ -100,8 +100,6 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
     private boolean disposing = false;
     private @Nullable Gson gson;
 
-    private boolean channelsUpdated = false;
-
     public TadoZoneHandler(Thing thing, TadoStateDescriptionProvider stateDescriptionProvider,
             TadoTranslationProvider translationProvider) {
         super(thing);
@@ -293,10 +291,7 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
                 updateProperty(TadoBindingConstants.PROPERTY_ZONE_TYPE, zoneDetails.getType().name());
 
                 this.capabilities = capabilities;
-                if (!channelsUpdated) {
-                    updateDynamicChannels();
-                    channelsUpdated = true;
-                }
+                updateDynamicChannels(capabilities);
             } catch (IOException | ApiException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Could not connect to server due to " + e.getMessage());
@@ -493,10 +488,12 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
     /**
      * Initialize the dynamic channels depending on whether this device's capabilities support them.
      *
+     * @param capabilities the new capabilities object.
+     *
      * @throws IllegalStateException if any of the channel builders failed.
      */
-    private void updateDynamicChannels() throws IllegalStateException {
-        CapabilitiesSupport capabilitiesSupport = new CapabilitiesSupport(getZoneCapabilities());
+    private void updateDynamicChannels(GenericZoneCapabilities capabilities) throws IllegalStateException {
+        CapabilitiesSupport capabilitiesSupport = new CapabilitiesSupport(capabilities);
         List<ZoneChannelBuilder> channelBuilders = new ArrayList<>();
 
         // @formatter:off
@@ -570,22 +567,24 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
             dirty |= channelBuilder.isDirty();
         }
 
-        if (!dirty) {
-            // nothing to do
-            return;
-        }
+        int added = 0;
+        int removed = 0;
 
-        // add or remove the channels
-        List<Channel> channels = new ArrayList<>(thing.getChannels());
-        for (ZoneChannelBuilder channelBuilder : channelBuilders) {
-            if (channelBuilder.isAddingRequired()) {
-                channels.add(channelBuilder.build());
-            } else if (channelBuilder.isRemovingRequired()) {
-                channels.removeIf(channelBuilder.getPredicate());
+        if (dirty) {
+            List<Channel> channels = new ArrayList<>(thing.getChannels());
+
+            for (ZoneChannelBuilder channelBuilder : channelBuilders) {
+                if (channelBuilder.isAddingRequired()) {
+                    added++;
+                    channels.add(channelBuilder.build());
+                } else if (channelBuilder.isRemovingRequired()) {
+                    removed++;
+                    channels.removeIf(channelBuilder.getPredicate());
+                }
             }
-        }
 
-        // update the thing
-        updateThing(editThing().withChannels(channels).build());
+            scheduler.submit(() -> updateThing(editThing().withChannels(channels).build()));
+        }
+        logger.debug("updateDynamicChannels(): channels added:{}, removed:{}", added, removed);
     }
 }
