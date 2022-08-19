@@ -26,13 +26,13 @@ The following configuration parameters are available for the binding/bridge:
 
 - **username** (required)
 The username to login at Easee Cloud service.
-This should be an email adress or phone number.
+This should be an e-mail address or phone number.
 
 - **passord** (required)  
 Your password to login at Easee Cloud service.
 
 - **siteId** (required)  
-The ID of the site containing the wallbox(es) and circuit(s) that should be integrated into Openhab.
+The ID of the site containing the wallbox(es) and circuit(s) that should be integrated into openHAB.
 The ID of your site can be found out via the sites overview (https://easee.cloud/sites).
 You just need to click on one of the sites listed there, the id will be part of the URL which is then opened.
 It will be a number with typically 6 digits.

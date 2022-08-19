@@ -134,7 +134,7 @@
 		<channels>
 			<channel id="sessionEnergy" typeId="type-energy">
 				<label>Total Session Energy</label>
-				<description>Total Energy for last session..</description>
+				<description>Total Energy for last session.</description>
 			</channel>
 			<channel id="sessionStart" typeId="type-date">
 				<label>Session Start</label>
