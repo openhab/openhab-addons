@@ -144,7 +144,7 @@ public class VeluxHandler extends ExtendedBaseThingHandler {
      * @param bridgeHandler the calling bridge handler.
      * @throws IllegalStateException if something went wrong.
      */
-    public void initializeVanePositionChannel(VeluxBridgeHandler bridgeHandler) throws IllegalStateException {
+    public void updateDynamicChannels(VeluxBridgeHandler bridgeHandler) throws IllegalStateException {
         // roller shutters are the only things allowed to have vane support
         if (!VeluxBindingConstants.THING_TYPE_VELUX_ROLLERSHUTTER.equals(thing.getThingTypeUID())) {
             return;

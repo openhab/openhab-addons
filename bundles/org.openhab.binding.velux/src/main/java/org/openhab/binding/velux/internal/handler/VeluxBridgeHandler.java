@@ -466,7 +466,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
             }
         }
 
-        initializeVanePositionChannels();
+        updateDynamicChannels();
 
         veluxBridgeConfiguration.hasChanged = false;
         logger.debug("Velux veluxBridge is online, now.");
@@ -964,11 +964,11 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
     /**
      * Ask all things in the hub to initialise their dynamic vane position channel if they support it.
      */
-    private void initializeVanePositionChannels() {
+    private void updateDynamicChannels() {
         getThing().getThings().stream().forEach(thing -> {
             ThingHandler thingHandler = thing.getHandler();
             if (thingHandler instanceof VeluxHandler) {
-                ((VeluxHandler) thingHandler).initializeVanePositionChannel(this);
+                ((VeluxHandler) thingHandler).updateDynamicChannels(this);
             }
         });
     }
