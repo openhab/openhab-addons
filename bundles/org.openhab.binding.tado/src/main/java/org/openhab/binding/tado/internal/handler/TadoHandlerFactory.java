@@ -24,8 +24,11 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.tado.internal.TadoTranslationProvider;
 import org.openhab.binding.tado.internal.discovery.TadoDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryService;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -54,10 +57,14 @@ public class TadoHandlerFactory extends BaseThingHandlerFactory {
     private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
     private final TadoStateDescriptionProvider stateDescriptionProvider;
+    private final TadoTranslationProvider translationProvider;
 
     @Activate
-    public TadoHandlerFactory(final @Reference TadoStateDescriptionProvider stateDescriptionProvider) {
+    public TadoHandlerFactory(final @Reference TadoStateDescriptionProvider stateDescriptionProvider,
+            final @Reference TranslationProvider translationProvider, final @Reference LocaleProvider localeProvider) {
         this.stateDescriptionProvider = stateDescriptionProvider;
+        this.translationProvider = new TadoTranslationProvider(getBundleContext().getBundle(), translationProvider,
+                localeProvider);
     }
 
     @Override
@@ -74,7 +81,7 @@ public class TadoHandlerFactory extends BaseThingHandlerFactory {
             registerTadoDiscoveryService(tadoHomeHandler);
             return tadoHomeHandler;
         } else if (thingTypeUID.equals(THING_TYPE_ZONE)) {
-            return new TadoZoneHandler(thing, stateDescriptionProvider);
+            return new TadoZoneHandler(thing, stateDescriptionProvider, translationProvider);
         } else if (thingTypeUID.equals(THING_TYPE_MOBILE_DEVICE)) {
             return new TadoMobileDeviceHandler(thing);
         }

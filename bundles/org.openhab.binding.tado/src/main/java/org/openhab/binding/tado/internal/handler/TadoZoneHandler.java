@@ -15,6 +15,7 @@ package org.openhab.binding.tado.internal.handler;
 import static org.openhab.binding.tado.internal.api.TadoApiTypeUtils.terminationConditionTemplateToTerminationCondition;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -24,6 +25,7 @@ import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.tado.internal.CapabilitiesSupport;
 import org.openhab.binding.tado.internal.TadoBindingConstants;
 import org.openhab.binding.tado.internal.TadoBindingConstants.FanLevel;
 import org.openhab.binding.tado.internal.TadoBindingConstants.HorizontalSwing;
@@ -32,6 +34,7 @@ import org.openhab.binding.tado.internal.TadoBindingConstants.TemperatureUnit;
 import org.openhab.binding.tado.internal.TadoBindingConstants.VerticalSwing;
 import org.openhab.binding.tado.internal.TadoBindingConstants.ZoneType;
 import org.openhab.binding.tado.internal.TadoHvacChange;
+import org.openhab.binding.tado.internal.TadoTranslationProvider;
 import org.openhab.binding.tado.internal.adapter.TadoZoneStateAdapter;
 import org.openhab.binding.tado.internal.api.ApiException;
 import org.openhab.binding.tado.internal.api.GsonBuilderFactory;
@@ -50,7 +53,9 @@ import org.openhab.binding.tado.internal.api.model.OverlayTerminationCondition;
 import org.openhab.binding.tado.internal.api.model.TadoSystemType;
 import org.openhab.binding.tado.internal.api.model.Zone;
 import org.openhab.binding.tado.internal.api.model.ZoneState;
+import org.openhab.binding.tado.internal.builder.ZoneChannelBuilder;
 import org.openhab.binding.tado.internal.config.TadoZoneConfig;
+import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -83,6 +88,7 @@ import com.google.gson.Gson;
 public class TadoZoneHandler extends BaseHomeThingHandler {
     private Logger logger = LoggerFactory.getLogger(TadoZoneHandler.class);
 
+    private final TadoTranslationProvider translationProvider;
     private final TadoStateDescriptionProvider stateDescriptionProvider;
     private TadoZoneConfig configuration;
 
@@ -94,8 +100,12 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
     private boolean disposing = false;
     private @Nullable Gson gson;
 
-    public TadoZoneHandler(Thing thing, TadoStateDescriptionProvider stateDescriptionProvider) {
+    private boolean channelsUpdated = false;
+
+    public TadoZoneHandler(Thing thing, TadoStateDescriptionProvider stateDescriptionProvider,
+            TadoTranslationProvider translationProvider) {
         super(thing);
+        this.translationProvider = translationProvider;
         this.stateDescriptionProvider = stateDescriptionProvider;
         configuration = getConfigAs(TadoZoneConfig.class);
     }
@@ -281,7 +291,12 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
 
                 updateProperty(TadoBindingConstants.PROPERTY_ZONE_NAME, zoneDetails.getName());
                 updateProperty(TadoBindingConstants.PROPERTY_ZONE_TYPE, zoneDetails.getType().name());
+
                 this.capabilities = capabilities;
+                if (!channelsUpdated) {
+                    updateDynamicChannels();
+                    channelsUpdated = true;
+                }
             } catch (IOException | ApiException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Could not connect to server due to " + e.getMessage());
@@ -473,5 +488,104 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
             gson = this.gson = GsonBuilderFactory.defaultGsonBuilder().setPrettyPrinting().create();
         }
         return gson.toJson(object);
+    }
+
+    /**
+     * Initialize the dynamic channels depending on whether this device's capabilities support them.
+     *
+     * @throws IllegalStateException if any of the channel builders failed.
+     */
+    private void updateDynamicChannels() throws IllegalStateException {
+        CapabilitiesSupport capabilitiesSupport = new CapabilitiesSupport(getZoneCapabilities());
+        List<ZoneChannelBuilder> channelBuilders = new ArrayList<>();
+
+        // @formatter:off
+        // channel builder for CHAN_TYPE_AC_POWER
+        channelBuilders.add(new ZoneChannelBuilder(thing)
+                .withChannelTypeUID(TadoBindingConstants.CHANNNEL_TYPE_AC_POWER)
+                .withChannelId(TadoBindingConstants.CHANNEL_ZONE_AC_POWER)
+                .withRequired(capabilitiesSupport.acPower())
+                .withAcceptedItemType(CoreItemFactory.SWITCH)
+                .withTranslationProvider(translationProvider));
+
+        // channel builder for CHAN_TYPE_VERTICAL_SWING
+        channelBuilders.add(new ZoneChannelBuilder(thing)
+                .withChannelTypeUID(TadoBindingConstants.CHANNNEL_TYPE_VERTICAL_SWING)
+                .withChannelId(TadoBindingConstants.CHANNEL_ZONE_VERTICAL_SWING)
+                .withRequired(capabilitiesSupport.verticalSwing())
+                .withAcceptedItemType(CoreItemFactory.STRING)
+                .withTranslationProvider(translationProvider));
+
+        // channel builder for CHAN_TYPE_HORIZONTAL_SWING
+        channelBuilders.add(new ZoneChannelBuilder(thing)
+                .withChannelTypeUID(TadoBindingConstants.CHANNNEL_TYPE_HORIZONTAL_SWING)
+                .withChannelId(TadoBindingConstants.CHANNEL_ZONE_HORIZONTAL_SWING)
+                .withRequired(capabilitiesSupport.horizontalSwing())
+                .withAcceptedItemType(CoreItemFactory.STRING)
+                .withTranslationProvider(translationProvider));
+
+        // channel builder for CHAN_TYPE_FAN_LEVEL
+        channelBuilders.add(new ZoneChannelBuilder(thing)
+                .withChannelTypeUID(TadoBindingConstants.CHANNNEL_TYPE_FAN_LEVEL)
+                .withChannelId(TadoBindingConstants.CHANNEL_ZONE_FAN_LEVEL)
+                .withRequired(capabilitiesSupport.fanLevel())
+                .withAcceptedItemType(CoreItemFactory.STRING)
+                .withTranslationProvider(translationProvider));
+
+        // channel builder for CHAN_TYPE_LIGHT
+        channelBuilders.add(new ZoneChannelBuilder(thing)
+                .withChannelTypeUID(TadoBindingConstants.CHANNNEL_TYPE_LIGHT)
+                .withChannelId(TadoBindingConstants.CHANNEL_ZONE_LIGHT)
+                .withRequired(capabilitiesSupport.light())
+                .withAcceptedItemType(CoreItemFactory.SWITCH)
+                .withTranslationProvider(translationProvider));
+
+        // channel builder for CHAN_TYPE_SWING
+        channelBuilders.add(new ZoneChannelBuilder(thing)
+                .withChannelTypeUID(TadoBindingConstants.CHANNNEL_TYPE_SWING)
+                .withChannelId(TadoBindingConstants.CHANNEL_ZONE_SWING)
+                .withRequired(capabilitiesSupport.swing())
+                .withAcceptedItemType(CoreItemFactory.SWITCH)
+                .withTranslationProvider(translationProvider));
+
+        // channel builder for CHAN_TYPE_FAN_SPEED
+        channelBuilders.add(new ZoneChannelBuilder(thing)
+                .withChannelTypeUID(TadoBindingConstants.CHANNNEL_TYPE_FAN_SPEED)
+                .withChannelId(TadoBindingConstants.CHANNEL_ZONE_FAN_SPEED)
+                .withRequired(capabilitiesSupport.fanSpeed())
+                .withAcceptedItemType(CoreItemFactory.STRING)
+                .withTranslationProvider(translationProvider));
+
+        // channel builder for CHAN_TYPE_HEATING_POWER
+        channelBuilders.add(new ZoneChannelBuilder(thing)
+                .withChannelTypeUID(TadoBindingConstants.CHANNNEL_TYPE_HEATING_POWER)
+                .withChannelId(TadoBindingConstants.CHANNEL_ZONE_HEATING_POWER)
+                .withRequired(capabilitiesSupport.heatingPower())
+                .withAcceptedItemType(CoreItemFactory.NUMBER)
+                .withTranslationProvider(translationProvider));
+        // @formatter:on
+
+        boolean dirty = false;
+        for (ZoneChannelBuilder channelBuilder : channelBuilders) {
+            dirty |= channelBuilder.isDirty();
+        }
+
+        if (!dirty) {
+            // nothing to do
+            return;
+        }
+
+        // add or remove the channels
+        List<Channel> channels = new ArrayList<>(thing.getChannels());
+        for (ZoneChannelBuilder channelBuilder : channelBuilders) {
+            if (channelBuilder.isAddingRequired()) {
+                channels.add(channelBuilder.build());
+            } else if (channelBuilder.isRemovingRequired()) {
+                channels.removeIf(channelBuilder.getPredicate());
+            }
+        }
+
+        // update the thing
+        updateThing(editThing().withChannels(channels).build());
     }
 }

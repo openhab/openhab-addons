@@ -14,6 +14,7 @@ package org.openhab.binding.tado.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.type.ChannelTypeUID;
 
 /**
  * The {@link TadoBinding} class defines common constants, which are
@@ -148,4 +149,15 @@ public class TadoBindingConstants {
     }
 
     public static final String PROPERTY_MOBILE_DEVICE_NAME = "name";
+
+    // channel type uid's for dynamically created channels
+    public static final ChannelTypeUID CHANNNEL_TYPE_AC_POWER = new ChannelTypeUID(BINDING_ID, "acPower");
+    public static final ChannelTypeUID CHANNNEL_TYPE_VERTICAL_SWING = new ChannelTypeUID(BINDING_ID, "verticalSwing");
+    public static final ChannelTypeUID CHANNNEL_TYPE_HORIZONTAL_SWING = new ChannelTypeUID(BINDING_ID,
+            "horizontalSwing");
+    public static final ChannelTypeUID CHANNNEL_TYPE_FAN_LEVEL = new ChannelTypeUID(BINDING_ID, "fanLevel");
+    public static final ChannelTypeUID CHANNNEL_TYPE_LIGHT = new ChannelTypeUID(BINDING_ID, "light");
+    public static final ChannelTypeUID CHANNNEL_TYPE_SWING = new ChannelTypeUID(BINDING_ID, "swing");
+    public static final ChannelTypeUID CHANNNEL_TYPE_FAN_SPEED = new ChannelTypeUID(BINDING_ID, "fanspeed");
+    public static final ChannelTypeUID CHANNNEL_TYPE_HEATING_POWER = new ChannelTypeUID(BINDING_ID, "heatingPower");
 }

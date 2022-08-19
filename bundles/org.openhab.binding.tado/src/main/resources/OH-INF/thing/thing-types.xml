@@ -38,29 +38,15 @@
 		<channels>
 			<channel typeId="currentTemperature" id="currentTemperature"></channel>
 			<channel typeId="humidity" id="humidity"></channel>
-
-			<channel typeId="heatingPower" id="heatingPower"></channel>
-
 			<channel typeId="hvacMode" id="hvacMode"></channel>
 			<channel typeId="targetTemperature" id="targetTemperature"></channel>
-			<channel typeId="fanspeed" id="fanspeed"></channel>
-			<channel typeId="swing" id="swing"></channel>
-			<channel typeId="light" id="light"></channel>
-			<channel typeId="fanLevel" id="fanLevel"></channel>
-			<channel typeId="horizontalSwing" id="horizontalSwing"></channel>
-			<channel typeId="verticalSwing" id="verticalSwing"></channel>
-
 			<channel typeId="overlayExpiry" id="overlayExpiry"></channel>
 			<channel typeId="timerDuration" id="timerDuration"></channel>
-
 			<channel typeId="operationMode" id="operationMode"></channel>
-
 			<channel typeId="system.low-battery" id="batteryLowAlarm">
 				<label>Battery Low Alarm</label>
 				<description>ON if one or more devices in the zone have a low battery</description>
 			</channel>
-
-			<channel typeId="acPower" id="acPower"></channel>
 			<channel typeId="openWindowDetected" id="openWindowDetected"></channel>
 		</channels>
 
