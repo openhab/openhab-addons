@@ -69,14 +69,12 @@ public class ShadeChannelBuilder {
         }
         ChannelTypeUID channelTypeUID = this.channelTypeUID;
         if (channelTypeUID != null) {
-            predicate = c -> channelTypeUID.equals(c.getChannelTypeUID());
-            if (channelId != null && translationProvider != null && required != null) {
-                Predicate<Channel> predicate = this.predicate;
-                if (predicate != null) {
-                    existing = thing.getChannels().stream().anyMatch(predicate);
-                    ready = true;
-                    return;
-                }
+            this.predicate = c -> channelTypeUID.equals(c.getChannelTypeUID());
+            Predicate<Channel> predicate = this.predicate;
+            if (channelId != null && translationProvider != null && required != null && predicate != null) {
+                existing = thing.getChannels().stream().anyMatch(predicate);
+                ready = true;
+                return;
             }
         }
         throw new IllegalStateException(NOT_INITIALIZED);
