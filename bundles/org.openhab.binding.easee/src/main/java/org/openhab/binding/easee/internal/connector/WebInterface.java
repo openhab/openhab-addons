@@ -243,12 +243,6 @@ public class WebInterface implements AtomicReferenceTrait {
             }
 
             switch (status.getHttpCode()) {
-                case BAD_GATEWAY:
-                case SERVICE_UNAVAILABLE:
-                case GATEWAY_TIMEOUT:
-                    statusHandler.updateStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, msg);
-                    setAuthenticated(false);
-                    break;
                 case OK:
                 case ACCEPTED:
                     // no action needed as the thing is already online.
