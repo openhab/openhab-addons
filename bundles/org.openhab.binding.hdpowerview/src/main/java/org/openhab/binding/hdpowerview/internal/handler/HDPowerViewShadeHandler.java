@@ -648,24 +648,21 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         int added = 0;
         int removed = 0;
 
-        if (!dirty) {
-            logger.debug("updateDynamicChannels(): channels added:{}, removed:{}", added, removed);
-            return;
-        }
+        if (dirty) {
+            List<Channel> channels = new ArrayList<>(thing.getChannels());
 
-        List<Channel> channels = new ArrayList<>(thing.getChannels());
-
-        for (ShadeChannelBuilder channelBuilder : channelBuilders) {
-            if (channelBuilder.isAddingRequired()) {
-                added++;
-                channels.add(0, channelBuilder.build());
-            } else if (channelBuilder.isRemovingRequired()) {
-                removed++;
-                channels.removeIf(channelBuilder.getPredicate());
+            for (ShadeChannelBuilder channelBuilder : channelBuilders) {
+                if (channelBuilder.isAddingRequired()) {
+                    added++;
+                    channels.add(0, channelBuilder.build());
+                } else if (channelBuilder.isRemovingRequired()) {
+                    removed++;
+                    channels.removeIf(channelBuilder.getPredicate());
+                }
             }
-        }
 
+            scheduler.submit(() -> updateThing(editThing().withChannels(channels).build()));
+        }
         logger.debug("updateDynamicChannels(): channels added:{}, removed:{}", added, removed);
-        updateThing(editThing().withChannels(channels).build());
     }
 }
