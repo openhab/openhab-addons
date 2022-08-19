@@ -14,7 +14,7 @@ package org.openhab.binding.easee.internal.connector;
 
 import static org.openhab.binding.easee.internal.EaseeBindingConstants.*;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.Queue;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
@@ -77,12 +77,12 @@ public class WebInterface implements AtomicReferenceTrait {
     /**
      * expiry of the access token.
      */
-    private Date tokenExpiry;
+    private Instant tokenExpiry;
 
     /**
      * last refresh of the access token.
      */
-    private Date tokenRefreshDate;
+    private Instant tokenRefreshDate;
 
     /**
      * HTTP client for asynchronous calls
@@ -136,19 +136,15 @@ public class WebInterface implements AtomicReferenceTrait {
                     statusHandler.updateStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
                     setAuthenticated(false);
                     break;
-                case SERVICE_UNAVAILABLE:
-                    statusHandler.updateStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, msg);
-                    setAuthenticated(false);
-                    break;
                 case OK:
                     String accessToken = Utils.getAsString(jsonObject, JSON_KEY_AUTH_ACCESS_TOKEN);
                     String refreshToken = Utils.getAsString(jsonObject, JSON_KEY_AUTH_REFRESH_TOKEN);
-                    int expiresIn = Utils.getAsInt(jsonObject, JSON_KEY_AUTH_EXPIRES_IN);
-                    if (accessToken != null && refreshToken != null && expiresIn != 0) {
+                    int expiresInSeconds = Utils.getAsInt(jsonObject, JSON_KEY_AUTH_EXPIRES_IN);
+                    if (accessToken != null && refreshToken != null && expiresInSeconds != 0) {
                         WebInterface.this.accessToken = accessToken;
                         WebInterface.this.refreshToken = refreshToken;
-                        tokenRefreshDate = new Date();
-                        tokenExpiry = new Date(System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(expiresIn));
+                        tokenRefreshDate = Instant.now();
+                        tokenExpiry = tokenRefreshDate.plusSeconds(expiresInSeconds);
                         statusHandler.updateStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE,
                                 "Access Token Refreshed/Validated");
                         setAuthenticated(true);
@@ -214,12 +210,12 @@ public class WebInterface implements AtomicReferenceTrait {
          * periodically refreshed the access token.
          */
         private synchronized void refreshAccessToken() {
-            Date now = new Date();
+            Instant now = Instant.now();
             long expiryBuffer = TimeUnit.MINUTES.toMillis(WEB_REQUEST_TOKEN_EXPIRY_BUFFER_MINUTES);
             long maxAge = TimeUnit.MINUTES.toMillis(WEB_REQUEST_TOKEN_MAX_AGE_MINUTES);
 
-            if (tokenExpiry.getTime() - now.getTime() - expiryBuffer < 0
-                    || tokenRefreshDate.getTime() + maxAge < now.getTime()) {
+            if (tokenExpiry.toEpochMilli() - now.toEpochMilli() - expiryBuffer < 0
+                    || tokenRefreshDate.toEpochMilli() + maxAge < now.toEpochMilli()) {
                 logger.debug("access token needs to be refreshed, last refresh: {}, expiry: {}",
                         Utils.formatDate(tokenRefreshDate), Utils.formatDate(tokenRefreshDate));
 
@@ -276,8 +272,8 @@ public class WebInterface implements AtomicReferenceTrait {
         this.statusHandler = statusHandler;
         this.scheduler = scheduler;
         this.httpClient = httpClient;
-        this.tokenExpiry = INVALID_DATE;
-        this.tokenRefreshDate = INVALID_DATE;
+        this.tokenExpiry = OUTDATED_DATE;
+        this.tokenRefreshDate = OUTDATED_DATE;
         this.accessToken = "";
         this.refreshToken = "";
         this.requestExecutor = new WebRequestExecutor();
@@ -325,7 +321,7 @@ public class WebInterface implements AtomicReferenceTrait {
     private void setAuthenticated(boolean authenticated) {
         this.authenticated = authenticated;
         if (!authenticated) {
-            this.tokenExpiry = INVALID_DATE;
+            this.tokenExpiry = OUTDATED_DATE;
             this.accessToken = "";
             this.refreshToken = "";
         }

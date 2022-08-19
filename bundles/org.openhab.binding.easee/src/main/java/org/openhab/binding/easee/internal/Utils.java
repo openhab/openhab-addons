@@ -15,9 +15,9 @@ package org.openhab.binding.easee.internal;
 import static org.openhab.binding.easee.internal.EaseeBindingConstants.*;
 
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -68,7 +68,7 @@ public final class Utils {
      * @param date
      * @return
      */
-    public static String formatDate(Date date) {
+    public static String formatDate(Instant date) {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         return formatter.format(date);
     }
