@@ -52,7 +52,6 @@ public class ZoneChannelBuilderTest {
     void testChannelBuilder() {
         // @formatter:off
         ZoneChannelBuilder channelBuilder = new ZoneChannelBuilder(zone)
-                .withChannelTypeUID(TadoBindingConstants.CHANNNEL_TYPE_AC_POWER)
                 .withChannelId(TadoBindingConstants.CHANNEL_ZONE_AC_POWER)
                 .withRequired(false)
                 .withAcceptedItemType(CoreItemFactory.SWITCH)
@@ -83,76 +82,67 @@ public class ZoneChannelBuilderTest {
     @Test
     void testChannelMissingParts() {
         ZoneChannelBuilder channelBuilder;
+        boolean exceptionOccurred;
 
         // @formatter:off
         channelBuilder = new ZoneChannelBuilder(zone)
-                .withChannelId(TadoBindingConstants.CHANNEL_ZONE_AC_POWER)
                 .withRequired(false)
                 .withAcceptedItemType(CoreItemFactory.SWITCH)
                 .withTranslationProvider(TRANSLATION_PROVIDER);
         // @formatter:on
 
+        exceptionOccurred = false;
         try {
-            channelBuilder.isExisting();
+            channelBuilder.build();
         } catch (IllegalStateException e) {
-            assertTrue(true);
+            exceptionOccurred = true;
         }
+        assertTrue(exceptionOccurred);
 
         // @formatter:off
         channelBuilder = new ZoneChannelBuilder(zone)
-                .withChannelTypeUID(TadoBindingConstants.CHANNNEL_TYPE_AC_POWER)
-                .withRequired(false)
-                .withAcceptedItemType(CoreItemFactory.SWITCH)
-                .withTranslationProvider(TRANSLATION_PROVIDER);
-        // @formatter:on
-
-        try {
-            channelBuilder.isExisting();
-        } catch (IllegalStateException e) {
-            assertTrue(true);
-        }
-
-        // @formatter:off
-        channelBuilder = new ZoneChannelBuilder(zone)
-                .withChannelTypeUID(TadoBindingConstants.CHANNNEL_TYPE_AC_POWER)
                 .withChannelId(TadoBindingConstants.CHANNEL_ZONE_AC_POWER)
                 .withAcceptedItemType(CoreItemFactory.SWITCH)
                 .withTranslationProvider(TRANSLATION_PROVIDER);
         // @formatter:on
 
+        exceptionOccurred = false;
         try {
-            channelBuilder.isExisting();
+            channelBuilder.build();
         } catch (IllegalStateException e) {
-            assertTrue(true);
+            exceptionOccurred = true;
         }
+        assertTrue(exceptionOccurred);
 
         // @formatter:off
         channelBuilder = new ZoneChannelBuilder(zone)
-                .withChannelTypeUID(TadoBindingConstants.CHANNNEL_TYPE_AC_POWER)
                 .withChannelId(TadoBindingConstants.CHANNEL_ZONE_AC_POWER)
                 .withRequired(false)
                 .withTranslationProvider(TRANSLATION_PROVIDER);
         // @formatter:on
 
+        exceptionOccurred = false;
         try {
-            channelBuilder.isExisting();
+            channelBuilder.build();
         } catch (IllegalStateException e) {
-            assertTrue(true);
+            exceptionOccurred = true;
         }
+        assertTrue(exceptionOccurred);
 
         // @formatter:off
         channelBuilder = new ZoneChannelBuilder(zone)
-                .withChannelTypeUID(TadoBindingConstants.CHANNNEL_TYPE_AC_POWER)
                 .withChannelId(TadoBindingConstants.CHANNEL_ZONE_AC_POWER)
                 .withRequired(false)
                 .withAcceptedItemType(CoreItemFactory.SWITCH);
         // @formatter:on
 
+        exceptionOccurred = false;
         try {
-            channelBuilder.isExisting();
+            channelBuilder.build();
         } catch (IllegalStateException e) {
-            assertTrue(true);
+            exceptionOccurred = true;
         }
+        assertTrue(exceptionOccurred);
     }
 
     /**
@@ -172,7 +162,6 @@ public class ZoneChannelBuilderTest {
 
         // @formatter:off
         channels.add(new ZoneChannelBuilder(zone)
-                .withChannelTypeUID(TadoBindingConstants.CHANNNEL_TYPE_AC_POWER)
                 .withChannelId(TadoBindingConstants.CHANNEL_ZONE_AC_POWER)
                 .withRequired(true)
                 .withAcceptedItemType(CoreItemFactory.SWITCH)
@@ -182,7 +171,6 @@ public class ZoneChannelBuilderTest {
 
         // @formatter:off
         channels.add(new ZoneChannelBuilder(zone)
-                .withChannelTypeUID(TadoBindingConstants.CHANNNEL_TYPE_VERTICAL_SWING)
                 .withChannelId(TadoBindingConstants.CHANNEL_ZONE_VERTICAL_SWING)
                 .withRequired(true)
                 .withAcceptedItemType(CoreItemFactory.STRING)
@@ -206,7 +194,6 @@ public class ZoneChannelBuilderTest {
 
         // @formatter:off
             channelBuilder = new ZoneChannelBuilder(fullThing())
-                .withChannelTypeUID(TadoBindingConstants.CHANNNEL_TYPE_AC_POWER)
                 .withChannelId(TadoBindingConstants.CHANNEL_ZONE_AC_POWER)
                 .withRequired(false)
                 .withAcceptedItemType(CoreItemFactory.SWITCH)
@@ -237,7 +224,6 @@ public class ZoneChannelBuilderTest {
 
         // @formatter:off
         channelBuilder = new ZoneChannelBuilder(fullThing())
-            .withChannelTypeUID(TadoBindingConstants.CHANNNEL_TYPE_AC_POWER)
             .withChannelId(TadoBindingConstants.CHANNEL_ZONE_AC_POWER)
             .withRequired(true)
             .withAcceptedItemType(CoreItemFactory.SWITCH)
@@ -266,7 +252,6 @@ public class ZoneChannelBuilderTest {
 
         // @formatter:off
             channelBuilder = new ZoneChannelBuilder(emptyThing())
-                .withChannelTypeUID(TadoBindingConstants.CHANNNEL_TYPE_AC_POWER)
                 .withChannelId(TadoBindingConstants.CHANNEL_ZONE_AC_POWER)
                 .withRequired(true)
                 .withAcceptedItemType(CoreItemFactory.SWITCH)
@@ -297,7 +282,6 @@ public class ZoneChannelBuilderTest {
 
         // @formatter:off
             channelBuilder = new ZoneChannelBuilder(emptyThing())
-                .withChannelTypeUID(TadoBindingConstants.CHANNNEL_TYPE_AC_POWER)
                 .withChannelId(TadoBindingConstants.CHANNEL_ZONE_AC_POWER)
                 .withRequired(false)
                 .withAcceptedItemType(CoreItemFactory.SWITCH)

@@ -16,11 +16,11 @@ import java.util.function.Predicate;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.tado.internal.TadoBindingConstants;
 import org.openhab.binding.tado.internal.TadoTranslationProvider;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.thing.type.ChannelTypeUID;
@@ -39,15 +39,10 @@ public class ZoneChannelBuilder {
 
     // attributes that are set via withSomething() methods
     private @Nullable String channelId;
-    private @Nullable ChannelTypeUID channelTypeUID;
-    private @Nullable TadoTranslationProvider translationProvider;
     private @Nullable Boolean required;
     private @Nullable String acceptedItemType;
-
-    // attributes that are set when initialize() is called
-    private @Nullable Predicate<Channel> predicate;
-    private @Nullable Boolean existing;
-    private boolean ready = false;
+    private @Nullable ChannelTypeUID channelTypeUID;
+    private @Nullable TadoTranslationProvider translationProvider;
 
     /**
      * Constructor
@@ -58,24 +53,42 @@ public class ZoneChannelBuilder {
         this.thing = thing;
     }
 
-    /**
-     * Helper method that prepares the class to be used.
-     *
-     * @throws IllegalStateException if any attributes have not been properly set.
-     */
-    private void prepare() throws IllegalStateException {
-        if (ready) {
-            return;
+    private boolean checkAllAttributesSet() throws IllegalStateException {
+        if (channelId != null && required != null && acceptedItemType != null && channelTypeUID != null
+                && translationProvider != null) {
+            return true;
         }
+        throw new IllegalStateException(NOT_INITIALIZED);
+    }
+
+    private String getChannelId() throws IllegalStateException {
+        String channelId = this.channelId;
+        if (channelId != null) {
+            return channelId;
+        }
+        throw new IllegalStateException(NOT_INITIALIZED);
+    }
+
+    private TadoTranslationProvider getTranslationProvider() throws IllegalStateException {
+        TadoTranslationProvider translationProvider = this.translationProvider;
+        if (translationProvider != null) {
+            return translationProvider;
+        }
+        throw new IllegalStateException(NOT_INITIALIZED);
+    }
+
+    private String getAcceptedItemType() throws IllegalStateException {
+        String acceptedItemType = this.acceptedItemType;
+        if (acceptedItemType != null) {
+            return acceptedItemType;
+        }
+        throw new IllegalStateException(NOT_INITIALIZED);
+    }
+
+    private ChannelTypeUID getChannelTypeUID() throws IllegalStateException {
         ChannelTypeUID channelTypeUID = this.channelTypeUID;
         if (channelTypeUID != null) {
-            Predicate<Channel> predicate = c -> channelTypeUID.equals(c.getChannelTypeUID());
-            this.predicate = predicate;
-            if (channelId != null && translationProvider != null && required != null) {
-                existing = thing.getChannels().stream().anyMatch(predicate);
-                ready = true;
-                return;
-            }
+            return channelTypeUID;
         }
         throw new IllegalStateException(NOT_INITIALIZED);
     }
@@ -85,11 +98,7 @@ public class ZoneChannelBuilder {
      * @throws IllegalStateException if any attributes have not been properly set.
      */
     public boolean isExisting() throws IllegalStateException {
-        prepare();
-        if (ready) {
-            return Boolean.TRUE.equals(existing);
-        }
-        throw new IllegalStateException(NOT_INITIALIZED);
+        return thing.getChannels().stream().anyMatch(getPredicate());
     }
 
     /**
@@ -97,9 +106,8 @@ public class ZoneChannelBuilder {
      * @throws IllegalStateException if any attributes have not been properly set.
      */
     public boolean isRequired() throws IllegalStateException {
-        prepare();
-        if (ready) {
-            return Boolean.TRUE.equals(required);
+        if (required != null) {
+            return required.booleanValue();
         }
         throw new IllegalStateException(NOT_INITIALIZED);
     }
@@ -130,11 +138,7 @@ public class ZoneChannelBuilder {
 
     public ZoneChannelBuilder withChannelId(String channelId) {
         this.channelId = channelId;
-        return this;
-    }
-
-    public ZoneChannelBuilder withChannelTypeUID(ChannelTypeUID channelTypeUID) {
-        this.channelTypeUID = channelTypeUID;
+        this.channelTypeUID = new ChannelTypeUID(TadoBindingConstants.BINDING_ID, channelId);
         return this;
     }
 
@@ -158,12 +162,7 @@ public class ZoneChannelBuilder {
      * @throws IllegalStateException if any attributes have not been properly set.
      */
     public Predicate<Channel> getPredicate() throws IllegalStateException {
-        prepare();
-        Predicate<Channel> predicate = this.predicate;
-        if (predicate != null) {
-            return predicate;
-        }
-        throw new IllegalStateException(NOT_INITIALIZED);
+        return c -> getChannelTypeUID().equals(c.getChannelTypeUID());
     }
 
     /**
@@ -171,34 +170,20 @@ public class ZoneChannelBuilder {
      * @throws IllegalStateException if any attributes have not been properly set.
      */
     public Channel build() throws IllegalStateException {
-        prepare();
-        if (ready) {
-            String channelId = this.channelId;
-            String acceptedItemType = this.acceptedItemType;
-            ThingUID thingUID = thing.getUID();
-            ChannelTypeUID channelTypeUID = this.channelTypeUID;
-            TadoTranslationProvider translationProvider = this.translationProvider;
+        checkAllAttributesSet();
 
-            if (channelId != null && channelTypeUID != null && translationProvider != null
-                    && acceptedItemType != null) {
-                // make translations
-                String propertyKeyPrefix = "channel-type." + channelTypeUID.getAsString().replace(":", ".") + ".";
-                String label = translationProvider.getText(propertyKeyPrefix + "label");
-                String description = translationProvider.getText(propertyKeyPrefix + "description");
+        ChannelTypeUID channelTypeUID = getChannelTypeUID();
+        TadoTranslationProvider translationProvider = getTranslationProvider();
+        String propertyKeyPrefix = "channel-type." + channelTypeUID.getAsString().replace(":", ".") + ".";
 
-                ChannelUID channelUID = new ChannelUID(thingUID, channelId);
-
-                // @formatter:off
-                return ChannelBuilder.create(channelUID)
-                        .withType(channelTypeUID)
-                        .withLabel(label)
-                        .withDescription(description)
-                        .withAcceptedItemType(acceptedItemType)
-                        .withKind(ChannelKind.STATE)
-                        .build();
-                // @formatter:on
-            }
-        }
-        throw new IllegalStateException(NOT_INITIALIZED);
+        // @formatter:off
+        return ChannelBuilder.create(new ChannelUID(thing.getUID(), getChannelId()))
+                .withType(channelTypeUID)
+                .withLabel(translationProvider.getText(propertyKeyPrefix + "label"))
+                .withDescription(translationProvider.getText(propertyKeyPrefix + "description"))
+                .withAcceptedItemType(getAcceptedItemType())
+                .withKind(ChannelKind.STATE)
+                .build();
+        // @formatter:on
     }
 }
