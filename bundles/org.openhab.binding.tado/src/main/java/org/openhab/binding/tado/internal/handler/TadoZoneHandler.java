@@ -55,6 +55,7 @@ import org.openhab.binding.tado.internal.api.model.TadoSystemType;
 import org.openhab.binding.tado.internal.api.model.Zone;
 import org.openhab.binding.tado.internal.api.model.ZoneState;
 import org.openhab.binding.tado.internal.builder.ZoneChannelBuilder;
+import org.openhab.binding.tado.internal.builder.ZoneChannelBuilder.InsertPosition;
 import org.openhab.binding.tado.internal.config.TadoZoneConfig;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DecimalType;
@@ -505,18 +506,20 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
 
         // @formatter:off
 
-        // channel builder for CHANNEL_ZONE_OPEN_WINDOW_DETECTED
-        channelBuilders.add(new ZoneChannelBuilder(thing)
-                .withChannelId(TadoBindingConstants.CHANNEL_ZONE_OPEN_WINDOW_DETECTED)
-                .withRequired(capabilitiesSupport.openWindow())
-                .withAcceptedItemType(CoreItemFactory.SWITCH)
-                .withTranslationProvider(translationProvider));
-
         // channel builder for CHANNEL_ZONE_BATTERY_LOW_ALARM
         channelBuilders.add(new ZoneChannelBuilder(thing)
                 .withChannelId(TadoBindingConstants.CHANNEL_ZONE_BATTERY_LOW_ALARM)
                 .withRequired(capabilitiesSupport.batteryLowAlarm())
                 .withAcceptedItemType(CoreItemFactory.SWITCH)
+                .withInsertPosition(InsertPosition.END)
+                .withTranslationProvider(translationProvider));
+
+        // channel builder for CHANNEL_ZONE_OPEN_WINDOW_DETECTED
+        channelBuilders.add(new ZoneChannelBuilder(thing)
+                .withChannelId(TadoBindingConstants.CHANNEL_ZONE_OPEN_WINDOW_DETECTED)
+                .withRequired(capabilitiesSupport.openWindow())
+                .withAcceptedItemType(CoreItemFactory.SWITCH)
+                .withInsertPosition(InsertPosition.END)
                 .withTranslationProvider(translationProvider));
 
         // channel builder for CHANNEL_ZONE_LIGHT
@@ -604,7 +607,11 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
             for (ZoneChannelBuilder channelBuilder : channelBuilders) {
                 if (channelBuilder.isAddingRequired()) {
                     added++;
-                    channels.add(0, channelBuilder.build());
+                    if (channelBuilder.getInsertPosition() == InsertPosition.START) {
+                        channels.add(0, channelBuilder.build());
+                    } else {
+                        channels.add(channelBuilder.build());
+                    }
                 } else if (channelBuilder.isRemovingRequired()) {
                     removed++;
                     channels.removeIf(channelBuilder.getPredicate());

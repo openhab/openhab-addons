@@ -43,6 +43,12 @@ public class ZoneChannelBuilder {
     private @Nullable String acceptedItemType;
     private @Nullable ChannelTypeUID channelTypeUID;
     private @Nullable TadoTranslationProvider translationProvider;
+    private InsertPosition insertPosition = InsertPosition.START;
+
+    public static enum InsertPosition {
+        START,
+        END
+    }
 
     /**
      * Constructor
@@ -155,6 +161,15 @@ public class ZoneChannelBuilder {
     public ZoneChannelBuilder withAcceptedItemType(String acceptedItemType) {
         this.acceptedItemType = acceptedItemType;
         return this;
+    }
+
+    public ZoneChannelBuilder withInsertPosition(InsertPosition insertPosition) {
+        this.insertPosition = insertPosition;
+        return this;
+    }
+
+    public InsertPosition getInsertPosition() {
+        return insertPosition;
     }
 
     /**

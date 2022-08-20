@@ -36,12 +36,12 @@
 		<description>A zone of a home</description>
 
 		<channels>
+			<!-- static channels for all zone types (other channels are created dynamically) -->
 			<channel typeId="hvacMode" id="hvacMode"></channel>
 			<channel typeId="targetTemperature" id="targetTemperature"></channel>
 			<channel typeId="operationMode" id="operationMode"></channel>
 			<channel typeId="overlayExpiry" id="overlayExpiry"></channel>
 			<channel typeId="timerDuration" id="timerDuration"></channel>
-			<channel typeId="openWindowDetected" id="openWindowDetected"></channel>
 		</channels>
 
 		<properties>
