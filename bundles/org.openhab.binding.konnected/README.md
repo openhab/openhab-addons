@@ -1,9 +1,9 @@
 # Konnected Binding
 
-This binding is for interacting with a [Konnected Alarm Panel](https://konnected.io/). Konnected Alarm Panels can connect to 
-security sensors directly or interface with existing alarm panels. Konnected is an open-source firmware and software that 
-runs on a NodeMCU. The Konnected hardware is designed for an alarm panel installation, but the general purpose firmware/software 
-can be run on a generic NodeMCU device.
+This binding is for interacting with a [Konnected Alarm Panel](https://konnected.io/). 
+Konnected Alarm Panels can connect to security sensors directly or interface with existing alarm panels. 
+Konnected is an open-source firmware and software that runs on a NodeMCU. 
+The Konnected hardware is designed for an alarm panel installation, but the general purpose firmware/software can be run on a generic NodeMCU device.
 
 ## Supported Things
 
@@ -16,15 +16,16 @@ The binding will then create things for each module discovered which can be adde
 
 ## Thing Configuration
 
-The binding attempts to discover The Konnected Alarm Panels via the UPnP service. The auto-discovery service of the binding will 
-detect the base URL of the Konnected Alarm Panel. When manually adding things the base URL of the Konnected Alarm Panel will need 
-to be configured. The base should include scheme, address and port (for example http://192.168.1.123:9123).
+The binding attempts to discover The Konnected Alarm Panels via the UPnP service. 
+The auto-discovery service of the binding will detect the base URL of the Konnected Alarm Panel. 
+When manually adding things the base URL of the Konnected Alarm Panel will need to be configured. 
+The base URL should include scheme, address and port (for example http://192.168.1.123:9123).
 
 The binding will attempt to obtain the ip address of your openHAB server as configured in the OSGi framework.
 If it is unable to determine the ip address it will also attempt to use the network address service to obtain the ip address and port.
-Auto discovery of the callback URL will fail if you are using reverse proxies and/or https for your openHAB server. In this case you 
-will need to configure the callback URL in the advanced configuration section. The callback URL will normally end with /konnected 
-(for example https://192.168.1.2/konnected).
+Auto discovery of the callback URL will fail if you are using reverse proxies and/or https for your openHAB server. 
+In this case you will need to configure the callback URL in the advanced configuration section. 
+The callback URL will normally end with /konnected (for example https://192.168.1.2/konnected).
 
 In addition you can also turn off discovery which when this setting is synced to the module will cause the device to no longer respond to UPnP requests as documented.
 https://help.konnected.io/support/solutions/articles/32000023968-disabling-device-discovery
