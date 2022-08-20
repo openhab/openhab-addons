@@ -41,10 +41,6 @@
 			<channel typeId="operationMode" id="operationMode"></channel>
 			<channel typeId="overlayExpiry" id="overlayExpiry"></channel>
 			<channel typeId="timerDuration" id="timerDuration"></channel>
-			<channel typeId="system.low-battery" id="batteryLowAlarm">
-				<label>Battery Low Alarm</label>
-				<description>ON if one or more devices in the zone have a low battery</description>
-			</channel>
 			<channel typeId="openWindowDetected" id="openWindowDetected"></channel>
 		</channels>
 
@@ -278,8 +274,8 @@
 
 	<channel-type id="acPower">
 		<item-type>Switch</item-type>
-		<label>AirCon Power State</label>
-		<description>Indicates if the air-conditioning is Off or On</description>
+		<label>Air-conditioning Power</label>
+		<description>Current power state of the air-conditioning</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -288,6 +284,14 @@
 		<label>Open Window Detected</label>
 		<description>Indicates if an open window has been detected</description>
 		<category>window</category>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="batteryLowAlarm">
+		<item-type>Switch</item-type>
+		<label>Battery Low Alarm</label>
+		<description>ON if one or more devices in the zone have a low battery</description>
+		<category>lowbattery</category>
 		<state readOnly="true"></state>
 	</channel-type>
 

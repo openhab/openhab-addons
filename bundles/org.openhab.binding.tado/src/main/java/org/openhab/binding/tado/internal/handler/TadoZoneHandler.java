@@ -17,6 +17,7 @@ import static org.openhab.binding.tado.internal.api.TadoApiTypeUtils.termination
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -291,7 +292,11 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
                 updateProperty(TadoBindingConstants.PROPERTY_ZONE_TYPE, zoneDetails.getType().name());
 
                 this.capabilities = capabilities;
-                updateDynamicChannels(capabilities);
+
+                Optional<Zone> zone = getApi().listZones(getHomeId()).stream().filter(z -> z != null)
+                        .filter(z -> z.getId().longValue() == getZoneId()).findFirst();
+
+                updateDynamicChannels(capabilities, zone);
             } catch (IOException | ApiException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Could not connect to server due to " + e.getMessage());
@@ -489,74 +494,82 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
      * Initialize the dynamic channels depending on whether this device's capabilities support them.
      *
      * @param capabilities the new capabilities object.
+     * @param zone
      *
      * @throws IllegalStateException if any of the channel builders failed.
      */
-    private void updateDynamicChannels(GenericZoneCapabilities capabilities) throws IllegalStateException {
-        CapabilitiesSupport capabilitiesSupport = new CapabilitiesSupport(capabilities);
+    private void updateDynamicChannels(GenericZoneCapabilities capabilities, Optional<Zone> zone)
+            throws IllegalStateException {
+        CapabilitiesSupport capabilitiesSupport = new CapabilitiesSupport(capabilities, zone);
         List<ZoneChannelBuilder> channelBuilders = new ArrayList<>();
 
         // @formatter:off
 
-        // channel builder for CHAN_TYPE_LIGHT
+        // channel builder for CHANNEL_ZONE_OPEN_WINDOW_DETECTED
         channelBuilders.add(new ZoneChannelBuilder(thing)
-                .withChannelTypeUID(TadoBindingConstants.CHANNNEL_TYPE_LIGHT)
+                .withChannelId(TadoBindingConstants.CHANNEL_ZONE_OPEN_WINDOW_DETECTED)
+                .withRequired(capabilitiesSupport.openWindow())
+                .withAcceptedItemType(CoreItemFactory.SWITCH)
+                .withTranslationProvider(translationProvider));
+
+        // channel builder for CHANNEL_ZONE_BATTERY_LOW_ALARM
+        channelBuilders.add(new ZoneChannelBuilder(thing)
+                .withChannelId(TadoBindingConstants.CHANNEL_ZONE_BATTERY_LOW_ALARM)
+                .withRequired(capabilitiesSupport.batteryLowAlarm())
+                .withAcceptedItemType(CoreItemFactory.SWITCH)
+                .withTranslationProvider(translationProvider));
+
+        // channel builder for CHANNEL_ZONE_LIGHT
+        channelBuilders.add(new ZoneChannelBuilder(thing)
                 .withChannelId(TadoBindingConstants.CHANNEL_ZONE_LIGHT)
                 .withRequired(capabilitiesSupport.light())
                 .withAcceptedItemType(CoreItemFactory.SWITCH)
                 .withTranslationProvider(translationProvider));
 
-        // channel builder for CHAN_TYPE_HORIZONTAL_SWING
+        // channel builder for CHANNEL_ZONE_HORIZONTAL_SWING
         channelBuilders.add(new ZoneChannelBuilder(thing)
-                .withChannelTypeUID(TadoBindingConstants.CHANNNEL_TYPE_HORIZONTAL_SWING)
                 .withChannelId(TadoBindingConstants.CHANNEL_ZONE_HORIZONTAL_SWING)
                 .withRequired(capabilitiesSupport.horizontalSwing())
                 .withAcceptedItemType(CoreItemFactory.STRING)
                 .withTranslationProvider(translationProvider));
 
-        // channel builder for CHAN_TYPE_VERTICAL_SWING
+        // channel builder for CHANNEL_ZONE_VERTICAL_SWING
         channelBuilders.add(new ZoneChannelBuilder(thing)
-                .withChannelTypeUID(TadoBindingConstants.CHANNNEL_TYPE_VERTICAL_SWING)
                 .withChannelId(TadoBindingConstants.CHANNEL_ZONE_VERTICAL_SWING)
                 .withRequired(capabilitiesSupport.verticalSwing())
                 .withAcceptedItemType(CoreItemFactory.STRING)
                 .withTranslationProvider(translationProvider));
 
-        // channel builder for CHAN_TYPE_SWING
+        // channel builder for CHANNEL_ZONE_SWING
         channelBuilders.add(new ZoneChannelBuilder(thing)
-                .withChannelTypeUID(TadoBindingConstants.CHANNNEL_TYPE_SWING)
                 .withChannelId(TadoBindingConstants.CHANNEL_ZONE_SWING)
                 .withRequired(capabilitiesSupport.swing())
                 .withAcceptedItemType(CoreItemFactory.SWITCH)
                 .withTranslationProvider(translationProvider));
 
-        // channel builder for CHAN_TYPE_FAN_LEVEL
+        // channel builder for CHANNEL_ZONE_FAN_LEVEL
         channelBuilders.add(new ZoneChannelBuilder(thing)
-                .withChannelTypeUID(TadoBindingConstants.CHANNNEL_TYPE_FAN_LEVEL)
                 .withChannelId(TadoBindingConstants.CHANNEL_ZONE_FAN_LEVEL)
                 .withRequired(capabilitiesSupport.fanLevel())
                 .withAcceptedItemType(CoreItemFactory.STRING)
                 .withTranslationProvider(translationProvider));
 
-        // channel builder for CHAN_TYPE_FAN_SPEED
+        // channel builder for CHANNEL_ZONE_FAN_SPEED
         channelBuilders.add(new ZoneChannelBuilder(thing)
-                .withChannelTypeUID(TadoBindingConstants.CHANNNEL_TYPE_FAN_SPEED)
                 .withChannelId(TadoBindingConstants.CHANNEL_ZONE_FAN_SPEED)
                 .withRequired(capabilitiesSupport.fanSpeed())
                 .withAcceptedItemType(CoreItemFactory.STRING)
                 .withTranslationProvider(translationProvider));
 
-        // channel builder for CHAN_TYPE_AC_POWER
+        // channel builder for CHANNEL_ZONE_AC_POWER
         channelBuilders.add(new ZoneChannelBuilder(thing)
-                .withChannelTypeUID(TadoBindingConstants.CHANNNEL_TYPE_AC_POWER)
                 .withChannelId(TadoBindingConstants.CHANNEL_ZONE_AC_POWER)
                 .withRequired(capabilitiesSupport.acPower())
                 .withAcceptedItemType(CoreItemFactory.SWITCH)
                 .withTranslationProvider(translationProvider));
 
-        // channel builder for CHAN_TYPE_HEATING_POWER
+        // channel builder for CHANNEL_ZONE_HEATING_POWER
         channelBuilders.add(new ZoneChannelBuilder(thing)
-                .withChannelTypeUID(TadoBindingConstants.CHANNNEL_TYPE_HEATING_POWER)
                 .withChannelId(TadoBindingConstants.CHANNEL_ZONE_HEATING_POWER)
                 .withRequired(capabilitiesSupport.heatingPower())
                 .withAcceptedItemType(CoreItemFactory.NUMBER)
@@ -564,7 +577,6 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
 
         // channel builder for CHANNNEL_TYPE_HUMIDITY
         channelBuilders.add(new ZoneChannelBuilder(thing)
-                .withChannelTypeUID(TadoBindingConstants.CHANNNEL_TYPE_HUMIDITY)
                 .withChannelId(TadoBindingConstants.CHANNEL_ZONE_HUMIDITY)
                 .withRequired(capabilitiesSupport.humidity())
                 .withAcceptedItemType(CoreItemFactory.NUMBER)
@@ -572,10 +584,9 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
 
         // channel builder for CHANNNEL_TYPE_CURRENT_TEMPERATURE
         channelBuilders.add(new ZoneChannelBuilder(thing)
-                .withChannelTypeUID(TadoBindingConstants.CHANNNEL_TYPE_CURRENT_TEMPERATURE)
                 .withChannelId(TadoBindingConstants.CHANNEL_ZONE_CURRENT_TEMPERATURE)
                 .withRequired(capabilitiesSupport.currentTemperature())
-                .withAcceptedItemType(CoreItemFactory.NUMBER)
+                .withAcceptedItemType(CoreItemFactory.NUMBER + ":Temperature")
                 .withTranslationProvider(translationProvider));
         // @formatter:on
 
@@ -593,7 +604,7 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
             for (ZoneChannelBuilder channelBuilder : channelBuilders) {
                 if (channelBuilder.isAddingRequired()) {
                     added++;
-                    channels.add(channelBuilder.build());
+                    channels.add(0, channelBuilder.build());
                 } else if (channelBuilder.isRemovingRequired()) {
                     removed++;
                     channels.removeIf(channelBuilder.getPredicate());
@@ -602,6 +613,6 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
 
             scheduler.submit(() -> updateThing(editThing().withChannels(channels).build()));
         }
-        logger.debug("updateDynamicChannels(): channels added:{}, removed:{}", added, removed);
+        logger.debug("updateDynamicChannels(): {} channels added:{}, removed:{}", thing.getUID(), added, removed);
     }
 }

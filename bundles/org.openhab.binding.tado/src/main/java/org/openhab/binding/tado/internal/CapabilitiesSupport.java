@@ -12,14 +12,18 @@
  */
 package org.openhab.binding.tado.internal;
 
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tado.internal.api.model.AcModeCapabilities;
 import org.openhab.binding.tado.internal.api.model.AirConditioningCapabilities;
+import org.openhab.binding.tado.internal.api.model.ControlDevice;
 import org.openhab.binding.tado.internal.api.model.GenericZoneCapabilities;
 import org.openhab.binding.tado.internal.api.model.TadoSystemType;
+import org.openhab.binding.tado.internal.api.model.Zone;
 
 /**
  * The {@link CapabilitiesSupport} class checks the given {@link GenericZoneCapabilities} parameter, and iterates over
@@ -37,9 +41,19 @@ public class CapabilitiesSupport {
     private boolean fanSpeed;
     private boolean verticalSwing;
     private boolean horizontalSwing;
+    private boolean batteryLowAlarm;
 
-    public CapabilitiesSupport(GenericZoneCapabilities capabilities) {
+    public CapabilitiesSupport(GenericZoneCapabilities capabilities, Optional<Zone> zone) {
         type = capabilities.getType();
+
+        if (zone.isPresent()) {
+            Zone zone2 = zone.get();
+            if (zone2.getDevices() != null) {
+                batteryLowAlarm = zone2.getDevices().stream().map(ControlDevice::getBatteryState)
+                        .filter(Objects::nonNull).count() > 0;
+            }
+        }
+
         if (!(capabilities instanceof AirConditioningCapabilities)) {
             return;
         }
@@ -105,6 +119,14 @@ public class CapabilitiesSupport {
     }
 
     public boolean humidity() {
+        return (type == TadoSystemType.AIR_CONDITIONING) || (type == TadoSystemType.HEATING);
+    }
+
+    public boolean batteryLowAlarm() {
+        return batteryLowAlarm;
+    }
+
+    public boolean openWindow() {
         return (type == TadoSystemType.AIR_CONDITIONING) || (type == TadoSystemType.HEATING);
     }
 }
