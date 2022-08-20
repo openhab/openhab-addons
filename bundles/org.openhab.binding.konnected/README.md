@@ -18,7 +18,7 @@ The binding will then create things for each module discovered which can be adde
 
 The binding attempts to discover The Konnected Alarm Panels via the UPnP service. 
 The auto-discovery service of the binding will detect the base URL of the Konnected Alarm Panel. 
-When manually adding things the base URL of the Konnected Alarm Panel will need to be configured. 
+When manually adding things, the base URL of the Konnected Alarm Panel will need to be configured. 
 The base URL should include scheme, address and port (for example http://192.168.1.123:9123).
 
 The binding will attempt to obtain the ip address of your openHAB server as configured in the OSGi framework.
