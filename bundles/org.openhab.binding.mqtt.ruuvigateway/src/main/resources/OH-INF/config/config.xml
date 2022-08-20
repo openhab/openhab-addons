@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<!-- TODO -->
+	<config-description uri="thing-type:mqtt:rgb">
+		<parameter name="oneTriggersNightMode" type="boolean" required="true">
+			<label>1% Triggers Night Mode</label>
+			<description>1% on a slider will trigger the Night Mode.</description>
+			<default>false</default>
+		</parameter>
+
+		<parameter name="powerFailsToMinimum" type="boolean" required="true">
+			<label>Dimmed on Power Fail</label>
+			<description>If lights loose power when soft off, the lights will default back to the minimum brightness.</description>
+			<default>false</default>
+		</parameter>
+	</config-description>
+
+
+</config-description:config-descriptions>
