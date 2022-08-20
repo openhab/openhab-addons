@@ -1,6 +1,6 @@
 # Konnected Binding
 
-This binding is for interacting with an [Konnected Alarm Panel](https://konnected.io/). Konnected Alarm Panels can connect to 
+This binding is for interacting with a [Konnected Alarm Panel](https://konnected.io/). Konnected Alarm Panels can connect to 
 security sensors directly or interface with existing alarm panels. Konnected is an open-source firmware and software that 
 runs on a NodeMCU. The Konnected hardware is designed for an alarm panel installation, but the general purpose firmware/software 
 can be run on a generic NodeMCU device.
