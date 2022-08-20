@@ -15,6 +15,7 @@ package org.openhab.binding.easee.internal.connector;
 import static org.openhab.binding.easee.internal.EaseeBindingConstants.*;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Queue;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
@@ -211,11 +212,9 @@ public class WebInterface implements AtomicReferenceTrait {
          */
         private synchronized void refreshAccessToken() {
             Instant now = Instant.now();
-            long expiryBuffer = TimeUnit.MINUTES.toMillis(WEB_REQUEST_TOKEN_EXPIRY_BUFFER_MINUTES);
-            long maxAge = TimeUnit.MINUTES.toMillis(WEB_REQUEST_TOKEN_MAX_AGE_MINUTES);
 
-            if (tokenExpiry.toEpochMilli() - now.toEpochMilli() - expiryBuffer < 0
-                    || tokenRefreshDate.toEpochMilli() + maxAge < now.toEpochMilli()) {
+            if (now.isAfter(tokenExpiry.minus(WEB_REQUEST_TOKEN_EXPIRY_BUFFER_MINUTES, ChronoUnit.MINUTES))
+                    || now.isAfter(tokenRefreshDate.plus(WEB_REQUEST_TOKEN_MAX_AGE_MINUTES, ChronoUnit.MINUTES))) {
                 logger.debug("access token needs to be refreshed, last refresh: {}, expiry: {}",
                         Utils.formatDate(tokenRefreshDate), Utils.formatDate(tokenRefreshDate));
 

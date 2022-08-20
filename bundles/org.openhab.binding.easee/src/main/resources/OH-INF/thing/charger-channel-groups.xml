@@ -149,7 +149,7 @@
 	<channel-group-type id="charger-commands">
 		<label>Charger Commands</label>
 		<channels>
-			<channel id="genericCommand" typeId="rwtype-command">
+			<channel id="genericCommand" typeId="rwtype-charger-command">
 				<label>Generic Charger Command</label>
 				<description>Sends a command to the charger. Write only channel.</description>
 				<properties>

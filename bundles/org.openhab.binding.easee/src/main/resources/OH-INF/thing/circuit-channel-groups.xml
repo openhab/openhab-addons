@@ -18,7 +18,7 @@
 				<label>Max Circuit Current Phase 3</label>
 				<description>Max circuit current for phase 3.</description>
 			</channel>
-			<channel id="maxCurrents" typeId="rwtype-command">
+			<channel id="maxCurrents" typeId="rwtype-currents">
 				<label>Max Circuit Currents Phase 1,2,3</label>
 				<description>Max circuit currents for phases 1,2,3.</description>
 				<properties>
@@ -38,7 +38,7 @@
 				<label>Offline Max Circuit Current Phase 3</label>
 				<description>Max circuit current for phase 3 in offline mode.</description>
 			</channel>
-			<channel id="offlineMaxCurrents" typeId="rwtype-command">
+			<channel id="offlineMaxCurrents" typeId="rwtype-currents">
 				<label>Offline Max Circuit Currents Phase 1,2,3</label>
 				<description>Offline Max circuit currents for phases 1,2,3.</description>
 				<properties>
@@ -75,7 +75,7 @@
 				<label>Dynamic Circuit Current Phase 3</label>
 				<description>Dynamic set circuit current for phase 3.</description>
 			</channel>
-			<channel id="dynamicCurrents" typeId="rwtype-command">
+			<channel id="dynamicCurrents" typeId="rwtype-currents">
 				<label>Dynamic Circuit Currents Phase 1,2,3</label>
 				<description>Dynamic circuit currents for phases 1,2,3.</description>
 				<properties>

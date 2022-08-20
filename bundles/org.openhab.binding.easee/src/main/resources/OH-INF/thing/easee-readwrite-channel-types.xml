@@ -31,9 +31,15 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="rwtype-command">
+	<channel-type id="rwtype-currents">
 		<item-type>String</item-type>
-		<label>Generic Command</label>
+		<label>Currents Phase 1;2;3</label>
+		<state pattern="%s" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="rwtype-charger-command">
+		<item-type>String</item-type>
+		<label>Charger Command</label>
 		<state pattern="%s" readOnly="false">
 		</state>
 	</channel-type>
