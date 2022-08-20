@@ -56,15 +56,17 @@ public class TadoHandlerFactory extends BaseThingHandlerFactory {
 
     private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
+    private final LocaleProvider localeProvider;
+    private final TranslationProvider i18nProvider;
     private final TadoStateDescriptionProvider stateDescriptionProvider;
-    private final TadoTranslationProvider translationProvider;
+    private @Nullable TadoTranslationProvider tadoTranslationProvider;
 
     @Activate
-    public TadoHandlerFactory(final @Reference TadoStateDescriptionProvider stateDescriptionProvider,
-            final @Reference TranslationProvider translationProvider, final @Reference LocaleProvider localeProvider) {
+    public TadoHandlerFactory(@Reference TranslationProvider i18nProvider, @Reference LocaleProvider localeProvider,
+            @Reference TadoStateDescriptionProvider stateDescriptionProvider) {
+        this.i18nProvider = i18nProvider;
+        this.localeProvider = localeProvider;
         this.stateDescriptionProvider = stateDescriptionProvider;
-        this.translationProvider = new TadoTranslationProvider(getBundleContext().getBundle(), translationProvider,
-                localeProvider);
     }
 
     @Override
@@ -81,7 +83,7 @@ public class TadoHandlerFactory extends BaseThingHandlerFactory {
             registerTadoDiscoveryService(tadoHomeHandler);
             return tadoHomeHandler;
         } else if (thingTypeUID.equals(THING_TYPE_ZONE)) {
-            return new TadoZoneHandler(thing, stateDescriptionProvider, translationProvider);
+            return new TadoZoneHandler(thing, stateDescriptionProvider, getTadoTranslationProvider());
         } else if (thingTypeUID.equals(THING_TYPE_MOBILE_DEVICE)) {
             return new TadoMobileDeviceHandler(thing);
         }
@@ -110,5 +112,14 @@ public class TadoHandlerFactory extends BaseThingHandlerFactory {
                 }
             }
         }
+    }
+
+    private TadoTranslationProvider getTadoTranslationProvider() {
+        TadoTranslationProvider result = this.tadoTranslationProvider;
+        if (result == null) {
+            result = new TadoTranslationProvider(getBundleContext().getBundle(), i18nProvider, localeProvider);
+            this.tadoTranslationProvider = result;
+        }
+        return result;
     }
 }
