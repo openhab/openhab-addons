@@ -33,16 +33,16 @@ import org.slf4j.LoggerFactory;
 public class HubCommunicationThread extends Thread {
 
     private enum HubCommunicationThreadState {
-        STARTING(ThingStatus.INITIALIZING, ThingStatusDetail.BRIDGE_UNINITIALIZED, ""),
+        STARTING(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING, "@text/message.bridge.status.connecting"),
         CONNECTED(ThingStatus.ONLINE, ThingStatusDetail.NONE, ""),
         DISCONNECTED(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/message.bridge.status.failed"),
-        STOPPED(ThingStatus.REMOVING, ThingStatusDetail.BRIDGE_OFFLINE, "");
+        STOPPED(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "");
 
         private final ThingStatus status;
         private final ThingStatusDetail statusDetail;
         private final String errorMessage;
 
-        private HubCommunicationThreadState(ThingStatus status, ThingStatusDetail statusDetail, String errorMessage) {
+        HubCommunicationThreadState(ThingStatus status, ThingStatusDetail statusDetail, String errorMessage) {
             this.status = status;
             this.statusDetail = statusDetail;
             this.errorMessage = errorMessage;
@@ -67,7 +67,6 @@ public class HubCommunicationThread extends Thread {
     private final NoboHubBridgeHandler hubHandler;
     private final Duration timeout;
     private Instant lastTimeFullScan;
-    private Instant lastTimeReadStart;
 
     private volatile boolean stopped = false;
     private HubCommunicationThreadState currentState = HubCommunicationThreadState.STARTING;
@@ -77,7 +76,6 @@ public class HubCommunicationThread extends Thread {
         this.hubHandler = hubHandler;
         this.timeout = timeout;
         this.lastTimeFullScan = Instant.now();
-        this.lastTimeReadStart = Instant.now();
     }
 
     public void stopNow() {
@@ -94,7 +92,7 @@ public class HubCommunicationThread extends Thread {
                         lastTimeFullScan = Instant.now();
                         setNextState(HubCommunicationThreadState.CONNECTED);
                     } catch (NoboCommunicationException nce) {
-                        logger.error("Communication error with Hub", nce);
+                        logger.debug("Communication error with Hub", nce);
                         setNextState(HubCommunicationThreadState.DISCONNECTED);
                     }
                     break;
@@ -115,7 +113,7 @@ public class HubCommunicationThread extends Thread {
 
                         hubConnection.processReads(timeout);
                     } catch (NoboCommunicationException nce) {
-                        logger.error("Communication error with Hub", nce);
+                        logger.debug("Communication error with Hub", nce);
                         setNextState(HubCommunicationThreadState.DISCONNECTED);
                     }
                     break;

@@ -84,7 +84,7 @@ public class ZoneHandler extends BaseThingHandler {
         updateState(CHANNEL_ZONE_ECO_TEMPERATURE, ecoTemperature);
 
         Double temp = zone.getTemperature();
-        if (temp != null && temp != Double.NaN) {
+        if (temp != null && !Double.isNaN(temp)) {
             QuantityType<Temperature> currentTemperature = new QuantityType<>(temp, SIUnits.CELSIUS);
             updateState(CHANNEL_ZONE_CURRENT_TEMPERATURE, currentTemperature);
         }
@@ -115,7 +115,8 @@ public class ZoneHandler extends BaseThingHandler {
                 for (WeekProfile wp : hubHandler.getWeekProfiles()) {
                     options.add(new StateOption(String.valueOf(wp.getId()), wp.getName()));
                 }
-                logger.debug("State options {}.", options.size() + " first: " + options.get(0));
+                logger.debug("State options count: {}. First: {}", options.size(),
+                        (!options.isEmpty()) ? options.get(0) : 0);
                 weekProfileStateDescriptionOptionsProvider.setStateOptions(
                         new ChannelUID(getThing().getUID(), CHANNEL_ZONE_ACTIVE_WEEK_PROFILE), options);
             }
