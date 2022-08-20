@@ -23,7 +23,7 @@ The base URL should include scheme, address and port (for example http://192.168
 
 The binding will attempt to obtain the ip address of your openHAB server as configured in the OSGi framework.
 If it is unable to determine the IP address it will also attempt to use the network address service to obtain the IP address and port.
-Auto discovery of the callback URL will fail if you are using reverse proxies and/or https for your openHAB server. 
+Auto-discovery of the callback URL will fail if you are using reverse proxies and/or HTTPS for your openHAB server. 
 In this case you will need to configure the callback URL in the advanced configuration section. 
 The callback URL will normally end with /konnected (for example https://192.168.1.2/konnected).
 
