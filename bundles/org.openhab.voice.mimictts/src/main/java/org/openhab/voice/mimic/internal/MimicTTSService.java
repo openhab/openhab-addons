@@ -30,6 +30,7 @@ import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.client.util.InputStreamResponseListener;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioStream;
 import org.openhab.core.config.core.ConfigurableService;
@@ -94,7 +95,7 @@ public class MimicTTSService implements TTSService {
 
     private final Gson gson = new GsonBuilder().create();
 
-    private HttpClient httpClient;
+    private final HttpClient httpClient;
 
     @Activate
     public MimicTTSService(final @Reference HttpClientFactory httpClientFactory, Map<String, Object> config) {
@@ -258,14 +259,23 @@ public class MimicTTSService implements TTSService {
         Response response;
         try {
             response = inputStreamResponseListener.get(timeout, TimeUnit.SECONDS);
-            if (response.getStatus() == 200) {
+            if (response.getStatus() == HttpStatus.OK_200) {
                 String lengthHeader = response.getHeaders().get(HttpHeader.CONTENT_LENGTH);
-                long length = Long.parseLong(lengthHeader);
+                long length;
+                try {
+                    length = Long.parseLong(lengthHeader);
+                } catch (NumberFormatException e) {
+                    throw new TTSException(
+                            "Cannot get Content-Length header from mimic response. Are you sure to query a mimic TTS server at "
+                                    + urlTTS + " ?");
+                }
                 return new InputStreamAudioStream(inputStreamResponseListener.getInputStream(), AUDIO_FORMAT, length);
             } else {
                 String errorMessage = "Cannot get wav from mimic url " + urlTTS + " with HTTP response code "
-                        + response.getStatus();
-                throw new TTSException(errorMessage);
+                        + response.getStatus() + " for reason " + response.getReason();
+                TTSException ttsException = new TTSException(errorMessage);
+                response.abort(ttsException);
+                throw ttsException;
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             String errorMessage = "Cannot get wav from mimic url " + urlTTS;
