@@ -16,6 +16,7 @@ import java.time.Duration;
 import java.time.Instant;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.nobohub.internal.NoboHubBindingConstants;
 import org.openhab.binding.nobohub.internal.NoboHubBridgeHandler;
 import org.openhab.binding.nobohub.internal.model.NoboCommunicationException;
@@ -33,26 +34,27 @@ import org.slf4j.LoggerFactory;
 public class HubCommunicationThread extends Thread {
 
     private enum HubCommunicationThreadState {
-        STARTING(ThingStatus.ONLINE, ThingStatusDetail.UNKNOWN.NONE, "@text/message.bridge.status.connecting"),
+        STARTING(null, null, ""),
         CONNECTED(ThingStatus.ONLINE, ThingStatusDetail.NONE, ""),
         DISCONNECTED(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/message.bridge.status.failed"),
-        STOPPED(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "");
+        STOPPED(null, null, "");
 
-        private final ThingStatus status;
-        private final ThingStatusDetail statusDetail;
+        private final @Nullable ThingStatus status;
+        private final @Nullable ThingStatusDetail statusDetail;
         private final String errorMessage;
 
-        HubCommunicationThreadState(ThingStatus status, ThingStatusDetail statusDetail, String errorMessage) {
+        HubCommunicationThreadState(@Nullable ThingStatus status, @Nullable ThingStatusDetail statusDetail,
+                String errorMessage) {
             this.status = status;
             this.statusDetail = statusDetail;
             this.errorMessage = errorMessage;
         }
 
-        public ThingStatus getThingStatus() {
+        public @Nullable ThingStatus getThingStatus() {
             return status;
         }
 
-        public ThingStatusDetail getThingStatusDetail() {
+        public @Nullable ThingStatusDetail getThingStatusDetail() {
             return statusDetail;
         }
 
@@ -156,7 +158,10 @@ public class HubCommunicationThread extends Thread {
 
     private void setNextState(HubCommunicationThreadState newState) {
         currentState = newState;
-        hubHandler.setStatusInfo(newState.getThingStatus(), newState.getThingStatusDetail(),
-                newState.getErrorMessage());
+        ThingStatus stateThingStatus = newState.getThingStatus();
+        ThingStatusDetail stateThingStatusDetail = newState.getThingStatusDetail();
+        if (null != stateThingStatus && null != stateThingStatusDetail) {
+            hubHandler.setStatusInfo(stateThingStatus, stateThingStatusDetail, newState.getErrorMessage());
+        }
     }
 }

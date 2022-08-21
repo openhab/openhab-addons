@@ -140,7 +140,6 @@ public class HubConnection {
     }
 
     public boolean isConnected() {
-
         Socket conn = this.hubConnection;
         if (null != conn) {
             return conn.isConnected();
@@ -150,7 +149,6 @@ public class HubConnection {
     }
 
     public boolean hasData() throws NoboCommunicationException {
-
         BufferedReader i = this.in;
         if (null != i) {
             try {
@@ -222,7 +220,6 @@ public class HubConnection {
     }
 
     private void connectSocket() throws NoboCommunicationException {
-
         if (null == host) {
             try {
                 host = InetAddress.getByName(hostName);

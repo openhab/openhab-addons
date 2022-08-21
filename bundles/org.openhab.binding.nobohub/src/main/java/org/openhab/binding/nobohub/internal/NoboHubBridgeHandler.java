@@ -91,7 +91,7 @@ public class NoboHubBridgeHandler extends BaseBridgeHandler {
                 }
             } catch (NoboCommunicationException noboEx) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/message.bridge.status.failed [\\" + noboEx.getMessage() + "\"]");
+                        "@text/message.bridge.status.failed [\"" + noboEx.getMessage() + "\"]");
             }
 
             return;
@@ -400,7 +400,7 @@ public class NoboHubBridgeHandler extends BaseBridgeHandler {
             }
         } catch (NoboCommunicationException noboEx) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/message.bridge.status.failed [\\" + noboEx.getMessage() + "\"]");
+                    "@text/message.bridge.status.failed [\"" + noboEx.getMessage() + "\"]");
         }
     }
 
