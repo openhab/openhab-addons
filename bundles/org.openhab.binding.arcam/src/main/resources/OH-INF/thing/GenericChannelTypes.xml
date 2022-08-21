@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="arcam"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+
+	<channel-type id="dcOffset">
+		<item-type>Switch</item-type>
+		<label>DC offset</label>
+		<description>Output DC offset status.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="directMode">
+		<item-type>Switch</item-type>
+		<label>Direct mode</label>
+		<description>Analogue input direct mode of the current input.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="headphones">
+		<item-type>Switch</item-type>
+		<label>Headphones</label>
+		<description>Determine whether headphones are connected.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="incomingSampleRate">
+		<item-type>String</item-type>
+		<label>Incoming audio sample rate</label>
+		<description>Incoming audio sample rate.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="inputDetect">
+		<item-type>Switch</item-type>
+		<label>Input detect</label>
+		<description>the status of the active input.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="lifterTemperature">
+		<item-type>Number</item-type>
+		<label>Lifter temperature</label>
+		<description>The temperature of the lifter.</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f °C"/>
+	</channel-type>
+	<channel-type id="nowPlayingAlbum">
+		<item-type>String</item-type>
+		<label>Album</label>
+		<description>Now playing album name.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="nowPlayingApplication">
+		<item-type>String</item-type>
+		<label>Application</label>
+		<description>Now playing GoogleCast source application.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="nowPlayingAudioEncoder">
+		<item-type>String</item-type>
+		<label>Audio encoder</label>
+		<description>Now playing audio encoder.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="nowPlayingSampleRate">
+		<item-type>String</item-type>
+		<label>Sample rate</label>
+		<description>Now playing sample rate.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="outputTemperature">
+		<item-type>Number</item-type>
+		<label>Output temperature</label>
+		<description>The temperature of the output stage.</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f °C"/>
+	</channel-type>
+
+	<channel-type id="reboot">
+		<item-type>Switch</item-type>
+		<label>Reboot</label>
+		<description>Forces a reboot of the unit.</description>
+	</channel-type>
+	<channel-type id="roomEqualisation">
+		<item-type>String</item-type>
+		<label>Room Equalisation</label>
+		<description>Turn the room equalisation system on/off.</description>
+		<state>
+			<options>
+				<option value="ROOM_EQ_OFF">Room EQ off</option>
+				<option value="ROOM_EQ_1">Room EQ 1</option>
+				<option value="ROOM_EQ_2">Room EQ 2</option>
+				<option value="ROOM_EQ_3">Room EQ 3</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="shortCircuit">
+		<item-type>Switch</item-type>
+		<label>Short circuit status</label>
+		<description>Short circuit status.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="softwareVersion">
+		<item-type>String</item-type>
+		<label>Software version</label>
+		<description>Software (firmware) version.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="timeoutCounter">
+		<item-type>Number</item-type>
+		<label>Timeout counter</label>
+		<description>The time left (in minutes) until unit enters auto standby.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+
+</thing:thing-descriptions>

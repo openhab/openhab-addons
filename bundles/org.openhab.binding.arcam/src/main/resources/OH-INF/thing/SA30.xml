@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="arcam"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="SA30">
+
+		<label>Arcam Binding Thing</label>
+		<description>SA30</description>
+		<channel-groups>
+			<channel-group id="sa30MasterZone" typeId="sa30MasterZone">
+				<label>Master zone</label>
+				<description>The master zone. Commands that appear zone-less refer to the master zone</description>
+			</channel-group>
+		</channel-groups>
+
+		<config-description>
+			<parameter name="hostname" type="text">
+				<context>network-address</context>
+				<label>Hostname</label>
+				<description>Hostname or IP address of the device</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-group-type id="sa30MasterZone">
+		<label>Master zone</label>
+		<description>Channels for the master zone.</description>
+		<channels>
+			<channel id="balance" typeId="sa30Balance"/>
+			<channel id="dacFilter" typeId="sa30DacFilter"/>
+			<channel id="dcOffset" typeId="dcOffset"/>
+			<channel id="directMode" typeId="directMode"/>
+			<channel id="displaybrightness" typeId="sa30DisplayBrightness"/>
+			<channel id="headphones" typeId="headphones"/>
+			<channel id="incomingSampleRate" typeId="incomingSampleRate"/>
+			<channel id="input" typeId="sa30Input"/>
+			<channel id="inputDetect" typeId="inputDetect"/>
+			<channel id="lifterTemperature" typeId="lifterTemperature"/>
+			<channel id="mute" typeId="system.mute"/>
+			<channel id="nowPlayingTitle" typeId="system.media-title"/>
+			<channel id="nowPlayingArtist" typeId="system.media-artist"/>
+			<channel id="nowPlayingAlbum" typeId="nowPlayingAlbum"/>
+			<channel id="nowPlayingApplication" typeId="nowPlayingApplication"/>
+			<channel id="nowPlayingSampleRate" typeId="nowPlayingSampleRate"/>
+			<channel id="nowPlayingAudioEncoder" typeId="nowPlayingAudioEncoder"/>
+			<channel id="outputTemperature" typeId="outputTemperature"/>
+			<channel id="power" typeId="system.power"/>
+			<channel id="reboot" typeId="reboot"/>
+			<channel id="roomEqualisation" typeId="roomEqualisation"/>
+			<channel id="shortCircuit" typeId="shortCircuit"/>
+			<channel id="softwareVersion" typeId="softwareVersion"/>
+			<channel id="timeoutCounter" typeId="timeoutCounter"/>
+			<channel id="volume" typeId="system.volume"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="sa30Balance">
+		<item-type>Number</item-type>
+		<label>Balance</label>
+		<description>Adjust the balance control.</description>
+		<state min="-12" max="12" step="1.0"/>
+	</channel-type>
+
+</thing:thing-descriptions>
