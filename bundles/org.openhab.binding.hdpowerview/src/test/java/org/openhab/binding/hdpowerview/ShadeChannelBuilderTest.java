@@ -188,95 +188,113 @@ public class ShadeChannelBuilderTest {
     @Test
     public void testBuilderMissingElements() {
         ShadeChannelBuilder channelBuilder;
+        boolean failed;
+
+        Thing fullShade = fullThing();
 
         // @formatter:off
         // missing ChannelTypeUID element
-        channelBuilder = new ShadeChannelBuilder(shade)
+        channelBuilder = new ShadeChannelBuilder(fullShade)
                 .withChannelId(CHANNEL_SHADE_VANE)
                 .withRequired(false)
                 .withAcceptedItemType(CoreItemFactory.DIMMER)
                 .withTranslationProvider(TRANSLATION_PROVIDER);
         // @formatter:on
 
+        failed = false;
         try {
             channelBuilder.isExisting();
             channelBuilder.isRequired();
             channelBuilder.getPredicate();
+            channelBuilder.build();
         } catch (IllegalStateException e) {
-            assertTrue(true);
+            failed = true;
         }
+        assertTrue(failed);
 
         // @formatter:off
         // missing ChannelId element
-        channelBuilder = new ShadeChannelBuilder(shade)
+        channelBuilder = new ShadeChannelBuilder(fullShade)
                 .withChannelTypeUID(CHANNEL_TYPE_VANE)
                 .withRequired(false)
                 .withAcceptedItemType(CoreItemFactory.DIMMER)
                 .withTranslationProvider(TRANSLATION_PROVIDER);
         // @formatter:on
 
+        failed = false;
         try {
             channelBuilder.isExisting();
             channelBuilder.isRequired();
             channelBuilder.getPredicate();
+            channelBuilder.build();
         } catch (IllegalStateException e) {
-            assertTrue(true);
+            failed = true;
         }
+        assertTrue(failed);
 
         // @formatter:off
         // missing translation provider element
-        channelBuilder = new ShadeChannelBuilder(shade)
+        channelBuilder = new ShadeChannelBuilder(fullShade)
                 .withChannelTypeUID(CHANNEL_TYPE_VANE)
                 .withChannelId(CHANNEL_SHADE_VANE)
                 .withRequired(false)
                 .withAcceptedItemType(CoreItemFactory.DIMMER);
         // @formatter:on
 
+        failed = false;
         try {
             channelBuilder.isExisting();
             channelBuilder.isRequired();
             channelBuilder.getPredicate();
+            channelBuilder.build();
         } catch (IllegalStateException e) {
-            assertTrue(true);
+            failed = true;
         }
+        assertTrue(failed);
 
         // @formatter:off
         // missing 'required' element
-        channelBuilder = new ShadeChannelBuilder(shade)
+        channelBuilder = new ShadeChannelBuilder(fullShade)
                 .withChannelTypeUID(CHANNEL_TYPE_VANE)
                 .withChannelId(CHANNEL_SHADE_VANE)
                 .withAcceptedItemType(CoreItemFactory.DIMMER)
                 .withTranslationProvider(TRANSLATION_PROVIDER);
         // @formatter:on
 
+        failed = false;
         try {
             channelBuilder.isExisting();
             channelBuilder.isRequired();
             channelBuilder.getPredicate();
+            channelBuilder.build();
         } catch (IllegalStateException e) {
-            assertTrue(true);
+            failed = true;
         }
+        assertTrue(failed);
 
         // @formatter:off
         // missing accepted item type
-        channelBuilder = new ShadeChannelBuilder(shade)
+        channelBuilder = new ShadeChannelBuilder(fullShade)
                 .withChannelTypeUID(CHANNEL_TYPE_VANE)
                 .withChannelId(CHANNEL_SHADE_VANE)
                 .withRequired(false)
                 .withTranslationProvider(TRANSLATION_PROVIDER);
         // @formatter:on
 
+        failed = false;
         try {
             channelBuilder.isExisting();
             channelBuilder.isRequired();
             channelBuilder.getPredicate();
+            channelBuilder.build();
         } catch (IllegalStateException e) {
-            assertTrue(true);
+            failed = true;
         }
+        assertTrue(failed);
 
         // @formatter:off
         // all elements present
-        channelBuilder = new ShadeChannelBuilder(shade)
+        channelBuilder = new ShadeChannelBuilder(fullShade)
                 .withChannelTypeUID(CHANNEL_TYPE_VANE)
                 .withChannelId(CHANNEL_SHADE_VANE)
                 .withRequired(false)
@@ -284,9 +302,16 @@ public class ShadeChannelBuilderTest {
                 .withTranslationProvider(TRANSLATION_PROVIDER);
         // @formatter:on
 
-        assertFalse(channelBuilder.isExisting());
-        assertFalse(channelBuilder.isRequired());
-        assertNotNull(channelBuilder.getPredicate());
+        failed = false;
+        try {
+            channelBuilder.isExisting();
+            channelBuilder.isRequired();
+            channelBuilder.getPredicate();
+            channelBuilder.build();
+        } catch (IllegalStateException e) {
+            failed = true;
+        }
+        assertFalse(failed);
     }
 
     /**
