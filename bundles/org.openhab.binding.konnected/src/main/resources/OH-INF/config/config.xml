@@ -46,8 +46,8 @@
 		</parameter>
 
 		<parameter name="callbackUrl" type="text">
-			<label>Callback URI</label>
-			<description>The URI where the Konnected panel will make callbacks. The default is to auto detect the port and IP
+			<label>Callback URL</label>
+			<description>The URL where the Konnected panel will make callbacks. The default is to auto detect the port and IP
 				address of openHAB. This may not work in case you use a reverse proxy or openHAB
 				is running in Docker. Then the
 				plugin
