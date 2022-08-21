@@ -330,15 +330,15 @@ public class ShadeChannelBuilderTest {
      * expected result
      *
      * @param thing test article (may be a full or an empty thing)
-     * @param capbilitiesId target capabilities
+     * @param capabilitiesId target capabilities
      * @param expectedDirty expected dirty outcome of tests
      * @param expectedChannelCount expected resulting number of channels
      * @return the resulting channel list
      */
-    private List<Channel> testListAddRemoveChannelsHelper(Thing thing, int capbilitiesId, Expect expectedDirty,
+    private List<Channel> testListAddRemoveChannelsHelper(Thing thing, int capabilitiesId, Expect expectedDirty,
             int expectedChannelCount) {
         ShadeCapabilitiesDatabase db = new ShadeCapabilitiesDatabase();
-        Capabilities capabilities = db.getCapabilities(capbilitiesId);
+        Capabilities capabilities = db.getCapabilities(capabilitiesId);
 
         List<ShadeChannelBuilder> channelBuilders = new ArrayList<>();
 
