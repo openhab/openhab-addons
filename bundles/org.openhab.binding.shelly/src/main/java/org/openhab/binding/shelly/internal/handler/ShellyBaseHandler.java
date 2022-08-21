@@ -21,11 +21,9 @@ import static org.openhab.core.thing.Thing.*;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -37,6 +35,7 @@ import org.openhab.binding.shelly.internal.api.ShellyApiInterface;
 import org.openhab.binding.shelly.internal.api.ShellyApiResult;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyFavPos;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyInputState;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyOtaCheckResult;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDevice;
@@ -98,7 +97,6 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
     protected final Logger logger = LoggerFactory.getLogger(ShellyBaseHandler.class);
     protected final ShellyChannelDefinitions channelDefinitions;
-    private final CopyOnWriteArrayList<OptionEntry> stateOptions = new CopyOnWriteArrayList<>();
 
     public String thingName = "";
     public String thingType = "";
@@ -321,16 +319,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
         tmpPrf.status = api.getStatus(); // update thing properties
         tmpPrf.updateFromStatus(tmpPrf.status);
-
-        if (tmpPrf.isTRV) {
-            String[] profileNames = tmpPrf.getValveProfileList(0);
-            String channelId = mkChannelId(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_PROFILE);
-            logger.debug("{}: Adding TRV profile names to channel description: {}", thingName, profileNames);
-            clearStateOptions(channelId);
-            for (int i = 0; i < profileNames.length; i++) {
-                addStateOption(channelId, "" + (i + 1), profileNames[i]);
-            }
-        }
+        addStateOptions(tmpPrf);
 
         // update thing properties
         updateProperties(tmpPrf, tmpPrf.status);
@@ -352,22 +341,6 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         updateProperties(profile, profile.status);
         setThingOnline(); // if API call was successful the thing must be online
         return true; // success
-    }
-
-    private void showThingConfig(ShellyDeviceProfile profile) {
-        logger.debug("{}: Initializing device {}, type {}, Hardware: Rev: {}, batch {}; Firmware: {} / {}", thingName,
-                profile.hostname, profile.deviceType, profile.hwRev, profile.hwBatchId, profile.fwVersion,
-                profile.fwDate);
-        logger.debug("{}: Shelly settings info for {}: {}", thingName, profile.hostname, profile.settingsJson);
-        logger.debug("{}: Device "
-                + "hasRelays:{} (numRelays={}),isRoller:{} (numRoller={}),isDimmer:{},numMeter={},isEMeter:{})"
-                + ",isSensor:{},isDS:{},hasBattery:{}{},isSense:{},isMotion:{},isLight:{},isBulb:{},isDuo:{},isRGBW2:{},inColor:{}"
-                + ",alwaysOn:{}, updatePeriod:{}sec", thingName, profile.hasRelays, profile.numRelays, profile.isRoller,
-                profile.numRollers, profile.isDimmer, profile.numMeters, profile.isEMeter, profile.isSensor,
-                profile.isDW, profile.hasBattery,
-                profile.hasBattery ? " (low battery threshold=" + config.lowBattery + "%)" : "", profile.isSense,
-                profile.isMotion, profile.isLight, profile.isBulb, profile.isDuo, profile.isRGBW2, profile.inColor,
-                profile.alwaysOn, profile.updatePeriod);
     }
 
     /**
@@ -599,6 +572,45 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 logger.debug("{}: Enabling channel cache ({} updates / {}s)", thingName, skipUpdate,
                         cacheCount * UPDATE_STATUS_INTERVAL_SECONDS);
                 cache.enable();
+            }
+        }
+    }
+
+    private void showThingConfig(ShellyDeviceProfile profile) {
+        logger.debug("{}: Initializing device {}, type {}, Hardware: Rev: {}, batch {}; Firmware: {} / {}", thingName,
+                profile.hostname, profile.deviceType, profile.hwRev, profile.hwBatchId, profile.fwVersion,
+                profile.fwDate);
+        logger.debug("{}: Shelly settings info for {}: {}", thingName, profile.hostname, profile.settingsJson);
+        logger.debug("{}: Device "
+                + "hasRelays:{} (numRelays={}),isRoller:{} (numRoller={}),isDimmer:{},numMeter={},isEMeter:{})"
+                + ",isSensor:{},isDS:{},hasBattery:{}{},isSense:{},isMotion:{},isLight:{},isBulb:{},isDuo:{},isRGBW2:{},inColor:{}"
+                + ",alwaysOn:{}, updatePeriod:{}sec", thingName, profile.hasRelays, profile.numRelays, profile.isRoller,
+                profile.numRollers, profile.isDimmer, profile.numMeters, profile.isEMeter, profile.isSensor,
+                profile.isDW, profile.hasBattery,
+                profile.hasBattery ? " (low battery threshold=" + config.lowBattery + "%)" : "", profile.isSense,
+                profile.isMotion, profile.isLight, profile.isBulb, profile.isDuo, profile.isRGBW2, profile.inColor,
+                profile.alwaysOn, profile.updatePeriod);
+    }
+
+    private void addStateOptions(ShellyDeviceProfile prf) {
+
+        if (prf.isTRV) {
+            String[] profileNames = prf.getValveProfileList(0);
+            String channelId = mkChannelId(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_PROFILE);
+            logger.debug("{}: Adding TRV profile names to channel description: {}", thingName, profileNames);
+            channelDefinitions.clearStateOptions(channelId);
+            for (int i = 0; i < profileNames.length; i++) {
+                channelDefinitions.addStateOption(channelId, "" + (i + 1), profileNames[i]);
+            }
+        }
+        if (prf.isRoller && getBool(prf.settings.favoritesEnabled)) {
+            String channelId = mkChannelId(CHANNEL_GROUP_ROL_CONTROL, CHANNEL_ROL_CONTROL_FAV);
+            logger.debug("{}: Adding {} roler favorite(s) to channel description", thingName,
+                    prf.settings.favorites.size());
+            channelDefinitions.clearStateOptions(channelId);
+            for (int i = 0; i < prf.settings.favorites.size(); i++) {
+                ShellyFavPos fav = prf.settings.favorites.get(i);
+                channelDefinitions.addStateOption(channelId, fav.pos, fav.name);
             }
         }
     }
@@ -1426,31 +1438,11 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
     @Override
     public List<StateOption> getStateOptions(ChannelTypeUID uid) {
-        List<StateOption> options = new ArrayList<>();
-        for (OptionEntry oe : stateOptions) {
-            if (oe.uid.equals(uid)) {
-                options.add(new StateOption(oe.key, oe.value));
-            }
-        }
-
+        List<StateOption> options = channelDefinitions.getStateOptions(uid);
         if (!options.isEmpty()) {
             logger.debug("{}: Return {} state options for channel uid {}", thingName, options.size(), uid.getId());
         }
         return options;
-    }
-
-    private void addStateOption(String channelId, String key, String value) {
-        ChannelTypeUID uid = channelDefinitions.getChannelTypeUID(channelId);
-        stateOptions.addIfAbsent(new OptionEntry(uid, key, value));
-    }
-
-    private void clearStateOptions(String channelId) {
-        ChannelTypeUID uid = channelDefinitions.getChannelTypeUID(channelId);
-        for (OptionEntry oe : stateOptions) {
-            if (oe.uid.equals(uid)) {
-                stateOptions.remove(oe);
-            }
-        }
     }
 
     protected ShellyDeviceProfile getDeviceProfile() {

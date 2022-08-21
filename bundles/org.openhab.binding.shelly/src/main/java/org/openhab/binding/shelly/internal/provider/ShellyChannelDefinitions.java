@@ -16,12 +16,15 @@ import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_API_INVTEMP;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.measure.Unit;
 
@@ -47,6 +50,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.thing.type.ChannelTypeUID;
+import org.openhab.core.types.StateOption;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -96,6 +100,20 @@ public class ShellyChannelDefinitions {
 
     public static final String PREFIX_GROUP = "group-type." + BINDING_ID + ".";
     public static final String PREFIX_CHANNEL = "channel-type." + BINDING_ID + ".";
+
+    public class OptionEntry {
+        public ChannelTypeUID uid;
+        public String key;
+        public String value;
+
+        public OptionEntry(ChannelTypeUID uid, String key, String value) {
+            this.uid = uid;
+            this.key = key;
+            this.value = value;
+        }
+    }
+
+    private final CopyOnWriteArrayList<OptionEntry> stateOptions = new CopyOnWriteArrayList<>();
 
     private static final ChannelMap CHANNEL_DEFINITIONS = new ChannelMap();
 
@@ -319,10 +337,10 @@ public class ShellyChannelDefinitions {
         }
 
         // Shelly 1/1PM Addon
-        if (profile.settings.extTemperature != null) {
-            addChannel(thing, add, profile.settings.extTemperature.sensor1 != null, CHGR_SENSOR, CHANNEL_ESENDOR_TEMP1);
-            addChannel(thing, add, profile.settings.extTemperature.sensor2 != null, CHGR_SENSOR, CHANNEL_ESENDOR_TEMP2);
-            addChannel(thing, add, profile.settings.extTemperature.sensor3 != null, CHGR_SENSOR, CHANNEL_ESENDOR_TEMP3);
+        if (profile.status.extTemperature != null) {
+            addChannel(thing, add, profile.status.extTemperature.sensor1 != null, CHGR_SENSOR, CHANNEL_ESENDOR_TEMP1);
+            addChannel(thing, add, profile.status.extTemperature.sensor2 != null, CHGR_SENSOR, CHANNEL_ESENDOR_TEMP2);
+            addChannel(thing, add, profile.status.extTemperature.sensor3 != null, CHGR_SENSOR, CHANNEL_ESENDOR_TEMP3);
         }
         if (profile.settings.extHumidity != null) {
             addChannel(thing, add, profile.settings.extHumidity.sensor1 != null, CHGR_SENSOR, CHANNEL_ESENDOR_HUMIDITY);
@@ -408,7 +426,7 @@ public class ShellyChannelDefinitions {
         ShellyThingInterface handler = (ShellyThingInterface) thing.getHandler();
         if (handler != null) {
             ShellySettingsGlobal settings = handler.getProfile().settings;
-            if (getBool(settings.favoritesEnabled) && (settings.favorites != null)) {
+            if (getBool(settings.favoritesEnabled) && settings.favorites != null) {
                 addChannel(thing, add, roller.currentPos != null, CHGR_ROLLER, CHANNEL_ROL_CONTROL_FAV);
             }
         }
@@ -545,6 +563,34 @@ public class ShellyChannelDefinitions {
                     builder.withDescription(channelDef.description);
                 }
                 newChannels.put(channelId, builder.withType(channelTypeUID).build());
+            }
+        }
+    }
+
+    public List<StateOption> getStateOptions(ChannelTypeUID uid) {
+        List<StateOption> options = new ArrayList<>();
+        for (OptionEntry oe : stateOptions) {
+            if (oe.uid.equals(uid)) {
+                options.add(new StateOption(oe.key, oe.value));
+            }
+        }
+        return options;
+    }
+
+    public void addStateOption(String channelId, String key, String value) {
+        ChannelTypeUID uid = getChannelTypeUID(channelId);
+        stateOptions.addIfAbsent(new OptionEntry(uid, key, value));
+    }
+
+    public void addStateOption(String channelId, int key, String value) {
+        addStateOption(channelId, "" + key, value);
+    }
+
+    public void clearStateOptions(String channelId) {
+        ChannelTypeUID uid = getChannelTypeUID(channelId);
+        for (OptionEntry oe : stateOptions) {
+            if (oe.uid.equals(uid)) {
+                stateOptions.remove(oe);
             }
         }
     }

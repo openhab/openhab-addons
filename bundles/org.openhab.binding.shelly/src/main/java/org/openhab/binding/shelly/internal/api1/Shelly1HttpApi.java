@@ -714,4 +714,8 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
     public int getTimeoutsRecovered() {
         return timeoutsRecovered;
     }
+
+    @Override
+    public void close() {
+    }
 }

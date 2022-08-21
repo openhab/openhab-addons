@@ -35,7 +35,6 @@ Also check out the [Shelly Manager](doc/ShellyManager.md), which
 | shelly1l           | Shelly 1L Single Relay Switch                          | SHSW-L    |
 | shelly1pm          | Shelly Single Relay Switch with integrated Power Meter | SHSW-PM   |
 | shelly2-relay      | Shelly Double Relay Switch in relay mode               | SHSW-21   |
-| shelly2-roller     | Shelly2 in Roller Mode                                 | SHSW-21   |
 | shelly25-relay     | Shelly 2.5 in Relay Switch                             | SHSW-25   |
 | shelly25-roller    | Shelly 2.5 in Roller Mode                              | SHSW-25   |
 | shelly4pro         | Shelly 4x Relay Switch                                 | SHSW-44   |
@@ -55,7 +54,7 @@ Also check out the [Shelly Manager](doc/ShellyManager.md), which
 | shellybulbduo      | Shelly Duo White G10                                   | SHBDUO-1  |
 | shellycolorbulb    | Shelly Duo Color G10                                   | SHCB-1    |
 | shellyvintage      | Shelly Vintage (White Mode)                            | SHVIN-1   |
-| shellyht           | Shelly Sensor (temp+humidity)                          | SHHT-1    |
+| shellyht           | Shelly Sensor (temperature+humidity)                   | SHHT-1    |
 | shellyflood        | Shelly Flood Sensor                                    | SHWT-1    |
 | shellysmoke        | Shelly Smoke Sensor                                    | SHSM-1    |
 | shellymotion       | Shelly Motion Sensor                                   | SHMOS-01  |
@@ -73,24 +72,25 @@ Also check out the [Shelly Manager](doc/ShellyManager.md), which
 
 | thing-type          | Model                                                    | Vendor ID      |
 |---------------------|----------------------------------------------------------|----------------|
-| shellyplus1         | Shelly Plus 1 with 1xrelay                               | SNSW-001X16EU  |
+| shellyplus1         | Shelly Plus 1 with 1x relay                              | SNSW-001X16EU  |
 | shellyplus1pm       | Shelly Plus 1PM with 1x relay + power meter              | SNSW-001P16EU  |
 | shellyplus2pm-relay | Shelly Plus 2PM with 2x relay + power meter, relay mode  | SNSW-002P16EU  |
 | shellyplus2pm-roller| Shelly Plus 2PM with 2x relay + power meter, roller mode | SNSW-002P16EU  |
-| shellyplusi4        | Shelly Plus i4 with 4x AC Input                          | SNSN-0024X     |
-| shellyplusi4dc      | Shelly Plus i4 with 4x DC Input                          | SNSN-0D24X     |
-| shellyplusht        | Shelly Plus HT with temp + humidity sensori              | SNSN-0013A     |
+| shellyplusi4        | Shelly Plus i4 with 4x AC input                          | SNSN-0024X     |
+| shellyplusi4dc      | Shelly Plus i4 with 4x DC input                          | SNSN-0D24X     |
+| shellyplusht        | Shelly Plus HT with temperature + humidity sensor        | SNSN-0013A     |
 
 ### Generation 2 Pro series:
 
 | thing-type          | Model                                                    | Vendor ID      |
 |---------------------|----------------------------------------------------------|----------------|
-| shellypro1          | Shelly Pro 1 with 1xrelay                                | SPSW-001XE16EU |
-| shellypro1pm        | Shelly Pro 1 PM with 1xrelay + power meter               | SPSW-001PE16EU |
-| shellypro2-relay    | Shelly Pro 2 with 2xrelay, relay mode                    | SPSW-002XE16EU |
-| shellypro2pm-relay  | Shelly Pro 2 PM with 2xrelay + power meter, relay mode   | SPSW-002PE16EU |
-| shellypro2pm-roller | Shelly Pro 2 PM with 2xrelay + power meter, roller mode  | SPSW-002PE16EU |
-| shellypro4pm        | Shelly Pro 4 PM with 4xrelay + power meter               | SPSW-004PE16EU |
+| shellypro1          | Shelly Pro 1 with 1x relay                               | SPSW-001XE16EU |
+| shellypro1pm        | Shelly Pro 1 PM with 1x relay + power meter              | SPSW-001PE16EU |
+| shellypro2-relay    | Shelly Pro 2 with 2x relay, relay mode                   | SPSW-002XE16EU |
+| shellypro2pm-relay  | Shelly Pro 2 PM with 2x relay + power meter, relay mode  | SPSW-002PE16EU |
+| shellypro2pm-roller | Shelly Pro 2 PM with 2x relay + power meter, roller mode | SPSW-002PE16EU |
+| shellypro3          | Shelly Pro 3 with 3x relay (dry contacts)                | SPSW-003XE16EU |
+| shellypro4pm        | Shelly Pro 4 PM with 4x relay + power meter              | SPSW-004PE16EU |
 
 
 ## Binding Configuration
@@ -180,12 +180,14 @@ Values 1-4 are selecting the corresponding favorite id in the Shelly App, 0 mean
 
 The binding sets the following Thing status depending on the device status:
 
-| Status       |Description                                                       |
-|--------------|------------------------------------------------------------------|
-| INITIALIZING | This is the default status while initializing the Thing. Once the initialization is triggered the Thing switches to Status UNKNOWN. |
-| UNKNOWN      | Indicates that the status is currently unknown, which must not show a problem. Usually the Thing stays in this status when the device is in sleep mode. Once the device is reachable and was initialized the Thing switches to status ONLINE.|
-| ONLINE       | ONLINE indicates that the device can be accessed and is responding properly. Battery powered devices also stay ONLINE when in sleep mode. The binding has an integrated watchdog timer supervising the device, see below. The Thing switches to status OFFLINE when some type of communication error occurs. | 
-| OFFLINE      | Communication with the device failed. Check the Thing status in the UI and openHAB's log for an indication of the error. Try restarting OH or deleting and re-discovering the Thing. You could also post to the community thread if the problem persists. |
+| Status         |Description                                                       |
+|----------------|------------------------------------------------------------------|
+| INITIALIZING   | This is the default status while initializing the Thing. Once the initialization is triggered the Thing switches to Status UNKNOWN. |
+| UNKNOWN        | Indicates that the status is currently unknown, which must not show a problem. Usually the Thing stays in this status when the device is in sleep mode. Once the device is reachable and was initialized the Thing switches to status ONLINE.|
+| ONLINE         | ONLINE indicates that the device can be accessed and is responding properly. Battery powered devices also stay ONLINE when in sleep mode. The binding has an integrated watchdog timer supervising the device, see below. The Thing switches to status OFFLINE when some type of communication error occurs. | 
+| OFFLINE        | Communication with the device failed. Check the Thing status in the UI and openHAB's log for an indication of the error. Try restarting OH or deleting and re-discovering the Thing. You could also post to the community thread if the problem persists. |
+| CONFIG PENDING | CONFIG PENDING description |
+| ERROR: COMM    | ERROR: COMM descritpion |
 
 `Battery powered devices:` 
 If the device is in sleep mode and can't be reached by the binding, the Thing will change into CONFIG_PENDING.
@@ -359,7 +361,7 @@ Refer to section [Full Example:shelly.rules](#shelly-rules) for examples how to 
 
 Depending on the device type and firmware release channels might be not available or stay with value NaN.  
 
-### Shelly 1(thing-type: shelly1)
+### Shelly 1 (thing-type: shelly1)
 
 |Group     |Channel      |Type     |read-only|Description                                                                      |
 |----------|-------------|---------|---------|---------------------------------------------------------------------------------|
@@ -492,7 +494,7 @@ The Thing id is derived from the service name, so that's the reason why the Thin
 |          |lastUpdate   |DateTime |yes      |Timestamp of the last measurement                                                |
 
 
-### Shelly 2 - relay mode thing-type: shelly2-relay)
+### Shelly 2 - relay mode (thing-type: shelly2-relay)
 
 |Group     |Channel      |Type     |read-only|Description                                                                      |
 |----------|-------------|---------|---------|---------------------------------------------------------------------------------|
@@ -613,7 +615,7 @@ Using the Thing configuration option `brightnessAutoOn` you could decide if the 
 
 Channels lastEvent and eventCount are only available if input type is set to momentary button
 
-### Shelly UNI - Low voltage sensor/actor: shellyuni)
+### Shelly UNI (thing-type: shellyuni)
 
 |Group     |Channel      |Type     |read-only|Description                                                                 |
 |----------|-------------|---------|---------|----------------------------------------------------------------------------|
@@ -660,7 +662,7 @@ Beside channel `hsb` the binding also offers the `white` channel (hsb as only RG
 Or control each color separately with channels `red`, `blue`, `green` (those are advanced channels).
 
 
-#### Shelly Duo (thing-type: shellybulbduo)
+### Shelly Duo (thing-type: shellybulbduo)
 
 This information applies to the Shelly Duo-1 as well as the Duo White for the G10 socket.
 
@@ -691,7 +693,7 @@ This information applies to the Shelly Duo-1 as well as the Duo White for the G1
 |          |totalKWH     |Number   |yes      |Total energy consumption in kWh since the device powered up (resets on restart)|
 |          |lastUpdate   |DateTime |yes      |Timestamp of the last measurement                                      |
  
-## Shelly Duo Color (thing-type: shellyduocolor-color)
+### Shelly Duo Color (thing-type: shellyduocolor-color)
 
 |Group     |Channel      |Type     |read-only|Description                                                            |
 |----------|-------------|---------|---------|-----------------------------------------------------------------------|
@@ -720,7 +722,7 @@ Using the Thing configuration option `brightnessAutoOn` you could decide if the 
 `false`: Brightness will be set, but output stays unchanged so light will not be switched on when it's currently off.
 
 
-## Shelly Duo RGBW Color Bulb (thing-type: shellycolorbulb)
+### Shelly Duo RGBW Color Bulb (thing-type: shellycolorbulb)
 
 |Group     |Channel      |Type     |read-only|Description                                                            |
 |----------|-------------|---------|---------|-----------------------------------------------------------------------|
@@ -969,18 +971,58 @@ You should calibrate the valve using the device Web UI or Shelly App before star
 
 ### Shelly Plus 1 (thing-type: shellyplus1)
 
-|Group     |Channel      |Type     |read-only|Description                                                            |
-|----------|-------------|---------|---------|-----------------------------------------------------------------------|
+|Group     |Channel      |Type     |read-only|Description                                                                      |
+|----------|-------------|---------|---------|---------------------------------------------------------------------------------|
+|relay     |output       |Switch   |r/w      |Relay #1: Controls the relay's output channel (on/off)                           |
+|          |outputName   |String   |yes      |Logical name of this relay output as configured in the Shelly App                |
+|          |input        |Switch   |yes      |ON: Input/Button is powered, see General Notes on Channels                       |
+|          |autoOn       |Number   |r/w      |Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds|
+|          |autoOff      |Number   |r/w      |Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds|
+|          |timerActive  |Switch   |yes      |Relay #1: ON: An auto-on/off timer is active                                     |
+|          |button       |Trigger  |yes      |Event trigger, see section Button Events                                         |
 
 ### Shelly Plus 1PM (thing-type: shellyplus1pm)
 
-|Group     |Channel      |Type     |read-only|Description                                                            |
-|----------|-------------|---------|---------|-----------------------------------------------------------------------|
+|Group     |Channel      |Type     |read-only|Description                                                                      |
+|----------|-------------|---------|---------|---------------------------------------------------------------------------------|
+|relay     |output       |Switch   |r/w      |Relay #1: Controls the relay's output channel (on/off)                           |
+|          |outputName   |String   |yes      |Logical name of this relay output as configured in the Shelly App                |
+|          |input        |Switch   |yes      |ON: Input/Button is powered, see General Notes on Channels                       |
+|          |autoOn       |Number   |r/w      |Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds|
+|          |autoOff      |Number   |r/w      |Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds|
+|          |timerActive  |Switch   |yes      |Relay #1: ON: An auto-on/off timer is active                                     |
+|          |button       |Trigger  |yes      |Event trigger, see section Button Events                                         |
+|meter     |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
+|          |lastPower1   |Number   |yes      |Energy consumption for a round minute, 1 minute  ago                             |
+|          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (resets on restart)|
+|          |lastUpdate   |DateTime |yes      |Timestamp of the last measurement                                                |
 
 ### Shelly Plus 2PM - relay mode (thing-type: shellyplus2pm-relay)
 
-|Group     |Channel      |Type     |read-only|Description                                                            |
-|----------|-------------|---------|---------|-----------------------------------------------------------------------|
+|Group     |Channel      |Type     |read-only|Description                                                                      |
+|----------|-------------|---------|---------|---------------------------------------------------------------------------------|
+|relay1    |output       |Switch   |r/w      |Relay #1: Controls the relay's output channel (on/off)                           |
+|          |outputName   |String   |yes      |Logical name of this relay output as configured in the Shelly App                |
+|          |input        |Switch   |yes      |ON: Input/Button is powered, see General Notes on Channels                       |
+|          |autoOn       |Number   |r/w      |Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds|
+|          |autoOff      |Number   |r/w      |Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds|
+|          |timerActive  |Switch   |yes      |Relay #1: ON: An auto-on/off timer is active                                     |
+|          |button       |Trigger  |yes      |Event trigger, see section Button Events                                         |
+|meter1    |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
+|          |lastPower1   |Number   |yes      |Energy consumption for a round minute, 1 minute  ago                             |
+|          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (resets on restart)|
+|          |lastUpdate   |DateTime |yes      |Timestamp of the last measurement                                                |
+|relay2    |output       |Switch   |r/w      |Relay #2: Controls the relay's output channel (on/off)                           |
+|          |outputName   |String   |yes      |Logical name of this relay output as configured in the Shelly App                |
+|          |input        |Switch   |yes      |ON: Input/Button is powered, see General Notes on Channels                       |
+|          |autoOn       |Number   |r/w      |Relay #2: Sets a  timer to turn the device ON after every OFF command; in seconds|
+|          |autoOff      |Number   |r/w      |Relay #2: Sets a  timer to turn the device OFF after every ON command; in seconds|
+|          |timerActive  |Switch   |yes      |Relay #2: ON: An auto-on/off timer is active                                     |
+|          |button       |Trigger  |yes      |Event trigger, see section Button Events                                         |
+|meter2    |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
+|          |lastPower1   |Number   |yes      |Energy consumption for a round minute, 1 minute  ago                             |
+|          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (resets on restart)|
+|          |lastUpdate   |DateTime |yes      |Timestamp of the last measurement                                                |
 
 ### Shelly Plus 2PM - roller mode (thing-type: shellyplus2pm-roller)
 
@@ -1152,6 +1194,16 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 |          |timerActive  |Switch   |yes      |Relay #3: ON: An auto-on/off timer is active                                     |
 |          |button       |Trigger  |yes      |Relay #3:  Event trigger, see section Button Events                                         |
 
+### Shelly Pro 4PM (thing-type: shelly4pro)
+|Group     |Channel      |Type     |read-only|Description                                                                      |
+|----------|-------------|---------|---------|---------------------------------------------------------------------------------|
+|relay1    |output       |Switch   |r/w      |Relay #1: Controls the relay's output channel (on/off)                           |
+|          |outputName   |String   |yes      |Logical name of this relay output as configured in the Shelly App                |
+|          |input        |Switch   |yes      |ON: Input/Button is powered, see General Notes on Channels                       |
+|          |autoOn       |Number   |r/w      |Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds|
+|          |autoOff      |Number   |r/w      |Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds|
+|          |timerActive  |Switch   |yes      |Relay #1: ON: An auto-on/off timer is active                                     |
+|          |button       |Trigger  |yes      |Event trigger, see section Button Events                                         |
 
 
 ## Full Example

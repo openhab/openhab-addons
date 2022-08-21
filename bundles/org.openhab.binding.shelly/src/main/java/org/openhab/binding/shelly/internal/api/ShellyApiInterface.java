@@ -123,4 +123,6 @@ public interface ShellyApiInterface {
     public void setActionURLs() throws ShellyApiException;
 
     public void sendIRKey(String keyCode) throws ShellyApiException, IllegalArgumentException;
+
+    public void close();
 }

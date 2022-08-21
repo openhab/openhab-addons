@@ -125,8 +125,7 @@ public class ShellyDeviceProfile {
             json = json.replace("ext_temperature", "ext_temperature_array");
         }
         settingsJson = json;
-        ShellySettingsGlobal gs = fromJson(gson, json, ShellySettingsGlobal.class);
-        settings = gs; // only update when no exception
+        settings = fromJson(gson, json, ShellySettingsGlobal.class);
 
         // General settings
         name = getString(settings.name);

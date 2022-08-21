@@ -199,7 +199,7 @@ public class Shelly2RpcSocket {
                     s.disconnect();
                 }
                 logger.debug("{}: Closing WebSocket", thingName);
-                s.close();
+                s.close(StatusCode.NORMAL, "Socket closed");
                 session = null;
             }
         } catch (IOException e) {

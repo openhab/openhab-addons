@@ -121,6 +121,11 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             rpcSocket = new Shelly2RpcSocket(thingName, thingTable, config.deviceIp);
             rpcSocket.addMessageHandler(this);
             initialized = true;
+        } else {
+            if (rpcSocket.isConnected()) {
+                logger.debug("{}: Disconnect Rpc Socket on initialize", thingName);
+                disconnect();
+            }
         }
     }
 
@@ -787,7 +792,10 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         return this;
     }
 
-    public void dispose() {
+    @Override
+    public void close() {
+        logger.debug("{}: Closing Rpc API (socket is {}", thingName,
+                rpcSocket.isConnected() ? "connected" : "disconnected");
         disconnect();
     }
 }
