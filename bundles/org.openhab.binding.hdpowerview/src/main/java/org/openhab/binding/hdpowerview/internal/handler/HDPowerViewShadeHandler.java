@@ -663,6 +663,6 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
 
             scheduler.submit(() -> updateThing(editThing().withChannels(channels).build()));
         }
-        logger.debug("updateDynamicChannels(): channels added:{}, removed:{}", added, removed);
+        logger.debug("updateDynamicChannels(): {} channels added:{}, removed:{}", thing.getUID(), added, removed);
     }
 }
