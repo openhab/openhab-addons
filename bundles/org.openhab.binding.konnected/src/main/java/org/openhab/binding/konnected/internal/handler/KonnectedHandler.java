@@ -53,9 +53,8 @@ import com.google.gson.GsonBuilder;
 public class KonnectedHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(KonnectedHandler.class);
     private KonnectedConfiguration config;
-    private final String konnectedServletPath;
     private final KonnectedHTTPUtils http = new KonnectedHTTPUtils(30);
-    private String callbackIpAddress = null;
+    private String callbackUrl;
     private String baseUrl;
     private final Gson gson = new GsonBuilder().create();
     private int retryCount;
@@ -71,11 +70,10 @@ public class KonnectedHandler extends BaseThingHandler {
      * @param hostAddress the webaddress of the openHAB server instance obtained by the runtime
      * @param port the port on which the openHAB instance is running that was obtained by the runtime.
      */
-    public KonnectedHandler(Thing thing, String path, String hostAddress, String port) {
+    public KonnectedHandler(Thing thing, String callbackUrl) {
         super(thing);
-        this.konnectedServletPath = path;
-        callbackIpAddress = hostAddress + ":" + port;
-        logger.debug("The callback ip address is: {}", callbackIpAddress);
+        this.callbackUrl = callbackUrl;
+        logger.debug("The auto discovered callback URL is: {}", this.callbackUrl);
         retryCount = 2;
         thingID = getThing().getThingTypeUID().getId();
         authToken = getThing().getUID().getAsString();
@@ -178,9 +176,16 @@ public class KonnectedHandler extends BaseThingHandler {
         String testRetryCount = testConfig.get(RETRY_COUNT).toString();
         String testRequestTimeout = testConfig.get(REQUEST_TIMEOUT).toString();
         baseUrl = testConfig.get(BASE_URL).toString();
+        String configuredCallbackUrl = (String) getThing().getConfiguration().get(CALLBACK_URL);
+        if (configuredCallbackUrl != null) {
+            callbackUrl = configuredCallbackUrl;
+        } else {
+            getThing().getConfiguration().put(CALLBACK_URL, callbackUrl);
+        }
         logger.debug("The RequestTimeout Parameter is Configured as: {}", testRequestTimeout);
         logger.debug("The Retry Count Parameter is Configured as: {}", testRetryCount);
         logger.debug("Base URL is Configured as: {}", baseUrl);
+        logger.debug("The callback URL is: {}", callbackUrl);
         try {
             this.retryCount = Integer.parseInt(testRetryCount);
         } catch (NumberFormatException e) {
@@ -197,9 +202,8 @@ public class KonnectedHandler extends BaseThingHandler {
                     testRequestTimeout);
         }
 
-        if ((callbackIpAddress == null)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Unable to obtain hostaddress from OSGI service, please configure hostaddress");
+        if ((callbackUrl == null)) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Unable to obtain callback URL");
         }
 
         else {
@@ -321,13 +325,8 @@ public class KonnectedHandler extends BaseThingHandler {
      * @return a json settings payload which can be sent to the Konnected Module based on the Thing
      */
     private String constructSettingsPayload() {
-        String apiUrl = (String) getThing().getConfiguration().get(CALLBACK_URL);
-        if (apiUrl == null) {
-            apiUrl = "http://" + callbackIpAddress + this.konnectedServletPath;
-        }
-
         logger.debug("The Auth_Token is: {}", authToken);
-        KonnectedModulePayload payload = new KonnectedModulePayload(authToken, apiUrl);
+        KonnectedModulePayload payload = new KonnectedModulePayload(authToken, callbackUrl);
         payload.setBlink(config.blink);
         payload.setDiscovery(config.discovery);
         this.getThing().getChannels().forEach(channel -> {
