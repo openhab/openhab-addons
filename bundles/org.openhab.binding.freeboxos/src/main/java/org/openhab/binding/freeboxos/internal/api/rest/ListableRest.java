@@ -109,7 +109,7 @@ public class ListableRest<T extends FbxDevice, Z extends Response<T>, Y extends 
             if (result != null) {
                 return result;
             }
-            throw new FreeboxException("Devicelist is empty");
+            return List.of();
         } else {
             return getList(listRespClass, listSubPath);
         }

@@ -744,4 +744,11 @@
 >>>>>>> 46dadb1 SAT warnings handling
 	</channel-type>
 
+    <channel-type id="basic-shutter">
+        <item-type>Rollershutter</item-type>
+        <label>Shutter</label>
+        <description>Shutter command</description>
+        <category>Blinds</category>
+    </channel-type>
+
 </thing:thing-descriptions>

@@ -5,6 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
 		https://openhab.org/schemas/config-description-1.0.0.xsd">
 
+<<<<<<< Upstream, based on origin/main
 	<config-description uri="thing-type:freeboxos:home_node">
 		<parameter name="id" type="integer" required="true">
 			<label>ID</label>
@@ -16,6 +17,29 @@
 			<description>The refresh interval in seconds which is used to poll the Node</description>
 			<default>30</default>
 		</parameter>
+=======
+	<config-description uri="thing-type:freeboxos:basic_shutter">
+		<parameter name="nodeId" type="integer" required="true">
+			<label>Node ID</label>
+			<description>Id of the Home Node</description>
+		</parameter>
+        <parameter name="upSlotId" type="integer" required="true">
+            <label>UP Slot ID</label>
+            <description>Id of the UP Slot</description>
+        </parameter>
+        <parameter name="stopSlotId" type="integer" required="true">
+            <label>STOP Slot ID</label>
+            <description>Id of the UP Slot</description>
+        </parameter>
+        <parameter name="downSlotId" type="integer" required="true">
+            <label>DOWN Slot ID</label>
+            <description>Id of the UP Slot</description>
+        </parameter>
+        <parameter name="stateSignalId" type="integer" required="true">
+            <label>STATE Signal ID</label>
+            <description>Id of the STATE Signal</description>
+        </parameter>
+>>>>>>> 2d844db Discover Freebox Delta Home equipments(basic_shutter)
 	</config-description>
 
 </config-description:config-descriptions>

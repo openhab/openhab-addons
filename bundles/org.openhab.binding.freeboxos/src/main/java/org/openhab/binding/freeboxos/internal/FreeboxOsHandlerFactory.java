@@ -184,6 +184,7 @@ import org.openhab.binding.freeboxos.internal.api.ApiHandler;
 import org.openhab.binding.freeboxos.internal.api.rest.FreeboxOsSession;
 import org.openhab.binding.freeboxos.internal.handler.ActivePlayerHandler;
 import org.openhab.binding.freeboxos.internal.handler.FreeboxOsHandler;
+import org.openhab.binding.freeboxos.internal.handler.HomeNodeBasicShutterHandler;
 import org.openhab.binding.freeboxos.internal.handler.HostHandler;
 import org.openhab.binding.freeboxos.internal.handler.LandlineHandler;
 import org.openhab.binding.freeboxos.internal.handler.PlayerHandler;
@@ -258,6 +259,8 @@ public class FreeboxOsHandlerFactory extends BaseThingHandlerFactory {
             return new VmHandler(thing);
         } else if (THING_TYPE_REPEATER.equals(thingTypeUID)) {
             return new RepeaterHandler(thing);
+        } else if (THING_TYPE_HOME_BASIC_SHUTTER.equals(thingTypeUID)) {
+            return new HomeNodeBasicShutterHandler(thing);
         }
 >>>>>>> 46dadb1 SAT warnings handling
         return null;
