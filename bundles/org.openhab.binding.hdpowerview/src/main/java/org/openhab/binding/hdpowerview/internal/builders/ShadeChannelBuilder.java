@@ -20,7 +20,6 @@ import org.openhab.binding.hdpowerview.internal.HDPowerViewTranslationProvider;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.thing.type.ChannelTypeUID;
@@ -39,15 +38,10 @@ public class ShadeChannelBuilder {
 
     // attributes that are set via withSomething() methods
     private @Nullable String channelId;
-    private @Nullable ChannelTypeUID channelTypeUID;
-    private @Nullable HDPowerViewTranslationProvider translationProvider;
     private @Nullable Boolean required;
     private @Nullable String acceptedItemType;
-
-    // attributes that are set when initialize() is called
-    private @Nullable Predicate<Channel> predicate;
-    private @Nullable Boolean existing;
-    private boolean ready = false;
+    private @Nullable ChannelTypeUID channelTypeUID;
+    private @Nullable HDPowerViewTranslationProvider translationProvider;
 
     /**
      * Constructor
@@ -58,24 +52,42 @@ public class ShadeChannelBuilder {
         this.thing = thing;
     }
 
-    /**
-     * Helper method that prepares the class to be used.
-     *
-     * @throws IllegalStateException if any attributes have not been properly set.
-     */
-    private void prepare() throws IllegalStateException {
-        if (ready) {
-            return;
+    private boolean checkAllAttributesSet() throws IllegalStateException {
+        if (channelId != null && required != null && acceptedItemType != null && channelTypeUID != null
+                && translationProvider != null) {
+            return true;
         }
+        throw new IllegalStateException(NOT_INITIALIZED);
+    }
+
+    private String getChannelId() throws IllegalStateException {
+        String channelId = this.channelId;
+        if (channelId != null) {
+            return channelId;
+        }
+        throw new IllegalStateException(NOT_INITIALIZED);
+    }
+
+    private HDPowerViewTranslationProvider getTranslationProvider() throws IllegalStateException {
+        HDPowerViewTranslationProvider translationProvider = this.translationProvider;
+        if (translationProvider != null) {
+            return translationProvider;
+        }
+        throw new IllegalStateException(NOT_INITIALIZED);
+    }
+
+    private String getAcceptedItemType() throws IllegalStateException {
+        String acceptedItemType = this.acceptedItemType;
+        if (acceptedItemType != null) {
+            return acceptedItemType;
+        }
+        throw new IllegalStateException(NOT_INITIALIZED);
+    }
+
+    private ChannelTypeUID getChannelTypeUID() throws IllegalStateException {
         ChannelTypeUID channelTypeUID = this.channelTypeUID;
         if (channelTypeUID != null) {
-            this.predicate = c -> channelTypeUID.equals(c.getChannelTypeUID());
-            Predicate<Channel> predicate = this.predicate;
-            if (channelId != null && translationProvider != null && required != null && predicate != null) {
-                existing = thing.getChannels().stream().anyMatch(predicate);
-                ready = true;
-                return;
-            }
+            return channelTypeUID;
         }
         throw new IllegalStateException(NOT_INITIALIZED);
     }
@@ -85,11 +97,7 @@ public class ShadeChannelBuilder {
      * @throws IllegalStateException if any attributes have not been properly set.
      */
     public boolean isExisting() throws IllegalStateException {
-        prepare();
-        if (ready) {
-            return Boolean.TRUE.equals(existing);
-        }
-        throw new IllegalStateException(NOT_INITIALIZED);
+        return thing.getChannels().stream().anyMatch(getPredicate());
     }
 
     /**
@@ -97,9 +105,9 @@ public class ShadeChannelBuilder {
      * @throws IllegalStateException if any attributes have not been properly set.
      */
     public boolean isRequired() throws IllegalStateException {
-        prepare();
-        if (ready) {
-            return Boolean.TRUE.equals(required);
+        Boolean required = this.required;
+        if (required != null) {
+            return required.booleanValue();
         }
         throw new IllegalStateException(NOT_INITIALIZED);
     }
@@ -158,12 +166,8 @@ public class ShadeChannelBuilder {
      * @throws IllegalStateException if any attributes have not been properly set.
      */
     public Predicate<Channel> getPredicate() throws IllegalStateException {
-        prepare();
-        Predicate<Channel> predicate = this.predicate;
-        if (predicate != null) {
-            return predicate;
-        }
-        throw new IllegalStateException(NOT_INITIALIZED);
+        ChannelTypeUID channelUID = getChannelTypeUID();
+        return c -> channelUID.equals(c.getChannelTypeUID());
     }
 
     /**
@@ -171,34 +175,18 @@ public class ShadeChannelBuilder {
      * @throws IllegalStateException if any attributes have not been properly set.
      */
     public Channel build() throws IllegalStateException {
-        prepare();
-        if (ready) {
-            String channelId = this.channelId;
-            String acceptedItemType = this.acceptedItemType;
-            ThingUID thingUID = thing.getUID();
-            ChannelTypeUID channelTypeUID = this.channelTypeUID;
-            HDPowerViewTranslationProvider translationProvider = this.translationProvider;
+        checkAllAttributesSet();
 
-            if (channelId != null && channelTypeUID != null && translationProvider != null
-                    && acceptedItemType != null) {
-                // make translations
-                String propertyKeyPrefix = "channel-type." + channelTypeUID.getAsString().replace(":", ".") + ".";
-                String label = translationProvider.getText(propertyKeyPrefix + "label");
-                String description = translationProvider.getText(propertyKeyPrefix + "description");
+        String propertyKeyPrefix = "channel-type." + getChannelTypeUID().getAsString().replace(":", ".") + ".";
 
-                ChannelUID channelUID = new ChannelUID(thingUID, channelId);
-
-                // @formatter:off
-                return ChannelBuilder.create(channelUID)
-                        .withType(channelTypeUID)
-                        .withLabel(label)
-                        .withDescription(description)
-                        .withAcceptedItemType(acceptedItemType)
-                        .withKind(ChannelKind.STATE)
-                        .build();
-                // @formatter:on
-            }
-        }
-        throw new IllegalStateException(NOT_INITIALIZED);
+        // @formatter:off
+        return ChannelBuilder.create(new ChannelUID(thing.getUID(), getChannelId()))
+                .withType(getChannelTypeUID())
+                .withLabel(getTranslationProvider().getText(propertyKeyPrefix + "label"))
+                .withDescription(getTranslationProvider().getText(propertyKeyPrefix + "description"))
+                .withAcceptedItemType(getAcceptedItemType())
+                .withKind(ChannelKind.STATE)
+                .build();
+        // @formatter:on
     }
 }
