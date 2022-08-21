@@ -33,10 +33,10 @@ import org.slf4j.LoggerFactory;
 public class HubCommunicationThread extends Thread {
 
     private enum HubCommunicationThreadState {
-        STARTING(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING, "@text/message.bridge.status.connecting"),
+        STARTING(ThingStatus.ONLINE, ThingStatusDetail.UNKNOWN.NONE, "@text/message.bridge.status.connecting"),
         CONNECTED(ThingStatus.ONLINE, ThingStatusDetail.NONE, ""),
         DISCONNECTED(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/message.bridge.status.failed"),
-        STOPPED(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "");
+        STOPPED(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "");
 
         private final ThingStatus status;
         private final ThingStatusDetail statusDetail;
