@@ -17,7 +17,6 @@ import static org.openhab.binding.tado.internal.api.TadoApiTypeUtils.termination
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -294,7 +293,10 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
 
                 this.capabilities = capabilities;
 
-                updateDynamicChannels(capabilities, getHomeHandler().getBatteryChecker().getZone(getZoneId()));
+                CapabilitiesSupport capabilitiesSupport = new CapabilitiesSupport(capabilities,
+                        getHomeHandler().getBatteryChecker().getZone(getZoneId()));
+
+                updateDynamicChannels(capabilitiesSupport);
             } catch (IOException | ApiException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Could not connect to server due to " + e.getMessage());
@@ -491,14 +493,10 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
     /**
      * Initialize the dynamic channels depending on whether this device's capabilities support them.
      *
-     * @param capabilities the new capabilities object.
-     * @param zone
-     *
+     * @param capabilitiesSupport a CapabilitiesSupport instance which summarizes the device's capabilities.
      * @throws IllegalStateException if any of the channel builders failed.
      */
-    private void updateDynamicChannels(GenericZoneCapabilities capabilities, Optional<Zone> zone)
-            throws IllegalStateException {
-        CapabilitiesSupport capabilitiesSupport = new CapabilitiesSupport(capabilities, zone);
+    private void updateDynamicChannels(CapabilitiesSupport capabilitiesSupport) throws IllegalStateException {
         List<ZoneChannelBuilder> channelBuilders = new ArrayList<>();
 
         // @formatter:off
