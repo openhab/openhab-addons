@@ -13,6 +13,7 @@
 package org.openhab.binding.freeboxos.internal.api.rest;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,6 +25,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.freeboxos.internal.api.ApiHandler;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
+import org.openhab.binding.freeboxos.internal.api.MissingPermissionException;
 import org.openhab.binding.freeboxos.internal.api.Response;
 import org.openhab.binding.freeboxos.internal.api.Response.ErrorCode;
 import org.openhab.binding.freeboxos.internal.api.lan.LanManager;
@@ -148,6 +150,12 @@ public class FreeboxOsSession {
                 Constructor<T> managerConstructor = clazz.getConstructor(FreeboxOsSession.class);
                 manager = managerConstructor.newInstance(this);
                 restManagers.put(clazz, manager);
+            } catch (InvocationTargetException e) {
+                Throwable cause = e.getCause();
+                if (cause instanceof MissingPermissionException) {
+                    throw (MissingPermissionException) cause;
+                }
+                throw new FreeboxException(e, "Unable to call RestManager constructor for %s", clazz.getName());
             } catch (SecurityException | ReflectiveOperationException e) {
                 throw new FreeboxException(e, "Unable to call RestManager constructor for %s", clazz.getName());
             }

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
+		https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:freeboxos:basic_shutter">
+		<parameter name="nodeId" type="integer" required="true">
+			<label>Node ID</label>
+			<description>Id of the Home Node</description>
+		</parameter>
+        <parameter name="upSlotId" type="integer" required="true">
+            <label>UP Slot ID</label>
+            <description>Id of the UP Slot</description>
+        </parameter>
+        <parameter name="stopSlotId" type="integer" required="true">
+            <label>STOP Slot ID</label>
+            <description>Id of the UP Slot</description>
+        </parameter>
+        <parameter name="downSlotId" type="integer" required="true">
+            <label>DOWN Slot ID</label>
+            <description>Id of the UP Slot</description>
+        </parameter>
+        <parameter name="stateSignalId" type="integer" required="true">
+            <label>STATE Signal ID</label>
+            <description>Id of the STATE Signal</description>
+        </parameter>
+	</config-description>
+
+</config-description:config-descriptions>

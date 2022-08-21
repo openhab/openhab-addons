@@ -27,6 +27,7 @@ import org.openhab.binding.freeboxos.internal.config.ApiConsumerConfiguration;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
@@ -202,6 +203,10 @@ abstract class ApiConsumerHandler extends BaseThingHandler {
         updateIfActive(group, channelId, OnOffType.from(value));
     }
 
+    protected void updateChannelOpenClosed(String group, String channelId, OpenClosedType value) {
+        updateIfActive(group, channelId, value);
+    }
+
     protected void updateChannelString(String group, String channelId, @Nullable String value) {
         updateIfActive(group, channelId, value != null ? new StringType(value) : UnDefType.NULL);
     }
@@ -215,6 +220,10 @@ abstract class ApiConsumerHandler extends BaseThingHandler {
     }
 
     protected void updateChannelDecimal(String group, String channelId, @Nullable Integer value) {
+        updateIfActive(group, channelId, value != null ? new DecimalType(value) : UnDefType.NULL);
+    }
+
+    protected void updateChannelDecimal(String group, String channelId, @Nullable Double value) {
         updateIfActive(group, channelId, value != null ? new DecimalType(value) : UnDefType.NULL);
     }
 

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="freeboxos"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="basic-shutter">
+		<label>Basic shutter status</label>
+		<channels>
+			<channel id="basic-shutter" typeId="basic-shutter"/>
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>

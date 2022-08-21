@@ -50,6 +50,7 @@ public class FreeboxOsBindingConstants {
     public static final ThingTypeUID THING_TYPE_ACTIVE_PLAYER = new ThingTypeUID(BINDING_ID, "active_player");
     public static final ThingTypeUID THING_TYPE_VM = new ThingTypeUID(BINDING_ID, "vm");
     public static final ThingTypeUID THING_TYPE_REPEATER = new ThingTypeUID(BINDING_ID, "repeater");
+    public static final ThingTypeUID THING_TYPE_HOME_BASIC_SHUTTER = new ThingTypeUID(BINDING_ID, "basic_shutter");
 
     // Configuration elements
     public static final String TIMEOUT = "timeout";
@@ -58,7 +59,7 @@ public class FreeboxOsBindingConstants {
     public static final Set<ThingTypeUID> BRIDGE_TYPE_UID = Set.of(BRIDGE_TYPE_API);
     public static final Set<ThingTypeUID> THINGS_TYPES_UIDS = Set.of(THING_TYPE_LANDLINE, THING_TYPE_HOST,
             THING_TYPE_VM, THING_TYPE_PLAYER, THING_TYPE_ACTIVE_PLAYER, THING_TYPE_DELTA, THING_TYPE_REVOLUTION,
-            THING_TYPE_REPEATER, THING_TYPE_WIFI_HOST);
+            THING_TYPE_REPEATER, THING_TYPE_WIFI_HOST, THING_TYPE_HOME_BASIC_SHUTTER);
 
     protected static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
             .concat(BRIDGE_TYPE_UID.stream(), THINGS_TYPES_UIDS.stream()).collect(Collectors.toSet());
@@ -79,6 +80,7 @@ public class FreeboxOsBindingConstants {
     public static final String GROUP_WIFI = "wifi";
     public static final String REPEATER_MISC = "repeater-misc";
     public static final String PHONE_MISC = "phone-misc";
+    public static final String BASIC_SHUTTER = "basic-shutter";
 
     // List of all Channel ids
     public static final String RSSI = "rssi";
@@ -130,6 +132,9 @@ public class FreeboxOsBindingConstants {
     public static final String LED = "led";
     public static final String HOST_COUNT = "host-count";
     public static final String RPT_TIMESTAMP = "start-timestamp";
+
+    // Home channels
+    public static final String BASIC_SHUTTER_CMD = "basic-shutter";
 
     // Defaults api strings
     public static final String DEFAULT_FREEBOX_NAME = "mafreebox.freebox.fr";
