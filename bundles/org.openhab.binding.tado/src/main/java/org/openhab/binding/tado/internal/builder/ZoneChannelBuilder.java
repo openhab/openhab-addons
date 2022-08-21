@@ -177,7 +177,8 @@ public class ZoneChannelBuilder {
      * @throws IllegalStateException if any attributes have not been properly set.
      */
     public Predicate<Channel> getPredicate() throws IllegalStateException {
-        return c -> getChannelTypeUID().equals(c.getChannelTypeUID());
+        ChannelTypeUID channelUID = getChannelTypeUID();
+        return c -> channelUID.equals(c.getChannelTypeUID());
     }
 
     /**
