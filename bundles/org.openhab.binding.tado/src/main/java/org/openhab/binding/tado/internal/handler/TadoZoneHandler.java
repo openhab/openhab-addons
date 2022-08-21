@@ -294,10 +294,7 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
 
                 this.capabilities = capabilities;
 
-                Optional<Zone> zone = getApi().listZones(getHomeId()).stream().filter(z -> z != null)
-                        .filter(z -> z.getId().longValue() == getZoneId()).findFirst();
-
-                updateDynamicChannels(capabilities, zone);
+                updateDynamicChannels(capabilities, getHomeHandler().getBatteryChecker().getZone(getZoneId()));
             } catch (IOException | ApiException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Could not connect to server due to " + e.getMessage());
@@ -366,7 +363,7 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
         }
 
         updateState(TadoBindingConstants.CHANNEL_ZONE_BATTERY_LOW_ALARM,
-                getHomeHandler().getBatteryLowAlarm(getZoneId()));
+                getHomeHandler().getBatteryChecker().getBatteryLowAlarm(getZoneId()));
     }
 
     /**

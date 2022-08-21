@@ -26,9 +26,10 @@ import org.openhab.binding.tado.internal.api.model.TadoSystemType;
 import org.openhab.binding.tado.internal.api.model.Zone;
 
 /**
- * The {@link CapabilitiesSupport} class checks the given {@link GenericZoneCapabilities} parameter, and iterates over
- * all its mode specific sub-capabilities to check which type of channels are needed in a thing that is to be built
- * around the respective capabilities.
+ * The {@link CapabilitiesSupport} class checks which type of channels are needed in a thing that is to be built around
+ * the given capabilities argument, and the (optional) zone argument. It iterates over each of the capabilities
+ * argument's mode specific sub-capabilities to determine the maximum super set of all sub-capabilities. And it checks
+ * the capabilities of the optional zone argument too.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
@@ -43,13 +44,13 @@ public class CapabilitiesSupport {
     private boolean horizontalSwing;
     private boolean batteryLowAlarm;
 
-    public CapabilitiesSupport(GenericZoneCapabilities capabilities, Optional<Zone> zone) {
+    public CapabilitiesSupport(GenericZoneCapabilities capabilities, Optional<Zone> zoneOptional) {
         type = capabilities.getType();
 
-        if (zone.isPresent()) {
-            Zone zone2 = zone.get();
-            if (zone2.getDevices() != null) {
-                batteryLowAlarm = zone2.getDevices().stream().map(ControlDevice::getBatteryState)
+        if (zoneOptional.isPresent()) {
+            Zone zone = zoneOptional.get();
+            if (zone.getDevices() != null) {
+                batteryLowAlarm = zone.getDevices().stream().map(ControlDevice::getBatteryState)
                         .filter(Objects::nonNull).count() > 0;
             }
         }
