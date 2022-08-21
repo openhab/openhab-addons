@@ -24,6 +24,8 @@ import org.openhab.binding.easee.internal.command.circuit.SetCircuitSettings;
 import org.openhab.binding.easee.internal.command.circuit.SetDynamicCircuitCurrents;
 import org.openhab.binding.easee.internal.command.circuit.SetMaxCircuitCurrents;
 import org.openhab.binding.easee.internal.command.circuit.SetOfflineMaxCircuitCurrents;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -41,8 +43,8 @@ import org.slf4j.LoggerFactory;
 public class EaseeMasterChargerHandler extends EaseeChargerHandler implements EaseeThingHandler {
     private final Logger logger = LoggerFactory.getLogger(EaseeMasterChargerHandler.class);
 
-    public EaseeMasterChargerHandler(Thing thing) {
-        super(thing);
+    public EaseeMasterChargerHandler(Thing thing, LocaleProvider localeProvider, TranslationProvider i18nProvider) {
+        super(thing, localeProvider, i18nProvider);
     }
 
     /**

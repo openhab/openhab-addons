@@ -131,6 +131,13 @@ public class EaseeBindingConstants {
     public static final String DYNAMIC_CIRCUIT_CURRENT_URL = "https://api.easee.cloud/api/sites/{siteId}/circuits/{circuitId}/dynamicCurrent";
     public static final String CIRCUIT_SETTINGS_URL = "https://api.easee.cloud/api/sites/{siteId}/circuits/{circuitId}/settings";
 
+    // Status Keys
+    public static final String STATUS_TOKEN_VALIDATED = "binding.easee.status.token.validated";
+    public static final String STATUS_WAITING_FOR_BRIDGE = "binding.easee.status.waiting.for.bridge";
+    public static final String STATUS_WAITING_FOR_LOGIN = "binding.easee.status.waiting.for.login";
+    public static final String STATUS_NO_VALID_DATA = "binding.easee.status.no.valid.data";
+    public static final String STATUS_NO_CONNECTION = "binding.easee.status.no.connection";
+
     // other
     public static final long POLLING_INITIAL_DELAY = 1;
 

@@ -29,11 +29,14 @@ import org.openhab.binding.easee.internal.connector.CommunicationStatus;
 import org.openhab.binding.easee.internal.connector.WebInterface;
 import org.openhab.binding.easee.internal.discovery.EaseeSiteDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryService;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +49,7 @@ import com.google.gson.JsonObject;
  * @author Alexander Friese - initial contribution
  */
 @NonNullByDefault
-public class EaseeSiteHandler extends BaseBridgeHandler implements EaseeBridgeHandler {
+public class EaseeSiteHandler extends BaseBridgeHandler implements EaseeBridgeHandler, TranslationService {
     private final Logger logger = LoggerFactory.getLogger(EaseeSiteHandler.class);
 
     private @Nullable DiscoveryService discoveryService;
@@ -56,9 +59,15 @@ public class EaseeSiteHandler extends BaseBridgeHandler implements EaseeBridgeHa
      */
     private WebInterface webInterface;
 
-    public EaseeSiteHandler(Bridge bridge, HttpClient httpClient) {
+    private final LocaleProvider localeProvider;
+    private final TranslationProvider i18nProvider;
+
+    public EaseeSiteHandler(Bridge bridge, HttpClient httpClient, LocaleProvider localeProvider,
+            TranslationProvider i18nProvider) {
         super(bridge);
-        this.webInterface = new WebInterface(scheduler, this, httpClient, super::updateStatus);
+        this.localeProvider = localeProvider;
+        this.i18nProvider = i18nProvider;
+        this.webInterface = new WebInterface(scheduler, this, httpClient, this::getLocalizedText, super::updateStatus);
     }
 
     @Override
@@ -68,7 +77,7 @@ public class EaseeSiteHandler extends BaseBridgeHandler implements EaseeBridgeHa
         logger.debug("Easee Site initialized with configuration: {}", config);
 
         webInterface.start();
-        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "waiting for web api login");
+        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, getLocalizedText(STATUS_WAITING_FOR_LOGIN));
 
         enqueueCommand(new GetSite(this, this::updateProperties));
     }
@@ -120,5 +129,12 @@ public class EaseeSiteHandler extends BaseBridgeHandler implements EaseeBridgeHa
     @Override
     public void enqueueCommand(EaseeCommand command) {
         webInterface.enqueueCommand(command);
+    }
+
+    @Override
+    public String getLocalizedText(String key) {
+        String tranlation = i18nProvider.getText(FrameworkUtil.getBundle(getClass()), key, key,
+                localeProvider.getLocale());
+        return tranlation == null ? key : tranlation;
     }
 }

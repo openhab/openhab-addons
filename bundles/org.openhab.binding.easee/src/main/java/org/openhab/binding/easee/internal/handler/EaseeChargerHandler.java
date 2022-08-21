@@ -34,6 +34,8 @@ import org.openhab.binding.easee.internal.command.charger.SendCommand;
 import org.openhab.binding.easee.internal.command.charger.SendCommandStartStop;
 import org.openhab.binding.easee.internal.config.EaseeConfiguration;
 import org.openhab.binding.easee.internal.connector.CommunicationStatus;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.Thing;
@@ -43,6 +45,7 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
+import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,7 +58,8 @@ import com.google.gson.JsonObject;
  * @author Alexander Friese - initial contribution
  */
 @NonNullByDefault
-public class EaseeChargerHandler extends BaseThingHandler implements EaseeThingHandler, AtomicReferenceTrait {
+public class EaseeChargerHandler extends BaseThingHandler
+        implements EaseeThingHandler, AtomicReferenceTrait, TranslationService {
     private final Logger logger = LoggerFactory.getLogger(EaseeChargerHandler.class);
 
     /**
@@ -63,8 +67,13 @@ public class EaseeChargerHandler extends BaseThingHandler implements EaseeThingH
      */
     private final AtomicReference<@Nullable Future<?>> dataPollingJobReference;
 
-    public EaseeChargerHandler(Thing thing) {
+    private final LocaleProvider localeProvider;
+    private final TranslationProvider i18nProvider;
+
+    public EaseeChargerHandler(Thing thing, LocaleProvider localeProvider, TranslationProvider i18nProvider) {
         super(thing);
+        this.localeProvider = localeProvider;
+        this.i18nProvider = i18nProvider;
         this.dataPollingJobReference = new AtomicReference<>(null);
     }
 
@@ -74,8 +83,8 @@ public class EaseeChargerHandler extends BaseThingHandler implements EaseeThingH
         String chargerId = getConfig().get(EaseeBindingConstants.THING_CONFIG_ID).toString();
         logger.debug("Easee Charger initialized with id: {}", chargerId);
 
+        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, getLocalizedText(STATUS_WAITING_FOR_BRIDGE));
         startPolling();
-        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "waiting for bridge to go online");
 
         enqueueCommand(new Charger(this, chargerId, this::updateProperties));
     }
@@ -144,12 +153,12 @@ public class EaseeChargerHandler extends BaseThingHandler implements EaseeThingH
 
         if (isOnline == null) {
             super.updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "no valid data received this is most likely a configuration error.");
+                    getLocalizedText(STATUS_NO_VALID_DATA));
         } else if (isOnline) {
             super.updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
         } else {
-            super.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
-                    "Charger might have no internet connection or fuse tripped");
+            super.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    getLocalizedText(STATUS_NO_CONNECTION));
         }
     }
 
@@ -227,5 +236,12 @@ public class EaseeChargerHandler extends BaseThingHandler implements EaseeThingH
                 throw new UnsupportedOperationException(
                         "write command not found for channel: " + channel.getUID().getIdWithoutGroup());
         }
+    }
+
+    @Override
+    public String getLocalizedText(String key) {
+        String tranlation = i18nProvider.getText(FrameworkUtil.getBundle(getClass()), key, key,
+                localeProvider.getLocale());
+        return tranlation == null ? key : tranlation;
     }
 }
