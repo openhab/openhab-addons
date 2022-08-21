@@ -22,6 +22,7 @@ import javax.ws.rs.core.UriBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
+import org.openhab.binding.freeboxos.internal.api.MissingPermissionException;
 import org.openhab.binding.freeboxos.internal.api.Response;
 import org.openhab.binding.freeboxos.internal.api.login.Session.Permission;
 
@@ -52,7 +53,7 @@ public class RestManager {
     public RestManager(FreeboxOsSession session, Permission required, String... pathElements) throws FreeboxException {
         this(session, pathElements);
         if (!session.hasPermission(required)) {
-            throw new FreeboxException("Permission missing : %s", required.toString());
+            throw new MissingPermissionException(required, "Permission missing : %s", required.toString());
         }
     }
 
