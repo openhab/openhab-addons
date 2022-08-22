@@ -14,23 +14,33 @@ The following devices have been reported functional :
 
 Two things are supported by this binding :
 
-- A *smsmodembridge*, representing the dongle
+- A *smsmodembridge*, representing the dongle connected on the local computer
+- A *smsmodemremotebridge*, representing the dongle exposed over the network (with ser2net or other similar software)
 - A *smsconversation*, representing a conversation between one distant msisdn and the msisdn on the sim card in the dongle.
 
 ## Discovery
 
-There is no discovery process for *smsmodembridge* thing.
+There is no discovery process for *smsmodembridge* or *smsmodemremotebridge* thing.
 A *smsconversation* thing will be discovered and added to the inbox everytime the modem should receive a SMS by a new sender.
 
 ## Thing Configuration
 
-The *smsmodembridge* thing requires at least two parameters to work properly (serialPortOrIP, baudOrNetworkPort).
-Depending on the nature of the connection (direct serial modem, or serial over network), this two fields will be used differently :
+The *smsmodembridge* or *smsmodemremotebridge* things requires at least two parameters to work properly.
 
-| Parameter Name | type | direct serial modem   | serial over network                  |
-|----------------|-------|----------------------|----------------------|
-|serialPortOrIP| text | The serial port to access (eg. /dev/tty/USBx) | IP address of the computer hosting the ser2net service|
-|baudOrNetworkPort| integer | Baud rate        | The network port of the ser2net service |
+For local *smsmodembridge*:
+
+| Parameter Name | type | direct serial modem   |
+|----------------|-------|----------------------|
+|serialPort| text | The serial port to access (eg. /dev/tty/USBx) |
+|baud| integer | Baud rate        |
+
+For remote *smsmodemremotebridge*:
+
+| Parameter Name | type | serial over network                  |
+|----------------|-------|----------------------|
+|ip| text | IP address of the computer hosting the ser2net service|
+|networkPort| integer | The network port of the ser2net service |
+
 
 The other parameters are optional :
 
@@ -61,7 +71,7 @@ The *smsconversation* supports the following channels :
 
 ## Trigger channels
 
-The *smsmodembridge* has the following trigger channel :
+The *smsmodembridge* and *smsmodemremotebridge* has the following trigger channel :
 | Channel ID          | event                      |  
 |---------------------|----------------------------|
 |receivetrigger| The msisdn and message received (concatened with the '\|' character as a separator)|
@@ -81,7 +91,7 @@ val smsAction = getActions("smsmodem","smsmodem:smsmodembridge:<uid>")
 var smsAction = actions.get("smsmodem","smsmodem:smsmodembridge:<uid>");
 ```
 
-Where uid is the Bridge UID of the *smsconversation* thing.
+Where uid is the Bridge UID of the *smsmodembridge* thing.
 
 Once this action instance is retrieved, you can invoke the 'send' method on it:
 
@@ -102,7 +112,7 @@ smsAction.sendSMS("1234567890", "Hello world!", "EncUcs2")
 things/smsmodem.things:
 
 ```
-Bridge smsmodem:smsmodembridge:adonglename "USB 3G Dongle " [ serialPortOrIP="/dev/ttyUSB0", baudOrNetworkPort="19200", enableAutoDiscovery="true" ] {
+Bridge smsmodem:smsmodembridge:adonglename "USB 3G Dongle " [ serialPort="/dev/ttyUSB0", baud="19200" ] {
     Thing smsconversation aconversationname [ recipient="XXXXXXXXXXX", deliveryReport="true" ]
 }
 ```
@@ -132,5 +142,5 @@ def smscommand(event):
     sender_and_message = event.event.split("|")
     sender = sender_and_message[0]
     content = sender_and_message[1]
-    actions.get("smsmodem", "smsmodem:smsmodembridge:dongleuid").send("336123456789", sender + "send the following message:" + content)
+    actions.get("smsmodem", "smsmodem:smsmodembridge:dongleuid").send("336123456789", sender + " just send the following message: " + content)
 ```

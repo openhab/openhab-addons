@@ -30,6 +30,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smsmodem.internal.SMSConversationDiscoveryService;
 import org.openhab.binding.smsmodem.internal.SMSModemBindingConstants;
 import org.openhab.binding.smsmodem.internal.SMSModemBridgeConfiguration;
+import org.openhab.binding.smsmodem.internal.SMSModemRemoteBridgeConfiguration;
 import org.openhab.binding.smsmodem.internal.actions.SMSModemActions;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.serial.SerialPortIdentifier;
@@ -70,7 +71,9 @@ import org.smslib.message.Payload.Type;
 public class SMSModemBridgeHandler extends BaseBridgeHandler
         implements IModemStatusListener, IInboundOutboundMessageListener, IDeviceInformationListener {
 
-    public static final ThingTypeUID SUPPORTED_THING_TYPES_UIDS = SMSModemBindingConstants.SMSMODEMBRIDGE_THING_TYPE;
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(
+            SMSModemBindingConstants.SMSMODEMBRIDGE_THING_TYPE,
+            SMSModemBindingConstants.SMSMODEMREMOTEBRIDGE_THING_TYPE);
 
     private final Logger logger = LoggerFactory.getLogger(SMSModemBridgeHandler.class);
 
@@ -133,21 +136,34 @@ public class SMSModemBridgeHandler extends BaseBridgeHandler
             if (shouldRun && !isRunning()) {
                 logger.debug("Initializing smsmodem");
                 // ensure the underlying modem is stopped before trying to (re)starting it :
-                SMSModemBridgeConfiguration config = getConfigAs(SMSModemBridgeConfiguration.class);
                 if (modem != null) {
                     modem.stop();
-                } else {
-                    modem = new Modem(serialPortManager, resolveEventualSymbolicLink(config.serialPortOrIP),
-                            Integer.valueOf(config.baudOrNetworkPort), config.simPin, scheduler, config.pollingInterval,
-                            config.delayBetweenSend);
                 }
-                checkParam(config);
-                logger.debug("Now trying to start SMSModem {}/{}", config.serialPortOrIP, config.baudOrNetworkPort);
+                String logName;
+                if (getThing().getThingTypeUID().equals(SMSModemBindingConstants.SMSMODEMBRIDGE_THING_TYPE)) {
+                    SMSModemBridgeConfiguration config = getConfigAs(SMSModemBridgeConfiguration.class);
+                    modem = new Modem(serialPortManager, resolveEventualSymbolicLink(config.serialPort),
+                            Integer.valueOf(config.baud), config.simPin, scheduler, config.pollingInterval,
+                            config.delayBetweenSend);
+                    checkParam(config);
+                    logName = config.serialPort + " | " + config.baud;
+                } else if (getThing().getThingTypeUID()
+                        .equals(SMSModemBindingConstants.SMSMODEMREMOTEBRIDGE_THING_TYPE)) {
+                    SMSModemRemoteBridgeConfiguration config = getConfigAs(SMSModemRemoteBridgeConfiguration.class);
+                    modem = new Modem(serialPortManager, resolveEventualSymbolicLink(config.ip),
+                            Integer.valueOf(config.networkPort), config.simPin, scheduler, config.pollingInterval,
+                            config.delayBetweenSend);
+                    checkRemoteParam(config);
+                    logName = config.ip + ":" + config.networkPort;
+                } else {
+                    throw new IllegalArgumentException("Invalid thing type");
+                }
+                logger.debug("Now trying to start SMSModem {}", logName);
                 modem.registerStatusListener(this);
                 modem.registerMessageListener(this);
                 modem.registerInformationListener(this);
                 modem.start();
-                logger.debug("SMSModem {}/{} started", config.serialPortOrIP, config.baudOrNetworkPort);
+                logger.debug("SMSModem {} started", logName);
             }
         } catch (ModemConfigurationException e) {
             String message = e.getMessage();
@@ -157,22 +173,28 @@ public class SMSModemBridgeHandler extends BaseBridgeHandler
     }
 
     private void checkParam(SMSModemBridgeConfiguration config) throws ModemConfigurationException {
-        String realSerialPortOrIP = resolveEventualSymbolicLink(config.serialPortOrIP);
-        SerialPortIdentifier identifier = serialPortManager.getIdentifier(realSerialPortOrIP);
+        String realSerialPort = resolveEventualSymbolicLink(config.serialPort);
+        SerialPortIdentifier identifier = serialPortManager.getIdentifier(realSerialPort);
         if (identifier == null) {
-            try {
-                InetAddress inetAddress = InetAddress.getByName(realSerialPortOrIP);
-                realSerialPortOrIP = inetAddress.getHostAddress();
+            // no serial port
+            throw new ModemConfigurationException(
+                    realSerialPort + " with " + config.baud + " is not a valid serial port | baud");
+        }
+    }
 
-                // test reachable address :
-                try (Socket s = new Socket(realSerialPortOrIP, config.baudOrNetworkPort)) {
-                }
+    private void checkRemoteParam(SMSModemRemoteBridgeConfiguration config) throws ModemConfigurationException {
+        try {
+            InetAddress inetAddress = InetAddress.getByName(config.ip);
+            String ip = inetAddress.getHostAddress();
 
-            } catch (IOException | NumberFormatException ex) {
-                // no serial port and no ip
-                throw new ModemConfigurationException(realSerialPortOrIP + " with " + config.baudOrNetworkPort
-                        + " is not a serial port/baud or a reachable address/port", ex);
+            // test reachable address :
+            try (Socket s = new Socket(ip, config.networkPort)) {
             }
+
+        } catch (IOException | NumberFormatException ex) {
+            // no ip
+            throw new ModemConfigurationException(
+                    config.ip + ":" + config.networkPort + " is not a reachable address:port", ex);
         }
     }
 

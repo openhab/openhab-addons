@@ -15,15 +15,15 @@ package org.openhab.binding.smsmodem.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link SMSModemBridgeConfiguration} class contains fields mapping bridge configuration parameters.
+ * The {@link SMSModemRemoteBridgeConfiguration} class contains fields mapping bridge configuration parameters.
  *
  * @author Gwendal ROULLEAU - Initial contribution
  */
 @NonNullByDefault
-public class SMSModemBridgeConfiguration {
+public class SMSModemRemoteBridgeConfiguration {
 
-    public String serialPort = "";
-    public Integer baud = 9800;
+    public String ip = "";
+    public Integer networkPort = 2000;
     public String simPin = "";
     public Integer pollingInterval = 15;
     public Integer delayBetweenSend = 0;

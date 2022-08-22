@@ -30,6 +30,8 @@ public class SMSModemBindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID SMSCONVERSATION_THING_TYPE = new ThingTypeUID(BINDING_ID, "smsconversation");
     public static final ThingTypeUID SMSMODEMBRIDGE_THING_TYPE = new ThingTypeUID(BINDING_ID, "smsmodembridge");
+    public static final ThingTypeUID SMSMODEMREMOTEBRIDGE_THING_TYPE = new ThingTypeUID(BINDING_ID,
+            "smsmodemremotebridge");
 
     // List of all Channel ids
     public static final String CHANNEL_RECEIVED = "receive";
@@ -37,13 +39,8 @@ public class SMSModemBindingConstants {
     public static final String CHANNEL_DELIVERYSTATUS = "deliverystatus";
     public static final String CHANNEL_TRIGGER_MODEM_RECEIVE = "receivetrigger";
 
-    // List of all Parameters
-    public static final String BRIDGE_PARAMETER_SERIALPORTORIP = "serialPortOrIP";
-    public static final String BRIDGE_PARAMETER_BAUDRATEORPORT = "baudOrNetworkPort";
-    public static final String BRIDGE_PARAMETER_SIMPIN = "simPin";
-
+    // parameter
     public static final String SMSCONVERSATION_PARAMETER_RECIPIENT = "recipient";
-    public static final String SMSCONVERSATION_ASK_DELIVERY_REPORT = "deliveryReport";
 
     // List of all properties
     public static final String PROPERTY_MANUFACTURER = Thing.PROPERTY_VENDOR;

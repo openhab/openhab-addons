@@ -13,15 +13,54 @@
 		</channels>
 
 		<config-description>
-			<parameter name="serialPortOrIP" type="text" required="true">
-				<label>Address</label>
-				<description>Serial port of the modem, or the IP address if it is a network one.</description>
+			<parameter name="serialPort" type="text" required="true">
+				<label>Serial Port</label>
+				<description>Serial port of the modem (usually /dev/ttyUSB0).</description>
+				<context>serial-port</context>
 				<default></default>
 			</parameter>
-			<parameter name="baudOrNetworkPort" type="integer" required="true">
-				<label>Baud Or Network Port</label>
-				<description>Baud rate, in case of a serial modem, or network port if it is on another machine.</description>
-				<default>9800</default>
+			<parameter name="baud" type="integer" required="true">
+				<label>Baud</label>
+				<description>Baud rate.</description>
+				<default>19200</default>
+			</parameter>
+			<parameter name="simPin" type="text" required="false">
+				<label>Pin Code</label>
+				<description>The pin (if set) for the sim card.</description>
+				<default></default>
+			</parameter>
+			<parameter name="pollingInterval" type="integer">
+				<advanced>true</advanced>
+				<default>15</default>
+				<description>Delay between polling for new messages (in seconds).</description>
+			</parameter>
+			<parameter name="delayBetweenSend" type="integer">
+				<advanced>true</advanced>
+				<default>100</default>
+				<description>Delay between two messages (in milliseconds). Useful for slow modem.</description>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<bridge-type id="smsmodemremotebridge">
+		<label>SMSModem Remote Bridge</label>
+		<description>This bridge represents a modem on a network controlled computer.</description>
+
+		<channels>
+			<channel id="receivetrigger" typeId="smsmodemreceivetrigger"/>
+		</channels>
+
+		<config-description>
+			<parameter name="ip" type="text" required="true">
+				<label>IP Address</label>
+				<description>IP address of the remote computer.</description>
+				<default></default>
+				<context>network-address</context>
+			</parameter>
+			<parameter name="networkPort" type="integer" required="true">
+				<label>Network Port</label>
+				<description>Network port to join the remote service (a.k.a. ser2net).</description>
+				<default>2000</default>
 			</parameter>
 			<parameter name="simPin" type="text" required="false">
 				<label>Pin Code</label>

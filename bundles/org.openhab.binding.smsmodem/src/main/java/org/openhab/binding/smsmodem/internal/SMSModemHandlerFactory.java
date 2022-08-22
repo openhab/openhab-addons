@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.smsmodem.internal;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -40,8 +41,11 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 public class SMSModemHandlerFactory extends BaseThingHandlerFactory {
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set
-            .of(SMSModemBridgeHandler.SUPPORTED_THING_TYPES_UIDS, SMSConversationHandler.SUPPORTED_THING_TYPES_UIDS);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>();
+    {
+        SUPPORTED_THING_TYPES_UIDS.add(SMSConversationHandler.SUPPORTED_THING_TYPES_UIDS);
+        SUPPORTED_THING_TYPES_UIDS.addAll(SMSModemBridgeHandler.SUPPORTED_THING_TYPES_UIDS);
+    }
 
     private @NonNullByDefault({}) SerialPortManager serialPortManager;
 
@@ -63,7 +67,7 @@ public class SMSModemHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (SMSModemBridgeHandler.SUPPORTED_THING_TYPES_UIDS.equals(thingTypeUID)) {
+        if (SMSModemBridgeHandler.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
             return new SMSModemBridgeHandler((Bridge) thing, serialPortManager);
         } else if (SMSConversationHandler.SUPPORTED_THING_TYPES_UIDS.equals(thingTypeUID)) {
             return new SMSConversationHandler(thing);
@@ -75,7 +79,7 @@ public class SMSModemHandlerFactory extends BaseThingHandlerFactory {
     @Override
     public @Nullable Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration,
             @Nullable ThingUID thingUID, @Nullable ThingUID bridgeUID) {
-        if (SMSModemBridgeHandler.SUPPORTED_THING_TYPES_UIDS.equals(thingTypeUID)) {
+        if (SMSModemBridgeHandler.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
             return super.createThing(thingTypeUID, configuration, thingUID, null);
         }
         if (SMSConversationHandler.SUPPORTED_THING_TYPES_UIDS.equals(thingTypeUID)) {
