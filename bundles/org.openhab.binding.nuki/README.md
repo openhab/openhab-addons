@@ -62,6 +62,7 @@ This is a common thing for all Nuki smart lock products - Nuki Smart Lock 1.0/2.
   | Parameter | Description                                                                                                                                                                                               | Comment       |
   |-----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------|
   | unlatch   | If set to `true` the Nuki Smart Lock will unlock the door but then also automatically pull the latch of the door lock. Usually, if the door hinges are correctly adjusted, the door will then swing open. | Default false |
+  | nukiId    | Smart Lock ID                                                                                                                                                                                             |               |
 
 #### Supported Channels
 
