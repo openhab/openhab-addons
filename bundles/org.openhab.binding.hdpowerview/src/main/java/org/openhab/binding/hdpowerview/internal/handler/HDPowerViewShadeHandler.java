@@ -82,10 +82,10 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
 
     private static final String DETECTED_SECONDARY_RAIL = "secondaryRailDetected";
     private static final String DETECTED_TILT_ANYWHERE = "tiltAnywhereDetected";
-    private final Map<String, String> detectedCapabilities = new HashMap<>();
-
-    private final Logger logger = LoggerFactory.getLogger(HDPowerViewShadeHandler.class);
     private static final ShadeCapabilitiesDatabase DB = new ShadeCapabilitiesDatabase();
+
+    private final Map<String, String> detectedCapabilities = new HashMap<>();
+    private final Logger logger = LoggerFactory.getLogger(HDPowerViewShadeHandler.class);
 
     private @Nullable ScheduledFuture<?> refreshPositionFuture = null;
     private @Nullable ScheduledFuture<?> refreshSignalFuture = null;
