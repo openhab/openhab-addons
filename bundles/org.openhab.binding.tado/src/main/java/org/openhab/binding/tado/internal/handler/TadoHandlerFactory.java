@@ -26,8 +26,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tado.internal.discovery.TadoDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryService;
-import org.openhab.core.i18n.LocaleProvider;
-import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -58,8 +56,7 @@ public class TadoHandlerFactory extends BaseThingHandlerFactory {
     private final TadoStateDescriptionProvider stateDescriptionProvider;
 
     @Activate
-    public TadoHandlerFactory(@Reference TranslationProvider i18nProvider, @Reference LocaleProvider localeProvider,
-            @Reference TadoStateDescriptionProvider stateDescriptionProvider) {
+    public TadoHandlerFactory(@Reference TadoStateDescriptionProvider stateDescriptionProvider) {
         this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
