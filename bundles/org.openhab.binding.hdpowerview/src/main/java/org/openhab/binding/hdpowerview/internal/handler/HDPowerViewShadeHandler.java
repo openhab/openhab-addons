@@ -28,14 +28,12 @@ import javax.ws.rs.NotSupportedException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants;
-import org.openhab.binding.hdpowerview.internal.HDPowerViewTranslationProvider;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewWebTargets;
 import org.openhab.binding.hdpowerview.internal.api.CoordinateSystem;
 import org.openhab.binding.hdpowerview.internal.api.Firmware;
 import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
 import org.openhab.binding.hdpowerview.internal.api.SurveyData;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades.ShadeData;
-import org.openhab.binding.hdpowerview.internal.builders.ShadeChannelBuilder;
 import org.openhab.binding.hdpowerview.internal.config.HDPowerViewShadeConfiguration;
 import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDatabase;
 import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDatabase.Capabilities;
@@ -44,7 +42,6 @@ import org.openhab.binding.hdpowerview.internal.exceptions.HubInvalidResponseExc
 import org.openhab.binding.hdpowerview.internal.exceptions.HubMaintenanceException;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubProcessingException;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubShadeTimeoutException;
-import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
@@ -96,11 +93,9 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
     private @Nullable Capabilities capabilities;
     private int shadeId;
     private boolean isDisposing;
-    private final HDPowerViewTranslationProvider translationProvider;
 
-    public HDPowerViewShadeHandler(Thing thing, HDPowerViewTranslationProvider translationProvider) {
+    public HDPowerViewShadeHandler(Thing thing) {
         super(thing);
-        this.translationProvider = translationProvider;
     }
 
     @Override
@@ -606,63 +601,43 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
     }
 
     /**
-     * Initialize the dynamic channels if the respective device supports them.
+     * If the given channel exists in the thing, but is NOT required in the thing, then add it to a list of channels to
+     * be removed. Or if the channel does NOT exist in the thing, but is required in the thing, then log a warning.
      *
-     * @throws IllegalStateException if any of the channel builders fails.
+     * @param removeList the list of channels to be removed from the thing.
+     * @param channelId the id of the channel to be (eventually) removed.
+     * @param channelRequired true if the thing requires this channel.
      */
-    private void updateDynamicChannels(Capabilities capabilities) throws IllegalStateException {
-        List<ShadeChannelBuilder> channelBuilders = new ArrayList<>();
-
-        // @formatter:off
-
-        // add the vane channel builder
-        channelBuilders.add(new ShadeChannelBuilder(thing)
-                .withChannelTypeUID(CHANNEL_TYPE_VANE)
-                .withChannelId(CHANNEL_SHADE_VANE)
-                .withRequired(capabilities.supportsTiltAnywhere() || capabilities.supportsTiltOnClosed())
-                .withAcceptedItemType(CoreItemFactory.DIMMER)
-                .withTranslationProvider(translationProvider));
-
-        // add the secondary channel builder
-        channelBuilders.add(new ShadeChannelBuilder(thing)
-                .withChannelTypeUID(CHANNEL_TYPE_SECONDARY)
-                .withChannelId(CHANNEL_SHADE_SECONDARY_POSITION)
-                .withRequired(capabilities.supportsSecondary() || capabilities.supportsSecondaryOverlapped())
-                .withAcceptedItemType(CoreItemFactory.ROLLERSHUTTER)
-                .withTranslationProvider(translationProvider));
-
-        // add the primary channel builder
-        channelBuilders.add(new ShadeChannelBuilder(thing)
-                .withChannelTypeUID(CHANNEL_TYPE_POSITION)
-                .withChannelId(CHANNEL_SHADE_POSITION)
-                .withRequired(capabilities.supportsPrimary())
-                .withAcceptedItemType(CoreItemFactory.ROLLERSHUTTER)
-                .withTranslationProvider(translationProvider));
-        // @formatter:on
-
-        boolean dirty = false;
-        for (ShadeChannelBuilder channelBuilder : channelBuilders) {
-            dirty |= channelBuilder.isDirty();
+    private void removeListProcessChannel(List<Channel> removeList, String channelId, boolean channelRequired) {
+        Channel channel = thing.getChannel(channelId);
+        if (!channelRequired && channel != null) {
+            removeList.add(channel);
+        } else if (channelRequired && channel == null) {
+            logger.warn("Shade {} does not have a '{}' channel => please reinitialize the thing", shadeId, channelId);
         }
+    }
 
-        int added = 0;
-        int removed = 0;
+    /**
+     * Remove previously statically created channels if the shade does not support them.
+     */
+    private void updateDynamicChannels(Capabilities capabilities) {
+        List<Channel> removeList = new ArrayList<Channel>(3);
 
-        if (dirty) {
-            List<Channel> channels = new ArrayList<>(thing.getChannels());
+        removeListProcessChannel(removeList, CHANNEL_SHADE_POSITION, capabilities.supportsPrimary());
 
-            for (ShadeChannelBuilder channelBuilder : channelBuilders) {
-                if (channelBuilder.isAddingRequired()) {
-                    added++;
-                    channels.add(0, channelBuilder.build());
-                } else if (channelBuilder.isRemovingRequired()) {
-                    removed++;
-                    channels.removeIf(channelBuilder.getPredicate());
-                }
+        removeListProcessChannel(removeList, CHANNEL_SHADE_SECONDARY_POSITION,
+                capabilities.supportsSecondary() || capabilities.supportsSecondaryOverlapped());
+
+        removeListProcessChannel(removeList, CHANNEL_SHADE_VANE,
+                capabilities.supportsTiltAnywhere() || capabilities.supportsTiltOnClosed());
+
+        if (!removeList.isEmpty()) {
+            if (logger.isDebugEnabled()) {
+                StringJoiner joiner = new StringJoiner(", ");
+                removeList.forEach(c -> joiner.add(c.getUID().getId()));
+                logger.debug("Removing unsupported channels for {}: {}", shadeId, joiner.toString());
             }
-
-            scheduler.submit(() -> updateThing(editThing().withChannels(channels).build()));
+            updateThing(editThing().withoutChannels(removeList).build());
         }
-        logger.debug("updateDynamicChannels(): {} channels added:{}, removed:{}", thing.getUID(), added, removed);
     }
 }

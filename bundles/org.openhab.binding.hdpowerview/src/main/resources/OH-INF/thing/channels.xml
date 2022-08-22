@@ -16,12 +16,6 @@
 		<description>The opening of the slats in the shade</description>
 	</channel-type>
 
-	<channel-type id="shade-secondary">
-		<item-type>Rollershutter</item-type>
-		<label>Secondary Position</label>
-		<description>The secondary vertical position (on top-down/bottom-up shades)</description>
-	</channel-type>
-
 	<channel-type id="shade-command" advanced="true">
 		<item-type>String</item-type>
 		<label>Command</label>

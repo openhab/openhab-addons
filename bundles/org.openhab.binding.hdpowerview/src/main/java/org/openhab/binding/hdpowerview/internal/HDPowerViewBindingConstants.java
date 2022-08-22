@@ -18,7 +18,6 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
-import org.openhab.core.thing.type.ChannelTypeUID;
 
 /**
  * The {@link HDPowerViewBinding} class defines common constants, which are
@@ -77,9 +76,4 @@ public class HDPowerViewBindingConstants {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_HUB, THING_TYPE_SHADE,
             THING_TYPE_REPEATER);
-
-    // Channel Type UIDs
-    public static final ChannelTypeUID CHANNEL_TYPE_POSITION = new ChannelTypeUID(BINDING_ID, "shade-position");
-    public static final ChannelTypeUID CHANNEL_TYPE_SECONDARY = new ChannelTypeUID(BINDING_ID, "shade-secondary");
-    public static final ChannelTypeUID CHANNEL_TYPE_VANE = new ChannelTypeUID(BINDING_ID, "shade-vane");
 }
