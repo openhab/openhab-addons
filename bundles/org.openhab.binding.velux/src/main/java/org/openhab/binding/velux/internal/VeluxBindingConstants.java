@@ -18,7 +18,6 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
-import org.openhab.core.thing.type.ChannelTypeUID;
 
 /**
  * The {@link VeluxBindingConstants} class defines common constants, which are
@@ -158,8 +157,4 @@ public class VeluxBindingConstants {
 
     public static final String UNKNOWN_THING_TYPE_ID = "FAILED";
     public static final String UNKNOWN_IP_ADDRESS = "xxx.xxx.xxx.xxx";
-
-    // Channel Type UIDs
-    public static final ChannelTypeUID CHANNEL_TYPE_MAIN = new ChannelTypeUID(BINDING_ID, CHANNEL_ACTUATOR_POSITION);
-    public static final ChannelTypeUID CHANNEL_TYPE_VANE = new ChannelTypeUID(BINDING_ID, CHANNEL_VANE_POSITION);
 }
