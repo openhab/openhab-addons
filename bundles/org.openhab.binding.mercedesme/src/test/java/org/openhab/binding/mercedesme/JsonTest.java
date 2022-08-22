@@ -14,6 +14,9 @@ package org.openhab.binding.mercedesme;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -41,10 +44,10 @@ class JsonTest {
     public static final DateTimeFormatter DATE_INPUT_PATTERN = DateTimeFormatter.ofPattern(DATE_INPUT_PATTERN_STRING);
 
     @Test
-    void testOdoMapper() {
+    void testOdoMapper() throws Exception {
         List<String> expectedResults = new ArrayList<String>();
         expectedResults.add("range:mileage 4131 km");
-        String content = FileReader.readFileInString("src/test/resources/odo.json");
+        String content = Files.readString(Path.of("src/test/resources/odo.json"));
         JSONArray ja = new JSONArray(content);
         assertTrue(ja.length() > 0);
         ja.forEach(entry -> {
@@ -61,11 +64,11 @@ class JsonTest {
     }
 
     @Test
-    void testEVMapper() {
+    void testEVMapper() throws IOException {
         List<String> expectedResults = new ArrayList<String>();
         expectedResults.add("range:range-electric 325 km");
         expectedResults.add("range:soc 78 %");
-        String content = FileReader.readFileInString("src/test/resources/evstatus.json");
+        String content = Files.readString(Path.of("src/test/resources/evstatus.json"));
         JSONArray ja = new JSONArray(content);
         assertTrue(ja.length() > 0);
         ja.forEach(entry -> {
@@ -82,11 +85,11 @@ class JsonTest {
     }
 
     @Test
-    void testFuelMapper() {
+    void testFuelMapper() throws IOException {
         List<String> expectedResults = new ArrayList<String>();
         expectedResults.add("range:range-fuel 1292 km");
         expectedResults.add("range:fuel-level 90 %");
-        String content = FileReader.readFileInString("src/test/resources/fuel.json");
+        String content = Files.readString(Path.of("src/test/resources/fuel.json"));
         JSONArray ja = new JSONArray(content);
         assertTrue(ja.length() > 0);
         ja.forEach(entry -> {
@@ -102,13 +105,13 @@ class JsonTest {
     }
 
     @Test
-    void testLockMapper() {
+    void testLockMapper() throws IOException {
         List<String> expectedResults = new ArrayList<String>();
         expectedResults.add("lock:doors 0");
         expectedResults.add("lock:deck-lid ON");
         expectedResults.add("lock:flap ON");
         expectedResults.add("location:heading 120 °");
-        String content = FileReader.readFileInString("src/test/resources/lock.json");
+        String content = Files.readString(Path.of("src/test/resources/lock.json"));
         JSONArray ja = new JSONArray(content);
         assertTrue(ja.length() > 0);
         ja.forEach(entry -> {
@@ -124,7 +127,7 @@ class JsonTest {
     }
 
     @Test
-    void testStatusMapper() {
+    void testStatusMapper() throws IOException {
         List<String> expectedResults = new ArrayList<String>();
         expectedResults.add("doors:deck-lid CLOSED");
         expectedResults.add("doors:driver-front CLOSED");
@@ -143,7 +146,7 @@ class JsonTest {
         expectedResults.add("windows:driver-rear 0");
         expectedResults.add("windows:passenger-rear 0");
 
-        String content = FileReader.readFileInString("src/test/resources/status.json");
+        String content = Files.readString(Path.of("src/test/resources/status.json"));
         JSONArray ja = new JSONArray(content);
         assertTrue(ja.length() > 0);
         ja.forEach(entry -> {
@@ -160,7 +163,7 @@ class JsonTest {
     }
 
     @Test
-    void testEQALightsMapper() {
+    void testEQALightsMapper() throws IOException {
         // real life example
         List<String> expectedResults = new ArrayList<String>();
         expectedResults.add("doors:passenger-front OPEN");
@@ -174,7 +177,7 @@ class JsonTest {
         expectedResults.add("doors:driver-front CLOSED");
         expectedResults.add("doors:driver-rear CLOSED");
 
-        String content = FileReader.readFileInString("src/test/resources/eqa-light-sample.json");
+        String content = Files.readString(Path.of("src/test/resources/eqa-light-sample.json"));
         JSONArray ja = new JSONArray(content);
         assertTrue(ja.length() > 0);
         ja.forEach(entry -> {
@@ -190,8 +193,8 @@ class JsonTest {
     }
 
     @Test
-    void testTimeStamp() {
-        String content = FileReader.readFileInString("src/test/resources/eqa-light-sample.json");
+    void testTimeStamp() throws IOException {
+        String content = Files.readString(Path.of("src/test/resources/eqa-light-sample.json"));
         JSONArray ja = new JSONArray(content);
         assertTrue(ja.length() > 0);
         long lastTimestamp = 0;
@@ -212,8 +215,8 @@ class JsonTest {
     }
 
     @Test
-    void testInvalidData() {
-        String content = FileReader.readFileInString("src/test/resources/invalid-key.json");
+    void testInvalidData() throws IOException {
+        String content = Files.readString(Path.of("src/test/resources/invalid-key.json"));
         JSONArray ja = new JSONArray(content);
         assertTrue(ja.length() > 0);
         ja.forEach(entry -> {
@@ -225,10 +228,10 @@ class JsonTest {
     }
 
     @Test
-    void testMissingTimestamp() {
+    void testMissingTimestamp() throws IOException {
         List<String> expectedResults = new ArrayList<String>();
         expectedResults.add("range:mileage 4131 km");
-        String content = FileReader.readFileInString("src/test/resources/invalid-timestamp.json");
+        String content = Files.readString(Path.of("src/test/resources/invalid-timestamp.json"));
         JSONArray ja = new JSONArray(content);
         assertTrue(ja.length() > 0);
         ja.forEach(entry -> {

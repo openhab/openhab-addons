@@ -120,12 +120,15 @@ public class VehicleHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.trace("Received {} {} {}", channelUID.getAsString(), command.toFullString(), channelUID.getId());
         if (command instanceof RefreshType) {
+            /**
+             * Refresh requested e.g. after adding new item
+             * Adding several items will frequently raise RefreshType command. Calling API each time shall be avoided
+             * API update is performed after 5 seconds for all items which should be sufficient for a frequent update
+             */
             if (Instant.now().isAfter(nextRefresh)) {
-                nextRefresh = Instant.now().plus(Duration.ofSeconds(10));
+                nextRefresh = Instant.now().plus(Duration.ofSeconds(5));
                 logger.trace("Refresh granted - next at {}", nextRefresh);
-                getData();
-            } else {
-                logger.trace("Refresh rejected {}", nextRefresh);
+                scheduler.schedule(this::getData, 5, TimeUnit.SECONDS);
             }
         } else if ("image-view".equals(channelUID.getIdWithoutGroup())) {
             if (imageStorage.isPresent()) {
@@ -186,11 +189,11 @@ public class VehicleHandler extends BaseThingHandler {
                 }
                 updateState(new ChannelUID(thing.getUID(), GROUP_IMAGE, "clear-cache"), OnOffType.OFF);
             } else {
-                String textKey = Constants.PREFIX + "vehicle" + Constants.STATUS_BRIDGEHANDLER_MISSING;
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_MISSING_ERROR, textKey);
+                String textKey = Constants.STATUS_TEXT_PREFIX + "vehicle" + Constants.STATUS_BRIDGEHANDLER_MISSING;
+                updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.HANDLER_INITIALIZING_ERROR, textKey);
             }
         } else {
-            String textKey = Constants.PREFIX + "vehicle" + Constants.STATUS_BRIDGE_MISSING;
+            String textKey = Constants.STATUS_TEXT_PREFIX + "vehicle" + Constants.STATUS_BRIDGE_MISSING;
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, textKey);
         }
     }
@@ -212,83 +215,83 @@ public class VehicleHandler extends BaseThingHandler {
     }
 
     public void getData() {
-        if (!accountHandler.isEmpty()) {
-            String token = accountHandler.get().getToken();
-            if (token.isEmpty()) {
-                String textKey = Constants.PREFIX + "vehicle" + Constants.STATUS_BRIDGE_ATHORIZATION;
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, textKey);
-                return;
-            } else if (!online) { // only update if thing isn't already ONLINE
-                updateStatus(ThingStatus.ONLINE);
-            }
-
-            // Mileage for all cars
-            String odoUrl = String.format(ODO_URL, config.get().vin);
-            if (accountConfigAvailable()) {
-                if (accountHandler.get().config.get().odoScope) {
-                    call(odoUrl);
-                } else {
-                    logger.trace("{} Odo scope not activated", this.getThing().getLabel());
-                }
-            } else {
-                logger.trace("{} Account not properly configured", this.getThing().getLabel());
-            }
-
-            // Electric status for hybrid and electric
-            if (uid.equals(BEV) || uid.equals(HYBRID)) {
-                String evUrl = String.format(EV_URL, config.get().vin);
-                if (accountConfigAvailable()) {
-                    if (accountHandler.get().config.get().evScope) {
-                        call(evUrl);
-                    } else {
-                        logger.trace("{} Electric Status scope not activated", this.getThing().getLabel());
-                    }
-                } else {
-                    logger.trace("{} Account not properly configured", this.getThing().getLabel());
-                }
-            }
-
-            // Fuel for hybrid and combustion
-            if (uid.equals(COMBUSTION) || uid.equals(HYBRID)) {
-                String fuelUrl = String.format(FUEL_URL, config.get().vin);
-                if (accountConfigAvailable()) {
-                    if (accountHandler.get().config.get().fuelScope) {
-                        call(fuelUrl);
-                    } else {
-                        logger.trace("{} Fuel scope not activated", this.getThing().getLabel());
-                    }
-                } else {
-                    logger.trace("{} Account not properly configured", this.getThing().getLabel());
-                }
-            }
-
-            // Status and Lock for all
-            String statusUrl = String.format(STATUS_URL, config.get().vin);
-            if (accountConfigAvailable()) {
-                if (accountHandler.get().config.get().vehicleScope) {
-                    call(statusUrl);
-                } else {
-                    logger.trace("{} Vehicle Status scope not activated", this.getThing().getLabel());
-                }
-            } else {
-                logger.trace("{} Account not properly configured", this.getThing().getLabel());
-            }
-            String lockUrl = String.format(LOCK_URL, config.get().vin);
-            if (accountConfigAvailable()) {
-                if (accountHandler.get().config.get().lockScope) {
-                    call(lockUrl);
-                } else {
-                    logger.trace("{} Lock scope not activated", this.getThing().getLabel());
-                }
-            } else {
-                logger.trace("{} Account not properly configured", this.getThing().getLabel());
-            }
-
-            // Range radius for all types
-            updateRadius();
-        } else {
+        if (accountHandler.isEmpty()) {
             logger.warn("AccountHandler not set");
+            return;
         }
+        String token = accountHandler.get().getToken();
+        if (token.isEmpty()) {
+            String textKey = Constants.STATUS_TEXT_PREFIX + "vehicle" + Constants.STATUS_BRIDGE_ATHORIZATION;
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, textKey);
+            return;
+        } else if (!online) { // only update if thing isn't already ONLINE
+            updateStatus(ThingStatus.ONLINE);
+        }
+
+        // Mileage for all cars
+        String odoUrl = String.format(ODO_URL, config.get().vin);
+        if (accountConfigAvailable()) {
+            if (accountHandler.get().config.get().odoScope) {
+                call(odoUrl);
+            } else {
+                logger.trace("{} Odo scope not activated", this.getThing().getLabel());
+            }
+        } else {
+            logger.trace("{} Account not properly configured", this.getThing().getLabel());
+        }
+
+        // Electric status for hybrid and electric
+        if (uid.equals(BEV) || uid.equals(HYBRID)) {
+            String evUrl = String.format(EV_URL, config.get().vin);
+            if (accountConfigAvailable()) {
+                if (accountHandler.get().config.get().evScope) {
+                    call(evUrl);
+                } else {
+                    logger.trace("{} Electric Status scope not activated", this.getThing().getLabel());
+                }
+            } else {
+                logger.trace("{} Account not properly configured", this.getThing().getLabel());
+            }
+        }
+
+        // Fuel for hybrid and combustion
+        if (uid.equals(COMBUSTION) || uid.equals(HYBRID)) {
+            String fuelUrl = String.format(FUEL_URL, config.get().vin);
+            if (accountConfigAvailable()) {
+                if (accountHandler.get().config.get().fuelScope) {
+                    call(fuelUrl);
+                } else {
+                    logger.trace("{} Fuel scope not activated", this.getThing().getLabel());
+                }
+            } else {
+                logger.trace("{} Account not properly configured", this.getThing().getLabel());
+            }
+        }
+
+        // Status and Lock for all
+        String statusUrl = String.format(STATUS_URL, config.get().vin);
+        if (accountConfigAvailable()) {
+            if (accountHandler.get().config.get().vehicleScope) {
+                call(statusUrl);
+            } else {
+                logger.trace("{} Vehicle Status scope not activated", this.getThing().getLabel());
+            }
+        } else {
+            logger.trace("{} Account not properly configured", this.getThing().getLabel());
+        }
+        String lockUrl = String.format(LOCK_URL, config.get().vin);
+        if (accountConfigAvailable()) {
+            if (accountHandler.get().config.get().lockScope) {
+                call(lockUrl);
+            } else {
+                logger.trace("{} Lock scope not activated", this.getThing().getLabel());
+            }
+        } else {
+            logger.trace("{} Account not properly configured", this.getThing().getLabel());
+        }
+
+        // Range radius for all types
+        updateRadius();
     }
 
     private boolean accountConfigAvailable() {
@@ -353,8 +356,9 @@ public class VehicleHandler extends BaseThingHandler {
             commandOptions.add(new CommandOption("Initilaze", null));
             stateOptions.add(new StateOption("Initilaze", null));
         }
-        mmcop.setCommandOptions(new ChannelUID(thing.getUID(), GROUP_IMAGE, "image-view"), commandOptions);
-        mmsop.setStateOptions(new ChannelUID(thing.getUID(), GROUP_IMAGE, "image-view"), stateOptions);
+        ChannelUID cuid = new ChannelUID(thing.getUID(), GROUP_IMAGE, "image-view");
+        mmcop.setCommandOptions(cuid, commandOptions);
+        mmsop.setStateOptions(cuid, stateOptions);
     }
 
     private String getImage(String key) {

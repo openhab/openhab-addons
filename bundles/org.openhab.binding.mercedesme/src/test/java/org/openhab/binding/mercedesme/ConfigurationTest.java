@@ -12,12 +12,17 @@
  */
 package org.openhab.binding.mercedesme;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.SocketException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mercedesme.internal.Constants;
 import org.openhab.binding.mercedesme.internal.config.AccountConfiguration;
+import org.openhab.binding.mercedesme.internal.server.Utils;
 
 /**
  * The {@link ConfigurationTest} Test configuration settings
@@ -52,5 +57,15 @@ class ConfigurationTest {
         float unchargedValue = Math.round((100 - socValue) * 1000 * (float) batteryCapacity / 1000) / (float) 100;
         assertEquals(22.61, unchargedValue, 0.01);
         assertEquals(batteryCapacity, chargedValue + unchargedValue, 0.01);
+    }
+
+    @Test
+    public void testCallbackUrl() throws SocketException {
+        String ip = Utils.getCallbackIP();
+        try {
+            assertTrue(InetAddress.getByName(ip).isReachable(10));
+        } catch (IOException e) {
+            assertTrue(false, "IP " + ip + " not reachable");
+        }
     }
 }

@@ -76,7 +76,7 @@ public class Constants {
     public static final String IMAGE_BASE_URL = "https://api.mercedes-benz.com/vehicle_images/v2";
     public static final String IMAGE_EXTERIOR_RESOURCE_URL = IMAGE_BASE_URL + "/vehicles/%s";
 
-    public static final String PREFIX = "@text/mercedesme.";
+    public static final String STATUS_TEXT_PREFIX = "@text/mercedesme.";
     public static final String STATUS_AUTH_NEEDED = ".status.authorization-needed";
     public static final String STATUS_IP_MISSING = ".status.ip-missing";
     public static final String STATUS_PORT_MISSING = ".status.port-missing";
@@ -89,9 +89,6 @@ public class Constants {
 
     public static final String SPACE = " ";
     public static final String EMPTY = "";
-
-    public static final String HTTP = "http://";
-    public static final String LOOPBACK_ADDRESS = "lo";
     public static final String COLON = ":";
     public static final String NOT_SET = "not set";
 

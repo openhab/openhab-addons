@@ -14,6 +14,7 @@ package org.openhab.binding.mercedesme.internal.server;
 
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -58,28 +59,30 @@ public class Utils {
         PORTS.remove(Integer.valueOf(portNr));
     }
 
-    public static String getCallbackIP() {
+    public static String getCallbackIP() throws SocketException {
         // https://stackoverflow.com/questions/1062041/ip-address-not-obtained-in-java
-        String ip = Constants.NOT_SET;
-        try {
-            for (Enumeration<NetworkInterface> ifaces = NetworkInterface.getNetworkInterfaces(); ifaces
-                    .hasMoreElements();) {
-                NetworkInterface iface = ifaces.nextElement();
-                // guess IP address, not loopback!
-                if (!Constants.LOOPBACK_ADDRESS.equals(iface.getName())) {
-                    for (Enumeration<InetAddress> addresses = iface.getInetAddresses(); addresses.hasMoreElements();) {
-                        InetAddress address = addresses.nextElement();
-                        ip = address.getHostAddress();
+        for (Enumeration<NetworkInterface> ifaces = NetworkInterface.getNetworkInterfaces(); ifaces
+                .hasMoreElements();) {
+            NetworkInterface iface = ifaces.nextElement();
+            try {
+                if (!iface.isLoopback()) {
+                    if (iface.isUp()) {
+                        for (Enumeration<InetAddress> addresses = iface.getInetAddresses(); addresses
+                                .hasMoreElements();) {
+                            InetAddress address = addresses.nextElement();
+                            return address.getHostAddress();
+                        }
                     }
                 }
+            } catch (SocketException se) {
+                // Calling one network interface failed - continue searching
+                LOGGER.trace("Network {} failed {}", iface.getName(), se.getMessage());
             }
-        } catch (Exception e) {
-            LOGGER.trace("Autodetect IP failed {}", e.getMessage());
         }
-        return ip;
+        throw new SocketException("IP address not detected");
     }
 
     public static String getCallbackAddress(String callbackIP, int callbackPort) {
-        return Constants.HTTP + callbackIP + Constants.COLON + callbackPort + Constants.CALLBACK_ENDPOINT;
+        return "http://" + callbackIP + Constants.COLON + callbackPort + Constants.CALLBACK_ENDPOINT;
     }
 }

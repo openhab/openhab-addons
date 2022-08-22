@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.mercedesme.internal.handler;
 
+import java.net.SocketException;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -61,7 +62,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     @Override
     public void initialize() {
         config = Optional.of(getConfigAs(AccountConfiguration.class));
-        handleConfig();
+        autodetectCallback();
         String configValidReason = configValid();
         if (!configValidReason.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, configValidReason);
@@ -70,7 +71,8 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             thing.setProperty("callbackUrl", callbackUrl);
             server = Optional.of(new CallbackServer(this, httpClient, oAuthFactory, config.get(), callbackUrl));
             if (!server.get().start()) {
-                String textKey = Constants.PREFIX + thing.getThingTypeUID().getId() + Constants.STATUS_SERVER_RESTART;
+                String textKey = Constants.STATUS_TEXT_PREFIX + thing.getThingTypeUID().getId()
+                        + Constants.STATUS_SERVER_RESTART;
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, textKey);
             } else {
                 // get fresh token
@@ -79,7 +81,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
         }
     }
 
-    private void handleConfig() {
+    private void autodetectCallback() {
         // if Callback IP and Callback Port are not set => autodetect these values
         config = Optional.of(getConfigAs(AccountConfiguration.class));
         Configuration updateConfig = super.editConfiguration();
@@ -89,7 +91,13 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             Utils.addPort(config.get().callbackPort);
         }
         if (!updateConfig.containsKey("callbackIP")) {
-            updateConfig.put("callbackIP", Utils.getCallbackIP());
+            String ip;
+            try {
+                ip = Utils.getCallbackIP();
+                updateConfig.put("callbackIP", ip);
+            } catch (SocketException e) {
+                logger.info("Cannot detect IP address {}", e.getMessage());
+            }
         }
         super.updateConfiguration(updateConfig);
         // get new config after update
@@ -98,23 +106,18 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
 
     private String configValid() {
         config = Optional.of(getConfigAs(AccountConfiguration.class));
-        if (!config.isEmpty()) {
-            String textKey = Constants.PREFIX + thing.getThingTypeUID().getId();
-            if (config.get().callbackIP.equals(Constants.NOT_SET)) {
-                return textKey + Constants.STATUS_IP_MISSING;
-            } else if (config.get().callbackPort == -1) {
-                return textKey + Constants.STATUS_PORT_MISSING;
-            } else if (config.get().clientId.equals(Constants.NOT_SET)) {
-                return textKey + Constants.STATUS_CLIENT_ID_MISSING;
-            } else if (config.get().clientSecret.equals(Constants.NOT_SET)) {
-                return textKey + Constants.STATUS_CLIENT_SECRET_MISSING;
-            } else {
-                return Constants.EMPTY;
-            }
+        String textKey = Constants.STATUS_TEXT_PREFIX + thing.getThingTypeUID().getId();
+        if (config.get().callbackIP.equals(Constants.NOT_SET)) {
+            return textKey + Constants.STATUS_IP_MISSING;
+        } else if (config.get().callbackPort == -1) {
+            return textKey + Constants.STATUS_PORT_MISSING;
+        } else if (config.get().clientId.equals(Constants.NOT_SET)) {
+            return textKey + Constants.STATUS_CLIENT_ID_MISSING;
+        } else if (config.get().clientSecret.equals(Constants.NOT_SET)) {
+            return textKey + Constants.STATUS_CLIENT_SECRET_MISSING;
         } else {
-            logger.debug("Config is empty");
+            return Constants.EMPTY;
         }
-        return Constants.EMPTY;
     }
 
     @Override
@@ -135,11 +138,13 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             updateStatus(ThingStatus.ONLINE);
         } else if (server.isEmpty()) {
             // server not running - fix first
-            String textKey = Constants.PREFIX + thing.getThingTypeUID().getId() + Constants.STATUS_SERVER_RESTART;
+            String textKey = Constants.STATUS_TEXT_PREFIX + thing.getThingTypeUID().getId()
+                    + Constants.STATUS_SERVER_RESTART;
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, textKey);
         } else {
             // all failed - start manual authorization
-            String textKey = Constants.PREFIX + thing.getThingTypeUID().getId() + Constants.STATUS_AUTH_NEEDED;
+            String textKey = Constants.STATUS_TEXT_PREFIX + thing.getThingTypeUID().getId()
+                    + Constants.STATUS_AUTH_NEEDED;
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
                     textKey + " [\"" + thing.getProperties().get("callbackUrl") + "\"]");
         }
