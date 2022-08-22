@@ -56,7 +56,7 @@ public class TadoHandlerFactory extends BaseThingHandlerFactory {
     private final TadoStateDescriptionProvider stateDescriptionProvider;
 
     @Activate
-    public TadoHandlerFactory(@Reference TadoStateDescriptionProvider stateDescriptionProvider) {
+    public TadoHandlerFactory(final @Reference TadoStateDescriptionProvider stateDescriptionProvider) {
         this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
