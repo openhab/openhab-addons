@@ -507,7 +507,7 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
      * @param capabilitiesSupport a CapabilitiesSupport instance which summarizes the device's capabilities.
      * @throws IllegalStateException if any of the channel builders failed.
      */
-    private void updateDynamicChannels(CapabilitiesSupport capabilitiesSupport) throws IllegalStateException {
+    private void updateDynamicChannels(CapabilitiesSupport capabilitiesSupport) {
         List<Channel> removeList = new ArrayList<Channel>(3);
 
         removeListProcessChannel(removeList, TadoBindingConstants.CHANNEL_ZONE_BATTERY_LOW_ALARM,
