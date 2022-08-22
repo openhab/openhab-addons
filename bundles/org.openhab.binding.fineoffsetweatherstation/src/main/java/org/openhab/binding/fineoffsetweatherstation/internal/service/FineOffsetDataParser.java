@@ -187,7 +187,7 @@ public class FineOffsetDataParser {
         List<MeasuredValue> result = new ArrayList<>();
         while (idx < size) {
             int code = data[idx++];
-            Measurand measurand = Measurand.getByCode(code);
+            Measurand.SingleChannelMeasurand measurand = Measurand.getByCode(code);
             if (measurand == null) {
                 logger.warn("failed to get measurand 0x{}", Integer.toHexString(code));
                 return result;

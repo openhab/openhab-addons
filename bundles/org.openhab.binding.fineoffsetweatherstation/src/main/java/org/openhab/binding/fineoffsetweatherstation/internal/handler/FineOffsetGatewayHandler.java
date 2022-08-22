@@ -31,7 +31,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetGatewayConfiguration;
 import org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetSensorConfiguration;
-import org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants;
 import org.openhab.binding.fineoffsetweatherstation.internal.discovery.FineOffsetGatewayDiscoveryService;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.ConversionContext;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.SensorGatewayBinding;
@@ -190,15 +189,14 @@ public class FineOffsetGatewayHandler extends BaseBridgeHandler {
         }
         ChannelBuilder builder = ChannelBuilder.create(new ChannelUID(thing.getUID(), measuredValue.getChannelId()))
                 .withKind(ChannelKind.STATE).withType(channelTypeId);
-        String channelKey = "thing-type." + FineOffsetWeatherStationBindingConstants.BINDING_ID + "."
-                + THING_TYPE_GATEWAY.getId() + ".channel." + measuredValue.getChannelId();
+        String channelKey = THING_TYPE_GATEWAY.getId() + ".dynamic-channel." + measuredValue.getChannelPrefix();
         String label = translationProvider.getText(bundle, channelKey + ".label", measuredValue.getDebugName(),
-                localeProvider.getLocale());
+                localeProvider.getLocale(), measuredValue.getChannelNumber());
         if (label != null) {
             builder.withLabel(label);
         }
         String description = translationProvider.getText(bundle, channelKey + ".description", null,
-                localeProvider.getLocale());
+                localeProvider.getLocale(), measuredValue.getChannelNumber());
         if (description != null) {
             builder.withDescription(description);
         }
