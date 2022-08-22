@@ -17,6 +17,7 @@ import static org.openhab.binding.tado.internal.api.TadoApiTypeUtils.termination
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringJoiner;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -34,7 +35,6 @@ import org.openhab.binding.tado.internal.TadoBindingConstants.TemperatureUnit;
 import org.openhab.binding.tado.internal.TadoBindingConstants.VerticalSwing;
 import org.openhab.binding.tado.internal.TadoBindingConstants.ZoneType;
 import org.openhab.binding.tado.internal.TadoHvacChange;
-import org.openhab.binding.tado.internal.TadoTranslationProvider;
 import org.openhab.binding.tado.internal.adapter.TadoZoneStateAdapter;
 import org.openhab.binding.tado.internal.api.ApiException;
 import org.openhab.binding.tado.internal.api.GsonBuilderFactory;
@@ -53,10 +53,7 @@ import org.openhab.binding.tado.internal.api.model.OverlayTerminationCondition;
 import org.openhab.binding.tado.internal.api.model.TadoSystemType;
 import org.openhab.binding.tado.internal.api.model.Zone;
 import org.openhab.binding.tado.internal.api.model.ZoneState;
-import org.openhab.binding.tado.internal.builder.ZoneChannelBuilder;
-import org.openhab.binding.tado.internal.builder.ZoneChannelBuilder.InsertPosition;
 import org.openhab.binding.tado.internal.config.TadoZoneConfig;
-import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -89,7 +86,6 @@ import com.google.gson.Gson;
 public class TadoZoneHandler extends BaseHomeThingHandler {
     private Logger logger = LoggerFactory.getLogger(TadoZoneHandler.class);
 
-    private final TadoTranslationProvider translationProvider;
     private final TadoStateDescriptionProvider stateDescriptionProvider;
     private TadoZoneConfig configuration;
 
@@ -101,10 +97,8 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
     private boolean disposing = false;
     private @Nullable Gson gson;
 
-    public TadoZoneHandler(Thing thing, TadoStateDescriptionProvider stateDescriptionProvider,
-            TadoTranslationProvider translationProvider) {
+    public TadoZoneHandler(Thing thing, TadoStateDescriptionProvider stateDescriptionProvider) {
         super(thing);
-        this.translationProvider = translationProvider;
         this.stateDescriptionProvider = stateDescriptionProvider;
         configuration = getConfigAs(TadoZoneConfig.class);
     }
@@ -491,130 +485,60 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
     }
 
     /**
-     * Initialize the dynamic channels depending on whether this device's capabilities support them.
+     * If the given channel exists in the thing, but is NOT required in the thing, then add it to a list of channels to
+     * be removed. Or if the channel does NOT exist in the thing, but is required in the thing, then log a warning.
+     *
+     * @param removeList the list of channels to be removed from the thing.
+     * @param channelId the id of the channel to be (eventually) removed.
+     * @param channelRequired true if the thing requires this channel.
+     */
+    private void removeListProcessChannel(List<Channel> removeList, String channelId, boolean channelRequired) {
+        Channel channel = thing.getChannel(channelId);
+        if (!channelRequired && channel != null) {
+            removeList.add(channel);
+        } else if (channelRequired && channel == null) {
+            logger.warn("Thing {} does not have a '{}' channel => please reinitialize it", thing.getUID(), channelId);
+        }
+    }
+
+    /**
+     * Remove previously statically created channels if the device does not support them.
      *
      * @param capabilitiesSupport a CapabilitiesSupport instance which summarizes the device's capabilities.
      * @throws IllegalStateException if any of the channel builders failed.
      */
     private void updateDynamicChannels(CapabilitiesSupport capabilitiesSupport) throws IllegalStateException {
-        List<ZoneChannelBuilder> channelBuilders = new ArrayList<>();
+        List<Channel> removeList = new ArrayList<Channel>(3);
 
-        // @formatter:off
+        removeListProcessChannel(removeList, TadoBindingConstants.CHANNEL_ZONE_BATTERY_LOW_ALARM,
+                capabilitiesSupport.batteryLowAlarm());
+        removeListProcessChannel(removeList, TadoBindingConstants.CHANNEL_ZONE_OPEN_WINDOW_DETECTED,
+                capabilitiesSupport.openWindow());
+        removeListProcessChannel(removeList, TadoBindingConstants.CHANNEL_ZONE_LIGHT, capabilitiesSupport.light());
+        removeListProcessChannel(removeList, TadoBindingConstants.CHANNEL_ZONE_HORIZONTAL_SWING,
+                capabilitiesSupport.horizontalSwing());
+        removeListProcessChannel(removeList, TadoBindingConstants.CHANNEL_ZONE_VERTICAL_SWING,
+                capabilitiesSupport.verticalSwing());
+        removeListProcessChannel(removeList, TadoBindingConstants.CHANNEL_ZONE_SWING, capabilitiesSupport.swing());
+        removeListProcessChannel(removeList, TadoBindingConstants.CHANNEL_ZONE_FAN_SPEED,
+                capabilitiesSupport.fanSpeed());
+        removeListProcessChannel(removeList, TadoBindingConstants.CHANNEL_ZONE_FAN_LEVEL,
+                capabilitiesSupport.fanLevel());
+        removeListProcessChannel(removeList, TadoBindingConstants.CHANNEL_ZONE_AC_POWER, capabilitiesSupport.acPower());
+        removeListProcessChannel(removeList, TadoBindingConstants.CHANNEL_ZONE_HEATING_POWER,
+                capabilitiesSupport.heatingPower());
+        removeListProcessChannel(removeList, TadoBindingConstants.CHANNEL_ZONE_HUMIDITY,
+                capabilitiesSupport.humidity());
+        removeListProcessChannel(removeList, TadoBindingConstants.CHANNEL_ZONE_CURRENT_TEMPERATURE,
+                capabilitiesSupport.currentTemperature());
 
-        // channel builder for CHANNEL_ZONE_BATTERY_LOW_ALARM
-        channelBuilders.add(new ZoneChannelBuilder(thing)
-                .withChannelId(TadoBindingConstants.CHANNEL_ZONE_BATTERY_LOW_ALARM)
-                .withRequired(capabilitiesSupport.batteryLowAlarm())
-                .withAcceptedItemType(CoreItemFactory.SWITCH)
-                .withInsertPosition(InsertPosition.END)
-                .withTranslationProvider(translationProvider));
-
-        // channel builder for CHANNEL_ZONE_OPEN_WINDOW_DETECTED
-        channelBuilders.add(new ZoneChannelBuilder(thing)
-                .withChannelId(TadoBindingConstants.CHANNEL_ZONE_OPEN_WINDOW_DETECTED)
-                .withRequired(capabilitiesSupport.openWindow())
-                .withAcceptedItemType(CoreItemFactory.SWITCH)
-                .withInsertPosition(InsertPosition.END)
-                .withTranslationProvider(translationProvider));
-
-        // channel builder for CHANNEL_ZONE_LIGHT
-        channelBuilders.add(new ZoneChannelBuilder(thing)
-                .withChannelId(TadoBindingConstants.CHANNEL_ZONE_LIGHT)
-                .withRequired(capabilitiesSupport.light())
-                .withAcceptedItemType(CoreItemFactory.SWITCH)
-                .withTranslationProvider(translationProvider));
-
-        // channel builder for CHANNEL_ZONE_HORIZONTAL_SWING
-        channelBuilders.add(new ZoneChannelBuilder(thing)
-                .withChannelId(TadoBindingConstants.CHANNEL_ZONE_HORIZONTAL_SWING)
-                .withRequired(capabilitiesSupport.horizontalSwing())
-                .withAcceptedItemType(CoreItemFactory.STRING)
-                .withTranslationProvider(translationProvider));
-
-        // channel builder for CHANNEL_ZONE_VERTICAL_SWING
-        channelBuilders.add(new ZoneChannelBuilder(thing)
-                .withChannelId(TadoBindingConstants.CHANNEL_ZONE_VERTICAL_SWING)
-                .withRequired(capabilitiesSupport.verticalSwing())
-                .withAcceptedItemType(CoreItemFactory.STRING)
-                .withTranslationProvider(translationProvider));
-
-        // channel builder for CHANNEL_ZONE_SWING
-        channelBuilders.add(new ZoneChannelBuilder(thing)
-                .withChannelId(TadoBindingConstants.CHANNEL_ZONE_SWING)
-                .withRequired(capabilitiesSupport.swing())
-                .withAcceptedItemType(CoreItemFactory.SWITCH)
-                .withTranslationProvider(translationProvider));
-
-        // channel builder for CHANNEL_ZONE_FAN_LEVEL
-        channelBuilders.add(new ZoneChannelBuilder(thing)
-                .withChannelId(TadoBindingConstants.CHANNEL_ZONE_FAN_LEVEL)
-                .withRequired(capabilitiesSupport.fanLevel())
-                .withAcceptedItemType(CoreItemFactory.STRING)
-                .withTranslationProvider(translationProvider));
-
-        // channel builder for CHANNEL_ZONE_FAN_SPEED
-        channelBuilders.add(new ZoneChannelBuilder(thing)
-                .withChannelId(TadoBindingConstants.CHANNEL_ZONE_FAN_SPEED)
-                .withRequired(capabilitiesSupport.fanSpeed())
-                .withAcceptedItemType(CoreItemFactory.STRING)
-                .withTranslationProvider(translationProvider));
-
-        // channel builder for CHANNEL_ZONE_AC_POWER
-        channelBuilders.add(new ZoneChannelBuilder(thing)
-                .withChannelId(TadoBindingConstants.CHANNEL_ZONE_AC_POWER)
-                .withRequired(capabilitiesSupport.acPower())
-                .withAcceptedItemType(CoreItemFactory.SWITCH)
-                .withTranslationProvider(translationProvider));
-
-        // channel builder for CHANNEL_ZONE_HEATING_POWER
-        channelBuilders.add(new ZoneChannelBuilder(thing)
-                .withChannelId(TadoBindingConstants.CHANNEL_ZONE_HEATING_POWER)
-                .withRequired(capabilitiesSupport.heatingPower())
-                .withAcceptedItemType(CoreItemFactory.NUMBER)
-                .withTranslationProvider(translationProvider));
-
-        // channel builder for CHANNNEL_TYPE_HUMIDITY
-        channelBuilders.add(new ZoneChannelBuilder(thing)
-                .withChannelId(TadoBindingConstants.CHANNEL_ZONE_HUMIDITY)
-                .withRequired(capabilitiesSupport.humidity())
-                .withAcceptedItemType(CoreItemFactory.NUMBER)
-                .withTranslationProvider(translationProvider));
-
-        // channel builder for CHANNNEL_TYPE_CURRENT_TEMPERATURE
-        channelBuilders.add(new ZoneChannelBuilder(thing)
-                .withChannelId(TadoBindingConstants.CHANNEL_ZONE_CURRENT_TEMPERATURE)
-                .withRequired(capabilitiesSupport.currentTemperature())
-                .withAcceptedItemType(CoreItemFactory.NUMBER + ":Temperature")
-                .withTranslationProvider(translationProvider));
-        // @formatter:on
-
-        boolean dirty = false;
-        for (ZoneChannelBuilder channelBuilder : channelBuilders) {
-            dirty |= channelBuilder.isDirty();
-        }
-
-        int added = 0;
-        int removed = 0;
-
-        if (dirty) {
-            List<Channel> channels = new ArrayList<>(thing.getChannels());
-
-            for (ZoneChannelBuilder channelBuilder : channelBuilders) {
-                if (channelBuilder.isAddingRequired()) {
-                    added++;
-                    if (channelBuilder.getInsertPosition() == InsertPosition.START) {
-                        channels.add(0, channelBuilder.build());
-                    } else {
-                        channels.add(channelBuilder.build());
-                    }
-                } else if (channelBuilder.isRemovingRequired()) {
-                    removed++;
-                    channels.removeIf(channelBuilder.getPredicate());
-                }
+        if (!removeList.isEmpty()) {
+            if (logger.isDebugEnabled()) {
+                StringJoiner joiner = new StringJoiner(", ");
+                removeList.forEach(c -> joiner.add(c.getUID().getId()));
+                logger.debug("Removing unsupported channels for {}: {}", thing.getUID(), joiner.toString());
             }
-
-            scheduler.submit(() -> updateThing(editThing().withChannels(channels).build()));
+            updateThing(editThing().withoutChannels(removeList).build());
         }
-        logger.debug("updateDynamicChannels(): {} channels added:{}, removed:{}", thing.getUID(), added, removed);
     }
 }

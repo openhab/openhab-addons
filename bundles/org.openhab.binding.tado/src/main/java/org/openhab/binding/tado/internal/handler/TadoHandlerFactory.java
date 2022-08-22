@@ -24,7 +24,6 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.tado.internal.TadoTranslationProvider;
 import org.openhab.binding.tado.internal.discovery.TadoDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.i18n.LocaleProvider;
@@ -56,16 +55,11 @@ public class TadoHandlerFactory extends BaseThingHandlerFactory {
 
     private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
-    private final LocaleProvider localeProvider;
-    private final TranslationProvider i18nProvider;
     private final TadoStateDescriptionProvider stateDescriptionProvider;
-    private @Nullable TadoTranslationProvider tadoTranslationProvider;
 
     @Activate
     public TadoHandlerFactory(@Reference TranslationProvider i18nProvider, @Reference LocaleProvider localeProvider,
             @Reference TadoStateDescriptionProvider stateDescriptionProvider) {
-        this.i18nProvider = i18nProvider;
-        this.localeProvider = localeProvider;
         this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
@@ -83,7 +77,7 @@ public class TadoHandlerFactory extends BaseThingHandlerFactory {
             registerTadoDiscoveryService(tadoHomeHandler);
             return tadoHomeHandler;
         } else if (thingTypeUID.equals(THING_TYPE_ZONE)) {
-            return new TadoZoneHandler(thing, stateDescriptionProvider, getTadoTranslationProvider());
+            return new TadoZoneHandler(thing, stateDescriptionProvider);
         } else if (thingTypeUID.equals(THING_TYPE_MOBILE_DEVICE)) {
             return new TadoMobileDeviceHandler(thing);
         }
@@ -112,14 +106,5 @@ public class TadoHandlerFactory extends BaseThingHandlerFactory {
                 }
             }
         }
-    }
-
-    private TadoTranslationProvider getTadoTranslationProvider() {
-        TadoTranslationProvider result = this.tadoTranslationProvider;
-        if (result == null) {
-            result = new TadoTranslationProvider(getBundleContext().getBundle(), i18nProvider, localeProvider);
-            this.tadoTranslationProvider = result;
-        }
-        return result;
     }
 }

@@ -36,12 +36,26 @@
 		<description>A zone of a home</description>
 
 		<channels>
-			<!-- static channels for all zone types (other channels are created dynamically) -->
+			<channel typeId="currentTemperature" id="currentTemperature"></channel>
+			<channel typeId="humidity" id="humidity"></channel>
+			<channel typeId="heatingPower" id="heatingPower"></channel>
+			<channel typeId="acPower" id="acPower"></channel>
+			<channel typeId="fanspeed" id="fanspeed"></channel>
+			<channel typeId="fanLevel" id="fanLevel"></channel>
+			<channel typeId="swing" id="swing"></channel>
+			<channel typeId="horizontalSwing" id="horizontalSwing"></channel>
+			<channel typeId="verticalSwing" id="verticalSwing"></channel>
+			<channel typeId="light" id="light"></channel>
 			<channel typeId="hvacMode" id="hvacMode"></channel>
 			<channel typeId="targetTemperature" id="targetTemperature"></channel>
 			<channel typeId="operationMode" id="operationMode"></channel>
 			<channel typeId="overlayExpiry" id="overlayExpiry"></channel>
 			<channel typeId="timerDuration" id="timerDuration"></channel>
+			<channel typeId="openWindowDetected" id="openWindowDetected"></channel>
+			<channel typeId="system.low-battery" id="batteryLowAlarm">
+				<label>Battery Low Alarm</label>
+				<description>ON if one or more devices in the zone have a low battery</description>
+			</channel>
 		</channels>
 
 		<properties>
@@ -294,14 +308,6 @@
 		<label>Open Window Detected</label>
 		<description>Indicates if an open window has been detected</description>
 		<category>window</category>
-		<state readOnly="true"></state>
-	</channel-type>
-
-	<channel-type id="batteryLowAlarm">
-		<item-type>Switch</item-type>
-		<label>Battery Low Alarm</label>
-		<description>ON if one or more devices in the zone have a low battery</description>
-		<category>lowbattery</category>
 		<state readOnly="true"></state>
 	</channel-type>
 
