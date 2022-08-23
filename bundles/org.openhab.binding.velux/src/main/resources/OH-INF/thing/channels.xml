@@ -132,6 +132,13 @@
 
 	<!-- Channel Type - Generic Things -->
 
+	<channel-type id="windowPosition">
+		<item-type>Rollershutter</item-type>
+		<label>@text/channel-type.velux.windowPosition.label</label>
+		<description>@text/channel-type.velux.windowPosition.description</description>
+		<category>Window</category>
+	</channel-type>
+
 	<channel-type id="position">
 		<item-type>Rollershutter</item-type>
 		<label>@text/channel-type.velux.position.label</label>
