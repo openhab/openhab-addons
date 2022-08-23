@@ -22,14 +22,9 @@ public class HomeManager extends RestManager {
         return getList(HomeNodesResponse.class, NODES_SUB_PATH);
     }
 
-    @SuppressWarnings("unchecked")
-    public <T> HomeNodeEndpointState getEndpointsState(int nodeId, int stateSignalId, Class<T> valueType)
-            throws FreeboxException {
-        if (Boolean.class.equals(valueType)) {
-            return get(HomeNodeEndpointStateResponse.class, ENDPOINTS_SUB_PATH, String.valueOf(nodeId),
-                    String.valueOf(stateSignalId));
-        }
-        throw new FreeboxException("Not managed state type");
+    public <T> HomeNodeEndpointState getEndpointsState(int nodeId, int stateSignalId) throws FreeboxException {
+        return get(HomeNodeEndpointStateResponse.class, ENDPOINTS_SUB_PATH, String.valueOf(nodeId),
+                String.valueOf(stateSignalId));
     }
 
     public <T> void putCommand(int nodeId, int stateSignalId, T value) throws FreeboxException {
