@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mercedesme"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-group-type id="light-values">
+		<label>Light Status</label>
+		<description>Light Status of interior lights and main light switch</description>
+		<channels>
+			<channel id="interior-front" typeId="interior-front-channel"/>
+			<channel id="interior-rear" typeId="interior-rear-channel"/>
+			<channel id="light-switch" typeId="light-switch-channel"/>
+			<channel id="reading-left" typeId="reading-left-channel"/>
+			<channel id="reading-right" typeId="reading-right-channel"/>
+			<channel id="last-update" typeId="last-lights-update-channel"/>
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>
