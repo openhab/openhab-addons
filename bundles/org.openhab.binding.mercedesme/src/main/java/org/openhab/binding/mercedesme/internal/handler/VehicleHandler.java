@@ -189,8 +189,7 @@ public class VehicleHandler extends BaseThingHandler {
                 }
                 updateState(new ChannelUID(thing.getUID(), GROUP_IMAGE, "clear-cache"), OnOffType.OFF);
             } else {
-                String textKey = Constants.STATUS_TEXT_PREFIX + "vehicle" + Constants.STATUS_BRIDGEHANDLER_MISSING;
-                updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.HANDLER_INITIALIZING_ERROR, textKey);
+                throw new IllegalStateException("BridgeHandler is null");
             }
         } else {
             String textKey = Constants.STATUS_TEXT_PREFIX + "vehicle" + Constants.STATUS_BRIDGE_MISSING;

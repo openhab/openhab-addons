@@ -81,9 +81,6 @@ Some supporting screenshots for the setup
 
 <img src="./doc/CallbackUrl_Page.png" width="500" height="350"/>
 
-Prefix of URL *Nicht sicher* translates to *Not safe* due to the fact that *http* is uses instead of *https*. 
-In this case it's ok because this URL isn't accessible from the outside.
-The Mercedes authorization response is forwarding the response to your local IP address.
 
 ### Bridge Configuration Parameters
 

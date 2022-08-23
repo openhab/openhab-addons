@@ -84,7 +84,6 @@ public class Constants {
     public static final String STATUS_CLIENT_SECRET_MISSING = ".status.client-secret-missing";
     public static final String STATUS_SERVER_RESTART = ".status.server-restart";
     public static final String STATUS_BRIDGE_MISSING = ".status.bridge-missing";
-    public static final String STATUS_BRIDGEHANDLER_MISSING = ".status.bridge-handler-missing";
     public static final String STATUS_BRIDGE_ATHORIZATION = ".status.bridge-authoriziation";
 
     public static final String SPACE = " ";
