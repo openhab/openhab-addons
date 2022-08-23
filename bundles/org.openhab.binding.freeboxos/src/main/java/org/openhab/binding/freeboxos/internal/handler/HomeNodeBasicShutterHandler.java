@@ -30,7 +30,7 @@ public class HomeNodeBasicShutterHandler extends ApiConsumerHandler {
     protected void internalPoll() throws FreeboxException {
         BasicShutter config = getBasicShutterConfig();
         HomeManager manager = getManager(HomeManager.class);
-        HomeNodeEndpointState state = manager.getEndpointsState(config.nodeId, config.stateSignalId, Boolean.class);
+        HomeNodeEndpointState state = manager.getEndpointsState(config.nodeId, config.stateSignalId);
         Double percent = null;
         if ("bool".equals(state.getValueType())) {
             percent = Boolean.TRUE.equals(state.asBoolean()) ? 1.0 : 0.0;
