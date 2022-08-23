@@ -23,14 +23,17 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  *
  * @author Bernd Pfrommer - Initial contribution
  * @author Rob Nielsen - Port to openHAB 2 insteon binding
+ * @author Jeremy Setton - Improvements for openHAB 3 insteon binding
  */
 @NonNullByDefault
 public class X10 {
+    public static final char HOUSE_CODE_MIN = 'A';
+    public static final char HOUSE_CODE_MAX = 'P';
+    public static final int UNIT_CODE_MIN = 1;
+    public static final int UNIT_CODE_MAX = 16;
+
     /**
-     * Enumerates the X10 command codes.
-     *
-     * @author Bernd Pfrommer - openHAB 1 insteonplm binding
-     *
+     * Enumerates the X10 command codes
      */
     public enum Command {
         ALL_LIGHTS_OFF(0x6),
@@ -52,8 +55,8 @@ public class X10 {
 
         private final byte code;
 
-        Command(int b) {
-            code = (byte) b;
+        Command(int code) {
+            this.code = (byte) code;
         }
 
         public byte code() {
@@ -62,49 +65,102 @@ public class X10 {
     }
 
     /**
-     * converts house code to clear text
+     * Enumerates the X10 flag codes
+     */
+    public enum Flag {
+        ADDRESS(0x00),
+        COMMAND(0x80);
+
+        private byte code;
+
+        Flag(int code) {
+            this.code = (byte) code;
+        }
+
+        public byte code() {
+            return code;
+        }
+    }
+
+    /**
+     * Returns house code as string
      *
      * @param c house code as per X10 spec
      * @return clear text house code, i.e letter A-P
      */
     public static String houseToString(byte c) {
         String s = houseCodeToString.get(c & 0xff);
-        return (s == null) ? "X" : s;
+        return s == null ? "X" : s;
     }
 
     /**
-     * converts unit code to regular integer
+     * Returns unit code as integer
      *
      * @param c unit code per X10 spec
      * @return decoded integer, i.e. number 0-16
      */
     public static int unitToInt(byte c) {
         Integer i = unitCodeToInt.get(c & 0xff);
-        return (i == null) ? -1 : i;
+        return i == null ? -1 : i;
     }
 
     /**
-     * Test if string has valid X10 address of form "H.U", e.g. A.10
+     * Returns if an X10 address is valid
      *
      * @param s string to test
-     * @return true if is valid X10 address
+     * @return true if valid X10 address
      */
     public static boolean isValidAddress(String s) {
         String[] parts = s.split("\\.");
         if (parts.length != 2) {
             return false;
         }
-        return parts[0].matches("[A-P]") && parts[1].matches("\\d{1,2}");
+        return isValidHouseCode(parts[0]) && isValidUnitCode(parts[1]);
     }
 
     /**
-     * Turn clear text address ("A.10") to byte code
+     * Returns if a house code is valid
      *
-     * @param addr clear text address
+     * @param s house code to test
+     * @return true if valid house code
+     */
+    public static boolean isValidHouseCode(String s) {
+        return s.length() == 1 && s.charAt(0) >= HOUSE_CODE_MIN && s.charAt(0) <= HOUSE_CODE_MAX;
+    }
+
+    /**
+     * Returns if a unit code as an integer is valid
+     *
+     * @param i unit code to test
+     * @return true if valid unit code
+     */
+    public static boolean isValidUnitCode(int i) {
+        return i >= UNIT_CODE_MIN && i <= UNIT_CODE_MAX;
+    }
+
+    /**
+     * Returns if a unit code as a string is valid
+     *
+     * @param s unit code to test
+     * @return true if valid unit code
+     */
+    public static boolean isValidUnitCode(String s) {
+        try {
+            int i = Integer.parseInt(s);
+            return isValidUnitCode(i);
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    /**
+     * Returns X10 address to byte code
+     *
+     * @param address clear text address
      * @return byte that encodes house + unit code
      */
-    public static byte addressToByte(String addr) {
-        String[] parts = addr.split("\\.");
+    public static byte addressToByte(String address) {
+        String[] parts = address.split("\\.");
         int ih = houseStringToCode(parts[0]);
         int iu = unitStringToCode(parts[1]);
         int itot = ih << 4 | iu;
@@ -112,7 +168,7 @@ public class X10 {
     }
 
     /**
-     * converts String to house byte code
+     * Returns house string as code
      *
      * @param s clear text house string
      * @return coded house byte
@@ -127,7 +183,7 @@ public class X10 {
     }
 
     /**
-     * converts unit string to unit code
+     * Returns unit string as code
      *
      * @param s string with clear text integer inside
      * @return encoded unit byte

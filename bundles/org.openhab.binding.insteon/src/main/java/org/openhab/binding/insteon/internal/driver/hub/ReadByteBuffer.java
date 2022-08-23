@@ -16,20 +16,20 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * ReadByteBuffer buffer class
  *
  * @author Daniel Pfrommer - Initial contribution
  * @author Rob Nielsen - Port to openHAB 2 insteon binding
+ * @author Jeremy Setton - Improvements for openHAB 3 insteon binding
  */
 @NonNullByDefault
 public class ReadByteBuffer {
-    private byte buf[]; // the actual buffer
+    private byte[] buffer; // the actual buffer
     private int count; // number of valid bytes
     private int index = 0; // current read index
-    private boolean done = false;
+    private boolean eof = false;
 
     /**
      * Constructor for ByteArrayIO with dynamic size
@@ -37,19 +37,19 @@ public class ReadByteBuffer {
      * @param size initial size, but will grow dynamically
      */
     public ReadByteBuffer(int size) {
-        this.buf = new byte[size];
+        this.buffer = new byte[size];
     }
 
     /**
-     * Done reading bytes
+     * Closes buffer
      */
-    public synchronized void done() {
-        done = true;
+    public synchronized void close() {
+        eof = true;
         notifyAll();
     }
 
     /**
-     * Number of unread bytes
+     * Returns number of unread bytes
      *
      * @return number of bytes not yet read
      */
@@ -60,11 +60,11 @@ public class ReadByteBuffer {
     /**
      * Blocking read of a single byte
      *
-     * @return byte read
+     * @return -1 if eof, otherwise next byte read as an integer
      * @throws IOException
      */
-    public synchronized byte get() throws IOException {
-        while (!done && remaining() < 1) {
+    public synchronized int get() throws IOException {
+        while (!eof && remaining() < 1) {
             try {
                 wait();
             } catch (InterruptedException e) {
@@ -72,24 +72,24 @@ public class ReadByteBuffer {
             }
         }
 
-        if (done) {
-            throw new IOException("done");
+        if (eof) {
+            return -1;
         }
 
-        return buf[index++];
+        return (int) buffer[index++];
     }
 
     /**
      * Blocking read of multiple bytes
      *
-     * @param bytes destination array for bytes read
+     * @param b destination array for bytes read
      * @param off offset into dest array
      * @param len max number of bytes to read into dest array
-     * @return number of bytes actually read
+     * @return -1 if eof, otherwise number of bytes read
      * @throws IOException
      */
-    public synchronized int get(byte @Nullable [] bytes, int off, int len) throws IOException {
-        while (!done && remaining() < 1) {
+    public synchronized int get(byte[] b, int off, int len) throws IOException {
+        while (!eof && remaining() < 1) {
             try {
                 wait();
             } catch (InterruptedException e) {
@@ -97,16 +97,14 @@ public class ReadByteBuffer {
             }
         }
 
-        if (done) {
-            throw new IOException("done");
+        if (eof) {
+            return -1;
         }
 
-        int b = Math.min(len, remaining());
-        if (bytes != null) {
-            System.arraycopy(buf, index, bytes, off, b);
-        }
-        index += b;
-        return b;
+        int numBytes = Math.min(len, remaining());
+        System.arraycopy(buffer, index, b, off, numBytes);
+        index += numBytes;
+        return numBytes;
     }
 
     /**
@@ -116,20 +114,20 @@ public class ReadByteBuffer {
      * @param off starting offset into buffer
      * @param len number of bytes to add
      */
-    private synchronized void add(byte b[], int off, int len) {
-        if ((off < 0) || (off > b.length) || (len < 0) || ((off + len) > b.length) || ((off + len) < 0)) {
+    private synchronized void add(byte[] b, int off, int len) {
+        if (off < 0 || len < 0 || off + len > b.length) {
             throw new IndexOutOfBoundsException();
         } else if (len == 0) {
             return;
         }
-        int nCount = count + len;
-        if (nCount > buf.length) {
+        int newCount = count + len;
+        if (newCount > buffer.length) {
             // dynamically grow the array
-            buf = Arrays.copyOf(buf, Math.max(buf.length << 1, nCount));
+            buffer = Arrays.copyOf(buffer, Math.max(buffer.length << 1, newCount));
         }
         // append new data to end of buffer
-        System.arraycopy(b, off, buf, count, len);
-        count = nCount;
+        System.arraycopy(b, off, buffer, count, len);
+        count = newCount;
         notifyAll();
     }
 
@@ -143,16 +141,16 @@ public class ReadByteBuffer {
     }
 
     /**
-     * Shrink the buffer to smallest size possible
+     * Shrinks the buffer to smallest size possible
      */
     public synchronized void makeCompact() {
         if (index == 0) {
             return;
         }
-        byte[] newBuf = new byte[remaining()];
-        System.arraycopy(buf, index, newBuf, 0, newBuf.length);
+        byte[] newBuffer = new byte[remaining()];
+        System.arraycopy(buffer, index, newBuffer, 0, newBuffer.length);
         index = 0;
-        count = newBuf.length;
-        buf = newBuf;
+        count = newBuffer.length;
+        buffer = newBuffer;
     }
 }

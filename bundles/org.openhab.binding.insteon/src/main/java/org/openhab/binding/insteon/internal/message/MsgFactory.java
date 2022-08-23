@@ -16,7 +16,7 @@ import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.insteon.internal.utils.Utils;
+import org.openhab.binding.insteon.internal.utils.ByteUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,7 +77,9 @@ public class MsgFactory {
         System.arraycopy(data, 0, buf, end, l);
         end += l;
         // copy the incoming data to the end of the buffer
-        logger.trace("read buffer: len {} data: {}", end, Utils.getHexString(buf, end));
+        if (logger.isTraceEnabled()) {
+            logger.trace("read buffer: len {} data: {}", end, ByteUtils.getHexString(buf, end, false));
+        }
     }
 
     /**
@@ -92,7 +94,9 @@ public class MsgFactory {
         Msg msg = null;
         // handle the case where we get a pure nack
         if (end > 0 && buf[0] == 0x15) {
-            logger.trace("got pure nack!");
+            if (logger.isTraceEnabled()) {
+                logger.trace("got pure nack!");
+            }
             removeFromBuffer(1);
             try {
                 msg = Msg.makeMessage("PureNACK");
@@ -112,19 +116,23 @@ public class MsgFactory {
             // we have some data, but do we have enough to read the entire header?
             int headerLength = Msg.getHeaderLength(buf[1]);
             boolean isExtended = Msg.isExtended(buf, end, headerLength);
-            logger.trace("header length expected: {} extended: {}", headerLength, isExtended);
+            if (logger.isTraceEnabled()) {
+                logger.trace("header length expected: {} extended: {}", headerLength, isExtended);
+            }
             if (headerLength < 0) {
                 removeFromBuffer(1); // get rid of the leading 0x02 so draining works
-                bail("got unknown command code " + Utils.getHexByte(buf[0]));
+                bail("got unknown command code " + ByteUtils.getHexString(buf[0]));
             } else if (headerLength >= 2) {
                 if (end >= headerLength) {
                     // only when the header is complete do we know that isExtended is correct!
                     int msgLen = Msg.getMessageLength(buf[1], isExtended);
-                    logger.trace("msgLen expected: {}", msgLen);
+                    if (logger.isTraceEnabled()) {
+                        logger.trace("msgLen expected: {}", msgLen);
+                    }
                     if (msgLen < 0) {
                         // Cannot make sense out of the combined command code & isExtended flag.
                         removeFromBuffer(1);
-                        bail("got unknown command code/ext flag " + Utils.getHexByte(buf[0]));
+                        bail("got unknown command code/ext flag " + ByteUtils.getHexString(buf[0]));
                     } else if (msgLen > 0) {
                         if (end >= msgLen) {
                             msg = Msg.createMessage(buf, msgLen, isExtended);
@@ -140,15 +148,19 @@ public class MsgFactory {
         }
         // indicate no more messages available in buffer if empty or undefined message
         if (end == 0 || msg == null) {
-            logger.trace("done processing current buffer data");
+            if (logger.isTraceEnabled()) {
+                logger.trace("done processing current buffer data");
+            }
             done = true;
         }
-        logger.trace("keeping buffer len {} data: {}", end, Utils.getHexString(buf, end));
+        if (logger.isTraceEnabled()) {
+            logger.trace("keeping buffer len {} data: {}", end, ByteUtils.getHexString(buf, end, false));
+        }
         return msg;
     }
 
     private void bail(String txt) throws IOException {
-        drainBuffer(); // this will drain until end or it finds the next 0x02
+        drainBuffer(); // this will drain until end or it finds the next message start
         logger.debug("bad data received: {}", txt);
         throw new IOException(txt);
     }

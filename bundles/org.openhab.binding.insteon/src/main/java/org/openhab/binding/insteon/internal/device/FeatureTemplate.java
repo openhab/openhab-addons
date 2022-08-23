@@ -15,9 +15,15 @@ package org.openhab.binding.insteon.internal.device;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.insteon.internal.handler.feature.CommandHandler;
+import org.openhab.binding.insteon.internal.handler.feature.MessageDispatcher;
+import org.openhab.binding.insteon.internal.handler.feature.MessageHandler;
+import org.openhab.binding.insteon.internal.handler.feature.PollHandler;
+import org.openhab.binding.insteon.internal.utils.ByteUtils;
 import org.openhab.core.types.Command;
 
 /**
@@ -27,109 +33,58 @@ import org.openhab.core.types.Command;
  *
  * @author Daniel Pfrommer - Initial contribution
  * @author Rob Nielsen - Port to openHAB 2 insteon binding
+ * @author Jeremy Setton - Improvements for openHAB 3 insteon binding
  */
 @NonNullByDefault
 public class FeatureTemplate {
-    private String name;
-    private String timeout;
-    private boolean isStatus;
-    private @Nullable HandlerEntry dispatcher = null;
-    private @Nullable HandlerEntry pollHandler = null;
-    private @Nullable HandlerEntry defaultMsgHandler = null;
-    private @Nullable HandlerEntry defaultCmdHandler = null;
+    private String type;
+    private @Nullable HandlerEntry dispatcher;
+    private @Nullable HandlerEntry pollHandler;
+    private @Nullable HandlerEntry defaultMsgHandler;
+    private @Nullable HandlerEntry defaultCmdHandler;
     private Map<Integer, HandlerEntry> messageHandlers = new HashMap<>();
     private Map<Class<? extends Command>, HandlerEntry> commandHandlers = new HashMap<>();
+    private Map<String, String> parameters = new HashMap<>();
 
-    public FeatureTemplate(String name, boolean isStatus, String timeout) {
-        this.name = name;
-        this.isStatus = isStatus;
-        this.timeout = timeout;
+    public FeatureTemplate(String type, Map<String, String> parameters) {
+        this.type = type;
+        this.parameters = parameters;
     }
 
-    // simple getters
-    public String getName() {
-        return name;
+    public void setMessageDispatcher(HandlerEntry dispatcher) {
+        this.dispatcher = dispatcher;
     }
 
-    public String getTimeout() {
-        return timeout;
+    public void setPollHandler(HandlerEntry pollHandler) {
+        this.pollHandler = pollHandler;
     }
 
-    public boolean isStatusFeature() {
-        return isStatus;
+    public void setDefaultCommandHandler(HandlerEntry defaultCmdHandler) {
+        this.defaultCmdHandler = defaultCmdHandler;
     }
 
-    public @Nullable HandlerEntry getPollHandler() {
-        return pollHandler;
-    }
-
-    public @Nullable HandlerEntry getDispatcher() {
-        return dispatcher;
-    }
-
-    public @Nullable HandlerEntry getDefaultCommandHandler() {
-        return defaultCmdHandler;
-    }
-
-    public @Nullable HandlerEntry getDefaultMessageHandler() {
-        return defaultMsgHandler;
+    public void setDefaultMessageHandler(HandlerEntry defaultMsgHandler) {
+        this.defaultMsgHandler = defaultMsgHandler;
     }
 
     /**
-     * Retrieves a hashmap of message command code to command handler name
+     * Adds a message handler to this feature template
      *
-     * @return a Hashmap from Integer to String representing the command codes and the associated message handlers
+     * @param command the insteon command to be mapped
+     * @param msgHandler the message handler entry to map to
      */
-    public Map<Integer, HandlerEntry> getMessageHandlers() {
-        return messageHandlers;
+    public void addMessageHandler(int command, HandlerEntry msgHandler) {
+        messageHandlers.put(command, msgHandler);
     }
 
     /**
-     * Similar to getMessageHandlers(), but for command handlers
-     * Instead of Integers it uses the class of the Command as a key
+     * Adds a command handler to this feature template
      *
-     * @see #getMessageHandlers()
-     * @return a HashMap from Command Classes to CommandHandler names
+     * @param classRef the command class reference to be mapped
+     * @param cmdHandler the command handler entry to map to
      */
-    public Map<Class<? extends Command>, HandlerEntry> getCommandHandlers() {
-        return commandHandlers;
-    }
-
-    // simple setters
-
-    public void setMessageDispatcher(HandlerEntry he) {
-        dispatcher = he;
-    }
-
-    public void setPollHandler(HandlerEntry he) {
-        pollHandler = he;
-    }
-
-    public void setDefaultCommandHandler(HandlerEntry cmd) {
-        defaultCmdHandler = cmd;
-    }
-
-    public void setDefaultMessageHandler(HandlerEntry he) {
-        defaultMsgHandler = he;
-    }
-
-    /**
-     * Adds a message handler mapped from the command which this handler should be invoked for
-     * to the name of the handler to be created
-     *
-     * @param cmd command to be mapped
-     * @param he handler entry to map to
-     */
-    public void addMessageHandler(int cmd, HandlerEntry he) {
-        messageHandlers.put(cmd, he);
-    }
-
-    /**
-     * Adds a command handler mapped from the command class which this handler should be invoke for
-     * to the name of the handler to be created
-     */
-    public void addCommandHandler(Class<? extends Command> command, HandlerEntry he) {
-        commandHandlers.put(command, he);
+    public void addCommandHandler(Class<? extends Command> classRef, HandlerEntry cmdHandler) {
+        commandHandlers.put(classRef, cmdHandler);
     }
 
     /**
@@ -138,46 +93,122 @@ public class FeatureTemplate {
      * @return the feature which this template describes
      */
     public DeviceFeature build() {
-        DeviceFeature f = new DeviceFeature(name);
-        f.setStatusFeature(isStatus);
-        f.setTimeout(timeout);
+        DeviceFeature feature = new DeviceFeature(type);
+        // add feature template parameters
+        feature.addParameters(parameters);
+
         HandlerEntry dispatcher = this.dispatcher;
         if (dispatcher != null) {
-            f.setMessageDispatcher(MessageDispatcher.makeHandler(dispatcher.getName(), dispatcher.getParams(), f));
+            MessageDispatcher handler = MessageDispatcher.makeHandler(dispatcher.getName(), dispatcher.getParameters(),
+                    feature);
+            if (handler != null) {
+                feature.setMessageDispatcher(handler);
+            }
         }
+
         HandlerEntry pollHandler = this.pollHandler;
         if (pollHandler != null) {
-            f.setPollHandler(PollHandler.makeHandler(pollHandler, f));
+            PollHandler handler = PollHandler.makeHandler(pollHandler.getName(), pollHandler.getParameters(), feature);
+            if (handler != null) {
+                feature.setPollHandler(handler);
+            }
         }
+
         HandlerEntry defaultCmdHandler = this.defaultCmdHandler;
         if (defaultCmdHandler != null) {
-            CommandHandler h = CommandHandler.makeHandler(defaultCmdHandler.getName(), defaultCmdHandler.getParams(),
-                    f);
-            if (h != null) {
-                f.setDefaultCommandHandler(h);
+            CommandHandler handler = CommandHandler.makeHandler(defaultCmdHandler.getName(),
+                    defaultCmdHandler.getParameters(), feature);
+            if (handler != null) {
+                feature.setDefaultCommandHandler(handler);
             }
         }
+
         HandlerEntry defaultMsgHandler = this.defaultMsgHandler;
         if (defaultMsgHandler != null) {
-            MessageHandler h = MessageHandler.makeHandler(defaultMsgHandler.getName(), defaultMsgHandler.getParams(),
-                    f);
-            if (h != null) {
-                f.setDefaultMsgHandler(h);
+            MessageHandler handler = MessageHandler.makeHandler(defaultMsgHandler.getName(),
+                    defaultMsgHandler.getParameters(), feature);
+            if (handler != null) {
+                feature.setDefaultMsgHandler(handler);
             }
         }
-        for (Entry<Integer, HandlerEntry> mH : messageHandlers.entrySet()) {
-            f.addMessageHandler(mH.getKey(),
-                    MessageHandler.makeHandler(mH.getValue().getName(), mH.getValue().getParams(), f));
+
+        for (Entry<Integer, HandlerEntry> msgHandler : messageHandlers.entrySet()) {
+            MessageHandler handler = MessageHandler.makeHandler(msgHandler.getValue().getName(),
+                    msgHandler.getValue().getParameters(), feature);
+            if (handler != null) {
+                feature.addMessageHandler(msgHandler.getKey(), handler);
+            }
         }
-        for (Entry<Class<? extends Command>, HandlerEntry> cH : commandHandlers.entrySet()) {
-            f.addCommandHandler(cH.getKey(),
-                    CommandHandler.makeHandler(cH.getValue().getName(), cH.getValue().getParams(), f));
+
+        for (Entry<Class<? extends Command>, HandlerEntry> cmdHandler : commandHandlers.entrySet()) {
+            CommandHandler handler = CommandHandler.makeHandler(cmdHandler.getValue().getName(),
+                    cmdHandler.getValue().getParameters(), feature);
+            if (handler != null) {
+                feature.addCommandHandler(cmdHandler.getKey(), handler);
+            }
         }
-        return f;
+
+        return feature;
     }
 
     @Override
     public String toString() {
-        return getName() + "(" + isStatusFeature() + ")";
+        String s = "type:" + type;
+        if (!parameters.isEmpty()) {
+            s += "|parameters:" + parameters.entrySet().stream().map(Entry::toString).collect(Collectors.joining(","));
+        }
+        if (dispatcher != null) {
+            s += "|dispatcher:" + dispatcher;
+        }
+        if (dispatcher != null) {
+            s += "|pollHandler:" + pollHandler;
+        }
+        if (defaultMsgHandler != null) {
+            s += "|defaultMsgHandler:" + defaultMsgHandler;
+        }
+        if (defaultCmdHandler != null) {
+            s += "|defaultCmdHandler:" + defaultCmdHandler;
+        }
+        if (!messageHandlers.isEmpty()) {
+            s += "|msgHandlers:" + messageHandlers.entrySet().stream()
+                    .map(mH -> String.format("%s->%s", ByteUtils.getHexString(mH.getKey()), mH.getValue()))
+                    .collect(Collectors.joining(","));
+        }
+        if (!commandHandlers.isEmpty()) {
+            s += "|cmdHandlers:" + commandHandlers.entrySet().stream()
+                    .map(cH -> String.format("%s->%s", cH.getKey().getSimpleName(), cH.getValue()))
+                    .collect(Collectors.joining(","));
+        }
+        return s;
+    }
+
+    /**
+     * Class that reflects handler entry
+     */
+    public static class HandlerEntry {
+        String name;
+        Map<String, String> parameters;
+
+        HandlerEntry(String name, Map<String, String> parameters) {
+            this.name = name;
+            this.parameters = parameters;
+        }
+
+        String getName() {
+            return name;
+        }
+
+        Map<String, String> getParameters() {
+            return parameters;
+        }
+
+        @Override
+        public String toString() {
+            String s = name;
+            if (!parameters.isEmpty()) {
+                s += parameters;
+            }
+            return s;
+        }
     }
 }

@@ -18,6 +18,7 @@ import java.io.OutputStream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.insteon.internal.InsteonBindingConstants;
 import org.openhab.core.io.transport.serial.PortInUseException;
 import org.openhab.core.io.transport.serial.SerialPort;
 import org.openhab.core.io.transport.serial.SerialPortIdentifier;
@@ -27,100 +28,67 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Implements IOStream for serial devices.
+ * Implements IOStream for serial devices
  *
  * @author Bernd Pfrommer - Initial contribution
  * @author Daniel Pfrommer - openHAB 1 insteonplm binding
  * @author Rob Nielsen - Port to openHAB 2 insteon binding
+ * @author Jeremy Setton - Improvements for openHAB 3 insteon binding
  */
 @NonNullByDefault
 public class SerialIOStream extends IOStream {
     private final Logger logger = LoggerFactory.getLogger(SerialIOStream.class);
-    private @Nullable SerialPort port = null;
-    private final String appName = "PLM";
-    private int baudRate = 19200;
-    private String devName;
-    private boolean validConfig = true;
-    private @Nullable SerialPortManager serialPortManager;
 
-    public SerialIOStream(@Nullable SerialPortManager serialPortManager, String config) {
+    private String name;
+    private int baudRate;
+    private SerialPortManager serialPortManager;
+    private @Nullable SerialPort port;
+
+    public SerialIOStream(String name, int baudRate, SerialPortManager serialPortManager) {
+        this.name = name;
+        this.baudRate = baudRate;
         this.serialPortManager = serialPortManager;
+    }
 
-        String[] parts = config.split(",");
-        devName = parts[0];
-        for (int i = 1; i < parts.length; i++) {
-            String parameter = parts[i];
-            String[] paramParts = parameter.split("=");
-            if (paramParts.length != 2) {
-                logger.warn("{} invalid parameter format '{}', must be 'key=value'.", config, parameter);
-
-                validConfig = false;
-            } else {
-                String key = paramParts[0];
-                String value = paramParts[1];
-                if ("baudRate".equals(key)) {
-                    try {
-                        baudRate = Integer.parseInt(value);
-                    } catch (NumberFormatException e) {
-                        logger.warn("{} baudRate {} must be an integer.", config, value);
-
-                        validConfig = false;
-                    }
-                } else {
-                    logger.warn("{} invalid parameter '{}'.", config, parameter);
-
-                    validConfig = false;
-                }
-            }
-        }
+    @Override
+    public boolean isOpen() {
+        return port != null;
     }
 
     @Override
     public boolean open() {
-        if (!validConfig) {
-            logger.warn("{} has an invalid configuration.", devName);
+        if (isOpen()) {
+            logger.warn("serial port is already open");
             return false;
         }
 
         try {
-            SerialPortManager serialPortManager = this.serialPortManager;
-            if (serialPortManager == null) {
-                logger.warn("serial port manager is null.");
-                return false;
-            }
-            SerialPortIdentifier spi = serialPortManager.getIdentifier(devName);
+            SerialPortIdentifier spi = serialPortManager.getIdentifier(name);
             if (spi == null) {
-                logger.warn("{} is not a valid serial port.", devName);
+                logger.warn("{} is not a valid serial port.", name);
                 return false;
             }
 
-            port = spi.open(appName, 1000);
-            open(port);
-            logger.debug("successfully opened port {}", devName);
+            SerialPort port = spi.open(InsteonBindingConstants.BINDING_ID, 1000);
+            logger.debug("setting {} baud rate to {}", name, baudRate);
+            port.setSerialPortParams(baudRate, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
+            port.setFlowControlMode(SerialPort.FLOWCONTROL_NONE);
+            port.enableReceiveThreshold(1);
+            port.enableReceiveTimeout(1000);
+            this.in = port.getInputStream();
+            this.out = port.getOutputStream();
+            this.port = port;
+            logger.debug("successfully opened port {}", name);
             return true;
         } catch (IOException e) {
-            logger.warn("cannot open port: {}, got IOException {}", devName, e.getMessage());
+            logger.warn("cannot open port: {}, got IOException {}", name, e.getMessage());
         } catch (PortInUseException e) {
-            logger.warn("cannot open port: {}, it is in use!", devName);
+            logger.warn("cannot open port: {}, it is in use!", name);
         } catch (UnsupportedCommOperationException e) {
-            logger.warn("got unsupported operation {} on port {}", e.getMessage(), devName);
+            logger.warn("got unsupported operation {} on port {}", e.getMessage(), name);
         }
 
         return false;
-    }
-
-    private void open(@Nullable SerialPort port) throws UnsupportedCommOperationException, IOException {
-        if (port != null) {
-            port.setSerialPortParams(baudRate, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
-            port.setFlowControlMode(SerialPort.FLOWCONTROL_NONE);
-            logger.debug("setting {} baud rate to {}", devName, baudRate);
-            port.enableReceiveThreshold(1);
-            port.enableReceiveTimeout(1000);
-            in = port.getInputStream();
-            out = port.getOutputStream();
-        } else {
-            logger.warn("port is null");
-        }
     }
 
     @Override
@@ -130,7 +98,7 @@ public class SerialIOStream extends IOStream {
             try {
                 in.close();
             } catch (IOException e) {
-                logger.warn("failed to close input stream", e);
+                logger.debug("failed to close input stream", e);
             }
             this.in = null;
         }
@@ -140,7 +108,7 @@ public class SerialIOStream extends IOStream {
             try {
                 out.close();
             } catch (IOException e) {
-                logger.warn("failed to close output stream", e);
+                logger.debug("failed to close output stream", e);
             }
             this.out = null;
         }

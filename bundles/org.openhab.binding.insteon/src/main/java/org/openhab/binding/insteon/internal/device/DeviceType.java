@@ -14,8 +14,11 @@ package org.openhab.binding.insteon.internal.device;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -25,124 +28,88 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  *
  * @author Bernd Pfrommer - Initial contribution
  * @author Rob Nielsen - Port to openHAB 2 insteon binding
+ * @author Jeremy Setton - Improvements for openHAB 3 insteon binding
  */
 @NonNullByDefault
 public class DeviceType {
-    private String productKey;
-    private String model = "";
-    private String description = "";
-    private Map<String, String> features = new HashMap<>();
-    private Map<String, FeatureGroup> featureGroups = new HashMap<>();
+    private String name;
+    private Map<String, Boolean> flags = new HashMap<>();
+    private Map<String, FeatureEntry> features = new LinkedHashMap<>();
 
     /**
      * Constructor
      *
-     * @param aProductKey the product key for this device type
+     * @param name the name for this device type
+     * @param flags the flags for this device type
+     * @param features the features for this device type
      */
-    public DeviceType(String aProductKey) {
-        productKey = aProductKey;
+    public DeviceType(String name, Map<String, Boolean> flags, Map<String, FeatureEntry> features) {
+        this.name = name;
+        this.flags = flags;
+        this.features = features;
     }
 
     /**
-     * Get supported features
+     * Returns name
+     *
+     * @return the name for this device type
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Returns flags
+     *
+     * @return all flags for this device type
+     */
+    public Map<String, Boolean> getFlags() {
+        return flags;
+    }
+
+    /**
+     * Returns supported features
      *
      * @return all features that this device type supports
      */
-    public Map<String, String> getFeatures() {
-        return features;
+    public List<FeatureEntry> getFeatures() {
+        return features.values().stream().collect(Collectors.toList());
     }
 
     /**
-     * Get all feature groups
+     * Returns supported feature groups
      *
-     * @return all feature groups of this device type
+     * @return all feature groups that this device type supports
      */
-    public Map<String, FeatureGroup> getFeatureGroups() {
-        return featureGroups;
-    }
-
-    /**
-     * Sets the descriptive model string
-     *
-     * @param aModel descriptive model string
-     */
-    public void setModel(String aModel) {
-        model = aModel;
-    }
-
-    /**
-     * Sets free text description
-     *
-     * @param aDesc free text description
-     */
-    public void setDescription(String aDesc) {
-        description = aDesc;
-    }
-
-    /**
-     * Adds feature to this device type
-     *
-     * @param aKey the key (e.g. "switch") under which this feature can be referenced in the item binding config
-     * @param aFeatureName the name (e.g. "GenericSwitch") under which the feature has been defined
-     * @return false if feature was already there
-     */
-    public boolean addFeature(String aKey, String aFeatureName) {
-        if (features.containsKey(aKey)) {
-            return false;
-        }
-        features.put(aKey, aFeatureName);
-        return true;
-    }
-
-    /**
-     * Adds feature group to device type
-     *
-     * @param aKey name of the feature group, which acts as key for lookup later
-     * @param fg feature group to add
-     * @return true if add succeeded, false if group was already there
-     */
-    public boolean addFeatureGroup(String aKey, FeatureGroup fg) {
-        if (features.containsKey(aKey)) {
-            return false;
-        }
-        featureGroups.put(aKey, fg);
-        return true;
+    public List<FeatureEntry> getFeatureGroups() {
+        return features.values().stream().filter(FeatureEntry::hasConnectedFeatures).collect(Collectors.toList());
     }
 
     @Override
     public String toString() {
-        String s = "pk:" + productKey + "|model:" + model + "|desc:" + description + "|features";
-        for (Entry<String, String> f : features.entrySet()) {
-            s += ":" + f.getKey() + "=" + f.getValue();
+        String s = "name:" + name;
+        if (!features.isEmpty()) {
+            s += "|features:" + features.values().stream().map(FeatureEntry::toString).collect(Collectors.joining(","));
         }
-        s += "|groups";
-        for (Entry<String, FeatureGroup> f : featureGroups.entrySet()) {
-            s += ":" + f.getKey() + "=" + f.getValue();
+        if (!flags.isEmpty()) {
+            s += "|flags:" + flags.entrySet().stream().map(Entry::toString).collect(Collectors.joining(","));
         }
         return s;
     }
 
     /**
-     * Class that reflects feature group association
-     *
-     * @author Bernd Pfrommer - Initial contribution
+     * Class that reflects a feature entry
      */
-    public static class FeatureGroup {
+    public static class FeatureEntry {
         private String name;
         private String type;
-        private ArrayList<String> fgFeatures = new ArrayList<>();
+        private Map<String, String> parameters;
+        private List<String> connectedFeatures = new ArrayList<>();
 
-        FeatureGroup(String name, String type) {
+        public FeatureEntry(String name, String type, Map<String, String> parameters) {
             this.name = name;
             this.type = type;
-        }
-
-        public void addFeature(String f) {
-            fgFeatures.add(f);
-        }
-
-        public ArrayList<String> getFeatures() {
-            return fgFeatures;
+            this.parameters = parameters;
         }
 
         public String getName() {
@@ -153,13 +120,29 @@ public class DeviceType {
             return type;
         }
 
+        public Map<String, String> getParameters() {
+            return parameters;
+        }
+
+        public List<String> getConnectedFeatures() {
+            return connectedFeatures;
+        }
+
+        public boolean hasConnectedFeatures() {
+            return !connectedFeatures.isEmpty();
+        }
+
+        public void addConnectedFeature(String name) {
+            connectedFeatures.add(name);
+        }
+
         @Override
         public String toString() {
-            String s = "";
-            for (String g : fgFeatures) {
-                s += g + ",";
+            String s = name + "->" + type;
+            if (!connectedFeatures.isEmpty()) {
+                s += connectedFeatures;
             }
-            return (s.replaceAll(",$", ""));
+            return s;
         }
     }
 }

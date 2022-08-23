@@ -16,13 +16,16 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.insteon.internal.config.InsteonBridgeConfiguration;
+import org.openhab.binding.insteon.internal.config.InsteonHubConfiguration;
+import org.openhab.binding.insteon.internal.config.InsteonHubLegacyConfiguration;
+import org.openhab.binding.insteon.internal.config.InsteonPLMConfiguration;
 import org.openhab.binding.insteon.internal.driver.hub.HubIOStream;
 import org.openhab.core.io.transport.serial.SerialPortManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Abstract class for implementation for I/O stream with anything that looks
@@ -31,63 +34,68 @@ import org.slf4j.LoggerFactory;
  * @author Bernd Pfrommer - Initial contribution
  * @author Daniel Pfrommer - openHAB 1 insteonplm binding
  * @author Rob Nielsen - Port to openHAB 2 insteon binding
+ * @author Jeremy Setton - Improvements for openHAB 3 insteon binding
  */
 @NonNullByDefault
 public abstract class IOStream {
-    private static final Logger logger = LoggerFactory.getLogger(IOStream.class);
-    protected @Nullable InputStream in = null;
-    protected @Nullable OutputStream out = null;
-    private volatile boolean stopped = false;
-
-    public void start() {
-        stopped = false;
-    }
-
-    public void stop() {
-        stopped = true;
-    }
+    protected @Nullable InputStream in;
+    protected @Nullable OutputStream out;
 
     /**
-     * read data from iostream
+     * Reads data from IOStream
      *
      * @param b byte array (output)
-     * @param offset offset for placement into byte array
-     * @param readSize size to read
      * @return number of bytes read
      */
-    public int read(byte[] b, int offset, int readSize) throws InterruptedException, IOException {
+    public int read(byte @Nullable [] b) throws InterruptedException, IOException {
         int len = 0;
-        while (!stopped && len < 1) {
+        while (len == 0) {
+            if (!isOpen()) {
+                throw new IOException("io stream not open");
+            }
+
             InputStream in = this.in;
             if (in != null) {
-                len = in.read(b, offset, readSize);
+                len = in.read(b);
             } else {
-                throw new IOException("in is null");
-            }
-            if (len == -1) {
-                throw new EOFException();
+                throw new IOException("input stream not defined");
             }
 
             if (Thread.interrupted()) {
                 throw new InterruptedException();
             }
+
+            if (len == -1) {
+                throw new EOFException();
+            }
         }
-        return (len);
+        return len;
     }
 
     /**
-     * Write data to iostream
+     * Writes data to IOStream
      *
      * @param b byte array to write
      */
-    public void write(byte @Nullable [] b) throws IOException {
+    public void write(byte @Nullable [] b) throws InterruptedException, IOException {
+        if (!isOpen()) {
+            throw new IOException("io stream not open");
+        }
+
         OutputStream out = this.out;
         if (out != null) {
             out.write(b);
         } else {
-            throw new IOException("out is null");
+            throw new IOException("output stream not defined");
         }
     }
+
+    /**
+     * Returns if IOStream is open
+     *
+     * @return true if stream is open, false if not
+     */
+    public abstract boolean isOpen();
 
     /**
      * Opens the IOStream
@@ -102,83 +110,44 @@ public abstract class IOStream {
     public abstract void close();
 
     /**
-     * Creates an IOStream from an allowed config string:
-     *
-     * /dev/ttyXYZ (serial port like e.g. usb: /dev/ttyUSB0 or alias /dev/insteon)
-     *
-     * /hub2/user:password@myinsteonhub.mydomain.com:25105,poll_time=1000 (insteon hub2 (2014))
-     *
-     * /hub/myinsteonhub.mydomain.com:9761
-     *
-     * /tcp/serialportserver.mydomain.com:port (serial port exposed via tcp, eg. ser2net)
+     * Creates an IOStream from an insteon bridge config object
      *
      * @param config
+     * @param serialPortManager
      * @return reference to IOStream
      */
 
-    public static IOStream create(@Nullable SerialPortManager serialPortManager, String config) {
-        if (config.startsWith("/hub2/")) {
-            return makeHub2014Stream(config);
-        } else if (config.startsWith("/hub/") || config.startsWith("/tcp/")) {
-            return makeTCPStream(config);
+    public static IOStream create(InsteonBridgeConfiguration config, ScheduledExecutorService scheduler,
+            @Nullable SerialPortManager serialPortManager) {
+        if (config instanceof InsteonHubConfiguration) {
+            return makeHubIOStream((InsteonHubConfiguration) config, scheduler);
+        } else if (config instanceof InsteonHubLegacyConfiguration) {
+            return makeHubLegacyIOStream((InsteonHubLegacyConfiguration) config);
+        } else if (config instanceof InsteonPLMConfiguration && serialPortManager != null) {
+            return makePLMIOStream((InsteonPLMConfiguration) config, serialPortManager);
         } else {
-            return new SerialIOStream(serialPortManager, config);
+            throw new UnsupportedOperationException("Unsupported bridge configuration");
         }
     }
 
-    private static HubIOStream makeHub2014Stream(String config) {
-        @Nullable
-        String user = null;
-        @Nullable
-        String pass = null;
-        int pollTime = 1000; // poll time in milliseconds
-
-        // Get rid of the /hub2/ part and split off options at the end
-        String[] parts = config.substring(6).split(",");
-
-        // Parse the first part, the address
-        String[] adr = parts[0].split("@");
-        String[] hostPort;
-        if (adr.length > 1) {
-            String[] userPass = adr[0].split(":");
-            user = userPass[0];
-            pass = userPass[1];
-            hostPort = adr[1].split(":");
-        } else {
-            hostPort = parts[0].split(":");
-        }
-        HostPort hp = new HostPort(hostPort, 25105);
-        // check if additional options are given
-        if (parts.length > 1) {
-            if (parts[1].trim().startsWith("poll_time")) {
-                pollTime = Integer.parseInt(parts[1].split("=")[1].trim());
-            }
-        }
-        return new HubIOStream(hp.host, hp.port, pollTime, user, pass);
+    private static HubIOStream makeHubIOStream(InsteonHubConfiguration config, ScheduledExecutorService scheduler) {
+        String host = config.getHostname();
+        int port = config.getPort();
+        String user = config.getUsername();
+        String pass = config.getPassword();
+        int pollInterval = config.getHubPollInterval();
+        return new HubIOStream(host, port, user, pass, pollInterval, scheduler);
     }
 
-    private static TcpIOStream makeTCPStream(String config) {
-        // Get rid of the /hub/ part and split off options at the end, if any
-        String[] parts = config.substring(5).split(",");
-        String[] hostPort = parts[0].split(":");
-        HostPort hp = new HostPort(hostPort, 9761);
-        return new TcpIOStream(hp.host, hp.port);
+    private static TcpIOStream makeHubLegacyIOStream(InsteonHubLegacyConfiguration config) {
+        String host = config.getHostname();
+        int port = config.getPort();
+        return new TcpIOStream(host, port);
     }
 
-    private static class HostPort {
-        public String host = "localhost";
-        public int port = -1;
-
-        HostPort(String[] hostPort, int defaultPort) {
-            port = defaultPort;
-            host = hostPort[0];
-            try {
-                if (hostPort.length > 1) {
-                    port = Integer.parseInt(hostPort[1]);
-                }
-            } catch (NumberFormatException e) {
-                logger.warn("bad format for port {} ", hostPort[1], e);
-            }
-        }
+    private static SerialIOStream makePLMIOStream(InsteonPLMConfiguration config, SerialPortManager serialPortManager) {
+        String name = config.getSerialPort();
+        int baudRate = config.getBaudRate();
+        return new SerialIOStream(name, baudRate, serialPortManager);
     }
 }

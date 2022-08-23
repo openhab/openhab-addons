@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="insteon"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="device">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="hub1"/>
+			<bridge-type-ref id="hub2"/>
+			<bridge-type-ref id="plm"/>
+		</supported-bridge-type-refs>
+
+		<label>Insteon Device</label>
+		<description>An Insteon device such as a switch, dimmer, keypad, sensor, etc.</description>
+
+		<representation-property>address</representation-property>
+
+		<config-description>
+			<parameter name="address" type="text" required="true" pattern="[0-9A-F]{2}\.[0-9A-F]{2}\.[0-9A-F]{2}">
+				<label>Insteon Address</label>
+				<description>Insteon address of the device. Example: 12.34.56</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+</thing:thing-descriptions>
