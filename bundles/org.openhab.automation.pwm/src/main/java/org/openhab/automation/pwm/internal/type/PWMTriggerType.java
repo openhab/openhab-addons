@@ -62,7 +62,14 @@ public class PWMTriggerType extends TriggerType {
                 .withDefault("0") //
                 .withLabel("Min Dutycycle") //
                 .withUnit("%") //
-                .withDescription("The dutycycle will be min this value").build());
+                .withDescription("The dutycycle below this value will be increased to this value").build());
+        configDescriptions.add(ConfigDescriptionParameterBuilder.create(CONFIG_EQUATE_MIN_TO_ZERO, Type.BOOLEAN) //
+                .withRequired(false) //
+                .withMultiple(false) //
+                .withDefault("false") //
+                .withLabel("Equate Min Dutycycle to 0") //
+                .withDescription("True if the dutycycle below Min Dutycycle should be set to 0 (defaults to false)")
+                .build());
         configDescriptions.add(ConfigDescriptionParameterBuilder.create(CONFIG_MAX_DUTYCYCLE, Type.DECIMAL) //
                 .withRequired(false) //
                 .withMultiple(false) //
@@ -71,7 +78,14 @@ public class PWMTriggerType extends TriggerType {
                 .withDefault("100") //
                 .withUnit("%") //
                 .withLabel("Max Dutycycle") //
-                .withDescription("The dutycycle will be max this value").build());
+                .withDescription("The dutycycle above this value will be increased to 100").build());
+        configDescriptions.add(ConfigDescriptionParameterBuilder.create(CONFIG_EQUATE_MAX_TO_HUNDRED, Type.BOOLEAN) //
+                .withRequired(false) //
+                .withMultiple(false) //
+                .withDefault("true") //
+                .withLabel("Equate Max Dutycycle to 100") //
+                .withDescription("True if the dutycycle above Max Dutycycle should be set to 100 (defaults to true)")
+                .build());
         configDescriptions.add(ConfigDescriptionParameterBuilder.create(CONFIG_DEAD_MAN_SWITCH, Type.DECIMAL) //
                 .withRequired(false) //
                 .withMultiple(false) //

@@ -47,8 +47,7 @@ public class HomekitBatteryImpl extends AbstractHomekitAccessoryImpl implements 
             HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
         super(taggedItem, mandatoryCharacteristics, updater, settings);
         lowBatteryReader = createBooleanReader(BATTERY_LOW_STATUS);
-        final String batteryTypeConfig = getAccessoryConfiguration(BATTERY_TYPE, "false");
-        isChargeable = "true".equalsIgnoreCase(batteryTypeConfig) || "yes".equalsIgnoreCase(batteryTypeConfig);
+        isChargeable = getAccessoryConfigurationAsBoolean(BATTERY_TYPE, false);
         if (isChargeable) {
             chargingBatteryReader = createBooleanReader(BATTERY_CHARGING_STATE);
         }

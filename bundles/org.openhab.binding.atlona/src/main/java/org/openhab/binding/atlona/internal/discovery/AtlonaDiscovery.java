@@ -137,7 +137,7 @@ public class AtlonaDiscovery extends AbstractDiscoveryService {
                                 multiSocket.receive(receivePacket);
 
                                 String message = new String(receivePacket.getData()).trim();
-                                if (message != null && message.length() > 0) {
+                                if (message.length() > 0) {
                                     messageReceive(message);
                                 }
                             } catch (SocketTimeoutException e) {
@@ -196,17 +196,17 @@ public class AtlonaDiscovery extends AbstractDiscoveryService {
             if (idx > 0) {
                 String name = msg.substring(0, idx);
 
-                if (name.equalsIgnoreCase("Host")) {
+                if ("Host".equalsIgnoreCase(name)) {
                     host = msg.substring(idx + 1).trim().replaceAll("\"", "");
                     int sep = host.indexOf('_');
                     if (sep >= 0) {
                         host = host.substring(sep + 1);
                     }
-                } else if (name.equalsIgnoreCase("Model")) {
+                } else if ("Model".equalsIgnoreCase(name)) {
                     model = msg.substring(idx + 1).trim().replaceAll("\"", "");
-                } else if (name.equalsIgnoreCase("Manufacturer")) {
+                } else if ("Manufacturer".equalsIgnoreCase(name)) {
                     manufacturer = msg.substring(idx + 1).trim().replaceAll("\"", "");
-                } else if (name.equalsIgnoreCase("From")) {
+                } else if ("From".equalsIgnoreCase(name)) {
                     from = msg.substring(idx + 1).trim().replaceAll("\"", "");
                     int sep = from.indexOf(':');
                     if (sep >= 0) {
@@ -223,13 +223,13 @@ public class AtlonaDiscovery extends AbstractDiscoveryService {
 
         if (host != null && model != null && from != null) {
             ThingTypeUID typeId = null;
-            if (model.equalsIgnoreCase("AT-UHD-PRO3-44M")) {
+            if ("AT-UHD-PRO3-44M".equalsIgnoreCase(model)) {
                 typeId = THING_TYPE_PRO3_44M;
-            } else if (model.equalsIgnoreCase("AT-UHD-PRO3-66M")) {
+            } else if ("AT-UHD-PRO3-66M".equalsIgnoreCase(model)) {
                 typeId = THING_TYPE_PRO3_66M;
-            } else if (model.equalsIgnoreCase("AT-UHD-PRO3-88M")) {
+            } else if ("AT-UHD-PRO3-88M".equalsIgnoreCase(model)) {
                 typeId = THING_TYPE_PRO3_88M;
-            } else if (model.equalsIgnoreCase("AT-UHD-PRO3-1616M")) {
+            } else if ("AT-UHD-PRO3-1616M".equalsIgnoreCase(model)) {
                 typeId = THING_TYPE_PRO3_1616M;
             } else {
                 logger.warn("Unknown model #: {}", model);

@@ -20,6 +20,7 @@
 			<channel id="brightness" typeId="brightness"/>
 			<channel id="tcbypass" typeId="tcbypass"/>
 			<channel id="balance" typeId="balance"/>
+			<channel id="otherCommand" typeId="otherCommand"/>
 		</channels>
 
 		<properties>

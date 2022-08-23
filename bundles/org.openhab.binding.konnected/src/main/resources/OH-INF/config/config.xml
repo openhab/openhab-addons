@@ -9,6 +9,10 @@
 			<label>Actions</label>
 			<description/>
 		</parameter-group>
+		<parameter name="baseUrl" type="text" required="true">
+			<label>Base URL</label>
+			<description>The base URL of the Konnected Alarm Panel.</description>
+		</parameter>
 		<parameter name="blink" type="boolean">
 			<label>Blink</label>
 			<description> When set to false the Led on the device won't blink during transmission.</description>
@@ -23,7 +27,7 @@
 			<default>true</default>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="retry_count" type="integer">
+		<parameter name="retryCount" type="integer">
 			<label>Retry Count</label>
 			<description>The number of times the binding attempts to send http requests to the Konnected Alarm Panel. Increase
 				this setting if you are experiencing situations where the module is reporting as offline but you can access the
@@ -32,7 +36,7 @@
 			<default>2</default>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="request_timeout" type="integer">
+		<parameter name="requestTimeout" type="integer">
 			<label>Request Timeout</label>
 			<description>The timeout period in seconds for HTTP requests to the Konnected Alarm Panel. The default is 30.
 				Adjusting this setting can help in networks situations with high latency where the binding is erroneously reporting
@@ -40,6 +44,17 @@
 			<default>30</default>
 			<advanced>true</advanced>
 		</parameter>
+
+		<parameter name="callbackUrl" type="text">
+			<label>Callback URL</label>
+			<description>The URL where the Konnected panel will make callbacks. The default is to auto detect the port and IP
+				address of openHAB. This may not work in case you use a reverse proxy or openHAB
+				is running in Docker. Then the
+				plugin
+				is bound to the /konnected http context.</description>
+			<advanced>true</advanced>
+		</parameter>
+
 		<parameter name="controller_softreset" type="boolean" groupName="actions">
 			<label>Soft Reset Module</label>
 			<description>Send A Restart Command to the Module.</description>

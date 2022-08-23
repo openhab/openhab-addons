@@ -21,8 +21,7 @@ Once the bridge is created and configured, OpenHab will automatically discover a
 `bridge:`
 
 - appKey (mandatory): The Application Key is required to communicate with the Automower Connect API. It can be obtained by registering an Application on [the Husqvarna Website](https://developer.husqvarnagroup.cloud/). This application also needs to be connected to the ["Authentication API" and the "Automower Connect API"](https://developer.husqvarnagroup.cloud/docs/getting-started)
-- userName (mandatory): The user name for which the application key has been issued
-- password (mandatory): The password for the given user
+- appSecret (mandatory): The Application Secret is required to communicate with the Automower Connect API. It can be obtained by registering an Application on [the Husqvarna Website](https://developer.husqvarnagroup.cloud/).
 - pollingInterval (optional): How often the bridge state should be queried in seconds. Default is 1h (3600s)
 
 Keep in mind that the status of the bridge should not be queried too often.

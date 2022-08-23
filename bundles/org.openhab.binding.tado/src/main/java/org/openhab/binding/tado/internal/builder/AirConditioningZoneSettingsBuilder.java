@@ -76,11 +76,6 @@ public class AirConditioningZoneSettingsBuilder extends ZoneSettingsBuilder {
             targetMode = getCurrentOrDefaultAcMode(zoneStateProvider);
         }
 
-        Float temperature = this.temperature;
-        if (temperature != null) {
-            newSetting.setTemperature(temperature(temperature, temperatureUnit));
-        }
-
         Boolean swing = this.swing;
         if (swing != null) {
             newSetting.setSwing(swing.booleanValue() ? Power.ON : Power.OFF);
@@ -104,6 +99,24 @@ public class AirConditioningZoneSettingsBuilder extends ZoneSettingsBuilder {
          */
         AcModeCapabilities targetModeCapabilities = TadoApiTypeUtils.getModeCapabilities(targetMode,
                 genericCapabilities);
+
+        Float temperature = this.temperature;
+        if (temperature != null) {
+            IntRange range = null;
+            boolean valid = false;
+            TemperatureRange caps = targetModeCapabilities.getTemperatures();
+            if (caps != null) {
+                range = temperatureUnit == TemperatureUnit.CELSIUS ? caps.getCelsius() : caps.getFahrenheit();
+                valid = (range != null) && (range.getMin() <= temperature) && (temperature <= range.getMax());
+            }
+            if (valid) {
+                newSetting.setTemperature(temperature(temperature, temperatureUnit));
+            } else {
+                logger.warn(STATE_VALUE_NOT_SUPPORTED, "Target Temperature", temperature,
+                        targetMode.getClass().getSimpleName(), targetMode,
+                        range == null ? "none" : String.format("%d..%d", range.getMin(), range.getMax()));
+            }
+        }
 
         FanLevel fanLevel = this.fanLevel;
         if (fanLevel != null) {

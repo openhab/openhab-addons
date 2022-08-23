@@ -1,6 +1,6 @@
 # Epson Projector Binding
 
-This binding is compatible with Epson projectors that support the ESC/VP21 protocol over the built-in network (ethernet or Wi-Fi) port, serial port or USB to serial adapter.
+This binding is compatible with Epson projectors that support the ESC/VP21 protocol over the built-in network (Ethernet or Wi-Fi) port, serial port or USB to serial adapter.
 If your projector does not have built-in networking, you can connect to your projector's serial port via a TCP connection using a serial over IP device or by using`ser2net`.
 
 ## Supported Things
@@ -9,7 +9,7 @@ This binding supports two thing types based on the connection used: `projector-s
 
 ## Discovery
 
-If the projector has a built-in ethernet port connected to the same network as the openHAB server and the 'AMX Device Discovery' option is present and enabled in the projector's network menu, the thing will be discovered automatically.
+If the projector has a built-in Ethernet port connected to the same network as the openHAB server and the 'AMX Device Discovery' option is present and enabled in the projector's network menu, the thing will be discovered automatically.
 Serial port or serial over IP connections must be configured manually.
 
 ## Binding Configuration
@@ -32,7 +32,7 @@ The `projector-tcp` thing has the following configuration parameters:
 | Parameter       | Name             | Description                                                                                                                                    | Required |
 |-----------------|------------------|------------------------------------------------------------------------------------------------------------------------------------------------|----------|
 | host            | Host Name        | Host Name or IP address for the projector or serial over IP device.                                                                            | yes      |
-| port            | Port             | Port for the projector or serial over IP device; default 3629 for projectors with built-in ethernet connector or Wi-Fi.                        | yes      |
+| port            | Port             | Port for the projector or serial over IP device; default 3629 for projectors with built-in Ethernet connector or Wi-Fi.                        | yes      |
 | pollingInterval | Polling Interval | Polling interval in seconds to update channel states, range 5-60 seconds; default 10 seconds.                                                  | no       |
 | maxVolume       | Max Volume Range | Set to the maximum volume level available in the projector's OSD to select the correct range for the volume control. e.g. 20 or 40; default 20 | no       |
 
@@ -51,10 +51,23 @@ Some notes:
 * On Linux, you may get an error stating the serial port cannot be opened when the epsonprojector binding tries to load.
 * You can get around this by adding the `openhab` user to the `dialout` group like this: `usermod -a -G dialout openhab`.
 * Also on Linux you may have issues with the USB if using two serial USB devices e.g. epsonprojector and RFXcom. See the [general documentation about serial port configuration](/docs/administration/serial.html) for more on symlinking the USB ports.
-* Here is an example of ser2net.conf you can use to share your serial port /dev/ttyUSB0 on IP port 4444 using [ser2net Linux tool](https://sourceforge.net/projects/ser2net/) (take care, the baud rate is specific to the Epson projector):
+* Here is an example of ser2net.conf (for ser2net version < 4) you can use to share your serial port /dev/ttyUSB0 on IP port 4444 using [ser2net Linux tool](https://sourceforge.net/projects/ser2net/) (take care, the baud rate is specific to the Epson projector):
 
 ```
 4444:raw:0:/dev/ttyUSB0:9600 8DATABITS NONE 1STOPBIT LOCAL
+```
+
+* Here is an example of ser2net.yaml (for ser2net version >= 4) you can use to share your serial port /dev/ttyUSB0 on IP port 4444 using [ser2net Linux tool](https://sourceforge.net/projects/ser2net/) (take care, the baud rate is specific to the Epson projector):
+
+```
+connection: &conEpson
+    accepter: tcp,4444
+    enable: on
+    options:
+      kickolduser: true
+    connector: serialdev,
+              /dev/ttyUSB0,
+              9600n81,local
 ```
 
 ## Channels
@@ -134,9 +147,9 @@ Switch epsonHorizontalReverse                          { channel="epsonprojector
 String epsonBackground  "Background [%s]"              { channel="epsonprojector:projector-serial:hometheater:background" }
 String epsonKeyCode     "Key Code [%s]"                { channel="epsonprojector:projector-serial:hometheater:keycode", autoupdate="false" }
 String epsonPowerState  "Power State [%s]"   <switch>  { channel="epsonprojector:projector-serial:hometheater:powerstate" }
-Number epsonLampTime    "Lamp Time [%d h]"   <switch>       { channel="epsonprojector:projector-serial:hometheater:lamptime" }
-Number epsonErrCode     "Error Code [%d]"    <"siren-on">   { channel="epsonprojector:projector-serial:hometheater:errcode" }
-String epsonErrMessage  "Error Message [%s]" <"siren-off">  { channel="epsonprojector:projector-serial:hometheater:errmessage" }
+Number epsonLampTime    "Lamp Time [%d h]"   <switch>  { channel="epsonprojector:projector-serial:hometheater:lamptime" }
+Number epsonErrCode     "Error Code [%d]"    <error>   { channel="epsonprojector:projector-serial:hometheater:errcode" }
+String epsonErrMessage  "Error Message [%s]" <error>   { channel="epsonprojector:projector-serial:hometheater:errmessage" }
 ```
 
 sitemaps/epson.sitemap

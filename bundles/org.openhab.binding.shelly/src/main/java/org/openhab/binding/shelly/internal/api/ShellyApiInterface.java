@@ -35,6 +35,8 @@ import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 public interface ShellyApiInterface {
     public boolean isInitialized();
 
+    public void initialize() throws ShellyApiException;
+
     public void setConfig(String thingName, ShellyThingConfiguration config);
 
     public ShellySettingsDevice getDeviceInfo() throws ShellyApiException;
