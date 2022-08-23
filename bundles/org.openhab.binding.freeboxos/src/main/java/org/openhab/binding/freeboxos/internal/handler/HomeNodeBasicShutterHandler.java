@@ -55,12 +55,15 @@ public class HomeNodeBasicShutterHandler extends ApiConsumerHandler {
             if (command instanceof UpDownType) {
                 if (command == UpDownType.UP) {
                     getManager(HomeManager.class).putCommand(config.nodeId, config.upSlotId, true);
+                    return true;
                 } else if (command == UpDownType.DOWN) {
                     getManager(HomeManager.class).putCommand(config.nodeId, config.downSlotId, true);
+                    return true;
                 }
             } else if (command instanceof StopMoveType) {
                 if (command == StopMoveType.STOP) {
                     getManager(HomeManager.class).putCommand(config.nodeId, config.stopSlotId, true);
+                    return true;
                 }
             }
         }
