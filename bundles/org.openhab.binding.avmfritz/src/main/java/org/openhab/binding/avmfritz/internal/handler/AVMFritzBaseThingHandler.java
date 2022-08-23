@@ -606,31 +606,23 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
                 if (color_temperature != null) {
                     int pct = color_temperature.intValue();
                     int temperature = 2700;
-                    if ((pct >= 0) && (pct <= 11)) {
+                    if (pct <= 11) {
                         temperature = 2700;
-                    }
-                    if ((pct >= 11) && (pct <= 22)) {
+                    } else if ((pct > 11) && (pct <= 22)) {
                         temperature = 3000;
-                    }
-                    if ((pct >= 22) && (pct <= 33)) {
+                    } else if ((pct > 22) && (pct <= 33)) {
                         temperature = 3400;
-                    }
-                    if ((pct >= 33) && (pct <= 44)) {
+                    } else if ((pct > 33) && (pct <= 44)) {
                         temperature = 3800;
-                    }
-                    if ((pct >= 44) && (pct <= 55)) {
+                    } else if ((pct > 44) && (pct <= 55)) {
                         temperature = 4200;
-                    }
-                    if ((pct >= 55) && (pct <= 66)) {
+                    } else if ((pct > 55) && (pct <= 66)) {
                         temperature = 4700;
-                    }
-                    if ((pct >= 66) && (pct <= 77)) {
+                    } else if ((pct > 66) && (pct <= 77)) {
                         temperature = 5300;
-                    }
-                    if ((pct >= 77) && (pct <= 88)) {
+                    } else if ((pct > 77) && (pct <= 88)) {
                         temperature = 5900;
-                    }
-                    if ((pct >= 88) && (pct <= 100)) {
+                    } else if (pct >= 88) {
                         temperature = 6500;
                     }
                     fritzBox.setColorTemperature(ain, temperature, 0);
