@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.linky.internal.api;
 
-import java.net.CookieStore;
 import java.net.HttpCookie;
 import java.net.URI;
 import java.time.LocalDate;
@@ -71,7 +70,6 @@ public class EnedisHttpApi {
     private final Logger logger = LoggerFactory.getLogger(EnedisHttpApi.class);
     private final Gson gson;
     private final HttpClient httpClient;
-    private final CookieStore cookieStore;
     private final LinkyConfiguration config;
 
     private boolean connected = false;
@@ -80,7 +78,6 @@ public class EnedisHttpApi {
         this.gson = gson;
         this.httpClient = httpClient;
         this.config = config;
-        this.cookieStore = httpClient.getCookieStore();
     }
 
     public void initialize() throws LinkyException {
@@ -158,7 +155,7 @@ public class EnedisHttpApi {
             result = httpClient.POST(el.attr("action")).content(getFormContent("SAMLResponse", samlInput.attr("value")))
                     .send();
             if (result.getStatus() != 302) {
-                throw new LinkyException("Connection failed step 5");
+                throw new LinkyException("Connection failed step 6");
             }
             connected = true;
         } catch (InterruptedException | TimeoutException | ExecutionException | JsonSyntaxException e) {
@@ -178,7 +175,7 @@ public class EnedisHttpApi {
                 String location = getLocation(httpClient.GET(URL_APPS_LINCS + "/logout"));
                 location = getLocation(httpClient.GET(location));
                 getLocation(httpClient.GET(location));
-                cookieStore.removeAll();
+                httpClient.getCookieStore().removeAll();
             } catch (InterruptedException | ExecutionException | TimeoutException e) {
                 throw new LinkyException(e, "Error while disconnecting from Enedis webservice");
             }
@@ -197,7 +194,7 @@ public class EnedisHttpApi {
         HttpCookie cookie = new HttpCookie(key, value);
         cookie.setDomain(ENEDIS_DOMAIN);
         cookie.setPath("/");
-        cookieStore.add(COOKIE_URI, cookie);
+        httpClient.getCookieStore().add(COOKIE_URI, cookie);
     }
 
     private FormContentProvider getFormContent(String fieldName, String fieldValue) {

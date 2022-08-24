@@ -53,10 +53,9 @@ import com.google.gson.GsonBuilder;
 public class KonnectedHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(KonnectedHandler.class);
     private KonnectedConfiguration config;
-    private final String konnectedServletPath;
     private final KonnectedHTTPUtils http = new KonnectedHTTPUtils(30);
-    private String callbackIpAddress = null;
-    private String moduleIpAddress;
+    private String callbackUrl;
+    private String baseUrl;
     private final Gson gson = new GsonBuilder().create();
     private int retryCount;
     private final String thingID;
@@ -71,11 +70,10 @@ public class KonnectedHandler extends BaseThingHandler {
      * @param hostAddress the webaddress of the openHAB server instance obtained by the runtime
      * @param port the port on which the openHAB instance is running that was obtained by the runtime.
      */
-    public KonnectedHandler(Thing thing, String path, String hostAddress, String port) {
+    public KonnectedHandler(Thing thing, String callbackUrl) {
         super(thing);
-        this.konnectedServletPath = path;
-        callbackIpAddress = hostAddress + ":" + port;
-        logger.debug("The callback ip address is: {}", callbackIpAddress);
+        this.callbackUrl = callbackUrl;
+        logger.debug("The auto discovered callback URL is: {}", this.callbackUrl);
         retryCount = 2;
         thingID = getThing().getThingTypeUID().getId();
         authToken = getThing().getUID().getAsString();
@@ -177,8 +175,17 @@ public class KonnectedHandler extends BaseThingHandler {
         Configuration testConfig = this.getConfig();
         String testRetryCount = testConfig.get(RETRY_COUNT).toString();
         String testRequestTimeout = testConfig.get(REQUEST_TIMEOUT).toString();
+        baseUrl = testConfig.get(BASE_URL).toString();
+        String configuredCallbackUrl = (String) getThing().getConfiguration().get(CALLBACK_URL);
+        if (configuredCallbackUrl != null) {
+            callbackUrl = configuredCallbackUrl;
+        } else {
+            getThing().getConfiguration().put(CALLBACK_URL, callbackUrl);
+        }
         logger.debug("The RequestTimeout Parameter is Configured as: {}", testRequestTimeout);
         logger.debug("The Retry Count Parameter is Configured as: {}", testRetryCount);
+        logger.debug("Base URL is Configured as: {}", baseUrl);
+        logger.debug("The callback URL is: {}", callbackUrl);
         try {
             this.retryCount = Integer.parseInt(testRetryCount);
         } catch (NumberFormatException e) {
@@ -195,9 +202,8 @@ public class KonnectedHandler extends BaseThingHandler {
                     testRequestTimeout);
         }
 
-        if ((callbackIpAddress == null)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Unable to obtain hostaddress from OSGI service, please configure hostaddress");
+        if ((callbackUrl == null)) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Unable to obtain callback URL");
         }
 
         else {
@@ -224,7 +230,7 @@ public class KonnectedHandler extends BaseThingHandler {
                 if (cfg[1].equals("softreset") && value instanceof Boolean && (Boolean) value) {
                     scheduler.execute(() -> {
                         try {
-                            http.doGet(moduleIpAddress + "/settings?restart=true", null, retryCount);
+                            http.doGet(baseUrl + "/settings?restart=true", null, retryCount);
                         } catch (KonnectedHttpRetryExceeded e) {
                             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                         }
@@ -233,7 +239,7 @@ public class KonnectedHandler extends BaseThingHandler {
                 } else if (cfg[1].equals("removewifi") && value instanceof Boolean && (Boolean) value) {
                     scheduler.execute(() -> {
                         try {
-                            http.doGet(moduleIpAddress + "/settings?restore=true", null, retryCount);
+                            http.doGet(baseUrl + "/settings?restore=true", null, retryCount);
                         } catch (KonnectedHttpRetryExceeded e) {
                             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                         }
@@ -288,7 +294,6 @@ public class KonnectedHandler extends BaseThingHandler {
         } catch (ConfigValidationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         }
-        this.moduleIpAddress = this.getThing().getProperties().get(HOST).toString();
         scheduler.execute(() -> {
             try {
                 String response = updateKonnectedModule();
@@ -320,13 +325,8 @@ public class KonnectedHandler extends BaseThingHandler {
      * @return a json settings payload which can be sent to the Konnected Module based on the Thing
      */
     private String constructSettingsPayload() {
-        String apiUrl = (String) getThing().getConfiguration().get(CALLBACK_URI);
-        if (apiUrl == null) {
-            apiUrl = "http://" + callbackIpAddress + this.konnectedServletPath;
-        }
-
         logger.debug("The Auth_Token is: {}", authToken);
-        KonnectedModulePayload payload = new KonnectedModulePayload(authToken, apiUrl);
+        KonnectedModulePayload payload = new KonnectedModulePayload(authToken, callbackUrl);
         payload.setBlink(config.blink);
         payload.setDiscovery(config.discovery);
         this.getThing().getChannels().forEach(channel -> {
@@ -404,7 +404,7 @@ public class KonnectedHandler extends BaseThingHandler {
      */
     private String updateKonnectedModule() throws KonnectedHttpRetryExceeded {
         String payload = constructSettingsPayload();
-        String response = http.doPut(moduleIpAddress + "/settings", payload, retryCount);
+        String response = http.doPut(baseUrl + "/settings", payload, retryCount);
         logger.debug("The response of the put request was: {}", response);
         return response;
     }
@@ -469,7 +469,7 @@ public class KonnectedHandler extends BaseThingHandler {
                         path = "/device";
                         break;
                 }
-                http.doPut(moduleIpAddress + path, payloadString, retryCount);
+                http.doPut(baseUrl + path, payloadString, retryCount);
             } else {
                 logger.debug("The channel {} returned null for channelId.getID(): {}", channelId.toString(),
                         channelId.getId());
@@ -515,7 +515,7 @@ public class KonnectedHandler extends BaseThingHandler {
 
     private void sendSetSwitchState(String thingId, String payloadString) throws KonnectedHttpRetryExceeded {
         String path = thingId.equals(WIFI_MODULE) ? "/device" : "/zone";
-        String response = http.doGet(moduleIpAddress + path, payloadString, retryCount);
+        String response = http.doGet(baseUrl + path, payloadString, retryCount);
         KonnectedModuleGson[] events = gson.fromJson(response, KonnectedModuleGson[].class);
         for (KonnectedModuleGson event : events) {
             this.handleWebHookEvent(event);

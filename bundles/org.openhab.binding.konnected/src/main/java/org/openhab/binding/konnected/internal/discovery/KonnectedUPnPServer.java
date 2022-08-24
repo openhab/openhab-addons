@@ -60,7 +60,7 @@ public class KonnectedUPnPServer implements UpnpDiscoveryParticipant {
         ThingUID uid = getThingUID(device);
         if (uid != null) {
             Map<String, Object> properties = new HashMap<>();
-            properties.put(HOST, device.getDetails().getBaseURL());
+            properties.put(BASE_URL, device.getDetails().getBaseURL());
             properties.put(MAC_ADDR, device.getDetails().getSerialNumber());
             DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
                     .withLabel(device.getDetails().getFriendlyName()).withRepresentationProperty(MAC_ADDR).build();
