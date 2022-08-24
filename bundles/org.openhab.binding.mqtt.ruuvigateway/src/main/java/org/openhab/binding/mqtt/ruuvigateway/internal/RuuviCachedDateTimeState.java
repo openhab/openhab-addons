@@ -53,5 +53,4 @@ public class RuuviCachedDateTimeState extends ChannelState {
     public void update(Instant value) {
         cachedValue.update(new DateTimeType(value.atZone(UTC)));
     }
-
 }

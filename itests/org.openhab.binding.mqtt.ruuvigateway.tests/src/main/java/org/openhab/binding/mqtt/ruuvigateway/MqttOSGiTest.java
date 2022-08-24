@@ -127,5 +127,4 @@ public class MqttOSGiTest extends JavaOSGiTest {
         String jenkinsHome = System.getenv("JENKINS_HOME");
         return "true".equals(System.getenv("CI")) || (jenkinsHome != null && !jenkinsHome.isBlank());
     }
-
 }

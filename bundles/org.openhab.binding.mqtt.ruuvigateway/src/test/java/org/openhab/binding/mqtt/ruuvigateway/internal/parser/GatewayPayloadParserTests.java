@@ -122,7 +122,6 @@ public class GatewayPayloadParserTests {
                             + "  \"data\": \"0201061BFF99040512FC5394C37C0004FFFC040CAC364200CDCBB8334C884F\","
                             + "  \"coords\": \"\"" + "}"));
         });
-
     }
 
     @Test

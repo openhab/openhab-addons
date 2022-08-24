@@ -31,41 +31,41 @@
 		</channels>
 
 		<config-description>
-			<parameter name="address" type="text">
-				<label>Address</label>
-				<description>Bluetooth address in XX:XX:XX:XX:XX:XX format</description>
+			<parameter name="topic" type="text">
+				<label>MQTT topic</label>
+				<description>MQTT topic containing the payload</description>
 			</parameter>
 		</config-description>
 
 	</thing-type>
-	
-     <channel-type id="ruuvitag_rssi">
-        <item-type>Number</item-type>
-        <label>RSSI</label>
-        <description>Received signal strength indicator</description>
-        <category>QualityOfService</category>
-        <state readOnly="true" pattern="%d dBm"/>
-     </channel-type>     
-     <channel-type id="ruuvitag_ts">
-        <item-type>DateTime</item-type>
-        <label>Timestamp</label>
-        <description>Timestamp when the message from Bluetooth-sensor was received by Gateway (ts)</description>
-        <category>Time</category>
-         <state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
-     </channel-type>
-     <channel-type id="ruuvitag_gwts" advanced="true">
-        <item-type>DateTime</item-type>
-        <label>Relay Timestamp</label>
-        <description>Timestamp when the message from Bluetooth-sensor was relayed by Gateway (gwts)</description>
-        <category>Time</category>
-         <state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
-     </channel-type>
-     <channel-type id="ruuvitag_gwmac" advanced="true">
-        <item-type>String</item-type>
-        <label>Gateway MAC Address</label>
-        <description>MAC-address of Ruuvi Gateway</description>
-        <state readOnly="true"/>
-     </channel-type>
+
+	<channel-type id="ruuvitag_rssi">
+		<item-type>Number</item-type>
+		<label>RSSI</label>
+		<description>Received signal strength indicator</description>
+		<category>QualityOfService</category>
+		<state readOnly="true" pattern="%d dBm"/>
+	</channel-type>
+	<channel-type id="ruuvitag_ts">
+		<item-type>DateTime</item-type>
+		<label>Timestamp</label>
+		<description>Timestamp when the message from Bluetooth-sensor was received by Gateway (ts)</description>
+		<category>Time</category>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
+	</channel-type>
+	<channel-type id="ruuvitag_gwts" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Relay Timestamp</label>
+		<description>Timestamp when the message from Bluetooth-sensor was relayed by Gateway (gwts)</description>
+		<category>Time</category>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
+	</channel-type>
+	<channel-type id="ruuvitag_gwmac" advanced="true">
+		<item-type>String</item-type>
+		<label>Gateway MAC Address</label>
+		<description>MAC-address of Ruuvi Gateway</description>
+		<state readOnly="true"/>
+	</channel-type>
 
 	<channel-type id="ruuvitag_accelerationx">
 		<item-type>Number:Acceleration</item-type>

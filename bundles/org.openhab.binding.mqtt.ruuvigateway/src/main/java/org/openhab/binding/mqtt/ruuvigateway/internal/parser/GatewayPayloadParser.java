@@ -125,7 +125,6 @@ public class GatewayPayloadParser {
                 throw new JsonSyntaxException("Manufacturer data is not valid");
             }
             measurement = localManufacturerData;
-
         }
     }
 

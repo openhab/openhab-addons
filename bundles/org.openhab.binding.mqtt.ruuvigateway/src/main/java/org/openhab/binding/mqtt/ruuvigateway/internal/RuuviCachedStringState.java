@@ -48,5 +48,4 @@ public class RuuviCachedStringState extends ChannelState {
     public void update(String value) {
         cachedValue.update(new StringType(value));
     }
-
 }
