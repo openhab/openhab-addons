@@ -333,7 +333,8 @@ class WundergroundUpdateReceiverDiscoveryServiceTest {
         assertThat(actual, equalTo(before));
     }
 
-    private void assertChannel(Channel actual, ChannelTypeUID expectedUid, ChannelKind expectedKind, Matcher<Object> expectedItemType) {
+    private void assertChannel(Channel actual, ChannelTypeUID expectedUid, ChannelKind expectedKind,
+            Matcher<Object> expectedItemType) {
         assertThat(actual, is(notNullValue()));
         assertThat(actual.getChannelTypeUID(), is(expectedUid));
         assertThat(actual.getKind(), is(expectedKind));
@@ -360,8 +361,7 @@ class WundergroundUpdateReceiverDiscoveryServiceTest {
                     new StateChannelTypeBuilderImpl(HUMIDITY_CHANNELTYPEUID, "Humidity", "Number:Dimensionless")
                             .build());
             when(provider.getChannelType(eq(PM2_5_MASS_CHANNELTYPEUID), any())).thenReturn(
-                    new StateChannelTypeBuilderImpl(PM2_5_MASS_CHANNELTYPEUID, "PM2.5 Mass", "Number:Density")
-                            .build());
+                    new StateChannelTypeBuilderImpl(PM2_5_MASS_CHANNELTYPEUID, "PM2.5 Mass", "Number:Density").build());
             when(provider.getChannelType(eq(DATEUTC_CHANNELTYPEUID), any())).thenReturn(
                     new StateChannelTypeBuilderImpl(DATEUTC_CHANNELTYPEUID, "Last Updated", "String").build());
             when(provider.getChannelType(eq(LOW_BATTERY_CHANNELTYPEUID), any()))

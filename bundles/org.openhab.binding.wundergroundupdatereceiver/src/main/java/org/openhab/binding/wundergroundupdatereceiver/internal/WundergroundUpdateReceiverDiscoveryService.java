@@ -14,7 +14,6 @@ package org.openhab.binding.wundergroundupdatereceiver.internal;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -127,5 +126,4 @@ public class WundergroundUpdateReceiverDiscoveryService extends AbstractDiscover
     protected synchronized void setScanning(boolean value) {
         this.scanning = value;
     }
-
 }

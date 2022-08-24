@@ -116,8 +116,7 @@ public class WundergroundUpdateReceiverHandler extends BaseThingHandler {
             ThingBuilder thingBuilder = editThing();
             List.of(LAST_RECEIVED, LAST_QUERY_TRIGGER, DATEUTC_DATETIME, LAST_QUERY_STATE)
                     .forEach((String channelId) -> buildChannel(thingBuilder, channelId, ""));
-            requestParameters
-                    .forEach((String parameter, String query) -> buildChannel(thingBuilder, parameter, query));
+            requestParameters.forEach((String parameter, String query) -> buildChannel(thingBuilder, parameter, query));
             updateThing(thingBuilder.build());
         }
         discoveryService.removeUnhandledStationId(config.stationId);
