@@ -22,6 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.thing.type.AutoUpdatePolicy;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeBuilder;
 import org.openhab.core.thing.type.ChannelTypeProvider;
@@ -57,7 +58,8 @@ public class WundergroundUpdateReceiverUnknownChannelTypeProvider implements Cha
         ChannelType type = getChannelType(typeUid, null);
         if (type == null) {
             String itemType = guessItemType(value);
-            type = ChannelTypeBuilder.state(typeUid, parameterName + " channel type", itemType).build();
+            type = ChannelTypeBuilder.state(typeUid, parameterName + " channel type", itemType)
+                    .withAutoUpdatePolicy(AutoUpdatePolicy.DEFAULT).build();
             return addChannelType(typeUid, type);
         }
         return type;
@@ -76,7 +78,7 @@ public class WundergroundUpdateReceiverUnknownChannelTypeProvider implements Cha
     }
 
     private ChannelType addChannelType(ChannelTypeUID channelTypeUID, ChannelType channelType) {
-        logger.warn("Adding channelType {} for unknown parameter", channelTypeUID.getAsString());
+        logger.warn("Adding new synthetic channelType {} for unrecognised parameter", channelTypeUID.getAsString());
         this.channelTypes.put(channelTypeUID, channelType);
         return channelType;
     }

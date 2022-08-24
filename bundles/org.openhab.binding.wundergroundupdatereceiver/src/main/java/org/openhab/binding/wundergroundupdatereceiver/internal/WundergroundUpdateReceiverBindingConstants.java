@@ -125,7 +125,7 @@ public class WundergroundUpdateReceiverBindingConstants {
     public static final String AQ_OC = "AqOC";
     public static final String AQ_BC = "AqBC";
     public static final String AQ_UV_AETH = "AqUV-AETH";
-    public static final String AQ_PM2_5 = "AqPM2.5";
+    public static final String AQ_PM2_5 = "AqPM2-5";
     public static final String AQ_PM10 = "AqPM10";
     public static final String AQ_OZONE = "AqOZONE";
 

@@ -111,14 +111,13 @@ public class WundergroundUpdateReceiverHandler extends BaseThingHandler {
         this.config = getConfigAs(WundergroundUpdateReceiverConfiguration.class);
         wundergroundUpdateReceiverServlet.addHandler(this);
         @Nullable
-        Map<String, String[]> requestParameters = discoveryService.getUnhandledStationRequest(config.stationId);
+        Map<String, String> requestParameters = discoveryService.getUnhandledStationRequest(config.stationId);
         if (requestParameters != null && thing.getChannels().isEmpty()) {
-            final String[] noValues = new String[0];
             ThingBuilder thingBuilder = editThing();
             List.of(LAST_RECEIVED, LAST_QUERY_TRIGGER, DATEUTC_DATETIME, LAST_QUERY_STATE)
-                    .forEach((String channelId) -> buildChannel(thingBuilder, channelId, noValues));
+                    .forEach((String channelId) -> buildChannel(thingBuilder, channelId, ""));
             requestParameters
-                    .forEach((String parameter, String[] query) -> buildChannel(thingBuilder, parameter, query));
+                    .forEach((String parameter, String query) -> buildChannel(thingBuilder, parameter, query));
             updateThing(thingBuilder.build());
         }
         discoveryService.removeUnhandledStationId(config.stationId);
@@ -150,10 +149,10 @@ public class WundergroundUpdateReceiverHandler extends BaseThingHandler {
         triggerChannel(queryTriggerChannel, lastQuery);
     }
 
-    private void buildChannel(ThingBuilder thingBuilder, String parameter, String... query) {
+    private void buildChannel(ThingBuilder thingBuilder, String parameter, String value) {
         @Nullable
         WundergroundUpdateReceiverParameterMapping channelTypeMapping = WundergroundUpdateReceiverParameterMapping
-                .getOrCreateMapping(parameter, String.join("", query), channelTypeProvider);
+                .getOrCreateMapping(parameter, value, channelTypeProvider);
         if (channelTypeMapping == null) {
             return;
         }
