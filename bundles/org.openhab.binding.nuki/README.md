@@ -59,10 +59,11 @@ connected to is configured and online.
 
 This is a common thing for all Nuki smart lock products - Nuki Smart Lock 1.0/2.0/3.0 (Pro) and Nuki Smart Door. The following configuration options are available:
 
-  | Parameter | Description                                                                                                                                                                                               | Comment       |
-  |-----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------|
-  | unlatch   | If set to `true` the Nuki Smart Lock will unlock the door but then also automatically pull the latch of the door lock. Usually, if the door hinges are correctly adjusted, the door will then swing open. | Default false |
-  | nukiId    | Smart Lock ID                                                                                                                                                                                             |               |
+  | Parameter  | Description                                                                                                                                                                                               | Comment       |
+  |------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------|
+  | unlatch    | If set to `true` the Nuki Smart Lock will unlock the door but then also automatically pull the latch of the door lock. Usually, if the door hinges are correctly adjusted, the door will then swing open. | Default false |
+  | nukiId     | Smart Lock ID that identifies the Smart Lock. Can be looked up in the Nuki app.                                                                                                                           |               |
+  | deviceType | 0 = Nuki Smart Lock 1.0/2.0, 3 = Nuki Smart Door, 4 = Nuki Smart Lock 3.0 (Pro)                                                                                                                           | Default 0     |
 
 #### Supported Channels
 
