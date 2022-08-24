@@ -1,0 +1,228 @@
+{
+   "Apps": [
+      {
+         "name": "SmartCast Home",
+         "config": {
+            "APP_ID": "1",
+            "NAME_SPACE": 4,
+            "MESSAGE": null
+         }
+      },
+      {
+         "name": "Apple TV+",
+         "config": {
+            "APP_ID": "4",
+            "NAME_SPACE": 3,
+            "MESSAGE": null
+         }
+      },
+      {
+         "name": "CBS News",
+         "config": {
+            "APP_ID": "42",
+            "NAME_SPACE": 4,
+            "MESSAGE": null
+         }
+      },
+      {
+         "name": "Crackle",
+         "config": {
+            "APP_ID": "5",
+            "NAME_SPACE": 4,
+            "MESSAGE": null
+         }
+      },
+      {
+         "name": "discovery+",
+         "config": {
+            "APP_ID": "130",
+            "NAME_SPACE": 4,
+            "MESSAGE": null
+         }
+      },
+      {
+         "name": "Disney+",
+         "config": {
+            "APP_ID": "75",
+            "NAME_SPACE": 4,
+            "MESSAGE": null
+         }
+      },
+      {
+         "name": "FilmRise",
+         "config": {
+            "APP_ID": "24",
+            "NAME_SPACE": 4,
+            "MESSAGE": null
+         }
+      },
+      {
+         "name": "Haystack News",
+         "config": {
+            "APP_ID": "60",
+            "NAME_SPACE": 4,
+            "MESSAGE": null
+         }
+      },
+      {
+         "name": "HBO Max",
+         "config": {
+            "APP_ID": "128",
+            "NAME_SPACE": 4,
+            "MESSAGE": null
+         }
+      },
+      {
+         "name": "Hulu",
+         "config": {
+            "APP_ID": "3",
+            "NAME_SPACE": 4,
+            "MESSAGE": null
+         }
+      },
+      {
+         "name": "iHeartRadio",
+         "config": {
+            "APP_ID": "6",
+            "NAME_SPACE": 4,
+            "MESSAGE": null
+         }
+      },
+      {
+         "name": "Movies Anywhere",
+         "config": {
+            "APP_ID": "38",
+            "NAME_SPACE": 4,
+            "MESSAGE": null
+         }
+      },
+      {
+         "name": "NBC",
+         "config": {
+            "APP_ID": "10",
+            "NAME_SPACE": 4,
+            "MESSAGE": null
+         }
+      },
+      {
+         "name": "Netflix",
+         "config": {
+            "APP_ID": "1",
+            "NAME_SPACE": 3,
+            "MESSAGE": null
+         }
+      },
+      {
+         "name": "Newsy",
+         "config": {
+            "APP_ID": "15",
+            "NAME_SPACE": 4,
+            "MESSAGE": null
+         }
+      },
+      {
+         "name": "Paramount+",
+         "config": {
+            "APP_ID": "37",
+            "NAME_SPACE": 4,
+            "MESSAGE": null
+         }
+      },
+      {
+         "name": "Peacock",
+         "config": {
+            "APP_ID": "88",
+            "NAME_SPACE": 4,
+            "MESSAGE": null
+         }
+      },
+      {
+         "name": "Plex",
+         "config": {
+            "APP_ID": "9",
+            "NAME_SPACE": 4,
+            "MESSAGE": null
+         }
+      },
+      {
+         "name": "Pluto TV",
+         "config": {
+            "APP_ID": "E6F74C01",
+            "NAME_SPACE": 0,
+            "MESSAGE": "{\"CAST_NAMESPACE\": \"urn:x-cast:tv.pluto\",\"CAST_MESSAGE\": {\"command\": \"initializePlayback\",\"channel\": \"\",\"episode\": \"\",\"time\": 0}}"
+         }
+      },
+      {
+         "name": "Prime Video",
+         "config": {
+            "APP_ID": "3",
+            "NAME_SPACE": 3,
+            "MESSAGE": null
+         }
+      },
+      {
+         "name": "Redbox",
+         "config": {
+            "APP_ID": "41",
+            "NAME_SPACE": 4,
+            "MESSAGE": null
+         }
+      },
+      {
+         "name": "Starz",
+         "config": {
+            "APP_ID": "151",
+            "NAME_SPACE": 4,
+            "MESSAGE": null
+         }
+      },
+      {
+         "name": "Vudu",
+         "config": {
+            "APP_ID": "31",
+            "NAME_SPACE": 4,
+            "MESSAGE": "https://my.vudu.com/castReceiver/index.html?launch-source=app-icon"
+         }
+      },
+      {
+         "name": "XUMO",
+         "config": {
+            "APP_ID": "62",
+            "NAME_SPACE": 4,
+            "MESSAGE": "{\"CAST_NAMESPACE\": \"urn:x-cast:com.google.cast.media\",\"CAST_MESSAGE\": {\"type\": \"LOAD\",\"media\": {},\"autoplay\": true,\"currentTime\": 0,\"customData\": {}}}"
+         }
+      },
+      {
+         "name": "YouTube",
+         "config": {
+            "APP_ID": "1",
+            "NAME_SPACE": 5,
+            "MESSAGE": null
+         }
+      },
+      {
+         "name": "YouTubeTV",
+         "config": {
+            "APP_ID": "3",
+            "NAME_SPACE": 5,
+            "MESSAGE": null
+         }
+      },
+      {
+         "name": "WatchFree Plus",
+         "config": {
+            "APP_ID": "3014",
+            "NAME_SPACE": 4,
+            "MESSAGE": null
+         }
+      },
+      {
+         "name": "WatchFree+ AVOD",
+         "config": {
+            "APP_ID": "145",
+            "NAME_SPACE": 4,
+            "MESSAGE": null
+         }
+      }
+   ]
+}

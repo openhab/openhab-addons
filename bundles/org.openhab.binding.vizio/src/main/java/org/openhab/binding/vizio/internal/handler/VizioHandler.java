@@ -1,0 +1,540 @@
+/**
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.vizio.internal.handler;
+
+import static org.openhab.binding.vizio.internal.VizioBindingConstants.*;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.vizio.internal.VizioConfiguration;
+import org.openhab.binding.vizio.internal.VizioException;
+import org.openhab.binding.vizio.internal.VizioStateDescriptionOptionProvider;
+import org.openhab.binding.vizio.internal.communication.VizioCommunicator;
+import org.openhab.binding.vizio.internal.communication.VizioTlsTrustManagerProvider;
+import org.openhab.binding.vizio.internal.dto.app.CurrentApp;
+import org.openhab.binding.vizio.internal.dto.applist.VizioApp;
+import org.openhab.binding.vizio.internal.dto.applist.VizioApps;
+import org.openhab.binding.vizio.internal.dto.audio.Audio;
+import org.openhab.binding.vizio.internal.dto.audio.ItemAudio;
+import org.openhab.binding.vizio.internal.dto.input.CurrentInput;
+import org.openhab.binding.vizio.internal.dto.inputlist.InputList;
+import org.openhab.binding.vizio.internal.dto.power.PowerMode;
+import org.openhab.binding.vizio.internal.enums.KeyCommand;
+import org.openhab.core.config.core.Configuration;
+import org.openhab.core.io.net.http.TlsTrustManagerProvider;
+import org.openhab.core.library.types.NextPreviousType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.PlayPauseType;
+import org.openhab.core.library.types.RewindFastforwardType;
+import org.openhab.core.library.types.StringType;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.StateOption;
+import org.openhab.core.types.UnDefType;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.ServiceRegistration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
+
+/**
+ * The {@link VizioHandler} is responsible for handling commands, which are
+ * sent to one of the channels.
+ *
+ * @author Michael Lobstein - Initial contribution
+ */
+@NonNullByDefault
+public class VizioHandler extends BaseThingHandler {
+    private final Logger logger = LoggerFactory.getLogger(VizioHandler.class);
+    private final HttpClient httpClient;
+    private final VizioStateDescriptionOptionProvider stateDescriptionProvider;
+    private final VizioApps dbApps;
+
+    private @Nullable ServiceRegistration<?> serviceRegistration;
+    private @Nullable ScheduledFuture<?> refreshJob;
+    private @Nullable ScheduledFuture<?> metadataRefreshJob;
+
+    private VizioCommunicator communicator;
+    private List<VizioApp> userConfigApps = new ArrayList<VizioApp>();
+    private Object sequenceLock = new Object();
+
+    private int pairingDeviceId = -1;
+    private int pairingToken = -1;
+    private Long currentInputHash = 0L;
+    private Long currentVolumeHash = 0L;
+    private String currentApp = EMPTY;
+    private String currentInput = EMPTY;
+    private boolean currentMute = false;
+    private int currentVolume = -1;
+    private boolean debounce = true;
+
+    public VizioHandler(Thing thing, HttpClient httpClient,
+            VizioStateDescriptionOptionProvider stateDescriptionProvider, VizioApps vizioApps) {
+        super(thing);
+        this.httpClient = httpClient;
+        this.stateDescriptionProvider = stateDescriptionProvider;
+        this.dbApps = vizioApps;
+        this.communicator = new VizioCommunicator(httpClient, EMPTY, -1, EMPTY);
+    }
+
+    @Override
+    public void initialize() {
+        logger.debug("Initializing Vizio handler");
+        final Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
+        VizioConfiguration config = getConfigAs(VizioConfiguration.class);
+
+        final @Nullable String host = config.hostName;
+        final @Nullable String authToken = config.authToken;
+        @Nullable
+        String appListJson = config.appListJson;
+
+        if (host != null && !host.isEmpty()) {
+            this.communicator = new VizioCommunicator(httpClient, host, config.port,
+                    authToken != null ? authToken : EMPTY);
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Host Name must be specified");
+            return;
+        }
+
+        if (authToken == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+                    "Auth Token must be specified, see README for instructions");
+            return;
+        }
+
+        // register trustmanager service to allow httpClient to accept self signed cert from the Vizio TV
+        VizioTlsTrustManagerProvider tlsTrustManagerProvider = new VizioTlsTrustManagerProvider(
+                host + ":" + config.port);
+        serviceRegistration = FrameworkUtil.getBundle(getClass()).getBundleContext()
+                .registerService(TlsTrustManagerProvider.class.getName(), tlsTrustManagerProvider, null);
+
+        // if app list is not supplied in thing configuration, populate it from the json db
+        if (appListJson == null) {
+            appListJson = gson.toJson(dbApps);
+
+            // Update thing configuration (persistent) - store app list from db into thing so the user can update it
+            Configuration configuration = this.getConfig();
+            configuration.put(PROPERTY_APP_LIST_JSON, appListJson);
+            this.updateConfiguration(configuration);
+        }
+
+        try {
+            VizioApps appsFromJson = gson.fromJson(appListJson, VizioApps.class);
+            if (appsFromJson != null && !appsFromJson.getApps().isEmpty()) {
+                userConfigApps = appsFromJson.getApps();
+
+                List<StateOption> appListOptions = new ArrayList<>();
+                userConfigApps.forEach(app -> {
+                    appListOptions.add(new StateOption(app.getName(), app.getName()));
+                });
+
+                stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), ACTIVE_APP),
+                        appListOptions);
+            }
+        } catch (JsonSyntaxException e) {
+            logger.debug("Invalid App List Configuration in thing configuration. Exception: {}", e.getMessage(), e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+                    "Invalid App List Configuration in thing configuration");
+            return;
+        }
+
+        updateStatus(ThingStatus.UNKNOWN);
+
+        startVizioStateRefresh();
+        startPeriodicRefresh();
+    }
+
+    /**
+     * Start the job that queries the Vizio TV every 10 seconds to get its current status
+     */
+    private void startVizioStateRefresh() {
+        ScheduledFuture<?> refreshJob = this.refreshJob;
+        if (refreshJob == null || refreshJob.isCancelled()) {
+            this.refreshJob = scheduler.scheduleWithFixedDelay(this::refreshVizioState, 5, 10, TimeUnit.SECONDS);
+        }
+    }
+
+    /**
+     * Get current status from the Vizio TV and update the channels
+     */
+    private void refreshVizioState() {
+        synchronized (sequenceLock) {
+            try {
+                PowerMode polledPowerMode = communicator.getPowerMode();
+
+                if (debounce) {
+                    int powerMode = polledPowerMode.getItems().get(0).getValue();
+                    if (powerMode == 1) {
+                        updateState(POWER, OnOffType.ON);
+                    } else if (powerMode == 0) {
+                        updateState(POWER, OnOffType.OFF);
+                    } else {
+                        logger.debug("Unknown power mode {}, for response object: {}", powerMode, polledPowerMode);
+                    }
+                }
+                updateStatus(ThingStatus.ONLINE);
+            } catch (VizioException | NullPointerException e) {
+                logger.debug("Unable to retrieve Vizio TV power mode info. Exception: {}", e.getMessage(), e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            }
+
+            try {
+                Audio audioSettings = communicator.getCurrentAudioSettings();
+
+                Optional<ItemAudio> volumeItem = audioSettings.getItems().stream()
+                        .filter(i -> VOLUME.equals(i.getCname())).findFirst();
+                if (debounce && volumeItem.isPresent()) {
+                    currentVolumeHash = volumeItem.get().getHashval();
+
+                    try {
+                        int polledVolume = Integer.parseInt(volumeItem.get().getValue());
+                        if (polledVolume != currentVolume) {
+                            currentVolume = polledVolume;
+                            updateState(VOLUME, new PercentType(BigDecimal.valueOf(currentVolume)));
+                        }
+                    } catch (NumberFormatException e) {
+                        logger.debug("Unable to parse volume value {} as int", volumeItem.get().getValue());
+                    }
+                }
+
+                Optional<ItemAudio> muteItem = audioSettings.getItems().stream().filter(i -> MUTE.equals(i.getCname()))
+                        .findFirst();
+                if (debounce && muteItem.isPresent()) {
+                    String polledMute = muteItem.get().getValue().toUpperCase(Locale.ENGLISH);
+
+                    if (ON.equals(polledMute) || OFF.equals(polledMute)) {
+                        if (ON.equals(polledMute) && !currentMute) {
+                            updateState(MUTE, OnOffType.ON);
+                            currentMute = true;
+                        } else if (OFF.equals(polledMute) && currentMute) {
+                            updateState(MUTE, OnOffType.OFF);
+                            currentMute = false;
+                        }
+                    } else {
+                        logger.debug("Unknown mute mode {}, for response object: {}", polledMute, audioSettings);
+                    }
+                }
+            } catch (VizioException e) {
+                logger.debug("Unable to retrieve Vizio TV current audio settings. Exception: {}", e.getMessage(), e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            }
+
+            try {
+                CurrentInput polledInputState = communicator.getCurrentInput();
+
+                if (debounce && !currentInput.equals(polledInputState.getItems().get(0).getValue())) {
+                    currentInput = polledInputState.getItems().get(0).getValue();
+                    currentInputHash = polledInputState.getItems().get(0).getHashval();
+                    updateState(SOURCE, new StringType(currentInput));
+                }
+            } catch (VizioException | NullPointerException e) {
+                logger.debug("Unable to retrieve Vizio TV current input. Exception: {}", e.getMessage(), e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            }
+
+            try {
+                if (debounce) {
+                    CurrentApp polledApp = communicator.getCurrentApp();
+                    Optional<VizioApp> currentAppData = userConfigApps.stream()
+                            .filter(a -> polledApp.getItem().getValue().getAppId().equals(a.getConfig().getAppId())
+                                    && polledApp.getItem().getValue().getNameSpace()
+                                            .equals(a.getConfig().getNameSpace()))
+                            .findFirst();
+
+                    if (currentAppData.isPresent()) {
+                        if (!currentApp.equals(currentAppData.get().getName())) {
+                            currentApp = currentAppData.get().getName();
+                            updateState(ACTIVE_APP, new StringType(currentApp));
+                        }
+                    } else {
+                        currentApp = EMPTY;
+                        try {
+                            int appId = Integer.parseInt(polledApp.getItem().getValue().getAppId());
+                            updateState(ACTIVE_APP, new StringType(String.format(UNKNOWN_APP_STR, appId,
+                                    polledApp.getItem().getValue().getNameSpace())));
+                        } catch (NumberFormatException nfe) {
+                            // Non-numeric appId received, eg: hdmi1
+                            updateState(ACTIVE_APP, UnDefType.UNDEF);
+                        }
+
+                        logger.debug("Unknown app_id: {}, name_space: {}", polledApp.getItem().getValue().getAppId(),
+                                polledApp.getItem().getValue().getNameSpace());
+                    }
+                }
+            } catch (VizioException | NullPointerException e) {
+                logger.debug("Unable to retrieve Vizio TV current running app. Exception: {}", e.getMessage(), e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            }
+        }
+        debounce = true;
+    }
+
+    /**
+     * Start the job to periodically retrieve various metadata from the Vizio TV every 10 minutes
+     */
+    private void startPeriodicRefresh() {
+        ScheduledFuture<?> metadataRefreshJob = this.metadataRefreshJob;
+        if (metadataRefreshJob == null || metadataRefreshJob.isCancelled()) {
+            this.metadataRefreshJob = scheduler.scheduleWithFixedDelay(this::refreshVizioMetadata, 1, 600,
+                    TimeUnit.SECONDS);
+        }
+    }
+
+    /**
+     * Update source list (hashes) and other metadata from the Vizio TV
+     */
+    private void refreshVizioMetadata() {
+        synchronized (sequenceLock) {
+            try {
+                InputList inputList = communicator.getSourceInputList();
+
+                List<StateOption> sourceListOptions = new ArrayList<>();
+                inputList.getItems().forEach(source -> {
+                    sourceListOptions.add(new StateOption(source.getName(), source.getValue().getName()));
+                });
+
+                stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), SOURCE),
+                        sourceListOptions);
+            } catch (VizioException | NullPointerException e) {
+                logger.debug("Unable to retrieve the Vizio TV input list. Exception: {}", e.getMessage(), e);
+            }
+        }
+    }
+
+    @Override
+    public void dispose() {
+        ScheduledFuture<?> refreshJob = this.refreshJob;
+        if (refreshJob != null) {
+            refreshJob.cancel(true);
+            this.refreshJob = null;
+        }
+
+        ScheduledFuture<?> metadataRefreshJob = this.metadataRefreshJob;
+        if (metadataRefreshJob != null) {
+            metadataRefreshJob.cancel(true);
+            this.metadataRefreshJob = null;
+        }
+
+        ServiceRegistration<?> localServiceRegistration = serviceRegistration;
+        if (localServiceRegistration != null) {
+            // remove trustmanager service
+            localServiceRegistration.unregister();
+            serviceRegistration = null;
+        }
+    }
+
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        if (command instanceof RefreshType) {
+            logger.debug("Unsupported refresh command: {}", command);
+        } else {
+            switch (channelUID.getId()) {
+                case POWER:
+                    debounce = false;
+                    synchronized (sequenceLock) {
+                        try {
+                            if (command == OnOffType.ON) {
+                                communicator.sendKeyPress(KeyCommand.POWERON.getJson());
+                            } else {
+                                communicator.sendKeyPress(KeyCommand.POWEROFF.getJson());
+                            }
+                        } catch (VizioException e) {
+                            logger.debug("Unable to send power {} command to the Vizio TV, Exception: {}", command,
+                                    e.getMessage());
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                        }
+                    }
+                    break;
+                case VOLUME:
+                    debounce = false;
+                    synchronized (sequenceLock) {
+                        try {
+                            int volume = Integer.parseInt(command.toString());
+
+                            // volume changed again before polling has run, get current volume hash from the TV first
+                            if (currentVolumeHash.equals(0L)) {
+                                Audio audioSettings = communicator.getCurrentAudioSettings();
+
+                                Optional<ItemAudio> volumeItem = audioSettings.getItems().stream()
+                                        .filter(i -> VOLUME.equals(i.getCname())).findFirst();
+                                if (volumeItem.isPresent()) {
+                                    currentVolumeHash = volumeItem.get().getHashval();
+                                } else {
+                                    logger.debug("Unable to get current volume hash on the Vizio TV");
+                                }
+                            }
+                            communicator
+                                    .changeVolume(String.format(MODIFY_INT_SETTING_JSON, volume, currentVolumeHash));
+                            currentVolumeHash = 0L;
+                        } catch (VizioException | NullPointerException e) {
+                            logger.debug("Unable to set volume on the Vizio TV, command volume: {}, Exception: {}",
+                                    command, e.getMessage());
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                        } catch (NumberFormatException e) {
+                            logger.debug("Unable to parse command volume value {} as int", command);
+                        }
+                    }
+                    break;
+                case MUTE:
+                    debounce = false;
+                    synchronized (sequenceLock) {
+                        try {
+                            if (command == OnOffType.ON && !currentMute) {
+                                communicator.sendKeyPress(KeyCommand.MUTETOGGLE.getJson());
+                                currentMute = true;
+                            } else if (command == OnOffType.OFF && currentMute) {
+                                communicator.sendKeyPress(KeyCommand.MUTETOGGLE.getJson());
+                                currentMute = false;
+                            }
+                        } catch (VizioException e) {
+                            logger.debug("Unable to send mute {} command to the Vizio TV, Exception: {}", command,
+                                    e.getMessage());
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                        }
+                    }
+                    break;
+                case SOURCE:
+                    debounce = false;
+                    synchronized (sequenceLock) {
+                        try {
+                            // if input changed again before polling has run, get current input hash from the TV
+                            // first
+                            if (currentInputHash.equals(0L)) {
+                                currentInputHash = communicator.getCurrentInput().getItems().get(0).getHashval();
+                            }
+                            communicator
+                                    .changeInput(String.format(MODIFY_STRING_SETTING_JSON, command, currentInputHash));
+                            currentInputHash = 0L;
+                        } catch (VizioException | NullPointerException e) {
+                            logger.debug("Unable to set current source on the Vizio TV, source: {}, Exception: {}",
+                                    command, e.getMessage());
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                        }
+                    }
+                    break;
+                case ACTIVE_APP:
+                    debounce = false;
+                    synchronized (sequenceLock) {
+                        try {
+                            Optional<VizioApp> selectedApp = userConfigApps.stream()
+                                    .filter(a -> command.toString().equals(a.getName())).findFirst();
+
+                            if (selectedApp.isPresent()) {
+                                communicator.launchApp(selectedApp.get().getConfig());
+                            } else {
+                                logger.debug("Unknown app name: '{}', check that it exists in App List configuration",
+                                        command);
+                            }
+                        } catch (VizioException | NullPointerException e) {
+                            logger.debug("Unable to launch app name: '{}' on the Vizio TV, Exception: {}", command,
+                                    e.getMessage());
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                        }
+                    }
+                    break;
+                case CONTROL:
+                    debounce = false;
+                    synchronized (sequenceLock) {
+                        try {
+                            handleControlCommand(command);
+                        } catch (VizioException e) {
+                            logger.debug("Unable to send control command: '{}' to the Vizio TV, Exception: {}", command,
+                                    e.getMessage());
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                        }
+                    }
+                    break;
+                case BUTTON:
+                    synchronized (sequenceLock) {
+                        try {
+                            KeyCommand keyCommand = KeyCommand.valueOf(command.toString().toUpperCase(Locale.ENGLISH));
+                            communicator.sendKeyPress(keyCommand.getJson());
+                        } catch (IllegalArgumentException | VizioException e) {
+                            logger.debug("Unable to send keypress to the Vizio TV, key: {}, Exception: {}", command,
+                                    e.getMessage());
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                        }
+                    }
+                    break;
+                default:
+                    logger.warn("Unknown channel: '{}'", channelUID.getId());
+                    break;
+            }
+        }
+    }
+
+    private void handleControlCommand(Command command) throws VizioException {
+        if (command instanceof PlayPauseType) {
+            if (command == PlayPauseType.PLAY) {
+                communicator.sendKeyPress(KeyCommand.PLAY.getJson());
+            } else if (command == PlayPauseType.PAUSE) {
+                communicator.sendKeyPress(KeyCommand.PAUSE.getJson());
+            }
+        } else if (command instanceof NextPreviousType) {
+            if (command == NextPreviousType.NEXT) {
+                communicator.sendKeyPress(KeyCommand.RIGHT.getJson());
+            } else if (command == NextPreviousType.PREVIOUS) {
+                communicator.sendKeyPress(KeyCommand.LEFT.getJson());
+            }
+        } else if (command instanceof RewindFastforwardType) {
+            if (command == RewindFastforwardType.FASTFORWARD) {
+                communicator.sendKeyPress(KeyCommand.SEEKFWD.getJson());
+            } else if (command == RewindFastforwardType.REWIND) {
+                communicator.sendKeyPress(KeyCommand.SEEKBACK.getJson());
+            }
+        } else {
+            logger.warn("Unknown control command: {}", command);
+        }
+    }
+
+    // The remaining methods are used by the console when obtaining the auth token from the TV.
+    public void saveAuthToken(String authToken) {
+        Configuration configuration = this.getConfig();
+        configuration.put(PROPERTY_AUTH_TOKEN, authToken);
+        this.updateConfiguration(configuration);
+    }
+
+    public int getPairingDeviceId() {
+        return pairingDeviceId;
+    }
+
+    public void setPairingDeviceId(int pairingDeviceId) {
+        this.pairingDeviceId = pairingDeviceId;
+    }
+
+    public int getPairingToken() {
+        return pairingToken;
+    }
+
+    public void setPairingToken(int pairingToken) {
+        this.pairingToken = pairingToken;
+    }
+}
