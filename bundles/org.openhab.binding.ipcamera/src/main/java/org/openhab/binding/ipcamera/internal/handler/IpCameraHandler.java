@@ -842,7 +842,6 @@ public class IpCameraHandler extends BaseThingHandler {
                 ffmpegRecord = new Ffmpeg(this, format, cameraConfig.getFfmpegLocation(), inputOptions, rtspUri,
                         cameraConfig.getMp4OutOptions(), cameraConfig.getFfmpegOutput() + mp4Filename + ".mp4",
                         cameraConfig.getUser(), cameraConfig.getPassword());
-                logger.debug("ffmpegRecord output {}", ffmpegRecord);
                 Ffmpeg localRecord = ffmpegRecord;
                 if (localRecord != null) {
                     localRecord.startConverting();
@@ -1590,8 +1589,7 @@ public class IpCameraHandler extends BaseThingHandler {
             case AMCREST_THING:
             case DAHUA_THING:
                 if (mjpegUri.isEmpty()) {
-                    mjpegUri = "/cgi-bin/mjpg/video.cgi?channel=" + cameraConfig.getNvrChannel() + "&subtype="
-                            + cameraConfig.getNvrChannelSubtype();
+                    mjpegUri = "/cgi-bin/mjpg/video.cgi?channel=" + cameraConfig.getNvrChannel() + "&subtype=1";
                 }
                 if (snapshotUri.isEmpty()) {
                     snapshotUri = "/cgi-bin/snapshot.cgi?channel=" + cameraConfig.getNvrChannel();
