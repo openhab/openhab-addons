@@ -54,7 +54,7 @@ Thing ipcamera:generic:Esp32Cam
 
 It is better to always setup your Amcrest camera as a `dahua` thing type.
 The old alarm polling based method is used if you setup as `amcrest`, and the newer/better event based method is used if you setup as `dahua` instead.
-All other features should be the same between the two. 
+All other features should be the same between the two.
 
 ### Dahua
 
@@ -67,7 +67,7 @@ For MJPEG to work, you need to set the first sub-stream to use MJPEG format for 
 * If your camera does not support MJPEG as some Foscams no longer do, then you can set `mjpegUrl` to contain *ffmpeg* to use your CPU to generate a MJPEG stream.
 * Some Foscam cameras need to have a detection area listed in the URL when you enable the motion alarm.
 
-As each Foscam model has a different resolution and two different URLs, this makes it difficult to automate, so an override feature was added to create your own "enable the alarm" URL. 
+As each Foscam model has a different resolution and two different URLs, this makes it difficult to automate, so an override feature was added to create your own "enable the alarm" URL.
 This setting is called `customMotionAlarmUrl` and the steps to using it are:
 
 1. Enable the motion alarm in the web interface of your camera and setup any areas you wish movement to be ignored in. E.g. tree branches moving in the wind.
@@ -126,7 +126,7 @@ Thing ipcamera:hikvision:West "West Camera"
 
 ## Discovery
 
-The discovery feature of openHAB can be used to find and setup any ONVIF cameras. 
+The discovery feature of openHAB can be used to find and setup any ONVIF cameras.
 This method should be preferred as it will discover the cameras IP, ports and URLs for you, making the setup much easier.
 The binding needs to use UDP port 3702 to discover the cameras with, so this port needs to be unblocked by your firewall or add the camera manually if the camera is not auto found.
 To use the discovery, just press the `+` icon located in the Inbox, then select the IpCamera binding from the list of installed bindings.
@@ -160,7 +160,7 @@ For ONVIF cameras that auto detect the wrong URL, these same fields can be used 
 NOTE: Leave any `user:pass@` out of any URLs, the binding will handle this for you.
 Not only does this hide your login details, it will also make changing your password much easier if it is only located in 1 field.
 
-Below is a list of all configuration parameters (useful for textual config) with a short description. 
+Below is a list of all configuration parameters (useful for textual config) with a short description.
 If you do not specify any of these, the binding will use the default which should work in most cases and should be tried first.
 
 | Parameter | Description |
@@ -264,6 +264,11 @@ The channels are kept consistent as much as possible from brand to brand to make
 | `tooDarkAlarm` | Switch (read only) | ONVIF cameras only will reflect the status of the ONVIF event of the same name. |
 | `pollImage` | Switch | This control can be used to manually start and stop using your CPU to create snapshots from a RTSP source. If you have a snapshot URL setup in the binding, only then can this control can be used to update the Image channel. |
 | `zoom` | Dimmer | Works with ONVIF cameras that can be moved. |
+| `acceptedCardNumber` | String (read only) | This channel shows the last Pass Card Number, authorized by Dahua VTO to open door. This could be used by Openhab's presence detection and security monitoring. Cards could be programmed into VTO without VTH with a help of Dahua SmartPSS soft <https://www.youtube.com/watch?v=qzR_ILT7j-0>. After that cards appear in VTO's web interface. The channel doesn't show rejected/unauthorised cards. |
+| `doorUnlock` | Switch | This channel could reflect Dahua VTO door lock state and at the same time send commands to door lock. Note that under some conditions Dahua doesn't send "lock off" message, so it's better to add expiration timer to corresponding item. |
+| `doorContact` | Switch (read only) | Reflects Dahua VTO door open/closed contact state.
+| `exitButton` | Switch (read only) | Reflects Dahua VTO exit button state. This could be used to check for exit button's long clicks/double clicks, so the button could control other gates connected to Openhab, or outdoor lights.
+| `motionDetectionLevel` | Dimmer | Controls Dahua built-in motion detection sensitivity.
 
 ## Moving PTZ Cameras
 
@@ -351,7 +356,7 @@ You can link this same channel to BOTH a switch and a slider at the same time if
 
 **audioAlarm**
 
-This works in the same way, just with different channels. 
+This works in the same way, just with different channels.
 If you setup a lower resolution URL in the config `alarmInputUrl` you need to ensure it contains audio otherwise this feature wont work.
 A value of 10 on a slider translates to -10dB below max volume (digital full scale) and when the audio goes above the -10dB threshold the alarm will turn ON.
 
@@ -364,15 +369,15 @@ There are a number of ways to use snapshots with this binding.
 + Use the cameras URL so it passes from the camera directly to your end device. ie a tablet.
 This is always the best option if it works.
 + Request a snapshot with the URL `http://openhabIP:8080/ipcamera/{cameraUID}/ipcamera.jpg`.
-The IP is for your openHAB server not the camera. 
+The IP is for your openHAB server not the camera.
 If you find the snapshot is old, you can set the `gifPreroll` to a number above 0 and this forces the camera to keep updating the stored JPG in RAM.
 The ipcamera.jpg can also be cast, as most cameras can not directly cast their snapshots.
-+ Use the `http://openHAB:8080/ipcamera/{cameraUID}/snapshots.mjpeg` to request a stream of snapshots to be delivered in MJPEG format. 
-+ Use the record GIF action and use a `gifPreroll` value > 0. 
-This creates a number of snapshots in the FFmpeg output folder called snapshotXXX.jpg where XXX starts at 0 and increases each `pollTime`. 
-This allows you to get a snapshot from an exact amount of time before, on, or after starting the record to GIF action. 
++ Use the `http://openHAB:8080/ipcamera/{cameraUID}/snapshots.mjpeg` to request a stream of snapshots to be delivered in MJPEG format.
++ Use the record GIF action and use a `gifPreroll` value > 0.
+This creates a number of snapshots in the FFmpeg output folder called snapshotXXX.jpg where XXX starts at 0 and increases each `pollTime`.
+This allows you to get a snapshot from an exact amount of time before, on, or after starting the record to GIF action.
 Handy for cameras which lag due to slow processors, or if you do not want a hand blocking the image when the door bell was pushed.
-These snapshots can be fetched either directly as they exist on disk, or via this URL format. 
+These snapshots can be fetched either directly as they exist on disk, or via this URL format.
 `http://openHAB:8080/ipcamera/{cameraUID}/snapshot0.jpg`
 + Also worth a mention is that you can off load cameras to a software package running on a separate server such as, Motion, Shinobi and Zoneminder.
 
@@ -384,7 +389,7 @@ See this forum thread for examples of how to use snapshots and streams in a site
 To get video streams working, this forum thread has working widget examples that you can use.
 <https://community.openhab.org/t/oh3-widget-building-a-camera-widget/110069>
 
-To get some of the video formats working, you need to install FFmpeg. 
+To get some of the video formats working, you need to install FFmpeg.
 Visit their site here to learn how <https://ffmpeg.org/>
 
 Under Linux, FFmpeg can be installed very easily with this one command.
@@ -395,17 +400,17 @@ sudo apt update && sudo apt install ffmpeg
 
 **IMPORTANT:**
 The binding has its own file server that works by allowing access to the snapshot and video streams with no user/password for requests that come from an IP located in the `ipWhitelist`. 
-Requests from external IPs or internal requests that are not on the `ipWhitelist` will fail to get any answer. 
+Requests from external IPs or internal requests that are not on the `ipWhitelist` will fail to get any answer.
 If you prefer to use your own firewall instead, you can also choose to make the `ipWhitelist` equal "DISABLE" and then all internal IPs will have access.
 
 There are multiple ways to get a moving picture, to use them just enter the URL into any browser using `http://openHAB:8080/ipcamera/{cameraUID}/name.format` replacing the name.format with one of the options that are listed below:
 
-+ **ipcamera.m3u8** HLS (HTTP Live Streaming) which uses H.264 compression. 
++ **ipcamera.m3u8** HLS (HTTP Live Streaming) which uses H.264 compression.
 This can be used to cast to Chromecast devices, or can display video in many browsers (some browsers require a plugin to be installed).
 Please understand that this format due to the way it works will give you lag behind real time, more on this below.
 + **ipcamera.mjpeg** whilst needing more bandwidth, it is far more compatible for displaying in a wider range of UIs and browsers.
 It is normally 1 second or less behind real-time.
-FFmpeg can be used to create this stream if your camera does not create one for you, but this uses more CPU. 
+FFmpeg can be used to create this stream if your camera does not create one for you, but this uses more CPU.
 A lot of cameras limit the resolution in this format, so consider using HLS, autofps.mjpeg, or snapshots.mjpeg instead which will be in a higher resolution.
 + **snapshots.mjpeg** is a special MJPEG stream created from the cameras snapshots that are taken at the polling rate.
 + **autofps.mjpeg** This requires a camera that has a motion alarm to be turned on or it will only send a picture every 8 seconds.
@@ -413,7 +418,7 @@ You can also use the `externalMotion` channel to change the framerate.
 This feature is designed to keep data traffic to your mobile devices as low as possible by automatically sending 1fps when motion is occurring, but only 1 picture every 8 seconds when the picture has no motion.
 The idea is to not send lots of pictures if the picture has not changed as doing so only eats up your data plan.
 + **ipcamera.gif** This is small in size and very compatible and handy to use in push notifications, Pushover, Telegram, or emails.
-You can cast it which can be handy to show a moving picture that keeps repeating on a Google/Nest home hub or your wall mounted tablet. 
+You can cast it which can be handy to show a moving picture that keeps repeating on a Google/Nest home hub or your wall mounted tablet.
 + MP4 recordings can be created by the binding and FFmpeg, more on this below.
 
 ## MJPEG Streams
@@ -441,7 +446,7 @@ For cameras that have an API you can opt to not use the cameras stream and use F
 
 FFmpeg may require you to lower the resolution and/or the FPS to lower the CPU load down enough to run, you may need to experiment.
 To change the settings used by this feature the binding exposes the config `mjpegOptions` which the default is currently `-q:v 5 -r 2 -vf scale=640:-2 -update 1` where 5 is the JPG quality/compression setting, and -r 2 is how many frames per second to try and create.
-In this case it will create 2 frames every second. 
+In this case it will create 2 frames every second.
 `-vf scale=640:-2` will lower the resolution down to make the video 640 pixels wide.
 You can remove this to use the same resolution as the camera is set to use, however it may become a trade off and you may get less frames per second if you raise the resolution.
 Always try to get the default settings working first before you begin to experiment and if your stream is above 1080p and 10 frames per second, consider lowering it if you have issues on an ARM based server like a Raspberry PIx.
@@ -453,9 +458,9 @@ Snapshots are usually high resolution and look great, however they are limited t
 The reason this is more useful than snapshots on their own, is some UIs will flash white or black when a snapshot is refreshing, this does not happen with snapshots.mjpeg and is the same bandwidth and CPU load as just using snapshots!
 
 The autofps.mjpeg feature will display a snapshot that updates every 8 seconds to keep network traffic low, then when motion is detected it will automatically increase the frames to every second until the motion stops.
-This means lower traffic unless the picture is actually changing. 
+This means lower traffic unless the picture is actually changing.
 
-Request the stream to be sent to an item with this URL. 
+Request the stream to be sent to an item with this URL.
 NOTE: The IP is openHAB's not your cameras IP.
 
 `http://openHAB:8080/ipcamera/{cameraUID}/snapshots.mjpeg`
@@ -471,9 +476,9 @@ Video url="http://openHAB:8080/ipcamera/{cameraUID}/snapshots.mjpeg" encoding="m
 ## HLS (HTTP Live Streaming)
 
 HLS is a way of splitting the live stream up into small H.264 based files so it can be played in many browsers (some require addons to be installed) without using much CPU power as cameras generally are already in H.264 and this does not transcode the data.
-Because the files need to be created, this creates a lag/delay behind real time that can be reduced (more on that below). 
+Because the files need to be created, this creates a lag/delay behind real time that can be reduced (more on that below).
 
-The channel called 'startStream' can be used to create HLS files non stop and will remove the startup delay that comes with using this type of stream. 
+The channel called 'startStream' can be used to create HLS files non stop and will remove the startup delay that comes with using this type of stream.
 The startup delay and the lag are two different things, with the startup delay easily solved by turning this channel ON.
 If the channel is OFF, the stream will start and stop automatically as required and the channel will reflect its current status.
 With a fast openHAB server it should only need to be requested once, but on slower ARM systems it takes a while for FFmpeg to get up and running at full speed.
@@ -489,9 +494,9 @@ To use the HLS feature, you need to:
 
 ### Ram Drive Setup
 
-To create a tmpfs of 20mb at /tmpfs/ run this command to open the file for editing. 
+To create a tmpfs of 20mb at /tmpfs/ run this command to open the file for editing.
 Recommend using 20Mb per camera that uses this location although it could use less than half that amount if carefully streamlined for less ram.
-If using the FFmpeg `-hls_wrap wrap` option (causes issues for my Home Hub), you can get away with 5Mb per camera. 
+If using the FFmpeg `-hls_wrap wrap` option (causes issues for my Home Hub), you can get away with 5Mb per camera.
 
 ```
 nano /etc/fstab
@@ -576,7 +581,7 @@ Webview url="http://192.168.6.4:8080/static/html/file.html" height=5
             <video playsinline autoplay muted controls style="width: 100%; " src="http://openHAB:8080/ipcamera/{cameraUID}/ipcamera.m3u8" />
         </div>
     </body>
-</html> 
+</html>
 
 ```
 
@@ -590,7 +595,7 @@ There are two ways to cast a camera.
 The first method once setup allows you to ask "OK Google show X camera", or "OK Google show X camera on Y display".
 By optionally naming the display that you wish to use, it can be cast directly to your Chromecast (connected to your TV) by speaking to a Google Nest Mini.
 This must use the HLS format and use the metadata tag shown below with the openHAB Cloud Connector setup.
-Don't forget to ask Google to 'sync my devices' after adding the metadata. 
+Don't forget to ask Google to 'sync my devices' after adding the metadata.
 The synonyms in the tag allows Google to understand multiple names that the camera may be called by different people in your family.
 
 Example of how this is done in an items file.
@@ -710,13 +715,13 @@ If you use the `Create Equipment from Thing` feature to auto create your items, 
 ```java
 
     Text label="BabyMonitor" icon="camera"{
-        Switch item=BabyCam_GoToPreset icon=movecontrol label="Camera Direction" mappings=[1="Room", 2="Chair", 3="Cot"]            
-        Text label="Advanced Controls" icon="settings"{ 
+        Switch item=BabyCam_GoToPreset icon=movecontrol label="Camera Direction" mappings=[1="Room", 2="Chair", 3="Cot"]
+        Text label="Advanced Controls" icon="settings"{
             Default item=BabyCam_AutoLED
             Default item=BabyCam_AudioAlarmThreshold icon=recorder
             Switch item=BabyCam_AudioAlarm
             Default item=BabyCam_EnableMotionAlarm
-            Default item=BabyCam_MotionAlarm                                
+            Default item=BabyCam_MotionAlarm
             Slider item=BabyCam_Pan icon=movecontrol
             Slider item=BabyCam_Tilt icon=movecontrol
             Slider item=BabyCam_Zoom icon=zoom
@@ -724,7 +729,7 @@ If you use the `Create Equipment from Thing` feature to auto create your items, 
         Default item=BabyCam_StartHLSStream
         Text label="Mjpeg Stream" icon="camera"{Video url="http://openHAB:8080/ipcamera/BabyCam/ipcamera.mjpeg" encoding="mjpeg"}
         Text label="HLS Stream" icon="camera"{Webview url="http://openHAB:8080/ipcamera/BabyCam/ipcamera.m3u8" height=15}
-        Video url="http://openHAB:8080/ipcamera/BabyCam/autofps.mjpeg" encoding="mjpeg"            
-    }  
+        Video url="http://openHAB:8080/ipcamera/BabyCam/autofps.mjpeg" encoding="mjpeg"
+    }
 
 ```

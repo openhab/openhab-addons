@@ -117,6 +117,10 @@ public class CameraConfig {
         return nvrChannel;
     }
 
+    public int getNvrChannelSubtype() {
+        return nvrChannel;
+    }
+
     public String getMjpegUrl() {
         return mjpegUrl;
     }

@@ -169,7 +169,6 @@ public class DahuaHandler extends ChannelDuplexHandler {
                     ipCameraHandler.setChannelState(CHANNEL_TOO_BLURRY_ALARM, OnOffType.OFF);
                 }
                 break;
-
             case "AccessControl":
                 if ("Pulse".equals(action)) {
                     if (content.contains("\"Method\" : 1")) {

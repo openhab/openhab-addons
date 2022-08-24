@@ -1086,6 +1086,16 @@
 				<advanced>true</advanced>
 			</parameter>
 
+			<parameter name="nvrChannelSubtype" type="integer" required="true" min="0" max="255" groupName="Settings">
+				<label>NVR Input Channel Subtype</label>
+				<description>Set this to 1 if your camera doesn't have additional channel types, or channel subtype number of your
+					NVR that the camera
+					is connected to.
+				</description>
+				<default>1</default>
+				<advanced>true</advanced>
+			</parameter>
+
 			<parameter name="port" type="integer" required="true" min="1" max="65535" groupName="Settings">
 				<label>Port for HTTP</label>
 				<description>This port will be used for HTTP calls for fetching the snapshot and alarm states.
