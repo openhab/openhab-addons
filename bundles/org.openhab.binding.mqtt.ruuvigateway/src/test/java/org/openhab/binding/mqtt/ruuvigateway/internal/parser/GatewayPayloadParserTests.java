@@ -97,7 +97,7 @@ public class GatewayPayloadParserTests {
     }
 
     @Test
-    public void testUnexpectedTypes2() {
+    public void testInvalidHex() {
         assertThrows(JsonSyntaxException.class, () -> {
             GatewayPayloadParser.parse(bytes(//
                     "{\"gw_mac\": \"DE:AD:BE:EF:00:00\","//
@@ -105,7 +105,7 @@ public class GatewayPayloadParserTests {
                             + "  \"aoa\": [],"//
                             + "  \"gwts\": \"1659365438\","//
                             + "  \"ts\": \"1659365438\","//
-                            + "  \"data\": 6666," // should be string
+                            + "  \"data\": \"XYZZ\"," // should be hex string
                             + "  \"coords\": \"\"" + "}"));
         });
     }

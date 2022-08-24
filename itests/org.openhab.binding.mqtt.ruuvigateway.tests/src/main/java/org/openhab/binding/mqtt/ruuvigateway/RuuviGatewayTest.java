@@ -15,9 +15,12 @@ package org.openhab.binding.mqtt.ruuvigateway;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.openhab.binding.mqtt.ruuvigateway.internal.RuuviGatewayBindingConstants.*;
 
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -28,26 +31,43 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 
-import org.eclipse.jdt.annotation.NonNull;
+import javax.measure.quantity.Acceleration;
+import javax.measure.quantity.Dimensionless;
+import javax.measure.quantity.ElectricPotential;
+import javax.measure.quantity.Power;
+import javax.measure.quantity.Pressure;
+import javax.measure.quantity.Temperature;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.openhab.binding.mqtt.discovery.MQTTTopicDiscoveryService;
 import org.openhab.binding.mqtt.ruuvigateway.internal.RuuviGatewayBindingConstants;
 import org.openhab.binding.mqtt.ruuvigateway.internal.discovery.RuuviGatewayDiscoveryService;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.events.Event;
-import org.openhab.core.events.EventFilter;
-import org.openhab.core.events.EventSubscriber;
+import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.io.transport.mqtt.MqttConnectionObserver;
 import org.openhab.core.io.transport.mqtt.MqttConnectionState;
+import org.openhab.core.items.GenericItem;
+import org.openhab.core.library.CoreItemFactory;
+import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Channel;
+import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -55,10 +75,11 @@ import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.builder.BridgeBuilder;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
-import org.openhab.core.thing.events.ThingStatusInfoChangedEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.openhab.core.thing.link.ItemChannelLink;
+import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 
 /**
  * A full implementation test, that starts the embedded MQTT broker and publishes test data
@@ -66,40 +87,26 @@ import org.slf4j.LoggerFactory;
  * @author David Graeff - Initial contribution
  * @author Sami Salonen - Adapted and extended to Ruuvi Gateway tests
  */
-// @ExtendWith(MockitoExtension.class)
-// @MockitoSettings(strictness = Strictness.LENIENT)
 @NonNullByDefault
 public class RuuviGatewayTest extends MqttOSGiTest {
     private static final String BASE_TOPIC_RUUVI = "ruuvi";
-    // private static final String BASE_TOPIC_CUSTOM = "mycustomprefix";
-
-    private static class ThingStatusInfoChangedSubscriber implements EventSubscriber {
-
-        private final Logger logger = LoggerFactory.getLogger(ThingStatusInfoChangedSubscriber.class);
-
-        public Map<ThingUID, List<ThingStatusInfo>> statusUpdates = new HashMap<>();
-
-        @Override
-        public Set<@NonNull String> getSubscribedEventTypes() {
-            return Collections.singleton(ThingStatusInfoChangedEvent.TYPE);
-        }
-
-        @Override
-        public @Nullable EventFilter getEventFilter() {
-            return null;
-        }
-
-        @Override
-        public void receive(Event event) {
-            // Expecting only state updates in the tests
-            assertInstanceOf(ThingStatusInfoChangedEvent.class, event);
-            ThingStatusInfoChangedEvent statusEvent = (ThingStatusInfoChangedEvent) event;
-            logger.trace("Captured event: {} ", event);
-            List<ThingStatusInfo> updates = statusUpdates.computeIfAbsent(statusEvent.getThingUID(),
-                    item -> new ArrayList<>());
-            assert updates != null; // To make compiler happy
-            updates.add(statusEvent.getStatusInfo());
-        }
+    private static final Map<String, String> CHANNEL_TO_ITEM_TYPE = new HashMap<>();
+    static {
+        CHANNEL_TO_ITEM_TYPE.put(CHANNEL_ID_ACCELERATIONX, "Number:Acceleration");
+        CHANNEL_TO_ITEM_TYPE.put(CHANNEL_ID_ACCELERATIONY, "Number:Acceleration");
+        CHANNEL_TO_ITEM_TYPE.put(CHANNEL_ID_ACCELERATIONZ, "Number:Acceleration");
+        CHANNEL_TO_ITEM_TYPE.put(CHANNEL_ID_BATTERY, "Number:ElectricPotential");
+        CHANNEL_TO_ITEM_TYPE.put(CHANNEL_ID_DATA_FORMAT, "Number");
+        CHANNEL_TO_ITEM_TYPE.put(CHANNEL_ID_HUMIDITY, "Number:Dimensionless");
+        CHANNEL_TO_ITEM_TYPE.put(CHANNEL_ID_MEASUREMENT_SEQUENCE_NUMBER, "Number");
+        CHANNEL_TO_ITEM_TYPE.put(CHANNEL_ID_MOVEMENT_COUNTER, "Number");
+        CHANNEL_TO_ITEM_TYPE.put(CHANNEL_ID_PRESSURE, "Number:Pressure");
+        CHANNEL_TO_ITEM_TYPE.put(CHANNEL_ID_TEMPERATURE, "Number:Temperature");
+        CHANNEL_TO_ITEM_TYPE.put(CHANNEL_ID_TX_POWER, "Number:Power");
+        CHANNEL_TO_ITEM_TYPE.put(CHANNEL_ID_RSSI, "Number:Power");
+        CHANNEL_TO_ITEM_TYPE.put(CHANNEL_ID_TS, "DateTime");
+        CHANNEL_TO_ITEM_TYPE.put(CHANNEL_ID_GWTS, "DateTime");
+        CHANNEL_TO_ITEM_TYPE.put(CHANNEL_ID_GWMAC, "String");
     }
 
     private ThingStatusInfoChangedSubscriber statusSubscriber = new ThingStatusInfoChangedSubscriber();
@@ -115,6 +122,7 @@ public class RuuviGatewayTest extends MqttOSGiTest {
     private MqttConnectionObserver failIfChange = (state, error) -> assertThat(state,
             is(MqttConnectionState.CONNECTED));
 
+    @SuppressWarnings("unused") // used indirectly with Inbox
     private @NonNullByDefault({}) RuuviGatewayDiscoveryService ruuviDiscoveryService;
     private Set<Thing> things = new HashSet<>();
 
@@ -131,25 +139,42 @@ public class RuuviGatewayTest extends MqttOSGiTest {
         return bridge;
     }
 
-    private Thing createRuuviThing(String brokerPrefix, String topic) {
-        return createRuuviThing(brokerPrefix, topic, null);
-    }
-
     private Thing createRuuviThing(String brokerPrefix, String topic, @Nullable Integer timeoutMillisecs) {
         Configuration configuration = new Configuration();
         configuration.put(RuuviGatewayBindingConstants.CONFIGURATION_PROPERTY_TOPIC, topic);
         if (timeoutMillisecs != null) {
             configuration.put(RuuviGatewayBindingConstants.CONFIGURATION_PROPERTY_TIMEOUT, timeoutMillisecs);
         }
-        Thing thing = ThingBuilder
-                .create(RuuviGatewayBindingConstants.THING_TYPE_BEACON, topic.replaceAll("[:_/]", "_"))
-                .withBridge(new ThingUID("mqtt", "broker", "mybroker")).withLabel("Ruuvi " + topic)
-                .withConfiguration(configuration).build();
+        ThingUID bridgeThingUID = new ThingUID("mqtt", "broker", "mybroker");
+        ThingUID thingUID = new ThingUID(RuuviGatewayBindingConstants.THING_TYPE_BEACON,
+                topic.replaceAll("[:_/]", "_"));
+        ThingBuilder thingBuilder = ThingBuilder.create(RuuviGatewayBindingConstants.THING_TYPE_BEACON, thingUID)
+                .withBridge(bridgeThingUID).withLabel("Ruuvi " + topic).withConfiguration(configuration);
+
+        CHANNEL_TO_ITEM_TYPE.forEach((channelId, _itemType) -> {
+            thingBuilder.withChannel(ChannelBuilder.create(new ChannelUID(thingUID, channelId)).build());
+        });
+
+        Thing thing = thingBuilder.build();
         thingProvider.add(thing);
         waitForAssert(() -> assertNotNull(thing.getHandler()));
         assertNotNull(thing.getConfiguration());
         things.add(thing);
         return thing;
+    }
+
+    private String itemName(ChannelUID channelUID) {
+        return channelUID.getAsString().replace(":", "_");
+    }
+
+    private String linkChannelToAutogeneratedItem(ChannelUID channelUID) {
+        String itemName = itemName(channelUID);
+        String itemType = CHANNEL_TO_ITEM_TYPE.get(channelUID.getId());
+        GenericItem item = new CoreItemFactory().createItem(itemType, itemName);
+        assertNotNull(item, itemType);
+        itemProvider.add(item);
+        itemChannelLinkProvider.add(new ItemChannelLink(itemName, channelUID));
+        return itemName;
     }
 
     @Override
@@ -158,7 +183,9 @@ public class RuuviGatewayTest extends MqttOSGiTest {
         super.beforeEach();
 
         statusSubscriber.statusUpdates.clear();
+        // stateUpdateSubscriber.stateUpdates.clear();
         registerService(statusSubscriber);
+        // registerService(stateUpdateSubscriber);
 
         MQTTTopicDiscoveryService mqttTopicDiscoveryService = getService(MQTTTopicDiscoveryService.class);
         assertNotNull(mqttTopicDiscoveryService);
@@ -173,33 +200,6 @@ public class RuuviGatewayTest extends MqttOSGiTest {
 
         List<CompletableFuture<Boolean>> futures = new ArrayList<>();
         futures.add(publish(BASE_TOPIC_RUUVI + "/mygwid/DE:AD:BE:EF:AA:00", "{}"));
-        futures.add(publish(BASE_TOPIC_RUUVI + "/mygwid/DE:AD:BE:EF:BB:02",
-                "{" + "  \"gw_mac\": \"DE:AD:BE:EF:00\"," + "  \"rssi\": -82," + "  \"aoa\": [],"
-                        + "  \"gwts\": \"1659365432\"," + "  \"ts\": \"1659365222\","
-                        + "  \"data\": \"0201061BFF99040512FC5394C37C0004FFFC040CAC364200CDCBB8334C884F\","
-                        + "  \"coords\": \"\" }"));
-        futures.add(publish(BASE_TOPIC_RUUVI + "/mygwid/DE:AD:BE:EF:BB:03", "invalid json"));
-        futures.add(publish(BASE_TOPIC_RUUVI + "/mygwid/DE:AD:BE:EF:BB:04",
-                "{" + "  \"gw_mac\": \"DE:AD:BE:EF:00:00\"," + "  \"rssi\": -82," + "  \"aoa\": [],"
-                        + "  \"gwts\": \"1659365432\"," + "  \"ts\": \"1659365222\","
-                        + "  \"data\": \"0201061BFF990405\"," // payload too short
-                        + "  \"coords\": \"\" }"));
-        futures.add(publish(BASE_TOPIC_RUUVI + "/mygwid/DE:AD:BE:EF:BB:05", "{" + "  \"gw_mac\": \"DE:AD:BE:EF:00:00\","
-                + "  \"rssi\": -82," + "  \"aoa\": []," + "  \"gwts\": \"1659365432\"," + "  \"ts\": \"1659365222\","
-                // non-matching manufacturer (the two bytes after FF do not match 99 04)
-                + "  \"data\": \"0201061BFF99050512FC5394C37C0004FFFC040CAC364200CDCBB8334C884F\","
-                + "  \"coords\": \"\" }"));
-        futures.add(publish(BASE_TOPIC_RUUVI + "/mygwid/DE:AD:BE:EF:BB:06", "{" + "  \"gw_mac\": \"DE:AD:BE:EF:00:00\","
-                + "  \"rssi\": -82," + "  \"aoa\": []," + "  \"gwts\": \"1659365432\"," + "  \"ts\": \"1659365222\","
-                // advertisement is not for "manufacturer specific" data
-                + "  \"data\": \"0201061BFA99040512FC5394C37C0004FFFC040CAC364200CDCBB8334C884F\","
-                + "  \"coords\": \"\" }"));
-        futures.add(publish(BASE_TOPIC_RUUVI + "/mygwid/DE:AD:BE:EF:BB:07",
-                "{" + "  \"gw_mac\": \"DE:AD:BE:EF:00\"," + "  \"rssi\": -82," + "  \"aoa\": [],"
-                // data field is number, not a string
-                        + "  \"gwts\": \"1659365432\"," + "  \"ts\": \"1659365222\"," + "  \"data\": 999,"
-                        + "  \"coords\": \"\" }"));
-        futures.add(publish(BASE_TOPIC_RUUVI + "/mygwid/invalid:mac2", "{}"));
 
         registeredTopics = futures.size();
         CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).get(5, TimeUnit.SECONDS);
@@ -215,6 +215,7 @@ public class RuuviGatewayTest extends MqttOSGiTest {
             mqttConnection.stop().get(5, TimeUnit.SECONDS);
         }
         things.stream().map(thing -> thingProvider.remove(thing.getUID()));
+        unregisterService(statusSubscriber);
 
         if (scheduler != null) {
             scheduler.shutdownNow();
@@ -232,53 +233,292 @@ public class RuuviGatewayTest extends MqttOSGiTest {
 
     private void assertThingStatus(List<ThingStatusInfo> statusUpdates, int index, ThingStatus status,
             @Nullable ThingStatusDetail detail, @Nullable String description) {
-        assertEquals(status, statusUpdates.get(index).getStatus());
-        assertEquals(detail, statusUpdates.get(index).getStatusDetail());
-        assertEquals(description, statusUpdates.get(index).getDescription());
+        assertTrue(statusUpdates.size() > index, "assert " + statusUpdates.size() + " > " + index + " failed");
+        assertEquals(status, statusUpdates.get(index).getStatus(), statusUpdates.get(index).toString());
+        assertEquals(detail, statusUpdates.get(index).getStatusDetail(), statusUpdates.get(index).toString());
+        assertEquals(description, statusUpdates.get(index).getDescription(), statusUpdates.get(index).toString());
+    }
+
+    @SuppressWarnings("null")
+    private void assertThingStatusWithDescriptionPattern(List<ThingStatusInfo> statusUpdates, int index,
+            ThingStatus status, ThingStatusDetail detail, String descriptionPattern) {
+        assertTrue(statusUpdates.size() > index, "assert " + statusUpdates.size() + " > " + index + " failed");
+        assertEquals(status, statusUpdates.get(index).getStatus(), statusUpdates.get(index).toString());
+        assertEquals(detail, statusUpdates.get(index).getStatusDetail(), statusUpdates.get(index).toString());
+        assertTrue(statusUpdates.get(index).getDescription().matches(descriptionPattern),
+                statusUpdates.get(index).toString());
     }
 
     private void assertThingStatus(List<ThingStatusInfo> statusUpdates, int index, ThingStatus status) {
         assertThingStatus(statusUpdates, index, status, ThingStatusDetail.NONE, null);
     }
 
+    private void assertItems(Function<String, State> channelStateGetter, String temperatureCelsius,
+            String accelerationXStandardGravity, String accelerationYStandardGravity,
+            String accelerationZStandardGravity, String batteryVolt, int dataFormat, String humidityPercent,
+            int measurementSequenceNumber, int movementCounter, String pressurePascal, String txPowerDecibelMilliwatts,
+            String rssiDecibelMilliwatts, Instant ts, Instant gwts, String gwMac) {
+        assertEquals(new QuantityType<Temperature>(new BigDecimal(temperatureCelsius), SIUnits.CELSIUS),
+                channelStateGetter.apply(CHANNEL_ID_TEMPERATURE));
+        assertEquals(
+                new QuantityType<Acceleration>(new BigDecimal(accelerationXStandardGravity), Units.STANDARD_GRAVITY),
+                channelStateGetter.apply(CHANNEL_ID_ACCELERATIONX));
+        assertEquals(
+                new QuantityType<Acceleration>(new BigDecimal(accelerationYStandardGravity), Units.STANDARD_GRAVITY),
+                channelStateGetter.apply(CHANNEL_ID_ACCELERATIONY));
+        assertEquals(
+                new QuantityType<Acceleration>(new BigDecimal(accelerationZStandardGravity), Units.STANDARD_GRAVITY),
+                channelStateGetter.apply(CHANNEL_ID_ACCELERATIONZ));
+        assertEquals(new QuantityType<ElectricPotential>(new BigDecimal(batteryVolt), Units.VOLT),
+                channelStateGetter.apply(CHANNEL_ID_BATTERY));
+        assertEquals(new DecimalType(dataFormat), channelStateGetter.apply(CHANNEL_ID_DATA_FORMAT));
+        assertEquals(new QuantityType<Dimensionless>(new BigDecimal(humidityPercent), Units.PERCENT),
+                channelStateGetter.apply(CHANNEL_ID_HUMIDITY));
+        assertEquals(new DecimalType(new BigDecimal(measurementSequenceNumber)),
+                channelStateGetter.apply(CHANNEL_ID_MEASUREMENT_SEQUENCE_NUMBER));
+        assertEquals(new DecimalType(new BigDecimal(movementCounter)),
+                channelStateGetter.apply(CHANNEL_ID_MOVEMENT_COUNTER));
+        assertEquals(new QuantityType<Pressure>(new BigDecimal(pressurePascal), SIUnits.PASCAL),
+                channelStateGetter.apply(CHANNEL_ID_PRESSURE));
+        assertEquals(new QuantityType<Power>(new BigDecimal(txPowerDecibelMilliwatts), Units.DECIBEL_MILLIWATTS),
+                channelStateGetter.apply(CHANNEL_ID_TX_POWER));
+
+        assertEquals(new QuantityType<Power>(new BigDecimal(rssiDecibelMilliwatts), Units.DECIBEL_MILLIWATTS),
+                channelStateGetter.apply(CHANNEL_ID_RSSI));
+        assertEquals(new DateTimeType(ts.atZone(ZoneId.of("UTC"))), channelStateGetter.apply(CHANNEL_ID_TS));
+        assertEquals(new DateTimeType(gwts.atZone(ZoneId.of("UTC"))), channelStateGetter.apply(CHANNEL_ID_GWTS));
+        assertEquals(new StringType(gwMac), channelStateGetter.apply(CHANNEL_ID_GWMAC));
+
+    }
+
     @ParameterizedTest
-    @ValueSource(strings = { //
-            BASE_TOPIC_RUUVI + "mygwid/DE:AD:BE:EF:AA:00", // empty json
-            BASE_TOPIC_RUUVI + "mygwid/DE:AD:BE:EF:BB:03", // invalid json
-            BASE_TOPIC_RUUVI + "mygwid/DE:AD:BE:EF:BB:04", // payload too short
-            BASE_TOPIC_RUUVI + "mygwid/DE:AD:BE:EF:BB:05", // wrong manufacturer id
-            BASE_TOPIC_RUUVI + "mygwid/DE:AD:BE:EF:BB:06", // unexpected advertisement
-            BASE_TOPIC_RUUVI + "mygwid/DE:AD:BE:EF:BB:07", // wrong json data types
+    @CsvSource(delimiter = '@', value = { //
+            BASE_TOPIC_RUUVI + "mygwid/DE:AD:BE:EF:AA:01 @" + "{}", // empty json
+            BASE_TOPIC_RUUVI + "mygwid/DE:AD:BE:EF:BB:03 @" + "invalid json", // invalid json
+            BASE_TOPIC_RUUVI + "mygwid/DE:AD:BE:EF:BB:04 @" + "0201061BFF990405", // payload too short
+            BASE_TOPIC_RUUVI + "mygwid/DE:AD:BE:EF:BB:05 @"
+                    + "0201061BFF99050512FC5394C37C0004FFFC040CAC364200CDCBB8334C884F", // wrong manufacturer id (the
+                                                                                        // two bytes after FF do not
+                                                                                        // match 99 04)
+            BASE_TOPIC_RUUVI + "mygwid/DE:AD:BE:EF:BB:06 @"
+                    + "0201061BFA99040512FC5394C37C0004FFFC040CAC364200CDCBB8334C884F", // unexpected advertisement (no
+                                                                                        // FF to indicate 'manufacturer
+                                                                                        // specific' advertisement)
+            BASE_TOPIC_RUUVI + "mygwid/DE:AD:BE:EF:BB:07 @" + "{" + "  \"gw_mac\": \"DE:AD:BE:EF:00\","
+                    + "  \"rssi\": -82," + "  \"aoa\": [],"
+                    // data field is number, not a string
+                    + "  \"gwts\": \"1659365432\"," + "  \"ts\": \"1659365222\"," + "  \"data\": 999,"
+                    + "  \"coords\": \"\" }", // wrong json data types
     })
-    public void testInvalidCases(String topic) throws Exception {
+    public void testInvalidCases(String topic, String val) throws Exception {
+        final String jsonPayload;
+        if (val.contains("{")) {
+            // test argument is specifiying the whole json payload
+            jsonPayload = val;
+        } else {
+            // test argument is only specifiying the data field in the json payload
+            // Fill rest of the fields with some valid values
+            jsonPayload = "{" + "  \"gw_mac\": \"DE:AD:BE:EF:00\"," + "  \"rssi\": -82," + "  \"aoa\": [],"
+                    + "  \"gwts\": \"1659365432\"," + "  \"ts\": \"1659365222\"," + "  \"data\": \"" + val + "\","
+                    + "  \"coords\": \"\" }";
+        }
+
         Thing ruuviThing = createRuuviThing("mygwid", topic, 100);
         waitForAssert(() -> {
             List<ThingStatusInfo> statusUpdates = statusSubscriber.statusUpdates.get(ruuviThing.getUID());
             assertNotNull(statusUpdates);
-            assertEquals(4, statusUpdates.size(), statusUpdates.toString());
-            int i = 0;
-            assertThingStatus(statusUpdates, i++, ThingStatus.INITIALIZING);
-            assertThingStatus(statusUpdates, i++, ThingStatus.UNKNOWN);
-            assertThingStatus(statusUpdates, i++, ThingStatus.ONLINE, ThingStatusDetail.NONE,
+            int statusUpdateIndex = 0;
+            assertThingStatus(statusUpdates, statusUpdateIndex++, ThingStatus.INITIALIZING);
+            assertThingStatus(statusUpdates, statusUpdateIndex++, ThingStatus.UNKNOWN);
+            assertThingStatus(statusUpdates, statusUpdateIndex++, ThingStatus.ONLINE, ThingStatusDetail.NONE,
                     "Waiting for initial data");
-            assertThingStatus(statusUpdates, i++, ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "No valid data received for some time");
+            assertThingStatus(statusUpdates, statusUpdateIndex++, ThingStatus.OFFLINE,
+                    ThingStatusDetail.COMMUNICATION_ERROR, "No valid data received for some time");
+            scheduler.execute(() -> publish(topic, jsonPayload));
+            assertThingStatusWithDescriptionPattern(statusUpdates, statusUpdateIndex++, ThingStatus.OFFLINE,
+                    ThingStatusDetail.COMMUNICATION_ERROR, ".*could not be parsed.*");
+            assertEquals(statusUpdateIndex, statusUpdates.size());
         });
     }
 
-    public void testHappyFlow() {
-        Thing ruuviThing = createRuuviThing("mygwid", BASE_TOPIC_RUUVI + "/mygwid/DE:AD:BE:EF:BB:02", 100);
+    @SuppressWarnings("null")
+    @Test
+    public void testDiscovery() {
+        scheduler.execute(() -> publish(BASE_TOPIC_RUUVI + "/mygwid/DE:AD:BE:EF:BB:02",
+                "{" + " \"gw_mac\": \"DE:AD:BE:EF:00\"," + " \"rssi\": -82," + " \"aoa\": [],"
+                        + " \"gwts\": \"1659365432\"," + " \"ts\": \"1659365222\","
+                        + " \"data\": \"0201061BFF99040512FC5394C37C0004FFFC040CAC364200CDCBB8334C884F\","
+                        + " \"coords\": \"\" }"));
+        waitForAssert(() -> {
+            assertEquals(2, inbox.getAll().size(), inbox.getAll().toString());
+            var discovered = new HashSet<DiscoveryResult>();
+            discovered.addAll(inbox.getAll());
+
+            for (var result : discovered) {
+                assertEquals(THING_TYPE_BEACON, result.getThingTypeUID());
+                assertEquals("topic", result.getRepresentationProperty());
+                Object topic = result.getProperties().get("topic");
+                assertNotNull(topic);
+                assertTrue(
+                        // published in this test
+                        topic.equals((BASE_TOPIC_RUUVI + "/mygwid/DE:AD:BE:EF:BB:02"))
+                                // published in beforeEach
+                                || result.getProperties().get("topic")
+                                        .equals((BASE_TOPIC_RUUVI + "/mygwid/DE:AD:BE:EF:AA:00")));
+            }
+        });
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = { true, false })
+    public void testHappyFlow(boolean quickTimeout) {
+        Thing ruuviThing = createRuuviThing("mygwid", BASE_TOPIC_RUUVI + "/mygwid/DE:AD:BE:EF:BB:02", quickTimeout ? 100
+                : 9_000_000 /* heartbeat effectively disabled. Thing will not "timeout" and go OFFLINE */);
+        // Link all channels to freshly created items
+        ruuviThing.getChannels().stream().map(Channel::getUID).forEach(this::linkChannelToAutogeneratedItem);
+
+        @SuppressWarnings("null")
+        Function<String, State> getItemState = channelId -> itemRegistry
+                .get(itemName(ruuviThing.getChannel(channelId).getUID())).getState();
+
+        AtomicInteger statusUpdateIndex = new AtomicInteger();
         waitForAssert(() -> {
             List<ThingStatusInfo> statusUpdates = statusSubscriber.statusUpdates.get(ruuviThing.getUID());
             assertNotNull(statusUpdates);
-            assertEquals(4, statusUpdates.size(), statusUpdates.toString());
-            int i = 0;
-            assertThingStatus(statusUpdates, i++, ThingStatus.INITIALIZING);
-            assertThingStatus(statusUpdates, i++, ThingStatus.UNKNOWN);
-            assertThingStatus(statusUpdates, i++, ThingStatus.ONLINE, ThingStatusDetail.NONE,
+
+            assertThingStatus(statusUpdates, statusUpdateIndex.get(), ThingStatus.INITIALIZING);
+            assertThingStatus(statusUpdates, statusUpdateIndex.get() + 1, ThingStatus.UNKNOWN);
+            assertThingStatus(statusUpdates, statusUpdateIndex.get() + 2, ThingStatus.ONLINE, ThingStatusDetail.NONE,
                     "Waiting for initial data");
-            assertThingStatus(statusUpdates, i++, ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "No valid data received for some time");
+
+            statusUpdateIndex.set(statusUpdateIndex.get() + 3);
         });
+
+        List<ThingStatusInfo> statusUpdates = statusSubscriber.statusUpdates.get(ruuviThing.getUID());
+        assertNotNull(statusUpdates);
+        if (quickTimeout) {
+            waitForAssert(() -> {
+                assertThingStatus(statusUpdates, statusUpdateIndex.get(), ThingStatus.OFFLINE,
+                        ThingStatusDetail.COMMUNICATION_ERROR, "No valid data received for some time");
+
+                CHANNEL_TO_ITEM_TYPE.keySet()
+                        .forEach(channelId -> assertEquals(UnDefType.UNDEF, getItemState.apply(channelId)));
+                statusUpdateIndex.incrementAndGet();
+            });
+        }
+
+        // publish some valid data ("valid case" test vector from
+        // https://docs.ruuvi.com/communication/bluetooth-advertisements/data-format-5-rawv2)
+        scheduler.execute(() -> publish(BASE_TOPIC_RUUVI + "/mygwid/DE:AD:BE:EF:BB:02",
+                "{" + " \"gw_mac\": \"DE:AD:BE:EF:00\"," + " \"rssi\": -82," + " \"aoa\": [],"
+                        + " \"gwts\": \"1659365432\"," + " \"ts\": \"1659365222\","
+                        + " \"data\": \"0201061BFF99040512FC5394C37C0004FFFC040CAC364200CDCBB8334C884F\","
+                        + " \"coords\": \"\" }"));
+
+        waitForAssert(() -> {
+            assertThingStatus(statusUpdates, statusUpdateIndex.get(), ThingStatus.ONLINE);
+            statusUpdateIndex.incrementAndGet();
+        });
+
+        waitForAssert(() -> {
+            assertItems(getItemState, //
+                    "24.3", // temperature, Celsius
+                    "0.004", // acc X, g
+                    "-0.004", // acc Y, g
+                    "1.036", // acc Z, g
+                    "2.9770000000000003", // battery, volt
+                    5, // data format
+                    "53.49", // humidity %
+                    205, // measurement seq
+                    66, // movement
+                    "100044", // pressure, pascal
+                    "4", // tx power, dBm
+                    "-82", // RSSI, dBm
+                    Instant.ofEpochSecond(1659365222), // ts
+                    Instant.ofEpochSecond(1659365432), // gwts
+                    "DE:AD:BE:EF:00" // gw mac
+            );
+        });
+
+        if (quickTimeout) {
+            waitForAssert(() -> {
+                assertThingStatus(statusUpdates, statusUpdateIndex.get(), ThingStatus.OFFLINE,
+                        ThingStatusDetail.COMMUNICATION_ERROR, "No valid data received for some time");
+                CHANNEL_TO_ITEM_TYPE.keySet()
+                        .forEach(channelId -> assertEquals(UnDefType.UNDEF, getItemState.apply(channelId)));
+                statusUpdateIndex.incrementAndGet();
+            });
+
+        }
+
+        // Another mqtt update (("minimum values" test vector from
+        // https://docs.ruuvi.com/communication/bluetooth-advertisements/data-format-5-rawv2)
+        scheduler.execute(() -> publish(BASE_TOPIC_RUUVI + "/mygwid/DE:AD:BE:EF:BB:02",
+                "{" + " \"gw_mac\": \"DE:AD:BE:EF:00\"," + " \"rssi\": -66," + " \"aoa\": [],"
+                        + " \"gwts\": \"1659365431\"," + " \"ts\": \"1659365221\","
+                        + " \"data\": \"0201061BFF9904058001000000008001800180010000000000CBB8334C884F\","
+                        + " \"coords\": \"\" }"));
+        if (quickTimeout) {
+            // With quick timeout we were previously online, so now we should be back online
+            // with valid channels.
+            waitForAssert(() -> {
+                assertThingStatus(statusUpdates, statusUpdateIndex.get(), ThingStatus.ONLINE);
+                statusUpdateIndex.getAndIncrement();
+            });
+
+            // ...after a while all items are updated
+            waitForAssert(() -> {
+                assertItems(getItemState, //
+                        "-163.835", // temperature, Celsius
+                        "-32.767", // acc X, g
+                        "-32.767", // acc Y, g
+                        "-32.767", // acc Z, g
+                        "1.6", // battery, volt
+                        5, // data format
+                        "0.0", // humidity %
+                        0, // measurement seq
+                        0, // movement
+                        "50000", // pressure, pascal
+                        "-40", // tx power, dBm
+                        "-66", // RSSI, dBm
+                        Instant.ofEpochSecond(1659365221), // ts
+                        Instant.ofEpochSecond(1659365431), // gwts
+                        "DE:AD:BE:EF:00" // gw mac
+                );
+            });
+
+            // ...after which timeout will happen again
+            waitForAssert(() -> {
+                assertThingStatus(statusUpdates, statusUpdateIndex.get(), ThingStatus.OFFLINE,
+                        ThingStatusDetail.COMMUNICATION_ERROR, "No valid data received for some time");
+                CHANNEL_TO_ITEM_TYPE.keySet()
+                        .forEach(channelId -> assertEquals(UnDefType.UNDEF, getItemState.apply(channelId)));
+                statusUpdateIndex.getAndIncrement();
+            });
+        } else {
+            // with non-quick timeout we are still online, and items are updated
+            waitForAssert(() -> {
+                assertItems(getItemState, //
+                        "-163.835", // temperature, Celsius
+                        "-32.767", // acc X, g
+                        "-32.767", // acc Y, g
+                        "-32.767", // acc Z, g
+                        "1.6", // battery, volt
+                        5, // data format
+                        "0.0", // humidity %
+                        0, // measurement seq
+                        0, // movement
+                        "50000", // pressure, pascal
+                        "-40", // tx power, dBm
+                        "-66", // RSSI, dBm
+                        Instant.ofEpochSecond(1659365221), // ts
+                        Instant.ofEpochSecond(1659365431), // gwts
+                        "DE:AD:BE:EF:00" // gw mac
+                );
+            });
+        }
+
+        // assert that we have processed all status updates
+        assertEquals(statusUpdateIndex.get(), statusUpdates.size());
     }
 }

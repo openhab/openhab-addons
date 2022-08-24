@@ -41,12 +41,16 @@ public class RuuviGatewayBindingConstants {
     public static final String CHANNEL_ID_HUMIDITY = "humidity";
     public static final String CHANNEL_ID_PRESSURE = "pressure";
     public static final String CHANNEL_ID_TX_POWER = "txPower";
-
     public static final String CHANNEL_ID_ACCELERATIONX = "accelerationx";
     public static final String CHANNEL_ID_ACCELERATIONY = "accelerationy";
     public static final String CHANNEL_ID_ACCELERATIONZ = "accelerationz";
     public static final String CHANNEL_ID_MEASUREMENT_SEQUENCE_NUMBER = "measurementSequenceNumber";
     public static final String CHANNEL_ID_MOVEMENT_COUNTER = "movementCounter";
+
+    public static final String CHANNEL_ID_RSSI = "rssi";
+    public static final String CHANNEL_ID_TS = "ts";
+    public static final String CHANNEL_ID_GWTS = "gwts";
+    public static final String CHANNEL_ID_GWMAC = "gwmac";
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_BEACON);
     public static final int RUUVI_GATEWAY_SUBSCRIBE_TIMEOUT_MS = 30000;

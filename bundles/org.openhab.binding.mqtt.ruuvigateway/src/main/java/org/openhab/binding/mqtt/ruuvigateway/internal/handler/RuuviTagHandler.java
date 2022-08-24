@@ -14,9 +14,11 @@ package org.openhab.binding.mqtt.ruuvigateway.internal.handler;
 
 import static org.openhab.binding.mqtt.ruuvigateway.internal.RuuviGatewayBindingConstants.*;
 
+import java.lang.reflect.InvocationTargetException;
+import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledFuture;
@@ -30,8 +32,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.AbstractMQTTThingHandler;
 import org.openhab.binding.mqtt.generic.ChannelState;
-import org.openhab.binding.mqtt.ruuvigateway.internal.RuuviCachedState;
+import org.openhab.binding.mqtt.ruuvigateway.internal.RuuviCachedDateTimeState;
+import org.openhab.binding.mqtt.ruuvigateway.internal.RuuviCachedNumberState;
+import org.openhab.binding.mqtt.ruuvigateway.internal.RuuviCachedStringState;
 import org.openhab.binding.mqtt.ruuvigateway.internal.RuuviGatewayBindingConstants;
+import org.openhab.binding.mqtt.ruuvigateway.internal.parser.GatewayPayloadParser;
+import org.openhab.binding.mqtt.ruuvigateway.internal.parser.GatewayPayloadParser.GatewayPayload;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.io.transport.mqtt.MqttMessageSubscriber;
@@ -47,8 +53,7 @@ import org.openhab.core.util.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fi.tkgwf.ruuvi.common.bean.RuuviMeasurement;
-import fi.tkgwf.ruuvi.common.parser.impl.AnyDataFormatParser;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link RuuviTagHandler} is responsible updating RuuviTag Sensor data received from
@@ -61,7 +66,14 @@ public class RuuviTagHandler extends AbstractMQTTThingHandler implements MqttMes
 
     // Ruuvitag sends an update every 10 seconds. So we keep a heartbeat to give it some slack
     private int heartbeatTimeoutMillisecs = 60_000;
-    private static final Map<String, @Nullable Unit<?>> unitByChannelUID = new HashMap<>(11);
+    // This map is used to initialize channel caches.
+    // Key is channel ID.
+    // Value is one of the following
+    // - null (plain number), uses RuuviCachedNumberState
+    // - Unit (QuantityType Number), uses RuuviCachedNumberState with unit
+    // - Class object, uses given class object with String constructor
+
+    private static final Map<String, @Nullable Object> unitByChannelUID = new HashMap<>(11);
     static {
         unitByChannelUID.put(CHANNEL_ID_ACCELERATIONX, Units.STANDARD_GRAVITY);
         unitByChannelUID.put(CHANNEL_ID_ACCELERATIONY, Units.STANDARD_GRAVITY);
@@ -74,15 +86,18 @@ public class RuuviTagHandler extends AbstractMQTTThingHandler implements MqttMes
         unitByChannelUID.put(CHANNEL_ID_PRESSURE, SIUnits.PASCAL);
         unitByChannelUID.put(CHANNEL_ID_TEMPERATURE, SIUnits.CELSIUS);
         unitByChannelUID.put(CHANNEL_ID_TX_POWER, Units.DECIBEL_MILLIWATTS);
+        unitByChannelUID.put(CHANNEL_ID_RSSI, Units.DECIBEL_MILLIWATTS);
+        unitByChannelUID.put(CHANNEL_ID_TS, RuuviCachedDateTimeState.class);
+        unitByChannelUID.put(CHANNEL_ID_GWTS, RuuviCachedDateTimeState.class);
+        unitByChannelUID.put(CHANNEL_ID_GWMAC, RuuviCachedStringState.class);
     }
 
     private final Logger logger = LoggerFactory.getLogger(RuuviTagHandler.class);
-    private final AnyDataFormatParser parser = new AnyDataFormatParser();
     /**
      * Indicator whether we have received data recently
      */
     private final AtomicBoolean receivedData = new AtomicBoolean();
-    private final Map<ChannelUID, RuuviCachedState<?>> channelStateByChannelUID = new HashMap<>();
+    private final Map<ChannelUID, ChannelState> channelStateByChannelUID = new HashMap<>();
     private @NonNullByDefault({}) ScheduledFuture<?> heartbeatFuture;
 
     /**
@@ -121,20 +136,41 @@ public class RuuviTagHandler extends AbstractMQTTThingHandler implements MqttMes
             ChannelUID channelUID = channel.getUID();
             String channelID = channelUID.getId();
             assert unitByChannelUID.containsKey(channelID); // Invariant as all channels should exist in the static map
-            Unit<?> unit = unitByChannelUID.get(channelID);
-            initStateCache(channelUID, unit);
+            Object cacheHint = unitByChannelUID.get(channelID);
+            if (cacheHint == null || cacheHint instanceof Unit<?>) {
+                Unit<?> unit = (Unit<?>) cacheHint;
+                initNumberStateCache(channelUID, unit);
+            } else {
+                Class<?> cacheType = (Class<?>) cacheHint;
+                initCacheWithClass(channelUID, cacheType);
+            }
+
         }
     }
 
-    private <T extends Quantity<T>> RuuviCachedState<?> initStateCache(ChannelUID channelUID, @Nullable Unit<T> unit) {
-        final RuuviCachedState<?> cached;
+    private <T extends Quantity<T>> RuuviCachedNumberState<?> initNumberStateCache(ChannelUID channelUID,
+            @Nullable Unit<T> unit) {
+        final RuuviCachedNumberState<?> cached;
         if (unit == null) {
-            cached = channelStateByChannelUID.put(channelUID, new RuuviCachedState<>(channelUID));
+            cached = new RuuviCachedNumberState<>(channelUID);
+            channelStateByChannelUID.put(channelUID, cached);
         } else {
-            cached = channelStateByChannelUID.put(channelUID, new RuuviCachedState<>(channelUID, unit));
+            cached = new RuuviCachedNumberState<>(channelUID, unit);
+            channelStateByChannelUID.put(channelUID, cached);
         }
-        Objects.requireNonNull(cached); // Invariant: putIfAbsent returns always non-null. To make compiler happy
         return cached;
+    }
+
+    private ChannelState initCacheWithClass(ChannelUID channelUID, Class<?> clazz) {
+        try {
+            ChannelState cached = (ChannelState) clazz.getConstructor(ChannelUID.class).newInstance(channelUID);
+            assert cached != null;
+            channelStateByChannelUID.put(channelUID, cached);
+            return cached;
+        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+                | NoSuchMethodException | SecurityException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     @Override
@@ -149,8 +185,8 @@ public class RuuviTagHandler extends AbstractMQTTThingHandler implements MqttMes
         return connection.subscribe(topic, this).handle((subscriptionSuccess, subscriptionException) -> {
             if (subscriptionSuccess) {
                 updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "Waiting for initial data");
-                heartbeatFuture = scheduler.scheduleWithFixedDelay(this::heartbeat, 0, heartbeatTimeoutMillisecs,
-                        TimeUnit.MILLISECONDS);
+                heartbeatFuture = scheduler.scheduleWithFixedDelay(this::heartbeat, heartbeatTimeoutMillisecs,
+                        heartbeatTimeoutMillisecs, TimeUnit.MILLISECONDS);
             } else {
                 if (subscriptionException == null) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -202,7 +238,7 @@ public class RuuviTagHandler extends AbstractMQTTThingHandler implements MqttMes
         synchronized (receivedData) {
             if (!receivedData.getAndSet(false) && getThing().getStatus() == ThingStatus.ONLINE) {
                 getThing().getChannels().stream().map(Channel::getUID).filter(this::isLinked)
-                        .forEach(c -> updateState(c, UnDefType.UNDEF));
+                        .forEach(c -> updateChannelState(c, UnDefType.UNDEF));
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "No valid data received for some time");
             }
@@ -213,97 +249,90 @@ public class RuuviTagHandler extends AbstractMQTTThingHandler implements MqttMes
     public void processMessage(String topic, byte[] payload) {
         receivedData.set(true);
 
-        // TODO: parse JSON payload
-        // decide what to do with gw_mac, ts, gw, gwts, rssi. Extra channels
-        // the data: 0201061BFF 99040512A3499EC7E00028FFE80400A1562A7FE5F164ED95EC96
-        // bytes[4] == 0xff
-        // bytes[5] company id
-        // bytes[6] company id
+        // TODO: json syntax only with exceptions, other with Optional
+        final GatewayPayload parsed;
+        try {
+            parsed = GatewayPayloadParser.parse(payload);
+        } catch (JsonSyntaxException e) {
+            // We assume this is exceptional enough for Warn level. Perhaps thing has been configured with wrong topic,
+            // for example
+            logger.warn("Received invalid data which could not be parsed to any known Ruuvi Tag data formats ("
+                    + e.getMessage() + "): {}", new String(payload, StandardCharsets.UTF_8));
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Received bluetooth data which could not be parsed to any known Ruuvi Tag data formats ("
+                            + e.getMessage() + ")");
+            return;
+        }
+        var ruuvitagData = parsed.measurement;
 
-        // {
-        // "gw_mac": "D8:AC:D9:57:EB:F0",
-        // "rssi": -83,
-        // "aoa": [],
-        // "gwts": "1659365438",
-        // "ts": "1659365438",
-        // "data": "02 01 06 1B FF 99040512A3499EC7E00028FFE80400A1562A7FE5F164ED95EC96",
-        // "coords": ""
-        // }
-
-        // https://jimmywongiot.com/2019/08/13/advertising-payload-format-on-ble/
-        // 02: length of header (?)
-        // 01: data type
-        // 06: advertising mode
-        // 1B: bytes to follow 27
-        // FF: manufascturer data
-
-        final RuuviMeasurement ruuvitagData = parser.parse(payload);
-        if (ruuvitagData != null) {
-            boolean atLeastOneRuuviFieldPresent = false;
-            for (Channel channel : thing.getChannels()) {
-                ChannelUID channelUID = channel.getUID();
-                switch (channelUID.getId()) {
-                    case CHANNEL_ID_ACCELERATIONX:
-                        atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID, ruuvitagData.getAccelerationX());
-                        break;
-                    case CHANNEL_ID_ACCELERATIONY:
-                        atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID, ruuvitagData.getAccelerationY());
-                        break;
-                    case CHANNEL_ID_ACCELERATIONZ:
-                        atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID, ruuvitagData.getAccelerationZ());
-                        break;
-                    case CHANNEL_ID_BATTERY:
-                        atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID,
-                                ruuvitagData.getBatteryVoltage());
-                        break;
-                    case CHANNEL_ID_DATA_FORMAT:
-                        atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID, ruuvitagData.getDataFormat());
-                        break;
-                    case CHANNEL_ID_HUMIDITY:
-                        atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID, ruuvitagData.getHumidity());
-                        break;
-                    case CHANNEL_ID_MEASUREMENT_SEQUENCE_NUMBER:
-                        atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID,
-                                ruuvitagData.getMeasurementSequenceNumber());
-                        break;
-                    case CHANNEL_ID_MOVEMENT_COUNTER:
-                        atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID,
-                                ruuvitagData.getMovementCounter());
-                        break;
-                    case CHANNEL_ID_PRESSURE:
-                        atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID, ruuvitagData.getPressure());
-                        break;
-                    case CHANNEL_ID_TEMPERATURE:
-                        atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID, ruuvitagData.getTemperature());
-                        break;
-                    case CHANNEL_ID_TX_POWER:
-                        atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID, ruuvitagData.getTxPower());
-                        break;
-                }
+        boolean atLeastOneRuuviFieldPresent = false;
+        for (Channel channel : thing.getChannels()) {
+            ChannelUID channelUID = channel.getUID();
+            switch (channelUID.getId()) {
+                case CHANNEL_ID_ACCELERATIONX:
+                    atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID, ruuvitagData.getAccelerationX());
+                    break;
+                case CHANNEL_ID_ACCELERATIONY:
+                    atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID, ruuvitagData.getAccelerationY());
+                    break;
+                case CHANNEL_ID_ACCELERATIONZ:
+                    atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID, ruuvitagData.getAccelerationZ());
+                    break;
+                case CHANNEL_ID_BATTERY:
+                    atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID, ruuvitagData.getBatteryVoltage());
+                    break;
+                case CHANNEL_ID_DATA_FORMAT:
+                    atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID, ruuvitagData.getDataFormat());
+                    break;
+                case CHANNEL_ID_HUMIDITY:
+                    atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID, ruuvitagData.getHumidity());
+                    break;
+                case CHANNEL_ID_MEASUREMENT_SEQUENCE_NUMBER:
+                    atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID,
+                            ruuvitagData.getMeasurementSequenceNumber());
+                    break;
+                case CHANNEL_ID_MOVEMENT_COUNTER:
+                    atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID, ruuvitagData.getMovementCounter());
+                    break;
+                case CHANNEL_ID_PRESSURE:
+                    atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID, ruuvitagData.getPressure());
+                    break;
+                case CHANNEL_ID_TEMPERATURE:
+                    atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID, ruuvitagData.getTemperature());
+                    break;
+                case CHANNEL_ID_TX_POWER:
+                    atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID, ruuvitagData.getTxPower());
+                    break;
+                //
+                // Auxiliary channels, not part of bluetooth advertisement
+                //
+                case CHANNEL_ID_RSSI:
+                    atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID, parsed.rssi);
+                    break;
+                case CHANNEL_ID_TS:
+                    atLeastOneRuuviFieldPresent |= updateDateTimeStateIfLinked(channelUID, parsed.ts);
+                    break;
+                case CHANNEL_ID_GWTS:
+                    atLeastOneRuuviFieldPresent |= updateDateTimeStateIfLinked(channelUID, parsed.gwts);
+                    break;
+                case CHANNEL_ID_GWMAC:
+                    atLeastOneRuuviFieldPresent |= updateStringStateIfLinked(channelUID, parsed.gwMac);
+                    break;
             }
-            if (atLeastOneRuuviFieldPresent) {
-                String thingStatusDescription = getThing().getStatusInfo().getDescription();
-                if (getThing().getStatus() != ThingStatus.ONLINE
-                        || (thingStatusDescription != null && !thingStatusDescription.isBlank())) {
-                    // Update thing as ONLINE and possibly clear the thing detail status
-                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
-                }
-            } else {
-                if (logger.isTraceEnabled()) {
-                    logger.trace("Received Ruuvi Tag data but no fields could be parsed: {}",
-                            HexUtils.bytesToHex(payload));
-                }
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Received Ruuvi Tag data but no fields could be parsed");
+        }
+        if (atLeastOneRuuviFieldPresent) {
+            String thingStatusDescription = getThing().getStatusInfo().getDescription();
+            if (getThing().getStatus() != ThingStatus.ONLINE
+                    || (thingStatusDescription != null && !thingStatusDescription.isBlank())) {
+                // Update thing as ONLINE and possibly clear the thing detail status
+                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
             }
         } else {
             if (logger.isTraceEnabled()) {
-                logger.trace(
-                        "Received bluetooth data which could not be parsed to any known Ruuvi Tag data formats: {}",
-                        HexUtils.bytesToHex(payload));
+                logger.trace("Received Ruuvi Tag data but no fields could be parsed: {}", HexUtils.bytesToHex(payload));
             }
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Received bluetooth data which could not be parsed to any known Ruuvi Tag data formats");
+                    "Received Ruuvi Tag data but no fields could be parsed");
         }
     }
 
@@ -318,7 +347,7 @@ public class RuuviTagHandler extends AbstractMQTTThingHandler implements MqttMes
     }
 
     /**
-     * Update channel state
+     * Update number channel state
      *
      * Update is not done when value is null.
      *
@@ -327,7 +356,7 @@ public class RuuviTagHandler extends AbstractMQTTThingHandler implements MqttMes
      * @return whether the value was present
      */
     private <T extends Quantity<T>> boolean updateStateIfLinked(ChannelUID channelUID, @Nullable Number value) {
-        RuuviCachedState<?> cache = channelStateByChannelUID.get(channelUID);
+        RuuviCachedNumberState<?> cache = (RuuviCachedNumberState<?>) channelStateByChannelUID.get(channelUID);
         if (cache == null) {
             // Invariant as channels should be initialized already
             logger.error("Channel {} not initialized. BUG", channelUID);
@@ -337,6 +366,61 @@ public class RuuviTagHandler extends AbstractMQTTThingHandler implements MqttMes
             return false;
         } else {
             cache.update(value);
+            if (isLinked(channelUID)) {
+                updateChannelState(channelUID, cache.getCache().getChannelState());
+            }
+            return true;
+        }
+    }
+
+    /**
+     * Update string channel state
+     *
+     * Update is not done when value is null.
+     *
+     * @param channelUID channel UID
+     * @param value value to update
+     * @return whether the value was present
+     */
+    private <T extends Quantity<T>> boolean updateStringStateIfLinked(ChannelUID channelUID, Optional<String> value) {
+        RuuviCachedStringState cache = (RuuviCachedStringState) channelStateByChannelUID.get(channelUID);
+        if (cache == null) {
+            // Invariant as channels should be initialized already
+            logger.error("Channel {} not initialized. BUG", channelUID);
+            return false;
+        }
+        if (value.isEmpty()) {
+            return false;
+        } else {
+            cache.update(value.get());
+            if (isLinked(channelUID)) {
+                updateChannelState(channelUID, cache.getCache().getChannelState());
+            }
+            return true;
+        }
+    }
+
+    /**
+     * Update date time channel state
+     *
+     * Update is not done when value is null.
+     *
+     * @param channelUID channel UID
+     * @param value value to update
+     * @return whether the value was present
+     */
+    private <T extends Quantity<T>> boolean updateDateTimeStateIfLinked(ChannelUID channelUID,
+            Optional<Instant> value) {
+        RuuviCachedDateTimeState cache = (RuuviCachedDateTimeState) channelStateByChannelUID.get(channelUID);
+        if (cache == null) {
+            // Invariant as channels should be initialized already
+            logger.error("Channel {} not initialized. BUG", channelUID);
+            return false;
+        }
+        if (value.isEmpty()) {
+            return false;
+        } else {
+            cache.update(value.get());
             if (isLinked(channelUID)) {
                 updateChannelState(channelUID, cache.getCache().getChannelState());
             }

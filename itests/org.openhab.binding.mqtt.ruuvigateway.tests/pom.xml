@@ -15,7 +15,7 @@
   <name>openHAB Add-ons :: Integration Tests :: MQTT Ruuvi Gateway Tests</name>
 
   <properties>
-    <mqttbroker.port>1883</mqttbroker.port>
+    <mqttbroker.port>1884</mqttbroker.port>
   </properties>
 
   <dependencies>
@@ -83,6 +83,12 @@
       <groupId>io.netty</groupId>
       <artifactId>netty-transport</artifactId>
       <version>${netty.version}</version>
+    </dependency>
+        <dependency> <!-- HACK -->
+      <groupId>fi.tkgwf.ruuvi</groupId>
+      <artifactId>ruuvitag-common</artifactId>
+      <version>1.0.0</version>
+      <scope>compile</scope>
     </dependency>
   </dependencies>
 

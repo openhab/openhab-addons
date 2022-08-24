@@ -105,6 +105,13 @@ public class GatewayPayloadParser {
                 throw new JsonSyntaxException("Data is not a valid hex pattern: " + localData);
             }
             byte[] bytes = HexUtils.hexToBytes(localData);
+            if (bytes.length < 4) {
+                // We want at least 4 bytes, ensuring bytes[4] is valid as well as Arrays.copyOfRange(bytes, 5, ...)
+                // below
+                // The payload length (might depend on format version ) is validated by parser.parse call
+                throw new JsonSyntaxException("Manufacturerer data is too short");
+
+            }
             if ((bytes[4] & 0xff) != 0xff) {
                 logger.trace("Data is not representing manufacturer specific bluetooth advertisement: "
                         + HexUtils.bytesToHex(bytes));

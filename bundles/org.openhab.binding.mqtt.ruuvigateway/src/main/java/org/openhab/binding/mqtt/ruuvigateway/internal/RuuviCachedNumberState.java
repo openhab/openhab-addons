@@ -34,7 +34,7 @@ import org.openhab.core.thing.ChannelUID;
  * @author Sami Salonen - Initial contribution
  */
 @NonNullByDefault
-public class RuuviCachedState<T extends Quantity<T>> extends ChannelState {
+public class RuuviCachedNumberState<T extends Quantity<T>> extends ChannelState {
 
     private final Optional<Unit<T>> unit;
 
@@ -45,7 +45,7 @@ public class RuuviCachedState<T extends Quantity<T>> extends ChannelState {
      * @param unit unit associated with updated numbers
      *
      */
-    public RuuviCachedState(ChannelUID channelUID, Unit<T> unit) {
+    public RuuviCachedNumberState(ChannelUID channelUID, Unit<T> unit) {
         super(new ChannelConfig(), channelUID, new NumberValue(null, null, null, unit), null);
         this.unit = Optional.of(unit);
     }
@@ -55,7 +55,7 @@ public class RuuviCachedState<T extends Quantity<T>> extends ChannelState {
      *
      * @param channelUID associated channeld UID
      */
-    public RuuviCachedState(ChannelUID channelUID) {
+    public RuuviCachedNumberState(ChannelUID channelUID) {
         super(new ChannelConfig(), channelUID, new NumberValue(null, null, null, null), null);
         this.unit = Optional.empty();
     }

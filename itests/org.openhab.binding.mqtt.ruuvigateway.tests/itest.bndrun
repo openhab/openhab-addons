@@ -106,5 +106,6 @@ Import-Package: \
 	org.openhab.core.transform;version='[3.4.0,3.4.1)',\
 	jakarta.ws.rs-api;version='[2.1.6,2.1.7)',\
 	org.openhab.binding.mqtt.ruuvigateway;version='[3.4.0,3.4.1)',\
-	org.openhab.binding.mqtt.ruuvigateway.tests;version='[3.4.0,3.4.1)'
+	org.openhab.binding.mqtt.ruuvigateway.tests;version='[3.4.0,3.4.1)',\
+	junit-jupiter-params;version='[5.8.1,5.8.2)'
 

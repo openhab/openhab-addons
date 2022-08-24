@@ -24,11 +24,17 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.openhab.core.config.discovery.inbox.Inbox;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.io.transport.mqtt.MqttConnectionState;
+import org.openhab.core.items.ItemProvider;
+import org.openhab.core.items.ItemRegistry;
+import org.openhab.core.items.ManagedItemProvider;
 import org.openhab.core.test.java.JavaOSGiTest;
 import org.openhab.core.thing.ManagedThingProvider;
 import org.openhab.core.thing.ThingProvider;
+import org.openhab.core.thing.link.ItemChannelLinkProvider;
+import org.openhab.core.thing.link.ManagedItemChannelLinkProvider;
 
 import io.moquette.BrokerConstants;
 import io.moquette.broker.Server;
@@ -50,6 +56,10 @@ public class MqttOSGiTest extends JavaOSGiTest {
 
     private Server moquetteServer = new Server();
     protected @NonNullByDefault({}) ManagedThingProvider thingProvider;
+    protected @NonNullByDefault({}) ManagedItemProvider itemProvider;
+    protected @NonNullByDefault({}) ItemRegistry itemRegistry;
+    protected @NonNullByDefault({}) ManagedItemChannelLinkProvider itemChannelLinkProvider;
+    protected @NonNullByDefault({}) Inbox inbox;
 
     @BeforeEach
     public void beforeEach() throws Exception {
@@ -57,6 +67,17 @@ public class MqttOSGiTest extends JavaOSGiTest {
 
         thingProvider = getService(ThingProvider.class, ManagedThingProvider.class);
         assertNotNull(thingProvider, "Could not get ManagedThingProvider");
+
+        itemProvider = getService(ItemProvider.class, ManagedItemProvider.class);
+        assertNotNull(itemProvider, "Could not get ManagedItemProvider");
+        itemRegistry = getService(ItemRegistry.class);
+        assertNotNull(itemProvider, "Could not get ItemRegistry");
+
+        itemChannelLinkProvider = getService(ItemChannelLinkProvider.class, ManagedItemChannelLinkProvider.class);
+        assertNotNull(itemChannelLinkProvider, "Could not get ManagedItemChannelLinkProvider");
+
+        inbox = getService(Inbox.class);
+        assertNotNull(inbox, "Could not get Inbox");
 
         moquetteServer = new Server();
         moquetteServer.startServer(brokerProperties());
@@ -93,4 +114,18 @@ public class MqttOSGiTest extends JavaOSGiTest {
     protected CompletableFuture<Boolean> publish(String topic, String message) {
         return brokerConnection.publish(topic, message.getBytes(StandardCharsets.UTF_8), 1, true);
     }
+
+    /**
+     * Whether tests are run in Continuous Integration environment, i.e. Jenkins or Travis CI
+     *
+     * Travis CI is detected using CI environment variable, see https://docs.travis-ci.com/us>
+     * Jenkins CI is detected using JENKINS_HOME environment variable
+     *
+     * @return
+     */
+    protected boolean isRunningInCI() {
+        String jenkinsHome = System.getenv("JENKINS_HOME");
+        return "true".equals(System.getenv("CI")) || (jenkinsHome != null && !jenkinsHome.isBlank());
+    }
+
 }

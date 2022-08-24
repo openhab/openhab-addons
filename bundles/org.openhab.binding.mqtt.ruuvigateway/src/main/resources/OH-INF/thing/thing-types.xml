@@ -13,7 +13,10 @@
 		<description>A RuuviTag SmartBeacon</description>
 
 		<channels>
-			<channel id="rssi" typeId="rssi"/>
+			<channel id="rssi" typeId="ruuvitag_rssi"/>
+			<channel id="ts" typeId="ruuvitag_ts"/>
+			<channel id="gwts" typeId="ruuvitag_gwts"/>
+			<channel id="gwmac" typeId="ruuvitag_gwmac"/>
 			<channel id="accelerationx" typeId="ruuvitag_accelerationx"/>
 			<channel id="accelerationy" typeId="ruuvitag_accelerationy"/>
 			<channel id="accelerationz" typeId="ruuvitag_accelerationz"/>
@@ -35,6 +38,34 @@
 		</config-description>
 
 	</thing-type>
+	
+     <channel-type id="ruuvitag_rssi">
+        <item-type>Number</item-type>
+        <label>RSSI</label>
+        <description>Received signal strength indicator</description>
+        <category>QualityOfService</category>
+        <state readOnly="true" pattern="%d dBm"/>
+     </channel-type>     
+     <channel-type id="ruuvitag_ts">
+        <item-type>DateTime</item-type>
+        <label>Timestamp</label>
+        <description>Timestamp when the message from Bluetooth-sensor was received by Gateway (ts)</description>
+        <category>Time</category>
+         <state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
+     </channel-type>
+     <channel-type id="ruuvitag_gwts" advanced="true">
+        <item-type>DateTime</item-type>
+        <label>Relay Timestamp</label>
+        <description>Timestamp when the message from Bluetooth-sensor was relayed by Gateway (gwts)</description>
+        <category>Time</category>
+         <state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
+     </channel-type>
+     <channel-type id="ruuvitag_gwmac" advanced="true">
+        <item-type>String</item-type>
+        <label>Gateway MAC Address</label>
+        <description>MAC-address of Ruuvi Gateway</description>
+        <state readOnly="true"/>
+     </channel-type>
 
 	<channel-type id="ruuvitag_accelerationx">
 		<item-type>Number:Acceleration</item-type>

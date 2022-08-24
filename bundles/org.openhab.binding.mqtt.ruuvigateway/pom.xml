@@ -29,7 +29,7 @@
     <dependency>
       <groupId>fi.tkgwf.ruuvi</groupId>
       <artifactId>ruuvitag-common</artifactId>
-      <version>1.0.2</version>
+      <version>1.0.0</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>
