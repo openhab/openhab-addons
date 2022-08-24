@@ -917,6 +917,11 @@
 			<channel id="tooDarkAlarm" typeId="tooDarkAlarm"/>
 			<channel id="sceneChangeAlarm" typeId="sceneChangeAlarm"/>
 			<channel id="tooBlurryAlarm" typeId="tooBlurryAlarm"/>
+			<channel id="acceptedCardNumber" typeId="acceptedCardNumber"/>
+			<channel id="doorUnlock" typeId="doorUnlock"/>
+			<channel id="doorContact" typeId="doorContact"/>
+			<channel id="exitButton" typeId="exitButton"/>
+			<channel id="motionDetectionLevel" typeId="motionDetectionLevel"/>
 		</channels>
 		<config-description>
 
@@ -2670,6 +2675,44 @@
 		<item-type>String</item-type>
 		<label>Text Overlay</label>
 		<description>Enter some text you wish to overlay on top of the cameras snapshot and video streams.</description>
+	</channel-type>
+
+	<channel-type id="acceptedCardNumber" advanced="true">
+		<item-type>String</item-type>
+		<label>Accepted Card Number</label>
+		<description>Displays last card number accepted</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="doorUnlock" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Door Unlock</label>
+		<description>Lock/unlock.</description>
+		<category>Lock</category>
+	</channel-type>
+
+	<channel-type id="doorContact" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Door Contact</label>
+		<description>Door contact representing if the door is opened/closed</description>
+		<category>Lock</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="exitButton" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Exit Button</label>
+		<description>Exit button pressed/released</description>
+		<category>Lock</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="motionDetectionLevel" advanced="true">
+		<item-type>Dimmer</item-type>
+		<label>Motion Detection Level</label>
+		<description>By moving this control you should be able to change how sensitive the camera's motion detection is to
+			movements.</description>
+		<category>Motion</category>
 	</channel-type>
 
 	<channel-type id="gotoPreset" advanced="true">

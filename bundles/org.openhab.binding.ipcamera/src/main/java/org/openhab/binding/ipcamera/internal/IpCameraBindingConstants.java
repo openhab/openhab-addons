@@ -138,4 +138,9 @@ public class IpCameraBindingConstants {
     public static final String CHANNEL_ENABLE_PRIVACY_MODE = "enablePrivacyMode";
     public static final String CHANNEL_CAR_ALARM = "carAlarm";
     public static final String CHANNEL_HUMAN_ALARM = "humanAlarm";
+    public static final String CHANNEL_ACCEPTED_CARD_NUMBER = "acceptedCardNumber";
+    public static final String CHANNEL_DOOR_UNLOCK = "doorUnlock";
+    public static final String CHANNEL_DOOR_CONTACT = "doorContact";
+    public static final String CHANNEL_EXIT_BUTTON = "exitButton";
+    public static final String CHANNEL_MOTION_DETECTION_LEVEL = "motionDetectionLevel";
 }
