@@ -59,6 +59,10 @@ public class LutronMdnsBridgeDiscoveryService implements MDNSDiscoveryParticipan
     private static final String PRODTYP_RA2_SELECT = "Main Repeater";
     private static final String DEVCLASS_RA2_SELECT = "080E0401";
 
+    private static final String PRODFAM_RA3 = "RadioRA 3";
+    private static final String PRODTYP_RA3 = "Processor";
+    private static final String DEVCLASS_RA3 = "081B0101";
+
     private static final String DEVCLASS_CONNECT_BRIDGE = "08090301";
     private static final String DEFAULT_LABEL = "Unknown Lutron bridge";
 
@@ -123,6 +127,10 @@ public class LutronMdnsBridgeDiscoveryService implements MDNSDiscoveryParticipan
             properties.put(PROPERTY_PRODFAM, PRODFAM_RA2_SELECT);
             properties.put(PROPERTY_PRODTYP, PRODTYP_RA2_SELECT);
             label = PRODFAM_RA2_SELECT + " " + PRODTYP_RA2_SELECT;
+        } else if (DEVCLASS_RA3.equals(devclass)) {
+            properties.put(PROPERTY_PRODFAM, PRODFAM_RA3);
+            properties.put(PROPERTY_PRODTYP, PRODTYP_RA3);
+            label = PRODFAM_RA3 + " " + PRODTYP_RA3;
         } else if (DEVCLASS_CONNECT_BRIDGE.equals(devclass)) {
             logger.debug("Lutron Connect Bridge discovered. Ignoring.");
             return null;
