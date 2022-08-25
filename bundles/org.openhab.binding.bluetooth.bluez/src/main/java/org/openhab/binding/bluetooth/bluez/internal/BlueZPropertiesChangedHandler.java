@@ -34,6 +34,7 @@ import org.openhab.binding.bluetooth.bluez.internal.events.ConnectedEvent;
 import org.openhab.binding.bluetooth.bluez.internal.events.ManufacturerDataEvent;
 import org.openhab.binding.bluetooth.bluez.internal.events.NameEvent;
 import org.openhab.binding.bluetooth.bluez.internal.events.RssiEvent;
+import org.openhab.binding.bluetooth.bluez.internal.events.ServiceDataEvent;
 import org.openhab.binding.bluetooth.bluez.internal.events.ServicesResolvedEvent;
 import org.openhab.binding.bluetooth.bluez.internal.events.TXPowerEvent;
 import org.openhab.core.common.ThreadPoolManager;
@@ -46,6 +47,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Benjamin Lafois - Initial contribution and API
  * @author Connor Petty - Code cleanup
+ * @author Peter Rosenberg - Add support for ServiceData
  */
 @NonNullByDefault
 public class BlueZPropertiesChangedHandler extends AbstractPropertiesChangedHandler {
@@ -114,6 +116,9 @@ public class BlueZPropertiesChangedHandler extends AbstractPropertiesChangedHand
                         break;
                     case "manufacturerdata":
                         onManufacturerDataUpdate(dbusPath, variant);
+                        break;
+                    case "servicedata":
+                        onServiceDataUpdate(dbusPath, variant);
                         break;
                     case "powered":
                         onPoweredUpdate(dbusPath, variant);
@@ -193,6 +198,28 @@ public class BlueZPropertiesChangedHandler extends AbstractPropertiesChangedHand
         }
         if (!eventData.isEmpty()) {
             notifyListeners(new ManufacturerDataEvent(dbusPath, eventData));
+        }
+    }
+
+    private void onServiceDataUpdate(String dbusPath, Variant<?> variant) {
+        Map<String, byte[]> serviceData = new HashMap<>();
+
+        Object map = variant.getValue();
+        if (map instanceof DBusMap) {
+            DBusMap<?, ?> dbm = (DBusMap<?, ?>) map;
+            for (Map.Entry<?, ?> entry : dbm.entrySet()) {
+                Object key = entry.getKey();
+                Object value = entry.getValue();
+                if (key instanceof String && value instanceof Variant<?>) {
+                    value = ((Variant<?>) value).getValue();
+                    if (value instanceof byte[]) {
+                        serviceData.put(((String) key), ((byte[]) value));
+                    }
+                }
+            }
+        }
+        if (!serviceData.isEmpty()) {
+            notifyListeners(new ServiceDataEvent(dbusPath, serviceData));
         }
     }
 
