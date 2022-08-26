@@ -24,7 +24,7 @@ public class ItemApp {
     private String type;
 
     @SerializedName("VALUE")
-    private ItemAppValue value;
+    private ItemAppValue value = new ItemAppValue();
 
     public String getType() {
         return type;

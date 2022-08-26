@@ -25,7 +25,7 @@ public class Item {
     @SerializedName("CNAME")
     private String cname;
     @SerializedName("NAME")
-    private String name;
+    private String name = "";
     @SerializedName("TYPE")
     private String type;
     @SerializedName("ENABLED")
@@ -33,7 +33,7 @@ public class Item {
     @SerializedName("READONLY")
     private String readonly;
     @SerializedName("VALUE")
-    private Value value;
+    private Value value = new Value();
 
     public Long getHashval() {
         return hashval;

@@ -21,13 +21,13 @@ import com.google.gson.annotations.SerializedName;
  */
 public class ItemInput {
     @SerializedName("HASHVAL")
-    private Long hashval;
+    private Long hashval = 0L;
     @SerializedName("NAME")
     private String name;
     @SerializedName("ENABLED")
     private String enabled;
     @SerializedName("VALUE")
-    private String value;
+    private String value = "";
     @SerializedName("CNAME")
     private String cname;
     @SerializedName("HIDDEN")

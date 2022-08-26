@@ -15,7 +15,6 @@ package org.openhab.binding.vizio.internal.console;
 import static org.openhab.binding.vizio.internal.VizioBindingConstants.*;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -140,8 +139,8 @@ public class VizioCommandExtension extends AbstractConsoleCommandExtension {
                             console.println("Pairing complete!");
                             console.println("The auth token: " + authTokenResp.getItem().getAuthToken()
                                     + " was received and will be added to the thing configuration.");
-                            console.println("If the thing was provisioned via a file, an error will be"
-                                    + " seen next and the token must be manually added to the thing.");
+                            console.println(
+                                    "If the thing is provisioned via a file, the token must be manually added to the thing configuration.");
 
                             handler.setPairingDeviceId(-1);
                             handler.setPairingToken(-1);
@@ -166,7 +165,7 @@ public class VizioCommandExtension extends AbstractConsoleCommandExtension {
 
     @Override
     public List<String> getUsages() {
-        return Arrays.asList(new String[] {
+        return List.of(new String[] {
                 buildCommandUsage("<thingUID> " + START_PAIRING + " <deviceName>", "start pairing process"),
                 buildCommandUsage("<thingUID> " + SUBMIT_CODE + " <pairingCode>", "submit pairing code") });
     }

@@ -18,7 +18,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.vizio.internal.appdb.VizioAppDbService;
-import org.openhab.binding.vizio.internal.dto.applist.VizioApps;
 import org.openhab.binding.vizio.internal.handler.VizioHandler;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Thing;
@@ -42,7 +41,7 @@ public class VizioHandlerFactory extends BaseThingHandlerFactory {
 
     private final HttpClient httpClient;
     private final VizioStateDescriptionOptionProvider stateDescriptionProvider;
-    private final VizioApps vizioApps;
+    private final String vizioAppsJson;
 
     @Activate
     public VizioHandlerFactory(final @Reference HttpClientFactory httpClientFactory,
@@ -50,7 +49,7 @@ public class VizioHandlerFactory extends BaseThingHandlerFactory {
             final @Reference VizioAppDbService vizioAppDbService) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
         this.stateDescriptionProvider = provider;
-        this.vizioApps = vizioAppDbService.getVizioApps();
+        this.vizioAppsJson = vizioAppDbService.getVizioAppsJson();
     }
 
     @Override
@@ -63,7 +62,7 @@ public class VizioHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
-            VizioHandler handler = new VizioHandler(thing, httpClient, stateDescriptionProvider, vizioApps);
+            VizioHandler handler = new VizioHandler(thing, httpClient, stateDescriptionProvider, vizioAppsJson);
             return handler;
         }
 

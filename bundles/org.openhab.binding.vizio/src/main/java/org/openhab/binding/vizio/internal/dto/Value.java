@@ -21,7 +21,7 @@ import com.google.gson.annotations.SerializedName;
  */
 public class Value {
     @SerializedName("NAME")
-    private String name;
+    private String name = "";
     @SerializedName("METADATA")
     private String metadata;
 

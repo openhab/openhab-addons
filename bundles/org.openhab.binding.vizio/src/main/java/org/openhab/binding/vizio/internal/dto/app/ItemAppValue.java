@@ -23,9 +23,9 @@ public class ItemAppValue {
     @SerializedName("MESSAGE")
     private String message;
     @SerializedName("NAME_SPACE")
-    private Integer nameSpace;
+    private Integer nameSpace = -1;
     @SerializedName("APP_ID")
-    private String appId;
+    private String appId = "";
 
     public String getMessage() {
         return message;

@@ -21,9 +21,9 @@ import com.google.gson.annotations.SerializedName;
  */
 public class VizioApp {
     @SerializedName("name")
-    private String name;
+    private String name = "";
     @SerializedName("config")
-    private VizioAppConfig config;
+    private VizioAppConfig config = new VizioAppConfig();
 
     public String getName() {
         return name;

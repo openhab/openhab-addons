@@ -21,7 +21,7 @@ import com.google.gson.annotations.SerializedName;
  */
 public class ItemAudio {
     @SerializedName("HASHVAL")
-    private Long hashval;
+    private Long hashval = 0L;
     @SerializedName("CNAME")
     private String cname;
     @SerializedName("NAME")
@@ -33,7 +33,7 @@ public class ItemAudio {
     @SerializedName("READONLY")
     private String readonly;
     @SerializedName("VALUE")
-    private String value;
+    private String value = "";
 
     public Long getHashval() {
         return hashval;

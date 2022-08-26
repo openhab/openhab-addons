@@ -26,7 +26,7 @@ public class CurrentApp {
     @SerializedName("STATUS")
     private Status status;
     @SerializedName("ITEM")
-    private ItemApp item;
+    private ItemApp item = new ItemApp();
     @SerializedName("URI")
     private String uri;
 

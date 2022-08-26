@@ -12,25 +12,20 @@
  */
 package org.openhab.binding.vizio.internal.appdb;
 
+import static org.openhab.binding.vizio.internal.VizioBindingConstants.*;
+
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.vizio.internal.dto.applist.VizioApps;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonIOException;
-import com.google.gson.JsonSyntaxException;
-
 /**
- * The {@link VizioAppDbService} class makes available a list of known apps on Vizio TVs.
+ * The {@link VizioAppDbService} class makes available a JSON list of known apps on Vizio TVs.
  *
  * @author Michael Lobstein - Initial Contribution
  */
@@ -39,21 +34,24 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 public class VizioAppDbService {
     private final Logger logger = LoggerFactory.getLogger(VizioAppDbService.class);
-    private VizioApps vizioApps;
+    private String vizioAppsJson;
 
     @Activate
     public VizioAppDbService() {
-        try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("/db/apps.json");
-                Reader reader = new InputStreamReader(is, StandardCharsets.UTF_8);) {
-            Gson gson = new Gson();
-            vizioApps = gson.fromJson(reader, VizioApps.class);
-        } catch (IOException | JsonSyntaxException | JsonIOException e) {
+        try {
+            InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("/db/apps.json");
+            if (is != null) {
+                vizioAppsJson = new String(is.readAllBytes(), StandardCharsets.UTF_8);
+            } else {
+                vizioAppsJson = EMPTY;
+            }
+        } catch (IOException e) {
             logger.warn("Unable to load Vizio app list : {}", e.getMessage());
-            vizioApps = new VizioApps();
+            vizioAppsJson = EMPTY;
         }
     }
 
-    public VizioApps getVizioApps() {
-        return vizioApps;
+    public String getVizioAppsJson() {
+        return vizioAppsJson;
     }
 }

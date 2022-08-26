@@ -32,7 +32,7 @@ The thing has a few configuration parameters:
 ### Console Commands for Pairing:
 
 To obtain an authorization token that enables openHAB to authenticate with the TV, the following console commands must be used while the TV is turned on.
-The first command will send a pairing start request to the TV. The TV will then display a 4-digit code on screen that must be sent with the second command.
+The first command will send a pairing start request to the TV. This triggers the TV to display a 4-digit PIN code on screen that must be sent with the second command.
 
 Start Pairing:
 
