@@ -77,7 +77,8 @@ public class FreeboxOsSession {
     private String initiateConnection() throws FreeboxException {
         try {
             String localToken = appToken;
-            if (localToken != null) {
+            if (localToken != null && !localToken.isBlank()) {
+                session = null;
                 session = getManager(LoginManager.class).openSession(localToken);
                 getManager(NetShareManager.class);
                 getManager(LanManager.class);
@@ -113,7 +114,7 @@ public class FreeboxOsSession {
         return localSession != null ? localSession.getSessionToken() : null;
     }
 
-    private <F, T extends Response<F>> @Nullable F execute(URI uri, HttpMethod method, Class<T> clazz,
+    private synchronized <F, T extends Response<F>> @Nullable F execute(URI uri, HttpMethod method, Class<T> clazz,
             boolean retryAuth, int retryCount, @Nullable Object aPayload) throws FreeboxException {
         try {
             T response = apiHandler.executeUri(uri, method, clazz, sessionToken(), aPayload);

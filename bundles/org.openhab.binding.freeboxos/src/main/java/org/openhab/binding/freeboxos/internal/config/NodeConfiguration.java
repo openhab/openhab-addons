@@ -28,10 +28,10 @@ public class NodeConfiguration {
                 switch (category) {
                     case "basic_shutter":
                         ThingUID thingUID = new ThingUID(THING_TYPE_HOME_BASIC_SHUTTER, bridgeUID,
-                                Long.toString(node.getId()));
+                                Integer.toString(node.getId()));
                         discoveryResultBuilder = DiscoveryResultBuilder.create(thingUID);
                         BasicShutter.configure(discoveryResultBuilder, node);
-
+                        break;
                     default:
                         break;
                 }
