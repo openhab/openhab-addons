@@ -26,7 +26,7 @@
 			"aid": 2,
 			"signalStrength": 4,
 			"capabilities": 0,
-			"batteryKind": "unassigned",
+			"batteryKind": 1,
 			"positions": {
 				"posKind1": 3,
 				"position1": 32579
