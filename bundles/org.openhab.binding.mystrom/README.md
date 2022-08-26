@@ -11,7 +11,7 @@ This bundle adds the following thing types:
 | ----------------------| ----------- | -------------------------------------------------- |
 | myStrom Smart Plug    | mystromplug | A myStrom smart plug                               |
 | myStrom Bulb          | mystrombulb | A myStrom bulb                                     |
-| myStrom Motion Sensor | mystrompir  | A myStrom bulb                                     |
+| myStrom Motion Sensor | mystrompir  | A myStrom PIR motion sensor                        |
 
 According to the myStrom API documentation all request specific to the myStrom Bulb are also work on the LED strip.
 
