@@ -84,6 +84,8 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
     private static final String DETECTED_TILT_ANYWHERE = "tiltAnywhereDetected";
     private static final ShadeCapabilitiesDatabase DB = new ShadeCapabilitiesDatabase();
 
+    private static final int HARDWIRED_POWER_SUPPLY = 1;
+
     private final Map<String, String> detectedCapabilities = new HashMap<>();
     private final Logger logger = LoggerFactory.getLogger(HDPowerViewShadeHandler.class);
 
@@ -274,7 +276,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         logger.debug("Caching capabilities {} for shade {}", capabilities.getValue(), shade.id);
         this.capabilities = capabilities;
 
-        updateDynamicChannels(capabilities);
+        updateDynamicChannels(capabilities, shade);
     }
 
     private Capabilities getCapabilitiesOrDefault() {
@@ -619,8 +621,10 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
 
     /**
      * Remove previously statically created channels if the shade does not support them.
+     *
+     * @param shade
      */
-    private void updateDynamicChannels(Capabilities capabilities) {
+    private void updateDynamicChannels(Capabilities capabilities, ShadeData shade) {
         List<Channel> removeList = new ArrayList<>();
 
         removeListProcessChannel(removeList, CHANNEL_SHADE_POSITION, capabilities.supportsPrimary());
@@ -630,6 +634,18 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
 
         removeListProcessChannel(removeList, CHANNEL_SHADE_VANE,
                 capabilities.supportsTiltAnywhere() || capabilities.supportsTiltOnClosed());
+
+        boolean batteryChannelsRequired;
+        try {
+            String batteryKind = shade.batteryKind;
+            batteryChannelsRequired = batteryKind == null || Integer.parseInt(batteryKind) != HARDWIRED_POWER_SUPPLY;
+        } catch (NumberFormatException e) {
+            batteryChannelsRequired = true;
+        }
+
+        removeListProcessChannel(removeList, CHANNEL_SHADE_BATTERY_LEVEL, batteryChannelsRequired);
+        removeListProcessChannel(removeList, CHANNEL_SHADE_BATTERY_VOLTAGE, batteryChannelsRequired);
+        removeListProcessChannel(removeList, CHANNEL_SHADE_LOW_BATTERY, batteryChannelsRequired);
 
         if (!removeList.isEmpty()) {
             if (logger.isDebugEnabled()) {
