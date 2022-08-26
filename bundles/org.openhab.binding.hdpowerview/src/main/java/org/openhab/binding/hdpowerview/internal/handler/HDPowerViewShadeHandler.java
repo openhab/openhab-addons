@@ -622,7 +622,8 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
     /**
      * Remove previously statically created channels if the shade does not support them.
      *
-     * @param shade
+     * @param capabilities the capabilities of the shade.
+     * @param shade the shade data.
      */
     private void updateDynamicChannels(Capabilities capabilities, ShadeData shade) {
         List<Channel> removeList = new ArrayList<>();
