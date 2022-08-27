@@ -13,6 +13,7 @@
 package org.openhab.binding.wundergroundupdatereceiver.internal;
 
 import static org.openhab.binding.wundergroundupdatereceiver.internal.WundergroundUpdateReceiverBindingConstants.THING_TYPE_UPDATE_RECEIVER;
+import static org.openhab.binding.wundergroundupdatereceiver.internal.WundergroundUpdateReceiverBindingConstants.UNCATEGORIZED;
 
 import java.util.Collection;
 import java.util.List;
@@ -58,8 +59,8 @@ public class WundergroundUpdateReceiverUnknownChannelTypeProvider implements Cha
         ChannelType type = getChannelType(typeUid, null);
         if (type == null) {
             String itemType = guessItemType(value);
-            type = ChannelTypeBuilder.state(typeUid, parameterName + " channel type", itemType)
-                    .withAutoUpdatePolicy(AutoUpdatePolicy.DEFAULT).build();
+            type = ChannelTypeBuilder.state(typeUid, parameterName + " channel type", itemType).isAdvanced(true)
+                    .withCategory(UNCATEGORIZED).withAutoUpdatePolicy(AutoUpdatePolicy.DEFAULT).build();
             return addChannelType(typeUid, type);
         }
         return type;

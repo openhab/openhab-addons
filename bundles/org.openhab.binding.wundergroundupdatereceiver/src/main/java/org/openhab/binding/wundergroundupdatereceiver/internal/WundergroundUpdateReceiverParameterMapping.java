@@ -173,7 +173,7 @@ public class WundergroundUpdateReceiverParameterMapping {
         }
         Optional<WundergroundUpdateReceiverParameterMapping> knownMapping = lookupMapping(parameterName);
         return knownMapping.orElseGet(() -> new WundergroundUpdateReceiverParameterMapping(parameterName,
-                channelTypeProvider.getOrCreateChannelType(parameterName, value).getUID(), "Uncategorized", null, false,
+                channelTypeProvider.getOrCreateChannelType(parameterName, value).getUID(), UNCATEGORIZED, null, false,
                 null));
     }
 

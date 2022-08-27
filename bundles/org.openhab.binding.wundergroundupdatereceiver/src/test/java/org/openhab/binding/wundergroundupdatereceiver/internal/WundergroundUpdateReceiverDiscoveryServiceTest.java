@@ -41,6 +41,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Answers;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Channel;
+import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.DefaultSystemChannelTypeProvider;
 import org.openhab.core.thing.ManagedThingProvider;
 import org.openhab.core.thing.Thing;
@@ -76,8 +77,8 @@ class WundergroundUpdateReceiverDiscoveryServiceTest {
     void programmaticChannelsAreAddedCorrectlyOnce() throws ServletException, NamespaceException, IOException {
         // Given
         final String queryString = "ID=dfggger&" + "PASSWORD=XXXXXX&" + "humidity=74&" + "AqPM2.5=30&"
-                + "dateutc=2021-02-07%2014:04:03&" + "softwaretype=WH2600%20V2.2.8&" + "action=updateraw&"
-                + "realtime=1&" + "rtfreq=5";
+                + "windspdmph_avg2m=10&" + "dateutc=2021-02-07%2014:04:03&" + "softwaretype=WH2600%20V2.2.8&"
+                + "action=updateraw&" + "realtime=1&" + "rtfreq=5";
         MetaData.Request request = new MetaData.Request("GET",
                 new HttpURI("http://localhost" + WundergroundUpdateReceiverServlet.SERVLET_URL + "?" + queryString),
                 HttpVersion.HTTP_1_1, new HttpFields());
@@ -105,16 +106,25 @@ class WundergroundUpdateReceiverDiscoveryServiceTest {
         var actual = handler.getThing().getChannels();
 
         // Then
-        assertThat(actual.size(), is(8));
+        assertThat(actual.size(), is(9));
 
-        assertChannel(actual.get(0), LAST_RECEIVED_DATETIME_CHANNELTYPEUID, ChannelKind.STATE, is("DateTime"));
-        assertChannel(actual.get(1), LAST_QUERY_TRIGGER_CHANNELTYPEUID, ChannelKind.TRIGGER, nullValue());
-        assertChannel(actual.get(2), LAST_QUERY_STATE_CHANNELTYPEUID, ChannelKind.STATE, is("String"));
-        assertChannel(actual.get(3), DATEUTC_CHANNELTYPEUID, ChannelKind.STATE, is("String"));
-        assertChannel(actual.get(4), REALTIME_FREQUENCY_CHANNELTYPEUID, ChannelKind.STATE, is("Number"));
-        assertChannel(actual.get(5), SOFTWARETYPE_CHANNELTYPEUID, ChannelKind.STATE, is("String"));
-        assertChannel(actual.get(6), HUMIDITY_CHANNELTYPEUID, ChannelKind.STATE, is("Number:Dimensionless"));
-        assertChannel(actual.get(7), PM2_5_MASS_CHANNELTYPEUID, ChannelKind.STATE, is("Number:Density"));
+        assertChannel(actual.get(0), METADATA_GROUP, LAST_RECEIVED, LAST_RECEIVED_DATETIME_CHANNELTYPEUID,
+                ChannelKind.STATE, is("DateTime"));
+        assertChannel(actual.get(1), METADATA_GROUP, LAST_QUERY_TRIGGER, LAST_QUERY_TRIGGER_CHANNELTYPEUID,
+                ChannelKind.TRIGGER, nullValue());
+        assertChannel(actual.get(2), METADATA_GROUP, LAST_QUERY_STATE, LAST_QUERY_STATE_CHANNELTYPEUID,
+                ChannelKind.STATE, is("String"));
+        assertChannel(actual.get(3), METADATA_GROUP, DATEUTC, DATEUTC_CHANNELTYPEUID, ChannelKind.STATE, is("String"));
+        assertChannel(actual.get(4), METADATA_GROUP, REALTIME_FREQUENCY, REALTIME_FREQUENCY_CHANNELTYPEUID,
+                ChannelKind.STATE, is("Number"));
+        assertChannel(actual.get(5), METADATA_GROUP, SOFTWARE_TYPE, SOFTWARETYPE_CHANNELTYPEUID, ChannelKind.STATE,
+                is("String"));
+        assertChannel(actual.get(6), HUMIDITY_GROUP, HUMIDITY, HUMIDITY_CHANNELTYPEUID, ChannelKind.STATE,
+                is("Number:Dimensionless"));
+        assertChannel(actual.get(7), WIND_GROUP, WIND_SPEED_AVG_2MIN, WIND_SPEED_AVG_2MIN_CHANNELTYPEUID,
+                ChannelKind.STATE, is("Number:Speed"));
+        assertChannel(actual.get(8), POLLUTION_GROUP, AQ_PM2_5, PM2_5_MASS_CHANNELTYPEUID, ChannelKind.STATE,
+                is("Number:Density"));
     }
 
     @Test
@@ -333,9 +343,10 @@ class WundergroundUpdateReceiverDiscoveryServiceTest {
         assertThat(actual, equalTo(before));
     }
 
-    private void assertChannel(Channel actual, ChannelTypeUID expectedUid, ChannelKind expectedKind,
-            Matcher<Object> expectedItemType) {
+    private void assertChannel(Channel actual, String expectedGroup, String expectedName, ChannelTypeUID expectedUid,
+            ChannelKind expectedKind, Matcher<Object> expectedItemType) {
         assertThat(actual, is(notNullValue()));
+        assertThat(actual.getUID(), is(new ChannelUID(TEST_THING_UID, expectedGroup, expectedName)));
         assertThat(actual.getChannelTypeUID(), is(expectedUid));
         assertThat(actual.getKind(), is(expectedKind));
         assertThat(actual.getAcceptedItemType(), expectedItemType);
@@ -360,6 +371,9 @@ class WundergroundUpdateReceiverDiscoveryServiceTest {
             when(provider.getChannelType(eq(HUMIDITY_CHANNELTYPEUID), any())).thenReturn(
                     new StateChannelTypeBuilderImpl(HUMIDITY_CHANNELTYPEUID, "Humidity", "Number:Dimensionless")
                             .build());
+            when(provider.getChannelType(eq(WIND_SPEED_AVG_2MIN_CHANNELTYPEUID), any()))
+                    .thenReturn(new StateChannelTypeBuilderImpl(WIND_SPEED_AVG_2MIN_CHANNELTYPEUID,
+                            "Wind Speed 2min Average", "Number:Speed").build());
             when(provider.getChannelType(eq(PM2_5_MASS_CHANNELTYPEUID), any())).thenReturn(
                     new StateChannelTypeBuilderImpl(PM2_5_MASS_CHANNELTYPEUID, "PM2.5 Mass", "Number:Density").build());
             when(provider.getChannelType(eq(DATEUTC_CHANNELTYPEUID), any())).thenReturn(
