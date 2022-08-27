@@ -29,6 +29,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewWebTargets;
+import org.openhab.binding.hdpowerview.internal.api.BatteryKind;
 import org.openhab.binding.hdpowerview.internal.api.CoordinateSystem;
 import org.openhab.binding.hdpowerview.internal.api.Firmware;
 import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
@@ -83,8 +84,6 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
     private static final String DETECTED_SECONDARY_RAIL = "secondaryRailDetected";
     private static final String DETECTED_TILT_ANYWHERE = "tiltAnywhereDetected";
     private static final ShadeCapabilitiesDatabase DB = new ShadeCapabilitiesDatabase();
-
-    private static final int HARDWIRED_POWER_SUPPLY = 1;
 
     private final Map<String, String> detectedCapabilities = new HashMap<>();
     private final Logger logger = LoggerFactory.getLogger(HDPowerViewShadeHandler.class);
@@ -620,7 +619,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
     }
 
     /**
-     * Remove previously statically created channels if the shade does not support them.
+     * Remove previously statically created channels if the shade does not support them or they are not relevant.
      *
      * @param capabilities the capabilities of the shade.
      * @param shade the shade data.
@@ -636,16 +635,8 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         removeListProcessChannel(removeList, CHANNEL_SHADE_VANE,
                 capabilities.supportsTiltAnywhere() || capabilities.supportsTiltOnClosed());
 
-        boolean batteryChannelsRequired;
-        try {
-            String batteryKind = shade.batteryKind;
-            batteryChannelsRequired = batteryKind == null || Integer.parseInt(batteryKind) != HARDWIRED_POWER_SUPPLY;
-        } catch (NumberFormatException e) {
-            batteryChannelsRequired = true;
-        }
-
+        boolean batteryChannelsRequired = shade.getBatteryKind() != BatteryKind.HARDWIRED_POWER_SUPPLY;
         removeListProcessChannel(removeList, CHANNEL_SHADE_BATTERY_LEVEL, batteryChannelsRequired);
-        removeListProcessChannel(removeList, CHANNEL_SHADE_BATTERY_VOLTAGE, batteryChannelsRequired);
         removeListProcessChannel(removeList, CHANNEL_SHADE_LOW_BATTERY, batteryChannelsRequired);
 
         if (!removeList.isEmpty()) {
