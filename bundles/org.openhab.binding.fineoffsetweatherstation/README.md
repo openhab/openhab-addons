@@ -62,6 +62,15 @@ This binding works offline by [implementing the wire protocol](https://osswww.ec
   - WH80 - 6-in-1 weather station - Ultrasonic sensor for wind speed & direction, solar radiation & light, temperature & humidity
   - WH90 - A new weather station
 
+### Unsupported Devices
+
+Some weather stations have firmware that does not allow you to query live-data directly.
+In this case you have to configure a service to which the data is sent.
+Please try if here the [IPObserver binding](https://www.openhab.org/addons/bindings/ipobserver/) offers an alternative.
+Known weather stations not compatible with this binding:
+
+  - [WH3000](https://community.openhab.org/t/fine-offset-weather-station-binding-beta-and-discussion/134167/52?u=andy2003)
+
 ## Discovery
 
 This binding support discovery of Fine Offset gateway devices by sending a broadcast message.
