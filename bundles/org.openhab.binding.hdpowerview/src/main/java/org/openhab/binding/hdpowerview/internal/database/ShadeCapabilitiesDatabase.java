@@ -41,17 +41,18 @@ public class ShadeCapabilitiesDatabase {
      */
     private static final Map<Integer, Capabilities> CAPABILITIES_DATABASE = Arrays.asList(
     // @formatter:off
-            new Capabilities(0).primary()                                                       .text("Bottom Up"),
-            new Capabilities(1).primary()        .tiltOnClosed()                                .text("Bottom Up Tilt 90°"),
-            new Capabilities(2).primary()        .tiltAnywhere().tilt180()                      .text("Bottom Up Tilt 180°"),
-            new Capabilities(3).primary()        .tiltAnywhere().tilt180()                      .text("Vertical Tilt 180°"),
-            new Capabilities(4).primary()                                                       .text("Vertical"),
-            new Capabilities(5)                  .tiltAnywhere().tilt180()                      .text("Tilt Only 180°"),
-            new Capabilities(6).primaryInverted()                                               .text("Top Down"),
-            new Capabilities(7).primary()                                 .secondary()          .text("Top Down Bottom Up"),
-            new Capabilities(8).primary()                                 .secondaryOverlapped().text("Dual Overlapped"),
+            new Capabilities( 0).primary()                                                       .text("Bottom Up"),
+            new Capabilities( 1).primary()        .tiltOnClosed()                                .text("Bottom Up Tilt 90°"),
+            new Capabilities( 2).primary()        .tiltAnywhere().tilt180()                      .text("Bottom Up Tilt 180°"),
+            new Capabilities( 3).primary()                                                       .text("Vertical"),
+            new Capabilities( 4).primary()        .tiltAnywhere().tilt180()                      .text("Vertical Tilt 180°"),
+            new Capabilities( 5)                  .tiltAnywhere().tilt180()                      .text("Tilt Only 180°"),
+            new Capabilities( 6).primaryInverted()                                               .text("Top Down"),
+            new Capabilities( 7).primary()                                 .secondary()          .text("Top Down Bottom Up"),
+            new Capabilities( 8).primary()                                 .secondaryOverlapped().text("Dual Overlapped"),
             // note: for the following capabilities entry the 'tiltOnClosed()' applies to the primary shade
-            new Capabilities(9).primary()        .tiltOnClosed()          .secondaryOverlapped().text("Dual Overlapped Tilt 90°"),
+            new Capabilities( 9).primary()        .tiltOnClosed()          .secondaryOverlapped().text("Dual Overlapped Tilt 90°"),
+            new Capabilities(10).primary()        .tiltOnClosed().tilt180().secondaryOverlapped().text("Dual Overlapped Tilt 180°"),
     // @formatter:on
             new Capabilities()).stream().collect(Collectors.toMap(Capabilities::getValue, Function.identity()));
 
