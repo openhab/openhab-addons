@@ -45,8 +45,8 @@ public class SerialNumberTest {
 
     @Test
     public void testGetComponentType() {
-        assertEquals("NTD-4R", new SerialNumber("186170024143").getComponentType());
-        assertEquals("Nobø Switch", new SerialNumber("234001021010").getComponentType());
+        assertEquals("NTD-4R/DCU-1R", new SerialNumber("186170024143").getComponentType());
+        assertEquals("Nobø Eco Switch", new SerialNumber("234001021010").getComponentType());
         assertEquals("Unknown, please contact maintainer to add a new type for 123123123123",
                 new SerialNumber("123123123123").getComponentType());
         assertEquals("Unknown, please contact maintainer to add a new type for foobar",
