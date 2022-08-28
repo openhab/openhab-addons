@@ -164,8 +164,10 @@ public class JRubyScriptEngineConfiguration {
         }
 
         String[] gems = gemsConfigElement.getValue().get().split(",");
-        String gemCommand = "require 'bundler/inline'\nrequire 'openssl'\n\ngemfile(" + checkUpdate + ") do\n"
-                + "  source 'https://rubygems.org/'\n";
+        // Set update_native_env_enabled to false so that bundler doesn't leak
+        // into other script engines
+        String gemCommand = "require 'jruby'\nJRuby.runtime.instance_config.update_native_env_enabled = false\nrequire 'bundler/inline'\nrequire 'openssl'\n\ngemfile("
+                + checkUpdate + ") do\n" + "  source 'https://rubygems.org/'\n";
         int validGems = 0;
         for (String gem : gems) {
             gem = gem.trim();
