@@ -14,8 +14,8 @@ package org.openhab.binding.easee.internal;
 
 import static org.openhab.binding.easee.internal.EaseeBindingConstants.*;
 
-import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -69,7 +69,8 @@ public final class Utils {
      * @return
      */
     public static String formatDate(Instant date) {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+                .withZone(ZoneId.systemDefault());
         return formatter.format(date);
     }
 

@@ -153,6 +153,9 @@ public class WebInterface implements AtomicReferenceTrait {
                         tokenRefreshDate = Instant.now();
                         tokenExpiry = tokenRefreshDate.plusSeconds(expiresInSeconds);
 
+                        logger.debug("access token refreshed: {}, expiry: {}", Utils.formatDate(tokenRefreshDate),
+                                Utils.formatDate(tokenExpiry));
+
                         statusHandler.updateStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE,
                                 translationService.getLocalizedText(STATUS_TOKEN_VALIDATED));
                         setAuthenticated(true);
@@ -223,7 +226,7 @@ public class WebInterface implements AtomicReferenceTrait {
             if (now.isAfter(tokenExpiry.minus(WEB_REQUEST_TOKEN_EXPIRY_BUFFER_MINUTES, ChronoUnit.MINUTES))
                     || now.isAfter(tokenRefreshDate.plus(WEB_REQUEST_TOKEN_MAX_AGE_MINUTES, ChronoUnit.MINUTES))) {
                 logger.debug("access token needs to be refreshed, last refresh: {}, expiry: {}",
-                        Utils.formatDate(tokenRefreshDate), Utils.formatDate(tokenRefreshDate));
+                        Utils.formatDate(tokenRefreshDate), Utils.formatDate(tokenExpiry));
 
                 EaseeCommand refreshCommand = new RefreshToken(handler, accessToken, refreshToken);
                 refreshCommand.registerResultProcessor(this::processAuthenticationResult);
