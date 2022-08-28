@@ -137,9 +137,12 @@ public class KonnectedHandler extends BaseThingHandler {
                 // check if the itemType has been defined for the zone received
                 // check the itemType of the Zone, if Contact, send the State if Temp send Temp, etc.
                 if (channelType.contains(CHANNEL_SWITCH) || channelType.contains(CHANNEL_ACTUATOR)) {
-                    OnOffType onOffType = event.getState().equalsIgnoreCase(getOnState(channel)) ? OnOffType.ON
-                            : OnOffType.OFF;
-                    updateState(channelId, onOffType);
+                    logger.debug("The event state is: {}", event.getState());
+                    if (event.getState() != null) {
+                        OnOffType onOffType = event.getState().equalsIgnoreCase(getOnState(channel)) ? OnOffType.ON
+                                : OnOffType.OFF;
+                        updateState(channelId, onOffType);
+                    }
                 } else if (channelType.contains(CHANNEL_HUMIDITY)) {
                     // if the state is of type number then this means it is the humidity channel of the dht22
                     updateState(channelId, new QuantityType<>(Double.parseDouble(event.getHumi()), Units.PERCENT));
