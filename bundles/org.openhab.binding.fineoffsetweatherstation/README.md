@@ -67,7 +67,7 @@ This binding works offline by [implementing the wire protocol](https://osswww.ec
 Some weather stations have firmware that does not allow you to query live-data directly.
 In this case you have to configure a service to which the data is sent.
 Please try if here the [IPObserver binding](https://www.openhab.org/addons/bindings/ipobserver/) offers an alternative.
-Known weather-stations not compatible with this binding:
+Known weather stations not compatible with this binding:
 
   - [WH3000](https://community.openhab.org/t/fine-offset-weather-station-binding-beta-and-discussion/134167/52?u=andy2003)
 
