@@ -17,6 +17,7 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.hdpowerview.internal.api.BatteryKind;
 import org.openhab.binding.hdpowerview.internal.api.Firmware;
 import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
 
@@ -55,9 +56,15 @@ public class Shades {
         public @Nullable Integer capabilities;
         public @Nullable Firmware firmware;
         public @Nullable Firmware motor;
+        // note: in old JSON batteryKind was a string but now it's a number; fortunately GSON string accepts either
+        public @Nullable String batteryKind;
 
         public String getName() {
             return new String(Base64.getDecoder().decode(name));
+        }
+
+        public BatteryKind getBatteryKind() {
+            return BatteryKind.fromString(batteryKind);
         }
     }
 }

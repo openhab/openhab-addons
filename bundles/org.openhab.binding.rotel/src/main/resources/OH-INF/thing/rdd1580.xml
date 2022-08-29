@@ -14,6 +14,7 @@
 			<channel id="source" typeId="source"/>
 			<channel id="playControl" typeId="system.media-control"/>
 			<channel id="frequency" typeId="frequency"/>
+			<channel id="otherCommand" typeId="otherCommand"/>
 		</channels>
 
 		<properties>

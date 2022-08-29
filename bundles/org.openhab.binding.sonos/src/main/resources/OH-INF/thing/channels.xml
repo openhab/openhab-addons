@@ -279,7 +279,6 @@
 				<option value="STOPPED">Stopped</option>
 				<option value="PLAYING">Playing</option>
 				<option value="PAUSED_PLAYBACK">Paused</option>
-				<option value="TRANSITIONING">Transitioning</option>
 			</options>
 		</state>
 	</channel-type>

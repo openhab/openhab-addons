@@ -398,7 +398,7 @@ public class ShellyComponents {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_SCHEDULE,
                         getOnOff(t.schedule));
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_PROFILE,
-                        getStringType(profile.getValueProfile(pid)));
+                        getStringType(profile.getValueProfile(0, pid)));
                 if (t.tmp != null) {
                     Double temp = convertToC(t.tmp.value, getString(t.tmp.units));
                     updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_TEMP,

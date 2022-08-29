@@ -64,9 +64,9 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
      * @param httpPort port of the openHAB HTTP API
      */
     public ShellyRelayHandler(final Thing thing, final ShellyTranslationProvider translationProvider,
-            final ShellyBindingConfiguration bindingConfig, final Shelly1CoapServer coapServer, final String localIP,
-            int httpPort, final HttpClient httpClient) {
-        super(thing, translationProvider, bindingConfig, coapServer, localIP, httpPort, httpClient);
+            final ShellyBindingConfiguration bindingConfig, ShellyThingTable thingTable,
+            final Shelly1CoapServer coapServer, final HttpClient httpClient) {
+        super(thing, translationProvider, bindingConfig, thingTable, coapServer, httpClient);
     }
 
     @Override
@@ -329,7 +329,7 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
      */
     public boolean updateRelays(ShellySettingsStatus status) throws ShellyApiException {
         boolean updated = false;
-        // Check for Relay in Standard Mode
+
         if (profile.hasRelays && !profile.isDimmer) {
             double voltage = -1;
             if (status.voltage == null && profile.settings.supplyVoltage != null) {
@@ -384,7 +384,7 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
             ShellySettingsStatus dstatus = fromJson(gson, Shelly1ApiJsonDTO.fixDimmerJson(orgStatus.json),
                     ShellySettingsStatus.class);
 
-            logger.trace("{}: Updating {} dimmers(s)", thingName, dstatus.dimmers.size());
+            logger.trace("{}: Updating {} dimmers(s)", thingName, dstatus.dimmers.size());
             int l = 0;
             for (ShellyShortLightStatus dimmer : dstatus.dimmers) {
                 Integer r = l + 1;

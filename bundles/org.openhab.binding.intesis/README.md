@@ -42,7 +42,7 @@ The binding uses the following configuration parameters.
 | outdoorTemperature | Number:Temperature | (Readonly) The outdoor air temperature (if applicable) |                                                         |
 | errorStatus        | String             | (Readonly) The error status of the device              | OK,ERR                                                  |
 | errorCode          | String             | (Readonly) The error code if an error encountered      | not documented                                          |
-| wifiSignal         | Number             | (Readonly) WiFi signal strength (IntesisBox only)      | 4=excellent, 3=very good, 2=good, 1=acceptable, 0=low   |
+| wifiSignal         | Number             | (Readonly) WiFi signal strength                        | 4=excellent, 3=very good, 2=good, 1=acceptable, 0=low   |
 
 Note that individual A/C units may not support all channels, or all possible values for those channels.
 

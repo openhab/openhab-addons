@@ -86,6 +86,12 @@ public class WemoDiscoveryParticipant implements UpnpDiscoveryParticipant {
                                     device.getIdentity().getUdn().getIdentifierString());
                             return new ThingUID(THING_TYPE_SOCKET, device.getIdentity().getUdn().getIdentifierString());
                         }
+                        if (device.getDetails().getModelDetails().getModelName().toLowerCase()
+                                .startsWith("outdoorplug")) {
+                            logger.debug("Discovered a WeMo Outdoor Plug thing with UDN '{}'",
+                                    device.getIdentity().getUdn().getIdentifierString());
+                            return new ThingUID(THING_TYPE_SOCKET, device.getIdentity().getUdn().getIdentifierString());
+                        }
                         if (device.getDetails().getModelDetails().getModelName().toLowerCase().startsWith("insight")) {
                             logger.debug("Discovered a WeMo Insight thing with UDN '{}'",
                                     device.getIdentity().getUdn().getIdentifierString());

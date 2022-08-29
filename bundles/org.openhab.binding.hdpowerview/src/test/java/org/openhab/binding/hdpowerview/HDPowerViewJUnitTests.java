@@ -23,6 +23,7 @@ import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.hdpowerview.internal.api.BatteryKind;
 import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
 import org.openhab.binding.hdpowerview.internal.api.responses.SceneCollections;
 import org.openhab.binding.hdpowerview.internal.api.responses.SceneCollections.SceneCollection;
@@ -74,6 +75,20 @@ public class HDPowerViewJUnitTests {
         assertEquals(3, shadeData.size());
         ShadeData shade = shadeData.get(0);
         assertEquals("Shade 2", shade.getName());
+    }
+
+    /**
+     * Test the BatteryKind decoding.
+     */
+    @Test
+    public void testBatteryKind() throws IOException {
+        Shades shades = getObjectFromJson("shades.json", Shades.class);
+        List<ShadeData> shadeData = shades.shadeData;
+        assertNotNull(shadeData);
+        ShadeData shade = shadeData.get(0);
+        assertEquals(BatteryKind.HARDWIRED_POWER_SUPPLY, shade.getBatteryKind());
+        shade = shadeData.get(1);
+        assertEquals(BatteryKind.ERROR_UNKNOWN, shade.getBatteryKind());
     }
 
     /**
