@@ -13,18 +13,22 @@
         <parameter name="upSlotId" type="integer" required="true">
             <label>UP Slot ID</label>
             <description>Id of the UP Slot</description>
+            <default>0</default>
         </parameter>
         <parameter name="stopSlotId" type="integer" required="true">
             <label>STOP Slot ID</label>
             <description>Id of the UP Slot</description>
+            <default>1</default>
         </parameter>
         <parameter name="downSlotId" type="integer" required="true">
             <label>DOWN Slot ID</label>
             <description>Id of the UP Slot</description>
+            <default>2</default>
         </parameter>
         <parameter name="stateSignalId" type="integer" required="true">
             <label>STATE Signal ID</label>
             <description>Id of the STATE Signal</description>
+            <default>3</default>
         </parameter>
 	</config-description>
 
