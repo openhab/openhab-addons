@@ -94,7 +94,7 @@ public class KonnectedHandler extends BaseThingHandler {
                 int sendCommand = (OnOffType.OFF.compareTo((OnOffType) command));
                 logger.debug("The command being sent to zone {} for channel:{}  is {}", zone, channelUID.getAsString(),
                         sendCommand);
-                sendActuatorCommand(Integer.toString(sendCommand), zone, channelUID);
+                sendActuatorCommand(sendCommand, zone, channelUID);
             }
         } else if (command instanceof RefreshType) {
             // check to see if handler has been initialized before attempting to get state of pin, else wait one minute
@@ -137,9 +137,12 @@ public class KonnectedHandler extends BaseThingHandler {
                 // check if the itemType has been defined for the zone received
                 // check the itemType of the Zone, if Contact, send the State if Temp send Temp, etc.
                 if (channelType.contains(CHANNEL_SWITCH) || channelType.contains(CHANNEL_ACTUATOR)) {
-                    OnOffType onOffType = event.getState().equalsIgnoreCase(getOnState(channel)) ? OnOffType.ON
-                            : OnOffType.OFF;
-                    updateState(channelId, onOffType);
+                    Integer state = event.getState();
+                    logger.debug("The event state is: {}", state);
+                    if (state != null) {
+                        OnOffType onOffType = state == getOnState(channel) ? OnOffType.ON : OnOffType.OFF;
+                        updateState(channelId, onOffType);
+                    }
                 } else if (channelType.contains(CHANNEL_HUMIDITY)) {
                     // if the state is of type number then this means it is the humidity channel of the dht22
                     updateState(channelId, new QuantityType<>(Double.parseDouble(event.getHumi()), Units.PERCENT));
@@ -415,7 +418,7 @@ public class KonnectedHandler extends BaseThingHandler {
      * @param scommand the string command, either 0 or 1 to send to the actutor pin on the Konnected module
      * @param zone the zone to send the command to on the Konnected Module
      */
-    private void sendActuatorCommand(String scommand, String zone, ChannelUID channelId) {
+    private void sendActuatorCommand(Integer scommand, String zone, ChannelUID channelId) {
         try {
             Channel channel = getThing().getChannel(channelId.getId());
             if (!(channel == null)) {
@@ -429,7 +432,7 @@ public class KonnectedHandler extends BaseThingHandler {
 
                 // check to see if this is an On Command type, if so add the momentary, pause, times to the payload if
                 // they exist on the configuration.
-                if (scommand.equals(getOnState(channel))) {
+                if (scommand == getOnState(channel)) {
                     if (configuration.get(CHANNEL_ACTUATOR_TIMES) == null) {
                         logger.debug(
                                 "The times configuration was not set for channelID: {}, not adding it to the payload.",
@@ -522,12 +525,7 @@ public class KonnectedHandler extends BaseThingHandler {
         }
     }
 
-    private String getOnState(Channel channel) {
-        String config = (String) channel.getConfiguration().get(CHANNEL_ONVALUE);
-        if (config == null) {
-            return "1";
-        } else {
-            return config;
-        }
+    private int getOnState(Channel channel) {
+        return ((Number) channel.getConfiguration().get(CHANNEL_ONVALUE)).intValue();
     }
 }

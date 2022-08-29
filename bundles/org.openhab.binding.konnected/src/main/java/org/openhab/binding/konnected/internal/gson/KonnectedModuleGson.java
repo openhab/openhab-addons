@@ -29,7 +29,7 @@ public class KonnectedModuleGson {
     private String zone;
     private String temp;
     private String humi;
-    private String state;
+    private Integer state;
     @SerializedName("Auth_Token")
     private String authToken;
     private String momentary;
@@ -79,11 +79,11 @@ public class KonnectedModuleGson {
         this.humi = setHumi;
     }
 
-    public String getState() {
+    public Integer getState() {
         return state;
     }
 
-    public void setState(String setState) {
+    public void setState(Integer setState) {
         this.state = setState;
     }
 
