@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.emby.internal;
 
-import static org.openhab.binding.emby.internal.EmbyBindingConstants.*;
+import static org.openhab.binding.emby.internal.EmbyBindingConstants.THING_TYPE_EMBY_CONTROLLER;
+import static org.openhab.binding.emby.internal.EmbyBindingConstants.THING_TYPE_EMBY_DEVICE;
 
 import java.util.Collections;
 import java.util.Dictionary;
