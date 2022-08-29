@@ -80,15 +80,16 @@ public class ShadeCapabilitiesDatabase {
             new Type(47).capabilities(7).text("Pleated Top Down Bottom Up"),
             new Type(49).capabilities(0).text("AC Roller"),
             new Type(51).capabilities(2).text("Venetian"),
-            new Type(54).capabilities(4).text("Vertical Slats Left Stack").capabilitiesOverride(3),
-            new Type(55).capabilities(4).text("Vertical Slats Right Stack").capabilitiesOverride(3),
-            new Type(56).capabilities(4).text("Vertical Slats Split Stack").capabilitiesOverride(3),
+            // note: sometimes shade type 54/55/56 wrongly report capabilities:3 so force capabilities:4
+            new Type(54).capabilities(4).text("Vertical Slats Left Stack").capabilitiesOverride(4),
+            new Type(55).capabilities(4).text("Vertical Slats Right Stack").capabilitiesOverride(4),
+            new Type(56).capabilities(4).text("Vertical Slats Split Stack").capabilitiesOverride(4),
             new Type(62).capabilities(2).text("Venetian"),
             new Type(65).capabilities(8).text("Vignette Duolite"),
             new Type(66).capabilities(5).text("Shutter"),
-            new Type(69).capabilities(4).text("Curtain Left Stack"),
-            new Type(70).capabilities(4).text("Curtain Right Stack"),
-            new Type(71).capabilities(4).text("Curtain Split Stack"),
+            new Type(69).capabilities(3).text("Curtain Left Stack"),
+            new Type(70).capabilities(3).text("Curtain Right Stack"),
+            new Type(71).capabilities(3).text("Curtain Split Stack"),
             new Type(79).capabilities(8).text("Duolite Lift"),
     // @formatter:on
             new Type()).stream().collect(Collectors.toMap(Type::getValue, Function.identity()));
