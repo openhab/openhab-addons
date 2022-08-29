@@ -8,17 +8,18 @@ The server can be connected to Free infrastructures either by xDSL or fiber opti
 
 This binding supports the following thing types:
 
-| Thing      | Thing Type | Description                                           |
-|------------|------------|-------------------------------------------------------|
-| api        | Bridge     | Bridge to access freebox OS API hosted by the server. |
-| delta      | Thing      | A Freebox Delta server.                               |
-| revolution | Thing      | A Freebox Revolution server.                          |
-| player     | Thing      | The TV player equipment (e.g. Devialet).              |
-| landline   | Thing      | The phone wired to the Freebox Server.                |
-| host       | Thing      | A network device on the local network.                |
-| wifihost   | Thing      | A wifi networked device on the local network.         |
-| vm         | Thing      | A virtual machine hosted on the server (>= Delta).    |
-| repeater   | Thing      | A Free wifi repeater.                                 |
+| Thing         | Thing Type | Description                                           |
+|---------------|------------|-------------------------------------------------------|
+| api           | Bridge     | Bridge to access freebox OS API hosted by the server. |
+| delta         | Thing      | A Freebox Delta server.                               |
+| revolution    | Thing      | A Freebox Revolution server.                          |
+| player        | Thing      | The TV player equipment (e.g. Devialet).              |
+| landline      | Thing      | The phone wired to the Freebox Server.                |
+| host          | Thing      | A network device on the local network.                |
+| wifihost      | Thing      | A wifi networked device on the local network.         |
+| vm            | Thing      | A virtual machine hosted on the server (>= Delta).    |
+| repeater      | Thing      | A Free wifi repeater.                                 |
+| basic_shutter | Thing      | RTS Shutter configured in Freebox Home (>= Delta).    |
 
 ## Discovery
 
@@ -100,6 +101,18 @@ The *repeater* thing is a specialized case of a *wifihost*. The *vm* derives fro
 | ID               | id              | Id of the repeater within Freebox Api                            | Yes      | 1       |
 | Refresh Interval | refreshInterval | The refresh interval in seconds which is used to poll the player | Yes      | 30      |
 
+### Basic shutter thing
+
+The *basic_shutter* thing requires the following configuration parameters:
+
+| Parameter Label  | Parameter ID    | Description                                                      | Required | Default |
+|------------------|-----------------|------------------------------------------------------------------|----------|---------|
+| Node ID          | nodeId          | Id of the Home Node.                                             | Yes      |         |
+| UP Slot ID       | upSlotId        | Id of the UP Slot.                                               | Yes      | 0       |
+| STOP Slot ID     | stopSlotId      | Id of the STOP Slot.                                             | Yes      | 1       |
+| DOWN Slot ID     | downSlotId      | Id of the UP Slot.                                               | Yes      | 2       |
+| STATE Signal ID  | stateSignalId   | Id of the STATE Signal.                                          | Yes      | 3       |
+
 ## Authentication
 
 You will have to authorize openHAB to connect to your Freebox. Here is the process described :
@@ -120,44 +133,45 @@ Once initialized, the thing will generate all available channels.
 
 The following channels are supported:
 
-| Thing         | Channel Type ID      | Item Type | Access Mode | Description                                                                    |
-|---------------|----------------------|-----------|-------------|--------------------------------------------------------------------------------|
-| revolution    | lcd_brightness       | Number    | RW          | Brightness level of the screen in percent                                      |
-| revolution    | lcd_orientation      | Number    | RW          | Screen Orientation in degrees (0 or 90 or 180 or 270)                          |
-| revolution    | lcd_forced           | Switch    | RW          | Indicates whether the screen orientation forced                                |
-| server (*)    | uptime               | Number    | R           | Time since last reboot of the Freebox Server                                   |
-| server (*)    | restarted            | Switch    | R           | Indicates whether the Freebox server has restarted during the last poll period |
-| server (*)    | wifi_status          | Switch    | RW          | Indicates whether the WiFi network is enabled                                  |
-| server (*)    | ftp_status           | Switch    | RW          | Indicates whether the FTP server is enabled                                    |
-| server (*)    | airmedia_status      | Switch    | RW          | Indicates whether Air Media is enabled                                         |
-| server (*)    | upnpav_status        | Switch    | RW          | Indicates whether UPnP AV is enabled                                           |
-| server (*)    | samba-file-status    | Switch    | RW          | Indicates whether Window File Sharing is enabled                               |
-| server (*)    | samba-printer-status | Switch    | RW          | Indicates whether Window Printer Sharing is enabled                            |
-| server (*)    | xdsl_status          | String    | R           | Status of the xDSL line                                                        |
-| server (*)    | ftth_status          | Switch    | R           | Status of the Ftth line                                                        |
-| server (*)    | line_status          | String    | R           | Status of network line connexion                                               |
-| server (*)    | ipv4                 | String    | R           | Public IP Address of the Freebox Server                                        |
-| server (*)    | rate_up              | Number    | R           | Current upload rate in byte/s                                                  |
-| server (*)    | rate_down            | Number    | R           | Current download  rate in byte/s                                               |
-| server (*)    | bytes_up             | Number    | R           | Total uploaded bytes since last connection                                     |
-| server (*)    | bytes_down           | Number    | R           | Total downloaded  bytes since last connection                                  |
-| phone         | state#onhook         | Switch    | R           | Indicates whether the phone is on hook                                         |
-| phone         | state#ringing        | Switch    | R           | Is the phone ringing                                                           |
-| phone         | accepted#number      | Call      | R           | Last accepted call: number                                                     |
-| phone         | accepted#duration    | Number    | R           | Last accepted call: duration in seconds                                        |
-| phone         | accepted#timestamp   | DateTime  | R           | Last accepted call: creation timestamp                                         |
-| phone         | accepted#name        | String    | R           | Last accepted call: caller name                                                |
-| phone         | missed#number        | Call      | R           | Last missed call: number                                                       |
-| phone         | missed#timestamp     | DateTime  | R           | Last missed call: creation timestamp                                           |
-| phone         | missed#name          | String    | R           | Last missed call: caller name                                                  |
-| phone         | outgoing#number      | Call      | R           | Last outgoing call: number                                                     |
-| phone         | outgoing#duration    | Number    | R           | Last outgoing call: duration in seconds                                        |
-| phone         | outgoing#timestamp   | DateTime  | R           | Last outgoing call: creation timestamp                                         |
-| phone         | outgoing#name        | String    | R           | Last outgoing call: called name                                                |
-| net_device    | reachable            | Switch    | R           | Indicates whether the network device is reachable                              |
-| net_interface | reachable            | Switch    | R           | Indicates whether the network interface is reachable                           |
-| airplay       | playurl              | String    | W           | Play an audio or video media from the given URL                                |
-| airplay       | stop                 | Switch    | W           | Stop the media playback                                                        |
+| Thing         | Channel Type ID             | Item Type     | Access Mode | Description                                                                    |
+|---------------|-----------------------------|---------------|-------------|--------------------------------------------------------------------------------|
+| revolution    | lcd_brightness              | Number        | RW          | Brightness level of the screen in percent                                      |
+| revolution    | lcd_orientation             | Number        | RW          | Screen Orientation in degrees (0 or 90 or 180 or 270)                          |
+| revolution    | lcd_forced                  | Switch        | RW          | Indicates whether the screen orientation forced                                |
+| server (*)    | uptime                      | Number        | R           | Time since last reboot of the Freebox Server                                   |
+| server (*)    | restarted                   | Switch        | R           | Indicates whether the Freebox server has restarted during the last poll period |
+| server (*)    | wifi_status                 | Switch        | RW          | Indicates whether the WiFi network is enabled                                  |
+| server (*)    | ftp_status                  | Switch        | RW          | Indicates whether the FTP server is enabled                                    |
+| server (*)    | airmedia_status             | Switch        | RW          | Indicates whether Air Media is enabled                                         |
+| server (*)    | upnpav_status               | Switch        | RW          | Indicates whether UPnP AV is enabled                                           |
+| server (*)    | samba-file-status           | Switch        | RW          | Indicates whether Window File Sharing is enabled                               |
+| server (*)    | samba-printer-status        | Switch        | RW          | Indicates whether Window Printer Sharing is enabled                            |
+| server (*)    | xdsl_status                 | String        | R           | Status of the xDSL line                                                        |
+| server (*)    | ftth_status                 | Switch        | R           | Status of the Ftth line                                                        |
+| server (*)    | line_status                 | String        | R           | Status of network line connexion                                               |
+| server (*)    | ipv4                        | String        | R           | Public IP Address of the Freebox Server                                        |
+| server (*)    | rate_up                     | Number        | R           | Current upload rate in byte/s                                                  |
+| server (*)    | rate_down                   | Number        | R           | Current download  rate in byte/s                                               |
+| server (*)    | bytes_up                    | Number        | R           | Total uploaded bytes since last connection                                     |
+| server (*)    | bytes_down                  | Number        | R           | Total downloaded  bytes since last connection                                  |
+| phone         | state#onhook                | Switch        | R           | Indicates whether the phone is on hook                                         |
+| phone         | state#ringing               | Switch        | R           | Is the phone ringing                                                           |
+| phone         | accepted#number             | Call          | R           | Last accepted call: number                                                     |
+| phone         | accepted#duration           | Number        | R           | Last accepted call: duration in seconds                                        |
+| phone         | accepted#timestamp          | DateTime      | R           | Last accepted call: creation timestamp                                         |
+| phone         | accepted#name               | String        | R           | Last accepted call: caller name                                                |
+| phone         | missed#number               | Call          | R           | Last missed call: number                                                       |
+| phone         | missed#timestamp            | DateTime      | R           | Last missed call: creation timestamp                                           |
+| phone         | missed#name                 | String        | R           | Last missed call: caller name                                                  |
+| phone         | outgoing#number             | Call          | R           | Last outgoing call: number                                                     |
+| phone         | outgoing#duration           | Number        | R           | Last outgoing call: duration in seconds                                        |
+| phone         | outgoing#timestamp          | DateTime      | R           | Last outgoing call: creation timestamp                                         |
+| phone         | outgoing#name               | String        | R           | Last outgoing call: called name                                                |
+| net_device    | reachable                   | Switch        | R           | Indicates whether the network device is reachable                              |
+| net_interface | reachable                   | Switch        | R           | Indicates whether the network interface is reachable                           |
+| airplay       | playurl                     | String        | W           | Play an audio or video media from the given URL                                |
+| airplay       | stop                        | Switch        | W           | Stop the media playback                                                        |
+| basic_shutter | basic-shutter#basic-shutter | RollerShutter | W           | Up, stop and down commands for a RTS shutter                                   |
 
 (*) : server means *delta* or *revolution*
 
