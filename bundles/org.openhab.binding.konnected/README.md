@@ -92,19 +92,19 @@ Switch item=Siren label="Alarm Siren" icon="Siren" mappings=[ON="Open", OFF="Clo
 
 ```
 Thing konnected:wifi-module:generic "Konnected Module" [baseUrl="http://192.168.30.153:9586", macAddress="1586517"]{
-   Type switch      : switch-wifi      "Front Door"          [channel_zone=1]
-   Type actuator    : actuator-wifi    "Siren"               [channel_zone=1, momentary = 50, times = 2, pause = 50]
-   Type humidity    : humidity-wifi    "DHT - Humidity"      [channel_zone=1]
-   Type temperature : temperature-wifi "DHT Temperature"     [channel_zone=1, tempsensorType = true, pollinterval = 1]
-   Type temperature : temperature-wifi "DS18B20 Temperature" [channel_zone=1, tempsensorType = false, pollinterval = 1, ds18b20_address = "XX:XX:XX:XX:XX:XX:XX"]
+   Type switch      : switch-wifi      "Front Door"          [zone=1]
+   Type actuator    : actuator-wifi    "Siren"               [zone=2, momentary = 50, times = 2, pause = 50]
+   Type humidity    : humidity-wifi    "DHT - Humidity"      [zone=3]
+   Type temperature : temperature-wifi "DHT Temperature"     [zone=4, tempsensorType = true, pollinterval = 1]
+   Type temperature : temperature-wifi "DS18B20 Temperature" [zone=5, tempsensorType = false, pollinterval = 1, ds18b20_address = "XX:XX:XX:XX:XX:XX:XX"]
 }
 
 Thing konnected:pro-module:generic "Konnected Module" [baseUrl="http://192.168.30.154:9586", macAddress="1684597"]{
-   Type switch      : switch-pro      "Front Door"          [channel_zone=1]
-   Type actuator    : actuator-pro    "Siren"               [channel_zone=1, momentary = 50, times = 2, pause = 50]
-   Type humidity    : humidity-pro    "DHT - Humidity"      [channel_zone=1]
-   Type temperature : temperature-pro "DHT Temperature"     [channel_zone=1, tempsensorType = true, pollinterval = 1]
-   Type temperature : temperature-pro "DS18B20 Temperature" [channel_zone=1, tempsensorType = false, pollinterval = 1, ds18b20_address = "XX:XX:XX:XX:XX:XX:XX"]
+   Type switch      : switch-pro      "Front Door"          [zone=1]
+   Type actuator    : actuator-pro    "Siren"               [zone=2, momentary = 50, times = 2, pause = 50]
+   Type humidity    : humidity-pro    "DHT - Humidity"      [zone=3]
+   Type temperature : temperature-pro "DHT Temperature"     [zone=4, tempsensorType = true, pollinterval = 1]
+   Type temperature : temperature-pro "DS18B20 Temperature" [zone=5, tempsensorType = false, pollinterval = 1, ds18b20_address = "XX:XX:XX:XX:XX:XX:XX"]
 }
 ```
 
