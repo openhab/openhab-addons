@@ -12,7 +12,10 @@
  */
 package org.openhab.binding.emby.internal.discovery;
 
-import static org.openhab.binding.emby.internal.EmbyBindingConstants.*;
+import static org.openhab.binding.emby.internal.EmbyBindingConstants.DEVICE_ID;
+import static org.openhab.binding.emby.internal.EmbyBindingConstants.HOST_PARAMETER;
+import static org.openhab.binding.emby.internal.EmbyBindingConstants.THING_TYPE_EMBY_CONTROLLER;
+import static org.openhab.binding.emby.internal.EmbyBindingConstants.WS_PORT_PARAMETER;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -44,7 +47,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 /**
- * The {@EmbyBridgeDiscoveryService} handles the bridge discovery which find emby servers on the network
+ * The {@EmbyBridgeDiscoveryService} handles the bridge discovery which finds emby servers on the network
  *
  * @author Zachary Christiansen - Initial contribution
  */
@@ -142,6 +145,8 @@ public class EmbyBridgeDiscoveryService extends AbstractDiscoveryService {
         } catch (IOException ex) {
 
             logger.debug("The exception was: {}", ex.getMessage());
+        } finally {
+
         }
     }
 

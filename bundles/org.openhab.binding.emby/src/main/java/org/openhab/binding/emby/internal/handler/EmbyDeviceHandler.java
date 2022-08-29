@@ -12,9 +12,35 @@
  */
 package org.openhab.binding.emby.internal.handler;
 
-import static org.openhab.binding.emby.internal.EmbyBindingConstants.*;
+import static org.openhab.binding.emby.internal.EmbyBindingConstants.CHANNEL_CONTROL;
+import static org.openhab.binding.emby.internal.EmbyBindingConstants.CHANNEL_CURRENTTIME;
+import static org.openhab.binding.emby.internal.EmbyBindingConstants.CHANNEL_DURATION;
+import static org.openhab.binding.emby.internal.EmbyBindingConstants.CHANNEL_GENERALCOMMAND;
+import static org.openhab.binding.emby.internal.EmbyBindingConstants.CHANNEL_GENERALCOMMANDWITHARGS;
+import static org.openhab.binding.emby.internal.EmbyBindingConstants.CHANNEL_GENERALCOMMAND_NAME;
+import static org.openhab.binding.emby.internal.EmbyBindingConstants.CHANNEL_IMAGEURL;
+import static org.openhab.binding.emby.internal.EmbyBindingConstants.CHANNEL_IMAGEURL_MAXHEIGHT;
+import static org.openhab.binding.emby.internal.EmbyBindingConstants.CHANNEL_IMAGEURL_MAXWIDTH;
+import static org.openhab.binding.emby.internal.EmbyBindingConstants.CHANNEL_IMAGEURL_PERCENTPLAYED;
+import static org.openhab.binding.emby.internal.EmbyBindingConstants.CHANNEL_IMAGEURL_TYPE;
+import static org.openhab.binding.emby.internal.EmbyBindingConstants.CHANNEL_MEDIATYPE;
+import static org.openhab.binding.emby.internal.EmbyBindingConstants.CHANNEL_MUTE;
+import static org.openhab.binding.emby.internal.EmbyBindingConstants.CHANNEL_SENDPLAYCOMMAND;
+import static org.openhab.binding.emby.internal.EmbyBindingConstants.CHANNEL_SHOWTITLE;
+import static org.openhab.binding.emby.internal.EmbyBindingConstants.CHANNEL_STOP;
+import static org.openhab.binding.emby.internal.EmbyBindingConstants.CHANNEL_TITLE;
+import static org.openhab.binding.emby.internal.EmbyBindingConstants.CONTROL_GENERALCOMMAND;
+import static org.openhab.binding.emby.internal.EmbyBindingConstants.CONTROL_MUTE;
+import static org.openhab.binding.emby.internal.EmbyBindingConstants.CONTROL_PAUSE;
+import static org.openhab.binding.emby.internal.EmbyBindingConstants.CONTROL_PLAY;
+import static org.openhab.binding.emby.internal.EmbyBindingConstants.CONTROL_SENDPLAY;
+import static org.openhab.binding.emby.internal.EmbyBindingConstants.CONTROL_SESSION;
+import static org.openhab.binding.emby.internal.EmbyBindingConstants.CONTROL_STOP;
+import static org.openhab.binding.emby.internal.EmbyBindingConstants.CONTROL_UNMUTE;
+import static org.openhab.binding.emby.internal.EmbyBindingConstants.DEVICE_ID;
 import static org.openhab.core.thing.ThingStatus.OFFLINE;
-import static org.openhab.core.thing.ThingStatusDetail.*;
+import static org.openhab.core.thing.ThingStatusDetail.BRIDGE_OFFLINE;
+import static org.openhab.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
 
 import java.net.URI;
 import java.net.URISyntaxException;

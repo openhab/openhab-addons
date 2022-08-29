@@ -1,6 +1,6 @@
 # Emby Binding
 
-The Emby Binding integrates EMBY  support with openHAB, allowing both controlling the player as well as retrieving player status data like the currently played movie title.
+The Emby Binding integrates EMBY, a personal media server https://emby.media/,  support with openHAB, allowing both controlling the player as well as retrieving player status data like the currently played movie title.
 
 This binding supports multiple clients connected to a EMBY Media Server. This binding allows simlar integration and control in the same manner as the Plex Binding. For example with this binding, it's possible to dim your lights when a video starts playing. 
 

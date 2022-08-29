@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.emby.internal.discovery;
 
-import static org.openhab.binding.emby.internal.EmbyBindingConstants.*;
+import static org.openhab.binding.emby.internal.EmbyBindingConstants.DEVICE_ID;
+import static org.openhab.binding.emby.internal.EmbyBindingConstants.THING_TYPE_EMBY_DEVICE;
 
 import java.util.Collections;
 import java.util.HashMap;

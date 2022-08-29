@@ -12,7 +12,11 @@
  */
 package org.openhab.binding.emby.internal.handler;
 
-import static org.openhab.binding.emby.internal.EmbyBindingConstants.*;
+import static org.openhab.binding.emby.internal.EmbyBindingConstants.API_KEY;
+import static org.openhab.binding.emby.internal.EmbyBindingConstants.HOST_PARAMETER;
+import static org.openhab.binding.emby.internal.EmbyBindingConstants.REFRESH_PARAMETER;
+import static org.openhab.binding.emby.internal.EmbyBindingConstants.WS_BUFFER_SIZE;
+import static org.openhab.binding.emby.internal.EmbyBindingConstants.WS_PORT_PARAMETER;
 
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -92,8 +96,7 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
         return defaultValue;
     }
 
-    @Override
-    public void initialize() {
+    private void establishConnection() {
         updateStatus(ThingStatus.UNKNOWN);
         scheduler.execute(() -> {
             try {
@@ -121,6 +124,11 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
     }
 
     @Override
+    public void initialize() {
+        establishConnection();
+    }
+
+    @Override
     public void handleEvent(EmbyPlayStateModel playstate, String hostname, int embyport) {
         EmbyClientDiscoveryService discvoeryService = this.clientDiscoverySerivce;
         if (discvoeryService != null) {
@@ -141,7 +149,9 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
         if (connected) {
             updateStatus(ThingStatus.ONLINE);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "No connection established");
+            // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "No connection established");
+            logger.debug("The connection was closed going to attempt to reestablish connection.");
+            establishConnection();
         }
     }
 
