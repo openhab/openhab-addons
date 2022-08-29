@@ -186,7 +186,7 @@ public class FineOffsetDataParser {
         var size = toUInt16(data, 3);
         List<MeasuredValue> result = new ArrayList<>();
         while (idx < size) {
-            int code = data[idx++];
+            byte code = data[idx++];
             Measurand.SingleChannelMeasurand measurand = Measurand.getByCode(code);
             if (measurand == null) {
                 logger.warn("failed to get measurand 0x{}", Integer.toHexString(code));

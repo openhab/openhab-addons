@@ -89,6 +89,19 @@ class FineOffsetDataParserTest {
     }
 
     @Test
+    void testRainDataW90() {
+        byte[] data = Hex.decode(
+                "FFFF5700398000008300000009840000000985000000C786000000C7810000870064006400640064006400640064006400640064880900007A02BF");
+        List<MeasuredValue> measuredValues = new FineOffsetDataParser(Protocol.DEFAULT).getRainData(data,
+                new ConversionContext(ZoneOffset.UTC));
+        Assertions.assertThat(measuredValues)
+                .extracting(MeasuredValue::getChannelId, measuredValue -> measuredValue.getState().toString())
+                .containsExactly(new Tuple("piezo-rain-rate", "0 mm/h"), new Tuple("piezo-rain-day", "0.9 mm"),
+                        new Tuple("piezo-rain-week", "0.9 mm"), new Tuple("piezo-rain-month", "19.9 mm"),
+                        new Tuple("piezo-rain-year", "19.9 mm"), new Tuple("piezo-rain-event", "0 mm"));
+    }
+
+    @Test
     void testFirmware() {
         byte[] data = Hex.decode("FFFF501511456173795765617468657256312E362E3400");
         String firmware = new FineOffsetDataParser(Protocol.ELV).getFirmwareVersion(data);

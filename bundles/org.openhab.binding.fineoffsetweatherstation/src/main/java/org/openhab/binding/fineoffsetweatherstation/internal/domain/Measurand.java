@@ -178,7 +178,7 @@ public enum Measurand {
 
     ;
 
-    private static final Map<Integer, SingleChannelMeasurand> MEASURANDS = new HashMap<>();
+    private static final Map<Byte, SingleChannelMeasurand> MEASURANDS = new HashMap<>();
 
     static {
         for (Measurand measurand : values()) {
@@ -186,7 +186,7 @@ public enum Measurand {
                 int code = measurand.codes[i];
                 // if we get more than one code this measurand has multiple channels
                 Integer channel = measurand.codes.length == 1 ? null : i + 1;
-                MEASURANDS.put(code, new SingleChannelMeasurand(measurand, channel));
+                MEASURANDS.put((byte) code, new SingleChannelMeasurand(measurand, channel));
             }
         }
     }
@@ -222,7 +222,7 @@ public enum Measurand {
         this.parsers = parsers;
     }
 
-    public static @Nullable SingleChannelMeasurand getByCode(int code) {
+    public static @Nullable SingleChannelMeasurand getByCode(byte code) {
         return MEASURANDS.get(code);
     }
 
