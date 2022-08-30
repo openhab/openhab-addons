@@ -7,25 +7,6 @@
 	<thing-type id="energymeter">
 		<label>SMA Energy Meter</label>
 
-		<channels>
-			<channel id="powerIn" typeId="powerInType"/>
-			<channel id="powerOut" typeId="powerOutType"/>
-			<channel id="energyIn" typeId="energyInType"/>
-			<channel id="energyOut" typeId="energyOutType"/>
-			<channel id="powerInL1" typeId="powerInTypeL1"/>
-			<channel id="powerOutL1" typeId="powerOutTypeL1"/>
-			<channel id="energyInL1" typeId="energyInTypeL1"/>
-			<channel id="energyOutL1" typeId="energyOutTypeL1"/>
-			<channel id="powerInL2" typeId="powerInTypeL2"/>
-			<channel id="powerOutL2" typeId="powerOutTypeL2"/>
-			<channel id="energyInL2" typeId="energyInTypeL2"/>
-			<channel id="energyOutL2" typeId="energyOutTypeL2"/>
-			<channel id="powerInL3" typeId="powerInTypeL3"/>
-			<channel id="powerOutL3" typeId="powerOutTypeL3"/>
-			<channel id="energyInL3" typeId="energyInTypeL3"/>
-			<channel id="energyOutL3" typeId="energyOutTypeL3"/>
-		</channels>
-
 		<properties>
 			<property name="vendor">Vendor</property>
 			<property name="serialNumber">Serial Number</property>
@@ -51,101 +32,65 @@
 			</parameter>
 		</config-description>
 	</thing-type>
+	<channel-type id="W">
+		<item-type>Number</item-type>
+		<label>Power</label>
+		<category>Energy</category>
+		<state pattern="%.2f W" readOnly="true"/>
+	</channel-type>
+	<channel-type id="VA">
+		<item-type>Number</item-type>
+		<label>apparent power</label>
+		<category>Energy</category>
+		<state pattern="%.2f VA" readOnly="true"/>
+	</channel-type>
+	<channel-type id="VAr">
+		<item-type>Number</item-type>
+		<label>reactiv power</label>
+		<category>Energy</category>
+		<state pattern="%.2f VAr" readOnly="true"/>
+	</channel-type>
 
-	<channel-type id="powerInType">
+	<channel-type id="kWh">
 		<item-type>Number</item-type>
-		<label>Purchased Power</label>
-		<category>Energy</category>
-		<state pattern="%.2f W" readOnly="true"/>
-	</channel-type>
-	<channel-type id="powerOutType">
-		<item-type>Number</item-type>
-		<label>Grid Feed-in Power</label>
-		<category>Energy</category>
-		<state pattern="%.2f W" readOnly="true"/>
-	</channel-type>
-	<channel-type id="energyInType">
-		<item-type>Number</item-type>
-		<label>Purchased Energy</label>
+		<label>kilowatt hour</label>
 		<category>Energy</category>
 		<state pattern="%.2f kWh" readOnly="true"/>
 	</channel-type>
-	<channel-type id="energyOutType">
+	<channel-type id="kVAh">
 		<item-type>Number</item-type>
-		<label>Grid Feed-in Energy</label>
+		<label>kVAh</label>
 		<category>Energy</category>
-		<state pattern="%.2f kWh" readOnly="true"/>
+		<state pattern="%.2f kVAh" readOnly="true"/>
 	</channel-type>
-	<channel-type id="powerInTypeL1">
+	<channel-type id="kVArh">
 		<item-type>Number</item-type>
-		<label>Purchased Power L1</label>
+		<label>kVArh</label>
 		<category>Energy</category>
-		<state pattern="%.2f W" readOnly="true"/>
+		<state pattern="%.2f kVArh" readOnly="true"/>
 	</channel-type>
-	<channel-type id="powerOutTypeL1">
+	<channel-type id="A">
 		<item-type>Number</item-type>
-		<label>Grid Feed-in Power L1</label>
+		<label>current</label>
 		<category>Energy</category>
-		<state pattern="%.2f W" readOnly="true"/>
+		<state pattern="%.2f A" readOnly="true"/>
 	</channel-type>
-	<channel-type id="energyInTypeL1">
+	<channel-type id="V">
 		<item-type>Number</item-type>
-		<label>Purchased Energy L1</label>
+		<label>voltage</label>
 		<category>Energy</category>
-		<state pattern="%.2f kWh" readOnly="true"/>
+		<state pattern="%.2f V" readOnly="true"/>
 	</channel-type>
-	<channel-type id="energyOutTypeL1">
+	<channel-type id="DEG">
 		<item-type>Number</item-type>
-		<label>Grid Feed-in Energy L1</label>
+		<label>Cos Phi</label>
 		<category>Energy</category>
-		<state pattern="%.2f kWh" readOnly="true"/>
+		<state pattern="%.2f °" readOnly="true"/>
 	</channel-type>
-	<channel-type id="powerInTypeL2">
+	<channel-type id="Hz">
 		<item-type>Number</item-type>
-		<label>Purchased Power L2</label>
+		<label>frequency</label>
 		<category>Energy</category>
-		<state pattern="%.2f W" readOnly="true"/>
-	</channel-type>
-	<channel-type id="powerOutTypeL2">
-		<item-type>Number</item-type>
-		<label>Grid Feed-in Power L2</label>
-		<category>Energy</category>
-		<state pattern="%.2f W" readOnly="true"/>
-	</channel-type>
-	<channel-type id="energyInTypeL2">
-		<item-type>Number</item-type>
-		<label>Purchased Energy L2</label>
-		<category>Energy</category>
-		<state pattern="%.2f kWh" readOnly="true"/>
-	</channel-type>
-	<channel-type id="energyOutTypeL2">
-		<item-type>Number</item-type>
-		<label>Grid Feed-in Energy L2</label>
-		<category>Energy</category>
-		<state pattern="%.2f kWh" readOnly="true"/>
-	</channel-type>
-	<channel-type id="powerInTypeL3">
-		<item-type>Number</item-type>
-		<label>Purchased Power L3</label>
-		<category>Energy</category>
-		<state pattern="%.2f W" readOnly="true"/>
-	</channel-type>
-	<channel-type id="powerOutTypeL3">
-		<item-type>Number</item-type>
-		<label>Grid Feed-in Power L3</label>
-		<category>Energy</category>
-		<state pattern="%.2f W" readOnly="true"/>
-	</channel-type>
-	<channel-type id="energyInTypeL3">
-		<item-type>Number</item-type>
-		<label>Purchased Energy L3</label>
-		<category>Energy</category>
-		<state pattern="%.2f kWh" readOnly="true"/>
-	</channel-type>
-	<channel-type id="energyOutTypeL3">
-		<item-type>Number</item-type>
-		<label>Grid Feed-in Energy L3</label>
-		<category>Energy</category>
-		<state pattern="%.2f kWh" readOnly="true"/>
+		<state pattern="%.2f Hz" readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

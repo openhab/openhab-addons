@@ -17,10 +17,13 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
-import org.openhab.core.library.types.DecimalType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link EnergyMeter} class is responsible for communication with the SMA device
@@ -29,60 +32,26 @@ import org.openhab.core.library.types.DecimalType;
  * @author Osman Basha - Initial contribution
  */
 public class EnergyMeter {
-
-    private String multicastGroup;
-    private int port;
-
-    private String serialNumber;
-    private Date lastUpdate;
-
-    private final FieldDTO powerIn;
-    private final FieldDTO energyIn;
-    private final FieldDTO powerOut;
-    private final FieldDTO energyOut;
-    private final FieldDTO powerInL1;
-    private final FieldDTO energyInL1;
-    private final FieldDTO powerOutL1;
-    private final FieldDTO energyOutL1;
-    private final FieldDTO powerInL2;
-    private final FieldDTO energyInL2;
-    private final FieldDTO powerOutL2;
-    private final FieldDTO energyOutL2;
-    private final FieldDTO powerInL3;
-    private final FieldDTO energyInL3;
-    private final FieldDTO powerOutL3;
-    private final FieldDTO energyOutL3;
-
     public static final String DEFAULT_MCAST_GRP = "239.12.255.254";
     public static final int DEFAULT_MCAST_PORT = 9522;
+    private final Logger logger = LoggerFactory.getLogger(EnergyMeter.class);
+    private final String multicastGroup;
+    private final int port;
+    private String serialNumber;
+    private Date lastUpdate;
 
     public EnergyMeter(String multicastGroup, int port) {
         this.multicastGroup = multicastGroup;
         this.port = port;
-
-        powerIn = new FieldDTO(0x20, 4, 10);
-        energyIn = new FieldDTO(0x28, 8, 3600000);
-        powerOut = new FieldDTO(0x34, 4, 10);
-        energyOut = new FieldDTO(0x3C, 8, 3600000);
-
-        powerInL1 = new FieldDTO(0xA8, 4, 10);
-        energyInL1 = new FieldDTO(0xB0, 8, 3600000); // +8
-        powerOutL1 = new FieldDTO(0xBC, 4, 10); // + C
-        energyOutL1 = new FieldDTO(0xC4, 8, 3600000); // +8
-
-        powerInL2 = new FieldDTO(0x138, 4, 10);
-        energyInL2 = new FieldDTO(0x140, 8, 3600000); // +8
-        powerOutL2 = new FieldDTO(0x14C, 4, 10); // + C
-        energyOutL2 = new FieldDTO(0x154, 8, 3600000); // +8
-
-        powerInL3 = new FieldDTO(0x1C8, 4, 10);
-        energyInL3 = new FieldDTO(0x1D0, 8, 3600000); // +8
-        powerOutL3 = new FieldDTO(0x1DC, 4, 10); // + C
-        energyOutL3 = new FieldDTO(0x1E4, 8, 3600000); // +8
     }
 
-    public void update() throws IOException {
+    private static int getIntegerFromByteArray(byte[] bytes, int from, int to) {
+        return ByteBuffer.wrap(Arrays.copyOfRange(bytes, from, to)).getInt();
+    }
+
+    public List<SmaChannel> update() throws IOException {
         byte[] bytes = new byte[608];
+        List<SmaChannel> result = new ArrayList<>();
         try (MulticastSocket socket = new MulticastSocket(port)) {
             socket.setSoTimeout(5000);
             InetAddress address = InetAddress.getByName(multicastGroup);
@@ -96,33 +65,57 @@ public class EnergyMeter {
                 throw new IOException("Not a SMA telegram." + sma);
             }
 
-            ByteBuffer buffer = ByteBuffer.wrap(Arrays.copyOfRange(bytes, 0x14, 0x18));
-            serialNumber = String.valueOf(buffer.getInt());
+            int dataLength = ByteBuffer.wrap(Arrays.copyOfRange(bytes, 12, 14)).getShort() + 16;
 
-            powerIn.updateValue(bytes);
-            energyIn.updateValue(bytes);
-            powerOut.updateValue(bytes);
-            energyOut.updateValue(bytes);
+            if (dataLength != 54) {
+                ByteBuffer buffer = ByteBuffer.wrap(Arrays.copyOfRange(bytes, 20, 24));
+                serialNumber = String.valueOf(buffer.getInt() & 0xFFFFFFFFL);
 
-            powerInL1.updateValue(bytes);
-            energyInL1.updateValue(bytes);
-            powerOutL1.updateValue(bytes);
-            energyOutL1.updateValue(bytes);
-
-            powerInL2.updateValue(bytes);
-            energyInL2.updateValue(bytes);
-            powerOutL2.updateValue(bytes);
-            energyOutL2.updateValue(bytes);
-
-            powerInL3.updateValue(bytes);
-            energyInL3.updateValue(bytes);
-            powerOutL3.updateValue(bytes);
-            energyOutL3.updateValue(bytes);
-
+                // int timestamp = getIntegerFromByteArray(bytes, 24, 28);
+                logger.debug("Data received with date: ");
+                int dataPosition = 28;
+                while (dataPosition < dataLength) {
+                    byte[] valueHeader = Arrays.copyOfRange(bytes, dataPosition, dataPosition + 4);
+                    SmaChannel dataInformation = decodeHeaderData(valueHeader);
+                    if (dataInformation.datatype == Type.UNKNOWN) {
+                        logger.debug("No valid header at {} will stop reading data", dataPosition);
+                        break;
+                    }
+                    dataPosition += 4; // skip header size
+                    dataInformation.rawValue = getIntegerFromByteArray(bytes, dataPosition,
+                            dataPosition + dataInformation.datatype.getDataSize());
+                    dataPosition += dataInformation.datatype.getDataSize();
+                    logger.debug("Data read {}", dataInformation);
+                    result.add(dataInformation);
+                }
+            }
             lastUpdate = new Date(System.currentTimeMillis());
         } catch (Exception e) {
             throw new IOException(e);
         }
+
+        return result;
+    }
+
+    private SmaChannel decodeHeaderData(byte[] valueHeader) {
+        SmaChannel di = new SmaChannel();
+        int rawType = ByteBuffer.wrap(Arrays.copyOfRange(valueHeader, 2, 3)).get();
+        short channelNumberShort = ByteBuffer.wrap(Arrays.copyOfRange(valueHeader, 0, 2)).getShort();
+        int channelNumber = Short.toUnsignedInt(channelNumberShort);
+        EnergyMeterValue measuredUnit = EnergyMeterValue.getMeasuredUnit(channelNumber);
+        if (rawType == 0 && measuredUnit == EnergyMeterValue.SPEEDWIRE) {
+            di.datatype = Type.VERSION;
+        } else if (rawType == 4) {
+            di.datatype = Type.CURRENT;
+        } else if (rawType == 8) {
+            di.datatype = Type.TOTAL;
+        } else {
+            di.datatype = Type.UNKNOWN;
+            logger.debug("unknown datatype: measurement {} datatype {} raw_type {}", di.channelNo, di.datatype,
+                    rawType);
+        }
+        di.measuredUnit = measuredUnit;
+        return di;
     }
 
     public String getSerialNumber() {
@@ -131,69 +124,5 @@ public class EnergyMeter {
 
     public Date getLastUpdate() {
         return lastUpdate;
-    }
-
-    public DecimalType getPowerIn() {
-        return new DecimalType(powerIn.getValue());
-    }
-
-    public DecimalType getPowerOut() {
-        return new DecimalType(powerOut.getValue());
-    }
-
-    public DecimalType getEnergyIn() {
-        return new DecimalType(energyIn.getValue());
-    }
-
-    public DecimalType getEnergyOut() {
-        return new DecimalType(energyOut.getValue());
-    }
-
-    public DecimalType getPowerInL1() {
-        return new DecimalType(powerInL1.getValue());
-    }
-
-    public DecimalType getPowerOutL1() {
-        return new DecimalType(powerOutL1.getValue());
-    }
-
-    public DecimalType getEnergyInL1() {
-        return new DecimalType(energyInL1.getValue());
-    }
-
-    public DecimalType getEnergyOutL1() {
-        return new DecimalType(energyOutL1.getValue());
-    }
-
-    public DecimalType getPowerInL2() {
-        return new DecimalType(powerInL2.getValue());
-    }
-
-    public DecimalType getPowerOutL2() {
-        return new DecimalType(powerOutL2.getValue());
-    }
-
-    public DecimalType getEnergyInL2() {
-        return new DecimalType(energyInL2.getValue());
-    }
-
-    public DecimalType getEnergyOutL2() {
-        return new DecimalType(energyOutL2.getValue());
-    }
-
-    public DecimalType getPowerInL3() {
-        return new DecimalType(powerInL3.getValue());
-    }
-
-    public DecimalType getPowerOutL3() {
-        return new DecimalType(powerOutL3.getValue());
-    }
-
-    public DecimalType getEnergyInL3() {
-        return new DecimalType(energyInL3.getValue());
-    }
-
-    public DecimalType getEnergyOutL3() {
-        return new DecimalType(energyOutL3.getValue());
     }
 }

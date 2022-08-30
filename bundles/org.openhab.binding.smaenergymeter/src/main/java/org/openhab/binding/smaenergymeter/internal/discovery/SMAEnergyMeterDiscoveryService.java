@@ -81,6 +81,7 @@ public class SMAEnergyMeterDiscoveryService extends AbstractDiscoveryService {
         properties.put(Thing.PROPERTY_VENDOR, "SMA");
         properties.put(Thing.PROPERTY_SERIAL_NUMBER, energyMeter.getSerialNumber());
         ThingUID uid = new ThingUID(THING_TYPE_ENERGY_METER, energyMeter.getSerialNumber());
+
         DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
                 .withLabel("SMA Energy Meter").build();
         thingDiscovered(result);
