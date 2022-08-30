@@ -154,9 +154,9 @@ public class ShadeCapabilitiesDatabase {
         }
 
         /**
-         * Get shade's type specific 'capabilities'.
+         * Get shade's overridden 'capabilities'.
          *
-         * @return 'typeCapabilities'.
+         * @return 'capabilitiesOverride'.
          */
         public int getCapabilitiesOverride() {
             return capabilitiesOverride;
