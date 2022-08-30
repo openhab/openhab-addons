@@ -24,13 +24,14 @@ import java.util.Objects;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.hdpowerview.internal.api.BatteryKind;
+import org.openhab.binding.hdpowerview.internal.api.ShadeData;
 import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
 import org.openhab.binding.hdpowerview.internal.api.responses.SceneCollections;
 import org.openhab.binding.hdpowerview.internal.api.responses.SceneCollections.SceneCollection;
 import org.openhab.binding.hdpowerview.internal.api.responses.Scenes;
 import org.openhab.binding.hdpowerview.internal.api.responses.Scenes.Scene;
+import org.openhab.binding.hdpowerview.internal.api.v1.HDPowerViewWebTargetsV1;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades;
-import org.openhab.binding.hdpowerview.internal.api.responses.Shades.ShadeData;
 import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDatabase;
 import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDatabase.Capabilities;
 import org.openhab.core.library.types.PercentType;
@@ -48,7 +49,7 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public class HDPowerViewJUnitTests {
 
-    private Gson gson = new Gson();
+    private final Gson gson = HDPowerViewWebTargetsV1.getGson();
 
     private <T> T getObjectFromJson(String filename, Class<T> clazz) throws IOException {
         try (InputStream inputStream = HDPowerViewJUnitTests.class.getResourceAsStream(filename)) {
