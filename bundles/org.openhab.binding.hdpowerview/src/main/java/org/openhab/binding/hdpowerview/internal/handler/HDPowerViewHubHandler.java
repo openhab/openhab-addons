@@ -32,6 +32,8 @@ import org.openhab.binding.hdpowerview.internal.HDPowerViewTranslationProvider;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewWebTargets;
 import org.openhab.binding.hdpowerview.internal.api.Firmware;
 import org.openhab.binding.hdpowerview.internal.api.HubFirmware;
+import org.openhab.binding.hdpowerview.internal.api.ShadeData;
+import org.openhab.binding.hdpowerview.internal.api.ShadeDataV1;
 import org.openhab.binding.hdpowerview.internal.api.UserData;
 import org.openhab.binding.hdpowerview.internal.api.responses.SceneCollections;
 import org.openhab.binding.hdpowerview.internal.api.responses.SceneCollections.SceneCollection;
@@ -40,7 +42,6 @@ import org.openhab.binding.hdpowerview.internal.api.responses.Scenes.Scene;
 import org.openhab.binding.hdpowerview.internal.api.responses.ScheduledEvents;
 import org.openhab.binding.hdpowerview.internal.api.responses.ScheduledEvents.ScheduledEvent;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades;
-import org.openhab.binding.hdpowerview.internal.api.responses.Shades.ShadeData;
 import org.openhab.binding.hdpowerview.internal.builders.AutomationChannelBuilder;
 import org.openhab.binding.hdpowerview.internal.builders.SceneChannelBuilder;
 import org.openhab.binding.hdpowerview.internal.builders.SceneGroupChannelBuilder;
@@ -422,7 +423,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         HDPowerViewShadeHandler thingHandler = ((HDPowerViewShadeHandler) thing.getHandler());
         if (thingHandler == null) {
             logger.debug("Shade '{}' handler not initialized", shadeId);
-            pendingShadeInitializations.put(thing.getUID(), new ShadeData());
+            pendingShadeInitializations.put(thing.getUID(), new ShadeDataV1());
             return;
         }
         ThingStatus thingStatus = thingHandler.getThing().getStatus();
@@ -436,7 +437,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             case UNINITIALIZED:
             case INITIALIZING:
                 logger.debug("Shade '{}' handler not yet ready; status: {}", shadeId, thingStatus);
-                pendingShadeInitializations.put(thing.getUID(), new ShadeData());
+                pendingShadeInitializations.put(thing.getUID(), new ShadeDataV1());
                 break;
             case REMOVING:
             case REMOVED:

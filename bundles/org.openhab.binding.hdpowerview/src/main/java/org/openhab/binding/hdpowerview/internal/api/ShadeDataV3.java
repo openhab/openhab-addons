@@ -10,19 +10,26 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.hdpowerview.internal.api.responses;
+package org.openhab.binding.hdpowerview.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.hdpowerview.internal.api.ShadeData;
 
 /**
- * State of a single Shade, as returned by an HD PowerView hub
+ * State of a Shade as returned by an HD PowerView hub of Generation 3.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class Shade {
+public class ShadeDataV3 extends ShadeData {
+    public @Nullable String ptName;
+    public @Nullable String powerType;
+    public @Nullable String bleName;
+    // TODO: public @Nullable Motion motion;
 
-    public @Nullable ShadeData shade;
+    @Override
+    public BatteryKind getBatteryKind() {
+        // TODO Auto-generated method stub
+        return BatteryKind.ERROR_UNKNOWN;
+    }
 }

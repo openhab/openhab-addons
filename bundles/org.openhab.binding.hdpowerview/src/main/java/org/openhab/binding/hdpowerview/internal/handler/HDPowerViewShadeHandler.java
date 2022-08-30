@@ -32,9 +32,11 @@ import org.openhab.binding.hdpowerview.internal.HDPowerViewWebTargets;
 import org.openhab.binding.hdpowerview.internal.api.BatteryKind;
 import org.openhab.binding.hdpowerview.internal.api.CoordinateSystem;
 import org.openhab.binding.hdpowerview.internal.api.Firmware;
+import org.openhab.binding.hdpowerview.internal.api.ShadeData;
+import org.openhab.binding.hdpowerview.internal.api.ShadeDataV1;
 import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
+import org.openhab.binding.hdpowerview.internal.api.ShadePositionV1;
 import org.openhab.binding.hdpowerview.internal.api.SurveyData;
-import org.openhab.binding.hdpowerview.internal.api.responses.Shades.ShadeData;
 import org.openhab.binding.hdpowerview.internal.config.HDPowerViewShadeConfiguration;
 import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDatabase;
 import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDatabase.Capabilities;
@@ -258,7 +260,9 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         if (shadePosition != null) {
             updatePositionStates(shadePosition);
         }
-        updateBatteryStates(shadeData.batteryStatus, shadeData.batteryStrength);
+        if (shadeData instanceof ShadeDataV1) {
+            updateBatteryStates(shadeData.batteryStatus, ((ShadeDataV1) shadeData).batteryStrength);
+        }
         updateSignalStrengthState(shadeData.signalStrength);
     }
 
@@ -334,7 +338,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
     private void updateFirmwareProperties(ShadeData shadeData) {
         Map<String, String> properties = editProperties();
         Firmware shadeFirmware = shadeData.firmware;
-        Firmware motorFirmware = shadeData.motor;
+        Firmware motorFirmware = shadeData instanceof ShadeDataV1 ? ((ShadeDataV1) shadeData).motor : null;
         if (shadeFirmware != null) {
             properties.put(Thing.PROPERTY_FIRMWARE_VERSION, shadeFirmware.toString());
         }
@@ -441,7 +445,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         newPosition = shadeData.positions;
         // if no positions returned, then create a new position
         if (newPosition == null) {
-            newPosition = new ShadePosition();
+            newPosition = new ShadePositionV1();
         }
         Capabilities capabilities = getCapabilitiesOrDefault();
         // set the new position value, and write the positions to the hub
@@ -570,7 +574,8 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
                     break;
                 case BATTERY_LEVEL:
                     shadeData = webTargets.refreshShadeBatteryLevel(shadeId);
-                    updateBatteryStates(shadeData.batteryStatus, shadeData.batteryStrength);
+                    updateBatteryStates(shadeData.batteryStatus,
+                            (shadeData instanceof ShadeDataV1) ? ((ShadeDataV1) shadeData).batteryStrength : -1);
                     break;
                 default:
                     throw new NotSupportedException("Unsupported refresh kind " + kind.toString());

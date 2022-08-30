@@ -27,8 +27,11 @@ import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
+import org.openhab.binding.hdpowerview.internal.api.GsonCustomBuilder;
 import org.openhab.binding.hdpowerview.internal.api.Color;
 import org.openhab.binding.hdpowerview.internal.api.HubFirmware;
+import org.openhab.binding.hdpowerview.internal.api.ShadeData;
+import org.openhab.binding.hdpowerview.internal.api.ShadeDataV1;
 import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
 import org.openhab.binding.hdpowerview.internal.api.SurveyData;
 import org.openhab.binding.hdpowerview.internal.api.UserData;
@@ -50,7 +53,6 @@ import org.openhab.binding.hdpowerview.internal.api.responses.ScheduledEvents;
 import org.openhab.binding.hdpowerview.internal.api.responses.ScheduledEvents.ScheduledEvent;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shade;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades;
-import org.openhab.binding.hdpowerview.internal.api.responses.Shades.ShadeData;
 import org.openhab.binding.hdpowerview.internal.api.responses.Survey;
 import org.openhab.binding.hdpowerview.internal.api.responses.UserDataResponse;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubInvalidResponseException;
@@ -98,7 +100,8 @@ public class HDPowerViewWebTargets {
     private final String repeaters;
     private final String userData;
 
-    private final Gson gson = new Gson();
+    private final Gson gson = GsonCustomBuilder.getGen1();
+
     private final HttpClient httpClient;
 
     /**
@@ -260,7 +263,7 @@ public class HDPowerViewWebTargets {
             if (shadeData == null) {
                 throw new HubInvalidResponseException("Missing 'shade.shade' element");
             }
-            if (Boolean.TRUE.equals(shadeData.timedOut)) {
+            if (shadeData instanceof ShadeDataV1 && Boolean.TRUE.equals(((ShadeDataV1) shadeData).timedOut)) {
                 throw new HubShadeTimeoutException("Timeout when sending request to the shade");
             }
             return shadeData;
@@ -425,7 +428,7 @@ public class HDPowerViewWebTargets {
 
     /**
      * Enables or disables a scheduled event in the hub.
-     * 
+     *
      * @param scheduledEventId id of the scheduled event to be enabled or disabled
      * @param enable true to enable scheduled event, false to disable
      * @throws HubInvalidResponseException if response is invalid
@@ -527,7 +530,7 @@ public class HDPowerViewWebTargets {
 
     /**
      * Enables or disables blinking for a repeater
-     * 
+     *
      * @param repeaterId id of the repeater for which to be enable or disable blinking
      * @param enable true to enable blinking, false to disable
      * @return RepeaterData class instance
