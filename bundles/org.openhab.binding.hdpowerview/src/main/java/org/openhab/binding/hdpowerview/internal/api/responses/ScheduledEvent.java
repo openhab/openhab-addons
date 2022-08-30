@@ -12,17 +12,29 @@
  */
 package org.openhab.binding.hdpowerview.internal.api.responses;
 
+import java.time.DayOfWeek;
+import java.util.EnumSet;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.hdpowerview.internal.api.ShadeData;
 
 /**
- * State of a single Shade, as returned by an HD PowerView hub
+ * Abstract class for scheduled event as returned by an HD PowerView hub.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class Shade {
+public abstract class ScheduledEvent {
+    // fields common to Generation 1/2 and 3 hubs
+    public int id;
+    public int type;
+    public boolean enabled;
+    public int hour;
+    public int minute;
+    public int sceneId;
 
-    public @Nullable ShadeData shade;
+    public abstract EnumSet<DayOfWeek> getDays();
+
+    public abstract int getEventType();
+
+    public abstract int version();
 }
