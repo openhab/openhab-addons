@@ -96,8 +96,7 @@ public class EmbyHandlerFactory extends BaseThingHandlerFactory {
                 logger.warn("No network interface could be found.");
                 return null;
             }
-            logger.debug("The callback url not set so obtained ipAddress of {} from network address server",
-                    ipAddress);
+            logger.debug("The callback url not set so obtained ipAddress of {} from network address server", ipAddress);
             return ipAddress;
         }
     }

@@ -150,7 +150,8 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
         if (connected) {
             updateStatus(ThingStatus.ONLINE);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "The connection to the emby server was closed, binding will attempt to restablish connection.");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "The connection to the emby server was closed, binding will attempt to restablish connection.");
         }
     }
 
@@ -160,6 +161,7 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.trace("Command was received for thing {}, no command processed as the bridge handler is read only", thing.getLabel());
+        logger.trace("Command was received for thing {}, no command processed as the bridge handler is read only",
+                thing.getLabel());
     }
 }

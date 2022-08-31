@@ -157,9 +157,8 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
                                     "Arguments:" + command + "}");
                             break;
                         default:
-                            logger.warn("The channel {} is not a supported channel",
-                                        channelUID.getAsString());
-                        break;
+                            logger.warn("The channel {} is not a supported channel", channelUID.getAsString());
+                            break;
                     }
                 }
 
