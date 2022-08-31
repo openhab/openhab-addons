@@ -74,9 +74,9 @@ public class VizioCommunicator {
         final String baseUrl = "https://" + host + ":" + port;
         urlPowerMode = baseUrl + "/state/device/power_mode";
         urlCurrentAudio = baseUrl + "/menu_native/dynamic/tv_settings/audio";
+        urlChangeVolume = baseUrl + "/menu_native/dynamic/tv_settings/audio/volume";
         urlCurrentInput = baseUrl + "/menu_native/dynamic/tv_settings/devices/current_input";
         urlInputList = baseUrl + "/menu_native/dynamic/tv_settings/devices/name_input";
-        urlChangeVolume = baseUrl + "/menu_native/dynamic/tv_settings/audio/volume";
         urlCurrentApp = baseUrl + "/app/current";
         urlLaunchApp = baseUrl + "/app/launch";
         urlKeyPress = baseUrl + "/key_command/";
@@ -188,7 +188,7 @@ public class VizioCommunicator {
     }
 
     /**
-     * Start the pairing process to obtain an auth code from the TV
+     * Start the pairing process to obtain an auth token from the TV
      *
      * @param the deviceName that is displayed in the TV settings after the device is registered
      * @param the deviceId a unique number that identifies this pairing request
@@ -204,11 +204,11 @@ public class VizioCommunicator {
     }
 
     /**
-     * Finish the pairing process by submitting the code that was displayed on the TV to obtain the auth code
+     * Finish the pairing process by submitting the code that was displayed on the TV to obtain the auth token
      *
      * @param the same deviceId that was used by startPairing()
      * @param the pairingCode that was displayed on the TV
-     * @param the pairing token returned by startPairing()
+     * @param the pairingToken returned by startPairing()
      * @return A PairingComplete response object
      * @throws VizioException
      *

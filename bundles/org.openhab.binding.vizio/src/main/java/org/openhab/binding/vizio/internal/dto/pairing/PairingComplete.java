@@ -22,7 +22,7 @@ import com.google.gson.annotations.SerializedName;
  */
 public class PairingComplete {
     @SerializedName("ITEM")
-    private ItemAuthToken item;
+    private ItemAuthToken item = new ItemAuthToken();
 
     public ItemAuthToken getItem() {
         return item;

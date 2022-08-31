@@ -87,16 +87,19 @@ public class VizioCommandExtension extends AbstractConsoleCommandExtension {
                 console.println("'" + args[0] + "' is not a Vizio thing id");
                 printUsage(console);
             } else {
-                String hostName = (String) thing.getConfiguration().get(PROPERTY_HOST_NAME);
+                String host = (String) thing.getConfiguration().get(PROPERTY_HOST_NAME);
                 BigDecimal port = (BigDecimal) thing.getConfiguration().get(PROPERTY_PORT);
 
-                if (hostName == null || hostName.isEmpty() || port.signum() < 1) {
+                if (host == null || host.isEmpty() || port.signum() < 1) {
                     console.println(
                             "Error! Host Name and Port must be specified in thing configuration before paring.");
                     return;
+                } else if (host.contains(":")) {
+                    // format for ipv6
+                    host = "[" + host + "]";
                 }
 
-                VizioCommunicator communicator = new VizioCommunicator(httpClient, hostName, port.intValue(), EMPTY);
+                VizioCommunicator communicator = new VizioCommunicator(httpClient, host, port.intValue(), EMPTY);
 
                 switch (args[1]) {
                     case START_PAIRING:
@@ -106,14 +109,18 @@ public class VizioCommandExtension extends AbstractConsoleCommandExtension {
                             int pairingDeviceId = rng.nextInt(100000);
                             int pairingToken = communicator.starPairing(args[2], pairingDeviceId).getItem()
                                     .getPairingReqToken();
-                            handler.setPairingDeviceId(pairingDeviceId);
-                            handler.setPairingToken(pairingToken);
+                            if (pairingToken != -1) {
+                                handler.setPairingDeviceId(pairingDeviceId);
+                                handler.setPairingToken(pairingToken);
 
-                            console.println("Pairing has been started!");
-                            console.println(
-                                    "Please note the 4 digit code displayed on the TV and substitute it into the following console command:");
-                            console.println(
-                                    "openhab:vizio " + handler.getThing().getUID() + " " + SUBMIT_CODE + " <NNNN>");
+                                console.println("Pairing has been started!");
+                                console.println(
+                                        "Please note the 4 digit code displayed on the TV and substitute it into the following console command:");
+                                console.println(
+                                        "openhab:vizio " + handler.getThing().getUID() + " " + SUBMIT_CODE + " <NNNN>");
+                            } else {
+                                console.println("Unable to obtain pairing token!");
+                            }
                         } catch (VizioException e) {
                             console.println("Error! Unable to start pairing process.");
                             console.println("Exception was: " + e.getMessage());
@@ -136,15 +143,19 @@ public class VizioCommandExtension extends AbstractConsoleCommandExtension {
                             Integer.valueOf(args[2]);
                             PairingComplete authTokenResp = communicator.submitPairingCode(pairingDeviceId, args[2],
                                     pairingToken);
-                            console.println("Pairing complete!");
-                            console.println("The auth token: " + authTokenResp.getItem().getAuthToken()
-                                    + " was received and will be added to the thing configuration.");
-                            console.println(
-                                    "If the thing is provisioned via a file, the token must be manually added to the thing configuration.");
+                            if (authTokenResp.getItem().getAuthToken() != EMPTY) {
+                                console.println("Pairing complete!");
+                                console.println("The auth token: " + authTokenResp.getItem().getAuthToken()
+                                        + " was received and will be added to the thing configuration.");
+                                console.println(
+                                        "If the thing is provisioned via a file, the token must be manually added to the thing configuration.");
 
-                            handler.setPairingDeviceId(-1);
-                            handler.setPairingToken(-1);
-                            handler.saveAuthToken(authTokenResp.getItem().getAuthToken());
+                                handler.setPairingDeviceId(-1);
+                                handler.setPairingToken(-1);
+                                handler.saveAuthToken(authTokenResp.getItem().getAuthToken());
+                            } else {
+                                console.println("Unable to obtain auth token!");
+                            }
                         } catch (NumberFormatException nfe) {
                             console.println(
                                     "Error! Pairing code must be numeric. Check console command and try again.");

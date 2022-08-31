@@ -21,7 +21,7 @@ import com.google.gson.annotations.SerializedName;
  */
 public class ItemAuthToken {
     @SerializedName("AUTH_TOKEN")
-    private String authToken;
+    private String authToken = "";
 
     public String getAuthToken() {
         return authToken;

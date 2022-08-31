@@ -21,9 +21,9 @@ import com.google.gson.annotations.SerializedName;
  */
 public class ItemPairing {
     @SerializedName("PAIRING_REQ_TOKEN")
-    private Integer pairingReqToken;
+    private Integer pairingReqToken = -1;
     @SerializedName("CHALLENGE_TYPE")
-    private Integer challengeType;
+    private Integer challengeType = -1;
 
     public Integer getPairingReqToken() {
         return pairingReqToken;

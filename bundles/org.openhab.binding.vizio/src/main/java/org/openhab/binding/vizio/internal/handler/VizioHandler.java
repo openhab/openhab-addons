@@ -112,18 +112,21 @@ public class VizioHandler extends BaseThingHandler {
         final Gson gson = new Gson();
         VizioConfiguration config = getConfigAs(VizioConfiguration.class);
 
-        final @Nullable String host = config.hostName;
+        @Nullable
+        String host = config.hostName;
         final @Nullable String authToken = config.authToken;
         @Nullable
         String appListJson = config.appListJson;
 
-        if (host != null && !host.isEmpty()) {
-            this.communicator = new VizioCommunicator(httpClient, host, config.port,
-                    authToken != null ? authToken : EMPTY);
-        } else {
+        if (host == null || host.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Host Name must be specified");
             return;
+        } else if (host.contains(":")) {
+            // format for ipv6
+            host = "[" + host + "]";
         }
+
+        this.communicator = new VizioCommunicator(httpClient, host, config.port, authToken != null ? authToken : EMPTY);
 
         // register trustmanager service to allow httpClient to accept self signed cert from the Vizio TV
         VizioTlsTrustManagerProvider tlsTrustManagerProvider = new VizioTlsTrustManagerProvider(

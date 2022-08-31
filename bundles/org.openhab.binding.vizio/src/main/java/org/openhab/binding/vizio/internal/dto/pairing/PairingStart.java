@@ -22,7 +22,7 @@ import com.google.gson.annotations.SerializedName;
  */
 public class PairingStart {
     @SerializedName("ITEM")
-    private ItemPairing item;
+    private ItemPairing item = new ItemPairing();
 
     public ItemPairing getItem() {
         return item;
