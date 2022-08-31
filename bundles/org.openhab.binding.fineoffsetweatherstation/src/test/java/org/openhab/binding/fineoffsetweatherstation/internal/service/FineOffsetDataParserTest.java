@@ -20,6 +20,7 @@ import org.assertj.core.groups.Tuple;
 import org.bouncycastle.util.encoders.Hex;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.fineoffsetweatherstation.internal.domain.Command;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.ConversionContext;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.Protocol;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.MeasuredValue;
@@ -72,6 +73,34 @@ class FineOffsetDataParserTest {
                         new Tuple("rain-month", "33.5 mm"), new Tuple("rain-year", "410.3 mm"),
                         new Tuple("rain-total", "486.1 mm"), new Tuple("illumination", "74028 lx"),
                         new Tuple("irradiation-uv", "215.3 mW/m²"), new Tuple("uv-index", "5"));
+    }
+
+    @Test
+    void testRainData() {
+        byte[] data = Hex
+                .decode("FFFF5700290E000010000000001100000024120000003113000005030D00000F0064880000017A017B0030");
+        List<MeasuredValue> measuredValues = new FineOffsetDataParser(Protocol.DEFAULT).getRainData(data,
+                new ConversionContext(ZoneOffset.UTC));
+        Assertions.assertThat(measuredValues)
+                .extracting(MeasuredValue::getChannelId, measuredValue -> measuredValue.getState().toString())
+                .containsExactly(new Tuple("rain-rate", "0 mm/h"), new Tuple("rain-day", "0 mm"),
+                        new Tuple("rain-week", "3.6 mm"), new Tuple("rain-month", "4.9 mm"),
+                        new Tuple("rain-year", "128.3 mm"), new Tuple("rain-event", "0 mm"),
+                        new Tuple("rain-hour", "10 mm"));
+    }
+
+    @Test
+    void testRainDataW90() {
+        byte[] data = Hex.decode(
+                "FFFF5700398000008300000009840000000985000000C786000000C7810000870064006400640064006400640064006400640064880900007A02BF");
+        Assertions.assertThat(Command.CMD_READ_RAIN.isResponseValid(data)).isTrue();
+        List<MeasuredValue> measuredValues = new FineOffsetDataParser(Protocol.DEFAULT).getRainData(data,
+                new ConversionContext(ZoneOffset.UTC));
+        Assertions.assertThat(measuredValues)
+                .extracting(MeasuredValue::getChannelId, measuredValue -> measuredValue.getState().toString())
+                .containsExactly(new Tuple("piezo-rain-rate", "0 mm/h"), new Tuple("piezo-rain-day", "0.9 mm"),
+                        new Tuple("piezo-rain-week", "0.9 mm"), new Tuple("piezo-rain-month", "19.9 mm"),
+                        new Tuple("piezo-rain-year", "19.9 mm"), new Tuple("piezo-rain-event", "0 mm"));
     }
 
     @Test
