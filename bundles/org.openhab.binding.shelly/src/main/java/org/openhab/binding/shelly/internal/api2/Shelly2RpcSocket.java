@@ -110,6 +110,8 @@ public class Shelly2RpcSocket {
      */
     public void connect() throws ShellyApiException {
         try {
+            disconnect(); // for safe
+
             URI uri = new URI("ws://" + deviceIp + "/rpc");
             ClientUpgradeRequest request = new ClientUpgradeRequest();
             request.setHeader(HttpHeaders.HOST, deviceIp);
@@ -198,11 +200,14 @@ public class Shelly2RpcSocket {
                     logger.debug("{}: Disconnecting WebSocket", thingName);
                     s.disconnect();
                 }
-                logger.debug("{}: Closing WebSocket", thingName);
                 s.close(StatusCode.NORMAL, "Socket closed");
                 session = null;
+
+                if (client.isStarted()) {
+                    client.stop();
+                }
             }
-        } catch (IOException e) {
+        } catch (/* IOException | */Exception e) {
             logger.debug("{}: Unable to close socket", thingName, e);
         }
     }

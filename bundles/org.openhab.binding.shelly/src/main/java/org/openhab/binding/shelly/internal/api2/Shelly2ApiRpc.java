@@ -794,8 +794,9 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
     @Override
     public void close() {
-        logger.debug("{}: Closing Rpc API (socket is {}", thingName,
+        logger.debug("{}: Closing Rpc API (socket is {})", thingName,
                 rpcSocket.isConnected() ? "connected" : "disconnected");
         disconnect();
+        initialized = false;
     }
 }

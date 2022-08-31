@@ -311,8 +311,8 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             profile.settings.favorites = new ArrayList<>();
             for (int i = 0; i < favorites.length; i++) {
                 ShellyFavPos fav = new ShellyFavPos();
-                fav.name = "" + (i + 1);
                 fav.pos = Integer.parseInt(favorites[i]);
+                fav.name = fav.pos + "%";
                 profile.settings.favorites.add(fav);
             }
             profile.settings.favoritesEnabled = profile.settings.favorites.size() > 0;

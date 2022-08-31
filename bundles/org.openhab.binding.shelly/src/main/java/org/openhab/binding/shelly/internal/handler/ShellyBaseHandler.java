@@ -83,17 +83,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public abstract class ShellyBaseHandler extends BaseThingHandler
         implements ShellyThingInterface, ShellyDeviceListener, ShellyManagerInterface {
-    private class OptionEntry {
-        public ChannelTypeUID uid;
-        public String key;
-        public String value;
-
-        public OptionEntry(ChannelTypeUID uid, String key, String value) {
-            this.uid = uid;
-            this.key = key;
-            this.value = value;
-        }
-    }
 
     protected final Logger logger = LoggerFactory.getLogger(ShellyBaseHandler.class);
     protected final ShellyChannelDefinitions channelDefinitions;
@@ -174,10 +163,6 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     public boolean checkRepresentation(String key) {
         return key.equalsIgnoreCase(getUID()) || key.equalsIgnoreCase(config.deviceIp)
                 || key.equalsIgnoreCase(config.serviceName) || key.equalsIgnoreCase(getThingName());
-    }
-
-    public String getUID() {
-        return getThing().getUID().getAsString();
     }
 
     /**
@@ -296,7 +281,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         // Validate device mode
         String reqMode = thingType.contains("-") ? substringAfter(thingType, "-") : "";
         if (!reqMode.isEmpty() && !tmpPrf.mode.equals(reqMode)) {
-            setThingOffline(ThingStatusDetail.CONFIGURATION_ERROR, "offline.conf-error-wrong-mode");
+            setThingOffline(ThingStatusDetail.CONFIGURATION_ERROR, "offline.conf-error-wrong-mode", tmpPrf.mode,
+                    reqMode);
             return false;
         }
         if (!getString(devInfo.coiot).isEmpty()) {
@@ -593,24 +579,26 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     }
 
     private void addStateOptions(ShellyDeviceProfile prf) {
-
         if (prf.isTRV) {
             String[] profileNames = prf.getValveProfileList(0);
             String channelId = mkChannelId(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_PROFILE);
             logger.debug("{}: Adding TRV profile names to channel description: {}", thingName, profileNames);
             channelDefinitions.clearStateOptions(channelId);
-            for (int i = 0; i < profileNames.length; i++) {
-                channelDefinitions.addStateOption(channelId, "" + (i + 1), profileNames[i]);
+            int fid = 1;
+            for (String name : profileNames) {
+                channelDefinitions.addStateOption(channelId, "" + fid, fid + ": " + name);
+                fid++;
             }
         }
-        if (prf.isRoller && getBool(prf.settings.favoritesEnabled)) {
+        if (prf.isRoller && prf.settings.favorites != null) {
             String channelId = mkChannelId(CHANNEL_GROUP_ROL_CONTROL, CHANNEL_ROL_CONTROL_FAV);
             logger.debug("{}: Adding {} roler favorite(s) to channel description", thingName,
                     prf.settings.favorites.size());
             channelDefinitions.clearStateOptions(channelId);
-            for (int i = 0; i < prf.settings.favorites.size(); i++) {
-                ShellyFavPos fav = prf.settings.favorites.get(i);
-                channelDefinitions.addStateOption(channelId, fav.pos, fav.name);
+            int fid = 1;
+            for (ShellyFavPos fav : prf.settings.favorites) {
+                channelDefinitions.addStateOption(channelId, "" + fid, fid + ": " + fav.name);
+                fid++;
             }
         }
     }
@@ -657,8 +645,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     }
 
     @Override
-    public void setThingOffline(ThingStatusDetail detail, String messageKey) {
-        String message = messages.get(messageKey);
+    public void setThingOffline(ThingStatusDetail detail, String messageKey, String... arguments) {
+        String message = messages.get(messageKey, arguments);
         if (stopping) {
             logger.debug("{}: Thing should go OFFLINE with status {}, but handler is shutting down -> ignore",
                     thingName, message);
@@ -1437,12 +1425,13 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     }
 
     @Override
-    public List<StateOption> getStateOptions(ChannelTypeUID uid) {
+    public @Nullable List<StateOption> getStateOptions(ChannelTypeUID uid) {
         List<StateOption> options = channelDefinitions.getStateOptions(uid);
         if (!options.isEmpty()) {
             logger.debug("{}: Return {} state options for channel uid {}", thingName, options.size(), uid.getId());
+            return options;
         }
-        return options;
+        return null;
     }
 
     protected ShellyDeviceProfile getDeviceProfile() {
@@ -1476,7 +1465,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             statusJob = null;
             logger.debug("{}: Shelly statusJob stopped", thingName);
         }
-
+        api.close();
         profile.initialized = false;
     }
 
@@ -1496,6 +1485,10 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
      */
     public boolean handleDeviceCommand(ChannelUID channelUID, Command command) throws ShellyApiException {
         return false;
+    }
+
+    public String getUID() {
+        return getThing().getUID().getAsString();
     }
 
     /**

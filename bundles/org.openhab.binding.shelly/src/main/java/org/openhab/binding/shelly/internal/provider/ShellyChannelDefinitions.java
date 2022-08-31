@@ -582,10 +582,6 @@ public class ShellyChannelDefinitions {
         stateOptions.addIfAbsent(new OptionEntry(uid, key, value));
     }
 
-    public void addStateOption(String channelId, int key, String value) {
-        addStateOption(channelId, "" + key, value);
-    }
-
     public void clearStateOptions(String channelId) {
         ChannelTypeUID uid = getChannelTypeUID(channelId);
         for (OptionEntry oe : stateOptions) {

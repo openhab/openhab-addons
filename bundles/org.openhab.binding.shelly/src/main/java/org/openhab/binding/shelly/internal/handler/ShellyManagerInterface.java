@@ -46,7 +46,7 @@ public interface ShellyManagerInterface {
 
     public void setThingOnline();
 
-    public void setThingOffline(ThingStatusDetail detail, String messageKey);
+    public void setThingOffline(ThingStatusDetail detail, String messageKey, String... arguments);
 
     public boolean requestUpdates(int requestCount, boolean refreshSettings);
 }
