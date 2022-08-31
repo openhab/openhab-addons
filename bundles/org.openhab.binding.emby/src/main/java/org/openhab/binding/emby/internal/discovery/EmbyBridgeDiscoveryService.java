@@ -143,10 +143,8 @@ public class EmbyBridgeDiscoveryService extends AbstractDiscoveryService {
             // Close the port!
             c.close();
         } catch (IOException ex) {
-
             logger.debug("The exception was: {}", ex.getMessage());
         } finally {
-
         }
     }
 

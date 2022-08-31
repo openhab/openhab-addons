@@ -84,9 +84,7 @@ public class EmbyNowPlayingItem {
                 returnValue = currentProgram.getRunTimeTicks();
                 break;
             case "Recording":
-
                 break;
-
             case "Episode":
             case "Movie":
                 returnValue = runTimeTicks;
