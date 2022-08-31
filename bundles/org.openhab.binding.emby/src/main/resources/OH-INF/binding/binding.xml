@@ -4,6 +4,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
 
 	<name>emby Binding</name>
-	<description>The Emby Binding integrates EMBY, a personal media server https://emby.media/,  support with openHAB, allowing both controlling the player as well as retrieving player status data like the currently played movie title.</description>
+	<description>The Emby Binding integrates EMBY, a personal media server https://emby.media/, support with openHAB,
+		allowing both controlling the player as well as retrieving player status data like the currently played movie title.</description>
 
 </binding:binding>

@@ -81,7 +81,7 @@ public class EmbyHTTPUtils {
             throws EmbyHttpRetryExceeded {
         String response = null;
         int x = 0;
-        
+
         while (true) {
             try {
                 response = doPost(urlAddress, payload);
