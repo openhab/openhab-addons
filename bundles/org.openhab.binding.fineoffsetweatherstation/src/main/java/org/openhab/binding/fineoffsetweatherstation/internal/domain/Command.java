@@ -236,7 +236,7 @@ public enum Command {
     /**
      * read rain data including piezo (wh90)
      */
-    CMD_READ_RAIN((byte) 0x57, 1),
+    CMD_READ_RAIN((byte) 0x57, 2),
 
     /**
      * write rain data

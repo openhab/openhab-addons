@@ -20,6 +20,7 @@ import org.assertj.core.groups.Tuple;
 import org.bouncycastle.util.encoders.Hex;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.fineoffsetweatherstation.internal.domain.Command;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.ConversionContext;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.Protocol;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.MeasuredValue;
@@ -92,6 +93,7 @@ class FineOffsetDataParserTest {
     void testRainDataW90() {
         byte[] data = Hex.decode(
                 "FFFF5700398000008300000009840000000985000000C786000000C7810000870064006400640064006400640064006400640064880900007A02BF");
+        Assertions.assertThat(Command.CMD_READ_RAIN.isResponseValid(data)).isTrue();
         List<MeasuredValue> measuredValues = new FineOffsetDataParser(Protocol.DEFAULT).getRainData(data,
                 new ConversionContext(ZoneOffset.UTC));
         Assertions.assertThat(measuredValues)
