@@ -61,12 +61,13 @@ public class EmbyClientSocket {
 
     private boolean connected = false;
 
-    private final JsonParser parser = new JsonParser();
     private final Gson mapper = new Gson();
     private @Nullable URI uri;
     private @Nullable Session session;
     private WebSocketClient client;
     private int bufferSize;
+    private EmbyWebSocketListener socket;
+    private ClientUpgradeRequest request;
 
     private final EmbyClientSocketEventListener eventHandler;
 
@@ -77,6 +78,8 @@ public class EmbyClientSocket {
         client = new WebSocketClient();
         scheduler = setScheduler;
         bufferSize = setBufferSize;
+        socket = new EmbyWebSocketListener();
+        request = new ClientUpgradeRequest();
     }
 
     /**
@@ -93,8 +96,6 @@ public class EmbyClientSocket {
             client.start();
             client.setMaxTextMessageBufferSize(bufferSize);
         }
-        EmbyWebSocketListener socket = new EmbyWebSocketListener();
-        ClientUpgradeRequest request = new ClientUpgradeRequest();
 
         client.connect(socket, uri, request);
     }
@@ -149,7 +150,7 @@ public class EmbyClientSocket {
         @OnWebSocketMessage
         public void onMessage(String message) {
             logger.debug("Message received from server: {}", message);
-            final JsonObject json = parser.parse(message).getAsJsonObject();
+            final JsonObject json = JsonParser.parseString(message).getAsJsonObject();
             if (json.has("Data")) {
                 JsonArray messageId = json.get("Data").getAsJsonArray();
                 Gson gson = new Gson();

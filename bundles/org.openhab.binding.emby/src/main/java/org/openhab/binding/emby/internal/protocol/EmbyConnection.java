@@ -49,6 +49,7 @@ public class EmbyConnection implements EmbyClientSocketEventListener {
     @Override
     public synchronized void onConnectionClosed() {
         listener.updateConnectionState(false);
+        this.checkConnection();
     }
 
     @Override

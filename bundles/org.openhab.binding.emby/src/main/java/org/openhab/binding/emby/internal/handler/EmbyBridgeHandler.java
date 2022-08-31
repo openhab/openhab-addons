@@ -151,7 +151,7 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
         } else {
             // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "No connection established");
             logger.debug("The connection was closed going to attempt to reestablish connection.");
-            establishConnection();
+            // establishConnection();
         }
     }
 
