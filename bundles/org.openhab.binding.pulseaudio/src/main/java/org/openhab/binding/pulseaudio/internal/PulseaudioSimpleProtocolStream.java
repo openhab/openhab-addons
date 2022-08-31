@@ -43,8 +43,6 @@ public abstract class PulseaudioSimpleProtocolStream {
 
     protected @Nullable Socket clientSocket;
 
-    private boolean isIdle = true;
-
     private @Nullable ScheduledFuture<?> scheduledDisconnection;
 
     public PulseaudioSimpleProtocolStream(PulseaudioHandler pulseaudioHandler, ScheduledExecutorService scheduler) {
@@ -75,7 +73,7 @@ public abstract class PulseaudioSimpleProtocolStream {
      */
     public void disconnect() {
         final Socket clientSocketLocal = clientSocket;
-        if (clientSocketLocal != null && isIdle) {
+        if (clientSocketLocal != null) {
             logger.debug("Simple TCP Stream disconnecting");
             try {
                 clientSocketLocal.close();
@@ -113,9 +111,5 @@ public abstract class PulseaudioSimpleProtocolStream {
     public String getLabel(@Nullable Locale locale) {
         var label = pulseaudioHandler.getThing().getLabel();
         return label != null ? label : pulseaudioHandler.getThing().getUID().getId();
-    }
-
-    public void setIdle(boolean idle) {
-        isIdle = idle;
     }
 }

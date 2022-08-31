@@ -84,7 +84,6 @@ public class PulseAudioAudioSource extends PulseaudioSimpleProtocolStream implem
                     if (!audioFormat.isCompatible(sourceFormat)) {
                         throw new AudioException("Incompatible audio format requested");
                     }
-                    setIdle(true);
                     var pipeOutput = new PipedOutputStream();
                     var pipeInput = new PipedInputStream(pipeOutput, 1024 * 10) {
                         @Override
@@ -96,7 +95,6 @@ public class PulseAudioAudioSource extends PulseaudioSimpleProtocolStream implem
                     registerPipe(pipeOutput);
                     // get raw audio from the pulse audio socket
                     return new PulseAudioStream(sourceFormat, pipeInput, (idle) -> {
-                        setIdle(idle);
                         if (idle) {
                             scheduleDisconnect();
                         } else {
@@ -113,12 +111,10 @@ public class PulseAudioAudioSource extends PulseaudioSimpleProtocolStream implem
                         logger.warn(
                                 "Error while trying to get audio from pulseaudio audio source. Cannot connect to {}:{}, error: {}",
                                 pulseaudioHandler.getHost(), port, e.getMessage());
-                        setIdle(true);
                         throw e;
                     }
                 } catch (InterruptedException ie) {
                     logger.info("Interrupted during source audio connection: {}", ie.getMessage());
-                    setIdle(true);
                     throw new AudioException(ie);
                 }
                 countAttempt++;
@@ -128,7 +124,6 @@ public class PulseAudioAudioSource extends PulseaudioSimpleProtocolStream implem
         } finally {
             scheduleDisconnect();
         }
-        setIdle(true);
         throw new AudioException("Unable to create input stream");
     }
 

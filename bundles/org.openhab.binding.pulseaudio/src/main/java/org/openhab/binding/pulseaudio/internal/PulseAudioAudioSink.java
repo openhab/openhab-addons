@@ -73,7 +73,6 @@ public class PulseAudioAudioSink extends PulseaudioSimpleProtocolStream implemen
                     final Socket clientSocketLocal = clientSocket;
                     if (clientSocketLocal != null) {
                         // send raw audio to the socket and to pulse audio
-                        setIdle(false);
                         Instant start = Instant.now();
                         normalizedPCMStream.transferTo(clientSocketLocal.getOutputStream());
                         if (normalizedPCMStream.getDuration() != -1) { // ensure, if the sound has a duration
@@ -110,7 +109,6 @@ public class PulseAudioAudioSink extends PulseaudioSimpleProtocolStream implemen
         } finally {
             scheduleDisconnect();
         }
-        setIdle(true);
     }
 
     @Override
