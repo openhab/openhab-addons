@@ -138,8 +138,9 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
             EmbyDeviceHandler handler = (EmbyDeviceHandler) thing.getHandler();
             if (handler != null) {
                 handler.handleEvent(playstate, hostname, embyport);
+                logger.trace("Handler was found for thing {}", thing.getLabel());
             } else {
-                logger.debug("There is no handler for thing {}", thing.getLabel());
+                logger.trace("There is no handler for thing {}", thing.getLabel());
             }
         });
     }
@@ -149,9 +150,7 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
         if (connected) {
             updateStatus(ThingStatus.ONLINE);
         } else {
-            // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "No connection established");
-            logger.debug("The connection was closed going to attempt to reestablish connection.");
-            // establishConnection();
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "The connection to the emby server was closed, binding will attempt to restablish connection.");
         }
     }
 
@@ -161,6 +160,6 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("The bridge handler is read only");
+        logger.trace("Command was received for thing {}, no command processed as the bridge handler is read only", thing.getLabel());
     }
 }

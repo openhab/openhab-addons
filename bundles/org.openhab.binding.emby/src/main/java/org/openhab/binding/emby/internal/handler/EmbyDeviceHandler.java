@@ -99,10 +99,10 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
             String commandName;
             if (bridgeHandler != null) {
                 EmbyBridgeHandler handler = bridgeHandler;
-                logger.debug("The channel ID of the received command is: {}", channelUID.getId());
+                logger.trace("The channel ID of the received command is: {}", channelUID.getId());
                 if (!(currentPlayState == null)) {
                     String currentSessionID = currentPlayState.getId();
-                    logger.debug("The device Id is: {}, the received deviceID is: {} ", currentSessionID,
+                    logger.trace("The device Id is: {}, the received deviceID is: {} ", currentSessionID,
                             config.deviceID);
                     switch (channelUID.getId()) {
                         case CHANNEL_CONTROL:
@@ -115,7 +115,7 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
                                     handler.sendCommand(CONTROL_SESSION + currentSessionID + CONTROL_PAUSE);
                                 }
                             } else {
-                                logger.debug("The channel {} receceived a command {}, this command not supported",
+                                logger.warn("The channel {} receceived a command {}, this command is not supported",
                                         channelUID.getAsString(), command.toString());
                             }
                             break;
@@ -133,7 +133,7 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
                             break;
 
                         case CHANNEL_SENDPLAYCOMMAND:
-                            logger.debug("Sending the following payload: {} for device: {}", command.toString(),
+                            logger.trace("Sending the following payload: {} for device: {}", command.toString(),
                                     currentSessionID);
                             handler.sendCommand(CONTROL_SESSION + currentSessionID + CONTROL_SENDPLAY,
                                     command.toString());
@@ -141,7 +141,7 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
 
                         case CHANNEL_GENERALCOMMAND:
                             commandName = channel.getConfiguration().get(CHANNEL_GENERALCOMMAND_NAME).toString();
-                            logger.debug("Sending the following command {} for device: {}", commandName,
+                            logger.trace("Sending the following command {} for device: {}", commandName,
                                     currentSessionID);
                             if (OnOffType.ON.equals(command)) {
                                 handler.sendCommand(
@@ -150,12 +150,16 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
                             break;
                         case CHANNEL_GENERALCOMMANDWITHARGS:
                             commandName = channel.getConfiguration().get(CHANNEL_GENERALCOMMAND_NAME).toString();
-                            logger.debug("Sending the following command {} for device: {}", commandName,
+                            logger.trace("Sending the following command {} for device: {}", commandName,
                                     currentSessionID);
                             handler.sendCommand(
                                     CONTROL_SESSION + currentSessionID + CONTROL_GENERALCOMMAND + commandName,
                                     "Arguments:" + command + "}");
                             break;
+                        default:
+                            logger.warn("The channel {} is not a supported channel",
+                                        channelUID.getAsString());
+                        break;
                     }
                 }
 

@@ -109,7 +109,7 @@ public class EmbyClientSocket {
             try {
                 session.close();
             } catch (Exception e) {
-                logger.debug("Exception during closing the websocket: {}", e.getMessage(), e);
+                logger.debug("Exception during the closing the websocket: {}", e.getMessage(), e);
             }
             session = null;
         }
@@ -133,7 +133,7 @@ public class EmbyClientSocket {
     public class EmbyWebSocketListener {
         @OnWebSocketConnect
         public void onConnect(Session wssession) {
-            logger.debug("Connected to server");
+            logger.info("EMBY client socket is Connected to emby server");
             session = wssession;
             connected = true;
             if (eventHandler != null) {
@@ -141,7 +141,7 @@ public class EmbyClientSocket {
                     try {
                         eventHandler.onConnectionOpened();
                     } catch (Exception e) {
-                        logger.debug("Error handling onConnectionOpened(): {}", e.getMessage(), e);
+                        logger.error("Error handling onConnectionOpened(): {}", e.getMessage(), e);
                     }
                 });
             }
@@ -149,7 +149,7 @@ public class EmbyClientSocket {
 
         @OnWebSocketMessage
         public void onMessage(String message) {
-            logger.debug("Message received from server: {}", message);
+            logger.trace("Message received from server: {}", message);
             final JsonObject json = JsonParser.parseString(message).getAsJsonObject();
             if (json.has("Data")) {
                 JsonArray messageId = json.get("Data").getAsJsonArray();
@@ -157,8 +157,6 @@ public class EmbyClientSocket {
                 Type type = new TypeToken<List<EmbyPlayStateModel>>() {
                 }.getType();
                 List<EmbyPlayStateModel> response = gson.fromJson(messageId, type);
-
-                // need to add internal validation method check but right now will pass all states to handler
                 response.forEach(eventHandler::handleEvent);
             }
         }
@@ -180,7 +178,7 @@ public class EmbyClientSocket {
                     try {
                         eventHandler.onConnectionClosed();
                     } catch (Exception e) {
-                        logger.debug("Error handling onConnectionClosed(): {}", e.getMessage(), e);
+                        logger.error("Error handling onConnectionClosed(): {}", e.getMessage(), e);
                     }
                 });
             }
@@ -194,7 +192,7 @@ public class EmbyClientSocket {
 
     private void sendMessage(String str) throws IOException {
         if (isConnected()) {
-            logger.debug("send message: {}", str);
+            logger.trace("send message: {}", str);
             session.getRemote().sendString(str);
         } else {
             throw new IOException("socket not initialized");
@@ -214,8 +212,6 @@ public class EmbyClientSocket {
 
     public @Nullable JsonElement callMethod(String methodName, @Nullable JsonObject params) {
         JsonObject payloadObject = new JsonObject();
-        // payloadObject.addProperty("jsonrpc", "2.0");
-        // payloadObject.addProperty("id", nextMessageId);
         payloadObject.addProperty("MessageType", methodName);
         if (params != null) {
             payloadObject.add("Data", params);
@@ -235,16 +231,16 @@ public class EmbyClientSocket {
                     return commandResponse.get("result");
                 } else {
                     JsonElement error = commandResponse.get("error");
-                    logger.debug("Error received from server: {}", error);
+                    logger.warn("Error received from server: {}", error);
                     return null;
                 }
             } else {
-                logger.debug("Timeout during callMethod({}, {})", payloadObject.get("MessageType").toString(),
+                logger.warn("Timeout during callMethod({}, {})", payloadObject.get("MessageType").toString(),
                         payloadObject.get("Data").toString());
                 return null;
             }
         } catch (Exception e) {
-            logger.debug("Error during callMethod({}): {}", payloadObject.get("MessageType").toString(), e.getMessage(),
+            logger.error("Error during callMethod({}): {}", payloadObject.get("MessageType").toString(), e.getMessage(),
                     e);
             return null;
         }
