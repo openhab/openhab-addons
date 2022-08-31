@@ -28,8 +28,14 @@ public class ShadeDataV3 extends ShadeData {
     // TODO: public @Nullable Motion motion;
 
     @Override
+    public String getName() {
+        return String.join(" ", super.getName(), ptName);
+    }
+
+    @Override
     public BatteryKind getBatteryKind() {
         // TODO Auto-generated method stub
+        // NOTE: the schema for powerType is not clear; is may be a string? or an integer?
         return BatteryKind.ERROR_UNKNOWN;
     }
 }

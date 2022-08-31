@@ -27,8 +27,9 @@ import org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewTranslationProvider;
 import org.openhab.binding.hdpowerview.internal.api.responses.SceneCollections.SceneCollection;
 import org.openhab.binding.hdpowerview.internal.api.responses.Scenes.Scene;
+import org.openhab.binding.hdpowerview.internal.api.responses.ScheduledEvent;
+import org.openhab.binding.hdpowerview.internal.api.responses.ScheduledEventV1;
 import org.openhab.binding.hdpowerview.internal.api.responses.ScheduledEvents;
-import org.openhab.binding.hdpowerview.internal.api.responses.ScheduledEvents.ScheduledEvent;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
@@ -63,7 +64,7 @@ public class AutomationChannelBuilder extends BaseChannelBuilder {
     /**
      * Creates an {@link AutomationChannelBuilder} for the given {@link HDPowerViewTranslationProvider} and
      * {@link ChannelGroupUID}.
-     * 
+     *
      * @param translationProvider the {@link HDPowerViewTranslationProvider}
      * @param channelGroupUid parent {@link ChannelGroupUID} for created channels
      * @return channel builder
@@ -75,7 +76,7 @@ public class AutomationChannelBuilder extends BaseChannelBuilder {
 
     /**
      * Adds created channels to existing list.
-     * 
+     *
      * @param channels list that channels will be added to
      * @return channel builder
      */
@@ -86,7 +87,7 @@ public class AutomationChannelBuilder extends BaseChannelBuilder {
 
     /**
      * Sets the scenes.
-     * 
+     *
      * @param scenes the scenes
      * @return channel builder
      */
@@ -97,7 +98,7 @@ public class AutomationChannelBuilder extends BaseChannelBuilder {
 
     /**
      * Sets the scene collections.
-     * 
+     *
      * @param sceneCollections the scene collections
      * @return channel builder
      */
@@ -109,7 +110,7 @@ public class AutomationChannelBuilder extends BaseChannelBuilder {
 
     /**
      * Sets the scheduled events.
-     * 
+     *
      * @param scheduledEvents the sceduled events
      * @return channel builder
      */
@@ -129,8 +130,8 @@ public class AutomationChannelBuilder extends BaseChannelBuilder {
             return getChannelList(0);
         }
         List<Channel> channels = getChannelList(scheduledEvents.size());
-        scheduledEvents.stream().forEach(scheduledEvent -> {
-            Channel channel = createChannel(scheduledEvent);
+        scheduledEvents.stream().filter(s -> s instanceof ScheduledEventV1).forEach(scheduledEvent -> {
+            Channel channel = createChannel((ScheduledEventV1) scheduledEvent);
             if (channel != null) {
                 channels.add(channel);
             }
@@ -139,7 +140,7 @@ public class AutomationChannelBuilder extends BaseChannelBuilder {
         return channels;
     }
 
-    private @Nullable Channel createChannel(ScheduledEvent scheduledEvent) {
+    private @Nullable Channel createChannel(ScheduledEventV1 scheduledEvent) {
         String referencedName = getReferencedSceneOrSceneCollectionName(scheduledEvent);
         if (referencedName == null) {
             return null;
@@ -154,7 +155,7 @@ public class AutomationChannelBuilder extends BaseChannelBuilder {
         return channel;
     }
 
-    private @Nullable String getReferencedSceneOrSceneCollectionName(ScheduledEvent scheduledEvent) {
+    private @Nullable String getReferencedSceneOrSceneCollectionName(ScheduledEventV1 scheduledEvent) {
         if (scheduledEvent.sceneId > 0) {
             Map<Integer, Scene> scenes = this.scenes;
             if (scenes == null) {
@@ -189,7 +190,7 @@ public class AutomationChannelBuilder extends BaseChannelBuilder {
         }
     }
 
-    private String getScheduledEventName(String sceneName, ScheduledEvent scheduledEvent) {
+    private String getScheduledEventName(String sceneName, ScheduledEventV1 scheduledEvent) {
         String timeString, daysString;
 
         switch (scheduledEvent.eventType) {

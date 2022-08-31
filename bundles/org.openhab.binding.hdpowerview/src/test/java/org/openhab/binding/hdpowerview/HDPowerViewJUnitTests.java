@@ -23,7 +23,7 @@ import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.hdpowerview.internal.api.GsonCustomBuilder;
+import org.openhab.binding.hdpowerview.internal.HDPowerViewWebTargetsV1;
 import org.openhab.binding.hdpowerview.internal.api.BatteryKind;
 import org.openhab.binding.hdpowerview.internal.api.ShadeData;
 import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
@@ -49,7 +49,7 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public class HDPowerViewJUnitTests {
 
-    private final Gson gson = GsonCustomBuilder.getGen1();
+    private final Gson gson = HDPowerViewWebTargetsV1.getGson();
 
     private <T> T getObjectFromJson(String filename, Class<T> clazz) throws IOException {
         try (InputStream inputStream = HDPowerViewJUnitTests.class.getResourceAsStream(filename)) {

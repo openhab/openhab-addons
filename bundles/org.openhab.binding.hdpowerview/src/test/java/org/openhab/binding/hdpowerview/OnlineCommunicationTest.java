@@ -22,6 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewWebTargets;
+import org.openhab.binding.hdpowerview.internal.HDPowerViewWebTargetsV1;
 import org.openhab.binding.hdpowerview.internal.api.ShadeData;
 import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
 import org.openhab.binding.hdpowerview.internal.api.ShadePositionV1;
@@ -84,7 +85,7 @@ public class OnlineCommunicationTest {
                 fail(e.getMessage());
             }
 
-            HDPowerViewWebTargets webTargets = new HDPowerViewWebTargets(client, hubIPAddress);
+            HDPowerViewWebTargets webTargets = new HDPowerViewWebTargetsV1(client, hubIPAddress);
             assertNotNull(webTargets);
 
             int shadeId = 0;

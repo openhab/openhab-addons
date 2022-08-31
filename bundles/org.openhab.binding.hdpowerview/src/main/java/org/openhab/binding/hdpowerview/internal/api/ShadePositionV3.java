@@ -15,6 +15,7 @@ package org.openhab.binding.hdpowerview.internal.api;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDatabase.Capabilities;
+import org.openhab.core.library.types.PercentType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
@@ -29,12 +30,25 @@ public class ShadePositionV3 extends ShadePosition {
     private @Nullable Double primary;
     private @Nullable Double secondary;
     private @Nullable Double tilt;
-    private @Nullable Double velocity;
+    // private @Nullable Double velocity;
 
     @Override
     public State getState(Capabilities shadeCapabilities, CoordinateSystem posKindCoords) {
-        // TODO
-        return UnDefType.UNDEF;
+        Double value;
+        switch (posKindCoords) {
+            case PRIMARY_POSITION:
+                value = primary;
+                break;
+            case SECONDARY_POSITION:
+                value = secondary;
+                break;
+            case VANE_TILT_POSITION:
+                value = tilt;
+                break;
+            default:
+                value = null;
+        }
+        return value != null ? new PercentType((int) value.doubleValue() * 100) : UnDefType.UNDEF;
     }
 
     @Override
@@ -49,7 +63,19 @@ public class ShadePositionV3 extends ShadePosition {
 
     @Override
     public ShadePositionV3 setPosition(Capabilities shadeCapabilities, CoordinateSystem posKindCoords, int percent) {
-        // TODO
+        Double value = Double.valueOf(percent / 100.0f);
+        switch (posKindCoords) {
+            case PRIMARY_POSITION:
+                primary = value;
+                break;
+            case SECONDARY_POSITION:
+                secondary = value;
+                break;
+            case VANE_TILT_POSITION:
+                tilt = value;
+                break;
+            default:
+        }
         return this;
     }
 }
