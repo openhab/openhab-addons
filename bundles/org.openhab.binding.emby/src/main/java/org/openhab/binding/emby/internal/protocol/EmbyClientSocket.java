@@ -72,10 +72,11 @@ public class EmbyClientSocket {
     private final EmbyClientSocketEventListener eventHandler;
 
     public EmbyClientSocket(EmbyClientSocketEventListener setEventHandler, @Nullable URI setUri,
-            ScheduledExecutorService setScheduler, int setBufferSize) {
+            ScheduledExecutorService setScheduler, int setBufferSize, WebSocketClient sharedWebSocketClient) {
         eventHandler = setEventHandler;
         uri = setUri;
-        client = new WebSocketClient();
+        // client = new WebSocketClient();
+        client = sharedWebSocketClient;
         scheduler = setScheduler;
         bufferSize = setBufferSize;
         socket = new EmbyWebSocketListener();

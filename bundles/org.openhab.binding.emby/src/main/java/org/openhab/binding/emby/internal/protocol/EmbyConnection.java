@@ -18,6 +18,7 @@ import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.emby.internal.EmbyBridgeListener;
 import org.openhab.binding.emby.internal.model.EmbyPlayStateModel;
 import org.slf4j.Logger;
@@ -40,10 +41,12 @@ public class EmbyConnection implements EmbyClientSocketEventListener {
     private @Nullable EmbyClientSocket socket;
 
     private final EmbyBridgeListener listener;
+    private WebSocketClient sharedWebSocketClient;
 
-    public EmbyConnection(EmbyBridgeListener listener) {
+    public EmbyConnection(EmbyBridgeListener listener, WebSocketClient embyWebSocketClient) {
         this.listener = listener;
         this.hostname = "";
+        this.sharedWebSocketClient = embyWebSocketClient;
     }
 
     @Override
@@ -68,7 +71,7 @@ public class EmbyConnection implements EmbyClientSocketEventListener {
             close();
 
             wsUri = new URI("ws", null, hostname, embyport, null, "api_key=" + apiKey, null);
-            socket = new EmbyClientSocket(this, wsUri, scheduler, bufferSize);
+            socket = new EmbyClientSocket(this, wsUri, scheduler, bufferSize, sharedWebSocketClient);
             checkConnection();
         } catch (URISyntaxException e) {
             logger.error("exception during constructing URI host={}, port={}", hostname, embyport, e);

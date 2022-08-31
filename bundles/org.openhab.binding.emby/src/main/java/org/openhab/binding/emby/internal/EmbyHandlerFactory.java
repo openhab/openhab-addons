@@ -30,6 +30,7 @@ import org.openhab.binding.emby.internal.discovery.EmbyClientDiscoveryService;
 import org.openhab.binding.emby.internal.handler.EmbyBridgeHandler;
 import org.openhab.binding.emby.internal.handler.EmbyDeviceHandler;
 import org.openhab.core.config.discovery.DiscoveryService;
+import org.openhab.core.io.net.http.WebSocketFactory;
 import org.openhab.core.net.HttpServiceUtil;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Bridge;
@@ -59,6 +60,7 @@ public class EmbyHandlerFactory extends BaseThingHandlerFactory {
     private Logger logger = LoggerFactory.getLogger(EmbyHandlerFactory.class);
 
     private @NonNullByDefault({}) NetworkAddressService networkAddressService;
+    private @NonNullByDefault({}) WebSocketFactory webSocketClientFactory;
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .unmodifiableSet(Stream.of(THING_TYPE_EMBY_CONTROLLER, THING_TYPE_EMBY_DEVICE).collect(Collectors.toSet()));
@@ -79,7 +81,7 @@ public class EmbyHandlerFactory extends BaseThingHandlerFactory {
         } else if (thingTypeUID.equals(THING_TYPE_EMBY_CONTROLLER)) {
             logger.info("Creating EMBY Bridge Handler for {}.", thing.getLabel());
             EmbyBridgeHandler bridgeHandler = new EmbyBridgeHandler((Bridge) thing, createCallbackUrl(),
-                    createCallbackPort());
+                    createCallbackPort(), webSocketClientFactory.getCommonWebSocketClient());
             registerEmbyClientDiscoveryService(bridgeHandler);
             return bridgeHandler;
         }
@@ -118,6 +120,15 @@ public class EmbyHandlerFactory extends BaseThingHandlerFactory {
 
     protected void unsetNetworkAddressService(NetworkAddressService networkAddressService) {
         this.networkAddressService = null;
+    }
+
+    @Reference
+    protected void setWebSocketClientFactoryService(WebSocketFactory WebSocketFactory) {
+        this.webSocketClientFactory = WebSocketFactory;
+    }
+
+    protected void unsetWebSocketClientFactoryService(WebSocketFactory WebSocketFactory) {
+        this.webSocketClientFactory = null;
     }
 
     @Override

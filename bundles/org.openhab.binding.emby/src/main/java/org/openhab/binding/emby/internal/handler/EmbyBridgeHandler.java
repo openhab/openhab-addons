@@ -23,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.emby.internal.EmbyBridgeListener;
 import org.openhab.binding.emby.internal.discovery.EmbyClientDiscoveryService;
 import org.openhab.binding.emby.internal.model.EmbyPlayStateModel;
@@ -55,12 +56,13 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
     private @Nullable EmbyClientDiscoveryService clientDiscoverySerivce;
     private EmbyHTTPUtils httputils;
 
-    public EmbyBridgeHandler(Bridge bridge, @Nullable String hostAddress, @Nullable String port) {
+    public EmbyBridgeHandler(Bridge bridge, @Nullable String hostAddress, @Nullable String port,
+            WebSocketClient WebSocketClient) {
         super(bridge);
         callbackIpAddress = hostAddress + ":" + port;
         logger.debug("The callback ip address is: {}", callbackIpAddress);
         httputils = new EmbyHTTPUtils(30, (String) this.getConfig().get(API_KEY), getServerAddress());
-        connection = new EmbyConnection(this);
+        connection = new EmbyConnection(this, WebSocketClient);
     }
 
     public void sendCommand(String commandURL, String payload) {
