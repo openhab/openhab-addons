@@ -80,7 +80,7 @@ public class EmbyBridgeDiscoveryService extends AbstractDiscoveryService {
                 DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length,
                         InetAddress.getByName("255.255.255.255"), REQUEST_PORT);
                 c.send(sendPacket);
-                logger.debug(">>> Request packet sent to: {} ({})", REQUEST_MSG, REQUEST_PORT);
+                logger.trace(">>> Request packet sent to: {} ({})", REQUEST_MSG, REQUEST_PORT);
             } catch (Exception e) {
             }
 
@@ -105,12 +105,12 @@ public class EmbyBridgeDiscoveryService extends AbstractDiscoveryService {
                     } catch (Exception e) {
                     }
 
-                    logger.debug(">>> Request packet sent to: {} ; Interface: {}  ", broadcast.getHostAddress(),
+                    logger.trace(">>> Request packet sent to: {} ; Interface: {}  ", broadcast.getHostAddress(),
                             networkInterface.getDisplayName());
                 }
             }
 
-            logger.debug(">>> Done looping over all network interfaces. Now waiting for a reply!");
+            logger.trace(">>> Done looping over all network interfaces. Now waiting for a reply!");
 
             // Wait for a response
             byte[] recvBuf = new byte[15000];

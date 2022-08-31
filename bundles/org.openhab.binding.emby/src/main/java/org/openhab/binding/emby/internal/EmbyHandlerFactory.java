@@ -74,8 +74,10 @@ public class EmbyHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (thingTypeUID.equals(THING_TYPE_EMBY_DEVICE)) {
+            logger.info("Creating EMBY Device Handler for {}.", thing.getLabel());
             return new EmbyDeviceHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_EMBY_CONTROLLER)) {
+            logger.info("Creating EMBY Bridge Handler for {}.", thing.getLabel());
             EmbyBridgeHandler bridgeHandler = new EmbyBridgeHandler((Bridge) thing, createCallbackUrl(),
                     createCallbackPort());
             registerEmbyClientDiscoveryService(bridgeHandler);
@@ -86,6 +88,7 @@ public class EmbyHandlerFactory extends BaseThingHandlerFactory {
 
     private @Nullable String createCallbackUrl() {
         if (callbackUrl != null) {
+            logger.debug("The callback url was set to {}", callbackUrl);
             return callbackUrl;
         } else {
             final String ipAddress = networkAddressService.getPrimaryIpv4HostAddress();
@@ -93,6 +96,8 @@ public class EmbyHandlerFactory extends BaseThingHandlerFactory {
                 logger.warn("No network interface could be found.");
                 return null;
             }
+            logger.debug("The callback url not set so obtained ipAddress of {} from network address server",
+                    ipAddress);
             return ipAddress;
         }
     }
