@@ -12,7 +12,7 @@
 				<label>API Key</label>
 				<description>This is the API key generated from EMBY used for Authorization.</description>
 			</parameter>
-			<parameter name="buffer_size" type="integer">
+			<parameter name="bufferSize" type="integer">
 				<label>Web Socket Buffer Size</label>
 				<description>Here you can define a custom size for the websocket buffer size. Default is 10,0000</description>
 				<advanced>true</advanced>

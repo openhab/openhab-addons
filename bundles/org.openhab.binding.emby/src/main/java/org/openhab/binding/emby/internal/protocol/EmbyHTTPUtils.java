@@ -81,11 +81,11 @@ public class EmbyHTTPUtils {
             throws EmbyHttpRetryExceeded {
         String response = null;
         int x = 0;
-        Boolean loop = true;
-        while (loop) {
+        
+        while (true) {
             try {
                 response = doPost(urlAddress, payload);
-                loop = false;
+                break;
             } catch (IOException e) {
                 x++;
                 if (x > retryCount) {

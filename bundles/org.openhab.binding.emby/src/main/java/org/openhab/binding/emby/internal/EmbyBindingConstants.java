@@ -59,7 +59,7 @@ public class EmbyBindingConstants {
 
     public static final String HOST_PARAMETER = "ipAddress";
     public static final String WS_PORT_PARAMETER = "port";
-    public static final String WS_BUFFER_SIZE = "buffer_size";
+    public static final String WS_BUFFER_SIZE = "bufferSize";
     public static final String HTTP_PORT_PARAMETER = "httpPort";
     public static final String HTTP_USER_PARAMETER = "httpUser";
     public static final String HTTP_PASSWORD_PARAMETER = "httpPassword";
