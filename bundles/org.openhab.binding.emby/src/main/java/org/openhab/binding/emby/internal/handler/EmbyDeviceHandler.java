@@ -353,7 +353,7 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
                         e.getMessage());
             }
         } else {
-            logger.debug("{} does not equal {} the event is for device named: {} ", playstate.getDeviceId(),
+            logger.trace("{} does not equal {} the event is for device named: {} ", playstate.getDeviceId(),
                     config.deviceID, playstate.getDeviceName());
         }
     }
