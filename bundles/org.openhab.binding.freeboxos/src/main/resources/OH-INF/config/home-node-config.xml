@@ -17,12 +17,12 @@
 		</parameter>
 		<parameter name="stopSlotId" type="integer" required="true">
 			<label>STOP Slot ID</label>
-			<description>Id of the UP Slot</description>
+			<description>Id of the STOP Slot</description>
 			<default>1</default>
 		</parameter>
 		<parameter name="downSlotId" type="integer" required="true">
 			<label>DOWN Slot ID</label>
-			<description>Id of the UP Slot</description>
+			<description>Id of the DOWN Slot</description>
 			<default>2</default>
 		</parameter>
 		<parameter name="stateSignalId" type="integer" required="true">
