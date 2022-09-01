@@ -30,9 +30,10 @@ public class GatewayInfo {
 
     public HubFirmware getHubFirmware() {
         Firmware firmware = new Firmware();
+        String fwVersion = this.fwVersion;
         if (fwVersion != null) {
             @NonNull
-            String[] parts = fwVersion.split(".");
+            String[] parts = fwVersion.split("\\.");
             if (parts.length > 0) {
                 firmware.revision = Integer.valueOf(parts[0]);
             }

@@ -40,7 +40,6 @@ import org.openhab.binding.hdpowerview.internal.api.responses.Scenes;
 import org.openhab.binding.hdpowerview.internal.api.responses.ScheduledEvents;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shade;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades;
-import org.openhab.binding.hdpowerview.internal.api.v1.ShadeDataV1;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubInvalidResponseException;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubMaintenanceException;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubProcessingException;
@@ -123,9 +122,6 @@ public abstract class HDPowerViewWebTargets {
             ShadeData shadeData = shade.shade;
             if (shadeData == null) {
                 throw new HubInvalidResponseException("Missing 'shade.shade' element");
-            }
-            if (shadeData instanceof ShadeDataV1 && Boolean.TRUE.equals(((ShadeDataV1) shadeData).timedOut)) {
-                throw new HubShadeTimeoutException("Timeout when sending request to the shade");
             }
             return shadeData;
         } catch (JsonParseException e) {

@@ -41,4 +41,6 @@ public abstract class ShadeData {
     }
 
     public abstract BatteryKind getBatteryKind();
+
+    public abstract int version();
 }

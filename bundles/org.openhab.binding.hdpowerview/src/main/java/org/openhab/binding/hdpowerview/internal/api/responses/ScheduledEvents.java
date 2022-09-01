@@ -38,5 +38,4 @@ public class ScheduledEvents {
 
     public @Nullable List<ScheduledEvent> scheduledEventData;
     public @Nullable List<Integer> scheduledEventIds;
-
 }

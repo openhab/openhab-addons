@@ -39,4 +39,9 @@ public class ShadeDataV1 extends ShadeData {
     public BatteryKind getBatteryKind() {
         return BatteryKind.fromString(batteryKind);
     }
+
+    @Override
+    public int version() {
+        return 1;
+    }
 }

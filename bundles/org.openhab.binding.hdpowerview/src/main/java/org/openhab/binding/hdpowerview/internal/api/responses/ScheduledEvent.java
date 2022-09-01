@@ -33,4 +33,8 @@ public abstract class ScheduledEvent {
     public int minute;
 
     public abstract EnumSet<DayOfWeek> getDays();
+
+    public abstract int getEventType();
+
+    public abstract int version();
 }
