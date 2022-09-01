@@ -20,7 +20,8 @@ import org.eclipse.jdt.annotation.Nullable;
 /**
  * Abstract class for state of a Shade as returned by an HD PowerView hub.
  *
- * @author Andrew Fiddian-Green - Initial contribution
+ * @author Andy Lintner - Initial contribution
+ * @author Andrew Fiddian-Green - Refactored into separate class
  */
 @NonNullByDefault
 public abstract class ShadeData {

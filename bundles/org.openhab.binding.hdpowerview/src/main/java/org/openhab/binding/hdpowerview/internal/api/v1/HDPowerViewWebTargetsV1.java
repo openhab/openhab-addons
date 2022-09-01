@@ -12,11 +12,9 @@
  */
 package org.openhab.binding.hdpowerview.internal.api.v1;
 
-import java.lang.reflect.Type;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewWebTargets;
@@ -36,10 +34,10 @@ import org.openhab.binding.hdpowerview.internal.api.responses.FirmwareVersion;
 import org.openhab.binding.hdpowerview.internal.api.responses.Repeater;
 import org.openhab.binding.hdpowerview.internal.api.responses.RepeaterData;
 import org.openhab.binding.hdpowerview.internal.api.responses.Repeaters;
+import org.openhab.binding.hdpowerview.internal.api.responses.Scene;
 import org.openhab.binding.hdpowerview.internal.api.responses.SceneCollections;
 import org.openhab.binding.hdpowerview.internal.api.responses.SceneCollections.SceneCollection;
 import org.openhab.binding.hdpowerview.internal.api.responses.Scenes;
-import org.openhab.binding.hdpowerview.internal.api.responses.Scenes.Scene;
 import org.openhab.binding.hdpowerview.internal.api.responses.ScheduledEvent;
 import org.openhab.binding.hdpowerview.internal.api.responses.ScheduledEvents;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades;
@@ -50,10 +48,6 @@ import org.openhab.binding.hdpowerview.internal.exceptions.HubMaintenanceExcepti
 import org.openhab.binding.hdpowerview.internal.exceptions.HubProcessingException;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubShadeTimeoutException;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
@@ -88,8 +82,14 @@ public class HDPowerViewWebTargetsV1 extends HDPowerViewWebTargets {
     public HDPowerViewWebTargetsV1(HttpClient httpClient, String ipAddress) {
         super(httpClient, ipAddress);
 
-        String base = "http://" + ipAddress + "/api/";
+        // initialize the de-serializer target classes
+        shadeDataTargetClass = ShadeDataV1.class;
+        shadePositionTargetClass = ShadePositionV1.class;
+        scheduledEventTargetClass = ScheduledEventV1.class;
+        sceneTargetClass = SceneV1.class;
 
+        // initialize the urls
+        String base = "http://" + ipAddress + "/api/";
         shades = base + "shades/";
         firmwareVersion = base + "fwversion";
         sceneActivate = base + "scenes";
@@ -603,48 +603,5 @@ public class HDPowerViewWebTargetsV1 extends HDPowerViewWebTargets {
         String jsonResponse = invoke(HttpMethod.GET, shades + Integer.toString(shadeId),
                 Query.of("updateBatteryLevel", Boolean.toString(true)), null);
         return shadeDataFromJson(jsonResponse);
-    }
-
-    private static class ShadeDataDeserializer implements JsonDeserializer<ShadeData> {
-        @Override
-        public @Nullable ShadeData deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
-                throws JsonParseException {
-            JsonObject jsonObject = json.getAsJsonObject();
-            return context.deserialize(jsonObject, ShadeDataV1.class);
-        }
-    }
-
-    private static class ShadePositionDeserializer implements JsonDeserializer<ShadePosition> {
-        @Override
-        public @Nullable ShadePosition deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
-                throws JsonParseException {
-            JsonObject jsonObject = json.getAsJsonObject();
-            return context.deserialize(jsonObject, ShadePositionV1.class);
-        }
-    }
-
-    private static class ScheduledEventDeserializer implements JsonDeserializer<ScheduledEvent> {
-        @Override
-        public @Nullable ScheduledEvent deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
-                throws JsonParseException {
-            JsonObject jsonObject = json.getAsJsonObject();
-            return context.deserialize(jsonObject, ScheduledEventV1.class);
-        }
-    }
-
-    @Override
-    protected Gson getGsonObject() {
-        return getGson();
-    }
-
-    /**
-     * Public static method to get Gson object. e.g. used for JUnit testing.
-     *
-     * @return an instance of the Gson class.
-     */
-    public static Gson getGson() {
-        return new GsonBuilder().registerTypeAdapter(ShadeData.class, new ShadeDataDeserializer())
-                .registerTypeAdapter(ShadePosition.class, new ShadePositionDeserializer())
-                .registerTypeAdapter(ScheduledEvent.class, new ScheduledEventDeserializer()).create();
     }
 }
