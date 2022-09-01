@@ -110,7 +110,7 @@ The *basic_shutter* thing requires the following configuration parameters:
 | Node ID          | nodeId          | Id of the Home Node.                                             | Yes      |         |
 | UP Slot ID       | upSlotId        | Id of the UP Slot.                                               | Yes      | 0       |
 | STOP Slot ID     | stopSlotId      | Id of the STOP Slot.                                             | Yes      | 1       |
-| DOWN Slot ID     | downSlotId      | Id of the UP Slot.                                               | Yes      | 2       |
+| DOWN Slot ID     | downSlotId      | Id of the DOWN Slot.                                             | Yes      | 2       |
 | STATE Signal ID  | stateSignalId   | Id of the STATE Signal.                                          | Yes      | 3       |
 
 ## Authentication
