@@ -18,6 +18,7 @@ import java.util.EnumSet;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hdpowerview.internal.api.responses.ScheduledEvent;
+import org.openhab.binding.hdpowerview.internal.api.responses.ScheduledEvents;
 
 /**
  * class for scheduled event as returned by an HD PowerView Generation 3 hub.
@@ -28,6 +29,20 @@ import org.openhab.binding.hdpowerview.internal.api.responses.ScheduledEvent;
 public class ScheduledEventV3 extends ScheduledEvent {
     // fields specific to Generation 3
     public int days;
+
+    private static final int MON = 0x01;
+    private static final int TUE = 0x02;
+    private static final int WED = 0x04;
+    private static final int THU = 0x08;
+    private static final int FRI = 0x10;
+    private static final int SAT = 0x20;
+    private static final int SUN = 0x40;
+
+    private static final int CLOCK_BASED = 0;
+    private static final int BEFORE_SUNRISE = 2;
+    private static final int BEFORE_SUNSET = 6;
+    private static final int AFTER_SUNRISE = 10;
+    private static final int AFTER_SUNSET = 14;
 
     @Override
     public boolean equals(@Nullable Object o) {
@@ -59,27 +74,51 @@ public class ScheduledEventV3 extends ScheduledEvent {
     @Override
     public EnumSet<DayOfWeek> getDays() {
         EnumSet<DayOfWeek> daySet = EnumSet.noneOf(DayOfWeek.class);
-        if ((days & 0x01) != 0) {
+        if ((days & MON) != 0) {
             daySet.add(DayOfWeek.MONDAY);
         }
-        if ((days & 0x02) != 0) {
+        if ((days & TUE) != 0) {
             daySet.add(DayOfWeek.TUESDAY);
         }
-        if ((days & 0x04) != 0) {
+        if ((days & WED) != 0) {
             daySet.add(DayOfWeek.WEDNESDAY);
         }
-        if ((days & 0x08) != 0) {
+        if ((days & THU) != 0) {
             daySet.add(DayOfWeek.THURSDAY);
         }
-        if ((days & 0x10) != 0) {
+        if ((days & FRI) != 0) {
             daySet.add(DayOfWeek.FRIDAY);
         }
-        if ((days & 0x20) != 0) {
+        if ((days & SAT) != 0) {
             daySet.add(DayOfWeek.SATURDAY);
         }
-        if ((days & 0x40) != 0) {
+        if ((days & SUN) != 0) {
             daySet.add(DayOfWeek.SUNDAY);
         }
         return daySet;
+    }
+
+    @Override
+    public int getEventType() {
+        switch (type) {
+            case CLOCK_BASED:
+                return ScheduledEvents.SCHEDULED_EVENT_TYPE_TIME;
+
+            case BEFORE_SUNRISE:
+            case AFTER_SUNRISE:
+                // TODO handle before and after sunrise cases separately
+                return ScheduledEvents.SCHEDULED_EVENT_TYPE_SUNRISE;
+
+            case BEFORE_SUNSET:
+            case AFTER_SUNSET:
+                // TODO handle before and after sunset cases separately
+                return ScheduledEvents.SCHEDULED_EVENT_TYPE_SUNSET;
+        }
+        return 0;
+    }
+
+    @Override
+    public int version() {
+        return 3;
     }
 }

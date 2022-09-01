@@ -102,7 +102,15 @@ public class HDPowerViewWebTargetsV1 extends HDPowerViewWebTargets {
         scheduledEvents = base + "scheduledevents";
         repeaters = base + "repeaters/";
         userData = base + "userdata";
+    }
 
+    @Override
+    protected ShadeData shadeDataFromJson(String json) throws HubInvalidResponseException, HubShadeTimeoutException {
+        ShadeData shadeData = super.shadeDataFromJson(json);
+        if (shadeData.version() == 1 && Boolean.TRUE.equals(((ShadeDataV1) shadeData).timedOut)) {
+            throw new HubShadeTimeoutException("Timeout when sending request to the shade");
+        }
+        return shadeData;
     }
 
     /**

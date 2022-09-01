@@ -38,11 +38,13 @@ import org.openhab.binding.hdpowerview.internal.api.responses.SceneCollections;
 import org.openhab.binding.hdpowerview.internal.api.responses.SceneCollections.SceneCollection;
 import org.openhab.binding.hdpowerview.internal.api.responses.Scenes;
 import org.openhab.binding.hdpowerview.internal.api.responses.Scenes.Scene;
-import org.openhab.binding.hdpowerview.internal.api.v1.HDPowerViewWebTargetsV1;
-import org.openhab.binding.hdpowerview.internal.api.v1.ShadeDataV1;
 import org.openhab.binding.hdpowerview.internal.api.responses.ScheduledEvent;
 import org.openhab.binding.hdpowerview.internal.api.responses.ScheduledEvents;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades;
+import org.openhab.binding.hdpowerview.internal.api.v1.HDPowerViewWebTargetsV1;
+import org.openhab.binding.hdpowerview.internal.api.v1.ShadeDataV1;
+import org.openhab.binding.hdpowerview.internal.api.v3.HDPowerViewWebTargetsV3;
+import org.openhab.binding.hdpowerview.internal.api.v3.ShadeDataV3;
 import org.openhab.binding.hdpowerview.internal.builders.AutomationChannelBuilder;
 import org.openhab.binding.hdpowerview.internal.builders.SceneChannelBuilder;
 import org.openhab.binding.hdpowerview.internal.builders.SceneGroupChannelBuilder;
@@ -103,6 +105,8 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
     private List<ScheduledEvent> scheduledEventCache = new CopyOnWriteArrayList<>();
     private Instant userDataUpdated = Instant.MIN;
     private Boolean deprecatedChannelsCreated = false;
+
+    private boolean isGeneration1 = true; // TODO auto initialize this field or via config parameter
 
     private final ChannelTypeUID sceneChannelTypeUID = new ChannelTypeUID(HDPowerViewBindingConstants.BINDING_ID,
             HDPowerViewBindingConstants.CHANNELTYPE_SCENE_ACTIVATE);
@@ -166,8 +170,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         }
 
         pendingShadeInitializations.clear();
-        // TODO instantiate HDPowerViewWebTargetsV1 resp. HDPowerViewWebTargetsV3
-        webTargets = new HDPowerViewWebTargetsV1(httpClient, host);
+        webTargets = newWebTargets(host);
         refreshInterval = config.refresh;
         hardRefreshPositionInterval = config.hardRefresh;
         hardRefreshBatteryLevelInterval = config.hardRefreshBatteryLevel;
@@ -425,7 +428,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         HDPowerViewShadeHandler thingHandler = ((HDPowerViewShadeHandler) thing.getHandler());
         if (thingHandler == null) {
             logger.debug("Shade '{}' handler not initialized", shadeId);
-            pendingShadeInitializations.put(thing.getUID(), new ShadeDataV1());
+            pendingShadeInitializations.put(thing.getUID(), newShadeData());
             return;
         }
         ThingStatus thingStatus = thingHandler.getThing().getStatus();
@@ -439,7 +442,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             case UNINITIALIZED:
             case INITIALIZING:
                 logger.debug("Shade '{}' handler not yet ready; status: {}", shadeId, thingStatus);
-                pendingShadeInitializations.put(thing.getUID(), new ShadeDataV1());
+                pendingShadeInitializations.put(thing.getUID(), newShadeData());
                 break;
             case REMOVING:
             case REMOVED:
@@ -677,5 +680,14 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
                 logger.debug("Shade '{}' handler not initialized", shadeId);
             }
         }
+    }
+
+    private HDPowerViewWebTargets newWebTargets(String host) {
+        return isGeneration1 ? new HDPowerViewWebTargetsV1(httpClient, host)
+                : new HDPowerViewWebTargetsV3(httpClient, host);
+    }
+
+    private ShadeData newShadeData() {
+        return isGeneration1 ? new ShadeDataV1() : new ShadeDataV3();
     }
 }

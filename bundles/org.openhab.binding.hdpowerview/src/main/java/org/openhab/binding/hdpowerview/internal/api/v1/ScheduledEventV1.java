@@ -103,4 +103,14 @@ public class ScheduledEventV1 extends ScheduledEvent {
         }
         return days;
     }
+
+    @Override
+    public int getEventType() {
+        return eventType;
+    }
+
+    @Override
+    public int version() {
+        return 1;
+    }
 }

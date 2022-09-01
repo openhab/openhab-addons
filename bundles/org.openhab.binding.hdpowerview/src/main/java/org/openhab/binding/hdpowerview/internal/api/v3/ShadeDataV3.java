@@ -40,4 +40,9 @@ public class ShadeDataV3 extends ShadeData {
         // NOTE: the schema for powerType is not clear; is may be a string? or an integer?
         return BatteryKind.ERROR_UNKNOWN;
     }
+
+    @Override
+    public int version() {
+        return 3;
+    }
 }
