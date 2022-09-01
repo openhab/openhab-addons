@@ -1,9 +1,22 @@
+/**
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.freeboxos.internal.config;
 
 import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.THING_TYPE_HOME_BASIC_SHUTTER;
 
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.home.HomeNode;
@@ -13,37 +26,56 @@ import org.openhab.core.thing.ThingUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * The {@link NodeConfiguration} is responsible for holding
+ * configuration informations associated to a Freebox Home thing type
+ *
+ * @author ben12 - Initial contribution
+ */
+@NonNullByDefault
 public class NodeConfiguration {
-    private static final Logger LOGGER = LoggerFactory.getLogger(NodeConfiguration.class);
 
     public static final String NODE_ID = "nodeId";
 
+    private static final NodeConfigurationBuilder BUILDER_INSTANCE = new NodeConfigurationBuilder();
+
     public int nodeId = 1;
 
-    public static @Nullable DiscoveryResultBuilder configure(ThingUID bridgeUID, HomeNode node) {
-        DiscoveryResultBuilder discoveryResultBuilder = null;
-        String category = node.getCategory();
-        if (category != null) {
-            try {
-                switch (category) {
-                    case "basic_shutter":
-                        ThingUID thingUID = new ThingUID(THING_TYPE_HOME_BASIC_SHUTTER, bridgeUID,
-                                Integer.toString(node.getId()));
-                        discoveryResultBuilder = DiscoveryResultBuilder.create(thingUID);
-                        BasicShutter.configure(discoveryResultBuilder, node);
-                        break;
-                    default:
-                        break;
+    public static NodeConfigurationBuilder builder() {
+        return BUILDER_INSTANCE;
+    }
+
+    public static class NodeConfigurationBuilder {
+        private final Logger logger = LoggerFactory.getLogger(NodeConfigurationBuilder.class);
+
+        private NodeConfigurationBuilder() {
+        }
+
+        public @Nullable DiscoveryResultBuilder configure(ThingUID bridgeUID, HomeNode node) {
+            DiscoveryResultBuilder discoveryResultBuilder = null;
+            String category = node.getCategory();
+            if (category != null) {
+                try {
+                    switch (category) {
+                        case "basic_shutter":
+                            ThingUID thingUID = new ThingUID(THING_TYPE_HOME_BASIC_SHUTTER, bridgeUID,
+                                    Integer.toString(node.getId()));
+                            discoveryResultBuilder = DiscoveryResultBuilder.create(thingUID);
+                            BasicShutter.configure(discoveryResultBuilder, node);
+                            break;
+                        default:
+                            break;
+                    }
+                } catch (FreeboxException e) {
+                    logger.warn("Error while requesting data for home things discovery : {}", e.getMessage());
+                    discoveryResultBuilder = null;
                 }
-            } catch (FreeboxException e) {
-                LOGGER.warn("Error while requesting data for home things discovery : {}", e.getMessage());
-                discoveryResultBuilder = null;
             }
+            if (discoveryResultBuilder != null) {
+                discoveryResultBuilder.withProperty(NODE_ID, node.getId());
+            }
+            return discoveryResultBuilder;
         }
-        if (discoveryResultBuilder != null) {
-            discoveryResultBuilder.withProperty(NODE_ID, node.getId());
-        }
-        return discoveryResultBuilder;
     }
 
     public static class BasicShutter extends NodeConfiguration {
@@ -63,8 +95,9 @@ public class NodeConfiguration {
             List<HomeNodeEndpoint> showEndpoints = homeNode.getShowEndpoints();
             if (showEndpoints != null) {
                 for (HomeNodeEndpoint endpoint : showEndpoints) {
-                    if ("slot".equals(endpoint.getEpType())) {
-                        switch (endpoint.getName()) {
+                    String name = endpoint.getName();
+                    if ("slot".equals(endpoint.getEpType()) && name != null) {
+                        switch (name) {
                             case "up":
                                 discoveryResultBuilder.withProperty(UP_SLOT_ID, endpoint.getId());
                                 break;
@@ -75,9 +108,9 @@ public class NodeConfiguration {
                                 discoveryResultBuilder.withProperty(DOWN_SLOT_ID, endpoint.getId());
                                 break;
                             default:
-                                throw new FreeboxException("Unknown endpoint name {}", endpoint.getName());
+                                throw new FreeboxException("Unknown endpoint name {}", name);
                         }
-                    } else if ("signal".equals(endpoint.getEpType()) && "state".equals(endpoint.getName())) {
+                    } else if ("signal".equals(endpoint.getEpType()) && "state".equals(name)) {
                         discoveryResultBuilder.withProperty(STATE_SIGNAL_ID, endpoint.getId());
                     }
                 }
@@ -86,5 +119,4 @@ public class NodeConfiguration {
             }
         }
     }
-
 }

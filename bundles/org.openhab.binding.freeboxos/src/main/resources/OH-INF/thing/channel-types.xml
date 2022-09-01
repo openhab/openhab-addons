@@ -337,11 +337,11 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-    <channel-type id="basic-shutter">
-        <item-type>Rollershutter</item-type>
-        <label>Shutter</label>
-        <description>Shutter command</description>
-        <category>Blinds</category>
-    </channel-type>
+	<channel-type id="basic-shutter">
+		<item-type>Rollershutter</item-type>
+		<label>Shutter</label>
+		<description>Shutter command</description>
+		<category>Blinds</category>
+	</channel-type>
 
 </thing:thing-descriptions>

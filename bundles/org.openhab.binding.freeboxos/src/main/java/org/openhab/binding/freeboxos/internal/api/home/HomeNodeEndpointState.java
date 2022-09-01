@@ -1,3 +1,15 @@
+/**
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.freeboxos.internal.api.home;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -6,6 +18,12 @@ import org.openhab.binding.freeboxos.internal.api.Response;
 
 import com.google.gson.JsonElement;
 
+/**
+ * The {@link HomeNodeEndpointState} is a Java class used to map the
+ * structure used by the home API
+ *
+ * @author ben12 - Initial contribution
+ */
 @NonNullByDefault
 public class HomeNodeEndpointState {
     public static class HomeNodeEndpointStateResponse extends Response<HomeNodeEndpointState> {
@@ -30,15 +48,17 @@ public class HomeNodeEndpointState {
     }
 
     public @Nullable Boolean asBoolean() {
-        if (value != null && value.isJsonPrimitive() && value.getAsJsonPrimitive().isBoolean()) {
-            return value.getAsBoolean();
+        final JsonElement theValue = value;
+        if (theValue != null && theValue.isJsonPrimitive() && theValue.getAsJsonPrimitive().isBoolean()) {
+            return theValue.getAsBoolean();
         }
         return null;
     }
 
     public @Nullable Integer asInt() {
-        if (value != null && value.isJsonPrimitive() && value.getAsJsonPrimitive().isNumber()) {
-            return value.getAsInt();
+        final JsonElement theValue = value;
+        if (theValue != null && theValue.isJsonPrimitive() && theValue.getAsJsonPrimitive().isNumber()) {
+            return theValue.getAsInt();
         }
         return null;
     }
