@@ -18,7 +18,7 @@ import static org.openhab.binding.hdpowerview.internal.api.CoordinateSystem.*;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
-import org.openhab.binding.hdpowerview.internal.api.ShadePositionV1;
+import org.openhab.binding.hdpowerview.internal.api.v1.ShadePositionV1;
 import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDatabase;
 import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDatabase.Capabilities;
 import org.openhab.core.library.types.PercentType;

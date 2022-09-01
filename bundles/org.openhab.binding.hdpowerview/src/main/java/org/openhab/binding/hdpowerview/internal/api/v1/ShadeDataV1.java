@@ -10,10 +10,13 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.hdpowerview.internal.api;
+package org.openhab.binding.hdpowerview.internal.api.v1;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.hdpowerview.internal.api.BatteryKind;
+import org.openhab.binding.hdpowerview.internal.api.Firmware;
+import org.openhab.binding.hdpowerview.internal.api.ShadeData;
 
 /**
  * State of a Shade as returned by an HD PowerView hub of Generation 1 or 2.

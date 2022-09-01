@@ -23,7 +23,6 @@ import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.hdpowerview.internal.HDPowerViewWebTargetsV1;
 import org.openhab.binding.hdpowerview.internal.api.BatteryKind;
 import org.openhab.binding.hdpowerview.internal.api.ShadeData;
 import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
@@ -31,6 +30,7 @@ import org.openhab.binding.hdpowerview.internal.api.responses.SceneCollections;
 import org.openhab.binding.hdpowerview.internal.api.responses.SceneCollections.SceneCollection;
 import org.openhab.binding.hdpowerview.internal.api.responses.Scenes;
 import org.openhab.binding.hdpowerview.internal.api.responses.Scenes.Scene;
+import org.openhab.binding.hdpowerview.internal.api.v1.HDPowerViewWebTargetsV1;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades;
 import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDatabase;
 import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDatabase.Capabilities;

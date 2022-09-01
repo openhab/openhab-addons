@@ -10,13 +10,14 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.hdpowerview.internal.api.responses;
+package org.openhab.binding.hdpowerview.internal.api.v3;
 
 import java.time.DayOfWeek;
 import java.util.EnumSet;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.hdpowerview.internal.api.responses.ScheduledEvent;
 
 /**
  * class for scheduled event as returned by an HD PowerView Generation 3 hub.

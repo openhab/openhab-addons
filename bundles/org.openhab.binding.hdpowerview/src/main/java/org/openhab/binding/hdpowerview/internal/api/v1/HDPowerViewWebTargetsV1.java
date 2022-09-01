@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.hdpowerview.internal;
+package org.openhab.binding.hdpowerview.internal.api.v1;
 
 import java.lang.reflect.Type;
 import java.util.List;
@@ -19,12 +19,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpMethod;
+import org.openhab.binding.hdpowerview.internal.HDPowerViewWebTargets;
 import org.openhab.binding.hdpowerview.internal.api.Color;
 import org.openhab.binding.hdpowerview.internal.api.HubFirmware;
 import org.openhab.binding.hdpowerview.internal.api.ShadeData;
-import org.openhab.binding.hdpowerview.internal.api.ShadeDataV1;
 import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
-import org.openhab.binding.hdpowerview.internal.api.ShadePositionV1;
 import org.openhab.binding.hdpowerview.internal.api.SurveyData;
 import org.openhab.binding.hdpowerview.internal.api.UserData;
 import org.openhab.binding.hdpowerview.internal.api.requests.RepeaterBlinking;
@@ -42,7 +41,6 @@ import org.openhab.binding.hdpowerview.internal.api.responses.SceneCollections.S
 import org.openhab.binding.hdpowerview.internal.api.responses.Scenes;
 import org.openhab.binding.hdpowerview.internal.api.responses.Scenes.Scene;
 import org.openhab.binding.hdpowerview.internal.api.responses.ScheduledEvent;
-import org.openhab.binding.hdpowerview.internal.api.responses.ScheduledEventV1;
 import org.openhab.binding.hdpowerview.internal.api.responses.ScheduledEvents;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades;
 import org.openhab.binding.hdpowerview.internal.api.responses.Survey;
