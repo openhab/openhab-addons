@@ -414,7 +414,7 @@ public class FreeboxOsDiscoveryService extends AbstractDiscoveryService implemen
             HomeManager homeManager = bridgeHandler.getManager(HomeManager.class);
             List<HomeNode> homeNodes = homeManager.getHomeNodes();
             homeNodes.forEach(node -> {
-                DiscoveryResultBuilder discoveryResultBuilder = NodeConfiguration.configure(bridgeUID, node);
+                DiscoveryResultBuilder discoveryResultBuilder = NodeConfiguration.builder().configure(bridgeUID, node);
                 if (discoveryResultBuilder != null) {
                     DiscoveryResult discoveryResult = discoveryResultBuilder.withLabel(node.getLabel())
                             .withBridge(bridgeUID).build();
@@ -422,7 +422,7 @@ public class FreeboxOsDiscoveryService extends AbstractDiscoveryService implemen
                 }
             });
         } catch (MissingPermissionException e) {
-            logger.warn("Mission permission to discover Home {}", e.getPermission());
+            logger.warn("Missing permission to discover Home {}", e.getPermission());
         }
     }
 
@@ -439,7 +439,7 @@ public class FreeboxOsDiscoveryService extends AbstractDiscoveryService implemen
                 thingDiscovered(discoveryResult);
             });
         } catch (MissingPermissionException e) {
-            logger.warn("Mission permission to discover Phone {}", e.getPermission());
+            logger.warn("Missing permission to discover Phone {}", e.getPermission());
         }
     }
 
@@ -460,7 +460,7 @@ public class FreeboxOsDiscoveryService extends AbstractDiscoveryService implemen
                 thingDiscovered(discoveryResult);
             });
         } catch (MissingPermissionException e) {
-            logger.warn("Mission permission to discover VM {}", e.getPermission());
+            logger.warn("Missing permission to discover VM {}", e.getPermission());
         }
     }
 
@@ -487,7 +487,7 @@ public class FreeboxOsDiscoveryService extends AbstractDiscoveryService implemen
                 }
             });
         } catch (MissingPermissionException e) {
-            logger.warn("Mission permission to discover Hosts {}", e.getPermission());
+            logger.warn("Missing permission to discover Hosts {}", e.getPermission());
         }
     }
 
@@ -507,7 +507,7 @@ public class FreeboxOsDiscoveryService extends AbstractDiscoveryService implemen
                 thingDiscovered(discoveryResult);
             });
         } catch (MissingPermissionException e) {
-            logger.warn("Mission permission to discover Repeater {}", e.getPermission());
+            logger.warn("Missing permission to discover Repeater {}", e.getPermission());
         }
     }
 
@@ -526,7 +526,7 @@ public class FreeboxOsDiscoveryService extends AbstractDiscoveryService implemen
                     .withLabel(config.getPrettyName().orElse("Freebox Server")).build();
             thingDiscovered(discoveryResult);
         } catch (MissingPermissionException e) {
-            logger.warn("Mission permission to discover Server {}", e.getPermission());
+            logger.warn("Missing permission to discover Server {}", e.getPermission());
         }
     }
 
@@ -544,7 +544,7 @@ public class FreeboxOsDiscoveryService extends AbstractDiscoveryService implemen
                 thingDiscovered(discoveryResult);
             }
         } catch (MissingPermissionException e) {
-            logger.warn("Mission permission to discover Player {}", e.getPermission());
+            logger.warn("Missing permission to discover Player {}", e.getPermission());
         }
     }
 
