@@ -40,6 +40,7 @@ import org.openhab.binding.hdpowerview.internal.api.responses.SceneCollections.S
 import org.openhab.binding.hdpowerview.internal.api.responses.Scenes;
 import org.openhab.binding.hdpowerview.internal.api.responses.ScheduledEvent;
 import org.openhab.binding.hdpowerview.internal.api.responses.ScheduledEvents;
+import org.openhab.binding.hdpowerview.internal.api.responses.Shade;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades;
 import org.openhab.binding.hdpowerview.internal.api.responses.Survey;
 import org.openhab.binding.hdpowerview.internal.api.responses.UserDataResponse;
@@ -80,13 +81,7 @@ public class HDPowerViewWebTargetsV1 extends HDPowerViewWebTargets {
      * @param ipAddress the IP address of the server (the hub)
      */
     public HDPowerViewWebTargetsV1(HttpClient httpClient, String ipAddress) {
-        super(httpClient, ipAddress);
-
-        // initialize the de-serializer target classes
-        shadeDataTargetClass = ShadeDataV1.class;
-        shadePositionTargetClass = ShadePositionV1.class;
-        scheduledEventTargetClass = ScheduledEventV1.class;
-        sceneTargetClass = SceneV1.class;
+        super(httpClient, ipAddress, SceneV1.class, ShadeDataV1.class, ShadePositionV1.class, ScheduledEventV1.class);
 
         // initialize the urls
         String base = "http://" + ipAddress + "/api/";
@@ -104,13 +99,31 @@ public class HDPowerViewWebTargetsV1 extends HDPowerViewWebTargets {
         userData = base + "userdata";
     }
 
-    @Override
+    /**
+     * Protected method to create ShadeData instances from a JSON payload.
+     *
+     * @param json the json payload
+     * @return a ShadeData instance
+     * @throws HubInvalidResponseException in case od missing or invalid response
+     * @throws HubShadeTimeoutException in case of connection time out (in V1 implementation)
+     */
     protected ShadeData shadeDataFromJson(String json) throws HubInvalidResponseException, HubShadeTimeoutException {
-        ShadeData shadeData = super.shadeDataFromJson(json);
-        if (shadeData.version() == 1 && Boolean.TRUE.equals(((ShadeDataV1) shadeData).timedOut)) {
-            throw new HubShadeTimeoutException("Timeout when sending request to the shade");
+        try {
+            Shade shade = gson.fromJson(json, Shade.class);
+            if (shade == null) {
+                throw new HubInvalidResponseException("Missing shade response");
+            }
+            ShadeData shadeData = shade.shade;
+            if (shadeData == null) {
+                throw new HubInvalidResponseException("Missing 'shade.shade' element");
+            }
+            if (shadeData.version() == 1 && Boolean.TRUE.equals(((ShadeDataV1) shadeData).timedOut)) {
+                throw new HubShadeTimeoutException("Timeout when sending request to the shade");
+            }
+            return shadeData;
+        } catch (JsonParseException e) {
+            throw new HubInvalidResponseException("Error parsing shade response", e);
         }
-        return shadeData;
     }
 
     /**

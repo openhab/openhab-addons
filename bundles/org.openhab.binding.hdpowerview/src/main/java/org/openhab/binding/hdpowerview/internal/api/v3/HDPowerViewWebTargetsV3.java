@@ -35,6 +35,7 @@ import org.openhab.binding.hdpowerview.internal.api.responses.SceneCollections;
 import org.openhab.binding.hdpowerview.internal.api.responses.Scenes;
 import org.openhab.binding.hdpowerview.internal.api.responses.ScheduledEvent;
 import org.openhab.binding.hdpowerview.internal.api.responses.ScheduledEvents;
+import org.openhab.binding.hdpowerview.internal.api.responses.Shade;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubInvalidResponseException;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubMaintenanceException;
@@ -64,12 +65,16 @@ public class HDPowerViewWebTargetsV3 extends HDPowerViewWebTargets {
     private final String automations;
 
     // @formatter:off
-    private final Type scheduledEventType =
-            new TypeToken<ArrayList<ScheduledEvent>>() {}.getType();
+    private final Type shadeType = new TypeToken<ArrayList<ShadeData>>() {}.getType();
     // @formatter:on
 
     // @formatter:off
     private final Type sceneType = new TypeToken<ArrayList<Scene>>() {}.getType();
+    // @formatter:on
+
+    // @formatter:off
+    private final Type scheduledEventType =
+            new TypeToken<ArrayList<ScheduledEvent>>() {}.getType();
     // @formatter:on
 
     /**
@@ -79,13 +84,7 @@ public class HDPowerViewWebTargetsV3 extends HDPowerViewWebTargets {
      * @param ipAddress the IP address of the server (the hub)
      */
     public HDPowerViewWebTargetsV3(HttpClient httpClient, String ipAddress) {
-        super(httpClient, ipAddress);
-
-        // initialize the de-serializer target classes
-        shadeDataTargetClass = ShadeDataV3.class;
-        shadePositionTargetClass = ShadePositionV3.class;
-        scheduledEventTargetClass = ScheduledEventV3.class;
-        sceneTargetClass = SceneV3.class;
+        super(httpClient, ipAddress, SceneV3.class, ShadeDataV3.class, ShadePositionV3.class, ScheduledEventV3.class);
 
         // initialize the urls
         String base = "http://" + ipAddress + "/";
@@ -99,16 +98,40 @@ public class HDPowerViewWebTargetsV3 extends HDPowerViewWebTargets {
         firmware = base + "gateway/info";
     }
 
+    /**
+     * Protected method to create ShadeData instances from a JSON payload.
+     *
+     * @param json the json payload
+     * @return a ShadeData instance
+     * @throws HubInvalidResponseException in case od missing or invalid response
+     * @throws HubShadeTimeoutException in case of connection time out (in V1 implementation)
+     */
+    protected ShadeData shadeDataFromJson(String json) throws HubInvalidResponseException, HubShadeTimeoutException {
+        try {
+            Shade shade = gson.fromJson(json, Shade.class);
+            if (shade == null) {
+                throw new HubInvalidResponseException("Missing shade response");
+            }
+            ShadeData shadeData = shade.shade;
+            if (shadeData == null) {
+                throw new HubInvalidResponseException("Missing 'shade.shade' element");
+            }
+            return shadeData;
+        } catch (JsonParseException e) {
+            throw new HubInvalidResponseException("Error parsing shade response", e);
+        }
+    }
+
     @Override
     public HubFirmware getFirmwareVersions()
             throws HubInvalidResponseException, HubProcessingException, HubMaintenanceException {
+        String json = invoke(HttpMethod.GET, firmware, null, null);
         try {
-            String jsonResponse = invoke(HttpMethod.GET, firmware, null, null);
-            GatewayInfoV3 gatewayInfo = gson.fromJson(jsonResponse, GatewayInfoV3.class);
+            GatewayInfoV3 gatewayInfo = gson.fromJson(json, GatewayInfoV3.class);
             if (gatewayInfo == null) {
                 throw new HubProcessingException("getFirmwareVersions(): missing gatewayInfo");
             }
-            return gatewayInfo.getHubFirmware();
+            return gatewayInfo.toHubFirmware();
         } catch (JsonParseException e) {
             throw new HubInvalidResponseException("Error parsing gateway info response", e);
         }
@@ -123,12 +146,9 @@ public class HDPowerViewWebTargetsV3 extends HDPowerViewWebTargets {
     public Shades getShades() throws HubInvalidResponseException, HubProcessingException, HubMaintenanceException {
         String json = invoke(HttpMethod.GET, shades, null, null);
         try {
-            Shades shades = gson.fromJson(json, Shades.class);
-            if (shades == null) {
-                throw new HubInvalidResponseException("Missing shades response");
-            }
-            List<ShadeData> shadeData = shades.shadeData;
-            if (shadeData == null) {
+            Shades shades = new Shades();
+            shades.shadeData = gson.fromJson(json, shadeType);
+            if (shades.shadeData == null) {
                 throw new HubInvalidResponseException("Missing 'shades.shadeData' element");
             }
             return shades;
@@ -155,24 +175,23 @@ public class HDPowerViewWebTargetsV3 extends HDPowerViewWebTargets {
     @Override
     public ShadeData jogShade(int shadeId) throws HubInvalidResponseException, HubProcessingException,
             HubMaintenanceException, HubShadeTimeoutException {
-        String jsonRequest = gson.toJson(new ShadeJog());
-        invoke(HttpMethod.PUT, String.format(shadeMotion, shadeId), null, jsonRequest);
+        String json = gson.toJson(new ShadeJog());
+        invoke(HttpMethod.PUT, String.format(shadeMotion, shadeId), null, json);
         return getShade(shadeId);
     }
 
     @Override
     public ShadeData calibrateShade(int shadeId) throws HubInvalidResponseException, HubProcessingException,
             HubMaintenanceException, HubShadeTimeoutException {
-        String jsonRequest = gson.toJson(new ShadeCalibrate());
-        invoke(HttpMethod.PUT, String.format(shadeMotion, shadeId), null, jsonRequest);
+        String json = gson.toJson(new ShadeCalibrate());
+        invoke(HttpMethod.PUT, String.format(shadeMotion, shadeId), null, json);
         return getShade(shadeId);
     }
 
     @Override
     public Scenes getScenes() throws HubInvalidResponseException, HubProcessingException, HubMaintenanceException {
+        String json = invoke(HttpMethod.GET, this.scenes, null, null);
         try {
-            String json = invoke(HttpMethod.GET, this.scenes, null, null);
-
             Scenes scenes = new Scenes();
             scenes.sceneData = gson.fromJson(json, sceneType);
             return scenes;
@@ -200,11 +219,11 @@ public class HDPowerViewWebTargetsV3 extends HDPowerViewWebTargets {
     @Override
     public ScheduledEvents getScheduledEvents()
             throws HubInvalidResponseException, HubProcessingException, HubMaintenanceException {
+        String json = invoke(HttpMethod.GET, automations, null, null);
         try {
-            ScheduledEvents result = new ScheduledEvents();
-            String json = invoke(HttpMethod.GET, automations, null, null);
-            result.scheduledEventData = gson.fromJson(json, scheduledEventType);
-            return result;
+            ScheduledEvents scheduledEvents = new ScheduledEvents();
+            scheduledEvents.scheduledEventData = gson.fromJson(json, scheduledEventType);
+            return scheduledEvents;
         } catch (JsonParseException e) {
             throw new HubInvalidResponseException("Error parsing automation response", e);
         }
@@ -249,8 +268,8 @@ public class HDPowerViewWebTargetsV3 extends HDPowerViewWebTargets {
     @Override
     public ShadeData getShade(int shadeId) throws HubInvalidResponseException, HubProcessingException,
             HubMaintenanceException, HubShadeTimeoutException {
-        String jsonResponse = invoke(HttpMethod.GET, shades + Integer.toString(shadeId), null, null);
-        return shadeDataFromJson(jsonResponse);
+        String json = invoke(HttpMethod.GET, shades + Integer.toString(shadeId), null, null);
+        return shadeDataFromJson(json);
     }
 
     @Override
