@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewWebTargets;
@@ -29,12 +28,11 @@ import org.openhab.binding.hdpowerview.internal.api.SurveyData;
 import org.openhab.binding.hdpowerview.internal.api.UserData;
 import org.openhab.binding.hdpowerview.internal.api.requests.ShadeCalibrate;
 import org.openhab.binding.hdpowerview.internal.api.requests.ShadeJog;
-import org.openhab.binding.hdpowerview.internal.api.responses.GatewayInfo;
 import org.openhab.binding.hdpowerview.internal.api.responses.RepeaterData;
 import org.openhab.binding.hdpowerview.internal.api.responses.Repeaters;
+import org.openhab.binding.hdpowerview.internal.api.responses.Scene;
 import org.openhab.binding.hdpowerview.internal.api.responses.SceneCollections;
 import org.openhab.binding.hdpowerview.internal.api.responses.Scenes;
-import org.openhab.binding.hdpowerview.internal.api.responses.Scenes.Scene;
 import org.openhab.binding.hdpowerview.internal.api.responses.ScheduledEvent;
 import org.openhab.binding.hdpowerview.internal.api.responses.ScheduledEvents;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades;
@@ -43,12 +41,6 @@ import org.openhab.binding.hdpowerview.internal.exceptions.HubMaintenanceExcepti
 import org.openhab.binding.hdpowerview.internal.exceptions.HubProcessingException;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubShadeTimeoutException;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
 
@@ -71,6 +63,15 @@ public class HDPowerViewWebTargetsV3 extends HDPowerViewWebTargets {
     private final String firmware;
     private final String automations;
 
+    // @formatter:off
+    private final Type scheduledEventType =
+            new TypeToken<ArrayList<ScheduledEvent>>() {}.getType();
+    // @formatter:on
+
+    // @formatter:off
+    private final Type sceneType = new TypeToken<ArrayList<Scene>>() {}.getType();
+    // @formatter:on
+
     /**
      * Initialize the web targets
      *
@@ -80,6 +81,13 @@ public class HDPowerViewWebTargetsV3 extends HDPowerViewWebTargets {
     public HDPowerViewWebTargetsV3(HttpClient httpClient, String ipAddress) {
         super(httpClient, ipAddress);
 
+        // initialize the de-serializer target classes
+        shadeDataTargetClass = ShadeDataV3.class;
+        shadePositionTargetClass = ShadePositionV3.class;
+        scheduledEventTargetClass = ScheduledEventV3.class;
+        sceneTargetClass = SceneV3.class;
+
+        // initialize the urls
         String base = "http://" + ipAddress + "/";
         shades = base + "home/shades/";
         scenes = base + "home/scenes/";
@@ -94,12 +102,16 @@ public class HDPowerViewWebTargetsV3 extends HDPowerViewWebTargets {
     @Override
     public HubFirmware getFirmwareVersions()
             throws HubInvalidResponseException, HubProcessingException, HubMaintenanceException {
-        String jsonResponse = invoke(HttpMethod.GET, firmware, null, null);
-        GatewayInfo gatewayInfo = gson.fromJson(jsonResponse, GatewayInfo.class);
-        if (gatewayInfo == null) {
-            throw new HubProcessingException("getFirmwareVersions(): missing gatewayInfo");
+        try {
+            String jsonResponse = invoke(HttpMethod.GET, firmware, null, null);
+            GatewayInfoV3 gatewayInfo = gson.fromJson(jsonResponse, GatewayInfoV3.class);
+            if (gatewayInfo == null) {
+                throw new HubProcessingException("getFirmwareVersions(): missing gatewayInfo");
+            }
+            return gatewayInfo.getHubFirmware();
+        } catch (JsonParseException e) {
+            throw new HubInvalidResponseException("Error parsing gateway info response", e);
         }
-        return gatewayInfo.getHubFirmware();
     }
 
     @Override
@@ -158,16 +170,11 @@ public class HDPowerViewWebTargetsV3 extends HDPowerViewWebTargets {
 
     @Override
     public Scenes getScenes() throws HubInvalidResponseException, HubProcessingException, HubMaintenanceException {
-        String json = invoke(HttpMethod.GET, scenes, null, null);
         try {
-            Scenes scenes = gson.fromJson(json, Scenes.class);
-            if (scenes == null) {
-                throw new HubInvalidResponseException("Missing scenes response");
-            }
-            List<Scene> sceneData = scenes.sceneData;
-            if (sceneData == null) {
-                throw new HubInvalidResponseException("Missing 'scenes.sceneData' element");
-            }
+            String json = invoke(HttpMethod.GET, this.scenes, null, null);
+
+            Scenes scenes = new Scenes();
+            scenes.sceneData = gson.fromJson(json, sceneType);
             return scenes;
         } catch (JsonParseException e) {
             throw new HubInvalidResponseException("Error parsing scenes response", e);
@@ -193,13 +200,14 @@ public class HDPowerViewWebTargetsV3 extends HDPowerViewWebTargets {
     @Override
     public ScheduledEvents getScheduledEvents()
             throws HubInvalidResponseException, HubProcessingException, HubMaintenanceException {
-        ScheduledEvents result = new ScheduledEvents();
-        String jsonResponse = invoke(HttpMethod.GET, automations, null, null);
-        // TODO we really need to check this funky code..
-        Type typeOfListOfScheduledEvent = new TypeToken<ArrayList<ScheduledEvent>>() {
-        }.getType();
-        result.scheduledEventData = gson.fromJson(jsonResponse, typeOfListOfScheduledEvent);
-        return result;
+        try {
+            ScheduledEvents result = new ScheduledEvents();
+            String json = invoke(HttpMethod.GET, automations, null, null);
+            result.scheduledEventData = gson.fromJson(json, scheduledEventType);
+            return result;
+        } catch (JsonParseException e) {
+            throw new HubInvalidResponseException("Error parsing automation response", e);
+        }
     }
 
     @Override
@@ -261,48 +269,5 @@ public class HDPowerViewWebTargetsV3 extends HDPowerViewWebTargets {
     public ShadeData refreshShadeBatteryLevel(int shadeId) throws HubInvalidResponseException, HubProcessingException,
             HubMaintenanceException, HubShadeTimeoutException {
         return getShade(shadeId);
-    }
-
-    private static class ShadeDataDeserializer implements JsonDeserializer<ShadeData> {
-        @Override
-        public @Nullable ShadeData deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
-                throws JsonParseException {
-            JsonObject jsonObject = json.getAsJsonObject();
-            return context.deserialize(jsonObject, ShadeDataV3.class);
-        }
-    }
-
-    private static class ShadePositionDeserializer implements JsonDeserializer<ShadePosition> {
-        @Override
-        public @Nullable ShadePosition deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
-                throws JsonParseException {
-            JsonObject jsonObject = json.getAsJsonObject();
-            return context.deserialize(jsonObject, ShadePositionV3.class);
-        }
-    }
-
-    private static class ScheduledEventDeserializer implements JsonDeserializer<ScheduledEvent> {
-        @Override
-        public @Nullable ScheduledEvent deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
-                throws JsonParseException {
-            JsonObject jsonObject = json.getAsJsonObject();
-            return context.deserialize(jsonObject, ScheduledEventV3.class);
-        }
-    }
-
-    @Override
-    protected Gson getGsonObject() {
-        return getGson();
-    }
-
-    /**
-     * Public static method to get Gson object. e.g. used for JUnit testing.
-     *
-     * @return an instance of the Gson class.
-     */
-    public static Gson getGson() {
-        return new GsonBuilder().registerTypeAdapter(ShadeData.class, new ShadeDataDeserializer())
-                .registerTypeAdapter(ShadePosition.class, new ShadePositionDeserializer())
-                .registerTypeAdapter(ScheduledEvent.class, new ScheduledEventDeserializer()).create();
     }
 }

@@ -24,10 +24,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewTranslationProvider;
+import org.openhab.binding.hdpowerview.internal.api.responses.Scene;
 import org.openhab.binding.hdpowerview.internal.api.responses.SceneCollections.SceneCollection;
-import org.openhab.binding.hdpowerview.internal.api.responses.Scenes.Scene;
 import org.openhab.binding.hdpowerview.internal.api.responses.ScheduledEvent;
 import org.openhab.binding.hdpowerview.internal.api.responses.ScheduledEvents;
+import org.openhab.binding.hdpowerview.internal.api.v1.SceneV1;
 import org.openhab.binding.hdpowerview.internal.api.v1.ScheduledEventV1;
 import org.openhab.binding.hdpowerview.internal.builders.AutomationChannelBuilder;
 import org.openhab.binding.hdpowerview.providers.MockedLocaleProvider;
@@ -66,7 +67,7 @@ public class AutomationChannelBuilderTest {
         logger.setLevel(Level.OFF);
         builder = AutomationChannelBuilder.create(TRANSLATION_PROVIDER, CHANNEL_GROUP_UID);
 
-        Scene scene = new Scene();
+        Scene scene = new SceneV1();
         scene.id = 1;
         scene.name = Base64.getEncoder().encodeToString(("TestScene").getBytes());
         scenes = new ArrayList<>(List.of(scene));

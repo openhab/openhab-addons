@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.hdpowerview.internal.api.responses;
+package org.openhab.binding.hdpowerview.internal.api.v3;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -24,7 +24,7 @@ import org.openhab.binding.hdpowerview.internal.api.HubFirmware;
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class GatewayInfo {
+public class GatewayInfoV3 {
     public @Nullable String fwVersion;
     public @Nullable String serialNumber;
 

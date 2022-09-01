@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewTranslationProvider;
-import org.openhab.binding.hdpowerview.internal.api.responses.Scenes.Scene;
+import org.openhab.binding.hdpowerview.internal.api.responses.Scene;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
@@ -45,7 +45,7 @@ public class SceneChannelBuilder extends BaseChannelBuilder {
     /**
      * Creates a {@link SceneChannelBuilder} for the given {@link HDPowerViewTranslationProvider} and
      * {@link ChannelGroupUID}.
-     * 
+     *
      * @param translationProvider the {@link HDPowerViewTranslationProvider}
      * @param channelGroupUid parent {@link ChannelGroupUID} for created channels
      * @return channel builder
@@ -57,7 +57,7 @@ public class SceneChannelBuilder extends BaseChannelBuilder {
 
     /**
      * Adds created channels to existing list.
-     * 
+     *
      * @param channels list that channels will be added to
      * @return channel builder
      */
@@ -68,7 +68,7 @@ public class SceneChannelBuilder extends BaseChannelBuilder {
 
     /**
      * Sets the scenes.
-     * 
+     *
      * @param scenes the scenes
      * @return channel builder
      */

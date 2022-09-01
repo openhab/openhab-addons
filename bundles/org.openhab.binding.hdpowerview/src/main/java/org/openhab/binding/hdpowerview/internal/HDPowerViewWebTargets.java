@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.hdpowerview.internal;
 
+import java.lang.reflect.Type;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
@@ -35,8 +36,10 @@ import org.openhab.binding.hdpowerview.internal.api.SurveyData;
 import org.openhab.binding.hdpowerview.internal.api.UserData;
 import org.openhab.binding.hdpowerview.internal.api.responses.RepeaterData;
 import org.openhab.binding.hdpowerview.internal.api.responses.Repeaters;
+import org.openhab.binding.hdpowerview.internal.api.responses.Scene;
 import org.openhab.binding.hdpowerview.internal.api.responses.SceneCollections;
 import org.openhab.binding.hdpowerview.internal.api.responses.Scenes;
+import org.openhab.binding.hdpowerview.internal.api.responses.ScheduledEvent;
 import org.openhab.binding.hdpowerview.internal.api.responses.ScheduledEvents;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shade;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades;
@@ -48,6 +51,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
 /**
@@ -72,8 +80,64 @@ public abstract class HDPowerViewWebTargets {
     protected final Gson gson;
     protected final HttpClient httpClient;
 
+    /*
+     * De-serializer target class types
+     */
+    protected @Nullable Class<?> shadeDataTargetClass;
+    protected @Nullable Class<?> shadePositionTargetClass;
+    protected @Nullable Class<?> scheduledEventTargetClass;
+    protected @Nullable Class<?> sceneTargetClass;
+
+    /*
+     * Private helper class for de-serialization of ShadeData
+     */
+    private class ShadeDataDeserializer implements JsonDeserializer<ShadeData> {
+        @Override
+        public @Nullable ShadeData deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+                throws JsonParseException {
+            JsonObject jsonObject = json.getAsJsonObject();
+            return context.deserialize(jsonObject, shadeDataTargetClass);
+        }
+    }
+
+    /*
+     * Private helper class for de-serialization of ShadePosition
+     */
+    private class ShadePositionDeserializer implements JsonDeserializer<ShadePosition> {
+        @Override
+        public @Nullable ShadePosition deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+                throws JsonParseException {
+            JsonObject jsonObject = json.getAsJsonObject();
+            return context.deserialize(jsonObject, shadePositionTargetClass);
+        }
+    }
+
+    /*
+     * Private helper class for de-serialization of ScheduledEvent
+     */
+    private class ScheduledEventDeserializer implements JsonDeserializer<ScheduledEvent> {
+        @Override
+        public @Nullable ScheduledEvent deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+                throws JsonParseException {
+            JsonObject jsonObject = json.getAsJsonObject();
+            return context.deserialize(jsonObject, scheduledEventTargetClass);
+        }
+    }
+
+    /*
+     * Private helper class for de-serialization of Scene
+     */
+    private class SceneDeserializer implements JsonDeserializer<Scene> {
+        @Override
+        public @Nullable Scene deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+                throws JsonParseException {
+            JsonObject jsonObject = json.getAsJsonObject();
+            return context.deserialize(jsonObject, sceneTargetClass);
+        }
+    }
+
     /**
-     * protected helper class for passing http url query parameters
+     * Protected helper class for passing http url query parameters
      */
     protected static class Query {
         private final String key;
@@ -110,9 +174,24 @@ public abstract class HDPowerViewWebTargets {
      */
     public HDPowerViewWebTargets(HttpClient httpClient, String ipAddress) {
         this.httpClient = httpClient;
-        this.gson = getGsonObject();
+        this.gson = new GsonBuilder()
+        // @formatter:off
+                .registerTypeAdapter(ShadeData.class, new ShadeDataDeserializer())
+                .registerTypeAdapter(ShadePosition.class, new ShadePositionDeserializer())
+                .registerTypeAdapter(ScheduledEvent.class, new ScheduledEventDeserializer())
+                .registerTypeAdapter(Scene.class, new SceneDeserializer())
+        // @formatter:on
+                .create();
     }
 
+    /**
+     * Common protected method to create ShadeData instances from a JSON payload.
+     *
+     * @param json the json payload
+     * @return a ShadeData instance
+     * @throws HubInvalidResponseException in case od missing or invalid response
+     * @throws HubShadeTimeoutException in case of connection time out (in V1 implementation)
+     */
     protected ShadeData shadeDataFromJson(String json) throws HubInvalidResponseException, HubShadeTimeoutException {
         try {
             Shade shade = gson.fromJson(json, Shade.class);
@@ -130,7 +209,7 @@ public abstract class HDPowerViewWebTargets {
     }
 
     /**
-     * Invoke a call on the hub server to retrieve information or send a command
+     * Common protected method to invoke a call on the hub server to retrieve information or send a command
      *
      * @param method GET or PUT
      * @param url the host url to be called
@@ -193,6 +272,10 @@ public abstract class HDPowerViewWebTargets {
             throw new HubProcessingException("Missing response entity");
         }
         return jsonResponse;
+    }
+
+    public Gson getGson() {
+        return this.gson;
     }
 
     /**
@@ -469,11 +552,4 @@ public abstract class HDPowerViewWebTargets {
      */
     public abstract ShadeData refreshShadeBatteryLevel(int shadeId) throws HubInvalidResponseException,
             HubProcessingException, HubMaintenanceException, HubShadeTimeoutException;
-
-    /**
-     * Get the Gson Json de-/serializer.
-     *
-     * @return instance of a Gson object.
-     */
-    protected abstract Gson getGsonObject();
 }
