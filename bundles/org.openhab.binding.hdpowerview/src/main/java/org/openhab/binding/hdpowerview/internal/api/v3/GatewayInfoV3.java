@@ -28,7 +28,7 @@ public class GatewayInfoV3 {
     public @Nullable String fwVersion;
     public @Nullable String serialNumber;
 
-    public HubFirmware getHubFirmware() {
+    public HubFirmware toHubFirmware() {
         Firmware firmware = new Firmware();
         String fwVersion = this.fwVersion;
         if (fwVersion != null) {
