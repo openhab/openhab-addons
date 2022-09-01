@@ -41,6 +41,7 @@ import org.openhab.binding.jablotron.internal.model.JablotronHistoryDataEvent;
 import org.openhab.binding.jablotron.internal.model.JablotronLoginResponse;
 import org.openhab.binding.jablotron.internal.model.ja100f.JablotronGetPGResponse;
 import org.openhab.binding.jablotron.internal.model.ja100f.JablotronGetSectionsResponse;
+import org.openhab.binding.jablotron.internal.model.ja100f.JablotronGetThermoDevicesResponse;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -334,10 +335,28 @@ public class JablotronBridgeHandler extends BaseBridgeHandler {
             return null;
         }
 
-        String urlParameters = "{\"connect-device\":false,\"list-type\":\"FULL\",\"service-id\":"
-                + handler.thingConfig.getServiceId() + ",\"service-states\":true}";
+        String urlParameters = getCommonUrlParameters(handler.thingConfig.getServiceId());
 
         return sendJsonMessage(url, urlParameters, JablotronGetPGResponse.class);
+    }
+
+    private String getCommonUrlParameters(String serviceId) {
+        return "{\"connect-device\":false,\"list-type\":\"FULL\",\"service-id\":" + serviceId
+                + ",\"service-states\":true}";
+    }
+
+    protected @Nullable JablotronGetThermoDevicesResponse sendGetThermometers(Thing th, String alarm) {
+        String url = JABLOTRON_API_URL + alarm + "/thermoDevicesGet.json";
+        JablotronAlarmHandler handler = (JablotronAlarmHandler) th.getHandler();
+
+        if (handler == null) {
+            logger.debug("Thing handler is null");
+            return null;
+        }
+
+        String urlParameters = getCommonUrlParameters(handler.thingConfig.getServiceId());
+
+        return sendJsonMessage(url, urlParameters, JablotronGetThermoDevicesResponse.class);
     }
 
     protected @Nullable JablotronGetSectionsResponse sendGetSections(Thing th, String alarm) {
@@ -349,8 +368,7 @@ public class JablotronBridgeHandler extends BaseBridgeHandler {
             return null;
         }
 
-        String urlParameters = "{\"connect-device\":false,\"list-type\":\"FULL\",\"service-id\":"
-                + handler.thingConfig.getServiceId() + ",\"service-states\":true}";
+        String urlParameters = getCommonUrlParameters(handler.thingConfig.getServiceId());
 
         return sendJsonMessage(url, urlParameters, JablotronGetSectionsResponse.class);
     }
