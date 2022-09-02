@@ -43,8 +43,6 @@ import org.openhab.binding.hdpowerview.internal.api.responses.ScheduledEvents;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades;
 import org.openhab.binding.hdpowerview.internal.api.v1.HDPowerViewWebTargetsV1;
 import org.openhab.binding.hdpowerview.internal.api.v1.ShadeDataV1;
-import org.openhab.binding.hdpowerview.internal.api.v3.HDPowerViewWebTargetsV3;
-import org.openhab.binding.hdpowerview.internal.api.v3.ShadeDataV3;
 import org.openhab.binding.hdpowerview.internal.builders.AutomationChannelBuilder;
 import org.openhab.binding.hdpowerview.internal.builders.SceneChannelBuilder;
 import org.openhab.binding.hdpowerview.internal.builders.SceneGroupChannelBuilder;
@@ -106,7 +104,8 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
     private Instant userDataUpdated = Instant.MIN;
     private Boolean deprecatedChannelsCreated = false;
 
-    private boolean isGeneration1 = true; // TODO auto initialize this field or via config parameter
+    // TODO auto initialize this field or via config parameter
+    // private boolean isGeneration1 = true;
 
     private final ChannelTypeUID sceneChannelTypeUID = new ChannelTypeUID(HDPowerViewBindingConstants.BINDING_ID,
             HDPowerViewBindingConstants.CHANNELTYPE_SCENE_ACTIVATE);
@@ -683,11 +682,13 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
     }
 
     private HDPowerViewWebTargets newWebTargets(String host) {
-        return isGeneration1 ? new HDPowerViewWebTargetsV1(httpClient, host)
-                : new HDPowerViewWebTargetsV3(httpClient, host);
+        // return isGeneration1 ? new HDPowerViewWebTargetsV1(httpClient, host)
+        // : new HDPowerViewWebTargetsV3(httpClient, host);
+        return new HDPowerViewWebTargetsV1(httpClient, host);
     }
 
     private ShadeData newShadeData() {
-        return isGeneration1 ? new ShadeDataV1() : new ShadeDataV3();
+        // return isGeneration1 ? new ShadeDataV1() : new ShadeDataV3();
+        return new ShadeDataV1();
     }
 }

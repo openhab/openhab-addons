@@ -37,7 +37,6 @@ import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
 import org.openhab.binding.hdpowerview.internal.api.SurveyData;
 import org.openhab.binding.hdpowerview.internal.api.v1.ShadeDataV1;
 import org.openhab.binding.hdpowerview.internal.api.v1.ShadePositionV1;
-import org.openhab.binding.hdpowerview.internal.api.v3.ShadePositionV3;
 import org.openhab.binding.hdpowerview.internal.config.HDPowerViewShadeConfiguration;
 import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDatabase;
 import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDatabase.Capabilities;
@@ -97,7 +96,8 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
     private @Nullable Capabilities capabilities;
     private int shadeId;
     private boolean isDisposing;
-    private boolean isGeneration1 = true;;
+
+    // private boolean isGeneration1 = true;
 
     public HDPowerViewShadeHandler(Thing thing) {
         super(thing);
@@ -254,7 +254,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
      * @param shadeData the ShadeData to be used.
      */
     protected void onReceiveUpdate(ShadeData shadeData) {
-        isGeneration1 = shadeData.version() == 1;
+        // isGeneration1 = shadeData.version() == 1;
         updateStatus(ThingStatus.ONLINE);
         updateCapabilities(shadeData);
         updateSoftProperties(shadeData);
@@ -656,6 +656,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
     }
 
     private ShadePosition newShadePosition() {
-        return isGeneration1 ? new ShadePositionV1() : new ShadePositionV3();
+        // return isGeneration1 ? new ShadePositionV1() : new ShadePositionV3();
+        return new ShadePositionV1();
     }
 }
