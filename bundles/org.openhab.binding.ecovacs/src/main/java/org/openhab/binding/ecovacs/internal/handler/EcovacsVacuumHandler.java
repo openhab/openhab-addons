@@ -282,7 +282,10 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
                     } catch (NumberFormatException e) {
                         return item;
                     }
-                }).collect(Collectors.joining(","));
+                }).collect(Collectors.joining(";"));
+            } else if (newMode == CleanMode.CUSTOM_AREA) {
+                // Map the separator from comma to semicolon to allow using the output as command input
+                def = def.replace(',', ';');
             }
             return new StringType(def);
         });
@@ -691,7 +694,7 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
             if (splitted.length == 2 || splitted.length == 3) {
                 int passes = splitted.length == 3 && "x2".equals(splitted[2]) ? 2 : 1;
                 List<String> roomIds = new ArrayList<>();
-                for (String id : splitted[1].split(",")) {
+                for (String id : splitted[1].split(";")) {
                     // We let the user pass in letters as in Ecovacs' app, but the API wants indices
                     if (id.length() == 1 && id.charAt(0) >= 'A' && id.charAt(0) <= 'Z') {
                         roomIds.add(String.valueOf(id.charAt(0) - 'A'));
@@ -703,7 +706,8 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
                     return new SpotAreaCleaningCommand(roomIds, passes);
                 }
             } else {
-                logger.info("{}: spotArea command needs to have the form spotArea:<rooms>[:x2]", getDeviceSerial());
+                logger.info("{}: spotArea command needs to have the form spotArea:<room1>[;<room2>][;<...roomX>][:x2]",
+                        getDeviceSerial());
             }
         }
         if (command.startsWith(CMD_CUSTOM_AREA) && device.hasCapability(DeviceCapability.CUSTOM_AREA_CLEANING)) {
@@ -711,11 +715,12 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
             if (splitted.length == 2 || splitted.length == 3) {
                 String coords = splitted[1];
                 int passes = splitted.length == 3 && "x2".equals(splitted[2]) ? 2 : 1;
-                if (coords.split(",").length == 4) {
-                    return new CustomAreaCleaningCommand(coords, passes);
+                String[] splittedAreaDef = coords.split(";");
+                if (splittedAreaDef.length == 4) {
+                    return new CustomAreaCleaningCommand(String.join(",", splittedAreaDef), passes);
                 }
             }
-            logger.info("{}: customArea command needs to have the form customArea:<x1>,<y1>,<x2>,<y2>[:x2]",
+            logger.info("{}: customArea command needs to have the form customArea:<x1>;<y1>;<x2>;<y2>[:x2]",
                     getDeviceSerial());
         }
 
