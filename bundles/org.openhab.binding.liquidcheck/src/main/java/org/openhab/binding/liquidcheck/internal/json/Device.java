@@ -15,8 +15,10 @@ package org.openhab.binding.liquidcheck.internal.json;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link Device} .
- *
+ * The {@link Device} is used for serializing and deserializing of JSONs.
+ * It contains the device related data like firmware, hardware, name, the model class,
+ * manufacturer, uuid and the security class.
+ * 
  * @author Marcel Goerentz - Initial contribution
  */
 @NonNullByDefault

@@ -15,7 +15,8 @@ package org.openhab.binding.liquidcheck.internal.json;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link Model} .
+ * The {@link Model} is used for serializing and deserializing of JSONs.
+ * It contains the status message.
  *
  * @author Marcel Goerentz - Initial contribution
  */

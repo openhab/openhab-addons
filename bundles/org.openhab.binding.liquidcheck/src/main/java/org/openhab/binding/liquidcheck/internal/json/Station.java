@@ -15,7 +15,8 @@ package org.openhab.binding.liquidcheck.internal.json;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link Station} .
+ * The {@link Station} is used for serializing and deserializing of JSONs.
+ * It contains the station related data like hostname, ip address, gateway, netmask and mac address.
  *
  * @author Marcel Goerentz - Initial contribution
  */

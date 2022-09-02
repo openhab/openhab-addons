@@ -15,7 +15,9 @@ package org.openhab.binding.liquidcheck.internal.json;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link Payload} .
+ * The {@link Payload} is used for serializing and deserializing of JSONs.
+ * It contains the complete data set within the Measure class, the Expansion class, the Device class, the
+ * LiquidCheckSystem class and the wifi class.
  *
  * @author Marcel Goerentz - Initial contribution
  */
@@ -24,6 +26,6 @@ public class Payload {
     public Measure measure = new Measure();
     public Expansion expansion = new Expansion();
     public Device device = new Device();
-    public System system = new System();
+    public LiquidCheckSystem system = new LiquidCheckSystem();
     public Wifi wifi = new Wifi();
 }

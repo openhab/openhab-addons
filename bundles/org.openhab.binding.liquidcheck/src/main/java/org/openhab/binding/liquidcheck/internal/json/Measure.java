@@ -15,7 +15,8 @@ package org.openhab.binding.liquidcheck.internal.json;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link Measure} .
+ * The {@link Measure} is used for serializing and deserializing of JSONs.
+ * It contains the measured data like level, content and the raw class and the age of the data.
  *
  * @author Marcel Goerentz - Initial contribution
  */

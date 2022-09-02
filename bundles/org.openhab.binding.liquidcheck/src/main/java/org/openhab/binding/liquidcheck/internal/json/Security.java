@@ -15,7 +15,8 @@ package org.openhab.binding.liquidcheck.internal.json;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link Security} .
+ * The {@link Security} is used for serializing and deserializing of JSONs.
+ * It contains the security code for cloud connection of the device.
  *
  * @author Marcel Goerentz - Initial contribution
  */

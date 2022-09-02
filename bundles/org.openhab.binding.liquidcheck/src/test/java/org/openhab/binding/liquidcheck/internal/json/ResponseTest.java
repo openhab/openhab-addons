@@ -12,7 +12,10 @@
  */
 package org.openhab.binding.liquidcheck.internal.json;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.nio.charset.StandardCharsets;
@@ -37,7 +40,7 @@ public class ResponseTest {
     @DisplayName("Test response from polling")
     @Test
     public void pollingResponseTest() {
-        Response response = new Response();
+        CommData response = new CommData();
         try {
             List<String> lines = Files.readAllLines(Paths.get("src/test/resources/PollingResponseExample.json"),
                     StandardCharsets.UTF_8);
@@ -46,7 +49,7 @@ public class ResponseTest {
                 sb.append(line);
             }
             String json = sb.toString();
-            response = new Gson().fromJson(json, Response.class);
+            response = new Gson().fromJson(json, CommData.class);
         } catch (Exception e) {
             return;
         }
@@ -91,7 +94,7 @@ public class ResponseTest {
     @DisplayName("Test response from measurement command")
     @Test
     public void commandResponseTest() {
-        Response response = new Response();
+        CommData response = new CommData();
         try {
             List<String> lines = Files.readAllLines(Paths.get("src/test/resources/CommandResponseExample.json"),
                     StandardCharsets.UTF_8);
@@ -100,7 +103,7 @@ public class ResponseTest {
                 sb.append(line);
             }
             String json = sb.toString();
-            response = new Gson().fromJson(json, Response.class);
+            response = new Gson().fromJson(json, CommData.class);
         } catch (Exception e) {
             return;
         }
@@ -111,34 +114,6 @@ public class ResponseTest {
             assertThat(response.header.messageId, is(equalTo("6D6A415C-A116FF36")));
             assertThat(response.header.payloadVersion, is(equalTo("1")));
             assertThat(response.header.authorization, is(equalTo("1C9DC262BE70-001092EA-4D4KU4ID5ZCXPNTQJ3V8HD")));
-            assertThat(response.payload.measure.level, is(equalTo(0.00)));
-            assertThat(response.payload.measure.content, is(equalTo(0)));
-            assertThat(response.payload.measure.age, is(equalTo(0)));
-            assertThat(response.payload.measure.raw.level, is(equalTo(0.00)));
-            assertThat(response.payload.measure.raw.content, is(equalTo(0.00)));
-            assertThat(response.payload.expansion.boardType, is(equalTo(0)));
-            assertThat(response.payload.expansion.board, is(equalTo("")));
-            assertThat(response.payload.expansion.oneWire, is(equalTo("")));
-            assertThat(response.payload.device.firmware, is(equalTo("")));
-            assertThat(response.payload.device.hardware, is(equalTo("")));
-            assertThat(response.payload.device.name, is(equalTo("")));
-            assertThat(response.payload.device.manufacturer, is(equalTo("")));
-            assertThat(response.payload.device.uuid, is(equalTo("")));
-            assertThat(response.payload.device.model.name, is(equalTo("")));
-            assertThat(response.payload.device.model.number, is(equalTo(0)));
-            assertThat(response.payload.device.security.code, is(equalTo("")));
-            assertThat(response.payload.system.error, is(equalTo(0)));
-            assertThat(response.payload.system.uptime, is(equalTo(0)));
-            assertThat(response.payload.system.pump.totalRuns, is(equalTo(0)));
-            assertThat(response.payload.system.pump.totalRuntime, is(equalTo(0)));
-            assertThat(response.payload.wifi.station.hostname, is(equalTo("")));
-            assertThat(response.payload.wifi.station.ip, is(equalTo("")));
-            assertThat(response.payload.wifi.station.gateway, is(equalTo("")));
-            assertThat(response.payload.wifi.station.netmask, is(equalTo("")));
-            assertThat(response.payload.wifi.station.mac, is(equalTo("")));
-            assertThat(response.payload.wifi.accessPoint.ssid, is(equalTo("")));
-            assertThat(response.payload.wifi.accessPoint.bssid, is(equalTo("")));
-            assertThat(response.payload.wifi.accessPoint.rssi, is(equalTo(0)));
             assertThat(response.context.status, is(equalTo("success")));
         }
     }

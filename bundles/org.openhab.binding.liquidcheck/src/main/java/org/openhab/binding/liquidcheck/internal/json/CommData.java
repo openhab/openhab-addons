@@ -15,12 +15,13 @@ package org.openhab.binding.liquidcheck.internal.json;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link Response} .
+ * The {@link CommData} is used for serializing and deserializing of JSONs.
+ * It contains the complete communication data with header and payload or context.
  *
  * @author Marcel Goerentz - Initial contribution
  */
 @NonNullByDefault
-public class Response {
+public class CommData {
 
     public Header header = new Header();
     public Payload payload = new Payload();

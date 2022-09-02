@@ -14,17 +14,24 @@ package org.openhab.binding.liquidcheck.internal.json;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import com.google.gson.annotations.Expose;
+
 /**
- * The {@link Header} class defines common constants, which are
- * used across the whole binding.
+ * The {@link Header} class is used for serializing and deserializing of JSONs.
+ * It contains the data lika namespace, name, messageId, payloadVersion and authorization.
  *
  * @author Marcel Goerentz - Initial contribution
  */
 @NonNullByDefault
 public class Header {
+    @Expose
     public String namespace = "";
+    @Expose
     public String name = "";
+    @Expose
     public String messageId = "";
+    @Expose
     public String payloadVersion = "";
+
     public String authorization = "";
 }

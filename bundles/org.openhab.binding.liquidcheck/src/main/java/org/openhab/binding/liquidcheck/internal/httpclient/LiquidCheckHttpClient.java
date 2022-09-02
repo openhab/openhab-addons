@@ -27,7 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link LiquidCheckHttpClient} sets up the jetty client for the connection to the device
+ * The {@link LiquidCheckHttpClient} sets up the jetty client for the connection to the device.
  *
  * @author Marcel Goerentz - Initial contribution
  */

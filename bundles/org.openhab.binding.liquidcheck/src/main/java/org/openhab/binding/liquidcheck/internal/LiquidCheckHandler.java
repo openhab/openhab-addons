@@ -12,7 +12,23 @@
  */
 package org.openhab.binding.liquidcheck.internal;
 
-import static org.openhab.binding.liquidcheck.internal.LiquidCheckBindingConstants.*;
+import static org.openhab.binding.liquidcheck.internal.LiquidCheckBindingConstants.CONFIG_ID_FIRMWARE;
+import static org.openhab.binding.liquidcheck.internal.LiquidCheckBindingConstants.CONFIG_ID_HARDWARE;
+import static org.openhab.binding.liquidcheck.internal.LiquidCheckBindingConstants.CONFIG_ID_IP;
+import static org.openhab.binding.liquidcheck.internal.LiquidCheckBindingConstants.CONFIG_ID_MAC;
+import static org.openhab.binding.liquidcheck.internal.LiquidCheckBindingConstants.CONFIG_ID_MANUFACTURER;
+import static org.openhab.binding.liquidcheck.internal.LiquidCheckBindingConstants.CONFIG_ID_NAME;
+import static org.openhab.binding.liquidcheck.internal.LiquidCheckBindingConstants.CONFIG_ID_SECURITY_CODE;
+import static org.openhab.binding.liquidcheck.internal.LiquidCheckBindingConstants.CONFIG_ID_SSID;
+import static org.openhab.binding.liquidcheck.internal.LiquidCheckBindingConstants.CONFIG_ID_UUID;
+import static org.openhab.binding.liquidcheck.internal.LiquidCheckBindingConstants.CONTENT_CHANNEL;
+import static org.openhab.binding.liquidcheck.internal.LiquidCheckBindingConstants.FILL_INDICATOR_CHANNEL;
+import static org.openhab.binding.liquidcheck.internal.LiquidCheckBindingConstants.LEVEL_CHANNEL;
+import static org.openhab.binding.liquidcheck.internal.LiquidCheckBindingConstants.MEASURE_CHANNEL;
+import static org.openhab.binding.liquidcheck.internal.LiquidCheckBindingConstants.PUMP_TOTAL_RUNS_CHANNEL;
+import static org.openhab.binding.liquidcheck.internal.LiquidCheckBindingConstants.PUMP_TOTAL_RUNTIME_CHANNEL;
+import static org.openhab.binding.liquidcheck.internal.LiquidCheckBindingConstants.RAW_CONTENT_CHANNEL;
+import static org.openhab.binding.liquidcheck.internal.LiquidCheckBindingConstants.RAW_LEVEL_CHANNEL;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,7 +40,7 @@ import java.util.concurrent.TimeoutException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.liquidcheck.internal.httpclient.LiquidCheckHttpClient;
-import org.openhab.binding.liquidcheck.internal.json.Response;
+import org.openhab.binding.liquidcheck.internal.json.CommData;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -70,7 +86,7 @@ public class LiquidCheckHandler extends BaseThingHandler {
                 try {
                     if (client.isConnected()) {
                         String response = client.measureCommand();
-                        Response commandResponse = new Gson().fromJson(response, Response.class);
+                        CommData commandResponse = new Gson().fromJson(response, CommData.class);
                         if (null != commandResponse) {
                             if (!"success".equals(commandResponse.context.status)) {
                                 logger.error("Starting the measurement was not successful!");
@@ -109,7 +125,7 @@ public class LiquidCheckHandler extends BaseThingHandler {
         });
     }
 
-    private Map<String, String> createPropertyMap(Response response) {
+    private Map<String, String> createPropertyMap(CommData response) {
         Map<String, String> properties = new HashMap<>();
         properties.put(CONFIG_ID_FIRMWARE, response.payload.device.firmware);
         properties.put(CONFIG_ID_HARDWARE, response.payload.device.hardware);
@@ -143,7 +159,7 @@ public class LiquidCheckHandler extends BaseThingHandler {
         public void run() {
             try {
                 String jsonString = client.pollData();
-                Response response = new Gson().fromJson(jsonString, Response.class);
+                CommData response = new Gson().fromJson(jsonString, CommData.class);
                 if (null != response) {
                     Map<String, String> properties = createPropertyMap(response);
                     if (!oldProps.equals(properties)) {

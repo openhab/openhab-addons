@@ -15,12 +15,13 @@ package org.openhab.binding.liquidcheck.internal.json;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link System} .
+ * The {@link LiquidCheckSystem} is used for serializing and deserializing of JSONs.
+ * It contains the errer counter, the uptime and the pump class.
  *
  * @author Marcel Goerentz - Initial contribution
  */
 @NonNullByDefault
-public class System {
+public class LiquidCheckSystem {
     public int error = 0;
     public int uptime = 0;
     public Pump pump = new Pump();

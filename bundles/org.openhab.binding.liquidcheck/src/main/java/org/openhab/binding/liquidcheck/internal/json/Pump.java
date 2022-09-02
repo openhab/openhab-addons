@@ -15,7 +15,8 @@ package org.openhab.binding.liquidcheck.internal.json;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link Pump} .
+ * The {@link Pump} is used for serializing and deserializing of JSONs.
+ * It contains the pump data like total runs and total runtime.
  *
  * @author Marcel Goerentz - Initial contribution
  */

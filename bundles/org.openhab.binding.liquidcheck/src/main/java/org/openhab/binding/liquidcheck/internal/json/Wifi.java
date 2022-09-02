@@ -15,7 +15,8 @@ package org.openhab.binding.liquidcheck.internal.json;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link Wifi} .
+ * The {@link Wifi} is used for serializing and deserializing of JSONs.
+ * It conatains the wifi related data within the Station class and AccessPoint class.
  *
  * @author Marcel Goerentz - Initial contribution
  */

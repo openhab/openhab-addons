@@ -15,8 +15,9 @@ package org.openhab.binding.liquidcheck.internal.json;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link Expansion} .
- *
+ * The {@link Expansion} is used for serializing and deserializing of JSONs.
+ * It contains the Expansion related data like boardType, oneWire and board.
+ * 
  * @author Marcel Goerentz - Initial contribution
  */
 @NonNullByDefault

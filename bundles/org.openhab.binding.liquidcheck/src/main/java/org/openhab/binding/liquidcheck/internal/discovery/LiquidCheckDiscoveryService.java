@@ -12,7 +12,18 @@
  */
 package org.openhab.binding.liquidcheck.internal.discovery;
 
-import static org.openhab.binding.liquidcheck.internal.LiquidCheckBindingConstants.*;
+import static org.openhab.binding.liquidcheck.internal.LiquidCheckBindingConstants.CONFIG_ID_FIRMWARE;
+import static org.openhab.binding.liquidcheck.internal.LiquidCheckBindingConstants.CONFIG_ID_HARDWARE;
+import static org.openhab.binding.liquidcheck.internal.LiquidCheckBindingConstants.CONFIG_ID_HOSTNAME;
+import static org.openhab.binding.liquidcheck.internal.LiquidCheckBindingConstants.CONFIG_ID_IP;
+import static org.openhab.binding.liquidcheck.internal.LiquidCheckBindingConstants.CONFIG_ID_MAC;
+import static org.openhab.binding.liquidcheck.internal.LiquidCheckBindingConstants.CONFIG_ID_MANUFACTURER;
+import static org.openhab.binding.liquidcheck.internal.LiquidCheckBindingConstants.CONFIG_ID_NAME;
+import static org.openhab.binding.liquidcheck.internal.LiquidCheckBindingConstants.CONFIG_ID_SECURITY_CODE;
+import static org.openhab.binding.liquidcheck.internal.LiquidCheckBindingConstants.CONFIG_ID_SSID;
+import static org.openhab.binding.liquidcheck.internal.LiquidCheckBindingConstants.CONFIG_ID_UUID;
+import static org.openhab.binding.liquidcheck.internal.LiquidCheckBindingConstants.SUPPORTED_THING_TYPES_UIDS;
+import static org.openhab.binding.liquidcheck.internal.LiquidCheckBindingConstants.THING_TYPE_LIQUID_CHEK;
 
 import java.io.IOException;
 import java.net.Inet4Address;
@@ -33,7 +44,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
-import org.openhab.binding.liquidcheck.internal.json.Response;
+import org.openhab.binding.liquidcheck.internal.json.CommData;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -79,7 +90,7 @@ public class LiquidCheckDiscoveryService extends AbstractDiscoveryService {
                 request.followRedirects(false);
                 ContentResponse response = request.send();
                 if (response.getStatus() == 200) {
-                    Response json = new Gson().fromJson(response.getContentAsString(), Response.class);
+                    CommData json = new Gson().fromJson(response.getContentAsString(), CommData.class);
                     if (null != json) {
                         if (InetAddress.getByName(json.payload.wifi.station.hostname).isReachable(50)) {
                             isHostname = true;
@@ -193,7 +204,7 @@ public class LiquidCheckDiscoveryService extends AbstractDiscoveryService {
      * 
      * @param response
      */
-    private void buildDiscoveryResult(Response response) {
+    private void buildDiscoveryResult(CommData response) {
         ThingUID thingUID = new ThingUID(THING_TYPE_LIQUID_CHEK, response.payload.device.uuid);
         DiscoveryResult dResult = DiscoveryResultBuilder.create(thingUID).withProperties(createPropertyMap(response))
                 .withLabel(response.payload.device.name).build();
@@ -206,7 +217,7 @@ public class LiquidCheckDiscoveryService extends AbstractDiscoveryService {
      * @param response
      * @return
      */
-    private Map<String, Object> createPropertyMap(Response response) {
+    private Map<String, Object> createPropertyMap(CommData response) {
         Map<String, Object> properties = new HashMap<>();
         properties.put(CONFIG_ID_FIRMWARE, response.payload.device.firmware);
         properties.put(CONFIG_ID_HARDWARE, response.payload.device.hardware);

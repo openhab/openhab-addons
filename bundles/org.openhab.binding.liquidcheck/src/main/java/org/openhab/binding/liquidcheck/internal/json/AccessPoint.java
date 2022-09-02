@@ -15,7 +15,8 @@ package org.openhab.binding.liquidcheck.internal.json;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link AccessPoint} .
+ * The {@link AccessPoint} is used for serializing and deserializing of JSONs.
+ * It contains the data for ssid, bssid and the rssi value.
  *
  * @author Marcel Goerentz - Initial contribution
  */

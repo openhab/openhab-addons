@@ -15,7 +15,8 @@ package org.openhab.binding.liquidcheck.internal.json;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link Raw} .
+ * The {@link Raw} is used for serializing and deserializing of JSONs.
+ * It contains the raw data measured and calculated by the sensor.
  *
  * @author Marcel Goerentz - Initial contribution
  */
