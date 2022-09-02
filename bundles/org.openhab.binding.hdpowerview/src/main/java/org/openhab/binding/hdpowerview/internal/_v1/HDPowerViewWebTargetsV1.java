@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.hdpowerview.internal.api.v1;
+package org.openhab.binding.hdpowerview.internal._v1;
 
 import java.util.List;
 
@@ -24,6 +24,8 @@ import org.openhab.binding.hdpowerview.internal.api.ShadeData;
 import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
 import org.openhab.binding.hdpowerview.internal.api.SurveyData;
 import org.openhab.binding.hdpowerview.internal.api.UserData;
+import org.openhab.binding.hdpowerview.internal.api._v1.ShadeDataV1;
+import org.openhab.binding.hdpowerview.internal.api._v1.ShadePositionV1;
 import org.openhab.binding.hdpowerview.internal.api.requests.RepeaterBlinking;
 import org.openhab.binding.hdpowerview.internal.api.requests.RepeaterColor;
 import org.openhab.binding.hdpowerview.internal.api.requests.ShadeCalibrate;
@@ -44,6 +46,8 @@ import org.openhab.binding.hdpowerview.internal.api.responses.Shade;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades;
 import org.openhab.binding.hdpowerview.internal.api.responses.Survey;
 import org.openhab.binding.hdpowerview.internal.api.responses.UserDataResponse;
+import org.openhab.binding.hdpowerview.internal.api.responses._v1.SceneV1;
+import org.openhab.binding.hdpowerview.internal.api.responses._v1.ScheduledEventV1;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubInvalidResponseException;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubMaintenanceException;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubProcessingException;
