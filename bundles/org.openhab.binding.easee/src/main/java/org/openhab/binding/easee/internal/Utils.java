@@ -40,7 +40,7 @@ import com.google.gson.JsonPrimitive;
  */
 @NonNullByDefault
 public final class Utils {
-    private static final Logger logger = LoggerFactory.getLogger(Utils.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Utils.class);
 
     /**
      * only static methods no instance needed
@@ -56,9 +56,9 @@ public final class Utils {
      */
     public static ZonedDateTime parseDate(String date) {
         final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssX");
-        logger.debug("parsing: {}", date);
+        LOGGER.debug("parsing: {}", date);
         ZonedDateTime zdt = ZonedDateTime.parse(date, formatter);
-        logger.debug("parsing completed: {}", date);
+        LOGGER.debug("parsing completed: {}", date);
         return zdt;
     }
 

@@ -28,9 +28,9 @@ import org.openhab.core.types.Command;
  */
 @NonNullByDefault
 public class SetOfflineMaxCircuitCurrents extends SetCircuitSettings {
-    private final String PHASE1 = "offlineMaxCircuitCurrentP1";
-    private final String PHASE2 = "offlineMaxCircuitCurrentP2";
-    private final String PHASE3 = "offlineMaxCircuitCurrentP3";
+    private static final String PHASE1 = "offlineMaxCircuitCurrentP1";
+    private static final String PHASE2 = "offlineMaxCircuitCurrentP2";
+    private static final String PHASE3 = "offlineMaxCircuitCurrentP3";
 
     public SetOfflineMaxCircuitCurrents(EaseeThingHandler handler, Channel channel, Command command, String circuitId) {
         super(handler, channel, command, circuitId);

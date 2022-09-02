@@ -34,9 +34,9 @@ import org.openhab.core.types.Command;
  */
 @NonNullByDefault
 public class SetDynamicCircuitCurrents extends AbstractWriteCommand {
-    private final String PHASE1 = "phase1";
-    private final String PHASE2 = "phase2";
-    private final String PHASE3 = "phase3";
+    private static final String PHASE1 = "phase1";
+    private static final String PHASE2 = "phase2";
+    private static final String PHASE3 = "phase3";
     private final String url;
 
     public SetDynamicCircuitCurrents(EaseeThingHandler handler, Channel channel, Command command, String circuitId) {

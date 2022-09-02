@@ -54,7 +54,6 @@ public class EaseeMasterChargerHandler extends EaseeChargerHandler {
 
         // proceed if charger is online, otherwise circuit data is not in sync.
         if (getThing().getStatus() == ThingStatus.ONLINE) {
-
             String circuitId = getConfig().get(EaseeBindingConstants.THING_CONFIG_CIRCUIT_ID).toString();
             logger.debug("polling circuit data for {}", circuitId);
 
