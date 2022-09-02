@@ -24,11 +24,12 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public abstract class Scene {
+public abstract class Scene implements Comparable<Scene> {
     // fields that are common to Generation 1/2 and 3 hubs
     public int id;
     public @Nullable String name;
 
+    @Override
     public abstract int compareTo(Scene other);
 
     public String getName() {
