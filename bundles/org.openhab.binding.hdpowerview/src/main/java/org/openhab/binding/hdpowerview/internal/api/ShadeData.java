@@ -27,15 +27,14 @@ import org.eclipse.jdt.annotation.Nullable;
 public abstract class ShadeData {
     // fields common to Generation 1/2 and 3 hubs
     public int id;
-    public int type;
     public @Nullable String name;
-    public @Nullable Integer capabilities;
-    public int batteryStatus;
     public int roomId;
-    public @Nullable Firmware firmware;
-    public int signalStrength;
-
+    public int type;
+    public int batteryStatus;
     public @Nullable ShadePosition positions;
+    public int signalStrength;
+    public @Nullable Integer capabilities;
+    public @Nullable Firmware firmware;
 
     public String getName() {
         return new String(Base64.getDecoder().decode(name));

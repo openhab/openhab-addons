@@ -28,9 +28,9 @@ public abstract class ScheduledEvent {
     public int id;
     public int type;
     public boolean enabled;
-    public int sceneId;
     public int hour;
     public int minute;
+    public int sceneId;
 
     public abstract EnumSet<DayOfWeek> getDays();
 

@@ -327,7 +327,7 @@ public class ShadePositionV1 extends ShadePosition {
      * @return this object.
      */
     @Override
-    public ShadePositionV1 setPosition(Capabilities shadeCapabilities, CoordinateSystem posKindCoords, int percent) {
+    public ShadePosition setPosition(Capabilities shadeCapabilities, CoordinateSystem posKindCoords, int percent) {
         logger.trace("setPosition(): capabilities={}, coords={}, percent={}", shadeCapabilities, posKindCoords,
                 percent);
         // if necessary swap the order of position1 and position2
