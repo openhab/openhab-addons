@@ -46,8 +46,8 @@ public class EaseeBindingConstants {
     public static final String CHANNEL_GROUP_CHARGER_STATE = "state";
     public static final String CHANNEL_GROUP_CHARGER_CONFIG = "config";
     public static final String CHANNEL_GROUP_CHARGER_COMMANDS = "commands";
-    public static final String CHANNEL_GROUP_CHARGER_LATEST_SESSION = "latest_session";
-    public static final String CHANNEL_GROUP_CIRCUIT_DYNAMIC_CURRENT = "dynamic_current";
+    public static final String CHANNEL_GROUP_CHARGER_LATEST_SESSION = "latestSession";
+    public static final String CHANNEL_GROUP_CIRCUIT_DYNAMIC_CURRENT = "dynamicCurrent";
     public static final String CHANNEL_GROUP_CIRCUIT_SETTINGS = "settings";
 
     // Channel types

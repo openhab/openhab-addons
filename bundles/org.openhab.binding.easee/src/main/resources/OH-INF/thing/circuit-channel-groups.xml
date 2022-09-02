@@ -60,7 +60,7 @@
 			</channel>
 		</channels>
 	</channel-group-type>
-	<channel-group-type id="circuit-dynamic_current">
+	<channel-group-type id="circuit-dynamicCurrent">
 		<label>Circuit Dynamic Current</label>
 		<channels>
 			<channel id="phase1" typeId="type-current">
