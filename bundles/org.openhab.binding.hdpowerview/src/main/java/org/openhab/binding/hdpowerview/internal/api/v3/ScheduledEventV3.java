@@ -28,7 +28,7 @@ import org.openhab.binding.hdpowerview.internal.api.responses.ScheduledEvents;
 @NonNullByDefault
 public class ScheduledEventV3 extends ScheduledEvent {
     // fields specific to Generation 3
-    public int days;
+    public @Nullable String days;
 
     private static final int MON = 0x01;
     private static final int TUE = 0x02;
@@ -62,10 +62,11 @@ public class ScheduledEventV3 extends ScheduledEvent {
     public final int hashCode() {
         final int prime = 31;
         int result = 1;
+        String days = this.days;
         result = prime * result + id;
         result = prime * result + (enabled ? 1 : 0);
         result = prime * result + sceneId;
-        result = prime * result + days;
+        result = prime * result + (days != null ? days.hashCode() : 0);
         result = prime * result + hour;
         result = prime * result + minute;
         return result;
@@ -74,26 +75,34 @@ public class ScheduledEventV3 extends ScheduledEvent {
     @Override
     public EnumSet<DayOfWeek> getDays() {
         EnumSet<DayOfWeek> daySet = EnumSet.noneOf(DayOfWeek.class);
-        if ((days & MON) != 0) {
-            daySet.add(DayOfWeek.MONDAY);
-        }
-        if ((days & TUE) != 0) {
-            daySet.add(DayOfWeek.TUESDAY);
-        }
-        if ((days & WED) != 0) {
-            daySet.add(DayOfWeek.WEDNESDAY);
-        }
-        if ((days & THU) != 0) {
-            daySet.add(DayOfWeek.THURSDAY);
-        }
-        if ((days & FRI) != 0) {
-            daySet.add(DayOfWeek.FRIDAY);
-        }
-        if ((days & SAT) != 0) {
-            daySet.add(DayOfWeek.SATURDAY);
-        }
-        if ((days & SUN) != 0) {
-            daySet.add(DayOfWeek.SUNDAY);
+        String days = this.days;
+        if (days != null) {
+            try {
+                int daysInt = Integer.valueOf(days).intValue();
+                if ((daysInt & MON) != 0) {
+                    daySet.add(DayOfWeek.MONDAY);
+                }
+                if ((daysInt & TUE) != 0) {
+                    daySet.add(DayOfWeek.TUESDAY);
+                }
+                if ((daysInt & WED) != 0) {
+                    daySet.add(DayOfWeek.WEDNESDAY);
+                }
+                if ((daysInt & THU) != 0) {
+                    daySet.add(DayOfWeek.THURSDAY);
+                }
+                if ((daysInt & FRI) != 0) {
+                    daySet.add(DayOfWeek.FRIDAY);
+                }
+                if ((daysInt & SAT) != 0) {
+                    daySet.add(DayOfWeek.SATURDAY);
+                }
+                if ((daysInt & SUN) != 0) {
+                    daySet.add(DayOfWeek.SUNDAY);
+                }
+            } catch (NumberFormatException e) {
+                // fall through
+            }
         }
         return daySet;
     }
