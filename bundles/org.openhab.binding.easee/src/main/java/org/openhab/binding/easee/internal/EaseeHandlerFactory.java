@@ -20,8 +20,6 @@ import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.easee.internal.handler.EaseeChargerHandler;
 import org.openhab.binding.easee.internal.handler.EaseeMasterChargerHandler;
 import org.openhab.binding.easee.internal.handler.EaseeSiteHandler;
-import org.openhab.core.i18n.LocaleProvider;
-import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -51,15 +49,10 @@ public class EaseeHandlerFactory extends BaseThingHandlerFactory {
      * the shared http client
      */
     private final HttpClient httpClient;
-    private final LocaleProvider localeProvider;
-    private final TranslationProvider i18nProvider;
 
     @Activate
-    public EaseeHandlerFactory(final @Reference HttpClientFactory httpClientFactory,
-            final @Reference LocaleProvider localeProvider, final @Reference TranslationProvider i18nProvider) {
+    public EaseeHandlerFactory(final @Reference HttpClientFactory httpClientFactory) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
-        this.localeProvider = localeProvider;
-        this.i18nProvider = i18nProvider;
     }
 
     @Override
@@ -72,11 +65,11 @@ public class EaseeHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_SITE.equals(thingTypeUID)) {
-            return new EaseeSiteHandler((Bridge) thing, httpClient, localeProvider, i18nProvider);
+            return new EaseeSiteHandler((Bridge) thing, httpClient);
         } else if (THING_TYPE_MASTER_CHARGER.equals(thingTypeUID)) {
-            return new EaseeMasterChargerHandler(thing, localeProvider, i18nProvider);
+            return new EaseeMasterChargerHandler(thing);
         } else if (THING_TYPE_CHARGER.equals(thingTypeUID)) {
-            return new EaseeChargerHandler(thing, localeProvider, i18nProvider);
+            return new EaseeChargerHandler(thing);
         } else {
             logger.warn("Unsupported Thing-Type: {}", thingTypeUID.getAsString());
         }

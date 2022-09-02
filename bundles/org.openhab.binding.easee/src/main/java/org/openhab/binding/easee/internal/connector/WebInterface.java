@@ -33,7 +33,6 @@ import org.openhab.binding.easee.internal.command.account.Login;
 import org.openhab.binding.easee.internal.command.account.RefreshToken;
 import org.openhab.binding.easee.internal.handler.EaseeBridgeHandler;
 import org.openhab.binding.easee.internal.handler.StatusHandler;
-import org.openhab.binding.easee.internal.handler.TranslationService;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.slf4j.Logger;
@@ -90,11 +89,6 @@ public class WebInterface implements AtomicReferenceTrait {
      * HTTP client for asynchronous calls
      */
     private final HttpClient httpClient;
-
-    /**
-     * used to get translated strings
-     */
-    private final TranslationService translationService;
 
     /**
      * the scheduler which periodically sends web requests to the Easee Cloud API. Should be initiated with the thing's
@@ -157,7 +151,7 @@ public class WebInterface implements AtomicReferenceTrait {
                                 Utils.formatDate(tokenExpiry));
 
                         statusHandler.updateStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE,
-                                translationService.getLocalizedText(STATUS_TOKEN_VALIDATED));
+                                STATUS_TOKEN_VALIDATED);
                         setAuthenticated(true);
                         handler.startDiscovery();
                         break;
@@ -270,12 +264,11 @@ public class WebInterface implements AtomicReferenceTrait {
      * @param config Bridge configuration
      */
     public WebInterface(ScheduledExecutorService scheduler, EaseeBridgeHandler handler, HttpClient httpClient,
-            TranslationService translationService, StatusHandler statusHandler) {
+            StatusHandler statusHandler) {
         this.handler = handler;
         this.statusHandler = statusHandler;
         this.scheduler = scheduler;
         this.httpClient = httpClient;
-        this.translationService = translationService;
         this.tokenExpiry = OUTDATED_DATE;
         this.tokenRefreshDate = OUTDATED_DATE;
         this.accessToken = "";
