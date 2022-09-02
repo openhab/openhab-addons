@@ -8,12 +8,6 @@
 		<label>Switch</label>
 		<state readOnly="false"></state>
 	</channel-type>
-	<channel-type id="rwtype-integer">
-		<item-type>Number</item-type>
-		<label>Generic Integer</label>
-		<state pattern="%d" readOnly="false">
-		</state>
-	</channel-type>
 	<channel-type id="rwtype-current">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Electric Current</label>

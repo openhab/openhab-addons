@@ -132,11 +132,11 @@ public class EaseeBindingConstants {
     public static final String CIRCUIT_SETTINGS_URL = "https://api.easee.cloud/api/sites/{siteId}/circuits/{circuitId}/settings";
 
     // Status Keys
-    public static final String STATUS_TOKEN_VALIDATED = "@text/binding.easee.status.token.validated";
-    public static final String STATUS_WAITING_FOR_BRIDGE = "@text/binding.easee.status.waiting.for.bridge";
-    public static final String STATUS_WAITING_FOR_LOGIN = "@text/binding.easee.status.waiting.for.login";
-    public static final String STATUS_NO_VALID_DATA = "@text/binding.easee.status.no.valid.data";
-    public static final String STATUS_NO_CONNECTION = "@text/binding.easee.status.no.connection";
+    public static final String STATUS_TOKEN_VALIDATED = "@text/status.token.validated";
+    public static final String STATUS_WAITING_FOR_BRIDGE = "@text/status.waiting.for.bridge";
+    public static final String STATUS_WAITING_FOR_LOGIN = "@text/status.waiting.for.login";
+    public static final String STATUS_NO_VALID_DATA = "@text/status.no.valid.data";
+    public static final String STATUS_NO_CONNECTION = "@text/status.no.connection";
 
     // other
     public static final long POLLING_INITIAL_DELAY = 1;
