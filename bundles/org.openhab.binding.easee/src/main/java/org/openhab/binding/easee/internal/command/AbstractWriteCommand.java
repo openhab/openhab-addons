@@ -74,8 +74,9 @@ public abstract class AbstractWriteCommand extends AbstractCommand implements Ea
      * helper that transforms channelId + commandvalue in a JSON string that can be added as content to a POST request.
      *
      * @return converted JSON string
+     * @throws ValidationException
      */
-    protected String getJsonContent() {
+    protected String getJsonContent() throws ValidationException {
         Map<String, String> content = new HashMap<String, String>(1);
         content.put(channel.getUID().getIdWithoutGroup(), getCommandValue());
 
@@ -83,7 +84,7 @@ public abstract class AbstractWriteCommand extends AbstractCommand implements Ea
     }
 
     @Override
-    protected Request prepareRequest(Request requestToPrepare) {
+    protected Request prepareRequest(Request requestToPrepare) throws ValidationException {
         String channelId = channel.getUID().getIdWithoutGroup();
         String expr = Utils.getValidationExpression(channel);
         String value = getCommandValue();
@@ -113,6 +114,7 @@ public abstract class AbstractWriteCommand extends AbstractCommand implements Ea
      *
      * @param requestToPrepare the request to prepare
      * @return prepared Request object
+     * @throws ValidationException
      */
-    protected abstract Request prepareWriteRequest(Request requestToPrepare);
+    protected abstract Request prepareWriteRequest(Request requestToPrepare) throws ValidationException;
 }

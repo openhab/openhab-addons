@@ -51,9 +51,10 @@ public class SetDynamicCircuitCurrents extends AbstractWriteCommand implements E
      * helper that transforms channelId + commandvalue in a JSON string that can be added as content to a POST request.
      *
      * @return converted JSON string
+     * @throws ValidationException
      */
     @Override
-    protected String getJsonContent() {
+    protected String getJsonContent() throws ValidationException {
         Map<String, String> content = new HashMap<String, String>(3);
         String rawCommand = getCommandValue();
         String[] tokens = rawCommand.split(";");
@@ -69,7 +70,7 @@ public class SetDynamicCircuitCurrents extends AbstractWriteCommand implements E
     }
 
     @Override
-    protected Request prepareWriteRequest(Request requestToPrepare) {
+    protected Request prepareWriteRequest(Request requestToPrepare) throws ValidationException {
         requestToPrepare.method(HttpMethod.POST);
         StringContentProvider cp = new StringContentProvider(getJsonContent());
         requestToPrepare.content(cp);

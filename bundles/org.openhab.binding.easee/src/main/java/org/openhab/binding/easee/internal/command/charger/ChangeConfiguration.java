@@ -21,6 +21,7 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.easee.internal.command.AbstractWriteCommand;
 import org.openhab.binding.easee.internal.command.EaseeCommand;
 import org.openhab.binding.easee.internal.handler.EaseeThingHandler;
+import org.openhab.binding.easee.internal.model.ValidationException;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.types.Command;
 
@@ -39,7 +40,7 @@ public class ChangeConfiguration extends AbstractWriteCommand implements EaseeCo
     }
 
     @Override
-    protected Request prepareWriteRequest(Request requestToPrepare) {
+    protected Request prepareWriteRequest(Request requestToPrepare) throws ValidationException {
         StringContentProvider cp = new StringContentProvider(getJsonContent());
         requestToPrepare.content(cp);
         requestToPrepare.method(HttpMethod.POST);

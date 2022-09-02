@@ -18,6 +18,7 @@ import org.eclipse.jetty.client.api.Response.CompleteListener;
 import org.eclipse.jetty.client.api.Response.ContentListener;
 import org.eclipse.jetty.client.api.Response.FailureListener;
 import org.eclipse.jetty.client.api.Response.SuccessListener;
+import org.openhab.binding.easee.internal.model.ValidationException;
 
 /**
  * public interface for all commands
@@ -33,8 +34,9 @@ public interface EaseeCommand extends SuccessListener, FailureListener, ContentL
      * this method is to be called by the UplinkWebinterface class
      *
      * @param asyncclient
+     * @throws ValidationException
      */
-    void performAction(HttpClient asyncclient, String token);
+    void performAction(HttpClient asyncclient, String token) throws ValidationException;
 
     /**
      * sets a result processor for json result data

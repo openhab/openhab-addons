@@ -20,7 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Alexander Friese - initial contribution
  */
 @NonNullByDefault
-public class ValidationException extends RuntimeException {
+public class ValidationException extends Exception {
     private static final long serialVersionUID = -6479556472780307224L;
 
     public ValidationException() {

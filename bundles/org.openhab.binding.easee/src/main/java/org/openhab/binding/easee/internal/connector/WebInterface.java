@@ -33,6 +33,7 @@ import org.openhab.binding.easee.internal.command.account.Login;
 import org.openhab.binding.easee.internal.command.account.RefreshToken;
 import org.openhab.binding.easee.internal.handler.EaseeBridgeHandler;
 import org.openhab.binding.easee.internal.handler.StatusHandler;
+import org.openhab.binding.easee.internal.model.ValidationException;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.slf4j.Logger;
@@ -208,7 +209,11 @@ public class WebInterface implements AtomicReferenceTrait {
             setAuthenticated(false);
             EaseeCommand loginCommand = new Login(handler);
             loginCommand.registerResultProcessor(this::processAuthenticationResult);
-            loginCommand.performAction(httpClient, accessToken);
+            try {
+                loginCommand.performAction(httpClient, accessToken);
+            } catch (ValidationException e) {
+                // this cannot happen
+            }
         }
 
         /**
@@ -224,14 +229,20 @@ public class WebInterface implements AtomicReferenceTrait {
 
                 EaseeCommand refreshCommand = new RefreshToken(handler, accessToken, refreshToken);
                 refreshCommand.registerResultProcessor(this::processAuthenticationResult);
-                refreshCommand.performAction(httpClient, accessToken);
+                try {
+                    refreshCommand.performAction(httpClient, accessToken);
+                } catch (ValidationException e) {
+                    // this cannot happen
+                }
             }
         }
 
         /**
          * executes the next command in the queue. requires authenticated session.
+         *
+         * @throws ValidationException
          */
-        private void executeCommand() {
+        private void executeCommand() throws ValidationException {
             EaseeCommand command = commandQueue.poll();
             if (command != null) {
                 command.registerResultProcessor(this::processExecutionResult);

@@ -37,6 +37,7 @@ import org.openhab.binding.easee.internal.EaseeBindingConstants;
 import org.openhab.binding.easee.internal.connector.CommunicationStatus;
 import org.openhab.binding.easee.internal.handler.EaseeThingHandler;
 import org.openhab.binding.easee.internal.model.GenericResponseTransformer;
+import org.openhab.binding.easee.internal.model.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -250,9 +251,11 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
     /**
      * preparation of the request. will call a hook (prepareRequest) that has to be implemented in the subclass to add
      * content to the request.
+     *
+     * @throws ValidationException
      */
     @Override
-    public void performAction(HttpClient asyncclient, String accessToken) {
+    public void performAction(HttpClient asyncclient, String accessToken) throws ValidationException {
         Request request = asyncclient.newRequest(getURL()).timeout(handler.getBridgeConfiguration().getAsyncTimeout(),
                 TimeUnit.SECONDS);
 
@@ -300,8 +303,9 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
      *
      * @param requestToPrepare the request to prepare
      * @return prepared Request object
+     * @throws ValidationException
      */
-    protected abstract Request prepareRequest(Request requestToPrepare);
+    protected abstract Request prepareRequest(Request requestToPrepare) throws ValidationException;
 
     /**
      * concrete implementation has to provide the channel group.
