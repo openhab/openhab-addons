@@ -7,19 +7,19 @@
 		<label>Circuit Settings</label>
 		<channels>
 			<channel id="maxCircuitCurrentP1" typeId="type-current">
-				<label>Max Circuit Current Phase 1</label>
+				<label>Max Current P1</label>
 				<description>Max circuit current for phase 1.</description>
 			</channel>
 			<channel id="maxCircuitCurrentP2" typeId="type-current">
-				<label>Max Circuit Current Phase 2</label>
+				<label>Max Current P2</label>
 				<description>Max circuit current for phase 2.</description>
 			</channel>
 			<channel id="maxCircuitCurrentP3" typeId="type-current">
-				<label>Max Circuit Current Phase 3</label>
+				<label>Max Current P3</label>
 				<description>Max circuit current for phase 3.</description>
 			</channel>
 			<channel id="maxCurrents" typeId="rwtype-currents">
-				<label>Max Circuit Currents Phase 1,2,3</label>
+				<label>Max Currents</label>
 				<description>Max circuit currents for phases 1,2,3.</description>
 				<properties>
 					<property name="writeCommand">SetMaxCircuitCurrents</property>
@@ -27,19 +27,19 @@
 				</properties>
 			</channel>
 			<channel id="offlineMaxCircuitCurrentP1" typeId="type-current">
-				<label>Offline Max Circuit Current Phase 1</label>
+				<label>Offline Max Current P1</label>
 				<description>Max circuit current for phase 1 in offline mode.</description>
 			</channel>
 			<channel id="offlineMaxCircuitCurrentP2" typeId="type-current">
-				<label>Offline Max Circuit Current Phase 2</label>
+				<label>Offline Max Current P2</label>
 				<description>Max circuit current for phase 2 in offline mode.</description>
 			</channel>
 			<channel id="offlineMaxCircuitCurrentP3" typeId="type-current">
-				<label>Offline Max Circuit Current Phase 3</label>
+				<label>Offline Max Current P3</label>
 				<description>Max circuit current for phase 3 in offline mode.</description>
 			</channel>
 			<channel id="offlineMaxCurrents" typeId="rwtype-currents">
-				<label>Offline Max Circuit Currents Phase 1,2,3</label>
+				<label>Offline Max Currents</label>
 				<description>Offline Max circuit currents for phases 1,2,3.</description>
 				<properties>
 					<property name="writeCommand">SetOfflineMaxCircuitCurrents</property>
@@ -64,19 +64,19 @@
 		<label>Circuit Dynamic Current</label>
 		<channels>
 			<channel id="phase1" typeId="type-current">
-				<label>Dynamic Circuit Current Phase 1</label>
+				<label>Dynamic Current P1</label>
 				<description>Dynamic set circuit current for phase 1.</description>
 			</channel>
 			<channel id="phase2" typeId="type-current">
-				<label>Dynamic Circuit Current Phase 2</label>
+				<label>Dynamic Current P2</label>
 				<description>Dynamic set circuit current for phase 2.</description>
 			</channel>
 			<channel id="phase3" typeId="type-current">
-				<label>Dynamic Circuit Current Phase 3</label>
+				<label>Dynamic Current P3</label>
 				<description>Dynamic set circuit current for phase 3.</description>
 			</channel>
 			<channel id="dynamicCurrents" typeId="rwtype-currents">
-				<label>Dynamic Circuit Currents Phase 1,2,3</label>
+				<label>Dynamic Currents</label>
 				<description>Dynamic circuit currents for phases 1,2,3.</description>
 				<properties>
 					<property name="writeCommand">SetDynamicCircuitCurrents</property>
