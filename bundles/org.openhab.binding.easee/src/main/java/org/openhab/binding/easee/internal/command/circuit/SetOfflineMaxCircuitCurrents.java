@@ -16,7 +16,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.easee.internal.command.EaseeCommand;
 import org.openhab.binding.easee.internal.handler.EaseeThingHandler;
 import org.openhab.binding.easee.internal.model.ValidationException;
 import org.openhab.core.thing.Channel;
@@ -28,7 +27,7 @@ import org.openhab.core.types.Command;
  * @author Alexander Friese - initial contribution
  */
 @NonNullByDefault
-public class SetOfflineMaxCircuitCurrents extends SetCircuitSettings implements EaseeCommand {
+public class SetOfflineMaxCircuitCurrents extends SetCircuitSettings {
     private final String PHASE1 = "offlineMaxCircuitCurrentP1";
     private final String PHASE2 = "offlineMaxCircuitCurrentP2";
     private final String PHASE3 = "offlineMaxCircuitCurrentP3";

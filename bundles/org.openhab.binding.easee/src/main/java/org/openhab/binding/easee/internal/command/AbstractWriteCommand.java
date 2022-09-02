@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
  * @author Alexander Friese - initial contribution
  */
 @NonNullByDefault
-public abstract class AbstractWriteCommand extends AbstractCommand implements EaseeCommand {
+public abstract class AbstractWriteCommand extends AbstractCommand {
     private final Logger logger = LoggerFactory.getLogger(AbstractWriteCommand.class);
 
     protected final Channel channel;

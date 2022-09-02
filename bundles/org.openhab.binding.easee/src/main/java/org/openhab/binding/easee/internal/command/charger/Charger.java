@@ -18,7 +18,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.easee.internal.command.AbstractCommand;
-import org.openhab.binding.easee.internal.command.EaseeCommand;
 import org.openhab.binding.easee.internal.command.JsonResultProcessor;
 import org.openhab.binding.easee.internal.handler.EaseeThingHandler;
 
@@ -28,7 +27,7 @@ import org.openhab.binding.easee.internal.handler.EaseeThingHandler;
  * @author Alexander Friese - initial contribution
  */
 @NonNullByDefault
-public class Charger extends AbstractCommand implements EaseeCommand {
+public class Charger extends AbstractCommand {
     private final String url;
 
     public Charger(EaseeThingHandler handler, String chargerId, JsonResultProcessor resultProcessor) {

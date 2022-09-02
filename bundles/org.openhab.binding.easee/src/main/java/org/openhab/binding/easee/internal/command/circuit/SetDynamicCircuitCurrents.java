@@ -22,7 +22,6 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.easee.internal.command.AbstractWriteCommand;
-import org.openhab.binding.easee.internal.command.EaseeCommand;
 import org.openhab.binding.easee.internal.handler.EaseeThingHandler;
 import org.openhab.binding.easee.internal.model.ValidationException;
 import org.openhab.core.thing.Channel;
@@ -34,7 +33,7 @@ import org.openhab.core.types.Command;
  * @author Alexander Friese - initial contribution
  */
 @NonNullByDefault
-public class SetDynamicCircuitCurrents extends AbstractWriteCommand implements EaseeCommand {
+public class SetDynamicCircuitCurrents extends AbstractWriteCommand {
     private final String PHASE1 = "phase1";
     private final String PHASE2 = "phase2";
     private final String PHASE3 = "phase3";

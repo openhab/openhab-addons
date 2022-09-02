@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  * @author Alexander Friese - initial contribution
  */
 @NonNullByDefault
-public class EaseeMasterChargerHandler extends EaseeChargerHandler implements EaseeThingHandler {
+public class EaseeMasterChargerHandler extends EaseeChargerHandler {
     private final Logger logger = LoggerFactory.getLogger(EaseeMasterChargerHandler.class);
 
     public EaseeMasterChargerHandler(Thing thing) {

@@ -23,7 +23,6 @@ import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.easee.internal.command.AbstractCommand;
-import org.openhab.binding.easee.internal.command.EaseeCommand;
 import org.openhab.binding.easee.internal.handler.EaseeBridgeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +35,7 @@ import com.google.gson.JsonObject;
  * @author Alexander Friese - initial contribution
  */
 @NonNullByDefault
-public class Login extends AbstractCommand implements EaseeCommand {
+public class Login extends AbstractCommand {
     private final Logger logger = LoggerFactory.getLogger(Login.class);
 
     class LoginData {

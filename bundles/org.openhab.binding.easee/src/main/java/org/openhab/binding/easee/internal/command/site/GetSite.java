@@ -18,7 +18,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.easee.internal.command.AbstractCommand;
-import org.openhab.binding.easee.internal.command.EaseeCommand;
 import org.openhab.binding.easee.internal.command.JsonResultProcessor;
 import org.openhab.binding.easee.internal.handler.EaseeBridgeHandler;
 
@@ -28,7 +27,7 @@ import org.openhab.binding.easee.internal.handler.EaseeBridgeHandler;
  * @author Alexander Friese - initial contribution
  */
 @NonNullByDefault
-public class GetSite extends AbstractCommand implements EaseeCommand {
+public class GetSite extends AbstractCommand {
 
     public GetSite(EaseeBridgeHandler handler, JsonResultProcessor resultProcessor) {
         // retry does not make much sense as it is a polling command, command should always succeed therefore update

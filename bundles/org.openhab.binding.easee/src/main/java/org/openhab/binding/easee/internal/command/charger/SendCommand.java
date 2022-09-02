@@ -18,7 +18,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.easee.internal.command.AbstractWriteCommand;
-import org.openhab.binding.easee.internal.command.EaseeCommand;
 import org.openhab.binding.easee.internal.handler.EaseeThingHandler;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.types.Command;
@@ -29,7 +28,7 @@ import org.openhab.core.types.Command;
  * @author Alexander Friese - initial contribution
  */
 @NonNullByDefault
-public class SendCommand extends AbstractWriteCommand implements EaseeCommand {
+public class SendCommand extends AbstractWriteCommand {
     private final String url;
 
     public SendCommand(EaseeThingHandler handler, String chargerId, Channel channel, Command command) {
