@@ -66,6 +66,7 @@ public class PulseAudioAudioSink extends PulseaudioSimpleProtocolStream implemen
         if (audioStream == null) {
             return;
         }
+        addClientCount();
         try (ConvertedInputStream normalizedPCMStream = new ConvertedInputStream(audioStream)) {
             for (int countAttempt = 1; countAttempt <= 2; countAttempt++) { // two attempts allowed
                 try {
@@ -107,7 +108,7 @@ public class PulseAudioAudioSink extends PulseaudioSimpleProtocolStream implemen
             throw new UnsupportedAudioFormatException("Cannot send sound to the pulseaudio sink",
                     audioStream.getFormat(), e);
         } finally {
-            scheduleDisconnect();
+            minusClientCount();
         }
     }
 

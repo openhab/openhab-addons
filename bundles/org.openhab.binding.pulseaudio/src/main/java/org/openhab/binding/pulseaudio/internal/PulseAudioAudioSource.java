@@ -23,7 +23,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -94,13 +93,9 @@ public class PulseAudioAudioSource extends PulseaudioSimpleProtocolStream implem
                     };
                     registerPipe(pipeOutput);
                     // get raw audio from the pulse audio socket
-                    return new PulseAudioStream(sourceFormat, pipeInput, (idle) -> {
-                        if (idle) {
-                            scheduleDisconnect();
-                        } else {
-                            // ensure pipe is writing
-                            startPipeWrite();
-                        }
+                    return new PulseAudioStream(sourceFormat, pipeInput, () -> {
+                        // ensure pipe is writing
+                        startPipeWrite();
                     });
                 } catch (IOException e) {
                     disconnect(); // disconnect to force clear connection in case of socket not cleanly shutdown
@@ -121,14 +116,15 @@ public class PulseAudioAudioSource extends PulseaudioSimpleProtocolStream implem
             }
         } catch (IOException e) {
             throw new AudioException(e);
-        } finally {
-            scheduleDisconnect();
         }
         throw new AudioException("Unable to create input stream");
     }
 
     private synchronized void registerPipe(PipedOutputStream pipeOutput) {
-        this.pipeOutputs.add(pipeOutput);
+        boolean isAdded = this.pipeOutputs.add(pipeOutput);
+        if (isAdded) {
+            addClientCount();
+        }
         startPipeWrite();
     }
 
@@ -186,7 +182,10 @@ public class PulseAudioAudioSource extends PulseaudioSimpleProtocolStream implem
     }
 
     private synchronized void unregisterPipe(PipedOutputStream pipeOutput) {
-        this.pipeOutputs.remove(pipeOutput);
+        boolean isRemoved = this.pipeOutputs.remove(pipeOutput);
+        if (isRemoved) {
+            minusClientCount();
+        }
         try {
             Thread.sleep(0);
         } catch (InterruptedException ignored) {
@@ -238,13 +237,13 @@ public class PulseAudioAudioSource extends PulseaudioSimpleProtocolStream implem
         private final Logger logger = LoggerFactory.getLogger(PulseAudioAudioSource.class);
         private final AudioFormat format;
         private final InputStream input;
-        private final Consumer<Boolean> setIdle;
+        private final Runnable activity;
         private boolean closed = false;
 
-        public PulseAudioStream(AudioFormat format, InputStream input, Consumer<Boolean> setIdle) {
+        public PulseAudioStream(AudioFormat format, InputStream input, Runnable activity) {
             this.input = input;
             this.format = format;
-            this.setIdle = setIdle;
+            this.activity = activity;
         }
 
         @Override
@@ -277,14 +276,13 @@ public class PulseAudioAudioSource extends PulseaudioSimpleProtocolStream implem
             if (closed) {
                 throw new IOException("Stream is closed");
             }
-            setIdle.accept(false);
+            activity.run();
             return input.read(b, off, len);
         }
 
         @Override
         public void close() throws IOException {
             closed = true;
-            setIdle.accept(true);
             input.close();
         }
     };
