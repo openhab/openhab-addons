@@ -145,6 +145,23 @@
 				<label>Enable Events</label>
 				<description>Enable the event stream for the vehicle</description>
 			</parameter>
+			<parameter name="inactivity" type="integer" min="5" required="false">
+				<label>Inactivity interval</label>
+				<description>The inactivity period in minutes, after which the binding stops for 20 minutes to let the car sleep.</description>
+				<default>5</default>
+			</parameter>
+			<parameter name="useDriveState" type="boolean" required="false">
+				<default>false</default>
+				<label>Use Drive State for inactivity</label>
+				<description>Use the drive state instead of location to determine vehicle inactivity.</description>
+			</parameter>
+			<parameter name="useAdvancedStatesForPolling" type="boolean" required="false">
+				<default>false</default>
+				<label>Use Camp, Climate Keep, Dog, Sentry mode, and occupancy information</label>
+				<description>Use these states to help continue the fast polling of the API. Do not back off polling if in these
+					states.</description>
+			</parameter>
+
 		</config-description>
 
 	</thing-type>
