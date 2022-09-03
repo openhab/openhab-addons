@@ -99,8 +99,6 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
 
     // private boolean isGeneration1 = true;
 
-    // private boolean isGeneration1 = true;
-
     public HDPowerViewShadeHandler(Thing thing) {
         super(thing);
     }
