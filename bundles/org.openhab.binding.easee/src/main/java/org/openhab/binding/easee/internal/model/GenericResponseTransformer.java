@@ -14,6 +14,7 @@ package org.openhab.binding.easee.internal.model;
 
 import static org.openhab.binding.easee.internal.EaseeBindingConstants.*;
 
+import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -113,8 +114,8 @@ public class GenericResponseTransformer {
                         // fields.
                         result.putAll(customResponseTransformer.transform(channel, value, jsonData));
 
-                    } catch (Exception ex) {
-                        logger.warn("caught exception while trying to update channel {} with value '{}'. Exception: {}",
+                    } catch (NumberFormatException | DateTimeParseException ex) {
+                        logger.warn("caught exception while parsing data for channel {} (value '{}'). Exception: {}",
                                 channel.getUID().getId(), value, ex.getMessage());
                     }
                 }

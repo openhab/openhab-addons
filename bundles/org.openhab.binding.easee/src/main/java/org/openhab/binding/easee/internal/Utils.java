@@ -18,6 +18,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -54,7 +55,7 @@ public final class Utils {
      * @param date
      * @return
      */
-    public static ZonedDateTime parseDate(String date) {
+    public static ZonedDateTime parseDate(String date) throws DateTimeParseException {
         final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssX");
         LOGGER.debug("parsing: {}", date);
         ZonedDateTime zdt = ZonedDateTime.parse(date, formatter);
