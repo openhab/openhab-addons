@@ -24,7 +24,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewTranslationProvider;
-import org.openhab.binding.hdpowerview.internal.api.responses.Scenes.Scene;
+import org.openhab.binding.hdpowerview.internal.api.responses.Scene;
+import org.openhab.binding.hdpowerview.internal.api.responses._v1.SceneV1;
 import org.openhab.binding.hdpowerview.internal.builders.SceneChannelBuilder;
 import org.openhab.binding.hdpowerview.providers.MockedLocaleProvider;
 import org.openhab.binding.hdpowerview.providers.MockedTranslationProvider;
@@ -110,7 +111,7 @@ public class SceneChannelBuilderTest {
     }
 
     private List<Scene> createScenes() {
-        Scene scene = new Scene();
+        Scene scene = new SceneV1();
         scene.id = 1;
         scene.name = Base64.getEncoder().encodeToString(("TestScene").getBytes());
         return new ArrayList<>(List.of(scene));
