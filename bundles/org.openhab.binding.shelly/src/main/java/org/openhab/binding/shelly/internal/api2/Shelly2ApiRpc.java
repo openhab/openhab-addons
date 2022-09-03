@@ -25,6 +25,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpStatus;
+import org.eclipse.jetty.websocket.api.StatusCode;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyApiInterface;
 import org.openhab.binding.shelly.internal.api.ShellyApiResult;
@@ -282,7 +283,6 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
     @Override
     public void onConnect(String deviceIp, boolean connected) {
-        logger.debug("{}: WebSocket {}", thingName, connected ? "connected successful" : "failed to connect!");
         if (thing == null && thingTable != null) {
             logger.debug("{}: Get thing from thingTable", thingName);
             thing = thingTable.getThing(deviceIp);
@@ -318,7 +318,9 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
             Shelly2NotifyStatus params = message.params;
             if (params != null) {
-                thing.setThingOnline();
+                if (getThing().getThingStatusDetail() != ThingStatusDetail.FIRMWARE_UPDATING) {
+                    getThing().setThingOnline();
+                }
 
                 boolean updated = false;
                 ShellyDeviceProfile profile = getProfile();
@@ -396,14 +398,17 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                         break;
 
                     case SHELLY2_EVENT_OTASTART:
+                        logger.debug("{}: Firmware update started: {}", thingName, getString(e.msg));
                         getThing().postEvent(e.event, true);
                         getThing().setThingOffline(ThingStatusDetail.FIRMWARE_UPDATING,
                                 "offline.status-error-fwupgrade");
                         break;
                     case SHELLY2_EVENT_OTAPROGRESS:
+                        logger.debug("{}: Firmware update in progress: {}", thingName, getString(e.msg));
                         getThing().postEvent(e.event, false);
                         break;
                     case SHELLY2_EVENT_OTADONE:
+                        logger.debug("{}: Firmware update completed: {}", thingName, getString(e.msg));
                         getThing().setThingOffline(ThingStatusDetail.CONFIGURATION_PENDING,
                                 "offline.status-error-restarted");
                         getThing().requestUpdates(1, true); // refresh config
@@ -427,21 +432,27 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     }
 
     @Override
-    public void onClose() {
-        logger.debug("{}: WebSocket connection closed", thingName);
+    public void onClose(int statusCode, String reason) {
+        try {
+            logger.debug("{}: WebSocket connection closed, status = {}/{}", thingName, statusCode, getString(reason));
+            if (statusCode == StatusCode.ABNORMAL && !discovery && getProfile().alwaysOn) { // e.g. device rebooted
+                thingOffline();
+            }
+        } catch (ShellyApiException e) {
+            logger.debug("{}: Exception on onClose()", thingName, e);
+
+        }
     }
 
     @Override
     public void onError(Throwable cause) {
-        try {
-            if (thing != null && getProfile().alwaysOn) { // do not reinit of battery powered devices with sleep mode
-                logger.debug("{}: WebSocket error, reinit thing", thingName, cause);
-                getThing().setThingOffline(ThingStatusDetail.COMMUNICATION_ERROR,
-                        "offline.status-error-unexpected-error");
-                getThing().reinitializeThing();
-            }
-        } catch (ShellyApiException e) {
-            logger.debug("{}: Unable to re-initialize thing on WebSocket error", thingName);
+        logger.debug("{}: WebSocket error", thingName);
+        thingOffline();
+    }
+
+    private void thingOffline() {
+        if (thing != null) { // do not reinit of battery powered devices with sleep mode
+            thing.setThingOffline(ThingStatusDetail.COMMUNICATION_ERROR, "offline.status-error-unexpected-error");
         }
     }
 
@@ -794,8 +805,8 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
     @Override
     public void close() {
-        logger.debug("{}: Closing Rpc API (socket is {})", thingName,
-                rpcSocket.isConnected() ? "connected" : "disconnected");
+        logger.debug("{}: Closing Rpc API (socket is {}, discovery={})", thingName,
+                rpcSocket.isConnected() ? "connected" : "disconnected", discovery);
         disconnect();
         initialized = false;
     }

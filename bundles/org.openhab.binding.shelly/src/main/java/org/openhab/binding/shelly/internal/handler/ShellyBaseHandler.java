@@ -522,6 +522,10 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             // sleep mode. Once the next update is successful the device goes back online
             String status = "";
             ShellyApiResult res = e.getApiResult();
+            Throwable cause = e.getCause();
+            if (cause != null) {
+                logger.debug("{}: Error on refreshStatus", thingName, e);
+            }
             if (isWatchdogStarted()) {
                 if (!isWatchdogExpired()) {
                     logger.debug("{}: Ignore API Timeout, retry later", thingName);
@@ -535,7 +539,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             } else if (e.isJSONException()) {
                 status = "offline.status-error-unexpected-api-result";
                 logger.debug("{}: Unable to parse API response: {}; json={}", thingName, res.getUrl(), res.response, e);
-            } else if (res.isHttpTimeout()) {
+            } else if (res.isHttpTimeout() && e.getCause() == null) {
                 // Watchdog not started, e.g. device in sleep mode
                 if (isThingOnline()) { // ignore when already offline
                     status = "offline.status-error-watchdog";
@@ -629,10 +633,6 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
     @Override
     public void setThingOnline() {
-        if (stopping) {
-            logger.debug("{}: Thing should go ONLINE, but handler is shutting down, ignore!", thingName);
-            return;
-        }
         if (!isThingOnline()) {
             updateStatus(ThingStatus.ONLINE);
 
@@ -645,16 +645,10 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     }
 
     @Override
-    public void setThingOffline(ThingStatusDetail detail, String messageKey, String... arguments) {
-        String message = messages.get(messageKey, arguments);
-        if (stopping) {
-            logger.debug("{}: Thing should go OFFLINE with status {}, but handler is shutting down -> ignore",
-                    thingName, message);
-            return;
-        }
-
+    public void setThingOffline(ThingStatusDetail detail, String messageKey, Object... arguments) {
         if (!isThingOffline()) {
-            updateStatus(ThingStatus.OFFLINE, detail, message);
+            updateStatus(ThingStatus.OFFLINE, detail, messages.get(messageKey, arguments));
+            api.close(); // Gen2: disconnect WS/close http sessions
             watchdog = 0;
             channelsCreated = false; // check for new channels after devices gets re-initialized (e.g. new
         }
@@ -746,8 +740,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     private boolean checkRestarted(ShellySettingsStatus status) {
         if (profile.isInitialized() && profile.alwaysOn /* exclude battery powered devices */
                 && (status.uptime != null && status.uptime < stats.lastUptime
-                        || !profile.status.update.oldVersion.isEmpty()
-                                && !status.update.oldVersion.equals(profile.status.update.oldVersion))) {
+                        || (!profile.status.update.oldVersion.isEmpty()
+                                && !status.update.oldVersion.equals(profile.status.update.oldVersion)))) {
             logger.debug("{}: Device has been restarted, uptime={}/{}, firmware={}/{}", thingName, stats.lastUptime,
                     getLong(status.uptime), profile.status.update.oldVersion, status.update.oldVersion);
             updateProperties(profile, status);

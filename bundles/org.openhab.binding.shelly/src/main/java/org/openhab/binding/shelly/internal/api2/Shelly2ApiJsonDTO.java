@@ -674,10 +674,11 @@ public class Shelly2ApiJsonDTO {
     }
 
     public class Shelly2NotifyEvent {
-        public String component;
         public Integer id;
-        public String event;
         public Double ts;
+        public String event;
+        public String msg;
+        public String component;
         @SerializedName("cfg_rev")
         public Integer cfgRev;
     }
