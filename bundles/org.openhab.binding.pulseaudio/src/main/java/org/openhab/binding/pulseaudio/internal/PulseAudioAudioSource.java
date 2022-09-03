@@ -128,7 +128,18 @@ public class PulseAudioAudioSource extends PulseaudioSimpleProtocolStream implem
         startPipeWrite();
     }
 
-    private synchronized void startPipeWrite() {
+    /**
+     * As startPipeWrite is called for every chunk read,
+     * this wrapper method make the test before effectively
+     * locking the object (which is a costly operation)
+     */
+    private void startPipeWrite() {
+        if (this.pipeWriteTask == null) {
+            startPipeWriteSynchronized();
+        }
+    }
+
+    private synchronized void startPipeWriteSynchronized() {
         if (this.pipeWriteTask == null) {
             this.pipeWriteTask = executor.submit(() -> {
                 int lengthRead;
