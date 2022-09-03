@@ -13,7 +13,6 @@
 package org.openhab.binding.easee.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.easee.internal.connector.WebInterface;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 
@@ -26,7 +25,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 @NonNullByDefault
 public interface StatusHandler {
     /**
-     * Called from {@link WebInterface#authenticate()} to update
+     * Called from WebInterface#authenticate() to update
      * the thing status because updateStatus is protected.
      *
      * @param status Thing status
