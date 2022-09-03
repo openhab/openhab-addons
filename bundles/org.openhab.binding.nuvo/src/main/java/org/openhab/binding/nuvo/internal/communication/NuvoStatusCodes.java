@@ -43,9 +43,9 @@ public class NuvoStatusCodes {
         PLAY_MODE.put("6", "Play Shuffle");
         PLAY_MODE.put("7", "Play Repeat");
         PLAY_MODE.put("8", "Play Shuffle Repeat");
-        PLAY_MODE.put("9", "unknown-9");
-        PLAY_MODE.put("10", "unknown-10");
-        PLAY_MODE.put("11", "Radio"); // undocumented
+        PLAY_MODE.put("9", "Step Tune");
+        PLAY_MODE.put("10", "Seek Tune");
+        PLAY_MODE.put("11", "Preset Tune");
         PLAY_MODE.put("12", "unknown-12");
     }
 
