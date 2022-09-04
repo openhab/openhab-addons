@@ -17,6 +17,7 @@ import static org.openhab.binding.konnected.internal.KonnectedBindingConstants.*
 import java.math.BigDecimal;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import org.openhab.binding.konnected.internal.KonnectedConfiguration;
@@ -526,6 +527,7 @@ public class KonnectedHandler extends BaseThingHandler {
     }
 
     private int getOnState(Channel channel) {
-        return ((Number) channel.getConfiguration().get(CHANNEL_ONVALUE)).intValue();
+        Number configuredOnValue = (Number) (channel.getConfiguration().get(CHANNEL_ONVALUE));
+        return Objects.requireNonNullElse(configuredOnValue, 1).intValue();
     }
 }
