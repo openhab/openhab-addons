@@ -8,6 +8,7 @@
 		<item-type>Rollershutter</item-type>
 		<label>Position</label>
 		<description>The vertical position of the shade</description>
+		<category>blinds</category>
 	</channel-type>
 
 	<channel-type id="shade-vane">

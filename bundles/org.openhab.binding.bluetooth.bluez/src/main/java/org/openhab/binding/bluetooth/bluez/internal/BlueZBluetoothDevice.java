@@ -37,6 +37,7 @@ import org.openhab.binding.bluetooth.bluez.internal.events.ConnectedEvent;
 import org.openhab.binding.bluetooth.bluez.internal.events.ManufacturerDataEvent;
 import org.openhab.binding.bluetooth.bluez.internal.events.NameEvent;
 import org.openhab.binding.bluetooth.bluez.internal.events.RssiEvent;
+import org.openhab.binding.bluetooth.bluez.internal.events.ServiceDataEvent;
 import org.openhab.binding.bluetooth.bluez.internal.events.ServicesResolvedEvent;
 import org.openhab.binding.bluetooth.bluez.internal.events.TXPowerEvent;
 import org.openhab.binding.bluetooth.notification.BluetoothConnectionStatusNotification;
@@ -356,6 +357,13 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
             notification.setManufacturerData(data);
             notifyListeners(BluetoothEventType.SCAN_RECORD, notification);
         }
+    }
+
+    @Override
+    public void onServiceDataUpdate(ServiceDataEvent event) {
+        BluetoothScanNotification notification = new BluetoothScanNotification();
+        notification.setServiceData(event.getData());
+        notifyListeners(BluetoothEventType.SCAN_RECORD, notification);
     }
 
     @Override

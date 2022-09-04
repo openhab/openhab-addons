@@ -93,6 +93,7 @@
 				<option value="518">@text/indego.state.border-cut</option>
 				<option value="519">@text/indego.state.idle-in-lawn</option>
 				<option value="523">@text/indego.state.spotmow</option>
+				<option value="768">@text/indego.state.returning-to-dock</option>
 				<option value="769">@text/indego.state.returning-to-dock</option>
 				<option value="770">@text/indego.state.returning-to-dock</option>
 				<option value="771">@text/indego.state.returning-to-dock-battery-low</option>

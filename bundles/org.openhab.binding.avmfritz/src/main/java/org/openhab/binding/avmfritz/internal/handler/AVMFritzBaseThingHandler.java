@@ -463,129 +463,19 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
                 if (command instanceof HSBType) {
                     HSBType hsbType = (HSBType) command;
                     brightness = hsbType.getBrightness().toBigDecimal();
-
-                    int hue = hsbType.getHue().intValue();
-                    int sat = ColorControlModel.fromPercent(hsbType.getSaturation());
-
-                    if (sat >= 25) {
-                        if (hue < 16.5 || hue >= 346.5) {
-                            hue = 358;
-                            if (sat >= 146) {
-                                sat = 180;
-                            } else if (sat >= 83) {
-                                sat = 112;
-                            } else {
-                                sat = 54;
-                            }
-                        } else if ((hue >= 16.5) && (hue < 43.5)) {
-                            hue = 35;
-                            if (sat >= 177) {
-                                sat = 214;
-                            } else if (sat >= 106) {
-                                sat = 140;
-                            } else {
-                                sat = 72;
-                            }
-                        } else if ((hue >= 43.5) && (hue < 72)) {
-                            hue = 52;
-                            if (sat >= 127.5) {
-                                sat = 153;
-                            } else if (sat >= 76.5) {
-                                sat = 102;
-                            } else {
-                                sat = 51;
-                            }
-                        } else if ((hue >= 72) && (hue < 106)) {
-                            hue = 92;
-                            if (sat >= 101) {
-                                sat = 123;
-                            } else if (sat >= 58.5) {
-                                sat = 79;
-                            } else {
-                                sat = 38;
-                            }
-                        } else if ((hue >= 106) && (hue < 140)) {
-                            hue = 120;
-                            if (sat >= 121) {
-                                sat = 160;
-                            } else if (sat >= 60) {
-                                sat = 82;
-                            } else {
-                                sat = 38;
-                            }
-                        } else if ((hue >= 140) && (hue < 177.5)) {
-                            hue = 160;
-                            if (sat >= 114.5) {
-                                sat = 145;
-                            } else if (sat >= 62.5) {
-                                sat = 84;
-                            } else {
-                                sat = 41;
-                            }
-                        } else if ((hue >= 177.5) && (hue < 203.5)) {
-                            hue = 195;
-                            if (sat >= 148.5) {
-                                sat = 179;
-                            } else if (sat >= 88.5) {
-                                sat = 118;
-                            } else {
-                                sat = 59;
-                            }
-                        } else if ((hue >= 203.5) && (hue < 218.5)) {
-                            hue = 212;
-                            if (sat >= 146) {
-                                sat = 169;
-                            } else if (sat >= 83) {
-                                sat = 110;
-                            } else {
-                                sat = 56;
-                            }
-                        } else if ((hue >= 218.5) && (hue < 245.5)) {
-                            hue = 225;
-                            if (sat >= 146) {
-                                sat = 204;
-                            } else if (sat >= 83) {
-                                sat = 135;
-                            } else {
-                                sat = 67;
-                            }
-                        } else if ((hue >= 245.5) && (hue < 281)) {
-                            hue = 266;
-                            if (sat >= 146) {
-                                sat = 169;
-                            } else if (sat >= 83) {
-                                sat = 110;
-                            } else {
-                                sat = 54;
-                            }
-                        } else if ((hue >= 281) && (hue < 315.5)) {
-                            hue = 296;
-                            if (sat >= 146) {
-                                sat = 140;
-                            } else if (sat >= 83) {
-                                sat = 92;
-                            } else {
-                                sat = 46;
-                            }
-                        } else if ((hue >= 315.5) && (hue < 346.5)) {
-                            hue = 335;
-                            if (sat >= 146) {
-                                sat = 180;
-                            } else if (sat >= 83) {
-                                sat = 107;
-                            } else {
-                                sat = 51;
-                            }
-                        }
-                        fritzBox.setHueAndSaturation(ain, hue, sat, 0);
-                    } else {
-                        int temperature = 4700;
-                        fritzBox.setColorTemperature(ain, temperature, 0);
-                    }
+                    fritzBox.setUnmappedHueAndSaturation(ain, hsbType.getHue().intValue(),
+                            ColorControlModel.fromPercent(hsbType.getSaturation()), 0);
                 } else if (command instanceof PercentType) {
                     brightness = ((PercentType) command).toBigDecimal();
                 } else if (command instanceof OnOffType) {
                     fritzBox.setSwitch(ain, OnOffType.ON.equals(command));
+                } else if (command instanceof IncreaseDecreaseType) {
+                    brightness = ((DeviceModel) currentDevice).getLevelControlModel().getLevelPercentage();
+                    if (IncreaseDecreaseType.INCREASE.equals(command)) {
+                        brightness.add(BigDecimal.TEN);
+                    } else {
+                        brightness.subtract(BigDecimal.TEN);
+                    }
                 }
                 if (brightness != null) {
                     fritzBox.setLevelPercentage(ain, brightness);

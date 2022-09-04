@@ -60,6 +60,7 @@ Currently the binding supports  ***indego***  mowers as a thing type with these 
 | 518   | Border cut                                  |
 | 519   | Idle in lawn                                |
 | 523   | SpotMow                                     |
+| 768   | Returning to dock                           |
 | 769   | Returning to dock                           |
 | 770   | Returning to dock                           |
 | 771   | Returning to dock - Battery low             |

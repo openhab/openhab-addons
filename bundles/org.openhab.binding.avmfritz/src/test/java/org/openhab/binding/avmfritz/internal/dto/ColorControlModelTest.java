@@ -38,6 +38,16 @@ class ColorControlModelTest {
     }
 
     @Test
+    public void testColorControlModelPercentConversionRestrictsToLowerBounds() {
+        assertThat(ColorControlModel.toPercent(-1), is(PercentType.ZERO));
+    }
+
+    @Test
+    public void testColorControlModelPercentConversionRestrictsToUpperBounds() {
+        assertThat(ColorControlModel.toPercent(999), is(PercentType.HUNDRED));
+    }
+
+    @Test
     public void hsbSaturationAlwaysGreaterThanZero() {
         // a saturation greater than 1 should result in a percentage greater than 1
         for (int saturation = 1; saturation <= 254; ++saturation) {

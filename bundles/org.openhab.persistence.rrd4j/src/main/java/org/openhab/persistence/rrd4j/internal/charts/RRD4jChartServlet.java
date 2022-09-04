@@ -17,7 +17,6 @@ import static java.util.Map.entry;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.time.Duration;
@@ -50,6 +49,7 @@ import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
 import org.rrd4j.ConsolFun;
 import org.rrd4j.core.RrdDb;
+import org.rrd4j.core.RrdDb.Builder;
 import org.rrd4j.graph.RrdGraph;
 import org.rrd4j.graph.RrdGraphConstants.FontTag;
 import org.rrd4j.graph.RrdGraphDef;
@@ -120,9 +120,7 @@ public class RRD4jChartServlet implements Servlet, ChartProvider {
         try {
             logger.debug("Starting up rrd chart servlet at {}", SERVLET_NAME);
             httpService.registerServlet(SERVLET_NAME, this, new Hashtable<>(), httpService.createDefaultHttpContext());
-        } catch (NamespaceException e) {
-            logger.error("Error during servlet startup", e);
-        } catch (ServletException e) {
+        } catch (NamespaceException | ServletException e) {
             logger.error("Error during servlet startup", e);
         }
     }
@@ -184,13 +182,17 @@ public class RRD4jChartServlet implements Servlet, ChartProvider {
     protected void addLine(RrdGraphDef graphDef, Item item, int counter) {
         Color color = LINECOLORS[counter % LINECOLORS.length];
         String label = itemUIRegistry.getLabel(item.getName());
-        String rrdName = RRD4jPersistenceService.DB_FOLDER + File.separator + item.getName() + ".rrd";
+        String rrdName = RRD4jPersistenceService.getDatabasePath(item.getName()).toString();
         ConsolFun consolFun;
         if (label != null && label.contains("[") && label.contains("]")) {
             label = label.substring(0, label.indexOf('['));
         }
         try {
-            RrdDb db = RrdDb.of(rrdName);
+            Builder builder = RrdDb.getBuilder();
+            builder.setPool(RRD4jPersistenceService.getDatabasePool());
+            builder.setPath(rrdName);
+
+            RrdDb db = builder.build();
             consolFun = db.getRrdDef().getArcDefs()[0].getConsolFun();
             db.close();
         } catch (IOException e) {
