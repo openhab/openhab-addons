@@ -56,6 +56,8 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 
 /**
  * Abstract class for JAX-RS targets for communicating with an HD PowerView hub.
@@ -124,6 +126,16 @@ public abstract class HDPowerViewWebTargets {
     }
 
     /*
+     * Private helper class for serialization of ShadePosition
+     */
+    private class ShadePositionSerializer implements JsonSerializer<ShadePosition> {
+        @Override
+        public JsonElement serialize(ShadePosition src, Type typeOfT, JsonSerializationContext context) {
+            return context.serialize(src, shadePositionClass);
+        }
+    };
+
+    /*
      * Private helper class for de-serialization of ScheduledEvent
      */
     private class ScheduledEventDeserializer implements JsonDeserializer<ScheduledEvent> {
@@ -183,6 +195,7 @@ public abstract class HDPowerViewWebTargets {
                 .registerTypeAdapter(Scene.class, new SceneDeserializer())
                 .registerTypeAdapter(ShadeData.class, new ShadeDataDeserializer())
                 .registerTypeAdapter(ShadePosition.class, new ShadePositionDeserializer())
+                .registerTypeAdapter(ShadePosition.class, new ShadePositionSerializer())
                 .registerTypeAdapter(ScheduledEvent.class, new ScheduledEventDeserializer())
         // @formatter:on
                 .create();
