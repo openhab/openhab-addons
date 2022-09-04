@@ -10,21 +10,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.hdpowerview.internal.api.responses;
-
-import java.util.List;
+package org.openhab.binding.hdpowerview.internal.api.responses._v3;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * State of all Scenes in an HD PowerView hub
+ * Scene SSE event object as supplied an HD PowerView hub of Generation 3
  *
- * @author Andy Lintner - Initial contribution
+ * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class Scenes {
-
-    public @Nullable List<Scene> sceneData;
-    public @Nullable List<Integer> sceneIds;
+public class SseSceneV3 {
+    public @Nullable String evt;
+    public @Nullable String isoDate;
+    public int id;
+    public @Nullable SceneV3 scene;
 }

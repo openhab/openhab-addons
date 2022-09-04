@@ -12,19 +12,29 @@
  */
 package org.openhab.binding.hdpowerview.internal.api.responses;
 
-import java.util.List;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * State of all Scenes in an HD PowerView hub
+ * Scene object as returned by an HD PowerView hub
  *
- * @author Andy Lintner - Initial contribution
+ * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class Scenes {
+public abstract class Scene implements Comparable<Scene> {
+    // fields that are common to Generation 1/2 and 3 hubs
+    public int id;
+    public @Nullable String name;
 
-    public @Nullable List<Scene> sceneData;
-    public @Nullable List<Integer> sceneIds;
+    @Override
+    public abstract int compareTo(Scene other);
+
+    public String getName() {
+        return new String(Base64.getDecoder().decode(name), StandardCharsets.UTF_8);
+    }
+
+    public abstract int version();
 }

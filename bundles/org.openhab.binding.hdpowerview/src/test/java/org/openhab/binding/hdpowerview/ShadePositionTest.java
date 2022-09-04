@@ -18,6 +18,7 @@ import static org.openhab.binding.hdpowerview.internal.api.CoordinateSystem.*;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
+import org.openhab.binding.hdpowerview.internal.api._v1.ShadePositionV1;
 import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDatabase;
 import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDatabase.Capabilities;
 import org.openhab.core.library.types.PercentType;
@@ -90,7 +91,7 @@ public class ShadePositionTest {
     @Test
     public void testCaps1ShadePositionParsingFullyUp() {
         Capabilities capabilities = db.getCapabilities(1);
-        ShadePosition test = new ShadePosition().setPosition(capabilities, PRIMARY_POSITION, 0);
+        ShadePosition test = new ShadePositionV1().setPosition(capabilities, PRIMARY_POSITION, 0);
         assertNotNull(test);
         assertShadePosition(test.getState(capabilities, PRIMARY_POSITION), 0);
         assertShadePosition(test.getState(capabilities, SECONDARY_POSITION), UnDefType.UNDEF);
@@ -104,7 +105,7 @@ public class ShadePositionTest {
     @Test
     public void testCaps1ShadePositionParsingShadeFullyDown1() {
         Capabilities capabilities = db.getCapabilities(1);
-        ShadePosition test = new ShadePosition().setPosition(capabilities, PRIMARY_POSITION, 100);
+        ShadePosition test = new ShadePositionV1().setPosition(capabilities, PRIMARY_POSITION, 100);
         assertNotNull(test);
         assertShadePosition(test.getState(capabilities, PRIMARY_POSITION), 100);
         assertShadePosition(test.getState(capabilities, SECONDARY_POSITION), UnDefType.UNDEF);
@@ -118,7 +119,7 @@ public class ShadePositionTest {
     @Test
     public void testCaps1ShadePositionParsingShadeFullyDown2() {
         Capabilities capabilities = db.getCapabilities(1);
-        ShadePosition test = new ShadePosition().setPosition(capabilities, VANE_TILT_POSITION, 0);
+        ShadePosition test = new ShadePositionV1().setPosition(capabilities, VANE_TILT_POSITION, 0);
         assertNotNull(test);
         assertShadePosition(test.getState(capabilities, PRIMARY_POSITION), 100);
         assertShadePosition(test.getState(capabilities, SECONDARY_POSITION), UnDefType.UNDEF);
@@ -132,7 +133,7 @@ public class ShadePositionTest {
     @Test
     public void testCaps1ShadePositionParsingShadeFullyDownVaneOpen() {
         Capabilities capabilities = db.getCapabilities(1);
-        ShadePosition test = new ShadePosition().setPosition(capabilities, VANE_TILT_POSITION, 88);
+        ShadePosition test = new ShadePositionV1().setPosition(capabilities, VANE_TILT_POSITION, 88);
         assertNotNull(test);
         assertShadePosition(test.getState(capabilities, PRIMARY_POSITION), 100);
         assertShadePosition(test.getState(capabilities, SECONDARY_POSITION), UnDefType.UNDEF);
@@ -147,7 +148,7 @@ public class ShadePositionTest {
     @Test
     public void testDualRailConstraints() {
         Capabilities capabilities = db.getCapabilities(7);
-        ShadePosition test = new ShadePosition();
+        ShadePosition test = new ShadePositionV1();
 
         // ==== OK !! primary at bottom, secondary at top ====
         test.setPosition(capabilities, PRIMARY_POSITION, 100).setPosition(capabilities, SECONDARY_POSITION, 0);
@@ -207,42 +208,42 @@ public class ShadePositionTest {
         ShadePosition test;
 
         // both shades up
-        test = new ShadePosition().setPosition(capabilities, PRIMARY_POSITION, 0);
+        test = new ShadePositionV1().setPosition(capabilities, PRIMARY_POSITION, 0);
         assertNotNull(test);
         assertShadePosition(test.getState(capabilities, PRIMARY_POSITION), 0);
         assertShadePosition(test.getState(capabilities, SECONDARY_POSITION), 0);
         assertShadePosition(test.getState(capabilities, VANE_TILT_POSITION), UnDefType.UNDEF);
 
         // front shade 50% down
-        test = new ShadePosition().setPosition(capabilities, PRIMARY_POSITION, 50);
+        test = new ShadePositionV1().setPosition(capabilities, PRIMARY_POSITION, 50);
         assertNotNull(test);
         assertShadePosition(test.getState(capabilities, PRIMARY_POSITION), 50);
         assertShadePosition(test.getState(capabilities, SECONDARY_POSITION), 0);
         assertShadePosition(test.getState(capabilities, VANE_TILT_POSITION), UnDefType.UNDEF);
 
         // front shade 100% down, back shade 0% down
-        test = new ShadePosition().setPosition(capabilities, PRIMARY_POSITION, 100);
+        test = new ShadePositionV1().setPosition(capabilities, PRIMARY_POSITION, 100);
         assertNotNull(test);
         assertShadePosition(test.getState(capabilities, PRIMARY_POSITION), 100);
         assertShadePosition(test.getState(capabilities, SECONDARY_POSITION), 0);
         assertShadePosition(test.getState(capabilities, VANE_TILT_POSITION), UnDefType.UNDEF);
 
         // front shade 100% down, back shade 0% down (ALTERNATE)
-        test = new ShadePosition().setPosition(capabilities, SECONDARY_POSITION, 0);
+        test = new ShadePositionV1().setPosition(capabilities, SECONDARY_POSITION, 0);
         assertNotNull(test);
         assertShadePosition(test.getState(capabilities, PRIMARY_POSITION), 100);
         assertShadePosition(test.getState(capabilities, SECONDARY_POSITION), 0);
         assertShadePosition(test.getState(capabilities, VANE_TILT_POSITION), UnDefType.UNDEF);
 
         // front shade 100% down, back shade 50% down
-        test = new ShadePosition().setPosition(capabilities, SECONDARY_POSITION, 50);
+        test = new ShadePositionV1().setPosition(capabilities, SECONDARY_POSITION, 50);
         assertNotNull(test);
         assertShadePosition(test.getState(capabilities, PRIMARY_POSITION), 100);
         assertShadePosition(test.getState(capabilities, SECONDARY_POSITION), 50);
         assertShadePosition(test.getState(capabilities, VANE_TILT_POSITION), UnDefType.UNDEF);
 
         // front shade 100% down, back shade 100% down
-        test = new ShadePosition().setPosition(capabilities, SECONDARY_POSITION, 100);
+        test = new ShadePositionV1().setPosition(capabilities, SECONDARY_POSITION, 100);
         assertNotNull(test);
         assertShadePosition(test.getState(capabilities, PRIMARY_POSITION), 100);
         assertShadePosition(test.getState(capabilities, SECONDARY_POSITION), 100);
@@ -260,70 +261,70 @@ public class ShadePositionTest {
         ShadePosition test;
 
         // front shade up
-        test = new ShadePosition().setPosition(capabilities, PRIMARY_POSITION, 0);
+        test = new ShadePositionV1().setPosition(capabilities, PRIMARY_POSITION, 0);
         assertNotNull(test);
         assertShadePosition(test.getState(capabilities, PRIMARY_POSITION), 0);
         assertShadePosition(test.getState(capabilities, SECONDARY_POSITION), 0);
         assertShadePosition(test.getState(capabilities, VANE_TILT_POSITION), UnDefType.UNDEF);
 
         // front shade 30% down
-        test = new ShadePosition().setPosition(capabilities, PRIMARY_POSITION, 30);
+        test = new ShadePositionV1().setPosition(capabilities, PRIMARY_POSITION, 30);
         assertNotNull(test);
         assertShadePosition(test.getState(capabilities, PRIMARY_POSITION), 30);
         assertShadePosition(test.getState(capabilities, SECONDARY_POSITION), 0);
         assertShadePosition(test.getState(capabilities, VANE_TILT_POSITION), UnDefType.UNDEF);
 
         // front shade 100% down
-        test = new ShadePosition().setPosition(capabilities, PRIMARY_POSITION, 100);
+        test = new ShadePositionV1().setPosition(capabilities, PRIMARY_POSITION, 100);
         assertNotNull(test);
         assertShadePosition(test.getState(capabilities, PRIMARY_POSITION), 100);
         assertShadePosition(test.getState(capabilities, SECONDARY_POSITION), 0);
         assertShadePosition(test.getState(capabilities, VANE_TILT_POSITION), 0);
 
         // tilt 0%
-        test = new ShadePosition().setPosition(capabilities, VANE_TILT_POSITION, 0);
+        test = new ShadePositionV1().setPosition(capabilities, VANE_TILT_POSITION, 0);
         assertNotNull(test);
         assertShadePosition(test.getState(capabilities, PRIMARY_POSITION), 100);
         assertShadePosition(test.getState(capabilities, SECONDARY_POSITION), 0);
         assertShadePosition(test.getState(capabilities, VANE_TILT_POSITION), 0);
 
         // tilt 30%
-        test = new ShadePosition().setPosition(capabilities, VANE_TILT_POSITION, 30);
+        test = new ShadePositionV1().setPosition(capabilities, VANE_TILT_POSITION, 30);
         assertNotNull(test);
         assertShadePosition(test.getState(capabilities, PRIMARY_POSITION), 100);
         assertShadePosition(test.getState(capabilities, SECONDARY_POSITION), 0);
         assertShadePosition(test.getState(capabilities, VANE_TILT_POSITION), 30);
 
         // tilt 100%
-        test = new ShadePosition().setPosition(capabilities, VANE_TILT_POSITION, 100);
+        test = new ShadePositionV1().setPosition(capabilities, VANE_TILT_POSITION, 100);
         assertNotNull(test);
         assertShadePosition(test.getState(capabilities, PRIMARY_POSITION), 100);
         assertShadePosition(test.getState(capabilities, SECONDARY_POSITION), 0);
         assertShadePosition(test.getState(capabilities, VANE_TILT_POSITION), 100);
 
         // back shade 0% down
-        test = new ShadePosition().setPosition(capabilities, SECONDARY_POSITION, 0);
+        test = new ShadePositionV1().setPosition(capabilities, SECONDARY_POSITION, 0);
         assertNotNull(test);
         assertShadePosition(test.getState(capabilities, PRIMARY_POSITION), 100);
         assertShadePosition(test.getState(capabilities, SECONDARY_POSITION), 0);
         assertShadePosition(test.getState(capabilities, VANE_TILT_POSITION), 100);
 
         // back shade 30% down
-        test = new ShadePosition().setPosition(capabilities, SECONDARY_POSITION, 30);
+        test = new ShadePositionV1().setPosition(capabilities, SECONDARY_POSITION, 30);
         assertNotNull(test);
         assertShadePosition(test.getState(capabilities, PRIMARY_POSITION), 100);
         assertShadePosition(test.getState(capabilities, SECONDARY_POSITION), 30);
         assertShadePosition(test.getState(capabilities, VANE_TILT_POSITION), 100);
 
         // back shade 100% down
-        test = new ShadePosition().setPosition(capabilities, SECONDARY_POSITION, 100);
+        test = new ShadePositionV1().setPosition(capabilities, SECONDARY_POSITION, 100);
         assertNotNull(test);
         assertShadePosition(test.getState(capabilities, PRIMARY_POSITION), 100);
         assertShadePosition(test.getState(capabilities, SECONDARY_POSITION), 100);
         assertShadePosition(test.getState(capabilities, VANE_TILT_POSITION), 100);
 
         // test constraints on impossible values: primary 30% => tilt 30%
-        test = new ShadePosition().setPosition(capabilities, PRIMARY_POSITION, 30).setPosition(capabilities,
+        test = new ShadePositionV1().setPosition(capabilities, PRIMARY_POSITION, 30).setPosition(capabilities,
                 VANE_TILT_POSITION, 30);
         assertNotNull(test);
         assertShadePosition(test.getState(capabilities, PRIMARY_POSITION), 100);
@@ -331,7 +332,7 @@ public class ShadePositionTest {
         assertShadePosition(test.getState(capabilities, VANE_TILT_POSITION), 30);
 
         // test constraints on impossible values: primary 30% => tilt 30% => back shade 30% down
-        test = new ShadePosition().setPosition(capabilities, PRIMARY_POSITION, 30)
+        test = new ShadePositionV1().setPosition(capabilities, PRIMARY_POSITION, 30)
                 .setPosition(capabilities, VANE_TILT_POSITION, 30).setPosition(capabilities, SECONDARY_POSITION, 30);
         assertNotNull(test);
         assertShadePosition(test.getState(capabilities, PRIMARY_POSITION), 100);
@@ -346,7 +347,7 @@ public class ShadePositionTest {
     @Test
     public void testCaps0ShadePositionParsingFullyUp() {
         Capabilities capabilities = db.getCapabilities(0);
-        ShadePosition test = new ShadePosition().setPosition(capabilities, PRIMARY_POSITION, 0);
+        ShadePosition test = new ShadePositionV1().setPosition(capabilities, PRIMARY_POSITION, 0);
         assertNotNull(test);
         assertShadePosition(test.getState(capabilities, PRIMARY_POSITION), 0);
         assertShadePosition(test.getState(capabilities, SECONDARY_POSITION), UnDefType.UNDEF);
@@ -360,7 +361,7 @@ public class ShadePositionTest {
     @Test
     public void testCap0ShadePositionParsingShadeFullyDown() {
         Capabilities capabilities = db.getCapabilities(0);
-        ShadePosition test = new ShadePosition().setPosition(capabilities, PRIMARY_POSITION, 100);
+        ShadePosition test = new ShadePositionV1().setPosition(capabilities, PRIMARY_POSITION, 100);
         assertNotNull(test);
         assertShadePosition(test.getState(capabilities, PRIMARY_POSITION), 100);
         assertShadePosition(test.getState(capabilities, SECONDARY_POSITION), UnDefType.UNDEF);
@@ -384,7 +385,7 @@ public class ShadePositionTest {
     @Test
     public void testType44ShadePositionParsingFullyUp() {
         Capabilities capabilities = db.getCapabilities(44, null);
-        ShadePosition test = new ShadePosition().setPosition(capabilities, PRIMARY_POSITION, 0);
+        ShadePosition test = new ShadePositionV1().setPosition(capabilities, PRIMARY_POSITION, 0);
         assertNotNull(test);
         assertShadePosition(test.getState(capabilities, PRIMARY_POSITION), 0);
         assertShadePosition(test.getState(capabilities, SECONDARY_POSITION), UnDefType.UNDEF);
@@ -398,7 +399,7 @@ public class ShadePositionTest {
     @Test
     public void testType44ShadePositionParsingShadeFullyDownVaneOpen() {
         Capabilities capabilities = db.getCapabilities(44, null);
-        ShadePosition test = new ShadePosition().setPosition(capabilities, VANE_TILT_POSITION, 88);
+        ShadePosition test = new ShadePositionV1().setPosition(capabilities, VANE_TILT_POSITION, 88);
         assertNotNull(test);
         assertShadePosition(test.getState(capabilities, PRIMARY_POSITION), 100);
         assertShadePosition(test.getState(capabilities, SECONDARY_POSITION), UnDefType.UNDEF);
