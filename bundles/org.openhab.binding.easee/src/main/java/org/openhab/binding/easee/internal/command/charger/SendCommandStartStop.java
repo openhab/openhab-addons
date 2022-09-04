@@ -27,7 +27,6 @@ import org.openhab.core.types.Command;
  */
 @NonNullByDefault
 public class SendCommandStartStop extends SendCommand {
-    private final String url;
 
     public SendCommandStartStop(EaseeThingHandler handler, String chargerId, Channel channel, Command command) {
         super(handler, channel, command);

@@ -29,7 +29,7 @@ import org.openhab.core.types.Command;
  */
 @NonNullByDefault
 public class SendCommand extends AbstractWriteCommand {
-    String url = "";
+    String url = COMMANDS_URL;
 
     /**
      * general constructor.
