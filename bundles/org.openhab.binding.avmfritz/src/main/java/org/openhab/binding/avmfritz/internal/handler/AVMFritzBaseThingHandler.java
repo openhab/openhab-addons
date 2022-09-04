@@ -479,13 +479,6 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
                 }
                 if (brightness != null) {
                     fritzBox.setLevelPercentage(ain, brightness);
-                    if (brightness.compareTo(BigDecimal.ZERO) > 0) {
-                        logger.debug("brightness is nonzero - also setting on");
-                        fritzBox.setSwitch(ain, true);
-                    } else {
-                        logger.debug("brightness is zero - also setting off");
-                        fritzBox.setSwitch(ain, false);
-                    }
                 }
                 break;
             case CHANNEL_COLORTEMPERATURE:
