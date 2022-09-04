@@ -196,8 +196,7 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
                 if (deviceModel.isHANFUNBlinds()) {
                     updateLevelControl(deviceModel.getLevelControlModel());
                 } else if (deviceModel.isColorLight()) {
-                    updateColorLight(deviceModel.getColorControlModel(), deviceModel.getLevelControlModel(),
-                            deviceModel.getSimpleOnOffUnit());
+                    updateColorLight(deviceModel.getColorControlModel(), deviceModel.getLevelControlModel());
                 } else if (deviceModel.isDimmableLight() && !deviceModel.isHANFUNBlinds()) {
                     updateDimmableLight(deviceModel.getLevelControlModel());
                 } else if (deviceModel.isHANFUNUnit() && deviceModel.isHANFUNOnOff()) {
@@ -243,23 +242,11 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
     }
 
     private void updateColorLight(@Nullable ColorControlModel colorControlModel,
-            @Nullable LevelControlModel levelControlModel, @Nullable SimpleOnOffModel simpleOnOffUnit) {
+            @Nullable LevelControlModel levelControlModel) {
         if (colorControlModel != null && levelControlModel != null) {
             DecimalType hue = new DecimalType(colorControlModel.hue);
             PercentType saturation = ColorControlModel.toPercent(colorControlModel.saturation);
             PercentType brightness = new PercentType(levelControlModel.getLevelPercentage());
-            if (simpleOnOffUnit.state == false) {
-                if (brightness.toBigDecimal().compareTo(BigDecimal.ZERO) > 0) {
-                    logger.debug("device is off, but brightness is nonzero - deliberately misreporting as zero");
-                    brightness = new PercentType(0);
-                }
-            } else {
-                if (brightness.toBigDecimal().compareTo(BigDecimal.ZERO) <= 0) {
-                    logger.debug("device is on, but brightness is zero - deliberately misreporting as nonzero");
-                    brightness = new PercentType(1);
-                }
-            }
-
             updateThingChannelState(CHANNEL_COLOR, new HSBType(hue, saturation, brightness));
         }
     }
