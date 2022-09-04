@@ -34,8 +34,8 @@ import org.openhab.binding.hdpowerview.internal.api.SurveyData;
 import org.openhab.binding.hdpowerview.internal.api.UserData;
 import org.openhab.binding.hdpowerview.internal.api._v3.ShadeDataV3;
 import org.openhab.binding.hdpowerview.internal.api._v3.ShadePositionV3;
-import org.openhab.binding.hdpowerview.internal.api.requests.ShadeCalibrate;
-import org.openhab.binding.hdpowerview.internal.api.requests.ShadeJog;
+import org.openhab.binding.hdpowerview.internal.api.requests.ShadeMotion;
+import org.openhab.binding.hdpowerview.internal.api.requests.ShadePositions;
 import org.openhab.binding.hdpowerview.internal.api.responses.RepeaterData;
 import org.openhab.binding.hdpowerview.internal.api.responses.Repeaters;
 import org.openhab.binding.hdpowerview.internal.api.responses.Scene;
@@ -163,7 +163,7 @@ public class HDPowerViewWebTargetsV3 extends HDPowerViewWebTargets {
     public ShadeData moveShade(int shadeId, ShadePosition position) throws HubInvalidResponseException,
             HubProcessingException, HubMaintenanceException, HubShadeTimeoutException {
         invoke(HttpMethod.PUT, shadePositions, Query.of(IDS, Integer.valueOf(shadeId).toString()),
-                gson.toJson(position));
+                gson.toJson(new ShadePositions(position)));
         return getShade(shadeId);
     }
 
@@ -177,7 +177,7 @@ public class HDPowerViewWebTargetsV3 extends HDPowerViewWebTargets {
     @Override
     public ShadeData jogShade(int shadeId) throws HubInvalidResponseException, HubProcessingException,
             HubMaintenanceException, HubShadeTimeoutException {
-        String json = gson.toJson(new ShadeJog());
+        String json = gson.toJson(new ShadeMotion(ShadeMotion.Type.JOG));
         invoke(HttpMethod.PUT, String.format(shadeMotion, shadeId), null, json);
         return getShade(shadeId);
     }
@@ -185,7 +185,7 @@ public class HDPowerViewWebTargetsV3 extends HDPowerViewWebTargets {
     @Override
     public ShadeData calibrateShade(int shadeId) throws HubInvalidResponseException, HubProcessingException,
             HubMaintenanceException, HubShadeTimeoutException {
-        String json = gson.toJson(new ShadeCalibrate());
+        String json = gson.toJson(new ShadeMotion(ShadeMotion.Type.CALIBRATE));
         invoke(HttpMethod.PUT, String.format(shadeMotion, shadeId), null, json);
         return getShade(shadeId);
     }

@@ -21,7 +21,7 @@ import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
  * @author Andy Lintner - Initial contribution
  */
 @NonNullByDefault
-class ShadePositions {
+public class ShadePositions {
 
     public ShadePosition positions;
 
