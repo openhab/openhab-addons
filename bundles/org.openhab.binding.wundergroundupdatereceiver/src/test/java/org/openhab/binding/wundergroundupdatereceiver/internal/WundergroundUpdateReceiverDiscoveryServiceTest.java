@@ -50,7 +50,6 @@ import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.internal.type.StateChannelTypeBuilderImpl;
 import org.openhab.core.thing.internal.type.TriggerChannelTypeBuilderImpl;
-import org.openhab.core.thing.type.AutoUpdatePolicy;
 import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.thing.type.ChannelTypeProvider;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
@@ -346,11 +345,11 @@ class WundergroundUpdateReceiverDiscoveryServiceTest {
     private void assertChannel(Channel actual, String expectedGroup, String expectedName, ChannelTypeUID expectedUid,
             ChannelKind expectedKind, Matcher<Object> expectedItemType) {
         assertThat(actual, is(notNullValue()));
-        assertThat(actual.getUID(), is(new ChannelUID(TEST_THING_UID, expectedGroup, expectedName)));
-        assertThat(actual.getChannelTypeUID(), is(expectedUid));
-        assertThat(actual.getKind(), is(expectedKind));
-        assertThat(actual.getAcceptedItemType(), expectedItemType);
-        assertThat(actual.getAutoUpdatePolicy(), is(AutoUpdatePolicy.DEFAULT));
+        assertThat(actual.getLabel() + " UID", actual.getUID(),
+                is(new ChannelUID(TEST_THING_UID, expectedGroup, expectedName)));
+        assertThat(actual.getLabel() + " ChannelTypeUID", actual.getChannelTypeUID(), is(expectedUid));
+        assertThat(actual.getLabel() + " Kind", actual.getKind(), is(expectedKind));
+        assertThat(actual.getLabel() + " AcceptedItemType", actual.getAcceptedItemType(), expectedItemType);
     }
 
     class TestChannelTypeRegistry extends ChannelTypeRegistry {

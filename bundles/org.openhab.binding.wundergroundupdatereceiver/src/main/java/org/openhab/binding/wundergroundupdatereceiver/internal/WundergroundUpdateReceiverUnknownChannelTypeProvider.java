@@ -23,6 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.thing.type.AutoUpdatePolicy;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeBuilder;
@@ -39,7 +40,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class WundergroundUpdateReceiverUnknownChannelTypeProvider implements ChannelTypeProvider {
 
-    private static final List<String> BOOLEAN_STRINGS = List.of("1", "0", "true", "false");
+    private static final List<String> BOOLEAN_STRINGS = List.of("1", "0", "true", "false", "yes", "no", "on", "off");
     private final Map<ChannelTypeUID, ChannelType> channelTypes = new ConcurrentHashMap<>();
     private final Logger logger = LoggerFactory.getLogger(WundergroundUpdateReceiverUnknownChannelTypeProvider.class);
 
@@ -68,14 +69,14 @@ public class WundergroundUpdateReceiverUnknownChannelTypeProvider implements Cha
 
     private static String guessItemType(String value) {
         if (BOOLEAN_STRINGS.contains(value.toLowerCase())) {
-            return "Switch";
+            return CoreItemFactory.SWITCH;
         }
         try {
             Float.valueOf(value);
-            return "Number";
+            return CoreItemFactory.NUMBER;
         } catch (NumberFormatException ignored) {
         }
-        return "String";
+        return CoreItemFactory.STRING;
     }
 
     private ChannelType addChannelType(ChannelTypeUID channelTypeUID, ChannelType channelType) {

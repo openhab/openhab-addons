@@ -40,7 +40,6 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
-import org.openhab.core.thing.type.AutoUpdatePolicy;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.types.Command;
@@ -161,7 +160,7 @@ public class WundergroundUpdateReceiverHandler extends BaseThingHandler {
         }
         ChannelBuilder channelBuilder = ChannelBuilder
                 .create(new ChannelUID(thing.getUID(), channelTypeMapping.channelGroup, parameter))
-                .withKind(channelType.getKind()).withAutoUpdatePolicy(AutoUpdatePolicy.DEFAULT)
+                .withKind(channelType.getKind()).withAutoUpdatePolicy(channelType.getAutoUpdatePolicy())
                 .withDefaultTags(channelType.getTags()).withType(channelTypeMapping.channelTypeId)
                 .withAcceptedItemType(channelType.getItemType()).withLabel(channelType.getLabel());
         Optional.ofNullable(channelType.getDescription()).ifPresent(channelBuilder::withDescription);
