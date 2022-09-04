@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mercedesme"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-type id="doors-lock-channel">
+		<item-type>Number</item-type>
+		<label>Door Lock Status</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">Unlocked</option>
+				<option value="1">Locked Internal</option>
+				<option value="2">Locked External</option>
+				<option value="3">Unlocked Selective</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="deck-lid-lock-channel">
+		<item-type>Switch</item-type>
+		<label>Deck Lid Lock</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="flap-lock-channel">
+		<item-type>Switch</item-type>
+		<label>Flap Lock</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="last-lock-update-channel">
+		<item-type>DateTime</item-type>
+		<label>Last Lock Update</label>
+		<state pattern="%1$tA, %1$td.%1$tm. %1$tH:%1$tM" readOnly="true"/>
+	</channel-type>
+</thing:thing-descriptions>

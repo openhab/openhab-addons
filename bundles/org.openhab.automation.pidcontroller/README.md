@@ -35,14 +35,14 @@ This is then transferred to the action module.
 | `ki`             | Decimal | I: [Integral Gain](#integral-i-gain-parameter) Parameter                                                                                           | Y        |
 | `kd`             | Decimal | D: [Derivative Gain](#derivative-d-gain-parameter) Parameter                                                                                       | Y        |
 | `kdTimeConstant` | Decimal | D-T1: [Derivative Gain Time Constant](#derivative-time-constant-d-t1-parameter) in sec.                                                            | Y        |
-| `commandItem`    | String  | Send a String "RESET" to this item to reset the I- and the D-part to 0.                                                                             | N        |
+| `commandItem`    | String  | Send a String "RESET" to this item to reset the I- and the D-part to 0.                                                                            | N        |
 | `loopTime`       | Decimal | The interval the output value will be updated in milliseconds. Note: the output will also be updated when the input value or the setpoint changes. | Y        |
-| `integralMinValue` | Decimal | The I-part will be limited (min) to this value.                                                                                                  | N        |
-| `integralMaxValue` | Decimal | The I-part will be limited (max) to this value.                                                                                                  | N        |
-| `pInspector`     | Item    | Name of the debug Item for the current P-part                                                                                                      | N        |
-| `iInspector`     | Item    | Name of the debug Item for the current I-part                                                                                                      | N        |
-| `dInspector`     | Item    | Name of the debug Item for the current D-part                                                                                                      | N        |
-| `eInspector`     | Item    | Name of the debug Item for the current regulation difference (error)                                                                               | N        |
+| `integralMinValue` | Decimal | The I-part will be limited (min) to this value.                                                                                                    | N        |
+| `integralMaxValue` | Decimal | The I-part will be limited (max) to this value.                                                                                                    | N        |
+| `pInspector`     | Item    | Name of the inspector Item for the current P-part                                                                                                  | N        |
+| `iInspector`     | Item    | Name of the inspector Item for the current I-part                                                                                                  | N        |
+| `dInspector`     | Item    | Name of the inspector Item for the current D-part                                                                                                  | N        |
+| `eInspector`     | Item    | Name of the inspector Item for the current regulation difference (error)                                                                           | N        |
 
 The `loopTime` should be max a tenth of the system response.
 E.g. the heating needs 10 min to heat up the room, the loop time should be max 1 min.
@@ -56,6 +56,9 @@ When controlling a heating valve, reasonable values are 0% (min limit) and 100% 
 You can view the internal P-, I- and D-parts of the controller with the inspector Items.
 These values are useful when tuning the controller.
 They are updated every time the output is updated.
+
+Inspector items are also used to recover the controller's previous state during startup. This feature allows the PID
+controller parameters to be updated and openHAB to be restarted without losing the current controller state.
 
 ## Proportional (P) Gain Parameter
 
@@ -135,3 +138,11 @@ This can be done either by changing the setpoint (e.g. 20°C -> 25°C) or by for
 
 This process can take some time with slow responding control loops like heating systems.
 You will get faster results with constant lighting or PV zero export applications.
+
+## Persisting controller state across restarts
+
+Persisting controller state requires inspector items `iInspector`, `dInspector`, `eInspector` to be configured.
+The PID controller uses these Items to expose internal state in order to restore it during startup or reload.
+
+In addition, you need to have persistence set up for these items in openHAB. Please see openHAB documentation regarding
+[Persistence](https://www.openhab.org/docs/configuration/persistence.html) for more details and instructions.

@@ -296,31 +296,37 @@
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="menuXmlSrc1" type="text" required="false">
+				<context>script</context>
 				<label>S1 Menu XML</label>
 				<description>An XML string representing the menu items to load into the keypad for for Source 1, see README</description>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="menuXmlSrc2" type="text" required="false">
+				<context>script</context>
 				<label>S2 Menu XML</label>
 				<description>An XML string representing the menu items to load into the keypad for for Source 2, see README</description>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="menuXmlSrc3" type="text" required="false">
+				<context>script</context>
 				<label>S3 Menu XML</label>
 				<description>An XML string representing the menu items to load into the keypad for for Source 3, see README</description>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="menuXmlSrc4" type="text" required="false">
+				<context>script</context>
 				<label>S4 Menu XML</label>
 				<description>An XML string representing the menu items to load into the keypad for for Source 4, see README</description>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="menuXmlSrc5" type="text" required="false">
+				<context>script</context>
 				<label>S5 Menu XML</label>
 				<description>An XML string representing the menu items to load into the keypad for for Source 5, see README</description>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="menuXmlSrc6" type="text" required="false">
+				<context>script</context>
 				<label>S6 Menu XML</label>
 				<description>An XML string representing the menu items to load into the keypad for for Source 6, see README</description>
 				<advanced>true</advanced>

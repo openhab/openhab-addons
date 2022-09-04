@@ -36,6 +36,7 @@ import static org.openhab.binding.fineoffsetweatherstation.internal.Utils.toUInt
 import static org.openhab.core.library.unit.SIUnits.CELSIUS;
 import static org.openhab.core.library.unit.SIUnits.METRE;
 import static org.openhab.core.library.unit.SIUnits.PASCAL;
+import static org.openhab.core.library.unit.SIUnits.SQUARE_METRE;
 import static org.openhab.core.library.unit.Units.DEGREE_ANGLE;
 import static org.openhab.core.library.unit.Units.METRE_PER_SECOND;
 import static org.openhab.core.library.unit.Units.MICROGRAM_PER_CUBICMETRE;
@@ -72,7 +73,7 @@ public enum MeasureType {
 
     PERCENTAGE(PERCENT, 1, CHANNEL_TYPE_HUMIDITY, (data, offset) -> toUInt8(data[offset])),
 
-    PRESSURE(HECTO(PASCAL), 2, CHANNEL_TYPE_PRESSURE, Utils::toUInt16),
+    PRESSURE(HECTO(PASCAL), 2, CHANNEL_TYPE_PRESSURE, (data, offset) -> toUInt16(data, offset) / 10.),
 
     DEGREE(DEGREE_ANGLE, 2, null, Utils::toUInt16),
 
@@ -83,6 +84,8 @@ public enum MeasureType {
     HEIGHT_BIG(MILLI(METRE), 4, CHANNEL_TYPE_RAIN, (data, offset) -> toUInt32(data, offset) / 10.),
 
     HEIGHT_PER_HOUR(MILLIMETRE_PER_HOUR, 2, CHANNEL_TYPE_RAIN_RATE, (data, offset) -> toUInt16(data, offset) / 10.),
+
+    HEIGHT_PER_HOUR_BIG(MILLIMETRE_PER_HOUR, 4, CHANNEL_TYPE_RAIN_RATE, (data, offset) -> toUInt32(data, offset) / 10.),
 
     LUX(Units.LUX, 4, CHANNEL_TYPE_ILLUMINATION, (data, offset) -> toUInt32(data, offset) / 10.),
 
@@ -104,8 +107,8 @@ public enum MeasureType {
             (data, offset, context) -> new DateTimeType(
                     ZonedDateTime.ofInstant(Instant.ofEpochSecond(toUInt32(data, offset)), context.getZoneId()))),
 
-    MICROWATT_PER_SQUARE_CENTIMETRE(Units.MICROWATT_PER_SQUARE_CENTIMETRE, 2, CHANNEL_TYPE_UV_RADIATION,
-            Utils::toUInt16),
+    MILLIWATT_PER_SQUARE_METRE(MILLI(Units.WATT).divide(SQUARE_METRE), 2, CHANNEL_TYPE_UV_RADIATION,
+            (data, offset) -> Utils.toUInt16(data, offset) / 10.),
 
     BYTE(1, null, (data, offset, context) -> new DecimalType(toUInt8(data[offset]))),
 

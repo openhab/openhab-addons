@@ -143,7 +143,8 @@ public class KLF200Response {
      * @return <b>success</b> of type boolean which signals the success of the communication.
      */
     public static boolean check4matchingNodeID(Logger logger, int reqNodeID, int cfmNodeID) {
-        logger.trace("check4matchingNodeID() called for requestNodeID {} and responseNodeID {}.", reqNodeID, cfmNodeID);
+        logger.trace("check4matchingNodeID() called for request NodeID {} and response NodeID {}.", reqNodeID,
+                cfmNodeID);
         return check4matchingAnyID(logger, "NodeID", reqNodeID, cfmNodeID);
     }
 
@@ -157,8 +158,8 @@ public class KLF200Response {
      * @return <b>success</b> of type boolean which signals the success of the communication.
      */
     public static boolean check4matchingSessionID(Logger logger, int reqSessionID, int cfmSessionID) {
-        logger.trace("check4matchingSessionID() called for requestNodeID {} and responseNodeID {}.", reqSessionID,
-                cfmSessionID);
+        logger.trace("check4matchingSessionID() called for request SessionID {} and response SessionID {}.",
+                reqSessionID, cfmSessionID);
         return check4matchingAnyID(logger, "SessionID", reqSessionID, cfmSessionID);
     }
 }

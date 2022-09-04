@@ -20,6 +20,7 @@ import org.openhab.binding.mybmw.internal.handler.MyBMWBridgeHandler;
 import org.openhab.binding.mybmw.internal.handler.MyBMWCommandOptionProvider;
 import org.openhab.binding.mybmw.internal.handler.VehicleHandler;
 import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -42,14 +43,16 @@ import org.osgi.service.component.annotations.Reference;
 public class MyBMWHandlerFactory extends BaseThingHandlerFactory {
     private final HttpClientFactory httpClientFactory;
     private final MyBMWCommandOptionProvider commandOptionProvider;
+    private final LocationProvider locationProvider;
     private String localeLanguage;
 
     @Activate
     public MyBMWHandlerFactory(final @Reference HttpClientFactory hcf, final @Reference MyBMWCommandOptionProvider cop,
-            final @Reference LocaleProvider lp) {
+            final @Reference LocaleProvider localeP, final @Reference LocationProvider locationP) {
         httpClientFactory = hcf;
         commandOptionProvider = cop;
-        localeLanguage = lp.getLocale().getLanguage().toLowerCase();
+        locationProvider = locationP;
+        localeLanguage = localeP.getLocale().getLanguage().toLowerCase();
     }
 
     @Override
@@ -63,7 +66,8 @@ public class MyBMWHandlerFactory extends BaseThingHandlerFactory {
         if (THING_TYPE_CONNECTED_DRIVE_ACCOUNT.equals(thingTypeUID)) {
             return new MyBMWBridgeHandler((Bridge) thing, httpClientFactory, localeLanguage);
         } else if (SUPPORTED_THING_SET.contains(thingTypeUID)) {
-            VehicleHandler vh = new VehicleHandler(thing, commandOptionProvider, thingTypeUID.getId());
+            VehicleHandler vh = new VehicleHandler(thing, commandOptionProvider, locationProvider,
+                    thingTypeUID.getId());
             return vh;
         }
         return null;

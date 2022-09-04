@@ -12,7 +12,10 @@
  */
 package org.openhab.binding.rotel.internal.protocol.ascii;
 
+import static org.openhab.binding.rotel.internal.RotelBindingConstants.*;
+
 import java.nio.charset.StandardCharsets;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -33,7 +36,14 @@ public class RotelAsciiV2ProtocolHandler extends RotelAbstractAsciiProtocolHandl
 
     private static final char CHAR_END_RESPONSE = '$';
 
+    private static final Set<String> KEYSET = Set.of(KEY_DISC_NAME, KEY_DISC_TYPE, KEY_TRACK_NAME, KEY_TIME, KEY_FM_RDS,
+            KEY_DAB_STATION);
+
     private final Logger logger = LoggerFactory.getLogger(RotelAsciiV2ProtocolHandler.class);
+
+    private boolean searchKey = true;
+    private boolean variableLength;
+    private boolean prevIsEndCharacter;
 
     /**
      * Constructor
@@ -41,7 +51,7 @@ public class RotelAsciiV2ProtocolHandler extends RotelAbstractAsciiProtocolHandl
      * @param model the Rotel model in use
      */
     public RotelAsciiV2ProtocolHandler(RotelModel model) {
-        super(model, CHAR_END_RESPONSE);
+        super(model);
     }
 
     @Override
@@ -53,15 +63,27 @@ public class RotelAsciiV2ProtocolHandler extends RotelAbstractAsciiProtocolHandl
     public byte[] buildCommandMessage(RotelCommand cmd, @Nullable Integer value) throws RotelException {
         String messageStr = cmd.getAsciiCommandV2();
         if (messageStr == null) {
-            throw new RotelException("Command \"" + cmd.getName() + "\" ignored: not available for ASCII V2 protocol");
+            throw new RotelException("Command \"" + cmd.getLabel() + "\" ignored: not available for ASCII V2 protocol");
         }
         if (value != null) {
             switch (cmd) {
                 case VOLUME_SET:
+                case ZONE1_VOLUME_SET:
+                case ZONE2_VOLUME_SET:
+                case ZONE3_VOLUME_SET:
+                case ZONE4_VOLUME_SET:
                     messageStr += String.format("%02d", value);
                     break;
                 case BASS_SET:
+                case ZONE1_BASS_SET:
+                case ZONE2_BASS_SET:
+                case ZONE3_BASS_SET:
+                case ZONE4_BASS_SET:
                 case TREBLE_SET:
+                case ZONE1_TREBLE_SET:
+                case ZONE2_TREBLE_SET:
+                case ZONE3_TREBLE_SET:
+                case ZONE4_TREBLE_SET:
                     if (value == 0) {
                         messageStr += "000";
                     } else if (value > 0) {
@@ -71,6 +93,10 @@ public class RotelAsciiV2ProtocolHandler extends RotelAbstractAsciiProtocolHandl
                     }
                     break;
                 case BALANCE_SET:
+                case ZONE1_BALANCE_SET:
+                case ZONE2_BALANCE_SET:
+                case ZONE3_BALANCE_SET:
+                case ZONE4_BALANCE_SET:
                     if (value == 0) {
                         messageStr += "000";
                     } else if (value > 0) {
@@ -94,7 +120,77 @@ public class RotelAsciiV2ProtocolHandler extends RotelAbstractAsciiProtocolHandl
             messageStr += "!";
         }
         byte[] message = messageStr.getBytes(StandardCharsets.US_ASCII);
-        logger.debug("Command \"{}\" => {}", cmd.getName(), messageStr);
+        logger.debug("Command \"{}\" => {}", cmd, messageStr);
         return message;
+    }
+
+    @Override
+    public void handleIncomingData(byte[] inDataBuffer, int length) {
+        for (int i = 0; i < length; i++) {
+            boolean end = false;
+            if (searchKey && inDataBuffer[i] == '=') {
+                // End of key reading, check if the value is a fixed or variable length
+                searchKey = false;
+                byte[] dataKey = getDataBuffer();
+                String key = new String(dataKey, 0, dataKey.length, StandardCharsets.US_ASCII).trim();
+                variableLength = KEYSET.contains(key);
+                logger.trace("handleIncomingData: key = *{}* {}", key, variableLength ? "variable" : "fixed");
+                fillDataBuffer(inDataBuffer[i]);
+            } else if (searchKey) {
+                // Reading key
+                fillDataBuffer(inDataBuffer[i]);
+            } else if (inDataBuffer[i] == CHAR_END_RESPONSE) {
+                end = !variableLength || prevIsEndCharacter;
+            } else {
+                if (prevIsEndCharacter) {
+                    // End character inside a variable length value
+                    fillDataBuffer((byte) CHAR_END_RESPONSE);
+                }
+                // Reading value
+                fillDataBuffer(inDataBuffer[i]);
+            }
+            if (end) {
+                // End of value reading
+                handleIncomingMessage(getDataBuffer());
+                resetDataBuffer();
+                searchKey = true;
+                variableLength = false;
+                prevIsEndCharacter = false;
+            } else {
+                prevIsEndCharacter = inDataBuffer[i] == CHAR_END_RESPONSE;
+            }
+        }
+    }
+
+    @Override
+    protected void dispatchKeyValue(String key, String value) {
+        // For distribution amplifiers, we need to split certain values to get the value for each zone
+        if (model == RotelModel.C8 && value.contains(",")) {
+            switch (key) {
+                case KEY_INPUT:
+                case KEY_VOLUME:
+                case KEY_MUTE:
+                case KEY_BASS:
+                case KEY_TREBLE:
+                case KEY_BALANCE:
+                case KEY_FREQ:
+                    String[] splitValues = value.split(",");
+                    int nb = splitValues.length;
+                    if (nb > MAX_NUMBER_OF_ZONES) {
+                        nb = MAX_NUMBER_OF_ZONES;
+                    }
+                    for (int i = 1; i <= nb; i++) {
+                        String val = KEY_INPUT.equals(key) ? String.format("z%d:input_%s", i, splitValues[i - 1])
+                                : splitValues[i - 1];
+                        dispatchKeyValue(String.format("%s_zone%d", key, i), val);
+                    }
+                    break;
+                default:
+                    super.dispatchKeyValue(key, value);
+                    break;
+            }
+        } else {
+            super.dispatchKeyValue(key, value);
+        }
     }
 }

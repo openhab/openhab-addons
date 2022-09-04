@@ -7,6 +7,7 @@ Some of these brands are e.g.:
 * Aercus
 * Ambient Weather
 * Ecowitt
+* ELV
 * Frogitt
 * Misol
 * Pantech
@@ -22,7 +23,7 @@ This binding works offline by [implementing the wire protocol](https://osswww.ec
 
 ## Supported Things
 
-- `weatherstation`: A Fine Offset gateway device with the ThingTypeUID `fineoffsetweatherstation:weatherstation` wich supports the [wire protocol](https://osswww.ecowitt.net/uploads/20210716/WN1900%20GW1000,1100%20WH2680,2650%20telenet%20v1.6.0%20.pdf) e.g.:
+- `weatherstation`: A Fine Offset gateway device with the ThingTypeUID `fineoffsetweatherstation:weatherstation` which supports the [wire protocol](https://osswww.ecowitt.net/uploads/20220407/WN1900%20GW1000,1100%20WH2680,2650%20telenet%20v1.6.4.pdf) e.g.:
     - HP2550
     - HP3500
     - GW1000
@@ -30,6 +31,7 @@ This binding works offline by [implementing the wire protocol](https://osswww.ec
     - GW1002
     - GW1003
     - GW1100
+    - GW2001
     - WN1900
     - WN1910
     - WH2350
@@ -40,6 +42,8 @@ This binding works offline by [implementing the wire protocol](https://osswww.ec
     - WH2680
     - WH2900
     - WH2950
+    - WS980 ELV (tested)
+    - WittBoy (tested)
 - `sensor`: A Fine Offset sensor which is connected to the bridge with the ThingTypeUID `fineoffsetweatherstation:sensor`.
   Since the gateway collects all the sensor data and harmonizes them, the sensor thing itself will only hold information about the signal and battery status.
   This is a list of sensors supported by the protocol:
@@ -58,7 +62,16 @@ This binding works offline by [implementing the wire protocol](https://osswww.ec
   - WH65 - 7-in-1 weather station for wind speed & direction, solar radiation & light, temperature, humidity and rainfall
   - WH68 - 4-in-1 weather station - Solar-powered sensor for wind speed & direction, solar radiation & light
   - WH80 - 6-in-1 weather station - Ultrasonic sensor for wind speed & direction, solar radiation & light, temperature & humidity
-  - WH90 - A new weather station
+  - WH90 - 7-in-1 weather station - Ultrasonic sensor for wind speed & direction, solar radiation & light, temperature, humidity and haptic rainfall Sensor
+
+### Unsupported Devices
+
+Some weather stations have firmware that does not allow you to query live-data directly.
+In this case you have to configure a service to which the data is sent.
+Please try if here the [IPObserver binding](https://www.openhab.org/addons/bindings/ipobserver/) offers an alternative.
+Known weather stations not compatible with this binding:
+
+  - [WH3000](https://community.openhab.org/t/fine-offset-weather-station-binding-beta-and-discussion/134167/52?u=andy2003)
 
 ## Discovery
 
@@ -68,12 +81,13 @@ This binding support discovery of Fine Offset gateway devices by sending a broad
 
 ### `gateway` Thing Configuration
 
-| Name              | Type    | Description                                                                         | Default | Required | Advanced |
-|-------------------|---------|-------------------------------------------------------------------------------------|---------|----------|----------|
-| ip                | text    | The Hostname or IP address of the device                                            | N/A     | yes      | no       |
-| port              | integer | The network port of the gateway                                                     | 45000   | yes      | no       |
-| pollingInterval   | integer | Polling period for refreshing the data in seconds                                   | 16      | yes      | yes      |
-| discoverInterval  | integer | Interval in seconds to fetch registered sensors, battery status and signal strength | 900     | yes      | yes      |
+| Name             | Type    | Description                                                                                  | Default | Required | Advanced |
+|------------------|---------|----------------------------------------------------------------------------------------------|---------|----------|----------|
+| ip               | text    | The Hostname or IP address of the device                                                     | N/A     | yes      | no       |
+| port             | integer | The network port of the gateway                                                              | 45000   | yes      | no       |
+| protocol         | text    | The protocol to use for communicating with the gateway, valid values are: `DEFAULT` or `ELV` | DEFAULT | no       | no       |
+| pollingInterval  | integer | Polling period for refreshing the data in seconds                                            | 16      | yes      | yes      |
+| discoverInterval | integer | Interval in seconds to fetch registered sensors, battery status and signal strength          | 900     | yes      | yes      |
 
 ### `sensor` Thing Configuration
 
@@ -251,14 +265,22 @@ Valid sensors:
 | leaf-wetness-channel-6                | Number:Dimensionless          | R          | Leaf Moisture Channel 6                        | 
 | leaf-wetness-channel-7                | Number:Dimensionless          | R          | Leaf Moisture Channel 7                        | 
 | leaf-wetness-channel-8                | Number:Dimensionless          | R          | Leaf Moisture Channel 8                        | 
+| piezo-rain-rate                       | Number:VolumetricFlowRate     | R          | Piezo - Rainfall Rate                          |
+| piezo-rain-event                      | Number:Length                 | R          | Piezo - Amount of Rainfall At the last Rain    |
+| piezo-rain-hour                       | Number:Length                 | R          | Piezo - Rainfall Current Hour                  |
+| piezo-rain-day                        | Number:Length                 | R          | Piezo - Rainfall Today                         |
+| piezo-rain-week                       | Number:Length                 | R          | Piezo - Rainfall this Week                     |
+| piezo-rain-month                      | Number:Length                 | R          | Piezo - Rainfall this Month                    |
+| piezo-rain-year                       | Number:Length                 | R          | Piezo - Rainfall this Year                     |
 
 ### `sensor` Channels
 
-| Channel      | Type   | Read/Write | Description                 |
-|--------------|--------|------------|-----------------------------|
-| signal       | Number | R          | The sensors signal strenght |
-| batteryLevel | Number | R          | The sensors battery level   |
-| lowBattery   | Switch | R          | The sensors battery status  |
+| Channel        | Type                     | Read/Write | Description                 |
+|----------------|--------------------------|------------|-----------------------------|
+| signal         | Number                   | R          | The sensors signal strength |
+| batteryLevel   | Number                   | R          | The sensors battery level   |
+| batteryVoltage | Number:ElectricPotential | R          | The sensors battery voltage |
+| lowBattery     | Switch                   | R          | The sensors battery status  |
 
 ## Full Example
 
@@ -267,7 +289,13 @@ This is an example configuration for the WH2650 gateway
 _weatherstation.things_:
 
 ```xtend
-Bridge fineoffsetweatherstation:gateway:3906700515 "Weather station" [ip="192.168.1.42", port="45000", discoverInterval="900", pollingInterval="16"] {
+Bridge fineoffsetweatherstation:gateway:3906700515 "Weather station" [
+     ip="192.168.1.42",
+     port="45000", 
+     discoverInterval="900",
+     pollingInterval="16",
+     protocol="DEFAULT"
+] {
 	Thing sensor WH25 "WH25" [sensor="WH25"]
 	Thing sensor WH65 "WH65" [sensor="WH65"]
 }

@@ -13,7 +13,7 @@
 package org.openhab.binding.shelly.internal.manager;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.PROPERTY_SERVICE_NAME;
-import static org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.SHELLY_COIOT_MCAST;
+import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_COIOT_MCAST;
 import static org.openhab.binding.shelly.internal.manager.ShellyManagerConstants.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
@@ -26,11 +26,12 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.shelly.internal.ShellyHandlerFactory;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyOtaCheckResult;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsLogin;
+import org.openhab.binding.shelly.internal.api.ShellyApiInterface;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
-import org.openhab.binding.shelly.internal.api.ShellyHttpApi;
-import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyOtaCheckResult;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsLogin;
+import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO;
+import org.openhab.binding.shelly.internal.api1.Shelly1HttpApi;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyManagerInterface;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
@@ -81,8 +82,8 @@ public class ShellyManagerActionPage extends ShellyManagerPage {
 
             ShellyThingConfiguration config = getThingConfig(th, properties);
             ShellyDeviceProfile profile = th.getProfile();
-            ShellyHttpApi api = th.getApi();
-            new ShellyHttpApi(uid, config, httpClient);
+            ShellyApiInterface api = th.getApi();
+            new Shelly1HttpApi(uid, config, httpClient);
 
             int refreshTimer = 0;
             switch (action) {
@@ -138,7 +139,7 @@ public class ShellyManagerActionPage extends ShellyManagerPage {
 
                     String peer = getString(profile.settings.coiot.peer);
                     boolean mcast = peer.isEmpty() || SHELLY_COIOT_MCAST.equalsIgnoreCase(peer);
-                    String newPeer = mcast ? localIp + ":" + ShellyCoapJSonDTO.COIOT_PORT : SHELLY_COIOT_MCAST;
+                    String newPeer = mcast ? localIp + ":" + Shelly1CoapJSonDTO.COIOT_PORT : SHELLY_COIOT_MCAST;
                     String displayPeer = mcast ? newPeer : "Multicast";
 
                     if (profile.isMotion && action.equalsIgnoreCase(ACTION_SETCOIOT_MCAST)) {
@@ -326,7 +327,7 @@ public class ShellyManagerActionPage extends ShellyManagerPage {
                     !profile.settings.wifiRecoveryReboot ? "Enable WiFi Recovery" : "Disable WiFi Recovery");
         }
 
-        boolean set = (profile.settings.cloud != null) && profile.settings.cloud.enabled;
+        boolean set = profile.settings.cloud != null && profile.settings.cloud.enabled;
         list.put(set ? ACTION_DISCLOUD : ACTION_ENCLOUD, set ? "Disable Cloud" : "Enable Cloud");
 
         list.put(ACTION_RESET, "-Factory Reset");

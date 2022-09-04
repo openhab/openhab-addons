@@ -23,6 +23,7 @@
 			<channel id="powerL2" typeId="pl2"/>
 			<channel id="powerL3" typeId="pl3"/>
 			<channel id="powerAll" typeId="pAll"/>
+			<channel id="transaction" typeId="trx"/>
 			<channel id="allowCharging" typeId="alw"/>
 			<channel id="cableCurrent" typeId="cbl"/>
 			<channel id="firmware" typeId="fmw"/>
@@ -194,6 +195,12 @@
 		<label>Total Charged Energy</label>
 		<description>Amount of energy that has been charged since installation</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="trx">
+		<item-type>Number</item-type>
+		<label>Transaction</label>
+		<description>0 for no card, otherwise card ID</description>
+		<state readOnly="false"/>
 	</channel-type>
 	<channel-type id="alw">
 		<item-type>Switch</item-type>

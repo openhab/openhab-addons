@@ -18,6 +18,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -27,6 +29,7 @@ import org.jupnp.model.meta.RemoteDevice;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.upnp.UpnpDiscoveryParticipant;
+import org.openhab.core.config.discovery.upnp.internal.UpnpDiscoveryService;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Component;
@@ -44,10 +47,12 @@ import org.slf4j.LoggerFactory;
 @Component(service = UpnpDiscoveryParticipant.class)
 public class KonnectedUPnPServer implements UpnpDiscoveryParticipant {
     private Logger logger = LoggerFactory.getLogger(KonnectedUPnPServer.class);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+            .unmodifiableSet(Stream.of(THING_TYPE_PROMODULE, THING_TYPE_WIFIMODULE).collect(Collectors.toSet()));
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return Collections.singleton(THING_TYPE_MODULE);
+        return SUPPORTED_THING_TYPES_UIDS;
     }
 
     @Override
@@ -55,7 +60,7 @@ public class KonnectedUPnPServer implements UpnpDiscoveryParticipant {
         ThingUID uid = getThingUID(device);
         if (uid != null) {
             Map<String, Object> properties = new HashMap<>();
-            properties.put(HOST, device.getDetails().getBaseURL());
+            properties.put(BASE_URL, device.getDetails().getBaseURL());
             properties.put(MAC_ADDR, device.getDetails().getSerialNumber());
             DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
                     .withLabel(device.getDetails().getFriendlyName()).withRepresentationProperty(MAC_ADDR).build();
@@ -70,14 +75,16 @@ public class KonnectedUPnPServer implements UpnpDiscoveryParticipant {
         DeviceDetails details = device.getDetails();
         if (details != null) {
             ModelDetails modelDetails = details.getModelDetails();
-
             if (modelDetails != null) {
                 String modelName = modelDetails.getModelName();
                 logger.debug("Model Details: {} Url: {} UDN: {}  Model Number: {}", modelName, details.getBaseURL(),
                         details.getSerialNumber(), modelDetails.getModelNumber());
                 if (modelName != null) {
+                    if (modelName.startsWith("Konnected Pro")) {
+                        return new ThingUID(THING_TYPE_PROMODULE, details.getSerialNumber());
+                    }
                     if (modelName.startsWith("Konnected")) {
-                        return new ThingUID(THING_TYPE_MODULE, details.getSerialNumber());
+                        return new ThingUID(THING_TYPE_WIFIMODULE, details.getSerialNumber());
                     }
                 }
             }

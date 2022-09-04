@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.mielecloud.internal.config.servlet;
 
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.function.BooleanSupplier;
 
 import javax.servlet.http.HttpServletRequest;
@@ -55,6 +57,9 @@ public final class CreateBridgeServlet extends AbstractRedirectionServlet {
 
     private static final long DISCOVERY_COMPLETION_TIMEOUT_IN_MILLISECONDS = 5000;
     private static final long CHECK_INTERVAL_IN_MILLISECONDS = 100;
+
+    private static final long INBOX_ENTRY_CREATION_TIMEOUT = 15;
+    private static final TimeUnit INBOX_ENTRY_CREATION_TIMEOUT_UNIT = TimeUnit.SECONDS;
 
     private final Logger logger = LoggerFactory.getLogger(CreateBridgeServlet.class);
 
@@ -109,12 +114,12 @@ public final class CreateBridgeServlet extends AbstractRedirectionServlet {
             waitForBridgeToComeOnline(bridge);
             return "/mielecloud";
         } catch (BridgeReconfigurationFailedException e) {
-            logger.warn("{}", e.getMessage());
+            logger.warn("Thing reconfiguration failed: {}", e.getMessage(), e);
             return "/mielecloud/success?" + SuccessServlet.BRIDGE_RECONFIGURATION_FAILED_PARAMETER_NAME + "=true&"
                     + SuccessServlet.BRIDGE_UID_PARAMETER_NAME + "=" + bridgeUidString + "&"
                     + SuccessServlet.EMAIL_PARAMETER_NAME + "=" + email;
         } catch (BridgeCreationFailedException e) {
-            logger.warn("Thing creation failed because there was no binding available that supports the thing.");
+            logger.warn("Thing creation failed: {}", e.getMessage(), e);
             return "/mielecloud/success?" + SuccessServlet.BRIDGE_CREATION_FAILED_PARAMETER_NAME + "=true&"
                     + SuccessServlet.BRIDGE_UID_PARAMETER_NAME + "=" + bridgeUidString + "&"
                     + SuccessServlet.EMAIL_PARAMETER_NAME + "=" + email;
@@ -122,36 +127,47 @@ public final class CreateBridgeServlet extends AbstractRedirectionServlet {
     }
 
     private Thing pairOrReconfigureBridge(String locale, ThingUID bridgeUid, String email) {
+        var thing = thingRegistry.get(bridgeUid);
+        if (thing != null) {
+            reconfigureBridge(thing);
+            return thing;
+        } else {
+            return pairBridge(bridgeUid, locale, email);
+        }
+    }
+
+    private Thing pairBridge(ThingUID bridgeUid, String locale, String email) {
         DiscoveryResult result = DiscoveryResultBuilder.create(bridgeUid)
                 .withRepresentationProperty(Thing.PROPERTY_MODEL_ID).withLabel(MIELE_CLOUD_BRIDGE_LABEL)
                 .withProperty(Thing.PROPERTY_MODEL_ID, MIELE_CLOUD_BRIDGE_NAME)
                 .withProperty(MieleCloudBindingConstants.CONFIG_PARAM_LOCALE, locale)
                 .withProperty(MieleCloudBindingConstants.CONFIG_PARAM_EMAIL, email).build();
-        if (inbox.add(result)) {
-            return pairBridge(bridgeUid);
-        } else {
-            return reconfigureBridge(bridgeUid);
-        }
-    }
 
-    private Thing pairBridge(ThingUID thingUid) {
-        Thing thing = inbox.approve(thingUid, MIELE_CLOUD_BRIDGE_LABEL, null);
+        try {
+            var success = inbox.add(result).get(INBOX_ENTRY_CREATION_TIMEOUT, INBOX_ENTRY_CREATION_TIMEOUT_UNIT);
+            if (!Boolean.TRUE.equals(success)) {
+                throw new BridgeCreationFailedException("Adding bridge to inbox failed");
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new BridgeCreationFailedException("Interrupted while adding bridge to inbox", e);
+        } catch (ExecutionException e) {
+            throw new BridgeCreationFailedException("Adding bridge to inbox failed", e);
+        } catch (TimeoutException e) {
+            throw new BridgeCreationFailedException("Adding bridge to inbox failed: Timeout", e);
+        }
+
+        Thing thing = inbox.approve(bridgeUid, MIELE_CLOUD_BRIDGE_LABEL, null);
         if (thing == null) {
-            throw new BridgeCreationFailedException();
+            throw new BridgeCreationFailedException("Approving thing from inbox failed");
         }
 
-        logger.debug("Successfully created bridge {}", thingUid);
+        logger.debug("Successfully created bridge {}", bridgeUid);
         return thing;
     }
 
-    private Thing reconfigureBridge(ThingUID thingUid) {
+    private void reconfigureBridge(Thing thing) {
         logger.debug("Thing already exists. Modifying configuration.");
-        Thing thing = thingRegistry.get(thingUid);
-        if (thing == null) {
-            throw new BridgeReconfigurationFailedException(
-                    "Cannot modify non existing bridge: Could neither add bridge via inbox nor find existing bridge.");
-        }
-
         ThingHandler handler = thing.getHandler();
         if (handler == null) {
             throw new BridgeReconfigurationFailedException("Bridge exists but has no handler.");
@@ -164,8 +180,6 @@ public final class CreateBridgeServlet extends AbstractRedirectionServlet {
         MieleBridgeHandler bridgeHandler = (MieleBridgeHandler) handler;
         bridgeHandler.disposeWebservice();
         bridgeHandler.initializeWebservice();
-
-        return thing;
     }
 
     private String getValidLocale(@Nullable String localeParameterValue) {

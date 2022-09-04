@@ -26,9 +26,11 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.rotel.internal.RotelBindingConstants;
+import org.openhab.binding.rotel.internal.RotelCommandDescriptionOptionProvider;
 import org.openhab.binding.rotel.internal.RotelException;
 import org.openhab.binding.rotel.internal.RotelModel;
 import org.openhab.binding.rotel.internal.RotelPlayStatus;
+import org.openhab.binding.rotel.internal.RotelRepeatMode;
 import org.openhab.binding.rotel.internal.RotelStateDescriptionOptionProvider;
 import org.openhab.binding.rotel.internal.communication.RotelCommand;
 import org.openhab.binding.rotel.internal.communication.RotelConnector;
@@ -59,6 +61,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.CommandOption;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.StateOption;
@@ -81,15 +84,13 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
     private static final boolean USE_SIMULATED_DEVICE = false;
     private static final int SLEEP_INTV = 30;
 
-    private @Nullable ScheduledFuture<?> reconnectJob;
-    private @Nullable ScheduledFuture<?> powerOnJob;
-    private @Nullable ScheduledFuture<?> powerOffJob;
-    private @Nullable ScheduledFuture<?> powerOnZone2Job;
-    private @Nullable ScheduledFuture<?> powerOnZone3Job;
-    private @Nullable ScheduledFuture<?> powerOnZone4Job;
+    private final RotelStateDescriptionOptionProvider stateDescriptionProvider;
+    private final RotelCommandDescriptionOptionProvider commandDescriptionProvider;
+    private final SerialPortManager serialPortManager;
 
-    private RotelStateDescriptionOptionProvider stateDescriptionProvider;
-    private SerialPortManager serialPortManager;
+    private @Nullable ScheduledFuture<?> reconnectJob;
+    private @Nullable ScheduledFuture<?> powerOffJob;
+    private @Nullable ScheduledFuture<?>[] powerOnZoneJobs = { null, null, null, null, null };
 
     private RotelModel model;
     private RotelProtocol protocol;
@@ -103,37 +104,26 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
 
     private int currentZone = 1;
     private boolean selectingRecord;
-    private @Nullable Boolean power;
-    private boolean powerZone2;
-    private boolean powerZone3;
-    private boolean powerZone4;
-    private RotelSource source = RotelSource.CAT0_CD;
+    private @Nullable Boolean[] powers = { null, false, false, false, false };
+    private boolean powerControlPerZone;
     private @Nullable RotelSource recordSource;
-    private @Nullable RotelSource sourceZone2;
-    private @Nullable RotelSource sourceZone3;
-    private @Nullable RotelSource sourceZone4;
+    private @Nullable RotelSource[] sources = { RotelSource.CAT0_CD, null, null, null, null };
     private RotelDsp dsp = RotelDsp.CAT1_NONE;
-    private int volume;
-    private boolean mute;
-    private boolean fixedVolumeZone2;
-    private int volumeZone2;
-    private boolean muteZone2;
-    private boolean fixedVolumeZone3;
-    private int volumeZone3;
-    private boolean muteZone3;
-    private boolean fixedVolumeZone4;
-    private int volumeZone4;
-    private boolean muteZone4;
-    private int bass;
-    private int treble;
+    private boolean[] fixedVolumeZones = { false, false, false, false, false };
+    private int[] volumes = { 0, 0, 0, 0, 0 };
+    private boolean[] mutes = { false, false, false, false, false };
+    private int[] basses = { 0, 0, 0, 0, 0 };
+    private int[] trebles = { 0, 0, 0, 0, 0 };
     private RotelPlayStatus playStatus = RotelPlayStatus.STOPPED;
     private int track;
-    private double frequency;
+    private boolean randomMode;
+    private RotelRepeatMode repeatMode = RotelRepeatMode.OFF;
+    private double[] frequencies = { 0.0, 0.0, 0.0, 0.0, 0.0 };
     private String frontPanelLine1 = "";
     private String frontPanelLine2 = "";
     private int brightness;
     private boolean tcbypass;
-    private int balance;
+    private int[] balances = { 0, 0, 0, 0, 0 };
     private int minBalanceLevel;
     private int maxBalanceLevel;
     private boolean speakera;
@@ -145,9 +135,10 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
      * Constructor
      */
     public RotelHandler(Thing thing, RotelStateDescriptionOptionProvider stateDescriptionProvider,
-            SerialPortManager serialPortManager) {
+            RotelCommandDescriptionOptionProvider commandDescriptionProvider, SerialPortManager serialPortManager) {
         super(thing);
         this.stateDescriptionProvider = stateDescriptionProvider;
+        this.commandDescriptionProvider = commandDescriptionProvider;
         this.serialPortManager = serialPortManager;
         this.model = DEFAULT_MODEL;
         this.protocolHandler = new RotelHexProtocolHandler(model, Map.of());
@@ -158,6 +149,28 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
     @Override
     public void initialize() {
         logger.debug("Start initializing handler for thing {}", getThing().getUID());
+
+        RotelThingConfiguration config = getConfigAs(RotelThingConfiguration.class);
+
+        protocol = RotelProtocol.HEX;
+        if (config.protocol != null && !config.protocol.isEmpty()) {
+            try {
+                protocol = RotelProtocol.getFromName(config.protocol);
+            } catch (RotelException e) {
+                // Invalid protocol name in configuration, HEX will be considered by default
+            }
+        } else {
+            Map<String, String> properties = editProperties();
+            String property = properties.get(RotelBindingConstants.PROPERTY_PROTOCOL);
+            if (property != null && !property.isEmpty()) {
+                try {
+                    protocol = RotelProtocol.getFromName(property);
+                } catch (RotelException e) {
+                    // Invalid protocol name in thing property, HEX will be considered by default
+                }
+            }
+        }
+        logger.debug("rotelProtocol {}", protocol.getName());
 
         switch (getThing().getThingTypeUID().getId()) {
             case THING_TYPE_ID_RSP1066:
@@ -233,7 +246,11 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                 model = RotelModel.RA1572;
                 break;
             case THING_TYPE_ID_RA1592:
-                model = RotelModel.RA1592;
+                if (protocol == RotelProtocol.ASCII_V1) {
+                    model = RotelModel.RA1592_V1;
+                } else {
+                    model = RotelModel.RA1592_V2;
+                }
                 break;
             case THING_TYPE_ID_RAP1580:
                 model = RotelModel.RAP1580;
@@ -245,7 +262,11 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                 model = RotelModel.RC1572;
                 break;
             case THING_TYPE_ID_RC1590:
-                model = RotelModel.RC1590;
+                if (protocol == RotelProtocol.ASCII_V1) {
+                    model = RotelModel.RC1590_V1;
+                } else {
+                    model = RotelModel.RC1590_V2;
+                }
                 break;
             case THING_TYPE_ID_RCD1570:
                 model = RotelModel.RCD1570;
@@ -281,8 +302,17 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
             case THING_TYPE_ID_T14:
                 model = RotelModel.T14;
                 break;
+            case THING_TYPE_ID_C8:
+                model = RotelModel.C8;
+                break;
+            case THING_TYPE_ID_M8:
+                model = RotelModel.M8;
+                break;
             case THING_TYPE_ID_P5:
                 model = RotelModel.P5;
+                break;
+            case THING_TYPE_ID_S5:
+                model = RotelModel.S5;
                 break;
             case THING_TYPE_ID_X3:
                 model = RotelModel.X3;
@@ -294,28 +324,6 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                 model = DEFAULT_MODEL;
                 break;
         }
-
-        RotelThingConfiguration config = getConfigAs(RotelThingConfiguration.class);
-
-        protocol = RotelProtocol.HEX;
-        if (config.protocol != null && !config.protocol.isEmpty()) {
-            try {
-                protocol = RotelProtocol.getFromName(config.protocol);
-            } catch (RotelException e) {
-                // Invalid protocol name in configuration, HEX will be considered by default
-            }
-        } else {
-            Map<String, String> properties = editProperties();
-            String property = properties.get(RotelBindingConstants.PROPERTY_PROTOCOL);
-            if (property != null && !property.isEmpty()) {
-                try {
-                    protocol = RotelProtocol.getFromName(property);
-                } catch (RotelException e) {
-                    // Invalid protocol name in thing property, HEX will be considered by default
-                }
-            }
-        }
-        logger.debug("rotelProtocol {}", protocol.getName());
 
         Map<RotelSource, String> sourcesCustomLabels = new HashMap<>();
         Map<RotelSource, String> sourcesLabels = new HashMap<>();
@@ -343,6 +351,8 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
             logger.info("Set minValue to {} and maxValue to {} for your sitemap widget attached to your balance item.",
                     minBalanceLevel, maxBalanceLevel);
         }
+
+        powerControlPerZone = model.hasPowerControlPerZone();
 
         // Check configuration settings
         String configError = null;
@@ -439,23 +449,35 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                         new ChannelUID(getThing().getUID(), CHANNEL_MAIN_RECORD_SOURCE),
                         getStateOptions(model.getRecordSources(), sourcesCustomLabels));
             }
-            if (model.hasZone2SourceControl()) {
+            if (model.hasZoneSourceControl(1)) {
+                stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_ZONE1_SOURCE),
+                        getStateOptions(model.getZoneSources(1), sourcesCustomLabels));
+            }
+            if (model.hasZoneSourceControl(2)) {
                 stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_ZONE2_SOURCE),
-                        getStateOptions(model.getZone2Sources(), sourcesCustomLabels));
+                        getStateOptions(model.getZoneSources(2), sourcesCustomLabels));
             }
-            if (model.hasZone3SourceControl()) {
+            if (model.hasZoneSourceControl(3)) {
                 stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_ZONE3_SOURCE),
-                        getStateOptions(model.getZone3Sources(), sourcesCustomLabels));
+                        getStateOptions(model.getZoneSources(3), sourcesCustomLabels));
             }
-            if (model.hasZone4SourceControl()) {
+            if (model.hasZoneSourceControl(4)) {
                 stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_ZONE4_SOURCE),
-                        getStateOptions(model.getZone4Sources(), sourcesCustomLabels));
+                        getStateOptions(model.getZoneSources(4), sourcesCustomLabels));
             }
             if (model.hasDspControl()) {
                 stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_DSP),
                         model.getDspStateOptions());
                 stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_MAIN_DSP),
                         model.getDspStateOptions());
+            }
+
+            List<CommandOption> options = model.getOtherCommandsOptions(protocol);
+            if (!options.isEmpty()) {
+                commandDescriptionProvider.setCommandOptions(new ChannelUID(getThing().getUID(), CHANNEL_OTHER_COMMAND),
+                        options);
+                commandDescriptionProvider
+                        .setCommandOptions(new ChannelUID(getThing().getUID(), CHANNEL_MAIN_OTHER_COMMAND), options);
             }
 
             updateStatus(ThingStatus.UNKNOWN);
@@ -470,10 +492,9 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
     public void dispose() {
         logger.debug("Disposing handler for thing {}", getThing().getUID());
         cancelPowerOffJob();
-        cancelPowerOnJob();
-        cancelPowerOnZone2Job();
-        cancelPowerOnZone3Job();
-        cancelPowerOnZone4Job();
+        for (int zone = 0; zone <= model.getNumberOfZones(); zone++) {
+            cancelPowerOnZoneJob(zone);
+        }
         cancelReconnectJob();
         closeConnection();
         super.dispose();
@@ -507,6 +528,48 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
             return;
         }
 
+        int numZone = 0;
+        switch (channel) {
+            case CHANNEL_ZONE1_SOURCE:
+            case CHANNEL_ZONE1_VOLUME:
+            case CHANNEL_ZONE1_MUTE:
+            case CHANNEL_ZONE1_BASS:
+            case CHANNEL_ZONE1_TREBLE:
+            case CHANNEL_ZONE1_BALANCE:
+                numZone = 1;
+                break;
+            case CHANNEL_ZONE2_POWER:
+            case CHANNEL_ZONE2_SOURCE:
+            case CHANNEL_ZONE2_VOLUME:
+            case CHANNEL_ZONE2_VOLUME_UP_DOWN:
+            case CHANNEL_ZONE2_MUTE:
+            case CHANNEL_ZONE2_BASS:
+            case CHANNEL_ZONE2_TREBLE:
+            case CHANNEL_ZONE2_BALANCE:
+                numZone = 2;
+                break;
+            case CHANNEL_ZONE3_POWER:
+            case CHANNEL_ZONE3_SOURCE:
+            case CHANNEL_ZONE3_VOLUME:
+            case CHANNEL_ZONE3_MUTE:
+            case CHANNEL_ZONE3_BASS:
+            case CHANNEL_ZONE3_TREBLE:
+            case CHANNEL_ZONE3_BALANCE:
+                numZone = 3;
+                break;
+            case CHANNEL_ZONE4_POWER:
+            case CHANNEL_ZONE4_SOURCE:
+            case CHANNEL_ZONE4_VOLUME:
+            case CHANNEL_ZONE4_MUTE:
+            case CHANNEL_ZONE4_BASS:
+            case CHANNEL_ZONE4_TREBLE:
+            case CHANNEL_ZONE4_BALANCE:
+                numZone = 4;
+                break;
+            default:
+                break;
+        }
+
         RotelSource src;
         RotelCommand cmd;
         boolean success = true;
@@ -515,13 +578,13 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                 switch (channel) {
                     case CHANNEL_POWER:
                     case CHANNEL_MAIN_POWER:
-                        handlePowerCmd(channel, command, getPowerOnCommand(), getPowerOffCommand());
-                        break;
                     case CHANNEL_ZONE2_POWER:
-                        if (model.hasZone2Commands()) {
-                            handlePowerCmd(channel, command, RotelCommand.ZONE2_POWER_ON, RotelCommand.ZONE2_POWER_OFF);
-                        } else if (model.getNbAdditionalZones() == 1) {
-                            if (isPowerOn() || powerZone2) {
+                    case CHANNEL_ZONE3_POWER:
+                    case CHANNEL_ZONE4_POWER:
+                        if (numZone == 0 || model.hasZoneCommands(numZone)) {
+                            handlePowerCmd(channel, command, getPowerOnCommand(numZone), getPowerOffCommand(numZone));
+                        } else if (numZone == 2 && model.getNumberOfZones() == 2) {
+                            if (isPowerOn() || isPowerOn(numZone)) {
                                 selectZone(2, model.getZoneSelectCmd());
                             }
                             sendCommand(RotelCommand.ZONE_SELECT);
@@ -530,30 +593,26 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                             logger.debug("Command {} from channel {} failed: unavailable feature", command, channel);
                         }
                         break;
-                    case CHANNEL_ZONE3_POWER:
-                        if (model.hasZone3Commands()) {
-                            handlePowerCmd(channel, command, RotelCommand.ZONE3_POWER_ON, RotelCommand.ZONE3_POWER_OFF);
-                        } else {
-                            success = false;
-                            logger.debug("Command {} from channel {} failed: unavailable feature", command, channel);
-                        }
-                        break;
-                    case CHANNEL_ZONE4_POWER:
-                        if (model.hasZone4Commands()) {
-                            handlePowerCmd(channel, command, RotelCommand.ZONE4_POWER_ON, RotelCommand.ZONE4_POWER_OFF);
-                        } else {
-                            success = false;
-                            logger.debug("Command {} from channel {} failed: unavailable feature", command, channel);
-                        }
+                    case CHANNEL_ALL_POWER:
+                        handlePowerCmd(channel, command, RotelCommand.POWER_ON, RotelCommand.POWER_OFF);
                         break;
                     case CHANNEL_SOURCE:
                     case CHANNEL_MAIN_SOURCE:
-                        if (!isPowerOn()) {
+                    case CHANNEL_ZONE1_SOURCE:
+                    case CHANNEL_ZONE2_SOURCE:
+                    case CHANNEL_ZONE3_SOURCE:
+                    case CHANNEL_ZONE4_SOURCE:
+                        if (!isPowerOn(numZone)) {
                             success = false;
-                            logger.debug("Command {} from channel {} ignored: device in standby", command, channel);
-                        } else {
+                            logger.debug("Command {} from channel {} ignored: {} in standby", command, channel,
+                                    numZone == 0 ? "device" : "zone " + numZone);
+                        } else if (numZone == 0 || model.hasZoneCommands(numZone)) {
                             src = model.getSourceFromName(command.toString());
-                            cmd = model.hasOtherThanPrimaryCommands() ? src.getMainZoneCommand() : src.getCommand();
+                            if (numZone == 0) {
+                                cmd = model.hasOtherThanPrimaryCommands() ? src.getZoneCommand(1) : src.getCommand();
+                            } else {
+                                cmd = src.getZoneCommand(numZone);
+                            }
                             if (cmd != null) {
                                 sendCommand(cmd);
                                 if (model.canGetFrequency()) {
@@ -573,6 +632,32 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                                 logger.debug("Command {} from channel {} failed: undefined source command", command,
                                         channel);
                             }
+                        } else if (numZone == 2 && model.getNumberOfZones() > 1) {
+                            src = model.getSourceFromName(command.toString());
+                            cmd = src.getCommand();
+                            if (cmd != null) {
+                                selectZone(2, model.getZoneSelectCmd());
+                                sendCommand(cmd);
+                                if (model.canGetFrequency()) {
+                                    // send <new-source> returns
+                                    // 1.) the selected <new-source>
+                                    // 2.) the used frequency
+                                    // BUT:
+                                    // at response-time the frequency has the value of <old-source>
+                                    // so we must wait a short moment to get the frequency of <new-source>
+                                    Thread.sleep(1000);
+                                    sendCommand(RotelCommand.FREQUENCY);
+                                    Thread.sleep(100);
+                                    updateChannelState(CHANNEL_FREQUENCY);
+                                }
+                            } else {
+                                success = false;
+                                logger.debug("Command {} from channel {} failed: undefined source command", command,
+                                        channel);
+                            }
+                        } else {
+                            success = false;
+                            logger.debug("Command {} from channel {} failed: unavailable feature", command, channel);
                         }
                         break;
                     case CHANNEL_MAIN_RECORD_SOURCE:
@@ -603,74 +688,6 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                             }
                         }
                         break;
-                    case CHANNEL_ZONE2_SOURCE:
-                        if (!powerZone2) {
-                            success = false;
-                            logger.debug("Command {} from channel {} ignored: zone 2 in standby", command, channel);
-                        } else if (model.hasZone2Commands()) {
-                            src = model.getSourceFromName(command.toString());
-                            cmd = src.getZone2Command();
-                            if (cmd != null) {
-                                sendCommand(cmd);
-                            } else {
-                                success = false;
-                                logger.debug("Command {} from channel {} failed: undefined zone 2 source command",
-                                        command, channel);
-                            }
-                        } else if (model.getNbAdditionalZones() >= 1) {
-                            src = model.getSourceFromName(command.toString());
-                            cmd = src.getCommand();
-                            if (cmd != null) {
-                                selectZone(2, model.getZoneSelectCmd());
-                                sendCommand(cmd);
-                            } else {
-                                success = false;
-                                logger.debug("Command {} from channel {} failed: undefined source command", command,
-                                        channel);
-                            }
-                        } else {
-                            success = false;
-                            logger.debug("Command {} from channel {} failed: unavailable feature", command, channel);
-                        }
-                        break;
-                    case CHANNEL_ZONE3_SOURCE:
-                        if (!powerZone3) {
-                            success = false;
-                            logger.debug("Command {} from channel {} ignored: zone 3 in standby", command, channel);
-                        } else if (model.hasZone3Commands()) {
-                            src = model.getSourceFromName(command.toString());
-                            cmd = src.getZone3Command();
-                            if (cmd != null) {
-                                sendCommand(cmd);
-                            } else {
-                                success = false;
-                                logger.debug("Command {} from channel {} failed: undefined zone 3 source command",
-                                        command, channel);
-                            }
-                        } else {
-                            success = false;
-                            logger.debug("Command {} from channel {} failed: unavailable feature", command, channel);
-                        }
-                        break;
-                    case CHANNEL_ZONE4_SOURCE:
-                        if (!powerZone4) {
-                            success = false;
-                            logger.debug("Command {} from channel {} ignored: zone 4 in standby", command, channel);
-                        } else if (model.hasZone4Commands()) {
-                            src = model.getSourceFromName(command.toString());
-                            cmd = src.getZone4Command();
-                            if (cmd != null) {
-                                sendCommand(cmd);
-                            } else {
-                                success = false;
-                                logger.debug("Command {} from channel {} failed: undefined zone 4 source command",
-                                        command, channel);
-                            }
-                        } else {
-                            success = false;
-                            logger.debug("Command {} from channel {} failed: unavailable feature", command, channel);
-                        }
-                        break;
                     case CHANNEL_DSP:
                     case CHANNEL_MAIN_DSP:
                         if (!isPowerOn()) {
@@ -682,100 +699,30 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                         break;
                     case CHANNEL_VOLUME:
                     case CHANNEL_MAIN_VOLUME:
-                        if (!isPowerOn()) {
-                            success = false;
-                            logger.debug("Command {} from channel {} ignored: device in standby", command, channel);
-                        } else if (model.hasVolumeControl()) {
-                            handleVolumeCmd(volume, channel, command, getVolumeUpCommand(), getVolumeDownCommand(),
-                                    RotelCommand.VOLUME_SET);
-                        } else {
-                            success = false;
-                            logger.debug("Command {} from channel {} failed: unavailable feature", command, channel);
-                        }
-                        break;
                     case CHANNEL_MAIN_VOLUME_UP_DOWN:
-                        if (!isPowerOn()) {
-                            success = false;
-                            logger.debug("Command {} from channel {} ignored: device in standby", command, channel);
-                        } else if (model.hasVolumeControl()) {
-                            handleVolumeCmd(volume, channel, command, getVolumeUpCommand(), getVolumeDownCommand(),
-                                    null);
-                        } else {
-                            success = false;
-                            logger.debug("Command {} from channel {} failed: unavailable feature", command, channel);
-                        }
-                        break;
+                    case CHANNEL_ZONE1_VOLUME:
                     case CHANNEL_ZONE2_VOLUME:
-                        if (!powerZone2) {
-                            success = false;
-                            logger.debug("Command {} from channel {} ignored: zone 2 in standby", command, channel);
-                        } else if (fixedVolumeZone2) {
-                            success = false;
-                            logger.debug("Command {} from channel {} ignored: fixed volume in zone 2", command,
-                                    channel);
-                        } else if (model.hasVolumeControl() && model.getNbAdditionalZones() >= 1) {
-                            if (model.hasZone2Commands()) {
-                                handleVolumeCmd(volumeZone2, channel, command, RotelCommand.ZONE2_VOLUME_UP,
-                                        RotelCommand.ZONE2_VOLUME_DOWN, RotelCommand.ZONE2_VOLUME_SET);
-                            } else {
-                                selectZone(2, model.getZoneSelectCmd());
-                                handleVolumeCmd(volumeZone2, channel, command, RotelCommand.VOLUME_UP,
-                                        RotelCommand.VOLUME_DOWN, RotelCommand.VOLUME_SET);
-                            }
-                        } else {
-                            success = false;
-                            logger.debug("Command {} from channel {} failed: unavailable feature", command, channel);
-                        }
-                        break;
                     case CHANNEL_ZONE2_VOLUME_UP_DOWN:
-                        if (!powerZone2) {
-                            success = false;
-                            logger.debug("Command {} from channel {} ignored: zone 2 in standby", command, channel);
-                        } else if (fixedVolumeZone2) {
-                            success = false;
-                            logger.debug("Command {} from channel {} ignored: fixed volume in zone 2", command,
-                                    channel);
-                        } else if (model.hasVolumeControl() && model.getNbAdditionalZones() >= 1) {
-                            if (model.hasZone2Commands()) {
-                                handleVolumeCmd(volumeZone2, channel, command, RotelCommand.ZONE2_VOLUME_UP,
-                                        RotelCommand.ZONE2_VOLUME_DOWN, null);
-                            } else {
-                                selectZone(2, model.getZoneSelectCmd());
-                                handleVolumeCmd(volumeZone2, channel, command, RotelCommand.VOLUME_UP,
-                                        RotelCommand.VOLUME_DOWN, null);
-                            }
-                        } else {
-                            success = false;
-                            logger.debug("Command {} from channel {} failed: unavailable feature", command, channel);
-                        }
-                        break;
                     case CHANNEL_ZONE3_VOLUME:
-                        if (!powerZone3) {
-                            success = false;
-                            logger.debug("Command {} from channel {} ignored: zone 3 in standby", command, channel);
-                        } else if (fixedVolumeZone3) {
-                            success = false;
-                            logger.debug("Command {} from channel {} ignored: fixed volume in zone 3", command,
-                                    channel);
-                        } else if (model.hasVolumeControl() && model.hasZone3Commands()) {
-                            handleVolumeCmd(volumeZone3, channel, command, RotelCommand.ZONE3_VOLUME_UP,
-                                    RotelCommand.ZONE3_VOLUME_DOWN, RotelCommand.ZONE3_VOLUME_SET);
-                        } else {
-                            success = false;
-                            logger.debug("Command {} from channel {} failed: unavailable feature", command, channel);
-                        }
-                        break;
                     case CHANNEL_ZONE4_VOLUME:
-                        if (!powerZone4) {
+                        if (!isPowerOn(numZone)) {
                             success = false;
-                            logger.debug("Command {} from channel {} ignored: zone 4 in standby", command, channel);
-                        } else if (fixedVolumeZone4) {
+                            logger.debug("Command {} from channel {} ignored: zone {} in standby", command, channel,
+                                    numZone == 0 ? "device" : "zone " + numZone);
+                        } else if (fixedVolumeZones[numZone]) {
                             success = false;
-                            logger.debug("Command {} from channel {} ignored: fixed volume in zone 4", command,
-                                    channel);
-                        } else if (model.hasVolumeControl() && model.hasZone4Commands()) {
-                            handleVolumeCmd(volumeZone4, channel, command, RotelCommand.ZONE4_VOLUME_UP,
-                                    RotelCommand.ZONE4_VOLUME_DOWN, RotelCommand.ZONE4_VOLUME_SET);
+                            logger.debug("Command {} from channel {} ignored: fixed volume", command, channel);
+                        } else if (model.hasVolumeControl() && (numZone == 0 || model.hasZoneCommands(numZone))) {
+                            handleVolumeCmd(volumes[numZone], channel, command, getVolumeUpCommand(numZone),
+                                    getVolumeDownCommand(numZone),
+                                    CHANNEL_MAIN_VOLUME_UP_DOWN.equals(channel)
+                                            || CHANNEL_ZONE2_VOLUME_UP_DOWN.equals(channel) ? null
+                                                    : getVolumeSetCommand(numZone));
+                        } else if (numZone == 2 && model.hasVolumeControl() && model.getNumberOfZones() > 1) {
+                            selectZone(2, model.getZoneSelectCmd());
+                            handleVolumeCmd(volumes[numZone], channel, command, RotelCommand.VOLUME_UP,
+                                    RotelCommand.VOLUME_DOWN,
+                                    CHANNEL_ZONE2_VOLUME_UP_DOWN.equals(channel) ? null : RotelCommand.VOLUME_SET);
                         } else {
                             success = false;
                             logger.debug("Command {} from channel {} failed: unavailable feature", command, channel);
@@ -783,48 +730,18 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                         break;
                     case CHANNEL_MUTE:
                     case CHANNEL_MAIN_MUTE:
-                        if (!isPowerOn()) {
-                            success = false;
-                            logger.debug("Command {} from channel {} ignored: device in standby", command, channel);
-                        } else if (model.hasVolumeControl()) {
-                            handleMuteCmd(protocol == RotelProtocol.HEX, channel, command, getMuteOnCommand(),
-                                    getMuteOffCommand(), getMuteToggleCommand());
-                        } else {
-                            success = false;
-                            logger.debug("Command {} from channel {} failed: unavailable feature", command, channel);
-                        }
-                        break;
+                    case CHANNEL_ZONE1_MUTE:
                     case CHANNEL_ZONE2_MUTE:
-                        if (!powerZone2) {
-                            success = false;
-                            logger.debug("Command {} from channel {} ignored: zone 2 in standby", command, channel);
-                        } else if (model.hasVolumeControl() && model.hasZone2Commands()) {
-                            handleMuteCmd(false, channel, command, RotelCommand.ZONE2_MUTE_ON,
-                                    RotelCommand.ZONE2_MUTE_OFF, RotelCommand.ZONE2_MUTE_TOGGLE);
-                        } else {
-                            success = false;
-                            logger.debug("Command {} from channel {} failed: unavailable feature", command, channel);
-                        }
-                        break;
                     case CHANNEL_ZONE3_MUTE:
-                        if (!powerZone3) {
-                            success = false;
-                            logger.debug("Command {} from channel {} ignored: zone 3 in standby", command, channel);
-                        } else if (model.hasVolumeControl() && model.hasZone3Commands()) {
-                            handleMuteCmd(false, channel, command, RotelCommand.ZONE3_MUTE_ON,
-                                    RotelCommand.ZONE3_MUTE_OFF, RotelCommand.ZONE3_MUTE_TOGGLE);
-                        } else {
-                            success = false;
-                            logger.debug("Command {} from channel {} failed: unavailable feature", command, channel);
-                        }
-                        break;
                     case CHANNEL_ZONE4_MUTE:
-                        if (!powerZone4) {
+                        if (!isPowerOn(numZone)) {
                             success = false;
-                            logger.debug("Command {} from channel {} ignored: zone 4 in standby", command, channel);
-                        } else if (model.hasVolumeControl() && model.hasZone4Commands()) {
-                            handleMuteCmd(false, channel, command, RotelCommand.ZONE4_MUTE_ON,
-                                    RotelCommand.ZONE4_MUTE_OFF, RotelCommand.ZONE4_MUTE_TOGGLE);
+                            logger.debug("Command {} from channel {} ignored: zone {} in standby", command, channel,
+                                    numZone == 0 ? "device" : "zone " + numZone);
+                        } else if (model.hasVolumeControl() && (numZone == 0 || model.hasZoneCommands(numZone))) {
+                            handleMuteCmd(numZone == 0 && protocol == RotelProtocol.HEX, channel, command,
+                                    getMuteOnCommand(numZone), getMuteOffCommand(numZone),
+                                    getMuteToggleCommand(numZone));
                         } else {
                             success = false;
                             logger.debug("Command {} from channel {} failed: unavailable feature", command, channel);
@@ -832,30 +749,46 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                         break;
                     case CHANNEL_BASS:
                     case CHANNEL_MAIN_BASS:
-                        if (!isPowerOn()) {
+                    case CHANNEL_ZONE1_BASS:
+                    case CHANNEL_ZONE2_BASS:
+                    case CHANNEL_ZONE3_BASS:
+                    case CHANNEL_ZONE4_BASS:
+                        if (!isPowerOn(numZone)) {
                             success = false;
-                            logger.debug("Command {} from channel {} ignored: device in standby", command, channel);
+                            logger.debug("Command {} from channel {} ignored: zone {} in standby", command, channel,
+                                    numZone == 0 ? "device" : "zone " + numZone);
                         } else if (tcbypass) {
+                            success = false;
                             logger.debug("Command {} from channel {} ignored: tone control bypass is ON", command,
                                     channel);
-                            updateChannelState(CHANNEL_BASS);
+                        } else if (model.hasToneControl() && (numZone == 0 || model.hasZoneCommands(numZone))) {
+                            handleToneCmd(basses[numZone], channel, command, 2, getBassUpCommand(numZone),
+                                    getBassDownCommand(numZone), getBassSetCommand(numZone));
                         } else {
-                            handleToneCmd(bass, channel, command, 2, RotelCommand.BASS_UP, RotelCommand.BASS_DOWN,
-                                    RotelCommand.BASS_SET);
+                            success = false;
+                            logger.debug("Command {} from channel {} failed: unavailable feature", command, channel);
                         }
                         break;
                     case CHANNEL_TREBLE:
                     case CHANNEL_MAIN_TREBLE:
-                        if (!isPowerOn()) {
+                    case CHANNEL_ZONE1_TREBLE:
+                    case CHANNEL_ZONE2_TREBLE:
+                    case CHANNEL_ZONE3_TREBLE:
+                    case CHANNEL_ZONE4_TREBLE:
+                        if (!isPowerOn(numZone)) {
                             success = false;
-                            logger.debug("Command {} from channel {} ignored: device in standby", command, channel);
+                            logger.debug("Command {} from channel {} ignored: zone {} in standby", command, channel,
+                                    numZone == 0 ? "device" : "zone " + numZone);
                         } else if (tcbypass) {
+                            success = false;
                             logger.debug("Command {} from channel {} ignored: tone control bypass is ON", command,
                                     channel);
-                            updateChannelState(CHANNEL_TREBLE);
+                        } else if (model.hasToneControl() && (numZone == 0 || model.hasZoneCommands(numZone))) {
+                            handleToneCmd(trebles[numZone], channel, command, 1, getTrebleUpCommand(numZone),
+                                    getTrebleDownCommand(numZone), getTrebleSetCommand(numZone));
                         } else {
-                            handleToneCmd(treble, channel, command, 1, RotelCommand.TREBLE_UP, RotelCommand.TREBLE_DOWN,
-                                    RotelCommand.TREBLE_SET);
+                            success = false;
+                            logger.debug("Command {} from channel {} failed: unavailable feature", command, channel);
                         }
                         break;
                     case CHANNEL_PLAY_CONTROL:
@@ -872,15 +805,58 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                                 sendCommand(RotelCommand.PLAY_STATUS);
                             }
                         } else if (command instanceof NextPreviousType && command == NextPreviousType.NEXT) {
-                            sendCommand(RotelCommand.TRACK_FORWARD);
+                            sendCommand(RotelCommand.TRACK_FWD);
                         } else if (command instanceof NextPreviousType && command == NextPreviousType.PREVIOUS) {
-                            sendCommand(RotelCommand.TRACK_BACKWORD);
+                            sendCommand(RotelCommand.TRACK_BACK);
                         } else {
                             success = false;
                             logger.debug("Command {} from channel {} failed: invalid command value", command, channel);
                         }
                         break;
+                    case CHANNEL_RANDOM:
+                        if (!isPowerOn()) {
+                            success = false;
+                            logger.debug("Command {} from channel {} ignored: device in standby", command, channel);
+                        } else if (command instanceof OnOffType) {
+                            sendCommand(RotelCommand.RANDOM_TOGGLE);
+                        } else {
+                            success = false;
+                            logger.debug("Command {} from channel {} failed: invalid command value", command, channel);
+                        }
+                        break;
+                    case CHANNEL_REPEAT:
+                        if (!isPowerOn()) {
+                            success = false;
+                            logger.debug("Command {} from channel {} ignored: device in standby", command, channel);
+                        } else {
+                            RotelRepeatMode currentMode = repeatMode;
+                            RotelRepeatMode mode = RotelRepeatMode.OFF;
+                            try {
+                                mode = RotelRepeatMode.getFromName(command.toString());
+                                if (mode == currentMode) {
+                                    success = false;
+                                    logger.debug("Command {} from channel {} ignored: no change requested", command,
+                                            channel);
+                                }
+                            } catch (RotelException e) {
+                                success = false;
+                                logger.debug("Command {} from channel {} failed: invalid command value", command,
+                                        channel);
+                            }
+                            if (success) {
+                                // Toggle TRACK -> DISC -> OFF
+                                sendCommand(RotelCommand.REPEAT_TOGGLE);
+                                if ((mode == RotelRepeatMode.OFF && currentMode == RotelRepeatMode.TRACK)
+                                        || (mode == RotelRepeatMode.TRACK && currentMode == RotelRepeatMode.DISC)
+                                        || (mode == RotelRepeatMode.DISC && currentMode == RotelRepeatMode.OFF)) {
+                                    Thread.sleep(SLEEP_INTV);
+                                    sendCommand(RotelCommand.REPEAT_TOGGLE);
+                                }
+                            }
+                        }
+                        break;
                     case CHANNEL_BRIGHTNESS:
+                    case CHANNEL_ALL_BRIGHTNESS:
                         if (!isPowerOn()) {
                             success = false;
                             logger.debug("Command {} from channel {} ignored: device in standby", command, channel);
@@ -913,15 +889,20 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                         }
                         break;
                     case CHANNEL_BALANCE:
-                        if (!isPowerOn()) {
+                    case CHANNEL_ZONE1_BALANCE:
+                    case CHANNEL_ZONE2_BALANCE:
+                    case CHANNEL_ZONE3_BALANCE:
+                    case CHANNEL_ZONE4_BALANCE:
+                        if (!isPowerOn(numZone)) {
                             success = false;
-                            logger.debug("Command {} from channel {} ignored: device in standby", command, channel);
+                            logger.debug("Command {} from channel {} ignored: zone {} in standby", command, channel,
+                                    numZone == 0 ? "device" : "zone " + numZone);
                         } else if (!model.hasBalanceControl() || protocol == RotelProtocol.HEX) {
                             success = false;
                             logger.debug("Command {} from channel {} failed: unavailable feature", command, channel);
                         } else {
-                            handleBalanceCmd(channel, command, RotelCommand.BALANCE_LEFT, RotelCommand.BALANCE_RIGHT,
-                                    RotelCommand.BALANCE_SET);
+                            handleBalanceCmd(channel, command, getBalanceLeftCommand(numZone),
+                                    getBalanceRightCommand(numZone), getBalanceSetCommand(numZone));
                         }
                         break;
                     case CHANNEL_SPEAKER_A:
@@ -940,6 +921,24 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                         } else {
                             handleSpeakerCmd(protocol == RotelProtocol.HEX, channel, command, RotelCommand.SPEAKER_B_ON,
                                     RotelCommand.SPEAKER_B_OFF, RotelCommand.SPEAKER_B_TOGGLE);
+                        }
+                        break;
+                    case CHANNEL_OTHER_COMMAND:
+                    case CHANNEL_MAIN_OTHER_COMMAND:
+                        if (!isPowerOn()) {
+                            success = false;
+                            logger.debug("Command {} from channel {} ignored: device in standby", command, channel);
+                        } else {
+                            try {
+                                cmd = RotelCommand.getFromName(command.toString());
+                            } catch (RotelException e) {
+                                success = false;
+                                logger.debug("Command {} from channel {} failed: undefined command", command, channel);
+                                cmd = null;
+                            }
+                            if (cmd != null) {
+                                sendCommand(cmd);
+                            }
                         }
                         break;
                     default:
@@ -1104,8 +1103,8 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
         if (command instanceof OnOffType) {
             if (command == OnOffType.ON) {
                 sendCommand(onCmd);
-                bass = 0;
-                treble = 0;
+                basses[0] = 0;
+                trebles[0] = 0;
                 updateChannelState(CHANNEL_BASS);
                 updateChannelState(CHANNEL_TREBLE);
             } else if (command == OnOffType.OFF) {
@@ -1201,11 +1200,11 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
      */
     private void selectZone(int zone, @Nullable RotelCommand selectCommand)
             throws RotelException, InterruptedException {
-        if (protocol == RotelProtocol.HEX && model.getNbAdditionalZones() >= 1 && zone >= 1 && zone != currentZone
+        if (protocol == RotelProtocol.HEX && model.getNumberOfZones() > 1 && zone >= 1 && zone != currentZone
                 && selectCommand != null) {
             int nbSelect;
             if (zone < currentZone) {
-                nbSelect = zone + model.getNbAdditionalZones() - currentZone;
+                nbSelect = zone + model.getNumberOfZones() - 1 - currentZone;
                 if (isPowerOn() && selectCommand == RotelCommand.RECORD_FONCTION_SELECT) {
                     nbSelect++;
                 }
@@ -1281,6 +1280,53 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
         if (!KEY_ERROR.equals(key)) {
             updateStatus(ThingStatus.ONLINE);
         }
+        int numZone = 0;
+        switch (key) {
+            case KEY_INPUT_ZONE1:
+            case KEY_VOLUME_ZONE1:
+            case KEY_MUTE_ZONE1:
+            case KEY_BASS_ZONE1:
+            case KEY_TREBLE_ZONE1:
+            case KEY_BALANCE_ZONE1:
+            case KEY_FREQ_ZONE1:
+                numZone = 1;
+                break;
+            case KEY_POWER_ZONE2:
+            case KEY_SOURCE_ZONE2:
+            case KEY_INPUT_ZONE2:
+            case KEY_VOLUME_ZONE2:
+            case KEY_MUTE_ZONE2:
+            case KEY_BASS_ZONE2:
+            case KEY_TREBLE_ZONE2:
+            case KEY_BALANCE_ZONE2:
+            case KEY_FREQ_ZONE2:
+                numZone = 2;
+                break;
+            case KEY_POWER_ZONE3:
+            case KEY_SOURCE_ZONE3:
+            case KEY_INPUT_ZONE3:
+            case KEY_VOLUME_ZONE3:
+            case KEY_MUTE_ZONE3:
+            case KEY_BASS_ZONE3:
+            case KEY_TREBLE_ZONE3:
+            case KEY_BALANCE_ZONE3:
+            case KEY_FREQ_ZONE3:
+                numZone = 3;
+                break;
+            case KEY_POWER_ZONE4:
+            case KEY_SOURCE_ZONE4:
+            case KEY_INPUT_ZONE4:
+            case KEY_VOLUME_ZONE4:
+            case KEY_MUTE_ZONE4:
+            case KEY_BASS_ZONE4:
+            case KEY_TREBLE_ZONE4:
+            case KEY_BALANCE_ZONE4:
+            case KEY_FREQ_ZONE4:
+                numZone = 4;
+                break;
+            default:
+                break;
+        }
         try {
             switch (key) {
                 case KEY_ERROR:
@@ -1308,6 +1354,11 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                         handlePowerOn();
                     } else if (STANDBY.equalsIgnoreCase(value)) {
                         handlePowerOff();
+                        if (model.getNumberOfZones() > 1 && !powerControlPerZone) {
+                            for (int zone = 1; zone <= model.getNumberOfZones(); zone++) {
+                                handlePowerOffZone(zone);
+                            }
+                        }
                     } else if (POWER_OFF_DELAYED.equalsIgnoreCase(value)) {
                         schedulePowerOffJob(false);
                     } else {
@@ -1315,31 +1366,18 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                     }
                     break;
                 case KEY_POWER_ZONE2:
-                    if (POWER_ON.equalsIgnoreCase(value)) {
-                        handlePowerOnZone2();
-                    } else if (STANDBY.equalsIgnoreCase(value)) {
-                        handlePowerOffZone2();
-                    } else {
-                        throw new RotelException("Invalid value");
-                    }
-                    break;
                 case KEY_POWER_ZONE3:
-                    if (POWER_ON.equalsIgnoreCase(value)) {
-                        handlePowerOnZone3();
-                    } else if (STANDBY.equalsIgnoreCase(value)) {
-                        handlePowerOffZone3();
-                    } else {
-                        throw new RotelException("Invalid value");
-                    }
-                    break;
                 case KEY_POWER_ZONE4:
                     if (POWER_ON.equalsIgnoreCase(value)) {
-                        handlePowerOnZone4();
+                        handlePowerOnZone(numZone);
                     } else if (STANDBY.equalsIgnoreCase(value)) {
-                        handlePowerOffZone4();
+                        handlePowerOffZone(numZone);
                     } else {
                         throw new RotelException("Invalid value");
                     }
+                    break;
+                case KEY_POWER_MODE:
+                    logger.debug("Power mode is set to {}", value);
                     break;
                 case KEY_VOLUME_MIN:
                     minVolume = Integer.parseInt(value);
@@ -1356,99 +1394,50 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                     }
                     break;
                 case KEY_VOLUME:
-                    if (MSG_VALUE_MIN.equalsIgnoreCase(value)) {
-                        volume = minVolume;
+                case KEY_VOLUME_ZONE1:
+                case KEY_VOLUME_ZONE2:
+                case KEY_VOLUME_ZONE3:
+                case KEY_VOLUME_ZONE4:
+                    fixedVolumeZones[numZone] = false;
+                    if (MSG_VALUE_FIX.equalsIgnoreCase(value)) {
+                        fixedVolumeZones[numZone] = true;
+                    } else if (MSG_VALUE_MIN.equalsIgnoreCase(value)) {
+                        volumes[numZone] = minVolume;
                     } else if (MSG_VALUE_MAX.equalsIgnoreCase(value)) {
-                        volume = maxVolume;
+                        volumes[numZone] = maxVolume;
                     } else {
-                        volume = Integer.parseInt(value);
+                        volumes[numZone] = Integer.parseInt(value);
                     }
-                    updateChannelState(CHANNEL_VOLUME);
-                    updateChannelState(CHANNEL_MAIN_VOLUME);
-                    updateChannelState(CHANNEL_MAIN_VOLUME_UP_DOWN);
+                    if (numZone == 0) {
+                        updateChannelState(CHANNEL_VOLUME);
+                        updateChannelState(CHANNEL_MAIN_VOLUME);
+                        updateChannelState(CHANNEL_MAIN_VOLUME_UP_DOWN);
+                    } else {
+                        updateGroupChannelState(numZone, CHANNEL_VOLUME);
+                        updateGroupChannelState(numZone, CHANNEL_VOLUME_UP_DOWN);
+                    }
                     break;
                 case KEY_MUTE:
-                    if (MSG_VALUE_ON.equalsIgnoreCase(value)) {
-                        mute = true;
-                        updateChannelState(CHANNEL_MUTE);
-                        updateChannelState(CHANNEL_MAIN_MUTE);
-                    } else if (MSG_VALUE_OFF.equalsIgnoreCase(value)) {
-                        mute = false;
-                        updateChannelState(CHANNEL_MUTE);
-                        updateChannelState(CHANNEL_MAIN_MUTE);
-                    } else {
-                        throw new RotelException("Invalid value");
-                    }
-                    break;
-                case KEY_VOLUME_ZONE2:
-                    fixedVolumeZone2 = false;
-                    if (MSG_VALUE_FIX.equalsIgnoreCase(value)) {
-                        fixedVolumeZone2 = true;
-                    } else if (MSG_VALUE_MIN.equalsIgnoreCase(value)) {
-                        volumeZone2 = minVolume;
-                    } else if (MSG_VALUE_MAX.equalsIgnoreCase(value)) {
-                        volumeZone2 = maxVolume;
-                    } else {
-                        volumeZone2 = Integer.parseInt(value);
-                    }
-                    updateChannelState(CHANNEL_ZONE2_VOLUME);
-                    updateChannelState(CHANNEL_ZONE2_VOLUME_UP_DOWN);
-                    break;
-                case KEY_VOLUME_ZONE3:
-                    fixedVolumeZone3 = false;
-                    if (MSG_VALUE_FIX.equalsIgnoreCase(value)) {
-                        fixedVolumeZone3 = true;
-                    } else if (MSG_VALUE_MIN.equalsIgnoreCase(value)) {
-                        volumeZone3 = minVolume;
-                    } else if (MSG_VALUE_MAX.equalsIgnoreCase(value)) {
-                        volumeZone3 = maxVolume;
-                    } else {
-                        volumeZone3 = Integer.parseInt(value);
-                    }
-                    updateChannelState(CHANNEL_ZONE3_VOLUME);
-                    break;
-                case KEY_VOLUME_ZONE4:
-                    fixedVolumeZone4 = false;
-                    if (MSG_VALUE_FIX.equalsIgnoreCase(value)) {
-                        fixedVolumeZone4 = true;
-                    } else if (MSG_VALUE_MIN.equalsIgnoreCase(value)) {
-                        volumeZone4 = minVolume;
-                    } else if (MSG_VALUE_MAX.equalsIgnoreCase(value)) {
-                        volumeZone4 = maxVolume;
-                    } else {
-                        volumeZone4 = Integer.parseInt(value);
-                    }
-                    updateChannelState(CHANNEL_ZONE4_VOLUME);
-                    break;
+                case KEY_MUTE_ZONE1:
                 case KEY_MUTE_ZONE2:
-                    if (MSG_VALUE_ON.equalsIgnoreCase(value)) {
-                        muteZone2 = true;
-                        updateChannelState(CHANNEL_ZONE2_MUTE);
-                    } else if (MSG_VALUE_OFF.equalsIgnoreCase(value)) {
-                        muteZone2 = false;
-                        updateChannelState(CHANNEL_ZONE2_MUTE);
-                    } else {
-                        throw new RotelException("Invalid value");
-                    }
-                    break;
                 case KEY_MUTE_ZONE3:
-                    if (MSG_VALUE_ON.equalsIgnoreCase(value)) {
-                        muteZone3 = true;
-                        updateChannelState(CHANNEL_ZONE3_MUTE);
-                    } else if (MSG_VALUE_OFF.equalsIgnoreCase(value)) {
-                        muteZone3 = false;
-                        updateChannelState(CHANNEL_ZONE3_MUTE);
-                    } else {
-                        throw new RotelException("Invalid value");
-                    }
-                    break;
                 case KEY_MUTE_ZONE4:
                     if (MSG_VALUE_ON.equalsIgnoreCase(value)) {
-                        muteZone4 = true;
-                        updateChannelState(CHANNEL_ZONE4_MUTE);
+                        mutes[numZone] = true;
+                        if (numZone == 0) {
+                            updateChannelState(CHANNEL_MUTE);
+                            updateChannelState(CHANNEL_MAIN_MUTE);
+                        } else {
+                            updateGroupChannelState(numZone, CHANNEL_MUTE);
+                        }
                     } else if (MSG_VALUE_OFF.equalsIgnoreCase(value)) {
-                        muteZone4 = false;
-                        updateChannelState(CHANNEL_ZONE4_MUTE);
+                        mutes[numZone] = false;
+                        if (numZone == 0) {
+                            updateChannelState(CHANNEL_MUTE);
+                            updateChannelState(CHANNEL_MAIN_MUTE);
+                        } else {
+                            updateGroupChannelState(numZone, CHANNEL_MUTE);
+                        }
                     } else {
                         throw new RotelException("Invalid value");
                     }
@@ -1461,29 +1450,45 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                             minToneLevel, maxToneLevel);
                     break;
                 case KEY_BASS:
+                case KEY_BASS_ZONE1:
+                case KEY_BASS_ZONE2:
+                case KEY_BASS_ZONE3:
+                case KEY_BASS_ZONE4:
                     if (MSG_VALUE_MIN.equalsIgnoreCase(value)) {
-                        bass = minToneLevel;
+                        basses[numZone] = minToneLevel;
                     } else if (MSG_VALUE_MAX.equalsIgnoreCase(value)) {
-                        bass = maxToneLevel;
+                        basses[numZone] = maxToneLevel;
                     } else {
-                        bass = Integer.parseInt(value);
+                        basses[numZone] = Integer.parseInt(value);
                     }
-                    updateChannelState(CHANNEL_BASS);
-                    updateChannelState(CHANNEL_MAIN_BASS);
+                    if (numZone == 0) {
+                        updateChannelState(CHANNEL_BASS);
+                        updateChannelState(CHANNEL_MAIN_BASS);
+                    } else {
+                        updateGroupChannelState(numZone, CHANNEL_BASS);
+                    }
                     break;
                 case KEY_TREBLE:
+                case KEY_TREBLE_ZONE1:
+                case KEY_TREBLE_ZONE2:
+                case KEY_TREBLE_ZONE3:
+                case KEY_TREBLE_ZONE4:
                     if (MSG_VALUE_MIN.equalsIgnoreCase(value)) {
-                        treble = minToneLevel;
+                        trebles[numZone] = minToneLevel;
                     } else if (MSG_VALUE_MAX.equalsIgnoreCase(value)) {
-                        treble = maxToneLevel;
+                        trebles[numZone] = maxToneLevel;
                     } else {
-                        treble = Integer.parseInt(value);
+                        trebles[numZone] = Integer.parseInt(value);
                     }
-                    updateChannelState(CHANNEL_TREBLE);
-                    updateChannelState(CHANNEL_MAIN_TREBLE);
+                    if (numZone == 0) {
+                        updateChannelState(CHANNEL_TREBLE);
+                        updateChannelState(CHANNEL_MAIN_TREBLE);
+                    } else {
+                        updateGroupChannelState(numZone, CHANNEL_TREBLE);
+                    }
                     break;
                 case KEY_SOURCE:
-                    source = model.getSourceFromCommand(RotelCommand.getFromAsciiCommand(value));
+                    sources[0] = model.getSourceFromCommand(RotelCommand.getFromAsciiCommand(value));
                     updateChannelState(CHANNEL_SOURCE);
                     updateChannelState(CHANNEL_MAIN_SOURCE);
                     break;
@@ -1492,16 +1497,14 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                     updateChannelState(CHANNEL_MAIN_RECORD_SOURCE);
                     break;
                 case KEY_SOURCE_ZONE2:
-                    sourceZone2 = model.getZone2SourceFromCommand(RotelCommand.getFromAsciiCommand(value));
-                    updateChannelState(CHANNEL_ZONE2_SOURCE);
-                    break;
                 case KEY_SOURCE_ZONE3:
-                    sourceZone3 = model.getZone3SourceFromCommand(RotelCommand.getFromAsciiCommand(value));
-                    updateChannelState(CHANNEL_ZONE3_SOURCE);
-                    break;
                 case KEY_SOURCE_ZONE4:
-                    sourceZone4 = model.getZone4SourceFromCommand(RotelCommand.getFromAsciiCommand(value));
-                    updateChannelState(CHANNEL_ZONE4_SOURCE);
+                case KEY_INPUT_ZONE1:
+                case KEY_INPUT_ZONE2:
+                case KEY_INPUT_ZONE3:
+                case KEY_INPUT_ZONE4:
+                    sources[numZone] = model.getZoneSourceFromCommand(RotelCommand.getFromAsciiCommand(value), numZone);
+                    updateGroupChannelState(numZone, CHANNEL_SOURCE);
                     break;
                 case KEY_DSP_MODE:
                     if ("dolby_pliix_movie".equals(value)) {
@@ -1532,26 +1535,61 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                     }
                     break;
                 case KEY_TRACK:
-                    if (source.getName().equals("CD") && !model.hasSourceControl()) {
+                    RotelSource source = sources[0];
+                    if (source != null && source.getName().equals("CD") && !model.hasSourceControl()) {
                         track = Integer.parseInt(value);
                         updateChannelState(CHANNEL_TRACK);
                     }
                     break;
+                case KEY_RANDOM:
+                    if (MSG_VALUE_ON.equalsIgnoreCase(value)) {
+                        randomMode = true;
+                        updateChannelState(CHANNEL_RANDOM);
+                    } else if (MSG_VALUE_OFF.equalsIgnoreCase(value)) {
+                        randomMode = false;
+                        updateChannelState(CHANNEL_RANDOM);
+                    } else {
+                        throw new RotelException("Invalid value");
+                    }
+                    break;
+                case KEY_REPEAT:
+                    if (TRACK.equalsIgnoreCase(value)) {
+                        repeatMode = RotelRepeatMode.TRACK;
+                        updateChannelState(CHANNEL_REPEAT);
+                    } else if (DISC.equalsIgnoreCase(value)) {
+                        repeatMode = RotelRepeatMode.DISC;
+                        updateChannelState(CHANNEL_REPEAT);
+                    } else if (MSG_VALUE_OFF.equalsIgnoreCase(value)) {
+                        repeatMode = RotelRepeatMode.OFF;
+                        updateChannelState(CHANNEL_REPEAT);
+                    } else {
+                        throw new RotelException("Invalid value");
+                    }
+                    break;
                 case KEY_FREQ:
-                    if (MSG_VALUE_OFF.equalsIgnoreCase(value)) {
-                        frequency = 0.0;
+                case KEY_FREQ_ZONE1:
+                case KEY_FREQ_ZONE2:
+                case KEY_FREQ_ZONE3:
+                case KEY_FREQ_ZONE4:
+                    if (MSG_VALUE_OFF.equalsIgnoreCase(value) || MSG_VALUE_NONE.equalsIgnoreCase(value)) {
+                        frequencies[numZone] = 0.0;
                     } else {
                         // Suppress a potential ending "k" or "K"
                         if (value.toUpperCase().endsWith("K")) {
                             value = value.substring(0, value.length() - 1);
                         }
-                        frequency = Double.parseDouble(value);
+                        frequencies[numZone] = Double.parseDouble(value);
                     }
-                    updateChannelState(CHANNEL_FREQUENCY);
+                    if (numZone == 0) {
+                        updateChannelState(CHANNEL_FREQUENCY);
+                    } else {
+                        updateGroupChannelState(numZone, CHANNEL_FREQUENCY);
+                    }
                     break;
                 case KEY_DIMMER:
                     brightness = Integer.parseInt(value);
                     updateChannelState(CHANNEL_BRIGHTNESS);
+                    updateChannelState(CHANNEL_ALL_BRIGHTNESS);
                     break;
                 case KEY_UPDATE_MODE:
                 case KEY_DISPLAY_UPDATE:
@@ -1579,18 +1617,26 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                     }
                     break;
                 case KEY_BALANCE:
+                case KEY_BALANCE_ZONE1:
+                case KEY_BALANCE_ZONE2:
+                case KEY_BALANCE_ZONE3:
+                case KEY_BALANCE_ZONE4:
                     if (MSG_VALUE_MIN.equalsIgnoreCase(value)) {
-                        balance = minBalanceLevel;
+                        balances[numZone] = minBalanceLevel;
                     } else if (MSG_VALUE_MAX.equalsIgnoreCase(value)) {
-                        balance = maxBalanceLevel;
+                        balances[numZone] = maxBalanceLevel;
                     } else if (value.toUpperCase().startsWith("L")) {
-                        balance = -Integer.parseInt(value.substring(1));
-                    } else if (value.toLowerCase().startsWith("R")) {
-                        balance = Integer.parseInt(value.substring(1));
+                        balances[numZone] = -Integer.parseInt(value.substring(1));
+                    } else if (value.toUpperCase().startsWith("R")) {
+                        balances[numZone] = Integer.parseInt(value.substring(1));
                     } else {
-                        balance = Integer.parseInt(value);
+                        balances[numZone] = Integer.parseInt(value);
                     }
-                    updateChannelState(CHANNEL_BALANCE);
+                    if (numZone == 0) {
+                        updateChannelState(CHANNEL_BALANCE);
+                    } else {
+                        updateGroupChannelState(numZone, CHANNEL_BALANCE);
+                    }
                     break;
                 case KEY_SPEAKER:
                     if (MSG_VALUE_SPEAKER_A.equalsIgnoreCase(value)) {
@@ -1617,6 +1663,47 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                         throw new RotelException("Invalid value");
                     }
                     break;
+                case KEY_SUB_LEVEL:
+                    logger.debug("Sub level is set to {}", value);
+                    break;
+                case KEY_CENTER_LEVEL:
+                    logger.debug("Center level is set to {}", value);
+                    break;
+                case KEY_SURROUND_RIGHT_LEVEL:
+                    logger.debug("Surround right level is set to {}", value);
+                    break;
+                case KEY_SURROUND_LEFT_LEVEL:
+                    logger.debug("Surround left level is set to {}", value);
+                    break;
+                case KEY_CENTER_BACK_RIGHT_LEVEL:
+                    logger.debug("Center back right level is set to {}", value);
+                    break;
+                case KEY_CENTER_BACK_LEFT_LEVEL:
+                    logger.debug("Center back left level is set to {}", value);
+                    break;
+                case KEY_CEILING_FRONT_RIGHT_LEVEL:
+                    logger.debug("Ceiling front right level is set to {}", value);
+                    break;
+                case KEY_CEILING_FRONT_LEFT_LEVEL:
+                    logger.debug("Ceiling front left level is set to {}", value);
+                    break;
+                case KEY_CEILING_REAR_RIGHT_LEVEL:
+                    logger.debug("Ceiling rear right level is set to {}", value);
+                    break;
+                case KEY_CEILING_REAR_LEFT_LEVEL:
+                    logger.debug("Ceiling rear left level is set to {}", value);
+                    break;
+                case KEY_PCUSB_CLASS:
+                    logger.debug("PC-USB Audio Class is set to {}", value);
+                    break;
+                case KEY_PRODUCT_TYPE:
+                case KEY_MODEL:
+                    getThing().setProperty(Thing.PROPERTY_MODEL_ID, value);
+                    break;
+                case KEY_PRODUCT_VERSION:
+                case KEY_VERSION:
+                    getThing().setProperty(Thing.PROPERTY_FIRMWARE_VERSION, value);
+                    break;
                 default:
                     logger.debug("onNewMessageEvent: unhandled key {}", key);
                     break;
@@ -1630,10 +1717,11 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
      * Handle the received information that device power (main zone) is ON
      */
     private void handlePowerOn() {
-        Boolean prev = power;
-        power = true;
+        Boolean prev = powers[0];
+        powers[0] = true;
         updateChannelState(CHANNEL_POWER);
         updateChannelState(CHANNEL_MAIN_POWER);
+        updateChannelState(CHANNEL_ALL_POWER);
         if ((prev == null) || !prev) {
             schedulePowerOnJob();
         }
@@ -1643,105 +1731,67 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
      * Handle the received information that device power (main zone) is OFF
      */
     private void handlePowerOff() {
-        cancelPowerOnJob();
-        power = false;
+        cancelPowerOnZoneJob(0);
+        powers[0] = false;
         updateChannelState(CHANNEL_POWER);
-        updateChannelState(CHANNEL_MAIN_POWER);
         updateChannelState(CHANNEL_SOURCE);
-        updateChannelState(CHANNEL_MAIN_SOURCE);
-        updateChannelState(CHANNEL_MAIN_RECORD_SOURCE);
         updateChannelState(CHANNEL_DSP);
-        updateChannelState(CHANNEL_MAIN_DSP);
         updateChannelState(CHANNEL_VOLUME);
-        updateChannelState(CHANNEL_MAIN_VOLUME);
-        updateChannelState(CHANNEL_MAIN_VOLUME_UP_DOWN);
         updateChannelState(CHANNEL_MUTE);
-        updateChannelState(CHANNEL_MAIN_MUTE);
         updateChannelState(CHANNEL_BASS);
-        updateChannelState(CHANNEL_MAIN_BASS);
         updateChannelState(CHANNEL_TREBLE);
-        updateChannelState(CHANNEL_MAIN_TREBLE);
         updateChannelState(CHANNEL_PLAY_CONTROL);
         updateChannelState(CHANNEL_TRACK);
+        updateChannelState(CHANNEL_RANDOM);
+        updateChannelState(CHANNEL_REPEAT);
         updateChannelState(CHANNEL_FREQUENCY);
         updateChannelState(CHANNEL_BRIGHTNESS);
         updateChannelState(CHANNEL_TCBYPASS);
         updateChannelState(CHANNEL_BALANCE);
         updateChannelState(CHANNEL_SPEAKER_A);
         updateChannelState(CHANNEL_SPEAKER_B);
+
+        updateChannelState(CHANNEL_MAIN_POWER);
+        updateChannelState(CHANNEL_MAIN_SOURCE);
+        updateChannelState(CHANNEL_MAIN_RECORD_SOURCE);
+        updateChannelState(CHANNEL_MAIN_DSP);
+        updateChannelState(CHANNEL_MAIN_VOLUME);
+        updateChannelState(CHANNEL_MAIN_VOLUME_UP_DOWN);
+        updateChannelState(CHANNEL_MAIN_MUTE);
+        updateChannelState(CHANNEL_MAIN_BASS);
+        updateChannelState(CHANNEL_MAIN_TREBLE);
+
+        updateChannelState(CHANNEL_ALL_POWER);
+        updateChannelState(CHANNEL_ALL_BRIGHTNESS);
     }
 
     /**
-     * Handle the received information that zone 2 power is ON
+     * Handle the received information that a zone power is ON
      */
-    private void handlePowerOnZone2() {
-        boolean prev = powerZone2;
-        powerZone2 = true;
-        updateChannelState(CHANNEL_ZONE2_POWER);
-        if (!prev) {
-            schedulePowerOnZone2Job();
+    private void handlePowerOnZone(int numZone) {
+        Boolean prev = powers[numZone];
+        powers[numZone] = true;
+        updateGroupChannelState(numZone, CHANNEL_POWER);
+        if ((prev == null) || !prev) {
+            schedulePowerOnZoneJob(numZone, getVolumeDownCommand(numZone), getVolumeUpCommand(numZone));
         }
     }
 
     /**
-     * Handle the received information that zone 2 power is OFF
+     * Handle the received information that a zone power is OFF
      */
-    private void handlePowerOffZone2() {
-        cancelPowerOnZone2Job();
-        powerZone2 = false;
-        updateChannelState(CHANNEL_ZONE2_POWER);
-        updateChannelState(CHANNEL_ZONE2_SOURCE);
-        updateChannelState(CHANNEL_ZONE2_VOLUME);
-        updateChannelState(CHANNEL_ZONE2_VOLUME_UP_DOWN);
-        updateChannelState(CHANNEL_ZONE2_MUTE);
-    }
-
-    /**
-     * Handle the received information that zone 3 power is ON
-     */
-    private void handlePowerOnZone3() {
-        boolean prev = powerZone3;
-        powerZone3 = true;
-        updateChannelState(CHANNEL_ZONE3_POWER);
-        if (!prev) {
-            schedulePowerOnZone3Job();
-        }
-    }
-
-    /**
-     * Handle the received information that zone 3 power is OFF
-     */
-    private void handlePowerOffZone3() {
-        cancelPowerOnZone3Job();
-        powerZone3 = false;
-        updateChannelState(CHANNEL_ZONE3_POWER);
-        updateChannelState(CHANNEL_ZONE3_SOURCE);
-        updateChannelState(CHANNEL_ZONE3_VOLUME);
-        updateChannelState(CHANNEL_ZONE3_MUTE);
-    }
-
-    /**
-     * Handle the received information that zone 4 power is ON
-     */
-    private void handlePowerOnZone4() {
-        boolean prev = powerZone4;
-        powerZone4 = true;
-        updateChannelState(CHANNEL_ZONE4_POWER);
-        if (!prev) {
-            schedulePowerOnZone4Job();
-        }
-    }
-
-    /**
-     * Handle the received information that zone 4 power is OFF
-     */
-    private void handlePowerOffZone4() {
-        cancelPowerOnZone4Job();
-        powerZone4 = false;
-        updateChannelState(CHANNEL_ZONE4_POWER);
-        updateChannelState(CHANNEL_ZONE4_SOURCE);
-        updateChannelState(CHANNEL_ZONE4_VOLUME);
-        updateChannelState(CHANNEL_ZONE4_MUTE);
+    private void handlePowerOffZone(int numZone) {
+        cancelPowerOnZoneJob(numZone);
+        powers[numZone] = false;
+        updateGroupChannelState(numZone, CHANNEL_POWER);
+        updateGroupChannelState(numZone, CHANNEL_SOURCE);
+        updateGroupChannelState(numZone, CHANNEL_VOLUME);
+        updateGroupChannelState(numZone, CHANNEL_MUTE);
+        updateGroupChannelState(numZone, CHANNEL_BASS);
+        updateGroupChannelState(numZone, CHANNEL_TREBLE);
+        updateGroupChannelState(numZone, CHANNEL_BALANCE);
+        updateGroupChannelState(numZone, CHANNEL_FREQUENCY);
+        updateGroupChannelState(numZone, CHANNEL_VOLUME_UP_DOWN);
     }
 
     /**
@@ -1756,9 +1806,9 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
             logger.debug("Power OFF job");
             handlePowerOff();
             if (switchOffAllZones) {
-                handlePowerOffZone2();
-                handlePowerOffZone3();
-                handlePowerOffZone4();
+                for (int zone = 1; zone <= model.getNumberOfZones(); zone++) {
+                    handlePowerOffZone(zone);
+                }
             }
         }, 2000, TimeUnit.MILLISECONDS);
     }
@@ -1779,20 +1829,20 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
      */
     private void schedulePowerOnJob() {
         logger.debug("Schedule power ON job");
-        cancelPowerOnJob();
-        powerOnJob = scheduler.schedule(() -> {
+        cancelPowerOnZoneJob(0);
+        powerOnZoneJobs[0] = scheduler.schedule(() -> {
             synchronized (sequenceLock) {
                 logger.debug("Power ON job");
                 try {
                     switch (protocol) {
                         case HEX:
                             if (model.getRespNbChars() <= 13 && model.hasVolumeControl()) {
-                                sendCommand(getVolumeDownCommand());
+                                sendCommand(getVolumeDownCommand(0));
                                 Thread.sleep(100);
-                                sendCommand(getVolumeUpCommand());
+                                sendCommand(getVolumeUpCommand(0));
                                 Thread.sleep(100);
                             }
-                            if (model.getNbAdditionalZones() >= 1) {
+                            if (model.getNumberOfZones() > 1) {
                                 if (currentZone != 1
                                         && model.getZoneSelectCmd() == RotelCommand.RECORD_FONCTION_SELECT) {
                                     selectZone(1, model.getZoneSelectCmd());
@@ -1858,8 +1908,10 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                                     Thread.sleep(SLEEP_INTV);
                                     sendCommand(RotelCommand.TREBLE);
                                     Thread.sleep(SLEEP_INTV);
-                                    sendCommand(RotelCommand.TONE_CONTROLS);
-                                    Thread.sleep(SLEEP_INTV);
+                                    if (model.canGetBypassStatus()) {
+                                        sendCommand(RotelCommand.TONE_CONTROLS);
+                                        Thread.sleep(SLEEP_INTV);
+                                    }
                                 }
                             }
                             if (model.hasBalanceControl()) {
@@ -1867,8 +1919,10 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                                 Thread.sleep(SLEEP_INTV);
                             }
                             if (model.hasPlayControl()) {
+                                RotelSource source = sources[0];
                                 if (model != RotelModel.RCD1570 && model != RotelModel.RCD1572
-                                        && (model != RotelModel.RCX1500 || !source.getName().equals("CD"))) {
+                                        && (model != RotelModel.RCX1500 || source == null
+                                                || !source.getName().equals("CD"))) {
                                     sendCommand(RotelCommand.PLAY_STATUS);
                                     Thread.sleep(SLEEP_INTV);
                                 } else {
@@ -1892,12 +1946,23 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                                 sendCommand(RotelCommand.SPEAKER);
                                 Thread.sleep(SLEEP_INTV);
                             }
+                            if (model != RotelModel.RAP1580 && model != RotelModel.RSP1576
+                                    && model != RotelModel.RSP1582) {
+                                sendCommand(RotelCommand.MODEL);
+                                Thread.sleep(SLEEP_INTV);
+                                sendCommand(RotelCommand.VERSION);
+                                Thread.sleep(SLEEP_INTV);
+                            }
                             break;
                         case ASCII_V2:
                             sendCommand(RotelCommand.UPDATE_AUTO);
                             Thread.sleep(SLEEP_INTV);
                             if (model.hasSourceControl()) {
-                                sendCommand(RotelCommand.SOURCE);
+                                if (model.getNumberOfZones() > 1) {
+                                    sendCommand(RotelCommand.INPUT);
+                                } else {
+                                    sendCommand(RotelCommand.SOURCE);
+                                }
                                 Thread.sleep(SLEEP_INTV);
                             }
                             if (model.hasVolumeControl()) {
@@ -1911,8 +1976,10 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                                 Thread.sleep(SLEEP_INTV);
                                 sendCommand(RotelCommand.TREBLE);
                                 Thread.sleep(SLEEP_INTV);
-                                sendCommand(RotelCommand.TCBYPASS);
-                                Thread.sleep(SLEEP_INTV);
+                                if (model.canGetBypassStatus()) {
+                                    sendCommand(RotelCommand.TCBYPASS);
+                                    Thread.sleep(SLEEP_INTV);
+                                }
                             }
                             if (model.hasBalanceControl()) {
                                 sendCommand(RotelCommand.BALANCE);
@@ -1921,8 +1988,13 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                             if (model.hasPlayControl()) {
                                 sendCommand(RotelCommand.PLAY_STATUS);
                                 Thread.sleep(SLEEP_INTV);
-                                if (source.getName().equals("CD") && !model.hasSourceControl()) {
+                                RotelSource source = sources[0];
+                                if (source != null && source.getName().equals("CD") && !model.hasSourceControl()) {
                                     sendCommand(RotelCommand.TRACK);
+                                    Thread.sleep(SLEEP_INTV);
+                                    sendCommand(RotelCommand.RANDOM_MODE);
+                                    Thread.sleep(SLEEP_INTV);
+                                    sendCommand(RotelCommand.REPEAT_MODE);
                                     Thread.sleep(SLEEP_INTV);
                                 }
                             }
@@ -1942,6 +2014,10 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                                 sendCommand(RotelCommand.SPEAKER);
                                 Thread.sleep(SLEEP_INTV);
                             }
+                            sendCommand(RotelCommand.MODEL);
+                            Thread.sleep(SLEEP_INTV);
+                            sendCommand(RotelCommand.VERSION);
+                            Thread.sleep(SLEEP_INTV);
                             break;
                     }
                 } catch (RotelException e) {
@@ -1958,41 +2034,29 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
     }
 
     /**
-     * Cancel the job scheduled when the device power (main zone) switched ON
+     * Schedule the job to run with a few seconds delay when the zone power switched ON
      */
-    private void cancelPowerOnJob() {
-        ScheduledFuture<?> powerOnJob = this.powerOnJob;
-        if (powerOnJob != null && !powerOnJob.isCancelled()) {
-            powerOnJob.cancel(true);
-            this.powerOnJob = null;
-        }
-    }
-
-    /**
-     * Schedule the job to run with a few seconds delay when the zone 2 power switched ON
-     */
-    private void schedulePowerOnZone2Job() {
-        logger.debug("Schedule power ON zone 2 job");
-        cancelPowerOnZone2Job();
-        powerOnZone2Job = scheduler.schedule(() -> {
+    private void schedulePowerOnZoneJob(int numZone, RotelCommand volumeDown, RotelCommand volumeUp) {
+        logger.debug("Schedule power ON zone {} job", numZone);
+        cancelPowerOnZoneJob(numZone);
+        powerOnZoneJobs[numZone] = scheduler.schedule(() -> {
             synchronized (sequenceLock) {
-                logger.debug("Power ON zone 2 job");
+                logger.debug("Power ON zone {} job", numZone);
                 try {
-                    if (protocol == RotelProtocol.HEX && model.getNbAdditionalZones() >= 1) {
-                        selectZone(2, model.getZoneSelectCmd());
-                        sendCommand(
-                                model.hasZone2Commands() ? RotelCommand.ZONE2_VOLUME_DOWN : RotelCommand.VOLUME_DOWN);
+                    if (protocol == RotelProtocol.HEX && model.getNumberOfZones() >= numZone) {
+                        selectZone(numZone, model.getZoneSelectCmd());
+                        sendCommand(model.hasZoneCommands(numZone) ? volumeDown : RotelCommand.VOLUME_DOWN);
                         Thread.sleep(100);
-                        sendCommand(model.hasZone2Commands() ? RotelCommand.ZONE2_VOLUME_UP : RotelCommand.VOLUME_UP);
+                        sendCommand(model.hasZoneCommands(numZone) ? volumeUp : RotelCommand.VOLUME_UP);
                         Thread.sleep(100);
                     }
                 } catch (RotelException e) {
-                    logger.debug("Init sequence zone 2 failed: {}", e.getMessage());
+                    logger.debug("Init sequence zone {} failed: {}", numZone, e.getMessage());
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "@text/offline.comm-error-init-sequence-zone [\"2\"]");
+                            String.format("@text/offline.comm-error-init-sequence-zone [\"%d\"]", numZone));
                     closeConnection();
                 } catch (InterruptedException e) {
-                    logger.debug("Init sequence zone 2 interrupted: {}", e.getMessage());
+                    logger.debug("Init sequence zone {} interrupted: {}", numZone, e.getMessage());
                     Thread.currentThread().interrupt();
                 }
             }
@@ -2000,97 +2064,13 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
     }
 
     /**
-     * Cancel the job scheduled when the zone 2 power switched ON
+     * Cancel the job scheduled when the device power (main zone) or a zone power switched ON
      */
-    private void cancelPowerOnZone2Job() {
-        ScheduledFuture<?> powerOnZone2Job = this.powerOnZone2Job;
-        if (powerOnZone2Job != null && !powerOnZone2Job.isCancelled()) {
-            powerOnZone2Job.cancel(true);
-            this.powerOnZone2Job = null;
-        }
-    }
-
-    /**
-     * Schedule the job to run with a few seconds delay when the zone 3 power switched ON
-     */
-    private void schedulePowerOnZone3Job() {
-        logger.debug("Schedule power ON zone 3 job");
-        cancelPowerOnZone3Job();
-        powerOnZone3Job = scheduler.schedule(() -> {
-            synchronized (sequenceLock) {
-                logger.debug("Power ON zone 3 job");
-                try {
-                    if (protocol == RotelProtocol.HEX && model.getNbAdditionalZones() >= 2) {
-                        selectZone(3, model.getZoneSelectCmd());
-                        sendCommand(
-                                model.hasZone3Commands() ? RotelCommand.ZONE3_VOLUME_DOWN : RotelCommand.VOLUME_DOWN);
-                        Thread.sleep(100);
-                        sendCommand(model.hasZone3Commands() ? RotelCommand.ZONE3_VOLUME_UP : RotelCommand.VOLUME_UP);
-                        Thread.sleep(100);
-                    }
-                } catch (RotelException e) {
-                    logger.debug("Init sequence zone 3 failed: {}", e.getMessage());
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "@text/offline.comm-error-init-sequence-zone [\"3\"]");
-                    closeConnection();
-                } catch (InterruptedException e) {
-                    logger.debug("Init sequence zone 3 interrupted: {}", e.getMessage());
-                    Thread.currentThread().interrupt();
-                }
-            }
-        }, 2500, TimeUnit.MILLISECONDS);
-    }
-
-    /**
-     * Cancel the job scheduled when the zone 3 power switched ON
-     */
-    private void cancelPowerOnZone3Job() {
-        ScheduledFuture<?> powerOnZone3Job = this.powerOnZone3Job;
-        if (powerOnZone3Job != null && !powerOnZone3Job.isCancelled()) {
-            powerOnZone3Job.cancel(true);
-            this.powerOnZone3Job = null;
-        }
-    }
-
-    /**
-     * Schedule the job to run with a few seconds delay when the zone 4 power switched ON
-     */
-    private void schedulePowerOnZone4Job() {
-        logger.debug("Schedule power ON zone 4 job");
-        cancelPowerOnZone4Job();
-        powerOnZone4Job = scheduler.schedule(() -> {
-            synchronized (sequenceLock) {
-                logger.debug("Power ON zone 4 job");
-                try {
-                    if (protocol == RotelProtocol.HEX && model.getNbAdditionalZones() >= 3) {
-                        selectZone(4, model.getZoneSelectCmd());
-                        sendCommand(
-                                model.hasZone4Commands() ? RotelCommand.ZONE4_VOLUME_DOWN : RotelCommand.VOLUME_DOWN);
-                        Thread.sleep(100);
-                        sendCommand(model.hasZone4Commands() ? RotelCommand.ZONE4_VOLUME_UP : RotelCommand.VOLUME_UP);
-                        Thread.sleep(100);
-                    }
-                } catch (RotelException e) {
-                    logger.debug("Init sequence zone 4 failed: {}", e.getMessage());
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "@text/offline.comm-error-init-sequence-zone [\"4\"]");
-                    closeConnection();
-                } catch (InterruptedException e) {
-                    logger.debug("Init sequence zone 4 interrupted: {}", e.getMessage());
-                    Thread.currentThread().interrupt();
-                }
-            }
-        }, 2500, TimeUnit.MILLISECONDS);
-    }
-
-    /**
-     * Cancel the job scheduled when the zone 4 power switched ON
-     */
-    private void cancelPowerOnZone4Job() {
-        ScheduledFuture<?> powerOnZone4Job = this.powerOnZone4Job;
-        if (powerOnZone4Job != null && !powerOnZone4Job.isCancelled()) {
-            powerOnZone4Job.cancel(true);
-            this.powerOnZone4Job = null;
+    private void cancelPowerOnZoneJob(int numZone) {
+        ScheduledFuture<?> powerOnZoneJob = powerOnZoneJobs[numZone];
+        if (powerOnZoneJob != null && !powerOnZoneJob.isCancelled()) {
+            powerOnZoneJob.cancel(true);
+            powerOnZoneJobs[numZone] = null;
         }
     }
 
@@ -2104,7 +2084,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
             if (!connector.isConnected()) {
                 logger.debug("Trying to reconnect...");
                 closeConnection();
-                power = null;
+                powers[0] = null;
                 String error = null;
                 if (openConnection()) {
                     synchronized (sequenceLock) {
@@ -2123,9 +2103,9 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                 }
                 if (error != null) {
                     handlePowerOff();
-                    handlePowerOffZone2();
-                    handlePowerOffZone3();
-                    handlePowerOffZone4();
+                    for (int zone = 1; zone <= model.getNumberOfZones(); zone++) {
+                        handlePowerOffZone(zone);
+                    }
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, error);
                 } else {
                     updateStatus(ThingStatus.ONLINE);
@@ -2145,6 +2125,10 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
         }
     }
 
+    private void updateGroupChannelState(int numZone, String channel) {
+        updateChannelState(String.format("zone%d#%s", numZone, channel));
+    }
+
     /**
      * Update the state of a channel
      *
@@ -2155,51 +2139,79 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
             return;
         }
         State state = UnDefType.UNDEF;
+        RotelSource localSource;
+        int numZone = 0;
+        switch (channel) {
+            case CHANNEL_ZONE1_SOURCE:
+            case CHANNEL_ZONE1_VOLUME:
+            case CHANNEL_ZONE1_MUTE:
+            case CHANNEL_ZONE1_BASS:
+            case CHANNEL_ZONE1_TREBLE:
+            case CHANNEL_ZONE1_BALANCE:
+            case CHANNEL_ZONE1_FREQUENCY:
+                numZone = 1;
+                break;
+            case CHANNEL_ZONE2_POWER:
+            case CHANNEL_ZONE2_SOURCE:
+            case CHANNEL_ZONE2_VOLUME:
+            case CHANNEL_ZONE2_VOLUME_UP_DOWN:
+            case CHANNEL_ZONE2_MUTE:
+            case CHANNEL_ZONE2_BASS:
+            case CHANNEL_ZONE2_TREBLE:
+            case CHANNEL_ZONE2_BALANCE:
+            case CHANNEL_ZONE2_FREQUENCY:
+                numZone = 2;
+                break;
+            case CHANNEL_ZONE3_POWER:
+            case CHANNEL_ZONE3_SOURCE:
+            case CHANNEL_ZONE3_VOLUME:
+            case CHANNEL_ZONE3_MUTE:
+            case CHANNEL_ZONE3_BASS:
+            case CHANNEL_ZONE3_TREBLE:
+            case CHANNEL_ZONE3_BALANCE:
+            case CHANNEL_ZONE3_FREQUENCY:
+                numZone = 3;
+                break;
+            case CHANNEL_ZONE4_POWER:
+            case CHANNEL_ZONE4_SOURCE:
+            case CHANNEL_ZONE4_VOLUME:
+            case CHANNEL_ZONE4_MUTE:
+            case CHANNEL_ZONE4_BASS:
+            case CHANNEL_ZONE4_TREBLE:
+            case CHANNEL_ZONE4_BALANCE:
+            case CHANNEL_ZONE4_FREQUENCY:
+                numZone = 4;
+                break;
+            default:
+                break;
+        }
         switch (channel) {
             case CHANNEL_POWER:
             case CHANNEL_MAIN_POWER:
-                Boolean po = power;
-                if (po != null) {
-                    state = OnOffType.from(po.booleanValue());
-                }
-                break;
+            case CHANNEL_ALL_POWER:
             case CHANNEL_ZONE2_POWER:
-                state = OnOffType.from(powerZone2);
-                break;
             case CHANNEL_ZONE3_POWER:
-                state = OnOffType.from(powerZone3);
-                break;
             case CHANNEL_ZONE4_POWER:
-                state = OnOffType.from(powerZone4);
+                Boolean powerZone = powers[numZone];
+                if (powerZone != null) {
+                    state = OnOffType.from(powerZone.booleanValue());
+                }
                 break;
             case CHANNEL_SOURCE:
             case CHANNEL_MAIN_SOURCE:
-                if (isPowerOn()) {
-                    state = new StringType(source.getName());
+            case CHANNEL_ZONE1_SOURCE:
+            case CHANNEL_ZONE2_SOURCE:
+            case CHANNEL_ZONE3_SOURCE:
+            case CHANNEL_ZONE4_SOURCE:
+                localSource = sources[numZone];
+                if (isPowerOn(numZone) && localSource != null) {
+                    state = new StringType(localSource.getName());
                 }
                 break;
             case CHANNEL_MAIN_RECORD_SOURCE:
-                RotelSource recordSource = this.recordSource;
-                if (isPowerOn() && recordSource != null) {
-                    state = new StringType(recordSource.getName());
-                }
-                break;
-            case CHANNEL_ZONE2_SOURCE:
-                RotelSource sourceZone2 = this.sourceZone2;
-                if (powerZone2 && sourceZone2 != null) {
-                    state = new StringType(sourceZone2.getName());
-                }
-                break;
-            case CHANNEL_ZONE3_SOURCE:
-                RotelSource sourceZone3 = this.sourceZone3;
-                if (powerZone3 && sourceZone3 != null) {
-                    state = new StringType(sourceZone3.getName());
-                }
-                break;
-            case CHANNEL_ZONE4_SOURCE:
-                RotelSource sourceZone4 = this.sourceZone4;
-                if (powerZone4 && sourceZone4 != null) {
-                    state = new StringType(sourceZone4.getName());
+                localSource = recordSource;
+                if (isPowerOn() && localSource != null) {
+                    state = new StringType(localSource.getName());
                 }
                 break;
             case CHANNEL_DSP:
@@ -2210,79 +2222,65 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                 break;
             case CHANNEL_VOLUME:
             case CHANNEL_MAIN_VOLUME:
-                if (isPowerOn()) {
+            case CHANNEL_ZONE1_VOLUME:
+            case CHANNEL_ZONE2_VOLUME:
+            case CHANNEL_ZONE3_VOLUME:
+            case CHANNEL_ZONE4_VOLUME:
+                if (isPowerOn(numZone) && !fixedVolumeZones[numZone]) {
                     long volumePct = Math
-                            .round((double) (volume - minVolume) / (double) (maxVolume - minVolume) * 100.0);
+                            .round((double) (volumes[numZone] - minVolume) / (double) (maxVolume - minVolume) * 100.0);
                     state = new PercentType(BigDecimal.valueOf(volumePct));
                 }
                 break;
             case CHANNEL_MAIN_VOLUME_UP_DOWN:
-                if (isPowerOn()) {
-                    state = new DecimalType(volume);
-                }
-                break;
-            case CHANNEL_ZONE2_VOLUME:
-                if (powerZone2 && !fixedVolumeZone2) {
-                    long volumePct = Math
-                            .round((double) (volumeZone2 - minVolume) / (double) (maxVolume - minVolume) * 100.0);
-                    state = new PercentType(BigDecimal.valueOf(volumePct));
-                }
-                break;
             case CHANNEL_ZONE2_VOLUME_UP_DOWN:
-                if (powerZone2 && !fixedVolumeZone2) {
-                    state = new DecimalType(volumeZone2);
-                }
-                break;
-            case CHANNEL_ZONE3_VOLUME:
-                if (powerZone3 && !fixedVolumeZone3) {
-                    long volumePct = Math
-                            .round((double) (volumeZone3 - minVolume) / (double) (maxVolume - minVolume) * 100.0);
-                    state = new PercentType(BigDecimal.valueOf(volumePct));
-                }
-                break;
-            case CHANNEL_ZONE4_VOLUME:
-                if (powerZone4 && !fixedVolumeZone4) {
-                    long volumePct = Math
-                            .round((double) (volumeZone4 - minVolume) / (double) (maxVolume - minVolume) * 100.0);
-                    state = new PercentType(BigDecimal.valueOf(volumePct));
+                if (isPowerOn(numZone) && !fixedVolumeZones[numZone]) {
+                    state = new DecimalType(volumes[numZone]);
                 }
                 break;
             case CHANNEL_MUTE:
             case CHANNEL_MAIN_MUTE:
-                if (isPowerOn()) {
-                    state = OnOffType.from(mute);
-                }
-                break;
+            case CHANNEL_ZONE1_MUTE:
             case CHANNEL_ZONE2_MUTE:
-                if (powerZone2) {
-                    state = OnOffType.from(muteZone2);
-                }
-                break;
             case CHANNEL_ZONE3_MUTE:
-                if (powerZone3) {
-                    state = OnOffType.from(muteZone3);
-                }
-                break;
             case CHANNEL_ZONE4_MUTE:
-                if (powerZone4) {
-                    state = OnOffType.from(muteZone4);
+                if (isPowerOn(numZone)) {
+                    state = OnOffType.from(mutes[numZone]);
                 }
                 break;
             case CHANNEL_BASS:
             case CHANNEL_MAIN_BASS:
-                if (isPowerOn()) {
-                    state = new DecimalType(bass);
+            case CHANNEL_ZONE1_BASS:
+            case CHANNEL_ZONE2_BASS:
+            case CHANNEL_ZONE3_BASS:
+            case CHANNEL_ZONE4_BASS:
+                if (isPowerOn(numZone)) {
+                    state = new DecimalType(basses[numZone]);
                 }
                 break;
             case CHANNEL_TREBLE:
             case CHANNEL_MAIN_TREBLE:
-                if (isPowerOn()) {
-                    state = new DecimalType(treble);
+            case CHANNEL_ZONE1_TREBLE:
+            case CHANNEL_ZONE2_TREBLE:
+            case CHANNEL_ZONE3_TREBLE:
+            case CHANNEL_ZONE4_TREBLE:
+                if (isPowerOn(numZone)) {
+                    state = new DecimalType(trebles[numZone]);
                 }
                 break;
             case CHANNEL_TRACK:
-                if (track > 0 && isPowerOn()) {
+                if (isPowerOn() && track > 0) {
                     state = new DecimalType(track);
+                }
+                break;
+            case CHANNEL_RANDOM:
+                if (isPowerOn()) {
+                    state = OnOffType.from(randomMode);
+                }
+                break;
+            case CHANNEL_REPEAT:
+                if (isPowerOn()) {
+                    state = new StringType(repeatMode.name());
                 }
                 break;
             case CHANNEL_PLAY_CONTROL:
@@ -2299,8 +2297,12 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                 }
                 break;
             case CHANNEL_FREQUENCY:
-                if (frequency > 0.0 && isPowerOn()) {
-                    state = new DecimalType(frequency);
+            case CHANNEL_ZONE1_FREQUENCY:
+            case CHANNEL_ZONE2_FREQUENCY:
+            case CHANNEL_ZONE3_FREQUENCY:
+            case CHANNEL_ZONE4_FREQUENCY:
+                if (isPowerOn(numZone) && frequencies[numZone] > 0.0) {
+                    state = new DecimalType(frequencies[numZone]);
                 }
                 break;
             case CHANNEL_LINE1:
@@ -2310,6 +2312,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                 state = new StringType(frontPanelLine2);
                 break;
             case CHANNEL_BRIGHTNESS:
+            case CHANNEL_ALL_BRIGHTNESS:
                 if (isPowerOn() && model.hasDimmerControl()) {
                     long dimmerPct = Math.round((double) (brightness - model.getDimmerLevelMin())
                             / (double) (model.getDimmerLevelMax() - model.getDimmerLevelMin()) * 100.0);
@@ -2322,8 +2325,12 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                 }
                 break;
             case CHANNEL_BALANCE:
-                if (isPowerOn()) {
-                    state = new DecimalType(balance);
+            case CHANNEL_ZONE1_BALANCE:
+            case CHANNEL_ZONE2_BALANCE:
+            case CHANNEL_ZONE3_BALANCE:
+            case CHANNEL_ZONE4_BALANCE:
+                if (isPowerOn(numZone)) {
+                    state = new DecimalType(balances[numZone]);
                 }
                 break;
             case CHANNEL_SPEAKER_A:
@@ -2343,76 +2350,433 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
     }
 
     /**
-     * Inform about the main zone power state
+     * Inform about the device / main zone power state
      *
-     * @return true if main zone power state is known and known as ON
+     * @return true if device / main zone power state is known and known as ON
      */
     private boolean isPowerOn() {
-        Boolean power = this.power;
-        return power != null && power.booleanValue();
+        return isPowerOn(0);
     }
 
     /**
-     * Get the command to be used for main zone POWER ON
+     * Inform about the power state
      *
-     * @return the command
+     * @param numZone the zone number (1-4) or 0 for the device or main zone
+     *
+     * @return true if power state is known and known as ON
      */
-    private RotelCommand getPowerOnCommand() {
-        return model.hasOtherThanPrimaryCommands() ? RotelCommand.MAIN_ZONE_POWER_ON : RotelCommand.POWER_ON;
+    private boolean isPowerOn(int numZone) {
+        if (numZone < 0 || numZone > MAX_NUMBER_OF_ZONES) {
+            throw new IllegalArgumentException("numZone must be in range 0-" + MAX_NUMBER_OF_ZONES);
+        }
+        Boolean power = powers[numZone];
+        return (numZone > 0 && !powerControlPerZone) ? isPowerOn(0) : power != null && power.booleanValue();
     }
 
     /**
-     * Get the command to be used for main zone POWER OFF
+     * Get the command to be used for POWER ON
+     *
+     * @param numZone the zone number (2-4) or 0 for the device or main zone
      *
      * @return the command
      */
-    private RotelCommand getPowerOffCommand() {
-        return model.hasOtherThanPrimaryCommands() ? RotelCommand.MAIN_ZONE_POWER_OFF : RotelCommand.POWER_OFF;
+    private RotelCommand getPowerOnCommand(int numZone) {
+        switch (numZone) {
+            case 0:
+                return model.hasOtherThanPrimaryCommands() ? RotelCommand.MAIN_ZONE_POWER_ON : RotelCommand.POWER_ON;
+            case 2:
+                return RotelCommand.ZONE2_POWER_ON;
+            case 3:
+                return RotelCommand.ZONE3_POWER_ON;
+            case 4:
+                return RotelCommand.ZONE4_POWER_ON;
+            default:
+                throw new IllegalArgumentException("No power ON command defined for zone " + numZone);
+        }
     }
 
     /**
-     * Get the command to be used for main zone VOLUME UP
+     * Get the command to be used for POWER OFF
+     *
+     * @param numZone the zone number (2-4) or 0 for the device or main zone
      *
      * @return the command
      */
-    private RotelCommand getVolumeUpCommand() {
-        return model.hasOtherThanPrimaryCommands() ? RotelCommand.MAIN_ZONE_VOLUME_UP : RotelCommand.VOLUME_UP;
+    private RotelCommand getPowerOffCommand(int numZone) {
+        switch (numZone) {
+            case 0:
+                return model.hasOtherThanPrimaryCommands() ? RotelCommand.MAIN_ZONE_POWER_OFF : RotelCommand.POWER_OFF;
+            case 2:
+                return RotelCommand.ZONE2_POWER_OFF;
+            case 3:
+                return RotelCommand.ZONE3_POWER_OFF;
+            case 4:
+                return RotelCommand.ZONE4_POWER_OFF;
+            default:
+                throw new IllegalArgumentException("No power OFF command defined for zone " + numZone);
+        }
     }
 
     /**
-     * Get the command to be used for main zone VOLUME DOWN
+     * Get the command to be used for VOLUME UP
+     *
+     * @param numZone the zone number (1-4) or 0 for the device or main zone
      *
      * @return the command
      */
-    private RotelCommand getVolumeDownCommand() {
-        return model.hasOtherThanPrimaryCommands() ? RotelCommand.MAIN_ZONE_VOLUME_DOWN : RotelCommand.VOLUME_DOWN;
+    private RotelCommand getVolumeUpCommand(int numZone) {
+        switch (numZone) {
+            case 0:
+                return model.hasOtherThanPrimaryCommands() ? RotelCommand.MAIN_ZONE_VOLUME_UP : RotelCommand.VOLUME_UP;
+            case 1:
+                return RotelCommand.ZONE1_VOLUME_UP;
+            case 2:
+                return RotelCommand.ZONE2_VOLUME_UP;
+            case 3:
+                return RotelCommand.ZONE3_VOLUME_UP;
+            case 4:
+                return RotelCommand.ZONE4_VOLUME_UP;
+            default:
+                throw new IllegalArgumentException("No VOLUME UP command defined for zone " + numZone);
+        }
     }
 
     /**
-     * Get the command to be used for main zone MUTE ON
+     * Get the command to be used for VOLUME DOWN
+     *
+     * @param numZone the zone number (1-4) or 0 for the device or main zone
      *
      * @return the command
      */
-    private RotelCommand getMuteOnCommand() {
-        return model.hasOtherThanPrimaryCommands() ? RotelCommand.MAIN_ZONE_MUTE_ON : RotelCommand.MUTE_ON;
+    private RotelCommand getVolumeDownCommand(int numZone) {
+        switch (numZone) {
+            case 0:
+                return model.hasOtherThanPrimaryCommands() ? RotelCommand.MAIN_ZONE_VOLUME_DOWN
+                        : RotelCommand.VOLUME_DOWN;
+            case 1:
+                return RotelCommand.ZONE1_VOLUME_DOWN;
+            case 2:
+                return RotelCommand.ZONE2_VOLUME_DOWN;
+            case 3:
+                return RotelCommand.ZONE3_VOLUME_DOWN;
+            case 4:
+                return RotelCommand.ZONE4_VOLUME_DOWN;
+            default:
+                throw new IllegalArgumentException("No VOLUME DOWN command defined for zone " + numZone);
+        }
     }
 
     /**
-     * Get the command to be used for main zone MUTE OFF
+     * Get the command to be used for VOLUME SET
+     *
+     * @param numZone the zone number (1-4) or 0 for the device
      *
      * @return the command
      */
-    private RotelCommand getMuteOffCommand() {
-        return model.hasOtherThanPrimaryCommands() ? RotelCommand.MAIN_ZONE_MUTE_OFF : RotelCommand.MUTE_OFF;
+    private RotelCommand getVolumeSetCommand(int numZone) {
+        switch (numZone) {
+            case 0:
+                return RotelCommand.VOLUME_SET;
+            case 1:
+                return RotelCommand.ZONE1_VOLUME_SET;
+            case 2:
+                return RotelCommand.ZONE2_VOLUME_SET;
+            case 3:
+                return RotelCommand.ZONE3_VOLUME_SET;
+            case 4:
+                return RotelCommand.ZONE4_VOLUME_SET;
+            default:
+                throw new IllegalArgumentException("No VOLUME SET command defined for zone " + numZone);
+        }
     }
 
     /**
-     * Get the command to be used for main zone MUTE TOGGLE
+     * Get the command to be used for MUTE ON
+     *
+     * @param numZone the zone number (1-4) or 0 for the device or main zone
      *
      * @return the command
      */
-    private RotelCommand getMuteToggleCommand() {
-        return model.hasOtherThanPrimaryCommands() ? RotelCommand.MAIN_ZONE_MUTE_TOGGLE : RotelCommand.MUTE_TOGGLE;
+    private RotelCommand getMuteOnCommand(int numZone) {
+        switch (numZone) {
+            case 0:
+                return model.hasOtherThanPrimaryCommands() ? RotelCommand.MAIN_ZONE_MUTE_ON : RotelCommand.MUTE_ON;
+            case 1:
+                return RotelCommand.ZONE1_MUTE_ON;
+            case 2:
+                return RotelCommand.ZONE2_MUTE_ON;
+            case 3:
+                return RotelCommand.ZONE3_MUTE_ON;
+            case 4:
+                return RotelCommand.ZONE4_MUTE_ON;
+            default:
+                throw new IllegalArgumentException("No MUTE ON command defined for zone " + numZone);
+        }
+    }
+
+    /**
+     * Get the command to be used for MUTE OFF
+     *
+     * @param numZone the zone number (1-4) or 0 for the device or main zone
+     *
+     * @return the command
+     */
+    private RotelCommand getMuteOffCommand(int numZone) {
+        switch (numZone) {
+            case 0:
+                return model.hasOtherThanPrimaryCommands() ? RotelCommand.MAIN_ZONE_MUTE_OFF : RotelCommand.MUTE_OFF;
+            case 1:
+                return RotelCommand.ZONE1_MUTE_OFF;
+            case 2:
+                return RotelCommand.ZONE2_MUTE_OFF;
+            case 3:
+                return RotelCommand.ZONE3_MUTE_OFF;
+            case 4:
+                return RotelCommand.ZONE4_MUTE_OFF;
+            default:
+                throw new IllegalArgumentException("No MUTE OFF command defined for zone " + numZone);
+        }
+    }
+
+    /**
+     * Get the command to be used for MUTE TOGGLE
+     *
+     * @param numZone the zone number (1-4) or 0 for the device or main zone
+     *
+     * @return the command
+     */
+    private RotelCommand getMuteToggleCommand(int numZone) {
+        switch (numZone) {
+            case 0:
+                return model.hasOtherThanPrimaryCommands() ? RotelCommand.MAIN_ZONE_MUTE_TOGGLE
+                        : RotelCommand.MUTE_TOGGLE;
+            case 1:
+                return RotelCommand.ZONE1_MUTE_TOGGLE;
+            case 2:
+                return RotelCommand.ZONE2_MUTE_TOGGLE;
+            case 3:
+                return RotelCommand.ZONE3_MUTE_TOGGLE;
+            case 4:
+                return RotelCommand.ZONE4_MUTE_TOGGLE;
+            default:
+                throw new IllegalArgumentException("No MUTE TOGGLE command defined for zone " + numZone);
+        }
+    }
+
+    /**
+     * Get the command to be used for BASS UP
+     *
+     * @param numZone the zone number (1-4) or 0 for the device
+     *
+     * @return the command
+     */
+    private RotelCommand getBassUpCommand(int numZone) {
+        switch (numZone) {
+            case 0:
+                return RotelCommand.BASS_UP;
+            case 1:
+                return RotelCommand.ZONE1_BASS_UP;
+            case 2:
+                return RotelCommand.ZONE2_BASS_UP;
+            case 3:
+                return RotelCommand.ZONE3_BASS_UP;
+            case 4:
+                return RotelCommand.ZONE4_BASS_UP;
+            default:
+                throw new IllegalArgumentException("No BASS UP command defined for zone " + numZone);
+        }
+    }
+
+    /**
+     * Get the command to be used for BASS DOWN
+     *
+     * @param numZone the zone number (1-4) or 0 for the device
+     *
+     * @return the command
+     */
+    private RotelCommand getBassDownCommand(int numZone) {
+        switch (numZone) {
+            case 0:
+                return RotelCommand.BASS_DOWN;
+            case 1:
+                return RotelCommand.ZONE1_BASS_DOWN;
+            case 2:
+                return RotelCommand.ZONE2_BASS_DOWN;
+            case 3:
+                return RotelCommand.ZONE3_BASS_DOWN;
+            case 4:
+                return RotelCommand.ZONE4_BASS_DOWN;
+            default:
+                throw new IllegalArgumentException("No BASS DOWN command defined for zone " + numZone);
+        }
+    }
+
+    /**
+     * Get the command to be used for BASS SET
+     *
+     * @param numZone the zone number (1-4) or 0 for the device
+     *
+     * @return the command
+     */
+    private RotelCommand getBassSetCommand(int numZone) {
+        switch (numZone) {
+            case 0:
+                return RotelCommand.BASS_SET;
+            case 1:
+                return RotelCommand.ZONE1_BASS_SET;
+            case 2:
+                return RotelCommand.ZONE2_BASS_SET;
+            case 3:
+                return RotelCommand.ZONE3_BASS_SET;
+            case 4:
+                return RotelCommand.ZONE4_BASS_SET;
+            default:
+                throw new IllegalArgumentException("No BASS SET command defined for zone " + numZone);
+        }
+    }
+
+    /**
+     * Get the command to be used for TREBLE UP
+     *
+     * @param numZone the zone number (1-4) or 0 for the device
+     *
+     * @return the command
+     */
+    private RotelCommand getTrebleUpCommand(int numZone) {
+        switch (numZone) {
+            case 0:
+                return RotelCommand.TREBLE_UP;
+            case 1:
+                return RotelCommand.ZONE1_TREBLE_UP;
+            case 2:
+                return RotelCommand.ZONE2_TREBLE_UP;
+            case 3:
+                return RotelCommand.ZONE3_TREBLE_UP;
+            case 4:
+                return RotelCommand.ZONE4_TREBLE_UP;
+            default:
+                throw new IllegalArgumentException("No TREBLE UP command defined for zone " + numZone);
+        }
+    }
+
+    /**
+     * Get the command to be used for TREBLE DOWN
+     *
+     * @param numZone the zone number (1-4) or 0 for the device
+     *
+     * @return the command
+     */
+    private RotelCommand getTrebleDownCommand(int numZone) {
+        switch (numZone) {
+            case 0:
+                return RotelCommand.TREBLE_DOWN;
+            case 1:
+                return RotelCommand.ZONE1_TREBLE_DOWN;
+            case 2:
+                return RotelCommand.ZONE2_TREBLE_DOWN;
+            case 3:
+                return RotelCommand.ZONE3_TREBLE_DOWN;
+            case 4:
+                return RotelCommand.ZONE4_TREBLE_DOWN;
+            default:
+                throw new IllegalArgumentException("No TREBLE DOWN command defined for zone " + numZone);
+        }
+    }
+
+    /**
+     * Get the command to be used for TREBLE SET
+     *
+     * @param numZone the zone number (1-4) or 0 for the device
+     *
+     * @return the command
+     */
+    private RotelCommand getTrebleSetCommand(int numZone) {
+        switch (numZone) {
+            case 0:
+                return RotelCommand.TREBLE_SET;
+            case 1:
+                return RotelCommand.ZONE1_TREBLE_SET;
+            case 2:
+                return RotelCommand.ZONE2_TREBLE_SET;
+            case 3:
+                return RotelCommand.ZONE3_TREBLE_SET;
+            case 4:
+                return RotelCommand.ZONE4_TREBLE_SET;
+            default:
+                throw new IllegalArgumentException("No TREBLE SET command defined for zone " + numZone);
+        }
+    }
+
+    /**
+     * Get the command to be used for BALANCE LEFT
+     *
+     * @param numZone the zone number (1-4) or 0 for the device
+     *
+     * @return the command
+     */
+    private RotelCommand getBalanceLeftCommand(int numZone) {
+        switch (numZone) {
+            case 0:
+                return RotelCommand.BALANCE_LEFT;
+            case 1:
+                return RotelCommand.ZONE1_BALANCE_LEFT;
+            case 2:
+                return RotelCommand.ZONE2_BALANCE_LEFT;
+            case 3:
+                return RotelCommand.ZONE3_BALANCE_LEFT;
+            case 4:
+                return RotelCommand.ZONE4_BALANCE_LEFT;
+            default:
+                throw new IllegalArgumentException("No BALANCE LEFT command defined for zone " + numZone);
+        }
+    }
+
+    /**
+     * Get the command to be used for BALANCE RIGHT
+     *
+     * @param numZone the zone number (1-4) or 0 for the device
+     *
+     * @return the command
+     */
+    private RotelCommand getBalanceRightCommand(int numZone) {
+        switch (numZone) {
+            case 0:
+                return RotelCommand.BALANCE_RIGHT;
+            case 1:
+                return RotelCommand.ZONE1_BALANCE_RIGHT;
+            case 2:
+                return RotelCommand.ZONE2_BALANCE_RIGHT;
+            case 3:
+                return RotelCommand.ZONE3_BALANCE_RIGHT;
+            case 4:
+                return RotelCommand.ZONE4_BALANCE_RIGHT;
+            default:
+                throw new IllegalArgumentException("No BALANCE RIGHT command defined for zone " + numZone);
+        }
+    }
+
+    /**
+     * Get the command to be used for BALANCE SET
+     *
+     * @param numZone the zone number (1-4) or 0 for the device
+     *
+     * @return the command
+     */
+    private RotelCommand getBalanceSetCommand(int numZone) {
+        switch (numZone) {
+            case 0:
+                return RotelCommand.BALANCE_SET;
+            case 1:
+                return RotelCommand.ZONE1_BALANCE_SET;
+            case 2:
+                return RotelCommand.ZONE2_BALANCE_SET;
+            case 3:
+                return RotelCommand.ZONE3_BALANCE_SET;
+            case 4:
+                return RotelCommand.ZONE4_BALANCE_SET;
+            default:
+                throw new IllegalArgumentException("No BALANCE SET command defined for zone " + numZone);
+        }
     }
 
     private void sendCommand(RotelCommand cmd) throws RotelException {
@@ -2436,7 +2800,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
             logger.debug("sendCommand: {}", e.getMessage());
             return;
         }
-        connector.writeOutput(cmd.getName(), message);
+        connector.writeOutput(cmd, message);
 
         if (connector instanceof RotelSimuConnector) {
             if ((protocol == RotelProtocol.HEX && cmd.getHexType() != 0)

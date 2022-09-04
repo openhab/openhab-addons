@@ -48,6 +48,7 @@ import org.openhab.binding.mybmw.internal.utils.Constants;
 import org.openhab.binding.mybmw.internal.utils.Converter;
 import org.openhab.binding.mybmw.internal.utils.RemoteServiceUtils;
 import org.openhab.binding.mybmw.internal.utils.VehicleStatusUtils;
+import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -55,6 +56,7 @@ import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -87,17 +89,22 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
     protected String selectedSession = Constants.UNDEF;
 
     protected MyBMWCommandOptionProvider commandOptionProvider;
+    private LocationProvider locationProvider;
 
     // Data Caches
     protected Optional<String> vehicleStatusCache = Optional.empty();
     protected Optional<byte[]> imageCache = Optional.empty();
 
-    public VehicleChannelHandler(Thing thing, MyBMWCommandOptionProvider cop, String type) {
+    public VehicleChannelHandler(Thing thing, MyBMWCommandOptionProvider cop, LocationProvider lp, String type) {
         super(thing);
         commandOptionProvider = cop;
+        locationProvider = lp;
+        if (lp.getLocation() == null) {
+            logger.debug("Home location not available");
+        }
 
         hasFuel = type.equals(VehicleType.CONVENTIONAL.toString()) || type.equals(VehicleType.PLUGIN_HYBRID.toString())
-                || type.equals(VehicleType.ELECTRIC_REX.toString());
+                || type.equals(VehicleType.ELECTRIC_REX.toString()) || type.equals(VehicleType.MILD_HYBRID.toString());
         isElectric = type.equals(VehicleType.PLUGIN_HYBRID.toString())
                 || type.equals(VehicleType.ELECTRIC_REX.toString()) || type.equals(VehicleType.ELECTRIC.toString());
         isHybrid = hasFuel && isElectric;
@@ -448,9 +455,24 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
     }
 
     protected void updatePosition(Location pos) {
-        updateChannel(CHANNEL_GROUP_LOCATION, GPS, PointType
-                .valueOf(Double.toString(pos.coordinates.latitude) + "," + Double.toString(pos.coordinates.longitude)));
-        updateChannel(CHANNEL_GROUP_LOCATION, HEADING, QuantityType.valueOf(pos.heading, Units.DEGREE_ANGLE));
-        updateChannel(CHANNEL_GROUP_LOCATION, ADDRESS, StringType.valueOf(pos.address.formatted));
+        if (pos.coordinates.latitude < 0) {
+            updateChannel(CHANNEL_GROUP_LOCATION, GPS, UnDefType.UNDEF);
+            updateChannel(CHANNEL_GROUP_LOCATION, HEADING, UnDefType.UNDEF);
+            updateChannel(CHANNEL_GROUP_LOCATION, ADDRESS, UnDefType.UNDEF);
+            updateChannel(CHANNEL_GROUP_LOCATION, HOME_DISTANCE, UnDefType.UNDEF);
+        } else {
+            PointType vehicleLocation = PointType.valueOf(
+                    Double.toString(pos.coordinates.latitude) + "," + Double.toString(pos.coordinates.longitude));
+            updateChannel(CHANNEL_GROUP_LOCATION, GPS, vehicleLocation);
+            updateChannel(CHANNEL_GROUP_LOCATION, HEADING, QuantityType.valueOf(pos.heading, Units.DEGREE_ANGLE));
+            updateChannel(CHANNEL_GROUP_LOCATION, ADDRESS, StringType.valueOf(pos.address.formatted));
+            PointType homeLocation = locationProvider.getLocation();
+            if (homeLocation != null) {
+                updateChannel(CHANNEL_GROUP_LOCATION, HOME_DISTANCE,
+                        QuantityType.valueOf(vehicleLocation.distanceFrom(homeLocation).intValue(), SIUnits.METRE));
+            } else {
+                updateChannel(CHANNEL_GROUP_LOCATION, HOME_DISTANCE, UnDefType.UNDEF);
+            }
+        }
     }
 }

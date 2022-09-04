@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.hdpowerview.internal.handler;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,7 +31,8 @@ import org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewTranslationProvider;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewWebTargets;
 import org.openhab.binding.hdpowerview.internal.api.Firmware;
-import org.openhab.binding.hdpowerview.internal.api.responses.FirmwareVersions;
+import org.openhab.binding.hdpowerview.internal.api.HubFirmware;
+import org.openhab.binding.hdpowerview.internal.api.UserData;
 import org.openhab.binding.hdpowerview.internal.api.responses.SceneCollections;
 import org.openhab.binding.hdpowerview.internal.api.responses.SceneCollections.SceneCollection;
 import org.openhab.binding.hdpowerview.internal.api.responses.Scenes;
@@ -82,6 +85,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
     private final HttpClient httpClient;
     private final HDPowerViewTranslationProvider translationProvider;
     private final ConcurrentHashMap<ThingUID, ShadeData> pendingShadeInitializations = new ConcurrentHashMap<>();
+    private final Duration firmwareVersionValidityPeriod = Duration.ofDays(1);
 
     private long refreshInterval;
     private long hardRefreshPositionInterval;
@@ -95,7 +99,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
     private List<Scene> sceneCache = new CopyOnWriteArrayList<>();
     private List<SceneCollection> sceneCollectionCache = new CopyOnWriteArrayList<>();
     private List<ScheduledEvent> scheduledEventCache = new CopyOnWriteArrayList<>();
-    private @Nullable FirmwareVersions firmwareVersions;
+    private Instant userDataUpdated = Instant.MIN;
     private Boolean deprecatedChannelsCreated = false;
 
     private final ChannelTypeUID sceneChannelTypeUID = new ChannelTypeUID(HDPowerViewBindingConstants.BINDING_ID,
@@ -141,6 +145,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             }
         } catch (HubMaintenanceException e) {
             // exceptions are logged in HDPowerViewWebTargets
+            userDataUpdated = Instant.MIN;
         } catch (NumberFormatException | HubException e) {
             logger.debug("Unexpected error {}", e.getMessage());
         }
@@ -164,7 +169,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         hardRefreshPositionInterval = config.hardRefresh;
         hardRefreshBatteryLevelInterval = config.hardRefreshBatteryLevel;
         initializeChannels();
-        firmwareVersions = null;
+        userDataUpdated = Instant.MIN;
 
         updateStatus(ThingStatus.UNKNOWN);
         schedulePoll();
@@ -279,7 +284,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
 
     private synchronized void poll() {
         try {
-            updateFirmwareProperties();
+            updateUserDataProperties();
         } catch (HubException e) {
             logger.warn("Failed to update firmware properties: {}", e.getMessage());
         }
@@ -304,25 +309,49 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             }
         } catch (HubMaintenanceException e) {
             // exceptions are logged in HDPowerViewWebTargets
+            userDataUpdated = Instant.MIN;
         } catch (HubException e) {
             logger.warn("Error connecting to bridge: {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            userDataUpdated = Instant.MIN;
         }
     }
 
-    private void updateFirmwareProperties()
+    private void updateUserDataProperties()
             throws HubInvalidResponseException, HubProcessingException, HubMaintenanceException {
-        if (firmwareVersions != null) {
+        if (userDataUpdated.isAfter(Instant.now().minus(firmwareVersionValidityPeriod))) {
             return;
         }
-        FirmwareVersions firmwareVersions = webTargets.getFirmwareVersions();
+
+        UserData userData = webTargets.getUserData();
+        Map<String, String> properties = editProperties();
+        HubFirmware firmwareVersions = userData.firmware;
+        if (firmwareVersions != null) {
+            updateFirmwareProperties(properties, firmwareVersions);
+        }
+        String serialNumber = userData.serialNumber;
+        if (serialNumber != null) {
+            properties.put(Thing.PROPERTY_SERIAL_NUMBER, serialNumber);
+        }
+        String macAddress = userData.macAddress;
+        if (macAddress != null) {
+            properties.put(Thing.PROPERTY_MAC_ADDRESS, macAddress);
+        }
+        String hubName = userData.getHubName();
+        if (!hubName.isEmpty()) {
+            properties.put(HDPowerViewBindingConstants.PROPERTY_HUB_NAME, hubName);
+        }
+        updateProperties(properties);
+        userDataUpdated = Instant.now();
+    }
+
+    private void updateFirmwareProperties(Map<String, String> properties, HubFirmware firmwareVersions) {
         Firmware mainProcessor = firmwareVersions.mainProcessor;
         if (mainProcessor == null) {
             logger.warn("Main processor firmware version missing in response.");
             return;
         }
         logger.debug("Main processor firmware version received: {}, {}", mainProcessor.name, mainProcessor.toString());
-        Map<String, String> properties = editProperties();
         String mainProcessorName = mainProcessor.name;
         if (mainProcessorName != null) {
             properties.put(HDPowerViewBindingConstants.PROPERTY_FIRMWARE_NAME, mainProcessorName);
@@ -333,7 +362,6 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             logger.debug("Radio firmware version received: {}", radio.toString());
             properties.put(HDPowerViewBindingConstants.PROPERTY_RADIO_FIRMWARE_VERSION, radio.toString());
         }
-        updateProperties(properties);
     }
 
     private void pollShades() throws HubInvalidResponseException, HubProcessingException, HubMaintenanceException {

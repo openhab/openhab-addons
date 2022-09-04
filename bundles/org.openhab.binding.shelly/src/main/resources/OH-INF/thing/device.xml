@@ -10,7 +10,6 @@
 		<channels>
 			<channel id="alarm" typeId="alarmTrigger"/>
 			<channel id="wifiSignal" typeId="system.signal-strength"/>
-			<channel id="uptime" typeId="uptime"/>
 		</channels>
 	</channel-group-type>
 
@@ -123,7 +122,7 @@
 		</state>
 	</channel-type>
 	<channel-type id="supplyVoltage" advanced="true">
-		<item-type>Number:ElectricPotentia</item-type>
+		<item-type>Number:ElectricPotential</item-type>
 		<label>@text/channel-type.shelly.supplyVoltage.label</label>
 		<description>@text/channel-type.shelly.supplyVoltage.description</description>
 		<category>Energy</category>
@@ -131,6 +130,7 @@
 			<tag>Measurement</tag>
 			<tag>Voltage</tag>
 		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
 	<channel-type id="selfTest">
 		<item-type>String</item-type>
@@ -144,13 +144,6 @@
 				<option value="pending">@text/channel-type.shelly.selfTest.state.option.pending</option>
 				<option value="unknown">@text/channel-type.shelly.selfTest.state.option.unknown</option>
 			</options>
-		</state>
-	</channel-type>
-	<channel-type id="deviceSchedule" advanced="true">
-		<item-type>Switch</item-type>
-		<label>@text/channel-type.shelly.deviceSchedule.label</label>
-		<description>@text/channel-type.shelly.deviceSchedule.description</description>
-		<state readOnly="true">
 		</state>
 	</channel-type>
 

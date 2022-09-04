@@ -51,7 +51,7 @@ public class ConnectionStateWaitForLcnBusConnected extends AbstractConnectionSta
         switch (data) {
             case LcnDefs.LCNCONNSTATE_DISCONNECTED:
                 cancelLegacyTimer();
-                connection.getCallback().onOffline("LCN bus not connected to LCN-PCHK/PKE");
+                connection.getCallback().onOffline("LCN-PCHK/VISU not connected to LCN data wire");
                 break;
             case LcnDefs.LCNCONNSTATE_CONNECTED:
                 cancelLegacyTimer();
@@ -61,7 +61,7 @@ public class ConnectionStateWaitForLcnBusConnected extends AbstractConnectionSta
             case LcnDefs.INSUFFICIENT_LICENSES:
                 cancelLegacyTimer();
                 handleConnectionFailed(
-                        new LcnException("LCN-PCHK/PKE has not enough licenses to handle this connection"));
+                        new LcnException("LCN-PCHK/VISU has not enough licenses to handle this connection"));
                 break;
         }
     }

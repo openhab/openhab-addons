@@ -36,8 +36,7 @@ public class NuvoStatusCodes {
     public static final Map<String, String> PLAY_MODE = Map.ofEntries(entry("0", "Normal"), entry("1", "Idle"),
             entry("2", "Playing"), entry("3", "Paused"), entry("4", "Fast Forward"), entry("5", "Rewind"),
             entry("6", "Play Shuffle"), entry("7", "Play Repeat"), entry("8", "Play Shuffle Repeat"),
-            entry("9", "unknown-9"), entry("10", "unknown-10"), entry("11", "Radio"), // undocumented
-            entry("12", "unknown-12"));
+            entry("9", "Step Tune"), entry("10", "Seek Tune"), entry("11", "Preset Tune"), entry("12", "unknown-12"));
 
     // map to lookup button action name from NuvoNet button code
     public static final Map<String, String> BUTTON_CODE = Map.ofEntries(entry("1", "OK"), entry("2", "PLAYPAUSE"),

@@ -26,26 +26,32 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 public class MeasuredValue {
     private final MeasureType measureType;
-    private final String channelId;
+    private final String channelPrefix;
+    private final @Nullable Integer channelNumber;
     private final @Nullable ChannelTypeUID channelTypeUID;
     private final State state;
     private final String debugName;
 
-    public MeasuredValue(MeasureType measureType, String channelId, @Nullable ChannelTypeUID channelTypeUID,
-            State state, String debugName) {
+    public MeasuredValue(MeasureType measureType, String channelPrefix, @Nullable Integer channelNumber,
+            @Nullable ChannelTypeUID channelTypeUID, State state, String debugName) {
         this.measureType = measureType;
-        this.channelId = channelId;
+        this.channelPrefix = channelPrefix;
+        this.channelNumber = channelNumber;
         this.channelTypeUID = channelTypeUID;
         this.state = state;
         this.debugName = debugName;
     }
 
-    public MeasureType getMeasureType() {
-        return measureType;
+    public String getChannelId() {
+        return channelNumber == null ? channelPrefix : (channelPrefix + "-" + channelNumber);
     }
 
-    public String getChannelId() {
-        return channelId;
+    public String getChannelPrefix() {
+        return channelPrefix;
+    }
+
+    public @Nullable Integer getChannelNumber() {
+        return channelNumber;
     }
 
     public @Nullable ChannelTypeUID getChannelTypeUID() {
@@ -62,7 +68,7 @@ public class MeasuredValue {
 
     @Override
     public String toString() {
-        return "MeasuredValue{" + "measureType=" + measureType + ", channelId='" + channelId + '\''
+        return "MeasuredValue{" + "measureType=" + measureType + ", channelId='" + getChannelId() + '\''
                 + ", channelTypeUID=" + channelTypeUID + ", state=" + state + ", debugName='" + debugName + '\'' + '}';
     }
 }

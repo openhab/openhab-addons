@@ -142,16 +142,17 @@ public class HomekitAccessoryFactory {
     };
 
     private static List<HomekitCharacteristicType> getRequiredCharacteristics(HomekitTaggedItem taggedItem) {
+        final List<HomekitCharacteristicType> characteristics = new ArrayList<>();
+        if (MANDATORY_CHARACTERISTICS.containsKey(taggedItem.getAccessoryType())) {
+            characteristics.addAll(Arrays.asList(MANDATORY_CHARACTERISTICS.get(taggedItem.getAccessoryType())));
+        }
         if (taggedItem.getAccessoryType() == BATTERY) {
-            final String isChargeable = taggedItem.getConfiguration(HomekitBatteryImpl.BATTERY_TYPE, "false");
-            if ("true".equalsIgnoreCase(isChargeable) || "yes".equalsIgnoreCase(isChargeable)) {
-                final List<HomekitCharacteristicType> characteristics = new ArrayList<>();
-                characteristics.addAll(Arrays.asList(MANDATORY_CHARACTERISTICS.get(taggedItem.getAccessoryType())));
+            final boolean isChargeable = taggedItem.getConfigurationAsBoolean(HomekitBatteryImpl.BATTERY_TYPE, false);
+            if (isChargeable) {
                 characteristics.add(BATTERY_CHARGING_STATE);
-                return characteristics;
             }
         }
-        return Arrays.asList(MANDATORY_CHARACTERISTICS.get(taggedItem.getAccessoryType()));
+        return characteristics;
     }
 
     /**
@@ -271,7 +272,7 @@ public class HomekitAccessoryFactory {
             MetadataRegistry metadataRegistry) {
         List<HomekitTaggedItem> collectedCharacteristics = new ArrayList<>();
         if (taggedItem.isGroup()) {
-            for (Item item : ((GroupItem) taggedItem.getItem()).getAllMembers()) {
+            for (Item item : ((GroupItem) taggedItem.getItem()).getMembers()) {
                 addMandatoryCharacteristics(taggedItem, collectedCharacteristics, item, metadataRegistry);
             }
         } else {
@@ -311,7 +312,9 @@ public class HomekitAccessoryFactory {
             // if the item has only accessory tag, e.g. TemperatureSensor,
             // then we will link all mandatory characteristic to this item,
             // e.g. we will link CurrentTemperature in case of TemperatureSensor.
-            if (isRootAccessory(accessory)) {
+            // Note that accessories that are members of other accessories do _not_
+            // count - we're already constructing another root accessory.
+            if (isRootAccessory(accessory) && mainItem.getItem().equals(item)) {
                 mandatoryCharacteristics.forEach(c -> characteristics.add(new HomekitTaggedItem(itemProxy,
                         accessory.getKey(), c, mainItem.isGroup() ? (GroupItem) mainItem.getItem() : null,
                         HomekitAccessoryFactory.getItemConfiguration(item, metadataRegistry))));

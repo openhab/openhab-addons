@@ -28,8 +28,10 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.hdpowerview.internal.api.Color;
+import org.openhab.binding.hdpowerview.internal.api.HubFirmware;
 import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
 import org.openhab.binding.hdpowerview.internal.api.SurveyData;
+import org.openhab.binding.hdpowerview.internal.api.UserData;
 import org.openhab.binding.hdpowerview.internal.api.requests.RepeaterBlinking;
 import org.openhab.binding.hdpowerview.internal.api.requests.RepeaterColor;
 import org.openhab.binding.hdpowerview.internal.api.requests.ShadeCalibrate;
@@ -37,7 +39,6 @@ import org.openhab.binding.hdpowerview.internal.api.requests.ShadeJog;
 import org.openhab.binding.hdpowerview.internal.api.requests.ShadeMove;
 import org.openhab.binding.hdpowerview.internal.api.requests.ShadeStop;
 import org.openhab.binding.hdpowerview.internal.api.responses.FirmwareVersion;
-import org.openhab.binding.hdpowerview.internal.api.responses.FirmwareVersions;
 import org.openhab.binding.hdpowerview.internal.api.responses.Repeater;
 import org.openhab.binding.hdpowerview.internal.api.responses.RepeaterData;
 import org.openhab.binding.hdpowerview.internal.api.responses.Repeaters;
@@ -51,6 +52,7 @@ import org.openhab.binding.hdpowerview.internal.api.responses.Shade;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades.ShadeData;
 import org.openhab.binding.hdpowerview.internal.api.responses.Survey;
+import org.openhab.binding.hdpowerview.internal.api.responses.UserDataResponse;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubInvalidResponseException;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubMaintenanceException;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubProcessingException;
@@ -94,6 +96,7 @@ public class HDPowerViewWebTargets {
     private final String sceneCollections;
     private final String scheduledEvents;
     private final String repeaters;
+    private final String userData;
 
     private final Gson gson = new Gson();
     private final HttpClient httpClient;
@@ -137,7 +140,7 @@ public class HDPowerViewWebTargets {
     public HDPowerViewWebTargets(HttpClient httpClient, String ipAddress) {
         base = "http://" + ipAddress + "/api/";
         shades = base + "shades/";
-        firmwareVersion = base + "fwversion/";
+        firmwareVersion = base + "fwversion";
         sceneActivate = base + "scenes";
         scenes = base + "scenes/";
 
@@ -146,8 +149,8 @@ public class HDPowerViewWebTargets {
         sceneCollections = base + "scenecollections/";
 
         scheduledEvents = base + "scheduledevents";
-
         repeaters = base + "repeaters/";
+        userData = base + "userdata";
 
         this.httpClient = httpClient;
     }
@@ -160,7 +163,7 @@ public class HDPowerViewWebTargets {
      * @throws HubProcessingException if there is any processing error
      * @throws HubMaintenanceException if the hub is down for maintenance
      */
-    public FirmwareVersions getFirmwareVersions()
+    public HubFirmware getFirmwareVersions()
             throws HubInvalidResponseException, HubProcessingException, HubMaintenanceException {
         String json = invoke(HttpMethod.GET, firmwareVersion, null, null);
         try {
@@ -168,13 +171,38 @@ public class HDPowerViewWebTargets {
             if (firmwareVersion == null) {
                 throw new HubInvalidResponseException("Missing firmware response");
             }
-            FirmwareVersions firmwareVersions = firmwareVersion.firmware;
+            HubFirmware firmwareVersions = firmwareVersion.firmware;
             if (firmwareVersions == null) {
                 throw new HubInvalidResponseException("Missing 'firmware' element");
             }
             return firmwareVersions;
         } catch (JsonParseException e) {
             throw new HubInvalidResponseException("Error parsing firmware response", e);
+        }
+    }
+
+    /**
+     * Fetches a JSON package with user data information for the hub.
+     *
+     * @return {@link UserData} class instance
+     * @throws HubInvalidResponseException if response is invalid
+     * @throws HubProcessingException if there is any processing error
+     * @throws HubMaintenanceException if the hub is down for maintenance
+     */
+    public UserData getUserData() throws HubInvalidResponseException, HubProcessingException, HubMaintenanceException {
+        String json = invoke(HttpMethod.GET, userData, null, null);
+        try {
+            UserDataResponse userDataResponse = gson.fromJson(json, UserDataResponse.class);
+            if (userDataResponse == null) {
+                throw new HubInvalidResponseException("Missing userData response");
+            }
+            UserData userData = userDataResponse.userData;
+            if (userData == null) {
+                throw new HubInvalidResponseException("Missing 'userData' element");
+            }
+            return userData;
+        } catch (JsonParseException e) {
+            throw new HubInvalidResponseException("Error parsing userData response", e);
         }
     }
 

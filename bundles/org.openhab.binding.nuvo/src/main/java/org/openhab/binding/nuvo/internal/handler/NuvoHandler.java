@@ -212,17 +212,17 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
             return;
         }
 
-        if (serialPort != null) {
+        if (serialPort != null && !serialPort.isEmpty()) {
             connector = new NuvoSerialConnector(serialPortManager, serialPort, uid);
         } else if (port != null) {
             connector = new NuvoIpConnector(host, port, uid);
+            this.isMps4 = (port.intValue() == MPS4_PORT);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Either Serial port or Host & Port must be specifed");
             return;
         }
 
-        this.isMps4 = (port != null && port.intValue() == MPS4_PORT);
         if (this.isMps4) {
             logger.debug("Port set to {} configuring binding for MPS4 compatability", MPS4_PORT);
 
@@ -639,7 +639,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
         String type = evt.getType();
         String key = evt.getKey();
         String updateData = evt.getValue().trim();
-        if (this.getThing().getStatus() == ThingStatus.OFFLINE) {
+        if (this.getThing().getStatus() != ThingStatus.ONLINE) {
             updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, this.versionString);
         }
 
@@ -1042,7 +1042,6 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
             if (!connector.isConnected()) {
                 logger.debug("Trying to reconnect...");
                 closeConnection();
-                String error = null;
                 if (openConnection()) {
                     logger.debug("Reconnected");
                     // Polling status will disconnect from MPS4 on reconnect
@@ -1051,13 +1050,8 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                     }
                     enableNuvonet(true);
                 } else {
-                    error = "Reconnection failed";
-                }
-                if (error != null) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, error);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Reconnection failed");
                     closeConnection();
-                } else {
-                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, this.versionString);
                 }
             }
         }, 1, RECON_POLLING_INTERVAL_SEC, TimeUnit.SECONDS);
@@ -1075,7 +1069,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                 scheduleReconnectJob();
             }, PING_TIMEOUT_SEC, TimeUnit.SECONDS);
         } else {
-            logger.debug("Ping Timeout job on valid for MPS4 connections");
+            logger.debug("Ping Timeout job not valid for serial connections");
         }
     }
 

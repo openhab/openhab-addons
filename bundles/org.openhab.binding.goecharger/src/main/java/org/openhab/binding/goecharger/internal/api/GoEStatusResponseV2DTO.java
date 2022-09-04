@@ -27,6 +27,9 @@ public class GoEStatusResponseV2DTO extends GoEStatusResponseBaseDTO {
     @SerializedName("psm")
     public Integer phases;
 
+    @SerializedName("trx")
+    public Integer transaction;
+
     @SerializedName("alw")
     public Boolean allowCharging;
 
@@ -41,4 +44,7 @@ public class GoEStatusResponseV2DTO extends GoEStatusResponseBaseDTO {
 
     @SerializedName("frc")
     public Integer forceState;
+
+    @SerializedName("nrg")
+    public Double[] energy;
 }

@@ -19,6 +19,7 @@ import static org.openhab.binding.miele.internal.MieleBindingConstants.WATER_CON
 import java.math.BigDecimal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.miele.internal.api.dto.DeviceProperty;
 import org.openhab.binding.miele.internal.exceptions.MieleRpcException;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
@@ -110,6 +111,12 @@ public class DishWasherHandler extends MieleApplianceHandler<DishwasherChannelSe
                         cause.getMessage());
             }
         }
+    }
+
+    @Override
+    public void onAppliancePropertyChanged(DeviceProperty dp) {
+        super.onAppliancePropertyChanged(dp);
+        updateSwitchStartStopFromState(dp);
     }
 
     public void onApplianceExtendedStateChanged(byte[] extendedDeviceState) {

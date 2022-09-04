@@ -133,7 +133,7 @@ public class RotelHexProtocolHandler extends RotelAbstractProtocolHandler {
     @Override
     public byte[] buildCommandMessage(RotelCommand cmd, @Nullable Integer value) throws RotelException {
         if (cmd.getHexType() == 0) {
-            throw new RotelException("Command \"" + cmd.getName() + "\" ignored: not available for HEX protocol");
+            throw new RotelException("Command \"" + cmd.getLabel() + "\" ignored: not available for HEX protocol");
         }
         final int size = 6;
         byte[] message = new byte[size];
@@ -151,7 +151,7 @@ public class RotelHexProtocolHandler extends RotelAbstractProtocolHandler {
         } else {
             message[idx++] = checksum;
         }
-        logger.debug("Command \"{}\" => {}", cmd.getName(), HexUtils.bytesToHex(message));
+        logger.debug("Command \"{}\" => {}", cmd, HexUtils.bytesToHex(message));
         return message;
     }
 
@@ -487,7 +487,7 @@ public class RotelHexProtocolHandler extends RotelAbstractProtocolHandler {
                 logger.debug("Invalid value {} for MULTI IN", value);
             }
         } else if (searchDsp && valueLowerCase.startsWith(KEY_HEX_BYPASS)) {
-            dispatchKeyValue(KEY_DSP_MODE, RotelDsp.CAT4_BYPASS.getFeedback());
+            dispatchKeyValue(KEY_DSP_MODE, RotelDsp.CAT4_NONE.getFeedback());
         } else if (searchDsp && searchStereo && valueLowerCase.startsWith(KEY_HEX_STEREO)) {
             dispatchKeyValue(KEY_DSP_MODE, RotelDsp.CAT4_NONE.getFeedback());
         } else if (searchDsp && (valueLowerCase.startsWith(KEY1_HEX_3CH) || valueLowerCase.startsWith(KEY2_HEX_3CH))) {
@@ -675,7 +675,7 @@ public class RotelHexProtocolHandler extends RotelAbstractProtocolHandler {
         } else if (!MSG_VALUE_OFF.equalsIgnoreCase(value)) {
             RotelSource source = parseSource(value, true);
             if (source != null) {
-                RotelCommand cmd = source.getZone2Command();
+                RotelCommand cmd = source.getZoneCommand(2);
                 if (cmd != null) {
                     value = cmd.getAsciiCommandV2();
                     if (value != null) {
@@ -709,7 +709,7 @@ public class RotelHexProtocolHandler extends RotelAbstractProtocolHandler {
         } else if (!MSG_VALUE_OFF.equalsIgnoreCase(value)) {
             RotelSource source = parseSource(value, true);
             if (source != null) {
-                RotelCommand cmd = source.getZone3Command();
+                RotelCommand cmd = source.getZoneCommand(3);
                 if (cmd != null) {
                     value = cmd.getAsciiCommandV2();
                     if (value != null) {
@@ -743,7 +743,7 @@ public class RotelHexProtocolHandler extends RotelAbstractProtocolHandler {
         } else if (!MSG_VALUE_OFF.equalsIgnoreCase(value)) {
             RotelSource source = parseSource(value, true);
             if (source != null) {
-                RotelCommand cmd = source.getZone4Command();
+                RotelCommand cmd = source.getZoneCommand(4);
                 if (cmd != null) {
                     value = cmd.getAsciiCommandV2();
                     if (value != null) {

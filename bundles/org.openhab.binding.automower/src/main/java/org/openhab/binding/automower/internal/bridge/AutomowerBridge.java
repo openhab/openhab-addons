@@ -13,6 +13,7 @@
 package org.openhab.binding.automower.internal.bridge;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -40,17 +41,13 @@ import org.openhab.core.auth.client.oauth2.OAuthResponseException;
 public class AutomowerBridge {
     private final OAuthClientService authService;
     private final String appKey;
-    private final String userName;
-    private final String password;
 
     private final AutomowerConnectApi automowerApi;
 
-    public AutomowerBridge(OAuthClientService authService, String appKey, String userName, String password,
-            HttpClient httpClient, ScheduledExecutorService scheduler) {
+    public AutomowerBridge(OAuthClientService authService, String appKey, HttpClient httpClient,
+            ScheduledExecutorService scheduler) {
         this.authService = authService;
         this.appKey = appKey;
-        this.userName = userName;
-        this.password = password;
 
         this.automowerApi = new AutomowerConnectApi(httpClient);
     }
@@ -58,8 +55,8 @@ public class AutomowerBridge {
     private AccessTokenResponse authenticate() throws AutomowerCommunicationException {
         try {
             AccessTokenResponse result = authService.getAccessTokenResponse();
-            if (result == null) {
-                result = authService.getAccessTokenByResourceOwnerPasswordCredentials(userName, password, null);
+            if (result == null || result.isExpired(Instant.now(), 120)) {
+                result = authService.getAccessTokenByClientCredentials(null);
             }
             return result;
         } catch (OAuthException | IOException | OAuthResponseException e) {

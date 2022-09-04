@@ -12,10 +12,7 @@
  */
 package org.openhab.binding.fineoffsetweatherstation.internal.domain;
 
-import java.util.Arrays;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.fineoffsetweatherstation.internal.Utils;
 
 /**
@@ -25,6 +22,12 @@ import org.openhab.binding.fineoffsetweatherstation.internal.Utils;
  */
 @NonNullByDefault
 public enum Command {
+
+    /**
+     * read current data，reply data size is 2bytes.
+     */
+    CMD_WS980_LIVEDATA((byte) 0x0b, 2),
+
     /**
      * send SSID and Password to WIFI module
      */
@@ -228,7 +231,17 @@ public enum Command {
     /**
      * write back rain reset time
      */
-    CMD_WRITE_RSTRAIN_TIME((byte) 0x56, 1);
+    CMD_WRITE_RSTRAIN_TIME((byte) 0x56, 1),
+
+    /**
+     * read rain data including piezo (wh90)
+     */
+    CMD_READ_RAIN((byte) 0x57, 2),
+
+    /**
+     * write rain data
+     */
+    CMD_WRITE_RAIN((byte) 0x58, 1);
 
     private final byte code;
     private final int sizeBytes;
@@ -238,21 +251,18 @@ public enum Command {
         this.sizeBytes = sizeBytes;
     }
 
-    public byte getCode() {
-        return code;
-    }
-
-    public int getSizeBytes() {
-        return sizeBytes;
-    }
-
     public byte[] getPayload() {
         byte size = 3; // + rest of payload / not yet implemented
         return new byte[] { (byte) 0xff, (byte) 0xff, code, size, (byte) (code + size) };
     }
 
-    public static @Nullable Command findByCode(byte code) {
-        return Arrays.stream(values()).filter(command -> command.getCode() == code).findFirst().orElse(null);
+    public byte[] getPayloadAlternative() {
+        if (sizeBytes == 2) {
+            return new byte[] { (byte) 0xff, (byte) 0xff, code, 0, (byte) (sizeBytes + 2),
+                    (byte) ((code + sizeBytes + 2) % 0xff) };
+        }
+        byte size = 3;
+        return new byte[] { (byte) 0xff, (byte) 0xff, code, size, (byte) ((code + size) % 0xff) };
     }
 
     public boolean isHeaderValid(byte[] data) {

@@ -21,6 +21,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
+import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -36,7 +37,12 @@ import org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetSensorCon
 import org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants;
 import org.openhab.binding.fineoffsetweatherstation.internal.Utils;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.Command;
+import org.openhab.binding.fineoffsetweatherstation.internal.domain.ConversionContext;
+import org.openhab.binding.fineoffsetweatherstation.internal.domain.Protocol;
+import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.MeasuredValue;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.SensorDevice;
+import org.openhab.binding.fineoffsetweatherstation.internal.service.GatewayQueryService;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -60,13 +66,13 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @Component(service = { DiscoveryService.class, FineOffsetGatewayDiscoveryService.class }, immediate = true)
 public class FineOffsetGatewayDiscoveryService extends AbstractDiscoveryService {
-    public static final int DISCOVERY_PORT = 46000;
+    private static final int DISCOVERY_PORT = 46000;
     private static final int BUFFER_LENGTH = 255;
 
     private final Logger logger = LoggerFactory.getLogger(FineOffsetGatewayDiscoveryService.class);
 
     private static final long REFRESH_INTERVAL = 600;
-    private static final int DISCOVERY_TIME = 5;
+    private static final int DISCOVERY_TIME = 10;
     private final TranslationProvider translationProvider;
     private final LocaleProvider localeProvider;
     private final @Nullable Bundle bundle;
@@ -124,7 +130,11 @@ public class FineOffsetGatewayDiscoveryService extends AbstractDiscoveryService 
 
     private void discover() {
         startReceiverThread();
-        NetUtil.getAllBroadcastAddresses().forEach(this::sendDiscoveryRequest);
+        NetUtil.getAllBroadcastAddresses().forEach(broadcastAddress -> {
+            sendBroadcastPacket(broadcastAddress, Command.CMD_BROADCAST.getPayloadAlternative());
+            scheduler.schedule(() -> sendBroadcastPacket(broadcastAddress, Command.CMD_BROADCAST.getPayload()), 5,
+                    TimeUnit.SECONDS);
+        });
     }
 
     public void addSensors(ThingUID bridgeUID, Collection<SensorDevice> sensorDevices) {
@@ -168,13 +178,37 @@ public class FineOffsetGatewayDiscoveryService extends AbstractDiscoveryService 
         properties.put(Thing.PROPERTY_MAC_ADDRESS, Utils.toHexString(macAddr, macAddr.length, ":"));
         properties.put(FineOffsetGatewayConfiguration.IP, ip);
         properties.put(FineOffsetGatewayConfiguration.PORT, port);
+        FineOffsetGatewayConfiguration config = new Configuration(properties).as(FineOffsetGatewayConfiguration.class);
+        Protocol protocol = determineProtocol(config);
+        if (protocol != null) {
+            properties.put(FineOffsetGatewayConfiguration.PROTOCOL, protocol.name());
+        }
 
         ThingUID uid = new ThingUID(THING_TYPE_GATEWAY, id);
         DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
+                .withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS)
                 .withLabel(translationProvider.getText(bundle, "thing.gateway.label", name, localeProvider.getLocale()))
                 .build();
         thingDiscovered(result);
         logger.debug("Thing discovered '{}'", result);
+    }
+
+    @Nullable
+    private Protocol determineProtocol(FineOffsetGatewayConfiguration config) {
+        ConversionContext conversionContext = new ConversionContext(ZoneOffset.UTC);
+        for (Protocol protocol : Protocol.values()) {
+            try (GatewayQueryService gatewayQueryService = protocol.getGatewayQueryService(config, null,
+                    conversionContext)) {
+                Collection<MeasuredValue> result = gatewayQueryService.getMeasuredValues();
+                logger.trace("found {} measured values via protocol {}", result.size(), protocol);
+                if (!result.isEmpty()) {
+                    return protocol;
+                }
+            } catch (IOException e) {
+                logger.warn("", e);
+            }
+        }
+        return null;
     }
 
     synchronized @Nullable DatagramSocket getSocket() {
@@ -205,12 +239,13 @@ public class FineOffsetGatewayDiscoveryService extends AbstractDiscoveryService 
         this.clientSocket = null;
     }
 
-    private void sendDiscoveryRequest(String broadcastAddress) {
+    private void sendBroadcastPacket(String broadcastAddress, byte[] requestMessage) {
         final @Nullable DatagramSocket socket = getSocket();
         if (socket != null) {
-            byte[] requestMessage = Command.CMD_BROADCAST.getPayload();
             InetSocketAddress addr = new InetSocketAddress(broadcastAddress, DISCOVERY_PORT);
             DatagramPacket datagramPacket = new DatagramPacket(requestMessage, requestMessage.length, addr);
+            logger.trace("sendBroadcastPacket: send request: {}",
+                    Utils.toHexString(requestMessage, requestMessage.length, ""));
             try {
                 socket.send(datagramPacket);
             } catch (IOException e) {

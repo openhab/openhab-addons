@@ -8,22 +8,36 @@ His [Java Library](https://github.com/zazaz-de/iot-device-bosch-indego-controlle
 
 Currently the binding supports  ***indego***  mowers as a thing type with these configuration parameters:
 
-| Parameter | Description                                                          |
-|-----------|----------------------------------------------------------------------|
-| username  | Username for the Bosch Indego account                                |
-| password  | Password for the Bosch Indego account                                |
-| refresh   | Specifies the refresh interval in seconds (default 180, minimum: 60) |
+| Parameter          | Description                                                       | Default |
+|--------------------|-------------------------------------------------------------------|---------|
+| username           | Username for the Bosch Indego account                             |         |
+| password           | Password for the Bosch Indego account                             |         |
+| refresh            | The number of seconds between refreshing device state when idle   | 180     |
+| stateActiveRefresh | The number of seconds between refreshing device state when active | 30      |
+| cuttingTimeRefresh | The number of minutes between refreshing last/next cutting time   | 60      |
 
 ## Channels
 
-| Channel      | Item Type   | Description                                                                                                                         |
-|--------------|-------------|-------------------------------------------------------------------------------------------------------------------------------------|
-| state        | Number      | You can send commands to this channel to control the mower and read the simplified state from it (1=mow, 2=return to dock, 3=pause) |
-| errorcode    | Number      | Error code of the mower (0=no error, readonly)                                                                                      |
-| statecode    | Number      | Detailed state of the mower (readonly)                                                                                              |
-| textualstate | String      | State as a text. (readonly)                                                                                                         |
-| ready        | Number      | Shows if the mower is ready to mow (1=ready, 0=not ready, readonly)                                                                 |
-| mowed        | Dimmer      | Cut grass in percent (readonly)                                                                                                     |
+| Channel            | Item Type                | Description                                                                                                                         | Writeable |
+|--------------------|--------------------------|-------------------------------------------------------------------------------------------------------------------------------------|-----------|
+| state              | Number                   | You can send commands to this channel to control the mower and read the simplified state from it (1=mow, 2=return to dock, 3=pause) | Yes       |
+| errorcode          | Number                   | Error code of the mower (0=no error)                                                                                                |           |
+| statecode          | Number                   | Detailed state of the mower                                                                                                         |           |
+| textualstate       | String                   | State as a text.                                                                                                                    |           |
+| ready              | Number                   | Shows if the mower is ready to mow (1=ready, 0=not ready)                                                                           |           |
+| mowed              | Dimmer                   | Cut grass in percent                                                                                                                |           |
+| lastCutting        | DateTime                 | Last cutting time                                                                                                                   |           |
+| nextCutting        | DateTime                 | Next scheduled cutting time                                                                                                         |           |
+| batteryVoltage     | Number:ElectricPotential | Battery voltage reported by the device<sup>1</sup>                                                                                  |           |
+| batteryLevel       | Number                   | Battery level as a percentage (0-100%)<sup>1</sup>                                                                                  |           |
+| lowBattery         | Switch                   | Low battery warning with possible values on (low battery) and off (battery ok)<sup>1</sup>                                          |           |
+| batteryTemperature | Number:Temperature       | Battery temperature reported by the device<sup>1</sup>                                                                              |           |
+| gardenSize         | Number:Area              | Garden size mapped by the device                                                                                                    |           |
+| gardenMap          | Image                    | Garden map created by the device<sup>2</sup>                                                                                        |           |
+
+<sup>1)</sup> This will be updated every six hours when the device is idle. It will wake up the device, which can include turning on its display. When the device is active or charging, this will be updated every two minutes.
+
+<sup>2)</sup> This will be updated as often as specified by the `stateActiveRefresh` thing parameter.
 
 ### State Codes
 
@@ -37,6 +51,7 @@ Currently the binding supports  ***indego***  mowers as a thing type with these 
 | 261   | Docked                                      |
 | 262   | Docked - Loading map                        |
 | 263   | Docked - Saving map                         |
+| 266   | Leaving dock                                |
 | 513   | Mowing                                      |
 | 514   | Relocalising                                |
 | 515   | Loading map                                 |
@@ -44,6 +59,8 @@ Currently the binding supports  ***indego***  mowers as a thing type with these 
 | 517   | Paused                                      |
 | 518   | Border cut                                  |
 | 519   | Idle in lawn                                |
+| 523   | SpotMow                                     |
+| 768   | Returning to dock                           |
 | 769   | Returning to dock                           |
 | 770   | Returning to dock                           |
 | 771   | Returning to dock - Battery low             |
@@ -55,6 +72,7 @@ Currently the binding supports  ***indego***  mowers as a thing type with these 
 | 1025  | Diagnostic mode                             |
 | 1026  | End of life                                 |
 | 1281  | Software update                             |
+| 1537  | Energy save mode                            |
 | 64513 | Docked                                      |
 
 ## Full Example
@@ -74,6 +92,14 @@ Number Indego_StateCode { channel="boschindego:indego:lawnmower:statecode" }
 String Indego_TextualState { channel="boschindego:indego:lawnmower:textualstate" }
 Number Indego_Ready { channel="boschindego:indego:lawnmower:ready" }
 Dimmer Indego_Mowed { channel="boschindego:indego:lawnmower:mowed" }
+DateTime Indego_LastCutting { channel="boschindego:indego:lawnmower:lastCutting" }
+DateTime Indego_NextCutting { channel="boschindego:indego:lawnmower:nextCutting" }
+Number:ElectricPotential Indego_BatteryVoltage { channel="boschindego:indego:lawnmower:batteryVoltage" }
+Number Indego_BatteryLevel { channel="boschindego:indego:lawnmower:batteryLevel" }
+Switch Indego_LowBattery { channel="boschindego:indego:lawnmower:lowBattery" }
+Number:Temperature Indego_BatteryTemperature { channel="boschindego:indego:lawnmower:batteryTemperature" }
+Number:Area Indego_GardenSize { channel="boschindego:indego:lawnmower:gardenSize" }
+Image Indego_GardenMap { channel="boschindego:indego:lawnmower:gardenMap" }
 ```
 
 ### `indego.sitemap` File

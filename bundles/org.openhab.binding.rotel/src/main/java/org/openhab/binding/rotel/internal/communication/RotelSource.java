@@ -301,14 +301,23 @@ public enum RotelSource {
     CAT20_BLUETOOTH(20, "BLUETOOTH", "Bluetooth", RotelCommand.SOURCE_BLUETOOTH),
     CAT20_XLR1(20, "XLR1", "XLR 1", RotelCommand.SOURCE_XLR1),
     CAT20_XLR2(20, "XLR2", "XLR 2", RotelCommand.SOURCE_XLR1),
-    CAT20_PCUSB(20, "PCUSB", "PC USB", RotelCommand.SOURCE_PCUSB);
+    CAT20_PCUSB(20, "PCUSB", "PC USB", RotelCommand.SOURCE_PCUSB),
+
+    CAT21_INPUTA(21, "INPUTA", "Input A", RotelCommand.SOURCE_INPUT_A, null, RotelCommand.ZONE1_SOURCE_INPUT_A,
+            RotelCommand.ZONE2_SOURCE_INPUT_A, RotelCommand.ZONE3_SOURCE_INPUT_A, RotelCommand.ZONE4_SOURCE_INPUT_A),
+    CAT21_INPUTB(21, "INPUTB", "Input B", RotelCommand.SOURCE_INPUT_B, null, RotelCommand.ZONE1_SOURCE_INPUT_B,
+            RotelCommand.ZONE2_SOURCE_INPUT_B, RotelCommand.ZONE3_SOURCE_INPUT_B, RotelCommand.ZONE4_SOURCE_INPUT_B),
+    CAT21_INPUTC(21, "INPUTC", "Input C", RotelCommand.SOURCE_INPUT_C, null, RotelCommand.ZONE1_SOURCE_INPUT_C,
+            RotelCommand.ZONE2_SOURCE_INPUT_C, RotelCommand.ZONE3_SOURCE_INPUT_C, RotelCommand.ZONE4_SOURCE_INPUT_C),
+    CAT21_INPUTD(21, "INPUTD", "Input D", RotelCommand.SOURCE_INPUT_D, null, RotelCommand.ZONE1_SOURCE_INPUT_D,
+            RotelCommand.ZONE2_SOURCE_INPUT_D, RotelCommand.ZONE3_SOURCE_INPUT_D, RotelCommand.ZONE4_SOURCE_INPUT_D);
 
     private int category;
     private String name;
     private String label;
     private @Nullable RotelCommand command;
     private @Nullable RotelCommand recordCommand;
-    private @Nullable RotelCommand mainZoneCommand;
+    private @Nullable RotelCommand zone1Command;
     private @Nullable RotelCommand zone2Command;
     private @Nullable RotelCommand zone3Command;
     private @Nullable RotelCommand zone4Command;
@@ -333,13 +342,13 @@ public enum RotelSource {
      * @param label the label of the source
      * @param command the command to select the source
      * @param recordCommand the command to select the source as source to be recorded
-     * @param mainZoneCommand the command to select the source in the main zone
+     * @param zone1Command the command to select the source in the zone 1 or main zone
      * @param zone2Command the command to select the source in the zone 2
      * @param zone3Command the command to select the source in the zone 3
      * @param zone4Command the command to select the source in the zone 4
      */
     private RotelSource(int category, String name, String label, @Nullable RotelCommand command,
-            @Nullable RotelCommand recordCommand, @Nullable RotelCommand mainZoneCommand,
+            @Nullable RotelCommand recordCommand, @Nullable RotelCommand zone1Command,
             @Nullable RotelCommand zone2Command, @Nullable RotelCommand zone3Command,
             @Nullable RotelCommand zone4Command) {
         this.category = category;
@@ -347,7 +356,7 @@ public enum RotelSource {
         this.label = label;
         this.command = command;
         this.recordCommand = recordCommand;
-        this.mainZoneCommand = mainZoneCommand;
+        this.zone1Command = zone1Command;
         this.zone2Command = zone2Command;
         this.zone3Command = zone3Command;
         this.zone4Command = zone4Command;
@@ -399,47 +408,33 @@ public enum RotelSource {
     }
 
     /**
-     * Get the command to select the source in the main zone
+     * Get the command to select the source in a zone
+     *
+     * @param numZone the zone number, 1 for main zone or zone 1, 2 for zone 2, 3 for zone 3, 4 for zone 4
      *
      * @return the command
      */
-    public @Nullable RotelCommand getMainZoneCommand() {
-        return mainZoneCommand;
-    }
-
-    /**
-     * Get the command to select the source in the zone 2
-     *
-     * @return the command
-     */
-    public @Nullable RotelCommand getZone2Command() {
-        return zone2Command;
-    }
-
-    /**
-     * Get the command to select the source in the zone 3
-     *
-     * @return the command
-     */
-    public @Nullable RotelCommand getZone3Command() {
-        return zone3Command;
-    }
-
-    /**
-     * Get the command to select the source in the zone 4
-     *
-     * @return the command
-     */
-    public @Nullable RotelCommand getZone4Command() {
-        return zone4Command;
+    public @Nullable RotelCommand getZoneCommand(int numZone) {
+        switch (numZone) {
+            case 1:
+                return zone1Command;
+            case 2:
+                return zone2Command;
+            case 3:
+                return zone3Command;
+            case 4:
+                return zone4Command;
+            default:
+                throw new IllegalArgumentException("numZone must be a value between 1 and 4");
+        }
     }
 
     /**
      * Get the list of {@link RotelSource} available for a particular category of models
      *
      * @param category a category of models
-     * @param type a source type (0 for global source, 1 for main zone, 2 for zone 2, 3 for zone 3, 4 for zone 4 and 5
-     *            for record source)
+     * @param type a source type (0 for global source, 1 for main zone or zone 1, 2 for zone 2, 3 for zone 3, 4 for zone
+     *            4 and 5 for record source)
      *
      * @return the list of {@link RotelSource} available in a zone for a provided category of models
      */
@@ -447,9 +442,8 @@ public enum RotelSource {
         List<RotelSource> sources = new ArrayList<>();
         for (RotelSource value : RotelSource.values()) {
             if (value.getCategory() == category && ((type == 0 && value.getCommand() != null)
-                    || (type == 1 && value.getMainZoneCommand() != null)
-                    || (type == 2 && value.getZone2Command() != null) || (type == 3 && value.getZone3Command() != null)
-                    || (type == 4 && value.getZone4Command() != null)
+                    || (type == 1 && value.getZoneCommand(1) != null) || (type == 2 && value.getZoneCommand(2) != null)
+                    || (type == 3 && value.getZoneCommand(3) != null) || (type == 4 && value.getZoneCommand(4) != null)
                     || (type == 5 && value.getRecordCommand() != null))) {
                 sources.add(value);
             }
@@ -481,8 +475,8 @@ public enum RotelSource {
      *
      * @param category a category of models
      * @param command the command used to identify the source
-     * @param type a source type (0 for global source, 1 for main zone, 2 for zone 2, 3 for zone 3, 4 for zone 4 and 5
-     *            for record source)
+     * @param type a source type (0 for global source, 1 for main zone or zone 1, 2 for zone 2, 3 for zone 3,
+     *            4 for zone 4 and 5 for record source)
      *
      * @return the source associated to the searched command for the provided category of models
      *
@@ -491,14 +485,14 @@ public enum RotelSource {
     public static RotelSource getFromCommand(int category, RotelCommand command, int type) throws RotelException {
         for (RotelSource value : RotelSource.values()) {
             if (value.getCategory() == category && ((type == 0 && value.getCommand() == command)
-                    || (type == 1 && value.getMainZoneCommand() == command)
-                    || (type == 2 && value.getZone2Command() == command)
-                    || (type == 3 && value.getZone3Command() == command)
-                    || (type == 4 && value.getZone4Command() == command)
+                    || (type == 1 && value.getZoneCommand(1) == command)
+                    || (type == 2 && value.getZoneCommand(2) == command)
+                    || (type == 3 && value.getZoneCommand(3) == command)
+                    || (type == 4 && value.getZoneCommand(4) == command)
                     || (type == 5 && value.getRecordCommand() == command))) {
                 return value;
             }
         }
-        throw new RotelException("Invalid command for a source: " + command.getName());
+        throw new RotelException("Invalid command for a source: " + command.getLabel());
     }
 }
