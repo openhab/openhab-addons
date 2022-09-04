@@ -29,11 +29,30 @@ import org.openhab.core.types.Command;
  */
 @NonNullByDefault
 public class SendCommand extends AbstractWriteCommand {
-    private final String url;
+    String url = "";
 
+    /**
+     * general constructor.
+     *
+     * @param handler the ThingHandler which is responsible for the channel
+     * @param chargerId Id of the charger which is adressed by this command
+     * @param channel the channel that triggered this command
+     * @param command the command to be send
+     */
     public SendCommand(EaseeThingHandler handler, String chargerId, Channel channel, Command command) {
-        super(handler, channel, command, RetryOnFailure.YES, ProcessFailureResponse.YES);
+        this(handler, channel, command);
         this.url = COMMANDS_URL.replaceAll("\\{id\\}", chargerId).replaceAll("\\{command\\}", getCommandValue());
+    }
+
+    /**
+     * this constructor should only be used by other command implementations that inherit this class.
+     *
+     * @param handler the ThingHandler which is responsible for the channel
+     * @param channel the channel that triggered this command
+     * @param command the command to be send
+     */
+    SendCommand(EaseeThingHandler handler, Channel channel, Command command) {
+        super(handler, channel, command, RetryOnFailure.YES, ProcessFailureResponse.YES);
     }
 
     @Override

@@ -26,16 +26,15 @@ import org.openhab.core.types.Command;
  * @author Alexander Friese - initial contribution
  */
 @NonNullByDefault
-public class SendCommandStartStop extends SendCommand {
-    private final String url;
+public class SendCommandPauseResume extends SendCommand {
 
-    public SendCommandStartStop(EaseeThingHandler handler, String chargerId, Channel channel, Command command) {
+    public SendCommandPauseResume(EaseeThingHandler handler, String chargerId, Channel channel, Command command) {
         super(handler, channel, command);
         String value;
         if (command.equals(OnOffType.ON)) {
-            value = CMD_VAL_START_CHARGING;
+            value = CMD_VAL_PAUSE_CHARGING;
         } else {
-            value = CMD_VAL_STOP_CHARGING;
+            value = CMD_VAL_RESUME_CHARGING;
         }
         this.url = COMMANDS_URL.replaceAll("\\{id\\}", chargerId).replaceAll("\\{command\\}", value);
     }

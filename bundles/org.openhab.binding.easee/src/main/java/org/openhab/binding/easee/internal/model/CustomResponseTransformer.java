@@ -53,7 +53,10 @@ class CustomResponseTransformer {
 
         switch (triggerChannel.getUID().getId()) {
             case CHANNEL_GROUP_CHARGER_STATE + "#" + CHANNEL_CHARGER_OP_MODE:
-                updateChargerStartStop(result, value);
+                updateChargerStartStop(result, value, rawData);
+                break;
+            case CHANNEL_GROUP_CHARGER_STATE + "#" + CHANNEL_CHARGER_DYNAMIC_CURRENT:
+                updateChargerPauseResume(result, value);
                 break;
             case CHANNEL_GROUP_CIRCUIT_DYNAMIC_CURRENT + "#" + CHANNEL_CIRCUIT_DYNAMIC_CURRENT_PHASE1:
                 updateCompositePhaseChannel(result, rawData, CHANNEL_GROUP_CIRCUIT_DYNAMIC_CURRENT,
@@ -75,11 +78,30 @@ class CustomResponseTransformer {
         return result;
     }
 
-    private void updateChargerStartStop(Map<Channel, State> result, String value) {
+    private void updateChargerStartStop(Map<Channel, State> result, String value, JsonObject rawData) {
         Channel channel = channelProvider.getChannel(CHANNEL_GROUP_CHARGER_COMMANDS, CHANNEL_CHARGER_START_STOP);
         if (channel != null) {
             int val = Integer.valueOf(value);
-            result.put(channel, OnOffType.from(val >= CHARGER_OP_STATE_CHARGING));
+            // state >= 3 will mean charging, ready to charge or charging finished
+            boolean charging = val >= CHARGER_OP_STATE_CHARGING;
+
+            String rfnc = Utils.getAsString(rawData, CHANNEL_CHARGER_REASON_FOR_NO_CURRENT);
+            int reasonForNoCurrent = Integer.valueOf(rfnc == null ? "-1" : rfnc);
+            boolean paused = (val == CHARGER_OP_STATE_WAITING
+                    && reasonForNoCurrent == CHARGER_REASON_FOR_NO_CURRENT_PAUSED);
+
+            result.put(channel, OnOffType.from(charging || paused));
+        }
+    }
+
+    private void updateChargerPauseResume(Map<Channel, State> result, String value) {
+        Channel channel = channelProvider.getChannel(CHANNEL_GROUP_CHARGER_COMMANDS, CHANNEL_CHARGER_PAUSE_RESUME);
+        if (channel != null) {
+            int val = Integer.valueOf(value);
+            // value == 0 will mean paused
+            boolean paused = val == CHARGER_DYNAMIC_CURRENT_PAUSE;
+
+            result.put(channel, OnOffType.from(paused));
         }
     }
 

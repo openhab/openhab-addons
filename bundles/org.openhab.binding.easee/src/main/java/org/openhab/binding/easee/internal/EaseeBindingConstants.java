@@ -66,7 +66,10 @@ public class EaseeBindingConstants {
 
     // Channels with specific handling
     public static final String CHANNEL_CHARGER_OP_MODE = "chargerOpMode";
+    public static final String CHANNEL_CHARGER_DYNAMIC_CURRENT = "dynamicChargerCurrent";
+    public static final String CHANNEL_CHARGER_REASON_FOR_NO_CURRENT = "reasonForNoCurrent";
     public static final String CHANNEL_CHARGER_START_STOP = "startStop";
+    public static final String CHANNEL_CHARGER_PAUSE_RESUME = "pauseResume";
     public static final String CHANNEL_CIRCUIT_DYNAMIC_CURRENTS = "dynamicCurrents";
     public static final String CHANNEL_CIRCUIT_DYNAMIC_CURRENT_PHASE1 = "phase1";
     public static final String CHANNEL_CIRCUIT_DYNAMIC_CURRENT_PHASE2 = "phase2";
@@ -109,6 +112,8 @@ public class EaseeBindingConstants {
     // Command Values
     public static final String CMD_VAL_START_CHARGING = "start_charging";
     public static final String CMD_VAL_STOP_CHARGING = "stop_charging";
+    public static final String CMD_VAL_PAUSE_CHARGING = "pause_charging";
+    public static final String CMD_VAL_RESUME_CHARGING = "resume_charging";
 
     // web request constants
     public static final long WEB_REQUEST_INITIAL_DELAY = 30;
@@ -143,7 +148,10 @@ public class EaseeBindingConstants {
 
     public static final String GENERIC_YES = "Yes";
     public static final String GENERIC_NO = "No";
+    public static final int CHARGER_OP_STATE_WAITING = 2;
     public static final int CHARGER_OP_STATE_CHARGING = 3;
+    public static final int CHARGER_DYNAMIC_CURRENT_PAUSE = 0;
+    public static final int CHARGER_REASON_FOR_NO_CURRENT_PAUSED = 52;
 
     public static final String THING_CONFIG_ID = "id";
     public static final String THING_CONFIG_SITE_ID = "siteId";

@@ -165,8 +165,15 @@
 					<property name="validationExpression">.*</property>
 				</properties>
 			</channel>
+			<channel id="pauseResume" typeId="rwtype-switch">
+				<label>Pause/Resume Charging</label>
+				<description>Pauses/Resumes charging. Pausing works by setting Dynamic Charger Current to 0.</description>
+				<properties>
+					<property name="writeCommand">SendCommandPauseResume</property>
+					<property name="validationExpression">.*</property>
+				</properties>
+			</channel>
 		</channels>
 
 	</channel-group-type>
-	<!-- <channel-group-type id="charger-latest_session"> <label>Charger Status</label> <channels> </channels> </channel-group-type> -->
 </thing:thing-descriptions>
