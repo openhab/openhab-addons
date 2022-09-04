@@ -22,15 +22,17 @@ import java.util.List;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.hdpowerview.internal._v1.HDPowerViewWebTargetsV1;
 import org.openhab.binding.hdpowerview.internal.api.BatteryKind;
+import org.openhab.binding.hdpowerview.internal.api.ShadeData;
 import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
+import org.openhab.binding.hdpowerview.internal.api.responses.Scene;
 import org.openhab.binding.hdpowerview.internal.api.responses.SceneCollections;
 import org.openhab.binding.hdpowerview.internal.api.responses.SceneCollections.SceneCollection;
 import org.openhab.binding.hdpowerview.internal.api.responses.Scenes;
-import org.openhab.binding.hdpowerview.internal.api.responses.Scenes.Scene;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades;
-import org.openhab.binding.hdpowerview.internal.api.responses.Shades.ShadeData;
 import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDatabase;
 import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDatabase.Capabilities;
 import org.openhab.core.library.types.PercentType;
@@ -48,7 +50,7 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public class HDPowerViewJUnitTests {
 
-    private Gson gson = new Gson();
+    private final Gson gson = new HDPowerViewWebTargetsV1(new HttpClient(), "").getGson();
 
     private <T> T getObjectFromJson(String filename, Class<T> clazz) throws IOException {
         try (InputStream inputStream = HDPowerViewJUnitTests.class.getResourceAsStream(filename)) {
@@ -69,7 +71,7 @@ public class HDPowerViewJUnitTests {
      */
     @Test
     public void shadeNameIsDecoded() throws IOException {
-        Shades shades = getObjectFromJson("shades.json", Shades.class);
+        Shades shades = getObjectFromJson("_v1/shades.json", Shades.class);
         List<ShadeData> shadeData = shades.shadeData;
         assertNotNull(shadeData);
         assertEquals(3, shadeData.size());
@@ -82,7 +84,7 @@ public class HDPowerViewJUnitTests {
      */
     @Test
     public void testBatteryKind() throws IOException {
-        Shades shades = getObjectFromJson("shades.json", Shades.class);
+        Shades shades = getObjectFromJson("_v1/shades.json", Shades.class);
         List<ShadeData> shadeData = shades.shadeData;
         assertNotNull(shadeData);
         ShadeData shade = shadeData.get(0);
@@ -96,7 +98,7 @@ public class HDPowerViewJUnitTests {
      */
     @Test
     public void sceneNameIsDecoded() throws IOException {
-        Scenes scenes = getObjectFromJson("scenes.json", Scenes.class);
+        Scenes scenes = getObjectFromJson("_v1/scenes.json", Scenes.class);
         List<Scene> sceneData = scenes.sceneData;
         assertNotNull(sceneData);
         assertEquals(4, sceneData.size());
@@ -109,7 +111,7 @@ public class HDPowerViewJUnitTests {
      */
     @Test
     public void sceneCollectionNameIsDecoded() throws IOException {
-        SceneCollections sceneCollections = getObjectFromJson("sceneCollections.json", SceneCollections.class);
+        SceneCollections sceneCollections = getObjectFromJson("_v1/sceneCollections.json", SceneCollections.class);
 
         List<SceneCollection> sceneCollectionData = sceneCollections.sceneCollectionData;
         assertNotNull(sceneCollectionData);
@@ -124,7 +126,7 @@ public class HDPowerViewJUnitTests {
      */
     @Test
     public void duetteTopDownBottomUpShadeIsParsedCorrectly() throws IOException {
-        Shades shades = getObjectFromJson("duette.json", Shades.class);
+        Shades shades = getObjectFromJson("_v1/duette.json", Shades.class);
         List<ShadeData> shadesData = shades.shadeData;
         assertNotNull(shadesData);
 

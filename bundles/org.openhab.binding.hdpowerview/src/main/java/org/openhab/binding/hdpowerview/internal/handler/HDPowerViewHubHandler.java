@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
@@ -30,17 +31,23 @@ import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewTranslationProvider;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewWebTargets;
+import org.openhab.binding.hdpowerview.internal._v1.HDPowerViewWebTargetsV1;
+import org.openhab.binding.hdpowerview.internal._v3.HDPowerViewWebTargetsV3;
+import org.openhab.binding.hdpowerview.internal._v3.SseSinkV3;
 import org.openhab.binding.hdpowerview.internal.api.Firmware;
 import org.openhab.binding.hdpowerview.internal.api.HubFirmware;
+import org.openhab.binding.hdpowerview.internal.api.ShadeData;
+import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
 import org.openhab.binding.hdpowerview.internal.api.UserData;
+import org.openhab.binding.hdpowerview.internal.api._v1.ShadeDataV1;
+import org.openhab.binding.hdpowerview.internal.api._v3.ShadeDataV3;
+import org.openhab.binding.hdpowerview.internal.api.responses.Scene;
 import org.openhab.binding.hdpowerview.internal.api.responses.SceneCollections;
 import org.openhab.binding.hdpowerview.internal.api.responses.SceneCollections.SceneCollection;
 import org.openhab.binding.hdpowerview.internal.api.responses.Scenes;
-import org.openhab.binding.hdpowerview.internal.api.responses.Scenes.Scene;
+import org.openhab.binding.hdpowerview.internal.api.responses.ScheduledEvent;
 import org.openhab.binding.hdpowerview.internal.api.responses.ScheduledEvents;
-import org.openhab.binding.hdpowerview.internal.api.responses.ScheduledEvents.ScheduledEvent;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades;
-import org.openhab.binding.hdpowerview.internal.api.responses.Shades.ShadeData;
 import org.openhab.binding.hdpowerview.internal.builders.AutomationChannelBuilder;
 import org.openhab.binding.hdpowerview.internal.builders.SceneChannelBuilder;
 import org.openhab.binding.hdpowerview.internal.builders.SceneGroupChannelBuilder;
@@ -79,7 +86,7 @@ import org.slf4j.LoggerFactory;
  * @author Jacob Laursen - Added support for scene groups and automations
  */
 @NonNullByDefault
-public class HDPowerViewHubHandler extends BaseBridgeHandler {
+public class HDPowerViewHubHandler extends BaseBridgeHandler implements SseSinkV3 {
 
     private final Logger logger = LoggerFactory.getLogger(HDPowerViewHubHandler.class);
     private final HttpClient httpClient;
@@ -163,8 +170,14 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             return;
         }
 
+        try {
+            webTargets = newWebTargets(host);
+        } catch (InstantiationException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            return;
+        }
+
         pendingShadeInitializations.clear();
-        webTargets = new HDPowerViewWebTargets(httpClient, host);
         refreshInterval = config.refresh;
         hardRefreshPositionInterval = config.hardRefresh;
         hardRefreshBatteryLevelInterval = config.hardRefreshBatteryLevel;
@@ -227,7 +240,12 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
     }
 
     private void schedulePoll() {
-        scheduleSoftPoll();
+        if (sseSubscribe(this)) {
+            scheduler.submit(this::poll); // do a single poll to fetch the initial state
+        } else {
+            scheduleSoftPoll();
+        }
+        // do hard polls (even on generation 3) in case SSE subscriptions have dropped
         scheduleHardPoll();
     }
 
@@ -280,6 +298,8 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             future.cancel(true);
         }
         this.hardRefreshBatteryLevelFuture = null;
+
+        sseSubscribe(null);
     }
 
     private synchronized void poll() {
@@ -422,7 +442,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         HDPowerViewShadeHandler thingHandler = ((HDPowerViewShadeHandler) thing.getHandler());
         if (thingHandler == null) {
             logger.debug("Shade '{}' handler not initialized", shadeId);
-            pendingShadeInitializations.put(thing.getUID(), new ShadeData());
+            pendingShadeInitializations.put(thing.getUID(), newShadeData());
             return;
         }
         ThingStatus thingStatus = thingHandler.getThing().getStatus();
@@ -436,7 +456,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             case UNINITIALIZED:
             case INITIALIZING:
                 logger.debug("Shade '{}' handler not yet ready; status: {}", shadeId, thingStatus);
-                pendingShadeInitializations.put(thing.getUID(), new ShadeData());
+                pendingShadeInitializations.put(thing.getUID(), newShadeData());
                 break;
             case REMOVING:
             case REMOVED:
@@ -655,6 +675,9 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
                 logger.debug("Shade '{}' handler not initialized", shadeId);
             }
         }
+
+        // re-subscribe (in case SSE connections went down)
+        sseSubscribe(this);
     }
 
     private void requestRefreshShadeBatteryLevels() {
@@ -674,5 +697,91 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
                 logger.debug("Shade '{}' handler not initialized", shadeId);
             }
         }
+    }
+
+    /**
+     * Instantiate the web targets.
+     *
+     * @param host the ip address
+     * @return instance of HDPowerViewWebTargets class (either V1 or V3).
+     * @throws InstantiationException if neither a V1 nor a V3 web target was instantiated.
+     */
+    private HDPowerViewWebTargets newWebTargets(String host) throws InstantiationException {
+        HDPowerViewWebTargets webTargets = this.webTargets;
+        if (webTargets != null) {
+            return webTargets;
+        }
+        try {
+            // try communicating via V1 web targets
+            webTargets = new HDPowerViewWebTargetsV1(httpClient, host);
+            webTargets.getFirmwareVersions();
+            this.webTargets = webTargets;
+            return webTargets;
+        } catch (HubProcessingException | HubMaintenanceException e) {
+            // fall through
+        }
+        try {
+            // try communicating via V3 web targets
+            webTargets = new HDPowerViewWebTargetsV3(httpClient, host);
+            webTargets.getFirmwareVersions();
+            this.webTargets = webTargets;
+            return webTargets;
+        } catch (HubProcessingException | HubMaintenanceException e) {
+            // fall through
+        }
+        throw new InstantiationException("Unable to instantiate the web targets");
+    }
+
+    /**
+     * Check if gateway is generation 1
+     *
+     * @return true if gateway is generation 1
+     */
+    private boolean isGeneration1() {
+        return webTargets instanceof HDPowerViewWebTargetsV1;
+    }
+
+    /**
+     * Create a new ShadeData instance; either V1 or V3 depending on the gateway generation.
+     *
+     * @return new ShadeData instance.
+     */
+    private ShadeData newShadeData() {
+        return isGeneration1() ? new ShadeDataV1() : new ShadeDataV3();
+    }
+
+    /**
+     * If the gateway is generation 3 try to (un)subscribe to SSE on it. If 'sseSinK' is not null, make the
+     * subscription, otherwise cancel it.
+     *
+     * @param sseSinK the sink for the SSE call backs (may be null).
+     * @return true if the subscription succeeded.
+     */
+    private boolean sseSubscribe(@Nullable SseSinkV3 sseSinK) {
+        if (webTargets instanceof HDPowerViewWebTargetsV3) {
+            try {
+                return ((HDPowerViewWebTargetsV3) webTargets).sseSubscribe(sseSinK);
+            } catch (HubMaintenanceException | HubProcessingException e) {
+                logger.warn("Failed to {}subscribe for SSE '{}'", sseSinK == null ? "un-" : "", e.getMessage());
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public void sseShade(String evt, int shadeId, ShadePosition shadePosition) {
+        Optional<Thing> thing = getShadeThingIdMap().entrySet().stream()
+                .filter(e -> e.getValue().equals(Integer.valueOf(shadeId))).findFirst().map(Map.Entry::getKey);
+        if (thing.isPresent()) {
+            ThingHandler handler = thing.get().getHandler();
+            if (handler instanceof HDPowerViewShadeHandler) {
+                ((HDPowerViewShadeHandler) handler).sseShadePosition(shadePosition);
+            }
+        }
+    }
+
+    @Override
+    public void sseScene(String evt, int sceneId) {
+        // TODO (if anything)
     }
 }
