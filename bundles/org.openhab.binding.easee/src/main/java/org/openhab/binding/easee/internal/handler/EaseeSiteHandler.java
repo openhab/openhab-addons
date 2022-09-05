@@ -67,8 +67,8 @@ public class EaseeSiteHandler extends BaseBridgeHandler implements EaseeBridgeHa
         EaseeConfiguration config = getBridgeConfiguration();
         logger.debug("Easee Site initialized with configuration: {}", config);
 
-        webInterface.start();
         updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, STATUS_WAITING_FOR_LOGIN);
+        webInterface.start();
 
         enqueueCommand(new GetSite(this, this::updateProperties));
     }

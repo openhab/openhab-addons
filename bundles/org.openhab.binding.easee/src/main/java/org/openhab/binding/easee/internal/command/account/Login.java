@@ -24,8 +24,6 @@ import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.easee.internal.command.AbstractCommand;
 import org.openhab.binding.easee.internal.handler.EaseeBridgeHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonObject;
 
@@ -36,7 +34,6 @@ import com.google.gson.JsonObject;
  */
 @NonNullByDefault
 public class Login extends AbstractCommand {
-    private final Logger logger = LoggerFactory.getLogger(Login.class);
 
     class LoginData {
         final String userName;
@@ -73,8 +70,6 @@ public class Login extends AbstractCommand {
 
     @Override
     public void onComplete(@Nullable Result result) {
-        logger.debug("onComplete()");
-
         String json = getContentAsString(StandardCharsets.UTF_8);
         JsonObject jsonObject = gson.fromJson(json, JsonObject.class);
 

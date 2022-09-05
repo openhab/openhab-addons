@@ -220,7 +220,7 @@ public class EaseeChargerHandler extends BaseThingHandler implements EaseeThingH
                 return new SendCommandStartStop(this, chargerId, channel, command);
             default:
                 // this should not happen
-                logger.warn("write command '{}' not found for channel '{}'", command.toString(),
+                logger.error("write command '{}' not found for channel '{}'", command.toString(),
                         channel.getUID().getIdWithoutGroup());
                 throw new UnsupportedOperationException(
                         "write command not found for channel: " + channel.getUID().getIdWithoutGroup());
