@@ -130,8 +130,8 @@ public abstract class HDPowerViewWebTargets {
      */
     private class ShadePositionSerializer implements JsonSerializer<ShadePosition> {
         @Override
-        public JsonElement serialize(ShadePosition src, Type typeOfT, JsonSerializationContext context) {
-            return context.serialize(src, shadePositionClass);
+        public JsonElement serialize(ShadePosition src, Type typeOfSrc, JsonSerializationContext context) {
+            return context.serialize(src, src.getClass());
         }
     };
 
