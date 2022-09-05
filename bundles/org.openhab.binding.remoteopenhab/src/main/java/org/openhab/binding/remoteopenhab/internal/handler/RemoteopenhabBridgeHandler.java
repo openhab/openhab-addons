@@ -75,7 +75,6 @@ import org.openhab.core.thing.type.ChannelTypeBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.CommandOption;
-import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.openhab.core.types.StateOption;
@@ -201,10 +200,7 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
         }
 
         try {
-            if (command instanceof RefreshType) {
-                String state = restClient.getRemoteItemState(channelUID.getId());
-                updateChannelState(channelUID.getId(), null, state, false);
-            } else if (isLinked(channelUID)) {
+            if (isLinked(channelUID)) {
                 restClient.sendCommandToRemoteItem(channelUID.getId(), command);
                 String commandStr = command.toFullString();
                 logger.debug("Sending command {} to remote item {} succeeded",
