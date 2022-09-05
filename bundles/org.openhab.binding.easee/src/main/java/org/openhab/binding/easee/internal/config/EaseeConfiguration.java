@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.easee.internal.config;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -81,9 +80,11 @@ public class EaseeConfiguration {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this).append("username", getUsername()).append("password", getPassword())
-                .append("siteId", getSiteId()).append("asyncTimeout", getAsyncTimeout())
-                .append("syncTimeout", getSyncTimeout()).append("dataPollingInterval", getDataPollingInterval())
-                .toString();
+        StringBuilder builder = new StringBuilder();
+        builder.append("EaseeConfiguration [username=").append(username).append(", password=").append(password)
+                .append(", siteId=").append(siteId).append(", asyncTimeout=").append(asyncTimeout)
+                .append(", syncTimeout=").append(syncTimeout).append(", dataPollingInterval=")
+                .append(dataPollingInterval).append("]");
+        return builder.toString();
     }
 }
