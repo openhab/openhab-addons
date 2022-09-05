@@ -32,9 +32,9 @@ public class KonnectedModuleGson {
     private Integer state;
     @SerializedName("Auth_Token")
     private String authToken;
-    private String momentary;
-    private String pause;
-    private String times;
+    private Integer momentary;
+    private Integer pause;
+    private Integer times;
     @SerializedName("poll_interval")
     private Integer pollInterval;
     private String addr;
@@ -91,27 +91,27 @@ public class KonnectedModuleGson {
         return authToken;
     }
 
-    public String getMomentary() {
+    public Integer getMomentary() {
         return momentary;
     }
 
-    public void setMomentary(String setMomentary) {
+    public void setMomentary(Integer setMomentary) {
         this.momentary = setMomentary;
     }
 
-    public String getPause() {
+    public Integer getPause() {
         return pause;
     }
 
-    public void setPause(String setPause) {
+    public void setPause(Integer setPause) {
         this.pause = setPause;
     }
 
-    public String getTimes() {
+    public Integer getTimes() {
         return times;
     }
 
-    public void setTimes(String setTimes) {
+    public void setTimes(Integer setTimes) {
         this.times = setTimes;
     }
 
