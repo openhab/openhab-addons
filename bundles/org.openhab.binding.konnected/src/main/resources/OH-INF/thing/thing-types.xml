@@ -253,6 +253,7 @@
 			<parameter name="pollInterval" type="integer">
 				<label>Poll Interval</label>
 				<description>The interval in minutes to poll the sensor.</description>
+				<default>3</default>
 			</parameter>
 			<parameter name="ds18b20Address" type="text">
 				<label>DS18b20 Address</label>
