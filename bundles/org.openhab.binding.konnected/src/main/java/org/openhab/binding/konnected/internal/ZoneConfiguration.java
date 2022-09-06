@@ -12,18 +12,26 @@
  */
 package org.openhab.binding.konnected.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link ZoneConfiguration} class contains the configuration parameters for the zone.
  *
  * @author Haavar Valeur
  */
+@NonNullByDefault
 public class ZoneConfiguration {
-    public String zone;
-    public boolean dht22;
+    public String zone = "";
+    public boolean dht22 = true;
+    @Nullable
     public String ds18b20Address;
     public int pollInterval = 3;
+    @Nullable
     public Integer times;
+    @Nullable
     public Integer momentary;
+    @Nullable
     public Integer pause;
     public int onValue = 1;
 }

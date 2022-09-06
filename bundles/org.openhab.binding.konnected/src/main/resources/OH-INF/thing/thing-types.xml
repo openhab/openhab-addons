@@ -70,6 +70,7 @@
 			<parameter name="dht22" type="boolean">
 				<label>DHT22</label>
 				<description>Is the sensor a dht22 or a ds18b20? Set to true for dht22 sensor</description>
+				<default>true</default>
 			</parameter>
 			<parameter name="pollInterval" type="integer">
 				<label>Poll Interval</label>
@@ -250,6 +251,7 @@
 			<parameter name="dht22" type="boolean">
 				<label>DHT22</label>
 				<description>Is the sensor a dht22 or a ds18b20? Set to true for dht22 sensor</description>
+				<default>true</default>
 			</parameter>
 			<parameter name="pollInterval" type="integer">
 				<label>Poll Interval</label>
