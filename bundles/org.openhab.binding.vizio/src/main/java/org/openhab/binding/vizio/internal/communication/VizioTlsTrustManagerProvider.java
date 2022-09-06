@@ -52,7 +52,7 @@ public class VizioTlsTrustManagerProvider implements TlsTrustManagerProvider {
             logger.trace("Use self-signed certificate downloaded from Vizio TV.");
             return PEMTrustManager.getInstanceFromServer("https://" + getHostName());
         } catch (CertificateException | MalformedURLException e) {
-            logger.error("An unexpected exception occurred - returning a TrustAllTrustManager: {}", e.getMessage(), e);
+            logger.debug("An unexpected exception occurred - returning a TrustAllTrustManager: {}", e.getMessage(), e);
         }
         return TrustAllTrustManager.getInstance();
     }
