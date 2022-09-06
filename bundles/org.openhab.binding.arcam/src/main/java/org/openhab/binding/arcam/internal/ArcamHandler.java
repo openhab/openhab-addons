@@ -14,8 +14,13 @@ package org.openhab.binding.arcam.internal;
 
 import static org.openhab.binding.arcam.internal.ArcamBindingConstants.*;
 
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.arcam.internal.config.ArcamConfiguration;
+import org.openhab.binding.arcam.internal.connection.ArcamCommandCode;
 import org.openhab.binding.arcam.internal.connection.ArcamConnection;
 import org.openhab.binding.arcam.internal.connection.ArcamConnectionListener;
 import org.openhab.binding.arcam.internal.devices.ArcamDevice;
@@ -36,6 +41,8 @@ import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.micrometer.core.instrument.util.StringUtils;
+
 /**
  * The {@link ArcamHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -50,6 +57,9 @@ public class ArcamHandler extends BaseThingHandler implements ArcamStateChangedL
     private ArcamConnection connection;
     private ArcamState state;
     private ArcamDevice device;
+
+    @Nullable
+    private ScheduledFuture<?> reqAllDataTask;
 
     public ArcamHandler(Thing thing) {
         super(thing);
@@ -199,6 +209,7 @@ public class ArcamHandler extends BaseThingHandler implements ArcamStateChangedL
 
         scheduler.execute(() -> {
             String hostname = config.hostname;
+            Integer pollingInterval = config.pollingInterval;
 
             try {
                 if (hostname == null) {
@@ -206,18 +217,34 @@ public class ArcamHandler extends BaseThingHandler implements ArcamStateChangedL
                     return;
                 }
 
+                if (pollingInterval == null) {
+                    pollingInterval = 0;
+                }
+
                 connection.connect(hostname);
+
+                if (pollingInterval > 0) {
+                    reqAllDataTask = scheduler.scheduleWithFixedDelay(this::requestAllValues, pollingInterval,
+                            pollingInterval, TimeUnit.SECONDS);
+                }
+
             } catch (Exception e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 return;
             }
 
-            logger.debug("handler initialized. ip: {}", config.hostname);
+            logger.debug("handler initialized. hostname: {}", config.hostname);
         });
     }
 
     @Override
     public void dispose() {
+        final ScheduledFuture<?> reqAllDataTask = this.reqAllDataTask;
+        if (reqAllDataTask != null) {
+            reqAllDataTask.cancel(true);
+            this.reqAllDataTask = null;
+        }
+
         connection.dispose();
 
         super.dispose();
@@ -246,5 +273,24 @@ public class ArcamHandler extends BaseThingHandler implements ArcamStateChangedL
     @Override
     public void onConnection() {
         updateStatus(ThingStatus.ONLINE);
+
+        requestAllValues();
+    }
+
+    public void requestAllValues() {
+        logger.debug("requestAllValues");
+
+        for (ArcamCommandCode commandCode : ArcamCommandCode.values()) {
+            // Only request the commandCodes for which a channel can exist
+            if (StringUtils.isEmpty(commandCode.channel)) {
+                continue;
+            }
+
+            if (!isLinked(commandCode.channel)) {
+                continue;
+            }
+
+            connection.requestState(commandCode.channel);
+        }
     }
 }

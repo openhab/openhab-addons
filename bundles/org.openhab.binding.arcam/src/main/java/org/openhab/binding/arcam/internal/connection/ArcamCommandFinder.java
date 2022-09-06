@@ -28,14 +28,14 @@ import org.slf4j.LoggerFactory;
 public class ArcamCommandFinder {
     private final Logger logger = LoggerFactory.getLogger(ArcamCommandFinder.class);
 
-    public byte[] getCommandFromCode(ArcamCommandCode code, List<ArcamCommand> list) {
+    public byte[] getCommandDataFromCode(ArcamCommandCode code, List<ArcamCommand> list) {
         for (ArcamCommand command : list) {
             if (command.code.equals(code)) {
                 return command.data;
             }
         }
 
-        logger.error("Could not find ArcamCommandfor code: {}.", code);
+        logger.trace("Could not find ArcamCommand data for code: {}.", code);
         return new byte[] {};
     }
 }

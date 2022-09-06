@@ -9,11 +9,11 @@
 		<label>Arcam Binding Thing</label>
 		<description>AVR40</description>
 		<channel-groups>
-			<channel-group id="avr40MasterZone" typeId="avr40MasterZone">
+			<channel-group id="masterZone" typeId="avr40MasterZone">
 				<label>Master zone</label>
 				<description>The master zone. Commands that appear zone-less refer to the master zone</description>
 			</channel-group>
-			<channel-group id="avr40Zone2" typeId="avr40Zone2">
+			<channel-group id="zone2" typeId="avr40Zone2">
 				<label>Zone 2</label>
 				<description>zone.</description>
 			</channel-group>
@@ -24,6 +24,12 @@
 				<context>network-address</context>
 				<label>Hostname</label>
 				<description>Hostname or IP address of the device</description>
+			</parameter>
+			<parameter name="pollingInterval" type="integer" min="0">
+				<label>Polling interval</label>
+				<description>The amount of seconds to wait before polling the device for updated information. When set to 0 no
+					polling is done and the binding relies on data being pushed from the device to the binding.</description>
+				<default>0</default>
 			</parameter>
 		</config-description>
 	</thing-type>

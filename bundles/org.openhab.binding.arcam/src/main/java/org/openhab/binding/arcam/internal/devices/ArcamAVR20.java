@@ -122,9 +122,9 @@ public class ArcamAVR20 implements ArcamDevice {
         // 0x81 – 0x86 – Set the balance to the left 1, 2,..., 5, 6
         byte[] data;
         if (zone == ArcamZone.MASTER) {
-            data = commandFinder.getCommandFromCode(MASTER_BALANCE, COMMANDS);
+            data = commandFinder.getCommandDataFromCode(MASTER_BALANCE, COMMANDS);
         } else {
-            data = commandFinder.getCommandFromCode(ZONE2_BALANCE, COMMANDS);
+            data = commandFinder.getCommandDataFromCode(ZONE2_BALANCE, COMMANDS);
         }
         byte balanceByte = (byte) balance;
 
@@ -143,7 +143,7 @@ public class ArcamAVR20 implements ArcamDevice {
 
     @Override
     public byte[] getDisplayBrightnessCommand(String displayBrightness) {
-        byte[] data = commandFinder.getCommandFromCode(DISPLAY_BRIGHTNESS, COMMANDS);
+        byte[] data = commandFinder.getCommandDataFromCode(DISPLAY_BRIGHTNESS, COMMANDS);
         data[4] = commandDataFinder.getByteFromCommandDataCode(displayBrightness, DISPLAY_BRIGHTNESS_COMMANDS);
 
         return data;
@@ -151,12 +151,12 @@ public class ArcamAVR20 implements ArcamDevice {
 
     @Override
     public byte[] getHeartbeatCommand() {
-        return commandFinder.getCommandFromCode(HEARTBEAT, COMMANDS);
+        return commandFinder.getCommandDataFromCode(HEARTBEAT, COMMANDS);
     }
 
     @Override
     public byte[] getInputCommand(String inputName, ArcamZone zone) {
-        byte[] data = commandFinder.getCommandFromCode(MASTER_INPUT, COMMANDS);
+        byte[] data = commandFinder.getCommandDataFromCode(MASTER_INPUT, COMMANDS);
         data[4] = commandDataFinder.getByteFromCommandDataCode(inputName, INPUT_COMMANDS);
 
         return data;
@@ -188,9 +188,9 @@ public class ArcamAVR20 implements ArcamDevice {
     public byte[] getRoomEqualisationCommand(String eq, ArcamZone zone) {
         byte[] data;
         if (zone == ArcamZone.MASTER) {
-            data = commandFinder.getCommandFromCode(MASTER_ROOM_EQUALISATION, COMMANDS);
+            data = commandFinder.getCommandDataFromCode(MASTER_ROOM_EQUALISATION, COMMANDS);
         } else {
-            data = commandFinder.getCommandFromCode(ZONE2_ROOM_EQUALISATION, COMMANDS);
+            data = commandFinder.getCommandDataFromCode(ZONE2_ROOM_EQUALISATION, COMMANDS);
         }
         data[4] = commandDataFinder.getByteFromCommandDataCode(eq, ArcamDeviceConstants.ROOM_EQ);
         return data;
@@ -200,9 +200,9 @@ public class ArcamAVR20 implements ArcamDevice {
     public byte[] getVolumeCommand(int volume, ArcamZone zone) {
         byte[] data;
         if (zone == ArcamZone.MASTER) {
-            data = commandFinder.getCommandFromCode(MASTER_VOLUME, COMMANDS);
+            data = commandFinder.getCommandDataFromCode(MASTER_VOLUME, COMMANDS);
         } else {
-            data = commandFinder.getCommandFromCode(ZONE2_VOLUME, COMMANDS);
+            data = commandFinder.getCommandDataFromCode(ZONE2_VOLUME, COMMANDS);
         }
         data[4] = (byte) volume;
 
@@ -211,7 +211,7 @@ public class ArcamAVR20 implements ArcamDevice {
 
     @Override
     public byte[] getStateCommandByte(ArcamCommandCode commandCode) {
-        return commandFinder.getCommandFromCode(commandCode, COMMANDS);
+        return commandFinder.getCommandDataFromCode(commandCode, COMMANDS);
     }
 
     // Interpret incoming bytes

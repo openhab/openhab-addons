@@ -24,12 +24,14 @@ import org.eclipse.jdt.annotation.Nullable;
 public class ArcamConfiguration {
 
     public static final String HOSTNAME = "hostname";
-    public static final String SERIAL = "serial";
-    public static final String NAME = "name";
     public static final String MODEL = "model";
+    public static final String NAME = "name";
+    public static final String POLLING_INTERVAL = "pollingInterval";
+    public static final String SERIAL = "serial";
 
     public @Nullable String hostname;
-    public @Nullable String serial;
-    public @Nullable String name;
     public @Nullable String model;
+    public @Nullable String name;
+    public @Nullable Integer pollingInterval;
+    public @Nullable String serial;
 }

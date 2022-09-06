@@ -123,7 +123,7 @@ public class ArcamSA20 implements ArcamDevice {
         // 0x01 – 0x0C – Set the balance to the right 1, 2, ..., 11, 12
         // 0x81 – 0x8C – Set the balance to the left 1, 2,..., 11, 12
 
-        byte[] data = commandFinder.getCommandFromCode(MASTER_BALANCE, COMMANDS);
+        byte[] data = commandFinder.getCommandDataFromCode(MASTER_BALANCE, COMMANDS);
         byte balanceByte = (byte) balance;
 
         if (balance < 0) {
@@ -136,7 +136,7 @@ public class ArcamSA20 implements ArcamDevice {
 
     @Override
     public byte[] getDacFilterCommand(String dacFilter) {
-        byte[] data = commandFinder.getCommandFromCode(DAC_FILTER, COMMANDS);
+        byte[] data = commandFinder.getCommandDataFromCode(DAC_FILTER, COMMANDS);
         data[4] = commandDataFinder.getByteFromCommandDataCode(dacFilter, DAC_FILTER_COMMANDS);
 
         return data;
@@ -144,7 +144,7 @@ public class ArcamSA20 implements ArcamDevice {
 
     @Override
     public byte[] getDisplayBrightnessCommand(String displayBrightness) {
-        byte[] data = commandFinder.getCommandFromCode(DISPLAY_BRIGHTNESS, COMMANDS);
+        byte[] data = commandFinder.getCommandDataFromCode(DISPLAY_BRIGHTNESS, COMMANDS);
         data[4] = commandDataFinder.getByteFromCommandDataCode(displayBrightness, DISPLAY_BRIGHTNESS_COMMANDS);
 
         return data;
@@ -152,12 +152,12 @@ public class ArcamSA20 implements ArcamDevice {
 
     @Override
     public byte[] getHeartbeatCommand() {
-        return commandFinder.getCommandFromCode(HEARTBEAT, COMMANDS);
+        return commandFinder.getCommandDataFromCode(HEARTBEAT, COMMANDS);
     }
 
     @Override
     public byte[] getInputCommand(String inputName, ArcamZone zone) {
-        byte[] data = commandFinder.getCommandFromCode(MASTER_INPUT, COMMANDS);
+        byte[] data = commandFinder.getCommandDataFromCode(MASTER_INPUT, COMMANDS);
         data[4] = commandDataFinder.getByteFromCommandDataCode(inputName, INPUT_COMMANDS);
 
         return data;
@@ -165,7 +165,7 @@ public class ArcamSA20 implements ArcamDevice {
 
     @Override
     public byte[] getMuteCommand(boolean mute, ArcamZone zone) {
-        byte[] data = commandFinder.getCommandFromCode(MASTER_MUTE, COMMANDS);
+        byte[] data = commandFinder.getCommandDataFromCode(MASTER_MUTE, COMMANDS);
         if (mute) {
             data[4] = (byte) 0x00;
             return data;
@@ -177,7 +177,7 @@ public class ArcamSA20 implements ArcamDevice {
 
     @Override
     public byte[] getPowerCommand(boolean on, ArcamZone zone) {
-        byte[] data = commandFinder.getCommandFromCode(MASTER_POWER, COMMANDS);
+        byte[] data = commandFinder.getCommandDataFromCode(MASTER_POWER, COMMANDS);
         if (on) {
             data[4] = (byte) 0x01;
             return data;
@@ -200,7 +200,7 @@ public class ArcamSA20 implements ArcamDevice {
 
     @Override
     public byte[] getVolumeCommand(int volume, ArcamZone zone) {
-        byte[] data = commandFinder.getCommandFromCode(MASTER_VOLUME, COMMANDS);
+        byte[] data = commandFinder.getCommandDataFromCode(MASTER_VOLUME, COMMANDS);
         data[4] = (byte) volume;
 
         return data;
@@ -208,7 +208,7 @@ public class ArcamSA20 implements ArcamDevice {
 
     @Override
     public byte[] getStateCommandByte(ArcamCommandCode commandCode) {
-        return commandFinder.getCommandFromCode(commandCode, COMMANDS);
+        return commandFinder.getCommandDataFromCode(commandCode, COMMANDS);
     }
 
     // Interpret incoming bytes

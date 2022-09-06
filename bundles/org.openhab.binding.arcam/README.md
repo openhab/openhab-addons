@@ -38,11 +38,17 @@ The most easy way of using this binding is via UPnP discovery.
 This will automatically configure the `hostname` for your device.
 You can manually configure this if you don't want to use the discovery mechanism.
 
+In theory the Arcam devices support pushing data to the binding whenever the values change.
+However during testing I found that this often does not happen.
+In order to work around this you can enable polling by setting the polling interval.
+A good starting value for this setting is 5 seconds.
+
 ### `sample` Thing Configuration
 
-| Name            | Type    | Description                           | Default | Required |
-|-----------------|---------|---------------------------------------|---------|----------|
-| hostname        | text    | Hostname or IP address of the device  | N/A     | yes      |
+| Name             | Type    | Description                           | Default | Required |
+|------------------|---------|---------------------------------------|---------|----------|
+| hostname         | text    | Hostname or IP address of the device  | N/A     | yes      |
+| Polling interval | integer | The amount of seconds to wait before polling the device for updated information. When set to 0 no polling is done and the binding relies on data being pushed from the device to the binding.  | 0       | yes      |
 
 ## Channels
 

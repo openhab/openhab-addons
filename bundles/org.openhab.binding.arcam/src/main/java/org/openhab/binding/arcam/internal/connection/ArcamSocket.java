@@ -48,6 +48,8 @@ public class ArcamSocket implements ArcamConnectionReaderListener {
     private OutputStream outputStream;
     @Nullable
     private ScheduledFuture<?> pollingTask;
+    @Nullable
+    private ScheduledFuture<?> reconnectTask;
 
     private String thingUID;
     private ScheduledExecutorService scheduler;
@@ -67,39 +69,46 @@ public class ArcamSocket implements ArcamConnectionReaderListener {
         this.heartbeatCommand = heartbeatCommand;
     }
 
-    public synchronized void connect(String hostname) {
-        String prevHostname = this.hostname;
-        if (hostname.equals(prevHostname)) {
-            logger.trace("Skip connect as we're already connected to {}", hostname);
-            return;
+    public void connect(String hostname) {
+        synchronized (this) {
+            String prevHostname = this.hostname;
+            if (hostname.equals(prevHostname)) {
+                logger.trace("Skip connect as we're already connected to {}", hostname);
+                return;
+            }
+
+            this.hostname = hostname;
+            lastResponseTime = Instant.now();
         }
 
-        this.hostname = hostname;
         try {
             connect();
         } catch (IOException e) {
-            handleConnectionIssue();
+            synchronized (this) {
+                handleConnectionIssue();
+            }
         }
 
         pollingTask = scheduler.scheduleWithFixedDelay(this::sendHeartbeat, ALIVE_INTERVAL, ALIVE_INTERVAL,
                 TimeUnit.SECONDS);
-        lastResponseTime = Instant.now();
     }
 
-    private synchronized void connect() throws UnknownHostException, IOException {
+    private void connect() throws UnknownHostException, IOException {
         logger.debug("connecting to: {} {}", hostname, PORT);
-        Socket s = new Socket(hostname, PORT);
-        socket = s;
+        synchronized (this) {
+            Socket s = new Socket(hostname, PORT);
+            socket = s;
 
-        outputStream = s.getOutputStream();
-        ArcamConnectionReader acr = new ArcamConnectionReader(s, this);
-        acr.setName("OH-binding-" + thingUID);
-        acr.setDaemon(true);
-        acr.start();
-        this.acr = acr;
+            outputStream = s.getOutputStream();
+            ArcamConnectionReader acr = new ArcamConnectionReader(s, this);
+            acr.setName("OH-binding-" + thingUID);
+            acr.setDaemon(true);
+            acr.start();
+            this.acr = acr;
+            connectionState = ArcamConnectionState.CONNECTED;
+        }
 
         socketListener.onConnection();
-        connectionState = ArcamConnectionState.CONNECTED;
     }
 
     private void reconnect() {
@@ -132,17 +141,13 @@ public class ArcamSocket implements ArcamConnectionReaderListener {
         try {
             connect();
         } catch (IOException e) {
-            scheduler.schedule(this::reconnect, 10, TimeUnit.SECONDS);
+            reconnectTask = scheduler.schedule(this::reconnect, 10, TimeUnit.SECONDS);
         }
     }
 
     // This method should be called from a synchronized method in order to be thread safe
     private void handleConnectionIssue() {
         logger.debug("handleConnectionIssue");
-        var x = System.out;
-        if (x != null) {
-            new Exception().printStackTrace(x);
-        }
 
         if (connectionState == ArcamConnectionState.RECONNECTING) {
             logger.debug("skip reconnect because already connecting");
@@ -164,7 +169,7 @@ public class ArcamSocket implements ArcamConnectionReaderListener {
             handleConnectionIssue();
         }
 
-        logger.debug("Sending heartbeat bytes: {}", ArcamUtil.bytesToHex(heartbeatCommand));
+        logger.trace("Sending heartbeat bytes: {}", ArcamUtil.bytesToHex(heartbeatCommand));
         sendCommand(heartbeatCommand);
     }
 
@@ -184,10 +189,15 @@ public class ArcamSocket implements ArcamConnectionReaderListener {
 
     public synchronized void dispose() {
         final ScheduledFuture<?> pollingTask = this.pollingTask;
-
         if (pollingTask != null) {
             pollingTask.cancel(true);
             this.pollingTask = null;
+        }
+
+        final ScheduledFuture<?> reconnectTask = this.reconnectTask;
+        if (reconnectTask != null) {
+            reconnectTask.cancel(true);
+            this.reconnectTask = null;
         }
 
         try {
@@ -209,8 +219,10 @@ public class ArcamSocket implements ArcamConnectionReaderListener {
     }
 
     @Override
-    public synchronized void onResponse(ArcamResponse response) {
-        lastResponseTime = Instant.now();
+    public void onResponse(ArcamResponse response) {
+        synchronized (this) {
+            lastResponseTime = Instant.now();
+        }
         socketListener.onResponse(response);
     }
 

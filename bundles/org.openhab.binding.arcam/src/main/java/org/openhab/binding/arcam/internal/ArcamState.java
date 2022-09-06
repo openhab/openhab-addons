@@ -17,10 +17,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.PercentType;
-import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.State;
 
 /**
@@ -39,27 +35,7 @@ public class ArcamState {
         this.handler = handler;
     }
 
-    public void setState(String channelId, @Nullable String value) {
-        StringType newValue = new StringType(value);
-        setState(channelId, newValue);
-    }
-
-    public void setState(String channelId, int value) {
-        DecimalType newValue = new DecimalType(value);
-        setState(channelId, newValue);
-    }
-
-    public void setPercentageState(String channelId, int value) {
-        PercentType newValue = new PercentType(value);
-        setState(channelId, newValue);
-    }
-
-    public void setState(String channelId, boolean value) {
-        OnOffType newValue = value ? OnOffType.ON : OnOffType.OFF;
-        setState(channelId, newValue);
-    }
-
-    private synchronized void setState(String channelId, State newValue) {
+    public synchronized void setState(String channelId, State newValue) {
         State oldValue = states.get(channelId);
         if (newValue.equals(oldValue)) {
             return;
