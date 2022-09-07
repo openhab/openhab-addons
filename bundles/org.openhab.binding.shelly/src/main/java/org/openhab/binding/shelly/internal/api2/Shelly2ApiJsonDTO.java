@@ -39,12 +39,20 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLYRPC_METHOD_RESET = "Shelly.FactoryReset";
     public static final String SHELLYRPC_METHOD_CHECKUPD = "Shelly.CheckForUpdate";
     public static final String SHELLYRPC_METHOD_UPDATE = "Shelly.Update";
+    public static final String SHELLYRPC_METHOD_AUTHSET = "Shelly.SetAuth";
     public static final String SHELLYRPC_METHOD_SWITCH_STATUS = "Switch.GetStatus";
     public static final String SHELLYRPC_METHOD_SWITCH_SET = "Switch.Set";
     public static final String SHELLYRPC_METHOD_COVER_SETPOS = "Cover.GoToPosition";
     public static final String SHELLY2_COVER_CMD_OPEN = "Open";
     public static final String SHELLY2_COVER_CMD_CLOSE = "Close";
     public static final String SHELLY2_COVER_CMD_STOP = "Stop";
+    public static final String SHELLYRPC_METHOD_WIFIGETCONG = "Wifi.GetConfig";
+    public static final String SHELLYRPC_METHOD_WIFISETCONG = "Wifi.SetConfig";
+    public static final String SHELLYRPC_METHOD_ETHGETCONG = "Eth.GetConfig";
+    public static final String SHELLYRPC_METHOD_ETHSETCONG = "Eth.SetConfig";
+    public static final String SHELLYRPC_METHOD_BLEGETCONG = "BLE.GetConfig";
+    public static final String SHELLYRPC_METHOD_BLESETCONG = "BLE.SetConfig";
+    public static final String SHELLYRPC_METHOD_CLOUDSET = "Cloud.SetConfig";
     public static final String SHELLYRPC_METHOD_WSGETCONFIG = "WS.GetConfig";
     public static final String SHELLYRPC_METHOD_WSSETCONFIG = "WS.SetConfig";
 
@@ -103,6 +111,8 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLY2_EVENT_OTASTART = "ota_begin";
     public static final String SHELLY2_EVENT_OTAPROGRESS = "ota_progress";
     public static final String SHELLY2_EVENT_OTADONE = "ota_success";
+    public static final String SHELLY2_EVENT_WIFICONNFAILED = "sta_connect_fail";
+    public static final String SHELLY2_EVENT_WIFIDISCONNECTED = "sta_disconnected";
 
     // Error Codes
     public static final String SHELLY2_ERROR_OVERPOWER = "overpower";
@@ -122,6 +132,19 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLY2_WAKEUPOCAUSE_UPDATE = "status_update";
     public static final String SHELLY2_WAKEUPOCAUSE_UNDEFINED = "undefined";
 
+    public class Shelly2DevConfigBle {
+        public Boolean enable;
+    }
+
+    public class Shelly2DevConfigEth {
+        public Boolean enable;
+        public String ipv4mode;
+        public String ip;
+        public String netmask;
+        public String gw;
+        public String nameserver;
+    }
+
     public static class Shelly2DeviceSettings {
         public String name;
         public String id;
@@ -138,6 +161,20 @@ public class Shelly2ApiJsonDTO {
         public String authDomain;
     }
 
+    public static class Shelly2DeviceConfigAp {
+        public static class Shelly2DeviceConfigApRE {
+            public Boolean enable;
+        }
+
+        public Boolean enable;
+        public String ssid;
+        public String password;
+        @SerializedName("is_open")
+        public Boolean isOpen;
+        @SerializedName("range_extender")
+        Shelly2DeviceConfigApRE rangeExtender;
+    }
+
     public static class Shelly2DeviceConfig {
         public class Shelly2DeviceConfigSys {
             public class Shelly2DeviceConfigDevice {
@@ -147,7 +184,8 @@ public class Shelly2ApiJsonDTO {
                 public String fwId;
                 public String profile;
                 @SerializedName("eco_mode")
-                public String ecoMode;
+                public Boolean ecoMode;
+                public Boolean discoverable;
             }
 
             public class Shelly2DeviceConfigLocation {
@@ -292,9 +330,6 @@ public class Shelly2ApiJsonDTO {
         }
 
         public static class Shelly2GetConfigResult {
-            public class Shelly2DevConfigBle {
-                public Boolean enable;
-            }
 
             public class Shelly2DevConfigCloud {
                 public Boolean enable;
@@ -314,6 +349,7 @@ public class Shelly2ApiJsonDTO {
             }
 
             public Shelly2DevConfigBle ble;
+            public Shelly2DevConfigEth eth;
             public Shelly2DevConfigCloud cloud;
             public Shelly2DevConfigMqtt mqtt;
             public Shelly2DeviceConfigSys sys;
@@ -341,33 +377,30 @@ public class Shelly2ApiJsonDTO {
             public Shelly2DevConfigCover cover0;
         }
 
+        public class Shelly2DeviceConfigSta {
+            public String ssid;
+            public String password;
+            @SerializedName("is_open")
+            public Boolean isOpen;
+            public Boolean enable;
+            public String ipv4mode;
+            public String ip;
+            public String netmask;
+            public String gw;
+            public String nameserver;
+        }
+
+        public class Shelly2DeviceConfigRoam {
+            @SerializedName("rssi_thr")
+            public Integer rssiThr;
+            public Integer interval;
+        }
+
         public class Shelly2DeviceConfigWiFi {
-            public class Shelly2DeviceConfigAp {
-                public String ssid;
-                @SerializedName("is_open")
-                public Boolean isOpen;
-            }
-
-            public class Shelly2DeviceConfigSta {
-                public String ssid;
-                @SerializedName("is_open")
-                public Boolean isOpen;
-                public String ipv4mode;
-                public String ip;
-                public String netmask;
-                public String gw;
-                public String nameserver;
-            }
-
-            public class Shelly2DeviceConfigRoamd {
-                @SerializedName("rssi_thr")
-                public Integer rssiThr;
-                public Integer interval;
-            }
-
             public Shelly2DeviceConfigAp ap;
             public Shelly2DeviceConfigSta sta;
             public Shelly2DeviceConfigSta sta1;
+            public Shelly2DeviceConfigRoam roam;
         }
 
         public String id;
@@ -376,7 +409,6 @@ public class Shelly2ApiJsonDTO {
     }
 
     public static class Shelly2DeviceStatus {
-
         public class Shelly2InputStatus {
             public Integer id;
             public Boolean state;
@@ -525,6 +557,8 @@ public class Shelly2ApiJsonDTO {
             public String status;
             public String ssid;
             public Integer rssi;
+            @SerializedName("ap_client_count")
+            public Integer apClientCount;
         }
 
         public String id;
@@ -563,11 +597,14 @@ public class Shelly2ApiJsonDTO {
         public Long minuteTs;
     }
 
-    public static class Shelly2WsConfig {
+    public static class Shelly2ConfigParms {
         public Boolean enable;
         public String server;
         @SerializedName("ssl_ca")
         public String sslCA;
+
+        // WiFi.SetConfig
+        public Shelly2DeviceConfigAp ap;
     }
 
     public static class Shelly2RpcRequest {
@@ -575,10 +612,23 @@ public class Shelly2ApiJsonDTO {
         public String method;
 
         public static class Shelly2RpcRequestParams {
-            public Integer id;
+            public Integer id = 1;
+
+            // Cover
             public Integer pos;
             public Boolean on;
-            public Shelly2WsConfig config;
+
+            // Shelly.SetAuth
+            public String user;
+            public String realm;
+            public String ha1;
+
+            // Shelly.Update
+            public String stage;
+            public String url;
+
+            // Cloud.SetConfig
+            public Shelly2ConfigParms config = new Shelly2ConfigParms();
         }
 
         public Shelly2RpcRequestParams params = new Shelly2RpcRequestParams();
@@ -676,9 +726,10 @@ public class Shelly2ApiJsonDTO {
     public class Shelly2NotifyEvent {
         public Integer id;
         public Double ts;
+        public String component;
         public String event;
         public String msg;
-        public String component;
+        public Integer reason;
         @SerializedName("cfg_rev")
         public Integer cfgRev;
     }

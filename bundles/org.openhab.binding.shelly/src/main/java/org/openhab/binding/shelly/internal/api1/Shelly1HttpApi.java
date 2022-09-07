@@ -228,7 +228,7 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
     }
 
     @Override
-    public void setTimer(int index, String timerName, int value) throws ShellyApiException {
+    public void setAutoTimer(int index, String timerName, int value) throws ShellyApiException {
         String type = SHELLY_CLASS_RELAY;
         if (profile.isRoller) {
             type = SHELLY_CLASS_ROLLER;
@@ -353,10 +353,26 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
     }
 
     @Override
+    public boolean setWiFiRangeExtender(boolean enable) throws ShellyApiException {
+        return false;
+    }
+
+    @Override
+    public boolean setEthernet(boolean enable) throws ShellyApiException {
+        return false;
+    }
+
+    @Override
+    public boolean setBluetooth(boolean enable) throws ShellyApiException {
+        return false;
+    }
+
+    @Override
     public String resetStaCache() throws ShellyApiException { // FW 1.10+: Reset cached STA/AP list and to a rescan
         return callApi("/sta_cache_reset", String.class);
     }
 
+    @Override
     public ShellySettingsUpdate firmwareUpdate(String uri) throws ShellyApiException {
         return callApi("/ota?" + uri, ShellySettingsUpdate.class);
     }

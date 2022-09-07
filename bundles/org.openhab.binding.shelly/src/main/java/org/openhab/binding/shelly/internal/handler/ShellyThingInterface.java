@@ -112,4 +112,8 @@ public interface ShellyThingInterface {
     public void fillDeviceStatus(ShellySettingsStatus status, boolean updated);
 
     public boolean checkRepresentation(String key);
+
+    public void incProtMessages();
+
+    public void incProtErrors();
 }

@@ -187,6 +187,9 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 start = initializeThing();
             } catch (ShellyApiException e) {
                 ShellyApiResult res = e.getApiResult();
+                if (e.isConnectionError()) {
+                    setThingOffline(ThingStatusDetail.COMMUNICATION_ERROR, "offline.status-error-connect");
+                }
                 if (isAuthorizationFailed(res)) {
                     start = false;
                 }
@@ -243,6 +246,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         lastWakeupReason = "";
         cache.setThingName(thingName);
         cache.clear();
+        resetStats();
 
         logger.debug("{}: Start initializing for thing {}, type {}, IP address {}, Gen2: {}, CoIoT: {}", thingName,
                 getThing().getLabel(), thingType, config.deviceIp, gen2, config.eventsCoIoT);
@@ -522,11 +526,11 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             // sleep mode. Once the next update is successful the device goes back online
             String status = "";
             ShellyApiResult res = e.getApiResult();
-            Throwable cause = e.getCause();
-            if (cause != null) {
-                logger.debug("{}: Error on refreshStatus", thingName, e);
-            }
-            if (isWatchdogStarted()) {
+            if (e.isConnectionError() && profile.alwaysOn) {
+                status = "offline.status-error-connect";
+            } else if (res.isHttpAccessUnauthorized()) {
+                status = "offline.conf-error-access-denied";
+            } else if (isWatchdogStarted()) {
                 if (!isWatchdogExpired()) {
                     logger.debug("{}: Ignore API Timeout, retry later", thingName);
                 } else {
@@ -534,12 +538,10 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                         status = "offline.status-error-watchdog";
                     }
                 }
-            } else if (res.isHttpAccessUnauthorized()) {
-                status = "offline.conf-error-access-denied";
             } else if (e.isJSONException()) {
                 status = "offline.status-error-unexpected-api-result";
                 logger.debug("{}: Unable to parse API response: {}; json={}", thingName, res.getUrl(), res.response, e);
-            } else if (res.isHttpTimeout() && e.getCause() == null) {
+            } else if (res.isHttpTimeout()) {
                 // Watchdog not started, e.g. device in sleep mode
                 if (isThingOnline()) { // ignore when already offline
                     status = "offline.status-error-watchdog";
@@ -722,13 +724,20 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         if (status.uptime != null) {
             stats.lastUptime = getLong(status.uptime);
         }
-        if (coap != null) {
-            stats.coiotMessages = coap.getMessageCount();
-            stats.coiotErrors = coap.getErrorCount();
-        }
+
         if (!alarm.isEmpty()) {
             postEvent(alarm, false);
         }
+    }
+
+    @Override
+    public void incProtMessages() {
+        stats.protocolMessages++;
+    }
+
+    @Override
+    public void incProtErrors() {
+        stats.protocolErrors++;
     }
 
     /**
@@ -1505,6 +1514,9 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
     @Override
     public ShellyDeviceStats getStats() {
+        if (stats.protocolMessages > 0) {
+            int i = 1;
+        }
         return stats;
     }
 

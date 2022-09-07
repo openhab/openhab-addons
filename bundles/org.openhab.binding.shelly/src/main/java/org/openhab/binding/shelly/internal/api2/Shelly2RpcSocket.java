@@ -169,8 +169,7 @@ public class Shelly2RpcSocket {
         }
 
         if (websocketHandler == null && thingTable != null) {
-            logger.debug("{}: Unable to handle Rpc connection from {} (unknown/disabled thing), closing socket",
-                    thingName, deviceIp);
+            logger.debug("Rpc: Unable to handle connection from {} (unknown/disabled thing), closing socket", deviceIp);
             session.close(StatusCode.SHUTDOWN, "Thing not active");
         }
     }
@@ -283,7 +282,7 @@ public class Shelly2RpcSocket {
     @OnWebSocketClose
     public void onClose(int statusCode, String reason) {
         if (statusCode != StatusCode.NORMAL) {
-            logger.debug("{}: Rpc connection closed: {} - {}", thingName, statusCode, getString(reason));
+            logger.trace("{}: Rpc connection closed: {} - {}", thingName, statusCode, getString(reason));
         }
         if (inbound) {
             // Ignore disconnect: Device establishes the socket, sends NotifyxFullStatus and disconnects

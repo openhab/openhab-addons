@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.shelly.internal.api;
 
+import java.net.ConnectException;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
 import java.text.MessageFormat;
@@ -74,7 +75,7 @@ public class ShellyApiException extends Exception {
                         string[1]);
             } else if (isMalformedURL()) {
                 message = MessageFormat.format("Invalid URL: {0}", apiResult.getUrl());
-            } else if (isTimeout()) {
+            } else if (isConnectionRefused() || isTimeout()) {
                 message = MessageFormat.format("Device unreachable or API Timeout ({0})", apiResult.getUrl());
             } else {
                 message = MessageFormat.format("{0} ({1})", message, cause);
@@ -96,16 +97,24 @@ public class ShellyApiException extends Exception {
                 || nonNullString(getMessage()).toLowerCase().contains("timeout"));
     }
 
-    public boolean isHttpAccessUnauthorized() {
-        return apiResult.isHttpAccessUnauthorized();
+    public boolean isConnectionError() {
+        return isUnknownHost() || isConnectionRefused() || isMalformedURL();
     }
 
     public boolean isUnknownHost() {
-        return getCauseClass() == MalformedURLException.class;
+        return getCauseClass() == UnknownHostException.class;
+    }
+
+    public boolean isConnectionRefused() {
+        return getCauseClass() == ConnectException.class;
     }
 
     public boolean isMalformedURL() {
-        return getCauseClass() == UnknownHostException.class;
+        return getCauseClass() == MalformedURLException.class;
+    }
+
+    public boolean isHttpAccessUnauthorized() {
+        return apiResult.isHttpAccessUnauthorized();
     }
 
     public boolean isJSONException() {
@@ -126,6 +135,9 @@ public class ShellyApiException extends Exception {
 
     private Class<?> getCauseClass() {
         Throwable cause = getCause();
+        if (cause != null && cause.getClass() == ExecutionException.class) {
+            cause = cause.getCause();
+        }
         if (cause != null) {
             return cause.getClass();
         }

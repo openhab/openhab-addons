@@ -283,6 +283,7 @@ public class Shelly1ApiJsonDTO {
         public Boolean enabled;
         public String ssid;
         public String key;
+        public Boolean rangeExtender; // Gen2 only
     }
 
     public static class ShellySettingsWiFiNetwork {
@@ -676,6 +677,10 @@ public class Shelly1ApiJsonDTO {
 
         @SerializedName("sleep_time") // Shelly Motion
         public Integer sleepTime;
+
+        // Gen2
+        public Boolean ethernet;
+        public Boolean bluetooth;
     }
 
     public static class ShellySettingsAttributes {

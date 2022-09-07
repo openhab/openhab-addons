@@ -111,8 +111,9 @@ public class ShellyHttpClient {
                 }
                 return apiResult.response; // successful
             } catch (ShellyApiException e) {
-                if ((!e.isTimeout() && !apiResult.isHttpServerError()) && !apiResult.isNotFound() || profile.hasBattery
-                        || (retries == 0)) {
+                if (e.isConnectionError()
+                        || (!e.isTimeout() && !apiResult.isHttpServerError()) && !apiResult.isNotFound()
+                        || profile.hasBattery || (retries == 0)) {
                     // Sensor in sleep mode or API exception for non-battery device or retry counter expired
                     throw e; // non-timeout exception
                 }
@@ -181,7 +182,7 @@ public class ShellyHttpClient {
             }
         } catch (ExecutionException | InterruptedException | TimeoutException | IllegalArgumentException e) {
             ShellyApiException ex = new ShellyApiException(apiResult, e);
-            if (!ex.isTimeout()) { // will be handled by the caller
+            if (!ex.isConnectionError() && !ex.isTimeout()) { // will be handled by the caller
                 logger.trace("{}: API call returned exception", thingName, ex);
             }
             throw ex;

@@ -354,8 +354,11 @@ public class ShellyDeviceProfile {
 
     public static String extractFwVersion(@Nullable String version) {
         if (version != null) {
-            // fix version e.g. 20210319-122304/v.1.10-Dimmer1-gfd4cc10 (with v.1. instead of v1.)
-            String vers = version.replace("/v.1.10-", "/v1.10.0-");
+            // fix version e.g.
+            // 20210319-122304/v.1.10-Dimmer1-gfd4cc10 (with v.1. instead of v1.)
+            // 20220809-125346/v1.12-g99f7e0b (.0 in 1.12.0 missing)
+            String vers = version.replace("/v.1.10-", "/v1.10.0-") //
+                    .replace("/v1.12-", "/v1.12.0");
 
             // Extract version from string, e.g. 20210226-091047/v1.10.0-rc2-89-g623b41ec0-master
             Matcher matcher = VERSION_PATTERN.matcher(vers);

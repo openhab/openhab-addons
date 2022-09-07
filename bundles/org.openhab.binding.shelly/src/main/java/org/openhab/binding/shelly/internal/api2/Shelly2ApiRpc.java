@@ -40,6 +40,7 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettings
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsMeter;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRelay;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsUpdate;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsWiFiNetwork;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyShortLightStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyShortStatusRelay;
@@ -47,8 +48,11 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusLi
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusRelay;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2AuthResponse;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2DeviceConfigWiFi.Shelly2DeviceConfigSta;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2ConfigParms;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2DeviceConfigSta;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2GetConfigResult;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfigAp;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfigAp.Shelly2DeviceConfigApRE;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceSettings;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusSys.Shelly2DeviceStatusSysAvlUpdate;
@@ -59,8 +63,8 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcNoti
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcNotifyStatus.Shelly2NotifyStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcRequest;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcRequest.Shelly2RpcRequestParams;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2WsConfig;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2WsConfigResponse;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2WsConfigResponse.Shelly2WsConfigResult;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
@@ -146,6 +150,10 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         profile.settings.name = profile.status.name = dc.sys.device.name;
         profile.name = getString(profile.settings.name);
         profile.settings.timezone = getString(dc.sys.location.tz);
+        profile.settings.discoverable = getBool(dc.sys.device.discoverable);
+        if (dc.wifi != null && dc.wifi.ap != null && dc.wifi.ap.rangeExtender != null) {
+            profile.settings.wifiAp.rangeExtender = getBool(dc.wifi.ap.rangeExtender.enable);
+        }
         if (dc.cloud != null) {
             profile.settings.cloud.enabled = getBool(dc.cloud.enable);
         }
@@ -184,6 +192,13 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         profile.fwVersion = substringBefore(ShellyDeviceProfile.extractFwVersion(device.fw.replace("/", "/v")), "-");
         profile.status.update.oldVersion = profile.fwVersion;
         profile.status.hasUpdate = profile.status.update.hasUpdate = false;
+
+        if (dc.eth != null) {
+            profile.settings.ethernet = getBool(dc.eth.enable);
+        }
+        if (dc.ble != null) {
+            profile.settings.bluetooth = getBool(dc.ble.enable);
+        }
 
         profile.settings.wifiSta = new ShellySettingsWiFiNetwork();
         profile.settings.wifiSta1 = new ShellySettingsWiFiNetwork();
@@ -261,7 +276,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     }
 
     private void checkSetWsCallback() throws ShellyApiException {
-        Shelly2WsConfig wsConfig = apiRequest(SHELLYRPC_METHOD_WSGETCONFIG, null, Shelly2WsConfig.class);
+        Shelly2ConfigParms wsConfig = apiRequest(SHELLYRPC_METHOD_WSGETCONFIG, null, Shelly2ConfigParms.class);
         String url = "ws://" + config.localIp + ":" + config.localPort + "/shelly/wsevent";
         if (!getBool(wsConfig.enable) || !url.equalsIgnoreCase(getString(wsConfig.server))) {
             logger.debug("{}: A battery device was detected without correct callback, fix it", thingName);
@@ -302,6 +317,8 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                 logger.debug("{}: Thing is not in online state/connectable, ignore NotifyStatus", thingName);
                 return;
             }
+
+            getThing().incProtMessages();
             if (message.error != null) {
                 if (message.error.code == HttpStatus.UNAUTHORIZED_401 && !getString(message.error.message).isEmpty()) {
                     // Save nonce for notification
@@ -313,6 +330,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                 } else {
                     logger.debug("{}: Error status received - {} {}", thingName, message.error.code,
                             message.error.message);
+                    incProtErrors();
                 }
             }
 
@@ -348,6 +366,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             }
         } catch (ShellyApiException e) {
             logger.debug("{}: Unable to process status update", thingName, e);
+            incProtErrors();
         }
     }
 
@@ -357,6 +376,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             logger.debug("{}: NotifyEvent  received: {}", thingName, gson.toJson(message));
             ShellyDeviceProfile profile = getProfile();
 
+            getThing().incProtMessages();
             getThing().restartWatchdog();
 
             for (Shelly2NotifyEvent e : message.params.events) {
@@ -416,19 +436,29 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                     case SHELLY2_EVENT_SLEEP:
                         logger.debug("{}: Device went to sleep mode", thingName);
                         break;
-
+                    case SHELLY2_EVENT_WIFICONNFAILED:
+                        logger.debug("{}: WiFi connect failed, check setup, reason {}", thingName,
+                                getInteger(e.reason));
+                        getThing().postEvent(e.event, false);
+                        break;
+                    case SHELLY2_EVENT_WIFIDISCONNECTED:
+                        logger.debug("{}: WiFi disconnected, reason {}", thingName, getInteger(e.reason));
+                        getThing().postEvent(e.event, false);
+                        break;
                     default:
                         logger.debug("{}: Event {} was not handled", thingName, e.event);
                 }
             }
         } catch (ShellyApiException e) {
             logger.debug("{}: Unable to process event", thingName, e);
+            incProtErrors();
         }
     }
 
     @Override
     public void onMessage(String message) {
         logger.debug("{}: Unexpected RPC message received: {}", thingName, message);
+        incProtErrors();
     }
 
     @Override
@@ -440,14 +470,16 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             }
         } catch (ShellyApiException e) {
             logger.debug("{}: Exception on onClose()", thingName, e);
-
+            incProtErrors();
         }
     }
 
     @Override
     public void onError(Throwable cause) {
         logger.debug("{}: WebSocket error", thingName);
-        thingOffline();
+        if (thing != null && thing.getProfile().alwaysOn) {
+            thingOffline();
+        }
     }
 
     private void thingOffline() {
@@ -484,10 +516,12 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         status.wifiSta.rssi = getInteger(ds.wifi.rssi);
         status.fsFree = ds.sys.fsFree;
         status.fsSize = ds.sys.fsSize;
+        status.discoverable = getBool(profile.settings.discoverable);
+
         if (ds.sys.wakeupPeriod != null) {
             profile.settings.sleepMode.period = ds.sys.wakeupPeriod / 60;
         }
-        status.discoverable = true;
+
         status.hasUpdate = status.update.hasUpdate = false;
         status.update.oldVersion = getProfile().fwVersion;
         if (ds.sys.availableUpdates != null) {
@@ -515,10 +549,6 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
         fillDeviceStatus(status, ds, false);
         return status;
-    }
-
-    @Override
-    public void setLedStatus(String ledName, Boolean value) throws ShellyApiException {
     }
 
     @Override
@@ -575,6 +605,120 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     }
 
     @Override
+    public ShellyStatusSensor getSensorStatus() throws ShellyApiException {
+        return sensorData;
+    }
+
+    @Override
+    public ShellySettingsLogin getLoginSettings() throws ShellyApiException {
+        return new ShellySettingsLogin();
+    }
+
+    @Override
+    public ShellySettingsLogin setLoginCredentials(String user, String password) throws ShellyApiException {
+        Shelly2RpcRequestParams params = new Shelly2RpcRequestParams();
+        params.user = "admin";
+        params.realm = config.serviceName;
+        params.ha1 = sha256(params.user + ":" + params.realm + ":" + password);
+        apiRequest(SHELLYRPC_METHOD_AUTHSET, params, String.class);
+
+        ShellySettingsLogin res = new ShellySettingsLogin();
+        res.enabled = true;
+        res.username = params.user;
+        res.password = password;
+        return new ShellySettingsLogin();
+    }
+
+    @Override
+    public boolean setWiFiRangeExtender(boolean enable) throws ShellyApiException {
+        Shelly2RpcRequestParams params = new Shelly2RpcRequestParams();
+        params.config.ap = new Shelly2DeviceConfigAp();
+        params.config.ap.rangeExtender = new Shelly2DeviceConfigApRE();
+        params.config.ap.rangeExtender.enable = enable;
+        Shelly2WsConfigResult res = apiRequest(SHELLYRPC_METHOD_WIFISETCONG, params, Shelly2WsConfigResult.class);
+        return res.restartRequired;
+    }
+
+    @Override
+    public boolean setEthernet(boolean enable) throws ShellyApiException {
+        Shelly2RpcRequestParams params = new Shelly2RpcRequestParams();
+        params.config.enable = enable;
+        Shelly2WsConfigResult res = apiRequest(SHELLYRPC_METHOD_ETHSETCONG, params, Shelly2WsConfigResult.class);
+        return res.restartRequired;
+    }
+
+    @Override
+    public boolean setBluetooth(boolean enable) throws ShellyApiException {
+        Shelly2RpcRequestParams params = new Shelly2RpcRequestParams();
+        params.config.enable = enable;
+        Shelly2WsConfigResult res = apiRequest(SHELLYRPC_METHOD_BLESETCONG, params, Shelly2WsConfigResult.class);
+        return res.restartRequired;
+    }
+
+    @Override
+    public String deviceReboot() throws ShellyApiException {
+        return apiRequest(SHELLYRPC_METHOD_REBOOT, null, String.class);
+    }
+
+    @Override
+    public String factoryReset() throws ShellyApiException {
+        return apiRequest(SHELLYRPC_METHOD_RESET, null, String.class);
+    }
+
+    @Override
+    public ShellyOtaCheckResult checkForUpdate() throws ShellyApiException {
+        Shelly2DeviceStatusSysAvlUpdate status = apiRequest(SHELLYRPC_METHOD_CHECKUPD, null,
+                Shelly2DeviceStatusSysAvlUpdate.class);
+        ShellyOtaCheckResult result = new ShellyOtaCheckResult();
+        result.status = status.stable != null || status.beta != null ? "new" : "ok";
+        return result;
+    }
+
+    @Override
+    public ShellySettingsUpdate firmwareUpdate(String fwurl) throws ShellyApiException {
+        ShellySettingsUpdate res = new ShellySettingsUpdate();
+        boolean prod = fwurl.contains("update");
+        boolean beta = fwurl.contains("beta");
+
+        Shelly2RpcRequestParams params = new Shelly2RpcRequestParams();
+        if (prod || beta) {
+            params.stage = prod || beta ? "stable" : "beta";
+        } else {
+            params.url = fwurl;
+        }
+        apiRequest(SHELLYRPC_METHOD_UPDATE, params, String.class);
+        res.status = "Update initiated";
+        return res;
+    }
+
+    @Override
+    public String setCloud(boolean enable) throws ShellyApiException {
+        Shelly2RpcRequestParams params = new Shelly2RpcRequestParams();
+        params.config.enable = enable;
+        Shelly2WsConfigResult res = apiRequest(SHELLYRPC_METHOD_CLOUDSET, params, Shelly2WsConfigResult.class);
+        return res.restartRequired ? "restart required" : "ok";
+    }
+
+    @Override
+    public String setDebug(boolean enabled) throws ShellyApiException {
+        return "failed";
+    }
+
+    @Override
+    public String getDebugLog(String id) throws ShellyApiException {
+        return ""; // Gen2 uses WS to publish debug log
+    }
+
+    /*
+     * The following API calls are not yet relevant, because currently there a no Plus/Pro (Gen2) devices of those
+     * categories (e.g. bulbs)
+     */
+    @Override
+    public void setLedStatus(String ledName, Boolean value) throws ShellyApiException {
+        throw new ShellyApiException("API call not implemented");
+    }
+
+    @Override
     public ShellyStatusLight getLightStatus() throws ShellyApiException {
         throw new ShellyApiException("API call not implemented");
     }
@@ -586,6 +730,12 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
     @Override
     public void setLightParm(int lightIndex, String parm, String value) throws ShellyApiException {
+        throw new ShellyApiException("API call not implemented");
+    }
+
+    @Override
+    public void setLightParms(int lightIndex, Map<String, String> parameters) throws ShellyApiException {
+        throw new ShellyApiException("API call not implemented");
     }
 
     @Override
@@ -604,16 +754,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     }
 
     @Override
-    public void setLightParms(int lightIndex, Map<String, String> parameters) throws ShellyApiException {
-    }
-
-    @Override
-    public ShellyStatusSensor getSensorStatus() throws ShellyApiException {
-        return sensorData;
-    }
-
-    @Override
-    public void setTimer(int index, String timerName, int value) throws ShellyApiException {
+    public void setAutoTimer(int index, String timerName, int value) throws ShellyApiException {
         throw new ShellyApiException("API call not implemented");
     }
 
@@ -654,11 +795,18 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
     @Override
     public void setActionURLs() throws ShellyApiException {
+        // not relevant for Gen2
     }
 
     @Override
     public ShellySettingsLogin setCoIoTPeer(String peer) throws ShellyApiException {
+        // not relevant for Gen2
         return new ShellySettingsLogin();
+    }
+
+    @Override
+    public String getCoIoTDescription() {
+        return ""; // not relevant to Gen2
     }
 
     @Override
@@ -667,57 +815,13 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     }
 
     @Override
-    public ShellySettingsLogin getLoginSettings() throws ShellyApiException {
-        return new ShellySettingsLogin();
-    }
-
-    @Override
-    public ShellySettingsLogin setLoginCredentials(String user, String password) throws ShellyApiException {
-        return new ShellySettingsLogin();
-    }
-
-    @Override
     public String setWiFiRecovery(boolean enable) throws ShellyApiException {
-        return "failed";
+        return "failed"; // not supported by Gen2
     }
 
     @Override
     public String setApRoaming(boolean enable) throws ShellyApiException {
-        return "false";
-    }
-
-    @Override
-    public String setCloud(boolean enabled) throws ShellyApiException {
-        return "failed";
-    }
-
-    @Override
-    public String setDebug(boolean enabled) throws ShellyApiException {
-        return "failed";
-    }
-
-    @Override
-    public String getDebugLog(String id) throws ShellyApiException {
-        return "";
-    }
-
-    @Override
-    public String deviceReboot() throws ShellyApiException {
-        return apiRequest(SHELLYRPC_METHOD_REBOOT, null, String.class);
-    }
-
-    @Override
-    public String factoryReset() throws ShellyApiException {
-        return apiRequest(SHELLYRPC_METHOD_RESET, null, String.class);
-    }
-
-    @Override
-    public ShellyOtaCheckResult checkForUpdate() throws ShellyApiException {
-        Shelly2DeviceStatusSysAvlUpdate status = apiRequest(SHELLYRPC_METHOD_CHECKUPD, null,
-                Shelly2DeviceStatusSysAvlUpdate.class);
-        ShellyOtaCheckResult result = new ShellyOtaCheckResult();
-        result.status = status.stable != null || status.beta != null ? "new" : "ok";
-        return result;
+        return "false";// not supported by Gen2
     }
 
     private void asyncApiRequest(String method) throws ShellyApiException {
@@ -769,11 +873,6 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         return fromJson(gson, json, classOfT);
     }
 
-    @Override
-    public String getCoIoTDescription() {
-        return "";
-    }
-
     public <T> T apiRequest(Shelly2RpcRequest request, Class<T> classOfT) throws ShellyApiException {
         return apiRequest(request.method, request.params, classOfT);
     }
@@ -809,5 +908,11 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                 rpcSocket.isConnected() ? "connected" : "disconnected", discovery);
         disconnect();
         initialized = false;
+    }
+
+    private void incProtErrors() {
+        if (thing != null) {
+            thing.incProtErrors();
+        }
     }
 }
