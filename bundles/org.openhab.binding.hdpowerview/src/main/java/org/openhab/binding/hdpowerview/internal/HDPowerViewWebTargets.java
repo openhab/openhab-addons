@@ -81,10 +81,10 @@ public abstract class HDPowerViewWebTargets {
     /*
      * De-serializer target class types
      */
-    private final Class<?> sceneClass;
-    private final Class<?> shadeDataClass;
-    private final Class<?> shadePositionClass;
-    private final Class<?> scheduledEventClass;
+    private final Class<? extends Scene> sceneClass;
+    private final Class<? extends ShadeData> shadeDataClass;
+    private final Class<? extends ShadePosition> shadePositionClass;
+    private final Class<? extends ScheduledEvent> scheduledEventClass;
 
     protected final Gson gson;
     protected final HttpClient httpClient;
@@ -183,8 +183,9 @@ public abstract class HDPowerViewWebTargets {
      * @param httpClient the HTTP client (the binding)
      * @param ipAddress the IP address of the server (the hub)
      */
-    public HDPowerViewWebTargets(HttpClient httpClient, String ipAddress, Class<?> sceneClass, Class<?> shadeDataClass,
-            Class<?> shadePositionClass, Class<?> scheduledEventClass) {
+    public HDPowerViewWebTargets(HttpClient httpClient, String ipAddress, Class<? extends Scene> sceneClass,
+            Class<? extends ShadeData> shadeDataClass, Class<? extends ShadePosition> shadePositionClass,
+            Class<? extends ScheduledEvent> scheduledEventClass) {
         this.httpClient = httpClient;
         this.sceneClass = sceneClass;
         this.shadeDataClass = shadeDataClass;
