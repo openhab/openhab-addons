@@ -24,21 +24,12 @@ Discovery is implemented and will discover all circuits and chargers assigned to
 
 The following configuration parameters are available for the binding/bridge:
 
-- **username** (required)
-The username to login at Easee Cloud service.
-This should be an e-mail address or phone number.
-
-- **passord** (required)  
-Your password to login at Easee Cloud service.
-
-- **siteId** (required)  
-The ID of the site containing the wallbox(es) and circuit(s) that should be integrated into openHAB.
-The ID of your site can be found out via the sites overview (https://easee.cloud/sites).
-You just need to click on one of the sites listed there, the id will be part of the URL which is then opened.
-It will be a number with typically 6 digits.
-
-- **dataPollingInterval** (optional)  
-interval (seconds) in which live data values are retrieved from the Easee Cloud API. (default = 120)
+| Configuration Parameter | Required | Description                                                                                                                                                                                                                                                                                                                                              |
+|-------------------------|----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| username                | yes      | The username to login at Easee Cloud service. This should be an e-mail address or phone number.                                                                                                                                                                                                                                                          |
+| passord                 | yes      | Your password to login at Easee Cloud service.                                                                                                                                                                                                                                                                                                           |
+| siteId                  | yes      | The ID of the site containing the wallbox(es) and circuit(s) that should be integrated into openHAB. The ID of your site can be found out via the sites overview (https://easee.cloud/sites). You just need to click on one of the sites listed there, the id will be part of the URL which is then opened. It will be a number with typically 6 digits. |
+| dataPollingInterval     | no       | interval (seconds) in which live data values are retrieved from the Easee Cloud API. (default = 120)                                                                                                                                                                                                                                                     |
 
 ## Thing configuration
 
@@ -47,17 +38,16 @@ If manual configuration is preferred you need to specify configuration as below.
 
 ### Charger
 
-- **id** (required)
-The id of the charger that will be represented by this thing.
+| Configuration Parameter | Required | Description                                                                                                            |
+|-------------------------|----------|------------------------------------------------------------------------------------------------------------------------|
+| id                      | yes      | The id of the charger that will be represented by this thing.                                                          |
 
 ### Mastercharger
 
-- **id** (required)
-The id of the charger that will be represented by this thing.
-
-- **circuitId** (required)
-The id of the circuit that is controlled by this charger.
-
+| Configuration Parameter | Required | Description                                                                                                            |
+|-------------------------|----------|------------------------------------------------------------------------------------------------------------------------|
+| id                      | yes      | The id of the charger that will be represented by this thing.                                                          |
+| circuitId               | yes      | The id of the circuit that is controlled by this charger.                                                              |
 
 ## Channels
 
