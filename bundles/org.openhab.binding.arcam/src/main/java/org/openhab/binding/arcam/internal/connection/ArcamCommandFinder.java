@@ -31,7 +31,7 @@ public class ArcamCommandFinder {
     public byte[] getCommandDataFromCode(ArcamCommandCode code, List<ArcamCommand> list) {
         for (ArcamCommand command : list) {
             if (command.code.equals(code)) {
-                return command.data;
+                return command.data.clone();
             }
         }
 
