@@ -350,7 +350,7 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
     @Test
     public void assertChannelCpuLoadIsUpdated() {
         String channnelID = SysteminfoBindingConstants.CHANNEL_CPU_LOAD;
-        String acceptedItemType = "Number:Dimensionless";
+        String acceptedItemType = "Number";
 
         PercentType mockedCpuLoadValue = new PercentType(9);
         when(mockedSystemInfo.getSystemCpuLoad()).thenReturn(mockedCpuLoadValue);
@@ -1016,7 +1016,7 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
     @Test
     public void assertChannelProcessLoadIsUpdatedWithPIDset() throws DeviceNotFoundException {
         String channnelID = SysteminfoBindingConstants.CHANNEL_PROCESS_LOAD;
-        String acceptedItemType = "Number:Dimensionless";
+        String acceptedItemType = "Number";
         // The pid of the System idle process in Windows
         int pid = 0;
 
