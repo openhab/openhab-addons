@@ -74,17 +74,14 @@ A channel should be added for each probe, as indicated above and configured with
 *.items
 
 ```
-Switch Front_Door_Sensor "Front Door" {channel="konnected:wifi-module:generic:switch-wifi"}
-Switch Siren "Siren" {channel="konnected:wifi-module:generic:actuator-wifi"}
-
-Switch Front_Door_Sensor_Pro "Front Door" {channel="konnected:pro-module:generic:switch-pro"}
-Switch Siren_Pro "Siren" {channel="konnected:pro-module:generic:actuator-pro"}
+Switch Siren "Siren" {channel="konnected:wifi-module:generic:siren"}
+Switch Back_Door_Sensor "Back Door" {channel="konnected:pro-module:generic:backd"}
 ```
 
 *.sitemap
 
 ```
-Switch item=Front_Door_Sensor label="Front Door" icon="door" mappings=[OPEN="Open", CLOSED="Closed"]
+Switch item=Back_Door_Sensor label="Back Door" icon="door" mappings=[OPEN="Open", CLOSED="Closed"]
 Switch item=Siren label="Alarm Siren" icon="Siren" mappings=[ON="Open", OFF="Closed"]
 ```
 
@@ -92,19 +89,19 @@ Switch item=Siren label="Alarm Siren" icon="Siren" mappings=[ON="Open", OFF="Clo
 
 ```
 Thing konnected:wifi-module:generic "Konnected Module" [baseUrl="http://192.168.30.153:9586", macAddress="1586517"]{
-   Type switch      : switch-wifi      "Front Door"          [zone=1]
-   Type actuator    : actuator-wifi    "Siren"               [zone=2, momentary = 50, times = 2, pause = 50]
-   Type humidity    : humidity-wifi    "DHT - Humidity"      [zone=3]
-   Type temperature : temperature-wifi "DHT Temperature"     [zone=4, dht22 = true, pollInterval = 1]
-   Type temperature : temperature-wifi "DS18B20 Temperature" [zone=5, dht22 = false, pollInterval = 1, ds18b20Address = "XX:XX:XX:XX:XX:XX:XX"]
+   Type switch-wifi     : frontd    "Front Door"                        [zone="1"]
+   Type actuator-wifi   : siren     "Siren"                             [zone="2", momentary = 50, times = 2, pause = 50]
+   Type humidity-wifi   : bedhum    "Bedroom Humidity (DHT22)"          [zone="3"]
+   Type temperature-wifi: bedtemp   "Bedroom Temperature (DHT22)"       [zone="3", dht22 = true, pollInterval = 1]
+   Type temperature-wifi: lrtemp    "Living Room Temperature (DS18B20)" [zone="4", dht22 = false, pollInterval = 1, ds18b20Address = "XX:XX:XX:XX:XX:XX:XX"]
 }
 
-Thing konnected:pro-module:generic "Konnected Module" [baseUrl="http://192.168.30.154:9586", macAddress="1684597"]{
-   Type switch      : switch-pro      "Front Door"          [zone=1]
-   Type actuator    : actuator-pro    "Siren"               [zone=2, momentary = 50, times = 2, pause = 50]
-   Type humidity    : humidity-pro    "DHT - Humidity"      [zone=3]
-   Type temperature : temperature-pro "DHT Temperature"     [zone=4, dht22 = true, pollInterval = 1]
-   Type temperature : temperature-pro "DS18B20 Temperature" [zone=5, dht22 = false, pollInterval = 1, ds18b20Address = "XX:XX:XX:XX:XX:XX:XX"]
+Thing konnected:pro-module:generic "Konnected Module" [baseUrl="http://192.168.30.154:9586", macAddress="1684597",  callbackUrl="https://openhab/konnected"]{
+   Type switch-pro      : backd     "Back Door"                     [zone="1"]
+   Type actuator-pro    : chime     "Chime"                         [zone="2", momentary = 50, times = 2, pause = 50]
+   Type humidity-pro    : kitchhum  "Kitchen Humidity (DHT22)"      [zone="3"]
+   Type temperature-pro : kitchtemp "Kitchen Temperature (DHT22)"   [zone="3", dht22 = true, pollInterval = 1]
+   Type temperature-pro : outhum    "Outside Temperature (DS18B20)" [zone="4", dht22 = false, pollInterval = 1, ds18b20Address = "XX:XX:XX:XX:XX:XX:XX"]
 }
 ```
 
