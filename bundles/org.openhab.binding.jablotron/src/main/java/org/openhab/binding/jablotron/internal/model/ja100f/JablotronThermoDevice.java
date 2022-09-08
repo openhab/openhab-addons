@@ -17,36 +17,24 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link JablotronState} class defines the state object for the
- * getSections response
+ * The {@link JablotronThermoDevice} class defines the thermal device object
+ * for the getThermoDevices response
  *
  * @author Ondrej Pecta - Initial contribution
  */
 @NonNullByDefault
-public class JablotronState {
-
-    @SerializedName(value = "cloud-component-id", alternate = "component-id")
-    String cloudComponentId = "";
+public class JablotronThermoDevice {
 
     @SerializedName(value = "object-device-id")
     String objectDeviceId = "";
 
-    String state = "";
-    float temperature = 0;
-
-    public String getCloudComponentId() {
-        return cloudComponentId;
-    }
-
-    public String getState() {
-        return state;
-    }
-
-    public float getTemperature() {
-        return temperature;
-    }
+    String name = "";
 
     public String getObjectDeviceId() {
         return objectDeviceId;
+    }
+
+    public String getName() {
+        return name;
     }
 }
