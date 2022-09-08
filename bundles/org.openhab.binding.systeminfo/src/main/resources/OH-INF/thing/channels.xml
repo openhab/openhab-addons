@@ -289,7 +289,7 @@
 	</channel-type>
 
 	<channel-type id="load_process">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Load</label>
 		<description>Load in percent</description>
 		<state readOnly="true" pattern="%.1f %%"/>

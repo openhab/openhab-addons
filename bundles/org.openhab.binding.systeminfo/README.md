@@ -65,7 +65,7 @@ In the list below, you can find, how are channel group and channels id`s related
 **thing** `computer`
 
 *   **group** `memory`
-  * **channel** `available, total, used, availablePercent, usedPercent`
+  * **channel** `available, total, used, availablePercent, usedPercent, usedHeapPercent, availableHeap`
 *   **group** `swap`
   * **channel** `available, total, used, availablePercent, usedPercent`
 *   **group** `storage` (deviceIndex)
@@ -77,7 +77,7 @@ In the list below, you can find, how are channel group and channels id`s related
 *   **group** `battery` (deviceIndex)
   * **channel** `name, remainingCapacity, remainingTime`
 *   **group** `cpu`
-  * **channel** `name, description, load, load1, load5, load15, uptime`
+  * **channel** `name, description, load, load1, load5, load15, uptime, threads`
 *   **group** `sensors`
   * **channel** `cpuTemp, cpuVoltage, fanSpeed`
 *   **group** `network` (deviceIndex)
@@ -104,13 +104,14 @@ The binding introduces the following channels:
 
 | Channel ID         | Channel Description                                              | Supported item type | Default priority | Advanced |
 |--------------------|------------------------------------------------------------------|---------------------|------------------|----------|
-| load               | CPU Load in %                                                    | Number:Dimensionless| High             | False    |
+| load               | CPU Load (total or by process) in %                              | Number:Dimensionless| High             | False    |
 | load1              | Load for the last 1 minute                                       | Number              | Medium           | True     |
 | load5              | Load for the last 5 minutes                                      | Number              | Medium           | True     |
 | load15             | Load for the last 15 minutes                                     | Number              | Medium           | True     |
-| threads            | Number of threads currently running                              | Number              | Medium           | True     |
+| threads            | Number of threads currently running or for the process           | Number              | Medium           | True     |
+| path               | The full path of the process                                     | String              | Low              | False    |
 | uptime             | System uptime (time after start) in minutes                      | Number              | Medium           | True     |
-| name               | Name of the device                                               | String              | Low              | False    |
+| name               | Name of the device or process                                    | String              | Low              | False    |
 | available          | Available size in MB                                             | Number              | High             | False    |
 | used               | Used size in MB                                                  | Number              | High             | False    |
 | total              | Total size in MB                                                 | Number              | Low              | False    |
@@ -148,6 +149,9 @@ It has the following options:
 -   **High**
 -   **Medium**
 -   **Low**
+
+The ''load'' channel will update total or by process CPU load at the frequency defined by the priority update interval, by default high priority, every second.
+The value corresponds to the average CPU load over the interval.
 
 Channels from group ''process'' have additional configuration parameter - PID (Process identifier).
 This parameter is used as 'deviceIndex' and defines which process is tracked from the channel.

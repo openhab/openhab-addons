@@ -14,11 +14,14 @@ package org.openhab.binding.systeminfo.internal.model;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StringType;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
@@ -74,9 +77,11 @@ public class OSHISysteminfo implements SysteminfoInterface {
     private @NonNullByDefault({}) List<PowerSource> powerSources;
     private @NonNullByDefault({}) List<HWDiskStore> drives;
 
-    // Array containing cpu tick info, according to oshi doc:
+    // Array containing cpu tick info to calculate CPU load, according to oshi doc:
     // 8 long values representing time spent in User, Nice, System, Idle, IOwait, IRQ, SoftIRQ, and Steal states
     private long[] ticks = new long[8];
+    // Map containing previous process state to calculate load by process
+    private Map<Integer, OSProcess> processTicks = new HashMap<>();
 
     public static final int PRECISION_AFTER_DECIMAL_SIGN = 1;
 
@@ -342,7 +347,7 @@ public class OSHISysteminfo implements SysteminfoInterface {
     @Override
     public @Nullable DecimalType getSensorsFanSpeed(int index) throws DeviceNotFoundException {
         int[] fanSpeeds = sensors.getFanSpeeds();
-        int speed = 0;// 0 means unable to measure speed
+        int speed = 0; // 0 means unable to measure speed
         if (index < fanSpeeds.length) {
             speed = fanSpeeds[index];
         }
@@ -490,13 +495,11 @@ public class OSHISysteminfo implements SysteminfoInterface {
     }
 
     @Override
-    public @Nullable DecimalType getSystemCpuLoad() {
-        Double load = null;
-        if (ticks[0] > 0) {
-            load = cpu.getSystemCpuLoadBetweenTicks(ticks);
-        }
+    public @Nullable PercentType getSystemCpuLoad() {
+        PercentType load = (ticks[0] > 0) ? new PercentType(getPercentsValue(cpu.getSystemCpuLoadBetweenTicks(ticks)))
+                : null;
         ticks = cpu.getSystemCpuLoadTicks();
-        return load == null ? null : new DecimalType(load);
+        return load;
     }
 
     /**
@@ -617,12 +620,14 @@ public class OSHISysteminfo implements SysteminfoInterface {
     }
 
     @Override
-    public @Nullable DecimalType getProcessCpuUsage(int pid) throws DeviceNotFoundException {
+    public @Nullable PercentType getProcessCpuUsage(int pid) throws DeviceNotFoundException {
         if (pid > 0) {
             OSProcess process = getProcess(pid);
-            double cpuUsageRaw = (process.getKernelTime() + process.getUserTime()) / process.getUpTime();
-            BigDecimal cpuUsage = getPercentsValue(cpuUsageRaw);
-            return new DecimalType(cpuUsage);
+            PercentType load = (processTicks.containsKey(pid))
+                    ? new PercentType(getPercentsValue(process.getProcessCpuLoadBetweenTicks(processTicks.get(pid))))
+                    : null;
+            processTicks.put(pid, process);
+            return load;
         } else {
             return null;
         }
