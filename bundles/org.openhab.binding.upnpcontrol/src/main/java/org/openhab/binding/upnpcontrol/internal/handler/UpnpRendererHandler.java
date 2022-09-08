@@ -221,7 +221,7 @@ public class UpnpRendererHandler extends UpnpHandler {
     protected void initJob() {
         synchronized (jobLock) {
             if (!upnpIOService.isRegistered(this)) {
-                String msg = String.format("@text/offline.device-not-registed [ \"%s\" ]", getUDN());
+                String msg = String.format("@text/offline.device-not-registered [ \"%s\" ]", getUDN());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msg);
                 return;
             }
