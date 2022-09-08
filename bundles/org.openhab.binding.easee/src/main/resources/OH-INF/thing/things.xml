@@ -9,6 +9,9 @@
 		<config-description-ref uri="thing-type:easee:site"/>
 	</bridge-type>
 	<thing-type id="mastercharger">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="site"/>
+		</supported-bridge-type-refs>
 		<label>Easee Master Charger</label>
 		<description>Cloud connected Easee Master Charger which also controls the circuit.</description>
 		<channel-groups>
@@ -22,6 +25,9 @@
 		<config-description-ref uri="thing-type:easee:mastercharger"/>
 	</thing-type>
 	<thing-type id="charger">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="site"/>
+		</supported-bridge-type-refs>
 		<label>Easee Charger</label>
 		<description>Cloud connected Easee Charger.</description>
 		<channel-groups>
