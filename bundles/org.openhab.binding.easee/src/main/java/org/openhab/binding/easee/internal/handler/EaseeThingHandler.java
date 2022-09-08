@@ -31,7 +31,6 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * public interface of the {@link EaseeThingHandler}. provides some default implementations which can be used by both
@@ -41,7 +40,13 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public interface EaseeThingHandler extends ThingHandler, ChannelProvider {
-    static final Logger LOGGER = LoggerFactory.getLogger(EaseeThingHandler.class);
+
+    /**
+     * just to avoid usage of static loggers.
+     *
+     * @return
+     */
+    Logger getLogger();
 
     /**
      * method which updates the channels. needs to be implemented by thing types which have channels.
@@ -49,7 +54,7 @@ public interface EaseeThingHandler extends ThingHandler, ChannelProvider {
      * @param values key-value list where key is the channel
      */
     default void updateChannelStatus(Map<Channel, State> values) {
-        LOGGER.debug("updateChannelStatus not implemented/supported by this thing type");
+        getLogger().debug("updateChannelStatus not implemented/supported by this thing type");
     }
 
     /**
@@ -74,7 +79,7 @@ public interface EaseeThingHandler extends ThingHandler, ChannelProvider {
      */
     @Override
     default void handleCommand(ChannelUID channelUID, Command command) {
-        LOGGER.debug("command for {}: {}", channelUID, command);
+        getLogger().debug("command for {}: {}", channelUID, command);
 
         if (command instanceof RefreshType) {
             return;
@@ -85,20 +90,20 @@ public interface EaseeThingHandler extends ThingHandler, ChannelProvider {
         Channel channel = getChannel(group, channelUID.getIdWithoutGroup());
         if (channel == null) {
             // this should not happen
-            LOGGER.warn("channel not found: {}", channelUID);
+            getLogger().warn("channel not found: {}", channelUID);
             return;
         }
 
         String channelType = Utils.getChannelTypeId(channel);
         if (!channelType.startsWith(CHANNEL_TYPEPREFIX_RW)) {
-            LOGGER.info("channel '{}' does not support write access - value to set '{}'",
+            getLogger().info("channel '{}' does not support write access - value to set '{}'",
                     channelUID.getIdWithoutGroup(), command);
             throw new UnsupportedOperationException(
                     "channel (" + channelUID.getIdWithoutGroup() + ") does not support write access");
         }
 
         if (getThing().getStatus() != ThingStatus.ONLINE) {
-            LOGGER.debug("Thing is not online, thus no commands will be handled");
+            getLogger().debug("Thing is not online, thus no commands will be handled");
             return;
         }
         enqueueCommand(buildEaseeCommand(command, channel));

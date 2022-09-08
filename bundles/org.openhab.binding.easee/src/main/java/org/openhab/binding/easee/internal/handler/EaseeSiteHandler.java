@@ -121,4 +121,9 @@ public class EaseeSiteHandler extends BaseBridgeHandler implements EaseeBridgeHa
     public void enqueueCommand(EaseeCommand command) {
         webInterface.enqueueCommand(command);
     }
+
+    @Override
+    public Logger getLogger() {
+        return logger;
+    }
 }

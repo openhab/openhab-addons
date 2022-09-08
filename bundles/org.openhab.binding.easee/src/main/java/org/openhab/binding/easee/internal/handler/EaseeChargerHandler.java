@@ -226,4 +226,9 @@ public class EaseeChargerHandler extends BaseThingHandler implements EaseeThingH
                         "write command not found for channel: " + channel.getUID().getIdWithoutGroup());
         }
     }
+
+    @Override
+    public Logger getLogger() {
+        return logger;
+    }
 }
