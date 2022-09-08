@@ -48,6 +48,11 @@ You will need to add channels for the zones that you have connected and configur
 You will need to configure each channel with the appropriate zone number corresponding to the zone on The Konnected Alarm Panel.
 Then you need to link the corresponding item to the channel.
 
+Switches and actuators can be configured as high or low level triggered.
+This is done though setting the parameter onValue to 1 for high level trigger or 0 for low level trigger.
+The default setting is high level triggered (1).
+It may for example be useful to set channel to low level trigger when using a low level trigger relay board, to avoid inverting the switch logic.
+
 For the actuator type channels you can also add configuration parameters times, pause and momentary which will be added to the payload that is sent to the Konnected Alarm Panel.
 These parameters will tell the module to pulse the actuator for certain time period.
 A momentary switch actuates a switch for a specified time (in milliseconds) and then reverts it back to the off state.
