@@ -24,12 +24,12 @@ Discovery is implemented and will discover all circuits and chargers assigned to
 
 The following configuration parameters are available for the binding/bridge:
 
-| Configuration Parameter | Required | Description                                                                                                                                                                                                                                                                                                                                              |
-|-------------------------|----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| username                | yes      | The username to login at Easee Cloud service. This should be an e-mail address or phone number.                                                                                                                                                                                                                                                          |
-| passord                 | yes      | Your password to login at Easee Cloud service.                                                                                                                                                                                                                                                                                                           |
-| siteId                  | yes      | The ID of the site containing the wallbox(es) and circuit(s) that should be integrated into openHAB. The ID of your site can be found out via the sites overview (https://easee.cloud/sites). You just need to click on one of the sites listed there, the id will be part of the URL which is then opened. It will be a number with typically 6 digits. |
-| dataPollingInterval     | no       | interval (seconds) in which live data values are retrieved from the Easee Cloud API. (default = 120)                                                                                                                                                                                                                                                     |
+| Configuration Parameter | Required | Description                                                                                                                                                                                                                                                                                                                                       |
+|-------------------------|----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| username                | yes      | The username to login at Easee Cloud service. This should be an e-mail address or phone number.                                                                                                                                                                                                                                                   |
+| passord                 | yes      | Your password to login at Easee Cloud service.                                                                                                                                                                                                                                                                                                    |
+| siteId                  | yes      | The ID of the site containing the wallbox(es) and circuit(s) that should be integrated into openHAB. The ID of your site can be found via the sites overview (https://easee.cloud/sites). You just need to click one of the sites listed there, the id will be part of the URL which is then opened. It will be a number with typically 6 digits. |
+| dataPollingInterval     | no       | Interval (seconds) in which live data values are retrieved from the Easee Cloud API. (default = 120)                                                                                                                                                                                                                                              |
 
 ## Thing configuration
 
@@ -52,8 +52,8 @@ If manual configuration is preferred you need to specify configuration as below.
 ## Channels
 
 The binding only supports a subset of the available endpoints that is provided by the Easee Cloud API.
-The tables below shows all channels that are available and which of them are writable.
-The setting that start with "dynamic" can be changed frequently, the other are written to flash and thus should not be changed too often as this could result in damage of your flash.
+The tables below show all available channels and which of them are writable.
+The settings that start with "dynamic" can be changed frequently, the others are written to flash and thus should not be changed too often as this could result in damage of your flash.
 
 ### Charger Channels
 
@@ -92,7 +92,7 @@ The setting that start with "dynamic" can be changed frequently, the other are w
 
 ### Master Charger Channels
 
-The Master Charger is like the "normal" charger but has some extra channel to control the circuit. These additional channels are listed in the table below.
+The Master Charger is like the "normal" charger but has some extra channels to control the circuit. These additional channels are listed in the table below.
 
 | Channel Type ID                             | Item Type                | Writable | Description                                          | Allowed Values (write access)                                                                                                                                |
 |---------------------------------------------|--------------------------|----------|------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -110,19 +110,18 @@ The Master Charger is like the "normal" charger but has some extra channel to co
 | settings#offlineMaxCurrents                 | String                   | yes      | read/write only for all phases.                      | <value phase1>;<value phase2>;<value phase3>  valid values for each phase are 0, 6-32                                                                        |
 | settings#enableIdleCurrent                  | Switch                   | yes      |                                                      | true/false                                                                                                                                                   |
 | settings#allowOfflineMaxCircuitCurrent      | Switch                   | no       |                                                      |                                                                                                                                                              |
-|
 
 ## Full Example
 
 ### Thing                                                                                                                                                                    
 
-- minimum configuration
+#### Minimum configuration
 
 ```
 Bridge easee:site:mysite1 [ username="abc@def.net", password="secret", siteId="123456" ]
 ```
 
-- manual configuration with two chargers, pollingInterval set to 60 seconds.
+#### Manual configuration with two chargers, pollingInterval set to 60 seconds.
 
 ```
 Bridge easee:site:mysite1 [ username="abc@def.net", password="secret", siteId="471111", dataPollingInterval=60 ] {
@@ -145,7 +144,7 @@ Switch                  Easee_Charger_Start_Stop              "Start / Stop"    
 ### Sitemap
 
 ```
-    Switch item=Easee_Circuit_Dynamic_Phases mappings=["0;0;0"="0,00 kW", "6;0;0"="1,44 kW", "7;0;0"="1,68 kW", "8;0;0"="1,92 kW", "9;0;0"="2,16 kW", "10;0;0"="2,40 kW", "16;0;0"="3,72 kW", "16;16;16"="11,1 kW"] icon="energy"
+    Switch item=Easee_Circuit_Dynamic_Phases mappings=["0;0;0"="0.00 kW", "6;0;0"="1.44 kW", "7;0;0"="1.68 kW", "8;0;0"="1.92 kW", "9;0;0"="2.16 kW", "10;0;0"="2.40 kW", "16;0;0"="3.72 kW", "16;16;16"="11.1 kW"] icon="energy"
 ```
 
 ### Mapping
@@ -153,18 +152,27 @@ Switch                  Easee_Charger_Start_Stop              "Start / Stop"    
 easeePhases.map will make the phase setting more readable.
 
 ```
-0;0;0=0 kW
-6;0;0=1,44 kW
-7;0;0=1,68 kW
-8;0;0=1,92 kW
-9;0;0=2,16 kW
-10;0;0=2,40 kW
-11;0;0=2,64 kW
-12;0;0=2,88 kW
-13;0;0=3,12 kW
-14;0;0=3,36 kW
-15;0;0=3,60 kW
-16;0;0=3,72 kW
-6;6;6=4,32 kW
-16;16;16=11,1 kW
-´´´
+0;0;0=0.00 kW
+6;0;0=1.44 kW
+7;0;0=1.68 kW
+8;0;0=1.92 kW
+9;0;0=2.16 kW
+10;0;0=2.40 kW
+11;0;0=2.64 kW
+12;0;0=2.88 kW
+13;0;0=3.12 kW
+14;0;0=3.36 kW
+15;0;0=3.60 kW
+16;0;0=3.72 kW
+6;6;6=4.32 kW
+7;7;7=5.04 kW
+8;8;8=5.76 kW
+9;9;9=6.48 kW
+10;10;10=7.20 kW
+11;11;11=7.92 kW
+12;12;12=8.64 kW
+13;13;13=9.36 kW
+14;14;14=10.1 kW
+15;15;15=10.8 kW
+16;16;16=11.1 kW
+```
