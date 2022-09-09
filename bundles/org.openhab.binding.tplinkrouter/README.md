@@ -1,76 +1,52 @@
 # tplinkrouter Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
+The tplinkrouter Binding allows monitoring and controlling TP-Link routers.
 
-_If possible, provide some resources like pictures (only PNG is supported currently), a video, etc. to give an impression of what can be done with this binding._
-_You can place such resources into a `doc` folder next to this README.md._
+The binding use a telnet connection to communicate with the router.
 
-_Put each sentence in a separate line to improve readability of diffs._
+At the moment only wifi part is supported.
 
 ## Supported Things
 
-_Please describe the different supported things / devices including their ThingTypeUID within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+This binding provides only the `TD-W9970` Thing since it's the only model tested.
 
-- `bridge`: Short description of the Bridge, if any
-- `sample`: Short description of the Thing with the ThingTypeUID `sample`
-
-## Discovery
-
-_Describe the available auto-discovery features here._
-_Mention for what it works and what needs to be kept in mind when using it._
-
-## Binding Configuration
-
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it._
-_In this section, you should link to this file and provide some information about the options._
-_The file could e.g. look like:_
-
-```
-# Configuration for the tplinkrouter Binding
-#
-# Default secret key for the pairing of the tplinkrouter Thing.
-# It has to be between 10-40 (alphanumeric) characters.
-# This may be changed by the user for security reasons.
-secret=openHABSecret
-```
-
-_Note that it is planned to generate some part of this based on the information that is available within ```src/main/resources/OH-INF/binding``` of your binding._
-
-_If your binding does not offer any generic configurations, you can remove this section completely._
+This Thing may work with other TP-Link router provided that they use the same telnet API.
 
 ## Thing Configuration
 
-_Describe what is needed to manually configure a thing, either through the UI or via a thing-file._
-_This should be mainly about its mandatory and optional configuration parameters._
+### `TD-W9970` Thing Configuration
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
-
-### `sample` Thing Configuration
-
-| Name            | Type    | Description                           | Default | Required | Advanced |
-|-----------------|---------|---------------------------------------|---------|----------|----------|
-| hostname        | text    | Hostname or IP address of the device  | N/A     | yes      | no       |
-| password        | text    | Password to access the device         | N/A     | yes      | no       |
-| refreshInterval | integer | Interval the device is polled in sec. | 600     | no       | yes      |
+| Name            | Type    | Description                                   | Default | Required | Advanced |
+|-----------------|---------|-----------------------------------------------|---------|----------|----------|
+| hostname        | text    | Hostname or IP address of the device          | N/A     | yes      | no       |
+| username        | text    | Username to access the router (same as WebUI) | N/A     | yes      | no       |
+| password        | text    | Password to access the device (same as WebUI) | N/A     | yes      | no       |
+| refreshInterval | integer | Interval the device is polled in sec.         | 60      | no       | yes      |
 
 ## Channels
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
-
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
-
-| Channel | Type   | Read/Write | Description                 |
-|---------|--------|------------|-----------------------------|
-| control | Switch | RW         | This is the control channel |
+| Channel          | Type   | Read/Write | Description                              |
+|------------------|--------|------------|------------------------------------------|
+| `wifi#Status`    | Switch | RW         | State of the wifi                        |
+| `wifi#SSID`      | String | R          | SSID of the wifi network                 |
+| `wifi#bandWidth` | String | R          | Bandwidth of the wifi network            |
+| `wifi#QSS`       | String | R          | Quick Security Setup of the wifi network |
+| `wifi#SecMode`   | String | R          | Security Mode of the wifi network        |
+| `wifi#Key`       | String | R          | Password of the wifi network             |
 
 ## Full Example
 
-_Provide a full usage example based on textual configuration files._
-_*.things, *.items examples are mandatory as textual configuration is well used by many users._
-_*.sitemap examples are optional._
+`.things` configuration file:
 
-## Any custom content here!
+```
+Thing tplinkrouter:TD-W9970:myRouter [hostname="192.168.0.1", username="admin", password="myPassword"]
+```
 
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
+`.items` configuration file:
+```
+Switch Wifi "Wifi" <QualityOfService> {channel="tplinkrouter:TD-W9970:myRouter:wifi#Status", autoupdate="false"}
+String WifiSSID "Wifi SSID" <QualityOfService> {channel="tplinkrouter:TD-W9970:myRouter:wifi#SSID", autoupdate="false"}
+String BandWidth "Wifi Bandwidth" <QualityOfService> {channel="tplinkrouter:TD-W9970:myRouter:wifi#Bandwidth", autoupdate="false"}
+String QSS "Wifi QSS" <QualityOfService> {channel="tplinkrouter:TD-W9970:myRouter:wifi#QSS", autoupdate="false"}
+String SecMode "Wifi SecMode" <QualityOfService> {channel="tplinkrouter:TD-W9970:myRouter:wifi#SecMode", autoupdate="false"}
+```
