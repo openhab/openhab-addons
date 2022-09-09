@@ -97,47 +97,53 @@ public class SolcastObject implements SolarForecast {
             // prepare data for raw channel
             if (contentJson.has("forecasts")) {
                 resultJsonArray = contentJson.getJSONArray("forecasts");
+                addJSONArray(resultJsonArray);
                 rawData.get().put("forecasts", resultJsonArray);
-            } else {
+            }
+            if (contentJson.has("estimated_actuals")) {
                 resultJsonArray = contentJson.getJSONArray("estimated_actuals");
+                addJSONArray(resultJsonArray);
                 rawData.get().put("estimated_actuals", resultJsonArray);
             }
 
-            // sort data into TreeMaps
-            for (int i = 0; i < resultJsonArray.length(); i++) {
-                JSONObject jo = resultJsonArray.getJSONObject(i);
-                String periodEnd = jo.getString("period_end");
-                LocalDate ld = getZdtFromUTC(periodEnd).toLocalDate();
-                TreeMap<ZonedDateTime, Double> forecastMap = estimationDataMap.get(ld);
-                if (forecastMap == null) {
-                    forecastMap = new TreeMap<ZonedDateTime, Double>();
-                    estimationDataMap.put(ld, forecastMap);
-                }
-                forecastMap.put(getZdtFromUTC(periodEnd), jo.getDouble("pv_estimate"));
+        }
+    }
 
-                // fill pessimistic values
-                TreeMap<ZonedDateTime, Double> pessimisticForecastMap = pessimisticDataMap.get(ld);
-                if (pessimisticForecastMap == null) {
-                    pessimisticForecastMap = new TreeMap<ZonedDateTime, Double>();
-                    pessimisticDataMap.put(ld, pessimisticForecastMap);
-                }
-                if (jo.has("pv_estimate10")) {
-                    pessimisticForecastMap.put(getZdtFromUTC(periodEnd), jo.getDouble("pv_estimate10"));
-                } else {
-                    pessimisticForecastMap.put(getZdtFromUTC(periodEnd), jo.getDouble("pv_estimate"));
-                }
+    private void addJSONArray(JSONArray resultJsonArray) {
+        // sort data into TreeMaps
+        for (int i = 0; i < resultJsonArray.length(); i++) {
+            JSONObject jo = resultJsonArray.getJSONObject(i);
+            String periodEnd = jo.getString("period_end");
+            LocalDate ld = getZdtFromUTC(periodEnd).toLocalDate();
+            TreeMap<ZonedDateTime, Double> forecastMap = estimationDataMap.get(ld);
+            if (forecastMap == null) {
+                forecastMap = new TreeMap<ZonedDateTime, Double>();
+                estimationDataMap.put(ld, forecastMap);
+            }
+            forecastMap.put(getZdtFromUTC(periodEnd), jo.getDouble("pv_estimate"));
 
-                // fill optimistic values
-                TreeMap<ZonedDateTime, Double> optimisticForecastMap = optimisticDataMap.get(ld);
-                if (optimisticForecastMap == null) {
-                    optimisticForecastMap = new TreeMap<ZonedDateTime, Double>();
-                    optimisticDataMap.put(ld, optimisticForecastMap);
-                }
-                if (jo.has("pv_estimate90")) {
-                    optimisticForecastMap.put(getZdtFromUTC(periodEnd), jo.getDouble("pv_estimate90"));
-                } else {
-                    optimisticForecastMap.put(getZdtFromUTC(periodEnd), jo.getDouble("pv_estimate"));
-                }
+            // fill pessimistic values
+            TreeMap<ZonedDateTime, Double> pessimisticForecastMap = pessimisticDataMap.get(ld);
+            if (pessimisticForecastMap == null) {
+                pessimisticForecastMap = new TreeMap<ZonedDateTime, Double>();
+                pessimisticDataMap.put(ld, pessimisticForecastMap);
+            }
+            if (jo.has("pv_estimate10")) {
+                pessimisticForecastMap.put(getZdtFromUTC(periodEnd), jo.getDouble("pv_estimate10"));
+            } else {
+                pessimisticForecastMap.put(getZdtFromUTC(periodEnd), jo.getDouble("pv_estimate"));
+            }
+
+            // fill optimistic values
+            TreeMap<ZonedDateTime, Double> optimisticForecastMap = optimisticDataMap.get(ld);
+            if (optimisticForecastMap == null) {
+                optimisticForecastMap = new TreeMap<ZonedDateTime, Double>();
+                optimisticDataMap.put(ld, optimisticForecastMap);
+            }
+            if (jo.has("pv_estimate90")) {
+                optimisticForecastMap.put(getZdtFromUTC(periodEnd), jo.getDouble("pv_estimate90"));
+            } else {
+                optimisticForecastMap.put(getZdtFromUTC(periodEnd), jo.getDouble("pv_estimate"));
             }
         }
     }
@@ -266,6 +272,7 @@ public class SolcastObject implements SolarForecast {
             // production during period is half of previous and next value
             if (endValue != null) {
                 double addedValue = (endValue.doubleValue() + previousEstimate) / 2.0 / 2.0;
+                System.out.println(key + " add " + addedValue);
                 forecastValue += addedValue;
                 previousEstimate = endValue.doubleValue();
             } else {

@@ -21,6 +21,7 @@ import java.util.Optional;
 import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants;
 import org.openhab.binding.solarforecast.internal.actions.SolarForecast;
@@ -56,20 +57,24 @@ public class ForecastSolarObject implements SolarForecast {
         expirationDateTime = expirationDate;
         if (!content.equals(SolarForecastBindingConstants.EMPTY)) {
             rawData = Optional.of(content);
-            JSONObject contentJson = new JSONObject(content);
-            JSONObject resultJson = contentJson.getJSONObject("result");
-            JSONObject wattHourJson = resultJson.getJSONObject("watt_hours");
-            JSONObject wattJson = resultJson.getJSONObject("watts");
-            Iterator<String> iter = wattHourJson.keys();
-            // put all values of the current day into sorted tree map
-            while (iter.hasNext()) {
-                String dateStr = iter.next();
-                // convert date time into machine readable format
-                LocalDateTime ldt = LocalDateTime.parse(dateStr, dateInputFormatter);
-                wattHourMap.put(ldt, wattHourJson.getDouble(dateStr));
-                wattMap.put(ldt, wattJson.getDouble(dateStr));
+            try {
+                JSONObject contentJson = new JSONObject(content);
+                JSONObject resultJson = contentJson.getJSONObject("result");
+                JSONObject wattHourJson = resultJson.getJSONObject("watt_hours");
+                JSONObject wattJson = resultJson.getJSONObject("watts");
+                Iterator<String> iter = wattHourJson.keys();
+                // put all values of the current day into sorted tree map
+                while (iter.hasNext()) {
+                    String dateStr = iter.next();
+                    // convert date time into machine readable format
+                    LocalDateTime ldt = LocalDateTime.parse(dateStr, dateInputFormatter);
+                    wattHourMap.put(ldt, wattHourJson.getDouble(dateStr));
+                    wattMap.put(ldt, wattJson.getDouble(dateStr));
+                }
+                valid = true;
+            } catch (JSONException je) {
+                logger.info("Error parsing JSON response {} - {}", content, je.getMessage());
             }
-            valid = true;
         }
     }
 
@@ -113,7 +118,7 @@ public class ForecastSolarObject implements SolarForecast {
                 // ceiling date doesn't fit
                 return UNDEF;
             }
-        } else {
+        } else if (f != null && c != null) {
             // ceiling and floor available
             if (f.getKey().toLocalDate().equals(queryDateTime.toLocalDate())) {
                 if (c.getKey().toLocalDate().equals(queryDateTime.toLocalDate())) {
@@ -131,7 +136,8 @@ public class ForecastSolarObject implements SolarForecast {
                 // floor invalid - ceiling not reached
                 return 0;
             }
-        }
+        } // else both null - this shall not happen
+        return UNDEF;
     }
 
     public double getActualPowerValue(LocalDateTime queryDateTime) {
@@ -158,7 +164,7 @@ public class ForecastSolarObject implements SolarForecast {
                 // ceiling date doesn't fit
                 return UNDEF;
             }
-        } else {
+        } else if (f != null && c != null) {
             // we're during suntime!
             double powerCeiling = c.getValue();
             double powerFloor = f.getValue();
@@ -167,7 +173,8 @@ public class ForecastSolarObject implements SolarForecast {
             double interpolation = (queryDateTime.getMinute() - f.getKey().getMinute()) / 60.0;
             actualPowerValue = ((1 - interpolation) * powerFloor) + (interpolation * powerCeiling);
             return actualPowerValue / 1000.0;
-        }
+        } // else both null - this shall not happen
+        return UNDEF;
     }
 
     public double getDayTotal(LocalDate queryDate) {
