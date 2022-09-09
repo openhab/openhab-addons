@@ -18,7 +18,7 @@ Basically any Easee wallbox that supports the Cloud API should automatically be 
 
 ## Discovery
 
-Discovery is implemented and will discover all circuits and chargers assigned to a given site.
+Auto-discovery is supported and will discover all circuits and chargers assigned to a given site.
 
 ## Bridge Configuration
 
@@ -51,7 +51,7 @@ If manual configuration is preferred you need to specify configuration as below.
 
 ## Channels
 
-The binding only supports a subset of the available endpoints that is provided by the Easee Cloud API.
+The binding only supports a subset of the available endpoints provided by the Easee Cloud API.
 The tables below show all available channels and which of them are writable.
 The settings that start with "dynamic" can be changed frequently, the others are written to flash and thus should not be changed too often as this could result in damage of your flash.
 
