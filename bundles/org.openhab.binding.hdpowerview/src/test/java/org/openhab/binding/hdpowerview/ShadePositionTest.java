@@ -41,13 +41,14 @@ public class ShadePositionTest {
     public void testKnownTypesDatabase() {
         assertTrue(db.isTypeInDatabase(4));
         assertTrue(db.isCapabilitiesInDatabase(0));
+        assertTrue(db.isCapabilitiesInDatabase(10));
 
         assertTrue(db.getCapabilities(0).supportsPrimary());
         assertTrue(db.getCapabilities(1).supportsTiltOnClosed());
         assertTrue(db.getCapabilities(2).supportsTilt180());
         assertTrue(db.getCapabilities(2).supportsTiltAnywhere());
-        assertTrue(db.getCapabilities(3).supportsTilt180());
-        assertTrue(db.getCapabilities(3).supportsTiltAnywhere());
+        assertTrue(db.getCapabilities(4).supportsTilt180());
+        assertTrue(db.getCapabilities(4).supportsTiltAnywhere());
         assertTrue(db.getCapabilities(5).supportsTilt180());
         assertFalse(db.getCapabilities(5).supportsPrimary());
         assertTrue(db.getCapabilities(6).isPrimaryInverted());
