@@ -57,7 +57,7 @@ The settings that start with "dynamic" can be changed frequently, the others are
 
 ### Charger Channels
 
-| Channel Type ID                             | Item Type                | Writable | Description                                          | Allowed Values (write access)                                                                                                                                |
+| Channel                                     | Item Type                | Writable | Description                                          | Allowed Values (write access)                                                                                                                                |
 |---------------------------------------------|--------------------------|----------|------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | state#smartCharging                         | Switch                   | no       |                                                      |                                                                                                                                                              |
 | state#cableLocked                           | Switch                   | no       |                                                      |                                                                                                                                                              |
@@ -94,7 +94,7 @@ The settings that start with "dynamic" can be changed frequently, the others are
 
 The Master Charger is like the "normal" charger but has some extra channels to control the circuit. These additional channels are listed in the table below.
 
-| Channel Type ID                             | Item Type                | Writable | Description                                          | Allowed Values (write access)                                                                                                                                |
+| Channel                                     | Item Type                | Writable | Description                                          | Allowed Values (write access)                                                                                                                                |
 |---------------------------------------------|--------------------------|----------|------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | dynamicCurrent#phase1                       | Number:ElectricCurrent   | no       |                                                      |                                                                                                                                                              |
 | dynamicCurrent#phase2                       | Number:ElectricCurrent   | no       |                                                      |                                                                                                                                                              |
