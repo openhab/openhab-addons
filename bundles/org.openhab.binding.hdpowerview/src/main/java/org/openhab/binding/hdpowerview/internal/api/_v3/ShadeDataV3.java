@@ -27,7 +27,6 @@ public class ShadeDataV3 extends ShadeData {
     public @Nullable String ptName;
     public @Nullable String powerType;
     public @Nullable String bleName;
-    // TODO: public @Nullable Motion motion;
 
     @Override
     public String getName() {
@@ -36,8 +35,23 @@ public class ShadeDataV3 extends ShadeData {
 
     @Override
     public BatteryKind getBatteryKind() {
-        // TODO Auto-generated method stub
-        // NOTE: the schema for powerType is not clear; is may be a string? or an integer?
+        // TODO the schema for powerType is not clear; is may be a string? or an integer?
+        String powerType = this.powerType;
+        if (powerType != null) {
+            try {
+                Integer powerTypeInt = Integer.valueOf(powerType);
+                switch (powerTypeInt) {
+                    case 0:
+                        return BatteryKind.BATTERY_WAND;
+                    case 1:
+                        return BatteryKind.HARDWIRED_POWER_SUPPLY;
+                    case 2:
+                        return BatteryKind.RECHARGEABLE_BATTERY_WAND;
+                }
+            } catch (NumberFormatException e) {
+                // fall through
+            }
+        }
         return BatteryKind.ERROR_UNKNOWN;
     }
 
