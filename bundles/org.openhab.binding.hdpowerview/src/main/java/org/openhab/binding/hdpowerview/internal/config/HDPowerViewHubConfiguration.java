@@ -24,10 +24,13 @@ import org.eclipse.jdt.annotation.Nullable;
 public class HDPowerViewHubConfiguration {
 
     public static final String HOST = "host";
+    public static final String GENERATION = "generation";
 
     public @Nullable String host;
 
     public long refresh;
     public long hardRefresh;
     public long hardRefreshBatteryLevel;
+
+    public int generation;
 }

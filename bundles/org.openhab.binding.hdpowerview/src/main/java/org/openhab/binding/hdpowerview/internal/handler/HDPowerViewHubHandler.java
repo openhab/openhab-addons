@@ -711,23 +711,20 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler implements SseSinkV
         if (webTargets != null) {
             return webTargets;
         }
-        try {
-            // try communicating via V1 web targets
-            webTargets = new HDPowerViewWebTargetsV1(httpClient, host);
-            webTargets.getFirmwareVersions();
-            this.webTargets = webTargets;
-            return webTargets;
-        } catch (HubProcessingException | HubMaintenanceException e) {
-            // fall through
+        HDPowerViewHubConfiguration config = getConfigAs(HDPowerViewHubConfiguration.class);
+        int hubGeneration = config.generation;
+        switch (hubGeneration) {
+            case 0: // for non breaking of existing installations
+            case 1: // both generation 1 and 2 hubs use V1 web targets
+            case 2:
+                webTargets = new HDPowerViewWebTargetsV1(httpClient, host);
+                break;
+            case 3: // generation 3 hubs use V3 web targets
+                webTargets = new HDPowerViewWebTargetsV3(httpClient, host);
         }
-        try {
-            // try communicating via V3 web targets
-            webTargets = new HDPowerViewWebTargetsV3(httpClient, host);
-            webTargets.getFirmwareVersions();
+        if (webTargets != null) {
             this.webTargets = webTargets;
             return webTargets;
-        } catch (HubProcessingException | HubMaintenanceException e) {
-            // fall through
         }
         throw new InstantiationException("Unable to instantiate the web targets");
     }
@@ -782,6 +779,6 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler implements SseSinkV
 
     @Override
     public void sseScene(String evt, int sceneId) {
-        // TODO (if anything)
+        // TODO perhaps we don't need to do anything?
     }
 }

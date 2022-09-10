@@ -27,6 +27,11 @@
 				<description>The Host address of the PowerView Hub</description>
 				<context>network-address</context>
 			</parameter>
+            <parameter name="generation" type="integer" required="false">
+                <label>Hub Generation</label>
+                <description>The PowerView Hub Generation</description>
+                <default>0</default>
+            </parameter>
 			<parameter name="refresh" type="integer" required="false">
 				<label>Refresh Interval</label>
 				<description>The number of milliseconds between fetches of the PowerView Hub shade state</description>
