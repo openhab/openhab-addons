@@ -92,10 +92,7 @@ public class KonnectedHandler extends BaseThingHandler {
             if (channelType.contains(CHANNEL_SWITCH)) {
                 logger.debug("A command was sent to a sensor type so we are ignoring the command");
             } else {
-                int sendCommand = (OnOffType.OFF.compareTo((OnOffType) command));
-                logger.debug("The command being sent to zone {} for channel:{}  is {}", zone, channelUID.getAsString(),
-                        sendCommand);
-                sendActuatorCommand(sendCommand, zone, channelUID);
+                sendActuatorCommand((OnOffType) command, zone, channelUID);
             }
         } else if (command instanceof RefreshType) {
             // check to see if handler has been initialized before attempting to get state of pin, else wait one minute
@@ -404,10 +401,10 @@ public class KonnectedHandler extends BaseThingHandler {
     /**
      * Sends a command to the module via {@link KonnectedHTTPUtils}
      *
-     * @param scommand the string command, either 0 or 1 to send to the actutor pin on the Konnected module
+     * @param command the state to send to the actuator
      * @param zone the zone to send the command to on the Konnected Module
      */
-    private void sendActuatorCommand(Integer scommand, String zone, ChannelUID channelId) {
+    private void sendActuatorCommand(OnOffType command, String zone, ChannelUID channelId) {
         try {
             Channel channel = getThing().getChannel(channelId.getId());
             if (channel != null) {
@@ -415,23 +412,17 @@ public class KonnectedHandler extends BaseThingHandler {
                         channelId.getId(), channelId.getGroupId(), channelId);
                 ZoneConfiguration zoneConfig = channel.getConfiguration().as(ZoneConfiguration.class);
                 KonnectedModuleGson payload = new KonnectedModuleGson();
-                payload.setState(scommand);
-
                 payload.setZone(thingID, zone);
 
-                // check to see if this is an On Command type, if so add the momentary, pause, times to the payload if
-                // they exist on the configuration.
-                if (scommand == zoneConfig.onValue) {
+                if (command == OnOffType.ON) {
+                    payload.setState(zoneConfig.onValue);
                     payload.setTimes(zoneConfig.times);
-                    logger.debug("The times configuration was set to: {} for channelID: {}.", zoneConfig.times,
-                            channelId);
                     payload.setMomentary(zoneConfig.momentary);
-                    logger.debug("The momentary configuration set to: {} channelID: {}.", zoneConfig.momentary,
-                            channelId);
                     payload.setPause(zoneConfig.pause);
-                    logger.debug("The pause configuration was set to: {} for channelID: {}.", zoneConfig.pause,
-                            channelId);
+                } else {
+                    payload.setState(zoneConfig.onValue == 1 ? 0 : 1);
                 }
+
                 String payloadString = gson.toJson(payload);
                 logger.debug("The command payload  is: {}", payloadString);
                 String path = "";
