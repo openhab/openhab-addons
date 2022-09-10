@@ -187,8 +187,9 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 start = initializeThing();
             } catch (ShellyApiException e) {
                 ShellyApiResult res = e.getApiResult();
-                if (e.isConnectionError()) {
-                    setThingOffline(ThingStatusDetail.COMMUNICATION_ERROR, "offline.status-error-connect");
+                if (profile.alwaysOn && e.isConnectionError()) {
+                    setThingOffline(ThingStatusDetail.COMMUNICATION_ERROR, "offline.status-error-connect",
+                            e.toString());
                 }
                 if (isAuthorizationFailed(res)) {
                     start = false;
@@ -263,6 +264,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         }
 
         // Initialize API access, exceptions will be catched by initialize()
+        api.initialize();
+        profile.initFromThingType(thingType);
         ShellySettingsDevice devInfo = api.getDeviceInfo();
         if (getBool(devInfo.auth) && config.password.isEmpty()) {
             setThingOffline(ThingStatusDetail.CONFIGURATION_ERROR, "offline.conf-error-no-credentials");
@@ -273,7 +276,6 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         }
 
         api.setConfig(thingName, config);
-        api.initialize();
         ShellyDeviceProfile tmpPrf = api.getDeviceProfile(thingType);
         tmpPrf.isGen2 = gen2;
         tmpPrf.auth = devInfo.auth; // missing in /settings
@@ -526,7 +528,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             // sleep mode. Once the next update is successful the device goes back online
             String status = "";
             ShellyApiResult res = e.getApiResult();
-            if (e.isConnectionError() && profile.alwaysOn) {
+            if (profile.alwaysOn && e.isConnectionError()) {
                 status = "offline.status-error-connect";
             } else if (res.isHttpAccessUnauthorized()) {
                 status = "offline.conf-error-access-denied";

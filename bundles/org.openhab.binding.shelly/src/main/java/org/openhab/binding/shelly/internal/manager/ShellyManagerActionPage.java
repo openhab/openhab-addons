@@ -138,7 +138,7 @@ public class ShellyManagerActionPage extends ShellyManagerPage {
                     }
 
                     String peer = getString(profile.settings.coiot.peer);
-                    boolean mcast = peer.isEmpty() || SHELLY_COIOT_MCAST.equalsIgnoreCase(peer);
+                    boolean mcast = peer.isEmpty() || SHELLY_COIOT_MCAST.equalsIgnoreCase(peer) || profile.isMotion;
                     String newPeer = mcast ? localIp + ":" + Shelly1CoapJSonDTO.COIOT_PORT : SHELLY_COIOT_MCAST;
                     String displayPeer = mcast ? newPeer : "Multicast";
 
@@ -381,9 +381,9 @@ public class ShellyManagerActionPage extends ShellyManagerPage {
             list.put(ACTION_PROTECT, "Protect Device");
         }
 
-        if ((profile.settings.coiot != null) && profile.settings.coiot.peer != null && !profile.isMotion) {
+        if ((profile.settings.coiot != null) && profile.settings.coiot.peer != null) {
             boolean mcast = profile.settings.coiot.peer.isEmpty()
-                    || SHELLY_COIOT_MCAST.equalsIgnoreCase(profile.settings.coiot.peer);
+                    || SHELLY_COIOT_MCAST.equalsIgnoreCase(profile.settings.coiot.peer) || profile.isMotion;
             list.put(mcast ? ACTION_SETCOIOT_PEER : ACTION_SETCOIOT_MCAST,
                     mcast ? "Set CoIoT Peer Mode" : "Set CoIoT Multicast Mode");
         }

@@ -249,8 +249,7 @@ public class ShellyComponents {
                             updated |= thingHandler.updateChannel(groupName, CHANNEL_EMETER_CURRENT,
                                     toQuantityType(getDouble(emeter.current), DIGITS_VOLT, Units.AMPERE));
                             updated |= thingHandler.updateChannel(groupName, CHANNEL_EMETER_PFACTOR,
-                                    toQuantityType(computePF(emeter), Units.PERCENT));
-
+                                    getDecimal(computePF(emeter)));
                             accumulatedWatts += getDouble(emeter.power);
                             accumulatedTotal += getDouble(emeter.total) / 1000;
                             accumulatedReturned += getDouble(emeter.totalReturned) / 1000;
@@ -357,7 +356,7 @@ public class ShellyComponents {
 
             updated |= thingHandler.updateWakeupReason(sdata.actReasons);
 
-            if ((sdata.sensor != null) && sdata.sensor.isValid) {
+            if (sdata.sensor != null && sdata.sensor.isValid) {
                 // Shelly DW: “sensor”:{“state”:“open”, “is_valid”:true},
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_STATE,
                         getString(sdata.sensor.state).equalsIgnoreCase(SHELLY_API_DWSTATE_OPEN) ? OpenClosedType.OPEN
@@ -370,7 +369,7 @@ public class ShellyComponents {
                 }
                 updated |= changed;
             }
-            if ((sdata.tmp != null) && getBool(sdata.tmp.isValid)) {
+            if (sdata.tmp != null && getBool(sdata.tmp.isValid)) {
                 Double temp = getString(sdata.tmp.units).toUpperCase().equals(SHELLY_TEMP_CELSIUS)
                         ? getDouble(sdata.tmp.tC)
                         : getDouble(sdata.tmp.tF);

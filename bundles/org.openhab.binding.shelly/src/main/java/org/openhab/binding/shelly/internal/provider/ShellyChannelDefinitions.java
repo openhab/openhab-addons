@@ -198,7 +198,7 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_METER, CHANNEL_EMETER_REACTWATTS, "meterReactive", ITEMT_POWER))
                 .add(new ShellyChannel(m, CHGR_METER, CHANNEL_EMETER_VOLTAGE, "meterVoltage", ITEMT_VOLT))
                 .add(new ShellyChannel(m, CHGR_METER, CHANNEL_EMETER_CURRENT, "meterCurrent", ITEMT_AMP))
-                .add(new ShellyChannel(m, CHGR_METER, CHANNEL_EMETER_PFACTOR, "meterPowerFactor", ITEMT_PERCENT))
+                .add(new ShellyChannel(m, CHGR_METER, CHANNEL_EMETER_PFACTOR, "meterPowerFactor", ITEMT_NUMBER))
 
                 // Sensors
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_TEMP, "sensorTemp", ITEMT_TEMP))
@@ -289,7 +289,8 @@ public class ShellyChannelDefinitions {
 
         addChannel(thing, add, profile.settings.name != null, CHGR_DEVST, CHANNEL_DEVST_NAME);
 
-        if (!profile.isSensor && !profile.isIX && getDouble(status.temperature) != SHELLY_API_INVTEMP) {
+        if (!profile.isSensor && !profile.isIX && status.temperature != null
+                && status.temperature != SHELLY_API_INVTEMP) {
             // Only some devices report the internal device temp
             addChannel(thing, add, status.tmp != null || status.temperature != null, CHGR_DEVST, CHANNEL_DEVST_ITEMP);
         }

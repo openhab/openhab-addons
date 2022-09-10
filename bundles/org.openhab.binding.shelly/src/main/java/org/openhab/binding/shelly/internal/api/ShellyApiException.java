@@ -14,6 +14,10 @@ package org.openhab.binding.shelly.internal.api;
 
 import java.net.ConnectException;
 import java.net.MalformedURLException;
+import java.net.NoRouteToHostException;
+import java.net.PortUnreachableException;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.text.MessageFormat;
 import java.util.concurrent.ExecutionException;
@@ -66,19 +70,21 @@ public class ShellyApiException extends Exception {
 
     @Override
     public String toString() {
-        String message = nonNullString(super.getMessage());
+        String message = nonNullString(super.getMessage()).replace("java.util.concurrent.ExecutionException: ", "")
+                .replace("java.net.", "");
         String cause = getCauseClass().toString();
+        String url = apiResult.getUrl();
         if (!isEmpty()) {
             if (isUnknownHost()) {
                 String[] string = message.split(": "); // java.net.UnknownHostException: api.rach.io
                 message = MessageFormat.format("Unable to connect to {0} (Unknown host / Network down / Low signal)",
                         string[1]);
             } else if (isMalformedURL()) {
-                message = MessageFormat.format("Invalid URL: {0}", apiResult.getUrl());
-            } else if (isConnectionRefused() || isTimeout()) {
-                message = MessageFormat.format("Device unreachable or API Timeout ({0})", apiResult.getUrl());
-            } else {
-                message = MessageFormat.format("{0} ({1})", message, cause);
+                message = "Invalid URL: " + url;
+            } else if (isTimeout()) {
+                message = "API Timeout for " + url;
+            } else if (!isConnectionError()) {
+                message = message + "(" + cause + ")";
             }
         } else {
             message = apiResult.toString();
@@ -92,21 +98,20 @@ public class ShellyApiException extends Exception {
 
     public boolean isTimeout() {
         Class<?> extype = !isEmpty() ? getCauseClass() : null;
-        return (extype != null) && ((extype == TimeoutException.class) || (extype == ExecutionException.class)
-                || (extype == InterruptedException.class)
+        return (extype != null) && ((extype == TimeoutException.class) || extype == InterruptedException.class
+                || extype == SocketTimeoutException.class
                 || nonNullString(getMessage()).toLowerCase().contains("timeout"));
     }
 
     public boolean isConnectionError() {
-        return isUnknownHost() || isConnectionRefused() || isMalformedURL();
+        Class<?> exType = getCauseClass();
+        return isUnknownHost() || isMalformedURL() || exType == ConnectException.class
+                || exType == SocketException.class || exType == PortUnreachableException.class
+                || exType == NoRouteToHostException.class;
     }
 
     public boolean isUnknownHost() {
         return getCauseClass() == UnknownHostException.class;
-    }
-
-    public boolean isConnectionRefused() {
-        return getCauseClass() == ConnectException.class;
     }
 
     public boolean isMalformedURL() {

@@ -224,6 +224,11 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
             // SHelly H&T uses external_power, Sense uses charger
             status.charger = profile.settings.externalPower != 0;
         }
+        if (status.tmp != null && status.tmp.tC == null && status.tmp.value != null) { // Motion is is missing tC and tF
+            status.tmp.tC = getString(status.tmp.units).toUpperCase().equals(SHELLY_TEMP_FAHRENHEIT)
+                    ? ImperialUnits.FAHRENHEIT.getConverterTo(SIUnits.CELSIUS).convert(status.tmp.value).doubleValue()
+                    : status.tmp.value;
+        }
         return status;
     }
 
