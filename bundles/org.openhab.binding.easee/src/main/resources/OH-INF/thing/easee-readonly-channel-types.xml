@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="easee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-type id="type-power">
+		<item-type>Number:Power</item-type>
+		<label>Power</label>
+		<state pattern="%.2f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-energy">
+		<item-type>Number:Energy</item-type>
+		<label>Energy</label>
+		<state pattern="%.1f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-current">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>ElectricCurrent</label>
+		<state pattern="%.1f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-switch">
+		<item-type>Switch</item-type>
+		<label>Switch</label>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="type-volt">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>ElectricPotential</label>
+		<state pattern="%.1f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-integer">
+		<item-type>Number</item-type>
+		<label>Generic Integer</label>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-integer-charger-op-mode">
+		<item-type>Number</item-type>
+		<label>Charger Operation Mode</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">Offline</option>
+				<option value="1">Disconnected</option>
+				<option value="2">AwaitingStart</option>
+				<option value="3">Charging</option>
+				<option value="4">Completed</option>
+				<option value="5">Error</option>
+				<option value="6">ReadyToCharge</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="type-date">
+		<item-type>DateTime</item-type>
+		<label>DateTime</label>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+</thing:thing-descriptions>
