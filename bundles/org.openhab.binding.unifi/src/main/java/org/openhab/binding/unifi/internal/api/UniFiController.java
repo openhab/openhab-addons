@@ -21,15 +21,16 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.unifi.internal.api.cache.UniFiControllerCache;
-import org.openhab.binding.unifi.internal.api.dto.UnfiPortOverride;
+import org.openhab.binding.unifi.internal.api.dto.UnfiPortOverrideJsonElement;
 import org.openhab.binding.unifi.internal.api.dto.UniFiClient;
 import org.openhab.binding.unifi.internal.api.dto.UniFiDevice;
-import org.openhab.binding.unifi.internal.api.dto.UniFiPortTable;
+import org.openhab.binding.unifi.internal.api.dto.UniFiPortTuple;
 import org.openhab.binding.unifi.internal.api.dto.UniFiSite;
 import org.openhab.binding.unifi.internal.api.dto.UniFiUnknownClient;
 import org.openhab.binding.unifi.internal.api.dto.UniFiWiredClient;
 import org.openhab.binding.unifi.internal.api.dto.UniFiWirelessClient;
 import org.openhab.binding.unifi.internal.api.dto.UniFiWlan;
+import org.openhab.binding.unifi.internal.api.util.UnfiPortOverrideJsonElementDeserializer;
 import org.openhab.binding.unifi.internal.api.util.UniFiClientDeserializer;
 import org.openhab.binding.unifi.internal.api.util.UniFiClientInstanceCreator;
 import org.openhab.binding.unifi.internal.api.util.UniFiDeviceInstanceCreator;
@@ -92,8 +93,9 @@ public class UniFiController {
                 .registerTypeAdapter(UniFiUnknownClient.class, clientInstanceCreator)
                 .registerTypeAdapter(UniFiWiredClient.class, clientInstanceCreator)
                 .registerTypeAdapter(UniFiWirelessClient.class, clientInstanceCreator).create();
-        this.poeGson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-                .excludeFieldsWithoutExposeAnnotation().create();
+        this.poeGson = new GsonBuilder()
+                .registerTypeAdapter(UnfiPortOverrideJsonElement.class, new UnfiPortOverrideJsonElementDeserializer())
+                .create();
     }
 
     // Public API
@@ -151,7 +153,7 @@ public class UniFiController {
         return cache;
     }
 
-    public @Nullable Map<Integer, UniFiPortTable> getSwitchPorts(@Nullable final String deviceId) {
+    public @Nullable Map<Integer, UniFiPortTuple> getSwitchPorts(@Nullable final String deviceId) {
         return cache.getSwitchPorts(deviceId);
     }
 
@@ -173,12 +175,20 @@ public class UniFiController {
         refresh();
     }
 
-    public void poeMode(final UniFiDevice device, final Map<Integer, UnfiPortOverride> data) throws UniFiException {
-        final UniFiControllerRequest<Void> req = newRequest(Void.class, HttpMethod.PUT, poeGson);
-        req.setAPIPath(String.format("/api/s/%s/rest/device/%s", device.getSite().getName(), device.getId()));
-        req.setBodyParameter("port_overrides", data.values());
-        executeRequest(req);
-        refresh();
+    public boolean poeMode(final UniFiDevice device, final List<UnfiPortOverrideJsonElement> data)
+            throws UniFiException {
+        // Safety check to make sure no empty data is send to avoid corrupting override data on the device.
+        if (data.isEmpty() || data.stream().anyMatch(p -> p.getJsonObject().entrySet().isEmpty())) {
+            logger.info("Not overriding port for '{}', because port data contains empty json: {}", device.getName(),
+                    poeGson.toJson(data));
+            return false;
+        } else {
+            final UniFiControllerRequest<Void> req = newRequest(Void.class, HttpMethod.PUT, poeGson);
+            req.setAPIPath(String.format("/api/s/%s/rest/device/%s", device.getSite().getName(), device.getId()));
+            req.setBodyParameter("port_overrides", data);
+            executeRequest(req);
+            return true;
+        }
     }
 
     public void poePowerCycle(final UniFiDevice device, final Integer portIdx) throws UniFiException {
