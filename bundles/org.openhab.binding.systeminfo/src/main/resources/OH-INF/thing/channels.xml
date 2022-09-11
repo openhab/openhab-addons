@@ -107,6 +107,7 @@
 		<channels>
 			<channel id="name" typeId="name"/>
 			<channel id="description" typeId="description"/>
+			<channel id="load" typeId="cpuLoad"/>
 			<channel id="load1" typeId="loadAverage"/>
 			<channel id="load5" typeId="loadAverage"/>
 			<channel id="load15" typeId="loadAverage"/>
@@ -288,11 +289,19 @@
 	</channel-type>
 
 	<channel-type id="load_process">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Load</label>
 		<description>Load in percent</description>
 		<state readOnly="true" pattern="%.1f %%"/>
 		<config-description-ref uri="channel-type:systeminfo:highpriority_process"/>
+	</channel-type>
+
+	<channel-type id="cpuLoad">
+		<item-type>Number:Dimensionless</item-type>
+		<label>CPU Load</label>
+		<description>CPU load in percent</description>
+		<state readOnly="true" pattern="%.1f %%"/>
+		<config-description-ref uri="channel-type:systeminfo:highpriority"/>
 	</channel-type>
 
 	<channel-type id="loadAverage" advanced="true">
