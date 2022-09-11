@@ -17,7 +17,6 @@ import java.util.Map.Entry;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.velux.internal.VeluxBindingConstants;
-import org.openhab.binding.velux.internal.config.VeluxThingConfiguration;
 import org.openhab.binding.velux.internal.handler.utils.ExtendedBaseThingHandler;
 import org.openhab.binding.velux.internal.handler.utils.Thing2VeluxActuator;
 import org.openhab.binding.velux.internal.things.VeluxProduct;
@@ -44,8 +43,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class VeluxHandler extends ExtendedBaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(VeluxHandler.class);
-
-    private VeluxThingConfiguration configuration = new VeluxThingConfiguration();
 
     public VeluxHandler(Thing thing, Localization localization) {
         super(thing);
@@ -74,7 +71,6 @@ public class VeluxHandler extends ExtendedBaseThingHandler {
     }
 
     private synchronized void initializeProperties() {
-        configuration = getConfigAs(VeluxThingConfiguration.class);
         logger.trace("initializeProperties() done.");
     }
 
@@ -149,7 +145,7 @@ public class VeluxHandler extends ExtendedBaseThingHandler {
         VeluxProduct product = bridgeHandler.existingProducts().get(actuator.getProductBridgeIndex());
 
         if (product.equals(VeluxProduct.UNKNOWN)) {
-            throw new IllegalStateException("initializeVanePositionChannel(): Product unknown in the bridge");
+            throw new IllegalStateException("updateDynamicChannels(): Product unknown in the bridge");
         }
 
         Channel channel = thing.getChannel(id);
@@ -157,9 +153,9 @@ public class VeluxHandler extends ExtendedBaseThingHandler {
 
         if (!required && channel != null) {
             logger.debug("Removing unsupported channel for {}: {}", thing.getUID(), id);
-            scheduler.submit(() -> updateThing(editThing().withoutChannels(channel).build()));
+            updateThing(editThing().withoutChannels(channel).build());
         } else if (required && channel == null) {
-            logger.warn("Thing {} does not have a '{}' channel => please reinitialize it", thing.getUID(), id);
+            logger.warn("Thing {} does not have a '{}' channel => please re-create it", thing.getUID(), id);
         }
     }
 }
