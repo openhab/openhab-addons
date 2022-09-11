@@ -166,6 +166,7 @@ The following channels are available:
 | track          | Current Track                  | Number    | The current CD track number                              |                                    |
 | random         | Random Mode                    | Switch    | The current random mode                                  |                                    |
 | repeat         | Repeat Mode                    | String    | The current repeat mode                                  | TRACK, DISC, OFF                   |
+| radioPreset    | Radio Preset                   | Number    | Select a radio preset                                    | INCREASE, DECREASE, value between 1 and 30 |
 | mainZone#line1 | Front Panel Line 1             | String    | The first line displayed on the device front panel       |                                    |
 | mainZone#line2 | Front Panel Line 2             | String    | The second line displayed on the device front panel      |                                    |
 | frequency, zone1#frequency, zone2#frequency, zone3#frequency, zone4#frequency | Current Frequency              | Number    | The current frequency (in kHz) for digital source input  |                                    |
@@ -198,9 +199,9 @@ Here are the list of channels available for each thing type:
 | rc1590     | power, source, volume, mute, bass, treble, frequency, brightness, tcbypass, balance, otherCommand       |
 | rcd1570    | power, playControl, brightness                                                                          |
 | rcd1572    | power, playControl, track, random, repeat, brightness, otherCommand                                     |
-| rcx1500    | power, source, volume, mute, playControl                                                                |
+| rcx1500    | power, source, volume, mute, playControl, radioPreset                                                   |
 | rdd1580    | power, source, playControl, frequency, otherCommand                                                     |
-| rdg1520    | power, source, playControl                                                                              |
+| rdg1520    | power, source, playControl, radioPreset                                                                 |
 | rsp1066    | mainZone#power, mainZone#source, mainZone#recordSource, mainZone#dsp, mainZone#volumeUpDown, mainZone#mute, mainZone#bass, mainZone#treble, mainZone#line1, mainZone#otherCommand, zone2#power, zone2#source, zone2#volumeUpDown |
 | rsp1068    | mainZone#power, mainZone#source, mainZone#recordSource, mainZone#dsp, mainZone#volume, mainZone#mute, mainZone#bass, mainZone#treble, mainZone#line1, mainZone#line2, mainZone#otherCommand, zone2#power, zone2#source, zone2#volume, zone2#mute, zone3#power, zone3#source, zone3#volume, zone3#mute, zone4#power, zone4#source, zone4#volume, zone4#mute |
 | rsp1069    | mainZone#power, mainZone#source, mainZone#recordSource, mainZone#dsp, mainZone#volume, mainZone#mute, mainZone#bass, mainZone#treble, mainZone#line1, mainZone#line2, mainZone#otherCommand, zone2#power, zone2#source, zone2#volume, zone2#mute, zone3#power, zone3#source, zone3#volume, zone3#mute, zone4#power, zone4#source, zone4#volume, zone4#mute |
@@ -219,11 +220,11 @@ Here are the list of channels available for each thing type:
 | rsx1560    | mainZone#power, mainZone#source, mainZone#recordSource, mainZone#dsp, mainZone#volume, mainZone#mute, mainZone#bass, mainZone#treble, mainZone#line1, mainZone#line2, mainZone#otherCommand, zone2#power, zone2#source, zone2#volume, zone2#mute, zone3#power, zone3#source, zone3#volume, zone3#mute, zone4#power, zone4#source, zone4#volume, zone4#mute |
 | rsx1562    | mainZone#power, mainZone#source, mainZone#recordSource, mainZone#dsp, mainZone#volume, mainZone#mute, mainZone#line1, mainZone#line2, mainZone#otherCommand, zone2#power, zone2#source, zone2#volume, zone2#mute, zone3#power, zone3#source, zone3#volume, zone3#mute, zone4#power, zone4#source, zone4#volume, zone4#mute |
 | rt09       | power, source, playControl, brightness                                                                  |
-| rt11       | power, source, brightness                                                                               |
-| rt1570     | power, source, brightness                                                                               |
+| rt11       | power, source, radioPreset, brightness                                                                  |
+| rt1570     | power, source, radioPreset, brightness                                                                  |
 | s5         | power, brightness                                                                                       |
-| t11        | power, source, brightness                                                                               |
-| t14        | power, source, brightness                                                                               |
+| t11        | power, source, radioPreset, brightness                                                                  |
+| t14        | power, source, radioPreset, brightness                                                                  |
 | x3         | power, source, volume, mute, bass, treble, frequency, brightness, tcbypass, balance, otherCommand       |
 | x5         | power, source, volume, mute, bass, treble, frequency, brightness, tcbypass, balance, otherCommand       |
 
