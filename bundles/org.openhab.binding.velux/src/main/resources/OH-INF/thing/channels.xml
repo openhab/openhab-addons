@@ -137,6 +137,7 @@
 		<label>@text/channel-type.velux.windowPosition.label</label>
 		<description>@text/channel-type.velux.windowPosition.description</description>
 		<category>Window</category>
+		<state min="0" max="100"/>
 	</channel-type>
 
 	<channel-type id="position">
@@ -144,6 +145,7 @@
 		<label>@text/channel-type.velux.position.label</label>
 		<description>@text/channel-type.velux.position.description</description>
 		<category>Blinds</category>
+		<state min="0" max="100"/>
 	</channel-type>
 
 	<channel-type id="vanePosition">
@@ -164,14 +166,14 @@
 		<item-type>Rollershutter</item-type>
 		<label>@text/channel-type.velux.limitMinimum.label</label>
 		<description>@text/channel-type.velux.limitMinimum.description</description>
-		<category>Blinds</category>
+		<state min="0" max="100"/>
 	</channel-type>
 
 	<channel-type id="limitMaximum" advanced="true">
 		<item-type>Rollershutter</item-type>
 		<label>@text/channel-type.velux.limitMaximum.label</label>
 		<description>@text/channel-type.velux.limitMaximum.description</description>
-		<category>Blinds</category>
+		<state min="0" max="100"/>
 	</channel-type>
 
 	<channel-type id="action">
