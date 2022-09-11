@@ -1372,18 +1372,24 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
             try {
                 preset = Integer.parseInt(key.substring(KEY_FM_PRESET.length()));
             } catch (NumberFormatException e) {
+                // Considering the Rotel protocol, the parsing could not fail in practice.
+                // In case it would fail, 0 will be considered as preset, meaning undefined.
             }
             key = KEY_FM_PRESET;
         } else if (key.startsWith(KEY_DAB_PRESET)) {
             try {
                 preset = Integer.parseInt(key.substring(KEY_DAB_PRESET.length()));
             } catch (NumberFormatException e) {
+                // Considering the Rotel protocol, the parsing could not fail in practice.
+                // In case it would fail, 0 will be considered as preset, meaning undefined.
             }
             key = KEY_DAB_PRESET;
         } else if (key.startsWith(KEY_IRADIO_PRESET)) {
             try {
                 preset = Integer.parseInt(key.substring(KEY_IRADIO_PRESET.length()));
             } catch (NumberFormatException e) {
+                // Considering the Rotel protocol, the parsing could not fail in practice.
+                // In case it would fail, 0 will be considered as preset, meaning undefined.
             }
             key = KEY_IRADIO_PRESET;
         }
@@ -1560,6 +1566,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                             try {
                                 sendCommand(presetGetCmd);
                             } catch (RotelException e) {
+                                logger.debug("Getting the radio preset failed: {}", e.getMessage());
                             }
                         }, 250, TimeUnit.MILLISECONDS);
                     } else {
