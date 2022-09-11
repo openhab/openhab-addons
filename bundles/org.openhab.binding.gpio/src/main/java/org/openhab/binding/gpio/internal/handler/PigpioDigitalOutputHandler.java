@@ -63,6 +63,10 @@ public class PigpioDigitalOutputHandler implements ChannelHandler {
             throw new NoGpioIdException();
         }
         this.gpio = new GPIO(jPigpio, gpioId, JPigpio.PI_OUTPUT);
+        if (configuration.invert) {
+            updateStatus.accept(OnOffType.ON);
+            gpio.setValue(true);
+        }
     }
 
     @Override
