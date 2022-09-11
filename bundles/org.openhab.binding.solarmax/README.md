@@ -54,6 +54,74 @@ Each inverter requires the following configuration parameters:
 | acPhase3Voltage          | Number:ElectricPotential | Ac Phase3 Voltage in V                       |
 | heatSinkTemperature      | Number:Temperature       | Heat Sink Temperature in degrees celcius     |
 
+### Full Example
+
+Below you can find some example textual configuration for a solarmax with some basic functionallity. This can be extended/adjusted according to your needs and depending on the required channels (see list above).
+
+_inverter.things:_
+
+```
+Thing solarmax:inverter:solarmax "SolarMax Inverter" [
+    host="192.168.1.151",
+    port="12345",
+    refresh="15"
+]
+```
+
+_inverter.items:_
+
+```
+Group    gInverter   "SolarMax Inverter"
+
+DateTime lastUpdated "Last Updated" <clock> (gInverter) {channel="solarmax:inverter:solarmax:lastUpdated"}
+
+Number startups "Startups" (gInverter) { channel="solarmax:inverter:solarmax:startups" }
+
+Number:ElectricCurrent acPhase1Current "Ac Phase 1 Current in Amps" <energy> (gInverter) { channel="solarmax:inverter:solarmax:acPhase1Current" }
+Number:ElectricCurrent acPhase2Current "Ac Phase 2 Current in Amps" <energy> (gInverter) { channel="solarmax:inverter:solarmax:acPhase2Current" }
+Number:ElectricCurrent acPhase3Current "Ac Phase 3 Current in Amps" <energy> (gInverter) { channel="solarmax:inverter:solarmax:acPhase3Current" }
+
+Number:Energy energyGeneratedToday "Energy Generated Today in Wh" <energy> (gInverter) { channel="solarmax:inverter:solarmax:energyGeneratedToday" }
+Number:Energy energyGeneratedTotal "Energy Generated since recording began in Wh" <energy> (gInverter) { channel="solarmax:inverter:solarmax:energyGeneratedTotal" }
+
+Number operatingHours "Operating Hours since recording began in h" <time> (gInverter) { channel="solarmax:inverter:solarmax:operatingHours" }
+
+Number:Energy energyGeneratedYesterday "Energy Generated Yesterday in Wh" <energy> (gInverter) { channel="solarmax:inverter:solarmax:operatingHours" }
+Number:Energy energyGeneratedLastMonth "Energy Generated Last Month in Wh" <energy> (gInverter) { channel="solarmax:inverter:solarmax:energyGeneratedLastMonth" }
+Number:Energy energyGeneratedLastYear "Energy Generated Last Year in Wh" <energy> (gInverter) { channel="solarmax:inverter:solarmax:energyGeneratedLastYear" }
+Number:Energy energyGeneratedThisMonth "Energy Generated This Month in Wh" <energy> (gInverter) { channel="solarmax:inverter:solarmax:energyGeneratedThisMonth" }
+Number:Energy energyGeneratedThisYear "Energy Generated This Year in Wh" <energy> (gInverter) { channel="solarmax:inverter:solarmax:energyGeneratedThisYear" }
+
+Number:Power currentPowerGenerated "Power currently being generated in W" (gInverter) { channel="solarmax:inverter:solarmax:currentPowerGenerated" }
+Number:Frequency acFrequency "AcFrequency in Hz" (gInverter) { channel="solarmax:inverter:solarmax:acFrequency" }
+
+Number:ElectricPotential acPhase1Voltage "Ac Phase1 Voltage in V" <energy> (gInverter) { channel="solarmax:inverter:solarmax:acPhase1Voltage" }
+Number:ElectricPotential acPhase2Voltage "Ac Phase2 Voltage in V" <energy> (gInverter) { channel="solarmax:inverter:solarmax:acPhase2Voltage" }
+Number:ElectricPotential acPhase3Voltage "Ac Phase3 Voltage in V" <energy> (gInverter) { channel="solarmax:inverter:solarmax:acPhase3Voltage" }
+
+Number:Temperature heatSinkTemperature "Heat Sink Temperature in degrees celcius" <temperature> (gInverter) { channel="solarmax:inverter:solarmax:heatSinkTemperature" }
+
+```
+
+_heatpump.sitemap:_
+
+```
+sitemap heatpump label="Heatpump" {
+    Frame label="Heatpump" {
+        Text item=HeatPump_State_Ext
+        Text item=HeatPump_Temperature_1
+        Text item=HeatPump_Outside_Avg
+        Text item=HeatPump_Hours_Heatpump
+        Text item=HeatPump_Hours_Heating
+        Text item=HeatPump_Hours_Warmwater
+        Switch item=HeatPump_heating_operation_mode  mappings=[0="Auto", 1="Auxiliary heater", 2="Party", 3="Holiday", 4="Off"]
+        Setpoint item=HeatPump_heating_temperature minValue=-10 maxValue=10 step=0.5
+        Switch item=HeatPump_warmwater_operation_mode  mappings=[0="Auto", 1="Auxiliary heater", 2="Party", 3="Holiday", 4="Off"]
+        Setpoint item=HeatPump_warmwater_temperature minValue=10 maxValue=65 step=1
+    }
+}
+```
+
 ### SolarMax Commands
 
 During the implementation the SolarMax device was sent all possible 3 character commands and a number of 4 character commands, to see what it responded to.
