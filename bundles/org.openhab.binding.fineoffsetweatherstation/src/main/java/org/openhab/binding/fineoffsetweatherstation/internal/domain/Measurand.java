@@ -158,6 +158,19 @@ public enum Measurand {
     LEAF_WETNESS_CHX("leaf-wetness-channel", new int[] { 0x72, 0x73, 0x74, 0x75, 0x76, 0x77, 0x78, 0x79 },
             "Leaf Moisture", MeasureType.PERCENTAGE, CHANNEL_TYPE_MOISTURE),
 
+    /**
+     * 1 Traditional rain gauge
+     * 2 Piezoelectric rain gauge
+     */
+    RAIN_PRIO(0x7a, new Skip(1)),
+
+    /**
+     * 0 = RFM433M
+     * 1 = RFM868M
+     * default = RFM915M
+     */
+    RCSATION(0x7b, new Skip(1)),
+
     PIEZO_RAIN_RATE("piezo-rain-rate", 0x80, "Rain Rate", MeasureType.HEIGHT_PER_HOUR),
 
     PIEZO_EVENT_RAIN("piezo-rain-event", 0x81, "Rain Event", MeasureType.HEIGHT),
@@ -172,7 +185,7 @@ public enum Measurand {
 
     PIEZO_YEARLY_RAIN("piezo-rain-year", 0x86, "Rain Year", MeasureType.HEIGHT_BIG),
 
-    PIEZO_GAIN10(0x87, new Skip(2)),
+    PIEZO_GAIN10(0x87, new Skip(2 * 10)),
 
     RST_RAIN_TIME(0x88, new Skip(3)),
 
