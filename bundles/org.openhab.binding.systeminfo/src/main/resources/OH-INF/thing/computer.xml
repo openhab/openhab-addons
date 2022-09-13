@@ -16,7 +16,7 @@
 			<channel-group id="storage" typeId="storageGroup"/>
 			<channel-group id="sensors" typeId="sensorsGroup"/>
 			<channel-group id="cpu" typeId="cpuGroup"/>
-			<!-- This group types are not mandatory for every computer configuration -->
+			<channel-group id="currentProcess" typeId="currentProcessGroup"/>
 			<channel-group id="process" typeId="processGroup"/>
 			<channel-group id="drive" typeId="driveGroup"/>
 			<channel-group id="swap" typeId="swapGroup"/>
