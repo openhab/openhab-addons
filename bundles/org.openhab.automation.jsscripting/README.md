@@ -32,14 +32,15 @@ to common openHAB functionality within rules including items, things, actions, l
 - [Advanced Scripting](#advanced-scripting)
   - [@runtime](#runtime)
 
-
 ## Configuration
 
 This add-on includes by default the [openhab-js](https://github.com/openhab/openhab-js/) NPM library and exports its namespaces onto the global namespace.
 This allows the use of `items`, `actions`, `cache` and other objects without the need to explicitly import using `require()`.
-This functionality can be disabled for users who prefer to manage their own imports via the add-on configuration options. 
+This functionality can be disabled for users who prefer to manage their own imports via the add-on configuration options.
 
 ![openHAB Rule Configuration](doc/settings.png)
+
+<!-- Paste the copied docs from openhab-js under this comment. -->
 
 ### UI Based Rules
 
