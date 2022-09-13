@@ -4,6 +4,7 @@ This is the binding for [Jellyfin](https://jellyfin.org) the volunteer-built med
 Stream to any device from your own server, with no strings attached. 
 Your media, your server, your way.
 This binding allows connect to Jellyfin clients that supports remote control, it's build on top of the official Jellyfin kotlin sdk.
+Compatible with Jellyfin servers in version 10.8.x.
 
 ## Supported Things
 
@@ -62,7 +63,10 @@ In order to assist you with this process the binding expose a simple login form 
 | play-next-by-terms  | String | Add to playback queue as next by terms, works for series, episodes and movies; terms search is explained bellow |
 | play-last-by-terms  | String | Add to playback queue as last by terms, works for series, episodes and movies; terms search is explained bellow |
 | browse-by-terms  | String | Browse media by terms, works for series, episodes and movies; terms search is explained bellow |
-
+| play-by-id  | String | Play media by id, works for series, episodes and movies; id search is explained bellow |
+| play-next-by-id  | String | Add to playback queue as next by id, works for series, episodes and movies |
+| play-last-by-id  | String | Add to playback queue as last by id, works for series, episodes and movies |
+| browse-by-id  | String | Browse media by id, works for series, episodes and movies |
 ### Terms search:
 
 The terms search has a default behavior that can be modified sending some predefined prefixes.

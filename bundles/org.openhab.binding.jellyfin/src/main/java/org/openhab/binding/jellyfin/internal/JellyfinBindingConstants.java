@@ -50,7 +50,10 @@ public class JellyfinBindingConstants {
     public static final String PLAY_NEXT_BY_TERMS_CHANNEL = "play-next-by-terms";
     public static final String PLAY_LAST_BY_TERMS_CHANNEL = "play-last-by-terms";
     public static final String BROWSE_ITEM_BY_TERMS_CHANNEL = "browse-by-terms";
-
+    public static final String PLAY_BY_ID_CHANNEL = "play-by-id";
+    public static final String PLAY_NEXT_BY_ID_CHANNEL = "play-next-by-id";
+    public static final String PLAY_LAST_BY_ID_CHANNEL = "play-last-by-id";
+    public static final String BROWSE_ITEM_BY_ID_CHANNEL = "browse-by-id";
     // Discovery
     public static final int DISCOVERY_RESULT_TTL_SEC = 600;
 }

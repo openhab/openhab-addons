@@ -69,6 +69,10 @@
 			<channel id="play-next-by-terms" typeId="play-next-by-terms-channel"/>
 			<channel id="play-last-by-terms" typeId="play-last-by-terms-channel"/>
 			<channel id="browse-by-terms" typeId="browse-by-terms-channel"/>
+			<channel id="play-by-id" typeId="play-by-id-channel"/>
+			<channel id="play-next-by-id" typeId="play-next-by-id-channel"/>
+			<channel id="play-last-by-id" typeId="play-last-by-id-channel"/>
+			<channel id="browse-by-id" typeId="browse-by-id-channel"/>
 		</channels>
 
 		<config-description>
@@ -158,5 +162,25 @@
 		<item-type>String</item-type>
 		<label>Browse By Terms</label>
 		<description>Browse media by terms, works for series, episodes and movies</description>
+	</channel-type>
+	<channel-type id="play-by-id-channel">
+		<item-type>String</item-type>
+		<label>Play By Id</label>
+		<description>Play media by id</description>
+	</channel-type>
+	<channel-type id="play-next-by-id-channel">
+		<item-type>String</item-type>
+		<label>Play Next By Id</label>
+		<description>Add to playback queue as next by id</description>
+	</channel-type>
+	<channel-type id="play-last-by-id-channel">
+		<item-type>String</item-type>
+		<label>Play Last By Id</label>
+		<description>Add to playback queue as last by id</description>
+	</channel-type>
+	<channel-type id="browse-by-id-channel">
+		<item-type>String</item-type>
+		<label>Browse By Id</label>
+		<description>Browse media by id</description>
 	</channel-type>
 </thing:thing-descriptions>
