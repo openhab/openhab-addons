@@ -16,13 +16,32 @@
 #ifndef Config_h
 #define Config_h
 
+#include <Arduino.h>
+
 // ######### BOARD SELECTION #######################
+
+// Possible target base architectures
+#define BASE_ARCH_ARDUINO  1
+#define BASE_ARCH_ESP32    2
+
+// Selected base architecture
+#define BASE_ARCH   BASE_ARCH_ESP32
+
+// Possible outgoing connectivity modes
+#define CONN_MODE_ETH  1
+#define CONN_MODE_WIFI 2
+
+// Selected outgoing connectivity mode
+#define CONN_MODE   CONN_MODE_ETH
 
 // Enable if you use ProDiNo NetBoard V2.1 board
 //#define PRODINO_BOARD
 
 // Enable if you use PRODINo ESP32 Ethernet v1 (Enable also HARDWARE_SERIAL_WITH_PINS in NibeGW.h)
 #define PRODINO_BOARD_ESP32
+
+// Enable if you use a generic ESP32 board (Enable also HARDWARE_SERIAL_WITH_PINS in NibeGW.h)
+//#define GENERIC_BOARD_ESP32
 
 // Enable if ENC28J60 LAN module is used
 //#define TRANSPORT_ETH_ENC28J60
@@ -43,16 +62,20 @@
 #define ENABLE_DEBUG
 #define VERBOSE_LEVEL           1
 #define ENABLE_SERIAL_DEBUG
-#define ENABLE_REMOTE_DEBUG     // Remote debug is available in telnet port 23
+#define ENABLE_REMOTE_DEBUG     // Remote debug is available in telnet port 23 
 
 #define BOARD_NAME              "Arduino NibeGW"
 
 // Ethernet configuration
-#define BOARD_MAC               "DE:AD:BE:EF:FE:ED"
+#define BOARD_MAC               "DE:AD:BE:EF:FE:ED" // Not used in wifi mode, as ESP32 has a default MAC
 #define BOARD_IP                "192.168.1.100"
 #define DNS_SERVER              "192.168.1.1"
 #define GATEWAY_IP              "192.168.1.1"
 #define NETWORK_MASK            "255.255.255.0"
+
+// Wifi configuration
+#define WIFI_SSID               ""
+#define WIFI_PASS               ""
 
 // UDP ports for incoming messages
 #define INCOMING_PORT_READCMDS  9999
@@ -84,13 +107,15 @@
   #define RS485_RX_PIN          4
   #define RS485_TX_PIN          16
   #define RS485_DIRECTION_PIN   2
+#elif defined(GENERIC_BOARD_ESP32)
+  #define WDT_TIMEOUT           2
+  #define RS485_RX_PIN          16
+  #define RS485_TX_PIN          17
+  #define RS485_DIRECTION_PIN   19
 #else
   #define RS485_PORT            Serial
   #define RS485_DIRECTION_PIN   2
 #endif
-
-
-
 
 
 // ######### VARIABLES #######################
@@ -99,8 +124,6 @@
 
   #include "Bleeper.h"    // https://github.com/workilabs/Bleeper
   #include "ElegantOTA.h" // https://github.com/ayushsharma82/ElegantOTA
-  
-  WebServer otaServer(8080);
 
   class EthConfig: public Configuration {
     public:
@@ -144,7 +167,7 @@
       #ifdef ENABLE_DEBUG
       subconfig(DebugConfig, debug);
       #endif
-  } config;
+  };
     
 #else
 
@@ -180,41 +203,8 @@
     #endif
   
   };
-  
-  Config config = {
-    BOARD_NAME,
-    
-    {
-      BOARD_MAC,
-      BOARD_IP,
-      DNS_SERVER,
-      GATEWAY_IP,
-      NETWORK_MASK,
-      ETH_INIT_DELAY
-    },
-  
-    {
-      TARGET_IP,
-      TARGET_PORT,
-      INCOMING_PORT_READCMDS,
-      INCOMING_PORT_WRITECMDS,
-
-      {
-        SEND_ACK,
-        ACK_MODBUS40,
-        ACK_SMS40,
-        ACK_RMU40,
-      },
-    },
-  
-    
-    #ifdef ENABLE_DEBUG
-    {
-      VERBOSE_LEVEL
-    }
-    #endif
-  
-  };
 #endif
+
+extern Config config;
 
 #endif
