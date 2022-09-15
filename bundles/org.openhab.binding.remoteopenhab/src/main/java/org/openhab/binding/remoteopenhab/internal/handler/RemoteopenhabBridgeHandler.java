@@ -75,7 +75,6 @@ import org.openhab.core.thing.type.ChannelTypeBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.CommandOption;
-import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.openhab.core.types.StateOption;
@@ -99,7 +98,7 @@ import com.google.gson.Gson;
 public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
         implements RemoteopenhabStreamingDataListener, RemoteopenhabItemsDataListener {
 
-    private static final String DATE_FORMAT_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
+    private static final String DATE_FORMAT_PATTERN = "yyyy-MM-dd'T'HH:mm[:ss[.SSSSSSSSS][.SSSSSSSS][.SSSSSSS][.SSSSSS][.SSSSS][.SSSS][.SSS][.SS][.S]]Z";
     private static final DateTimeFormatter FORMATTER_DATE = DateTimeFormatter.ofPattern(DATE_FORMAT_PATTERN);
 
     private static final int MAX_STATE_SIZE_FOR_LOGGING = 50;
@@ -201,10 +200,7 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
         }
 
         try {
-            if (command instanceof RefreshType) {
-                String state = restClient.getRemoteItemState(channelUID.getId());
-                updateChannelState(channelUID.getId(), null, state, false);
-            } else if (isLinked(channelUID)) {
+            if (isLinked(channelUID)) {
                 restClient.sendCommandToRemoteItem(channelUID.getId(), command);
                 String commandStr = command.toFullString();
                 logger.debug("Sending command {} to remote item {} succeeded",

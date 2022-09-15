@@ -23,7 +23,7 @@ This binding works offline by [implementing the wire protocol](https://osswww.ec
 
 ## Supported Things
 
-- `weatherstation`: A Fine Offset gateway device with the ThingTypeUID `fineoffsetweatherstation:weatherstation` wich supports the [wire protocol](https://osswww.ecowitt.net/uploads/20210716/WN1900%20GW1000,1100%20WH2680,2650%20telenet%20v1.6.0%20.pdf) e.g.:
+- `weatherstation`: A Fine Offset gateway device with the ThingTypeUID `fineoffsetweatherstation:weatherstation` which supports the [wire protocol](https://osswww.ecowitt.net/uploads/20220407/WN1900%20GW1000,1100%20WH2680,2650%20telenet%20v1.6.4.pdf) e.g.:
     - HP2550
     - HP3500
     - GW1000
@@ -31,6 +31,7 @@ This binding works offline by [implementing the wire protocol](https://osswww.ec
     - GW1002
     - GW1003
     - GW1100
+    - GW2001
     - WN1900
     - WN1910
     - WH2350
@@ -42,6 +43,7 @@ This binding works offline by [implementing the wire protocol](https://osswww.ec
     - WH2900
     - WH2950
     - WS980 ELV (tested)
+    - WittBoy (tested)
 - `sensor`: A Fine Offset sensor which is connected to the bridge with the ThingTypeUID `fineoffsetweatherstation:sensor`.
   Since the gateway collects all the sensor data and harmonizes them, the sensor thing itself will only hold information about the signal and battery status.
   This is a list of sensors supported by the protocol:
@@ -60,7 +62,7 @@ This binding works offline by [implementing the wire protocol](https://osswww.ec
   - WH65 - 7-in-1 weather station for wind speed & direction, solar radiation & light, temperature, humidity and rainfall
   - WH68 - 4-in-1 weather station - Solar-powered sensor for wind speed & direction, solar radiation & light
   - WH80 - 6-in-1 weather station - Ultrasonic sensor for wind speed & direction, solar radiation & light, temperature & humidity
-  - WH90 - A new weather station
+  - WH90 - 7-in-1 weather station - Ultrasonic sensor for wind speed & direction, solar radiation & light, temperature, humidity and haptic rainfall Sensor
 
 ### Unsupported Devices
 
@@ -263,6 +265,13 @@ Valid sensors:
 | leaf-wetness-channel-6                | Number:Dimensionless          | R          | Leaf Moisture Channel 6                        | 
 | leaf-wetness-channel-7                | Number:Dimensionless          | R          | Leaf Moisture Channel 7                        | 
 | leaf-wetness-channel-8                | Number:Dimensionless          | R          | Leaf Moisture Channel 8                        | 
+| piezo-rain-rate                       | Number:VolumetricFlowRate     | R          | Piezo - Rainfall Rate                          |
+| piezo-rain-event                      | Number:Length                 | R          | Piezo - Amount of Rainfall At the last Rain    |
+| piezo-rain-hour                       | Number:Length                 | R          | Piezo - Rainfall Current Hour                  |
+| piezo-rain-day                        | Number:Length                 | R          | Piezo - Rainfall Today                         |
+| piezo-rain-week                       | Number:Length                 | R          | Piezo - Rainfall this Week                     |
+| piezo-rain-month                      | Number:Length                 | R          | Piezo - Rainfall this Month                    |
+| piezo-rain-year                       | Number:Length                 | R          | Piezo - Rainfall this Year                     |
 
 ### `sensor` Channels
 

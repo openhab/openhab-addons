@@ -111,7 +111,7 @@ public class DSMRBridgeHandler extends BaseBridgeHandler implements DSMREventLis
      * @param bridge the Bridge ThingType
      * @param serialPortManager The Serial port manager
      */
-    public DSMRBridgeHandler(Bridge bridge, SerialPortManager serialPortManager) {
+    public DSMRBridgeHandler(final Bridge bridge, final SerialPortManager serialPortManager) {
         super(bridge);
         this.serialPortManager = serialPortManager;
         smartyMeter = THING_TYPE_SMARTY_BRIDGE.equals(bridge.getThingTypeUID());
@@ -129,7 +129,7 @@ public class DSMRBridgeHandler extends BaseBridgeHandler implements DSMREventLis
      * @param command the {@link Command}
      */
     @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
+    public void handleCommand(final ChannelUID channelUID, final Command command) {
         // DSMRBridgeHandler does not support commands
     }
 
@@ -170,12 +170,13 @@ public class DSMRBridgeHandler extends BaseBridgeHandler implements DSMREventLis
      * @param deviceConfig device configuration
      * @return Specific {@link DSMRDevice} instance
      */
-    private DSMRDevice createDevice(DSMRDeviceConfiguration deviceConfig) {
+    private DSMRDevice createDevice(final DSMRDeviceConfiguration deviceConfig) {
         final DSMRDevice dsmrDevice;
 
         if (smartyMeter) {
             dsmrDevice = new DSMRFixedConfigDevice(serialPortManager, deviceConfig.serialPort,
-                    DSMRSerialSettings.HIGH_SPEED_SETTINGS, this, new DSMRTelegramListener(deviceConfig.decryptionKey));
+                    DSMRSerialSettings.HIGH_SPEED_SETTINGS, this,
+                    new DSMRTelegramListener(deviceConfig.decryptionKey, deviceConfig.additionalKey));
         } else {
             final DSMRTelegramListener telegramListener = new DSMRTelegramListener();
 
@@ -196,7 +197,7 @@ public class DSMRBridgeHandler extends BaseBridgeHandler implements DSMREventLis
      * @param meterListener the meter discovery listener to add
      * @return true if listener is added, false otherwise
      */
-    public boolean registerDSMRMeterListener(P1TelegramListener meterListener) {
+    public boolean registerDSMRMeterListener(final P1TelegramListener meterListener) {
         logger.trace("Register DSMRMeterListener");
         return meterListeners.add(meterListener);
     }
@@ -207,7 +208,7 @@ public class DSMRBridgeHandler extends BaseBridgeHandler implements DSMREventLis
      * @param meterListener the meter discovery listener to remove
      * @return true is listener is removed, false otherwise
      */
-    public boolean unregisterDSMRMeterListener(P1TelegramListener meterListener) {
+    public boolean unregisterDSMRMeterListener(final P1TelegramListener meterListener) {
         logger.trace("Unregister DSMRMeterListener");
         return meterListeners.remove(meterListener);
     }
@@ -247,7 +248,7 @@ public class DSMRBridgeHandler extends BaseBridgeHandler implements DSMREventLis
     }
 
     @Override
-    public synchronized void handleTelegramReceived(P1Telegram telegram) {
+    public synchronized void handleTelegramReceived(final P1Telegram telegram) {
         if (telegram.getCosemObjects().isEmpty()) {
             logger.debug("Parsing worked but something went wrong, so there were no CosemObjects:{}",
                     telegram.getTelegramState().stateDetails);
@@ -259,7 +260,7 @@ public class DSMRBridgeHandler extends BaseBridgeHandler implements DSMREventLis
     }
 
     @Override
-    public void handleErrorEvent(DSMRConnectorErrorEvent portEvent) {
+    public void handleErrorEvent(final DSMRConnectorErrorEvent portEvent) {
         if (portEvent != DSMRConnectorErrorEvent.READ_ERROR) {
             deviceOffline(ThingStatusDetail.CONFIGURATION_ERROR, portEvent.getEventDetails());
         }
@@ -270,7 +271,7 @@ public class DSMRBridgeHandler extends BaseBridgeHandler implements DSMREventLis
      *
      * @param telegram received meter values.
      */
-    private void meterValueReceived(P1Telegram telegram) {
+    private void meterValueReceived(final P1Telegram telegram) {
         if (isInitialized() && getThing().getStatus() != ThingStatus.ONLINE) {
             updateStatus(ThingStatus.ONLINE);
         }
@@ -302,7 +303,7 @@ public class DSMRBridgeHandler extends BaseBridgeHandler implements DSMREventLis
     /**
      * @param lenientMode the lenientMode to set
      */
-    public void setLenientMode(boolean lenientMode) {
+    public void setLenientMode(final boolean lenientMode) {
         logger.trace("SetLenientMode: {}", lenientMode);
         if (dsmrDevice != null) {
             dsmrDevice.setLenientMode(lenientMode);
@@ -315,7 +316,7 @@ public class DSMRBridgeHandler extends BaseBridgeHandler implements DSMREventLis
      * @param status off line status
      * @param details off line detailed message
      */
-    private void deviceOffline(ThingStatusDetail status, String details) {
+    private void deviceOffline(final ThingStatusDetail status, final String details) {
         updateStatus(ThingStatus.OFFLINE, status, details);
     }
 }

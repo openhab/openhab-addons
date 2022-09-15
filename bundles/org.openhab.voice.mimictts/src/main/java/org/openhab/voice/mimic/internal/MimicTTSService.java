@@ -13,23 +13,29 @@
 package org.openhab.voice.mimic.internal;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.Response;
+import org.eclipse.jetty.client.util.InputStreamResponseListener;
+import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioStream;
-import org.openhab.core.audio.ByteArrayAudioStream;
 import org.openhab.core.config.core.ConfigurableService;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.io.net.http.HttpRequestBuilder;
-import org.openhab.core.io.net.http.HttpUtil;
-import org.openhab.core.library.types.RawType;
 import org.openhab.core.voice.TTSException;
 import org.openhab.core.voice.TTSService;
 import org.openhab.core.voice.Voice;
@@ -38,6 +44,7 @@ import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,6 +63,8 @@ import com.google.gson.JsonSyntaxException;
         + " Text-to-Speech", description_uri = MimicTTSService.SERVICE_CATEGORY + ":" + MimicTTSService.SERVICE_ID)
 @NonNullByDefault
 public class MimicTTSService implements TTSService {
+
+    private final Logger logger = LoggerFactory.getLogger(MimicTTSService.class);
 
     static final String SERVICE_CATEGORY = "voice";
     static final String SERVICE_ID = "mimictts";
@@ -82,18 +91,16 @@ public class MimicTTSService implements TTSService {
 
     private Set<Voice> availableVoices = new HashSet<>();
 
-    /**
-     * Logger.
-     */
-    private final Logger logger = LoggerFactory.getLogger(MimicTTSService.class);
-
     private final MimicConfiguration config = new MimicConfiguration();
 
     private final Gson gson = new GsonBuilder().create();
 
+    private final HttpClient httpClient;
+
     @Activate
-    protected void activate(Map<String, Object> config) {
+    public MimicTTSService(final @Reference HttpClientFactory httpClientFactory, Map<String, Object> config) {
         updateConfig(config);
+        this.httpClient = httpClientFactory.getCommonHttpClient();
     }
 
     /**
@@ -175,8 +182,9 @@ public class MimicTTSService implements TTSService {
                 return;
             }
             for (VoiceDto voiceDto : mimicVoiceResponse) {
-                if (voiceDto.speakers != null && voiceDto.speakers.size() > 0) {
-                    for (String speaker : voiceDto.speakers) {
+                List<String> speakers = voiceDto.speakers;
+                if (speakers != null && !speakers.isEmpty()) {
+                    for (String speaker : speakers) {
                         availableVoices.add(new MimicVoice(voiceDto.key, voiceDto.language, voiceDto.name, speaker));
                     }
                 } else {
@@ -223,27 +231,55 @@ public class MimicTTSService implements TTSService {
         if (!AUDIO_FORMAT.isCompatible(requestedFormat)) {
             throw new TTSException("The passed AudioFormat is unsupported");
         }
-        String encodedText;
-        try {
-            encodedText = URLEncoder.encode(text, StandardCharsets.UTF_8.toString());
-        } catch (UnsupportedEncodingException e) {
-            throw new IllegalArgumentException("Cannot encode text in URL " + text);
-        }
 
         String ssml = "";
         if (text.startsWith("<speak>")) {
             ssml = "&ssml=true";
         }
 
-        // create the audio byte array for given text, locale, format
-        String urlTTS = config.url + SYNTHETIZE_URL + "?text=" + encodedText + "&voice="
-                + ((MimicVoice) voice).getTechnicalName() + ssml + "&noiseScale=" + config.audioVolatility + "&noiseW="
-                + config.phonemeVolatility + "&lengthScale=" + config.speakingRate + "&audioTarget=client";
+        // create the url for given locale, format
+        String urlTTS = config.url + SYNTHETIZE_URL + "?voice=" + ((MimicVoice) voice).getTechnicalName() + ssml
+                + "&noiseScale=" + config.audioVolatility + "&noiseW=" + config.phonemeVolatility + "&lengthScale="
+                + config.speakingRate + "&audioTarget=client";
         logger.debug("Querying mimic with URL {}", urlTTS);
-        RawType responseWav = HttpUtil.downloadData(urlTTS, "audio/wav", false, -1);
-        if (responseWav == null) {
-            throw new TTSException("Cannot get wav from mimic url " + urlTTS);
+
+        // prepare the response as an inputstream
+        InputStreamResponseListener inputStreamResponseListener = new InputStreamResponseListener();
+        // we will use a POST method for the text
+        StringContentProvider textContentProvider = new StringContentProvider(text, StandardCharsets.UTF_8);
+        httpClient.POST(urlTTS).content(textContentProvider).accept("audio/wav").send(inputStreamResponseListener);
+
+        // compute the estimated timeout using a "stupid" method based on text length, as the response time depends on
+        // the requested text. Average speaker speed estimated to 10/second.
+        // Will use a safe margin multiplicator (x5) to accept very slow mimic server
+        // So the constant chosen is 5 * 10 = /2
+        int timeout = text.length() / 2;
+
+        // check response status and return AudioStream
+        Response response;
+        try {
+            response = inputStreamResponseListener.get(timeout, TimeUnit.SECONDS);
+            if (response.getStatus() == HttpStatus.OK_200) {
+                String lengthHeader = response.getHeaders().get(HttpHeader.CONTENT_LENGTH);
+                long length;
+                try {
+                    length = Long.parseLong(lengthHeader);
+                } catch (NumberFormatException e) {
+                    throw new TTSException(
+                            "Cannot get Content-Length header from mimic response. Are you sure to query a mimic TTS server at "
+                                    + urlTTS + " ?");
+                }
+                return new InputStreamAudioStream(inputStreamResponseListener.getInputStream(), AUDIO_FORMAT, length);
+            } else {
+                String errorMessage = "Cannot get wav from mimic url " + urlTTS + " with HTTP response code "
+                        + response.getStatus() + " for reason " + response.getReason();
+                TTSException ttsException = new TTSException(errorMessage);
+                response.abort(ttsException);
+                throw ttsException;
+            }
+        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            String errorMessage = "Cannot get wav from mimic url " + urlTTS;
+            throw new TTSException(errorMessage, e);
         }
-        return new ByteArrayAudioStream(responseWav.getBytes(), AUDIO_FORMAT);
     }
 }

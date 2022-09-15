@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="easee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<bridge-type id="site">
+		<label>Easee Site</label>
+		<description>Cloud connection to an Easee site.</description>
+		<config-description-ref uri="thing-type:easee:site"/>
+	</bridge-type>
+	<thing-type id="mastercharger">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="site"/>
+		</supported-bridge-type-refs>
+		<label>Easee Master Charger</label>
+		<description>Cloud connected Easee Master Charger which also controls the circuit.</description>
+		<channel-groups>
+			<channel-group typeId="charger-state" id="state"/>
+			<channel-group typeId="charger-config" id="config"/>
+			<channel-group typeId="charger-commands" id="commands"/>
+			<channel-group typeId="charger-latestSession" id="latestSession"/>
+			<channel-group typeId="circuit-dynamicCurrent" id="dynamicCurrent"/>
+			<channel-group typeId="circuit-settings" id="settings"/>
+		</channel-groups>
+		<config-description-ref uri="thing-type:easee:mastercharger"/>
+	</thing-type>
+	<thing-type id="charger">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="site"/>
+		</supported-bridge-type-refs>
+		<label>Easee Charger</label>
+		<description>Cloud connected Easee Charger.</description>
+		<channel-groups>
+			<channel-group typeId="charger-state" id="state"/>
+			<channel-group typeId="charger-config" id="config"/>
+			<channel-group typeId="charger-commands" id="commands"/>
+			<channel-group typeId="charger-latestSession" id="latestSession"/>
+		</channel-groups>
+		<config-description-ref uri="thing-type:easee:charger"/>
+	</thing-type>
+</thing:thing-descriptions>

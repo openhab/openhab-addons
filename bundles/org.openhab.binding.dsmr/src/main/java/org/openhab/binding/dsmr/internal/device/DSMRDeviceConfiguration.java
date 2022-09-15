@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.dsmr.internal.device;
 
+import org.openhab.binding.dsmr.internal.DSMRBindingConstants;
+
 /**
  * Class describing the DSMR bridge user configuration
  *
@@ -19,6 +21,7 @@ package org.openhab.binding.dsmr.internal.device;
  * @author Hilbrand Bouwkamp - added receivedTimeout configuration
  */
 public class DSMRDeviceConfiguration {
+
     /**
      * Serial port name
      */
@@ -45,9 +48,14 @@ public class DSMRDeviceConfiguration {
     public String stopbits;
 
     /**
-     * The Luxembourgish smart meter decryption key
+     * The Luxembourgish/Austria smart meter decryption key
      */
     public String decryptionKey;
+
+    /**
+     * Austria smart meter additional decryption key
+     */
+    public String additionalKey = DSMRBindingConstants.ADDITIONAL_KEY_DEFAULT;
 
     /**
      * When no message was received after the configured number of seconds action will be taken.
@@ -66,6 +74,6 @@ public class DSMRDeviceConfiguration {
     public String toString() {
         return "DSMRDeviceConfiguration [serialPort=" + serialPort + ", Baudrate=" + baudrate + ", Databits=" + databits
                 + ", Parity=" + parity + ", Stopbits=" + stopbits + ", decryptionKey=" + decryptionKey
-                + ", receivedTimeout=" + receivedTimeout + "]";
+                + ", additionalKey=" + additionalKey + ", receivedTimeout=" + receivedTimeout + "]";
     }
 }

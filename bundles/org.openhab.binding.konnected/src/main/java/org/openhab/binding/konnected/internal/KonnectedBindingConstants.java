@@ -49,21 +49,9 @@ public class KonnectedBindingConstants {
     public static final Map<Integer, String> ESP8266_PIN_TO_ZONE = ESP8266_ZONE_TO_PIN.entrySet().stream()
             .collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
 
-    public static final String CHANNEL_ZONE = "zone";
-
     // channeltypeids
     public static final String CHANNEL_SWITCH = "konnected:switch";
     public static final String CHANNEL_ACTUATOR = "konnected:actuator";
     public static final String CHANNEL_TEMPERATURE = "konnected:temperature";
     public static final String CHANNEL_HUMIDITY = "konnected:humidity";
-
-    public static final String CHANNEL_TEMPERATURE_TYPE = "tempsensorType";
-    public static final String CHANNEL_TEMPERATURE_DS18B20_ADDRESS = "ds18b20_address";
-    public static final String CHANNEL_TEMPERATRUE_POLL = "pollinterval";
-
-    public static final String CHANNEL_ACTUATOR_TIMES = "times";
-    public static final String CHANNEL_ACTUATOR_MOMENTARY = "momentary";
-    public static final String CHANNEL_ACTUATOR_PAUSE = "pause";
-
-    public static final String CHANNEL_ONVALUE = "onvalue";
 }
