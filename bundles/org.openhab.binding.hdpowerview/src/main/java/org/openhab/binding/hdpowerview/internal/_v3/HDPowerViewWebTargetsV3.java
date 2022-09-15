@@ -228,7 +228,7 @@ public class HDPowerViewWebTargetsV3 extends HDPowerViewWebTargets {
     @Override
     public Repeaters getRepeaters()
             throws HubInvalidResponseException, HubProcessingException, HubMaintenanceException {
-        throw new HubProcessingException("getRepeaters(): method not implemented");
+        return new Repeaters();
     }
 
     @Override
