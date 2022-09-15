@@ -56,17 +56,18 @@ Obviously, this doesn't solve the problem when the Raspberry Pi is down, therefo
 `nibegw` is an application that reads telegrams from a serial port (which requires an RS-485 adapter), sends ACK/NAK to the heat pump and relays untouched telegrams to openHAB via UDP packets.
 The Nibe Heat Pump binding will listen to a UDP port and parse register data from UDP telegrams.
 
-### Arduino
+### Arduino / ESP32
 
-An Arduino-based solution has been tested with Arduino uno + RS485 and Ethernet shields.
-[PRODINo ESP32 Ethernet v1](https://kmpelectronics.eu/products/prodino-esp32-ethernet-v1/) and [ProDiNo Ethernet V2](https://kmpelectronics.eu/products/prodino-ethernet-v2/) boards are also supported.
-PRODINo boards have built-in Ethernet and RS-485 ports.
+Arduino- and ESP32 based solutions has been tested with:
+* Arduino uno + RS485 and Ethernet shield [ProDiNo Ethernet V2](https://kmpelectronics.eu/products/prodino-ethernet-v2/) 
+* ESP32 based [PRODINo ESP32 Ethernet v1](https://kmpelectronics.eu/products/prodino-esp32-ethernet-v1/) with built-in Ethernet and RS-485 ports.
+* Generic [ESP32 dev board](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/hw-reference/esp32/get-started-devkitc.html) and a [Waveshare RS485+CAN hat](https://www.waveshare.com/rs485-can-hat.htm)
 
-Arduino code is available [here](https://github.com/openhab/openhab-addons/tree/main/bundles/org.openhab.binding.nibeheatpump/contrib/NibeGW/Arduino/NibeGW).
+Arduino/ESP32 code is available [here](https://github.com/openhab/openhab-addons/tree/main/bundles/org.openhab.binding.nibeheatpump/contrib/NibeGW/Arduino/NibeGW).
 
-Arduino code can be build via Arduino IDE.
-For more details see [www.arduino.cc](https://www.arduino.cc/en/Main/Software). 
-NibeGW configuration (such IP addresses, ports, etc) can be adapted directly by editing the code files.
+Arduino/ESP32 code can be build via Arduino IDE or Platform.io.
+For more details see [www.arduino.cc](https://www.arduino.cc/en/Main/Software) and [www.platformio.org](https://platformio.org/platformio-ide). 
+NibeGW configuration (such IP addresses, ports, wifi credentials, etc) can be adapted directly by editing the code files.
 PRODINo ESP32 Ethernet v1 also supports dynamic configuration and OTA updates via Wi-Fi access point.
 
 ### Raspberry Pi (or other Linux/Unix based boards)
