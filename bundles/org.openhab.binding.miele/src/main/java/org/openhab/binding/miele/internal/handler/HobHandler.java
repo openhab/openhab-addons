@@ -16,6 +16,7 @@ import static org.openhab.binding.miele.internal.MieleBindingConstants.MIELE_DEV
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -31,8 +32,9 @@ import org.openhab.core.types.Command;
 @NonNullByDefault
 public class HobHandler extends MieleApplianceHandler<HobChannelSelector> {
 
-    public HobHandler(Thing thing, TranslationProvider i18nProvider, LocaleProvider localeProvider) {
-        super(thing, i18nProvider, localeProvider, HobChannelSelector.class, MIELE_DEVICE_CLASS_HOB);
+    public HobHandler(Thing thing, TranslationProvider i18nProvider, LocaleProvider localeProvider,
+            TimeZoneProvider timeZoneProvider) {
+        super(thing, i18nProvider, localeProvider, timeZoneProvider, HobChannelSelector.class, MIELE_DEVICE_CLASS_HOB);
     }
 
     @Override

@@ -58,7 +58,7 @@
 		<label>Start Time</label>
 		<description>Programmed start time of the program</description>
 		<category>Time</category>
-		<state readOnly="true" pattern="%1$tH:%1$tM"></state>
+		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="duration" advanced="true">
@@ -80,9 +80,9 @@
 	<channel-type id="finish">
 		<item-type>DateTime</item-type>
 		<label>Finish Time</label>
-		<description>Time to finish the program running on the appliance</description>
+		<description>End time of the program running on the appliance</description>
 		<category>Time</category>
-		<state readOnly="true" pattern="%1$tH:%1$tM"></state>
+		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="door">

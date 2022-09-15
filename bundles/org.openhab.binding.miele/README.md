@@ -127,7 +127,7 @@ Channels available for each appliance type are listed below.
 | start               | DateTime             | Read       | Programmed start time of the program                                |
 | duration            | DateTime             | Read       | Duration of the program running on the appliance                    |
 | elapsed             | DateTime             | Read       | Time elapsed in the program running on the appliance                |
-| finish              | DateTime             | Read       | Time to finish the program running on the appliance                 |
+| finish              | DateTime             | Read       | End time of the program running on the appliance                    |
 | door                | Contact              | Read       | Current state of the door of the appliance                          |
 | switch              | Switch               | Write      | Switch the appliance on or off                                      |
 | powerConsumption    | Number:Power         | Read       | Power consumption by the currently running program on the appliance |
@@ -239,7 +239,7 @@ Channels available for each appliance type are listed below.
 | start               | DateTime             | Read       | Programmed start time of the program                                |
 | duration            | DateTime             | Read       | Duration of the program running on the appliance                    |
 | elapsed             | DateTime             | Read       | Time elapsed in the program running on the appliance                |
-| finish              | DateTime             | Read       | Time to finish the program running on the appliance                 |
+| finish              | DateTime             | Read       | End time of the program running on the appliance                    |
 | target              | Number:Temperature   | Read       | Target temperature to be reached by the oven                        |
 | measured            | Number:Temperature   | Read       | Actual measured temperature in the oven                             |
 | temp1               | Number:Temperature   | Read       | Program temperature in the oven 1                                   |
@@ -281,7 +281,7 @@ See oven.
 | start               | DateTime             | Read       | Programmed start time of the program                                |
 | duration            | DateTime             | Read       | Duration of the program running on the appliance                    |
 | elapsed             | DateTime             | Read       | Time elapsed in the program running on the appliance                |
-| finish              | DateTime             | Read       | Time to finish the program running on the appliance                 |
+| finish              | DateTime             | Read       | End time of the program running on the appliance                    |
 | door                | Contact              | Read       | Current state of the door of the appliance                          |
 | switch              | Switch               | Write      | Switch the appliance on or off                                      |
 | step                | Number               | Read       | Current step in the program running on the appliance                |
@@ -345,7 +345,7 @@ See oven.
 | start               | DateTime             | Read       | Programmed start time of the program                                |
 | duration            | DateTime             | Read       | Duration of the program running on the appliance                    |
 | elapsed             | DateTime             | Read       | Time elapsed in the program running on the appliance                |
-| finish              | DateTime             | Read       | Time to finish the program running on the appliance                 |
+| finish              | DateTime             | Read       | End time of the program running on the appliance                    |
 | door                | Contact              | Read       | Current state of the door of the appliance                          |
 | switch              | Switch               | Write      | Switch the appliance on or off                                      |
 | target              | Number:Temperature   | Read       | Temperature of the selected program (10 °C = cold)                  |
