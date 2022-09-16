@@ -369,27 +369,47 @@
         "deviceClassLink": "fqxoiu"
     },
     {
-        "modelName": "DEEBOT X1 Omni",
+        "modelName": "DEEBOT T10",
+        "deviceClass": "jtmf04",
+        "deviceClassLink": "fqxoiu"
+    },
+    {
+        "modelName": "DEEBOT T10 PLUS",
+        "deviceClass": "rss8xk",
+        "deviceClassLink": "fqxoiu"
+    },
+    {
+        "modelName": "DEEBOT T10 PLUS",
+        "deviceClass": "p95mgv",
+        "deviceClassLink": "fqxoiu"
+    },
+    {
+        "modelName": "DEEBOT T10 TURBO",
+        "deviceClass": "9s1s80",
+        "deviceClassLink": "fqxoiu"
+    },
+    {
+        "modelName": "DEEBOT X1 OMNI",
         "deviceClass": "8bja83",
         "deviceClassLink": "fqxoiu"
     },
     {
-        "modelName": "DEEBOT X1 Omni",
+        "modelName": "DEEBOT X1 OMNI",
         "deviceClass": "1b23du",
         "deviceClassLink": "fqxoiu"
     },
     {
-        "modelName": "DEEBOT X1 Omni",
+        "modelName": "DEEBOT X1 OMNI",
         "deviceClass": "1vxt52",
         "deviceClassLink": "fqxoiu"
     },
     {
-        "modelName": "DEEBOT X1 Turbo",
+        "modelName": "DEEBOT X1 TURBO",
         "deviceClass": "2o4lnm",
         "deviceClassLink": "fqxoiu"
     },
     {
-        "modelName": "DEEBOT X1 Plus",
+        "modelName": "DEEBOT X1 PLUS",
         "deviceClass": "n4gstt",
         "deviceClassLink": "fqxoiu"
     },
