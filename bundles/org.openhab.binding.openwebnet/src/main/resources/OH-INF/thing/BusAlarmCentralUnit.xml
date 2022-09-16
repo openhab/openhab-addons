@@ -29,10 +29,10 @@
 		<config-description>
 			<parameter name="where" type="text" readOnly="true">
 				<label>OpenWebNet Address (where)</label>
-                <description>The Central Unit can only assume where=0</description>
-                <default>0</default>
-			</parameter>            
-   		</config-description>
+				<description>The Central Unit can only assume where=0</description>
+				<default>0</default>
+			</parameter>
+		</config-description>
 
 	</thing-type>
 </thing:thing-descriptions>

@@ -408,7 +408,7 @@
 		<description>Dry Contact Interface or IR Interface sensor movement (read only)</description>
 		<state readOnly="true"></state>
 	</channel-type>
-	
+
 	<!-- Alarm channels -->
 	<channel-type id="alarmState">
 		<item-type>String</item-type>
