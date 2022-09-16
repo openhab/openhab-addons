@@ -96,14 +96,16 @@ All of these channels appear in the binding, but only those which have a physica
 | vane           | Dimmer                   | The degree of opening of the slats or vanes (if any). On some shade types, setting this to a non-zero value might first move the shade `position` fully down, since the slats or vanes can only have a defined state if the shade is in its down position. See [Interdependency between Channel positions](#Interdependency-between-Channel-positions). |
 | command        | String                   | Send a command to the shade. Valid values are: `CALIBRATE`, `IDENTIFY` |
 | lowBattery     | Switch                   | Indicates ON when the battery level of the shade is low, as determined by the hub's internal rules. |
-| batteryLevel   | Number                   | Battery level (10% = low, 50% = medium, 100% = high)
-| batteryVoltage | Number:ElectricPotential | Battery voltage reported by the shade. |
+| batteryLevel   | Number                   | Battery level (10% = low, 50% = medium, 100% = high) |
+| batteryVoltage | Number:ElectricPotential | Battery (resp. mains power supply) voltage reported by the shade. |
 | signalStrength | Number                   | Signal strength (0 for no or unknown signal, 1 for weak, 2 for average, 3 for good or 4 for excellent) |
 | hubRssi        | Number:Power             | Received Signal Strength Indicator for Hub |
 | repeaterRssi   | Number:Power             | Received Signal Strength Indicator for Repeater |
 
 Notes:
-- The channels `position`, `secondary` and `vane` only exist if the shade physically supports such channels.
+- The channels `position`, `secondary` and `vane` exist if the shade physically supports such channels.
+- The shade's Power Option is set via the PowerView app with possible values 'Battery Wand', 'Rechargeable Battery Wand' or 'Hardwired Power Supply'.
+The channels `lowBattery` and `batteryLevel` exist if you have _not_ selected 'Hardwired Power Supply' in the app.
 - The RSSI values will only be updated upon manual request by a `REFRESH` command (e.g. in a rule).
 
 ### Channels for Repeaters (Thing type `repeater`)

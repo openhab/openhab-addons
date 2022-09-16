@@ -108,9 +108,16 @@ public class NoboHubBindingConstants {
                     Collections::<String, String> unmodifiableMap));
 
     // Full list of units: https://help.nobo.no/skriver/?chapterid=344&chapterlanguageid=2
-    public static final Map<String, String> SERIALNUMBERS_FOR_TYPES = Stream
-            .of(new String[][] { { "120", "RS-700" }, { "168", "NCU-2R" }, { "184", "NCU-1R" }, { "186", "NTD-4R" },
-                    { "192", "TXF" }, { "198", "NCU-ER" }, { "210", "NTB-2R" }, { "234", "Nobø Switch" }, })
-            .collect(Collectors.collectingAndThen(Collectors.toMap(data -> data[0], data -> data[1]),
-                    Collections::<String, String> unmodifiableMap));
+    public static final Map<String, String> SERIALNUMBERS_FOR_TYPES = Stream.of(new String[][] { { "100", "EC-700" },
+            { "102", "Eco Hub" }, { "103", "Quantum Hub" }, { "105", "Ewt Plus" }, { "120", "RS-700" },
+            { "130", "RCE-700" }, { "121", "RSX-700" }, { "160", "R80 RDC-700" }, { "165", "R80 RDC-700 LST" },
+            { "168", "NCU-2R" }, { "169", "DCU-2R" }, { "170", "Series 18 Ewt Touch" }, { "180", "2NC9-700" },
+            { "182", "R80 RSC-700 5-24" }, { "183", "R80 RSC-700 5-30" }, { "184", "NCU-1R" },
+            { "186", "NTD-4R/DCU-1R" }, { "190", "S16-700 Safir" }, { "192", "R80 TXF-700" }, { "194", "R80 RXC-700" },
+            { "198", "NCU-ER" }, { "199", "DCU-ER" }, { "200", "TRB-700" }, { "210", "NTB-2R" }, { "220", "TR36-700" },
+            { "230", "TCU-700" }, { "231", "THB-700" }, { "232", "TXB-700" }, { "233", "EcoSense MSW" },
+            { "234", "Nobø Eco Switch" },
+
+    }).collect(Collectors.collectingAndThen(Collectors.toMap(data -> data[0], data -> data[1]),
+            Collections::<String, String> unmodifiableMap));
 }

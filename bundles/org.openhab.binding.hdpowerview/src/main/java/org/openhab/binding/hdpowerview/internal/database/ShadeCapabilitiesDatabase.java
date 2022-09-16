@@ -41,17 +41,18 @@ public class ShadeCapabilitiesDatabase {
      */
     private static final Map<Integer, Capabilities> CAPABILITIES_DATABASE = Arrays.asList(
     // @formatter:off
-            new Capabilities(0).primary()                                                       .text("Bottom Up"),
-            new Capabilities(1).primary()        .tiltOnClosed()                                .text("Bottom Up Tilt 90°"),
-            new Capabilities(2).primary()        .tiltAnywhere().tilt180()                      .text("Bottom Up Tilt 180°"),
-            new Capabilities(3).primary()        .tiltAnywhere().tilt180()                      .text("Vertical Tilt 180°"),
-            new Capabilities(4).primary()                                                       .text("Vertical"),
-            new Capabilities(5)                  .tiltAnywhere().tilt180()                      .text("Tilt Only 180°"),
-            new Capabilities(6).primaryInverted()                                               .text("Top Down"),
-            new Capabilities(7).primary()                                 .secondary()          .text("Top Down Bottom Up"),
-            new Capabilities(8).primary()                                 .secondaryOverlapped().text("Dual Overlapped"),
+            new Capabilities( 0).primary()                                                       .text("Bottom Up"),
+            new Capabilities( 1).primary()        .tiltOnClosed()                                .text("Bottom Up Tilt 90°"),
+            new Capabilities( 2).primary()        .tiltAnywhere().tilt180()                      .text("Bottom Up Tilt 180°"),
+            new Capabilities( 3).primary()                                                       .text("Vertical"),
+            new Capabilities( 4).primary()        .tiltAnywhere().tilt180()                      .text("Vertical Tilt 180°"),
+            new Capabilities( 5)                  .tiltAnywhere().tilt180()                      .text("Tilt Only 180°"),
+            new Capabilities( 6).primaryInverted()                                               .text("Top Down"),
+            new Capabilities( 7).primary()                                 .secondary()          .text("Top Down Bottom Up"),
+            new Capabilities( 8).primary()                                 .secondaryOverlapped().text("Dual Overlapped"),
             // note: for the following capabilities entry the 'tiltOnClosed()' applies to the primary shade
-            new Capabilities(9).primary()        .tiltOnClosed()          .secondaryOverlapped().text("Dual Overlapped Tilt 90°"),
+            new Capabilities( 9).primary()        .tiltOnClosed()          .secondaryOverlapped().text("Dual Overlapped Tilt 90°"),
+            new Capabilities(10).primary()        .tiltOnClosed().tilt180().secondaryOverlapped().text("Dual Overlapped Tilt 180°"),
     // @formatter:on
             new Capabilities()).stream().collect(Collectors.toMap(Capabilities::getValue, Function.identity()));
 
@@ -79,15 +80,16 @@ public class ShadeCapabilitiesDatabase {
             new Type(47).capabilities(7).text("Pleated Top Down Bottom Up"),
             new Type(49).capabilities(0).text("AC Roller"),
             new Type(51).capabilities(2).text("Venetian"),
-            new Type(54).capabilities(4).text("Vertical Slats Left Stack").capabilitiesOverride(3),
-            new Type(55).capabilities(4).text("Vertical Slats Right Stack").capabilitiesOverride(3),
-            new Type(56).capabilities(4).text("Vertical Slats Split Stack").capabilitiesOverride(3),
+            // note: sometimes shade type 54/55/56 wrongly report capabilities:3 so force capabilities:4
+            new Type(54).capabilities(4).text("Vertical Slats Left Stack").capabilitiesOverride(4),
+            new Type(55).capabilities(4).text("Vertical Slats Right Stack").capabilitiesOverride(4),
+            new Type(56).capabilities(4).text("Vertical Slats Split Stack").capabilitiesOverride(4),
             new Type(62).capabilities(2).text("Venetian"),
             new Type(65).capabilities(8).text("Vignette Duolite"),
             new Type(66).capabilities(5).text("Shutter"),
-            new Type(69).capabilities(4).text("Curtain Left Stack"),
-            new Type(70).capabilities(4).text("Curtain Right Stack"),
-            new Type(71).capabilities(4).text("Curtain Split Stack"),
+            new Type(69).capabilities(3).text("Curtain Left Stack"),
+            new Type(70).capabilities(3).text("Curtain Right Stack"),
+            new Type(71).capabilities(3).text("Curtain Split Stack"),
             new Type(79).capabilities(8).text("Duolite Lift"),
     // @formatter:on
             new Type()).stream().collect(Collectors.toMap(Type::getValue, Function.identity()));
@@ -152,9 +154,9 @@ public class ShadeCapabilitiesDatabase {
         }
 
         /**
-         * Get shade's type specific 'capabilities'.
+         * Get shade's overridden 'capabilities'.
          *
-         * @return 'typeCapabilities'.
+         * @return 'capabilitiesOverride'.
          */
         public int getCapabilitiesOverride() {
             return capabilitiesOverride;

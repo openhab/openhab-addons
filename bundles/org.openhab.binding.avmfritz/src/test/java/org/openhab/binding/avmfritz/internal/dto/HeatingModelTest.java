@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.avmfritz.internal.dto;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.*;
 
 import java.math.BigDecimal;
 
@@ -59,5 +60,17 @@ public class HeatingModelTest {
         assertEquals(BIGDECIMAL_FOURTEEN, HeatingModel.normalizeCelsius(new BigDecimal("14.1")));
         assertEquals(BIGDECIMAL_FOURTEEN_POINT_FIVE, HeatingModel.normalizeCelsius(new BigDecimal("14.4")));
         assertEquals(BIGDECIMAL_FOURTEEN_POINT_FIVE, HeatingModel.normalizeCelsius(new BigDecimal("14.6")));
+    }
+
+    @Test
+    public void validateGetRadiatorModeReturnsValidMode() {
+        HeatingModel heatingModel = new HeatingModel();
+        assertEquals(MODE_UNKNOWN, heatingModel.getRadiatorMode());
+
+        heatingModel.setTsoll(BigDecimal.ONE);
+        assertEquals(MODE_ON, heatingModel.getRadiatorMode());
+
+        heatingModel.setKomfort(BigDecimal.ONE);
+        assertEquals(MODE_COMFORT, heatingModel.getRadiatorMode());
     }
 }

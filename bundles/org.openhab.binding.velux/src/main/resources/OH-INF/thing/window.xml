@@ -16,7 +16,7 @@
 		<description>@text/thing-type.velux.window.description</description>
 		<category>Window</category>
 		<channels>
-			<channel id="position" typeId="position"></channel>
+			<channel id="position" typeId="windowPosition"></channel>
 			<channel id="limitMinimum" typeId="limitMinimum"/>
 			<channel id="limitMaximum" typeId="limitMaximum"/>
 		</channels>
