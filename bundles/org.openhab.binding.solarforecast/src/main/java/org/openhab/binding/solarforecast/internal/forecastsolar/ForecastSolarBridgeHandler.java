@@ -58,7 +58,6 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
     public ForecastSolarBridgeHandler(Bridge bridge, PointType location) {
         super(bridge);
         homeLocation = location;
-        logger.debug("{} Constructor", bridge.getLabel());
     }
 
     @Override
@@ -68,7 +67,6 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
 
     @Override
     public void initialize() {
-        logger.debug("{} initialize", thing.getLabel());
         ForecastSolarBridgeConfiguration config = getConfigAs(ForecastSolarBridgeConfiguration.class);
         if (config.location.equals(SolarForecastBindingConstants.AUTODETECT)) {
             Configuration editConfig = editConfiguration();
@@ -106,7 +104,6 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
      * Get data for all planes. Protect parts map from being modified during update
      */
     private synchronized void getData() {
-        logger.debug("{} getData for {} planes", thing.getLabel(), parts.size());
         if (parts.isEmpty()) {
             logger.debug("No PV plane defined yet");
             return;

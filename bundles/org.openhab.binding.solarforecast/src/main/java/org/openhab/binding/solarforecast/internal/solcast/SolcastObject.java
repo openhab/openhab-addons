@@ -105,7 +105,6 @@ public class SolcastObject implements SolarForecast {
                 addJSONArray(resultJsonArray);
                 rawData.get().put("estimated_actuals", resultJsonArray);
             }
-
         }
     }
 
@@ -272,7 +271,7 @@ public class SolcastObject implements SolarForecast {
             // production during period is half of previous and next value
             if (endValue != null) {
                 double addedValue = (endValue.doubleValue() + previousEstimate) / 2.0 / 2.0;
-                System.out.println(key + " add " + addedValue);
+                // System.out.println(key + " add " + addedValue);
                 forecastValue += addedValue;
                 previousEstimate = endValue.doubleValue();
             } else {

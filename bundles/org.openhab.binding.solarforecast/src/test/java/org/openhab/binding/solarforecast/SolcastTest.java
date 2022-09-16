@@ -14,7 +14,6 @@ package org.openhab.binding.solarforecast;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -374,14 +373,14 @@ class SolcastTest {
         double productionExpected = 0;
         for (int i = 0; i < 1000; i++) {
             double forecast = sco.getActualValue(now.plusMinutes(i), QueryMode.Estimation);
-            int hour = now.plusMinutes(i).getHour();
-            int minute = now.plusMinutes(i).getMinute();
+            // int hour = now.plusMinutes(i).getHour();
+            // int minute = now.plusMinutes(i).getMinute();
             double addOnExpected = sco.getActualPowerValue(now.plusMinutes(i), QueryMode.Estimation) / 60.0;
             productionExpected += addOnExpected;
             double diff = forecast - productionExpected;
             maxDiff = Math.max(diff, maxDiff);
-            System.out.println(hour + ":" + minute + " : " + Math.round(forecast * 1000) / 1000.0 + " - "
-                    + Math.round(productionExpected * 1000) / 1000.0 + " - " + Math.round(diff * 1000) / 1000.0);
+            // System.out.println(hour + ":" + minute + " : " + Math.round(forecast * 1000) / 1000.0 + " - "
+            // + Math.round(productionExpected * 1000) / 1000.0 + " - " + Math.round(diff * 1000) / 1000.0);
             assertEquals(productionExpected, sco.getActualValue(now.plusMinutes(i), QueryMode.Estimation),
                     100 * TOLERANCE, "Step " + i);
         }
@@ -401,7 +400,7 @@ class SolcastTest {
 
     @Test
     void testUpdates() {
-        String content = FileReader.readFileInString("src/test/resources/solcast/test.json");
+        String content = FileReader.readFileInString("src/test/resources/solcast/estimated-actuals.json");
         ZonedDateTime now = LocalDateTime.of(2022, 7, 18, 16, 23).atZone(TEST_ZONE);
         SolcastObject sco = new SolcastObject(content, now, TIMEZONEPROVIDER);
         content = FileReader.readFileInString("src/test/resources/solcast/forecasts.json");
@@ -409,7 +408,7 @@ class SolcastTest {
         JSONObject joined = new JSONObject(sco.getRaw());
         assertTrue(joined.has("forecasts"), "Forecasts available");
         assertTrue(joined.has("estimated_actuals"), "Actual data available");
-        System.out.println(sco.getDay(LocalDate.now()));
+        // System.out.println(sco.getDay(LocalDate.now()));
     }
 
     @Test

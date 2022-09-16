@@ -20,5 +20,9 @@
 			<description>Refresh rate of channel data</description>
 			<default>1</default>
 		</parameter>
+		<parameter name="inverterKwp" type="decimal" step="0.1">
+			<label>Inverter Kilowatt Peak</label>
+			<description>Inverter maximum Kilowatt Peak capability</description>
+		</parameter>
 	</config-description>
 </config-description:config-descriptions>

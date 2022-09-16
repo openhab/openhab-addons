@@ -22,5 +22,15 @@
 			<label>Installed Kilowatt Peak</label>
 			<description>Installed Module power of this plane</description>
 		</parameter>
+		<parameter name="dampAM" type="decimal" step="0.01" required="true">
+			<label>Morning Damping Factor</label>
+			<description>Damping factor of morning hours</description>
+			<default>0.25</default>
+		</parameter>
+		<parameter name="dampPM" type="decimal" step="0.01" required="true">
+			<label>Evening Damping Factor</label>
+			<description>Damping factor of evening hours</description>
+			<default>0.25</default>
+		</parameter>
 	</config-description>
 </config-description:config-descriptions>

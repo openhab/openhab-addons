@@ -118,7 +118,6 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
      * https://doc.forecast.solar/doku.php?id=api:estimate
      */
     protected ForecastSolarObject fetchData() {
-        logger.debug("{} fetch data", thing.getLabel());
         if (location.isPresent()) {
             if (!forecast.isValid()) {
                 String url;
@@ -127,13 +126,15 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
                     // https://api.forecast.solar/estimate/:lat/:lon/:dec/:az/:kwp
                     url = BASE_URL + "estimate/" + location.get().getLatitude() + SLASH + location.get().getLongitude()
                             + SLASH + configuration.get().declination + SLASH + configuration.get().azimuth + SLASH
-                            + configuration.get().kwp;
+                            + configuration.get().kwp + "?damping=" + configuration.get().dampAM + ","
+                            + configuration.get().dampPM;
                 } else {
                     // use paid API
                     // https://api.forecast.solar/:apikey/estimate/:lat/:lon/:dec/:az/:kwp
                     url = BASE_URL + apiKey.get() + "/estimate/" + location.get().getLatitude() + SLASH
                             + location.get().getLongitude() + SLASH + configuration.get().declination + SLASH
-                            + configuration.get().azimuth + SLASH + configuration.get().kwp;
+                            + configuration.get().azimuth + SLASH + configuration.get().kwp + "?damping="
+                            + configuration.get().dampAM + "," + configuration.get().dampPM;
                 }
                 logger.debug("{} Call {}", thing.getLabel(), url);
                 try {

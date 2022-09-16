@@ -60,7 +60,6 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
     public SolcastBridgeHandler(Bridge bridge, TimeZoneProvider tzp) {
         super(bridge);
         timeZoneProvider = tzp;
-        logger.debug("{} Constructor", bridge.getLabel());
     }
 
     @Override
@@ -70,7 +69,6 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
 
     @Override
     public void initialize() {
-        logger.debug("{} initialize", thing.getLabel());
         SolcastBridgeConfiguration config = getConfigAs(SolcastBridgeConfiguration.class);
         configuration = Optional.of(config);
         if (!EMPTY.equals(config.apiKey)) {
@@ -116,7 +114,6 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
      * Get data for all planes. Protect parts map from being modified during update
      */
     private synchronized void getData() {
-        logger.debug("{} getData for {} planes", thing.getLabel(), parts.size());
         if (parts.isEmpty()) {
             logger.debug("No PV plane defined yet");
             return;

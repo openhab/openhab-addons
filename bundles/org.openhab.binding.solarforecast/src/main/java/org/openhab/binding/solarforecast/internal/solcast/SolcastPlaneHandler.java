@@ -156,11 +156,7 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
         }
     }
 
-    /**
-     * https://doc.forecast.solar/doku.php?id=api:estimate
-     */
     protected SolcastObject fetchData() {
-        logger.debug("{} fetch data", thing.getLabel());
         if (!forecast.isValid()) {
             String forecastUrl = String.format(FORECAST_URL, configuration.get().resourceId);
             String currentEstimateUrl = String.format(CURRENT_ESTIMATE_URL, configuration.get().resourceId);
