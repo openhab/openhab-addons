@@ -83,7 +83,7 @@ This list is just an example how the mapping looks like for some of the devices,
 | Auna KR200 Kitchen Radio | Internet Radio | Spotify                 | -            | Music Player | DAB Radio | FM Radio | AUX in       | -            | -          | -         |-       | - | - | - |
 | Auna Connect CD          | Internet Radio | Spotify                 | -            | Music Player | DAB Radio | FM Radio | CD           | Bluetooth    | AUX in    | -         | -      | - | - | - |
 | Teufel 3sixty            | Internet Radio | Spotify                 | -            | USB/Network  | DAB Radio | FM Radio | Bluetooth    | AUX in       | -          | -         | -      | - | - | - |
-| Ruark R5                 | Internet Radio | TIDAL                   | Deezer       | Amazon Music | Spotify   | Local Music | Music Player | DAB Radio | FM Radio   | Bluetooth | AUX in  | Phono | Optical | CD
+| Ruark R5                 | Internet Radio | TIDAL                   | Deezer       | Amazon Music | Spotify   | Local Music | Music Player | DAB Radio | FM Radio   | Bluetooth | AUX in  | Phono | Optical | CD |
 
 
 ## Full Example
