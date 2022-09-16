@@ -49,6 +49,8 @@ public class Sensor extends AbstractComponent<Sensor.ChannelConfiguration> {
         protected @Nullable String unitOfMeasurement;
         @SerializedName("device_class")
         protected @Nullable String deviceClass;
+        @SerializedName("state_class")
+        protected @Nullable String stateClass;
         @SerializedName("force_update")
         protected boolean forceUpdate = false;
         @SerializedName("expire_after")
@@ -70,9 +72,14 @@ public class Sensor extends AbstractComponent<Sensor.ChannelConfiguration> {
 
         Value value;
         String uom = channelConfiguration.unitOfMeasurement;
+        String sc = channelConfiguration.stateClass;
 
         if (uom != null && !uom.isBlank()) {
             value = new NumberValue(null, null, null, UnitUtils.parseUnit(uom));
+        } else if (sc != null && !sc.isBlank()) {
+            // see state_class at https://developers.home-assistant.io/docs/core/entity/sensor#properties
+            // > If not None, the sensor is assumed to be numerical
+            value = new NumberValue(null, null, null, null);
         } else {
             value = new TextValue();
         }
