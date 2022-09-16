@@ -291,12 +291,13 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler
         addAvailabilityTopic(availability_topic, payload_available, payload_not_available, null, null);
     }
 
+    @Override
     public void addAvailabilityTopic(String availability_topic, String payload_available, String payload_not_available,
             @Nullable String transformation_pattern,
             @Nullable TransformationServiceProvider transformationServiceProvider) {
         availabilityStates.computeIfAbsent(availability_topic, topic -> {
             Value value = new OnOffValue(payload_available, payload_not_available);
-            ChannelGroupUID groupUID = new ChannelGroupUID(getThing().getUID(), "availablility");
+            ChannelGroupUID groupUID = new ChannelGroupUID(getThing().getUID(), "availability");
             ChannelUID channelUID = new ChannelUID(groupUID, UIDUtils.encode(topic));
             ChannelState state = new ChannelState(ChannelConfigBuilder.create().withStateTopic(topic).build(),
                     channelUID, value, new ChannelStateUpdateListener() {
