@@ -69,6 +69,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -464,6 +465,8 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
                 logger.warn("Activation of House-Status-Monitoring failed (might lead to a lack of status updates).");
             }
         }
+
+        updateDynamicChannels();
 
         veluxBridgeConfiguration.hasChanged = false;
         logger.debug("Velux veluxBridge is online, now.");
@@ -956,5 +959,17 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
             }
         }
         return ProductBridgeIndex.UNKNOWN;
+    }
+
+    /**
+     * Ask all things in the hub to initialise their dynamic vane position channel if they support it.
+     */
+    private void updateDynamicChannels() {
+        getThing().getThings().stream().forEach(thing -> {
+            ThingHandler thingHandler = thing.getHandler();
+            if (thingHandler instanceof VeluxHandler) {
+                ((VeluxHandler) thingHandler).updateDynamicChannels(this);
+            }
+        });
     }
 }

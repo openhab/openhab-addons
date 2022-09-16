@@ -70,7 +70,7 @@ The Polling Interval and Online Timeout can be adjusted.
 | emergency               | String                    | Emergency call status                            |
 | service                 | String                    | Service Type                                     |
 | preconditioning         | String                    | Air conditioning status                          |
-| preconditioningFailure  | String                    | Airr conditioning failure cause                  |
+| preconditioningFailure  | String                    | Air conditioning failure cause                   |
 | level                   | Number:Dimensionless      | Fuel level                                       |
 | autonomy                | Number:Length             | Remaining distance                               |
 | consumption             | Number:VolumetricFlowRate | Fuel consumption                                 |

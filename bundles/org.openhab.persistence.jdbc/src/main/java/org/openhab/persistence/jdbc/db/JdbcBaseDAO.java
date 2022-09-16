@@ -14,6 +14,7 @@ package org.openhab.persistence.jdbc.db;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -564,11 +565,17 @@ public class JdbcBaseDAO {
     }
 
     protected ZonedDateTime objectAsDate(Object v) {
-        if (v instanceof java.lang.String) {
+        if (v instanceof LocalDateTime) {
+            return ZonedDateTime.of((LocalDateTime) v, ZoneId.systemDefault());
+        } else if (v instanceof java.sql.Timestamp) {
+            return ZonedDateTime.ofInstant(((java.sql.Timestamp) v).toInstant(), ZoneId.systemDefault());
+        } else if (v instanceof Instant) {
+            return ZonedDateTime.ofInstant((Instant) v, ZoneId.systemDefault());
+        } else if (v instanceof java.lang.String) {
             return ZonedDateTime.ofInstant(java.sql.Timestamp.valueOf(v.toString()).toInstant(),
                     ZoneId.systemDefault());
         }
-        return ZonedDateTime.ofInstant(((java.sql.Timestamp) v).toInstant(), ZoneId.systemDefault());
+        throw new UnsupportedOperationException("Date of type " + v.getClass().getName() + " is not supported");
     }
 
     protected Long objectAsLong(Object v) {

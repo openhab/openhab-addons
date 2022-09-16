@@ -28,7 +28,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.systeminfo.internal.model.DeviceNotFoundException;
 import org.openhab.binding.systeminfo.internal.model.SysteminfoInterface;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
@@ -294,8 +294,8 @@ public class SysteminfoHandler extends BaseThingHandler {
                     state = new QuantityType<>(Runtime.getRuntime().freeMemory(), Units.BYTE);
                     break;
                 case CHANNEL_MEMORY_USED_HEAP_PERCENT:
-                    state = new DecimalType((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())
-                            * 100 / Runtime.getRuntime().maxMemory());
+                    state = new QuantityType<>((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())
+                            * 100 / Runtime.getRuntime().maxMemory(), Units.PERCENT);
                     break;
                 case CHANNEL_DISPLAY_INFORMATION:
                     state = systeminfo.getDisplayInformation(deviceIndex);
@@ -317,6 +317,10 @@ public class SysteminfoHandler extends BaseThingHandler {
                     break;
                 case CHANNEL_SENSORS_FAN_SPEED:
                     state = systeminfo.getSensorsFanSpeed(deviceIndex);
+                    break;
+                case CHANNEL_CPU_LOAD:
+                    PercentType cpuLoad = systeminfo.getSystemCpuLoad();
+                    state = (cpuLoad != null) ? new QuantityType<>(cpuLoad, Units.PERCENT) : null;
                     break;
                 case CHANNEL_CPU_LOAD_1:
                     state = systeminfo.getCpuLoad1();
@@ -427,7 +431,8 @@ public class SysteminfoHandler extends BaseThingHandler {
                     state = systeminfo.getNetworkPacketsSent(deviceIndex);
                     break;
                 case CHANNEL_PROCESS_LOAD:
-                    state = systeminfo.getProcessCpuUsage(deviceIndex);
+                    PercentType processLoad = systeminfo.getProcessCpuUsage(deviceIndex);
+                    state = (processLoad != null) ? new QuantityType<>(processLoad, Units.PERCENT) : null;
                     break;
                 case CHANNEL_PROCESS_MEMORY:
                     state = systeminfo.getProcessMemoryUsage(deviceIndex);

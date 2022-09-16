@@ -28,7 +28,11 @@ public class JablotronState {
     @SerializedName(value = "cloud-component-id", alternate = "component-id")
     String cloudComponentId = "";
 
+    @SerializedName(value = "object-device-id")
+    String objectDeviceId = "";
+
     String state = "";
+    float temperature = 0;
 
     public String getCloudComponentId() {
         return cloudComponentId;
@@ -36,5 +40,13 @@ public class JablotronState {
 
     public String getState() {
         return state;
+    }
+
+    public float getTemperature() {
+        return temperature;
+    }
+
+    public String getObjectDeviceId() {
+        return objectDeviceId;
     }
 }

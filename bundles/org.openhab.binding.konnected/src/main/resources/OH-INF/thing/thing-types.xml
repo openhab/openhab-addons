@@ -36,7 +36,7 @@
 					<option value="alarm_out">Alarm/Out</option>
 				</options>
 			</parameter>
-			<parameter name="onvalue" type="integer">
+			<parameter name="onValue" type="integer">
 				<label>On Value</label>
 				<description>The value that will be treated by the binding as the on value. For sensors that activate with a high
 					value leave at the default of 1 and sensors that activate with a low value set to 0.</description>
@@ -67,15 +67,17 @@
 					<option value="alarm_out">Alarm/Out</option>
 				</options>
 			</parameter>
-			<parameter name="tempsensorType" type="boolean">
+			<parameter name="dht22" type="boolean">
 				<label>DHT22</label>
 				<description>Is the sensor a dht22 or a ds18b20? Set to true for dht22 sensor</description>
+				<default>true</default>
 			</parameter>
-			<parameter name="pollinterval" type="integer">
+			<parameter name="pollInterval" type="integer">
 				<label>Poll Interval</label>
 				<description>The interval in minutes to poll the sensor.</description>
+				<default>3</default>
 			</parameter>
-			<parameter name="ds18b20_address" type="text">
+			<parameter name="ds18b20Address" type="text">
 				<label>DS18b20 Address</label>
 				<description>This is the unique address of the sensor on the one wire bus.</description>
 			</parameter>
@@ -120,7 +122,7 @@
 					<option value="alarm_out">Alarm/Out</option>
 				</options>
 			</parameter>
-			<parameter name="onvalue" type="integer">
+			<parameter name="onValue" type="integer">
 				<label>On Value</label>
 				<description>The value that will be treated by the binding as an on command. For actuators that activate with a high
 					command set to 1 and actuators that activate with a low value set to 0.</description>
@@ -168,7 +170,7 @@
 					<option value="12">12</option>
 				</options>
 			</parameter>
-			<parameter name="onvalue" type="integer">
+			<parameter name="onValue" type="integer">
 				<label>On Value</label>
 				<description>The value that will be treated by the binding as the on value. For sensors that activate with a high
 					value, leave at the default of 1 and sensors that activate with a low value set to 0.</description>
@@ -202,7 +204,7 @@
 					<option value="alarm2_out2">Alarm2/Out2</option>
 				</options>
 			</parameter>
-			<parameter name="onvalue" type="integer">
+			<parameter name="onValue" type="integer">
 				<label>On Value</label>
 				<description>The value that will be treated by the binding as an on command. For actuators that activate with a high
 					command set to 1 and actuators that activate with a low value set to 0.</description>
@@ -246,15 +248,17 @@
 					<option value="8">8</option>
 				</options>
 			</parameter>
-			<parameter name="tempsensorType" type="boolean">
+			<parameter name="dht22" type="boolean">
 				<label>DHT22</label>
 				<description>Is the sensor a dht22 or a ds18b20? Set to true for dht22 sensor</description>
+				<default>true</default>
 			</parameter>
-			<parameter name="pollinterval" type="integer">
+			<parameter name="pollInterval" type="integer">
 				<label>Poll Interval</label>
 				<description>The interval in minutes to poll the sensor.</description>
+				<default>3</default>
 			</parameter>
-			<parameter name="ds18b20_address" type="text">
+			<parameter name="ds18b20Address" type="text">
 				<label>DS18b20 Address</label>
 				<description>This is the unique address of the sensor on the one wire bus.</description>
 			</parameter>

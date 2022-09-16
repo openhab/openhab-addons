@@ -99,7 +99,7 @@ public class SmartyDecrypterTest {
         final AtomicReference<String> telegramResult = new AtomicReference<>("");
         final P1TelegramListener telegramListener = telegram -> telegramResult.set(telegram.getRawTelegram());
         final SmartyDecrypter decoder = new SmartyDecrypter(new P1TelegramParser(telegramListener),
-                new DSMRTelegramListener(KEY), KEY);
+                new DSMRTelegramListener(KEY, ""), KEY, "");
         decoder.setLenientMode(true);
         final byte[] data = new byte[TELEGRAM.length];
 
