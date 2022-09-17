@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.velux.internal.handler;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.Map;
@@ -161,6 +162,8 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
      */
     private VeluxBridgeConfiguration veluxBridgeConfiguration = new VeluxBridgeConfiguration();
 
+    private Duration offlineDelay = Duration.ofMinutes(5);
+
     /*
      * ************************
      * ***** Constructors *****
@@ -283,6 +286,9 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
 
         logger.trace("initialize(): initialize bridge configuration parameters.");
         veluxBridgeConfiguration = new VeluxBinding(getConfigAs(VeluxBridgeConfiguration.class)).checked();
+
+        offlineDelay = Duration.ofMillis((((long) Math.pow(2, veluxBridgeConfiguration.retries) * 2) - 1)
+                * veluxBridgeConfiguration.refreshMSecs);
 
         scheduler.execute(() -> {
             disposing = false;
@@ -816,15 +822,17 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
 
         Instant lastCommunication = Instant.ofEpochMilli(thisBridge.lastCommunication());
         Instant lastSuccessfulCommunication = Instant.ofEpochMilli(thisBridge.lastSuccessfulCommunication());
+        boolean lastCommunicationSucceeded = lastSuccessfulCommunication.equals(lastCommunication);
 
-        boolean wasOffline = getThing().getStatus() != ThingStatus.ONLINE;
-        boolean isOffline = lastSuccessfulCommunication.isBefore(lastCommunication
-                .minusMillis(veluxBridgeConfiguration.retries * veluxBridgeConfiguration.refreshMSecs));
+        boolean thingOnline = getThing().getStatus() == ThingStatus.ONLINE;
 
-        if (isOffline && !wasOffline) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-        }
-        if (wasOffline && !isOffline) {
+        if (thingOnline) {
+            if (!lastCommunicationSucceeded) {
+                if (lastSuccessfulCommunication.plus(offlineDelay).isBefore(lastCommunication)) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                }
+            }
+        } else if (lastCommunicationSucceeded) {
             updateStatus(ThingStatus.ONLINE);
         }
 
