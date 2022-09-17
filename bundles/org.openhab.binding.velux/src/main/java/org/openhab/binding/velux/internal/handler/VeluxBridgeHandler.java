@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.velux.internal.handler;
 
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -812,10 +813,26 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
                 postCommand(channelUID, newValue);
             }
         }
+
+        Instant lastCommunication = Instant.ofEpochMilli(thisBridge.lastCommunication());
+        Instant lastSuccessfulCommunication = Instant.ofEpochMilli(thisBridge.lastSuccessfulCommunication());
+
+        boolean wasOffline = getThing().getStatus() != ThingStatus.ONLINE;
+        boolean isOffline = lastSuccessfulCommunication.isBefore(lastCommunication
+                .minusMillis(veluxBridgeConfiguration.retries * veluxBridgeConfiguration.refreshMSecs));
+
+        if (isOffline && !wasOffline) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+        }
+        if (wasOffline && !isOffline) {
+            updateStatus(ThingStatus.ONLINE);
+        }
+
         ThingProperty.setValue(this, VeluxBindingConstants.PROPERTY_BRIDGE_TIMESTAMP_ATTEMPT,
-                new java.util.Date(thisBridge.lastCommunication()).toString());
+                lastCommunication.toString());
         ThingProperty.setValue(this, VeluxBindingConstants.PROPERTY_BRIDGE_TIMESTAMP_SUCCESS,
-                new java.util.Date(thisBridge.lastSuccessfulCommunication()).toString());
+                lastSuccessfulCommunication.toString());
+
         logger.trace("handleCommandCommsJob({}) done.", Thread.currentThread());
     }
 
