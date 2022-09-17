@@ -372,14 +372,14 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
                 case DEFAULT_RESOURCE:
                     rthermData.setThermostatData(gson.fromJson(evtVal, RadioThermostatTstatDTO.class));
                     // if thermostat returned -1 for temperature, skip this update
-                    if (rthermData.getThermostatData().getTemperature() > 0) {
+                    if (rthermData.getThermostatData().getTemperature() >= 0) {
                         updateAllChannels();
                     }
                     break;
                 case HUMIDITY_RESOURCE:
                     RadioThermostatHumidityDTO dto = gson.fromJson(evtVal, RadioThermostatHumidityDTO.class);
                     // if thermostat returned -1 for humidity, skip this update
-                    if (dto != null && dto.getHumidity() > 0) {
+                    if (dto != null && dto.getHumidity() >= 0) {
                         rthermData.setHumidity(dto.getHumidity());
                         updateChannel(HUMIDITY, rthermData);
                     }
