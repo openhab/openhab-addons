@@ -492,10 +492,17 @@ public class IpCameraHandler extends BaseThingHandler {
     }
 
     private void checkCameraConnection() {
-        if (snapshotUri.isEmpty() || snapshotPolling) {
-            // Already polling or camera has RTSP only and no HTTP server
+        if (snapshotPolling) {// Currently polling a real URL for snapshots, so camera must be online.
             return;
+        } else if (ffmpegSnapshotGeneration) {// Use RTSP stream creating snapshots to know camera is online.
+            Ffmpeg localSnapshot = ffmpegSnapshot;
+            if (localSnapshot != null && !localSnapshot.getIsAlive()) {
+                cameraCommunicationError("FFmpeg Snapshots Stopped: Check your camera can be reached.");
+                return;
+            }
+            return;// ffmpeg snapshot stream is still alive
         }
+        // Open a HTTP connection without sending any requests as we do not need a snapshot.
         Bootstrap localBootstrap = mainBootstrap;
         if (localBootstrap != null) {
             ChannelFuture chFuture = localBootstrap
@@ -1362,6 +1369,7 @@ public class IpCameraHandler extends BaseThingHandler {
             if (snapshotUri.isEmpty() || "ffmpeg".equals(snapshotUri)) {
                 snapshotIsFfmpeg();
             } else {
+                ffmpegSnapshotGeneration = false;
                 updateSnapshot();
             }
             return;
@@ -1374,6 +1382,7 @@ public class IpCameraHandler extends BaseThingHandler {
         if ("ffmpeg".equals(snapshotUri)) {
             snapshotIsFfmpeg();
         } else if (!snapshotUri.isEmpty()) {
+            ffmpegSnapshotGeneration = false;
             updateSnapshot();
         } else if (!rtspUri.isEmpty()) {
             snapshotIsFfmpeg();
@@ -1497,15 +1506,8 @@ public class IpCameraHandler extends BaseThingHandler {
         // what needs to be done every poll//
         switch (thing.getThingTypeUID().getId()) {
             case GENERIC_THING:
-                if (!snapshotUri.isEmpty() && !snapshotPolling) {
+                if (!snapshotPolling) {
                     checkCameraConnection();
-                }
-                // RTSP stream has stopped and we need it for snapshots
-                if (ffmpegSnapshotGeneration) {
-                    Ffmpeg localSnapshot = ffmpegSnapshot;
-                    if (localSnapshot != null && !localSnapshot.getIsAlive()) {
-                        localSnapshot.startConverting();
-                    }
                 }
                 break;
             case ONVIF_THING:
