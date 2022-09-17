@@ -113,6 +113,8 @@ public class VoskSTTService implements STTService {
                 loadModel();
             } catch (IOException e) {
                 logger.warn("IOException loading model: {}", e.getMessage());
+            } catch (UnsatisfiedLinkError e) {
+                logger.warn("Missing native dependency: {}", e.getMessage());
             }
         } else {
             try {
@@ -164,7 +166,7 @@ public class VoskSTTService implements STTService {
         };
     }
 
-    private Model getModel() throws IOException {
+    private Model getModel() throws IOException, UnsatisfiedLinkError {
         var model = this.model;
         if (model != null) {
             return model;
@@ -172,7 +174,7 @@ public class VoskSTTService implements STTService {
         return loadModel();
     }
 
-    private Model loadModel() throws IOException {
+    private Model loadModel() throws IOException, UnsatisfiedLinkError {
         unloadModel();
         var modelFile = new File(MODEL_PATH);
         if (!modelFile.exists() || !modelFile.isDirectory()) {
@@ -258,6 +260,13 @@ public class VoskSTTService implements STTService {
                 }
             } catch (IOException e) {
                 logger.warn("Error running speech to text: {}", e.getMessage());
+                if (config.errorMessage.isBlank()) {
+                    sttListener.sttEventReceived(new SpeechRecognitionErrorEvent("Error"));
+                } else {
+                    sttListener.sttEventReceived(new SpeechRecognitionErrorEvent(config.errorMessage));
+                }
+            } catch (UnsatisfiedLinkError e) {
+                logger.warn("Missing native dependency: {}", e.getMessage());
                 if (config.errorMessage.isBlank()) {
                     sttListener.sttEventReceived(new SpeechRecognitionErrorEvent("Error"));
                 } else {
