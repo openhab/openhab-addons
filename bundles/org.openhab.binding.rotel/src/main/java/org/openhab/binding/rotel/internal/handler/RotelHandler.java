@@ -118,6 +118,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
     private int track;
     private boolean randomMode;
     private RotelRepeatMode repeatMode = RotelRepeatMode.OFF;
+    private int radioPreset;
     private double[] frequencies = { 0.0, 0.0, 0.0, 0.0, 0.0 };
     private String frontPanelLine1 = "";
     private String frontPanelLine2 = "";
@@ -149,6 +150,28 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
     @Override
     public void initialize() {
         logger.debug("Start initializing handler for thing {}", getThing().getUID());
+
+        RotelThingConfiguration config = getConfigAs(RotelThingConfiguration.class);
+
+        protocol = RotelProtocol.HEX;
+        if (config.protocol != null && !config.protocol.isEmpty()) {
+            try {
+                protocol = RotelProtocol.getFromName(config.protocol);
+            } catch (RotelException e) {
+                // Invalid protocol name in configuration, HEX will be considered by default
+            }
+        } else {
+            Map<String, String> properties = editProperties();
+            String property = properties.get(RotelBindingConstants.PROPERTY_PROTOCOL);
+            if (property != null && !property.isEmpty()) {
+                try {
+                    protocol = RotelProtocol.getFromName(property);
+                } catch (RotelException e) {
+                    // Invalid protocol name in thing property, HEX will be considered by default
+                }
+            }
+        }
+        logger.debug("rotelProtocol {}", protocol.getName());
 
         switch (getThing().getThingTypeUID().getId()) {
             case THING_TYPE_ID_RSP1066:
@@ -224,7 +247,11 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                 model = RotelModel.RA1572;
                 break;
             case THING_TYPE_ID_RA1592:
-                model = RotelModel.RA1592;
+                if (protocol == RotelProtocol.ASCII_V1) {
+                    model = RotelModel.RA1592_V1;
+                } else {
+                    model = RotelModel.RA1592_V2;
+                }
                 break;
             case THING_TYPE_ID_RAP1580:
                 model = RotelModel.RAP1580;
@@ -236,7 +263,11 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                 model = RotelModel.RC1572;
                 break;
             case THING_TYPE_ID_RC1590:
-                model = RotelModel.RC1590;
+                if (protocol == RotelProtocol.ASCII_V1) {
+                    model = RotelModel.RC1590_V1;
+                } else {
+                    model = RotelModel.RC1590_V2;
+                }
                 break;
             case THING_TYPE_ID_RCD1570:
                 model = RotelModel.RCD1570;
@@ -294,28 +325,6 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                 model = DEFAULT_MODEL;
                 break;
         }
-
-        RotelThingConfiguration config = getConfigAs(RotelThingConfiguration.class);
-
-        protocol = RotelProtocol.HEX;
-        if (config.protocol != null && !config.protocol.isEmpty()) {
-            try {
-                protocol = RotelProtocol.getFromName(config.protocol);
-            } catch (RotelException e) {
-                // Invalid protocol name in configuration, HEX will be considered by default
-            }
-        } else {
-            Map<String, String> properties = editProperties();
-            String property = properties.get(RotelBindingConstants.PROPERTY_PROTOCOL);
-            if (property != null && !property.isEmpty()) {
-                try {
-                    protocol = RotelProtocol.getFromName(property);
-                } catch (RotelException e) {
-                    // Invalid protocol name in thing property, HEX will be considered by default
-                }
-            }
-        }
-        logger.debug("rotelProtocol {}", protocol.getName());
 
         Map<RotelSource, String> sourcesCustomLabels = new HashMap<>();
         Map<RotelSource, String> sourcesLabels = new HashMap<>();
@@ -847,6 +856,45 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                             }
                         }
                         break;
+                    case CHANNEL_RADIO_PRESET:
+                        if (!isPowerOn()) {
+                            success = false;
+                            logger.debug("Command {} from channel {} ignored: device in standby", command, channel);
+                        } else {
+                            int value = 0;
+                            if (radioPreset > 0 && command instanceof IncreaseDecreaseType
+                                    && command == IncreaseDecreaseType.INCREASE) {
+                                value = radioPreset + 1;
+                            } else if (radioPreset > 0 && command instanceof IncreaseDecreaseType
+                                    && command == IncreaseDecreaseType.DECREASE) {
+                                value = radioPreset - 1;
+                            } else if (command instanceof DecimalType) {
+                                value = ((DecimalType) command).intValue();
+                            }
+                            if (value >= 1 && value <= 30) {
+                                RotelSource source = sources[0];
+                                RotelCommand presetCallCmd = source == null ? null : getRadioPresetCallCommand(source);
+                                if (presetCallCmd != null) {
+                                    sendCommand(presetCallCmd, value);
+                                    // In ASCII V2, the previous command will return nothing
+                                    RotelCommand presetGetCmd = source == null ? null
+                                            : getRadioPresetGetCommand(source);
+                                    if (protocol == RotelProtocol.ASCII_V2 && presetGetCmd != null) {
+                                        Thread.sleep(SLEEP_INTV);
+                                        sendCommand(presetGetCmd);
+                                    }
+                                } else {
+                                    success = false;
+                                    logger.debug("Command {} from channel {} ignored: current source is not radio",
+                                            command, channel);
+                                }
+                            } else {
+                                success = false;
+                                logger.debug("Command {} from channel {} ignored: value out of bounds", command,
+                                        channel);
+                            }
+                        }
+                        break;
                     case CHANNEL_BRIGHTNESS:
                     case CHANNEL_ALL_BRIGHTNESS:
                         if (!isPowerOn()) {
@@ -1319,6 +1367,33 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
             default:
                 break;
         }
+        int preset = 0;
+        if (key.startsWith(KEY_FM_PRESET)) {
+            try {
+                preset = Integer.parseInt(key.substring(KEY_FM_PRESET.length()));
+            } catch (NumberFormatException e) {
+                // Considering the Rotel protocol, the parsing could not fail in practice.
+                // In case it would fail, 0 will be considered as preset, meaning undefined.
+            }
+            key = KEY_FM_PRESET;
+        } else if (key.startsWith(KEY_DAB_PRESET)) {
+            try {
+                preset = Integer.parseInt(key.substring(KEY_DAB_PRESET.length()));
+            } catch (NumberFormatException e) {
+                // Considering the Rotel protocol, the parsing could not fail in practice.
+                // In case it would fail, 0 will be considered as preset, meaning undefined.
+            }
+            key = KEY_DAB_PRESET;
+        } else if (key.startsWith(KEY_IRADIO_PRESET)) {
+            try {
+                preset = Integer.parseInt(key.substring(KEY_IRADIO_PRESET.length()));
+            } catch (NumberFormatException e) {
+                // Considering the Rotel protocol, the parsing could not fail in practice.
+                // In case it would fail, 0 will be considered as preset, meaning undefined.
+            }
+            key = KEY_IRADIO_PRESET;
+        }
+        RotelSource source;
         try {
             switch (key) {
                 case KEY_ERROR:
@@ -1367,6 +1442,9 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                     } else {
                         throw new RotelException("Invalid value");
                     }
+                    break;
+                case KEY_POWER_MODE:
+                    logger.debug("Power mode is set to {}", value);
                     break;
                 case KEY_VOLUME_MIN:
                     minVolume = Integer.parseInt(value);
@@ -1477,9 +1555,24 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                     }
                     break;
                 case KEY_SOURCE:
-                    sources[0] = model.getSourceFromCommand(RotelCommand.getFromAsciiCommand(value));
+                    source = model.getSourceFromCommand(RotelCommand.getFromAsciiCommand(value));
+                    sources[0] = source;
                     updateChannelState(CHANNEL_SOURCE);
                     updateChannelState(CHANNEL_MAIN_SOURCE);
+                    RotelCommand presetGetCmd = getRadioPresetGetCommand(source);
+                    if (presetGetCmd != null) {
+                        // Request current preset (with a delay)
+                        scheduler.schedule(() -> {
+                            try {
+                                sendCommand(presetGetCmd);
+                            } catch (RotelException e) {
+                                logger.debug("Getting the radio preset failed: {}", e.getMessage());
+                            }
+                        }, 250, TimeUnit.MILLISECONDS);
+                    } else {
+                        radioPreset = 0;
+                        updateChannelState(CHANNEL_RADIO_PRESET);
+                    }
                     break;
                 case KEY_RECORD:
                     recordSource = model.getRecordSourceFromCommand(RotelCommand.getFromAsciiCommand(value));
@@ -1524,7 +1617,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                     }
                     break;
                 case KEY_TRACK:
-                    RotelSource source = sources[0];
+                    source = sources[0];
                     if (source != null && source.getName().equals("CD") && !model.hasSourceControl()) {
                         track = Integer.parseInt(value);
                         updateChannelState(CHANNEL_TRACK);
@@ -1553,6 +1646,28 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                         updateChannelState(CHANNEL_REPEAT);
                     } else {
                         throw new RotelException("Invalid value");
+                    }
+                    break;
+                case KEY_PRESET_FM:
+                case KEY_PRESET_DAB:
+                case KEY_PRESET_IRADIO:
+                    preset = Integer.parseInt(value);
+                case KEY_FM_PRESET:
+                case KEY_DAB_PRESET:
+                case KEY_IRADIO_PRESET:
+                    if (preset >= 1 && preset <= 30) {
+                        radioPreset = preset;
+                    } else {
+                        radioPreset = 0;
+                    }
+                    updateChannelState(CHANNEL_RADIO_PRESET);
+                    break;
+                case KEY_FM:
+                case KEY_DAB:
+                    preset = Integer.parseInt(value);
+                    if (preset >= 1 && preset <= 30) {
+                        radioPreset = preset;
+                        updateChannelState(CHANNEL_RADIO_PRESET);
                     }
                     break;
                 case KEY_FREQ:
@@ -1652,9 +1767,44 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                         throw new RotelException("Invalid value");
                     }
                     break;
+                case KEY_SUB_LEVEL:
+                    logger.debug("Sub level is set to {}", value);
+                    break;
+                case KEY_CENTER_LEVEL:
+                    logger.debug("Center level is set to {}", value);
+                    break;
+                case KEY_SURROUND_RIGHT_LEVEL:
+                    logger.debug("Surround right level is set to {}", value);
+                    break;
+                case KEY_SURROUND_LEFT_LEVEL:
+                    logger.debug("Surround left level is set to {}", value);
+                    break;
+                case KEY_CENTER_BACK_RIGHT_LEVEL:
+                    logger.debug("Center back right level is set to {}", value);
+                    break;
+                case KEY_CENTER_BACK_LEFT_LEVEL:
+                    logger.debug("Center back left level is set to {}", value);
+                    break;
+                case KEY_CEILING_FRONT_RIGHT_LEVEL:
+                    logger.debug("Ceiling front right level is set to {}", value);
+                    break;
+                case KEY_CEILING_FRONT_LEFT_LEVEL:
+                    logger.debug("Ceiling front left level is set to {}", value);
+                    break;
+                case KEY_CEILING_REAR_RIGHT_LEVEL:
+                    logger.debug("Ceiling rear right level is set to {}", value);
+                    break;
+                case KEY_CEILING_REAR_LEFT_LEVEL:
+                    logger.debug("Ceiling rear left level is set to {}", value);
+                    break;
+                case KEY_PCUSB_CLASS:
+                    logger.debug("PC-USB Audio Class is set to {}", value);
+                    break;
+                case KEY_PRODUCT_TYPE:
                 case KEY_MODEL:
                     getThing().setProperty(Thing.PROPERTY_MODEL_ID, value);
                     break;
+                case KEY_PRODUCT_VERSION:
                 case KEY_VERSION:
                     getThing().setProperty(Thing.PROPERTY_FIRMWARE_VERSION, value);
                     break;
@@ -1698,6 +1848,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
         updateChannelState(CHANNEL_TRACK);
         updateChannelState(CHANNEL_RANDOM);
         updateChannelState(CHANNEL_REPEAT);
+        updateChannelState(CHANNEL_RADIO_PRESET);
         updateChannelState(CHANNEL_FREQUENCY);
         updateChannelState(CHANNEL_BRIGHTNESS);
         updateChannelState(CHANNEL_TCBYPASS);
@@ -1898,6 +2049,13 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                             }
                             if (model.hasSpeakerGroups()) {
                                 sendCommand(RotelCommand.SPEAKER);
+                                Thread.sleep(SLEEP_INTV);
+                            }
+                            if (model != RotelModel.RAP1580 && model != RotelModel.RSP1576
+                                    && model != RotelModel.RSP1582) {
+                                sendCommand(RotelCommand.MODEL);
+                                Thread.sleep(SLEEP_INTV);
+                                sendCommand(RotelCommand.VERSION);
                                 Thread.sleep(SLEEP_INTV);
                             }
                             break;
@@ -2241,6 +2399,11 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                             state = PlayPauseType.PAUSE;
                             break;
                     }
+                }
+                break;
+            case CHANNEL_RADIO_PRESET:
+                if (isPowerOn()) {
+                    state = radioPreset == 0 ? UnDefType.UNDEF : new DecimalType(radioPreset);
                 }
                 break;
             case CHANNEL_FREQUENCY:
@@ -2724,6 +2887,43 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
             default:
                 throw new IllegalArgumentException("No BALANCE SET command defined for zone " + numZone);
         }
+    }
+
+    private @Nullable RotelCommand getRadioPresetGetCommand(RotelSource source) {
+        if (protocol == RotelProtocol.ASCII_V1) {
+            switch (source.getName()) {
+                case "FM":
+                case "DAB":
+                case "IRADIO":
+                    return RotelCommand.PRESET;
+                default:
+                    break;
+            }
+        } else if (protocol == RotelProtocol.ASCII_V2) {
+            switch (source.getName()) {
+                case "FM":
+                    return RotelCommand.FM_PRESET;
+                case "DAB":
+                    return RotelCommand.DAB_PRESET;
+                default:
+                    break;
+            }
+        }
+        return null;
+    }
+
+    private @Nullable RotelCommand getRadioPresetCallCommand(RotelSource source) {
+        switch (source.getName()) {
+            case "FM":
+                return RotelCommand.CALL_FM_PRESET;
+            case "DAB":
+                return RotelCommand.CALL_DAB_PRESET;
+            case "IRADIO":
+                return RotelCommand.CALL_IRADIO_PRESET;
+            default:
+                break;
+        }
+        return null;
     }
 
     private void sendCommand(RotelCommand cmd) throws RotelException {

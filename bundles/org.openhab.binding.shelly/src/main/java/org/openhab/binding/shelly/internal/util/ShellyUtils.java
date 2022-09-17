@@ -81,7 +81,7 @@ public class ShellyUtils {
         if (classOfT.isInstance(json)) {
             return wrap(classOfT).cast(json);
         } else if (json.isEmpty()) { // update GSON might return null
-            throw new ShellyApiException(PRE + className + "from empty JSON");
+            throw new ShellyApiException(PRE + className + " from empty JSON");
         } else {
             try {
                 @Nullable
@@ -92,7 +92,7 @@ public class ShellyUtils {
                 return obj;
             } catch (JsonSyntaxException e) {
                 throw new ShellyApiException(
-                        PRE + className + "from JSON (syntax/format error: " + e.getMessage() + "): " + json, e);
+                        PRE + className + " from JSON (syntax/format error: " + e.getMessage() + "): " + json, e);
             } catch (RuntimeException e) {
                 throw new ShellyApiException(PRE + className + " from JSON: " + json, e);
             }

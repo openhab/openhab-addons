@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="easee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-group-type id="charger-state">
+		<label>Charger Status</label>
+		<channels>
+			<channel id="smartCharging" typeId="type-switch">
+				<label>Smart Charging</label>
+				<description>Smart Charging status of the wallbox.</description>
+			</channel>
+			<channel id="cableLocked" typeId="type-switch">
+				<label>Cable Locked</label>
+				<description>Cable Locked status of the wallbox.</description>
+			</channel>
+			<channel id="chargerOpMode" typeId="type-integer-charger-op-mode">
+				<label>Charger Operation Mode</label>
+				<description>Current operation mode.</description>
+			</channel>
+			<channel id="totalPower" typeId="type-power">
+				<label>Total Power</label>
+				<description>Total Power for all active phases.</description>
+			</channel>
+			<channel id="sessionEnergy" typeId="type-energy">
+				<label>Session Energy</label>
+				<description>Energy for current session.</description>
+			</channel>
+			<channel id="dynamicCircuitCurrentP1" typeId="type-current">
+				<label>Dynamic Circuit Current P1</label>
+				<description>Dynamic set circuit current for phase 1.</description>
+			</channel>
+			<channel id="dynamicCircuitCurrentP2" typeId="type-current">
+				<label>Dynamic Circuit Current P2</label>
+				<description>Dynamic set circuit current for phase 2.</description>
+			</channel>
+			<channel id="dynamicCircuitCurrentP3" typeId="type-current">
+				<label>Dynamic Circuit Current P3</label>
+				<description>Dynamic set circuit current for phase 3.</description>
+			</channel>
+			<channel id="latestPulse" typeId="type-date">
+				<label>Latest Pulse</label>
+				<description>Last data received from charger.</description>
+			</channel>
+			<channel id="chargerFirmware" typeId="type-integer">
+				<label>Current Firmware</label>
+				<description>Current Firmware of the wallbox.</description>
+			</channel>
+			<channel id="latestFirmware" typeId="type-integer">
+				<label>Latest Firmware</label>
+				<description>Latest Firmware which is available for the wallbox.</description>
+			</channel>
+			<channel id="voltage" typeId="type-volt">
+				<label>Voltage</label>
+				<description>Voltage</description>
+			</channel>
+			<channel id="outputCurrent" typeId="type-current">
+				<label>Output Current</label>
+				<description>Actual charging current.</description>
+			</channel>
+			<channel id="isOnline" typeId="type-switch">
+				<label>Online</label>
+				<description>Online status of the wallbox.</description>
+			</channel>
+			<channel id="dynamicChargerCurrent" typeId="rwtype-current">
+				<label>Dynamic Charger Current</label>
+				<description>Dynamic set charging current.</description>
+				<properties>
+					<property name="writeCommand">ChangeConfiguration</property>
+					<property name="validationExpression">(0|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23|24|25|26|27|28|29|30|31|32)</property>
+				</properties>
+			</channel>
+			<channel id="reasonForNoCurrent" typeId="type-integer">
+				<label>Reason for no Current</label>
+				<description>Reason for no Current.</description>
+			</channel>
+			<channel id="lifetimeEnergy" typeId="type-energy">
+				<label>Lifetime Energy</label>
+				<description>Total lifetime energy.</description>
+			</channel>
+			<channel id="errorCode" typeId="type-integer">
+				<label>Error Code</label>
+				<description>Error Code.</description>
+			</channel>
+			<channel id="fatalErrorCode" typeId="type-integer">
+				<label>Fatal Error Code</label>
+				<description>Fatal Error Code.</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="charger-config">
+		<label>Charger Configuration</label>
+		<channels>
+			<channel id="lockCablePermanently" typeId="rwtype-switch">
+				<label>Lock Cable Permanently</label>
+				<description>Lock Cable Permanently status of the wallbox.</description>
+				<properties>
+					<property name="writeCommand">ChangeConfiguration</property>
+					<property name="validationExpression">.*</property>
+				</properties>
+			</channel>
+			<channel id="authorizationRequired" typeId="rwtype-switch">
+				<label>Authorization Required</label>
+				<description>Indicates if authorization is required to start charging.</description>
+				<properties>
+					<property name="writeCommand">ChangeConfiguration</property>
+					<property name="validationExpression">.*</property>
+				</properties>
+			</channel>
+			<channel id="limitToSinglePhaseCharging" typeId="rwtype-switch">
+				<label>Limit To Single Phase Charging</label>
+				<description>Indicates if charging should be limited to single phase mode.</description>
+				<properties>
+					<property name="writeCommand">ChangeConfiguration</property>
+					<property name="validationExpression">.*</property>
+				</properties>
+			</channel>
+			<channel id="phaseMode" typeId="rwtype-integer-phase-mode">
+				<label>Phase Mode</label>
+				<description>Phase Mode.</description>
+				<properties>
+					<property name="writeCommand">ChangeConfiguration</property>
+					<property name="validationExpression">(1|2|3)</property>
+				</properties>
+			</channel>
+			<channel id="maxChargerCurrent" typeId="type-current">
+				<label>Max Charger Current</label>
+				<description>Max charging current.</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="charger-latestSession">
+		<label>Last Charging Session</label>
+		<channels>
+			<channel id="sessionEnergy" typeId="type-energy">
+				<label>Total Session Energy</label>
+				<description>Total Energy for last session.</description>
+			</channel>
+			<channel id="sessionStart" typeId="type-date">
+				<label>Session Start</label>
+				<description>Date/Time when session started.</description>
+			</channel>
+			<channel id="sessionEnd" typeId="type-date">
+				<label>Session End</label>
+				<description>Date/Time when session ended.</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="charger-commands">
+		<label>Charger Commands</label>
+		<channels>
+			<channel id="genericCommand" typeId="rwtype-charger-command">
+				<label>Generic Charger Command</label>
+				<description>Sends a command to the charger. Write only channel.</description>
+				<properties>
+					<property name="writeCommand">SendCommand</property>
+					<property name="validationExpression">(reboot|update_firmware|poll_all|smart_charging|start_charging|stop_charging|pause_charging|resume_charging|toggle_charging|override_schedule)</property>
+				</properties>
+			</channel>
+			<channel id="startStop" typeId="rwtype-switch">
+				<label>Start/Stop Charging</label>
+				<description>Starts/Stops charging. Only relevant if authorization is required.</description>
+				<properties>
+					<property name="writeCommand">SendCommandStartStop</property>
+					<property name="validationExpression">.*</property>
+				</properties>
+			</channel>
+			<channel id="pauseResume" typeId="rwtype-switch">
+				<label>Pause/Resume Charging</label>
+				<description>Pauses/Resumes charging. Pausing works by setting Dynamic Charger Current to 0.</description>
+				<properties>
+					<property name="writeCommand">SendCommandPauseResume</property>
+					<property name="validationExpression">.*</property>
+				</properties>
+			</channel>
+		</channels>
+
+	</channel-group-type>
+</thing:thing-descriptions>

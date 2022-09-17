@@ -14,9 +14,6 @@ package org.openhab.binding.velux.internal.handler;
 
 import static org.openhab.binding.velux.internal.VeluxBindingConstants.*;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.velux.internal.bridge.common.GetProduct;
@@ -24,6 +21,7 @@ import org.openhab.binding.velux.internal.bridge.common.RunProductCommand;
 import org.openhab.binding.velux.internal.bridge.slip.FunctionalParameters;
 import org.openhab.binding.velux.internal.bridge.slip.SCrunProductCommand;
 import org.openhab.binding.velux.internal.handler.utils.Thing2VeluxActuator;
+import org.openhab.binding.velux.internal.things.StatusReply;
 import org.openhab.binding.velux.internal.things.VeluxExistingProducts;
 import org.openhab.binding.velux.internal.things.VeluxProduct;
 import org.openhab.binding.velux.internal.things.VeluxProduct.ProductBridgeIndex;
@@ -71,12 +69,6 @@ final class ChannelActuatorPosition extends ChannelHandlerTemplate {
         throw new AssertionError();
     }
 
-    /*
-     * List of product states that shall be processed
-     */
-    private static final List<ProductState> STATES_TO_PROCESS = Arrays.asList(ProductState.DONE, ProductState.EXECUTING,
-            ProductState.MANUAL, ProductState.UNKNOWN);
-
     // Public methods
 
     /**
@@ -105,12 +97,10 @@ final class ChannelActuatorPosition extends ChannelHandlerTemplate {
 
             GetProduct bcp = null;
             switch (channelId) {
-                case CHANNEL_VANE_POSITION:
-                    bcp = thisBridgeHandler.thisBridge.bridgeAPI().getProductStatus();
-                    break;
                 case CHANNEL_ACTUATOR_POSITION:
                 case CHANNEL_ACTUATOR_STATE:
-                    bcp = thisBridgeHandler.thisBridge.bridgeAPI().getProduct();
+                case CHANNEL_VANE_POSITION:
+                    bcp = thisBridgeHandler.thisBridge.bridgeAPI().getProductStatus();
                 default:
                     // unknown channel, will exit
             }
@@ -127,45 +117,68 @@ final class ChannelActuatorPosition extends ChannelHandlerTemplate {
             }
 
             VeluxProduct newProduct = bcp.getProduct();
-            if (STATES_TO_PROCESS.contains(newProduct.getProductState())) {
-                ProductBridgeIndex productBridgeIndex = newProduct.getBridgeProductIndex();
-                VeluxExistingProducts existingProducts = thisBridgeHandler.existingProducts();
-                VeluxProduct existingProduct = existingProducts.get(productBridgeIndex);
-                if (!VeluxProduct.UNKNOWN.equals(existingProduct)) {
-                    switch (channelId) {
-                        case CHANNEL_VANE_POSITION:
-                        case CHANNEL_ACTUATOR_POSITION:
-                        case CHANNEL_ACTUATOR_STATE: {
-                            if (existingProducts.update(newProduct)) {
-                                existingProduct = existingProducts.get(productBridgeIndex);
-                                int posValue = VeluxProductPosition.VPP_VELUX_UNKNOWN;
-                                switch (channelId) {
-                                    case CHANNEL_VANE_POSITION:
-                                        posValue = existingProduct.getVaneDisplayPosition();
-                                        break;
-                                    case CHANNEL_ACTUATOR_POSITION:
-                                    case CHANNEL_ACTUATOR_STATE:
-                                        posValue = existingProduct.getDisplayPosition();
-                                }
-                                VeluxProductPosition position = new VeluxProductPosition(posValue);
-                                if (position.isValid()) {
+            ProductBridgeIndex productBridgeIndex = newProduct.getBridgeProductIndex();
+            VeluxExistingProducts existingProducts = thisBridgeHandler.existingProducts();
+            VeluxProduct existingProduct = existingProducts.get(productBridgeIndex);
+            ProductState productState = newProduct.getProductState();
+            switch (productState) {
+                case DONE:
+                case EXECUTING:
+                case MANUAL:
+                case UNKNOWN:
+                    if (!VeluxProduct.UNKNOWN.equals(existingProduct)) {
+                        switch (channelId) {
+                            case CHANNEL_VANE_POSITION:
+                            case CHANNEL_ACTUATOR_POSITION:
+                            case CHANNEL_ACTUATOR_STATE: {
+                                if (existingProducts.update(newProduct)) {
+                                    existingProduct = existingProducts.get(productBridgeIndex);
+                                    int posValue = VeluxProductPosition.VPP_VELUX_UNKNOWN;
                                     switch (channelId) {
                                         case CHANNEL_VANE_POSITION:
-                                            newState = position.getPositionAsPercentType(false);
+                                            posValue = existingProduct.getVaneDisplayPosition();
                                             break;
                                         case CHANNEL_ACTUATOR_POSITION:
-                                            newState = position.getPositionAsPercentType(veluxActuator.isInverted());
-                                            break;
                                         case CHANNEL_ACTUATOR_STATE:
-                                            newState = OnOffType
-                                                    .from(position.getPositionAsPercentType(veluxActuator.isInverted())
-                                                            .intValue() > 50);
+                                            posValue = existingProduct.getDisplayPosition();
+                                    }
+                                    VeluxProductPosition position = new VeluxProductPosition(posValue);
+                                    if (position.isValid()) {
+                                        switch (channelId) {
+                                            case CHANNEL_VANE_POSITION:
+                                                newState = position.getPositionAsPercentType(false);
+                                                break;
+                                            case CHANNEL_ACTUATOR_POSITION:
+                                                newState = position
+                                                        .getPositionAsPercentType(veluxActuator.isInverted());
+                                                break;
+                                            case CHANNEL_ACTUATOR_STATE:
+                                                newState = OnOffType.from(
+                                                        position.getPositionAsPercentType(veluxActuator.isInverted())
+                                                                .intValue() > 50);
+                                        }
                                     }
                                 }
                             }
                         }
                     }
-                }
+                    break;
+                case WAITING_FOR_POWER:
+                case ERROR:
+                    StatusReply statusReply = productState == ProductState.WAITING_FOR_POWER
+                            ? StatusReply.NODE_WAITING_FOR_POWER
+                            : bcp.getStatusReply();
+                    if (statusReply.isError()) {
+                        String id = VeluxProduct.UNKNOWN.equals(existingProduct)
+                                ? newProduct.getBridgeProductIndex().toString()
+                                : existingProduct.getProductUniqueIndex();
+                        if (statusReply.isCriticalError()) {
+                            LOGGER.warn("Product Id:{} encountered an error with StatusReply:{}", id, statusReply);
+                        } else {
+                            LOGGER.info("Product Id:{} encountered an error with StatusReply:{}", id, statusReply);
+                        }
+                    }
+                default:
             }
 
             if (newState == null) {

@@ -15,8 +15,10 @@ package org.openhab.binding.avmfritz.internal.dto;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.PercentType;
 
 /**
@@ -36,6 +38,10 @@ public class ColorControlModel {
     public int currentMode;
     public int hue;
     public int saturation;
+    @XmlElement(name = "unmapped_hue")
+    public @Nullable Integer unmappedHue;
+    @XmlElement(name = "unmapped_saturation")
+    public @Nullable Integer unmappedSaturation;
     public int temperature;
 
     /**
@@ -62,7 +68,8 @@ public class ColorControlModel {
     @Override
     public String toString() {
         return new StringBuilder("[supportedModes=").append(supportedModes).append(",currentMode=").append(currentMode)
-                .append(",hue=").append(hue).append(",saturation=").append(saturation).append(",temperature=")
+                .append(",hue=").append(hue).append(",saturation=").append(saturation).append(",unmapped_hue=")
+                .append(unmappedHue).append(",unmapped_saturation=").append(unmappedSaturation).append(",temperature=")
                 .append(temperature).append("]").toString();
     }
 

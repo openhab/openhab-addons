@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="1">
+        <head>
+        <status>200</status>
+        <ttl>43200</ttl>
+        </head>
+        <body>
+<outline type="text" text="RTL2 105.9" guide_id="s50486" key="station" image="http://cdn-radiotime-logos.tunein.com/_0q.png?t=1" preset_id="s50486"/>
+<outline type="text" text="Le Son Pop-Rock"/>
+<outline type="text" text="Paris, France"/>
+<outline type="object" text="NowPlaying">
+<nowplaying>
+  <logo>http://cdn-radiotime-logos.tunein.com/_0.png?t=1</logo>
+  <twitter_id>RTL2officiel</twitter_id>
+</nowplaying>
+</outline>
+        </body>
+</opml>

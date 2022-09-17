@@ -38,6 +38,7 @@ import org.openhab.binding.boschindego.internal.dto.request.SetStateRequest;
 import org.openhab.binding.boschindego.internal.dto.response.AuthenticationResponse;
 import org.openhab.binding.boschindego.internal.dto.response.DeviceCalendarResponse;
 import org.openhab.binding.boschindego.internal.dto.response.DeviceStateResponse;
+import org.openhab.binding.boschindego.internal.dto.response.ErrorResponse;
 import org.openhab.binding.boschindego.internal.dto.response.LocationWeatherResponse;
 import org.openhab.binding.boschindego.internal.dto.response.OperatingDataResponse;
 import org.openhab.binding.boschindego.internal.dto.response.PredictiveLastCuttingResponse;
@@ -46,7 +47,7 @@ import org.openhab.binding.boschindego.internal.exceptions.IndegoAuthenticationE
 import org.openhab.binding.boschindego.internal.exceptions.IndegoException;
 import org.openhab.binding.boschindego.internal.exceptions.IndegoInvalidCommandException;
 import org.openhab.binding.boschindego.internal.exceptions.IndegoInvalidResponseException;
-import org.openhab.binding.boschindego.internal.exceptions.IndegoUnreachableException;
+import org.openhab.binding.boschindego.internal.exceptions.IndegoTimeoutException;
 import org.openhab.core.library.types.RawType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -192,11 +193,11 @@ public class IndegoController {
      * @param dtoClass the DTO class to which the JSON result should be deserialized
      * @return the deserialized DTO from the JSON response
      * @throws IndegoAuthenticationException if request was rejected as unauthorized
-     * @throws IndegoUnreachableException if device cannot be reached (gateway timeout error)
+     * @throws IndegoTimeoutException if device cannot be reached (gateway timeout error)
      * @throws IndegoException if any communication or parsing error occurred
      */
     private <T> T getRequestWithAuthentication(String path, Class<? extends T> dtoClass)
-            throws IndegoAuthenticationException, IndegoUnreachableException, IndegoException {
+            throws IndegoAuthenticationException, IndegoTimeoutException, IndegoException {
         if (!session.isValid()) {
             authenticate();
         }
@@ -222,11 +223,11 @@ public class IndegoController {
      * @param dtoClass the DTO class to which the JSON result should be deserialized
      * @return the deserialized DTO from the JSON response
      * @throws IndegoAuthenticationException if request was rejected as unauthorized
-     * @throws IndegoUnreachableException if device cannot be reached (gateway timeout error)
+     * @throws IndegoTimeoutException if device cannot be reached (gateway timeout error)
      * @throws IndegoException if any communication or parsing error occurred
      */
     private <T> T getRequest(String path, Class<? extends T> dtoClass)
-            throws IndegoAuthenticationException, IndegoUnreachableException, IndegoException {
+            throws IndegoAuthenticationException, IndegoTimeoutException, IndegoException {
         int status = 0;
         try {
             Request request = httpClient.newRequest(BASE_URL + path).method(HttpMethod.GET).header(CONTEXT_HEADER_NAME,
@@ -236,21 +237,23 @@ public class IndegoController {
             }
             ContentResponse response = sendRequest(request);
             status = response.getStatus();
+            String jsonResponse = response.getContentAsString();
+            if (!jsonResponse.isEmpty()) {
+                logger.trace("JSON response: '{}'", jsonResponse);
+            }
             if (status == HttpStatus.UNAUTHORIZED_401) {
                 // This will currently not happen because "WWW-Authenticate" header is missing; see below.
                 throw new IndegoAuthenticationException("Context rejected");
             }
             if (status == HttpStatus.GATEWAY_TIMEOUT_504) {
-                throw new IndegoUnreachableException("Gateway timeout");
+                throw new IndegoTimeoutException("Gateway timeout");
             }
             if (!HttpStatus.isSuccess(status)) {
                 throw new IndegoException("The request failed with error: " + status);
             }
-            String jsonResponse = response.getContentAsString();
             if (jsonResponse.isEmpty()) {
                 throw new IndegoInvalidResponseException("No content returned", status);
             }
-            logger.trace("JSON response: '{}'", jsonResponse);
 
             @Nullable
             T result = gson.fromJson(jsonResponse, dtoClass);
@@ -450,12 +453,25 @@ public class IndegoController {
                 logger.trace("{} request for {} with no payload", method, BASE_URL + path);
             }
             ContentResponse response = sendRequest(request);
+            String jsonResponse = response.getContentAsString();
+            if (!jsonResponse.isEmpty()) {
+                logger.trace("JSON response: '{}'", jsonResponse);
+            }
             int status = response.getStatus();
             if (status == HttpStatus.UNAUTHORIZED_401) {
                 // This will currently not happen because "WWW-Authenticate" header is missing; see below.
                 throw new IndegoAuthenticationException("Context rejected");
             }
             if (status == HttpStatus.INTERNAL_SERVER_ERROR_500) {
+                try {
+                    ErrorResponse result = gson.fromJson(jsonResponse, ErrorResponse.class);
+                    if (result != null) {
+                        throw new IndegoInvalidCommandException("The request failed with HTTP error: " + status,
+                                result.error);
+                    }
+                } catch (JsonParseException e) {
+                    // Ignore missing error code, next line will throw.
+                }
                 throw new IndegoInvalidCommandException("The request failed with HTTP error: " + status);
             }
             if (!HttpStatus.isSuccess(status)) {
@@ -575,11 +591,11 @@ public class IndegoController {
      * 
      * @return the device state
      * @throws IndegoAuthenticationException if request was rejected as unauthorized
-     * @throws IndegoUnreachableException if device cannot be reached (gateway timeout error)
+     * @throws IndegoTimeoutException if device cannot be reached (gateway timeout error)
      * @throws IndegoException if any communication or parsing error occurred
      */
     public OperatingDataResponse getOperatingData()
-            throws IndegoAuthenticationException, IndegoUnreachableException, IndegoException {
+            throws IndegoAuthenticationException, IndegoTimeoutException, IndegoException {
         return getRequestWithAuthentication(SERIAL_NUMBER_SUBPATH + this.getSerialNumber() + "/operatingData",
                 OperatingDataResponse.class);
     }

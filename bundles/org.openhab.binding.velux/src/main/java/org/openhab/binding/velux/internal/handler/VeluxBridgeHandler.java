@@ -13,8 +13,9 @@
 package org.openhab.binding.velux.internal.handler;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -43,6 +44,7 @@ import org.openhab.binding.velux.internal.bridge.common.BridgeCommunicationProto
 import org.openhab.binding.velux.internal.bridge.common.RunProductCommand;
 import org.openhab.binding.velux.internal.bridge.common.RunReboot;
 import org.openhab.binding.velux.internal.bridge.json.JsonVeluxBridge;
+import org.openhab.binding.velux.internal.bridge.slip.FunctionalParameters;
 import org.openhab.binding.velux.internal.bridge.slip.SlipVeluxBridge;
 import org.openhab.binding.velux.internal.config.VeluxBridgeConfiguration;
 import org.openhab.binding.velux.internal.development.Threads;
@@ -67,6 +69,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -143,14 +146,14 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
      * ***** Default visibility Objects *****
      */
 
-    VeluxBridge thisBridge = myJsonBridge;
+    public VeluxBridge thisBridge = myJsonBridge;
     public BridgeParameters bridgeParameters = new BridgeParameters();
-    Localization localization;
+    public Localization localization;
 
     /**
      * Mapping from ChannelUID to class Thing2VeluxActuator, which return Velux device information, probably cached.
      */
-    Map<ChannelUID, Thing2VeluxActuator> channel2VeluxActuator = new ConcurrentHashMap<>();
+    public final Map<ChannelUID, Thing2VeluxActuator> channel2VeluxActuator = new ConcurrentHashMap<>();
 
     /**
      * Information retrieved by {@link VeluxBinding#VeluxBinding}.
@@ -462,6 +465,8 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
                 logger.warn("Activation of House-Status-Monitoring failed (might lead to a lack of status updates).");
             }
         }
+
+        updateDynamicChannels();
 
         veluxBridgeConfiguration.hasChanged = false;
         logger.debug("Velux veluxBridge is online, now.");
@@ -819,7 +824,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
      */
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singletonList(VeluxActions.class);
+        return Set.of(VeluxActions.class);
     }
 
     /**
@@ -827,7 +832,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
      *
      * @return true if the command could be issued
      */
-    public boolean runReboot() {
+    public boolean rebootBridge() {
         logger.trace("runReboot() called on {}", getThing().getUID());
         RunReboot bcp = thisBridge.bridgeAPI().runReboot();
         if (bcp != null) {
@@ -906,5 +911,65 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
      */
     public boolean isDisposing() {
         return disposing;
+    }
+
+    /**
+     * Exported method (called by an OpenHAB Rules Action) to simultaneously move the shade main position and the vane
+     * position.
+     *
+     * @param node the node index in the bridge.
+     * @param mainPosition the desired main position.
+     * @param vanePosition the desired vane position.
+     * @return true if the command could be issued.
+     */
+    public Boolean moveMainAndVane(ProductBridgeIndex node, PercentType mainPosition, PercentType vanePosition) {
+        logger.trace("moveMainAndVane() called on {}", getThing().getUID());
+        RunProductCommand bcp = thisBridge.bridgeAPI().runProductCommand();
+        if (bcp != null) {
+            VeluxProduct product = existingProducts().get(node).clone();
+            FunctionalParameters functionalParameters = null;
+            if (product.supportsVanePosition()) {
+                int vanePos = new VeluxProductPosition(vanePosition).getPositionAsVeluxType();
+                product.setVanePosition(vanePos);
+                functionalParameters = product.getFunctionalParameters();
+            }
+            VeluxProductPosition mainPos = new VeluxProductPosition(mainPosition);
+            bcp.setNodeIdAndParameters(node.toInt(), mainPos, functionalParameters);
+            submitCommunicationsJob(() -> {
+                if (thisBridge.bridgeCommunicate(bcp)) {
+                    logger.trace("moveMainAndVane() command {}sucessfully sent to {}",
+                            bcp.isCommunicationSuccessful() ? "" : "un", getThing().getUID());
+                }
+            });
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Get the bridge product index for a given thing name.
+     *
+     * @param thingName the thing name
+     * @return the bridge product index or ProductBridgeIndex.UNKNOWN if not found.
+     */
+    public ProductBridgeIndex getProductBridgeIndex(String thingName) {
+        for (Entry<ChannelUID, Thing2VeluxActuator> entry : channel2VeluxActuator.entrySet()) {
+            if (thingName.equals(entry.getKey().getThingUID().getAsString())) {
+                return entry.getValue().getProductBridgeIndex();
+            }
+        }
+        return ProductBridgeIndex.UNKNOWN;
+    }
+
+    /**
+     * Ask all things in the hub to initialise their dynamic vane position channel if they support it.
+     */
+    private void updateDynamicChannels() {
+        getThing().getThings().stream().forEach(thing -> {
+            ThingHandler thingHandler = thing.getHandler();
+            if (thingHandler instanceof VeluxHandler) {
+                ((VeluxHandler) thingHandler).updateDynamicChannels(this);
+            }
+        });
     }
 }

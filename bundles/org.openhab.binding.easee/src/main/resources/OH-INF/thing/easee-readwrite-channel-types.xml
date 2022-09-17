@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="easee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-type id="rwtype-switch">
+		<item-type>Switch</item-type>
+		<label>Switch</label>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="rwtype-current">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Electric Current</label>
+		<state pattern="%.1f %unit%" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="rwtype-integer-phase-mode">
+		<item-type>Number</item-type>
+		<label>Phase Mode</label>
+		<state readOnly="false">
+			<options>
+				<option value="1">1-Phase</option>
+				<option value="2">Auto</option>
+				<option value="3">3-Phase</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="rwtype-currents">
+		<item-type>String</item-type>
+		<label>Currents Phase 1;2;3</label>
+		<state pattern="%s" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="rwtype-charger-command">
+		<item-type>String</item-type>
+		<label>Charger Command</label>
+		<state pattern="%s" readOnly="false">
+		</state>
+	</channel-type>
+</thing:thing-descriptions>

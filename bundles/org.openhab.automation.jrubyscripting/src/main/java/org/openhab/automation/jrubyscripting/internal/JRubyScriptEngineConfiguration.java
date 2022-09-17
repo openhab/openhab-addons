@@ -52,6 +52,7 @@ public class JRubyScriptEngineConfiguration {
     private static final String RUBYLIB = "rubylib";
     private static final String GEMS = "gems";
     private static final String REQUIRE = "require";
+    private static final String CHECK_UPDATE = "check_update";
 
     // Map of configuration parameters
     private static final Map<String, OptionalConfigurationElement> CONFIGURATION_PARAMETERS = Map.ofEntries(
@@ -74,7 +75,10 @@ public class JRubyScriptEngineConfiguration {
             Map.entry(GEMS, new OptionalConfigurationElement.Builder(OptionalConfigurationElement.Type.GEM).build()),
 
             Map.entry(REQUIRE,
-                    new OptionalConfigurationElement.Builder(OptionalConfigurationElement.Type.REQUIRE).build()));
+                    new OptionalConfigurationElement.Builder(OptionalConfigurationElement.Type.REQUIRE).build()),
+
+            Map.entry(CHECK_UPDATE,
+                    new OptionalConfigurationElement.Builder(OptionalConfigurationElement.Type.CHECK_UPDATE).build()));
 
     private static final Map<OptionalConfigurationElement.Type, List<OptionalConfigurationElement>> CONFIGURATION_TYPE_MAP = CONFIGURATION_PARAMETERS
             .values().stream().collect(Collectors.groupingBy(v -> v.type));
@@ -153,12 +157,21 @@ public class JRubyScriptEngineConfiguration {
         if (gemsConfigElement == null || !gemsConfigElement.getValue().isPresent()) {
             return;
         }
+        boolean checkUpdate = true;
+        OptionalConfigurationElement updateConfigElement = CONFIGURATION_PARAMETERS.get(CHECK_UPDATE);
+        if (updateConfigElement != null && updateConfigElement.getValue().isPresent()) {
+            checkUpdate = updateConfigElement.getValue().get().equals("true");
+        }
 
         String[] gems = gemsConfigElement.getValue().get().split(",");
+        // Set update_native_env_enabled to false so that bundler doesn't leak
+        // into other script engines
+        String gemCommand = "require 'jruby'\nJRuby.runtime.instance_config.update_native_env_enabled = false\nrequire 'bundler/inline'\nrequire 'openssl'\n\ngemfile("
+                + checkUpdate + ") do\n" + "  source 'https://rubygems.org/'\n";
+        int validGems = 0;
         for (String gem : gems) {
             gem = gem.trim();
             String version = "";
-            String gemCommand;
             if (gem.contains("=")) {
                 String[] gemParts = gem.split("=");
                 gem = gemParts[0].trim();
@@ -167,23 +180,26 @@ public class JRubyScriptEngineConfiguration {
 
             if (gem.isEmpty()) {
                 continue;
-            } else if (version.isEmpty()) {
-                gemCommand = "Gem.install('" + gem + "')\n";
-            } else {
-                gemCommand = "Gem.install('" + gem + "', '" + version + "')\n";
             }
 
-            try {
-                logger.debug("Installing Gem: {}", gem);
-                logger.trace("Gem install code:\n{}\n", gemCommand);
-                engine.eval(gemCommand);
-            } catch (ScriptException e) {
-                logger.warn("Error installing Gem: {}", e.getMessage());
-            } catch (BootstrapMethodError e) {
-                logger.warn("Error while checking/installing gems: {}. You may need to restart OpenHAB",
-                        e.getMessage());
-                logger.debug("Error in configureGems", e);
+            gemCommand += "  gem '" + gem + "'";
+            if (!version.isEmpty()) {
+                gemCommand += ", '" + version + "'";
             }
+            gemCommand += ", require: false\n";
+            validGems += 1;
+        }
+        if (validGems == 0) {
+            return;
+        }
+        gemCommand += "end\n";
+
+        try {
+            logger.debug("Installing Gems");
+            logger.trace("Gem install code:\n{}", gemCommand);
+            engine.eval(gemCommand);
+        } catch (ScriptException e) {
+            logger.warn("Error installing Gems: {}", e.getMessage());
         }
     }
 
@@ -310,7 +326,8 @@ public class JRubyScriptEngineConfiguration {
             SYSTEM_PROPERTY,
             RUBY_ENVIRONMENT,
             GEM,
-            REQUIRE
+            REQUIRE,
+            CHECK_UPDATE,
         }
 
         private static class Builder {

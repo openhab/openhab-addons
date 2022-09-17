@@ -22,11 +22,15 @@ import org.openhab.binding.jablotron.internal.model.JablotronHistoryDataEvent;
 import org.openhab.binding.jablotron.internal.model.JablotronServiceDetailSegment;
 import org.openhab.binding.jablotron.internal.model.ja100f.JablotronGetPGResponse;
 import org.openhab.binding.jablotron.internal.model.ja100f.JablotronGetSectionsResponse;
+import org.openhab.binding.jablotron.internal.model.ja100f.JablotronGetThermoDevicesResponse;
 import org.openhab.binding.jablotron.internal.model.ja100f.JablotronSection;
 import org.openhab.binding.jablotron.internal.model.ja100f.JablotronState;
+import org.openhab.binding.jablotron.internal.model.ja100f.JablotronThermoDevice;
 import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -141,6 +145,15 @@ public class JablotronJa100FHandler extends JablotronAlarmHandler {
         updateThing(thingBuilder.build());
     }
 
+    private void createThermoChannel(String name, String label) {
+        ChannelTypeUID alarmStatus = new ChannelTypeUID(BINDING_ID, "temperature");
+        ThingBuilder thingBuilder = editThing();
+        Channel channel = ChannelBuilder.create(new ChannelUID(thing.getUID(), name), "Number").withLabel(label)
+                .withType(alarmStatus).build();
+        thingBuilder.withChannel(channel);
+        updateThing(thingBuilder.build());
+    }
+
     private @Nullable JablotronGetSectionsResponse sendGetSections() {
         JablotronBridgeHandler handler = getBridgeHandler();
         if (handler != null) {
@@ -175,6 +188,13 @@ public class JablotronJa100FHandler extends JablotronAlarmHandler {
             if (resp != null) {
                 createPGChannels(resp.getData().getProgrammableGates());
                 updateSectionState(resp.getData().getStates());
+            }
+
+            // thermo devices
+            JablotronGetThermoDevicesResponse respThermo = handler.sendGetThermometers(getThing(), alarmName);
+            if (respThermo != null) {
+                createThermoDeviceChannels(respThermo.getData().getThermoDevices());
+                updateThermoState(respThermo.getData().getStates());
             }
 
             // update events
@@ -213,6 +233,18 @@ public class JablotronJa100FHandler extends JablotronAlarmHandler {
         }
     }
 
+    private void createThermoDeviceChannels(List<JablotronThermoDevice> thermoDevices) {
+        for (JablotronThermoDevice device : thermoDevices) {
+            String id = device.getObjectDeviceId().toLowerCase();
+            logger.trace("object device id: {} with name: {}", id, device.getName());
+            Channel channel = getThing().getChannel(id);
+            if (channel == null) {
+                logger.debug("Creating a new channel: {}", id);
+                createThermoChannel(id, device.getName());
+            }
+        }
+    }
+
     private void updateSectionState(String section, List<JablotronState> states) {
         for (JablotronState state : states) {
             String id = state.getCloudComponentId();
@@ -230,6 +262,14 @@ public class JablotronJa100FHandler extends JablotronAlarmHandler {
         }
     }
 
+    private void updateThermoState(List<JablotronState> states) {
+        for (JablotronState state : states) {
+            logger.debug("updating thermo state: {}", state.getObjectDeviceId());
+            String id = state.getObjectDeviceId();
+            updateSection(id, state);
+        }
+    }
+
     private void updateSection(String id, JablotronState state) {
         logger.debug("component id: {} with state: {}", id, state.getState());
         State newState;
@@ -238,6 +278,8 @@ public class JablotronJa100FHandler extends JablotronAlarmHandler {
             newState = new StringType(state.getState());
         } else if (id.startsWith("PG-")) {
             newState = "ON".equals(state.getState()) ? OnOffType.ON : OnOffType.OFF;
+        } else if (id.startsWith("THM-")) {
+            newState = new QuantityType<>(state.getTemperature(), SIUnits.CELSIUS);
         } else {
             logger.debug("unknown component id: {}", id);
             return;
