@@ -494,7 +494,7 @@ public class IpCameraHandler extends BaseThingHandler {
     private void checkCameraConnection() {
         if (snapshotPolling) {// Currently polling a real URL for snapshots, so camera must be online.
             return;
-        } else if (ffmpegSnapshotGeneration) {// Check if RTSP stream is working for creating snapshots.
+        } else if (ffmpegSnapshotGeneration) {// Use RTSP stream creating snapshots to know camera is online.
             Ffmpeg localSnapshot = ffmpegSnapshot;
             if (localSnapshot != null && !localSnapshot.getIsAlive()) {
                 cameraCommunicationError("FFmpeg Snapshots Stopped: Check your camera can be reached.");
@@ -502,7 +502,7 @@ public class IpCameraHandler extends BaseThingHandler {
             }
             return;// ffmpeg snapshot stream is still alive
         }
-        // Check if camera is online by trying a HTTP connection without sending any requests.
+        // Open a HTTP connection without sending any requests as we do not need a snapshot.
         Bootstrap localBootstrap = mainBootstrap;
         if (localBootstrap != null) {
             ChannelFuture chFuture = localBootstrap
