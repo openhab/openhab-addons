@@ -180,7 +180,8 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
 
                 components = componentsUnordered.stream().collect(Collectors.toList());
                 // We sort the components for consistent jsondb serialization order of 'topics' thing property
-                components.sort(Comparator.comparing(id -> id.component));
+                // Sorting key is HaID::toString, i.e. using the full topic string
+                components.sort(Comparator.comparing(HaID::toString));
             }
 
             final String componentNames = components.stream().map(id -> id.component)
