@@ -51,7 +51,6 @@ import org.jellyfin.sdk.model.api.PlayCommand;
 import org.jellyfin.sdk.model.api.PlayerStateInfo;
 import org.jellyfin.sdk.model.api.PlaystateCommand;
 import org.jellyfin.sdk.model.api.SessionInfo;
-import org.jetbrains.annotations.NotNull;
 import org.openhab.binding.jellyfin.internal.util.SyncCallback;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.NextPreviousType;
@@ -154,25 +153,50 @@ public class JellyfinClientHandler extends BaseThingHandler {
                     if (command instanceof RefreshType) {
                         return;
                     }
-                    runItemById(parseItemUUID(command), PlayCommand.PLAY_NOW);
+                    UUID itemUUID;
+                    try {
+                        itemUUID = parseItemUUID(command);
+                    } catch (NumberFormatException e) {
+                        logger.warn("Thing {}: Unable to parse item UUID.", thing.getUID());
+                        return;
+                    }
+                    runItemById(itemUUID, PlayCommand.PLAY_NOW);
                     break;
                 case PLAY_NEXT_BY_ID_CHANNEL:
                     if (command instanceof RefreshType) {
                         return;
                     }
-                    runItemById(parseItemUUID(command), PlayCommand.PLAY_NEXT);
+                    try {
+                        itemUUID = parseItemUUID(command);
+                    } catch (NumberFormatException e) {
+                        logger.warn("Thing {}: Unable to parse item UUID.", thing.getUID());
+                        return;
+                    }
+                    runItemById(itemUUID, PlayCommand.PLAY_NEXT);
                     break;
                 case PLAY_LAST_BY_ID_CHANNEL:
                     if (command instanceof RefreshType) {
                         return;
                     }
-                    runItemById(parseItemUUID(command), PlayCommand.PLAY_LAST);
+                    try {
+                        itemUUID = parseItemUUID(command);
+                    } catch (NumberFormatException e) {
+                        logger.warn("Thing {}: Unable to parse item UUID.", thing.getUID());
+                        return;
+                    }
+                    runItemById(itemUUID, PlayCommand.PLAY_LAST);
                     break;
                 case BROWSE_ITEM_BY_ID_CHANNEL:
                     if (command instanceof RefreshType) {
                         return;
                     }
-                    runItemById(parseItemUUID(command), null);
+                    try {
+                        itemUUID = parseItemUUID(command);
+                    } catch (NumberFormatException e) {
+                        logger.warn("Thing {}: Unable to parse item UUID.", thing.getUID());
+                        return;
+                    }
+                    runItemById(itemUUID, null);
                     break;
                 case PLAYING_ITEM_SECOND_CHANNEL:
                     if (command instanceof RefreshType) {
@@ -217,8 +241,7 @@ public class JellyfinClientHandler extends BaseThingHandler {
         }
     }
 
-    @NotNull
-    private UUID parseItemUUID(Command command) {
+    private UUID parseItemUUID(Command command) throws NumberFormatException {
         var itemId = command.toFullString().replace("-", "");
         UUID itemUUID = new UUID(new BigInteger(itemId.substring(0, 16), 16).longValue(),
                 new BigInteger(itemId.substring(16), 16).longValue());
@@ -482,7 +505,7 @@ public class JellyfinClientHandler extends BaseThingHandler {
             throws SyncCallback.SyncCallbackError, ApiClientException {
         var item = getServerHandler().getItem(itemId, null);
         if (item == null) {
-            logger.error("Unable to find item with id: {}", itemId);
+            logger.warn("Unable to find item with id: {}", itemId);
             return;
         }
         if (BaseItemKind.SERIES.equals(item.getType())) {
