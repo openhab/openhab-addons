@@ -16,7 +16,7 @@
 #ifndef Debug_h
 #define Debug_h
 
-#include <Config.h>
+#include "Config.h"
 
 #ifdef ENABLE_DEBUG
   #define DEBUG_PRINT_MSG(level, message) if (config.debug.verboseLevel >= level) { debugPrint(message); }

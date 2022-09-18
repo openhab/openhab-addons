@@ -495,7 +495,9 @@ void handleDebugInput() {
 
       case 'E':
         DEBUG_PRINT_MSG(0, "Connection closed\n");
+        #ifdef ENABLE_DEBUG
         exitDebugSession();
+        #endif
         break;
 
       #ifdef ENABLE_DEBUG

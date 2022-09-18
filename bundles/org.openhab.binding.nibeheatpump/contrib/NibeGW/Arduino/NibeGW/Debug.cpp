@@ -14,7 +14,7 @@
  *
  */
 
-#include <Debug.h>
+#include "Debug.h"
 
 #ifdef ENABLE_DEBUG
 
@@ -22,11 +22,11 @@ char debugBuf[DEBUG_BUFFER_SIZE];
 
 #ifdef ENABLE_REMOTE_DEBUG
   #if (CONN_MODE == CONN_MODE_ETH)
-    #include "Ethernet.h"
+    #include <Ethernet.h>
     EthernetServer telnet(23);
     EthernetClient client;
   #elif (CONN_MODE == CONN_MODE_WIFI)
-    #include "WiFi.h"
+    #include <WiFi.h>
     WiFiServer telnet(23);
     WiFiClient client;
   #endif 
