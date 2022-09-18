@@ -39,7 +39,6 @@
 		</config-description>
 	</thing-type>
 
-	<!-- Sample Channel Type -->
 	<channel-type id="signal">
 		<item-type>Number</item-type>
 		<label>Consumption Signal</label>
