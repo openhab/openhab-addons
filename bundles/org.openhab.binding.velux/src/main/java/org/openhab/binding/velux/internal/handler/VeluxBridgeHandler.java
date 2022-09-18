@@ -823,17 +823,17 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
         Instant lastCommunication = Instant.ofEpochMilli(thisBridge.lastCommunication());
         Instant lastSuccessfulCommunication = Instant.ofEpochMilli(thisBridge.lastSuccessfulCommunication());
         boolean lastCommunicationSucceeded = lastSuccessfulCommunication.equals(lastCommunication);
+        ThingStatus thingStatus = getThing().getStatus();
 
-        boolean thingOnline = getThing().getStatus() == ThingStatus.ONLINE;
-
-        if (thingOnline) {
-            if (!lastCommunicationSucceeded) {
-                if (lastSuccessfulCommunication.plus(offlineDelay).isBefore(lastCommunication)) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-                }
+        if (lastCommunicationSucceeded) {
+            if (thingStatus == ThingStatus.OFFLINE || thingStatus == ThingStatus.UNKNOWN) {
+                updateStatus(ThingStatus.ONLINE);
             }
-        } else if (lastCommunicationSucceeded) {
-            updateStatus(ThingStatus.ONLINE);
+        } else {
+            if ((thingStatus == ThingStatus.ONLINE || thingStatus == ThingStatus.UNKNOWN)
+                    && lastSuccessfulCommunication.plus(offlineDelay).isBefore(lastCommunication)) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            }
         }
 
         ThingProperty.setValue(this, VeluxBindingConstants.PROPERTY_BRIDGE_TIMESTAMP_ATTEMPT,
