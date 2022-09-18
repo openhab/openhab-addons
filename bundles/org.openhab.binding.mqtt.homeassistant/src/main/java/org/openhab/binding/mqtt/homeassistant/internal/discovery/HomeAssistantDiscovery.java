@@ -26,7 +26,10 @@ import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -128,6 +131,33 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
         return typeProvider.getThingTypeUIDs();
     }
 
+    /**
+     * Summarize components such as {Switch, Switch, Sensor} into string "Sensor, 2x Switch"
+     *
+     * @param componentNames stream of component names
+     * @return summary string of component names and their counts
+     */
+    static String getComponentNamesSummary(Stream<String> componentNames) {
+        StringBuilder summary = new StringBuilder();
+        Collector<String, ?, Long> countingCollector = Collectors.counting();
+        Map<String, Long> componentCounts = componentNames
+                .collect(Collectors.groupingBy(Function.identity(), countingCollector));
+        componentCounts.entrySet().stream().sorted(Map.Entry.comparingByKey()).forEach(entry -> {
+            String componentName = entry.getKey();
+            long count = entry.getValue();
+            if (summary.length() > 0) {
+                // not the first entry, so let's add the separating comma
+                summary.append(", ");
+            }
+            if (count > 1) {
+                summary.append(count);
+                summary.append("x ");
+            }
+            summary.append(componentName);
+        });
+        return summary.toString();
+    }
+
     @Override
     public void receivedMessage(ThingUID connectionBridge, MqttBrokerConnection connection, String topic,
             byte[] payload) {
@@ -184,8 +214,8 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
                 components.sort(Comparator.comparing(HaID::toString));
             }
 
-            final String componentNames = components.stream().map(id -> id.component)
-                    .map(c -> HA_COMP_TO_NAME.getOrDefault(c, c)).collect(Collectors.joining(", "));
+            final String componentNames = getComponentNamesSummary(
+                    components.stream().map(id -> id.component).map(c -> HA_COMP_TO_NAME.getOrDefault(c, c)));
 
             final List<String> topics = components.stream().map(HaID::toShortTopic).collect(Collectors.toList());
 
