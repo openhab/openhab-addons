@@ -16,9 +16,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
@@ -166,8 +168,21 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
             thingIDPerTopic.put(topic, thingUID);
 
             // We need to keep track of already found component topics for a specific thing
-            Set<HaID> components = componentsPerThingID.computeIfAbsent(thingID, key -> ConcurrentHashMap.newKeySet());
-            components.add(haID);
+            final List<HaID> components;
+            {
+                Set<HaID> componentsUnordered = componentsPerThingID.computeIfAbsent(thingID,
+                        key -> ConcurrentHashMap.newKeySet());
+
+                // Invariant. For compiler, computeIfAbsent above returns always
+                // non-null
+                Objects.requireNonNull(componentsUnordered);
+                componentsUnordered.add(haID);
+
+                components = componentsUnordered.stream().collect(Collectors.toList());
+                // We sort the components for consistent jsondb serialization order of 'topics' thing property
+                // Sorting key is HaID::toString, i.e. using the full topic string
+                components.sort(Comparator.comparing(HaID::toString));
+            }
 
             final String componentNames = components.stream().map(id -> id.component)
                     .map(c -> HA_COMP_TO_NAME.getOrDefault(c, c)).collect(Collectors.joining(", "));
