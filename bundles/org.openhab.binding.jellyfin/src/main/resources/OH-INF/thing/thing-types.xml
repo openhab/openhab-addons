@@ -55,6 +55,7 @@
 		<channels>
 			<channel id="send-notification" typeId="send-notification-channel"/>
 			<channel id="media-control" typeId="system.media-control"/>
+			<channel id="playing-item-id" typeId="playing-item-id-channel"/>
 			<channel id="playing-item-name" typeId="playing-item-name-channel"/>
 			<channel id="playing-item-series-name" typeId="playing-item-series-name-channel"/>
 			<channel id="playing-item-season-name" typeId="playing-item-season-name-channel"/>
@@ -84,6 +85,12 @@
 		<item-type>String</item-type>
 		<label>Send Notification</label>
 		<description>Send notification to the client</description>
+	</channel-type>
+	<channel-type id="playing-item-id-channel">
+		<item-type>String</item-type>
+		<label>Playing Item Id</label>
+		<description>Id of the item currently playing</description>
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="playing-item-name-channel">
 		<item-type>String</item-type>

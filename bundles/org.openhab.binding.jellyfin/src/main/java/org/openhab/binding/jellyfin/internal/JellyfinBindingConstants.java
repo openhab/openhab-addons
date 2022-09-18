@@ -37,6 +37,7 @@ public class JellyfinBindingConstants {
     public static final String SEND_NOTIFICATION_CHANNEL = "send-notification";
     public static final String MEDIA_CONTROL_CHANNEL = "media-control";
     public static final String PLAYING_ITEM_PERCENTAGE_CHANNEL = "playing-item-percentage";
+    public static final String PLAYING_ITEM_ID_CHANNEL = "playing-item-id";
     public static final String PLAYING_ITEM_NAME_CHANNEL = "playing-item-name";
     public static final String PLAYING_ITEM_SERIES_NAME_CHANNEL = "playing-item-series-name";
     public static final String PLAYING_ITEM_SEASON_NAME_CHANNEL = "playing-item-season-name";

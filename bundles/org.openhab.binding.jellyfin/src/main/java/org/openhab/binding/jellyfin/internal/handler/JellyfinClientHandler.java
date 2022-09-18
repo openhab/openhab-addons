@@ -17,6 +17,7 @@ import static org.openhab.binding.jellyfin.internal.JellyfinBindingConstants.BRO
 import static org.openhab.binding.jellyfin.internal.JellyfinBindingConstants.MEDIA_CONTROL_CHANNEL;
 import static org.openhab.binding.jellyfin.internal.JellyfinBindingConstants.PLAYING_ITEM_EPISODE_CHANNEL;
 import static org.openhab.binding.jellyfin.internal.JellyfinBindingConstants.PLAYING_ITEM_GENRES_CHANNEL;
+import static org.openhab.binding.jellyfin.internal.JellyfinBindingConstants.PLAYING_ITEM_ID_CHANNEL;
 import static org.openhab.binding.jellyfin.internal.JellyfinBindingConstants.PLAYING_ITEM_NAME_CHANNEL;
 import static org.openhab.binding.jellyfin.internal.JellyfinBindingConstants.PLAYING_ITEM_PERCENTAGE_CHANNEL;
 import static org.openhab.binding.jellyfin.internal.JellyfinBindingConstants.PLAYING_ITEM_SEASON_CHANNEL;
@@ -193,6 +194,7 @@ public class JellyfinClientHandler extends BaseThingHandler {
                     }
                     seekToPercentage(Integer.parseInt(command.toFullString()));
                     break;
+                case PLAYING_ITEM_ID_CHANNEL:
                 case PLAYING_ITEM_NAME_CHANNEL:
                 case PLAYING_ITEM_GENRES_CHANNEL:
                 case PLAYING_ITEM_SEASON_CHANNEL:
@@ -274,6 +276,14 @@ public class JellyfinClientHandler extends BaseThingHandler {
                         new DecimalType(seconds));
             } else {
                 cleanChannel(PLAYING_ITEM_TOTAL_SECOND_CHANNEL);
+            }
+        }
+        if (isLinked(PLAYING_ITEM_ID_CHANNEL)) {
+            if (playingItem != null) {
+                updateState(new ChannelUID(this.thing.getUID(), PLAYING_ITEM_ID_CHANNEL),
+                        new StringType(playingItem.getId().toString()));
+            } else {
+                cleanChannel(PLAYING_ITEM_ID_CHANNEL);
             }
         }
         if (isLinked(PLAYING_ITEM_NAME_CHANNEL)) {
@@ -576,10 +586,11 @@ public class JellyfinClientHandler extends BaseThingHandler {
     }
 
     private void cleanChannels() {
-        List.of(MEDIA_CONTROL_CHANNEL, PLAYING_ITEM_PERCENTAGE_CHANNEL, PLAYING_ITEM_NAME_CHANNEL,
-                PLAYING_ITEM_SERIES_NAME_CHANNEL, PLAYING_ITEM_SEASON_NAME_CHANNEL, PLAYING_ITEM_SEASON_CHANNEL,
-                PLAYING_ITEM_EPISODE_CHANNEL, PLAYING_ITEM_GENRES_CHANNEL, PLAYING_ITEM_TYPE_CHANNEL,
-                PLAYING_ITEM_SECOND_CHANNEL, PLAYING_ITEM_TOTAL_SECOND_CHANNEL).forEach(this::cleanChannel);
+        List.of(MEDIA_CONTROL_CHANNEL, PLAYING_ITEM_PERCENTAGE_CHANNEL, PLAYING_ITEM_ID_CHANNEL,
+                PLAYING_ITEM_NAME_CHANNEL, PLAYING_ITEM_SERIES_NAME_CHANNEL, PLAYING_ITEM_SEASON_NAME_CHANNEL,
+                PLAYING_ITEM_SEASON_CHANNEL, PLAYING_ITEM_EPISODE_CHANNEL, PLAYING_ITEM_GENRES_CHANNEL,
+                PLAYING_ITEM_TYPE_CHANNEL, PLAYING_ITEM_SECOND_CHANNEL, PLAYING_ITEM_TOTAL_SECOND_CHANNEL)
+                .forEach(this::cleanChannel);
     }
 
     private void cleanChannel(String channelId) {

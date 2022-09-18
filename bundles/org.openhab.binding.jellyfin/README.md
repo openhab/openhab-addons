@@ -49,6 +49,7 @@ In order to assist you with this process the binding expose a simple login form 
 |----------|--------|------------------------------|
 | send-notification  | String | Display message in client |
 | media-control  | Player | Control media playback |
+| playing-item-id  | String | Id of the item currently playing (readonly) |
 | playing-item-name  | String | Name of the item currently playing (readonly) |
 | playing-item-series-name  | String | Name of the item's series currently playing, only have value when item is an episode (readonly) |
 | playing-item-season-name  | String | Name of the item's season currently playing, only have value when item is an episode (readonly) |
@@ -110,6 +111,7 @@ Thing jellyfin:client:exampleServerId:<JELLYFIN_DEVICE_ID> "Jellyfin Android cli
 ```
 String strJellyfinAndroidSendNotification { channel="jellyfin:client:exampleServerId:<JELLYFIN_DEVICE_ID>:send-notification " }
 Player plJellyfinAndroidMediaControl { channel="jellyfin:client:exampleServerId:<JELLYFIN_DEVICE_ID>:media-control" }
+String strJellyfinAndroidPlayingItemId { channel="jellyfin:client:exampleServerId:<JELLYFIN_DEVICE_ID>:playing-item-id" }
 String strJellyfinAndroidPlayingItemName { channel="jellyfin:client:exampleServerId:<JELLYFIN_DEVICE_ID>:playing-item-name" }
 String strJellyfinAndroidPlayingItemSeriesName { channel="jellyfin:client:exampleServerId:<JELLYFIN_DEVICE_ID>:playing-item-series-name" }
 String strJellyfinAndroidPlayingItemSeasonName { channel="jellyfin:client:exampleServerId:<JELLYFIN_DEVICE_ID>:playing-item-season-name" }
