@@ -22,7 +22,8 @@ These can be installed under `Settings` &rarr; `Addon` &rarr; `Transformations`
 
 * The HomeAssistant Fan Components only support ON/OFF.
 * The HomeAssistant Cover Components only support OPEN/CLOSE/STOP.
-* The HomeAssistant Light Component only supports RGB color changes.
+* The HomeAssistant Light Component only support on/off, brightness, and RGB.
+  Other color spaces, color temperature, effects, and white channel may work, but are untested.
 * The HomeAssistant Climate Components is not yet supported.
 
 ## Tasmota auto discovery
