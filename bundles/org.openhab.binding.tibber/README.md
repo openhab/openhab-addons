@@ -32,6 +32,7 @@ Tibber Default:
 | Hourly Consumption | Hourly Consumption (last/previous hour) | True      |
 | Hourly From        | Timestamp (hourly from)                 | True      |
 | Hourly To          | Timestamp (hourly to)                   | True      |
+| Tomorrow           | JSON array of tomorrow's prices         | True      |
 
 Tibber Pulse (optional):
 
@@ -139,4 +140,5 @@ Number:Power               TibberAPILivePowerProduction          "Live Power Pro
 Number:Power               TibberAPILiveMinPowerproduction       "Min Power Production [%.0f W]"                  {channel="tibber:tibberapi:7cfae492:live_minPowerproduction"}
 Number:Power               TibberAPILiveMaxPowerproduction       "Max Power Production [%.0f W]"                  {channel="tibber:tibberapi:7cfae492:live_maxPowerproduction"}
 Number:Energy              TibberAPILiveAccumulatedProduction    "Accumulated Production [%.2f kWh]"         {channel="tibber:tibberapi:7cfae492:live_accumulatedProduction"}
+String                     TibberAPITomorrowPrices               "Price per hour tomorrow JSON array"        {channel="tibber:tibberapi:7cfae492:tomorrow"}
 ```
