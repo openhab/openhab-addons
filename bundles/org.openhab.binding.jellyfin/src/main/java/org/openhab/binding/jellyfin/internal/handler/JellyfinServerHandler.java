@@ -40,6 +40,7 @@ import org.jellyfin.sdk.model.api.AuthenticateUserByName;
 import org.jellyfin.sdk.model.api.AuthenticationResult;
 import org.jellyfin.sdk.model.api.BaseItemDto;
 import org.jellyfin.sdk.model.api.BaseItemDtoQueryResult;
+import org.jellyfin.sdk.model.api.BaseItemKind;
 import org.jellyfin.sdk.model.api.ItemFields;
 import org.jellyfin.sdk.model.api.MessageCommand;
 import org.jellyfin.sdk.model.api.PlayCommand;
@@ -271,7 +272,7 @@ public class JellyfinServerHandler extends BaseBridgeHandler {
         awaiter.awaitResponse();
     }
 
-    public void browseToItem(String sessionId, String itemType, String itemId, String itemName)
+    public void browseToItem(String sessionId, BaseItemKind itemType, String itemId, String itemName)
             throws SyncCallback.SyncCallbackError, ApiClientException {
         var awaiter = new EmptySyncResponse();
         new SessionApi(jellyApiClient).displayContent(sessionId, itemType, itemId, itemName, awaiter);
@@ -287,7 +288,7 @@ public class JellyfinServerHandler extends BaseBridgeHandler {
             throws SyncCallback.SyncCallbackError, ApiClientException {
         var asyncContinuation = new SyncResponse<BaseItemDtoQueryResult>();
         new TvShowsApi(jellyApiClient).getNextUp(jellyApiClient.getUserId(), null, limit, null, seriesId.toString(),
-                null, null, null, null, null, null, null, asyncContinuation);
+                null, null, null, null, null, null, null, null, null, asyncContinuation);
         var result = asyncContinuation.awaitContent();
         return Objects.requireNonNull(result.getItems());
     }
@@ -301,7 +302,8 @@ public class JellyfinServerHandler extends BaseBridgeHandler {
             throws SyncCallback.SyncCallbackError, ApiClientException {
         var asyncContinuation = new SyncResponse<BaseItemDtoQueryResult>();
         new ItemsApi(jellyApiClient).getResumeItems(Objects.requireNonNull(jellyApiClient.getUserId()), null, limit,
-                null, seriesId, null, null, true, null, null, null, List.of("Episode"), null, null, asyncContinuation);
+                null, seriesId, null, null, true, null, null, null, List.of(BaseItemKind.EPISODE), null, null, null,
+                asyncContinuation);
         var result = asyncContinuation.awaitContent();
         return Objects.requireNonNull(result.getItems());
     }
@@ -320,21 +322,34 @@ public class JellyfinServerHandler extends BaseBridgeHandler {
         return Objects.requireNonNull(result.getItems());
     }
 
-    public @Nullable BaseItemDto searchItem(@Nullable String searchTerm, @Nullable String itemType,
+    public @Nullable BaseItemDto getItem(UUID id, @Nullable List<ItemFields> fields)
+            throws SyncCallback.SyncCallbackError, ApiClientException {
+        var asyncContinuation = new SyncResponse<BaseItemDtoQueryResult>();
+        new ItemsApi(jellyApiClient).getItems(jellyApiClient.getUserId(), null, null, null, null, null, null, null,
+                null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+                null, null, null, null, null, null, null, null, 1, true, null, null, null, fields, null, null, null,
+                null, null, null, null, null, null, null, null, null, null, 1, null, null, null, null, null, null, null,
+                null, null, null, null, null, List.of(id), null, null, null, null, null, null, null, null, null, null,
+                null, null, null, null, null, null, null, false, false, asyncContinuation);
+        var response = asyncContinuation.awaitContent();
+        return Objects.requireNonNull(response.getItems()).stream().findFirst().orElse(null);
+    }
+
+    public @Nullable BaseItemDto searchItem(@Nullable String searchTerm, @Nullable BaseItemKind itemType,
             @Nullable List<ItemFields> fields) throws SyncCallback.SyncCallbackError, ApiClientException {
         return searchItems(searchTerm, itemType, fields, 1).stream().findFirst().orElse(null);
     }
 
-    public List<BaseItemDto> searchItems(@Nullable String searchTerm, @Nullable String itemType,
+    public List<BaseItemDto> searchItems(@Nullable String searchTerm, @Nullable BaseItemKind itemType,
             @Nullable List<ItemFields> fields, int limit) throws SyncCallback.SyncCallbackError, ApiClientException {
         var asyncContinuation = new SyncResponse<BaseItemDtoQueryResult>();
         var itemTypes = itemType != null ? List.of(itemType) : null;
         new ItemsApi(jellyApiClient).getItems(jellyApiClient.getUserId(), null, null, null, null, null, null, null,
                 null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
-                null, null, null, limit, true, searchTerm, null, null, fields, null, itemTypes, null, null, null, null,
-                null, null, null, null, null, null, null, 1, null, null, null, null, null, null, null, null, null, null,
+                null, null, null, null, null, null, null, null, limit, true, searchTerm, null, null, fields, null,
+                itemTypes, null, null, null, null, null, null, null, null, null, null, null, 1, null, null, null, null,
                 null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
-                null, null, null, false, false, asyncContinuation);
+                null, null, null, null, null, null, null, null, null, false, false, asyncContinuation);
         var response = asyncContinuation.awaitContent();
         return Objects.requireNonNull(response.getItems());
     }
