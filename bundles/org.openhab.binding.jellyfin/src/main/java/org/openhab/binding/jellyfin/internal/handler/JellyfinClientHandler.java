@@ -157,7 +157,7 @@ public class JellyfinClientHandler extends BaseThingHandler {
                     try {
                         itemUUID = parseItemUUID(command);
                     } catch (NumberFormatException e) {
-                        logger.warn("Thing {}: Unable to parse item UUID.", thing.getUID());
+                        logger.warn("Thing {}: Unable to parse item UUID in command {}.", thing.getUID(), command);
                         return;
                     }
                     runItemById(itemUUID, PlayCommand.PLAY_NOW);
@@ -169,7 +169,7 @@ public class JellyfinClientHandler extends BaseThingHandler {
                     try {
                         itemUUID = parseItemUUID(command);
                     } catch (NumberFormatException e) {
-                        logger.warn("Thing {}: Unable to parse item UUID.", thing.getUID());
+                        logger.warn("Thing {}: Unable to parse item UUID in command {}.", thing.getUID(), command);
                         return;
                     }
                     runItemById(itemUUID, PlayCommand.PLAY_NEXT);
@@ -181,7 +181,7 @@ public class JellyfinClientHandler extends BaseThingHandler {
                     try {
                         itemUUID = parseItemUUID(command);
                     } catch (NumberFormatException e) {
-                        logger.warn("Thing {}: Unable to parse item UUID.", thing.getUID());
+                        logger.warn("Thing {}: Unable to parse item UUID in command {}.", thing.getUID(), command);
                         return;
                     }
                     runItemById(itemUUID, PlayCommand.PLAY_LAST);
@@ -193,7 +193,7 @@ public class JellyfinClientHandler extends BaseThingHandler {
                     try {
                         itemUUID = parseItemUUID(command);
                     } catch (NumberFormatException e) {
-                        logger.warn("Thing {}: Unable to parse item UUID.", thing.getUID());
+                        logger.warn("Thing {}: Unable to parse item UUID in command {}.", thing.getUID(), command);
                         return;
                     }
                     runItemById(itemUUID, null);
