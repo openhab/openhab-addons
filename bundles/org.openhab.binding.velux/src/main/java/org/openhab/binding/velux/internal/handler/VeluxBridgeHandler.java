@@ -291,7 +291,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
          * When a binding call to the hub fails with a communication error, it will retry the call for a maximum of
          * veluxBridgeConfiguration.retries times, where the interval between retry attempts increases on each attempt
          * calculated as veluxBridgeConfiguration.refreshMSecs * 2^retry (i.e. 1, 2, 4, 8, 16, 32 etc.) so a complete
-         * retry series takes (veluxBridgeConfiguration.refreshMSecs * ((2^veluxBridgeConfiguration.retries + 1) - 1)
+         * retry series takes (veluxBridgeConfiguration.refreshMSecs * ((2^(veluxBridgeConfiguration.retries + 1)) - 1)
          * milliseconds. So we have to let this full retry series to have been tried (and failed), before we consider
          * the thing to be actually offline.
          */
