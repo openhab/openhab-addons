@@ -84,12 +84,6 @@
       <artifactId>netty-transport</artifactId>
       <version>${netty.version}</version>
     </dependency>
-    <dependency> <!-- HACK -->
-      <groupId>fi.tkgwf.ruuvi</groupId>
-      <artifactId>ruuvitag-common</artifactId>
-      <version>1.0.0</version>
-      <scope>compile</scope>
-    </dependency>
   </dependencies>
 
   <build>
