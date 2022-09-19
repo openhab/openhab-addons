@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Created with Liquid Technologies Online Tools 1.0 (https://www.liquid-technologies.com) -->
-<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<!-- To regenerate the NuvoMenu DTO from the XSD, use the following command: -->
+<!-- xjc -d ../src/main/java -p org.openhab.binding.nuvo.internal.dto NuvoMenu.xsd -->
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
   <xs:element name="menu">
+    <xs:annotation>
+      <xs:appinfo>
+        <jaxb:class name="NuvoMenu"/>
+      </xs:appinfo>
+    </xs:annotation>
     <xs:complexType>
       <xs:sequence>
         <xs:element maxOccurs="unbounded" name="source">

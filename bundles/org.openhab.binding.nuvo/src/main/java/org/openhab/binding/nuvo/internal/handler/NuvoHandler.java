@@ -230,7 +230,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                     || config.nuvoNetSrc4 == 2 || config.nuvoNetSrc5 == 2 || config.nuvoNetSrc6 == 2);
 
             if (this.isAnyOhNuvoNet) {
-                logger.debug("At least one source is configured as an OpenHAB NuvoNet source");
+                logger.debug("At least one source is configured as an openHAB NuvoNet source");
                 loadMenuConfiguration(config);
 
                 nuvoNetSrcMap.put("1", config.nuvoNetSrc1);
