@@ -53,7 +53,7 @@
 		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="start" advanced="true">
+	<channel-type id="start">
 		<item-type>DateTime</item-type>
 		<label>Start Time</label>
 		<description>Programmed start time of the program</description>
@@ -61,7 +61,7 @@
 		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="duration" advanced="true">
+	<channel-type id="duration">
 		<item-type>DateTime</item-type>
 		<label>Duration</label>
 		<description>Duration of the program running on the appliance</description>
