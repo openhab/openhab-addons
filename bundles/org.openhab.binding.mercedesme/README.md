@@ -94,7 +94,7 @@ Some supporting screenshots for the setup
 | lockScope       | boolean | Lock status of doors and trunk        | true        | yes      | no       |
 | fuelScope       | boolean | Fuel Status                           | true        | yes      | no       |
 | evScope         | boolean | Electric Vehicle Status               | true        | yes      | no       |
-| callbackIp      | text    | IP address of your openHAB server     | auto detect | no       | yes      |
+| callbackIP      | text    | IP address of your openHAB server     | auto detect | no       | yes      |
 | callbackPort    | integer | **Unique** port number                | auto detect | no       | yes      |
 
 The `callbackPort` needs to be unique for all created Mercedes Me account things. Otherwise token exchange will be corrupted.
@@ -401,7 +401,7 @@ Thing
 ### Things file
 
 ```
-Bridge mercedesme:account:4711   "MercedesMe John Doe" [ clientId="YOUR_CLIENT_ID", clientSecret="YOUR_CLIENT_SECRET", imageApiKey="YOUR_API_KEY", callbackIp="YOUR_OPENHAB_SERVER_IP", callbackPort=8092, odoScope=true, vehicleScope=true, lockScope=true, fuelScope=true, evScope=true] {
+Bridge mercedesme:account:4711   "MercedesMe John Doe" [ clientId="YOUR_CLIENT_ID", clientSecret="YOUR_CLIENT_SECRET", imageApiKey="YOUR_API_KEY", callbackIP="YOUR_OPENHAB_SERVER_IP", callbackPort=8092, odoScope=true, vehicleScope=true, lockScope=true, fuelScope=true, evScope=true] {
          Thing bev eqa           "Mercedes EQA"        [ vin="VEHICLE_VIN", refreshInterval=5, background=false, night=false, cropped=false, roofOpen=false, format="webp"]
 }
 ```

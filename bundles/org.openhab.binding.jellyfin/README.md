@@ -4,6 +4,7 @@ This is the binding for [Jellyfin](https://jellyfin.org) the volunteer-built med
 Stream to any device from your own server, with no strings attached. 
 Your media, your server, your way.
 This binding allows connect to Jellyfin clients that supports remote control, it's build on top of the official Jellyfin kotlin sdk.
+Compatible with Jellyfin servers in version 10.8.x.
 
 ## Supported Things
 
@@ -48,6 +49,7 @@ In order to assist you with this process the binding expose a simple login form 
 |----------|--------|------------------------------|
 | send-notification  | String | Display message in client |
 | media-control  | Player | Control media playback |
+| playing-item-id  | String | Id of the item currently playing (readonly) |
 | playing-item-name  | String | Name of the item currently playing (readonly) |
 | playing-item-series-name  | String | Name of the item's series currently playing, only have value when item is an episode (readonly) |
 | playing-item-season-name  | String | Name of the item's season currently playing, only have value when item is an episode (readonly) |
@@ -62,7 +64,10 @@ In order to assist you with this process the binding expose a simple login form 
 | play-next-by-terms  | String | Add to playback queue as next by terms, works for series, episodes and movies; terms search is explained bellow |
 | play-last-by-terms  | String | Add to playback queue as last by terms, works for series, episodes and movies; terms search is explained bellow |
 | browse-by-terms  | String | Browse media by terms, works for series, episodes and movies; terms search is explained bellow |
-
+| play-by-id  | String | Play media by id, works for series, episodes and movies; id search is explained bellow |
+| play-next-by-id  | String | Add to playback queue as next by id, works for series, episodes and movies |
+| play-last-by-id  | String | Add to playback queue as last by id, works for series, episodes and movies |
+| browse-by-id  | String | Browse media by id, works for series, episodes and movies |
 ### Terms search:
 
 The terms search has a default behavior that can be modified sending some predefined prefixes.
@@ -106,6 +111,7 @@ Thing jellyfin:client:exampleServerId:<JELLYFIN_DEVICE_ID> "Jellyfin Android cli
 ```
 String strJellyfinAndroidSendNotification { channel="jellyfin:client:exampleServerId:<JELLYFIN_DEVICE_ID>:send-notification " }
 Player plJellyfinAndroidMediaControl { channel="jellyfin:client:exampleServerId:<JELLYFIN_DEVICE_ID>:media-control" }
+String strJellyfinAndroidPlayingItemId { channel="jellyfin:client:exampleServerId:<JELLYFIN_DEVICE_ID>:playing-item-id" }
 String strJellyfinAndroidPlayingItemName { channel="jellyfin:client:exampleServerId:<JELLYFIN_DEVICE_ID>:playing-item-name" }
 String strJellyfinAndroidPlayingItemSeriesName { channel="jellyfin:client:exampleServerId:<JELLYFIN_DEVICE_ID>:playing-item-series-name" }
 String strJellyfinAndroidPlayingItemSeasonName { channel="jellyfin:client:exampleServerId:<JELLYFIN_DEVICE_ID>:playing-item-season-name" }
