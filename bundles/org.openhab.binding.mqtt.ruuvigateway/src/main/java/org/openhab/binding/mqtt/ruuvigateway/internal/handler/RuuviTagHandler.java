@@ -19,6 +19,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledFuture;
@@ -164,7 +165,7 @@ public class RuuviTagHandler extends AbstractMQTTThingHandler implements MqttMes
     private ChannelState initCacheWithClass(ChannelUID channelUID, Class<?> clazz) {
         try {
             ChannelState cached = (ChannelState) clazz.getConstructor(ChannelUID.class).newInstance(channelUID);
-            assert cached != null;
+            Objects.requireNonNull(cached); // to make compiler happy
             channelStateByChannelUID.put(channelUID, cached);
             return cached;
         } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException

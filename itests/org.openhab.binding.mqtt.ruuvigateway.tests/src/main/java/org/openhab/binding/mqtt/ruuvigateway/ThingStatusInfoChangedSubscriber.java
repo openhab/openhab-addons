@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -39,7 +40,7 @@ import org.slf4j.LoggerFactory;
  * @author Sami Salonen - Initial contribution
  */
 @NonNullByDefault
-class ThingStatusInfoChangedSubscriber implements EventSubscriber {
+public class ThingStatusInfoChangedSubscriber implements EventSubscriber {
 
     private final Logger logger = LoggerFactory.getLogger(ThingStatusInfoChangedSubscriber.class);
 
@@ -63,7 +64,7 @@ class ThingStatusInfoChangedSubscriber implements EventSubscriber {
         logger.trace("Captured event: {} ", event);
         List<ThingStatusInfo> updates = statusUpdates.computeIfAbsent(statusEvent.getThingUID(),
                 item -> new CopyOnWriteArrayList<>());
-        assert updates != null; // To make compiler happy
+        Objects.requireNonNull(updates); // To make compiler happy
         updates.add(statusEvent.getStatusInfo());
     }
 }
