@@ -10,7 +10,7 @@ id=`echo $camelcaseId | tr '[:upper:]' '[:lower:]'`
 author=$2
 githubUser=$3
 
-mvn -s archetype-settings.xml archetype:generate -N \
+mvn -s archetype-settings.xml org.apache.maven.plugins:maven-archetype-plugin:3.1.0:generate -N \
   -Dspotless.check.skip=true \
   -DarchetypeGroupId=org.openhab.core.tools.archetypes \
   -DarchetypeArtifactId=org.openhab.core.tools.archetypes.binding \
