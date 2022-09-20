@@ -74,8 +74,8 @@ public enum WashingMachineChannelSelector implements ApplianceChannelSelector {
         }
     },
     PROGRAM_PHASE(RAW_PHASE_PROPERTY_NAME, PHASE_CHANNEL_ID, DecimalType.class, false, false),
-    START_TIME(START_TIME_PROPERTY_NAME, START_CHANNEL_ID, DateTimeType.class, false, false),
-    FINISH_TIME(FINISH_TIME_PROPERTY_NAME, FINISH_CHANNEL_ID, DateTimeType.class, false, false),
+    START_TIME("", START_CHANNEL_ID, DateTimeType.class, false, false),
+    END_TIME("", END_CHANNEL_ID, DateTimeType.class, false, false),
     DURATION("duration", "duration", DateTimeType.class, false, false) {
         @Override
         public State getState(String s, @Nullable DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
@@ -104,6 +104,7 @@ public enum WashingMachineChannelSelector implements ApplianceChannelSelector {
             return getState(dateFormatter.format(date));
         }
     },
+    FINISH_TIME("", FINISH_CHANNEL_ID, DateTimeType.class, false, false),
     TARGET_TEMP("targetTemperature", "target", QuantityType.class, false, false) {
         @Override
         public State getState(String s, @Nullable DeviceMetaData dmd, MieleTranslationProvider translationProvider) {

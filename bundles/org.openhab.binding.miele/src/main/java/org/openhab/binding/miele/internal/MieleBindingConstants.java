@@ -56,6 +56,7 @@ public class MieleBindingConstants {
     public static final String SUPERFREEZE_CHANNEL_ID = "superfreeze";
     public static final String SWITCH_CHANNEL_ID = "switch";
     public static final String START_CHANNEL_ID = "start";
+    public static final String END_CHANNEL_ID = "end";
     public static final String FINISH_CHANNEL_ID = "finish";
     public static final String POWER_CONSUMPTION_CHANNEL_ID = "powerConsumption";
     public static final String WATER_CONSUMPTION_CHANNEL_ID = "waterConsumption";

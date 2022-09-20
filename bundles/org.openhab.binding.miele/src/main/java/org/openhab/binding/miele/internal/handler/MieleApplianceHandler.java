@@ -15,6 +15,7 @@ package org.openhab.binding.miele.internal.handler;
 import static org.openhab.binding.miele.internal.MieleBindingConstants.*;
 
 import java.time.Instant;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
@@ -272,7 +273,8 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
                 updateStateFromTime(new ChannelUID(thingUid, START_CHANNEL_ID), dp.Value, startTimeStabilizer);
                 return;
             } else if (FINISH_TIME_PROPERTY_NAME.equals(dp.Name)) {
-                updateStateFromTime(new ChannelUID(thingUid, FINISH_CHANNEL_ID), dp.Value, finishTimeStabilizer);
+                updateDurationState(new ChannelUID(thingUid, FINISH_CHANNEL_ID), dp.Value);
+                updateStateFromTime(new ChannelUID(thingUid, END_CHANNEL_ID), dp.Value, finishTimeStabilizer);
                 return;
             }
 
@@ -327,6 +329,21 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
         }
         updateState(channelUid, UnDefType.UNDEF);
         stabilizer.clear();
+    }
+
+    private void updateDurationState(ChannelUID channelUid, String value) {
+        try {
+            long minutesFromNow = Long.valueOf(value);
+            if (minutesFromNow > 0) {
+                ZonedDateTime remaining = ZonedDateTime.ofInstant(Instant.ofEpochSecond(minutesFromNow * 60),
+                        ZoneId.of("UTC"));
+                updateState(channelUid, new DateTimeType(remaining.withZoneSameLocal(timeZoneProvider.getTimeZone())));
+                return;
+            }
+        } catch (NumberFormatException e) {
+            // Fall through.
+        }
+        updateState(channelUid, UnDefType.UNDEF);
     }
 
     protected void updateSwitchOnOffFromState(DeviceProperty dp) {
