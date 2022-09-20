@@ -84,7 +84,7 @@ public class GatewayPayloadParserTests {
 
     @Test
     public void testUnexpectedTypes() {
-        assertThrows(JsonSyntaxException.class, () -> {
+        assertThrows(IllegalArgumentException.class, () -> {
             GatewayPayloadParser.parse(bytes(//
                     "{\"gw_mac\": \"DE:AD:BE:EF:00:00\","//
                             + "  \"rssi\": -83,"//
@@ -98,7 +98,7 @@ public class GatewayPayloadParserTests {
 
     @Test
     public void testInvalidHex() {
-        assertThrows(JsonSyntaxException.class, () -> {
+        assertThrows(IllegalArgumentException.class, () -> {
             GatewayPayloadParser.parse(bytes(//
                     "{\"gw_mac\": \"DE:AD:BE:EF:00:00\","//
                             + "  \"rssi\": -83,"//
@@ -126,7 +126,7 @@ public class GatewayPayloadParserTests {
 
     @Test
     public void testDataTooShort() {
-        assertThrows(JsonSyntaxException.class, () -> {
+        assertThrows(IllegalArgumentException.class, () -> {
             GatewayPayloadParser.parse(bytes(//
                     "{\"gw_mac\": \"DE:AD:BE:EF:00:00\","//
                             + "  \"rssi\": -83," + "  \"aoa\": [],"//
@@ -139,7 +139,7 @@ public class GatewayPayloadParserTests {
 
     @Test
     public void testUnexpectedManufacturer() {
-        assertThrows(JsonSyntaxException.class, () -> {
+        assertThrows(IllegalArgumentException.class, () -> {
             GatewayPayloadParser.parse(bytes(//
                     "{\"gw_mac\": \"DE:AD:BE:EF:00:00\","//
                             + "  \"rssi\": -83,"//
@@ -154,7 +154,7 @@ public class GatewayPayloadParserTests {
 
     @Test
     public void testDataNotBluetoothAdvertisement() {
-        assertThrows(JsonSyntaxException.class, () -> {
+        assertThrows(IllegalArgumentException.class, () -> {
             GatewayPayloadParser.parse(bytes(//
                     "{\"gw_mac\": \"DE:AD:BE:EF:00:00\","//
                             + "  \"rssi\": -83,"//

@@ -125,7 +125,7 @@ public class RuuviTagHandler extends AbstractMQTTThingHandler implements MqttMes
         if (timeout != null) {
             // Note: only in tests
             heartbeatTimeoutMillisecs = Integer.parseInt(timeout.toString());
-            logger.warn("Using overridden timeout: " + timeout);
+            logger.warn("Using overridden timeout: {}", heartbeatTimeoutMillisecs);
         }
 
         this.topic = topic;
@@ -250,15 +250,14 @@ public class RuuviTagHandler extends AbstractMQTTThingHandler implements MqttMes
     public void processMessage(String topic, byte[] payload) {
         receivedData.set(true);
 
-        // TODO: json syntax only with exceptions, other with Optional
         final GatewayPayload parsed;
         try {
             parsed = GatewayPayloadParser.parse(payload);
-        } catch (JsonSyntaxException e) {
+        } catch (JsonSyntaxException | IllegalArgumentException e) {
             // We assume this is exceptional enough for Warn level. Perhaps thing has been configured with wrong topic,
             // for example
-            logger.warn("Received invalid data which could not be parsed to any known Ruuvi Tag data formats ("
-                    + e.getMessage() + "): {}", new String(payload, StandardCharsets.UTF_8));
+            logger.warn("Received invalid data which could not be parsed to any known Ruuvi Tag data formats ({}): {}",
+                    e.getMessage(), new String(payload, StandardCharsets.UTF_8));
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Received bluetooth data which could not be parsed to any known Ruuvi Tag data formats ("
                             + e.getMessage() + ")");

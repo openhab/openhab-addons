@@ -77,7 +77,7 @@ public class GatewayPayloadParser {
         public Optional<Instant> ts = Optional.empty();
         public RuuviMeasurement measurement;
 
-        private GatewayPayload(GatewayPayloadIntermediate intermediate) {
+        private GatewayPayload(GatewayPayloadIntermediate intermediate) throws IllegalArgumentException {
             String gwMac = intermediate.gw_mac;
             if (gwMac == null) {
                 logger.trace("Missing mandatory field 'gw_mac', ignoring");
@@ -87,42 +87,47 @@ public class GatewayPayloadParser {
             try {
                 gwts = Optional.of(Instant.ofEpochSecond(intermediate.gwts));
             } catch (DateTimeException e) {
-                logger.trace("Field 'gwts' is a not valid time (epoch second), ignoring: {}", intermediate.gwts);
+                logger.debug("Field 'gwts' is a not valid time (epoch second), ignoring: {}", intermediate.gwts);
             }
             try {
                 ts = Optional.of(Instant.ofEpochSecond(intermediate.ts));
             } catch (DateTimeException e) {
-                logger.trace("Field 'ts' is a not valid time (epoch second), ignoring: {}", intermediate.ts);
+                logger.debug("Field 'ts' is a not valid time (epoch second), ignoring: {}", intermediate.ts);
             }
 
             String localData = intermediate.data;
             if (localData == null) {
-                throw new JsonSyntaxException("Missing mandatory field 'data'");
+                throw new IllegalArgumentException("Missing mandatory field 'data'");
             }
 
             if (!HEX_PATTERN_CHECKER.test(localData)) {
-                logger.trace("Data is not representing manufacturer specific bluetooth advertisement: " + localData);
-                throw new JsonSyntaxException("Data is not a valid hex pattern: " + localData);
+                logger.debug(
+                        "Data is not representing manufacturer specific bluetooth advertisement, it is not valid hex: {}",
+                        localData);
+                throw new IllegalArgumentException(
+                        "Data is not representing manufacturer specific bluetooth advertisement, it is not valid hex: "
+                                + localData);
             }
             byte[] bytes = HexUtils.hexToBytes(localData);
             if (bytes.length < 4) {
                 // We want at least 4 bytes, ensuring bytes[4] is valid as well as Arrays.copyOfRange(bytes, 5, ...)
                 // below
                 // The payload length (might depend on format version ) is validated by parser.parse call
-                throw new JsonSyntaxException("Manufacturerer data is too short");
+                throw new IllegalArgumentException("Manufacturerer data is too short");
 
             }
             if ((bytes[4] & 0xff) != 0xff) {
-                logger.trace("Data is not representing manufacturer specific bluetooth advertisement: "
-                        + HexUtils.bytesToHex(bytes));
-                throw new JsonSyntaxException("Data is not representing manufacturer specific bluetooth advertisement");
+                logger.debug("Data is not representing manufacturer specific bluetooth advertisement: {}",
+                        HexUtils.bytesToHex(bytes));
+                throw new IllegalArgumentException(
+                        "Data is not representing manufacturer specific bluetooth advertisement");
             }
             // Manufacturer data starts after 0xFF byte, at index 5
             byte[] manufacturerData = Arrays.copyOfRange(bytes, 5, bytes.length);
             RuuviMeasurement localManufacturerData = parser.parse(manufacturerData);
             if (localManufacturerData == null) {
-                logger.trace("Manufacturer data is not valid: " + HexUtils.bytesToHex(manufacturerData));
-                throw new JsonSyntaxException("Manufacturer data is not valid");
+                logger.trace("Manufacturer data is not valid: {}", HexUtils.bytesToHex(manufacturerData));
+                throw new IllegalArgumentException("Manufacturer data is not valid");
             }
             measurement = localManufacturerData;
         }
@@ -149,6 +154,14 @@ public class GatewayPayloadParser {
         public @Nullable String data;
     }
 
+    /**
+     * Parse MQTT JSON payload advertised by Ruuvi Gateway
+     *
+     * @param jsonPayload json payload of the Ruuvi sensor MQTT topic, as bytes
+     * @return parsed payload
+     * @throws JsonSyntaxException raised with JSON syntax exceptions and clearly invalid JSON types
+     * @throws IllegalArgumentException raised with invalid or unparseable data
+     */
     public static GatewayPayload parse(byte[] jsonPayload) throws JsonSyntaxException {
         String jsonPayloadString = new String(jsonPayload, StandardCharsets.UTF_8);
         GatewayPayloadIntermediate payloadIntermediate = GSON.fromJson(jsonPayloadString,
