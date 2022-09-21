@@ -583,8 +583,14 @@ public class JdbcBaseDAO {
             return ((Number) v).longValue();
         } else if (v instanceof java.sql.Date) {
             return ((java.sql.Date) v).getTime();
+        } else if (v instanceof LocalDateTime) {
+            return ((LocalDateTime) v).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+        } else if (v instanceof Instant) {
+            return ((Instant) v).toEpochMilli();
+        } else if (v instanceof java.sql.Timestamp) {
+            return ((java.sql.Timestamp) v).getTime();
         }
-        return ((java.sql.Timestamp) v).getTime();
+        throw new UnsupportedOperationException("Date of type " + v.getClass().getName() + " is not supported");
     }
 
     protected Integer objectAsInteger(Object v) {
