@@ -98,8 +98,9 @@ public class DefaultSchemaLight extends Light {
                     .build();
         }
 
-        if (channelConfiguration.effectStateTopic != null || channelConfiguration.effectCommandTopic != null) {
-            buildChannel(EFFECT_CHANNEL_ID, effectValue, "Lighting effect", this)
+        if (effectValue != null
+                && (channelConfiguration.effectStateTopic != null || channelConfiguration.effectCommandTopic != null)) {
+            buildChannel(EFFECT_CHANNEL_ID, Objects.requireNonNull(effectValue), "Lighting Effect", this)
                     .stateTopic(channelConfiguration.effectStateTopic, channelConfiguration.effectValueTemplate)
                     .commandTopic(channelConfiguration.effectCommandTopic, channelConfiguration.isRetain(),
                             channelConfiguration.getQos())
