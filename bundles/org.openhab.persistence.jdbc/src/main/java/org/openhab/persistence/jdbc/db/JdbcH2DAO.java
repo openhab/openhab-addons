@@ -12,6 +12,7 @@
  */
 package org.openhab.persistence.jdbc.db;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.knowm.yank.Yank;
 import org.openhab.core.items.Item;
 import org.openhab.core.types.State;
@@ -27,6 +28,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Helmut Lehmeyer - Initial contribution
  */
+@NonNullByDefault
 public class JdbcH2DAO extends JdbcBaseDAO {
     private final Logger logger = LoggerFactory.getLogger(JdbcH2DAO.class);
 

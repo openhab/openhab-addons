@@ -12,6 +12,8 @@
  */
 package org.openhab.persistence.jdbc.db;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.knowm.yank.Yank;
 import org.openhab.core.items.Item;
 import org.openhab.core.types.State;
@@ -28,6 +30,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Helmut Lehmeyer - Initial contribution
  */
+@NonNullByDefault
 public class JdbcHsqldbDAO extends JdbcBaseDAO {
     private final Logger logger = LoggerFactory.getLogger(JdbcHsqldbDAO.class);
 
@@ -76,7 +79,9 @@ public class JdbcHsqldbDAO extends JdbcBaseDAO {
      **************/
     @Override
     public Integer doPingDB() {
-        return Yank.queryScalar(sqlPingDB, Integer.class, null);
+        @Nullable
+        Integer result = Yank.queryScalar(sqlPingDB, Integer.class, null);
+        return result;
     }
 
     @Override
