@@ -58,28 +58,35 @@ public class TouchWandThermostatHandler extends TouchWandBaseUnitHandler {
         if (touchWandBridgeHandler != null) {
             if (command instanceof OnOffType) {
                 touchWandBridgeHandler.touchWandClient.cmdThermostatOnOff(unitId, (OnOffType) command);
-            } else {
-                String sCommand = command.toString();
-                switch (sCommand) {
-                    case "cool":
-                    case "heat":
-                    case "fan":
-                    case "auto":
-                    case "dry":
-                        touchWandBridgeHandler.touchWandClient.cmdThermostatMode(unitId, sCommand);
-                        break;
-                    case "low":
-                    case "medium":
-                    case "high":
-                        touchWandBridgeHandler.touchWandClient.cmdThermostatFanLevel(unitId, sCommand);
-                        break;
-                    case "fanAuto":
-                        touchWandBridgeHandler.touchWandClient.cmdThermostatFanLevel(unitId, "auto");
-                        break;
-                    default:
-                        touchWandBridgeHandler.touchWandClient.cmdThermostatTargetTemperature(unitId, sCommand);
-                        break;
-                }
+                return;
+            }
+            if (command instanceof QuantityType) {
+                QuantityType<?> value = (QuantityType<?>) command;
+                int targetTemperature = value.intValue();
+                touchWandBridgeHandler.touchWandClient.cmdThermostatTargetTemperature(unitId,
+                        String.valueOf(targetTemperature));
+                return;
+            }
+
+            String sCommand = command.toString();
+            switch (sCommand) {
+                case "cool":
+                case "heat":
+                case "fan":
+                case "auto":
+                case "dry":
+                    touchWandBridgeHandler.touchWandClient.cmdThermostatMode(unitId, sCommand);
+                    break;
+                case "low":
+                case "medium":
+                case "high":
+                    touchWandBridgeHandler.touchWandClient.cmdThermostatFanLevel(unitId, sCommand);
+                    break;
+                case "fanAuto":
+                    touchWandBridgeHandler.touchWandClient.cmdThermostatFanLevel(unitId, "auto");
+                    break;
+                default:
+                    break;
             }
         }
     }
