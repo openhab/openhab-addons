@@ -32,7 +32,7 @@ import org.eclipse.californium.core.network.CoapEndpoint;
 import org.eclipse.californium.elements.exception.ConnectorException;
 import org.eclipse.californium.scandium.DTLSConnector;
 import org.eclipse.californium.scandium.config.DtlsConnectorConfig;
-import org.eclipse.californium.scandium.dtls.pskstore.StaticPskStore;
+import org.eclipse.californium.scandium.dtls.pskstore.AdvancedSinglePskStore;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tradfri.internal.CoapCallback;
@@ -156,7 +156,8 @@ public class TradfriGatewayHandler extends BaseBridgeHandler implements CoapCall
         }
 
         DtlsConnectorConfig.Builder builder = new DtlsConnectorConfig.Builder();
-        builder.setPskStore(new StaticPskStore(configuration.identity, configuration.preSharedKey.getBytes()));
+        builder.setAdvancedPskStore(
+                new AdvancedSinglePskStore(configuration.identity, configuration.preSharedKey.getBytes()));
         builder.setMaxConnections(100);
         builder.setStaleConnectionThreshold(60);
         dtlsConnector = new DTLSConnector(builder.build());
@@ -186,7 +187,7 @@ public class TradfriGatewayHandler extends BaseBridgeHandler implements CoapCall
         String responseText = null;
         try {
             DtlsConnectorConfig.Builder builder = new DtlsConnectorConfig.Builder();
-            builder.setPskStore(new StaticPskStore("Client_identity", configuration.code.getBytes()));
+            builder.setAdvancedPskStore(new AdvancedSinglePskStore("Client_identity", configuration.code.getBytes()));
 
             DTLSConnector dtlsConnector = new DTLSConnector(builder.build());
             CoapEndpoint.Builder authEndpointBuilder = new CoapEndpoint.Builder();
