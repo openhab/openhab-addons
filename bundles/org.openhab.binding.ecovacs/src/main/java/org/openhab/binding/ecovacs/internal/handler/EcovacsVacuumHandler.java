@@ -748,6 +748,10 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
                 if (apiHandler != null) {
                     apiHandler.onLoginExpired();
                 }
+                // Drop our device instance to make sure we run a full init cycle,
+                // including an API re-login, on reconnection
+                device.disconnect(scheduler);
+                this.device = null;
             }
             teardownAndScheduleReconnection();
         }
