@@ -89,6 +89,11 @@ public class JdbcBaseDAOTest {
         assertInstanceOf(DateTimeType.class, dateTimeType);
         assertThat(dateTimeType, is(DateTimeType.valueOf("2021-02-01T23:30:02.049")));
 
+        dateTimeType = jdbcBaseDAO.objectAsState(new DateTimeItem("testDateTimeItem"), null,
+                LocalDateTime.parse("2021-02-01T23:30:02.049"));
+        assertInstanceOf(DateTimeType.class, dateTimeType);
+        assertThat(dateTimeType, is(DateTimeType.valueOf("2021-02-01T23:30:02.049")));
+
         State hsbType = jdbcBaseDAO.objectAsState(new ColorItem("testColorItem"), null, "184,100,52");
         assertInstanceOf(HSBType.class, hsbType);
         assertThat(hsbType, is(HSBType.valueOf("184,100,52")));
