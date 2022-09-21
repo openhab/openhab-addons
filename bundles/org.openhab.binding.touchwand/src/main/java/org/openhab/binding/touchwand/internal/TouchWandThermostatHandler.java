@@ -62,9 +62,8 @@ public class TouchWandThermostatHandler extends TouchWandBaseUnitHandler {
             }
             if (command instanceof QuantityType) {
                 QuantityType<?> value = (QuantityType<?>) command;
-                int targetTemperature = value.intValue();
-                touchWandBridgeHandler.touchWandClient.cmdThermostatTargetTemperature(unitId,
-                        String.valueOf(targetTemperature));
+                String targetTemperature = String.valueOf(value.intValue());
+                touchWandBridgeHandler.touchWandClient.cmdThermostatTargetTemperature(unitId, targetTemperature);
                 return;
             }
 
