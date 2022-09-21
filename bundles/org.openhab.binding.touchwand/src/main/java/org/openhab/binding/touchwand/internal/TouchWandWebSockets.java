@@ -72,7 +72,7 @@ public class TouchWandWebSockets {
         client = new WebSocketClient();
         touchWandSocket = new TouchWandSocket();
         this.controllerAddress = ipAddress;
-        this.port = port; 
+        this.port = port;
         this.scheduler = scheduler;
         socketReconnect = null;
     }
