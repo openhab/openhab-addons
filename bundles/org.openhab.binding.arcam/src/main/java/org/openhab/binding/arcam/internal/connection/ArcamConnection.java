@@ -69,9 +69,10 @@ public class ArcamConnection implements ArcamSocketListener {
 
     public void reboot() {
         byte[] data = device.getRebootCommand();
+        ArcamCommandCode commandCode = ArcamCommandCode.REBOOT;
 
         logger.debug("Sending reboot array: {}", ArcamUtil.bytesToHex(data));
-        socket.sendCommand(data);
+        sendCommand(data, commandCode);
     }
 
     public void requestState(String channel) {
@@ -86,71 +87,77 @@ public class ArcamConnection implements ArcamSocketListener {
             return;
         }
 
-        commandInTransit.set(commandCode);
-
-        if (data[2] == 0x64) {
-            nowPlayingInTransit = commandCode;
-        }
-
-        socket.sendCommand(data);
-
-        commandInTransit.waitFor();
+        sendCommand(data, commandCode);
     }
 
     public void setBalance(int balance, ArcamZone zone) {
         byte[] data = device.getBalanceCommand(balance, zone);
+        ArcamCommandCode commandCode = zone == ArcamZone.MASTER ? ArcamCommandCode.MASTER_BALANCE
+                : ArcamCommandCode.ZONE2_BALANCE;
 
         logger.debug("Sending balance byte: {}, array: {}, zone: {}", balance, ArcamUtil.bytesToHex(data), zone);
-        socket.sendCommand(data);
+        sendCommand(data, commandCode);
     }
 
     public void setDacFilter(String dacFilter) {
         byte[] data = device.getDacFilterCommand(dacFilter);
+        ArcamCommandCode commandCode = ArcamCommandCode.DAC_FILTER;
 
         logger.debug("Sending dacFilter byte: {}, array: {}", data[4], ArcamUtil.bytesToHex(data));
-        socket.sendCommand(data);
+        sendCommand(data, commandCode);
     }
 
     public void setDisplayBrightness(String displayBrightness) {
         byte[] data = device.getDisplayBrightnessCommand(displayBrightness);
+        ArcamCommandCode commandCode = ArcamCommandCode.DISPLAY_BRIGHTNESS;
 
         logger.debug("Sending display brightness byte: {}, array: {}", data[4], ArcamUtil.bytesToHex(data));
-        socket.sendCommand(data);
+        sendCommand(data, commandCode);
     }
 
     public void setInput(String inputStr, ArcamZone zone) {
         byte[] data = device.getInputCommand(inputStr, zone);
+        ArcamCommandCode commandCode = zone == ArcamZone.MASTER ? ArcamCommandCode.MASTER_INPUT
+                : ArcamCommandCode.ZONE2_INPUT;
 
         logger.debug("Sending input byte: {}, array: {}", data[4], ArcamUtil.bytesToHex(data));
-        socket.sendCommand(data);
+        sendCommand(data, commandCode);
     }
 
     public void setMute(boolean on, ArcamZone zone) {
         byte[] data = device.getMuteCommand(on, zone);
+        ArcamCommandCode commandCode = zone == ArcamZone.MASTER ? ArcamCommandCode.MASTER_MUTE
+                : ArcamCommandCode.ZONE2_MUTE;
 
         logger.debug("Sending mute byte: {}, array: {}, zone: {}", on, ArcamUtil.bytesToHex(data), zone);
-        socket.sendCommand(data);
+        sendCommand(data, commandCode);
     }
 
     public void setPower(boolean on, ArcamZone zone) {
         byte[] data = device.getPowerCommand(on, zone);
+        ArcamCommandCode commandCode = zone == ArcamZone.MASTER ? ArcamCommandCode.MASTER_POWER
+                : ArcamCommandCode.ZONE2_POWER;
 
         logger.debug("Sending power byte: {}, array: {}, zone: {}", on, ArcamUtil.bytesToHex(data), zone);
-        socket.sendCommand(data);
+        sendCommand(data, commandCode);
     }
 
     public void setRoomEqualisation(String eqStr, ArcamZone zone) {
         byte[] data = device.getRoomEqualisationCommand(eqStr, zone);
+        ArcamCommandCode commandCode = zone == ArcamZone.MASTER ? ArcamCommandCode.MASTER_ROOM_EQUALISATION
+                : ArcamCommandCode.ZONE2_ROOM_EQUALISATION;
 
         logger.debug("Sending eq byte: {}, array: {}", data[4], ArcamUtil.bytesToHex(data));
-        socket.sendCommand(data);
+        sendCommand(data, commandCode);
     }
 
     public void setVolume(int volume, ArcamZone zone) {
         byte[] data = device.getVolumeCommand(volume, zone);
+        ArcamCommandCode commandCode = zone == ArcamZone.MASTER ? ArcamCommandCode.MASTER_VOLUME
+                : ArcamCommandCode.ZONE2_VOLUME;
 
         logger.debug("Sending volume byte: {}, array: {}, zone: {}", volume, ArcamUtil.bytesToHex(data), zone);
-        socket.sendCommand(data);
+        sendCommand(data, commandCode);
     }
 
     @Override
@@ -379,6 +386,18 @@ public class ArcamConnection implements ArcamSocketListener {
         finishInTransit(channelId);
         OnOffType newValue = value ? OnOffType.ON : OnOffType.OFF;
         state.setState(channelId, newValue);
+    }
+
+    private void sendCommand(byte[] data, ArcamCommandCode commandCode) {
+        commandInTransit.set(commandCode);
+
+        if (data[2] == 0x64) {
+            nowPlayingInTransit = commandCode;
+        }
+
+        socket.sendCommand(data);
+
+        commandInTransit.waitFor();
     }
 
     @Override
