@@ -242,11 +242,6 @@ public class PWMTriggerHandler extends BaseTriggerModuleHandler implements Event
             localEventSubscriberRegistration.unregister();
         }
 
-        StateMachine localStateMachine = stateMachine;
-        if (localStateMachine != null) {
-            localStateMachine.stop();
-        }
-
         super.dispose();
     }
 }
