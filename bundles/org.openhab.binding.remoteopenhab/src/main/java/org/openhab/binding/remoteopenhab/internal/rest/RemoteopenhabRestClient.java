@@ -400,17 +400,15 @@ public class RemoteopenhabRestClient {
             connected = true;
             listeners.forEach(listener -> listener.onConnected());
         }
+        if (!"message".equals(name)) {
+            if (!"alive".equals(name)) {
+                logger.debug("Received unhandled event with name '{}' and data '{}'", name, data);
+            }
+            return;
+        }
 
         try {
             RemoteopenhabEvent event = jsonParser.fromJson(data, RemoteopenhabEvent.class);
-            if ("ALIVE".equals(event.type)) {
-                // ignore ALIVE message
-                return;
-            }
-            if (!"message".equals(name)) {
-                logger.debug("Received unhandled event with name '{}' and data '{}'", name, data);
-                return;
-            }
             String itemName;
             String thingUID;
             RemoteopenhabEventPayload payload;
