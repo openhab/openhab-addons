@@ -401,9 +401,7 @@ public class RemoteopenhabRestClient {
             listeners.forEach(listener -> listener.onConnected());
         }
         if (!"message".equals(name)) {
-            if (!"alive".equals(name)) {
-                logger.debug("Received unhandled event with name '{}' and data '{}'", name, data);
-            }
+            // Ignore silently all events which are not "message" events. This includes the "alive" events.
             return;
         }
 
