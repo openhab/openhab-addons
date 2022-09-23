@@ -4,16 +4,10 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Sample Thing Type -->
-	<thing-type id="TD-W9970">
-		<!-- Comment this in for Things which need a Bridge to function.
-			<supported-bridge-type-refs>
-			<bridge-type-ref id="tplinkrouterBridge" />
-			</supported-bridge-type-refs>
-		-->
+	<thing-type id="router">
 
-		<label>TpLinkRouter Binding Thing</label>
-		<description>Sample thing for TpLinkRouter Binding</description>
+		<label>Router</label>
+		<description>Router device monitored and controlled by telnet connection</description>
 
 		<channel-groups>
 			<channel-group id="wifi" typeId="wifiGroupType"/>

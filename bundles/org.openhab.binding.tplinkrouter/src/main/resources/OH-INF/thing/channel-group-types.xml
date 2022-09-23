@@ -37,7 +37,7 @@
 
 	<channel-type id="switch-type">
 		<item-type>Switch</item-type>
-		<label>TpLink Switch Type</label><!-- Use uppercase words, except prepositions. 2-3 words, max 25 chars -->
+		<label>TpLink Switch Type</label>
 		<description>Switch Type for TpLinkrRouter Binding</description>
 	</channel-type>
 	<channel-type id="string-type">
