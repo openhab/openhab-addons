@@ -33,6 +33,6 @@ public class EchonetLiteBindingConstants {
     public static final ThingTypeUID THING_TYPE_ECHONET_DEVICE = new ThingTypeUID(BINDING_ID, "device");
     public static final ThingTypeUID THING_TYPE_ECHONET_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
 
-    public static final StateCodec.OnOffCodec ON_OFF_CODEC_0x30_0x31 = new StateCodec.OnOffCodec(0x30, 0x31);
-    public static final StateCodec.OnOffCodec ON_OFF_CODEC_0x41_0x42 = new StateCodec.OnOffCodec(0x41, 0x42);
+    public static final StateCodec.OnOffCodec ON_OFF_CODEC_30_31 = new StateCodec.OnOffCodec(0x30, 0x31);
+    public static final StateCodec.OnOffCodec ON_OFF_CODEC_41_42 = new StateCodec.OnOffCodec(0x41, 0x42);
 }

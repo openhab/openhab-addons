@@ -111,7 +111,6 @@ public abstract class EchonetObject {
     }
 
     public void applyHeader(Esv esv, short tid) {
-
         if ((esv == Esv.Get_Res || esv == Esv.Get_SNA)) {
             final long sentTimestampMs = this.inflightGetRequest.timestampMs;
             if (this.inflightGetRequest.responseReceived(tid)) {

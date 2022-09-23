@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.echonetlite.internal;
 
-import static org.openhab.binding.echonetlite.internal.EchonetLiteBindingConstants.ON_OFF_CODEC_0x30_0x31;
-import static org.openhab.binding.echonetlite.internal.EchonetLiteBindingConstants.ON_OFF_CODEC_0x41_0x42;
+import static org.openhab.binding.echonetlite.internal.EchonetLiteBindingConstants.ON_OFF_CODEC_30_31;
+import static org.openhab.binding.echonetlite.internal.EchonetLiteBindingConstants.ON_OFF_CODEC_41_42;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -57,7 +57,7 @@ public interface Epc {
     // Table 2-1
     enum Device implements Epc {
         // @formatter:off
-        OPERATION_STATUS(0x80, ON_OFF_CODEC_0x30_0x31),
+        OPERATION_STATUS(0x80, ON_OFF_CODEC_30_31),
 
         INSTALLATION_LOCATION(0x81, new OptionCodec(
                 new Option("Not specified", 0b00000_000),
@@ -194,14 +194,14 @@ public interface Epc {
         MEASURED_CUMULATIVE_POWER_CONSUMPTION(0x85),
         MANUFACTURER_FAULT_CODE(0x86, StateCodec.HexStringCodec.INSTANCE, null),
         CURRENT_LIMIT_SETTING(0x87),
-        FAULT_STATUS(0x88, ON_OFF_CODEC_0x41_0x42, null),
+        FAULT_STATUS(0x88, ON_OFF_CODEC_41_42, null),
         FAULT_DESCRIPTION(0x89, StateCodec.HexStringCodec.INSTANCE, null),
         MANUFACTURER_CODE(0x8A, StateCodec.HexStringCodec.INSTANCE, null),
         BUSINESS_FACILITY_CODE(0x8B, StateCodec.HexStringCodec.INSTANCE, null),
         PRODUCT_CODE(0x8C),
         PRODUCTION_NUMBER(0x8D),
         PRODUCTION_DATE(0x8E),
-        POWER_SAVING_OPERATION_SETTING(0x8F, ON_OFF_CODEC_0x41_0x42),
+        POWER_SAVING_OPERATION_SETTING(0x8F, ON_OFF_CODEC_41_42),
         REMOTE_CONTROL_SETTING(0x93),
         CURRENT_TIME_SETTING(0x97),
         CURRENT_DATE_SETTING(0x98),

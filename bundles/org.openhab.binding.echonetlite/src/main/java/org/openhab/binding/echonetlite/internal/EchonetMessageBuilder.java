@@ -93,7 +93,6 @@ public class EchonetMessageBuilder {
     }
 
     public void appendEpcUpdate(final int epc, ByteBuffer edtBuffer) {
-
         if (edtBuffer.remaining() < 0 || 255 < edtBuffer.remaining()) {
             throw new IllegalArgumentException("Invalid update value, length: " + edtBuffer.remaining());
         }

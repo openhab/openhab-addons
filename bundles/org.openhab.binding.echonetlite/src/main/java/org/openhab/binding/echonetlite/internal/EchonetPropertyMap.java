@@ -80,7 +80,6 @@ public class EchonetPropertyMap {
                     }
                 }
             }
-
         }
 
         assert propertyIndex == properties.length;

@@ -33,7 +33,6 @@ enum EpcLookupTable {
     }
 
     public Epc resolve(int groupCode, int classCode, int epcCode) {
-
         if (MAX_ENTRIES <= groupCode) {
             throw new IllegalArgumentException(MAX_ENTRIES + "<= groupCode (" + groupCode + ")");
         }

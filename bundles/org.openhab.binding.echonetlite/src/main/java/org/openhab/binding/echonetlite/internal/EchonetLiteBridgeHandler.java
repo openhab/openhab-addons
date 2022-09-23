@@ -71,7 +71,6 @@ public class EchonetLiteBridgeHandler extends BaseBridgeHandler {
     }
 
     public void start() throws IOException {
-
         if (null == discoveryKey) {
             logger.error("Discovery key is null, unable to start");
             return;
@@ -173,7 +172,6 @@ public class EchonetLiteBridgeHandler extends BaseBridgeHandler {
     }
 
     private void pollDevices(long nowMs, EchonetChannel echonetChannel) {
-
         for (EchonetObject echonetObject : devicesByKey.values()) {
             if (echonetObject.buildUpdateMessage(messageBuilder, echonetChannel::nextTid, nowMs,
                     requireNonNull(managementControllerKey))) {
@@ -262,7 +260,6 @@ public class EchonetLiteBridgeHandler extends BaseBridgeHandler {
     }
 
     private void poll() {
-
         updateStatus(ThingStatus.ONLINE);
         try {
             while (!Thread.currentThread().isInterrupted()) {

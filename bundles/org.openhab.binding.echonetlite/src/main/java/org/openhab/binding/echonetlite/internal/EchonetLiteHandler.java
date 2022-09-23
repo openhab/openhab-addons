@@ -76,7 +76,6 @@ public class EchonetLiteHandler extends BaseThingHandler implements EchonetDevic
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         @Nullable
         final EchonetLiteBridgeHandler handler = bridgeHandler();
         if (null == handler) {
@@ -140,7 +139,6 @@ public class EchonetLiteHandler extends BaseThingHandler implements EchonetDevic
     }
 
     public void onInitialised(String identifier, InstanceKey instanceKey, Map<String, String> channelIdAndType) {
-
         logger.debug("Initialised Channels: {}", channelIdAndType);
 
         final List<String> toAddChannelFor = new ArrayList<>();
@@ -172,7 +170,6 @@ public class EchonetLiteHandler extends BaseThingHandler implements EchonetDevic
     }
 
     public void onUpdated(final String channelId, final State value) {
-
         stateByChannelId.put(channelId, value);
 
         if (ThingStatus.ONLINE != getThing().getStatus()) {

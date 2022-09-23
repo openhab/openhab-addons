@@ -14,10 +14,6 @@ Multicast traffic doesn't easily route over multiple networks and will often be 
 Discovery is handled via the Echonet Lite bridge, which contains the configuration of the multicast address used for discovery and asynchronous device notifications along with the port.
 It is unlikely that this configuration will require changing.
 
-## Binding Configuration
-
-No specific binding configuration required.
-
 ## Bridge Configuration
 
 The bridge configuration defaults should be applicable in most scenarios.
@@ -38,8 +34,9 @@ The value for Home Air Conditioners is '48' (0x30).
 Typically, this value will be '1'.
 * __pollIntervalMs__: Interval between polls of the device for its current status.
 If multicast is not working this will determine the latency at which changes made directly on the device will be propagated back to openhab.  The default is 30 000ms.
-* __retryTimeoutMs__: Length of time the bridge will wait before resubmitting a request.
-Because the binding uses UDP, packets can be lost on the network, so retries are necessary.
+* __retryTimeoutMs__: Length of time the bridge will wait before resubmitting a request[^1].
+
+[^1] Because the binding uses UDP, packets can be lost on the network, so retries are necessary.
 Testing has shown that 2000ms is a reasonable default that allows for timely retries without rejecting slow, but legitimate responses.
 
 ## Channels

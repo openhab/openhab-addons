@@ -13,7 +13,11 @@
 package org.openhab.binding.echonetlite.internal;
 
 import java.io.IOException;
-import java.net.*;
+import java.net.Inet4Address;
+import java.net.InetSocketAddress;
+import java.net.NetworkInterface;
+import java.net.SocketAddress;
+import java.net.StandardProtocolFamily;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;

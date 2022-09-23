@@ -14,9 +14,12 @@ package org.openhab.binding.echonetlite.internal;
 
 import java.nio.ByteBuffer;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * @author Michael Barker - Initial contribution
  */
+@NonNullByDefault
 public class HexUtil {
     public static String hex(ByteBuffer buffer) {
         return hex(buffer, "[", "]", "0x", ",");
