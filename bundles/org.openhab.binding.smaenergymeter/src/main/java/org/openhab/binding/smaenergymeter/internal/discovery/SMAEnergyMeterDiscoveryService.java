@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.smaenergymeter.internal.handler.EnergyMeter;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -39,6 +40,7 @@ import org.slf4j.LoggerFactory;
  * @author Osman Basha - Initial contribution
  */
 @Component(service = DiscoveryService.class, configurationPid = "discovery.smaenergymeter")
+@NonNullByDefault
 public class SMAEnergyMeterDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(SMAEnergyMeterDiscoveryService.class);

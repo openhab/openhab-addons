@@ -12,16 +12,14 @@
  */
 package org.openhab.binding.smaenergymeter.internal.handler;
 
-import static org.openhab.binding.smaenergymeter.internal.handler.MeasuredUnit.*;
-
 import java.util.Objects;
 
 /**
- * The {@link EnergyMeterValue} class holds information for the
+ * The {@link EnergyMeterChannel} class holds information for the
  *
  * @author Lars Repenning - Initial contribution
  */
-public class EnergyMeterValue {
+public class EnergyMeterChannel {
     private int channel;
     private MeasuredUnit currentUnitOfMeasurement;
     private MeasuredUnit totalUnitOfMeasurement;
@@ -29,7 +27,7 @@ public class EnergyMeterValue {
 
     private String name;
 
-    public EnergyMeterValue(int channel, String name, MeasuredUnit currentUnitOfMeasurement,
+    public EnergyMeterChannel(int channel, String name, MeasuredUnit currentUnitOfMeasurement,
             MeasuredUnit totalUnitOfMeasurement, int phase) {
         this.channel = channel;
         this.currentUnitOfMeasurement = currentUnitOfMeasurement;
@@ -64,7 +62,7 @@ public class EnergyMeterValue {
             return true;
         if (o == null || getClass() != o.getClass())
             return false;
-        EnergyMeterValue that = (EnergyMeterValue) o;
+        EnergyMeterChannel that = (EnergyMeterChannel) o;
         return channel == that.channel;
     }
 

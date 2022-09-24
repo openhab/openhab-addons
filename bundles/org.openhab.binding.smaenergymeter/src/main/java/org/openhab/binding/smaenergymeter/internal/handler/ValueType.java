@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.smaenergymeter.internal.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link ValueType} enum holds information of what type of measurement a channel is
  *
  * @author Lars Repenning - Initial contribution
  */
+@NonNullByDefault
 public enum ValueType {
     CURRENT(4),
     TOTAL(8),

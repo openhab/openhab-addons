@@ -47,9 +47,9 @@ public class EnergyMeter {
         return ByteBuffer.wrap(Arrays.copyOfRange(bytes, from, to)).getInt();
     }
 
-    public List<Channel> update() throws IOException {
+    public List<EnergyMeterData> update() throws IOException {
         byte[] bytes = new byte[608];
-        List<Channel> result = new ArrayList<>();
+        List<EnergyMeterData> result = new ArrayList<>();
         try (MulticastSocket socket = new MulticastSocket(port)) {
             socket.setSoTimeout(5000);
             InetAddress address = InetAddress.getByName(multicastGroup);
@@ -69,22 +69,23 @@ public class EnergyMeter {
                 ByteBuffer buffer = ByteBuffer.wrap(Arrays.copyOfRange(bytes, 20, 24));
                 serialNumber = String.valueOf(buffer.getInt() & 0xFFFFFFFFL);
 
-                // int timestamp = getIntegerFromByteArray(bytes, 24, 28);
                 logger.debug("Telegram received with date: ");
                 int dataPosition = 28;
                 while (dataPosition < dataLength) {
-                    byte[] valueHeader = Arrays.copyOfRange(bytes, dataPosition, dataPosition + 4);
-                    Channel dataInformation = decodeHeaderData(valueHeader);
-                    if (dataInformation.datatype == ValueType.UNKNOWN) {
+                    int headerStartPosition = dataPosition;
+                    int headerEndPosition = headerStartPosition + SMAEnergyMeterBindingConstants.DATA_HEADER_SIZE;
+
+                    byte[] valueHeader = Arrays.copyOfRange(bytes, headerStartPosition, headerEndPosition);
+                    EnergyMeterData energyMeterData = decodeData(valueHeader);
+                    if (energyMeterData.datatype == ValueType.UNKNOWN) {
                         logger.debug("No valid header at {} will stop reading data", dataPosition);
                         break;
                     }
-                    dataPosition += 4; // skip header size
-                    dataInformation.rawValue = getIntegerFromByteArray(bytes, dataPosition,
-                            dataPosition + dataInformation.datatype.getDataSize());
-                    dataPosition += dataInformation.datatype.getDataSize();
-                    logger.debug("Data read {}", dataInformation);
-                    result.add(dataInformation);
+                    int dataEndPosition = headerEndPosition + energyMeterData.datatype.getDataSize();
+                    energyMeterData.rawValue = getIntegerFromByteArray(bytes, headerEndPosition, dataEndPosition);
+                    dataPosition = dataEndPosition;
+                    logger.debug("Data read {}", energyMeterData);
+                    result.add(energyMeterData);
                 }
             }
             lastUpdate = new Date(System.currentTimeMillis());
@@ -94,27 +95,27 @@ public class EnergyMeter {
         return result;
     }
 
-    private Channel decodeHeaderData(byte[] valueHeader) {
-        Channel channel = new Channel();
+    private EnergyMeterData decodeData(byte[] valueHeader) {
+        EnergyMeterData energyMeterData = new EnergyMeterData();
         int rawType = ByteBuffer.wrap(Arrays.copyOfRange(valueHeader, 2, 3)).get();
         short channelNumberShort = ByteBuffer.wrap(Arrays.copyOfRange(valueHeader, 0, 2)).getShort();
         int channelNumber = Short.toUnsignedInt(channelNumberShort);
-        EnergyMeterValue measuredUnit = SMAEnergyMeterBindingConstants.getEnergyMeterValueForChannel(channelNumber);
+        EnergyMeterChannel measuredUnit = SMAEnergyMeterBindingConstants.getEnergyMeterValueForChannel(channelNumber);
         if (measuredUnit == null) {
             logger.debug("Not able to identify an energy meter value for {}", channelNumber);
         } else if (rawType == 0 && measuredUnit.getChannel() == 36864) {
-            channel.datatype = ValueType.VERSION;
+            energyMeterData.datatype = ValueType.VERSION;
         } else if (rawType == 4) {
-            channel.datatype = ValueType.CURRENT;
+            energyMeterData.datatype = ValueType.CURRENT;
         } else if (rawType == 8) {
-            channel.datatype = ValueType.TOTAL;
+            energyMeterData.datatype = ValueType.TOTAL;
         } else {
-            channel.datatype = ValueType.UNKNOWN;
-            logger.debug("unknown datatype: measurement {} datatype {} raw_type {}", channel.channelNo,
-                    channel.datatype, rawType);
+            energyMeterData.datatype = ValueType.UNKNOWN;
+            logger.debug("unknown datatype: measurement {} datatype {} raw_type {}", energyMeterData.channelNo,
+                    energyMeterData.datatype, rawType);
         }
-        channel.energyMeterValue = measuredUnit;
-        return channel;
+        energyMeterData.energyMeterChannel = measuredUnit;
+        return energyMeterData;
     }
 
     public String getSerialNumber() {
