@@ -113,8 +113,7 @@ public class SMAEnergyMeterHandler extends BaseThingHandler {
                 updateThing(thingBuilder.build());
 
             for (EnergyMeterData energyMeterDataInformation : energyMeterDataEntries) {
-                String channelName = energyMeterDataInformation.getEnergyMeterValue() + "_"
-                        + energyMeterDataInformation.getDatatype();
+                String channelName = energyMeterDataInformation.getOhChannelName();
                 updateState(channelName,
                         new org.openhab.core.library.types.DecimalType(energyMeterDataInformation.getValue()));
             }
@@ -129,9 +128,7 @@ public class SMAEnergyMeterHandler extends BaseThingHandler {
                 .create(new ChannelUID(thing.getUID(), energyMeterDataInformation.getOhChannelName()), "Number")
                 .withAcceptedItemType("Number").withLabel(energyMeterDataInformation.getOhChannelName())
                 .withType(new ChannelTypeUID("smaenergymeter", energyMeterDataInformation.getUnit().toString()))
-                .withDescription(energyMeterDataInformation.getEnergyMeterValue() + " "
-                        + energyMeterDataInformation.getDatatype())
-                .build();
+                .withDescription(energyMeterDataInformation.getOhChannelName()).build();
         return channel;
     }
 }
