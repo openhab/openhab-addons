@@ -260,18 +260,23 @@ public class EchonetLiteBridgeHandler extends BaseBridgeHandler {
     }
 
     private void poll() {
-        updateStatus(ThingStatus.ONLINE);
         try {
+            doPoll();
+            updateStatus(ThingStatus.ONLINE);
+
             while (!Thread.currentThread().isInterrupted()) {
-                final long nowMs = clock.millis();
-                pollRequests(nowMs);
-                pollDevices(nowMs, requireNonNull(echonetChannel));
-                pollNetwork(nowMs, requireNonNull(echonetChannel));
+                doPoll();
             }
         } catch (Exception e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
-            logger.error("Poll failed", e);
         }
+    }
+
+    private void doPoll() {
+        final long nowMs = clock.millis();
+        pollRequests(nowMs);
+        pollDevices(nowMs, requireNonNull(echonetChannel));
+        pollNetwork(nowMs, requireNonNull(echonetChannel));
     }
 
     @Override
