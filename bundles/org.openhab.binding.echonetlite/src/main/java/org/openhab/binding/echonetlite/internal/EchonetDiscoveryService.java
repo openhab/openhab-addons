@@ -55,14 +55,13 @@ public class EchonetDiscoveryService extends AbstractDiscoveryService
         logger.debug("startScan: {}", bridgeHandler);
         if (null != bridgeHandler) {
             bridgeHandler.startDiscovery(this);
-        } else {
-            logger.warn("bridgeHandler not initialized");
         }
     }
 
     @Override
     protected synchronized void stopScan() {
         final EchonetLiteBridgeHandler bridgeHandler = this.bridgeHandler;
+        logger.debug("stopScan: {}", bridgeHandler);
         if (null != bridgeHandler) {
             bridgeHandler.stopDiscovery();
         }
