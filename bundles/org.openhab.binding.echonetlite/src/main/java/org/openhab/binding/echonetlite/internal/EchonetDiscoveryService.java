@@ -84,8 +84,8 @@ public class EchonetDiscoveryService extends AbstractDiscoveryService
                 .withProperty(PROPERTY_NAME_GROUP_CODE, instanceKey.klass.groupCode())
                 .withProperty(PROPERTY_NAME_CLASS_CODE, instanceKey.klass.classCode())
                 .withProperty(PROPERTY_NAME_INSTANCE, instanceKey.instance)
-                .withBridge(bridgeHandler.getThing().getUID())
-                .withRepresentationProperty(PROPERTY_NAME_INSTANCE_KEY).build();
+                .withBridge(bridgeHandler.getThing().getUID()).withRepresentationProperty(PROPERTY_NAME_INSTANCE_KEY)
+                .build();
         thingDiscovered(discoveryResult);
     }
 
