@@ -22,24 +22,24 @@ Optionally, a refresh interval (in seconds) can be defined.
 
 ## Channels
 
-| Channel     | Description            |
-|-------------|------------------------|
-| powerIn     | Purchased power        |
-| powerInL1   | Purchased power L3     |
-| powerInL2   | Purchased power L2     |
-| powerInL3   | Purchased power L3     |
-| powerOut    | Grid feed-in power     |
-| powerOutL1  | Grid feed-in power L1  |
-| powerOutL2  | Grid feed-in power L2  |
-| powerOutL3  | Grid feed-in power L3  |
-| energyIn    | Purchased energy       |
-| energyInL1  | Purchased energy L1    |
-| energyInL2  | Purchased energy L2    |
-| energyInL3  | Purchased energy L3    |
-| energyOut   | Grid feed-in energy    |
-| energyOutL1 | Grid feed-in energy L1 |
-| energyOutL2 | Grid feed-in energy L2 |
-| energyOutL3 | Grid feed-in energy L3 |
+The channel names is a combination of three attributes
+
+- L1-L3 if there is a phase relevant for the value
+- total or current value
+- the name of the measured value (current, voltage, consumption, ...)
+
+this leads to channel names in the following format: L1_TOTAL_CONSUME
+
+Here are some examples:
+
+| Channel Name       | Channel name old | Description         |
+|--------------------|------------------|---------------------|
+| CURRENT_CONSUME    | powerIn          | Purchased power     |
+| CURRENT_SUPPLY     | powerOut         | Grid feed-in power  |
+| TOTAL_CONSUME      | energyIn         | Purchased energy    |
+| L1_CURRENT_CONSUME | powerInL1        | Purchased power L3  |
+| L2_CURRENT_CONSUME | powerInL2        | Purchased power L2  |
+| L3_CURRENT_CONSUME | powerInL3        | Purchased power L3  |
 
 ## Full example
 
