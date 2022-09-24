@@ -110,7 +110,8 @@ public class EchonetLiteHandler extends BaseThingHandler implements EchonetDevic
         @Nullable
         final EchonetLiteBridgeHandler bridgeHandler = bridgeHandler();
         if (null == bridgeHandler) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Bridge is null");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.conf-error.null-bridge-handler");
             return;
         }
 
