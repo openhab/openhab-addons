@@ -13,11 +13,11 @@
 package org.openhab.binding.smaenergymeter.internal.handler;
 
 /**
- * The {@link Unit} enum defines what scaling is used for data transmission
+ * The {@link MeasuredUnit} enum defines what scaling is used for data transmission
  *
  * @author Lars Repenning - Initial contribution
  */
-public enum Unit {
+public enum MeasuredUnit {
     NONE(1),
     W(10),
     VA(10),
@@ -30,13 +30,13 @@ public enum Unit {
     DEG(1000),
     Hz(1000);
 
-    private final int scaling;
+    private final int factor;
 
-    Unit(int scaling) {
-        this.scaling = scaling;
+    private MeasuredUnit(int factor) {
+        this.factor = factor;
     }
 
-    public int getScaling() {
-        return scaling;
+    public int getFactor() {
+        return factor;
     }
 }

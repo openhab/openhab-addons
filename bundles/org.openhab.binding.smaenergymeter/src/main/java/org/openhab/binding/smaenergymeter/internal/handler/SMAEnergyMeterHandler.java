@@ -14,10 +14,8 @@ package org.openhab.binding.smaenergymeter.internal.handler;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import org.openhab.binding.smaenergymeter.internal.configuration.EnergyMeterConfig;
 import org.openhab.core.thing.*;
@@ -69,10 +67,10 @@ public class SMAEnergyMeterHandler extends BaseThingHandler {
             updateProperty(Thing.PROPERTY_SERIAL_NUMBER, energyMeter.getSerialNumber());
             logger.debug("Found a SMA Energy Meter with S/N '{}'", energyMeter.getSerialNumber());
 
-//            int pollingPeriod = (config.getPollingPeriod() == null) ? 30 : config.getPollingPeriod();
-//            pollingJob = scheduler.scheduleWithFixedDelay(this::updateData, 0, pollingPeriod, TimeUnit.SECONDS);
-//            logger.debug("Polling job scheduled to run every {} sec. for '{}'", pollingPeriod, getThing().getUID());
-//
+            int pollingPeriod = (config.getPollingPeriod() == null) ? 30 : config.getPollingPeriod();
+            pollingJob = scheduler.scheduleWithFixedDelay(this::updateData, 0, pollingPeriod, TimeUnit.SECONDS);
+            logger.debug("Polling job scheduled to run every {} sec. for '{}'", pollingPeriod, getThing().getUID());
+
             updateStatus(ThingStatus.ONLINE);
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.getMessage());
@@ -94,36 +92,28 @@ public class SMAEnergyMeterHandler extends BaseThingHandler {
         logger.debug("Update SMAEnergyMeter data '{}'", getThing().getUID());
 
         try {
-            List<SmaChannel> channels = energyMeter.update();
+            List<Channel> channels = energyMeter.update();
 
             if (getThing().getStatus().equals(ThingStatus.OFFLINE)) {
                 updateStatus(ThingStatus.ONLINE);
             }
 
             ThingBuilder thingBuilder = editThing();
-            boolean updated = false;
-            Set<String> notUpdatedChannels = thing.getChannels().stream().map(c -> c.getUID().getId())
-                    .collect(Collectors.toSet());
-            for (SmaChannel smaChannel : channels) {
-                if (getThing().getChannel(smaChannel.getMeasuredUnit() + "_" + smaChannel.getDatatype()) == null) {
-                    Channel channel = createChannel(smaChannel);
+            boolean updatedThing = false;
+
+            for (Channel smaChannel : channels) {
+                if (getThing().getChannel(smaChannel.getOhChannelName()) == null) {
+                    org.openhab.core.thing.Channel channel = createChannel(smaChannel);
                     thingBuilder.withChannel(channel);
-                    updated = true;
+                    updatedThing = true;
                 }
-                notUpdatedChannels.remove(smaChannel.getMeasuredUnit() + "_" + smaChannel.getDatatype());
             }
 
-            for (SmaChannel smaChannel : channelsToDelete) {
-                Channel channel = thing.getChannel(smaChannel.getMeasuredUnit() + "_" + smaChannel.getDatatype());
-                thingBuilder.withoutChannel(channel.getUID());
-                logger.debug("Channel removed {}", channel);
-                updated = true;
-            }
-            if (updated)
+            if (updatedThing)
                 updateThing(thingBuilder.build());
 
-            for (SmaChannel channelInformation : channels) {
-                String channelName = channelInformation.getMeasuredUnit() + "_" + channelInformation.getDatatype();
+            for (Channel channelInformation : channels) {
+                String channelName = channelInformation.getEnergyMeterValue() + "_" + channelInformation.getDatatype();
                 updateState(channelName, new org.openhab.core.library.types.DecimalType(channelInformation.getValue()));
             }
 
@@ -132,14 +122,13 @@ public class SMAEnergyMeterHandler extends BaseThingHandler {
         }
     }
 
-    private Channel createChannel(SmaChannel channelInformation) {
-        Channel channel = ChannelBuilder
-                .create(new ChannelUID(thing.getUID(),
-                        channelInformation.getMeasuredUnit() + "_" + channelInformation.getDatatype()), "Number")
-                .withAcceptedItemType("Number").withLabel(channelInformation.getMeasuredUnit().toString())
+    private org.openhab.core.thing.Channel createChannel(Channel channelInformation) {
+        org.openhab.core.thing.Channel channel = ChannelBuilder
+                .create(new ChannelUID(thing.getUID(), channelInformation.getOhChannelName()), "Number")
+                .withAcceptedItemType("Number").withLabel(channelInformation.getOhChannelName())
                 .withType(new ChannelTypeUID("smaenergymeter", channelInformation.getUnit().toString()))
-                .withDescription(channelInformation.getMeasuredUnit() + " " + channelInformation.getDatatype()).build();
-        logger.debug("New channel created {}", channel);
+                .withDescription(channelInformation.getEnergyMeterValue() + " " + channelInformation.getDatatype())
+                .build();
         return channel;
     }
 }

@@ -13,11 +13,11 @@
 package org.openhab.binding.smaenergymeter.internal.handler;
 
 /**
- * The {@link Type} enum holds information of what type of measurement a channel is
+ * The {@link ValueType} enum holds information of what type of measurement a channel is
  *
  * @author Lars Repenning - Initial contribution
  */
-public enum Type {
+public enum ValueType {
     CURRENT(4),
     TOTAL(8),
     VERSION(4),
@@ -25,7 +25,7 @@ public enum Type {
 
     private int dataSize;
 
-    Type(int dataSize) {
+    ValueType(int dataSize) {
         this.dataSize = dataSize;
     }
 

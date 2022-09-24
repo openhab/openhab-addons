@@ -12,79 +12,64 @@
  */
 package org.openhab.binding.smaenergymeter.internal.handler;
 
-import static org.openhab.binding.smaenergymeter.internal.handler.Unit.*;
+import static org.openhab.binding.smaenergymeter.internal.handler.MeasuredUnit.*;
 
-import java.util.Arrays;
+import java.util.Objects;
 
 /**
- * The {@link EnergyMeterValue} enum which defines the different possible measurement values of SMA EnergyMeter
+ * The {@link EnergyMeterValue} class holds information for the
  *
  * @author Lars Repenning - Initial contribution
  */
-public enum EnergyMeterValue {
-    CONSUME(1, W, kWh),
-    SUPPLY(2, W, kWh),
-    QCONSUM(3, VAr, kVArh),
-    QSUPPLY(4, VAr, kVArh),
-    SCONSUME(9, VA, kVAh),
-    SSUPPLY(10, VA, kVAh),
-    COSPHI(13, DEG, DEG),
-    FREQUENCE(14, Hz, Hz),
-
-    L1_CONSUME(21, W, kWh),
-    L1_SUPPLY(22, W, kWh),
-    L1_QCONSUM(23, VAr, kVArh),
-    L1_QSUPPLY(24, VAr, kVArh),
-    L1_SCONSUME(29, VA, kVAh),
-    L1_SSUPPLY(30, VA, kVAh),
-    L1_CURRENT(31, A, A),
-    L1_VOLTAGE(32, V, V),
-    L1_COSPHI(33, DEG, DEG),
-    L1_FREQUENCE(34, Hz, Hz),
-
-    L2_CONSUME(41, W, kWh),
-    L2_SUPPLY(42, W, kWh),
-    L2_QCONSUM(43, VAr, kVArh),
-    L2_QSUPPLY(44, VAr, kVArh),
-    L2_SCONSUME(49, VA, kVAh),
-    L2_SSUPPLY(50, VA, kVAh),
-    L2_CURRENT(51, A, A),
-    L2_VOLTAGE(52, V, V),
-    L2_COSPHI(53, DEG, DEG),
-    L2_FREQUENCE(54, Hz, Hz),
-
-    L3_CONSUME(61, W, kWh),
-    L3_SUPPLY(62, W, kWh),
-    L3_QCONSUM(63, VAr, kVArh),
-    L3_QSUPPLY(64, VAr, kVArh),
-    L3_SCONSUME(69, VA, kVAh),
-    L3_SSUPPLY(70, VA, kVAh),
-    L3_CURRENT(71, A, A),
-    L3_VOLTAGE(72, V, V),
-    L3_COSPHI(73, DEG, DEG),
-    L3_FREQUENCE(74, Hz, Hz),
-
-    SPEEDWIRE(36864, NONE, NONE);
-
+public class EnergyMeterValue {
     private int channel;
-    private Unit currentUnitOfMeasurement;
-    private Unit totalUnitOfMeasurement;
+    private MeasuredUnit currentUnitOfMeasurement;
+    private MeasuredUnit totalUnitOfMeasurement;
+    private int phase;
 
-    EnergyMeterValue(int channel, Unit currentUnitOfMeasurement, Unit totalUnitOfMeasurement) {
+    private String name;
+
+    public EnergyMeterValue(int channel, String name, MeasuredUnit currentUnitOfMeasurement,
+            MeasuredUnit totalUnitOfMeasurement, int phase) {
         this.channel = channel;
         this.currentUnitOfMeasurement = currentUnitOfMeasurement;
         this.totalUnitOfMeasurement = totalUnitOfMeasurement;
+        this.phase = phase;
+        this.name = name;
     }
 
-    public Unit getCurrentUnitOfMeasurement() {
+    public int getChannel() {
+        return channel;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public MeasuredUnit getCurrentUnitOfMeasurement() {
         return currentUnitOfMeasurement;
     }
 
-    public Unit getTotalUnitOfMeasurement() {
+    public MeasuredUnit getTotalUnitOfMeasurement() {
         return totalUnitOfMeasurement;
     }
 
-    public static EnergyMeterValue getMeasuredUnit(int channel) {
-        return Arrays.stream(EnergyMeterValue.values()).filter(mv -> mv.channel == channel).findFirst().orElse(null);
+    public int getPhase() {
+        return phase;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        EnergyMeterValue that = (EnergyMeterValue) o;
+        return channel == that.channel;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(channel);
     }
 }
