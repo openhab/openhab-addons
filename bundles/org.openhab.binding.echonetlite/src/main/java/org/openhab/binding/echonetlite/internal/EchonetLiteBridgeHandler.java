@@ -69,15 +69,13 @@ public class EchonetLiteBridgeHandler extends BaseBridgeHandler {
         super(bridge);
     }
 
-    public void start() throws IOException {
-        if (null == discoveryKey) {
-            logger.error("Discovery key is null, unable to start");
-            return;
-        }
+    private void start(final InstanceKey managementControllerKey, InstanceKey discoveryKey) throws IOException {
+        this.managementControllerKey = managementControllerKey;
+        this.discoveryKey = discoveryKey;
 
-        logger.info("Binding echonet channel");
-        echonetChannel = new EchonetChannel(requireNonNull(discoveryKey).address);
-        logger.info("Starting networking thread");
+        logger.debug("Binding echonet channel");
+        echonetChannel = new EchonetChannel(discoveryKey.address);
+        logger.debug("Starting networking thread");
 
         networkingThread.setName("Echonet Networking");
         networkingThread.setDaemon(true);
@@ -195,10 +193,9 @@ public class EchonetLiteBridgeHandler extends BaseBridgeHandler {
     }
 
     private void pollRequests() {
-        @Nullable
         Message message;
-        while (null != (message = requests.poll())) {
-            logger.info("Received request: {}", message);
+        while (null != (message = requestsPoll())) {
+            logger.debug("Received request: {}", message);
             if (message instanceof NewDeviceMessage) {
                 newDeviceInternal((NewDeviceMessage) message);
             } else if (message instanceof RefreshMessage) {
@@ -215,12 +212,16 @@ public class EchonetLiteBridgeHandler extends BaseBridgeHandler {
         }
     }
 
+    private @Nullable Message requestsPoll() {
+        return requests.poll();
+    }
+
     private void pollNetwork(EchonetChannel echonetChannel) {
         try {
             echonetChannel.pollMessages(echonetMessage, this::onMessage,
                     EchonetLiteBindingConstants.NETWORK_WAIT_TIMEOUT);
         } catch (IOException e) {
-            logger.error("Failed to poll for messages", e);
+            logger.warn("Failed to poll for messages", e);
         }
     }
 
@@ -282,16 +283,16 @@ public class EchonetLiteBridgeHandler extends BaseBridgeHandler {
     public void initialize() {
         final EchonetBridgeConfig bridgeConfig = getConfigAs(EchonetBridgeConfig.class);
 
-        managementControllerKey = new InstanceKey(new InetSocketAddress(bridgeConfig.port),
+        final InstanceKey managementControllerKey = new InstanceKey(new InetSocketAddress(bridgeConfig.port),
                 EchonetClass.MANAGEMENT_CONTROLLER, (byte) 0x01);
-        discoveryKey = new InstanceKey(
+        final InstanceKey discoveryKey = new InstanceKey(
                 new InetSocketAddress(requireNonNull(bridgeConfig.multicastAddress), bridgeConfig.port),
                 EchonetClass.NODE_PROFILE, (byte) 0x01);
 
         updateStatus(ThingStatus.UNKNOWN);
 
         try {
-            start();
+            start(managementControllerKey, discoveryKey);
         } catch (IOException e) {
             throw new IllegalStateException("Unable to start networking thread", e);
         }
