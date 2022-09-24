@@ -12,6 +12,12 @@
  */
 package org.openhab.binding.echonetlite.internal;
 
+import static org.openhab.binding.echonetlite.internal.EchonetLiteBindingConstants.PROPERTY_NAME_CLASS_CODE;
+import static org.openhab.binding.echonetlite.internal.EchonetLiteBindingConstants.PROPERTY_NAME_GROUP_CODE;
+import static org.openhab.binding.echonetlite.internal.EchonetLiteBindingConstants.PROPERTY_NAME_HOSTNAME;
+import static org.openhab.binding.echonetlite.internal.EchonetLiteBindingConstants.PROPERTY_NAME_INSTANCE;
+import static org.openhab.binding.echonetlite.internal.EchonetLiteBindingConstants.PROPERTY_NAME_INSTANCE_KEY;
+import static org.openhab.binding.echonetlite.internal.EchonetLiteBindingConstants.PROPERTY_NAME_PORT;
 import static org.openhab.binding.echonetlite.internal.EchonetLiteBindingConstants.THING_TYPE_ECHONET_DEVICE;
 
 import java.util.Set;
@@ -72,12 +78,14 @@ public class EchonetDiscoveryService extends AbstractDiscoveryService
 
         final DiscoveryResult discoveryResult = DiscoveryResultBuilder
                 .create(new ThingUID(THING_TYPE_ECHONET_DEVICE, bridgeHandler.getThing().getUID(), identifier))
-                .withProperty("instanceKey", instanceKey.representationProperty())
-                .withProperty("hostname", instanceKey.address.getAddress().getHostAddress())
-                .withProperty("port", instanceKey.address.getPort())
-                .withProperty("groupCode", instanceKey.klass.groupCode())
-                .withProperty("classCode", instanceKey.klass.classCode()).withProperty("instance", instanceKey.instance)
-                .withBridge(bridgeHandler.getThing().getUID()).withRepresentationProperty("instanceKey").build();
+                .withProperty(PROPERTY_NAME_INSTANCE_KEY, instanceKey.representationProperty())
+                .withProperty(PROPERTY_NAME_HOSTNAME, instanceKey.address.getAddress().getHostAddress())
+                .withProperty(PROPERTY_NAME_PORT, instanceKey.address.getPort())
+                .withProperty(PROPERTY_NAME_GROUP_CODE, instanceKey.klass.groupCode())
+                .withProperty(PROPERTY_NAME_CLASS_CODE, instanceKey.klass.classCode())
+                .withProperty(PROPERTY_NAME_INSTANCE, instanceKey.instance)
+                .withBridge(bridgeHandler.getThing().getUID())
+                .withRepresentationProperty(PROPERTY_NAME_INSTANCE_KEY).build();
         thingDiscovered(discoveryResult);
     }
 

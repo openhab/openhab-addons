@@ -35,4 +35,11 @@ public class EchonetLiteBindingConstants {
 
     public static final StateCodec.OnOffCodec ON_OFF_CODEC_30_31 = new StateCodec.OnOffCodec(0x30, 0x31);
     public static final StateCodec.OnOffCodec ON_OFF_CODEC_41_42 = new StateCodec.OnOffCodec(0x41, 0x42);
+
+    public static final String PROPERTY_NAME_INSTANCE_KEY = "instanceKey";
+    public static final String PROPERTY_NAME_HOSTNAME = "hostname";
+    public static final String PROPERTY_NAME_PORT = "port";
+    public static final String PROPERTY_NAME_GROUP_CODE = "groupCode";
+    public static final String PROPERTY_NAME_CLASS_CODE = "classCode";
+    public static final String PROPERTY_NAME_INSTANCE = "instance";
 }

@@ -13,6 +13,7 @@
 package org.openhab.binding.echonetlite.internal;
 
 import static java.util.Objects.requireNonNull;
+import static org.openhab.binding.echonetlite.internal.EchonetLiteBindingConstants.PROPERTY_NAME_INSTANCE_KEY;
 
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
@@ -119,7 +120,7 @@ public class EchonetLiteHandler extends BaseThingHandler implements EchonetDevic
                     EchonetClass.resolve(config.groupCode, config.classCode), config.instance);
             this.instanceKey = instanceKey;
 
-            updateProperty("instanceKey", instanceKey.representationProperty());
+            updateProperty(PROPERTY_NAME_INSTANCE_KEY, instanceKey.representationProperty());
             bridgeHandler.newDevice(instanceKey, config.pollIntervalMs, config.retryTimeoutMs, this);
         } catch (Exception e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
