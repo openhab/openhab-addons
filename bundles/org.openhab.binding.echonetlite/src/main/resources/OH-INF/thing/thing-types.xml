@@ -6,19 +6,18 @@
 
 	<bridge-type id="bridge">
 		<label>Echonet Bridge</label>
-		<description>Virtual bridge to ensure that the a single binding to the echonet port</description>
+		<description>Virtual bridge to ensure that there is only a single binding to the echonet port</description>
 
 		<representation-property>port</representation-property>
 
 		<config-description>
 			<parameter name="multicastAddress" type="text" required="true">
-				<context>multicast-address</context>
+				<context>network-address</context>
 				<label>Discovery/Notification Address</label>
 				<description>Address used to discover nodes and receive notifications</description>
 				<default>224.0.23.0</default>
 			</parameter>
 			<parameter name="port" type="integer" required="true">
-				<context>port</context>
 				<label>Echonet Port</label>
 				<description>Port used for echonet messages both outbound and inbound</description>
 				<default>3610</default>
@@ -48,28 +47,23 @@
 				<description>Port of the device (usually 3610)</description>
 			</parameter>
 			<parameter name="groupCode" type="integer" required="true">
-				<context>group-code</context>
 				<label>Group Code</label>
 				<description>Echonet Group Code</description>
 			</parameter>
 			<parameter name="classCode" type="integer" required="true">
-				<context>class-code</context>
 				<label>Class Code</label>
 				<description>Echonet Class Code</description>
 			</parameter>
 			<parameter name="instance" type="integer" required="true">
-				<context>instance</context>
-				<label>instance</label>
+				<label>Instance</label>
 				<description>Echonet Instance</description>
 			</parameter>
 			<parameter name="pollIntervalMs" type="integer" required="true">
-				<context>poll-interval-ms</context>
 				<default>30000</default>
 				<label>Poll Interval (ms)</label>
 				<description>Interval in ms between each poll of the device</description>
 			</parameter>
 			<parameter name="retryTimeoutMs" type="integer" required="true">
-				<context>retry-timeout-ms</context>
 				<default>2000</default>
 				<label>Retry Timeout (ms)</label>
 				<description>Timeout in ms before a message is resent</description>
