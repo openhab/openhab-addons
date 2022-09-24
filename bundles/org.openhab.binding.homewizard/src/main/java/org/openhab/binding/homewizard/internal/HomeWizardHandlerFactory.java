@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.homewizard.internal;
 
-import static org.openhab.binding.homewizard.internal.HomeWizardBindingConstants.THING_TYPE_P1_WIFI_METER;
+import static org.openhab.binding.homewizard.internal.HomeWizardBindingConstants.*;
 
 import java.util.Set;
 
@@ -35,7 +35,8 @@ import org.osgi.service.component.annotations.Component;
 @Component(configurationPid = "binding.homewizard", service = ThingHandlerFactory.class)
 public class HomeWizardHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_P1_WIFI_METER);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_P1_METER,
+            THING_TYPE_ENERGY_SOCKET, THING_TYPE_WATERMETER);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -46,8 +47,16 @@ public class HomeWizardHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (THING_TYPE_P1_WIFI_METER.equals(thingTypeUID)) {
-            return new HomeWizardHandler(thing);
+        if (THING_TYPE_P1_METER.equals(thingTypeUID)) {
+            return new HomeWizardP1MeterHandler(thing);
+        }
+
+        if (THING_TYPE_ENERGY_SOCKET.equals(thingTypeUID)) {
+            return new HomeWizardEnergySocketHandler(thing);
+        }
+
+        if (THING_TYPE_WATERMETER.equals(thingTypeUID)) {
+            return new HomeWizardWaterMeterHandler(thing);
         }
 
         return null;

@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class HomeWizardConfiguration {
 
     /**
-     * IP Address or host for the P1 Meter
+     * IP Address or host for a HomeWizard device.
      */
     public String ipAddress = "";
 

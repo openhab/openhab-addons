@@ -12,50 +12,27 @@
  */
 package org.openhab.binding.homewizard.internal;
 
-import java.io.IOException;
 import java.time.DateTimeException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.gson.FieldNamingPolicy;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 /**
- * The {@link HomeWizardHandler} is responsible for handling commands, which are
- * sent to one of the channels.
+ * The {@link HomeWizardP1MeterHandler} implements functionality to handle a HomeWizard P1 Meter.
  *
  * @author Daniël van Os - Initial contribution
  */
 @NonNullByDefault
-public class HomeWizardHandler extends BaseThingHandler {
+public class HomeWizardP1MeterHandler extends HomeWizardDeviceHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(HomeWizardHandler.class);
-    private final Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-            .create();
-
-    private HomeWizardConfiguration config = new HomeWizardConfiguration();
-    private @Nullable ScheduledFuture<?> pollingJob;
-
-    private String apiURL = "";
     private String meterModel = "";
     private int meterVersion = 0;
 
@@ -64,7 +41,7 @@ public class HomeWizardHandler extends BaseThingHandler {
      *
      * @param thing The thing to handle
      */
-    public HomeWizardHandler(Thing thing) {
+    public HomeWizardP1MeterHandler(Thing thing) {
         super(thing);
     }
 
@@ -76,79 +53,12 @@ public class HomeWizardHandler extends BaseThingHandler {
     }
 
     /**
-     * If a host has been specified start polling it
-     */
-    @Override
-    public void initialize() {
-        config = getConfigAs(HomeWizardConfiguration.class);
-        if (configure()) {
-            pollingJob = scheduler.scheduleWithFixedDelay(this::pollingCode, 0, config.refreshDelay, TimeUnit.SECONDS);
-        }
-    }
-
-    /**
-     * Check the current configuration
+     * Device specific handling of the returned payload.
      *
-     * @return true if the configuration is ok to start polling, false otherwise
-     */
-    private boolean configure() {
-        if (config.ipAddress.trim().isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Missing ipAddress/host configuration");
-            return false;
-        } else {
-            updateStatus(ThingStatus.UNKNOWN);
-            apiURL = String.format("http://%s/api/v1/data", config.ipAddress.trim());
-            return true;
-        }
-    }
-
-    /**
-     * dispose: stop the poller
+     * @param payload The data parsed from the Json file
      */
     @Override
-    public void dispose() {
-        var job = pollingJob;
-        if (job != null) {
-            job.cancel(true);
-        }
-        pollingJob = null;
-    }
-
-    /**
-     * The actual polling loop
-     */
-    private void pollingCode() {
-        final String result;
-
-        try {
-            result = HttpUtil.executeUrl("GET", apiURL, 30000);
-        } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    String.format("Unable to query P1 Meter: %s", e.getMessage()));
-            return;
-        }
-
-        if (result.trim().isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "P1 Meter API returned empty status");
-            return;
-        }
-
-        P1Payload payload = gson.fromJson(result, P1Payload.class);
-        if (payload == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Unable to parse response from P1 meter");
-            return;
-        }
-
-        if ("".equals(payload.getMeterModel())) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Results from API are empty");
-            return;
-        }
-
-        updateStatus(ThingStatus.ONLINE);
-
+    protected void handleDataPayload(DataPayload payload) {
         if (!meterModel.equals(payload.getMeterModel())) {
             meterModel = payload.getMeterModel();
             updateProperty(HomeWizardBindingConstants.PROPERTY_METER_MODEL, meterModel);
