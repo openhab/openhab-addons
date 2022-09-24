@@ -9,7 +9,7 @@ This binding supports devices that make use of the Echonet Lite specification (h
 ## Discovery
 
 Discovery is supported using UDP Multicast.
-When running over Wi-Fi it is advisable to run openhab on the same network as the Echonet Lite devices.
+When running over Wi-Fi it is advisable to run openHAB on the same network as the Echonet Lite devices.
 Multicast traffic doesn't easily route over multiple networks and will often be dropped.
 Discovery is handled via the Echonet Lite bridge, which contains the configuration of the multicast address used for discovery and asynchronous device notifications along with the port.
 It is unlikely that this configuration will require changing.
@@ -33,10 +33,10 @@ The value for Home Air Conditioners is '48' (0x30).
 * __instance__: Instance identifier if multiple instances are running on the same IP address.
 Typically, this value will be '1'.
 * __pollIntervalMs__: Interval between polls of the device for its current status.
-If multicast is not working this will determine the latency at which changes made directly on the device will be propagated back to openhab.  The default is 30 000ms.
-* __retryTimeoutMs__: Length of time the bridge will wait before resubmitting a request[^1].
+If multicast is not working this will determine the latency at which changes made directly on the device will be propagated back to openHAB, default is 30 000ms.
+* __retryTimeoutMs__: Length of time the bridge will wait before resubmitting a request, default is 2 000ms.
 
-[^1] Because the binding uses UDP, packets can be lost on the network, so retries are necessary.
+Because the binding uses UDP, packets can be lost on the network, so retries are necessary.
 Testing has shown that 2000ms is a reasonable default that allows for timely retries without rejecting slow, but legitimate responses.
 
 ## Channels
