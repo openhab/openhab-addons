@@ -19,9 +19,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public enum EchonetClass {
-    AIRCON_HOMEAC(0x01, 0x30, Epc.Device.values(), Epc.AcGroup.values(), Epc.HomeAc.values()),
+    AIRCON_HOMEAC(0x01, 0x30, (Epc[]) Epc.Device.values(), (Epc[]) Epc.AcGroup.values(), (Epc[]) Epc.HomeAc.values()),
     MANAGEMENT_CONTROLLER(0x05, 0xFF, new Epc[0], new Epc[0], new Epc[0]),
-    NODE_PROFILE(0x0e, 0xf0, Epc.Profile.values(), Epc.ProfileGroup.values(), Epc.NodeProfile.values());
+    NODE_PROFILE(0x0e, 0xf0, (Epc[]) Epc.Profile.values(), (Epc[]) Epc.ProfileGroup.values(),
+            (Epc[]) Epc.NodeProfile.values());
 
     private final int groupCode;
     private final int classCode;

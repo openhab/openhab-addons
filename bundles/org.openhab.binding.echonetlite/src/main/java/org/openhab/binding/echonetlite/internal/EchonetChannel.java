@@ -49,7 +49,7 @@ public class EchonetChannel {
         channel.bind(new InetSocketAddress("0.0.0.0", discoveryAddress.getPort()));
         final Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
         while (networkInterfaces.hasMoreElements()) {
-            final NetworkInterface networkInterface = networkInterfaces.nextElement();
+            final NetworkInterface networkInterface = (NetworkInterface) networkInterfaces.nextElement();
             if (networkInterface.supportsMulticast() && hasIpV4Address(networkInterface)) {
                 channel.join(discoveryAddress.getAddress(), networkInterface);
             }
@@ -68,8 +68,7 @@ public class EchonetChannel {
             selector.close();
             logger.debug("closing channel");
             channel.close();
-        } catch (IOException e) {
-            logger.warn("Failed to close selector/channel", e);
+        } catch (IOException ignore) {
         }
     }
 
@@ -97,10 +96,10 @@ public class EchonetChannel {
                 long t1 = System.currentTimeMillis();
                 final long processingTimeMs = t1 - t0;
                 if (500 < processingTimeMs) {
-                    logger.info("Message took {}ms to process", processingTimeMs);
+                    logger.debug("Message took {}ms to process", processingTimeMs);
                 }
             } catch (IOException e) {
-                logger.error("Unable to select", e);
+                logger.warn("Failed to receive on channel", e);
             }
         }, timeout);
     }

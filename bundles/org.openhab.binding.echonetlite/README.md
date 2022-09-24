@@ -37,7 +37,7 @@ If multicast is not working this will determine the latency at which changes mad
 * __retryTimeoutMs__: Length of time the bridge will wait before resubmitting a request, default is 2 000ms.
 
 Because the binding uses UDP, packets can be lost on the network, so retries are necessary.
-Testing has shown that 2000ms is a reasonable default that allows for timely retries without rejecting slow, but legitimate responses.
+Testing has shown that 2 000ms is a reasonable default that allows for timely retries without rejecting slow, but legitimate responses.
 
 ## Channels
 
