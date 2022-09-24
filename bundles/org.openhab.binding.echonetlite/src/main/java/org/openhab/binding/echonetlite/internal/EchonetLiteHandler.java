@@ -114,7 +114,6 @@ public class EchonetLiteHandler extends BaseThingHandler implements EchonetDevic
         }
 
         try {
-            // TOOD: Move DNS lookup out to background
             final InetSocketAddress address = new InetSocketAddress(requireNonNull(config.hostname), config.port);
             final InstanceKey instanceKey = new InstanceKey(address,
                     EchonetClass.resolve(config.groupCode, config.classCode), config.instance);
