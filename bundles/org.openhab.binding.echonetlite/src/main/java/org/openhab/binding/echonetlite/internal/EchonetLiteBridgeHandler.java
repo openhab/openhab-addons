@@ -126,7 +126,7 @@ public class EchonetLiteBridgeHandler extends BaseBridgeHandler {
     private void removeDeviceInternal(final RemoveDevice removeDevice) {
         final EchonetObject remove = devicesByKey.remove(removeDevice.instanceKey);
 
-        logger.info("Removing device: {}, {}", removeDevice.instanceKey, remove);
+        logger.debug("Removing device: {}, {}", removeDevice.instanceKey, remove);
         if (null != remove) {
             remove.removed();
         }
