@@ -40,37 +40,7 @@ public class HexUtil {
         return sb.toString();
     }
 
-    public static String hex(byte[] array, int offset, int length) {
-        if (null == array) {
-            return "[]";
-        }
-
-        final StringBuilder sb = new StringBuilder();
-        sb.append('[');
-        for (int i = offset; i < length; i++) {
-            final int b = array[i] & 0xFF;
-            final String prefix = b < 0x10 ? "0" : "";
-            sb.append("0x").append(prefix).append(Integer.toHexString(b)).append(',');
-        }
-        sb.setLength(sb.length() - 1);
-        sb.append(']');
-
-        return sb.toString();
-    }
-
-    public static String hex(byte[] array) {
-        if (null == array) {
-            return "[]";
-        }
-
-        return hex(array, 0, array.length);
-    }
-
     public static String hex(int[] array, int offset, int length) {
-        if (null == array) {
-            return "[]";
-        }
-
         final StringBuilder sb = new StringBuilder();
         sb.append('[');
         for (int i = offset; i < length; i++) {
