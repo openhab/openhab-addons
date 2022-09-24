@@ -326,7 +326,7 @@
 	<channel-type id="operationMode">
 		<item-type>String</item-type>
 		<label>Operation Mode</label>
-		<description>Operation Mode</description>
+		<description>The current mode for the Home AC unit (heating, cooling, etc.)</description>
 		<state>
 			<options>
 				<option value="Automatic">Automatic</option>
@@ -340,26 +340,38 @@
 	</channel-type>
 
 	<channel-type id="setTemperature">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Set Temperature</label>
-		<description>Set Temperature</description>
-		<category>Heating</category>
+		<description>Desired target room temperature</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state min="0" max="50" pattern="%d °C" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="measuredRoomTemperature">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Measured Room Temperature</label>
 		<description>Measured Room Temperature</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state min="-127" max="125" pattern="%d °C" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="measuredOutdoorTemperature">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Measured Outdoor Temperature</label>
 		<description>Measured Outdoor Temperature</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state min="-127" max="125" pattern="%d °C" readOnly="true"/>
 	</channel-type>
 
