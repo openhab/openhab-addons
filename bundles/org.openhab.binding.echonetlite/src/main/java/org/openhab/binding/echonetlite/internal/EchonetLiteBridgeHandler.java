@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
-import java.time.Clock;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -40,8 +39,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Bridge handler for echonet lite devices. By default all messages (inbound and outbound) happen on port 3610, so
- * we can only have a single listener for echonet lite messages. Hence using a bridge model to handle communications
+ * Bridge handler for echonet lite devices. By default, all messages (inbound and outbound) happen on port 3610, so
+ * we can only have a single listener for echonet lite messages. Hence, using a bridge model to handle communications
  * and discovery.
  *
  * @author Michael Barker - Initial contribution
@@ -55,7 +54,7 @@ public class EchonetLiteBridgeHandler extends BaseBridgeHandler {
     private final EchonetMessageBuilder messageBuilder = new EchonetMessageBuilder();
     private final Thread networkingThread = new Thread(this::poll);
     private final EchonetMessage echonetMessage = new EchonetMessage();
-    private final Clock clock = Clock.systemUTC();
+    private final MonotonicClock clock = new MonotonicClock();
 
     @Nullable
     private EchonetChannel echonetChannel;
@@ -113,7 +112,7 @@ public class EchonetLiteBridgeHandler extends BaseBridgeHandler {
         requests.add(new RefreshMessage(instanceKey, channelId));
     }
 
-    private void refreshDeviceInternal(final RefreshMessage refreshMessage, long nowMs) {
+    private void refreshDeviceInternal(final RefreshMessage refreshMessage) {
         final EchonetObject item = devicesByKey.get(refreshMessage.instanceKey);
         if (null != item) {
             item.refresh(refreshMessage.channelId);
@@ -195,7 +194,7 @@ public class EchonetLiteBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    private void pollRequests(long nowMs) {
+    private void pollRequests() {
         @Nullable
         Message message;
         while (null != (message = requests.poll())) {
@@ -203,7 +202,7 @@ public class EchonetLiteBridgeHandler extends BaseBridgeHandler {
             if (message instanceof NewDeviceMessage) {
                 newDeviceInternal((NewDeviceMessage) message);
             } else if (message instanceof RefreshMessage) {
-                refreshDeviceInternal((RefreshMessage) message, nowMs);
+                refreshDeviceInternal((RefreshMessage) message);
             } else if (message instanceof RemoveDevice) {
                 removeDeviceInternal((RemoveDevice) message);
             } else if (message instanceof UpdateDevice) {
@@ -216,7 +215,7 @@ public class EchonetLiteBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    private void pollNetwork(long nowMs, EchonetChannel echonetChannel) {
+    private void pollNetwork(EchonetChannel echonetChannel) {
         try {
             echonetChannel.pollMessages(echonetMessage, this::onMessage,
                     EchonetLiteBindingConstants.NETWORK_WAIT_TIMEOUT);
@@ -273,10 +272,10 @@ public class EchonetLiteBridgeHandler extends BaseBridgeHandler {
     }
 
     private void doPoll() {
-        final long nowMs = clock.millis();
-        pollRequests(nowMs);
+        final long nowMs = clock.timeMs();
+        pollRequests();
         pollDevices(nowMs, requireNonNull(echonetChannel));
-        pollNetwork(nowMs, requireNonNull(echonetChannel));
+        pollNetwork(requireNonNull(echonetChannel));
     }
 
     @Override
