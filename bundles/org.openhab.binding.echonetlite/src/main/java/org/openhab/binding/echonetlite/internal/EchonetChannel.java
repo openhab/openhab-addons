@@ -64,12 +64,12 @@ public class EchonetChannel {
 
     public void close() {
         try {
-            logger.info("closing selector");
+            logger.debug("closing selector");
             selector.close();
-            logger.info("closing channel");
+            logger.debug("closing channel");
             channel.close();
         } catch (IOException e) {
-            logger.error("Failed to close selector/channel", e);
+            logger.warn("Failed to close selector/channel", e);
         }
     }
 

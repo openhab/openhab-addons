@@ -50,7 +50,7 @@ public class EchonetDiscoveryService extends AbstractDiscoveryService
         if (null != bridgeHandler) {
             bridgeHandler.startDiscovery(this);
         } else {
-            logger.error("bridgeHandler not initialized");
+            logger.warn("bridgeHandler not initialized");
         }
     }
 
