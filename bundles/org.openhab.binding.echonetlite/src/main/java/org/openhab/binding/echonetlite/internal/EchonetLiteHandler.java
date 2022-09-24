@@ -103,7 +103,7 @@ public class EchonetLiteHandler extends BaseThingHandler implements EchonetDevic
     public void initialize() {
         final EchonetDeviceConfig config = getConfigAs(EchonetDeviceConfig.class);
 
-        logger.info("Initialising: {}", config);
+        logger.debug("Initialising: {}", config);
 
         updateStatus(ThingStatus.UNKNOWN);
 

@@ -175,7 +175,7 @@ public class EchonetLiteBridgeHandler extends BaseBridgeHandler {
                 try {
                     echonetChannel.sendMessage(messageBuilder);
                 } catch (IOException e) {
-                    logger.error("Failed to send echonet message", e);
+                    logger.warn("Failed to send echonet message", e);
                 }
             }
 
@@ -186,7 +186,7 @@ public class EchonetLiteBridgeHandler extends BaseBridgeHandler {
                 try {
                     echonetChannel.sendMessage(messageBuilder);
                 } catch (IOException e) {
-                    logger.error("Failed to send echonet message", e);
+                    logger.warn("Failed to send echonet message", e);
                 }
             }
         }

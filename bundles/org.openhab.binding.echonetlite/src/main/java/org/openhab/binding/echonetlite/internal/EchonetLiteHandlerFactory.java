@@ -46,12 +46,12 @@ public class EchonetLiteHandlerFactory extends BaseThingHandlerFactory {
             THING_TYPE_ECHONET_BRIDGE);
 
     protected void activate(final ComponentContext componentContext) {
-        logger.info("Activating");
+        logger.debug("Activating");
         super.activate(componentContext);
     }
 
     protected void deactivate(final ComponentContext componentContext) {
-        logger.info("Deactivating");
+        logger.debug("Deactivating");
         super.deactivate(componentContext);
     }
 
