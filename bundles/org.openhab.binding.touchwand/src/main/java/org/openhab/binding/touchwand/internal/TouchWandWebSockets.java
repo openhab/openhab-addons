@@ -68,18 +68,17 @@ public class TouchWandWebSockets {
 
     private ScheduledExecutorService scheduler;
 
-    public TouchWandWebSockets(String ipAddress, int port, ScheduledExecutorService scheduler) {
+    public TouchWandWebSockets(String ipAddress, ScheduledExecutorService scheduler) {
         client = new WebSocketClient();
         touchWandSocket = new TouchWandSocket();
         this.controllerAddress = ipAddress;
-        this.port = port;
         this.scheduler = scheduler;
         socketReconnect = null;
     }
 
     public void connect() {
         try {
-            uri = new URI("ws://" + controllerAddress + ":" + String.valueOf(port) + WS_ENDPOINT_TOUCHWAND);
+            uri = new URI("ws://" + controllerAddress + WS_ENDPOINT_TOUCHWAND);
         } catch (URISyntaxException e) {
             logger.warn("URI not valid {} message {}", uri, e.getMessage());
             return;
