@@ -55,9 +55,10 @@ public class DSMRTelegramListener implements P1TelegramListener, DSMRConnectorLi
      * Constructs {@link DSMRTelegramListener} with a Smarty decryptor to first decrypt incoming messages.
      *
      * @param decryptionKey Smarty decryption key
+     * @param additionalKey Additional optional descryption key
      */
-    public DSMRTelegramListener(String decryptionKey) {
-        parser = new SmartyDecrypter(new P1TelegramParser(this), this, decryptionKey);
+    public DSMRTelegramListener(final String decryptionKey, final String additionalKey) {
+        parser = new SmartyDecrypter(new P1TelegramParser(this), this, decryptionKey, additionalKey);
     }
 
     /**
@@ -65,17 +66,17 @@ public class DSMRTelegramListener implements P1TelegramListener, DSMRConnectorLi
      *
      * @param eventListener the listener to set
      */
-    public void setDsmrEventListener(DSMREventListener eventListener) {
+    public void setDsmrEventListener(final DSMREventListener eventListener) {
         this.dsmrEventListener = eventListener;
     }
 
     @Override
-    public void handleData(byte[] data, int length) {
+    public void handleData(final byte[] data, final int length) {
         parser.parse(data, length);
     }
 
     @Override
-    public void handleErrorEvent(DSMRConnectorErrorEvent portEvent) {
+    public void handleErrorEvent(final DSMRConnectorErrorEvent portEvent) {
         dsmrEventListener.handleErrorEvent(portEvent);
         parser.reset();
     }
@@ -86,7 +87,7 @@ public class DSMRTelegramListener implements P1TelegramListener, DSMRConnectorLi
      * @param telegram the received telegram.
      */
     @Override
-    public void telegramReceived(P1Telegram telegram) {
+    public void telegramReceived(final P1Telegram telegram) {
         final TelegramState telegramState = telegram.getTelegramState();
         final List<CosemObject> cosemObjects = telegram.getCosemObjects();
 
@@ -106,7 +107,7 @@ public class DSMRTelegramListener implements P1TelegramListener, DSMRConnectorLi
     /**
      * @param lenientMode the lenientMode to set
      */
-    public void setLenientMode(boolean lenientMode) {
+    public void setLenientMode(final boolean lenientMode) {
         parser.setLenientMode(lenientMode);
     }
 }

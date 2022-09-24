@@ -101,6 +101,11 @@ public class RotelAsciiV1ProtocolHandler extends RotelAbstractAsciiProtocolHandl
                         messageStr += String.format("%d", value);
                     }
                     break;
+                case CALL_FM_PRESET:
+                case CALL_DAB_PRESET:
+                case CALL_IRADIO_PRESET:
+                    messageStr += String.format("%02d", value);
+                    break;
                 default:
                     break;
             }

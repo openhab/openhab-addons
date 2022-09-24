@@ -109,8 +109,10 @@
     <module>org.openhab.binding.dsmr</module>
     <module>org.openhab.binding.dwdpollenflug</module>
     <module>org.openhab.binding.dwdunwetter</module>
+    <module>org.openhab.binding.easee</module>
     <module>org.openhab.binding.ecobee</module>
     <module>org.openhab.binding.ecotouch</module>
+    <module>org.openhab.binding.ecowatt</module>
     <module>org.openhab.binding.ekey</module>
     <module>org.openhab.binding.electroluxair</module>
     <module>org.openhab.binding.elerotransmitterstick</module>

@@ -167,6 +167,10 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
         }
     }
 
+    public String getAccessToken() {
+        return logonToken.access_token;
+    }
+
     protected boolean checkResponse(Response response, boolean immediatelyFail) {
         if (response != null && response.getStatus() == 200) {
             return true;

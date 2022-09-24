@@ -68,6 +68,9 @@ public class AndroidDebugBridgeDevice {
             "https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,4}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)$");
     private static final Pattern INPUT_EVENT_PATTERN = Pattern
             .compile("/(?<input>\\S+): (?<n1>\\S+) (?<n2>\\S+) (?<n3>\\S+)$", Pattern.MULTILINE);
+    private static final Pattern VERSION_PATTERN = Pattern
+            .compile("^(?<major>\\d+)(\\.)?(?<minor>\\d+)?(\\.)?(?<patch>\\*|\\d+)?");
+    private static final Pattern MAC_PATTERN = Pattern.compile("^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$");
 
     private static final Pattern SECURE_SHELL_INPUT_PATTERN = Pattern.compile("^[^\\|\\&;\\\"]+$");
 
@@ -97,6 +100,9 @@ public class AndroidDebugBridgeDevice {
     private @Nullable Socket socket;
     private @Nullable AdbConnection connection;
     private @Nullable Future<String> commandFuture;
+    private int majorVersionNumber = 0;
+    private int minorVersionNumber = 0;
+    private int patchVersionNumber = 0;
 
     public AndroidDebugBridgeDevice(ScheduledExecutorService scheduler) {
         this.scheduler = scheduler;
@@ -201,7 +207,12 @@ public class AndroidDebugBridgeDevice {
 
     public String getCurrentPackage() throws AndroidDebugBridgeDeviceException, InterruptedException,
             AndroidDebugBridgeDeviceReadException, TimeoutException, ExecutionException {
-        var out = runAdbShell("dumpsys", "window", "windows", "|", "grep", "mFocusedApp");
+        String out;
+        if (isAtLeastVersion(10)) {
+            out = runAdbShell("dumpsys", "window", "displays", "|", "grep", "mFocusedApp");
+        } else {
+            out = runAdbShell("dumpsys", "window", "windows", "|", "grep", "mFocusedApp");
+        }
         var targetLine = Arrays.stream(out.split("\n")).findFirst().orElse("");
         var lineParts = targetLine.split(" ");
         if (lineParts.length >= 2) {
@@ -293,6 +304,19 @@ public class AndroidDebugBridgeDevice {
         return getDeviceProp("ro.build.version.release");
     }
 
+    public void setAndroidVersion(String version) {
+        var matcher = VERSION_PATTERN.matcher(version);
+        if (!matcher.find()) {
+            logger.warn("Unable to parse android version");
+            return;
+        }
+        this.majorVersionNumber = Integer.parseInt(matcher.group("major"));
+        var minorMatch = matcher.group("minor");
+        var patchMatch = matcher.group("patch");
+        this.minorVersionNumber = minorMatch != null ? Integer.parseInt(minorMatch) : 0;
+        this.patchVersionNumber = patchMatch != null ? Integer.parseInt(patchMatch) : 0;
+    }
+
     public String getBrand() throws AndroidDebugBridgeDeviceException, InterruptedException,
             AndroidDebugBridgeDeviceReadException, TimeoutException, ExecutionException {
         return getDeviceProp("ro.product.brand");
@@ -305,7 +329,17 @@ public class AndroidDebugBridgeDevice {
 
     public String getMacAddress() throws AndroidDebugBridgeDeviceException, InterruptedException,
             AndroidDebugBridgeDeviceReadException, TimeoutException, ExecutionException {
-        return runAdbShell("cat", "/sys/class/net/wlan0/address").replace("\n", "").replace("\r", "");
+        var macAddress = runAdbShell("cat", "/sys/class/net/wlan0/address").replace("\n", "").replace("\r", "");
+        var matcher = MAC_PATTERN.matcher(macAddress);
+        if (!matcher.find()) {
+            macAddress = runAdbShell("ip", "address", "|", "grep", "-m", "1", "link/ether", "|", "awk", "'{print $2}'")
+                    .replace("\n", "").replace("\r", "");
+            matcher = MAC_PATTERN.matcher(macAddress);
+            if (matcher.find()) {
+                return macAddress;
+            }
+        }
+        return "00:00:00:00:00:00";
     }
 
     private String getDeviceProp(String name) throws AndroidDebugBridgeDeviceException, InterruptedException,
@@ -766,6 +800,19 @@ public class AndroidDebugBridgeDevice {
             }
             socket = null;
         }
+    }
+
+    private boolean isAtLeastVersion(int major) {
+        return isAtLeastVersion(major, 0);
+    }
+
+    private boolean isAtLeastVersion(int major, int minor) {
+        return isAtLeastVersion(major, minor, 0);
+    }
+
+    private boolean isAtLeastVersion(int major, int minor, int patch) {
+        return majorVersionNumber > major || (majorVersionNumber == major
+                && (minorVersionNumber > minor || (minorVersionNumber == minor && patchVersionNumber >= patch)));
     }
 
     public static class VolumeInfo {

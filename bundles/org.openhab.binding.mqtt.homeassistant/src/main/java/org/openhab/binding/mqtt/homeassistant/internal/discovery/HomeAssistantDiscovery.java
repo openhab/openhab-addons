@@ -16,15 +16,20 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -126,6 +131,33 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
         return typeProvider.getThingTypeUIDs();
     }
 
+    /**
+     * Summarize components such as {Switch, Switch, Sensor} into string "Sensor, 2x Switch"
+     *
+     * @param componentNames stream of component names
+     * @return summary string of component names and their counts
+     */
+    static String getComponentNamesSummary(Stream<String> componentNames) {
+        StringBuilder summary = new StringBuilder();
+        Collector<String, ?, Long> countingCollector = Collectors.counting();
+        Map<String, Long> componentCounts = componentNames
+                .collect(Collectors.groupingBy(Function.identity(), countingCollector));
+        componentCounts.entrySet().stream().sorted(Map.Entry.comparingByKey()).forEach(entry -> {
+            String componentName = entry.getKey();
+            long count = entry.getValue();
+            if (summary.length() > 0) {
+                // not the first entry, so let's add the separating comma
+                summary.append(", ");
+            }
+            if (count > 1) {
+                summary.append(count);
+                summary.append("x ");
+            }
+            summary.append(componentName);
+        });
+        return summary.toString();
+    }
+
     @Override
     public void receivedMessage(ThingUID connectionBridge, MqttBrokerConnection connection, String topic,
             byte[] payload) {
@@ -166,11 +198,24 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
             thingIDPerTopic.put(topic, thingUID);
 
             // We need to keep track of already found component topics for a specific thing
-            Set<HaID> components = componentsPerThingID.computeIfAbsent(thingID, key -> ConcurrentHashMap.newKeySet());
-            components.add(haID);
+            final List<HaID> components;
+            {
+                Set<HaID> componentsUnordered = componentsPerThingID.computeIfAbsent(thingID,
+                        key -> ConcurrentHashMap.newKeySet());
 
-            final String componentNames = components.stream().map(id -> id.component)
-                    .map(c -> HA_COMP_TO_NAME.getOrDefault(c, c)).collect(Collectors.joining(", "));
+                // Invariant. For compiler, computeIfAbsent above returns always
+                // non-null
+                Objects.requireNonNull(componentsUnordered);
+                componentsUnordered.add(haID);
+
+                components = componentsUnordered.stream().collect(Collectors.toList());
+                // We sort the components for consistent jsondb serialization order of 'topics' thing property
+                // Sorting key is HaID::toString, i.e. using the full topic string
+                components.sort(Comparator.comparing(HaID::toString));
+            }
+
+            final String componentNames = getComponentNamesSummary(
+                    components.stream().map(id -> id.component).map(c -> HA_COMP_TO_NAME.getOrDefault(c, c)));
 
             final List<String> topics = components.stream().map(HaID::toShortTopic).collect(Collectors.toList());
 

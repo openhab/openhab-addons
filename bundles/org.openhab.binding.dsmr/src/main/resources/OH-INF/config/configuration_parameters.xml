@@ -73,8 +73,12 @@
 		</parameter>
 		<parameter name="decryptionKey" type="text" required="true">
 			<label>Decryption Key</label>
-			<description>The Luxembourgian Smart meter decryption key. Ask for your energy grid operator for your Smart meter P1
-				key.</description>
+			<description>Smart meter decryption key. Ask your energy grid operator for your smart meter P1 key.</description>
+		</parameter>
+		<parameter name="additionalKey" type="text">
+			<label>Additional Decryption Key</label>
+			<description>Additional decryption key. Ask your energy grid operator for your smart meter P1 key.</description>
+			<default>3000112233445566778899AABBCCDDEEFF</default>
 		</parameter>
 		<parameter name="receivedTimeout" type="integer" min="1" unit="s">
 			<default>30</default>
