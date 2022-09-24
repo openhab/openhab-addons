@@ -34,6 +34,10 @@ public class JellyfinServerConfiguration {
      */
     public Boolean ssl = true;
     /**
+     * Jellyfin base url
+     */
+    public String path = "";
+    /**
      * Interval to pull devices state from the server
      */
     public int refreshSeconds = 60;
