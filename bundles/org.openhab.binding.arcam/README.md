@@ -15,8 +15,8 @@ This binding supports the following models:
 | AVR30               | AVR30          | No     |
 | AVR40               | AVR40          | No     |
 | SA10                | SA10           | No     |
-| SA20                | SA20           | Yes    |
-| SA30                | SA30           | No     |
+| SA20                | SA20           | No     |
+| SA30                | SA30           | Yes    |
 
 Each device seems to have different options and the protocol differs between each series.
 Which is why not all Arcam models are supported yet.
