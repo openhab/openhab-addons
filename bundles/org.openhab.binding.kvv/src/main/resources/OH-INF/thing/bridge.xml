@@ -11,10 +11,12 @@
 			<parameter name="maxTrains" type="integer" min="1" max="127">
 				<label>Maximum Trains Listed</label>
 				<description>Maximum number of trains listed.</description>
+				<default>1</default>
 			</parameter>
 			<parameter name="updateInterval" type="integer" min="1">
 				<label>Update Interval</label>
 				<description>Update interval in seconds.</description>
+				<default>10</default>
 			</parameter>
 		</config-description>
 	</bridge-type>
