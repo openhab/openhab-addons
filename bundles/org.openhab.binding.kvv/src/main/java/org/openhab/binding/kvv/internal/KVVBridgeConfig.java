@@ -23,18 +23,14 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class KVVBridgeConfig {
 
-    /** maximum number of traines being queried */
+    /** maximum number of trains being queried */
     public int maxTrains;
 
     /** the update interval in seconds */
     public int updateInterval;
 
-    /** API key of the KVV API */
-    public String apiKey;
-
     public KVVBridgeConfig() {
-        this.maxTrains = 0;
+        this.maxTrains = 1;
         this.updateInterval = 10;
-        this.apiKey = "";
     }
 }
