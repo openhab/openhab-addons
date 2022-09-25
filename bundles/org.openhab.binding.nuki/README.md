@@ -198,7 +198,7 @@ sitemap nuki label="Nuki Smart Lock" {
 		Switch item=Frontdoor_Lock
 	}
 	Frame label="Channel State used for lock actions" {
-		Switch item=Frontdoor_LockState mappings=[2="Unlock", 7="Unlatch", 1002="LnGo", 1007="LnGoU", 4="Lock"]
+		Switch item=Frontdoor_LockState mappings=[1="Unlock", 2="Lock", 3="Unlatch", 4="LnGo", 5="LnGoU"]
 	}
 	Frame label="Channel State" {
 		Text item=Frontdoor_LockState label="Lock State [MAP(nukilockstates.map):%s]"
