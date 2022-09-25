@@ -20,6 +20,7 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyRollerSt
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDevice;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsLogin;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsUpdate;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyShortLightStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusLight;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusRelay;
@@ -59,7 +60,7 @@ public interface ShellyApiInterface {
 
     public void setRollerPos(int relayIndex, int position) throws ShellyApiException;
 
-    public void setTimer(int index, String timerName, int value) throws ShellyApiException;
+    public void setAutoTimer(int index, String timerName, double value) throws ShellyApiException;
 
     public ShellyStatusSensor getSensorStatus() throws ShellyApiException;
 
@@ -92,11 +93,19 @@ public interface ShellyApiInterface {
 
     public ShellyOtaCheckResult checkForUpdate() throws ShellyApiException;
 
+    public ShellySettingsUpdate firmwareUpdate(String uri) throws ShellyApiException;
+
     public ShellySettingsLogin getLoginSettings() throws ShellyApiException;
 
     public ShellySettingsLogin setLoginCredentials(String user, String password) throws ShellyApiException;
 
     public String setWiFiRecovery(boolean enable) throws ShellyApiException;
+
+    public boolean setWiFiRangeExtender(boolean enable) throws ShellyApiException;
+
+    public boolean setEthernet(boolean enable) throws ShellyApiException;
+
+    public boolean setBluetooth(boolean enable) throws ShellyApiException;
 
     public String deviceReboot() throws ShellyApiException;
 
@@ -123,4 +132,6 @@ public interface ShellyApiInterface {
     public void setActionURLs() throws ShellyApiException;
 
     public void sendIRKey(String keyCode) throws ShellyApiException, IllegalArgumentException;
+
+    public void close();
 }

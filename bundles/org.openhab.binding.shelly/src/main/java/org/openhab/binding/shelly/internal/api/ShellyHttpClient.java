@@ -32,6 +32,7 @@ import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcBaseMessage;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.slf4j.Logger;
@@ -64,7 +65,6 @@ public class ShellyHttpClient {
     public ShellyHttpClient(String thingName, ShellyThingInterface thing) {
         this(thingName, thing.getThingConfig(), thing.getHttpClient());
         this.profile = thing.getProfile();
-        profile.initFromThingType(thingName);
     }
 
     public ShellyHttpClient(String thingName, ShellyThingConfiguration config, HttpClient httpClient) {
@@ -111,8 +111,9 @@ public class ShellyHttpClient {
                 }
                 return apiResult.response; // successful
             } catch (ShellyApiException e) {
-                if ((!e.isTimeout() && !apiResult.isHttpServerError()) && !apiResult.isNotFound() || profile.hasBattery
-                        || (retries == 0)) {
+                if (e.isConnectionError()
+                        || (!e.isTimeout() && !apiResult.isHttpServerError()) && !apiResult.isNotFound()
+                        || profile.hasBattery || (retries == 0)) {
                     // Sensor in sleep mode or API exception for non-battery device or retry counter expired
                     throw e; // non-timeout exception
                 }
@@ -154,6 +155,16 @@ public class ShellyHttpClient {
             String response = contentResponse.getContentAsString().replace("\t", "").replace("\r\n", "").trim();
             logger.trace("{}: HTTP Response {}: {}", thingName, contentResponse.getStatus(), response);
 
+            if (response.contains("\"error\":{")) { // Gen2
+                Shelly2RpcBaseMessage message = gson.fromJson(response, Shelly2RpcBaseMessage.class);
+                if (message != null && message.error != null) {
+                    apiResult.httpCode = message.error.code;
+                    apiResult.response = message.error.message;
+                    if (getInteger(message.error.code) == HttpStatus.UNAUTHORIZED_401) {
+                        apiResult.authResponse = getString(message.error.message).replaceAll("\\\"", "\"");
+                    }
+                }
+            }
             HttpFields headers = contentResponse.getHeaders();
             String auth = headers.get(HttpHeader.WWW_AUTHENTICATE);
             if (!getString(auth).isEmpty()) {
@@ -171,7 +182,7 @@ public class ShellyHttpClient {
             }
         } catch (ExecutionException | InterruptedException | TimeoutException | IllegalArgumentException e) {
             ShellyApiException ex = new ShellyApiException(apiResult, e);
-            if (!ex.isTimeout()) { // will be handled by the caller
+            if (!ex.isConnectionError() && !ex.isTimeout()) { // will be handled by the caller
                 logger.trace("{}: API call returned exception", thingName, ex);
             }
             throw ex;

@@ -210,7 +210,6 @@
 		<state readOnly="false"></state>
 	</channel-type>
 
-
 	<channel-group-type id="sensorData">
 		<label>@text/channel-group-type.shelly.sensorData.label</label>
 		<description>@text/channel-group-type.shelly.sensorData.description</description>
@@ -457,7 +456,7 @@
 		<item-type>Number:ElectricPotential</item-type>
 		<label>@text/channel-type.shelly.sensorADC.label</label>
 		<description>@text/channel-type.shelly.sensorADC.description</description>
-		<state readOnly="true" pattern="%.0f %unit%">
+		<state readOnly="true" pattern="%.3f %unit%">
 		</state>
 	</channel-type>
 
