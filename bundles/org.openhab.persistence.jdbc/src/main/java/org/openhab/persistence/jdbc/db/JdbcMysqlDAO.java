@@ -93,10 +93,9 @@ public class JdbcMysqlDAO extends JdbcBaseDAO {
      * ITEMS DAOs *
      **************/
     @Override
-    public Integer doPingDB() {
-        @Nullable
-        Long result = Yank.queryScalar(sqlPingDB, Long.class, null);
-        return result.intValue();
+    public @Nullable Integer doPingDB() {
+        final @Nullable Long result = Yank.queryScalar(sqlPingDB, (Class<@Nullable Long>) Long.class, null);
+        return result != null ? result.intValue() : null;
     }
 
     /*************

@@ -102,10 +102,8 @@ public class JdbcDerbyDAO extends JdbcBaseDAO {
      * ITEMS DAOs *
      **************/
     @Override
-    public Integer doPingDB() {
-        @Nullable
-        Integer result = Yank.queryScalar(sqlPingDB, Integer.class, null);
-        return result;
+    public @Nullable Integer doPingDB() {
+        return Yank.queryScalar(sqlPingDB, (Class<@Nullable Integer>) Integer.class, null);
     }
 
     @Override
@@ -113,8 +111,7 @@ public class JdbcDerbyDAO extends JdbcBaseDAO {
         String sql = StringUtilsExt.replaceArrayMerge(sqlIfTableExists, new String[] { "#searchTable#" },
                 new String[] { vo.getItemsManageTable().toUpperCase() });
         logger.debug("JDBC::doIfTableExists sql={}", sql);
-        Yank.queryScalar(sql, String.class, null);
-        return true;
+        return Yank.queryScalar(sql, (Class<@Nullable String>) String.class, null) != null;
     }
 
     @Override

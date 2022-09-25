@@ -74,10 +74,15 @@ public class JdbcMapper {
                 logger.debug(
                         "JDBC::pingDB asking db for name as absolutely first db action, after connection is established.");
                 String dbName = conf.getDBDAO().doGetDB();
-                conf.setDbName(dbName);
-                ret = dbName.length() > 0;
+                if (dbName == null) {
+                    ret = false;
+                } else {
+                    conf.setDbName(dbName);
+                    ret = dbName.length() > 0;
+                }
             } else {
-                ret = conf.getDBDAO().doPingDB() > 0;
+                final @Nullable Integer result = conf.getDBDAO().doPingDB();
+                ret = result != null && result > 0;
             }
         }
         logTime("pingDB", timerStart, System.currentTimeMillis());
@@ -88,8 +93,8 @@ public class JdbcMapper {
         logger.debug("JDBC::getDB");
         long timerStart = System.currentTimeMillis();
         String res = conf.getDBDAO().doGetDB();
-        logTime("pingDB", timerStart, System.currentTimeMillis());
-        return res;
+        logTime("getDB", timerStart, System.currentTimeMillis());
+        return res != null ? res : "";
     }
 
     public ItemsVO createNewEntryInItemsTable(ItemsVO vo) {

@@ -243,24 +243,19 @@ public class JdbcBaseDAO {
     /**************
      * ITEMS DAOs *
      **************/
-    public Integer doPingDB() {
-        @Nullable
-        Integer result = Yank.queryScalar(sqlPingDB, Integer.class, null);
-        return result;
+    public @Nullable Integer doPingDB() {
+        return Yank.queryScalar(sqlPingDB, (Class<@Nullable Integer>) Integer.class, null);
     }
 
-    public String doGetDB() {
-        @Nullable
-        String result = Yank.queryScalar(sqlGetDB, String.class, null);
-        return result;
+    public @Nullable String doGetDB() {
+        return Yank.queryScalar(sqlGetDB, (Class<@Nullable String>) String.class, null);
     }
 
     public boolean doIfTableExists(ItemsVO vo) {
         String sql = StringUtilsExt.replaceArrayMerge(sqlIfTableExists, new String[] { "#searchTable#" },
                 new String[] { vo.getItemsManageTable() });
         logger.debug("JDBC::doIfTableExists sql={}", sql);
-        Yank.queryScalar(sql, String.class, null);
-        return true;
+        return Yank.queryScalar(sql, (Class<@Nullable String>) String.class, null) != null;
     }
 
     public Long doCreateNewEntryInItemsTable(ItemsVO vo) {

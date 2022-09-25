@@ -78,10 +78,8 @@ public class JdbcHsqldbDAO extends JdbcBaseDAO {
      * ITEMS DAOs *
      **************/
     @Override
-    public Integer doPingDB() {
-        @Nullable
-        Integer result = Yank.queryScalar(sqlPingDB, Integer.class, null);
-        return result;
+    public @Nullable Integer doPingDB() {
+        return Yank.queryScalar(sqlPingDB, (Class<@Nullable Integer>) Integer.class, null);
     }
 
     @Override
