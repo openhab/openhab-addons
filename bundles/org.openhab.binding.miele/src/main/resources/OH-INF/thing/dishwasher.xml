@@ -21,6 +21,7 @@
 			<channel id="phase" typeId="phase"/>
 			<channel id="rawPhase" typeId="rawPhase"/>
 			<channel id="start" typeId="start"/>
+			<channel id="end" typeId="end"/>
 			<channel id="duration" typeId="duration"/>
 			<channel id="elapsed" typeId="elapsed"/>
 			<channel id="finish" typeId="finish"/>
