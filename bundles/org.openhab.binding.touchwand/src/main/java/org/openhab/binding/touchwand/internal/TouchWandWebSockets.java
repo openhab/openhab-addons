@@ -59,7 +59,6 @@ public class TouchWandWebSockets {
 
     private WebSocketClient client;
     private String controllerAddress;
-    private int port;
     private TouchWandSocket touchWandSocket;
     private boolean isShutDown = false;
     private CopyOnWriteArraySet<TouchWandUnitStatusUpdateListener> listeners = new CopyOnWriteArraySet<>();
