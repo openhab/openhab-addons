@@ -80,7 +80,6 @@ public class EchonetDevice extends EchonetObject {
                     listener.onInitialised(identifier(), instanceKey, channelIds());
                     stateFields.forEach((e, s) -> listener.onUpdated(e.channelId(), s));
                 }
-
             } else {
                 if (Epc.Device.GET_PROPERTY_MAP == epc && null == getPropertyMap) {
                     final EchonetPropertyMap getPropertyMap = new EchonetPropertyMap(epc);

@@ -46,28 +46,28 @@ The full set of potential channels is available from "APPENDIX Detailed Requirem
 
 The channels currently implemented are:
 
-| Channel                            | Data Type | Description                                                   |
-|------------------------------------|-----------|---------------------------------------------------------------|
-| operationStatus                    | Switch    | Switch On/Off the device                                      |
-| installationLocation               | String    | Installation location (option)                                |
-| standardVersionInformation         | String    | Standard Version Information                                  |
-| identificationNumber               | String    | Unique id for device (used by auto discovery for the thingId) |
-| manufacturerFaultCode              | String    | Manufacturer Fault Code                                       |
-| faultStatus                        | Switch    | Fault Status                                                  |
-| faultDescription                   | String    | Fault Description                                             |
-| manufacturerCode                   | String    | Manufacturer Code                                             |
-| businessFacilityCode               | String    | Business Facility Code                                        |
-| powerSavingOperationSetting        | Switch    | Power Saving Operation Setting                                |
-| cumulativeOperatingTime            | Number    | Cumulative Operating Time                                     |
-| airFlowRate                        | String    | Air Flow Rate                                                 |
-| automaticControlOfAirFlowDirection | String    | Automatic Control Of Air Flow Direction                       |
-| automaticSwingOfAirFlow            | String    | Automatic Swing Of Air Flow                                   |
-| airFlowDirectionVertical           | String    | Air Flow Direction Vertical                                   |
-| airFlowDirectionHorizontal         | String    | Air Flow Direction Horizontal                                 |
-| operationMode                      | String    | Operation Mode                                                |
-| setTemperature                     | Number    | Set Temperature                                               |
-| measuredRoomTemperature            | Number    | Measured Room Temperature                                     |
-| measuredOutdoorTemperature         | Number    | Measured Outdoor Temperature                                  |
+| Channel                            | Data Type | Description                                                             |
+|------------------------------------|-----------|-------------------------------------------------------------------------|
+| operationStatus                    | Switch    | Switch On/Off the device                                                |
+| installationLocation               | String    | Installation location (option)                                          |
+| standardVersionInformation         | String    | Standard Version Information                                            |
+| identificationNumber               | String    | Unique id for device (used by auto discovery for the thingId)           |
+| manufacturerFaultCode              | String    | Manufacturer Fault Code                                                 |
+| faultStatus                        | Switch    | Fault Status                                                            |
+| faultDescription                   | String    | Fault Description                                                       |
+| manufacturerCode                   | String    | Manufacturer Code                                                       |
+| businessFacilityCode               | String    | Business Facility Code                                                  |
+| powerSavingOperationSetting        | Switch    | Controls whether the unit is in power saving operation or not           |
+| cumulativeOperatingTime            | Number    | Cumulative Operating Time                                               |
+| airFlowRate                        | String    | Air Flow Rate                                                           |
+| automaticControlOfAirFlowDirection | String    | The type of automatic control applied to the air flow direction, if any |
+| automaticSwingOfAirFlow            | String    | Automatic Swing Of Air Flow                                             |
+| airFlowDirectionVertical           | String    | Air Flow Direction Vertical                                             |
+| airFlowDirectionHorizontal         | String    | Air Flow Direction Horizontal                                           |
+| operationMode                      | String    | The current mode for the Home AC unit (heating, cooling, etc.)          |
+| setTemperature                     | Number    | Desired target room temperature                                         |
+| measuredRoomTemperature            | Number    | Measured Room Temperature                                               |
+| measuredOutdoorTemperature         | Number    | Measured Outdoor Temperature                                            |
 
 ## Full Example
 

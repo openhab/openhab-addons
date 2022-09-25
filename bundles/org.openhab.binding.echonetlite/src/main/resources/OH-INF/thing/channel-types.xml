@@ -207,16 +207,16 @@
 
 	<channel-type id="powerSavingOperationSetting">
 		<item-type>Switch</item-type>
-		<label>Power Saving Operation Setting</label>
-		<description>Power Saving Operation Setting</description>
+		<label>Power Saving</label>
+		<description>Controls whether the unit is in power saving operation or not</description>
 		<category>Switch</category>
 	</channel-type>
 
 	<channel-type id="cumulativeOperatingTime">
-		<item-type>Number</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Cumulative Operating Time</label>
-		<description>Cumulative Operating Time</description>
-		<category>Number</category>
+		<description>Cumulative time the unit has been operating in seconds</description>
+		<category>Time</category>
 	</channel-type>
 
 	<channel-type id="airFlowRate">
@@ -241,8 +241,8 @@
 
 	<channel-type id="automaticControlOfAirFlowDirection">
 		<item-type>String</item-type>
-		<label>Automatic Control Of Air Flow Direction</label>
-		<description>Automatic Control Of Air Flow Direction</description>
+		<label>Automatic Air Flow Direction</label>
+		<description>The type of automatic control applied to the air flow direction, if any</description>
 		<state>
 			<options>
 				<option value="Automatic">Automatic</option>

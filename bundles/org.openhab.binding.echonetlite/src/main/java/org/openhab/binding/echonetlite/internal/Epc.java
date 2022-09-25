@@ -326,7 +326,7 @@ public interface Epc {
 
         AUTOMATIC_TEMPERATURE_CONTROL(0xB1),
         NORMAL_HIGH_SPEED_SILENT_OPERATION(0xB2),
-        SET_TEMPERATURE(0xB3, StateCodec.Decimal8bitCodec.INSTANCE),
+        SET_TEMPERATURE(0xB3, StateCodec.Temperature8bitCodec.INSTANCE),
         SET_RELATIVE_HUMIDITY(0xB4),
         SET_TEMPERATURE_COOLING_MODE(0xB5),
         SET_TEMPERATURE_HEATING_MODE(0xB6),
@@ -334,10 +334,10 @@ public interface Epc {
         RATED_POWER_CONSUMPTION(0xB8),
         MEASURED_CURRENT_CONSUMPTION(0xB9),
         MEASURED_ROOM_RELATIVE_HUMIDITY(0xBA),
-        MEASURED_ROOM_TEMPERATURE(0xBB, StateCodec.Decimal8bitCodec.INSTANCE, null),
+        MEASURED_ROOM_TEMPERATURE(0xBB, StateCodec.Temperature8bitCodec.INSTANCE, null),
         SET_TEMPERATURE_USER_REMOTE_CONTROL(0xBC),
         MEASURED_COOLED_AIR_TEMPERATURE(0xBD),
-        MEASURED_OUTDOOR_TEMPERATURE(0xBE, StateCodec.Decimal8bitCodec.INSTANCE, null),
+        MEASURED_OUTDOOR_TEMPERATURE(0xBE, StateCodec.Temperature8bitCodec.INSTANCE, null),
         RELATIVE_TEMPERATURE(0xBF);
         // @formatter:on
 

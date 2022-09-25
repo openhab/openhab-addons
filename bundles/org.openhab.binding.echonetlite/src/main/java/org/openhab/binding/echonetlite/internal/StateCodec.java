@@ -19,12 +19,17 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -119,11 +124,11 @@ public interface StateCodec extends StateEncode, StateDecode {
                     break;
             }
 
-            return new DecimalType(timeUnit.toSeconds(time));
+            return new QuantityType<>(timeUnit.toSeconds(time), Units.SECOND);
         }
 
         public String itemType() {
-            return "Number";
+            return "Number:Time";
         }
     }
 
@@ -188,6 +193,24 @@ public interface StateCodec extends StateEncode, StateDecode {
 
         public void encodeState(final State state, final ByteBuffer edt) {
             edt.put((byte) (((DecimalType) state).intValue()));
+        }
+    }
+
+    enum Temperature8bitCodec implements StateCodec {
+        INSTANCE;
+
+        public State decodeState(final ByteBuffer edt) {
+            final int value = edt.get();
+            return new QuantityType<>(value, SIUnits.CELSIUS);
+        }
+
+        public String itemType() {
+            return "Number:Temperature";
+        }
+
+        public void encodeState(final State state, final ByteBuffer edt) {
+            final @Nullable QuantityType<?> tempCelsius = ((QuantityType<?>) state).toUnit(SIUnits.CELSIUS);
+            edt.put((byte) (Objects.requireNonNull(tempCelsius).intValue()));
         }
     }
 }

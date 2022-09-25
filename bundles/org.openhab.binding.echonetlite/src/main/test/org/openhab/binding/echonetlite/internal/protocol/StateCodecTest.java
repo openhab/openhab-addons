@@ -10,7 +10,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.echonetlite.internal.StateCodec;
-import org.openhab.binding.echonetlite.internal.StateCodec.Decimal8bitCodec;
 import org.openhab.binding.echonetlite.internal.StateCodec.HexStringCodec;
 import org.openhab.binding.echonetlite.internal.StateCodec.OperatingTimeDecode;
 import org.openhab.binding.echonetlite.internal.StateCodec.Option;
