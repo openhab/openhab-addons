@@ -156,7 +156,7 @@ public class TouchWandWebSockets {
                 }
                 touchWandUnit = TouchWandUnitFromJson.parseResponse(unitObj.get("unit").getAsJsonObject());
                 if (!touchWandUnit.getStatus().equals("ALIVE")) {
-                    return;
+                    logger.debug("UNIT_CHANGED unit status not ALIVE : {}", touchWandUnit.getStatus());
                 }
                 boolean supportedUnitType = Arrays.asList(SUPPORTED_TOUCHWAND_TYPES).contains(touchWandUnit.getType());
                 if (!supportedUnitType) {
