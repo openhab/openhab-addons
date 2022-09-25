@@ -40,9 +40,9 @@ All channels are read-only.
 
 | Channel           | Type   | Description                                                      |
 |-------------------|--------|------------------------------------------------------------------|
-| todaySignal       | Number | The signal relating to the forecast consumption level for today. Values are 1 for normal consumption, 2 for strained electrical system and 3 for very strained electrical system. |
-| tomorrowSignal    | Number | The signal relating to the forecast consumption level for tomorrow. Values are 1 for normal consumption, 2 for strained electrical system and 3 for very strained electrical system. |
-| currentHourSignal | Number | The signal relating to the forecast consumption level for the current hour. Values are 1 for normal consumption, 2 for strained electrical system and 3 for very strained electrical system. |
+| todaySignal       | Number | The signal relating to the forecast consumption level for today. Values are 1 for normal consumption (green), 2 for strained electrical system (orange) and 3 for very strained electrical system (red). |
+| tomorrowSignal    | Number | The signal relating to the forecast consumption level for tomorrow. Values are 1 for normal consumption (green), 2 for strained electrical system (orange) and 3 for very strained electrical system (red). |
+| currentHourSignal | Number | The signal relating to the forecast consumption level for the current hour. Values are 1 for normal consumption (green), 2 for strained electrical system (orange) and 3 for very strained electrical system (red). |
 
 ## Full Example
 
