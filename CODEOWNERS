@@ -106,7 +106,7 @@
 /bundles/org.openhab.binding.fronius/ @trokohl
 /bundles/org.openhab.binding.fsinternetradio/ @paphko
 /bundles/org.openhab.binding.ftpupload/ @paulianttila
-/bundles/org.openhab.binding.gardena/ @gerrieg
+/bundles/org.openhab.binding.gardena/ @gerrieg @andrewfg
 /bundles/org.openhab.binding.gce/ @clinique
 /bundles/org.openhab.binding.generacmobilelink/ @digitaldan
 /bundles/org.openhab.binding.globalcache/ @mhilbush
@@ -240,7 +240,7 @@
 /bundles/org.openhab.binding.onkyo/ @pail23 @paulianttila
 /bundles/org.openhab.binding.opengarage/ @psmedley
 /bundles/org.openhab.binding.opensprinkler/ @CrackerStealth @FlorianSW
-/bundles/org.openhab.binding.openthermgateway/ @ArjenKorevaar
+/bundles/org.openhab.binding.openthermgateway/ @ArjenKorevaar @andrewfg
 /bundles/org.openhab.binding.openuv/ @clinique
 /bundles/org.openhab.binding.openweathermap/ @cweitkamp
 /bundles/org.openhab.binding.openwebnet/ @mvalla
@@ -340,7 +340,7 @@
 /bundles/org.openhab.binding.vdr/ @MatthiasKlocke
 /bundles/org.openhab.binding.vektiva/ @octa22
 /bundles/org.openhab.binding.velbus/ @cedricboon
-/bundles/org.openhab.binding.velux/ @gs4711
+/bundles/org.openhab.binding.velux/ @gs4711 @andrewfg
 /bundles/org.openhab.binding.venstarthermostat/ @hww3 @digitaldan
 /bundles/org.openhab.binding.ventaair/ @t2000
 /bundles/org.openhab.binding.verisure/ @jannegpriv
