@@ -73,8 +73,7 @@ public class MeaterBridgeHandler extends BaseBridgeHandler {
     public void initialize() {
         MeaterBridgeConfiguration config = getConfigAs(MeaterBridgeConfiguration.class);
 
-        MeaterRestAPI meaterRestAPI = new MeaterRestAPI(config, gson, httpClient,
-                localeProvider.getLocale().getLanguage());
+        MeaterRestAPI meaterRestAPI = new MeaterRestAPI(config, gson, httpClient, localeProvider);
         refreshTimeInSeconds = config.refresh;
 
         if (config.email == null || config.password == null) {

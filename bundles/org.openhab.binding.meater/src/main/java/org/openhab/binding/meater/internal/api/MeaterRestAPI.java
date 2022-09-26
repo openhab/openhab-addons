@@ -29,6 +29,7 @@ import org.openhab.binding.meater.internal.MeaterBridgeConfiguration;
 import org.openhab.binding.meater.internal.MeaterException;
 import org.openhab.binding.meater.internal.dto.MeaterProbeDTO;
 import org.openhab.binding.meater.internal.dto.MeaterProbeDTO.Device;
+import org.openhab.core.i18n.LocaleProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,14 +58,14 @@ public class MeaterRestAPI {
     private final MeaterBridgeConfiguration configuration;
     private String authToken = "";
     private String userId = "";
-    private String acceptLanguage;
+    private LocaleProvider localeProvider;
 
     public MeaterRestAPI(MeaterBridgeConfiguration configuration, Gson gson, HttpClient httpClient,
-            String acceptLanguage) {
+            LocaleProvider localeProvider) {
         this.gson = gson;
         this.configuration = configuration;
         this.httpClient = httpClient;
-        this.acceptLanguage = acceptLanguage;
+        this.localeProvider = localeProvider;
     }
 
     public boolean refresh(Map<String, MeaterProbeDTO.Device> meaterProbeThings) {
@@ -99,7 +100,7 @@ public class MeaterRestAPI {
             Request request = httpClient.newRequest(API_ENDPOINT + LOGIN).method(HttpMethod.POST);
             request.header(HttpHeader.ACCEPT, JSON_CONTENT_TYPE);
             request.header(HttpHeader.CONTENT_TYPE, JSON_CONTENT_TYPE);
-            request.header(HttpHeader.ACCEPT_LANGUAGE, acceptLanguage);
+            request.header(HttpHeader.ACCEPT_LANGUAGE, localeProvider.getLocale().getLanguage());
             request.content(new StringContentProvider(json), JSON_CONTENT_TYPE);
 
             logger.trace("HTTP POST Request {}.", request.toString());
@@ -130,14 +131,14 @@ public class MeaterRestAPI {
                     request.header(HttpHeader.AUTHORIZATION, "Bearer " + authToken);
                     request.header(HttpHeader.ACCEPT, JSON_CONTENT_TYPE);
                     request.header(HttpHeader.CONTENT_TYPE, JSON_CONTENT_TYPE);
-                    request.header(HttpHeader.ACCEPT_LANGUAGE, acceptLanguage);
+                    request.header(HttpHeader.ACCEPT_LANGUAGE, localeProvider.getLocale().getLanguage());
 
                     ContentResponse response = request.send();
                     String content = response.getContentAsString();
                     logger.trace("API response: {}", content);
 
-                    if (response.getStatus() != HttpStatus.OK_200) {
-                        logger.debug("getFromApi failed, HTTP status: {}", response.getStatus());
+                    if (response.getStatus() == HttpStatus.UNAUTHORIZED_401) {
+                        logger.debug("getFromApi failed, HTTP status: {}", HttpStatus.UNAUTHORIZED_401);
                         login();
                     } else {
                         return content;
