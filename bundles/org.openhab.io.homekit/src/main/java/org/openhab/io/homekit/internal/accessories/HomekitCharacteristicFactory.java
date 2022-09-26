@@ -29,7 +29,6 @@ import javax.measure.Unit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.items.GenericItem;
-import org.openhab.core.items.Item;
 import org.openhab.core.library.items.ColorItem;
 import org.openhab.core.library.items.DimmerItem;
 import org.openhab.core.library.items.NumberItem;
@@ -188,8 +187,8 @@ public class HomekitCharacteristicFactory {
         if (optional.containsKey(type)) {
             return optional.get(type).apply(item, updater);
         }
-        logger.warn("Unsupported optional characteristic. Accessory type {}, characteristic type {}",
-                item.getAccessoryType(), type.getTag());
+        logger.warn("Unsupported optional characteristic from item {}. Accessory type {}, characteristic type {}",
+                item.getName(), item.getAccessoryType(), type.getTag());
         throw new HomekitException(
                 "Unsupported optional characteristic. Characteristic type \"" + type.getTag() + "\"");
     }
@@ -225,20 +224,20 @@ public class HomekitCharacteristicFactory {
 
     private static void setValueFromEnum(HomekitTaggedItem taggedItem, CharacteristicEnum value,
             CharacteristicEnum offEnum, CharacteristicEnum onEnum) {
-        if (taggedItem.getItem() instanceof SwitchItem) {
+        if (taggedItem.getBaseItem() instanceof SwitchItem) {
             if (value.equals(offEnum)) {
-                ((SwitchItem) taggedItem.getItem()).send(taggedItem.isInverted() ? OnOffType.ON : OnOffType.OFF);
+                taggedItem.send(taggedItem.isInverted() ? OnOffType.ON : OnOffType.OFF);
             } else if (value.equals(onEnum)) {
-                ((SwitchItem) taggedItem.getItem()).send(taggedItem.isInverted() ? OnOffType.OFF : OnOffType.ON);
+                taggedItem.send(taggedItem.isInverted() ? OnOffType.OFF : OnOffType.ON);
             } else {
-                logger.warn("Enum value {} is not supported. Only following values are supported: {},{}", value,
-                        offEnum, onEnum);
+                logger.warn("Enum value {} is not supported for {}. Only following values are supported: {},{}", value,
+                        taggedItem.getName(), offEnum, onEnum);
             }
-        } else if (taggedItem.getItem() instanceof NumberItem) {
-            ((NumberItem) taggedItem.getItem()).send(new DecimalType(value.getCode()));
+        } else if (taggedItem.getBaseItem() instanceof NumberItem) {
+            taggedItem.send(new DecimalType(value.getCode()));
         } else {
-            logger.warn("Item type {} is not supported. Only Switch and Number item types are supported.",
-                    taggedItem.getItem().getType());
+            logger.warn("Item {} of type {} is not supported. Only Switch and Number item types are supported.",
+                    taggedItem.getName(), taggedItem.getBaseItem().getType());
         }
     }
 
@@ -311,38 +310,38 @@ public class HomekitCharacteristicFactory {
 
     private static ExceptionalConsumer<Integer> setIntConsumer(HomekitTaggedItem taggedItem) {
         return (value) -> {
-            if (taggedItem.getItem() instanceof NumberItem) {
-                ((NumberItem) taggedItem.getItem()).send(new DecimalType(value));
+            if (taggedItem.getBaseItem() instanceof NumberItem) {
+                taggedItem.send(new DecimalType(value));
             } else {
                 logger.warn("Item type {} is not supported for {}. Only NumberItem is supported.",
-                        taggedItem.getItem().getType(), taggedItem.getName());
+                        taggedItem.getBaseItem().getType(), taggedItem.getName());
             }
         };
     }
 
     private static ExceptionalConsumer<Integer> setPercentConsumer(HomekitTaggedItem taggedItem) {
         return (value) -> {
-            if (taggedItem.getItem() instanceof NumberItem) {
-                ((NumberItem) taggedItem.getItem()).send(new DecimalType(value));
-            } else if (taggedItem.getItem() instanceof DimmerItem) {
-                ((DimmerItem) taggedItem.getItem()).send(new PercentType(value));
+            if (taggedItem.getBaseItem() instanceof NumberItem) {
+                taggedItem.send(new DecimalType(value));
+            } else if (taggedItem.getBaseItem() instanceof DimmerItem) {
+                taggedItem.send(new PercentType(value));
             } else {
                 logger.warn("Item type {} is not supported for {}. Only DimmerItem and NumberItem are supported.",
-                        taggedItem.getItem().getType(), taggedItem.getName());
+                        taggedItem.getBaseItem().getType(), taggedItem.getName());
             }
         };
     }
 
     private static ExceptionalConsumer<Integer> setAngleConsumer(HomekitTaggedItem taggedItem) {
         return (value) -> {
-            if (taggedItem.getItem() instanceof NumberItem) {
-                ((NumberItem) taggedItem.getItem()).send(new DecimalType(value));
-            } else if (taggedItem.getItem() instanceof DimmerItem) {
+            if (taggedItem.getBaseItem() instanceof NumberItem) {
+                taggedItem.send(new DecimalType(value));
+            } else if (taggedItem.getBaseItem() instanceof DimmerItem) {
                 value = (int) (value * 50.0 / 90.0 + 50.0);
-                ((DimmerItem) taggedItem.getItem()).send(new PercentType(value));
+                taggedItem.send(new PercentType(value));
             } else {
                 logger.warn("Item type {} is not supported for {}. Only DimmerItem and NumberItem are supported.",
-                        taggedItem.getItem().getType(), taggedItem.getName());
+                        taggedItem.getBaseItem().getType(), taggedItem.getName());
             }
         };
     }
@@ -363,13 +362,13 @@ public class HomekitCharacteristicFactory {
 
     private static ExceptionalConsumer<Double> setDoubleConsumer(HomekitTaggedItem taggedItem) {
         return (value) -> {
-            if (taggedItem.getItem() instanceof NumberItem) {
-                ((NumberItem) taggedItem.getItem()).send(new DecimalType(value.doubleValue()));
-            } else if (taggedItem.getItem() instanceof DimmerItem) {
-                ((DimmerItem) taggedItem.getItem()).send(new PercentType(value.intValue()));
+            if (taggedItem.getBaseItem() instanceof NumberItem) {
+                taggedItem.send(new DecimalType(value.doubleValue()));
+            } else if (taggedItem.getBaseItem() instanceof DimmerItem) {
+                taggedItem.send(new PercentType(value.intValue()));
             } else {
                 logger.warn("Item type {} is not supported for {}. Only Number and Dimmer type are supported.",
-                        taggedItem.getItem().getType(), taggedItem.getName());
+                        taggedItem.getBaseItem().getType(), taggedItem.getName());
             }
         };
     }
@@ -384,11 +383,11 @@ public class HomekitCharacteristicFactory {
 
     private static ExceptionalConsumer<Double> setTemperatureConsumer(HomekitTaggedItem taggedItem) {
         return (value) -> {
-            if (taggedItem.getItem() instanceof NumberItem) {
-                ((NumberItem) taggedItem.getItem()).send(new DecimalType(convertFromCelsius(value)));
+            if (taggedItem.getBaseItem() instanceof NumberItem) {
+                taggedItem.send(new DecimalType(convertFromCelsius(value)));
             } else {
                 logger.warn("Item type {} is not supported for {}. Only Number type is supported.",
-                        taggedItem.getItem().getType(), taggedItem.getName());
+                        taggedItem.getBaseItem().getType(), taggedItem.getName());
             }
         };
     }
@@ -552,11 +551,11 @@ public class HomekitCharacteristicFactory {
             }
             return CompletableFuture.completedFuture(value);
         }, (hue) -> {
-            if (taggedItem.getItem() instanceof ColorItem) {
+            if (taggedItem.getBaseItem() instanceof ColorItem) {
                 taggedItem.sendCommandProxy(HomekitCommandType.HUE_COMMAND, new DecimalType(hue));
             } else {
                 logger.warn("Item type {} is not supported for {}. Only Color type is supported.",
-                        taggedItem.getItem().getType(), taggedItem.getName());
+                        taggedItem.getBaseItem().getType(), taggedItem.getName());
             }
         }, getSubscriber(taggedItem, HUE, updater), getUnsubscriber(taggedItem, HUE, updater));
     }
@@ -573,12 +572,11 @@ public class HomekitCharacteristicFactory {
             }
             return CompletableFuture.completedFuture(value);
         }, (brightness) -> {
-            final Item item = taggedItem.getItem();
-            if (item instanceof DimmerItem) {
+            if (taggedItem.getBaseItem() instanceof DimmerItem) {
                 taggedItem.sendCommandProxy(HomekitCommandType.BRIGHTNESS_COMMAND, new PercentType(brightness));
             } else {
                 logger.warn("Item type {} is not supported for {}. Only ColorItem and DimmerItem are supported.",
-                        item.getType(), taggedItem.getName());
+                        taggedItem.getBaseItem().getType(), taggedItem.getName());
             }
         }, getSubscriber(taggedItem, BRIGHTNESS, updater), getUnsubscriber(taggedItem, BRIGHTNESS, updater));
     }
@@ -595,12 +593,12 @@ public class HomekitCharacteristicFactory {
             }
             return CompletableFuture.completedFuture(value);
         }, (saturation) -> {
-            if (taggedItem.getItem() instanceof ColorItem) {
+            if (taggedItem.getBaseItem() instanceof ColorItem) {
                 taggedItem.sendCommandProxy(HomekitCommandType.SATURATION_COMMAND,
                         new PercentType(saturation.intValue()));
             } else {
                 logger.warn("Item type {} is not supported for {}. Only Color type is supported.",
-                        taggedItem.getItem().getType(), taggedItem.getName());
+                        taggedItem.getBaseItem().getType(), taggedItem.getName());
             }
         }, getSubscriber(taggedItem, SATURATION, updater), getUnsubscriber(taggedItem, SATURATION, updater));
     }

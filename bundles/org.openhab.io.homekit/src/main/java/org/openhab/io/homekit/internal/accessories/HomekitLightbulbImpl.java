@@ -15,8 +15,6 @@ package org.openhab.io.homekit.internal.accessories;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import org.openhab.core.items.GenericItem;
-import org.openhab.core.items.GroupItem;
 import org.openhab.core.library.items.DimmerItem;
 import org.openhab.core.library.items.SwitchItem;
 import org.openhab.core.library.types.OnOffType;
@@ -53,13 +51,10 @@ class HomekitLightbulbImpl extends AbstractHomekitAccessoryImpl implements Light
     public CompletableFuture<Void> setLightbulbPowerState(boolean value) {
         getCharacteristic(HomekitCharacteristicType.ON_STATE).ifPresent(tItem -> {
             final OnOffType onOffState = OnOffType.from(value);
-            final GenericItem item = (GenericItem) tItem.getItem();
-            if (item instanceof DimmerItem) {
+            if (tItem.getBaseItem() instanceof DimmerItem) {
                 tItem.sendCommandProxy(HomekitCommandType.ON_COMMAND, onOffState);
-            } else if (item instanceof SwitchItem) {
-                ((SwitchItem) item).send(onOffState);
-            } else if (item instanceof GroupItem) {
-                ((GroupItem) item).send(onOffState);
+            } else if (tItem.getBaseItem() instanceof SwitchItem) {
+                tItem.send(onOffState);
             }
         });
         return CompletableFuture.completedFuture(null);
