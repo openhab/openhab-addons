@@ -55,7 +55,7 @@ public class SMSModemActions implements ThingActions {
         if (recipient != null && !recipient.isEmpty() && message != null) {
             handler.send(recipient, message, false, encoding);
         } else {
-            logger.error("SMSModem cannot send a message with no recipient or text");
+            logger.warn("SMSModem cannot send a message with no recipient or text");
         }
     }
 

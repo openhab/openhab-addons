@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class SMSModemBridgeConfiguration {
 
     public String serialPort = "";
-    public Integer baud = 9800;
+    public Integer baud = 9600;
     public String simPin = "";
     public Integer pollingInterval = 15;
     public Integer delayBetweenSend = 0;

@@ -21,9 +21,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -42,7 +44,6 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
-import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
@@ -76,8 +77,6 @@ public class SMSModemBridgeHandler extends BaseBridgeHandler
             SMSModemBindingConstants.SMSMODEMREMOTEBRIDGE_THING_TYPE);
 
     private final Logger logger = LoggerFactory.getLogger(SMSModemBridgeHandler.class);
-
-    private Set<SMSConversationHandler> childHandlers = new HashSet<>();
 
     private SerialPortManager serialPortManager;
 
@@ -167,7 +166,6 @@ public class SMSModemBridgeHandler extends BaseBridgeHandler
             }
         } catch (ModemConfigurationException e) {
             String message = e.getMessage();
-            logger.error(message, e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
         }
     }
@@ -190,7 +188,6 @@ public class SMSModemBridgeHandler extends BaseBridgeHandler
             // test reachable address :
             try (Socket s = new Socket(ip, config.networkPort)) {
             }
-
         } catch (IOException | NumberFormatException ex) {
             // no ip
             throw new ModemConfigurationException(
@@ -217,20 +214,6 @@ public class SMSModemBridgeHandler extends BaseBridgeHandler
     }
 
     @Override
-    public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
-        if (childHandler instanceof SMSConversationHandler) {
-            childHandlers.add((SMSConversationHandler) childHandler);
-        } else {
-            logger.error("The SMSModemBridgeHandler can only handle SMSConversation as child");
-        }
-    }
-
-    @Override
-    public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
-        childHandlers.remove(childHandler);
-    }
-
-    @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
     }
 
@@ -244,7 +227,7 @@ public class SMSModemBridgeHandler extends BaseBridgeHandler
             if (text != null) {
                 messageText = text;
             } else {
-                logger.error("Message has no payload !");
+                logger.warn("Message has no payload !");
                 return;
             }
         } else {
@@ -253,14 +236,14 @@ public class SMSModemBridgeHandler extends BaseBridgeHandler
                 logger.warn("Message payload in binary format. Don't know how to handle it. Please report it.");
                 messageText = bytes.toString();
             } else {
-                logger.error("Message has no payload !");
+                logger.warn("Message has no payload !");
                 return;
             }
         }
         logger.debug("Receiving new message from {} : {}", sender, messageText);
 
         // dispatch to conversation :
-        for (SMSConversationHandler child : childHandlers) {
+        for (SMSConversationHandler child : getChildHandlers()) {
             child.checkAndReceive(sender, messageText);
         }
 
@@ -277,7 +260,7 @@ public class SMSModemBridgeHandler extends BaseBridgeHandler
         try { // delete message on the sim
             modem.delete(message);
         } catch (CommunicationException e) {
-            logger.error("Cannot delete message after receiving it !", e);
+            logger.warn("Cannot delete message after receiving it !", e);
         }
     }
 
@@ -296,7 +279,7 @@ public class SMSModemBridgeHandler extends BaseBridgeHandler
                 out.setEncoding(encoding2);
             }
         } catch (IllegalArgumentException e) {
-            logger.error("Encoding {} is not supported. Use Enc7, Enc8, EncUcs2, or EncCustom", encoding);
+            logger.warn("Encoding {} is not supported. Use Enc7, Enc8, EncUcs2, or EncCustom", encoding);
         }
         out.setRequestDeliveryReport(deliveryReport);
         logger.debug("Sending message to {}", recipient);
@@ -321,25 +304,21 @@ public class SMSModemBridgeHandler extends BaseBridgeHandler
     public boolean processStatusCallback(Modem.Status oldStatus, Modem.Status newStatus) {
         switch (newStatus) {
             case Error:
-                logger.error("SMSLib reported an error on the underlying modem {}", modem.getDescription());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "SMSLib reported an error on the underlying modem " + modem.getDescription());
                 break;
             case Started:
-                logger.debug("SMSLib reported the modem {} is started", modem.getDescription());
                 updateStatus(ThingStatus.ONLINE);
                 break;
             case Starting:
-                logger.debug("SMSLib reported the modem {} is starting", modem.getDescription());
                 updateStatus(ThingStatus.UNKNOWN);
                 break;
             case Stopped:
-                logger.debug("SMSLib reported the modem {} is stopped", modem.getDescription());
                 if (thing.getStatus() != ThingStatus.OFFLINE) {
                     updateStatus(ThingStatus.OFFLINE);
                 }
                 break;
             case Stopping:
-                logger.debug("SMSLib reported the modem {} is stopping", modem.getDescription());
                 if (thing.getStatus() != ThingStatus.OFFLINE) {
                     updateStatus(ThingStatus.OFFLINE);
                 }
@@ -374,7 +353,7 @@ public class SMSModemBridgeHandler extends BaseBridgeHandler
         MsIsdn recipientAddress = message.getRecipientAddress();
         if (recipientAddress != null) {
             String recipient = recipientAddress.getAddress();
-            for (SMSConversationHandler child : childHandlers) {
+            for (SMSConversationHandler child : getChildHandlers()) {
                 child.checkAndUpdateDeliveryStatus(recipient, sentStatus);
             }
         }
@@ -405,15 +384,20 @@ public class SMSModemBridgeHandler extends BaseBridgeHandler
         MsIsdn recipientAddress = message.getRecipientAddress();
         if (recipientAddress != null) {
             String recipient = recipientAddress.getAddress();
-            for (SMSConversationHandler child : childHandlers) {
+            for (SMSConversationHandler child : getChildHandlers()) {
                 child.checkAndUpdateDeliveryStatus(recipient, sentStatus);
             }
         }
         try {
             modem.delete(message);
         } catch (CommunicationException e) {
-            logger.error("Cannot delete delivery report after receiving it !", e);
+            logger.warn("Cannot delete delivery report after receiving it !", e);
         }
+    }
+
+    private Set<SMSConversationHandler> getChildHandlers() {
+        return getThing().getThings().stream().map(Thing::getHandler).filter(Objects::nonNull)
+                .map(handler -> (SMSConversationHandler) handler).collect(Collectors.toSet());
     }
 
     @Override

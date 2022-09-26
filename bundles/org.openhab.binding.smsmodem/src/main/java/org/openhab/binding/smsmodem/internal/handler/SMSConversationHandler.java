@@ -16,6 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smsmodem.internal.SMSConversationConfiguration;
 import org.openhab.binding.smsmodem.internal.SMSModemBindingConstants;
+import org.openhab.core.i18n.ConfigurationException;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -56,24 +57,21 @@ public class SMSConversationHandler extends BaseThingHandler {
         return config.recipient.trim();
     }
 
-    private synchronized @Nullable SMSModemBridgeHandler getBridgeHandler() {
+    private synchronized void checkBridgeHandler() {
         if (this.bridgeHandler == null) {
             Bridge bridge = getBridge();
             if (bridge == null) {
-                logger.error("Required bridge not defined for SMSconversation {} with {}.", thing.getUID(),
-                        getRecipient());
-                return null;
+                throw new ConfigurationException("Required bridge not defined for SMSconversation {} with {}.",
+                        thing.getUID(), getRecipient());
             }
             ThingHandler handler = bridge.getHandler();
             if (handler instanceof SMSModemBridgeHandler) {
                 this.bridgeHandler = (SMSModemBridgeHandler) handler;
             } else {
-                logger.error("No available bridge handler found for SMSConversation {} bridge {} .", thing.getUID(),
-                        bridge.getUID());
-                return null;
+                throw new ConfigurationException("No available bridge handler found for SMSConversation {} bridge {} .",
+                        thing.getUID(), bridge.getUID());
             }
         }
-        return this.bridgeHandler;
     }
 
     protected void checkAndReceive(String sender, String text) {
@@ -115,29 +113,25 @@ public class SMSConversationHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         config = getConfigAs(SMSConversationConfiguration.class);
-        bridgeHandler = getBridgeHandler();
-        setStatusByBridgeStatus();
+        try {
+            checkBridgeHandler();
+            setStatusByBridgeStatus();
+        } catch (ConfigurationException confe) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, confe.getMessage());
+        }
     }
 
     private void setStatusByBridgeStatus() {
         SMSModemBridgeHandler bridgeHandlerFinal = bridgeHandler;
         if (bridgeHandlerFinal != null) {
             switch (bridgeHandlerFinal.getThing().getStatus()) {
-                case INITIALIZING:
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-                    break;
-                case OFFLINE:
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-                    break;
                 case ONLINE:
                     updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
                     break;
+                case INITIALIZING:
+                case OFFLINE:
                 case REMOVED:
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-                    break;
                 case REMOVING:
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-                    break;
                 case UNINITIALIZED:
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
                     break;
