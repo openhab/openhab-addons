@@ -183,8 +183,8 @@ public class IpCameraHandler extends BaseThingHandler {
     public BigDecimal motionThreshold = BigDecimal.ZERO;
     public int audioThreshold = 35;
     public boolean streamingSnapshotMjpeg = false;
-    public boolean motionAlarmEnabled = false;
-    public boolean audioAlarmEnabled = false;
+    public boolean ffmpegMotionAlarmEnabled = false;
+    public boolean ffmpegAudioAlarmEnabled = false;
     public boolean ffmpegSnapshotGeneration = false;
     public boolean snapshotPolling = false;
     public OnvifConnection onvifCamera = new OnvifConnection(this, "", "", "");
@@ -868,20 +868,20 @@ public class IpCameraHandler extends BaseThingHandler {
                 Ffmpeg localAlarms = ffmpegRtspHelper;
                 if (localAlarms != null) {
                     localAlarms.stopConverting();
-                    if (!audioAlarmEnabled && !motionAlarmEnabled) {
+                    if (!ffmpegAudioAlarmEnabled && !ffmpegMotionAlarmEnabled) {
                         return;
                     }
                 }
                 String input = (cameraConfig.getAlarmInputUrl().isEmpty()) ? rtspUri : cameraConfig.getAlarmInputUrl();
                 String filterOptions = "";
-                if (!audioAlarmEnabled) {
+                if (!ffmpegAudioAlarmEnabled) {
                     filterOptions = "-an";
                 } else {
                     filterOptions = "-af silencedetect=n=-" + audioThreshold + "dB:d=2";
                 }
-                if (!motionAlarmEnabled && !ffmpegSnapshotGeneration) {
+                if (!ffmpegMotionAlarmEnabled && !ffmpegSnapshotGeneration) {
                     filterOptions = filterOptions.concat(" -vn");
-                } else if (motionAlarmEnabled && !cameraConfig.getMotionOptions().isEmpty()) {
+                } else if (ffmpegMotionAlarmEnabled && !cameraConfig.getMotionOptions().isEmpty()) {
                     String usersMotionOptions = cameraConfig.getMotionOptions();
                     if (usersMotionOptions.startsWith("-")) {
                         // Need to put the users custom options first in the chain before the motion is detected
@@ -891,7 +891,7 @@ public class IpCameraHandler extends BaseThingHandler {
                         filterOptions = filterOptions + " " + usersMotionOptions + " -vf select='gte(scene,"
                                 + motionThreshold.divide(BIG_DECIMAL_SCALE_MOTION) + ")',metadata=print";
                     }
-                } else if (motionAlarmEnabled) {
+                } else if (ffmpegMotionAlarmEnabled) {
                     filterOptions = filterOptions.concat(" -vf select='gte(scene,"
                             + motionThreshold.divide(BIG_DECIMAL_SCALE_MOTION) + ")',metadata=print");
                 }
@@ -924,9 +924,9 @@ public class IpCameraHandler extends BaseThingHandler {
                 if (ffmpegSnapshot == null) {
                     if (inputOptions.isEmpty()) {
                         // iFrames only
-                        inputOptions = "-threads 1 -skip_frame nokey -hide_banner -loglevel warning";
+                        inputOptions = "-threads 1 -skip_frame nokey -hide_banner";
                     } else {
-                        inputOptions += " -threads 1 -skip_frame nokey -hide_banner -loglevel warning";
+                        inputOptions += " -threads 1 -skip_frame nokey -hide_banner";
                     }
                     ffmpegSnapshot = new Ffmpeg(this, format, cameraConfig.getFfmpegLocation(), inputOptions, rtspUri,
                             cameraConfig.getSnapshotOptions(), "http://127.0.0.1:" + SERVLET_PORT + "/ipcamera/"
@@ -1106,12 +1106,12 @@ public class IpCameraHandler extends BaseThingHandler {
                     return;
                 case CHANNEL_FFMPEG_MOTION_CONTROL:
                     if (OnOffType.ON.equals(command)) {
-                        motionAlarmEnabled = true;
+                        ffmpegMotionAlarmEnabled = true;
                     } else if (OnOffType.OFF.equals(command) || DecimalType.ZERO.equals(command)) {
-                        motionAlarmEnabled = false;
+                        ffmpegMotionAlarmEnabled = false;
                         noMotionDetected(CHANNEL_FFMPEG_MOTION_ALARM);
                     } else if (command instanceof PercentType) {
-                        motionAlarmEnabled = true;
+                        ffmpegMotionAlarmEnabled = true;
                         motionThreshold = ((PercentType) command).toBigDecimal();
                     }
                     setupFfmpegFormat(FFmpegFormat.RTSP_ALARMS);
@@ -1564,9 +1564,15 @@ public class IpCameraHandler extends BaseThingHandler {
                         + cameraConfig.getPassword());
                 break;
         }
-        Ffmpeg localHLS = ffmpegHLS;
-        if (localHLS != null) {
-            localHLS.checkKeepAlive();
+        Ffmpeg localFfmpeg = ffmpegHLS;
+        if (localFfmpeg != null) {
+            localFfmpeg.checkKeepAlive();
+        }
+        if (ffmpegMotionAlarmEnabled || ffmpegAudioAlarmEnabled) {
+            localFfmpeg = ffmpegRtspHelper;
+            if (localFfmpeg == null || !localFfmpeg.getIsAlive()) {
+                setupFfmpegFormat(FFmpegFormat.RTSP_ALARMS);
+            }
         }
         if (openChannels.size() > 10) {
             logger.debug("There are {} open Channels being tracked.", openChannels.size());
