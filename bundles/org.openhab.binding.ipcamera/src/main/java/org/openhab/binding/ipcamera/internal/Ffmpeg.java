@@ -134,12 +134,10 @@ public class Ffmpeg {
                         logger.debug("{}", line);
                         switch (format) {
                             case RTSP_ALARMS:
-
                                 if (line.contains("lavfi.")) {
                                     // When the number of pixels that change are below the noise floor we need to look
                                     // across frames to confirm it is motion and not noise.
-                                    if (countOfMotions < 10) {// Stop increasing otherwise it will take too long to go
-                                                              // OFF.
+                                    if (countOfMotions < 10) {// Stop increasing otherwise it takes too long to go OFF
                                         countOfMotions++;
                                     }
                                     if (countOfMotions > 9) {
@@ -180,9 +178,7 @@ public class Ffmpeg {
                         }
                     }
                 }
-            } catch (
-
-            IOException e) {
+            } catch (IOException e) {
                 logger.warn("An IO error occured trying to start FFmpeg:{}", e.getMessage());
             } finally {
                 switch (format) {
