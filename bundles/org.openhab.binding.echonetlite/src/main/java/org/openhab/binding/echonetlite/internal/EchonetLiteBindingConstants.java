@@ -29,7 +29,7 @@ public class EchonetLiteBindingConstants {
     public static final int NETWORK_WAIT_TIMEOUT = 250;
 
     // List of all Thing Type UIDs
-    private static final String BINDING_ID = "echonetlite";
+    public static final String BINDING_ID = "echonetlite";
     public static final ThingTypeUID THING_TYPE_ECHONET_DEVICE = new ThingTypeUID(BINDING_ID, "device");
     public static final ThingTypeUID THING_TYPE_ECHONET_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
 

@@ -1,3 +1,15 @@
+/**
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.echonetlite.internal.protocol;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
@@ -8,6 +20,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.echonetlite.internal.StateCodec;
 import org.openhab.binding.echonetlite.internal.StateCodec.HexStringCodec;
@@ -18,9 +31,15 @@ import org.openhab.binding.echonetlite.internal.StateCodec.StandardVersionInform
 import org.openhab.binding.echonetlite.internal.StateDecode;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.types.State;
 
+/**
+ * @author Michael Barker - Initial contribution
+ */
+@NonNullByDefault
 class StateCodecTest {
     private void assertEncodeDecode(StateCodec stateCodec, State state, byte[] expectedOutput) {
         final ByteBuffer buffer = ByteBuffer.allocate(1024);
@@ -78,11 +97,11 @@ class StateCodecTest {
 
         buffer.flip();
         buffer.order(ByteOrder.LITTLE_ENDIAN);
-        assertEquals(valueInSeconds, ((DecimalType) OperatingTimeDecode.INSTANCE.decodeState(buffer)).intValue());
+        assertEquals(valueInSeconds, ((QuantityType<?>) OperatingTimeDecode.INSTANCE.decodeState(buffer)).intValue());
 
         buffer.flip();
         buffer.order(ByteOrder.BIG_ENDIAN);
-        assertEquals(valueInSeconds, ((DecimalType) OperatingTimeDecode.INSTANCE.decodeState(buffer)).intValue());
+        assertEquals(valueInSeconds, ((QuantityType<?>) OperatingTimeDecode.INSTANCE.decodeState(buffer)).intValue());
     }
 
     @Test
@@ -94,8 +113,18 @@ class StateCodecTest {
 
     @Test
     void shouldEncodeAndDecode8Bit() {
-        assertEncodeDecode(Decimal8bitCodec.INSTANCE, new DecimalType(123), new byte[] { 123 });
-        assertEncodeDecode(Decimal8bitCodec.INSTANCE, new DecimalType(1), new byte[] { 1 });
-        assertEncodeDecode(Decimal8bitCodec.INSTANCE, new DecimalType(-1), new byte[] { b(255) });
+        assertEncodeDecode(StateCodec.Decimal8bitCodec.INSTANCE, new DecimalType(123), new byte[] { 123 });
+        assertEncodeDecode(StateCodec.Decimal8bitCodec.INSTANCE, new DecimalType(1), new byte[] { 1 });
+        assertEncodeDecode(StateCodec.Decimal8bitCodec.INSTANCE, new DecimalType(-1), new byte[] { b(255) });
+    }
+
+    @Test
+    void shouldEncodeAndDecodeTemperature() {
+        assertEncodeDecode(StateCodec.Temperature8bitCodec.INSTANCE, new QuantityType<>(123, SIUnits.CELSIUS),
+                new byte[] { 123 });
+        assertEncodeDecode(StateCodec.Temperature8bitCodec.INSTANCE, new QuantityType<>(1, SIUnits.CELSIUS),
+                new byte[] { 1 });
+        assertEncodeDecode(StateCodec.Temperature8bitCodec.INSTANCE, new QuantityType<>(-1, SIUnits.CELSIUS),
+                new byte[] { b(255) });
     }
 }

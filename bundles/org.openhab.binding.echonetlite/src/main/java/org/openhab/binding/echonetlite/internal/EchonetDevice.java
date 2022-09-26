@@ -75,13 +75,9 @@ public class EchonetDevice extends EchonetObject {
 
                 if (initialised) {
                     listener.onUpdated(epc.channelId(), state);
-                } else if (pendingGets.isEmpty()) {
-                    initialised = true;
-                    listener.onInitialised(identifier(), instanceKey, channelIds());
-                    stateFields.forEach((e, s) -> listener.onUpdated(e.channelId(), s));
                 }
-            } else {
-                if (Epc.Device.GET_PROPERTY_MAP == epc && null == getPropertyMap) {
+            } else if (Epc.Device.GET_PROPERTY_MAP == epc) {
+                if (null == getPropertyMap) {
                     final EchonetPropertyMap getPropertyMap = new EchonetPropertyMap(epc);
                     getPropertyMap.update(edt);
                     getPropertyMap.getProperties(instanceKey().klass.groupCode(), instanceKey().klass.classCode(),
@@ -90,10 +86,17 @@ public class EchonetDevice extends EchonetObject {
                 }
             }
 
+            if (!initialised && null != getPropertyMap && pendingGets.isEmpty()) {
+                initialised = true;
+                listener.onInitialised(identifier(), instanceKey, channelIds());
+                stateFields.forEach((e, s) -> listener.onUpdated(e.channelId(), s));
+            }
+
             if (logger.isDebugEnabled()) {
                 String value = null != state ? state.toString() : "";
                 edt.position(edtPosition);
-                logger.debug("Applying: {}({},{}) {} {}", epc, hex(epc.code()), pdc, value, hex(edt));
+                logger.debug("Applying: {}({},{}) {} {} pending: {}", epc, hex(epc.code()), pdc, value, hex(edt),
+                        pendingGets.size());
             }
         } else if (esv == Esv.Set_Res) {
             pendingSets.remove(epc);

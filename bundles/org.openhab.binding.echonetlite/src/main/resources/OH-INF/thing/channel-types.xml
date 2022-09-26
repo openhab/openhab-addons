@@ -348,7 +348,7 @@
 			<tag>Setpoint</tag>
 			<tag>Temperature</tag>
 		</tags>
-		<state min="0" max="50" pattern="%d °C" readOnly="false"/>
+		<state min="0" max="50" pattern="%d %unit%" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="measuredRoomTemperature">
@@ -360,7 +360,7 @@
 			<tag>Measurement</tag>
 			<tag>Temperature</tag>
 		</tags>
-		<state min="-127" max="125" pattern="%d °C" readOnly="true"/>
+		<state min="-127" max="125" pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="measuredOutdoorTemperature">
@@ -372,7 +372,7 @@
 			<tag>Measurement</tag>
 			<tag>Temperature</tag>
 		</tags>
-		<state min="-127" max="125" pattern="%d °C" readOnly="true"/>
+		<state min="-127" max="125" pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>

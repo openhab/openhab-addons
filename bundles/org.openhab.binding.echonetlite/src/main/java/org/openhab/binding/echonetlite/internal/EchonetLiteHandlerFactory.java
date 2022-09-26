@@ -25,10 +25,7 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
-import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Component;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link EchonetLiteHandlerFactory} is responsible for creating things and thing
@@ -40,20 +37,8 @@ import org.slf4j.LoggerFactory;
 @Component(configurationPid = "binding.echonetlite", service = ThingHandlerFactory.class)
 public class EchonetLiteHandlerFactory extends BaseThingHandlerFactory {
 
-    private final Logger logger = LoggerFactory.getLogger(EchonetLiteHandlerFactory.class);
-
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_ECHONET_DEVICE,
             THING_TYPE_ECHONET_BRIDGE);
-
-    protected void activate(final ComponentContext componentContext) {
-        logger.debug("Activating");
-        super.activate(componentContext);
-    }
-
-    protected void deactivate(final ComponentContext componentContext) {
-        logger.debug("Deactivating");
-        super.deactivate(componentContext);
-    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

@@ -15,11 +15,13 @@ package org.openhab.binding.echonetlite.internal;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.openhab.binding.echonetlite.internal.EchonetClass.AIRCON_HOMEAC;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 
 /**
  * @author Michael Barker - Initial contribution
  */
+@NonNullByDefault
 class EpcTest {
 
     @Test

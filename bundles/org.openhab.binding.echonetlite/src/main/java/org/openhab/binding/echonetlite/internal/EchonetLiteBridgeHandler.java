@@ -77,7 +77,7 @@ public class EchonetLiteBridgeHandler extends BaseBridgeHandler {
         echonetChannel = new EchonetChannel(discoveryKey.address);
         logger.debug("Starting networking thread");
 
-        networkingThread.setName("Echonet Networking");
+        networkingThread.setName("OH-binding-" + EchonetLiteBindingConstants.BINDING_ID);
         networkingThread.setDaemon(true);
         networkingThread.start();
     }
@@ -249,7 +249,7 @@ public class EchonetLiteBridgeHandler extends BaseBridgeHandler {
 
         logger.debug("Message {} for: {}", esv, echonetObject);
         if (null != echonetObject) {
-            echonetObject.applyHeader(esv, echonetMessage.tid());
+            echonetObject.applyHeader(esv, echonetMessage.tid(), clock.timeMs());
             while (echonetMessage.moveNext()) {
                 final int epc = echonetMessage.currentEpc();
                 final int pdc = echonetMessage.currentPdc();

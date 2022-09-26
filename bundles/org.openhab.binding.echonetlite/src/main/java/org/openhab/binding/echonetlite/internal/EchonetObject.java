@@ -15,7 +15,6 @@ package org.openhab.binding.echonetlite.internal;
 import static org.openhab.binding.echonetlite.internal.EchonetLiteBindingConstants.DEFAULT_RETRY_TIMEOUT_MS;
 
 import java.nio.ByteBuffer;
-import java.time.Clock;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -110,22 +109,22 @@ public abstract class EchonetObject {
     public void refresh(String channelId) {
     }
 
-    public void applyHeader(Esv esv, short tid) {
+    public void applyHeader(Esv esv, short tid, long nowMs) {
         if ((esv == Esv.Get_Res || esv == Esv.Get_SNA)) {
             final long sentTimestampMs = this.inflightGetRequest.timestampMs;
             if (this.inflightGetRequest.responseReceived(tid)) {
-                logger.debug("{} response time: {}ms", esv, Clock.systemUTC().millis() - sentTimestampMs);
+                logger.debug("{} response time: {}ms", esv, nowMs - sentTimestampMs);
             } else {
                 logger.warn("Unexpected {} response: {}", esv, tid);
-                this.inflightGetRequest.checkOldResponse(tid);
+                this.inflightGetRequest.checkOldResponse(tid, nowMs);
             }
         } else if ((esv == Esv.Set_Res || esv == Esv.SetC_SNA)) {
             final long sentTimestampMs = this.inflightSetRequest.timestampMs;
             if (this.inflightSetRequest.responseReceived(tid)) {
-                logger.debug("{} response time: {}ms", esv, Clock.systemUTC().millis() - sentTimestampMs);
+                logger.debug("{} response time: {}ms", esv, nowMs - sentTimestampMs);
             } else {
                 logger.warn("Unexpected {} response: {}", esv, tid);
-                this.inflightSetRequest.checkOldResponse(tid);
+                this.inflightSetRequest.checkOldResponse(tid, nowMs);
             }
         }
     }
@@ -184,11 +183,10 @@ public abstract class EchonetObject {
             return NULL_TIMESTAMP != timestampMs;
         }
 
-        public void checkOldResponse(short tid) {
+        public void checkOldResponse(short tid, long nowMs) {
             final Long oldResponseTimestampMs = oldRequests.remove(tid);
             if (null != oldResponseTimestampMs) {
-                logger.warn("Timed out request, tid={}, actually took={}", tid,
-                        System.currentTimeMillis() - oldResponseTimestampMs);
+                logger.warn("Timed out request, tid={}, actually took={}", tid, nowMs - oldResponseTimestampMs);
             }
         }
     }
