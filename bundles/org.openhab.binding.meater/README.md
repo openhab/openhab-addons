@@ -1,8 +1,8 @@
-# Meater Binding
+# MEATER Binding
 
-This is an openHAB binding for the Meater probe, by Apption Labs.
+This is an openHAB binding for the MEATER probe, MEATER® is a trademark of Apption Labs™ Limited. A Traeger Company.
 
-This binding uses the Meater cloud REST API.
+This binding uses the MEATER cloud REST API.
 
 ![Meater+ Probe](doc/meater-plus-side.png)
 
@@ -11,19 +11,19 @@ This binding uses the Meater cloud REST API.
 
 This binding supports the following thing types:
 
-- meaterapi: Bridge - Communicates with the Meater cloud REST API.
+- meaterapi: Bridge - Communicates with the MEATER cloud REST API.
 
 
-- meaterprobe: The Meater probe - Only support for cloud connected Meater probes (Meater+) 
+- meaterprobe: The MEATER probe - Only support for cloud connected MEATER probes (MEATER Block and MEATER Plus) 
 
 ## Discovery
 
-The preferred way of adding Meater probe(s) since the probe IDs are not easily found.
+The preferred way of adding MEATER probe(s) since the probe IDs are not easily found.
 
-**NOTE**: For The Original Meater and Meater Plus you need to have your Meater app running and the Meater probe(s) must connected to the cloud (out of the charger box) before you start the discovery.
+**NOTE**: For The Original MEATER and MEATER Plus you need to have your MEATER app running and the MEATER probe(s) must connected to the cloud (out of the charger box) before you start the discovery.
 
 
-After the configuration of the Bridge, you need to perform a manual scan and then your Meater probe(s) will be automatically discovered and placed as a thing(s) in the inbox.
+After the configuration of the Bridge, you need to perform a manual scan and then your MEATER probe(s) will be automatically discovered and placed as a thing(s) in the inbox.
 
 
 
@@ -33,16 +33,16 @@ After the configuration of the Bridge, you need to perform a manual scan and the
 
 | Parameter | Description                                                  | Type   | Default  | Required | 
 |-----------|--------------------------------------------------------------|--------|----------|----------|
-| email     | The email used to connect to your Meater cloud account       | String | NA       | yes      |
-| password  | The password used to connect to your Meater cloud account    | String | NA       | yes      |
+| email     | The email used to connect to your MEATER cloud account       | String | NA       | yes      |
+| password  | The password used to connect to your MEATER cloud account    | String | NA       | yes      |
 | refresh   | Specifies the refresh interval in second                     | Number | 30       | no     |
 
 ## Channels
 
 | Channel Type ID       | Item Type          | Description                                          | 
 |-----------------------|--------------------|------------------------------------------------------|
-| internalTemperature   | Number:Temperature | Internal temperature reading of Meater probe         |
-| ambientTemperature    | Number:Temperature | Ambient temperature reading of Meater probe.  If ambient is less than internal, ambient will equal internal                                                     |
+| internalTemperature   | Number:Temperature | Internal temperature reading of MEATER probe         |
+| ambientTemperature    | Number:Temperature | Ambient temperature reading of MEATER probe.  If ambient is less than internal, ambient will equal internal                                                     |
 | cookTargetTemperature | Number:Temperature | Target temperature of current cook                   |
 | cookPeakTemperature   | Number:Temperature | Peak temperature of current cook                     |
 | lastConnection        | DateTime           | Date and time of last probe connection               |
@@ -60,11 +60,11 @@ After the configuration of the Bridge, you need to perform a manual scan and the
 ### Things-file
 
 ````
-Bridge meater:meaterapi:block     "Meater Block"   [email="", password=""] {
-  meater:meaterprobe:block:probe1 "Meater Probe 1" [deviceId=""]
-  meater:meaterprobe:block:probe2 "Meater Probe 2" [deviceId=""]
-  meater:meaterprobe:block:probe3 "Meater Probe 3" [deviceId=""]
-  meater:meaterprobe:block:probe4 "Meater Probe 4" [deviceId=""]
+Bridge meater:meaterapi:block     "MEATER Block"   [email="", password=""] {
+  meater:meaterprobe:block:probe1 "MEATER Probe 1" [deviceId=""]
+  meater:meaterprobe:block:probe2 "MEATER Probe 2" [deviceId=""]
+  meater:meaterprobe:block:probe3 "MEATER Probe 3" [deviceId=""]
+  meater:meaterprobe:block:probe4 "MEATER Probe 4" [deviceId=""]
 }
 ````
 

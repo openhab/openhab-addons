@@ -102,7 +102,7 @@ public class MeaterRestAPI {
             request.header(HttpHeader.ACCEPT_LANGUAGE, acceptLanguage);
             request.content(new StringContentProvider(json), JSON_CONTENT_TYPE);
 
-            logger.debug("HTTP POST Request {}.", request.toString());
+            logger.trace("HTTP POST Request {}.", request.toString());
 
             ContentResponse httpResponse = request.send();
             if (httpResponse.getStatus() != HttpStatus.OK_200) {
@@ -114,7 +114,9 @@ public class MeaterRestAPI {
             JsonObject childObject = jsonObject.getAsJsonObject("data");
             this.authToken = childObject.get("token").getAsString();
             this.userId = childObject.get("userId").getAsString();
-        } catch (InterruptedException | TimeoutException | ExecutionException | JsonParseException e) {
+        } catch (TimeoutException | ExecutionException | JsonParseException e) {
+            throw new MeaterException(e);
+        } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new MeaterException(e);
         }
@@ -145,25 +147,28 @@ public class MeaterRestAPI {
                 }
             }
             throw new MeaterException("Failed to fetch from API!");
-        } catch (InterruptedException | MeaterException | ExecutionException e) {
+        } catch (ExecutionException e) {
+            throw new MeaterException(e);
+        } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new MeaterException(e);
         }
     }
 
-    public <T> T getDevices(Class<T> dto) throws MeaterException, JsonSyntaxException {
+    public <T> T getDevices(Class<T> dto) throws MeaterException {
         String uri = DEVICES;
         String json;
 
-        try {
-            json = getFromApi(uri);
-        } catch (MeaterException e) {
-            throw new MeaterException(e);
-        }
+        json = getFromApi(uri);
+
         if (json.isEmpty()) {
             throw new MeaterException("JSON from API is empty!");
         } else {
-            return gson.fromJson(json, dto);
+            try {
+                return gson.fromJson(json, dto);
+            } catch (JsonSyntaxException e) {
+                throw new MeaterException("Error parsing JSON", e);
+            }
         }
     }
 }

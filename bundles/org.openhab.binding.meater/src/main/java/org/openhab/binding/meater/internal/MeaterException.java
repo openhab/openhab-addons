@@ -33,6 +33,10 @@ public class MeaterException extends Exception {
         super(message);
     }
 
+    public MeaterException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
     @Override
     public @Nullable String getMessage() {
         Throwable throwable = getCause();
