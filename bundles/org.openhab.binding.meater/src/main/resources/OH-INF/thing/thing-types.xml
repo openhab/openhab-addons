@@ -76,6 +76,7 @@
 		<item-type>DateTime</item-type>
 		<label>Last Probe Connection</label>
 		<description>Date and time of last probe connection</description>
+		<category>Time</category>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM"/>
 	</channel-type>
 
@@ -83,6 +84,7 @@
 		<item-type>Number:Time</item-type>
 		<label>Cook Elapsed Time</label>
 		<description>Elapsed time in seconds for current cook</description>
+		<category>Time</category>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -90,6 +92,7 @@
 		<item-type>Number:Time</item-type>
 		<label>Cook Remaining Time</label>
 		<description>Remaining time in seconds for current cook</description>
+		<category>Time</category>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -97,6 +100,7 @@
 		<item-type>DateTime</item-type>
 		<label>Cook Estimated End Time</label>
 		<description>Date and time of estimated end time for current cook</description>
+		<category>Time</category>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM"/>
 	</channel-type>
 

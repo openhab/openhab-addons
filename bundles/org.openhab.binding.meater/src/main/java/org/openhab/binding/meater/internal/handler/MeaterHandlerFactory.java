@@ -19,6 +19,8 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -47,9 +49,14 @@ public class MeaterHandlerFactory extends BaseThingHandlerFactory {
 
     private final Gson gson;
     private final HttpClient httpClient;
+    private final TimeZoneProvider timeZoneProvider;
+    private final LocaleProvider localeProvider;
 
     @Activate
-    public MeaterHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
+    public MeaterHandlerFactory(@Reference TimeZoneProvider timeZoneProvider, @Reference LocaleProvider localeProvider,
+            @Reference HttpClientFactory httpClientFactory) {
+        this.timeZoneProvider = timeZoneProvider;
+        this.localeProvider = localeProvider;
         this.httpClient = httpClientFactory.getCommonHttpClient();
         this.gson = new Gson();
     }
@@ -64,9 +71,9 @@ public class MeaterHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_MEATER_PROBE.equals(thingTypeUID)) {
-            return new MeaterHandler(thing);
+            return new MeaterHandler(thing, timeZoneProvider);
         } else if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
-            return new MeaterBridgeHandler((Bridge) thing, httpClient, gson);
+            return new MeaterBridgeHandler((Bridge) thing, httpClient, gson, localeProvider);
         }
 
         return null;

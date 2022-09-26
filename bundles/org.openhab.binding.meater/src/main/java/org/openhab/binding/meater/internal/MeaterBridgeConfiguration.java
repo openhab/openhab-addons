@@ -24,5 +24,5 @@ import org.eclipse.jdt.annotation.Nullable;
 public class MeaterBridgeConfiguration {
     public @Nullable String email;
     public @Nullable String password;
-    public int refresh;
+    public int refresh = 30;
 }

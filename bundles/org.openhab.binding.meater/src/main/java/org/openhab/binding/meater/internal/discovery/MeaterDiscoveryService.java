@@ -22,7 +22,6 @@ import org.openhab.binding.meater.internal.MeaterConfiguration;
 import org.openhab.binding.meater.internal.handler.MeaterBridgeHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
@@ -34,7 +33,7 @@ import org.openhab.core.thing.binding.ThingHandlerService;
  * @author Jan Gustafsson - Initial contribution
  */
 @NonNullByDefault
-public class MeaterDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService, DiscoveryService {
+public class MeaterDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
     private static final int SEARCH_TIME = 2;
     private @Nullable MeaterBridgeHandler handler;
 
@@ -77,6 +76,5 @@ public class MeaterDiscoveryService extends AbstractDiscoveryService implements 
                                 .withRepresentationProperty(MeaterConfiguration.DEVICE_ID_LABEL).build());
             });
         }
-        stopScan();
     }
 }

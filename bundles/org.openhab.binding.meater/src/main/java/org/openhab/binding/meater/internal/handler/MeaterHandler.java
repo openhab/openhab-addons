@@ -23,6 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.meater.internal.MeaterConfiguration;
 import org.openhab.binding.meater.internal.dto.MeaterProbeDTO.Cook;
 import org.openhab.binding.meater.internal.dto.MeaterProbeDTO.Device;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -54,9 +55,11 @@ public class MeaterHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(MeaterHandler.class);
 
     private MeaterConfiguration config;
+    private TimeZoneProvider timeZoneProvider;
 
-    public MeaterHandler(Thing thing) {
+    public MeaterHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
         super(thing);
+        this.timeZoneProvider = timeZoneProvider;
         config = getConfigAs(MeaterConfiguration.class);
     }
 
@@ -153,12 +156,13 @@ public class MeaterHandler extends BaseThingHandler {
             case CHANNEL_LAST_CONNECTION:
                 ZonedDateTime zdt = meaterProbe.getLastConnection();
                 if (zdt != null) {
-                    return new DateTimeType(zdt);
+                    return new DateTimeType(zdt).toZone(timeZoneProvider.getTimeZone());
                 }
             case CHANNEL_COOK_ESTIMATED_END_TIME:
                 if (cook != null) {
                     if (cook.time.remaining > -1) {
-                        return new DateTimeType(ZonedDateTime.now().plusSeconds(cook.time.remaining));
+                        return new DateTimeType(ZonedDateTime.now().plusSeconds(cook.time.remaining))
+                                .toZone(timeZoneProvider.getTimeZone());
                     }
                 }
         }

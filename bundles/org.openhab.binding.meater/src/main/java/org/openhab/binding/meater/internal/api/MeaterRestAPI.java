@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
@@ -56,11 +57,14 @@ public class MeaterRestAPI {
     private final MeaterBridgeConfiguration configuration;
     private String authToken = "";
     private String userId = "";
+    private String acceptLanguage;
 
-    public MeaterRestAPI(MeaterBridgeConfiguration configuration, Gson gson, HttpClient httpClient) {
+    public MeaterRestAPI(MeaterBridgeConfiguration configuration, Gson gson, HttpClient httpClient,
+            String acceptLanguage) {
         this.gson = gson;
         this.configuration = configuration;
         this.httpClient = httpClient;
+        this.acceptLanguage = acceptLanguage;
     }
 
     public boolean refresh(Map<String, MeaterProbeDTO.Device> meaterProbeThings) {
@@ -95,6 +99,7 @@ public class MeaterRestAPI {
             Request request = httpClient.newRequest(API_ENDPOINT + LOGIN).method(HttpMethod.POST);
             request.header(HttpHeader.ACCEPT, JSON_CONTENT_TYPE);
             request.header(HttpHeader.CONTENT_TYPE, JSON_CONTENT_TYPE);
+            request.header(HttpHeader.ACCEPT_LANGUAGE, acceptLanguage);
             request.content(new StringContentProvider(json), JSON_CONTENT_TYPE);
 
             logger.debug("HTTP POST Request {}.", request.toString());
@@ -109,12 +114,13 @@ public class MeaterRestAPI {
             JsonObject childObject = jsonObject.getAsJsonObject("data");
             this.authToken = childObject.get("token").getAsString();
             this.userId = childObject.get("userId").getAsString();
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+        } catch (InterruptedException | TimeoutException | ExecutionException | JsonParseException e) {
+            Thread.currentThread().interrupt();
             throw new MeaterException(e);
         }
     }
 
-    private String getFromApi(String uri) throws MeaterException, InterruptedException {
+    private String getFromApi(String uri) throws MeaterException {
         try {
             for (int i = 0; i < MAX_RETRIES; i++) {
                 try {
@@ -122,6 +128,7 @@ public class MeaterRestAPI {
                     request.header(HttpHeader.AUTHORIZATION, "Bearer " + authToken);
                     request.header(HttpHeader.ACCEPT, JSON_CONTENT_TYPE);
                     request.header(HttpHeader.CONTENT_TYPE, JSON_CONTENT_TYPE);
+                    request.header(HttpHeader.ACCEPT_LANGUAGE, acceptLanguage);
 
                     ContentResponse response = request.send();
                     String content = response.getContentAsString();
@@ -138,20 +145,25 @@ public class MeaterRestAPI {
                 }
             }
             throw new MeaterException("Failed to fetch from API!");
-        } catch (JsonSyntaxException | MeaterException | ExecutionException e) {
+        } catch (InterruptedException | MeaterException | ExecutionException e) {
+            Thread.currentThread().interrupt();
             throw new MeaterException(e);
         }
     }
 
-    public <T> T getDevices(Class<T> dto) throws MeaterException {
+    public <T> T getDevices(Class<T> dto) throws MeaterException, JsonSyntaxException {
         String uri = DEVICES;
         String json;
 
         try {
             json = getFromApi(uri);
-        } catch (MeaterException | InterruptedException e) {
+        } catch (MeaterException e) {
             throw new MeaterException(e);
         }
-        return gson.fromJson(json, dto);
+        if (json.isEmpty()) {
+            throw new MeaterException("JSON from API is empty!");
+        } else {
+            return gson.fromJson(json, dto);
+        }
     }
 }

@@ -29,6 +29,7 @@ import org.openhab.binding.meater.internal.MeaterBridgeConfiguration;
 import org.openhab.binding.meater.internal.api.MeaterRestAPI;
 import org.openhab.binding.meater.internal.discovery.MeaterDiscoveryService;
 import org.openhab.binding.meater.internal.dto.MeaterProbeDTO;
+import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -55,22 +56,25 @@ public class MeaterBridgeHandler extends BaseBridgeHandler {
 
     private final Gson gson;
     private final HttpClient httpClient;
+    private LocaleProvider localeProvider;
     private final Map<String, MeaterProbeDTO.Device> meaterProbeThings = new ConcurrentHashMap<>();
 
     private @Nullable MeaterRestAPI api;
     private @Nullable ScheduledFuture<?> refreshJob;
 
-    public MeaterBridgeHandler(Bridge bridge, HttpClient httpClient, Gson gson) {
+    public MeaterBridgeHandler(Bridge bridge, HttpClient httpClient, Gson gson, LocaleProvider localeProvider) {
         super(bridge);
         this.httpClient = httpClient;
         this.gson = gson;
+        this.localeProvider = localeProvider;
     }
 
     @Override
     public void initialize() {
         MeaterBridgeConfiguration config = getConfigAs(MeaterBridgeConfiguration.class);
 
-        MeaterRestAPI meaterRestAPI = new MeaterRestAPI(config, gson, httpClient);
+        MeaterRestAPI meaterRestAPI = new MeaterRestAPI(config, gson, httpClient,
+                localeProvider.getLocale().getLanguage());
         refreshTimeInSeconds = config.refresh;
 
         if (config.email == null || config.password == null) {

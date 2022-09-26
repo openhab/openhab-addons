@@ -6,6 +6,7 @@ This binding uses the Meater cloud REST API.
 
 ![Meater+ Probe](doc/meater-plus-side.png)
 
+
 ## Supported Things
 
 This binding supports the following thing types:
@@ -19,9 +20,11 @@ This binding supports the following thing types:
 
 The preferred way of adding Meater probe(s) since the probe IDs are not easily found.
 
-**NOTE**: You need to have your Meater probe(s) connected to the cloud and the Meater app running before you start the discovery.
+**NOTE**: For The Original Meater and Meater Plus you need to have your Meater app running and the Meater probe(s) must connected to the cloud (out of the charger box) before you start the discovery.
 
-After the configuration of the Bridge, your Meater probe(s) will be automatically discovered and placed as a thing(s) in the inbox.
+
+After the configuration of the Bridge, you need to perform a manual scan and then your Meater probe(s) will be automatically discovered and placed as a thing(s) in the inbox.
+
 
 
 ## Thing Configuration
@@ -32,25 +35,93 @@ After the configuration of the Bridge, your Meater probe(s) will be automaticall
 |-----------|--------------------------------------------------------------|--------|----------|----------|
 | email     | The email used to connect to your Meater cloud account       | String | NA       | yes      |
 | password  | The password used to connect to your Meater cloud account    | String | NA       | yes      |
-| refresh   | Specifies the refresh interval in second                     | Number | 30       | yes      |
+| refresh   | Specifies the refresh interval in second                     | Number | 30       | no     |
 
 ## Channels
 
 | Channel Type ID       | Item Type          | Description                                          | 
 |-----------------------|--------------------|------------------------------------------------------|
 | internalTemperature   | Number:Temperature | Internal temperature reading of Meater probe         |
-| ambientTemperature    | Number:Temperature | Ambient temperature reading of Meater probe          |
-| cookTargetTemperature | Number:Temperature | Internal temperature reading of Meater probe         |
+| ambientTemperature    | Number:Temperature | Ambient temperature reading of Meater probe.  If ambient is less than internal, ambient will equal internal                                                     |
+| cookTargetTemperature | Number:Temperature | Target temperature of current cook                   |
 | cookPeakTemperature   | Number:Temperature | Peak temperature of current cook                     |
 | lastConnection        | DateTime           | Date and time of last probe connection               |
-| cookId                | String             | ID of current cook                                   |
-| cookName              | String             | Name of current cook                                 |
-| cookState             | String             | State of current cook                                |
-| cookElapsedTime       | Number:Time        | Elapsed time in seconds for current cook             |
-| cookRemainingTime     | Number:Time        | Remaining time in seconds for current cook           |
+| status                | String             | Information on current status                        |
+| cookId                | String             | Unique cook ID of current cook                       |
+| cookName              | String             | Name of selected meat or user given custom name      |   
+| cookState             | String             | One of Not Started, Configured, Started, Ready For Resting, Resting, Slightly Underdone, Finished, Slightly Overdone, OVERCOOK!                                 |
+| cookElapsedTime       | Number:Time        | Time since the start of cook in seconds. Default: 0  |
+| cookRemainingTime     | Number:Time        | Remaining time in seconds. When unknown/calculating default is used. Default: -1                                                                                   |
 | cookEstimatedEndTime  | DateTime           | Date and time of estimated end time for current cook |
 
 
+## Example
 
+### Things-file
+
+````
+Bridge meater:meaterapi:block     "Meater Block"   [email="", password=""] {
+  meater:meaterprobe:block:probe1 "Meater Probe 1" [deviceId=""]
+  meater:meaterprobe:block:probe2 "Meater Probe 2" [deviceId=""]
+  meater:meaterprobe:block:probe3 "Meater Probe 3" [deviceId=""]
+  meater:meaterprobe:block:probe4 "Meater Probe 4" [deviceId=""]
+}
+````
+
+### Items-file
+
+````
+Number:Temperature Probe1InternalTemperature   {channel ="meater:meaterprobe:block:probe1:internalTemperature"}
+Number:Temperature Probe1AmbientTemperature    {channel ="meater:meaterprobe:block:probe1:ambientTemperature"}
+String             Probe1CookId                {channel ="meater:meaterprobe:block:probe1:cookId"}
+String             Probe1CookName              {channel ="meater:meaterprobe:block:probe1:cookName"}
+String             Probe1CookState             {channel ="meater:meaterprobe:block:probe1:cookState"}
+Number:Temperature Probe1CookTargetTemperature {channel ="meater:meaterprobe:block:probe1:cookTargetTemperature"}
+Number:Temperature Probe1CookPeakTemperature   {channel ="meater:meaterprobe:block:probe1:cookPeakTemperature"}
+Number:Time        Probe1CookElapsedTime       {channel ="meater:meaterprobe:block:probe1:cookElapsedTime"}
+Number:Time        Probe1CookRemainingTime     {channel ="meater:meaterprobe:block:probe1:cookRemainingTime"}
+DateTime           Probe1CookEstimatedEndTime  {channel ="meater:meaterprobe:block:probe1:cookEstimatedEndTime"}
+String             Probe1Status                {channel ="meater:meaterprobe:block:probe1:status"}
+DateTime           Probe1LastConnection        {channel ="meater:meaterprobe:block:probe1:lastConnection"}
+
+Number:Temperature Probe2InternalTemperature   {channel ="meater:meaterprobe:block:probe2:internalTemperature"}
+Number:Temperature Probe2AmbientTemperature    {channel ="meater:meaterprobe:block:probe2:ambientTemperature"}
+String             Probe2CookId                {channel ="meater:meaterprobe:block:probe2:cookId"}
+String             Probe2CookName              {channel ="meater:meaterprobe:block:probe2:cookName"}
+String             Probe2CookState             {channel ="meater:meaterprobe:block:probe2:cookState"}
+Number:Temperature Probe2CookTargetTemperature {channel ="meater:meaterprobe:block:probe2:cookTargetTemperature"}
+Number:Temperature Probe2CookPeakTemperature   {channel ="meater:meaterprobe:block:probe2:cookPeakTemperature"}
+Number:Time        Probe2CookElapsedTime       {channel ="meater:meaterprobe:block:probe2:cookElapsedTime"}
+Number:Time        Probe2CookRemainingTime     {channel ="meater:meaterprobe:block:probe2:cookRemainingTime"}
+DateTime           Probe2CookEstimatedEndTime  {channel ="meater:meaterprobe:block:probe2:cookEstimatedEndTime"}
+String             Probe2Status                {channel ="meater:meaterprobe:block:probe2:status"}
+DateTime           Probe2LastConnection        {channel ="meater:meaterprobe:block:probe2:lastConnection"}
+
+Number:Temperature Probe3InternalTemperature   {channel ="meater:meaterprobe:block:probe3:internalTemperature"}
+Number:Temperature Probe3AmbientTemperature    {channel ="meater:meaterprobe:block:probe3:ambientTemperature"}
+String             Probe3CookId                {channel ="meater:meaterprobe:block:probe3:cookId"}
+String             Probe3CookName              {channel ="meater:meaterprobe:block:probe3:cookName"}
+String             Probe3CookState             {channel ="meater:meaterprobe:block:probe3:cookState"}
+Number:Temperature Probe3CookTargetTemperature {channel ="meater:meaterprobe:block:probe3:cookTargetTemperature"}
+Number:Temperature Probe3CookPeakTemperature   {channel ="meater:meaterprobe:block:probe3:cookPeakTemperature"}
+Number:Time        Probe3CookElapsedTime       {channel ="meater:meaterprobe:block:probe3:cookElapsedTime"}
+Number:Time        Probe3CookRemainingTime     {channel ="meater:meaterprobe:block:probe3:cookRemainingTime"}
+DateTime           Probe3CookEstimatedEndTime  {channel ="meater:meaterprobe:block:probe3:cookEstimatedEndTime"}
+String             Probe3Status                {channel ="meater:meaterprobe:block:probe3:status"}
+DateTime           Probe3LastConnection        {channel ="meater:meaterprobe:block:probe3:lastConnection"}
+
+Number:Temperature Probe4InternalTemperature   {channel ="meater:meaterprobe:block:probe4:internalTemperature"}
+Number:Temperature Probe4AmbientTemperature    {channel ="meater:meaterprobe:block:probe4:ambientTemperature"}
+String             Probe4CookId                {channel ="meater:meaterprobe:block:probe4:cookId"}
+String             Probe4CookName              {channel ="meater:meaterprobe:block:probe4:cookName"}
+String             Probe4CookState             {channel ="meater:meaterprobe:block:probe4:cookState"}
+Number:Temperature Probe4CookTargetTemperature {channel ="meater:meaterprobe:block:probe4:cookTargetTemperature"}
+Number:Temperature Probe4CookPeakTemperature   {channel ="meater:meaterprobe:block:probe4:cookPeakTemperature"}
+Number:Time        Probe4CookElapsedTime       {channel ="meater:meaterprobe:block:probe4:cookElapsedTime"}
+Number:Time        Probe4CookRemainingTime     {channel ="meater:meaterprobe:block:probe4:cookRemainingTime"}
+DateTime           Probe4CookEstimatedEndTime  {channel ="meater:meaterprobe:block:probe4:cookEstimatedEndTime"}
+String             Probe4Status                {channel ="meater:meaterprobe:block:probe4:status"}
+DateTime           Probe4LastConnection        {channel ="meater:meaterprobe:block:probe4:lastConnection"}
+````
 
 
