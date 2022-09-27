@@ -42,7 +42,7 @@ After the configuration of the Bridge, you need to perform a manual scan and the
 | Channel Type ID       | Item Type          | Description                                          | 
 |-----------------------|--------------------|------------------------------------------------------|
 | internalTemperature   | Number:Temperature | Internal temperature reading of MEATER probe         |
-| ambientTemperature    | Number:Temperature | Ambient temperature reading of MEATER probe.  If ambient is less than internal, ambient will equal internal                                                     |
+| ambientTemperature    | Number:Temperature | Ambient temperature reading of MEATER probe. If ambient is less than internal, ambient will equal internal                                                     |
 | cookTargetTemperature | Number:Temperature | Target temperature of current cook                   |
 | cookPeakTemperature   | Number:Temperature | Peak temperature of current cook                     |
 | lastConnection        | DateTime           | Date and time of last probe connection               |

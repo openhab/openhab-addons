@@ -100,7 +100,6 @@ public class MeaterRestAPI {
             Request request = httpClient.newRequest(API_ENDPOINT + LOGIN).method(HttpMethod.POST);
             request.header(HttpHeader.ACCEPT, JSON_CONTENT_TYPE);
             request.header(HttpHeader.CONTENT_TYPE, JSON_CONTENT_TYPE);
-            request.header(HttpHeader.ACCEPT_LANGUAGE, localeProvider.getLocale().getLanguage());
             request.content(new StringContentProvider(json), JSON_CONTENT_TYPE);
 
             logger.trace("HTTP POST Request {}.", request.toString());
@@ -140,6 +139,8 @@ public class MeaterRestAPI {
                     if (response.getStatus() == HttpStatus.UNAUTHORIZED_401) {
                         logger.debug("getFromApi failed, HTTP status: {}", HttpStatus.UNAUTHORIZED_401);
                         login();
+                    } else if (!HttpStatus.isSuccess(response.getStatus())) {
+                        logger.debug("getFromApi failed, HTTP status: {}", response.getStatus());
                     } else {
                         return content;
                     }
