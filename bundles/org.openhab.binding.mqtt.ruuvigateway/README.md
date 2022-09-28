@@ -1,7 +1,13 @@
 # Ruuvi Gateway MQTT Binding
 
-This binding allows reading data from Ruuvi Tags as published by [Ruuvi Gateway](https://ruuvi.com/gateway/).
-Both RuuviTag and RuuviTag Pro are supported.
+This binding allows integration of Ruuvi Tags via MQTT data, as collected by [Ruuvi Gateway](https://ruuvi.com/gateway/).
+Ruuvi gateway is listening for Bluetooth advertisements and publishing that data over MQTT.
+Ruuvi Cloud Subscription is not needed at all as the integration is local.
+
+Compared to Ruuvi Tag Bluetooth binding, this binding has the benefit of relying on strong and reliable antenna of Ruuvi Gateway, as opposed to e.g. usually much weaker antenna integrated onto computer motherboard.
+Obvious downside compared to the bluetooth binding is the requirement of having Ruuvi Gateway device.
+
+Both RuuviTag and RuuviTag Pro are supported. 
 
 ## Setup the Gateway
 
@@ -24,31 +30,31 @@ No manual configuration is needed, and discovery function can be used instead.
 
 For users that prefer manual configuration, we list here the configurable parameters.
 
-| Parameter | Description | Required | Default |
-|-|-|-|-|
-| `topic` | MQTT topic containing the gateway payload | Y | (N/A) |
+| Parameter | Description                               | Required | Default |
+|-----------|-------------------------------------------|----------|---------|
+| `topic`   | MQTT topic containing the gateway payload | Y        | (N/A)   |
 
 
 
 ## Channels
 
-| Channel ID                | Item Type                | Description                    |
-| ------------------------- | ------------------------ | ------------------------------ |
-| temperature               | Number:Temperature       | The measured temperature       |
-| humidity                  | Number:Dimensionless     | The measured humidity          |
-| pressure                  | Number:Pressure          | The measured air pressure      |
-| batteryVoltage            | Number:ElectricPotential | The measured battery voltage   |
-| accelerationx             | Number:Acceleration      | The measured acceleration of X |
-| accelerationy             | Number:Acceleration      | The measured acceleration of Y |
-| accelerationz             | Number:Acceleration      | The measured acceleration of Z |
-| txPower                   | Number:Power             | TX power                       |
-| dataFormat                | Number                   | Data format version            |
-| measurementSequenceNumber | Number:Dimensionless     | Measurement sequence number    |
-| movementCounter           | Number:Dimensionless     | Movement counter               |
-| rssi           | Number     | Received signal (between the Gateway and the sensor) strength indicator               |
-| ts           | DateTime     | Timestamp when the message from Bluetooth-sensor was received by Gateway               |
-| gwts           | DateTime     | Timestamp when the message from Bluetooth-sensor was relayed by Gateway               |
-| gwmac           | String     | MAC-address of Ruuvi Gateway               |
+| Channel ID                | Item Type                | Description                                                              |
+|---------------------------|--------------------------|--------------------------------------------------------------------------|
+| temperature               | Number:Temperature       | The measured temperature                                                 |
+| humidity                  | Number:Dimensionless     | The measured humidity                                                    |
+| pressure                  | Number:Pressure          | The measured air pressure                                                |
+| batteryVoltage            | Number:ElectricPotential | The measured battery voltage                                             |
+| accelerationx             | Number:Acceleration      | The measured acceleration of X                                           |
+| accelerationy             | Number:Acceleration      | The measured acceleration of Y                                           |
+| accelerationz             | Number:Acceleration      | The measured acceleration of Z                                           |
+| txPower                   | Number:Power             | TX power                                                                 |
+| dataFormat                | Number                   | Data format version                                                      |
+| measurementSequenceNumber | Number:Dimensionless     | Measurement sequence number                                              |
+| movementCounter           | Number:Dimensionless     | Movement counter                                                         |
+| rssi                      | Number                   | Received signal (between the Gateway and the sensor) strength indicator  |
+| ts                        | DateTime                 | Timestamp when the message from Bluetooth-sensor was received by Gateway |
+| gwts                      | DateTime                 | Timestamp when the message from Bluetooth-sensor was relayed by Gateway  |
+| gwmac                     | String                   | MAC-address of Ruuvi Gateway                                             |
 
 Note: not all channels are always updated. Available fields depend on [Ruuvi Data Format](https://github.com/ruuvi/ruuvi-sensor-protocols).
 At the time of writing (2022-09), most Ruuvi Tags use Ruuvi Data Format 5 out of box.
