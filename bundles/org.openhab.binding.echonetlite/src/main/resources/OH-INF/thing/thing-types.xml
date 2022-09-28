@@ -41,7 +41,6 @@
 				<description>Hostname or IP address of the device</description>
 			</parameter>
 			<parameter name="port" type="integer" required="true">
-				<context>network-port</context>
 				<default>3610</default>
 				<label>Port</label>
 				<description>Port of the device (usually 3610)</description>
