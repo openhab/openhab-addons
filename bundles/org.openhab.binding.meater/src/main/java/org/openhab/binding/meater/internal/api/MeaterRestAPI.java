@@ -141,6 +141,7 @@ public class MeaterRestAPI {
                         login();
                     } else if (!HttpStatus.isSuccess(response.getStatus())) {
                         logger.debug("getFromApi failed, HTTP status: {}", response.getStatus());
+                        throw new MeaterException("Failed to fetch from API!");
                     } else {
                         return content;
                     }
