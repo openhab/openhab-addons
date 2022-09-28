@@ -42,4 +42,5 @@ public class EchonetLiteBindingConstants {
     public static final String PROPERTY_NAME_GROUP_CODE = "groupCode";
     public static final String PROPERTY_NAME_CLASS_CODE = "classCode";
     public static final String PROPERTY_NAME_INSTANCE = "instance";
+    public static final int OFFLINE_TIMEOUT_COUNT = 2;
 }

@@ -30,4 +30,7 @@ public interface EchonetDeviceListener {
 
     default void onRemoved() {
     }
+
+    default void onOffline() {
+    }
 }

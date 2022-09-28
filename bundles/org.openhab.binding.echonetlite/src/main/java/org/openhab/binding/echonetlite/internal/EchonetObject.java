@@ -129,6 +129,9 @@ public abstract class EchonetObject {
         }
     }
 
+    public void checkTimeouts() {
+    }
+
     protected static class InflightRequest {
         private static final long NULL_TIMESTAMP = -1;
 
@@ -168,7 +171,7 @@ public abstract class EchonetObject {
         boolean hasTimedOut(long nowMs) {
             final boolean timedOut = timestampMs + timeoutMs <= nowMs;
             if (timedOut) {
-                logger.warn("Timed out {}, tid={}, timestampMs={} + timeoutMs={} <= nowMs={}", name, tid, timestampMs,
+                logger.debug("Timed out {}, tid={}, timestampMs={} + timeoutMs={} <= nowMs={}", name, tid, timestampMs,
                         timeoutMs, nowMs);
                 timeoutCount++;
 
@@ -186,8 +189,12 @@ public abstract class EchonetObject {
         public void checkOldResponse(short tid, long nowMs) {
             final Long oldResponseTimestampMs = oldRequests.remove(tid);
             if (null != oldResponseTimestampMs) {
-                logger.warn("Timed out request, tid={}, actually took={}", tid, nowMs - oldResponseTimestampMs);
+                logger.debug("Timed out request, tid={}, actually took={}", tid, nowMs - oldResponseTimestampMs);
             }
+        }
+
+        public int timeoutCount() {
+            return timeoutCount;
         }
     }
 }

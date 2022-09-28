@@ -61,17 +61,11 @@ public class EchonetLiteHandler extends BaseThingHandler implements EchonetDevic
         @Nullable
         final Bridge bridge = getBridge();
         if (null == bridge) {
-            logger.warn("Unable to handle commands if bridge is null");
             return null;
         }
 
         @Nullable
         final EchonetLiteBridgeHandler handler = (EchonetLiteBridgeHandler) bridge.getHandler();
-        if (null == handler) {
-            logger.warn("Unable to handle commands if bridge handler is null");
-            return null;
-        }
-
         return handler;
     }
 
@@ -80,6 +74,8 @@ public class EchonetLiteHandler extends BaseThingHandler implements EchonetDevic
         @Nullable
         final EchonetLiteBridgeHandler handler = bridgeHandler();
         if (null == handler) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.conf-error.null-bridge-handler");
             return;
         }
 
@@ -132,6 +128,8 @@ public class EchonetLiteHandler extends BaseThingHandler implements EchonetDevic
         @Nullable
         final EchonetLiteBridgeHandler bridgeHandler = bridgeHandler();
         if (null == bridgeHandler) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.conf-error.null-bridge-handler");
             return;
         }
 
@@ -180,5 +178,11 @@ public class EchonetLiteHandler extends BaseThingHandler implements EchonetDevic
 
     public void onRemoved() {
         updateStatus(ThingStatus.REMOVED);
+    }
+
+    public void onOffline() {
+        if (ThingStatus.OFFLINE != getThing().getStatus()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+        }
     }
 }

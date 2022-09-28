@@ -156,6 +156,12 @@ public class EchonetDevice extends EchonetObject {
         listener.onRemoved();
     }
 
+    public void checkTimeouts() {
+        if (EchonetLiteBindingConstants.OFFLINE_TIMEOUT_COUNT <= inflightGetRequest.timeoutCount()) {
+            listener.onOffline();
+        }
+    }
+
     public void refreshAll(long nowMs) {
         final EchonetPropertyMap getPropertyMap = this.getPropertyMap;
         if (lastPollMs + pollIntervalMs <= nowMs && null != getPropertyMap) {

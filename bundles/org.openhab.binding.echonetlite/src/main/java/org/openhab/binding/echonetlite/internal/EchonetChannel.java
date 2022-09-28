@@ -23,7 +23,7 @@ import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.util.Enumeration;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
@@ -81,8 +81,8 @@ public class EchonetChannel {
         channel.send(messageBuilder.buffer(), messageBuilder.address());
     }
 
-    public void pollMessages(EchonetMessage echonetMessage, Consumer<EchonetMessage> consumer, final long timeout)
-            throws IOException {
+    public void pollMessages(EchonetMessage echonetMessage, BiConsumer<EchonetMessage, SocketAddress> consumer,
+            final long timeout) throws IOException {
         selector.select(selectionKey -> {
             final DatagramChannel channel = (DatagramChannel) selectionKey.channel();
             try {
@@ -92,7 +92,7 @@ public class EchonetChannel {
                 echonetMessage.sourceAddress(address);
                 buffer.flip();
                 long t0 = System.currentTimeMillis();
-                consumer.accept(echonetMessage);
+                consumer.accept(echonetMessage, address);
                 long t1 = System.currentTimeMillis();
                 final long processingTimeMs = t1 - t0;
                 if (500 < processingTimeMs) {

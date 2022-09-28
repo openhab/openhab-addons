@@ -188,6 +188,8 @@ public class EchonetLiteBridgeHandler extends BaseBridgeHandler {
                 } catch (IOException e) {
                     logger.warn("Failed to send echonet message", e);
                 }
+            } else {
+                echonetObject.checkTimeouts();
             }
         }
     }
@@ -225,16 +227,11 @@ public class EchonetLiteBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    private void onMessage(final EchonetMessage echonetMessage) {
+    private void onMessage(final EchonetMessage echonetMessage, final SocketAddress sourceAddress) {
         final EchonetClass echonetClass = echonetMessage.sourceClass();
-        final SocketAddress sourceAddress = echonetMessage.sourceAddress();
         if (null == echonetClass) {
-            logger.warn("Unable to find echonetClass for message: {}", echonetMessage.toDebug());
-            return;
-        }
-
-        if (null == sourceAddress) {
-            logger.warn("Unable to find sourceAddress for message: {}", echonetMessage.toDebug());
+            logger.warn("Unable to find echonetClass for message: {}, from: {}", echonetMessage.toDebug(),
+                    sourceAddress);
             return;
         }
 
@@ -305,7 +302,7 @@ public class EchonetLiteBridgeHandler extends BaseBridgeHandler {
             try {
                 networkingThread.join(TimeUnit.SECONDS.toMillis(5));
             } catch (InterruptedException e) {
-                logger.warn("Interrupted while closing", e);
+                logger.debug("Interrupted while closing", e);
             }
         }
 
