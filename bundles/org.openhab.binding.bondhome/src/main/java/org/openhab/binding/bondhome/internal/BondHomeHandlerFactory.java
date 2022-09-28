@@ -15,15 +15,12 @@ package org.openhab.binding.bondhome.internal;
 import static org.openhab.binding.bondhome.internal.BondHomeBindingConstants.*;
 
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.bondhome.internal.discovery.BondDiscoveryService;
 import org.openhab.binding.bondhome.internal.handler.BondBridgeHandler;
 import org.openhab.binding.bondhome.internal.handler.BondDeviceHandler;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -33,8 +30,6 @@ import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link BondHomeHandlerFactory} is responsible for creating things and thing
@@ -45,8 +40,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @Component(configurationPid = "binding.bondhome", service = ThingHandlerFactory.class)
 public class BondHomeHandlerFactory extends BaseThingHandlerFactory {
-    private Logger logger = LoggerFactory.getLogger(BondHomeHandlerFactory.class);
-
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
     @Override
@@ -59,12 +52,7 @@ public class BondHomeHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_BOND_BRIDGE.equals(thingTypeUID)) {
-            logger.info(
-                    "\n\n*************************************************\nBond Home, binding version: {}\n*************************************************\n",
-                    CURRENT_BINDING_VERSION);
-
             final BondBridgeHandler handler = new BondBridgeHandler((Bridge) thing);
-            registerDeviceDiscoveryService(handler);
             return handler;
         } else if (SUPPORTED_DEVICE_TYPES.contains(thingTypeUID)) {
             return new BondDeviceHandler(thing);
@@ -81,13 +69,5 @@ public class BondHomeHandlerFactory extends BaseThingHandlerFactory {
                 serviceReg.unregister();
             }
         }
-    }
-
-    // Discovery Service
-    private synchronized void registerDeviceDiscoveryService(BondBridgeHandler bridgeHandler) {
-        logger.trace("Registering a discovery service for the Bond bridge.");
-        BondDiscoveryService discoveryService = new BondDiscoveryService(bridgeHandler);
-        discoveryServiceRegs.put(bridgeHandler.getThing().getUID(), bundleContext
-                .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
     }
 }

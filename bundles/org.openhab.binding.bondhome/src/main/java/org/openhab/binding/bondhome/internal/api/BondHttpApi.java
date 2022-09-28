@@ -95,7 +95,7 @@ public class BondHttpApi {
      * Gets basic device information
      *
      * @param deviceId The ID of the device
-     * @return the {@link org.openhab.binding.bondhome.internal.api.BondDevice}
+     * @return the {@link BondDevice}
      * @throws IOException
      */
     @Nullable
@@ -109,7 +109,7 @@ public class BondHttpApi {
      * Gets the current state of a device
      *
      * @param deviceId The ID of the device
-     * @return the {@link org.openhab.binding.bondhome.internal.api.BondDeviceState}
+     * @return the {@link BondDeviceState}
      * @throws IOException
      */
     @Nullable
@@ -123,7 +123,7 @@ public class BondHttpApi {
      * Gets the current properties of a device
      *
      * @param deviceId The ID of the device
-     * @return the {@link org.openhab.binding.bondhome.internal.api.BondDeviceProperties}
+     * @return the {@link BondDeviceProperties}
      * @throws IOException
      */
     @Nullable
@@ -138,7 +138,7 @@ public class BondHttpApi {
      *
      * @param deviceId The ID of the device
      * @param actionId The Bond action
-     * @return the {@link org.openhab.binding.bondhome.internal.api.BondDeviceProperties}
+     * @param argument An additional argument for the actions (such as the fan speed)
      */
     public synchronized void executeDeviceAction(String deviceId, BondDeviceAction action, @Nullable Integer argument) {
         String url = "http://" + bridgeHandler.getBridgeIpAddress() + "/v2/devices/" + deviceId + "/actions/"
@@ -211,24 +211,23 @@ public class BondHttpApi {
                     @Nullable
                     String innerErrorMessage = ioeCause.getMessage();
                     if (innerErrorMessage != null) {
-                        logger.info("Last request to Bond Bridge failed; {} retries remaining. Failure cause: {}",
+                        logger.debug("Last request to Bond Bridge failed; {} retries remaining. Failure cause: {}",
                                 numRetriesRemaining, innerErrorMessage);
                     } else {
-                        logger.info("Last request to Bond Bridge failed; {} retries remaining. Failure cause unknown",
+                        logger.debug("Last request to Bond Bridge failed; {} retries remaining. Failure cause unknown",
                                 numRetriesRemaining);
                     }
                 } else if (errorMessage != null) {
-                    logger.info("Last request to Bond Bridge failed; {} retries remaining. Failure cause: {}",
+                    logger.debug("Last request to Bond Bridge failed; {} retries remaining. Failure cause: {}",
                             numRetriesRemaining, errorMessage);
                 } else {
-                    logger.info("Last request to Bond Bridge failed; {} retries remaining. Failure cause unknown",
+                    logger.debug("Last request to Bond Bridge failed; {} retries remaining. Failure cause unknown",
                             numRetriesRemaining);
                 }
                 numRetriesRemaining--;
                 if (numRetriesRemaining == 0) {
-                    // TODO(SRGDamia1): Do I want to process more of the exceptions differently?
                     if (e.getCause() instanceof TimeoutException) {
-                        logger.warn("Repeated Bond API calls to {} timed out.", uri);
+                        logger.debug("Repeated Bond API calls to {} timed out.", uri);
                         bridgeHandler.setBridgeOffline(ThingStatusDetail.COMMUNICATION_ERROR,
                                 "Repeated timeouts attempting to reach bridge.");
                     } else if (e.getCause() instanceof InterruptedException) {

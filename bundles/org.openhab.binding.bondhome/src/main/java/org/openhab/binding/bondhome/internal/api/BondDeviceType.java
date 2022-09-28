@@ -26,13 +26,13 @@ import com.google.gson.annotations.SerializedName;
  */
 public enum BondDeviceType {
     @SerializedName("CF")
-    CeilingFan(THING_TYPE_BOND_FAN),
+    CEILING_FAN(THING_TYPE_BOND_FAN),
     @SerializedName("MS")
-    MotorizedShades(THING_TYPE_BOND_SHADES),
+    MOTORIZED_SHADES(THING_TYPE_BOND_SHADES),
     @SerializedName("FP")
-    Fireplace(THING_TYPE_BOND_FIREPLACE),
+    FIREPLACE(THING_TYPE_BOND_FIREPLACE),
     @SerializedName("GX")
-    GenericDevice(THING_TYPE_BOND_GENERIC);
+    GENERIC_DEVICE(THING_TYPE_BOND_GENERIC);
 
     private ThingTypeUID deviceTypeUid;
 

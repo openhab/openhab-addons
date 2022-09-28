@@ -18,7 +18,7 @@
 	<channel-group-type id="ceilingFanChannelGroup">
 		<label>Ceiling Fan</label>
 		<channels>
-			<channel id="fanSpeed" typeId="fanSpeedChannelType"/>
+			<channel id="speed" typeId="fanSpeedChannelType"/>
 			<channel id="breezeState" typeId="breezeStateChannelType"/>
 			<channel id="breezeMean" typeId="breezeMeanChannelType"/>
 			<channel id="breezeVariability" typeId="breezeVariabilityChannelType"/>
@@ -30,7 +30,7 @@
 	<channel-group-type id="lightChannelGroup">
 		<label>Light</label>
 		<channels>
-			<channel id="light" typeId="lightChannelType"/>
+			<channel id="power" typeId="lightChannelType"/>
 			<channel id="brightness" typeId="brightnessChannelType"/>
 			<channel id="dimmerStartStop" typeId="dimmerStartStopChannelType"/>
 			<channel id="dimmerIncr" typeId="dimmerIncrChannelType"/>
@@ -41,24 +41,24 @@
 	<channel-group-type id="upLightChannelGroup">
 		<label>Up Light</label>
 		<channels>
-			<channel id="upLight" typeId="upLightChannelType"/>
-			<channel id="upLightEnable" typeId="upLightEnableChannelType"/>
-			<channel id="upLightBrightness" typeId="upLightBrightnessChannelType"/>
-			<channel id="upLightDimmerStartStop" typeId="upLightDimmerStartStopChannelType"/>
-			<channel id="upLightDimmerIncr" typeId="upLightDimmerIncrChannelType"/>
-			<channel id="upLightDimmerDcr" typeId="upLightDimmerDcrChannelType"/>
+			<channel id="power" typeId="lightChannelType"/>
+			<channel id="enable" typeId="enableChannelType"/>
+			<channel id="brightness" typeId="brightnessChannelType"/>
+			<channel id="dimmerStartStop" typeId="dimmerStartStopChannelType"/>
+			<channel id="dimmerIncr" typeId="dimmerIncrChannelType"/>
+			<channel id="dimmerDcr" typeId="dimmerDcrChannelType"/>
 		</channels>
 	</channel-group-type>
 
 	<channel-group-type id="downLightChannelGroup">
 		<label>Down Light</label>
 		<channels>
-			<channel id="downLight" typeId="downLightChannelType"/>
-			<channel id="downLightEnable" typeId="downLightEnableChannelType"/>
-			<channel id="downLightBrightness" typeId="downLightBrightnessChannelType"/>
-			<channel id="downLightDimmerStartStop" typeId="downLightDimmerStartStopChannelType"/>
-			<channel id="downLightDimmerIncr" typeId="downLightDimmerIncrChannelType"/>
-			<channel id="downLightDimmerDcr" typeId="downLightDimmerDcrChannelType"/>
+			<channel id="power" typeId="lightChannelType"/>
+			<channel id="enable" typeId="enableChannelType"/>
+			<channel id="brightness" typeId="brightnessChannelType"/>
+			<channel id="dimmerStartStop" typeId="dimmerStartStopChannelType"/>
+			<channel id="dimmerIncr" typeId="dimmerIncrChannelType"/>
+			<channel id="dimmerDcr" typeId="dimmerDcrChannelType"/>
 		</channels>
 	</channel-group-type>
 
@@ -66,8 +66,8 @@
 		<label>Fireplace</label>
 		<channels>
 			<channel id="flame" typeId="flameChannelType"/>
-			<channel id="fpFanPower" typeId="fpFanPowerChannelType"/>
-			<channel id="fpFanSpeed" typeId="fpFanSpeedChannelType"/>
+			<channel id="fanPower" typeId="fpFanPowerChannelType"/>
+			<channel id="fanSpeed" typeId="fpFanSpeedChannelType"/>
 		</channels>
 	</channel-group-type>
 

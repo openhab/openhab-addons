@@ -51,59 +51,59 @@ public class BondHomeBindingConstants {
     public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_TYPES = Collections.singleton(THING_TYPE_BOND_BRIDGE);
 
     /**
-     * List of all Channel ids - these match the id fields in the ESH xml files
+     * List of all Channel ids - these match the id fields in the OH-INF xml files
      */
 
     // Universal channels
-    public static final String CHANNEL_GROUP_COMMON = "commonChannels";
-    public static final String CHANNEL_POWER_STATE = "commonChannels#power";
-    public static final String CHANNEL_LAST_UPDATE = "commonChannels#lastUpdate";
-    public static final String CHANNEL_STOP = "commonChannels#stop";
+    public static final String CHANNEL_GROUP_COMMON = "common";
+    public static final String CHANNEL_POWER_STATE = "common#power";
+    public static final String CHANNEL_LAST_UPDATE = "common#lastUpdate";
+    public static final String CHANNEL_STOP = "common#stop";
 
     // Ceiling fan channels
-    public static final String CHANNEL_GROUP_FAN = "ceilingFanChannels";
-    public static final String CHANNEL_FAN_SPEED = "ceilingFanChannels#fanSpeed";
-    public static final String CHANNEL_FAN_BREEZE_STATE = "ceilingFanChannels#breezeState";
-    public static final String CHANNEL_FAN_BREEZE_MEAN = "ceilingFanChannels#breezeMean";
-    public static final String CHANNEL_FAN_BREEZE_VAR = "ceilingFanChannels#breezeVariability";
-    public static final String CHANNEL_FAN_DIRECTION = "ceilingFanChannels#direction";
-    public static final String CHANNEL_TIMER = "ceilingFanChannels#timer";
+    public static final String CHANNEL_GROUP_FAN = "fan";
+    public static final String CHANNEL_FAN_SPEED = "fan#speed";
+    public static final String CHANNEL_FAN_BREEZE_STATE = "fan#breezeState";
+    public static final String CHANNEL_FAN_BREEZE_MEAN = "fan#breezeMean";
+    public static final String CHANNEL_FAN_BREEZE_VAR = "fan#breezeVariability";
+    public static final String CHANNEL_FAN_DIRECTION = "fan#direction";
+    public static final String CHANNEL_TIMER = "fan#timer";
 
     // Fan light channels
-    public static final String CHANNEL_GROUP_LIGHT = "lightChannels";
-    public static final String CHANNEL_LIGHT_STATE = "lightChannels#light";
-    public static final String CHANNEL_LIGHT_BRIGHTNESS = "lightChannels#brightness";
-    public static final String CHANNEL_LIGHT_START_STOP = "lightChannels#dimmerStartStop";
-    public static final String CHANNEL_LIGHT_DIRECTIONAL_INC = "lightChannels#dimmerIncr";
-    public static final String CHANNEL_LIGHT_DIRECTIONAL_DECR = "lightChannels#dimmerDcr";
+    public static final String CHANNEL_GROUP_LIGHT = "light";
+    public static final String CHANNEL_LIGHT_STATE = "light#power";
+    public static final String CHANNEL_LIGHT_BRIGHTNESS = "light#brightness";
+    public static final String CHANNEL_LIGHT_START_STOP = "light#dimmerStartStop";
+    public static final String CHANNEL_LIGHT_DIRECTIONAL_INC = "light#dimmerIncr";
+    public static final String CHANNEL_LIGHT_DIRECTIONAL_DECR = "light#dimmerDcr";
 
-    public static final String CHANNEL_GROUP_UP_LIGHT = "upLightChannels";
-    public static final String CHANNEL_UP_LIGHT_STATE = "upLightChannels#upLight";
-    public static final String CHANNEL_UP_LIGHT_ENABLE = "upLightChannels#upLightEnable";
-    public static final String CHANNEL_UP_LIGHT_BRIGHTNESS = "upLightChannels#upLightBrightness";
-    public static final String CHANNEL_UP_LIGHT_START_STOP = "upLightChannels#upLightDimmerStartStop";
-    public static final String CHANNEL_UP_LIGHT_DIRECTIONAL_INC = "upLightChannels#upLightDimmerIncr";
-    public static final String CHANNEL_UP_LIGHT_DIRECTIONAL_DECR = "upLightChannels#upLightDimmerDcr";
+    public static final String CHANNEL_GROUP_UP_LIGHT = "upLight";
+    public static final String CHANNEL_UP_LIGHT_STATE = "upLight#power";
+    public static final String CHANNEL_UP_LIGHT_ENABLE = "upLight#enable";
+    public static final String CHANNEL_UP_LIGHT_BRIGHTNESS = "upLight#brightness";
+    public static final String CHANNEL_UP_LIGHT_START_STOP = "upLight#dimmerStartStop";
+    public static final String CHANNEL_UP_LIGHT_DIRECTIONAL_INC = "upLight#dimmerIncr";
+    public static final String CHANNEL_UP_LIGHT_DIRECTIONAL_DECR = "upLight#dimmerDcr";
 
-    public static final String CHANNEL_GROUP_DOWN_LIGHT = "downLightChannels";
-    public static final String CHANNEL_DOWN_LIGHT_STATE = "downLightChannels#downLight";
-    public static final String CHANNEL_DOWN_LIGHT_ENABLE = "downLightChannels#downLightEnable";
-    public static final String CHANNEL_DOWN_LIGHT_BRIGHTNESS = "downLightChannels#downLightBrightness";
-    public static final String CHANNEL_DOWN_LIGHT_START_STOP = "downLightChannels#downLightDimmerStartStop";
-    public static final String CHANNEL_DOWN_LIGHT_DIRECTIONAL_INC = "downLightChannels#downLightDimmerIncr";
-    public static final String CHANNEL_DOWN_LIGHT_DIRECTIONAL_DECR = "downLightChannels#downLightDimmerDcr";
+    public static final String CHANNEL_GROUP_DOWN_LIGHT = "downLight";
+    public static final String CHANNEL_DOWN_LIGHT_STATE = "downLight#power";
+    public static final String CHANNEL_DOWN_LIGHT_ENABLE = "downLight#enable";
+    public static final String CHANNEL_DOWN_LIGHT_BRIGHTNESS = "downLight#brightness";
+    public static final String CHANNEL_DOWN_LIGHT_START_STOP = "downLight#dimmerStartStop";
+    public static final String CHANNEL_DOWN_LIGHT_DIRECTIONAL_INC = "downLight#dimmerIncr";
+    public static final String CHANNEL_DOWN_LIGHT_DIRECTIONAL_DECR = "downLight#dimmerDcr";
 
     // Fireplace channels
-    public static final String CHANNEL_GROUP_FIREPLACE = "fireplaceChannels";
-    public static final String CHANNEL_FLAME = "fireplaceChannels#flame";
-    public static final String CHANNEL_FP_FAN_STATE = "fireplaceChannels#fpFanPower";
-    public static final String CHANNEL_FP_FAN_SPEED = "fireplaceChannels#fpFanSpeed";
+    public static final String CHANNEL_GROUP_FIREPLACE = "fireplace";
+    public static final String CHANNEL_FLAME = "fireplace#flame";
+    public static final String CHANNEL_FP_FAN_STATE = "fireplace#fanPower";
+    public static final String CHANNEL_FP_FAN_SPEED = "fireplace#fanSpeed";
 
     // Motorize shade channels
-    public static final String CHANNEL_GROUP_SHADES = "shadeChannels";
-    public static final String CHANNEL_OPEN_CLOSE = "shadeChannels#openShade";
-    public static final String CHANNEL_HOLD = "shadeChannels#hold";
-    public static final String CHANNEL_PRESET = "shadeChannels#preset";
+    public static final String CHANNEL_GROUP_SHADES = "shade";
+    public static final String CHANNEL_OPEN_CLOSE = "shade#openShade";
+    public static final String CHANNEL_HOLD = "shade#hold";
+    public static final String CHANNEL_PRESET = "shade#preset";
 
     /**
      * Configuration arguments

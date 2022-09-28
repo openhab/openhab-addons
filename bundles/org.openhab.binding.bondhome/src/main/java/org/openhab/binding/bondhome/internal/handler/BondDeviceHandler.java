@@ -117,336 +117,333 @@ public class BondDeviceHandler extends BaseThingHandler {
                 initialize();
             }, 30, TimeUnit.SECONDS);
             return;
-        } else {
-            if (command instanceof RefreshType) {
-                long now = System.currentTimeMillis();
-                long timePassedFromLastUpdateInSeconds = (now - latestUpdate) / 1000;
-                if (latestUpdate < 0 || timePassedFromLastUpdateInSeconds > 15) {
-                    logger.trace("Executing refresh command");
-                    try {
-                        deviceState = api.getDeviceState(config.deviceId);
-                        updateChannelsFromState(deviceState);
-                    } catch (IOException e) {
-                        @Nullable
-                        String errorMessage = e.getMessage();
-                        if (errorMessage != null) {
-                            if (errorMessage.contains(API_ERR_HTTP_401_UNAUTHORIZED)) {
-                                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                                        "Incorrect local token for Bond Bridge.");
-                                setBridgeOffline(ThingStatusDetail.CONFIGURATION_ERROR,
-                                        "Incorrect local token for Bond Bridge.");
-                            } else if (errorMessage.contains(API_ERR_HTTP_404_NOTFOUND)) {
-                                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                                        "No Bond device found with the given device id.");
-                            } else {
-                                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
-                            }
+        }
+
+        if (command instanceof RefreshType) {
+            long now = System.currentTimeMillis();
+            long timePassedFromLastUpdateInSeconds = (now - latestUpdate) / 1000;
+            if (latestUpdate < 0 || timePassedFromLastUpdateInSeconds > 15) {
+                logger.trace("Executing refresh command");
+                try {
+                    deviceState = api.getDeviceState(config.deviceId);
+                    updateChannelsFromState(deviceState);
+                } catch (IOException e) {
+                    @Nullable
+                    String errorMessage = e.getMessage();
+                    if (errorMessage != null) {
+                        if (errorMessage.contains(API_ERR_HTTP_401_UNAUTHORIZED)) {
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                                    "Incorrect local token for Bond Bridge.");
+                            setBridgeOffline(ThingStatusDetail.CONFIGURATION_ERROR,
+                                    "Incorrect local token for Bond Bridge.");
+                        } else if (errorMessage.contains(API_ERR_HTTP_404_NOTFOUND)) {
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                                    "No Bond device found with the given device id.");
                         } else {
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
                         }
+                    } else {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                     }
-                } else {
-                    logger.trace("It has been less than 15s since the last update.  Please retry soon.");
                 }
+            } else {
+                logger.trace("It has been less than 15s since the last update.  Please retry soon.");
+            }
+            return;
+        }
+
+        switch (channelUID.getId()) {
+            case CHANNEL_POWER_STATE:
+                logger.trace("Power state command");
+                api.executeDeviceAction(config.deviceId,
+                        command == OnOffType.ON ? BondDeviceAction.TURN_ON : BondDeviceAction.TURN_OFF, null);
+                break;
+
+            case CHANNEL_STOP:
+                logger.trace("Stop command");
+                api.executeDeviceAction(config.deviceId, BondDeviceAction.STOP, null);
+                // Mark all the changing channels stopped
+                updateState(CHANNEL_LIGHT_START_STOP, OnOffType.OFF);
+                updateState(CHANNEL_LIGHT_DIRECTIONAL_INC, OnOffType.OFF);
+                updateState(CHANNEL_LIGHT_DIRECTIONAL_DECR, OnOffType.OFF);
+                updateState(CHANNEL_UP_LIGHT_START_STOP, OnOffType.OFF);
+                updateState(CHANNEL_UP_LIGHT_DIRECTIONAL_INC, OnOffType.OFF);
+                updateState(CHANNEL_UP_LIGHT_DIRECTIONAL_DECR, OnOffType.OFF);
+                updateState(CHANNEL_DOWN_LIGHT_START_STOP, OnOffType.OFF);
+                updateState(CHANNEL_DOWN_LIGHT_DIRECTIONAL_INC, OnOffType.OFF);
+                updateState(CHANNEL_DOWN_LIGHT_DIRECTIONAL_DECR, OnOffType.OFF);
+                break;
+
+            case CHANNEL_FAN_SPEED:
+                logger.trace("Fan speed command");
+                if (command instanceof PercentType) {
+                    int value = 1;
+                    BondDeviceProperties devProperties = this.deviceProperties;
+                    if (devProperties != null) {
+                        int maxSpeed = devProperties.maxSpeed;
+                        value = (int) Math.ceil(((PercentType) command).intValue() * maxSpeed / 100);
+                    }
+                    logger.trace("Fan speed command with speed set as {}", value);
+                    api.executeDeviceAction(config.deviceId, BondDeviceAction.SET_SPEED, value);
+                } else if (command instanceof IncreaseDecreaseType) {
+                    logger.trace("Fan increase/decrease speed command");
+                    api.executeDeviceAction(config.deviceId,
+                            ((IncreaseDecreaseType) command == IncreaseDecreaseType.INCREASE
+                                    ? BondDeviceAction.INCREASE_SPEED
+                                    : BondDeviceAction.DECREASE_SPEED),
+                            null);
+                } else {
+                    logger.info("Unsupported command on fan speed channel");
+                }
+                break;
+
+            case CHANNEL_FAN_BREEZE_STATE:
+                logger.trace("Fan enable/disable breeze command");
+                api.executeDeviceAction(config.deviceId,
+                        command == OnOffType.ON ? BondDeviceAction.BREEZE_ON : BondDeviceAction.BREEZE_OFF, null);
+                break;
+
+            case CHANNEL_FAN_BREEZE_MEAN:
+                // TODO(SRGDamia1): write array command fxn
+                logger.trace("Support for fan breeze settings not yet available");
+                break;
+
+            case CHANNEL_FAN_BREEZE_VAR:
+                // TODO(SRGDamia1): write array command fxn
+                logger.trace("Support for fan breeze settings not yet available");
+                break;
+
+            case CHANNEL_FAN_DIRECTION:
+                logger.trace("Fan direction command {}", command.toString());
+                if (command instanceof StringType) {
+                    api.executeDeviceAction(config.deviceId, BondDeviceAction.SET_DIRECTION,
+                            command.toString().equals("winter") ? -1 : 1);
+                }
+                break;
+
+            case CHANNEL_LIGHT_STATE:
+                logger.trace("Fan light state command");
+                api.executeDeviceAction(config.deviceId,
+                        command == OnOffType.ON ? BondDeviceAction.TURN_LIGHT_ON : BondDeviceAction.TURN_LIGHT_OFF,
+                        null);
+                break;
+
+            case CHANNEL_LIGHT_BRIGHTNESS:
+                if (command instanceof PercentType) {
+                    PercentType pctCommand = (PercentType) command;
+                    int value = pctCommand.intValue();
+                    logger.trace("Fan light brightness command with value of {}", value);
+                    api.executeDeviceAction(config.deviceId, BondDeviceAction.SET_BRIGHTNESS, value);
+                } else if (command instanceof IncreaseDecreaseType) {
+                    logger.trace("Fan light brightness increase/decrease command");
+                    api.executeDeviceAction(config.deviceId,
+                            ((IncreaseDecreaseType) command == IncreaseDecreaseType.INCREASE
+                                    ? BondDeviceAction.INCREASE_BRIGHTNESS
+                                    : BondDeviceAction.DECREASE_BRIGHTNESS),
+                            null);
+                    updateState(CHANNEL_STOP, OnOffType.ON);
+                } else {
+                    logger.info("Unsupported command on fan light brightness channel");
+                }
+                break;
+
+            case CHANNEL_LIGHT_START_STOP:
+                logger.trace("Fan light dimmer start/stop command");
+                api.executeDeviceAction(config.deviceId,
+                        command == OnOffType.ON ? BondDeviceAction.START_DIMMER : BondDeviceAction.STOP, null);
+                updateState(CHANNEL_STOP, OnOffType.ON);
+                // Unset in 30 seconds when this times out
+                scheduler.schedule(() -> {
+                    logger.trace("Fan light dimmer start/stop command run for 30s");
+                    updateState(CHANNEL_STOP, OnOffType.OFF);
+                    updateState(CHANNEL_LIGHT_START_STOP, OnOffType.ON);
+                }, 30, TimeUnit.SECONDS);
+                break;
+
+            case CHANNEL_LIGHT_DIRECTIONAL_INC:
+                logger.trace("Fan light brightness increase start/stop command");
+                api.executeDeviceAction(config.deviceId,
+                        command == OnOffType.ON ? BondDeviceAction.START_INCREASING_BRIGHTNESS : BondDeviceAction.STOP,
+                        null);
+                updateState(CHANNEL_STOP, OnOffType.ON);
+                // Unset in 30 seconds when this times out
+                scheduler.schedule(() -> {
+                    logger.trace("Fan light brightness increase start/stop command run for 30s");
+                    updateState(CHANNEL_STOP, OnOffType.OFF);
+                    updateState(CHANNEL_LIGHT_DIRECTIONAL_INC, OnOffType.ON);
+                }, 30, TimeUnit.SECONDS);
+                break;
+
+            case CHANNEL_LIGHT_DIRECTIONAL_DECR:
+                logger.trace("Fan light brightness decrease start/stop command");
+                api.executeDeviceAction(config.deviceId,
+                        command == OnOffType.ON ? BondDeviceAction.START_DECREASING_BRIGHTNESS : BondDeviceAction.STOP,
+                        null);
+                updateState(CHANNEL_STOP, OnOffType.ON);
+                // Unset in 30 seconds when this times out
+                scheduler.schedule(() -> {
+                    logger.trace("Fan light brightness decrease start/stop command run for 30s");
+                    updateState(CHANNEL_STOP, OnOffType.OFF);
+                    updateState(CHANNEL_LIGHT_DIRECTIONAL_DECR, OnOffType.ON);
+                }, 30, TimeUnit.SECONDS);
+                break;
+
+            case CHANNEL_UP_LIGHT_ENABLE:
+                api.executeDeviceAction(config.deviceId, command == OnOffType.ON ? BondDeviceAction.TURN_UP_LIGHT_ON
+                        : BondDeviceAction.TURN_UP_LIGHT_OFF, null);
+                break;
+
+            case CHANNEL_UP_LIGHT_STATE:
+                // To turn on the up light, we first have to enable it and then turn on the lights
+                api.executeDeviceAction(config.deviceId, BondDeviceAction.TURN_UP_LIGHT_ON, null);
+                if (command == OnOffType.ON) {
+                    api.executeDeviceAction(config.deviceId, BondDeviceAction.TURN_LIGHT_ON, null);
+                } else {
+                    api.executeDeviceAction(config.deviceId, BondDeviceAction.TURN_LIGHT_OFF, null);
+                }
+                break;
+
+            case CHANNEL_UP_LIGHT_BRIGHTNESS:
+                if (command instanceof PercentType) {
+                    PercentType pctCommand = (PercentType) command;
+                    int value = pctCommand.intValue();
+                    logger.trace("Fan up light brightness command with value of {}", value);
+                    api.executeDeviceAction(config.deviceId, BondDeviceAction.SET_UP_LIGHT_BRIGHTNESS, value);
+                } else if (command instanceof IncreaseDecreaseType) {
+                    logger.trace("Fan uplight brightness increase/decrease command");
+                    api.executeDeviceAction(config.deviceId,
+                            ((IncreaseDecreaseType) command == IncreaseDecreaseType.INCREASE
+                                    ? BondDeviceAction.INCREASE_UP_LIGHT_BRIGHTNESS
+                                    : BondDeviceAction.DECREASE_UP_LIGHT_BRIGHTNESS),
+                            null);
+                } else {
+                    logger.info("Unsupported command on fan up light brightness channel");
+                }
+                break;
+
+            case CHANNEL_UP_LIGHT_START_STOP:
+                logger.trace("Fan up light dimmer change command");
+                api.executeDeviceAction(config.deviceId,
+                        command == OnOffType.ON ? BondDeviceAction.START_DIMMER : BondDeviceAction.STOP, null);
+                updateState(CHANNEL_STOP, OnOffType.ON);
+                // Unset in 30 seconds when this times out
+                scheduler.schedule(() -> {
+                    logger.trace("Fan up light dimmer change command run for 30s");
+                    updateState(CHANNEL_STOP, OnOffType.OFF);
+                    updateState(CHANNEL_UP_LIGHT_START_STOP, OnOffType.ON);
+                }, 30, TimeUnit.SECONDS);
+                break;
+
+            case CHANNEL_UP_LIGHT_DIRECTIONAL_INC:
+            case CHANNEL_UP_LIGHT_DIRECTIONAL_DECR:
+                // TODO(SRGDamia1): Command format not documented by Bond for up light directional brightness
+                logger.info("Bi-direction brightness control for up-lights not yet enabled!");
+                break;
+
+            case CHANNEL_DOWN_LIGHT_ENABLE:
+                api.executeDeviceAction(config.deviceId, command == OnOffType.ON ? BondDeviceAction.TURN_DOWN_LIGHT_ON
+                        : BondDeviceAction.TURN_DOWN_LIGHT_OFF, null);
+                break;
+
+            case CHANNEL_DOWN_LIGHT_STATE:
+                // To turn on the down light, we first have to enable it and then turn on the lights
+                api.executeDeviceAction(config.deviceId, BondDeviceAction.TURN_DOWN_LIGHT_ON, null);
+                if (command == OnOffType.ON) {
+                    api.executeDeviceAction(config.deviceId, BondDeviceAction.TURN_LIGHT_ON, null);
+                } else {
+                    api.executeDeviceAction(config.deviceId, BondDeviceAction.TURN_LIGHT_OFF, null);
+                }
+                break;
+
+            case CHANNEL_DOWN_LIGHT_BRIGHTNESS:
+                if (command instanceof PercentType) {
+                    PercentType pctCommand = (PercentType) command;
+                    int value = pctCommand.intValue();
+                    logger.trace("Fan down light brightness command with value of {}", value);
+                    api.executeDeviceAction(config.deviceId, BondDeviceAction.SET_DOWN_LIGHT_BRIGHTNESS, value);
+                } else if (command instanceof IncreaseDecreaseType) {
+                    logger.trace("Fan down light brightness increase/decrease command");
+                    api.executeDeviceAction(config.deviceId,
+                            ((IncreaseDecreaseType) command == IncreaseDecreaseType.INCREASE
+                                    ? BondDeviceAction.INCREASE_DOWN_LIGHT_BRIGHTNESS
+                                    : BondDeviceAction.DECREASE_DOWN_LIGHT_BRIGHTNESS),
+                            null);
+                } else {
+                    logger.debug("Unsupported command on fan down light brightness channel");
+                }
+                break;
+
+            case CHANNEL_DOWN_LIGHT_START_STOP:
+                logger.trace("Fan down light dimmer change command");
+                api.executeDeviceAction(config.deviceId,
+                        command == OnOffType.ON ? BondDeviceAction.START_DIMMER : BondDeviceAction.STOP, null);
+                updateState(CHANNEL_STOP, OnOffType.ON);
+                // Unset in 30 seconds when this times out
+                scheduler.schedule(() -> {
+                    logger.trace("Fan down light dimmer change command run for 30s");
+                    updateState(CHANNEL_STOP, OnOffType.OFF);
+                    updateState(CHANNEL_DOWN_LIGHT_START_STOP, OnOffType.ON);
+                }, 30, TimeUnit.SECONDS);
+                break;
+
+            case CHANNEL_DOWN_LIGHT_DIRECTIONAL_INC:
+            case CHANNEL_DOWN_LIGHT_DIRECTIONAL_DECR:
+                // TODO(SRGDamia1): Command format not documented by Bond for down light directional brightness
+                logger.debug("Bi-direction brightness control for up-lights not yet enabled!");
+                break;
+
+            case CHANNEL_FLAME:
+                if (command instanceof PercentType) {
+                    PercentType pctCommand = (PercentType) command;
+                    int value = pctCommand.intValue();
+                    logger.trace("Fireplace flame command with value of {}", value);
+                    api.executeDeviceAction(config.deviceId, BondDeviceAction.SET_FLAME, value);
+                } else if (command instanceof IncreaseDecreaseType) {
+                    logger.trace("Fireplace flame increase/decrease command");
+                    api.executeDeviceAction(config.deviceId,
+                            ((IncreaseDecreaseType) command == IncreaseDecreaseType.INCREASE
+                                    ? BondDeviceAction.INCREASE_FLAME
+                                    : BondDeviceAction.DECREASE_FLAME),
+                            null);
+                } else {
+                    logger.info("Unsupported command on flame channel");
+                }
+                break;
+
+            case CHANNEL_FP_FAN_STATE:
+                api.executeDeviceAction(config.deviceId,
+                        command == OnOffType.ON ? BondDeviceAction.TURN_FP_FAN_ON : BondDeviceAction.TURN_FP_FAN_OFF,
+                        null);
+                break;
+
+            case CHANNEL_FP_FAN_SPEED:
+                if (command instanceof PercentType) {
+                    PercentType pctCommand = (PercentType) command;
+                    int value = pctCommand.intValue();
+                    logger.trace("Fireplace fan command with value of {}", value);
+                    api.executeDeviceAction(config.deviceId, BondDeviceAction.SET_FP_FAN, value);
+                } else {
+                    logger.info("Unsupported command on fireplace fan channel");
+                }
+                break;
+
+            case CHANNEL_OPEN_CLOSE:
+                api.executeDeviceAction(config.deviceId,
+                        command == OnOffType.ON ? BondDeviceAction.OPEN : BondDeviceAction.CLOSE, null);
+                break;
+
+            case CHANNEL_HOLD:
+                api.executeDeviceAction(config.deviceId, BondDeviceAction.HOLD, null);
+                break;
+
+            case CHANNEL_PRESET:
+                api.executeDeviceAction(config.deviceId, BondDeviceAction.PRESET, null);
+                break;
+
+            default:
+                logger.info("Command {} on unknown channel {}, {}", command.toFullString(), channelUID.getId(),
+                        channelUID.toString());
                 return;
-            }
-
-            switch (channelUID.getId()) {
-                case CHANNEL_POWER_STATE:
-                    logger.trace("Power state command");
-                    api.executeDeviceAction(config.deviceId,
-                            command == OnOffType.ON ? BondDeviceAction.TurnOn : BondDeviceAction.TurnOff, null);
-                    break;
-
-                case CHANNEL_STOP:
-                    logger.trace("Stop command");
-                    api.executeDeviceAction(config.deviceId, BondDeviceAction.Stop, null);
-                    // Mark all the changing channels stopped
-                    updateState(CHANNEL_LIGHT_START_STOP, OnOffType.OFF);
-                    updateState(CHANNEL_LIGHT_DIRECTIONAL_INC, OnOffType.OFF);
-                    updateState(CHANNEL_LIGHT_DIRECTIONAL_DECR, OnOffType.OFF);
-                    updateState(CHANNEL_UP_LIGHT_START_STOP, OnOffType.OFF);
-                    updateState(CHANNEL_UP_LIGHT_DIRECTIONAL_INC, OnOffType.OFF);
-                    updateState(CHANNEL_UP_LIGHT_DIRECTIONAL_DECR, OnOffType.OFF);
-                    updateState(CHANNEL_DOWN_LIGHT_START_STOP, OnOffType.OFF);
-                    updateState(CHANNEL_DOWN_LIGHT_DIRECTIONAL_INC, OnOffType.OFF);
-                    updateState(CHANNEL_DOWN_LIGHT_DIRECTIONAL_DECR, OnOffType.OFF);
-                    break;
-
-                case CHANNEL_FAN_SPEED:
-                    logger.trace("Fan speed command");
-                    if (command instanceof PercentType) {
-                        int value = 1;
-                        BondDeviceProperties devProperties = this.deviceProperties;
-                        if (devProperties != null) {
-                            int maxSpeed = devProperties.maxSpeed;
-                            value = (int) Math.ceil(((PercentType) command).intValue() * maxSpeed / 100);
-                        }
-                        logger.trace("Fan speed command with speed set as {}", value);
-                        api.executeDeviceAction(config.deviceId, BondDeviceAction.SetSpeed, value);
-                    } else if (command instanceof IncreaseDecreaseType) {
-                        logger.trace("Fan increase/decrease speed command");
-                        api.executeDeviceAction(config.deviceId,
-                                ((IncreaseDecreaseType) command == IncreaseDecreaseType.INCREASE
-                                        ? BondDeviceAction.IncreaseSpeed
-                                        : BondDeviceAction.DecreaseSpeed),
-                                null);
-                    } else {
-                        logger.info("Unsupported command on fan speed channel");
-                    }
-                    break;
-
-                case CHANNEL_FAN_BREEZE_STATE:
-                    logger.trace("Fan enable/disable breeze command");
-                    api.executeDeviceAction(config.deviceId,
-                            command == OnOffType.ON ? BondDeviceAction.BreezeOn : BondDeviceAction.BreezeOff, null);
-                    break;
-
-                case CHANNEL_FAN_BREEZE_MEAN:
-                    // TODO(SRGDamia1): write array command fxn
-                    logger.trace("Support for fan breeze settings not yet available");
-                    break;
-
-                case CHANNEL_FAN_BREEZE_VAR:
-                    // TODO(SRGDamia1): write array command fxn
-                    logger.trace("Support for fan breeze settings not yet available");
-                    break;
-
-                case CHANNEL_FAN_DIRECTION:
-                    logger.trace("Fan direction command {}", command.toString());
-                    if (command instanceof StringType) {
-                        api.executeDeviceAction(config.deviceId, BondDeviceAction.SetDirection,
-                                command.toString().equals("winter") ? -1 : 1);
-                    }
-                    break;
-
-                case CHANNEL_LIGHT_STATE:
-                    logger.trace("Fan light state command");
-                    api.executeDeviceAction(config.deviceId,
-                            command == OnOffType.ON ? BondDeviceAction.TurnLightOn : BondDeviceAction.TurnLightOff,
-                            null);
-                    break;
-
-                case CHANNEL_LIGHT_BRIGHTNESS:
-                    if (command instanceof PercentType) {
-                        PercentType pctCommand = (PercentType) command;
-                        int value = pctCommand.intValue();
-                        logger.trace("Fan light brightness command with value of {}", value);
-                        api.executeDeviceAction(config.deviceId, BondDeviceAction.SetBrightness, value);
-                    } else if (command instanceof IncreaseDecreaseType) {
-                        logger.trace("Fan light brightness increase/decrease command");
-                        api.executeDeviceAction(config.deviceId,
-                                ((IncreaseDecreaseType) command == IncreaseDecreaseType.INCREASE
-                                        ? BondDeviceAction.IncreaseBrightness
-                                        : BondDeviceAction.DecreaseBrightness),
-                                null);
-                        updateState(CHANNEL_STOP, OnOffType.ON);
-                    } else {
-                        logger.info("Unsupported command on fan light brightness channel");
-                    }
-                    break;
-
-                case CHANNEL_LIGHT_START_STOP:
-                    logger.trace("Fan light dimmer start/stop command");
-                    api.executeDeviceAction(config.deviceId,
-                            command == OnOffType.ON ? BondDeviceAction.StartDimmer : BondDeviceAction.Stop, null);
-                    updateState(CHANNEL_STOP, OnOffType.ON);
-                    // Unset in 30 seconds when this times out
-                    scheduler.schedule(() -> {
-                        logger.trace("Fan light dimmer start/stop command run for 30s");
-                        updateState(CHANNEL_STOP, OnOffType.OFF);
-                        updateState(CHANNEL_LIGHT_START_STOP, OnOffType.ON);
-                    }, 30, TimeUnit.SECONDS);
-                    break;
-
-                case CHANNEL_LIGHT_DIRECTIONAL_INC:
-                    logger.trace("Fan light brightness increase start/stop command");
-                    api.executeDeviceAction(config.deviceId,
-                            command == OnOffType.ON ? BondDeviceAction.StartIncreasingBrightness
-                                    : BondDeviceAction.Stop,
-                            null);
-                    updateState(CHANNEL_STOP, OnOffType.ON);
-                    // Unset in 30 seconds when this times out
-                    scheduler.schedule(() -> {
-                        logger.trace("Fan light brightness increase start/stop command run for 30s");
-                        updateState(CHANNEL_STOP, OnOffType.OFF);
-                        updateState(CHANNEL_LIGHT_DIRECTIONAL_INC, OnOffType.ON);
-                    }, 30, TimeUnit.SECONDS);
-                    break;
-
-                case CHANNEL_LIGHT_DIRECTIONAL_DECR:
-                    logger.trace("Fan light brightness decrease start/stop command");
-                    api.executeDeviceAction(config.deviceId,
-                            command == OnOffType.ON ? BondDeviceAction.StartDecreasingBrightness
-                                    : BondDeviceAction.Stop,
-                            null);
-                    updateState(CHANNEL_STOP, OnOffType.ON);
-                    // Unset in 30 seconds when this times out
-                    scheduler.schedule(() -> {
-                        logger.trace("Fan light brightness decrease start/stop command run for 30s");
-                        updateState(CHANNEL_STOP, OnOffType.OFF);
-                        updateState(CHANNEL_LIGHT_DIRECTIONAL_DECR, OnOffType.ON);
-                    }, 30, TimeUnit.SECONDS);
-                    break;
-
-                case CHANNEL_UP_LIGHT_ENABLE:
-                    api.executeDeviceAction(config.deviceId,
-                            command == OnOffType.ON ? BondDeviceAction.TurnUpLightOn : BondDeviceAction.TurnUpLightOff,
-                            null);
-                    break;
-
-                case CHANNEL_UP_LIGHT_STATE:
-                    // To turn on the up light, we first have to enable it and then turn on the lights
-                    api.executeDeviceAction(config.deviceId, BondDeviceAction.TurnUpLightOn, null);
-                    if (command == OnOffType.ON) {
-                        api.executeDeviceAction(config.deviceId, BondDeviceAction.TurnLightOn, null);
-                    } else {
-                        api.executeDeviceAction(config.deviceId, BondDeviceAction.TurnLightOff, null);
-                    }
-                    break;
-
-                case CHANNEL_UP_LIGHT_BRIGHTNESS:
-                    if (command instanceof PercentType) {
-                        PercentType pctCommand = (PercentType) command;
-                        int value = pctCommand.intValue();
-                        logger.trace("Fan up light brightness command with value of {}", value);
-                        api.executeDeviceAction(config.deviceId, BondDeviceAction.SetUpLightBrightness, value);
-                    } else if (command instanceof IncreaseDecreaseType) {
-                        logger.trace("Fan uplight brightness increase/decrease command");
-                        api.executeDeviceAction(config.deviceId,
-                                ((IncreaseDecreaseType) command == IncreaseDecreaseType.INCREASE
-                                        ? BondDeviceAction.IncreaseUpLightBrightness
-                                        : BondDeviceAction.DecreaseUpLightBrightness),
-                                null);
-                    } else {
-                        logger.info("Unsupported command on fan up light brightness channel");
-                    }
-                    break;
-
-                case CHANNEL_UP_LIGHT_START_STOP:
-                    logger.trace("Fan up light dimmer change command");
-                    api.executeDeviceAction(config.deviceId,
-                            command == OnOffType.ON ? BondDeviceAction.StartDimmer : BondDeviceAction.Stop, null);
-                    updateState(CHANNEL_STOP, OnOffType.ON);
-                    // Unset in 30 seconds when this times out
-                    scheduler.schedule(() -> {
-                        logger.trace("Fan up light dimmer change command run for 30s");
-                        updateState(CHANNEL_STOP, OnOffType.OFF);
-                        updateState(CHANNEL_UP_LIGHT_START_STOP, OnOffType.ON);
-                    }, 30, TimeUnit.SECONDS);
-                    break;
-
-                case CHANNEL_UP_LIGHT_DIRECTIONAL_INC:
-                case CHANNEL_UP_LIGHT_DIRECTIONAL_DECR:
-                    // TODO(SRGDamia1): Command format not documented by Bond for up light directional brightness
-                    logger.info("Bi-direction brightness control for up-lights not yet enabled!");
-                    break;
-
-                case CHANNEL_DOWN_LIGHT_ENABLE:
-                    api.executeDeviceAction(config.deviceId, command == OnOffType.ON ? BondDeviceAction.TurnDownLightOn
-                            : BondDeviceAction.TurnDownLightOff, null);
-                    break;
-
-                case CHANNEL_DOWN_LIGHT_STATE:
-                    // To turn on the down light, we first have to enable it and then turn on the lights
-                    api.executeDeviceAction(config.deviceId, BondDeviceAction.TurnDownLightOn, null);
-                    if (command == OnOffType.ON) {
-                        api.executeDeviceAction(config.deviceId, BondDeviceAction.TurnLightOn, null);
-                    } else {
-                        api.executeDeviceAction(config.deviceId, BondDeviceAction.TurnLightOff, null);
-                    }
-                    break;
-
-                case CHANNEL_DOWN_LIGHT_BRIGHTNESS:
-                    if (command instanceof PercentType) {
-                        PercentType pctCommand = (PercentType) command;
-                        int value = pctCommand.intValue();
-                        logger.trace("Fan down light brightness command with value of {}", value);
-                        api.executeDeviceAction(config.deviceId, BondDeviceAction.SetDownLightBrightness, value);
-                    } else if (command instanceof IncreaseDecreaseType) {
-                        logger.trace("Fan down light brightness increase/decrease command");
-                        api.executeDeviceAction(config.deviceId,
-                                ((IncreaseDecreaseType) command == IncreaseDecreaseType.INCREASE
-                                        ? BondDeviceAction.IncreaseDownLightBrightness
-                                        : BondDeviceAction.DecreaseDownLightBrightness),
-                                null);
-                    } else {
-                        logger.debug("Unsupported command on fan down light brightness channel");
-                    }
-                    break;
-
-                case CHANNEL_DOWN_LIGHT_START_STOP:
-                    logger.trace("Fan down light dimmer change command");
-                    api.executeDeviceAction(config.deviceId,
-                            command == OnOffType.ON ? BondDeviceAction.StartDimmer : BondDeviceAction.Stop, null);
-                    updateState(CHANNEL_STOP, OnOffType.ON);
-                    // Unset in 30 seconds when this times out
-                    scheduler.schedule(() -> {
-                        logger.trace("Fan down light dimmer change command run for 30s");
-                        updateState(CHANNEL_STOP, OnOffType.OFF);
-                        updateState(CHANNEL_DOWN_LIGHT_START_STOP, OnOffType.ON);
-                    }, 30, TimeUnit.SECONDS);
-                    break;
-
-                case CHANNEL_DOWN_LIGHT_DIRECTIONAL_INC:
-                case CHANNEL_DOWN_LIGHT_DIRECTIONAL_DECR:
-                    // TODO(SRGDamia1): Command format not documented by Bond for down light directional brightness
-                    logger.debug("Bi-direction brightness control for up-lights not yet enabled!");
-                    break;
-
-                case CHANNEL_FLAME:
-                    if (command instanceof PercentType) {
-                        PercentType pctCommand = (PercentType) command;
-                        int value = pctCommand.intValue();
-                        logger.trace("Fireplace flame command with value of {}", value);
-                        api.executeDeviceAction(config.deviceId, BondDeviceAction.SetFlame, value);
-                    } else if (command instanceof IncreaseDecreaseType) {
-                        logger.trace("Fireplace flame increase/decrease command");
-                        api.executeDeviceAction(config.deviceId,
-                                ((IncreaseDecreaseType) command == IncreaseDecreaseType.INCREASE
-                                        ? BondDeviceAction.IncreaseFlame
-                                        : BondDeviceAction.DecreaseFlame),
-                                null);
-                    } else {
-                        logger.info("Unsupported command on flame channel");
-                    }
-                    break;
-
-                case CHANNEL_FP_FAN_STATE:
-                    api.executeDeviceAction(config.deviceId,
-                            command == OnOffType.ON ? BondDeviceAction.TurnFpFanOn : BondDeviceAction.TurnFpFanOff,
-                            null);
-                    break;
-
-                case CHANNEL_FP_FAN_SPEED:
-                    if (command instanceof PercentType) {
-                        PercentType pctCommand = (PercentType) command;
-                        int value = pctCommand.intValue();
-                        logger.trace("Fireplace fan command with value of {}", value);
-                        api.executeDeviceAction(config.deviceId, BondDeviceAction.SetFpFan, value);
-                    } else {
-                        logger.info("Unsupported command on fireplace fan channel");
-                    }
-                    break;
-
-                case CHANNEL_OPEN_CLOSE:
-                    api.executeDeviceAction(config.deviceId,
-                            command == OnOffType.ON ? BondDeviceAction.Open : BondDeviceAction.Close, null);
-                    break;
-
-                case CHANNEL_HOLD:
-                    api.executeDeviceAction(config.deviceId, BondDeviceAction.Hold, null);
-                    break;
-
-                case CHANNEL_PRESET:
-                    api.executeDeviceAction(config.deviceId, BondDeviceAction.Preset, null);
-                    break;
-
-                default:
-                    logger.info("Command {} on unknown channel {}, {}", command.toFullString(), channelUID.getId(),
-                            channelUID.toString());
-                    return;
-            }
         }
     }
 
@@ -606,12 +603,10 @@ public class BondDeviceHandler extends BaseThingHandler {
         availableChannelIds.add(CHANNEL_LAST_UPDATE);
 
         for (BondDeviceAction action : availableActions) {
-            if (action != null) {
-                String actionType = action.getChannelTypeId();
-                if (actionType != null) {
-                    availableChannelIds.add(actionType);
-                    logger.trace(" Action: {}, Relevant Channel Type Id: {}", action.getActionId(), actionType);
-                }
+            String actionType = action.getChannelTypeId();
+            if (actionType != null) {
+                availableChannelIds.add(actionType);
+                logger.trace(" Action: {}, Relevant Channel Type Id: {}", action.getActionId(), actionType);
             }
         }
 
@@ -647,7 +642,7 @@ public class BondDeviceHandler extends BaseThingHandler {
             logger.trace("Update Time for {}: {}", this.getThing().getLabel(), (new DateTimeType()).toFullString());
 
             updateState(CHANNEL_POWER_STATE, updateState.power == 0 ? OnOffType.OFF : OnOffType.ON);
-            updateState("timer", new DecimalType(updateState.timer));
+            updateState(CHANNEL_TIMER, new DecimalType(updateState.timer));
             int value = 1;
             BondDeviceProperties devProperties = this.deviceProperties;
             if (devProperties != null) {
@@ -719,19 +714,16 @@ public class BondDeviceHandler extends BaseThingHandler {
             logger.info("Current version is {}, prior version was {}.", CURRENT_BINDING_VERSION, lastBindingVersion);
 
             // Update the thing with the new property value
-            final Map<String, String> newProperties = new HashMap<>(thing.getProperties());
+            final Map<String, String> newProperties = editProperties();
             newProperties.put(PROPERTIES_BINDING_VERSION, CURRENT_BINDING_VERSION);
 
-            final ThingBuilder thingBuilder = editThing();
-            thingBuilder.withProperties(newProperties);
-            updateThing(thingBuilder.build());
+            updateProperties(newProperties);
         }
         return updatedBinding;
     }
 
     private synchronized boolean wasThingUpdatedExternally(BondDevice devInfo) {
         // Check if the Bond hash tree has changed
-        config = getConfigAs(BondDeviceConfiguration.class);
         final String lastDeviceConfigurationHash = config.lastDeviceConfigurationHash;
         boolean updatedHashTree = !devInfo.hash.equals(lastDeviceConfigurationHash);
         if (updatedHashTree) {
@@ -786,7 +778,6 @@ public class BondDeviceHandler extends BaseThingHandler {
                 if (api == null) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "Bridge API not available");
-                    initialize();
                     return;
                 } else {
                     logger.trace("Polling for current state for {} ({})", config.deviceId, this.getThing().getLabel());

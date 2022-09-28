@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Kai Kreuzer - Initial contribution
  */
-@Component(service = MDNSDiscoveryParticipant.class, immediate = true)
+@Component(service = MDNSDiscoveryParticipant.class, configurationPid = "discovery.mdns.bondhome")
 @NonNullByDefault
 public class BondMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant {
 

@@ -30,6 +30,8 @@ import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,19 +41,35 @@ import org.slf4j.LoggerFactory;
  * @author Arne Seime - Initial contribution
  */
 @NonNullByDefault
-public class BondDiscoveryService extends AbstractDiscoveryService {
+public class BondDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
     private static final long REFRESH_INTERVAL_MINUTES = 60;
     public static final Set<ThingTypeUID> DISCOVERABLE_THING_TYPES_UIDS = SUPPORTED_DEVICE_TYPES;
     private final Logger logger = LoggerFactory.getLogger(BondDiscoveryService.class);
     private @Nullable ScheduledFuture<?> discoveryJob;
-    private final BondBridgeHandler bridgeHandler;
-    private BondHttpApi api;
+    private @Nullable BondBridgeHandler bridgeHandler;
+    private @Nullable BondHttpApi api;
 
-    public BondDiscoveryService(final BondBridgeHandler bridgeHandler) {
+    public BondDiscoveryService() {
         super(DISCOVERABLE_THING_TYPES_UIDS, 10);
-        this.bridgeHandler = bridgeHandler;
-        this.api = bridgeHandler.getBridgeAPI();
         this.discoveryJob = null;
+    }
+
+    @Override
+    public void deactivate() {
+        super.deactivate();
+    }
+
+    @Override
+    public void setThingHandler(@Nullable ThingHandler handler) {
+        if (handler instanceof BondBridgeHandler) {
+            bridgeHandler = (BondBridgeHandler) handler;
+            api = bridgeHandler.getBridgeAPI();
+        }
+    }
+
+    @Override
+    public @Nullable ThingHandler getThingHandler() {
+        return bridgeHandler;
     }
 
     @Override

@@ -14,8 +14,8 @@
 		<description>An RF or IR remote controlled motorized shade</description>
 
 		<channel-groups>
-			<channel-group id="commonChannels" typeId="commonChannelGroup"/>
-			<channel-group id="shadeChannels" typeId="shadeChannelGroup"/>
+			<channel-group id="common" typeId="commonChannelGroup"/>
+			<channel-group id="shade" typeId="shadeChannelGroup"/>
 		</channel-groups>
 
 		<representation-property>deviceId</representation-property>

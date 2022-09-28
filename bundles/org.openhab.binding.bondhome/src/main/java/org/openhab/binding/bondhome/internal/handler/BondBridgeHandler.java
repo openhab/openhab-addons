@@ -18,8 +18,8 @@ import static org.openhab.core.thing.Thing.*;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -35,6 +35,7 @@ import org.openhab.binding.bondhome.internal.api.BondDeviceState;
 import org.openhab.binding.bondhome.internal.api.BondHttpApi;
 import org.openhab.binding.bondhome.internal.api.BondSysVersion;
 import org.openhab.binding.bondhome.internal.config.BondBridgeConfiguration;
+import org.openhab.binding.bondhome.internal.discovery.BondDiscoveryService;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DateTimeType;
@@ -45,6 +46,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,7 +69,7 @@ public class BondBridgeHandler extends BaseBridgeHandler {
     private final BPUPListener udpListener;
     private final BondHttpApi api;
 
-    private @NonNullByDefault({}) BondBridgeConfiguration config;
+    private @Nullable BondBridgeConfiguration config;
 
     private final Set<BondDeviceHandler> handlers = Collections.synchronizedSet(new HashSet<>());
 
@@ -90,14 +92,11 @@ public class BondBridgeHandler extends BaseBridgeHandler {
         // set the thing status to UNKNOWN temporarily
         updateStatus(ThingStatus.UNKNOWN);
 
-        // Example for background initialization:
-        scheduler.execute(() -> {
-            initializeThing();
-        });
+        scheduler.execute(this::initializeThing);
     }
 
     private void initializeThing() {
-        BondBridgeConfiguration localConfig = config = getConfigAs(BondBridgeConfiguration.class);
+        BondBridgeConfiguration localConfig = config;
         if (localConfig.bondIpAddress == null) {
             try {
                 logger.trace("IP address of Bond {} is unknown", localConfig.bondId);
@@ -282,7 +281,7 @@ public class BondBridgeHandler extends BaseBridgeHandler {
         }
         if (myVersion != null) {
             // Update all the thing properties based on the result
-            Map<String, String> thingProperties = new HashMap<String, String>();
+            Map<String, String> thingProperties = editProperties();
             thingProperties.put(PROPERTY_VENDOR, myVersion.make);
             thingProperties.put(PROPERTY_MODEL_ID, myVersion.model);
             thingProperties.put(PROPERTY_SERIAL_NUMBER, myVersion.bondid);
@@ -293,5 +292,10 @@ public class BondBridgeHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Unable to get Bond bridge version via API");
         }
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singleton(BondDiscoveryService.class);
     }
 }

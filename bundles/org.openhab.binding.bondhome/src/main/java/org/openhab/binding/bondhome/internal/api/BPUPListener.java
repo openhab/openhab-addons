@@ -42,12 +42,13 @@ import com.google.gson.JsonParseException;
 @NonNullByDefault
 public class BPUPListener implements Runnable {
 
-    private static final int SOCKET_TIMEOUT_MILLISECONDS = 3000; // in milliseconds
+    private static final int SOCKET_TIMEOUT_MILLISECONDS = 3000;
+    private static final int SOCKET_RETRY_TIMEOUT_MILLISECONDS = 3000;
 
     private final Logger logger = LoggerFactory.getLogger(BPUPListener.class);
 
     // To parse the JSON responses
-    private Gson gsonBuilder;
+    private final Gson gsonBuilder;
 
     // Used for callbacks to handler
     private final BondBridgeHandler bridgeHandler;
@@ -243,8 +244,7 @@ public class BPUPListener implements Runnable {
     private void datagramSocketHealthRoutine() {
         @Nullable
         DatagramSocket datagramSocket = this.socket;
-        if (datagramSocket == null
-                || (datagramSocket != null && (datagramSocket.isClosed() || !datagramSocket.isConnected()))) {
+        if (datagramSocket == null || (datagramSocket.isClosed() || !datagramSocket.isConnected())) {
             logger.trace("Datagram Socket is disconnected or has been closed, reconnecting...");
             try {
                 // close the socket before trying to reopen
@@ -252,6 +252,10 @@ public class BPUPListener implements Runnable {
                     datagramSocket.close();
                 }
                 logger.trace("Old socket closed.");
+                try {
+                    Thread.sleep(SOCKET_RETRY_TIMEOUT_MILLISECONDS);
+                } catch (InterruptedException e) {
+                }
                 DatagramSocket s = new DatagramSocket(null);
                 s.setSoTimeout(SOCKET_TIMEOUT_MILLISECONDS);
                 s.bind(null);

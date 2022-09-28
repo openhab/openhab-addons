@@ -14,8 +14,8 @@
 		<description>An RF or IR remote controlled fireplace with or without a fan</description>
 
 		<channel-groups>
-			<channel-group id="commonChannels" typeId="commonChannelGroup"/>
-			<channel-group id="fireplaceChannels" typeId="fireplaceChannelGroup"/>
+			<channel-group id="common" typeId="commonChannelGroup"/>
+			<channel-group id="fireplace" typeId="fireplaceChannelGroup"/>
 		</channel-groups>
 
 		<representation-property>deviceId</representation-property>

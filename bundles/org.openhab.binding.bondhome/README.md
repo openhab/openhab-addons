@@ -1,56 +1,90 @@
-# BondHome Binding
+# Bond Home Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
-
-_If possible, provide some resources like pictures, a YouTube video, etc. to give an impression of what can be done with this binding. You can place such resources into a `doc` folder next to this README.md._
+This binding connects the [Bond Home](https://bondhome.io/) Bridge to OpenHAB using the [BOND V2 Local HTTP API](http://docs-local.appbond.com).
+You'll need to acquire your [Local Token](http://docs-local.appbond.com/#section/Getting-Started/Getting-the-Bond-Token).
+The easiest way is to open the Bond Home app on your mobile device, tap on your bridge device, open the Advanced Settings, and copy it from the Local Token entry.
 
 ## Supported Things
 
-_Please describe the different supported things / devices within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+| Thing Type       | Description                                                       |
+|------------------|-------------------------------------------------------------------|
+| bondBridge       | The RF/IR/WiFi Bridge                                             |
+| bondFan          | An RF or IR remote controlled ceiling fan with or without a light |
+| bondFireplace    | An RF or IR remote controlled fireplace with or without a fan     |
+| bondGenericThing | A generic RF or IR remote controlled device                       |
+| bondShades       | An RF or IR remote controlled motorized shade                     |
 
 ## Discovery
 
-_Describe the available auto-discovery features here. Mention for what it works and what needs to be kept in mind when using it._
-
-## Binding Configuration
-
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it. In this section, you should link to this file and provide some information about the options. The file could e.g. look like:_
-
-```
-# Configuration for the Philips Hue Binding
-#
-# Default secret key for the pairing of the Philips Hue Bridge.
-# It has to be between 10-40 (alphanumeric) characters
-# This may be changed by the user for security reasons.
-secret=openHABSecret
-```
-
-_Note that it is planned to generate some part of this based on the information that is available within ```src/main/resources/OH-INF/binding``` of your binding._
-
-_If your binding does not offer any generic configurations, you can remove this section completely._
+Once the bridge has been added, individual devices will be auto-discovered and added to the inbox.
 
 ## Thing Configuration
 
-_Describe what is needed to manually configure a thing, either through the (Paper) UI or via a thing-file. This should be mainly about its mandatory and optional configuration parameters. A short example entry for a thing file can help!_
+### bondBridge
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+| Parameter          | Description                                                           | Required |
+|--------------------|-----------------------------------------------------------------------|----------|
+| bondId             | The Bond ID of the bridge from the Bond Home app.                     | Yes      |
+| localToken         | The authentication token for the local API.                           | Yes      |
+| bondIpAddress      | The exact IP address to connect to the Bond Hub on the local network  | No       |
 
 ## Channels
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
+Not all channels will be available for every device.
+They are dependent on how the device is configured in the Bond Home app.
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+### `common` Group
 
-| channel  | type   | description                  |
-|----------|--------|------------------------------|
-| control  | Switch | This is the control channel  |
+| channel         | type     | description                                              |
+|-----------------|----------|----------------------------------------------------------|
+| power           | Switch   | Device Power                                             |
+| lastUpdate      | DateTime | Timestamp of last status update                          |
+| stopChannelType | Switch   | Stops any ongoing change actions (such as light dimming) |
+
+### `ceilingFan` Group
+
+| channel           | type     | description                                       |
+|-------------------|----------|---------------------------------------------------|
+| speed             | Dimmer   | Sets the fan speed. The 0-100% value will be scaled to however many speeds the fan actually has. Note that you cannot set the fan to speed 0 - you must turn `OFF` the power channel instead. |
+| breezeState       | Switch   | Enables or disables breeze mode                   |
+| breezeMean        | Dimmer   | Sets the average speed in breeze mode             |
+| breezeVariability | Dimmer   | Sets the variability of the speed in breeze mode. |
+| direction         | String   | Sets the fan direciton - "Summer" or "Winter"     |
+| timer             | Number   | Sets an automatic off timer for s seconds (turning on the fan if necessary) |
+
+### `light`, `upLight`, `downLight` Groups
+
+| channel         | type   | description                                            |
+|-----------------|--------|--------------------------------------------------------|
+| power           | Switch | Turns the light on or off                              |
+| brightness      | Dimmer | Adjusts the brightness of the light                    |
+| dimmerStartStop | Switch | Starts or stops cycling the brightness of the light    |
+| dimmerIncr      | Switch | Starts or stops increasing the brightness of the light |
+| dimmerDcr       | Switch | Starts or stops decreasing the brightness of the light |
+
+### `fireplace` Group
+
+| channel  | type   | description                            |
+|----------|--------|----------------------------------------|
+| flame    | Dimmer | Adjust the flame level                 |
+| fanPower | Switch | Turns the fireplace fan on or off      |
+| fanSpeed | Dimmer | Adjusts the speed of the fireplace fan |
+
+### `shade` Group
+
+| channel    | type   | description                               |
+|------------|--------|-------------------------------------------|
+| openShade  | Switch | Opens or closes motorized shades          |
+| hold       | Switch | Tells a shade to stop moving              |
+| preset     | Switch | Tells a shade to go to a set preset level |
 
 ## Full Example
 
-_Provide a full usage example based on textual configuration files (*.things, *.items, *.sitemap)._
+### `bond.items` File
 
-## Any custom content here!
-
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
+```
+Switch GreatFan_Switch "Great Room Fan" { channel="bondhome:bondFan:BD30179:0d55fb70:common#power" }
+Dimmer GreatFan_Dimmer "Great Room Fan" { channel="bondhome:bondFan:BD30179:0d55fb70:fan#speed" }
+String GreatFan_Rotation "Great Room Fan Rotation" { channel="bondhome:bondFan:BD30179:0d55fb70:fan#direction" }
+Switch GreatFanLight_Switch "Great Room Fan Light" { channel="bondhome:bondFan:BD30179:0d55fb70:light#power" }
+```

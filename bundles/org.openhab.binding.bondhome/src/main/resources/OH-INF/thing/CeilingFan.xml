@@ -14,11 +14,11 @@
 		<description>An RF or IR remote controlled ceiling fan with or without a light</description>
 
 		<channel-groups>
-			<channel-group id="commonChannels" typeId="commonChannelGroup"/>
-			<channel-group id="ceilingFanChannels" typeId="ceilingFanChannelGroup"/>
-			<channel-group id="lightChannels" typeId="lightChannelGroup"/>
-			<channel-group id="upLightChannels" typeId="upLightChannelGroup"/>
-			<channel-group id="downLightChannels" typeId="downLightChannelGroup"/>
+			<channel-group id="common" typeId="commonChannelGroup"/>
+			<channel-group id="fan" typeId="ceilingFanChannelGroup"/>
+			<channel-group id="light" typeId="lightChannelGroup"/>
+			<channel-group id="upLight" typeId="upLightChannelGroup"/>
+			<channel-group id="downLight" typeId="downLightChannelGroup"/>
 		</channel-groups>
 
 		<representation-property>deviceId</representation-property>

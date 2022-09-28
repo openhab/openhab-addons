@@ -14,7 +14,7 @@
 		<description>A generic RF or IR remote controlled device</description>
 
 		<channel-groups>
-			<channel-group id="commonChannels" typeId="commonChannelGroup"/>
+			<channel-group id="common" typeId="commonChannelGroup"/>
 		</channel-groups>
 
 		<representation-property>deviceId</representation-property>
