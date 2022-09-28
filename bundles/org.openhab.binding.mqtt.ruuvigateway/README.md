@@ -1,175 +1,65 @@
-# EspMilightHub Binding
+# Ruuvi Gateway MQTT Binding
 
-This binding allows an open source esp8266 based bridge to automatically find and add Milight globes.
-The hubs can be built from 2 ready made boards and only need connecting with 7 wires.
-They can be very easy to build with no soldering needed.
+This binding allows reading data from Ruuvi Tags as published by [Ruuvi Gateway](https://ruuvi.com/gateway/).
+Both RuuviTag and RuuviTag Pro are supported.
 
-Advantages to using this DIY bridge over the OEM bridge:
+## Setup the Gateway
 
-+ Almost unlimited groups to give individual control over an entire house of Milight globes without needing multiple bridges.
-+ If using the Milight remotes to control the globes, this binding can update the openHAB controls the moment a key is pressed on the physical remotes.
-+ Supports auto discovery.
+Before using this binding, Ruuvi Gateway needs to configured to publish the sensor data via MQTT. 
 
-## Setup the hardware
-
-In depth details on how to build and what the bridge is can be found here: <https://blog.christophermullins.com/2017/02/11/milight-wifi-gateway-emulator-on-an-esp8266>
-
-A quick overview of the steps to get the hardware going are:
-
-+ Connect a nodemcu/D1 mini/esp8266 to your computer via a USB cable.
-+ Download the latest BIN file from here <https://github.com/sidoh/esp8266_milight_hub/releases>
-+ Download esp8266flasher if you are on windows <https://github.com/nodemcu/nodemcu-flasher>
-+ Check the blog above on more info for Mac or Linux.
-+ Open the flasher tool and make sure the flash size is 4mb or whatever your esp8266 board has.
-+ Flash the bin and press the reset button on the board when it completes.
-+ Connect to the wifi access point of the esp directly with your phone/tablet and setup wifi details.
-+ Login by using the IP address of the esp8266 in a web browser and the control panel will show up.
-+ Connect 7 wires between the two ready made PCBs as shown in the blog.
-+ Setup a MQTT broker as this method uses the faster and lightweight MQTT protocol and not UDP.
-
-## Setup the Firmware
-
-Enter the control panel for the ESP8266 by using any browser and enter the IP address.
-The following options need to be changed in the firmware for the binding to work.
-Click on SETTINGS>MQTT>:
-
-**mqtt_topic_pattern:**
-`milight/commands/:device_id/:device_type/:group_id`
-
-**mqtt_update_topic_pattern:**
-Leave this blank.
-
-**mqtt_state_topic_pattern:**
-`milight/states/:device_id/:device_type/:group_id`
-
-**group_state_fields:**
-IMPORTANT: Make sure only the following are ticked:
-
-+ state
-+ level
-+ hue
-+ saturation
-+ mode
-+ color_temp
-+ bulb_mode
-
-Fill in the MQTT broker fields with the correct details so the hub can connect and then click **save**.
-Now when you use any Milight remote control, you will see MQTT topics being created that should include `level` and `hsb` in the messages.
-If you see `brightness` and not `level`, then go back and follow the above setup steps.
-
-You can use this Linux command to watch all MQTT topics from Milight:
-
-```
-mosquitto_sub -u usernamehere -P passwordhere -p 1883 -v -t 'milight/#'
-```
-
-You can also use the mosquitto_pub command to send your own commands and watch the bulbs respond all without the binding being setup.
-Everything this binding does goes in and out via MQTT and can be watched with the above command.
-Once you have setup and test the hub you can move onto using the binding.
-
-## Supported Things
-
-This binding is best thought of as a remote control emulator, so the things are really the type of remote that you own and not the globes.
-The Milight protocol is 1 way only so there is no way to find actual globes.
-
-| Thing Type ID | Description |
-|-|-|
-| `rgb_cct` | Remote that has 4 channels and controls globes with full colour, and both cool and warm whites. |
-| `fut089` | Remote is the newer 8 channel type called FUT089 and your globes are the rgb_cct. |
-| `cct` | Remote is 4 channels and the globes have no colours with only cool and warm white controls. |
-| `fut091` | Remote is the newer 8 group model called a fut091 and your globes are cct. |
-| `rgbw` | Remote is 4 channels and the globes have RGB and a fixed white. |
-| `rgb` | Remote is 4 channels and the globes have full RGB with no white. |
+For further instructions, refer to relevant section in [Ruuvi Gateway documentation](https://ruuvi.com/gateway-config/).
+For most convenient usage of this binding, please ensure that "Use 'ruuvi' on the prefix' MQTT setting is enabled on Ruuvi Gateway.
 
 ## Discovery
 
 First install the MQTT binding and setup a `broker` thing and make sure it is ONLINE, as this binding uses the MQTT binding to talk to your broker and hence that binding must be setup first.
-Next, move a control on either a physical remote, or used a virtual control inside the esp8266 control panel web page which cause a MQTT message to be sent.
-This binding should then detect the new device the moment the control is moved and a new entry should appear in your INBOX.
 
-To remove a saved state from your MQTT broker that causes an entry in your INBOX you can use this command or use the ignore feature of openHAB.
-
-```
-mosquitto_pub -u username -P password -p 1883 -t 'milight/states/0x0/rgb_cct/1' -n -r
-```
-
-Note that the group 0 (or ALL group) is not autodiscovered as a thing and thus has to be added manually if needed (see section [Using the group 0](#using-the-group-0) for details on when and how to do this)
+This binding discovers the Ruuvi Tags via the MQTT bridge; the discovered things should appear in your thing Inbox.
 
 ## Thing Configuration
 
+
+There is only thing type supported by this binding, `ruuvitag_beacon`.
+No manual configuration is needed, and discovery function can be used instead.
+
+For users that prefer manual configuration, we list here the configurable parameters.
+
 | Parameter | Description | Required | Default |
 |-|-|-|-|
-| `whiteHue` | When both the `whiteHue` and `whiteSat` values are seen by the binding it will trigger the white LEDS. Set to -1 to disable, 0 for Alexa, or 35 for Google Home. | Y | 35 |
-| `whiteSat` | When both the whiteHue and whiteSat values are seen by the binding it will trigger the white LEDS. Set to -1 to disable, 100 for Alexa or 32 for Google Home. | Y | 32 |
-| `favouriteWhite` | When one of the shortcuts triggers white mode, use this for the colour white instead of the default colour. | Y |200 |
-| `dimmedCT` | Traditional globes grow warmer the more they are dimmed. Set this to 370, or leave blank to disable. | N | blank |
-| `oneTriggersNightMode` | Night mode is a much lower level of light and this feature allows it to be auto selected when your fader/slider moves to 1%. NOTE: Night mode by design locks out some controls of a physical remote, so this feature is disabled by default. | Y | false |
-| `powerFailsToMinimum` | If lights loose power from the power switch OR a power outage, they will default to using the lowest brightness if the light was turned off before the power failure occurred. | Y | true |
-| `whiteThreshold` | This feature allows you to use a color control to change to using the real white LEDs when the saturation is equal to, or below this threshold. -1 will disable this feature. | Y | 12 |
+| `topic` | MQTT topic containing the gateway payload | Y | (N/A) |
+
+
 
 ## Channels
 
-| Channel | Type | Description |
-|-|-|-|
-| `level` | Dimmer | Level changes the brightness of the globe. |
-| `colourTemperature` | Dimmer | Change from cool to warm white with this control. |
-| `colour` | Color | Allows you to change the colour, brightness and saturation of the globe. |
-| `discoMode` | String | Switch to a Disco mode directly from a drop down list. |
-| `bulbMode` | String (read only) | Displays the mode the bulb is currently in so that rules can determine if the globe is white, a color, disco modes or night mode are selected. |
-| `command` | String | Sends the raw commands that the buttons on a remote send. |
+| Channel ID                | Item Type                | Description                    |
+| ------------------------- | ------------------------ | ------------------------------ |
+| temperature               | Number:Temperature       | The measured temperature       |
+| humidity                  | Number:Dimensionless     | The measured humidity          |
+| pressure                  | Number:Pressure          | The measured air pressure      |
+| batteryVoltage            | Number:ElectricPotential | The measured battery voltage   |
+| accelerationx             | Number:Acceleration      | The measured acceleration of X |
+| accelerationy             | Number:Acceleration      | The measured acceleration of Y |
+| accelerationz             | Number:Acceleration      | The measured acceleration of Z |
+| txPower                   | Number:Power             | TX power                       |
+| dataFormat                | Number                   | Data format version            |
+| measurementSequenceNumber | Number:Dimensionless     | Measurement sequence number    |
+| movementCounter           | Number:Dimensionless     | Movement counter               |
+| rssi           | Number     | Received signal (between the Gateway and the sensor) strength indicator               |
+| ts           | DateTime     | Timestamp when the message from Bluetooth-sensor was received by Gateway               |
+| gwts           | DateTime     | Timestamp when the message from Bluetooth-sensor was relayed by Gateway               |
+| gwmac           | String     | MAC-address of Ruuvi Gateway               |
 
-## Note Regarding Transmission Delays
+Note: not all channels are always updated. Available fields depends on [Ruuvi Data Format](https://github.com/ruuvi/ruuvi-sensor-protocols) and Ruuvi Tag model.
+At the time of writing (2022-09), most Ruuvi Tags use Ruuvi Data Format 5 out of box.
 
-If you have lots of globes and openHAB turns them all on, you may notice a delay that causes the globes to turn on one by one and the delay can add up when a lot of globes are installed in your house.
-This is caused by the time it takes to transmit the desired setting to the globe multiplied by how many times the hub repeats transmitting the setting.
-Since it takes around 2.8ms for a setting to be transmitted, if the firmware is set to repeat the packets 50 times it would then take 2.8*50 = 140ms before the next globe starts to have its new state transmitted by the hub.
-You can reduce the packet repeats to speed up the response of this binding and the hub by tweaking a few settings.
+Some measurements might not make any sense.
+For example, Ruuvi Tag Pro 2in1 does not have a humidity measurement and thus, the humidity data advertised by the sensor is garbage.
 
-Settings can be found on the radio tab in the esp control panel using your browser.
-Suggested settings are as follows:
+## Example
 
-+ Packet repeats = 12 (if you only turn 1 globe on or off it uses this value)
-+ Packet repeat throttle threshold = 200
-+ Packet repeat throttle sensitivity = 0
-+ Packet repeat minimum = 8 (When turning multiple globes on and off it will use this value as it throttles the repeats back to reduce latency/delay between each globe)
-
-## Important for Textual Configuration
-
-This binding requires things to have a specific format for the unique ID, the auto discovery does this for you.
-
-If doing textual configuration you need to add the Device ID and Group ID together to create the things unique ID.
-The DeviceID is different for each remote.
-The GroupID can be 0 (all channels on the remote), or 1 to 8 for each of the individual channels on the remote).
-If you do not understand this please use auto discovery to do it for you.
-
-The formula is
-DeviceID + GroupID = ThingUID
-
-For example:
-
-| Device ID | Group ID |ThingUID  |
-|-----------|----------|----------|
-| 0xE6C     | 4        | 0xE6C4   |
-| 0xB4CA    | 4        | 0xB4CA4  |
-| 0xB4CA    | 8        | 0xB4CA8  |
-| 0xB4CA    | 0        | 0xB4CA0  |
-
-## Using Group 0
-
-The group 0 (or ALL group) with the Group ID 0 can be used to control all bulbs that are paired with one specific remote at once.
-While this functionality can also be achieved by using openHAB groups with even greater flexibility, the group 0 must be setup if you want to capture physical remote control events for the ALL group, and keep physical devices synchronized to their openHAB representations.
-Milight remotes send all commands with the Group ID 0 after the master ON/OFF buttons have been used.
-If the group 0 has not been setup these events will be lost and your Item states will no longer be synchonized with the actual device states until you issue a command via openHAB.
-If you do not use a remote at all or you only control other bulbs than the ones controlled by openHAB you should not need to setup the ALL group.
-
-Since the group 0 is not needed in every case the autodiscovery feature will not detect this group as a Thing automatically.
-To create the group, use textual files or the openHAB UI to manually add a Thing with the correct Unique ID as described in section [Important for Textual Configuration](#important-for-textual-configuration).
-To create a Thing for the group 0, simply create a new Thing that has the same type as one of the auto discovered Things of the same remote and modify the ThingUID as described in section linked above.
-
-If you do not need separate group 0 controls in openHAB, but wish to have all the controls for the sub groups update when a physical remote is used, you only need to create the thing for group 0.
-Only if you want the controls do you need to link any channels and create the items, as creating the thing will subscribe the binding to the MQTT topic for group 0.
-
-## Full Example
+Please note that Thing and Item configuration can be done fully in MainUI. 
+For those who prefer textual configuration, we share this example here.
 
 To use these examples for textual configuration, you must already have a configured a MQTT `broker` thing and know its unique ID.
 This UID will be used in the things file and will replace the text `myBroker`.
@@ -179,32 +69,18 @@ The first line in the things file will create a `broker` thing and this can be r
 
 ```
 Bridge mqtt:broker:myBroker [ host="localhost", secure=false, password="*******", qos=1, username="user"]
-Thing mqtt:rgb_cct:0xE6C4 "Hallway" (mqtt:broker:myBroker) @ "MQTT"
+mqtt:ruuvitag_beacon:myTag1  "RuuviTag Sensor Beacon 9ABC" (mqtt:broker:myBroker [ address="12:34:56:78:9A:BC" ]
+
 ```
 
 *.items
 
 ```
-Dimmer Hallway_Level "Front Hall" {channel="mqtt:rgb_cct:0xE6C4:level"}
-Dimmer Hallway_ColourTemperature "White Color Temp" {channel="mqtt:rgb_cct:0xE6C4:colourTemperature"}
-Color  Hallway_Colour "Front Hall" ["Lighting"] {channel="mqtt:rgb_cct:0xE6C4:colour"}
-String Hallway_DiscoMode "Disco Mode" {channel="mqtt:rgb_cct:0xE6C4:discoMode"}
-String Hallway_BulbCommand "Send Command" {channel="mqtt:rgb_cct:0xE6C4:command"}
-String Hallway_BulbMode "Bulb Mode" {channel="mqtt:rgb_cct:0xE6C4:bulbMode"}
+Number:Temperature      temperature "Room Temperature [%.1f %unit%]" { channel="mqtt:ruuvitag_beacon:myTag1:temperature" }
+Number:Dimensionless    humidity    "Humidity [%.0f %unit%]"         { channel="mqtt:ruuvitag_beacon:myTag1:humidity" }
+Number:Pressure         pressure    "Air Pressure [%.0f %unit%]"     { channel="mqtt:ruuvitag_beacon:myTag1:pressure" }
 
-```
-
-*.sitemap
-
-```
-        Text label="Hallway" icon="light"
-        {
-            Switch      item=Hallway_Level
-            Slider      item=Hallway_Level
-            Slider      item=Hallway_ColourTemperature
-            Colorpicker item=Hallway_Colour
-            Selection   item=Hallway_DiscoMode
-            Text        item=Hallway_BulbMode
-            Switch item=Hallway_BulbCommand mappings=[next_mode='Mode +', previous_mode='Mode -', mode_speed_up='Speed +', mode_speed_down='Speed -', set_white='White', night_mode='Night' ]
-        }
+// Examples of converting units
+Number:Acceleration      acceleration_ms "Acceleration z [%.2f m/s²]" { channel="mqtt:ruuvitag_beacon:myTag1:accelerationz" }
+Number:Acceleration      acceleration_g  "Acceleration z (g-force) [%.2f gₙ]" { channel="mqtt:ruuvitag_beacon:myTag1:accelerationz" }
 ```
