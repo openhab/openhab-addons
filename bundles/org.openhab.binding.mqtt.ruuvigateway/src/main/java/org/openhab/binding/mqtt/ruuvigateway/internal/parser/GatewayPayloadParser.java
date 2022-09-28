@@ -162,7 +162,7 @@ public class GatewayPayloadParser {
      * @throws JsonSyntaxException raised with JSON syntax exceptions and clearly invalid JSON types
      * @throws IllegalArgumentException raised with invalid or unparseable data
      */
-    public static GatewayPayload parse(byte[] jsonPayload) throws JsonSyntaxException {
+    public static GatewayPayload parse(byte[] jsonPayload) throws JsonSyntaxException, IllegalArgumentException {
         String jsonPayloadString = new String(jsonPayload, StandardCharsets.UTF_8);
         GatewayPayloadIntermediate payloadIntermediate = GSON.fromJson(jsonPayloadString,
                 GatewayPayloadIntermediate.class);
