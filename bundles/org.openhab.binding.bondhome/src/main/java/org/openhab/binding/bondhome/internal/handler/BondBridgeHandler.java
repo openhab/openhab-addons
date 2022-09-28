@@ -291,7 +291,7 @@ public class BondBridgeHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.ONLINE);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Unable get Bond bridge version via API");
+                    "Unable to get Bond bridge version via API");
         }
     }
 }
