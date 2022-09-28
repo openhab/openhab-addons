@@ -50,7 +50,7 @@ For users that prefer manual configuration, we list here the configurable parame
 | gwts           | DateTime     | Timestamp when the message from Bluetooth-sensor was relayed by Gateway               |
 | gwmac           | String     | MAC-address of Ruuvi Gateway               |
 
-Note: not all channels are always updated. Available fields depends on [Ruuvi Data Format](https://github.com/ruuvi/ruuvi-sensor-protocols) and Ruuvi Tag model.
+Note: not all channels are always updated. Available fields depend on [Ruuvi Data Format](https://github.com/ruuvi/ruuvi-sensor-protocols).
 At the time of writing (2022-09), most Ruuvi Tags use Ruuvi Data Format 5 out of box.
 
 Some measurements might not make any sense.
