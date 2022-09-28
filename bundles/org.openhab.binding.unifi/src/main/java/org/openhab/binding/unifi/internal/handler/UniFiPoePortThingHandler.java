@@ -98,12 +98,15 @@ public class UniFiPoePortThingHandler
 
     @Override
     protected State getChannelState(final Map<Integer, UniFiPortTuple> ports, final String channelId) {
-        final UniFiPortTable port = getPort(ports).getTable();
+        final UniFiPortTuple portTuple = getPort(ports);
+
+        if (portTuple == null) {
+            return setOfflineOnNoPoEPortData();
+        }
+        final UniFiPortTable port = portTuple.getTable();
 
         if (port == null) {
-            logger.debug("No PoE port for thing '{}' could be found in the data. Refresh ignored.",
-                    getThing().getUID());
-            return UnDefType.NULL;
+            return setOfflineOnNoPoEPortData();
         }
         final State state;
 
@@ -130,6 +133,17 @@ public class UniFiPoePortThingHandler
                 state = UnDefType.UNDEF;
         }
         return state;
+    }
+
+    private State setOfflineOnNoPoEPortData() {
+        if (getThing().getStatus() != ThingStatus.OFFLINE) {
+            logger.debug(
+                    "No PoE port information for thing '{}' could be found in the UniFi API data for port '{}'. Setting thing off line.",
+                    getThing().getUID(), config.getPortNumber());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/error.thing.poe.offline.nodata_error");
+        }
+        return UnDefType.NULL;
     }
 
     private @Nullable UniFiPortTuple getPort(final Map<Integer, UniFiPortTuple> ports) {
