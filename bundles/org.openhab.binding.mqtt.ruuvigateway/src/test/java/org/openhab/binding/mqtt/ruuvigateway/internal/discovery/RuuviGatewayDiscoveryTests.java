@@ -18,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -76,7 +77,9 @@ public class RuuviGatewayDiscoveryTests {
         assertTrue(latch.await(3, TimeUnit.SECONDS));
         var discoveryResults = discoveryListener.getDiscoveryResults();
         assertThat(discoveryResults.size(), is(1));
-        var result = discoveryResults.get(0);
+        @Nullable
+        DiscoveryResult result = discoveryResults.get(0);
+        Objects.requireNonNull(result); // Make compiler happy
         assertThat(result.getBridgeUID(), is(MQTT_BRIDGE_UID));
         assertThat(result.getProperties().get(Thing.PROPERTY_VENDOR), is("Ruuvi Innovations Ltd (Oy)"));
         assertThat(result.getProperties().get(RuuviGatewayBindingConstants.PROPERTY_TAG_ID), is("DE:EA:DB:BE:FF:00"));
@@ -133,8 +136,9 @@ public class RuuviGatewayDiscoveryTests {
         @Override
         public void thingDiscovered(DiscoveryService source, DiscoveryResult result) {
             discoveryResults.add(result);
-            if (latch != null) {
-                latch.countDown();
+            CountDownLatch localLatch = latch;
+            if (localLatch != null) {
+                localLatch.countDown();
             }
         }
 
