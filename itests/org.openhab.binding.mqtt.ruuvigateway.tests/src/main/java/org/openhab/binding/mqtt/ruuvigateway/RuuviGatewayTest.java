@@ -180,8 +180,9 @@ public class RuuviGatewayTest extends MqttOSGiTest {
             heartbeatMethod.invoke(ruuviHandler);
         } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
                 | InvocationTargetException e) {
-            fail(e.getMessage());
-            throw new RuntimeException();
+            fail("Failed to call hearbeat method of thing handler via reflection. Bug in test? Details: "
+                    + e.getClass().getSimpleName() + ": " + e.getMessage());
+            throw new RuntimeException(e);
         }
     }
 
