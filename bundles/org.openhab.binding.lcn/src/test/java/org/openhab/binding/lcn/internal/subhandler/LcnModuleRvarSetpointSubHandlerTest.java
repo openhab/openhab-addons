@@ -121,7 +121,8 @@ public class LcnModuleRvarSetpointSubHandlerTest extends AbstractTestLcnModuleSu
     @Test
     public void testRvar1SensorDefective() {
         tryParseAllHandlers("=M000005.S132512");
-        verify(handler).updateChannel(LcnChannelGroup.RVARSETPOINT, "1", new StringType("DEFECTIVE"));
+        verify(handler).updateChannel(LcnChannelGroup.RVARSETPOINT, "1",
+                new StringType("Sensor defective: RVARSETPOINT1"));
         verify(handler).updateChannel(LcnChannelGroup.RVARLOCK, "1", OnOffType.OFF);
         verify(handler, times(2)).updateChannel(any(), any(), any());
     }
