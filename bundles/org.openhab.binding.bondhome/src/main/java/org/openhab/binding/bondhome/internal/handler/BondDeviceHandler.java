@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -98,7 +99,7 @@ public class BondDeviceHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (hasConfigurationError() || disposed || !fullyInitialized) {
+        if (hasConfigurationError() || !fullyInitialized) {
             logger.trace(
                     "Bond device handler for {} received command {} on channel {} but is not yet prepared to handle it.",
                     config.deviceId, command, channelUID);
@@ -107,7 +108,7 @@ public class BondDeviceHandler extends BaseThingHandler {
 
         logger.trace("Bond device handler for {} received command {} on channel {}", config.deviceId, command,
                 channelUID);
-        BondHttpApi api = this.api;
+        final BondHttpApi api = this.api;
         if (api == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Bridge API not available");
             // Re-attempt initialization
@@ -154,7 +155,7 @@ public class BondDeviceHandler extends BaseThingHandler {
         BondDeviceAction action = null;
         @Nullable
         Integer value = null;
-        BondDevice devInfo = this.deviceInfo;
+        final BondDevice devInfo = Objects.requireNonNull(this.deviceInfo);
         switch (channelUID.getId()) {
             case CHANNEL_POWER:
                 logger.trace("Power state command");
@@ -171,7 +172,7 @@ public class BondDeviceHandler extends BaseThingHandler {
                     break;
                 }
 
-                if (action != null && devInfo != null && devInfo.actions.contains(action)) {
+                if (devInfo.actions.contains(action)) {
                     api.executeDeviceAction(config.deviceId, action, null);
                 } else {
                     logger.warn("Device {} does not support command {}.", config.deviceId, command);
@@ -188,7 +189,7 @@ public class BondDeviceHandler extends BaseThingHandler {
             case CHANNEL_FAN_SPEED:
                 logger.trace("Fan speed command");
                 if (command instanceof PercentType) {
-                    if (devInfo != null && devInfo.actions.contains(BondDeviceAction.SET_FP_FAN)) {
+                    if (devInfo.actions.contains(BondDeviceAction.SET_FP_FAN)) {
                         value = ((PercentType) command).intValue();
                         if (value == 0) {
                             action = BondDeviceAction.TURN_FP_FAN_OFF;
@@ -222,10 +223,10 @@ public class BondDeviceHandler extends BaseThingHandler {
                             null);
                 } else if (command instanceof OnOffType) {
                     logger.trace("Fan speed command {}", command);
-                    if (devInfo != null && devInfo.actions.contains(BondDeviceAction.TURN_FP_FAN_ON)) {
+                    if (devInfo.actions.contains(BondDeviceAction.TURN_FP_FAN_ON)) {
                         action = command == OnOffType.ON ? BondDeviceAction.TURN_FP_FAN_ON
                                 : BondDeviceAction.TURN_FP_FAN_OFF;
-                    } else if (devInfo != null && devInfo.actions.contains(BondDeviceAction.TURN_ON)) {
+                    } else if (devInfo.actions.contains(BondDeviceAction.TURN_ON)) {
                         action = command == OnOffType.ON ? BondDeviceAction.TURN_ON : BondDeviceAction.TURN_OFF;
                     }
                     if (action != null) {
@@ -436,11 +437,11 @@ public class BondDeviceHandler extends BaseThingHandler {
     }
 
     private void enableUpLight() {
-        api.executeDeviceAction(config.deviceId, BondDeviceAction.TURN_UP_LIGHT_ON, null);
+        Objects.requireNonNull(api).executeDeviceAction(config.deviceId, BondDeviceAction.TURN_UP_LIGHT_ON, null);
     }
 
     private void enableDownLight() {
-        api.executeDeviceAction(config.deviceId, BondDeviceAction.TURN_DOWN_LIGHT_ON, null);
+        Objects.requireNonNull(api).executeDeviceAction(config.deviceId, BondDeviceAction.TURN_DOWN_LIGHT_ON, null);
     }
 
     @Override
@@ -453,12 +454,7 @@ public class BondDeviceHandler extends BaseThingHandler {
         // set the thing status to UNKNOWN temporarily
         updateStatus(ThingStatus.UNKNOWN);
 
-        // Schedule initialization for a bit in the future to make sure the bridge finishes first
-        scheduler.schedule((() -> {
-            if (getBridgeAndAPI()) {
-                initializeThing();
-            }
-        }), 15, TimeUnit.SECONDS);
+        scheduler.execute(this::initializeThing);
     }
 
     @Override
@@ -476,6 +472,9 @@ public class BondDeviceHandler extends BaseThingHandler {
     }
 
     private void initializeThing() {
+        if (!getBridgeAndAPI()) {
+            return;
+        }
         BondHttpApi api = this.api;
         if (api == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Bridge API not available");
@@ -495,17 +494,19 @@ public class BondDeviceHandler extends BaseThingHandler {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "Incorrect local token for Bond Bridge.");
                     setBridgeOffline(ThingStatusDetail.CONFIGURATION_ERROR, "Incorrect local token for Bond Bridge.");
+                    return;
                 } else if (errorMessage.contains(API_ERR_HTTP_404_NOTFOUND)) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "No Bond device found with the given device id.");
+                    return;
                 }
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }
 
-        BondDevice devInfo = this.deviceInfo;
-        BondDeviceProperties devProperties = this.deviceProperties;
+        final BondDevice devInfo = this.deviceInfo;
+        final BondDeviceProperties devProperties = this.deviceProperties;
         if (devInfo == null || devProperties == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Unable to get device properties from Bond");
@@ -515,15 +516,7 @@ public class BondDeviceHandler extends BaseThingHandler {
         // Anytime the configuration has changed or the binding has been updated,
         // recreate the thing to make sure all possible channels are available
         // NOTE: This will cause the thing to be disposed and re-initialized
-        if (wasBindingUpdated()) {
-            recreateAllChannels(devInfo.type, devInfo.hash);
-            return;
-        }
-
-        // Anytime the configuration has changed or the binding has been updated,
-        // recreate the thing to make sure all possible channels are available
-        // NOTE: This will cause the thing to be disposed and re-initialized
-        if (wasThingUpdatedExternally(devInfo)) {
+        if (wasBindingUpdated() || wasThingUpdatedExternally(devInfo)) {
             recreateAllChannels(devInfo.type, devInfo.hash);
             return;
         }
@@ -541,11 +534,6 @@ public class BondDeviceHandler extends BaseThingHandler {
     }
 
     private void updateDevicePropertiesFromBond(BondDevice devInfo, BondDeviceProperties devProperties) {
-        if (hasConfigurationError() || disposed) {
-            logger.trace("Don't update properties, I've been disposed!");
-            return;
-        }
-
         // Update all the thing properties based on the result
         Map<String, String> thingProperties = new HashMap<String, String>();
         thingProperties.put(PROPERTIES_BINDING_VERSION, CURRENT_BINDING_VERSION);
@@ -563,7 +551,7 @@ public class BondDeviceHandler extends BaseThingHandler {
     }
 
     private synchronized void recreateAllChannels(BondDeviceType currentType, String currentHash) {
-        if (hasConfigurationError() || disposed) {
+        if (hasConfigurationError()) {
             logger.trace("Don't recreate channels, I've been disposed!");
             return;
         }
@@ -582,11 +570,6 @@ public class BondDeviceHandler extends BaseThingHandler {
     }
 
     private synchronized void deleteExtraChannels(List<BondDeviceAction> currentActions) {
-        if (hasConfigurationError() || disposed) {
-            logger.trace("Don't delete channels, I've been disposed!");
-            return;
-        }
-
         logger.trace("Deleting channels based on the available actions");
         // Get the thing to edit
         ThingBuilder thingBuilder = editThing();
@@ -640,63 +623,64 @@ public class BondDeviceHandler extends BaseThingHandler {
     }
 
     public synchronized void updateChannelsFromState(@Nullable BondDeviceState updateState) {
-        if (hasConfigurationError() || disposed) {
+        if (hasConfigurationError()) {
             return;
         }
 
-        if (updateState != null) {
-            logger.debug("Updating channels from state for {} ({})", config.deviceId, this.getThing().getLabel());
-
-            updateStatus(ThingStatus.ONLINE);
-
-            updateState(CHANNEL_POWER, updateState.power == 0 ? OnOffType.OFF : OnOffType.ON);
-            boolean fanOn;
-            BondDevice devInfo = this.deviceInfo;
-            if (devInfo != null && devInfo.actions.contains(BondDeviceAction.TURN_FP_FAN_OFF)) {
-                fanOn = updateState.fpfanPower != 0;
-                updateState(CHANNEL_FAN_POWER, fanOn ? OnOffType.OFF : OnOffType.ON);
-                updateState(CHANNEL_FAN_SPEED, new PercentType(updateState.fpfanSpeed));
-            } else {
-                fanOn = updateState.power != 0;
-                int value = 1;
-                BondDeviceProperties devProperties = this.deviceProperties;
-                if (devProperties != null) {
-                    double maxSpeed = devProperties.maxSpeed;
-                    value = (int) (((double) updateState.speed / maxSpeed) * 100);
-                    logger.trace("Raw fan speed: {}, Percent: {}", updateState.speed, value);
-                } else if (updateState.speed != 0 && this.getThing().getThingTypeUID().equals(THING_TYPE_BOND_FAN)) {
-                    logger.info("Unable to convert fan speed to a percent for {}!", this.getThing().getLabel());
-                }
-                updateState(CHANNEL_FAN_SPEED, formPercentType(fanOn, value));
-            }
-            updateState(CHANNEL_FAN_BREEZE_STATE, updateState.breeze[0] == 0 ? OnOffType.OFF : OnOffType.ON);
-            updateState(CHANNEL_FAN_BREEZE_MEAN, new PercentType(updateState.breeze[1]));
-            updateState(CHANNEL_FAN_BREEZE_VAR, new PercentType(updateState.breeze[2]));
-            updateState(CHANNEL_FAN_DIRECTION,
-                    updateState.direction == 1 ? new StringType("summer") : new StringType("winter"));
-            updateState(CHANNEL_FAN_TIMER, new DecimalType(updateState.timer));
-
-            updateState(CHANNEL_LIGHT_POWER, updateState.light == 0 ? OnOffType.OFF : OnOffType.ON);
-            updateState(CHANNEL_LIGHT_BRIGHTNESS, formPercentType(updateState.light != 0, updateState.brightness));
-
-            updateState(CHANNEL_UP_LIGHT_ENABLE, updateState.upLight == 0 ? OnOffType.OFF : OnOffType.ON);
-            updateState(CHANNEL_UP_LIGHT_POWER,
-                    (updateState.upLight == 1 && updateState.light == 1) ? OnOffType.ON : OnOffType.OFF);
-            updateState(CHANNEL_UP_LIGHT_BRIGHTNESS, formPercentType(
-                    (updateState.upLight == 1 && updateState.light == 1), updateState.upLightBrightness));
-
-            updateState(CHANNEL_DOWN_LIGHT_ENABLE, updateState.downLight == 0 ? OnOffType.OFF : OnOffType.ON);
-            updateState(CHANNEL_DOWN_LIGHT_POWER,
-                    (updateState.downLight == 1 && updateState.light == 1) ? OnOffType.ON : OnOffType.OFF);
-            updateState(CHANNEL_DOWN_LIGHT_BRIGHTNESS, formPercentType(
-                    (updateState.downLight == 1 && updateState.light == 1), updateState.downLightBrightness));
-
-            updateState(CHANNEL_FLAME, formPercentType(updateState.power != 0, updateState.flame));
-
-            updateState(CHANNEL_ROLLERSHUTTER, formPercentType(updateState.open != 0, 100));
-        } else {
+        if (updateState == null) {
             logger.debug("No state information provided to update channels with");
+            return;
         }
+
+        logger.debug("Updating channels from state for {} ({})", config.deviceId, this.getThing().getLabel());
+
+        updateStatus(ThingStatus.ONLINE);
+
+        updateState(CHANNEL_POWER, updateState.power == 0 ? OnOffType.OFF : OnOffType.ON);
+        boolean fanOn;
+        final BondDevice devInfo = this.deviceInfo;
+        if (devInfo != null && devInfo.actions.contains(BondDeviceAction.TURN_FP_FAN_OFF)) {
+            fanOn = updateState.fpfanPower != 0;
+            updateState(CHANNEL_FAN_POWER, fanOn ? OnOffType.OFF : OnOffType.ON);
+            updateState(CHANNEL_FAN_SPEED, new PercentType(updateState.fpfanSpeed));
+        } else {
+            fanOn = updateState.power != 0;
+            int value = 1;
+            BondDeviceProperties devProperties = this.deviceProperties;
+            if (devProperties != null) {
+                double maxSpeed = devProperties.maxSpeed;
+                value = (int) (((double) updateState.speed / maxSpeed) * 100);
+                logger.trace("Raw fan speed: {}, Percent: {}", updateState.speed, value);
+            } else if (updateState.speed != 0 && this.getThing().getThingTypeUID().equals(THING_TYPE_BOND_FAN)) {
+                logger.info("Unable to convert fan speed to a percent for {}!", this.getThing().getLabel());
+            }
+            updateState(CHANNEL_FAN_SPEED, formPercentType(fanOn, value));
+        }
+        updateState(CHANNEL_FAN_BREEZE_STATE, updateState.breeze[0] == 0 ? OnOffType.OFF : OnOffType.ON);
+        updateState(CHANNEL_FAN_BREEZE_MEAN, new PercentType(updateState.breeze[1]));
+        updateState(CHANNEL_FAN_BREEZE_VAR, new PercentType(updateState.breeze[2]));
+        updateState(CHANNEL_FAN_DIRECTION,
+                updateState.direction == 1 ? new StringType("summer") : new StringType("winter"));
+        updateState(CHANNEL_FAN_TIMER, new DecimalType(updateState.timer));
+
+        updateState(CHANNEL_LIGHT_POWER, updateState.light == 0 ? OnOffType.OFF : OnOffType.ON);
+        updateState(CHANNEL_LIGHT_BRIGHTNESS, formPercentType(updateState.light != 0, updateState.brightness));
+
+        updateState(CHANNEL_UP_LIGHT_ENABLE, updateState.upLight == 0 ? OnOffType.OFF : OnOffType.ON);
+        updateState(CHANNEL_UP_LIGHT_POWER,
+                (updateState.upLight == 1 && updateState.light == 1) ? OnOffType.ON : OnOffType.OFF);
+        updateState(CHANNEL_UP_LIGHT_BRIGHTNESS,
+                formPercentType((updateState.upLight == 1 && updateState.light == 1), updateState.upLightBrightness));
+
+        updateState(CHANNEL_DOWN_LIGHT_ENABLE, updateState.downLight == 0 ? OnOffType.OFF : OnOffType.ON);
+        updateState(CHANNEL_DOWN_LIGHT_POWER,
+                (updateState.downLight == 1 && updateState.light == 1) ? OnOffType.ON : OnOffType.OFF);
+        updateState(CHANNEL_DOWN_LIGHT_BRIGHTNESS, formPercentType(
+                (updateState.downLight == 1 && updateState.light == 1), updateState.downLightBrightness));
+
+        updateState(CHANNEL_FLAME, formPercentType(updateState.power != 0, updateState.flame));
+
+        updateState(CHANNEL_ROLLERSHUTTER, formPercentType(updateState.open != 0, 100));
     }
 
     private PercentType formPercentType(boolean isOn, int value) {
@@ -708,28 +692,28 @@ public class BondDeviceHandler extends BaseThingHandler {
     }
 
     private boolean hasConfigurationError() {
-        ThingStatusInfo statusInfo = getThing().getStatusInfo();
+        final ThingStatusInfo statusInfo = getThing().getStatusInfo();
         return statusInfo.getStatus() == ThingStatus.OFFLINE
-                && statusInfo.getStatusDetail() == ThingStatusDetail.CONFIGURATION_ERROR;
+                && statusInfo.getStatusDetail() == ThingStatusDetail.CONFIGURATION_ERROR || disposed;
     }
 
     private synchronized boolean wasBindingUpdated() {
         // Check if the binding has been updated
-        boolean updatedBinding = true;
         @Nullable
         String lastBindingVersion = this.getThing().getProperties().get(PROPERTIES_BINDING_VERSION);
-        updatedBinding = !CURRENT_BINDING_VERSION.equals(lastBindingVersion);
-        if (updatedBinding) {
-            logger.info("Bond Home binding has been updated.");
-            logger.info("Current version is {}, prior version was {}.", CURRENT_BINDING_VERSION, lastBindingVersion);
-
-            // Update the thing with the new property value
-            final Map<String, String> newProperties = editProperties();
-            newProperties.put(PROPERTIES_BINDING_VERSION, CURRENT_BINDING_VERSION);
-
-            updateProperties(newProperties);
+        if (CURRENT_BINDING_VERSION.equals(lastBindingVersion)) {
+            return false;
         }
-        return updatedBinding;
+
+        logger.debug("Bond Home binding has been updated.");
+        logger.debug("Current version is {}, prior version was {}.", CURRENT_BINDING_VERSION, lastBindingVersion);
+
+        // Update the thing with the new property value
+        final Map<String, String> newProperties = editProperties();
+        newProperties.put(PROPERTIES_BINDING_VERSION, CURRENT_BINDING_VERSION);
+
+        updateProperties(newProperties);
+        return true;
     }
 
     private synchronized boolean wasThingUpdatedExternally(BondDevice devInfo) {
@@ -737,8 +721,8 @@ public class BondDeviceHandler extends BaseThingHandler {
         final String lastDeviceConfigurationHash = config.lastDeviceConfigurationHash;
         boolean updatedHashTree = !devInfo.hash.equals(lastDeviceConfigurationHash);
         if (updatedHashTree) {
-            logger.info("Hash tree of device has been updated by Bond.");
-            logger.info("Current state is {}, prior state was {}.", devInfo.hash, lastDeviceConfigurationHash);
+            logger.debug("Hash tree of device has been updated by Bond.");
+            logger.debug("Current state is {}, prior state was {}.", devInfo.hash, lastDeviceConfigurationHash);
         }
         return updatedHashTree;
     }
@@ -789,27 +773,26 @@ public class BondDeviceHandler extends BaseThingHandler {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "Bridge API not available");
                     return;
-                } else {
-                    logger.trace("Polling for current state for {} ({})", config.deviceId, this.getThing().getLabel());
-                    try {
-                        deviceState = api.getDeviceState(config.deviceId);
-                        updateChannelsFromState(deviceState);
-                    } catch (IOException e) {
-                        @Nullable
-                        String errorMessage = e.getMessage();
-                        if (errorMessage != null) {
-                            if (errorMessage.contains(API_ERR_HTTP_401_UNAUTHORIZED)) {
-                                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                                        "Incorrect local token for Bond Bridge.");
-                                setBridgeOffline(ThingStatusDetail.CONFIGURATION_ERROR,
-                                        "Incorrect local token for Bond Bridge.");
-                            } else if (errorMessage.contains(API_ERR_HTTP_404_NOTFOUND)) {
-                                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                                        "No Bond device found with the given device id.");
-                            }
-                        } else {
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                }
+                logger.trace("Polling for current state for {} ({})", config.deviceId, this.getThing().getLabel());
+                try {
+                    deviceState = api.getDeviceState(config.deviceId);
+                    updateChannelsFromState(deviceState);
+                } catch (IOException e) {
+                    @Nullable
+                    String errorMessage = e.getMessage();
+                    if (errorMessage != null) {
+                        if (errorMessage.contains(API_ERR_HTTP_401_UNAUTHORIZED)) {
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                                    "Incorrect local token for Bond Bridge.");
+                            setBridgeOffline(ThingStatusDetail.CONFIGURATION_ERROR,
+                                    "Incorrect local token for Bond Bridge.");
+                        } else if (errorMessage.contains(API_ERR_HTTP_404_NOTFOUND)) {
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                                    "No Bond device found with the given device id.");
                         }
+                    } else {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                     }
                 }
             };
