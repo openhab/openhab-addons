@@ -516,7 +516,7 @@ public class BondDeviceHandler extends BaseThingHandler {
         // Anytime the configuration has changed or the binding has been updated,
         // recreate the thing to make sure all possible channels are available
         // NOTE: This will cause the thing to be disposed and re-initialized
-        if (wasBindingUpdated() || wasThingUpdatedExternally(devInfo)) {
+        if (wasThingUpdatedExternally(devInfo)) {
             recreateAllChannels(devInfo.type, devInfo.hash);
             return;
         }
@@ -536,7 +536,6 @@ public class BondDeviceHandler extends BaseThingHandler {
     private void updateDevicePropertiesFromBond(BondDevice devInfo, BondDeviceProperties devProperties) {
         // Update all the thing properties based on the result
         Map<String, String> thingProperties = new HashMap<String, String>();
-        thingProperties.put(PROPERTIES_BINDING_VERSION, CURRENT_BINDING_VERSION);
         thingProperties.put(CONFIG_DEVICE_ID, config.deviceId);
         logger.trace("Updating device name to {}", devInfo.name);
         thingProperties.put(PROPERTIES_DEVICE_NAME, devInfo.name);
@@ -695,25 +694,6 @@ public class BondDeviceHandler extends BaseThingHandler {
         final ThingStatusInfo statusInfo = getThing().getStatusInfo();
         return statusInfo.getStatus() == ThingStatus.OFFLINE
                 && statusInfo.getStatusDetail() == ThingStatusDetail.CONFIGURATION_ERROR || disposed;
-    }
-
-    private synchronized boolean wasBindingUpdated() {
-        // Check if the binding has been updated
-        @Nullable
-        String lastBindingVersion = this.getThing().getProperties().get(PROPERTIES_BINDING_VERSION);
-        if (CURRENT_BINDING_VERSION.equals(lastBindingVersion)) {
-            return false;
-        }
-
-        logger.debug("Bond Home binding has been updated.");
-        logger.debug("Current version is {}, prior version was {}.", CURRENT_BINDING_VERSION, lastBindingVersion);
-
-        // Update the thing with the new property value
-        final Map<String, String> newProperties = editProperties();
-        newProperties.put(PROPERTIES_BINDING_VERSION, CURRENT_BINDING_VERSION);
-
-        updateProperties(newProperties);
-        return true;
     }
 
     private synchronized boolean wasThingUpdatedExternally(BondDevice devInfo) {
