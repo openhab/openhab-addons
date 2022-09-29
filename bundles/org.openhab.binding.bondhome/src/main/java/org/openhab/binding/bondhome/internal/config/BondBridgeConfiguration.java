@@ -29,15 +29,15 @@ public class BondBridgeConfiguration {
     /**
      * Configuration for a Bond Bridge
      */
-    public String bondId = API_MISSING_BOND_ID;
+    public String serialNumber = API_MISSING_BOND_ID;
     public String localToken = API_MISSING_LOCAL_TOKEN;
-    public @Nullable String bondIpAddress;
+    public @Nullable String ipAddress;
 
     public @Nullable String getIpAddress() {
-        return bondIpAddress;
+        return ipAddress;
     }
 
-    public void setIpAddress(String bondIpAddress) {
-        this.bondIpAddress = bondIpAddress;
+    public void setIpAddress(String ipAddress) {
+        this.ipAddress = ipAddress;
     }
 }

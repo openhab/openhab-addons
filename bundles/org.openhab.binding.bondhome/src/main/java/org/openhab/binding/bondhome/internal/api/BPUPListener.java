@@ -21,6 +21,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.util.concurrent.Executor;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -79,7 +80,16 @@ public class BPUPListener implements Runnable {
         gsonBuilder.excludeFieldsWithoutExposeAnnotation();
         Gson gson = gsonBuilder.create();
         this.gsonBuilder = gson;
-        this.shutdown = false;
+        this.shutdown = true;
+    }
+
+    public boolean isRunning() {
+        return !shutdown;
+    }
+
+    public void start(Executor executor) {
+        shutdown = false;
+        executor.execute(this);
     }
 
     /**
@@ -124,7 +134,7 @@ public class BPUPListener implements Runnable {
                         logger.warn("Reponse isn't from expected Bridge!  Expected: {}  Got: {}",
                                 bridgeHandler.getBridgeId(), response.bondId);
                     } else {
-                        bridgeHandler.setBridgeOnline();
+                        bridgeHandler.setBridgeOnline(inPacket.getAddress().getHostAddress());
                         numberOfKeepAliveTimeouts = 0;
                     }
                 }

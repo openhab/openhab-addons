@@ -38,7 +38,6 @@ They are dependent on how the device is configured in the Bond Home app.
 | channel    | type     | description                                                     |
 |------------|----------|-----------------------------------------------------------------|
 | power      | Switch   | Device Power                                                    |
-| lastUpdate | DateTime | Timestamp of last status update                                 |
 | command    | String   | Send a command to the device                                    |
 
 Available commands:

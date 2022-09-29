@@ -95,8 +95,8 @@ public class BondHomeBindingConstants {
     /**
      * Configuration arguments
      */
-    public static final String CONFIG_BOND_ID = "bondId";
-    public static final String CONFIG_IP_ADDRESS = "bondIpAddress";
+    public static final String CONFIG_SERIAL_NUMBER = "serialNumber";
+    public static final String CONFIG_IP_ADDRESS = "ipAddress";
     public static final String CONFIG_LOCAL_TOKEN = "localToken";
     public static final String CONFIG_DEVICE_ID = "deviceId";
     public static final String CONFIG_LATEST_HASH = "lastDeviceConfigurationHash";

@@ -24,8 +24,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -64,7 +62,6 @@ public class BondBridgeHandler extends BaseBridgeHandler {
     // Get a dedicated threadpool for the long-running listener thread.
     // Intent is to not permanently tie up the common scheduler pool.
     private final ScheduledExecutorService bondScheduler = ThreadPoolManager.getScheduledPool("bondBridgeHandler");
-    private @Nullable ScheduledFuture<?> listenerJob;
     private final BPUPListener udpListener;
     private final BondHttpApi api;
 
@@ -96,16 +93,16 @@ public class BondBridgeHandler extends BaseBridgeHandler {
 
     private void initializeThing() {
         BondBridgeConfiguration localConfig = config;
-        if (localConfig.bondIpAddress == null) {
+        if (localConfig.ipAddress == null) {
             try {
-                logger.trace("IP address of Bond {} is unknown", localConfig.bondId);
-                String lookupAddress = localConfig.bondId + ".local";
-                logger.trace("Attempting to get IP address for Bond Bridge {}", lookupAddress);
+                String lookupAddress = localConfig.serialNumber + ".local";
+                logger.debug("Attempting to get IP address for Bond Bridge {}", lookupAddress);
                 InetAddress ia = InetAddress.getByName(lookupAddress);
                 String ip = ia.getHostAddress();
                 Configuration c = editConfiguration();
                 c.put(CONFIG_IP_ADDRESS, ip);
                 updateConfiguration(c);
+                config = getConfigAs(BondBridgeConfiguration.class);
             } catch (UnknownHostException ignored) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Unable to get an IP Address for Bond Bridge");
@@ -113,19 +110,18 @@ public class BondBridgeHandler extends BaseBridgeHandler {
             }
         } else {
             try {
-                InetAddress.getByName(localConfig.bondIpAddress);
+                InetAddress.getByName(localConfig.ipAddress);
             } catch (UnknownHostException ignored) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "IP Address or host name for Bond Bridge is not valid");
+                return;
             }
         }
 
-        // Ask the bridge it's current status and update the properties with the info
+        // Ask the bridge its current status and update the properties with the info
         // This will also set the thing status to online/offline based on whether it
         // succeeds in getting the properties from the bridge.
         updateBridgeProperties();
-
-        // Finished
     }
 
     @Override
@@ -137,15 +133,16 @@ public class BondBridgeHandler extends BaseBridgeHandler {
     }
 
     private synchronized void startUDPListenerJob() {
-        logger.debug("Scheduled listener job to start in 30 seconds");
-        listenerJob = bondScheduler.schedule(udpListener, 30, TimeUnit.SECONDS);
+        if (udpListener.isRunning()) {
+            return;
+        }
+        logger.debug("Started listener job");
+        udpListener.start(bondScheduler);
     }
 
     private synchronized void stopUDPListenerJob() {
         logger.trace("Stopping UDP listener job");
-        ScheduledFuture<?> lJob = this.listenerJob;
-        if (lJob != null) {
-            lJob.cancel(true);
+        if (udpListener.isRunning()) {
             udpListener.shutdown();
             logger.debug("UDP listener job stopped");
         }
@@ -157,10 +154,8 @@ public class BondBridgeHandler extends BaseBridgeHandler {
         if (childHandler instanceof BondDeviceHandler) {
             BondDeviceHandler handler = (BondDeviceHandler) childHandler;
             synchronized (handlers) {
-                if (handlers.isEmpty()) {
-                    // Start the BPUP update service after the first child device is added
-                    startUDPListenerJob();
-                }
+                // Start the BPUP update service after the first child device is added
+                startUDPListenerJob();
                 if (!handlers.contains(handler)) {
                     handlers.add(handler);
                 }
@@ -220,14 +215,14 @@ public class BondBridgeHandler extends BaseBridgeHandler {
      * Returns the Id of the bridge associated with the handler
      */
     public String getBridgeId() {
-        return config.bondId;
+        return config.serialNumber;
     }
 
     /**
      * Returns the Ip Address of the bridge associated with the handler as a string
      */
     public @Nullable String getBridgeIpAddress() {
-        return config.bondIpAddress;
+        return config.ipAddress;
     }
 
     /**
@@ -263,9 +258,20 @@ public class BondBridgeHandler extends BaseBridgeHandler {
      *
      * Called by the UDP listener when it gets a proper response.
      */
-    public void setBridgeOnline() {
-        updateStatus(ThingStatus.ONLINE);
-        updateBridgeProperties();
+    public void setBridgeOnline(String bridgeAddress) {
+        BondBridgeConfiguration localConfig = config;
+        if (localConfig.ipAddress == null || !localConfig.ipAddress.equals(bridgeAddress)) {
+            logger.debug("IP address of Bond {} has changed to {}", localConfig.serialNumber, bridgeAddress);
+            Configuration c = editConfiguration();
+            c.put(CONFIG_IP_ADDRESS, bridgeAddress);
+            updateConfiguration(c);
+            updateBridgeProperties();
+            return;
+        }
+        // don't bother updating on every keepalive packet
+        if (getThing().getStatus() != ThingStatus.ONLINE) {
+            updateBridgeProperties();
+        }
     }
 
     private void updateBridgeProperties() {

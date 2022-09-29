@@ -9,11 +9,7 @@
 		<label>Bond Home Bridge</label>
 		<description>The RF/IR/Wifi Bridge</description>
 
-		<channels>
-			<channel id="lastUpdate" typeId="lastUpdateType"/>
-		</channels>
-
-		<representation-property>bondId</representation-property>
+		<representation-property>serialNumber</representation-property>
 		<config-description-ref uri="thing-type:bondhome:bondbridge"/>
 
 	</bridge-type>

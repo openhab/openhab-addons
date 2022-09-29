@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="thing-type:bondhome:bondbridge">
-		<parameter name="bondId" type="text" required="true">
+		<parameter name="serialNumber" type="text" required="true">
 			<label>Bond Serial Number</label>
 			<description>The Bond ID (serial number) of the Bond Bridge. Viewable in the Bond Home app or on the bottom of the
 				bridge itself.</description>
@@ -14,7 +14,7 @@
 			<label>Bond Bridge Local Token</label>
 			<description>The local token associated with the Bond Bridge. This is viewable in the Bond Home app.</description>
 		</parameter>
-		<parameter name="bondIpAddress" type="text" required="false">
+		<parameter name="ipAddress" type="text" required="false">
 			<context>network-address</context>
 			<label>Bond Bridge IP Address</label>
 			<description>The IP Address of the Bond Bridge.</description>

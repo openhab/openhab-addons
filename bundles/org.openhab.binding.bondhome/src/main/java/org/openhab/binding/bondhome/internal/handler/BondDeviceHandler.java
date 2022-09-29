@@ -804,9 +804,13 @@ public class BondDeviceHandler extends BaseThingHandler {
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE
                 && getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.BRIDGE_OFFLINE) {
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
-            // restart the polling job when the bridge goes back online
-            startPollingJob();
+            if (!fullyInitialized) {
+                scheduler.execute(this::initializeThing);
+            } else {
+                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+                // restart the polling job when the bridge goes back online
+                startPollingJob();
+            }
         } else if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
             // stop the polling job when the bridge goes offline
