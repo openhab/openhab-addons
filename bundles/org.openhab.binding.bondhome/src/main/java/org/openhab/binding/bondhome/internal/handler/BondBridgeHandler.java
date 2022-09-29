@@ -67,6 +67,8 @@ public class BondBridgeHandler extends BaseBridgeHandler {
 
     private @Nullable BondBridgeConfiguration config;
 
+    private @Nullable BondDiscoveryService discoveryService;
+
     private final Set<BondDeviceHandler> handlers = Collections.synchronizedSet(new HashSet<>());
 
     public BondBridgeHandler(Bridge bridge) {
@@ -291,6 +293,10 @@ public class BondBridgeHandler extends BaseBridgeHandler {
             thingProperties.put(PROPERTY_FIRMWARE_VERSION, myVersion.firmwareVersion);
             updateProperties(thingProperties);
             updateStatus(ThingStatus.ONLINE);
+            BondDiscoveryService localDiscoveryService = discoveryService;
+            if (localDiscoveryService != null) {
+                localDiscoveryService.discoverNow();
+            }
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Unable to get Bond bridge version via API");
@@ -300,5 +306,9 @@ public class BondBridgeHandler extends BaseBridgeHandler {
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return Collections.singleton(BondDiscoveryService.class);
+    }
+
+    public void setDiscoveryService(BondDiscoveryService discoveryService) {
+        this.discoveryService = discoveryService;
     }
 }

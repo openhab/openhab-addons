@@ -63,6 +63,7 @@ public class BondDiscoveryService extends AbstractDiscoveryService implements Th
     public void setThingHandler(@Nullable ThingHandler handler) {
         if (handler instanceof BondBridgeHandler) {
             bridgeHandler = (BondBridgeHandler) handler;
+            bridgeHandler.setDiscoveryService(this);
             api = bridgeHandler.getBridgeAPI();
         }
     }
@@ -74,6 +75,14 @@ public class BondDiscoveryService extends AbstractDiscoveryService implements Th
 
     @Override
     protected void startBackgroundDiscovery() {
+        discoverNow();
+    }
+
+    public synchronized void discoverNow() {
+        ScheduledFuture<?> localDiscoveryJob = discoveryJob;
+        if (localDiscoveryJob != null) {
+            localDiscoveryJob.cancel(true);
+        }
         discoveryJob = scheduler.scheduleWithFixedDelay(this::startScan, 0, REFRESH_INTERVAL_MINUTES, TimeUnit.MINUTES);
     }
 
