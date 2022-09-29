@@ -36,6 +36,7 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.measure.quantity.Acceleration;
 import javax.measure.quantity.Dimensionless;
@@ -169,6 +170,20 @@ public class RuuviGatewayTest extends MqttOSGiTest {
     }
 
     private void triggerTimeoutHandling(Thing ruuviThing) {
+        // Simulate some time passing, so that RuuviTagHandler.heartbeat() is called twice
+        // Two heartbeat calls happens to trigger timeout handling in handler, one is not enough.
+        // (this is really implementation detail of RuuviTagHandler, making this test slightly
+        // error prone to possible changes in RuuviTagHandler implementation)
+        //
+        // 0. Assume some data received already, RuuviTagHandler.receivedData is true
+        // 1. First heartbeat sets receivedData=false; no further action is taken yet
+        // 2. Second heartbeat acts on false receivedData, e.g. updating Thing Status
+        for (int i = 0; i < 2; i++) {
+            callInternalHeartbeat(ruuviThing);
+        }
+    }
+
+    private void callInternalHeartbeat(Thing ruuviThing) {
         ThingHandler handler = ruuviThing.getHandler();
         Objects.requireNonNull(handler);
         assertInstanceOf(RuuviTagHandler.class, handler);
@@ -256,7 +271,10 @@ public class RuuviGatewayTest extends MqttOSGiTest {
 
     private void assertThingStatus(List<ThingStatusInfo> statusUpdates, int index, ThingStatus status,
             @Nullable ThingStatusDetail detail, @Nullable String description) {
-        assertTrue(statusUpdates.size() > index, "assert " + statusUpdates.size() + " > " + index + " failed");
+        assertTrue(statusUpdates.size() > index,
+                String.format("Not enough status updates. Expected %d, but only had %d. Status updates received: %s",
+                        index + 1, statusUpdates.size(),
+                        statusUpdates.stream().map(ThingStatusInfo::getStatus).collect(Collectors.toList())));
         assertEquals(status, statusUpdates.get(index).getStatus(), statusUpdates.get(index).toString());
         assertEquals(detail, statusUpdates.get(index).getStatusDetail(), statusUpdates.get(index).toString());
         assertEquals(description, statusUpdates.get(index).getDescription(), statusUpdates.get(index).toString());
