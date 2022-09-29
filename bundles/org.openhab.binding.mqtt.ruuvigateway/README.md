@@ -75,7 +75,7 @@ The first line in the things file will create a `broker` thing and this can be r
 
 ```
 Bridge mqtt:broker:myBroker [ host="localhost", secure=false, password="*******", qos=1, username="user"]
-mqtt:ruuvitag_beacon:myTag1  "RuuviTag Sensor Beacon 9ABC" (mqtt:broker:myBroker [ address="12:34:56:78:9A:BC" ]
+mqtt:ruuvitag_beacon:myTag1  "RuuviTag Sensor Beacon 9ABC" (mqtt:broker:myBroker) [ topic="ruuvi/mygw/DE:AD:BE:EF:AA:01" ]
 
 ```
 
