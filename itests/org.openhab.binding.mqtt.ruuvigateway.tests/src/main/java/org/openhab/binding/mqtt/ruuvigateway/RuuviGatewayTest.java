@@ -174,13 +174,13 @@ public class RuuviGatewayTest extends MqttOSGiTest {
         assertInstanceOf(RuuviTagHandler.class, handler);
         RuuviTagHandler ruuviHandler = (RuuviTagHandler) handler;
         try {
-            Method heartbeatMethod = RuuviTagHandler.class.getMethod("heartbeat");
+            Method heartbeatMethod = RuuviTagHandler.class.getDeclaredMethod("heartbeat");
             Objects.requireNonNull(heartbeatMethod);
             heartbeatMethod.setAccessible(true);
             heartbeatMethod.invoke(ruuviHandler);
         } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
                 | InvocationTargetException e) {
-            fail("Failed to call hearbeat method of thing handler via reflection. Bug in test? Details: "
+            fail("Failed to call heartbeat method of thing handler via reflection. Bug in test? Details: "
                     + e.getClass().getSimpleName() + ": " + e.getMessage());
             throw new RuntimeException(e);
         }
