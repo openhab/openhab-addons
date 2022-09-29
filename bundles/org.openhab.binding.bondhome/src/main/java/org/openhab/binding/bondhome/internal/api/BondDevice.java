@@ -14,6 +14,9 @@ package org.openhab.binding.bondhome.internal.api;
 
 import static org.openhab.binding.bondhome.internal.BondHomeBindingConstants.*;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -48,7 +51,7 @@ public class BondDevice {
     public String template = API_MISSING_TEMPLATE;
     // A list of the available actions
     @Expose(serialize = false, deserialize = true)
-    public BondDeviceAction[] actions = { BondDeviceAction.TURN_ON };
+    public List<BondDeviceAction> actions = Arrays.asList(BondDeviceAction.TURN_ON);
     // The current hash of the properties object
     @Expose(serialize = false, deserialize = true)
     public @Nullable BondHash properties;

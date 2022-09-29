@@ -6,55 +6,62 @@
 
 	<!-- Individual Channels -->
 
-	<channel-type id="powerChannelType" advanced="false">
-		<item-type>Switch</item-type>
-		<label>Power</label>
-		<description>Device power</description>
-		<category>Switch</category>
-		<tags>
-			<tag>Switchable</tag>
-		</tags>
+	<channel-type id="commandChannelType">
+		<item-type>String</item-type>
+		<label>Command</label>
+		<description>Sends a command to a device</description>
+		<command>
+			<options>
+				<option value="STOP">Stop Dimming</option>
+				<option value="HOLD">Hold Rollershutter</option>
+				<option value="PRESET">Send shade to preset</option>
+				<option value="DIM_START_STOP">Start/Stop Dimming</option>
+				<option value="DIM_INCREASE">Increase Brightness Until Stopped</option>
+				<option value="DIM_DECREASE">Decrease Brightness Until Stopped</option>
+				<option value="UP_LIGHT_DIM_START_STOP">Start/Stop Dimming</option>
+				<option value="UP_LIGHT_DIM_INCREASE">Increase Brightness Until Stopped</option>
+				<option value="UP_LIGHT_DIM_DECREASE">Decrease Brightness Until Stopped</option>
+				<option value="DOWN_LIGHT_DIM_START_STOP">Start/Stop Dimming</option>
+				<option value="DOWN_LIGHT_DIM_INCREASE">Increase Brightness Until Stopped</option>
+				<option value="DOWN_LIGHT_DIM_DECREASE">Decrease Brightness Until Stopped</option>
+			</options>
+		</command>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
-	<channel-type id="lastUpdateType">
-		<item-type>DateTime</item-type>
-		<label>Last Update</label>
-		<description>Timestamp of last status update</description>
-		<category>Time</category>
-		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
-	</channel-type>
-
-	<channel-type id="fanSpeedChannelType" advanced="false">
+	<channel-type id="fanSpeedChannelType">
 		<item-type>Dimmer</item-type>
 		<label>Fan Speed</label>
 		<description>Sets fan speed</description>
 		<category>Heating</category>
 	</channel-type>
 
-	<channel-type id="breezeStateChannelType" advanced="false">
+	<channel-type id="breezeStateChannelType">
 		<item-type>Switch</item-type>
 		<label>Breeze Mode</label>
 		<description>Enables or disables breeze mode</description>
 	</channel-type>
 
-	<channel-type id="breezeMeanChannelType" advanced="false">
+	<channel-type id="breezeMeanChannelType">
 		<item-type>Dimmer</item-type>
 		<label>Mean Breeze Speed</label>
 		<description>Sets the average speed in breeze mode. 0 = minimum average speed (calm), 100 = maximum average speed
 			(storm)</description>
 	</channel-type>
 
-	<channel-type id="breezeVariabilityChannelType" advanced="false">
+	<channel-type id="breezeVariabilityChannelType">
 		<item-type>Dimmer</item-type>
-		<label>Mean Breeze Speed</label>
-		<description>Sets the variability of the speed in breeze mode. 0 = minimum variation (steady), 100 = maximum variation
+		<label>Breeze Variability</label>
+		<description>Sets the variability of the speed in breeze mode. 0 = minimum variation (steady), 100 = maximum
+			variation
 			(gusty)</description>
 	</channel-type>
 
-	<channel-type id="directionChannelType" advanced="false">
+	<channel-type id="directionChannelType">
 		<item-type>String</item-type>
 		<label>Fan Direction</label>
-		<description>Sets the fan direction; forward or reverse. The forward and reverse modes are sometimes called Summer and
+		<description>Sets the fan direction; forward or reverse. The forward and reverse modes are sometimes called Summer
+			and
 			Winter</description>
 		<state readOnly="false">
 			<options>
@@ -64,50 +71,21 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="timerChannelType" advanced="false">
+	<channel-type id="timerChannelType">
 		<item-type>Number</item-type>
 		<label>Timer</label>
 		<description>Starts a timer for s seconds. If power if off, device is implicitly turned on</description>
 		<category>Time</category>
 	</channel-type>
 
-	<channel-type id="lightChannelType" advanced="false">
+	<channel-type id="lightChannelType">
 		<item-type>Switch</item-type>
 		<label>Light</label>
 		<description>Turns the light on the ceiling fan on or off</description>
 		<category>Light</category>
 	</channel-type>
 
-	<channel-type id="brightnessChannelType" advanced="false">
-		<item-type>Dimmer</item-type>
-		<label>Brightness</label>
-		<description>Adjusts the brightness of the fan light</description>
-		<category>Light</category>
-	</channel-type>
-
-	<channel-type id="dimmerStartStopChannelType" advanced="false">
-		<item-type>Switch</item-type>
-		<label>Start Dimming</label>
-		<description>Starts or stops changing the brightness of the ceiling fan light. The direction of dimming cannot be
-			controlled.</description>
-		<category>Light</category>
-	</channel-type>
-
-	<channel-type id="dimmerIncrChannelType" advanced="false">
-		<item-type>Switch</item-type>
-		<label>Start Increasing Brightness</label>
-		<description>Starts or stops increasing the brightness of the ceiling fan light.</description>
-		<category>Light</category>
-	</channel-type>
-
-	<channel-type id="dimmerDcrChannelType" advanced="false">
-		<item-type>Switch</item-type>
-		<label>Start Decreasing Brightness</label>
-		<description>Starts or stops decreasing the brightness of the ceiling fan light.</description>
-		<category>Light</category>
-	</channel-type>
-
-	<channel-type id="enableChannelType" advanced="false">
+	<channel-type id="enableChannelType">
 		<item-type>Switch</item-type>
 		<label>Enable Up or Down Light</label>
 		<description>Enables or disables the up or down light of the ceiling fan. The light must also be on to turn on the up
@@ -115,55 +93,24 @@
 		<category>Light</category>
 	</channel-type>
 
-	<channel-type id="stopChannelType" advanced="false">
-		<item-type>Switch</item-type>
-		<label>Stop</label>
-		<description>Stops any ongoing change actions</description>
-		<category>Switch</category>
-		<tags>
-			<tag>Switchable</tag>
-		</tags>
-	</channel-type>
-
-	<channel-type id="flameChannelType" advanced="false">
+	<channel-type id="flameChannelType">
 		<item-type>Dimmer</item-type>
 		<label>Flame Level</label>
 		<description>Turns on or adjust the flame level</description>
 		<category>Heating</category>
 	</channel-type>
 
-	<channel-type id="fpFanPowerChannelType" advanced="false">
-		<item-type>Switch</item-type>
-		<label>Fireplace Fan State</label>
-		<description>Turns the fireplace fan on or off</description>
-		<category>Heating</category>
-	</channel-type>
-
-	<channel-type id="fpFanSpeedChannelType" advanced="false">
+	<channel-type id="fpFanSpeedChannelType">
 		<item-type>Dimmer</item-type>
 		<label>Fireplace Fan Speed</label>
 		<description>Adjusts the speed of the fireplace fan</description>
 		<category>Heating</category>
 	</channel-type>
 
-	<channel-type id="openShadeChannelType" advanced="false">
-		<item-type>Switch</item-type>
-		<label>Open</label>
-		<description>Opens or closes motorize shades</description>
-		<category>Rollershutter</category>
-	</channel-type>
-
-	<channel-type id="holdChannelType" advanced="false">
-		<item-type>Switch</item-type>
-		<label>Hold</label>
-		<description>Tells a shade to stop moving</description>
-		<category>Rollershutter</category>
-	</channel-type>
-
-	<channel-type id="presetChannelType" advanced="false">
-		<item-type>Switch</item-type>
-		<label>Preset</label>
-		<description>Tells a shade to go to a set preset level</description>
+	<channel-type id="rollershutterChannelType">
+		<item-type>Rollershutter</item-type>
+		<label>Shade</label>
+		<description>Opens, closes, or stops motorized shades</description>
 		<category>Rollershutter</category>
 	</channel-type>
 

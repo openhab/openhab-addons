@@ -32,20 +32,20 @@ public enum BondDeviceAction {
     // power: (integer) 1 = on, 0 = off
     // Actions
     @SerializedName("TurnOn")
-    TURN_ON("TurnOn", CHANNEL_GROUP_COMMON, CHANNEL_POWER_STATE),
+    TURN_ON("TurnOn", CHANNEL_GROUP_COMMON, CHANNEL_POWER),
     // ^^ Turn device power on.
     @SerializedName("TurnOff")
-    TURN_OFF("TurnOff", CHANNEL_GROUP_COMMON, CHANNEL_POWER_STATE),
+    TURN_OFF("TurnOff", CHANNEL_GROUP_COMMON, CHANNEL_POWER),
     // ^^ Turn device power off.
     @SerializedName("TogglePower")
-    TOGGLE_POWER("TogglePower", CHANNEL_GROUP_COMMON, CHANNEL_POWER_STATE),
+    TOGGLE_POWER("TogglePower", CHANNEL_GROUP_COMMON, CHANNEL_POWER),
     // ^^ Change device power from on to off, or off to on.
 
     // State Variables
     // timer: (integer) seconds remaining on timer, or 0 meaning no timer running
     // Actions
     @SerializedName("SetTimer")
-    SET_TIMER("SetTimer", CHANNEL_GROUP_COMMON, CHANNEL_TIMER),
+    SET_TIMER("SetTimer", CHANNEL_GROUP_COMMON, CHANNEL_FAN_TIMER),
     // ^^ Start timer for s seconds. If power if off, device is implicitly turned
     // on. If argument is zero, the timer is
     // canceled without turning off the device.
@@ -109,13 +109,13 @@ public enum BondDeviceAction {
     // light: (integer) 1 = light on, 0 = light off
     // Actions
     @SerializedName("TurnLightOn")
-    TURN_LIGHT_ON("TurnLightOn", CHANNEL_GROUP_LIGHT, CHANNEL_LIGHT_STATE),
+    TURN_LIGHT_ON("TurnLightOn", CHANNEL_GROUP_LIGHT, CHANNEL_LIGHT_POWER),
     // ^^ Turn light on.
     @SerializedName("TurnLightOff")
-    TURN_LIGHT_OFF("TurnLightOff", CHANNEL_GROUP_LIGHT, CHANNEL_LIGHT_STATE),
+    TURN_LIGHT_OFF("TurnLightOff", CHANNEL_GROUP_LIGHT, CHANNEL_LIGHT_POWER),
     // ^^ Turn off light.
     @SerializedName("ToggleLight")
-    TOGGLE_LIGHT("ToggleLight", CHANNEL_GROUP_LIGHT, CHANNEL_LIGHT_STATE),
+    TOGGLE_LIGHT("ToggleLight", CHANNEL_GROUP_LIGHT, CHANNEL_LIGHT_POWER),
     // ^^ Change light from on to off, or off to on.
 
     // State Variables
@@ -134,16 +134,16 @@ public enum BondDeviceAction {
     TURN_DOWN_LIGHT_ON("TurnDownLightOn", CHANNEL_GROUP_DOWN_LIGHT, CHANNEL_DOWN_LIGHT_ENABLE),
     // ^^ Turn down light on.
     @SerializedName("TurnUpLightOff")
-    TURN_UP_LIGHT_OFF("TurnUpLightOff", CHANNEL_GROUP_UP_LIGHT, CHANNEL_UP_LIGHT_STATE),
+    TURN_UP_LIGHT_OFF("TurnUpLightOff", CHANNEL_GROUP_UP_LIGHT, CHANNEL_UP_LIGHT_POWER),
     // ^^ Turn off up light.
     @SerializedName("TurnDownLightOff")
-    TURN_DOWN_LIGHT_OFF("TurnDownLightOff", CHANNEL_GROUP_DOWN_LIGHT, CHANNEL_DOWN_LIGHT_STATE),
+    TURN_DOWN_LIGHT_OFF("TurnDownLightOff", CHANNEL_GROUP_DOWN_LIGHT, CHANNEL_DOWN_LIGHT_POWER),
     // ^^ Turn off down light.
     @SerializedName("ToggleUpLight")
-    TOGGLE_UP_LIGHT("ToggleUpLight", CHANNEL_GROUP_UP_LIGHT, CHANNEL_UP_LIGHT_STATE),
+    TOGGLE_UP_LIGHT("ToggleUpLight", CHANNEL_GROUP_UP_LIGHT, CHANNEL_UP_LIGHT_POWER),
     // ^^ Change up light from on to off, or off to on.
     @SerializedName("ToggleDownLight")
-    TOGGLE_DOWN_LIGHT("ToggleDownLight", CHANNEL_GROUP_DOWN_LIGHT, CHANNEL_DOWN_LIGHT_STATE),
+    TOGGLE_DOWN_LIGHT("ToggleDownLight", CHANNEL_GROUP_DOWN_LIGHT, CHANNEL_DOWN_LIGHT_POWER),
     // ^^ Change down light from on to off, or off to on.
 
     // State Variables
@@ -222,38 +222,38 @@ public enum BondDeviceAction {
     // fpfan_speed: (integer) from 1-100
     // Actions
     @SerializedName("TurnFpFanOff")
-    TURN_FP_FAN_OFF("TurnFpFanOff", CHANNEL_GROUP_FIREPLACE, CHANNEL_FP_FAN_STATE),
+    TURN_FP_FAN_OFF("TurnFpFanOff", CHANNEL_GROUP_FAN, CHANNEL_FAN_SPEED),
     // ^^ Turn the fireplace fan off
     @SerializedName("TurnFpFanOn")
-    TURN_FP_FAN_ON("TurnFpFanOn", CHANNEL_GROUP_FIREPLACE, CHANNEL_FP_FAN_STATE),
+    TURN_FP_FAN_ON("TurnFpFanOn", CHANNEL_GROUP_FAN, CHANNEL_FAN_POWER),
     // ^^ Turn the fireplace fan on, restoring the previous speed
     @SerializedName("SetFpFan")
-    SET_FP_FAN("SetFpFan", CHANNEL_GROUP_FIREPLACE, CHANNEL_FP_FAN_SPEED),
+    SET_FP_FAN("SetFpFan", CHANNEL_GROUP_FAN, CHANNEL_FAN_SPEED),
     // ^^ Sets the speed of the fireplace fan
 
     // State Variables
     // open: (integer) 1 = open, 0 = closed
     // Actions
     @SerializedName("Open")
-    OPEN("Open", CHANNEL_GROUP_SHADES, CHANNEL_OPEN_CLOSE),
+    OPEN("Open", CHANNEL_GROUP_SHADES, CHANNEL_ROLLERSHUTTER),
     // ^^ Open the device.
     @SerializedName("Close")
-    CLOSE("Close", CHANNEL_GROUP_SHADES, CHANNEL_OPEN_CLOSE),
+    CLOSE("Close", CHANNEL_GROUP_SHADES, CHANNEL_ROLLERSHUTTER),
     // ^^ Close the device.
     @SerializedName("ToggleOpen")
-    TOGGLE_OPEN("ToggleOpen", CHANNEL_GROUP_SHADES, CHANNEL_OPEN_CLOSE),
+    TOGGLE_OPEN("ToggleOpen", CHANNEL_GROUP_SHADES, CHANNEL_ROLLERSHUTTER),
     // ^^ Close the device if it's open, open it if it's closed
     @SerializedName("Preset")
-    PRESET("Preset", CHANNEL_GROUP_SHADES, CHANNEL_PRESET),
+    PRESET("Preset", CHANNEL_GROUP_COMMON, CHANNEL_COMMAND),
     // ^^ Sets a shade to a preset level
 
     // Other actions
     @SerializedName("Stop")
-    STOP("Stop", CHANNEL_GROUP_COMMON, CHANNEL_STOP),
+    STOP("Stop", CHANNEL_GROUP_COMMON, CHANNEL_COMMAND),
     // ^^ This action tells the Bond to stop any in-progress transmission and empty
     // its transmission queue.
     @SerializedName("Hold")
-    HOLD("Hold", CHANNEL_GROUP_SHADES, CHANNEL_HOLD),
+    HOLD("Hold", CHANNEL_GROUP_SHADES, CHANNEL_COMMAND),
     // ^^ Can be used when a signal is required to tell a device to stop moving or
     // the like, since Stop is a special
     // "stop transmitting" action
@@ -261,20 +261,20 @@ public enum BondDeviceAction {
     PAIR("Pair", CHANNEL_GROUP_COMMON, null),
     // ^^ Used in devices that need to be paired with a receiver.
     @SerializedName("StartDimmer")
-    START_DIMMER("StartDimmer", CHANNEL_GROUP_LIGHT, CHANNEL_LIGHT_START_STOP),
+    START_DIMMER("StartDimmer", CHANNEL_GROUP_COMMON, CHANNEL_COMMAND),
     // ^^ Start dimming. The Bond should time out its transmission after 30 seconds,
     // or when the Stop action is called.
     @SerializedName("StartUpLightDimmer")
-    START_UP_LIGHT_DIMMER("StartUpLightDimmer", CHANNEL_GROUP_UP_LIGHT, CHANNEL_UP_LIGHT_START_STOP),
+    START_UP_LIGHT_DIMMER("StartUpLightDimmer", CHANNEL_GROUP_COMMON, CHANNEL_COMMAND),
     // ^^ Use this and the StartDownLightDimmer instead of StartDimmer if your
     // device has two dimmable lights.
     @SerializedName("StartDownLightDimmer")
-    START_DOWN_LIGHT_DIMMER("StartDownLightDimmer", CHANNEL_GROUP_DOWN_LIGHT, CHANNEL_DOWN_LIGHT_START_STOP),
+    START_DOWN_LIGHT_DIMMER("StartDownLightDimmer", CHANNEL_GROUP_COMMON, CHANNEL_COMMAND),
     // ^^ The counterpart to StartUpLightDimmer
     @SerializedName("StartIncreasingBrightness")
-    START_INCREASING_BRIGHTNESS("StartIncreasingBrightness", CHANNEL_GROUP_LIGHT, CHANNEL_LIGHT_DIRECTIONAL_INC),
+    START_INCREASING_BRIGHTNESS("StartIncreasingBrightness", CHANNEL_GROUP_COMMON, CHANNEL_COMMAND),
     @SerializedName("StartDecreasingBrightness")
-    START_DECREASING_BRIGHTNESS("StartDecreasingBrightness", CHANNEL_GROUP_LIGHT, CHANNEL_LIGHT_DIRECTIONAL_DECR),
+    START_DECREASING_BRIGHTNESS("StartDecreasingBrightness", CHANNEL_GROUP_COMMON, CHANNEL_COMMAND),
 
     // More actions
     @SerializedName("OEMRandom")

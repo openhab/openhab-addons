@@ -9,9 +9,8 @@
 	<channel-group-type id="commonChannelGroup">
 		<label>Common</label>
 		<channels>
-			<channel id="power" typeId="powerChannelType"/>
-			<channel id="lastUpdate" typeId="lastUpdateType"/>
-			<channel id="stop" typeId="stopChannelType"/>
+			<channel id="power" typeId="system.power"/>
+			<channel id="command" typeId="commandChannelType"/>
 		</channels>
 	</channel-group-type>
 
@@ -31,34 +30,25 @@
 		<label>Light</label>
 		<channels>
 			<channel id="power" typeId="lightChannelType"/>
-			<channel id="brightness" typeId="brightnessChannelType"/>
-			<channel id="dimmerStartStop" typeId="dimmerStartStopChannelType"/>
-			<channel id="dimmerIncr" typeId="dimmerIncrChannelType"/>
-			<channel id="dimmerDcr" typeId="dimmerDcrChannelType"/>
+			<channel id="brightness" typeId="system.brightness"/>
 		</channels>
 	</channel-group-type>
 
 	<channel-group-type id="upLightChannelGroup">
 		<label>Up Light</label>
 		<channels>
-			<channel id="power" typeId="lightChannelType"/>
+			<channel id="power" typeId="system.power"/>
 			<channel id="enable" typeId="enableChannelType"/>
-			<channel id="brightness" typeId="brightnessChannelType"/>
-			<channel id="dimmerStartStop" typeId="dimmerStartStopChannelType"/>
-			<channel id="dimmerIncr" typeId="dimmerIncrChannelType"/>
-			<channel id="dimmerDcr" typeId="dimmerDcrChannelType"/>
+			<channel id="brightness" typeId="system.brightness"/>
 		</channels>
 	</channel-group-type>
 
 	<channel-group-type id="downLightChannelGroup">
 		<label>Down Light</label>
 		<channels>
-			<channel id="power" typeId="lightChannelType"/>
+			<channel id="power" typeId="system.power"/>
 			<channel id="enable" typeId="enableChannelType"/>
-			<channel id="brightness" typeId="brightnessChannelType"/>
-			<channel id="dimmerStartStop" typeId="dimmerStartStopChannelType"/>
-			<channel id="dimmerIncr" typeId="dimmerIncrChannelType"/>
-			<channel id="dimmerDcr" typeId="dimmerDcrChannelType"/>
+			<channel id="brightness" typeId="system.brightness"/>
 		</channels>
 	</channel-group-type>
 
@@ -66,7 +56,7 @@
 		<label>Fireplace</label>
 		<channels>
 			<channel id="flame" typeId="flameChannelType"/>
-			<channel id="fanPower" typeId="fpFanPowerChannelType"/>
+			<channel id="fanPower" typeId="system.power"/>
 			<channel id="fanSpeed" typeId="fpFanSpeedChannelType"/>
 		</channels>
 	</channel-group-type>
@@ -74,9 +64,7 @@
 	<channel-group-type id="shadeChannelGroup">
 		<label>Motorized Shades</label>
 		<channels>
-			<channel id="openShade" typeId="openShadeChannelType"/>
-			<channel id="hold" typeId="holdChannelType"/>
-			<channel id="preset" typeId="presetChannelType"/>
+			<channel id="rollershutter" typeId="rollershutterChannelType"/>
 		</channels>
 	</channel-group-type>
 
