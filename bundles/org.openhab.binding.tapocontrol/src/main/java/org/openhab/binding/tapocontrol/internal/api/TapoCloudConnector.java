@@ -15,6 +15,7 @@ package org.openhab.binding.tapocontrol.internal.api;
 import static org.openhab.binding.tapocontrol.internal.constants.TapoBindingSettings.*;
 import static org.openhab.binding.tapocontrol.internal.constants.TapoErrorConstants.*;
 
+import java.util.UUID;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -83,7 +84,7 @@ public class TapoCloudConnector {
      * @return true if login was successfull
      */
     public Boolean login(String username, String password) {
-        this.token = getToken(username, password, TAPO_TERMINAL_UUID);
+        this.token = getToken(username, password, UUID.randomUUID().toString());
         this.url = TAPO_CLOUD_URL + "?token=" + token;
         return !this.token.isBlank();
     }
