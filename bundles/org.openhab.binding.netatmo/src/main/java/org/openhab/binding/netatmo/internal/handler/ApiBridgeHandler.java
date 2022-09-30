@@ -46,6 +46,7 @@ import org.openhab.binding.netatmo.internal.api.NetatmoException;
 import org.openhab.binding.netatmo.internal.api.RestManager;
 import org.openhab.binding.netatmo.internal.api.SecurityApi;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.Scope;
+import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.ServiceError;
 import org.openhab.binding.netatmo.internal.config.ApiHandlerConfiguration;
 import org.openhab.binding.netatmo.internal.config.BindingConfiguration;
 import org.openhab.binding.netatmo.internal.config.ConfigurationLevel;
@@ -245,6 +246,12 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
                 throw new NetatmoException(error);
             }
             return deserializer.deserialize(clazz, responseBody);
+        } catch (NetatmoException e) {
+            if (e.getStatusCode() == ServiceError.MAXIMUM_USAGE_REACHED) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                prepareReconnection(null, null);
+            }
+            throw e;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
