@@ -26,6 +26,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.unifi.internal.api.dto.UnfiPortOverrideJsonElement;
 import org.openhab.binding.unifi.internal.api.dto.UniFiClient;
 import org.openhab.binding.unifi.internal.api.dto.UniFiDevice;
+import org.openhab.binding.unifi.internal.api.dto.UniFiPortTable;
 import org.openhab.binding.unifi.internal.api.dto.UniFiPortTuple;
 import org.openhab.binding.unifi.internal.api.dto.UniFiSite;
 import org.openhab.binding.unifi.internal.api.dto.UniFiWlan;
@@ -93,25 +94,23 @@ public class UniFiControllerCache {
         devicesCache.putAll(devices);
         if (devices != null) {
             Stream.of(devices).filter(Objects::nonNull).forEach(d -> {
-                Stream.ofNullable(d.getPortTable()).filter(ptl -> ptl.length > 0 && ptl[0].isPortPoe()).forEach(pt -> {
-                    final Map<Integer, UniFiPortTuple> tupleTable = devicesToPortTables.computeIfAbsent(d.getMac(),
-                            p -> new HashMap<>());
+                Stream.ofNullable(d.getPortTable()).flatMap(pt -> Stream.of(pt)).filter(UniFiPortTable::isPortPoe)
+                        .forEach(p -> {
+                            final Map<Integer, UniFiPortTuple> tupleTable = devicesToPortTables
+                                    .computeIfAbsent(d.getMac(), tt -> new HashMap<>());
+                            final UniFiPortTuple tuple = tupleTable.computeIfAbsent(p.getPortIdx(),
+                                    t -> new UniFiPortTuple());
 
-                    Stream.of(pt).forEach(p -> {
-                        final UniFiPortTuple tuple = tupleTable.computeIfAbsent(p.getPortIdx(),
-                                t -> new UniFiPortTuple());
-
-                        tuple.setDevice(d);
-                        tuple.setTable(p);
-                    });
-                });
-                Stream.ofNullable(d.getPortOverrides()).filter(ptl -> ptl.length > 0).forEach(po -> {
+                            tuple.setDevice(d);
+                            tuple.setTable(p);
+                        });
+                Stream.ofNullable(d.getPortOverrides()).forEach(po -> {
                     final Map<Integer, UniFiPortTuple> tupleTable = devicesToPortTables.get(d.getMac());
 
                     if (tupleTable != null) {
                         Stream.of(po).filter(pof -> !pof.getAsJsonObject().entrySet().isEmpty())
-                                .map(UnfiPortOverrideJsonElement::new)
-                                .forEach(p -> tupleTable.get(p.getPortIdx()).setJsonElement(p));
+                                .map(UnfiPortOverrideJsonElement::new).forEach(p -> tupleTable
+                                        .computeIfAbsent(p.getPortIdx(), t -> new UniFiPortTuple()).setJsonElement(p));
                     }
                 });
             });
