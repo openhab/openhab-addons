@@ -137,9 +137,6 @@ public class UniFiPoePortThingHandler
 
     private State setOfflineOnNoPoEPortData() {
         if (getThing().getStatus() != ThingStatus.OFFLINE) {
-            logger.debug(
-                    "No PoE port information for thing '{}' could be found in the UniFi API data for port '{}'. Setting thing off line.",
-                    getThing().getUID(), config.getPortNumber());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/error.thing.poe.offline.nodata_error");
         }
