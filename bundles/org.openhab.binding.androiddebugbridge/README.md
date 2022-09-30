@@ -22,7 +22,7 @@ Please update this document if you tested it with other android versions to refl
 
 Android TV and Fire TV devices should be discovered automatically (using mDNS).
 
-As I can not find other android a way to identify other android devices in the network the manual discovery scan will try to connect through adb to all the reachable ip in the defined range.
+Since other Android devices cannot be discovered automatically on the network, the manual discovery scan will try to connect via adb to all reachable IP addresses in the defined range.
 
 You could customize the discovery process through the binding options.
 
