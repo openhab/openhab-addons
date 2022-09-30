@@ -19,6 +19,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 
@@ -123,12 +124,12 @@ public class JRubyScriptEngineFactory extends AbstractScriptEngineFactory {
     }
 
     private void importClassesToRuby(ScriptEngine scriptEngine, Map<String, Object> objects) {
-        String import_statements = objects.entrySet() //
-                .stream() //
-                .map(entry -> "java_import " + ((Class<?>) entry.getValue()).getName() + " rescue nil") //
-                .collect(Collectors.joining("\n"));
         try {
-            scriptEngine.eval(import_statements);
+            scriptEngine.put("__classes", objects);
+            final String code = "__classes.each { |(name, klass)| Object.const_set(name, klass.ruby_class) }";
+            scriptEngine.eval(code);
+            // clean up our temporary variable
+            scriptEngine.getBindings(ScriptContext.ENGINE_SCOPE).remove("__classes");
         } catch (ScriptException e) {
             logger.debug("Error importing java classes", e);
         }
