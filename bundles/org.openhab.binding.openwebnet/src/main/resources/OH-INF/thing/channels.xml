@@ -43,7 +43,7 @@
 	<channel-type id="brightness">
 		<item-type>Dimmer</item-type>
 		<label>Brightness</label>
-		<description>Control the brightness and switch the light ON and OFF</description>
+		<description>Control the brightness and switch the light ON and OFF (read/write)</description>
 		<category>Light</category>
 		<tags>
 			<tag>Control</tag>
@@ -55,7 +55,7 @@
 	<channel-type id="shutter">
 		<item-type>Rollershutter</item-type>
 		<label>Roller Shutter</label>
-		<description>Control the roller shutter position</description>
+		<description>Control the roller shutter position (read/write)</description>
 		<category>Blinds</category>
 		<tags>
 			<tag>OpenLevel</tag>
@@ -92,7 +92,7 @@
 	<channel-type id="functionCentralUnit">
 		<item-type>String</item-type>
 		<label>Thermo Function</label>
-		<description>Thermo function of the Central Unit</description>
+		<description>Thermo function of the Central Unit (read only)</description>
 		<state readOnly="true">
 			<options>
 				<option value="HEATING">Heating</option>
@@ -341,10 +341,11 @@
 		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
 
-	<!-- Basic Scenario trigger channels -->
+	<!-- Scenario trigger channels -->
 	<channel-type id="scenarioEvent">
 		<kind>trigger</kind>
-		<label>Basic Scenario Event</label>
+		<label>Activated Scenario Event</label>
+		<description>Event corresponding to the number of Basic Scenario that has been activated (read only)</description>
 		<event>
 			<options>
 				<option value="SCENARIO_01">Scenario 1</option>
@@ -375,12 +376,13 @@
 	<channel-type id="cenButtonEvent">
 		<kind>trigger</kind>
 		<label>CEN Button Event</label>
+		<description>Event corresponding to the button press (read only)</description>
 		<event>
 			<options>
-				<option value="START_PRESS">start press</option>
-				<option value="SHORT_PRESS">release after short press</option>
-				<option value="EXTENDED_PRESS">extended press (repeated until release)</option>
-				<option value="RELEASE_EXTENDED_PRESS">release after extended press</option>
+				<option value="START_PRESS">Start press</option>
+				<option value="SHORT_PRESS">Release after short press</option>
+				<option value="EXTENDED_PRESS">Extended press (repeated until release)</option>
+				<option value="RELEASE_EXTENDED_PRESS">Release after extended press</option>
 			</options>
 		</event>
 	</channel-type>
@@ -388,12 +390,13 @@
 	<channel-type id="cenPlusButtonEvent">
 		<kind>trigger</kind>
 		<label>CEN+ Button Event</label>
+		<description>Event corresponding to the button press (read only)</description>
 		<event>
 			<options>
-				<option value="SHORT_PRESS">short press</option>
-				<option value="START_EXTENDED_PRESS">start of extended press</option>
-				<option value="EXTENDED_PRESS">extended press (repeated until release)</option>
-				<option value="RELEASE_EXTENDED_PRESS">release after extended press</option>
+				<option value="SHORT_PRESS">Short press</option>
+				<option value="START_EXTENDED_PRESS">Start of extended press</option>
+				<option value="EXTENDED_PRESS">Extended press (repeated until release)</option>
+				<option value="RELEASE_EXTENDED_PRESS">Release after extended press</option>
 			</options>
 		</event>
 	</channel-type>

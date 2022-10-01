@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link OpenWebNetHandlerFactory} is responsible for creating thing handlers.
  *
- * @author Massimo Valla - Initial contribution
+ * @author Massimo Valla - Initial contribution, updates
  * @author Andrea Conte - Energy management, Thermoregulation
  * @author Gilberto Cocchi - Thermoregulation
  * @author Giovanni Fabiani - Auxiliary support
@@ -81,7 +81,7 @@ public class OpenWebNetHandlerFactory extends BaseThingHandlerFactory {
             logger.debug("Creating NEW AUXILIARY Handler");
             return new OpenWebNetAuxiliaryHandler(thing);
         } else if (OpenWebNetScenarioBasicHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
-            logger.debug("Creating NEW SCENARIO BASIC Handler");
+            logger.debug("Creating NEW BASIC SCENARIO Handler");
             return new OpenWebNetScenarioBasicHandler(thing);
         }
         logger.warn("ThingType {} is not supported by this binding", thing.getThingTypeUID());

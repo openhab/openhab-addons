@@ -18,6 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.types.Command;
 import org.openwebnet4j.message.BaseOpenMessage;
@@ -43,7 +44,7 @@ public class OpenWebNetScenarioBasicHandler extends OpenWebNetThingHandler {
 
     public OpenWebNetScenarioBasicHandler(Thing thing) {
         super(thing);
-        logger.debug("created Scenario Panel device for thing: {}", getThing().getUID());
+        logger.debug("created Basic Scenario device for thing: {}", getThing().getUID());
     }
 
     @Override
@@ -60,7 +61,7 @@ public class OpenWebNetScenarioBasicHandler extends OpenWebNetThingHandler {
                 logger.warn("Invalid Basic Scenario: {}. Ignoring message {}", scenario, msg);
                 return;
             }
-            logger.info("Basic Scenario {} has been activated", scenario);
+            logger.debug("Basic Scenario {} has been activated", scenario);
             triggerChannel(OpenWebNetBindingConstants.CHANNEL_SCENARIO, scenario.toString());
         } else {
             logger.debug("handleMessage() Ignoring unsupported DIM for thing {}. Frame={}", getThing().getUID(), msg);
@@ -69,9 +70,7 @@ public class OpenWebNetScenarioBasicHandler extends OpenWebNetThingHandler {
 
     @Override
     protected void handleChannelCommand(ChannelUID channel, Command command) {
-        // TODO not supported yet
-        logger.info("Activation of Basic Scenario (WHO=0) is not supported yet. Ignoring command {} for channel {}",
-                command, channel);
+        logger.info("Basic Scenario are read-only channels. Ignoring command {} for channel {}", command, channel);
     }
 
     @Override
@@ -81,7 +80,12 @@ public class OpenWebNetScenarioBasicHandler extends OpenWebNetThingHandler {
 
     @Override
     protected void refreshDevice(boolean refreshAll) {
-        logger.debug("Basic Scenario channels are trigger channels and do not have state.");
+        logger.debug("Basic Scenario channels are trigger channels and do not have state. Setting it ONLINE");
+        // put basic scenario things to ONLINE automatically as they do not have state
+        ThingStatus ts = getThing().getStatus();
+        if (ThingStatus.ONLINE != ts && ThingStatus.REMOVING != ts && ThingStatus.REMOVED != ts) {
+            updateStatus(ThingStatus.ONLINE);
+        }
     }
 
     @Override

@@ -157,8 +157,8 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
                 break;
             }
             case BASIC_SCENARIO: {
-                thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_BUS_SCENARIO_PANEL;
-                thingLabel = OpenWebNetBindingConstants.THING_LABEL_BUS_SCENARIO_PANEL;
+                thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_BUS_SCENARIO;
+                thingLabel = OpenWebNetBindingConstants.THING_LABEL_BUS_SCENARIO;
                 deviceWho = Who.SCENARIO;
                 break;
             }

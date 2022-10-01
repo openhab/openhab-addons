@@ -24,7 +24,7 @@ import org.openhab.core.thing.ThingTypeUID;
 /**
  * The {@link OpenWebNetBindingConstants} class defines common constants, which are used across the whole binding.
  *
- * @author Massimo Valla - Initial contribution
+ * @author Massimo Valla - Initial contribution, updates
  * @author Gilberto Cocchi - Thermoregulation
  * @author Andrea Conte - Energy management, Thermoregulation
  * @author Giovanni Fabiani - Aux support
@@ -64,14 +64,14 @@ public class OpenWebNetBindingConstants {
     public static final String THING_LABEL_BUS_THERMO_CU = "Thermo Central Unit";
     public static final ThingTypeUID THING_TYPE_BUS_CEN_SCENARIO_CONTROL = new ThingTypeUID(BINDING_ID,
             "bus_cen_scenario_control");
-    public static final String THING_LABEL_BUS_CEN_SCENARIO_CONTROL = "CEN Control";
+    public static final String THING_LABEL_BUS_CEN_SCENARIO_CONTROL = "CEN Scenario Control";
     public static final ThingTypeUID THING_TYPE_BUS_DRY_CONTACT_IR = new ThingTypeUID(BINDING_ID, "bus_dry_contact_ir");
     public static final String THING_LABEL_BUS_DRY_CONTACT_IR = "Dry Contact/IR";
     public static final ThingTypeUID THING_TYPE_BUS_CENPLUS_SCENARIO_CONTROL = new ThingTypeUID(BINDING_ID,
             "bus_cenplus_scenario_control");
-    public static final String THING_LABEL_BUS_CENPLUS_SCENARIO_CONTROL = "CEN+ Control";
-    public static final ThingTypeUID THING_TYPE_BUS_SCENARIO_PANEL = new ThingTypeUID(BINDING_ID, "bus_scenario_panel");
-    public static final String THING_LABEL_BUS_SCENARIO_PANEL = "Scenario Control Panel";
+    public static final String THING_LABEL_BUS_CENPLUS_SCENARIO_CONTROL = "CEN+ Scenario Control";
+    public static final ThingTypeUID THING_TYPE_BUS_SCENARIO = new ThingTypeUID(BINDING_ID, "bus_scenario_control");
+    public static final String THING_LABEL_BUS_SCENARIO = "Scenario Control";
     public static final ThingTypeUID THING_TYPE_BUS_AUX = new ThingTypeUID(BINDING_ID, "bus_aux");
     public static final String THING_LABEL_BUS_AUX = "Auxiliary";
     // ZIGBEE
@@ -104,7 +104,7 @@ public class OpenWebNetBindingConstants {
     public static final Set<ThingTypeUID> SCENARIO_SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BUS_CEN_SCENARIO_CONTROL,
             THING_TYPE_BUS_CENPLUS_SCENARIO_CONTROL, THING_TYPE_BUS_DRY_CONTACT_IR);
     // ## Basic Scenario
-    public static final Set<ThingTypeUID> SCENARIO_BASIC_SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BUS_SCENARIO_PANEL);
+    public static final Set<ThingTypeUID> SCENARIO_BASIC_SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BUS_SCENARIO);
     // ## Aux
     public static final Set<ThingTypeUID> AUX_SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BUS_AUX);
     // ## Groups
