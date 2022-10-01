@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *
- * Author: lassi.niemisto@gmail.com
+ * Author: lassi.niemisto@gmail.com, pauli.anttila@gmail.com
  *
  */
 
@@ -22,7 +22,7 @@ char debugBuf[DEBUG_BUFFER_SIZE];
 
 #ifdef ENABLE_REMOTE_DEBUG
   #if (CONN_MODE == CONN_MODE_ETH)
-    #include <Ethernet.h>
+    #include "KMPProDinoESP32.h"
     EthernetServer telnet(23);
     EthernetClient client;
   #elif (CONN_MODE == CONN_MODE_WIFI)
@@ -54,9 +54,7 @@ void initializeDebug()
 bool getDebugInput(char* pChar)
 {
 #ifdef ENABLE_REMOTE_DEBUG
-  if (telnet.hasClient()) {
-    client = telnet.available();
-  }
+  client = telnet.available();
 
   if (client && client.connected() && client.available()) {
     *pChar = client.read();

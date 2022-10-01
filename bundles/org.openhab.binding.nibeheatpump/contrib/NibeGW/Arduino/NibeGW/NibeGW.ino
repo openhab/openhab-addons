@@ -60,6 +60,9 @@
   #include <esp_task_wdt.h>
 #endif
 
+// ######### DEFINITIONS #######################
+
+#define NETWORK_REFRESH_PERIOD_MS 10000
 
 void setupStaticConfigMode();
 #if defined(PRODINO_BOARD_ESP32) && defined(ENABLE_DYNAMIC_CONFIG)
@@ -74,6 +77,7 @@ String IPtoString(const IPAddress& address);
 void sendUdpPacket(const byte* const data, int len);
 void printInfo();
 void initializeNetwork();
+void refreshNetwork();
 void nibeDebugCallback(byte level, char* data);
 #if defined(ENABLE_DEBUG) && defined(ENABLE_REMOTE_DEBUG)
   void handleDebugInput();
@@ -266,6 +270,10 @@ void loopNormalMode() {
     initializeDebug();
   }
 
+  if (netInitialized) {
+    refreshNetwork();
+  }
+
   #if defined(ENABLE_DEBUG) && defined(ENABLE_REMOTE_DEBUG)
     if (netInitialized) {
         handleDebugInput();
@@ -324,6 +332,18 @@ void initializeNetwork() {
   #if defined(PRODINO_BOARD_ESP32)
     KMPProDinoESP32.offStatusLed();
   #endif
+}
+
+void refreshNetwork() {
+#if (CONN_MODE == CONN_MODE_WIFI)
+  static unsigned long previousRefreshTimestamp = millis();
+  unsigned long now = millis();
+  if ((WiFi.status() != WL_CONNECTED) && (now - previousRefreshTimestamp >= NETWORK_REFRESH_PERIOD_MS)) {
+    WiFi.disconnect();
+    WiFi.reconnect();
+    previousRefreshTimestamp = now;
+  }
+#endif
 }
 
 void nibeCallbackMsgReceived(const byte* const data, int len) {
