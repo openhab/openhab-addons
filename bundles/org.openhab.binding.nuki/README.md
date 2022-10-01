@@ -169,6 +169,15 @@ If secureToken property is enabled, make sure that time on device running openHA
 is enabled, all requests contain timestamp and bridge will only accept requests with small time difference. If it is not possible to 
 keep time synchronized, disable secureToken feature.
 
+### NukiId conversion when migrating from old binding version
+
+Older versions of binding used nukiId in hexadecimal format (as displayed in Nuki app, e.g. 5C4BC4B3). The new version
+expects nukiId to be in decimal format (e.g. 1548469427), since that's the format returned from API.
+The binding does the conversion automatically, but only if your nukiId contains any letters A-F, otherwise the binding
+has no way to tell whether the id is in hexadecimal or decimal format. If your nukiId in hexadecimal format
+contains only numbers, you'll have to convert it to decimal format manually, or preferably delete the old Thing 
+and use discovery to recreate it.
+
 ## Full Example
 
 A manual setup through files could look like this:

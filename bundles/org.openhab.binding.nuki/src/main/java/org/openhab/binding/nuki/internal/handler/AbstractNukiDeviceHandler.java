@@ -63,7 +63,8 @@ public abstract class AbstractNukiDeviceHandler<T extends NukiDeviceConfiguratio
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
     private static final int JOB_INTERVAL = 60;
-    private static final Pattern NUKI_ID_HEX_PATTERN = Pattern.compile("[A-F\\d]{8}", Pattern.CASE_INSENSITIVE);
+    private static final Pattern NUKI_ID_HEX_PATTERN = Pattern.compile("[A-F\\d]*[A-F]+[A-F\\d]*",
+            Pattern.CASE_INSENSITIVE);
 
     @Nullable
     protected ScheduledFuture<?> reInitJob;
