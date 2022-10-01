@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Miguel Álvarez - Initial contribution
  */
-@Component(configurationPid = "discovery.androiddebugbridge")
+@Component(service = MDNSDiscoveryParticipant.class, configurationPid = "discovery.androiddebugbridge")
 @NonNullByDefault
 public class AndroidTVMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
