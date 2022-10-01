@@ -316,11 +316,10 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
     }
 
     /**
-     * create boolean reader with ON state mapped to trueOnOffValue or trueOpenClosedValue depending of item type
+     * create boolean reader for a number item with ON state mapped to the value of the
+     * item being above a given threshold
      *
      * @param characteristicType characteristic id
-     * @param trueOnOffValue ON value for switch
-     * @param trueOpenClosedValue ON value for contact
      * @param trueThreshold threshold for true of number item
      * @param invertThreshold result is true if item is less than threshold, instead of more
      * @return boolean read
