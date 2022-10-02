@@ -71,9 +71,11 @@ public abstract class AbstractNukiDeviceHandler<T extends NukiDeviceConfiguratio
     protected T configuration;
     @Nullable
     private NukiHttpClient nukiHttpClient;
+    protected final boolean readOnly;
 
-    public AbstractNukiDeviceHandler(Thing thing) {
+    public AbstractNukiDeviceHandler(Thing thing, boolean readOnly) {
         super(thing);
+        this.readOnly = readOnly;
         this.configuration = getConfigAs(getConfigurationClass());
     }
 
@@ -109,9 +111,11 @@ public abstract class AbstractNukiDeviceHandler<T extends NukiDeviceConfiguratio
         // legacy support - check if nukiId is hexadecimal (which might have been set by previous binding version)
         // and convert it to decimal
         if (NUKI_ID_HEX_PATTERN.matcher(nukiId).matches()) {
-            logger.warn(
-                    "SmartLock '{}' was created by old version of binding. It is recommended to delete it and discover again",
-                    thing.getUID());
+            if (!readOnly) {
+                logger.warn(
+                        "SmartLock '{}' was created by old version of binding. It is recommended to delete it and discover again",
+                        thing.getUID());
+            }
             Configuration newConfig = editConfiguration();
             newConfig.put(NukiBindingConstants.PROPERTY_NUKI_ID, hexToDecimal(nukiId));
             updateConfiguration(newConfig);
