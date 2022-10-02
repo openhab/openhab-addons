@@ -12,7 +12,7 @@
 			<channel id="todaySignal" typeId="signal">
 				<label>Today Signal</label>
 				<description>The signal relating to the forecast consumption level for today. Values are 1 for normal consumption
-					(green), 2 for strained electrical system (orange) and 3 for very strained electrical system (red)).</description>
+					(green), 2 for strained electrical system (orange) and 3 for very strained electrical system (red).</description>
 			</channel>
 			<channel id="tomorrowSignal" typeId="signal">
 				<label>Tomorrow Signal</label>
