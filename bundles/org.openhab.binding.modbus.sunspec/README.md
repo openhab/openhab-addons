@@ -72,6 +72,7 @@ This group contains general operational information about the device.
 | transformer-temperature | Number:Temperature    | Temperature of the transformer in Celsius                                                                                                                                                                                                                                                                       |
 | other-temperature       | Number:Temperature    | Any other temperature reading not covered by the above items if available. Celsius                                                                                                                                                                                                                              |
 | status                  | String                | Device status: <ul><li>OFF=Off</li><li>SLEEP=Sleeping/night mode</li><li>STARTING=Grid Monitoring/wake-up</li><li>ON=On - producing power (also called MPPT by Specification)</li><li>THROTTLED=Production (curtailed)<li>SHUTTING_DOWN=Shutting down<li>FAULT=Fault<li> STANDBY=Standby/Maintenance/Setup</ul> |
+| status-vendor           | Number                | Vendor Specific Status Code                                                                                                                                                                                                                                                                                     |
 
 Supported by: all inverter things
 
