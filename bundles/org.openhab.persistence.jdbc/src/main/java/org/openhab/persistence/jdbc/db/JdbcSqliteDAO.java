@@ -12,6 +12,8 @@
  */
 package org.openhab.persistence.jdbc.db;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.knowm.yank.Yank;
 import org.openhab.core.items.Item;
 import org.openhab.core.types.State;
@@ -28,6 +30,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Helmut Lehmeyer - Initial contribution
  */
+@NonNullByDefault
 public class JdbcSqliteDAO extends JdbcBaseDAO {
     private final Logger logger = LoggerFactory.getLogger(JdbcSqliteDAO.class);
 
@@ -73,8 +76,8 @@ public class JdbcSqliteDAO extends JdbcBaseDAO {
      **************/
 
     @Override
-    public String doGetDB() {
-        return Yank.queryColumn(sqlGetDB, "file", String.class, null).get(0);
+    public @Nullable String doGetDB() {
+        return Yank.queryColumn(sqlGetDB, "file", (Class<@Nullable String>) String.class, null).get(0);
     }
 
     @Override

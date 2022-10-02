@@ -21,6 +21,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.persistence.jdbc.db.JdbcBaseDAO;
 import org.openhab.persistence.jdbc.utils.MovingAverage;
 import org.openhab.persistence.jdbc.utils.StringUtilsExt;
@@ -32,6 +34,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Helmut Lehmeyer - Initial contribution
  */
+@NonNullByDefault
 public class JdbcConfiguration {
     private final Logger logger = LoggerFactory.getLogger(JdbcConfiguration.class);
 
@@ -40,12 +43,12 @@ public class JdbcConfiguration {
 
     private Map<Object, Object> configuration;
 
-    private JdbcBaseDAO dBDAO = null;
-    private String dbName = null;
+    private @NonNullByDefault({}) JdbcBaseDAO dBDAO;
+    private @Nullable String dbName;
     boolean dbConnected = false;
     boolean driverAvailable = false;
 
-    private String serviceName;
+    private @Nullable String serviceName;
     private String name = "jdbc";
     public final boolean valid;
 
@@ -70,12 +73,11 @@ public class JdbcConfiguration {
 
     public JdbcConfiguration(Map<Object, Object> configuration) {
         logger.debug("JDBC::JdbcConfiguration");
-        valid = updateConfig(configuration);
+        this.configuration = configuration;
+        valid = updateConfig();
     }
 
-    private boolean updateConfig(Map<Object, Object> config) {
-        configuration = config;
-
+    private boolean updateConfig() {
         logger.debug("JDBC::updateConfig: configuration size = {}", configuration.size());
 
         String user = (String) configuration.get("user");
@@ -226,15 +228,17 @@ public class JdbcConfiguration {
     }
 
     private void setDBDAOClass(String sn) {
-        serviceName = "none";
+        String serviceName;
 
         // set database type
-        if (sn == null || sn.isBlank() || sn.length() < 2) {
+        if (sn.isBlank() || sn.length() < 2) {
             logger.error(
                     "JDBC::updateConfig: Required database url like 'jdbc:<service>:<host>[:<port>;<attributes>]' - please configure the jdbc:url parameter in openhab.cfg");
+            serviceName = "none";
         } else {
             serviceName = sn;
         }
+        this.serviceName = serviceName;
         logger.debug("JDBC::updateConfig: found serviceName = '{}'", serviceName);
 
         // set class for database type
@@ -277,7 +281,9 @@ public class JdbcConfiguration {
             }
             String value = (String) configuration.get(key);
             logger.debug("JDBC::updateConfig: set sqlTypes: itemType={} value={}", itemType, value);
-            dBDAO.sqlTypes.put(itemType, value);
+            if (value != null) {
+                dBDAO.sqlTypes.put(itemType, value);
+            }
         }
     }
 
@@ -294,28 +300,31 @@ public class JdbcConfiguration {
             String warn = ""
                     + "\n\n\t!!!\n\tTo avoid this error, place an appropriate JDBC driver file for serviceName '{}' in addons directory.\n"
                     + "\tCopy missing JDBC-Driver-jar to your openHab/addons Folder.\n\t!!!\n" + "\tDOWNLOAD: \n";
-            switch (serviceName) {
-                case "derby":
-                    warn += "\tDerby:     version >= 10.11.1.1 from          https://mvnrepository.com/artifact/org.apache.derby/derby\n";
-                    break;
-                case "h2":
-                    warn += "\tH2:        version >= 1.4.189 from            https://mvnrepository.com/artifact/com.h2database/h2\n";
-                    break;
-                case "hsqldb":
-                    warn += "\tHSQLDB:    version >= 2.3.3 from              https://mvnrepository.com/artifact/org.hsqldb/hsqldb\n";
-                    break;
-                case "mariadb":
-                    warn += "\tMariaDB:   version >= 1.2.0 from              https://mvnrepository.com/artifact/org.mariadb.jdbc/mariadb-java-client\n";
-                    break;
-                case "mysql":
-                    warn += "\tMySQL:     version >= 5.1.36 from             https://mvnrepository.com/artifact/mysql/mysql-connector-java\n";
-                    break;
-                case "postgresql":
-                    warn += "\tPostgreSQL:version >= 9.4.1208 from           https://mvnrepository.com/artifact/org.postgresql/postgresql\n";
-                    break;
-                case "sqlite":
-                    warn += "\tSQLite:    version >= 3.16.1 from             https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc\n";
-                    break;
+            String serviceName = this.serviceName;
+            if (serviceName != null) {
+                switch (serviceName) {
+                    case "derby":
+                        warn += "\tDerby:     version >= 10.11.1.1 from          https://mvnrepository.com/artifact/org.apache.derby/derby\n";
+                        break;
+                    case "h2":
+                        warn += "\tH2:        version >= 1.4.189 from            https://mvnrepository.com/artifact/com.h2database/h2\n";
+                        break;
+                    case "hsqldb":
+                        warn += "\tHSQLDB:    version >= 2.3.3 from              https://mvnrepository.com/artifact/org.hsqldb/hsqldb\n";
+                        break;
+                    case "mariadb":
+                        warn += "\tMariaDB:   version >= 1.2.0 from              https://mvnrepository.com/artifact/org.mariadb.jdbc/mariadb-java-client\n";
+                        break;
+                    case "mysql":
+                        warn += "\tMySQL:     version >= 5.1.36 from             https://mvnrepository.com/artifact/mysql/mysql-connector-java\n";
+                        break;
+                    case "postgresql":
+                        warn += "\tPostgreSQL:version >= 9.4.1208 from           https://mvnrepository.com/artifact/org.postgresql/postgresql\n";
+                        break;
+                    case "sqlite":
+                        warn += "\tSQLite:    version >= 3.16.1 from             https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc\n";
+                        break;
+                }
             }
             logger.warn(warn, serviceName);
         }
@@ -330,7 +339,7 @@ public class JdbcConfiguration {
         return name;
     }
 
-    public String getServiceName() {
+    public @Nullable String getServiceName() {
         return serviceName;
     }
 
@@ -362,7 +371,7 @@ public class JdbcConfiguration {
         return dBDAO;
     }
 
-    public String getDbName() {
+    public @Nullable String getDbName() {
         return dbName;
     }
 

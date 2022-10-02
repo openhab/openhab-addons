@@ -15,6 +15,7 @@ package org.openhab.persistence.jdbc.db;
 import java.time.ZoneId;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.knowm.yank.Yank;
 import org.openhab.core.items.Item;
 import org.openhab.core.persistence.FilterCriteria;
@@ -33,6 +34,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Helmut Lehmeyer - Initial contribution
  */
+@NonNullByDefault
 public class JdbcPostgresqlDAO extends JdbcBaseDAO {
     private final Logger logger = LoggerFactory.getLogger(JdbcPostgresqlDAO.class);
 
