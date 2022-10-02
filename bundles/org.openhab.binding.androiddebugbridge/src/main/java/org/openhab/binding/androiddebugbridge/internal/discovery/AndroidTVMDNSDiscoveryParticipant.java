@@ -34,20 +34,23 @@ import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * The {@link FireTVStickMDNSDiscoveryParticipant} is responsible for discovering new and removed Fire TV Stick. It uses
+ * The {@link AndroidTVMDNSDiscoveryParticipant} is responsible for discovering new and removed Android TV devices. It
+ * uses
  * the central {@link MDNSDiscoveryService}.
  *
- * @author Christoph Weitkamp - Initial contribution
+ * @author Miguel Álvarez - Initial contribution
  */
 @Component(service = MDNSDiscoveryParticipant.class, configurationPid = "discovery.androiddebugbridge")
 @NonNullByDefault
-public class FireTVStickMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant {
+public class AndroidTVMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
-    private static final String SERVICE_TYPE = "_amzn-wplay._tcp.local.";
-    private static final String MDNS_PROPERTY_NAME = "n";
-    private static final String MDNS_PROPERTY_MAC_ADDRESS = "c";
+    private static final String SERVICE_TYPE = "_androidtvremote2._tcp.local.";
+    private static final String MDNS_PROPERTY_MAC_ADDRESS = "bt";
+    private final Logger logger = LoggerFactory.getLogger(AndroidTVMDNSDiscoveryParticipant.class);
 
     private boolean isAutoDiscoveryEnabled = true;
 
@@ -87,7 +90,7 @@ public class FireTVStickMDNSDiscoveryParticipant implements MDNSDiscoveryPartici
             if (uid != null) {
                 String ip = service.getHostAddresses()[0];
                 String macAddress = service.getPropertyString(MDNS_PROPERTY_MAC_ADDRESS);
-                String friendlyName = String.format("%s (%s)", service.getPropertyString(MDNS_PROPERTY_NAME), ip);
+                String friendlyName = String.format("%s (%s)", service.getName(), ip);
                 return DiscoveryResultBuilder.create(uid) //
                         .withProperties(Map.of( //
                                 PARAMETER_IP, ip, //
