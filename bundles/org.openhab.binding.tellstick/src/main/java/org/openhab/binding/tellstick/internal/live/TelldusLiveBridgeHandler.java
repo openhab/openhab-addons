@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.tellstick.internal.live;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.ScheduledFuture;
@@ -51,6 +53,8 @@ import org.tellstick.device.iface.Device;
  */
 public class TelldusLiveBridgeHandler extends BaseBridgeHandler implements TelldusBridgeHandler {
 
+    private static final int REFRESH_DELAY = 10;
+
     private final Logger logger = LoggerFactory.getLogger(TelldusLiveBridgeHandler.class);
 
     private TellstickNetDevices deviceList = null;
@@ -58,7 +62,10 @@ public class TelldusLiveBridgeHandler extends BaseBridgeHandler implements Telld
     private TelldusLiveDeviceController controller = new TelldusLiveDeviceController();
     private List<DeviceStatusListener> deviceStatusListeners = new Vector<>();
 
-    private static final int REFRESH_DELAY = 10;
+    private int nbRefresh;
+    private long sumRefreshDuration;
+    private long minRefreshDuration = 1000000;
+    private long maxRefreshDuration;
 
     public TelldusLiveBridgeHandler(Bridge bridge) {
         super(bridge);
@@ -88,9 +95,8 @@ public class TelldusLiveBridgeHandler extends BaseBridgeHandler implements Telld
         this.controller = new TelldusLiveDeviceController();
         this.controller.connectHttpClient(configuration.publicKey, configuration.privateKey, configuration.token,
                 configuration.tokenSecret);
+        updateStatus(ThingStatus.UNKNOWN);
         startAutomaticRefresh(configuration.refreshInterval);
-        refreshDeviceList();
-        updateStatus(ThingStatus.ONLINE);
     }
 
     private synchronized void startAutomaticRefresh(long refreshInterval) {
@@ -112,17 +118,36 @@ public class TelldusLiveBridgeHandler extends BaseBridgeHandler implements Telld
     }
 
     synchronized void refreshDeviceList() {
+        LocalDateTime start = LocalDateTime.now();
         try {
             updateDevices(deviceList);
             updateSensors(sensorList);
             updateStatus(ThingStatus.ONLINE);
-        } catch (TellstickException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            logger.error("Failed to update", e);
         } catch (Exception e) {
+            logger.warn("Failed to update", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            logger.error("Failed to update", e);
         }
+        monitorAdditionalRefresh(start, LocalDateTime.now());
+    }
+
+    private void monitorAdditionalRefresh(LocalDateTime start, LocalDateTime end) {
+        if (!logger.isDebugEnabled()) {
+            return;
+        }
+        long duration = ChronoUnit.MILLIS.between(start, end);
+        sumRefreshDuration += duration;
+        nbRefresh++;
+        if (duration < minRefreshDuration) {
+            minRefreshDuration = duration;
+        }
+        if (duration > maxRefreshDuration) {
+            maxRefreshDuration = duration;
+        }
+        logger.debug(
+                "{} refresh avg = {} ms min = {} max = {} (request avg = {} ms min = {} max = {}) ({} timeouts {} errors)",
+                nbRefresh, nbRefresh == 0 ? 0 : sumRefreshDuration / nbRefresh, minRefreshDuration, maxRefreshDuration,
+                controller.getAverageRequestDuration(), controller.getMinRequestDuration(),
+                controller.getMaxRequestDuration(), controller.getNbTimeouts(), controller.getNbErrors());
     }
 
     private synchronized void updateDevices(TellstickNetDevices previouslist) throws TellstickException {
@@ -258,7 +283,8 @@ public class TelldusLiveBridgeHandler extends BaseBridgeHandler implements Telld
         if (deviceStatusListener == null) {
             throw new IllegalArgumentException("It's not allowed to pass a null deviceStatusListener.");
         }
-        return deviceStatusListeners.add(deviceStatusListener);
+        return deviceStatusListeners.contains(deviceStatusListener) ? false
+                : deviceStatusListeners.add(deviceStatusListener);
     }
 
     @Override

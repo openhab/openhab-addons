@@ -160,7 +160,6 @@ public class TelldusCoreBridgeHandler extends BaseBridgeHandler
 
                 }
             }
-
         } catch (SupportedMethodsException e) {
             logger.error("Failed to get devices ", e);
         }
@@ -186,7 +185,8 @@ public class TelldusCoreBridgeHandler extends BaseBridgeHandler
         if (deviceStatusListener == null) {
             throw new IllegalArgumentException("It's not allowed to pass a null deviceStatusListener.");
         }
-        return deviceStatusListeners.add(deviceStatusListener);
+        return deviceStatusListeners.contains(deviceStatusListener) ? false
+                : deviceStatusListeners.add(deviceStatusListener);
     }
 
     @Override

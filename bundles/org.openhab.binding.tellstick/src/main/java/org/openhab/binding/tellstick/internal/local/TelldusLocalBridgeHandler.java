@@ -50,7 +50,7 @@ import org.tellstick.device.iface.Device;
  * to the framework. All {@link TelldusDevicesHandler}s use the
  * {@link TelldusLocalDeviceController} to execute the actual commands.
  *
- * @author Jan Gustafsson- Initial contribution
+ * @author Jan Gustafsson - Initial contribution
  */
 public class TelldusLocalBridgeHandler extends BaseBridgeHandler implements TelldusBridgeHandler {
 
@@ -231,7 +231,8 @@ public class TelldusLocalBridgeHandler extends BaseBridgeHandler implements Tell
         if (deviceStatusListener == null) {
             throw new IllegalArgumentException("It's not allowed to pass a null deviceStatusListener.");
         }
-        return deviceStatusListeners.add(deviceStatusListener);
+        return deviceStatusListeners.contains(deviceStatusListener) ? false
+                : deviceStatusListeners.add(deviceStatusListener);
     }
 
     @Override

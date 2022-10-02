@@ -205,4 +205,13 @@ public class TellstickDiscoveryService extends AbstractDiscoveryService implemen
         telldusBridgeHandlers.add(tellstickBridgeHandler);
         tellstickBridgeHandler.registerDeviceStatusListener(this);
     }
+
+    public void removeBridgeHandler(TelldusBridgeHandler tellstickBridgeHandler) {
+        telldusBridgeHandlers.remove(tellstickBridgeHandler);
+        tellstickBridgeHandler.unregisterDeviceStatusListener(this);
+    }
+
+    public boolean isOnlyForOneBridgeHandler() {
+        return telldusBridgeHandlers.size() == 1;
+    }
 }
