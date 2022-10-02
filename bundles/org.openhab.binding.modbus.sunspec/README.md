@@ -158,8 +158,8 @@ acPhaseC: available only for meter-wye-phase and meter-delta-phase meters type i
 | ac-voltage-to-n                | Number:ElectricPotential | Voltage of this line relative to the neutral line                   |
 | ac-voltage-to-next             | Number:ElectricPotential | Voltage of this line relative to the next line                      |
 | ac-real-power                  | Number:Power             | AC Real Power value (W)                                             |
-| ac-apparent-power              | Number:Power             | AC Apparent Power value                                             |
-| ac-reactive-power              | Number:Power             | AC Reactive Power value                                             |
+| ac-apparent-power              | Number:Power             | AC Apparent Power value (VA)                                        |
+| ac-reactive-power              | Number:Power             | AC Reactive Power value (VAR)                                       |
 | ac-power-factor                | Number:Dimensionless     | AC Power Factor (%)                                                 |
 | ac-exported-real-energy        | Number:Energy            | Real Energy Exported (Wh                                            |
 | ac-imported-real-energy        | Number:Energy            | Real Energy Imported (Wh)                                           |
