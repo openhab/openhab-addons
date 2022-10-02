@@ -19,6 +19,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -616,7 +617,14 @@ public class JdbcBaseDAO {
                 logger.debug(
                         "JDBC::getItemType: Cannot detect ItemType for {} because the GroupItems' base type isn't set in *.items File.",
                         i.getName());
-                item = ((GroupItem) i).getMembers().iterator().next();
+                Iterator<Item> iterator = ((GroupItem) i).getMembers().iterator();
+                if (!iterator.hasNext()) {
+                    logger.debug(
+                            "JDBC::getItemType: No Child-Members of GroupItem {}, use ItemType for STRINGITEM as Fallback",
+                            i.getName());
+                    return def;
+                }
+                item = iterator.next();
             }
         }
         String itemType = item.getClass().getSimpleName().toUpperCase();
