@@ -70,7 +70,7 @@ public class OpenWebNetScenarioBasicHandler extends OpenWebNetThingHandler {
 
     @Override
     protected void handleChannelCommand(ChannelUID channel, Command command) {
-        logger.info("Basic Scenario are read-only channels. Ignoring command {} for channel {}", command, channel);
+        logger.debug("Basic Scenario are read-only channels. Ignoring command {} for channel {}", command, channel);
     }
 
     @Override
