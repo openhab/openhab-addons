@@ -105,13 +105,12 @@ public class LinkyHandler extends BaseThingHandler {
         });
 
         this.cachedPowerData = new ExpiringDayCache<>("power cache", REFRESH_FIRST_HOUR_OF_DAY, () -> {
-            LocalDate to = LocalDate.now();
-            LocalDate from = to.minusDays(1);
-            Consumption consumption = getPowerData(from, to);
+            LocalDate today = LocalDate.now();
+            Consumption consumption = getPowerData(today.minusDays(2), today);
             if (consumption != null) {
                 logData(consumption.aggregats.days, "Day (peak)", true, DateTimeFormatter.ISO_LOCAL_DATE_TIME,
                         Target.ALL);
-                consumption = getConsumptionAfterChecks(consumption, Target.FIRST);
+                consumption = getConsumptionAfterChecks(consumption, Target.LAST);
             }
             return consumption;
         });
@@ -199,8 +198,8 @@ public class LinkyHandler extends BaseThingHandler {
         if (isLinked(PEAK_POWER) || isLinked(PEAK_TIMESTAMP)) {
             cachedPowerData.getValue().ifPresentOrElse(values -> {
                 Aggregate days = values.aggregats.days;
-                updateVAChannel(PEAK_POWER, days.datas.get(0));
-                updateState(PEAK_TIMESTAMP, new DateTimeType(days.periodes.get(0).dateDebut));
+                updateVAChannel(PEAK_POWER, days.datas.get(days.datas.size() - 1));
+                updateState(PEAK_TIMESTAMP, new DateTimeType(days.periodes.get(days.datas.size() - 1).dateDebut));
             }, () -> {
                 updateKwhChannel(PEAK_POWER, Double.NaN);
                 updateState(PEAK_TIMESTAMP, UnDefType.UNDEF);
