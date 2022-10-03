@@ -31,6 +31,7 @@ public class HomekitSettings {
     public String setupId;
     public String qrCode;
     public int startDelay = 30;
+    public boolean useDummyAccessories = false;
     public boolean useFahrenheitTemperature = false;
     public boolean useOHmDNS = false;
     public boolean blockUserDeletion = false;
@@ -62,6 +63,7 @@ public class HomekitSettings {
         result = prime * result + ((thermostatTargetModeHeat == null) ? 0 : thermostatTargetModeHeat.hashCode());
         result = prime * result + ((thermostatTargetModeOff == null) ? 0 : thermostatTargetModeOff.hashCode());
         result = prime * result + (useFahrenheitTemperature ? 1231 : 1237);
+        result = prime * result + (useDummyAccessories ? 1249 : 1259);
         return result;
     }
 
@@ -125,6 +127,9 @@ public class HomekitSettings {
             return false;
         }
         if (useFahrenheitTemperature != other.useFahrenheitTemperature) {
+            return false;
+        }
+        if (useDummyAccessories != other.useDummyAccessories) {
             return false;
         }
         return true;

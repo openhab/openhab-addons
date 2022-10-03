@@ -21,6 +21,7 @@ import org.openhab.core.io.console.Console;
 import org.openhab.core.io.console.extensions.AbstractConsoleCommandExtension;
 import org.openhab.core.io.console.extensions.ConsoleCommandExtension;
 import org.openhab.io.homekit.Homekit;
+import org.openhab.io.homekit.internal.accessories.DummyHomekitAccessory;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -40,6 +41,8 @@ public class HomekitCommandExtension extends AbstractConsoleCommandExtension {
     private static final String SUBCMD_LIST_ACCESSORIES = "list";
     private static final String SUBCMD_PRINT_ACCESSORY = "show";
     private static final String SUBCMD_ALLOW_UNAUTHENTICATED = "allowUnauthenticated";
+    private static final String SUBCMD_PRUNE_DUMMY_ACCESSORIES = "pruneDummyAccessories";
+    private static final String SUBCMD_LIST_DUMMY_ACCESSORIES = "listDummyAccessories";
 
     private final Logger logger = LoggerFactory.getLogger(HomekitCommandExtension.class);
 
@@ -76,6 +79,12 @@ public class HomekitCommandExtension extends AbstractConsoleCommandExtension {
                         console.println("accessory id or name is required as an argument");
                     }
                     break;
+                case SUBCMD_PRUNE_DUMMY_ACCESSORIES:
+                    pruneDummyAccessories(console);
+                    break;
+                case SUBCMD_LIST_DUMMY_ACCESSORIES:
+                    listDummyAccessories(console);
+                    break;
                 default:
                     console.println("Unknown command '" + subCommand + "'");
                     printUsage(console);
@@ -93,7 +102,11 @@ public class HomekitCommandExtension extends AbstractConsoleCommandExtension {
                         "print additional details of the accessories which partially match provided ID or name."),
                 buildCommandUsage(SUBCMD_CLEAR_PAIRINGS, "removes all pairings with HomeKit clients."),
                 buildCommandUsage(SUBCMD_ALLOW_UNAUTHENTICATED + " <boolean>",
-                        "enables or disables unauthenticated access to facilitate debugging"));
+                        "enables or disables unauthenticated access to facilitate debugging"),
+                buildCommandUsage(SUBCMD_PRUNE_DUMMY_ACCESSORIES,
+                        "removes dummy accessories whose items no longer exist."),
+                buildCommandUsage(SUBCMD_LIST_DUMMY_ACCESSORIES,
+                        "list dummy accessories whose items no longer exist."));
     }
 
     @Reference
@@ -111,10 +124,27 @@ public class HomekitCommandExtension extends AbstractConsoleCommandExtension {
         console.println((allow ? "Enabled " : "Disabled ") + "unauthenticated HomeKit access");
     }
 
+    private void pruneDummyAccessories(Console console) {
+        homekit.pruneDummyAccessories();
+        console.println("Dummy accessories pruned.");
+    }
+
     private void listAccessories(Console console) {
         homekit.getAccessories().forEach(v -> {
             try {
                 console.println(v.getId() + " " + v.getName().get());
+            } catch (InterruptedException | ExecutionException e) {
+                logger.warn("Cannot list accessories", e);
+            }
+        });
+    }
+
+    private void listDummyAccessories(Console console) {
+        homekit.getAccessories().forEach(v -> {
+            try {
+                if (v instanceof DummyHomekitAccessory) {
+                    console.println(v.getSerialNumber().get());
+                }
             } catch (InterruptedException | ExecutionException e) {
                 logger.warn("Cannot list accessories", e);
             }

@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -48,7 +49,6 @@ import org.openhab.io.homekit.internal.HomekitTaggedItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.github.hapjava.accessories.HomekitAccessory;
 import io.github.hapjava.characteristics.Characteristic;
 import io.github.hapjava.services.Service;
 
@@ -168,7 +168,7 @@ public class HomekitAccessoryFactory {
      *             characteristic
      */
     @SuppressWarnings("null")
-    public static HomekitAccessory create(HomekitTaggedItem taggedItem, MetadataRegistry metadataRegistry,
+    public static AbstractHomekitAccessoryImpl create(HomekitTaggedItem taggedItem, MetadataRegistry metadataRegistry,
             HomekitAccessoryUpdater updater, HomekitSettings settings) throws HomekitException {
         final HomekitAccessoryType accessoryType = taggedItem.getAccessoryType();
         logger.trace("Constructing {} of accessory type {}", taggedItem.getName(), accessoryType.getTag());
@@ -335,7 +335,7 @@ public class HomekitAccessoryFactory {
     }
 
     /**
-     * add optional characteristic for given accessory.
+     * add optional characteristics for given accessory.
      *
      * @param taggedItem main item
      * @param accessory accessory
@@ -380,7 +380,7 @@ public class HomekitAccessoryFactory {
      */
     private static Map<HomekitCharacteristicType, GenericItem> getOptionalCharacteristics(HomekitTaggedItem taggedItem,
             MetadataRegistry metadataRegistry) {
-        Map<HomekitCharacteristicType, GenericItem> characteristicItems = new HashMap<>();
+        Map<HomekitCharacteristicType, GenericItem> characteristicItems = new TreeMap<>();
         if (taggedItem.isGroup()) {
             GroupItem groupItem = (GroupItem) taggedItem.getItem();
             groupItem.getMembers().forEach(item -> getAccessoryTypes(item, metadataRegistry).stream()
