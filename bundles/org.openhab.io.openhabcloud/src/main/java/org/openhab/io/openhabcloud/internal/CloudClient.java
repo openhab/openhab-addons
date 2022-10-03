@@ -141,7 +141,8 @@ public class CloudClient {
      * Delay reconnect scheduler pool
      * 
      */
-    protected final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool("DelayConnect");
+    protected final ScheduledExecutorService scheduler = ThreadPoolManager
+            .getScheduledPool(ThreadPoolManager.THREAD_POOL_NAME_COMMON);
 
     /**
      * Constructor of CloudClient
