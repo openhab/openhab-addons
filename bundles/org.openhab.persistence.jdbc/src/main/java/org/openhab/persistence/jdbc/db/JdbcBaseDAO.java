@@ -348,7 +348,8 @@ public class JdbcBaseDAO {
         // we already retrieve the unit here once as it is a very costly operation
         String itemName = item.getName();
         Unit<? extends Quantity<?>> unit = item instanceof NumberItem ? ((NumberItem) item).getUnit() : null;
-        return m.stream().map(o -> new JdbcHistoricItem(itemName, objectAsState(item, unit, o[1]), objectAsDate(o[0])))
+        return m.stream()
+                .map(o -> new JdbcHistoricItem(itemName, objectAsState(item, unit, o[1]), objectAsZonedDateTime(o[0])))
                 .collect(Collectors.<HistoricItem> toList());
     }
 
@@ -541,8 +542,7 @@ public class JdbcBaseDAO {
             }
             return unit == null ? DecimalType.valueOf(objectAsString(v)) : QuantityType.valueOf(objectAsString(v));
         } else if (item instanceof DateTimeItem) {
-            return new DateTimeType(
-                    ZonedDateTime.ofInstant(Instant.ofEpochMilli(objectAsLong(v)), ZoneId.systemDefault()));
+            return new DateTimeType(objectAsZonedDateTime(v));
         } else if (item instanceof ColorItem) {
             return HSBType.valueOf(objectAsString(v));
         } else if (item instanceof DimmerItem || item instanceof RollershutterItem) {
@@ -564,31 +564,20 @@ public class JdbcBaseDAO {
         }
     }
 
-    protected ZonedDateTime objectAsDate(Object v) {
-        if (v instanceof LocalDateTime) {
-            return ZonedDateTime.of((LocalDateTime) v, ZoneId.systemDefault());
-        } else if (v instanceof java.sql.Timestamp) {
-            return ZonedDateTime.ofInstant(((java.sql.Timestamp) v).toInstant(), ZoneId.systemDefault());
+    protected ZonedDateTime objectAsZonedDateTime(Object v) {
+        if (v instanceof Long) {
+            return ZonedDateTime.ofInstant(Instant.ofEpochMilli(((Number) v).longValue()), ZoneId.systemDefault());
+        } else if (v instanceof java.sql.Date) {
+            return ZonedDateTime.ofInstant(Instant.ofEpochMilli(((java.sql.Date) v).getTime()), ZoneId.systemDefault());
+        } else if (v instanceof LocalDateTime) {
+            return ((LocalDateTime) v).atZone(ZoneId.systemDefault());
         } else if (v instanceof Instant) {
-            return ZonedDateTime.ofInstant((Instant) v, ZoneId.systemDefault());
+            return ((Instant) v).atZone(ZoneId.systemDefault());
+        } else if (v instanceof java.sql.Timestamp) {
+            return ((java.sql.Timestamp) v).toInstant().atZone(ZoneId.systemDefault());
         } else if (v instanceof java.lang.String) {
             return ZonedDateTime.ofInstant(java.sql.Timestamp.valueOf(v.toString()).toInstant(),
                     ZoneId.systemDefault());
-        }
-        throw new UnsupportedOperationException("Date of type " + v.getClass().getName() + " is not supported");
-    }
-
-    protected Long objectAsLong(Object v) {
-        if (v instanceof Long) {
-            return ((Number) v).longValue();
-        } else if (v instanceof java.sql.Date) {
-            return ((java.sql.Date) v).getTime();
-        } else if (v instanceof LocalDateTime) {
-            return ((LocalDateTime) v).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
-        } else if (v instanceof Instant) {
-            return ((Instant) v).toEpochMilli();
-        } else if (v instanceof java.sql.Timestamp) {
-            return ((java.sql.Timestamp) v).getTime();
         }
         throw new UnsupportedOperationException("Date of type " + v.getClass().getName() + " is not supported");
     }
