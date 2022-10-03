@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="shellyplus1">
-		<label>ShellyPlus 1 (SNSW-001X16EU")</label>
+		<label>ShellyPlus 1</label>
 		<description>@text/thing-type.shelly.shellyplus1.description</description>
 		<channel-groups>
 			<channel-group id="relay" typeId="relayChannel"/>
@@ -18,7 +18,7 @@
 	</thing-type>
 
 	<thing-type id="shellyplus1pm">
-		<label>ShellyPlus 1PM (SNSW-001P16EU)</label>
+		<label>ShellyPlus 1PM</label>
 		<description>@text/thing-type.shelly.shellyplus1pm.description</description>
 		<channel-groups>
 			<channel-group id="relay" typeId="relayChannel"/>
@@ -32,7 +32,7 @@
 	</thing-type>
 
 	<thing-type id="shellyplus2pm-relay">
-		<label>ShellyPlus 2 Relay (SNSW-002X2EU)</label>
+		<label>ShellyPlus 2 Relay</label>
 		<description>@text/thing-type.shelly.shellyplus2-relay.description</description>
 		<channel-groups>
 			<channel-group id="relay1" typeId="relayChannel"/>
@@ -47,7 +47,7 @@
 	</thing-type>
 
 	<thing-type id="shellyplus2pm-roller">
-		<label>ShellyPlus 2PM Roller (SNSW-002P16EU)</label>
+		<label>ShellyPlus 2PM Roller</label>
 		<description>@text/thing-type.shelly.shellyplus2pm-roller.description</description>
 		<category>Rollershutter</category>
 		<channel-groups>
@@ -62,7 +62,7 @@
 
 
 	<thing-type id="shellyplusi4">
-		<label>ShellyPlus i4 (SNSN-0024X)</label>
+		<label>ShellyPlus i4</label>
 		<description>@text/thing-type.shelly.shellyplusi4.description</description>
 		<channel-groups>
 			<channel-group id="status1" typeId="ixChannel">
@@ -85,7 +85,7 @@
 	</thing-type>
 
 	<thing-type id="shellyplusi4dc">
-		<label>ShellyPlus i4DC (SNSN-0D24X)</label>
+		<label>ShellyPlus i4DC</label>
 		<description>@text/thing-type.shelly.shellyplusi4dc.description</description>
 		<channel-groups>
 			<channel-group id="status1" typeId="ixChannel">
@@ -109,7 +109,7 @@
 
 
 	<thing-type id="shellypro1">
-		<label>ShellyPro 1 (SNSW-001P16EU")</label>
+		<label>ShellyPro 1</label>
 		<description>@text/thing-type.shelly.shellypro1.description</description>
 		<channel-groups>
 			<channel-group id="relay" typeId="relayChannel"/>
@@ -122,7 +122,7 @@
 	</thing-type>
 
 	<thing-type id="shellypro1pm">
-		<label>Shelly 1PM-Pro (SNSW-001P16EU)</label>
+		<label>ShellyPro 1PM</label>
 		<description>@text/thing-type.shelly.shellypro1pm.description</description>
 		<channel-groups>
 			<channel-group id="relay" typeId="relayChannel"/>
@@ -136,7 +136,7 @@
 	</thing-type>
 
 	<thing-type id="shellypro2-relay">
-		<label>ShellyPro 2 Relay (SNSW-002XE16EU)</label>
+		<label>ShellyPro 2 Relay</label>
 		<description>@text/thing-type.shelly.shellypro2-relay.description</description>
 		<channel-groups>
 			<channel-group id="relay1" typeId="relayChannel">
@@ -159,7 +159,7 @@
 	</thing-type>
 
 	<thing-type id="shellypro2pm-relay">
-		<label>ShellyPro 2PM Relay (SNSW-002PE16EU)</label>
+		<label>ShellyPro 2PM Relay</label>
 		<description>@text/thing-type.shelly.shellypro2pm-relay.description</description>
 		<channel-groups>
 			<channel-group id="relay1" typeId="relayChannel">
@@ -182,7 +182,7 @@
 	</thing-type>
 
 	<thing-type id="shellypro2pm-roller">
-		<label>ShellyPro 2PM Roller (SNSW-002PE16EU)</label>
+		<label>ShellyPro 2PM Roller</label>
 		<description>@text/thing-type.shelly.shellypro2pm-roller.description</description>
 		<category>Rollershutter</category>
 		<channel-groups>
@@ -196,7 +196,7 @@
 	</thing-type>
 
 	<thing-type id="shellypro3">
-		<label>ShellyPro 3 (SPSW-003XE16EU)</label>
+		<label>ShellyPro 3</label>
 		<description>@text/thing-type.shelly.shellypro3.description</description>
 
 		<channel-groups>
@@ -221,7 +221,7 @@
 
 
 	<thing-type id="shellypro4pm">
-		<label>ShellyPro 4PM (SPSW-004PE16EU)</label>
+		<label>ShellyPro 4PM</label>
 		<description>@text/thing-type.shelly.shellypro4pm.description</description>
 
 		<channel-groups>

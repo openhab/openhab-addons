@@ -1073,7 +1073,6 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     protected boolean isAuthorizationFailed(ShellyApiResult result) {
         if (result.isHttpAccessUnauthorized()) {
             // If the device is password protected the API doesn't provide settings to the device settings
-            logger.info("{}: {}", thingName, messages.get("init.protected"));
             setThingOffline(ThingStatusDetail.CONFIGURATION_ERROR, "offline.conf-error-access-denied");
             return true;
         }

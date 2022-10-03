@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="shellyplusht">
-		<label>ShellyPlus H&amp;T (SNSN-0013A)</label>
+		<label>ShellyPlus H&amp;T</label>
 		<description>@text/thing-type.shelly.shellypludht.description</description>
 		<category>Sensor</category>
 		<channel-groups>

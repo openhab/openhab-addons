@@ -187,7 +187,7 @@ The binding sets the following Thing status depending on the device status:
 | ONLINE         | ONLINE indicates that the device can be accessed and is responding properly. Battery powered devices also stay ONLINE when in sleep mode. The binding has an integrated watchdog timer supervising the device, see below. The Thing switches to status OFFLINE when some type of communication error occurs. | 
 | OFFLINE        | Communication with the device failed. Check the Thing status in the UI and openHAB's log for an indication of the error. Try restarting OH or deleting and re-discovering the Thing. You could also post to the community thread if the problem persists. |
 | CONFIG PENDING | CONFIG PENDING description |
-| ERROR: COMM    | ERROR: COMM descritpion |
+| ERROR: COMM    | ERROR: COMM description |
 
 `Battery powered devices:` 
 If the device is in sleep mode and can't be reached by the binding, the Thing will change into CONFIG_PENDING.
