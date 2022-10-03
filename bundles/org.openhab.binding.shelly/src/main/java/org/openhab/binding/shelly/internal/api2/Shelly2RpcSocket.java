@@ -202,8 +202,8 @@ public class Shelly2RpcSocket {
             if (session != null) {
                 Session s = session;
                 if (s.isOpen()) {
-                    logger.debug("{}: Disconnecting WebSocket ({} -> {})", thingName, session.getLocalAddress(),
-                            session.getRemoteAddress());
+                    logger.debug("{}: Disconnecting WebSocket ({} -> {})", thingName, s.getLocalAddress(),
+                            s.getRemoteAddress());
                     s.disconnect();
                 }
                 s.close(StatusCode.NORMAL, "Socket closed");
@@ -212,8 +212,7 @@ public class Shelly2RpcSocket {
             if (client.isStarted()) {
                 client.stop();
             }
-        } catch (/* IOException | */Exception e) {
-            Throwable cause = e.getCause();
+        } catch (Exception e) {
             if (e.getCause() instanceof InterruptedException) {
                 logger.debug("{}: Unable to close socket - interrupted", thingName); // e.g. device was rebooted
             } else {

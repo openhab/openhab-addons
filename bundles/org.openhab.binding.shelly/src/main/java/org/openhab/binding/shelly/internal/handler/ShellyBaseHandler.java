@@ -1515,9 +1515,6 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
     @Override
     public ShellyDeviceStats getStats() {
-        if (stats.protocolMessages > 0) {
-            int i = 1;
-        }
         return stats;
     }
 

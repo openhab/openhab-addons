@@ -299,8 +299,8 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     @Override
     public void onConnect(String deviceIp, boolean connected) {
         if (thing == null && thingTable != null) {
-            logger.debug("{}: Get thing from thingTable", thingName);
             thing = thingTable.getThing(deviceIp);
+            logger.debug("{}: Get thing from thingTable", thingName);
         }
     }
 
@@ -308,12 +308,13 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     public void onNotifyStatus(Shelly2RpcNotifyStatus message) {
         logger.debug("{}: NotifyStatus update received: {}", thingName, gson.toJson(message));
         try {
-            if (thing == null) {
+            ShellyThingInterface t = thing;
+            if (t == null) {
                 logger.debug("{}: No matching thing on NotifyStatus for {}, ignore (src={}, dst={}, discovery={})",
                         thingName, thingName, message.src, message.dst, discovery);
                 return;
             }
-            if (!thing.isThingOnline() && thing.getThingStatusDetail() != ThingStatusDetail.CONFIGURATION_PENDING) {
+            if (!t.isThingOnline() && t.getThingStatusDetail() != ThingStatusDetail.CONFIGURATION_PENDING) {
                 logger.debug("{}: Thing is not in online state/connectable, ignore NotifyStatus", thingName);
                 return;
             }
