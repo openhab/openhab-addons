@@ -405,9 +405,14 @@ public class HomekitCharacteristicFactory {
     // create method for characteristic
     private static StatusLowBatteryCharacteristic createStatusLowBatteryCharacteristic(HomekitTaggedItem taggedItem,
             HomekitAccessoryUpdater updater) {
+        BigDecimal lowThreshold = taggedItem.getConfiguration(HomekitTaggedItem.BATTERY_LOW_THRESHOLD,
+                BigDecimal.valueOf(20));
+        BooleanItemReader lowBatteryReader = new BooleanItemReader(taggedItem.getItem(),
+                taggedItem.isInverted() ? OnOffType.OFF : OnOffType.ON,
+                taggedItem.isInverted() ? OpenClosedType.CLOSED : OpenClosedType.OPEN, lowThreshold, true);
         return new StatusLowBatteryCharacteristic(
-                () -> getEnumFromItem(taggedItem, StatusLowBatteryEnum.NORMAL, StatusLowBatteryEnum.LOW,
-                        StatusLowBatteryEnum.NORMAL),
+                () -> CompletableFuture.completedFuture(
+                        lowBatteryReader.getValue() ? StatusLowBatteryEnum.LOW : StatusLowBatteryEnum.NORMAL),
                 getSubscriber(taggedItem, BATTERY_LOW_STATUS, updater),
                 getUnsubscriber(taggedItem, BATTERY_LOW_STATUS, updater));
     }

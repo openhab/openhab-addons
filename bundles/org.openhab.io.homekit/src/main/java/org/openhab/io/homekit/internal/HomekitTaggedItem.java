@@ -45,14 +45,15 @@ public class HomekitTaggedItem {
     private final Logger logger = LoggerFactory.getLogger(HomekitTaggedItem.class);
 
     /** configuration keywords at items level **/
-    public final static String MIN_VALUE = "minValue";
-    public final static String MAX_VALUE = "maxValue";
-    public final static String STEP = "step";
-    public final static String DIMMER_MODE = "dimmerMode";
     public final static String DELAY = "commandDelay";
-    public final static String INVERTED = "inverted";
-    public final static String PRIMARY_SERVICE = "primary";
+    public final static String DIMMER_MODE = "dimmerMode";
+    public static final String BATTERY_LOW_THRESHOLD = "lowThreshold";
     public final static String INSTANCE = "instance";
+    public final static String INVERTED = "inverted";
+    public final static String MAX_VALUE = "maxValue";
+    public final static String MIN_VALUE = "minValue";
+    public final static String PRIMARY_SERVICE = "primary";
+    public final static String STEP = "step";
 
     private static final Map<Integer, String> CREATED_ACCESSORY_IDS = new ConcurrentHashMap<>();
 
