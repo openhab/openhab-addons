@@ -261,6 +261,9 @@ public class ShellyManagerPage {
         properties.put(ATTRIBUTE_ACTIONS_SKIPPED,
                 profile.status.astats != null ? String.valueOf(profile.status.astats.skipped) : "n/a");
         properties.put(ATTRIBUTE_MAX_ITEMP, stats.maxInternalTemp > 0 ? stats.maxInternalTemp + " °C" : "n/a");
+        if (stats.maxInternalTemp == 0) {
+            properties.replace(CHANNEL_DEVST_ITEMP, "n/a");
+        }
 
         // Shelly H&T: When external power is connected the battery level is not valid
         if (!profile.isHT || (getInteger(profile.settings.externalPower) == 0)) {

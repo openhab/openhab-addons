@@ -84,8 +84,6 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
     private boolean updatesRequested = false;
     private int coiotPort = COIOT_PORT;
 
-    private long coiotMessages = 0;
-    private long coiotErrors = 0;
     private int lastSerial = -1;
     private String lastPayload = "";
     private Map<String, CoIotDescrBlk> blkMap = new LinkedHashMap<>();
@@ -164,7 +162,7 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
     @Override
     public void processResponse(@Nullable Response response) {
         if (response == null) {
-            coiotErrors++;
+            thingHandler.incProtErrors();
             return; // other device instance
         }
         ResponseCode code = response.getCode();
@@ -172,7 +170,7 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
             // error handling
             logger.debug("{}: Unknown Response Code {} received, payload={}", thingName, code,
                     response.getPayloadString());
-            coiotErrors++;
+            thingHandler.incProtErrors();
             return;
         }
 
@@ -205,14 +203,14 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
         String uri = "";
         int serial = -1;
         try {
-            coiotMessages++;
+            thingHandler.incProtMessages();
             if (logger.isDebugEnabled()) {
                 logger.debug("{}: CoIoT Message from {} (MID={}): {}", thingName,
                         response.getSourceContext().getPeerAddress(), response.getMID(), response.getPayloadString());
             }
             if (response.isCanceled() || response.isDuplicate() || response.isRejected()) {
                 logger.debug("{} ({}): Packet was canceled, rejected or is a duplicate -> discard", thingName, devId);
-                coiotErrors++;
+                thingHandler.incProtErrors();
                 return;
             }
 
@@ -285,7 +283,7 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
                 }
             } catch (ShellyApiException e) {
                 logger.debug("{}: Unable to process CoIoT message: {}", thingName, e.toString());
-                coiotErrors++;
+                thingHandler.incProtErrors();
             }
 
             if (!updatesRequested) {
@@ -296,7 +294,7 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
         } catch (JsonSyntaxException | IllegalArgumentException | NullPointerException e) {
             logger.debug("{}: Unable to process CoIoT Message for payload={}", thingName, payload, e);
             resetSerial();
-            coiotErrors++;
+            thingHandler.incProtErrors();
         }
     }
 
@@ -500,6 +498,7 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
                 // Aggregate Meter Data from different Coap updates
                 int i = 1;
                 double totalCurrent = 0.0;
+                @SuppressWarnings("unused")
                 double totalKWH = 0.0;
                 boolean updateMeter = false;
                 while (i <= thingHandler.getProfile().numMeters) {
@@ -661,14 +660,6 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
         }
         resetSerial();
         coiotBound = false;
-    }
-
-    public long getMessageCount() {
-        return coiotMessages;
-    }
-
-    public long getErrorCount() {
-        return coiotErrors;
     }
 
     public void dispose() {

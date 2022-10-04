@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="shelly"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="shellyplusht">
+		<label>ShellyPlus H&amp;T</label>
+		<description>@text/thing-type.shelly.shellypludht.description</description>
+		<category>Sensor</category>
+		<channel-groups>
+			<channel-group id="sensors" typeId="sensorData"/>
+			<channel-group id="battery" typeId="batteryStatus"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:battery-gen2"/>
+	</thing-type>
+
+</thing:thing-descriptions>
