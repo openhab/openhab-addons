@@ -31,6 +31,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.systeminfo.internal.SysteminfoThingTypeProvider;
 import org.openhab.binding.systeminfo.internal.model.DeviceNotFoundException;
 import org.openhab.binding.systeminfo.internal.model.SysteminfoInterface;
+import org.openhab.core.cache.ExpiringCache;
+import org.openhab.core.cache.ExpiringCacheMap;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PercentType;
@@ -113,6 +115,18 @@ public class SysteminfoHandler extends BaseThingHandler {
 
     private @Nullable ScheduledFuture<?> highPriorityTasks;
     private @Nullable ScheduledFuture<?> mediumPriorityTasks;
+
+    /**
+     * Caches for cpu process load and process load for a given pid. Using this cache limits the process load refresh
+     * interval to the minimum interval. Too frequent refreshes leads to inaccurate results. This could happen when the
+     * same process is tracked as current process and as a channel with pid parameter, or when the task interval is set
+     * too low.
+     */
+    private static final int MIN_PROCESS_LOAD_REFRESH_INTERVAL_MS = 2000;
+    private ExpiringCache<PercentType> cpuLoadCache = new ExpiringCache<>(MIN_PROCESS_LOAD_REFRESH_INTERVAL_MS,
+            () -> getSystemCpuLoad());
+    private ExpiringCacheMap<Integer, @Nullable DecimalType> processLoadCache = new ExpiringCacheMap<>(
+            MIN_PROCESS_LOAD_REFRESH_INTERVAL_MS);
 
     private final Logger logger = LoggerFactory.getLogger(SysteminfoHandler.class);
 
@@ -388,6 +402,8 @@ public class SysteminfoHandler extends BaseThingHandler {
         String channelID = channelUID.getId();
         int deviceIndex = getDeviceIndex(channelUID);
 
+        logger.trace("Getting state for channel {} with device index {}", channelID, deviceIndex);
+
         // The channelGroup or channel may contain deviceIndex. It must be deleted from the channelID, because otherwise
         // the switch will not find the correct method below.
         // All digits are deleted from the ID
@@ -424,7 +440,7 @@ public class SysteminfoHandler extends BaseThingHandler {
                     state = systeminfo.getSensorsFanSpeed(deviceIndex);
                     break;
                 case CHANNEL_CPU_LOAD:
-                    PercentType cpuLoad = systeminfo.getSystemCpuLoad();
+                    PercentType cpuLoad = cpuLoadCache.getValue();
                     state = (cpuLoad != null) ? new QuantityType<>(cpuLoad, Units.PERCENT) : null;
                     break;
                 case CHANNEL_CPU_LOAD_1:
@@ -537,7 +553,8 @@ public class SysteminfoHandler extends BaseThingHandler {
                     break;
                 case CHANNEL_PROCESS_LOAD:
                 case CHANNEL_CURRENT_PROCESS_LOAD:
-                    DecimalType processLoad = systeminfo.getProcessCpuUsage(deviceIndex);
+                    DecimalType processLoad = processLoadCache.putIfAbsentAndGet(deviceIndex,
+                            () -> getProcessCpuUsage(deviceIndex));
                     state = (processLoad != null) ? new QuantityType<>(processLoad, Units.PERCENT) : null;
                     break;
                 case CHANNEL_PROCESS_MEMORY:
@@ -566,6 +583,19 @@ public class SysteminfoHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.unexpected-error");
         }
         return state != null ? state : UnDefType.UNDEF;
+    }
+
+    private @Nullable PercentType getSystemCpuLoad() {
+        return systeminfo.getSystemCpuLoad();
+    }
+
+    private @Nullable DecimalType getProcessCpuUsage(int pid) {
+        try {
+            return systeminfo.getProcessCpuUsage(pid);
+        } catch (DeviceNotFoundException e) {
+            logger.warn("Process with pid {} does not exist", pid);
+            return null;
+        }
     }
 
     /**
