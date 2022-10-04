@@ -355,7 +355,7 @@ public class RuuviTagHandler extends AbstractMQTTThingHandler implements MqttMes
      * @param value value to update
      * @return whether the value was present
      */
-    private <T extends Quantity<T>> boolean updateStateIfLinked(ChannelUID channelUID, @Nullable Number value) {
+    private boolean updateStateIfLinked(ChannelUID channelUID, @Nullable Number value) {
         RuuviCachedNumberState<?> cache = (RuuviCachedNumberState<?>) channelStateByChannelUID.get(channelUID);
         if (cache == null) {
             // Invariant as channels should be initialized already
@@ -409,8 +409,7 @@ public class RuuviTagHandler extends AbstractMQTTThingHandler implements MqttMes
      * @param value value to update
      * @return whether the value was present
      */
-    private <T extends Quantity<T>> boolean updateDateTimeStateIfLinked(ChannelUID channelUID,
-            Optional<Instant> value) {
+    private boolean updateDateTimeStateIfLinked(ChannelUID channelUID, Optional<Instant> value) {
         RuuviCachedDateTimeState cache = (RuuviCachedDateTimeState) channelStateByChannelUID.get(channelUID);
         if (cache == null) {
             // Invariant as channels should be initialized already
