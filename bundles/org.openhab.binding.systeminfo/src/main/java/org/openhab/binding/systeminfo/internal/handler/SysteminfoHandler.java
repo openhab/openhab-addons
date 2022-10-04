@@ -136,7 +136,7 @@ public class SysteminfoHandler extends BaseThingHandler {
             }
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                    "Thing cannot be initialized!");
+                    "@text/offline.cannot-initialize");
         }
     }
 
@@ -563,8 +563,7 @@ public class SysteminfoHandler extends BaseThingHandler {
             logger.warn("No information for channel {} with device index: {}", channelID, deviceIndex);
         } catch (Exception e) {
             logger.debug("Unexpected error occurred while getting system information!", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Cannot get system info as result of unexpected error. Please try to restart the binding (remove and re-add the thing)!");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.unexpected-error");
         }
         return state != null ? state : UnDefType.UNDEF;
     }
