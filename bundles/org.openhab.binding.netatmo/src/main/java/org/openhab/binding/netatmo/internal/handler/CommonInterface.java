@@ -155,7 +155,9 @@ public interface CommonInterface {
                 finalReason = thingStatusReason;
             }
         }
-        if (!newData.isIgnoredForThingUpdate()) {
+        // Prevent turning ONLINE myself if in the meantime something turned account OFFLINE
+        ApiBridgeHandler accountHandler = getAccountHandler();
+        if (accountHandler != null && accountHandler.isConnected() && !newData.isIgnoredForThingUpdate()) {
             setThingStatus(finalReason == null ? ThingStatus.ONLINE : ThingStatus.OFFLINE, ThingStatusDetail.NONE,
                     finalReason);
         }
