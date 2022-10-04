@@ -166,13 +166,6 @@ public class TeslaVehicleHandler extends BaseThingHandler {
         Boolean useAdvancedStatesParam = (boolean) getConfig().get(TeslaBindingConstants.CONFIG_USEDADVANCEDSTATES);
         useAdvancedStates = useAdvancedStatesParam == null ? false : useAdvancedStatesParam;
 
-        logger.debug("Inactivity period set to {} minutes for thing {}.", inactivity, getThing().getUID());
-        logger.debug("Use drivestate for inactivity setting is {} for thing {}", useDriveState, getThing().getUID());
-        logger.debug("Use advanced modes is {} for thing {}", useAdvancedStatesParam, getThing().getUID());
-
-        // the streaming API seems to be broken - let's keep the code, if it comes back one day
-        // enableEvents = (boolean) getConfig().get(TeslaBindingConstants.CONFIG_ENABLEEVENTS);
-
         account = (TeslaAccountHandler) getBridge().getHandler();
         lock = new ReentrantLock();
         scheduler.execute(() -> queryVehicleAndUpdate());
@@ -848,13 +841,6 @@ public class TeslaVehicleHandler extends BaseThingHandler {
 
     protected void queryVehicleAndUpdate() {
         vehicle = queryVehicle();
-        /*
-         * This seems to be called by queryVehicle and is redundant?
-         * if (vehicle != null) {
-         * logger.debug("Calling parseAndUpdate from queryVehicleAndUpdate");
-         * parseAndUpdate("queryVehicle", null, vehicleJSON);
-         * }
-         */
     }
 
     public void parseAndUpdate(String request, String payLoad, String result) {
