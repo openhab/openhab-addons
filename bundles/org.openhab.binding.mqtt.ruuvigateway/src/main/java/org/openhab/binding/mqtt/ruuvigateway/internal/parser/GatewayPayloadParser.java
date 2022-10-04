@@ -137,13 +137,14 @@ public class GatewayPayloadParser {
      *
      * JSON MQTT payload sent by Ruuvi Gateway (intermediate representation).
      *
-     * This intermediate representation does not have all the typic yet set.
+     * This intermediate representation tries to match the low level JSON, making little data validation and conversion.
      *
      * Fields are descibed in https://docs.ruuvi.com/gw-data-formats/mqtt-time-stamped-data-from-bluetooth-sensors
      *
      * Fields are marked as nullable as GSON might apply nulls at runtime.
      *
      * @author Sami Salonen - Initial Contribution
+     * @see GatewayPayload Equivalent of this class but with additional data validation and typing
      *
      */
     private static class GatewayPayloadIntermediate {
