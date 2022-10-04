@@ -16,11 +16,11 @@ import static org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.*;
 
 import java.net.URI;
 import java.util.Collection;
-import java.util.stream.Collectors;
 
 import javax.ws.rs.core.UriBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureArea;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FloodLightMode;
 import org.openhab.binding.netatmo.internal.api.dto.Home;
@@ -62,25 +62,8 @@ public class SecurityApi extends RestManager {
         return true;
     }
 
-    public Collection<HomeEvent> getPersonEvents(String homeId, String personId) throws NetatmoException {
-        UriBuilder uriBuilder = getApiUriBuilder(SUB_PATH_GET_EVENTS, PARAM_HOME_ID, homeId, PARAM_PERSON_ID, personId,
-                PARAM_OFFSET, 1);
-        NAEventsDataResponse response = get(uriBuilder, NAEventsDataResponse.class);
-        BodyResponse<Home> body = response.getBody();
-        if (body != null) {
-            Home home = body.getElement();
-            if (home != null) {
-                return home.getEvents().stream().filter(event -> personId.equals(event.getPersonId()))
-                        .collect(Collectors.toList());
-            }
-        }
-        throw new NetatmoException("home should not be null");
-    }
-
-    public Collection<HomeEvent> getDeviceEvents(String homeId, String deviceId, String deviceType)
-            throws NetatmoException {
-        UriBuilder uriBuilder = getApiUriBuilder(SUB_PATH_GET_EVENTS, PARAM_HOME_ID, homeId, PARAM_DEVICE_ID, deviceId,
-                PARAM_DEVICES_TYPE, deviceType);
+    private Collection<HomeEvent> getEvents(@Nullable Object... params) throws NetatmoException {
+        UriBuilder uriBuilder = getApiUriBuilder(SUB_PATH_GET_EVENTS, params);
         BodyResponse<Home> body = get(uriBuilder, NAEventsDataResponse.class).getBody();
         if (body != null) {
             Home home = body.getElement();
@@ -89,6 +72,19 @@ public class SecurityApi extends RestManager {
             }
         }
         throw new NetatmoException("home should not be null");
+    }
+
+    public Collection<HomeEvent> getHomeEvents(String homeId) throws NetatmoException {
+        return getEvents(PARAM_HOME_ID, homeId);
+    }
+
+    public Collection<HomeEvent> getPersonEvents(String homeId, String personId) throws NetatmoException {
+        return getEvents(PARAM_HOME_ID, homeId, PARAM_PERSON_ID, personId, PARAM_OFFSET, 1);
+    }
+
+    public Collection<HomeEvent> getDeviceEvents(String homeId, String deviceId, String deviceType)
+            throws NetatmoException {
+        return getEvents(PARAM_HOME_ID, homeId, PARAM_DEVICE_ID, deviceId, PARAM_DEVICES_TYPE, deviceType);
     }
 
     public String ping(String vpnUrl) throws NetatmoException {
