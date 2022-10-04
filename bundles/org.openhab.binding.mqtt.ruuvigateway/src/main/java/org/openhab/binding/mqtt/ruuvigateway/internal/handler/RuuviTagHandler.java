@@ -25,6 +25,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
@@ -318,6 +319,9 @@ public class RuuviTagHandler extends AbstractMQTTThingHandler implements MqttMes
                 case CHANNEL_ID_GWMAC:
                     atLeastOneRuuviFieldPresent |= updateStringStateIfLinked(channelUID, parsed.gwMac);
                     break;
+                default:
+                    logger.error("BUG: We have unhandled channel: {}",
+                            thing.getChannels().stream().map(Channel::getUID).collect(Collectors.toList()));
             }
         }
         if (atLeastOneRuuviFieldPresent) {
