@@ -13,7 +13,6 @@
 package org.openhab.binding.knx.internal.i18n;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
@@ -41,7 +40,6 @@ public class KNXTranslationProviderTest {
     static final String KNOWN_DAY_NULL_VALUE = "null after sunset";
 
     @Test
-    @SuppressWarnings("null")
     public void testGetBeforeInit() {
         // NonNull, compilation error
         // assertNull(KNXTranslationProvider.I18N.get(null));
@@ -51,16 +49,14 @@ public class KNXTranslationProviderTest {
         assertEquals(UNKNOWN, KNXTranslationProvider.I18N.get(UNKNOWN, 5));
         assertEquals(UNKNOWN_NULL, KNXTranslationProvider.I18N.get(UNKNOWN_PATTERN, null, null));
         assertEquals(UNKNOWN_FIVE, KNXTranslationProvider.I18N.get(UNKNOWN_PATTERN, 5));
-        // KNXTranslationProvider.I18N.get(..., null) would cause a compiler warning (suppressed in this test)
-        assertNotNull(KNXTranslationProvider.I18N.get(UNKNOWN, null));
-        assertNotNull(KNXTranslationProvider.I18N.get(UNKNOWN_PATTERN, null));
+        // KNXTranslationProvider.I18N.get(..., null) would cause a compiler warning,
+        // but using a null object of a defined type, it is possible to invoke with null value
         String s = null;
         assertEquals(UNKNOWN, KNXTranslationProvider.I18N.get(UNKNOWN, s));
         assertEquals(UNKNOWN_NULL, KNXTranslationProvider.I18N.get(UNKNOWN_PATTERN, s));
     }
 
     @Test
-    @SuppressWarnings("null")
     public void testSetProvider() {
         // initial state, should not crash
         KNXTranslationProvider.I18N.setProvider(null, null);
@@ -74,9 +70,8 @@ public class KNXTranslationProviderTest {
         assertEquals(UNKNOWN, KNXTranslationProvider.I18N.get(UNKNOWN, 5));
         assertEquals(UNKNOWN_NULL, KNXTranslationProvider.I18N.get(UNKNOWN_PATTERN, null, null));
         assertEquals(UNKNOWN_FIVE, KNXTranslationProvider.I18N.get(UNKNOWN_PATTERN, 5));
-        // KNXTranslationProvider.I18N.get(..., null) would cause a compiler warning (suppressed in this test)
-        assertNotNull(KNXTranslationProvider.I18N.get(UNKNOWN, null));
-        assertNotNull(KNXTranslationProvider.I18N.get(UNKNOWN_PATTERN, null));
+        // KNXTranslationProvider.I18N.get(..., null) would cause a compiler warning,
+        // but using a null object of a defined type, it is possible to invoke with null value
         String s = null;
         assertEquals(UNKNOWN, KNXTranslationProvider.I18N.get(UNKNOWN, s));
         assertEquals(UNKNOWN_NULL, KNXTranslationProvider.I18N.get(UNKNOWN_PATTERN, s));

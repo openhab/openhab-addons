@@ -25,7 +25,7 @@ import org.osgi.framework.FrameworkUtil;
 /**
  * This class provides translations. It is a helper class for i18n / localization efforts.
  *
- * @implNote It is implemented as a static singelton, enforced by the single-element enum pattern.
+ * @implNote It is implemented as a static singleton, enforced by the single-element enum pattern.
  * @apiNote @set() must be called to provide tanslation service, otherwise all functions will return untranslated text.
  *          Thread safety is ensured.
  * @author Holger Friedrich - Initial contribution
@@ -80,10 +80,7 @@ public enum KNXTranslationProvider {
      * @return localized message in form <description (translated)> (<class name>, <e.getLocalizedMessage (not
      *         translated)>), empty string for null. May possibly change in further releases.
      */
-    public String getLocalizedException(final @Nullable Throwable e) {
-        if (e == null) {
-            return "";
-        }
+    public String getLocalizedException(final Throwable e) {
         StringBuffer res = new StringBuffer();
         final String exName = e.getClass().getSimpleName();
         final String key = "exception." + exName;
