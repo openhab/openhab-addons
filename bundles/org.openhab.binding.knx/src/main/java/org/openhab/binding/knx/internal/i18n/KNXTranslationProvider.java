@@ -58,18 +58,18 @@ public enum KNXTranslationProvider {
         final TranslationProvider translationProvider = this.translationProvider;
         final LocaleProvider localeProvider = this.localeProvider;
         if (translationProvider != null) {
-            // localeProvider might be null, but if not, getLoacle will return NonNull Locale
+            // localeProvider might be null, but if not, getLocale will return NonNull Locale
             // locale cannot be cached, as getLocale() will return different result once locale is changed by user
             final Locale locale = (localeProvider != null) ? localeProvider.getLocale() : Locale.getDefault();
             final String res = translationProvider.getText(bundle, text, text, locale, arguments);
             if (res != null)
                 return res;
         }
-        // translating not possibe, we still have the original text without any subsititutions
+        // translating not possible, we still have the original text without any subsititutions
         if ((arguments == null) || (arguments.length == 0)) {
             return text;
         }
-        // else execute pattern subsitution in untranslated text
+        // else execute pattern substitution in untranslated text
         return MessageFormat.format(text, arguments);
     }
 

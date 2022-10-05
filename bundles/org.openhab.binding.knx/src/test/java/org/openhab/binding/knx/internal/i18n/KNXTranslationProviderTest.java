@@ -41,6 +41,7 @@ public class KNXTranslationProviderTest {
     static final String KNOWN_DAY_NULL_VALUE = "null after sunset";
 
     @Test
+    @SuppressWarnings("null")
     public void testGetBeforeInit() {
         // NonNull, compilation error
         // assertNull(KNXTranslationProvider.I18N.get(null));
@@ -50,15 +51,16 @@ public class KNXTranslationProviderTest {
         assertEquals(UNKNOWN, KNXTranslationProvider.I18N.get(UNKNOWN, 5));
         assertEquals(UNKNOWN_NULL, KNXTranslationProvider.I18N.get(UNKNOWN_PATTERN, null, null));
         assertEquals(UNKNOWN_FIVE, KNXTranslationProvider.I18N.get(UNKNOWN_PATTERN, 5));
-        // this would cause a compiler warning as it cannot be casted to Object[]
-        // assertNotNull(KNXTranslationProvider.I18N.get(UNKNOWN, null));
-        // assertNotNull(KNXTranslationProvider.I18N.get(UNKNOWN_PATTERN, null));
+        // KNXTranslationProvider.I18N.get(..., null) would cause a compiler warning (suppressed in this test)
+        assertNotNull(KNXTranslationProvider.I18N.get(UNKNOWN, null));
+        assertNotNull(KNXTranslationProvider.I18N.get(UNKNOWN_PATTERN, null));
         String s = null;
         assertEquals(UNKNOWN, KNXTranslationProvider.I18N.get(UNKNOWN, s));
         assertEquals(UNKNOWN_NULL, KNXTranslationProvider.I18N.get(UNKNOWN_PATTERN, s));
     }
 
     @Test
+    @SuppressWarnings("null")
     public void testSetProvider() {
         // initial state, should not crash
         KNXTranslationProvider.I18N.setProvider(null, null);
@@ -72,9 +74,9 @@ public class KNXTranslationProviderTest {
         assertEquals(UNKNOWN, KNXTranslationProvider.I18N.get(UNKNOWN, 5));
         assertEquals(UNKNOWN_NULL, KNXTranslationProvider.I18N.get(UNKNOWN_PATTERN, null, null));
         assertEquals(UNKNOWN_FIVE, KNXTranslationProvider.I18N.get(UNKNOWN_PATTERN, 5));
-        // this would cause a compiler warning as it cannot be casted to Object[]
-        // assertNotNull(KNXTranslationProvider.I18N.get(UNKNOWN, null));
-        // assertNotNull(KNXTranslationProvider.I18N.get(UNKNOWN_PATTERN, null));
+        // KNXTranslationProvider.I18N.get(..., null) would cause a compiler warning (suppressed in this test)
+        assertNotNull(KNXTranslationProvider.I18N.get(UNKNOWN, null));
+        assertNotNull(KNXTranslationProvider.I18N.get(UNKNOWN_PATTERN, null));
         String s = null;
         assertEquals(UNKNOWN, KNXTranslationProvider.I18N.get(UNKNOWN, s));
         assertEquals(UNKNOWN_NULL, KNXTranslationProvider.I18N.get(UNKNOWN_PATTERN, s));
@@ -104,7 +106,7 @@ public class KNXTranslationProviderTest {
         final Exception se = new KNXLinkClosedException("connection closed", e);
         assertNotNull(KNXTranslationProvider.I18N.getLocalizedException(e));
         assertNotNull(KNXTranslationProvider.I18N.getLocalizedException(se));
-        // assertEquals("Exception", KNXTranslationProvider.I18N.getLocalizedException(e));
+        assertEquals("KNXException, error 1", KNXTranslationProvider.I18N.getLocalizedException(e));
 
         // use mockup classes with known dictionary
         KNXTranslationProvider.I18N.setProvider(new MockedLocaleProvider(), new MockedTranslationProvider());
