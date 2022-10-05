@@ -85,8 +85,8 @@ public class MeaterHandler extends BaseThingHandler {
         if (meaterProbe != null) {
             update(meaterProbe);
         } else {
-            logger.debug("Meater probe is offline!");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.communication-error.probe-offline");
         }
     }
 

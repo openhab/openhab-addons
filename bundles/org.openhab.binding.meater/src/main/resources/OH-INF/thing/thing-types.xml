@@ -6,17 +6,17 @@
 
 	<bridge-type id="meaterapi">
 		<label>MEATER Cloud REST API</label>
-		<description>This bridge represents the MEATER cloud REST API connector</description>
+		<description>This bridge represents the MEATER Cloud REST API connector</description>
 
 		<config-description>
 			<parameter name="email" type="text" required="true">
 				<label>Email</label>
-				<description>The email used to login to MEATER cloud account</description>
+				<description>The email used to login to MEATER Cloud account</description>
 			</parameter>
 			<parameter name="password" type="text" required="true">
 				<label>Password</label>
 				<context>password</context>
-				<description>The password used to login to MEATER cloud account</description>
+				<description>The password used to login to MEATER Cloud account</description>
 			</parameter>
 			<parameter name="refresh" type="integer" min="10" unit="s">
 				<label>Refresh Interval</label>
@@ -32,7 +32,7 @@
 		</supported-bridge-type-refs>
 
 		<label>MEATER Probe</label>
-		<description>This thing represents a MEATER probe</description>
+		<description>This thing represents a MEATER Probe</description>
 
 		<channels>
 			<channel id="internalTemperature" typeId="internalTemperature"/>
@@ -59,7 +59,7 @@
 		<config-description>
 			<parameter name="deviceId" type="text" required="true">
 				<label>Device Id</label>
-				<description>Unique id for your MEATER probe</description>
+				<description>Unique id for your MEATER Probe</description>
 			</parameter>
 		</config-description>
 
@@ -107,7 +107,7 @@
 	<channel-type id="internalTemperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Probe Internal Temperature</label>
-		<description>Internal temperature reading of MEATER probe</description>
+		<description>Internal temperature reading of MEATER Probe</description>
 		<category>Temperature</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -115,7 +115,7 @@
 	<channel-type id="ambientTemperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Probe Ambient Temperature</label>
-		<description>Ambient temperature reading of MEATER probe. If ambient is less than internal, ambient will equal
+		<description>Ambient temperature reading of MEATER Probe. If ambient is less than internal, ambient will equal
 			internal</description>
 		<category>Temperature</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>

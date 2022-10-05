@@ -26,6 +26,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.meater.internal.MeaterBridgeConfiguration;
+import org.openhab.binding.meater.internal.MeaterException;
 import org.openhab.binding.meater.internal.api.MeaterRestAPI;
 import org.openhab.binding.meater.internal.discovery.MeaterDiscoveryService;
 import org.openhab.binding.meater.internal.dto.MeaterProbeDTO;
@@ -85,12 +86,12 @@ public class MeaterBridgeHandler extends BaseBridgeHandler {
         } else {
             try {
                 this.api = meaterRestAPI;
+                api.login();
                 scheduler.execute(() -> {
                     updateStatus(ThingStatus.UNKNOWN);
                     startAutomaticRefresh();
-
                 });
-            } catch (RuntimeException e) {
+            } catch (MeaterException | RuntimeException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }

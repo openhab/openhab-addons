@@ -19,8 +19,10 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.HttpResponseException;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
@@ -70,9 +72,6 @@ public class MeaterRestAPI {
 
     public boolean refresh(Map<String, MeaterProbeDTO.Device> meaterProbeThings) {
         try {
-            // Login
-            login();
-
             MeaterProbeDTO dto = getDevices(MeaterProbeDTO.class);
             List<Device> devices = dto.getData().getDevices();
 
@@ -92,7 +91,7 @@ public class MeaterRestAPI {
         return false;
     }
 
-    private void login() throws MeaterException {
+    public void login() throws MeaterException {
         try {
             // Login
             String json = "{ \"email\": \"" + configuration.email + "\",  \"password\": \"" + configuration.password
@@ -102,10 +101,10 @@ public class MeaterRestAPI {
             request.header(HttpHeader.CONTENT_TYPE, JSON_CONTENT_TYPE);
             request.content(new StringContentProvider(json), JSON_CONTENT_TYPE);
 
-            logger.trace("HTTP POST Request {}.", request.toString());
+            logger.trace("{}.", request.toString());
 
             ContentResponse httpResponse = request.send();
-            if (httpResponse.getStatus() != HttpStatus.OK_200) {
+            if (!HttpStatus.isSuccess(httpResponse.getStatus())) {
                 throw new MeaterException("Failed to login " + httpResponse.getContentAsString());
             }
             // Fetch JWT
@@ -137,7 +136,8 @@ public class MeaterRestAPI {
                     logger.trace("API response: {}", content);
 
                     if (response.getStatus() == HttpStatus.UNAUTHORIZED_401) {
-                        logger.debug("getFromApi failed, HTTP status: {}", HttpStatus.UNAUTHORIZED_401);
+                        // This will currently not happen because "WWW-Authenticate" header is missing; see below.
+                        logger.debug("getFromApi failed, HTTP status: 401");
                         login();
                     } else if (!HttpStatus.isSuccess(response.getStatus())) {
                         logger.debug("getFromApi failed, HTTP status: {}", response.getStatus());
@@ -151,6 +151,19 @@ public class MeaterRestAPI {
             }
             throw new MeaterException("Failed to fetch from API!");
         } catch (ExecutionException e) {
+            Throwable cause = e.getCause();
+            if (cause != null && cause instanceof HttpResponseException) {
+                Response response = ((HttpResponseException) cause).getResponse();
+                if (response.getStatus() == HttpStatus.UNAUTHORIZED_401) {
+                    /*
+                     * When contextId is not valid, the service will respond with HTTP code 401 without
+                     * any "WWW-Authenticate" header, violating RFC 7235. Jetty will then throw
+                     * HttpResponseException. We need to handle this in order to attempt
+                     * reauthentication.
+                     */
+                    login();
+                }
+            }
             throw new MeaterException(e);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
