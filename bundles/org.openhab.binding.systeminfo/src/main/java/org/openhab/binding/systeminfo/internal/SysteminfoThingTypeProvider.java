@@ -21,14 +21,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingTypeProvider;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.type.ChannelGroupDefinition;
@@ -65,6 +68,8 @@ public class SysteminfoThingTypeProvider implements ThingTypeProvider {
     private final ChannelTypeRegistry channelTypeRegistry;
 
     private final Map<ThingTypeUID, ThingType> thingTypes = new HashMap<>();
+
+    private final Map<ThingUID, Map<String, Configuration>> thingChannelsConfig = new HashMap<>();
 
     @Activate
     public SysteminfoThingTypeProvider(@Reference ThingTypeRegistry thingTypeRegistry,
@@ -243,5 +248,32 @@ public class SysteminfoThingTypeProvider implements ThingTypeProvider {
             builder.withDescription(description);
         }
         return builder.build();
+    }
+
+    /**
+     * Store the channel configurations for a thing, to be able to restore them later when the thing handler for the
+     * same thing gets recreated with a new thing type. This is necessary because the
+     * {@link BaseThingHandler#changeThingType()} method reverts channel configurations to their defaults.
+     *
+     * @param thing
+     */
+    public void storeChannelsConfig(Thing thing) {
+        Map<String, Configuration> channelsConfig = thing.getChannels().stream()
+                .collect(Collectors.toMap(c -> c.getUID().getId(), c -> c.getConfiguration()));
+        thingChannelsConfig.put(thing.getUID(), channelsConfig);
+    }
+
+    /**
+     * Restore previous channel configurations of matching channels when the thing handler gets recreated with a new
+     * thing type. Return an empty map if no channel configurations where stored. Before returning previous channel
+     * configurations, clear the store, so they can only be retrieved ones, immediately after a thing type change. See
+     * also {@link #storeChannelsConfig(Thing)}.
+     *
+     * @param UID
+     * @return Map of ChannelId and Configuration for the channel
+     */
+    public Map<String, Configuration> restoreChannelsConfig(ThingUID UID) {
+        Map<String, Configuration> configs = thingChannelsConfig.remove(UID);
+        return configs != null ? configs : Collections.emptyMap();
     }
 }

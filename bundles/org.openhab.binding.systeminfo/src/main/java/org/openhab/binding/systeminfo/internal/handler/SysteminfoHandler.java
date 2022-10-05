@@ -141,9 +141,14 @@ public class SysteminfoHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
+        logger.trace("Initializing thing {} with thing type {}", thing.getUID().getId(),
+                thing.getThingTypeUID().getId());
+        restoreChannelsConfig(); // After a thing type change, previous channel configs will have been stored, and will
+                                 // be restored here.
         if (instantiateSysteminfoLibrary() && isConfigurationValid() && updateProperties()) {
-            if (!addDynamicChannels()) { // If there are new channel groups, the thing will get recreated and this
-                                         // handler will be disposed. Therefore do not do anything further here.
+            if (!addDynamicChannels()) { // If there are new channel groups, the thing will get recreated with a new
+                                         // thing type and this handler will be disposed. Therefore do not do anything
+                                         // further here.
                 groupChannelsByPriority();
                 scheduleUpdates();
                 updateStatus(ThingStatus.ONLINE);
@@ -291,6 +296,28 @@ public class SysteminfoHandler extends BaseThingHandler {
             }
         }
         return newChannels;
+    }
+
+    private void storeChannelsConfig() {
+        logger.trace("Storing channel configurations");
+        thingTypeProvider.storeChannelsConfig(thing);
+    }
+
+    private void restoreChannelsConfig() {
+        logger.trace("Restoring channel configurations");
+        Map<String, Configuration> channelsConfig = thingTypeProvider.restoreChannelsConfig(thing.getUID());
+        for (String channelId : channelsConfig.keySet()) {
+            Channel channel = thing.getChannel(channelId);
+            Configuration config = channelsConfig.get(channelId);
+            if (channel != null && config != null) {
+                Configuration currentConfig = channel.getConfiguration();
+                for (String param : config.keySet()) {
+                    if (isConfigurationKeyChanged(currentConfig, config, param)) {
+                        handleChannelConfigurationChange(channel, config, param);
+                    }
+                }
+            }
+        }
     }
 
     private void groupChannelsByPriority() {
@@ -696,9 +723,10 @@ public class SysteminfoHandler extends BaseThingHandler {
     }
 
     @Override
-    public void thingUpdated(Thing thing) {
+    public synchronized void thingUpdated(Thing thing) {
         logger.trace("About to update thing");
         boolean isChannelConfigChanged = false;
+
         List<Channel> channels = thing.getChannels();
 
         for (Channel channel : channels) {
@@ -742,6 +770,12 @@ public class SysteminfoHandler extends BaseThingHandler {
         logger.debug("Channel with UID {} has changed its {} from {} to {}", channel.getUID(), parameter, oldValue,
                 newValue);
         publishDataForChannel(channel.getUID());
+    }
+
+    @Override
+    protected void changeThingType(ThingTypeUID thingTypeUID, Configuration configuration) {
+        storeChannelsConfig();
+        super.changeThingType(thingTypeUID, configuration);
     }
 
     private void stopScheduledUpdates() {

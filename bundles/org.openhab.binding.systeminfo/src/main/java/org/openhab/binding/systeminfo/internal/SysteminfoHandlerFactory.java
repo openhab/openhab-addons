@@ -55,6 +55,8 @@ public class SysteminfoHandlerFactory extends BaseThingHandlerFactory {
             ThingTypeUID extThingTypeUID = new ThingTypeUID(BINDING_ID, THING_TYPE_COMPUTER_ID + extString);
             if (thingTypeProvider.getThingType(extThingTypeUID, null) == null) {
                 thingTypeProvider.createThingType(extThingTypeUID);
+                thingTypeProvider.storeChannelsConfig(thing); // Save the current channels configs, will be restored
+                                                              // after thing type change.
             }
             return new SysteminfoHandler(thing, thingTypeProvider, systeminfo);
         }
