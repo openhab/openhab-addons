@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.netatmo.internal.handler;
 
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
@@ -55,6 +57,7 @@ import org.openhab.binding.netatmo.internal.discovery.NetatmoDiscoveryService;
 import org.openhab.binding.netatmo.internal.servlet.GrantServlet;
 import org.openhab.binding.netatmo.internal.servlet.WebhookServlet;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -88,6 +91,8 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     private Map<Class<? extends RestManager>, RestManager> managers = new HashMap<>();
     private @Nullable WebhookServlet webHookServlet;
     private @Nullable GrantServlet grantServlet;
+    private int requestCount = -1;
+    private final ChannelUID requestCountChannelUID;
 
     public ApiBridgeHandler(Bridge bridge, HttpClient httpClient, NADeserializer deserializer,
             BindingConfiguration configuration, HttpService httpService) {
@@ -97,6 +102,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         this.httpClient = httpClient;
         this.deserializer = deserializer;
         this.httpService = httpService;
+        this.requestCountChannelUID = new ChannelUID(getThing().getUID(), GROUP_BRIDGE, CHANNEL_REQUEST_COUNT);
     }
 
     @Override
@@ -105,7 +111,10 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         updateStatus(ThingStatus.UNKNOWN);
         GrantServlet servlet = new GrantServlet(this, httpService);
         servlet.startListening();
-        this.grantServlet = servlet;
+        grantServlet = servlet;
+        scheduler.scheduleAtFixedRate(() -> {
+            requestCount = 0;
+        }, 0l, 1l, TimeUnit.HOURS);
         scheduler.execute(() -> openConnection(null, null));
     }
 
@@ -235,6 +244,8 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
                 }
             }
 
+            requestCount++;
+            updateState(requestCountChannelUID, new DecimalType(requestCount));
             ContentResponse response = request.send();
 
             Code statusCode = HttpStatus.getCode(response.getStatus());

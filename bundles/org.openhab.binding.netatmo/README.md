@@ -52,6 +52,13 @@ The Account bridge has the following configuration elements:
 
 (*) Strictly said this parameter is not mandatory at first run, until you grant your binding on Netatmo Connect. Once present, you'll not have to grant again.
 
+**Supported channels for the main indoor module:**
+
+| Channel Group | Channel Id    | Item Type | Description                                                          |
+|---------------|---------------|-----------|----------------------------------------------------------------------|
+| bridge        | request-count | Number    | Number of request transmitted to Netatmo API during the current hour |
+
+
 ### Configure the Bridge
 
 1. Complete the Netatmo Application Registration if you have not already done so, see above.
