@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Massimo Valla - Initial contribution
  * @author Andrea Conte - Energy management
- * @author Giovanni Fabiani - AAuxiliary message support
+ * @author Giovanni Fabiani - Auxiliary message support
  */
 @NonNullByDefault
 public class OwnIdTest {
@@ -66,7 +66,8 @@ public class OwnIdTest {
      * BUS CEN              51              51                  15.51           51
      * BUS CEN+             212             212                 25.212          212
      * BUS DryContact       399             399                 25.399          399
-     * BUS AUX                4               4                    9.4            4
+     * BUS AUX              4               4                   9.4             4
+     * BUS Scenario         05              05                  0.05            05
      */
 // @formatter:on
 
@@ -86,7 +87,9 @@ public class OwnIdTest {
         bus_cen(new WhereCEN("51"), Who.fromValue(15), "*15*31*51##", "51", "15.51", "51"),
         bus_cen_plus(new WhereCEN("212"), Who.fromValue(25), "*25*21#31*212##", "212", "25.212", "212"),
         bus_drycontact(new WhereCEN("399"), Who.fromValue(25), "*25*32#1*399##", "399", "25.399", "399"),
-        bus_aux(new WhereAuxiliary("4"), Who.fromValue(9), "*9*1*4##","4","9.4","4");
+        bus_aux(new WhereAuxiliary("4"), Who.fromValue(9), "*9*1*4##","4","9.4","4"),
+        bus_scenario(new WhereLightAutom("05"), Who.fromValue(0), "*0*2*05##","05","0.05","05");
+
 
 
         // @formatter:on
