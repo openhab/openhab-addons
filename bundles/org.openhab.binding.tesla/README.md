@@ -361,9 +361,11 @@ sitemap main label="Main"
             Mapview item=TeslaLocation height=10 icon=location
         }
     }
-}```
+}
+```
 
 demo.rule (for graphing online status in sitemap above)
+
 ```
 rule "Tesla State Changed"
     when
