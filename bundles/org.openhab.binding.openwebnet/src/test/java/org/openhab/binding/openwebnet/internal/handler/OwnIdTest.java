@@ -90,14 +90,8 @@ public class OwnIdTest {
         bus_cen_plus(new WhereCEN("212"), Who.fromValue(25), "*25*21#31*212##", "212", "25.212", "212"),
         bus_drycontact(new WhereCEN("399"), Who.fromValue(25), "*25*32#1*399##", "399", "25.399", "399"),
         bus_aux(new WhereAuxiliary("4"), Who.fromValue(9), "*9*1*4##","4","9.4","4"),
-<<<<<<< HEAD
-        bus_scenario(new WhereLightAutom("05"), Who.fromValue(0), "*0*2*05##","05","0.05","05");
-
-
-=======
+        bus_scenario(new WhereLightAutom("05"), Who.fromValue(0), "*0*2*05##","05","0.05","05"),
         bus_alarm_z(new WhereAlarm("#2"), Who.fromValue(5), "*#5*#2##", "2", "5.2", "2");
->>>>>>> 310d4cd20c ([openwebnet] added ownIdTest for Alarm)
-
         // @formatter:on
 
         private final Logger logger = LoggerFactory.getLogger(TEST.class);
