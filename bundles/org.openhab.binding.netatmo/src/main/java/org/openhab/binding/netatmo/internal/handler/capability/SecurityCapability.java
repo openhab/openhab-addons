@@ -145,7 +145,12 @@ class SecurityCapability extends RestCapability<SecurityApi> {
 
     public @Nullable String ping(String vpnUrl) {
         return getApi().map(api -> {
-            return api.ping(vpnUrl);
+            try {
+                return api.ping(vpnUrl);
+            } catch (NetatmoException e) {
+                logger.warn("Error pinging camera '{}' : {}", vpnUrl, e.getMessage());
+                return null;
+            }
         }).orElse(null);
     }
 
