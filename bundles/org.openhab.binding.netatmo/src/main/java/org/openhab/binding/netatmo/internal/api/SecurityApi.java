@@ -29,6 +29,8 @@ import org.openhab.binding.netatmo.internal.api.dto.HomeEvent;
 import org.openhab.binding.netatmo.internal.api.dto.HomeEvent.NAEventsDataResponse;
 import org.openhab.binding.netatmo.internal.api.dto.Ping;
 import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Base class for all Security related endpoints
@@ -37,6 +39,8 @@ import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
  */
 @NonNullByDefault
 public class SecurityApi extends RestManager {
+    private final Logger logger = LoggerFactory.getLogger(SecurityApi.class);
+
     public SecurityApi(ApiBridgeHandler apiClient) {
         super(apiClient, FeatureArea.SECURITY);
     }
@@ -97,6 +101,7 @@ public class SecurityApi extends RestManager {
         try {
             return get(uriBuilder, Ping.class).getStatus();
         } catch (NetatmoException e) {
+            logger.debug("Pinging {} failed : {}", vpnUrl, e.getMessage());
             return null;
         }
     }
