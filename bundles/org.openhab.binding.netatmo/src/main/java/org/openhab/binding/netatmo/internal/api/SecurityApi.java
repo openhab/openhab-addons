@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 import javax.ws.rs.core.UriBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureArea;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FloodLightMode;
 import org.openhab.binding.netatmo.internal.api.dto.Home;
@@ -28,6 +29,8 @@ import org.openhab.binding.netatmo.internal.api.dto.HomeEvent;
 import org.openhab.binding.netatmo.internal.api.dto.HomeEvent.NAEventsDataResponse;
 import org.openhab.binding.netatmo.internal.api.dto.Ping;
 import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Base class for all Security related endpoints
@@ -36,6 +39,8 @@ import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
  */
 @NonNullByDefault
 public class SecurityApi extends RestManager {
+    private final Logger logger = LoggerFactory.getLogger(SecurityApi.class);
+
     public SecurityApi(ApiBridgeHandler apiClient) {
         super(apiClient, FeatureArea.SECURITY);
     }
@@ -91,10 +96,14 @@ public class SecurityApi extends RestManager {
         throw new NetatmoException("home should not be null");
     }
 
-    public String ping(String vpnUrl) throws NetatmoException {
+    public @Nullable String ping(String vpnUrl) {
         UriBuilder uriBuilder = UriBuilder.fromUri(vpnUrl).path(PATH_COMMAND).path(SUB_PATH_PING);
-        Ping response = get(uriBuilder, Ping.class);
-        return response.getStatus();
+        try {
+            return get(uriBuilder, Ping.class).getStatus();
+        } catch (NetatmoException e) {
+            logger.debug("Pinging {} failed : {}", vpnUrl, e.getMessage());
+            return null;
+        }
     }
 
     public void changeStatus(String localCameraURL, boolean setOn) throws NetatmoException {
