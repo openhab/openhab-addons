@@ -156,6 +156,12 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
                 deviceWho = Who.ENERGY_MANAGEMENT;
                 break;
             }
+            case BASIC_SCENARIO: {
+                thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_BUS_SCENARIO;
+                thingLabel = OpenWebNetBindingConstants.THING_LABEL_BUS_SCENARIO;
+                deviceWho = Who.SCENARIO;
+                break;
+            }
             case SCENARIO_CONTROL: {
                 thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_BUS_CEN_SCENARIO_CONTROL;
                 thingLabel = OpenWebNetBindingConstants.THING_LABEL_BUS_CEN_SCENARIO_CONTROL;
