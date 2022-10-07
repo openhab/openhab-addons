@@ -39,6 +39,7 @@ import org.openhab.binding.netatmo.internal.handler.capability.RoomCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.SmokeCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.WeatherCapability;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.AirQualityChannelHelper;
+import org.openhab.binding.netatmo.internal.handler.channelhelper.ApiBridgeChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.CameraChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.EnergyChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.EventChannelHelper;
@@ -64,7 +65,7 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public enum ModuleType {
     UNKNOWN(FeatureArea.NONE, "", null, Set.of()),
-    ACCOUNT(FeatureArea.NONE, "", null, Set.of()),
+    ACCOUNT(FeatureArea.NONE, "", null, Set.of(), new ChannelGroup(ApiBridgeChannelHelper.class, GROUP_MONITORING)),
 
     HOME(FeatureArea.NONE, "NAHome", ACCOUNT,
             Set.of(DeviceCapability.class, HomeCapability.class, ChannelHelperCapability.class),

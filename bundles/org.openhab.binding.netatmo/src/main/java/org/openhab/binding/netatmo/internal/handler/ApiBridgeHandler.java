@@ -12,12 +12,17 @@
  */
 package org.openhab.binding.netatmo.internal.handler;
 
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.util.ArrayDeque;
 import java.util.Collection;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -55,6 +60,7 @@ import org.openhab.binding.netatmo.internal.discovery.NetatmoDiscoveryService;
 import org.openhab.binding.netatmo.internal.servlet.GrantServlet;
 import org.openhab.binding.netatmo.internal.servlet.WebhookServlet;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -88,6 +94,8 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     private Map<Class<? extends RestManager>, RestManager> managers = new HashMap<>();
     private @Nullable WebhookServlet webHookServlet;
     private @Nullable GrantServlet grantServlet;
+    private Deque<LocalDateTime> requestsTimestamps;
+    private final ChannelUID requestCountChannelUID;
 
     public ApiBridgeHandler(Bridge bridge, HttpClient httpClient, NADeserializer deserializer,
             BindingConfiguration configuration, HttpService httpService) {
@@ -97,6 +105,8 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         this.httpClient = httpClient;
         this.deserializer = deserializer;
         this.httpService = httpService;
+        this.requestsTimestamps = new ArrayDeque<>(200);
+        this.requestCountChannelUID = new ChannelUID(getThing().getUID(), GROUP_MONITORING, CHANNEL_REQUEST_COUNT);
     }
 
     @Override
@@ -105,7 +115,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         updateStatus(ThingStatus.UNKNOWN);
         GrantServlet servlet = new GrantServlet(this, httpService);
         servlet.startListening();
-        this.grantServlet = servlet;
+        grantServlet = servlet;
         scheduler.execute(() -> openConnection(null, null));
     }
 
@@ -235,6 +245,15 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
                 }
             }
 
+            if (isLinked(requestCountChannelUID)) {
+                LocalDateTime now = LocalDateTime.now();
+                LocalDateTime oneHourAgo = now.minusHours(1);
+                requestsTimestamps.addLast(now);
+                while (requestsTimestamps.getFirst().isBefore(oneHourAgo)) {
+                    requestsTimestamps.removeFirst();
+                }
+                updateState(requestCountChannelUID, new DecimalType(requestsTimestamps.size()));
+            }
             ContentResponse response = request.send();
 
             Code statusCode = HttpStatus.getCode(response.getStatus());
