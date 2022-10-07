@@ -85,13 +85,10 @@
 		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 
-	<channel-type id="request-count">
+	<channel-type id="request-count" advanced="true">
 		<item-type>Number</item-type>
 		<label>Request Count</label>
 		<description>Number of request transmitted to Netatmo API during the current hour.</description>
-		<tags>
-			<tag>Point</tag>
-		</tags>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 

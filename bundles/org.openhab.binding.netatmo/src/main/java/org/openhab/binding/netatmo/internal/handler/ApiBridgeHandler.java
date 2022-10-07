@@ -19,7 +19,10 @@ import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.util.ArrayDeque;
 import java.util.Collection;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -91,7 +94,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     private Map<Class<? extends RestManager>, RestManager> managers = new HashMap<>();
     private @Nullable WebhookServlet webHookServlet;
     private @Nullable GrantServlet grantServlet;
-    private int requestCount = -1;
+    private Deque<LocalDateTime> requestsTimestamps;
     private final ChannelUID requestCountChannelUID;
 
     public ApiBridgeHandler(Bridge bridge, HttpClient httpClient, NADeserializer deserializer,
@@ -102,7 +105,8 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         this.httpClient = httpClient;
         this.deserializer = deserializer;
         this.httpService = httpService;
-        this.requestCountChannelUID = new ChannelUID(getThing().getUID(), GROUP_BRIDGE, CHANNEL_REQUEST_COUNT);
+        this.requestsTimestamps = new ArrayDeque<>(200);
+        this.requestCountChannelUID = new ChannelUID(getThing().getUID(), GROUP_MONITORING, CHANNEL_REQUEST_COUNT);
     }
 
     @Override
@@ -112,9 +116,6 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         GrantServlet servlet = new GrantServlet(this, httpService);
         servlet.startListening();
         grantServlet = servlet;
-        scheduler.scheduleAtFixedRate(() -> {
-            requestCount = 0;
-        }, 0l, 1l, TimeUnit.HOURS);
         scheduler.execute(() -> openConnection(null, null));
     }
 
@@ -244,8 +245,15 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
                 }
             }
 
-            requestCount++;
-            updateState(requestCountChannelUID, new DecimalType(requestCount));
+            if (isLinked(requestCountChannelUID)) {
+                LocalDateTime now = LocalDateTime.now();
+                LocalDateTime oneHourAgo = now.minusHours(1);
+                requestsTimestamps.addLast(now);
+                while (requestsTimestamps.getFirst().isBefore(oneHourAgo)) {
+                    requestsTimestamps.removeFirst();
+                }
+                updateState(requestCountChannelUID, new DecimalType(requestsTimestamps.size()));
+            }
             ContentResponse response = request.send();
 
             Code statusCode = HttpStatus.getCode(response.getStatus());

@@ -58,7 +58,7 @@ public class NetatmoBindingConstants {
     public static final String GROUP_PROPERTIES = "properties";
     public static final String GROUP_SETPOINT = "setpoint";
     public static final String GROUP_LOCATION = "location";
-    public static final String GROUP_BRIDGE = "bridge";
+    public static final String GROUP_MONITORING = "monitoring";
 
     // Alternative extended groups
     public static final String OPTION_EXTENDED = "-extended";
