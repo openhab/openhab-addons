@@ -186,6 +186,13 @@
 			</channel>
 		</channels>
 	</channel-group-type>
+	
+    <channel-group-type id="door-tag">
+        <label>Door Tag</label>
+        <channels>
+            <channel id="status" typeId="door-status"/>
+        </channels>
+    </channel-group-type>
 
 	<channel-group-type id="presence">
 		<label>Presence Camera</label>
