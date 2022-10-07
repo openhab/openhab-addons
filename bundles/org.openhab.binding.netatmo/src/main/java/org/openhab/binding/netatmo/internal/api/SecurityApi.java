@@ -47,7 +47,7 @@ public class SecurityApi extends RestManager {
      */
     public void dropWebhook() throws NetatmoException {
         UriBuilder uriBuilder = getApiUriBuilder(SUB_PATH_DROP_WEBHOOK);
-        post(uriBuilder, ApiResponse.Ok.class, null, null);
+        post(uriBuilder, ApiResponse.Ok.class, null);
     }
 
     /**
@@ -58,7 +58,7 @@ public class SecurityApi extends RestManager {
      */
     public boolean addwebhook(URI uri) throws NetatmoException {
         UriBuilder uriBuilder = getApiUriBuilder(SUB_PATH_ADD_WEBHOOK, PARAM_URL, uri.toString());
-        post(uriBuilder, ApiResponse.Ok.class, null, null);
+        post(uriBuilder, ApiResponse.Ok.class, null);
         return true;
     }
 
@@ -96,18 +96,18 @@ public class SecurityApi extends RestManager {
     public void changeStatus(String localCameraURL, boolean setOn) throws NetatmoException {
         UriBuilder uriBuilder = UriBuilder.fromUri(localCameraURL).path(PATH_COMMAND).path(SUB_PATH_CHANGESTATUS);
         uriBuilder.queryParam(PARAM_STATUS, setOn ? "on" : "off");
-        post(uriBuilder, ApiResponse.Ok.class, null, null);
+        post(uriBuilder, ApiResponse.Ok.class, null);
     }
 
     public void changeFloodLightMode(String homeId, String cameraId, FloodLightMode mode) throws NetatmoException {
         UriBuilder uriBuilder = getAppUriBuilder(PATH_STATE);
         String payload = String.format(PAYLOAD_FLOODLIGHT, homeId, cameraId, mode.name().toLowerCase());
-        post(uriBuilder, ApiResponse.Ok.class, payload, "application/json;charset=utf-8");
+        post(uriBuilder, ApiResponse.Ok.class, payload);
     }
 
     public void setPersonAwayStatus(String homeId, String personId, boolean away) throws NetatmoException {
         UriBuilder uriBuilder = getAppUriBuilder(away ? SUB_PATH_PERSON_AWAY : SUB_PATH_PERSON_HOME);
         String payload = String.format(away ? PAYLOAD_PERSON_AWAY : PAYLOAD_PERSON_HOME, homeId, personId);
-        post(uriBuilder, ApiResponse.Ok.class, payload, "application/json;charset=utf-8");
+        post(uriBuilder, ApiResponse.Ok.class, payload);
     }
 }

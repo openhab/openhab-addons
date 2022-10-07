@@ -114,6 +114,10 @@ public class NetatmoConstants {
         }
     }
 
+    // Content types
+    public static final String CONTENT_APP_JSON = "application/json;charset=utf-8";
+    public static final String CONTENT_APP_FORM = "application/x-www-form-urlencoded;charset=UTF-8";
+
     // Netatmo API urls
     public static final String URL_API = "https://api.netatmo.com/";
     public static final String URL_APP = "https://app.netatmo.net/";
