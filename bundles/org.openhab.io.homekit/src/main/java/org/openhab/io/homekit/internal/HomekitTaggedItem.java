@@ -295,6 +295,12 @@ public class HomekitTaggedItem {
                 if ((value instanceof Double) && (defaultValue instanceof BigDecimal)) {
                     return (T) BigDecimal.valueOf(((Double) value).doubleValue());
                 }
+                if ((value instanceof Long) && (defaultValue instanceof Double)) {
+                    return (T) Double.valueOf((Long) value);
+                }
+                if ((value instanceof Long) && (defaultValue instanceof BigDecimal)) {
+                    return (T) BigDecimal.valueOf((Long) value);
+                }
             }
 
         }
