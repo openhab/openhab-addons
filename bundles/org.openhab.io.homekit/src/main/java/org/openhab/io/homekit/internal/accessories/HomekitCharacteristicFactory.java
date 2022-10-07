@@ -800,6 +800,11 @@ public class HomekitCharacteristicFactory {
     private static VOCDensityCharacteristic createVOCDensityCharacteristic(final HomekitTaggedItem taggedItem,
             HomekitAccessoryUpdater updater) {
         return new VOCDensityCharacteristic(
+                taggedItem.getConfigurationAsDouble(HomekitTaggedItem.MIN_VALUE,
+                        VOCDensityCharacteristic.DEFAULT_MIN_VALUE),
+                taggedItem.getConfigurationAsDouble(HomekitTaggedItem.MAX_VALUE,
+                        VOCDensityCharacteristic.DEFAULT_MAX_VALUE),
+                1.0,
                 getDoubleSupplier(taggedItem,
                         taggedItem.getConfigurationAsDouble(HomekitTaggedItem.MIN_VALUE,
                                 VOCDensityCharacteristic.DEFAULT_MIN_VALUE)),
