@@ -32,6 +32,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.State;
+import org.openhab.core.types.StateDescription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -283,7 +284,27 @@ public class HomekitTaggedItem {
     @SuppressWarnings({ "null", "unchecked" })
     public <T> T getConfiguration(String key, T defaultValue) {
         if (configuration != null) {
-            final @Nullable Object value = configuration.get(key);
+            @Nullable
+            Object value = configuration.get(key);
+            // No explicit configuration, but for certain things we can check the state description
+            // to see if the binding provided it
+            if (value == null) {
+                final @Nullable StateDescription stateDescription = getItem().getStateDescription();
+                if (stateDescription != null) {
+                    switch (key) {
+                        case MIN_VALUE:
+                            value = stateDescription.getMinimum();
+                            break;
+                        case MAX_VALUE:
+                            value = stateDescription.getMaximum();
+                            break;
+                        case STEP:
+                            value = stateDescription.getStep();
+                            break;
+                    }
+                }
+            }
+
             if (value != null) {
                 if (value.getClass().equals(defaultValue.getClass())) {
                     return (T) value;
