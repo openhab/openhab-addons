@@ -15,7 +15,6 @@ package org.openhab.binding.netatmo.internal.handler.capability;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -101,9 +100,8 @@ public class CameraCapability extends HomeSecurityThingCapability {
     public List<NAObject> updateReadings() {
         List<NAObject> result = new ArrayList<>();
         securityCapability.ifPresent(cap -> {
-            Collection<HomeEvent> events = cap.getDeviceEvents(handler.getId(), moduleType.apiName);
-            if (!events.isEmpty()) {
-                HomeEvent event = events.iterator().next();
+            HomeEvent event = cap.getLastDeviceEvent(handler.getId(), moduleType.apiName);
+            if (event != null) {
                 result.add(event);
                 result.addAll(event.getSubevents());
             }

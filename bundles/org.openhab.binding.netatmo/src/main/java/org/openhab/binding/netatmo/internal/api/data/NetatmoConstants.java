@@ -114,6 +114,10 @@ public class NetatmoConstants {
         }
     }
 
+    // Content types
+    public static final String CONTENT_APP_JSON = "application/json;charset=utf-8";
+    public static final String CONTENT_APP_FORM = "application/x-www-form-urlencoded;charset=UTF-8";
+
     // Netatmo API urls
     public static final String URL_API = "https://api.netatmo.com/";
     public static final String URL_APP = "https://app.netatmo.net/";
@@ -151,6 +155,11 @@ public class NetatmoConstants {
     public static final String PARAM_FAVORITES = "get_favorites";
     public static final String PARAM_STATUS = "status";
     public static final String PARAM_DEVICES_TYPE = "device_types";
+
+    // Payloads
+    public static final String PAYLOAD_FLOODLIGHT = "{\"home\": {\"id\":\"%s\",\"modules\": [ {\"id\":\"%s\",\"floodlight\":\"%s\"} ]}}";
+    public static final String PAYLOAD_PERSON_AWAY = "{\"home_id\":\"%s\",\"person_id\":\"%s\"}";
+    public static final String PAYLOAD_PERSON_HOME = "{\"home_id\":\"%s\",\"person_ids\":[\"%s\"]}";
 
     // Autentication process params
     public static final String PARAM_ERROR = "error";

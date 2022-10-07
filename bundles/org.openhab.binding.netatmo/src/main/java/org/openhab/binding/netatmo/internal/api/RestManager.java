@@ -52,14 +52,13 @@ public abstract class RestManager {
         return executeUri(uriBuilder, HttpMethod.GET, clazz, null, null);
     }
 
-    protected <T extends ApiResponse<?>> T post(UriBuilder uriBuilder, Class<T> clazz, @Nullable String payload,
-            @Nullable String contentType) throws NetatmoException {
-        return executeUri(uriBuilder, HttpMethod.POST, clazz, payload, contentType);
+    protected <T extends ApiResponse<?>> T post(UriBuilder uriBuilder, Class<T> clazz, @Nullable String payload)
+            throws NetatmoException {
+        return executeUri(uriBuilder, HttpMethod.POST, clazz, payload, payload == null ? null : CONTENT_APP_JSON);
     }
 
     protected <T> T post(URI uri, Class<T> clazz, Map<String, String> entries) throws NetatmoException {
-        return apiBridge.executeUri(uri, POST, clazz, toRequest(entries),
-                "application/x-www-form-urlencoded;charset=UTF-8", 3);
+        return apiBridge.executeUri(uri, POST, clazz, toRequest(entries), CONTENT_APP_FORM, 3);
     }
 
     private <T extends ApiResponse<?>> T executeUri(UriBuilder uriBuilder, HttpMethod method, Class<T> clazz,

@@ -16,7 +16,6 @@ import static org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.*;
 
 import java.net.URI;
 import java.util.Collection;
-import java.util.stream.Collectors;
 
 import javax.ws.rs.core.UriBuilder;
 
@@ -52,7 +51,7 @@ public class SecurityApi extends RestManager {
      */
     public void dropWebhook() throws NetatmoException {
         UriBuilder uriBuilder = getApiUriBuilder(SUB_PATH_DROP_WEBHOOK);
-        post(uriBuilder, ApiResponse.Ok.class, null, null);
+        post(uriBuilder, ApiResponse.Ok.class, null);
     }
 
     /**
@@ -63,29 +62,12 @@ public class SecurityApi extends RestManager {
      */
     public boolean addwebhook(URI uri) throws NetatmoException {
         UriBuilder uriBuilder = getApiUriBuilder(SUB_PATH_ADD_WEBHOOK, PARAM_URL, uri.toString());
-        post(uriBuilder, ApiResponse.Ok.class, null, null);
+        post(uriBuilder, ApiResponse.Ok.class, null);
         return true;
     }
 
-    public Collection<HomeEvent> getPersonEvents(String homeId, String personId) throws NetatmoException {
-        UriBuilder uriBuilder = getApiUriBuilder(SUB_PATH_GET_EVENTS, PARAM_HOME_ID, homeId, PARAM_PERSON_ID, personId,
-                PARAM_OFFSET, 1);
-        NAEventsDataResponse response = get(uriBuilder, NAEventsDataResponse.class);
-        BodyResponse<Home> body = response.getBody();
-        if (body != null) {
-            Home home = body.getElement();
-            if (home != null) {
-                return home.getEvents().stream().filter(event -> personId.equals(event.getPersonId()))
-                        .collect(Collectors.toList());
-            }
-        }
-        throw new NetatmoException("home should not be null");
-    }
-
-    public Collection<HomeEvent> getDeviceEvents(String homeId, String deviceId, String deviceType)
-            throws NetatmoException {
-        UriBuilder uriBuilder = getApiUriBuilder(SUB_PATH_GET_EVENTS, PARAM_HOME_ID, homeId, PARAM_DEVICE_ID, deviceId,
-                PARAM_DEVICES_TYPE, deviceType);
+    private Collection<HomeEvent> getEvents(@Nullable Object... params) throws NetatmoException {
+        UriBuilder uriBuilder = getApiUriBuilder(SUB_PATH_GET_EVENTS, params);
         BodyResponse<Home> body = get(uriBuilder, NAEventsDataResponse.class).getBody();
         if (body != null) {
             Home home = body.getElement();
@@ -94,6 +76,19 @@ public class SecurityApi extends RestManager {
             }
         }
         throw new NetatmoException("home should not be null");
+    }
+
+    public Collection<HomeEvent> getHomeEvents(String homeId) throws NetatmoException {
+        return getEvents(PARAM_HOME_ID, homeId);
+    }
+
+    public Collection<HomeEvent> getPersonEvents(String homeId, String personId) throws NetatmoException {
+        return getEvents(PARAM_HOME_ID, homeId, PARAM_PERSON_ID, personId, PARAM_OFFSET, 1);
+    }
+
+    public Collection<HomeEvent> getDeviceEvents(String homeId, String deviceId, String deviceType)
+            throws NetatmoException {
+        return getEvents(PARAM_HOME_ID, homeId, PARAM_DEVICE_ID, deviceId, PARAM_DEVICES_TYPE, deviceType);
     }
 
     public @Nullable String ping(String vpnUrl) {
@@ -109,22 +104,18 @@ public class SecurityApi extends RestManager {
     public void changeStatus(String localCameraURL, boolean setOn) throws NetatmoException {
         UriBuilder uriBuilder = UriBuilder.fromUri(localCameraURL).path(PATH_COMMAND).path(SUB_PATH_CHANGESTATUS);
         uriBuilder.queryParam(PARAM_STATUS, setOn ? "on" : "off");
-        post(uriBuilder, ApiResponse.Ok.class, null, null);
+        post(uriBuilder, ApiResponse.Ok.class, null);
     }
 
     public void changeFloodLightMode(String homeId, String cameraId, FloodLightMode mode) throws NetatmoException {
         UriBuilder uriBuilder = getAppUriBuilder(PATH_STATE);
-        String payload = String.format(
-                "{\"home\": {\"id\":\"%s\",\"modules\": [ {\"id\":\"%s\",\"floodlight\":\"%s\"} ]}}", homeId, cameraId,
-                mode.name().toLowerCase());
-        post(uriBuilder, ApiResponse.Ok.class, payload, "application/json;charset=utf-8");
+        String payload = String.format(PAYLOAD_FLOODLIGHT, homeId, cameraId, mode.name().toLowerCase());
+        post(uriBuilder, ApiResponse.Ok.class, payload);
     }
 
     public void setPersonAwayStatus(String homeId, String personId, boolean away) throws NetatmoException {
         UriBuilder uriBuilder = getAppUriBuilder(away ? SUB_PATH_PERSON_AWAY : SUB_PATH_PERSON_HOME);
-        String payload = String.format(
-                away ? "{\"home_id\":\"%s\",\"person_id\":\"%s\"}" : "{\"home_id\":\"%s\",\"person_ids\":[\"%s\"]}",
-                homeId, personId);
-        post(uriBuilder, ApiResponse.Ok.class, payload, "application/json;charset=utf-8");
+        String payload = String.format(away ? PAYLOAD_PERSON_AWAY : PAYLOAD_PERSON_HOME, homeId, personId);
+        post(uriBuilder, ApiResponse.Ok.class, payload);
     }
 }
