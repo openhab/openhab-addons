@@ -83,14 +83,17 @@ public class SecurityApi extends RestManager {
 
     public List<HomeEvent> getHomeEvents(String homeId, @Nullable ZonedDateTime oldestKnown) throws NetatmoException {
         List<HomeEvent> events = getEvents(PARAM_HOME_ID, homeId);
-        if (oldestKnown != null) { // we have to rewind to get the latest event just after oldestKnown
-            HomeEvent oldestRetrieved = events.get(events.size() - 1);
-            while (oldestRetrieved.getTime().isAfter(oldestKnown)) {
-                events.addAll(getEvents(PARAM_HOME_ID, homeId, PARAM_EVENT_ID, oldestRetrieved.getId()));
-                oldestRetrieved = events.get(events.size() - 1);
-            }
+
+        // we have to rewind to the latest event just after oldestKnown
+        HomeEvent oldestRetrieved = events.get(events.size() - 1);
+        while (oldestKnown != null && oldestRetrieved.getTime().isAfter(oldestKnown)) {
+            events.addAll(getEvents(PARAM_HOME_ID, homeId, PARAM_EVENT_ID, oldestRetrieved.getId()));
+            oldestRetrieved = events.get(events.size() - 1);
         }
-        return events.stream().sorted(Comparator.comparing(HomeEvent::getTime).reversed()).collect(Collectors.toList());
+
+        // Remove unneeded events being before oldestKnown
+        return events.stream().filter(event -> oldestKnown == null || event.getTime().isAfter(oldestKnown))
+                .sorted(Comparator.comparing(HomeEvent::getTime).reversed()).collect(Collectors.toList());
     }
 
     public List<HomeEvent> getPersonEvents(String homeId, String personId) throws NetatmoException {
