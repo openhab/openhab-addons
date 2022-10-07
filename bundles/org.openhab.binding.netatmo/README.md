@@ -609,7 +609,7 @@ Note: live feeds either locally or via VPN are not available in Netatmo API.
 
 | Channel Group | Channel ID        | Item Type    | Read/Write | Description                                          |
 |---------------|-------------------|--------------|------------|------------------------------------------------------|
-| tag           | status            | String       | Read-only  | Status of the siren, if silent or emitting an alarm  |
+| tag           | status            | Contact      | Read-only  | Status of tag (OPEN,CLOSED)                          |
 | signal        | strength          | Number       | Read-only  | Signal strength (0 for no signal, 1 for weak...)     |
 | signal        | value             | Number:Power | Read-only  | Signal strength in dBm                               |
 | timestamp     | last-seen         | DateTime     | Read-only  | Last time the module reported its presence           |
