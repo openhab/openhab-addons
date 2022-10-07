@@ -187,7 +187,7 @@
 		</channels>
 	</channel-group-type>
 	
-    <channel-group-type id="door-tag">
+    <channel-group-type id="tag">
         <label>Door Tag</label>
         <channels>
             <channel id="status" typeId="door-status"/>

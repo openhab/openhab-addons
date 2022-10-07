@@ -88,7 +88,7 @@ Now that you have got your bridge _ONLINE_ you can now start a scan with the bin
 | thermostat      | Thing  | NATherm1       | The Thermostat device placed in a given room.                                                        | id                                                                        |
 | room            | Thing  | NARoom         | A room in your house.                                                                                | id                                                                        |
 | valve           | Thing  | NRV            | A valve controlling a radiator.                                                                      | id                                                                        |
-| door-tag        | Thing  | NACamDoorTag   | A door / window sensor                                                                               | id                                                                        |
+| tag             | Thing  | NACamDoorTag   | A door / window sensor                                                                               | id                                                                        |
 
 
 
@@ -609,6 +609,7 @@ Note: live feeds either locally or via VPN are not available in Netatmo API.
 
 | Channel Group | Channel ID        | Item Type    | Read/Write | Description                                          |
 |---------------|-------------------|--------------|------------|------------------------------------------------------|
+| tag           | status            | String       | Read-only  | Status of the siren, if silent or emitting an alarm  |
 | signal        | strength          | Number       | Read-only  | Signal strength (0 for no signal, 1 for weak...)     |
 | signal        | value             | Number:Power | Read-only  | Signal strength in dBm                               |
 | timestamp     | last-seen         | DateTime     | Read-only  | Last time the module reported its presence           |

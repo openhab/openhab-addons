@@ -80,8 +80,8 @@ public enum ModuleType {
             ChannelGroup.SIGNAL, ChannelGroup.EVENT,
             new ChannelGroup(CameraChannelHelper.class, GROUP_CAM_STATUS, GROUP_CAM_LIVE)),
 
-    DOOR_TAG(FeatureArea.SECURITY, "NACamDoorTag", WELCOME, Set.of(ChannelHelperCapability.class), ChannelGroup.SIGNAL,
-            ChannelGroup.BATTERY, ChannelGroup.TIMESTAMP, new ChannelGroup(DoorTagChannelHelper.class, GROUP_DOOR_TAG)),
+    TAG(FeatureArea.SECURITY, "NACamDoorTag", WELCOME, Set.of(ChannelHelperCapability.class), ChannelGroup.SIGNAL,
+            ChannelGroup.BATTERY, ChannelGroup.TIMESTAMP, new ChannelGroup(DoorTagChannelHelper.class, GROUP_TAG)),
 
     SIREN(FeatureArea.SECURITY, "NIS", WELCOME, Set.of(ChannelHelperCapability.class), ChannelGroup.SIGNAL,
             ChannelGroup.BATTERY, ChannelGroup.TIMESTAMP, new ChannelGroup(SirenChannelHelper.class, GROUP_SIREN)),
