@@ -1406,7 +1406,7 @@ public class IpCameraHandler extends BaseThingHandler {
         }
     }
 
-    boolean streamIsStopped(String url) {
+    private boolean streamIsStopped(String url) {
         ChannelTracking channelTracking = channelTrackingMap.get(url);
         if (channelTracking != null) {
             if (channelTracking.getChannel().isActive()) {
@@ -1732,7 +1732,9 @@ public class IpCameraHandler extends BaseThingHandler {
             localFfmpeg.stopConverting();
             ffmpegSnapshot = null;
         }
-        onvifCamera.disconnect();
+        if (!thing.getThingTypeUID().getId().equals(GENERIC_THING)) {// generic cameras do not have ONVIF support
+            onvifCamera.disconnect();
+        }
         openChannels.close();
     }
 
