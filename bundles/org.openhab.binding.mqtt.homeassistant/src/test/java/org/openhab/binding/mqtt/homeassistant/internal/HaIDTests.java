@@ -19,12 +19,14 @@ import static org.hamcrest.core.IsIterableContaining.hasItem;
 import java.util.Collection;
 import java.util.Collections;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.core.config.core.Configuration;
 
 /**
  * @author Jochen Klein - Initial contribution
  */
+@NonNullByDefault
 public class HaIDTests {
 
     @Test

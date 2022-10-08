@@ -16,9 +16,15 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.OffsetDateTime;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tado.internal.TadoBindingConstants.HvacMode;
 import org.openhab.binding.tado.internal.TadoBindingConstants.OperationMode;
 import org.openhab.binding.tado.internal.TadoBindingConstants.TemperatureUnit;
+import org.openhab.binding.tado.internal.api.model.ACFanLevel;
+import org.openhab.binding.tado.internal.api.model.ACHorizontalSwing;
+import org.openhab.binding.tado.internal.api.model.ACVerticalSwing;
+import org.openhab.binding.tado.internal.api.model.AcFanSpeed;
 import org.openhab.binding.tado.internal.api.model.AcPowerDataPoint;
 import org.openhab.binding.tado.internal.api.model.ActivityDataPoints;
 import org.openhab.binding.tado.internal.api.model.CoolingZoneSetting;
@@ -27,6 +33,7 @@ import org.openhab.binding.tado.internal.api.model.HeatingZoneSetting;
 import org.openhab.binding.tado.internal.api.model.HotWaterZoneSetting;
 import org.openhab.binding.tado.internal.api.model.Overlay;
 import org.openhab.binding.tado.internal.api.model.OverlayTerminationConditionType;
+import org.openhab.binding.tado.internal.api.model.PercentageDataPoint;
 import org.openhab.binding.tado.internal.api.model.Power;
 import org.openhab.binding.tado.internal.api.model.SensorDataPoints;
 import org.openhab.binding.tado.internal.api.model.TadoSystemType;
@@ -51,9 +58,10 @@ import org.openhab.core.types.UnDefType;
  * @author Andrew Fiddian-Green - Added Low Battery Alarm, A/C Power and Open Window channels
  *
  */
+@NonNullByDefault
 public class TadoZoneStateAdapter {
-    private ZoneState zoneState;
-    private TemperatureUnit temperatureUnit;
+    private final ZoneState zoneState;
+    private final TemperatureUnit temperatureUnit;
 
     public TadoZoneStateAdapter(ZoneState zoneState, TemperatureUnit temperatureUnit) {
         this.zoneState = zoneState;
@@ -65,10 +73,9 @@ public class TadoZoneStateAdapter {
         return toTemperatureState(sensorDataPoints.getInsideTemperature(), temperatureUnit);
     }
 
-    public DecimalType getHumidity() {
-        SensorDataPoints sensorDataPoints = zoneState.getSensorDataPoints();
-        return sensorDataPoints.getHumidity() != null ? toDecimalType(sensorDataPoints.getHumidity().getPercentage())
-                : null;
+    public State getHumidity() {
+        PercentageDataPoint humidity = zoneState.getSensorDataPoints().getHumidity();
+        return humidity != null ? toDecimalType(humidity.getPercentage()) : UnDefType.UNDEF;
     }
 
     public DecimalType getHeatingPower() {
@@ -77,7 +84,7 @@ public class TadoZoneStateAdapter {
                 : DecimalType.ZERO;
     }
 
-    public OnOffType getAcPower() {
+    public State getAcPower() {
         ActivityDataPoints dataPoints = zoneState.getActivityDataPoints();
         AcPowerDataPoint acPower = dataPoints.getAcPower();
         if (acPower != null) {
@@ -86,7 +93,7 @@ public class TadoZoneStateAdapter {
                 return OnOffType.from(acPowerValue);
             }
         }
-        return null;
+        return UnDefType.UNDEF;
     }
 
     public StringType getMode() {
@@ -102,6 +109,9 @@ public class TadoZoneStateAdapter {
     }
 
     public State getTargetTemperature() {
+        if (!isPowerOn()) {
+            return UnDefType.UNDEF;
+        }
         switch (zoneState.getSetting().getType()) {
             case HEATING:
                 return toTemperatureState(((HeatingZoneSetting) zoneState.getSetting()).getTemperature(),
@@ -119,27 +129,42 @@ public class TadoZoneStateAdapter {
 
     public State getFanSpeed() {
         if (zoneState.getSetting().getType() == TadoSystemType.AIR_CONDITIONING) {
-            CoolingZoneSetting setting = (CoolingZoneSetting) zoneState.getSetting();
-            return setting.getFanSpeed() != null ? StringType.valueOf(setting.getFanSpeed().getValue())
-                    : UnDefType.NULL;
-        } else {
-            return UnDefType.UNDEF;
+            AcFanSpeed result = ((CoolingZoneSetting) zoneState.getSetting()).getFanSpeed();
+            return result != null ? StringType.valueOf(result.getValue()) : UnDefType.NULL;
         }
+        return UnDefType.UNDEF;
     }
 
     public State getSwing() {
         if (zoneState.getSetting().getType() == TadoSystemType.AIR_CONDITIONING) {
-            CoolingZoneSetting setting = (CoolingZoneSetting) zoneState.getSetting();
-            if (setting.getSwing() == null) {
-                return UnDefType.NULL;
-            } else if (setting.getSwing() == Power.ON) {
-                return OnOffType.ON;
-            } else {
-                return OnOffType.OFF;
-            }
-        } else {
-            return UnDefType.UNDEF;
+            Power result = ((CoolingZoneSetting) zoneState.getSetting()).getSwing();
+            return result != null ? OnOffType.from(result == Power.ON) : UnDefType.NULL;
         }
+        return UnDefType.UNDEF;
+    }
+
+    public State getFanLevel() {
+        if (zoneState.getSetting().getType() == TadoSystemType.AIR_CONDITIONING) {
+            ACFanLevel result = ((CoolingZoneSetting) zoneState.getSetting()).getFanLevel();
+            return result != null ? StringType.valueOf(result.getValue()) : UnDefType.NULL;
+        }
+        return UnDefType.UNDEF;
+    }
+
+    public State getHorizontalSwing() {
+        if (zoneState.getSetting().getType() == TadoSystemType.AIR_CONDITIONING) {
+            ACHorizontalSwing result = ((CoolingZoneSetting) zoneState.getSetting()).getHorizontalSwing();
+            return result != null ? StringType.valueOf(result.getValue()) : UnDefType.NULL;
+        }
+        return UnDefType.UNDEF;
+    }
+
+    public State getVerticalSwing() {
+        if (zoneState.getSetting().getType() == TadoSystemType.AIR_CONDITIONING) {
+            ACVerticalSwing result = ((CoolingZoneSetting) zoneState.getSetting()).getVerticalSwing();
+            return result != null ? StringType.valueOf(result.getValue()) : UnDefType.NULL;
+        }
+        return UnDefType.UNDEF;
     }
 
     public StringType getOperationMode() {
@@ -208,21 +233,20 @@ public class TadoZoneStateAdapter {
         return new DateTimeType(offsetDateTime.toZonedDateTime());
     }
 
-    private static State toTemperatureState(TemperatureObject temperature, TemperatureUnit temperatureUnit) {
-        if (temperature == null) {
-            return UnDefType.NULL;
+    private static State toTemperatureState(@Nullable TemperatureObject temperature, TemperatureUnit temperatureUnit) {
+        if (temperature == null || (temperature.getCelsius() == null && temperature.getFahrenheit() == null)) {
+            return UnDefType.UNDEF;
         }
-
         return temperatureUnit == TemperatureUnit.FAHRENHEIT
                 ? new QuantityType<>(temperature.getFahrenheit(), ImperialUnits.FAHRENHEIT)
                 : new QuantityType<>(temperature.getCelsius(), SIUnits.CELSIUS);
     }
 
-    private static State toTemperatureState(TemperatureDataPoint temperature, TemperatureUnit temperatureUnit) {
-        if (temperature == null) {
-            return UnDefType.NULL;
+    private static State toTemperatureState(@Nullable TemperatureDataPoint temperature,
+            TemperatureUnit temperatureUnit) {
+        if (temperature == null || (temperature.getCelsius() == null && temperature.getFahrenheit() == null)) {
+            return UnDefType.UNDEF;
         }
-
         return temperatureUnit == TemperatureUnit.FAHRENHEIT
                 ? new QuantityType<>(temperature.getFahrenheit(), ImperialUnits.FAHRENHEIT)
                 : new QuantityType<>(temperature.getCelsius(), SIUnits.CELSIUS);
@@ -234,5 +258,13 @@ public class TadoZoneStateAdapter {
             return OnOffType.from(openWindowDetected);
         }
         return OnOffType.OFF;
+    }
+
+    public State getLight() {
+        if (zoneState.getSetting().getType() == TadoSystemType.AIR_CONDITIONING) {
+            Power result = ((CoolingZoneSetting) zoneState.getSetting()).getLight();
+            return result != null ? OnOffType.from(result == Power.ON) : UnDefType.NULL;
+        }
+        return UnDefType.UNDEF;
     }
 }

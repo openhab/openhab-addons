@@ -12,13 +12,12 @@
  */
 package org.openhab.binding.daikin.internal;
 
-import java.io.IOException;
+import java.io.EOFException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -31,13 +30,12 @@ import org.openhab.binding.daikin.internal.api.BasicInfo;
 import org.openhab.binding.daikin.internal.api.ControlInfo;
 import org.openhab.binding.daikin.internal.api.EnergyInfoDayAndWeek;
 import org.openhab.binding.daikin.internal.api.EnergyInfoYear;
-import org.openhab.binding.daikin.internal.api.Enums.SpecialModeKind;
+import org.openhab.binding.daikin.internal.api.Enums.SpecialMode;
 import org.openhab.binding.daikin.internal.api.SensorInfo;
 import org.openhab.binding.daikin.internal.api.airbase.AirbaseBasicInfo;
 import org.openhab.binding.daikin.internal.api.airbase.AirbaseControlInfo;
 import org.openhab.binding.daikin.internal.api.airbase.AirbaseModelInfo;
 import org.openhab.binding.daikin.internal.api.airbase.AirbaseZoneInfo;
-import org.openhab.core.io.net.http.HttpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,11 +45,12 @@ import org.slf4j.LoggerFactory;
  * @author Tim Waterhouse - Initial Contribution
  * @author Paul Smedley <paul@smedley.id.au> - Modifications to support Airbase Controllers
  * @author Jimmy Tanagra - Add support for https and Daikin's uuid authentication
+ *         Implement connection retry
  *
  */
 @NonNullByDefault
 public class DaikinWebTargets {
-    private static final int TIMEOUT_MS = 30000;
+    private static final int TIMEOUT_MS = 5000;
 
     private String getBasicInfoUri;
     private String setControlInfoUri;
@@ -138,12 +137,32 @@ public class DaikinWebTargets {
         return EnergyInfoDayAndWeek.parse(response);
     }
 
-    public boolean setSpecialMode(SpecialModeKind specialModeKind, boolean state) throws DaikinCommunicationException {
+    public void setSpecialMode(SpecialMode newMode) throws DaikinCommunicationException {
         Map<String, String> queryParams = new HashMap<>();
-        queryParams.put("spmode_kind", String.valueOf(specialModeKind.getValue()));
-        queryParams.put("set_spmode", state ? "1" : "0");
+        if (newMode == SpecialMode.NORMAL) {
+            queryParams.put("set_spmode", "0");
+
+            ControlInfo controlInfo = getControlInfo();
+            if (!controlInfo.advancedMode.isUndefined()) {
+                queryParams.put("spmode_kind", controlInfo.getSpecialMode().getValue());
+            }
+        } else {
+            queryParams.put("set_spmode", "1");
+            queryParams.put("spmode_kind", newMode.getValue());
+        }
         String response = invoke(setSpecialModeUri, queryParams);
-        return !response.contains("ret=OK");
+        if (!response.contains("ret=OK")) {
+            logger.warn("Error setting special mode. Response: '{}'", response);
+        }
+    }
+
+    public void setStreamerMode(boolean state) throws DaikinCommunicationException {
+        Map<String, String> queryParams = new HashMap<>();
+        queryParams.put("en_streamer", state ? "1" : "0");
+        String response = invoke(setSpecialModeUri, queryParams);
+        if (!response.contains("ret=OK")) {
+            logger.warn("Error setting streamer mode. Response: '{}'", response);
+        }
     }
 
     // Daikin Airbase API
@@ -183,73 +202,73 @@ public class DaikinWebTargets {
     }
 
     private String invoke(String uri) throws DaikinCommunicationException {
-        return invoke(uri, new HashMap<>());
+        return invoke(uri, null);
     }
 
-    private String invoke(String uri, Map<String, String> params) throws DaikinCommunicationException {
-        String uriWithParams = uri + paramsToQueryString(params);
-        logger.debug("Calling url: {}", uriWithParams);
-        String response;
-        synchronized (this) {
-            try {
-                if (httpClient != null) {
-                    response = executeUrl(uriWithParams);
-                } else {
-                    // a fall back method
-                    logger.debug("Using HttpUtil fall scback");
-                    response = HttpUtil.executeUrl("GET", uriWithParams, TIMEOUT_MS);
-                }
-            } catch (DaikinCommunicationException ex) {
-                throw ex;
-            } catch (IOException ex) {
-                // Response will also be set to null if parsing in executeUrl fails so we use null here to make the
-                // error check below consistent.
-                response = null;
-            }
-        }
-
-        if (response == null) {
-            throw new DaikinCommunicationException("Daikin controller returned error while invoking " + uriWithParams);
-        }
-
-        return response;
-    }
-
-    private String executeUrl(String url) throws DaikinCommunicationException {
+    private synchronized String invoke(String url, @Nullable Map<String, String> params)
+            throws DaikinCommunicationException {
+        int attemptCount = 1;
         try {
-            Request request = httpClient.newRequest(url).method(HttpMethod.GET).timeout(TIMEOUT_MS,
-                    TimeUnit.MILLISECONDS);
-            if (uuid != null) {
-                request.header("X-Daikin-uuid", uuid);
-                logger.debug("Header: X-Daikin-uuid: {}", uuid);
+            while (true) {
+                try {
+                    String result = executeUrl(url, params);
+                    if (attemptCount > 1) {
+                        logger.debug("HTTP request successful on attempt #{}: {}", attemptCount, url);
+                    }
+                    return result;
+                } catch (ExecutionException | TimeoutException e) {
+                    if (attemptCount >= 3) {
+                        logger.debug("HTTP request failed after {} attempts: {}", attemptCount, url, e);
+                        Throwable rootCause = getRootCause(e);
+                        String message = rootCause.getMessage();
+                        // EOFException message is too verbose/gibberish
+                        if (message == null || rootCause instanceof EOFException) {
+                            message = "Connection error";
+                        }
+                        throw new DaikinCommunicationException(message);
+                    }
+                    logger.debug("HTTP request error on attempt #{}: {} {}", attemptCount, url, e.getMessage());
+                    Thread.sleep(500 * attemptCount);
+                    attemptCount++;
+                }
             }
-            ContentResponse response = request.send();
-
-            if (response.getStatus() == HttpStatus.FORBIDDEN_403) {
-                throw new DaikinCommunicationForbiddenException("Daikin controller access denied. Check uuid/key.");
-            }
-
-            if (response.getStatus() != HttpStatus.OK_200) {
-                logger.debug("Daikin controller HTTP status: {} - {}", response.getStatus(), response.getReason());
-            }
-
-            return response.getContentAsString();
-        } catch (DaikinCommunicationException e) {
-            throw e;
-        } catch (ExecutionException | TimeoutException e) {
-            throw new DaikinCommunicationException("Daikin HTTP error", e);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new DaikinCommunicationException("Daikin HTTP interrupted", e);
+            throw new DaikinCommunicationException("Execution interrupted");
         }
     }
 
-    private String paramsToQueryString(Map<String, String> params) {
-        if (params.isEmpty()) {
-            return "";
+    private String executeUrl(String url, @Nullable Map<String, String> params)
+            throws InterruptedException, TimeoutException, ExecutionException, DaikinCommunicationException {
+        Request request = httpClient.newRequest(url).method(HttpMethod.GET).timeout(TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        if (uuid != null) {
+            request.header("X-Daikin-uuid", uuid);
+            logger.trace("Header: X-Daikin-uuid: {}", uuid);
+        }
+        if (params != null) {
+            params.forEach((key, value) -> request.param(key, value));
+        }
+        logger.trace("Calling url: {}", request.getURI());
+
+        ContentResponse response = request.send();
+
+        if (response.getStatus() != HttpStatus.OK_200) {
+            logger.debug("Daikin controller HTTP status: {} - {} {}", response.getStatus(), response.getReason(), url);
         }
 
-        return "?" + params.entrySet().stream().map(param -> param.getKey() + "=" + param.getValue())
-                .collect(Collectors.joining("&"));
+        if (response.getStatus() == HttpStatus.FORBIDDEN_403) {
+            throw new DaikinCommunicationForbiddenException("Daikin controller access denied. Check uuid/key.");
+        }
+
+        return response.getContentAsString();
+    }
+
+    private Throwable getRootCause(Throwable exception) {
+        Throwable cause = exception.getCause();
+        while (cause != null) {
+            exception = cause;
+            cause = cause.getCause();
+        }
+        return exception;
     }
 }

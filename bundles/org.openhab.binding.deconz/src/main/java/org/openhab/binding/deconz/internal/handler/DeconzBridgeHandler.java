@@ -175,7 +175,7 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
         String url = buildUrl(config.getHostWithoutPort(), config.httpPort, config.apikey);
         return http.get(url, config.timeout).thenApply(r -> {
             if (r.getResponseCode() == 403) {
-                return Optional.ofNullable((BridgeFullState) null);
+                return Optional.<BridgeFullState> empty();
             } else if (r.getResponseCode() == 200) {
                 return Optional.ofNullable(gson.fromJson(r.getBody(), BridgeFullState.class));
             } else {

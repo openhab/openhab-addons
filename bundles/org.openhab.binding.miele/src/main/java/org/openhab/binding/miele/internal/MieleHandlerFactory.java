@@ -21,6 +21,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.miele.internal.discovery.MieleApplianceDiscoveryService;
 import org.openhab.binding.miele.internal.handler.CoffeeMachineHandler;
 import org.openhab.binding.miele.internal.handler.DishWasherHandler;
@@ -36,7 +39,9 @@ import org.openhab.binding.miele.internal.handler.WashingMachineHandler;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.i18n.TranslationProvider;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -55,7 +60,9 @@ import org.osgi.service.component.annotations.Reference;
  * handlers.
  *
  * @author Karel Goderis - Initial contribution
+ * @author Jacob Laursen - Refactored to use framework's HTTP client
  */
+@NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.miele")
 public class MieleHandlerFactory extends BaseThingHandlerFactory {
 
@@ -64,16 +71,21 @@ public class MieleHandlerFactory extends BaseThingHandlerFactory {
                     MieleApplianceHandler.SUPPORTED_THING_TYPES.stream())
             .collect(Collectors.toSet());
 
+    private final HttpClient httpClient;
     private final TranslationProvider i18nProvider;
     private final LocaleProvider localeProvider;
+    private final TimeZoneProvider timeZoneProvider;
 
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
     @Activate
-    public MieleHandlerFactory(final @Reference TranslationProvider i18nProvider,
-            final @Reference LocaleProvider localeProvider, ComponentContext componentContext) {
+    public MieleHandlerFactory(@Reference final HttpClientFactory httpClientFactory,
+            final @Reference TranslationProvider i18nProvider, final @Reference LocaleProvider localeProvider,
+            final @Reference TimeZoneProvider timeZoneProvider, ComponentContext componentContext) {
+        this.httpClient = httpClientFactory.getCommonHttpClient();
         this.i18nProvider = i18nProvider;
         this.localeProvider = localeProvider;
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -82,8 +94,8 @@ public class MieleHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    public Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration, ThingUID thingUID,
-            ThingUID bridgeUID) {
+    public @Nullable Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration,
+            @Nullable ThingUID thingUID, @Nullable ThingUID bridgeUID) {
         if (MieleBridgeHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             ThingUID mieleBridgeUID = getBridgeThingUID(thingTypeUID, thingUID, configuration);
             return super.createThing(thingTypeUID, configuration, mieleBridgeUID, null);
@@ -97,45 +109,46 @@ public class MieleHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         if (MieleBridgeHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
-            MieleBridgeHandler handler = new MieleBridgeHandler((Bridge) thing);
+            MieleBridgeHandler handler = new MieleBridgeHandler((Bridge) thing, httpClient);
             registerApplianceDiscoveryService(handler);
             return handler;
         } else if (MieleApplianceHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
             if (thing.getThingTypeUID().equals(THING_TYPE_HOOD)) {
-                return new HoodHandler(thing, i18nProvider, localeProvider);
+                return new HoodHandler(thing, i18nProvider, localeProvider, timeZoneProvider);
             }
             if (thing.getThingTypeUID().equals(THING_TYPE_FRIDGEFREEZER)) {
-                return new FridgeFreezerHandler(thing, i18nProvider, localeProvider);
+                return new FridgeFreezerHandler(thing, i18nProvider, localeProvider, timeZoneProvider);
             }
             if (thing.getThingTypeUID().equals(THING_TYPE_FRIDGE)) {
-                return new FridgeHandler(thing, i18nProvider, localeProvider);
+                return new FridgeHandler(thing, i18nProvider, localeProvider, timeZoneProvider);
             }
             if (thing.getThingTypeUID().equals(THING_TYPE_OVEN)) {
-                return new OvenHandler(thing, i18nProvider, localeProvider);
+                return new OvenHandler(thing, i18nProvider, localeProvider, timeZoneProvider);
             }
             if (thing.getThingTypeUID().equals(THING_TYPE_HOB)) {
-                return new HobHandler(thing, i18nProvider, localeProvider);
+                return new HobHandler(thing, i18nProvider, localeProvider, timeZoneProvider);
             }
             if (thing.getThingTypeUID().equals(THING_TYPE_WASHINGMACHINE)) {
-                return new WashingMachineHandler(thing, i18nProvider, localeProvider);
+                return new WashingMachineHandler(thing, i18nProvider, localeProvider, timeZoneProvider);
             }
             if (thing.getThingTypeUID().equals(THING_TYPE_DRYER)) {
-                return new TumbleDryerHandler(thing, i18nProvider, localeProvider);
+                return new TumbleDryerHandler(thing, i18nProvider, localeProvider, timeZoneProvider);
             }
             if (thing.getThingTypeUID().equals(THING_TYPE_DISHWASHER)) {
-                return new DishWasherHandler(thing, i18nProvider, localeProvider);
+                return new DishWasherHandler(thing, i18nProvider, localeProvider, timeZoneProvider);
             }
             if (thing.getThingTypeUID().equals(THING_TYPE_COFFEEMACHINE)) {
-                return new CoffeeMachineHandler(thing, i18nProvider, localeProvider);
+                return new CoffeeMachineHandler(thing, i18nProvider, localeProvider, timeZoneProvider);
             }
         }
 
         return null;
     }
 
-    private ThingUID getBridgeThingUID(ThingTypeUID thingTypeUID, ThingUID thingUID, Configuration configuration) {
+    private ThingUID getBridgeThingUID(ThingTypeUID thingTypeUID, @Nullable ThingUID thingUID,
+            Configuration configuration) {
         if (thingUID == null) {
             String hostID = (String) configuration.get(HOST);
             thingUID = new ThingUID(thingTypeUID, hostID);
@@ -143,12 +156,16 @@ public class MieleHandlerFactory extends BaseThingHandlerFactory {
         return thingUID;
     }
 
-    private ThingUID getApplianceUID(ThingTypeUID thingTypeUID, ThingUID thingUID, Configuration configuration,
-            ThingUID bridgeUID) {
+    private ThingUID getApplianceUID(ThingTypeUID thingTypeUID, @Nullable ThingUID thingUID,
+            Configuration configuration, @Nullable ThingUID bridgeUID) {
         String applianceId = (String) configuration.get(APPLIANCE_ID);
 
         if (thingUID == null) {
-            thingUID = new ThingUID(thingTypeUID, applianceId, bridgeUID.getId());
+            if (bridgeUID == null) {
+                thingUID = new ThingUID(thingTypeUID, applianceId);
+            } else {
+                thingUID = new ThingUID(thingTypeUID, bridgeUID, applianceId);
+            }
         }
         return thingUID;
     }

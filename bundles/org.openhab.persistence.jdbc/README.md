@@ -13,10 +13,10 @@ The following databases are currently supported and tested:
 | [H2](https://www.h2database.com/)            | [h2-1.4.191.jar](https://mvnrepository.com/artifact/com.h2database/h2) |
 | [HSQLDB](http://hsqldb.org/)                 | [hsqldb-2.3.3.jar](https://mvnrepository.com/artifact/org.hsqldb/hsqldb) |
 | [MariaDB](https://mariadb.org/)              | [mariadb-java-client-1.4.6.jar](https://mvnrepository.com/artifact/org.mariadb.jdbc/mariadb-java-client) |
-| [MySQL](https://www.mysql.com/)              | [mysql-connector-java-5.1.39.jar](https://mvnrepository.com/artifact/mysql/mysql-connector-java) |
-| [PostgreSQL](https://www.postgresql.org/)    | [postgresql-9.4.1209.jre7.jar](https://mvnrepository.com/artifact/org.postgresql/postgresql) |
+| [MySQL](https://www.mysql.com/)              | [mysql-connector-java-8.0.30.jar](https://mvnrepository.com/artifact/mysql/mysql-connector-java) |
+| [PostgreSQL](https://www.postgresql.org/)    | [postgresql-42.4.1.jar](https://mvnrepository.com/artifact/org.postgresql/postgresql) |
 | [SQLite](https://www.sqlite.org/)            | [sqlite-jdbc-3.16.1.jar](https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc) |
-| [TimescaleDB](https://www.timescale.com/)    | [postgresql-9.4.1209.jre7.jar](https://mvnrepository.com/artifact/org.postgresql/postgresql) |
+| [TimescaleDB](https://www.timescale.com/)    | [postgresql-42.4.1.jar](https://mvnrepository.com/artifact/org.postgresql/postgresql) |
 
 ## Table of Contents
 
@@ -40,7 +40,7 @@ This service can be configured in the file `services/jdbc.cfg`.
 
 | Property                  | Default                                                      | Required  | Description                                                  |
 | ------------------------- | ------------------------------------------------------------ | :-------: | ------------------------------------------------------------ |
-| url                       |                                                              |    Yes    | JDBC URL to establish a connection to your database.  Examples:<br/><br/>`jdbc:derby:./testDerby;create=true`<br/>`jdbc:h2:./testH2`<br/>`jdbc:hsqldb:./testHsqlDb`<br/>`jdbc:mariadb://192.168.0.1:3306/testMariadb`<br/>`jdbc:mysql://192.168.0.1:3306/testMysql?serverTimezone=UTC`<br/>`jdbc:postgresql://192.168.0.1:5432/testPostgresql`<br/>`jdbc:sqlite:./testSqlite.db`.<br/><br/>If no database is available it will be created; for example the url `jdbc:h2:./testH2` creates a new H2 database in openHAB folder. Example to create your own MySQL database directly:<br/><br/>`CREATE DATABASE 'yourDB' CHARACTER SET utf8 COLLATE utf8_general_ci;` |
+| url                       |                                                              |    Yes    | JDBC URL to establish a connection to your database.  Examples:<br/><br/>`jdbc:derby:./testDerby;create=true`<br/>`jdbc:h2:./testH2`<br/>`jdbc:hsqldb:./testHsqlDb`<br/>`jdbc:mariadb://192.168.0.1:3306/testMariadb`<br/>`jdbc:mysql://192.168.0.1:3306/testMysql?serverTimezone=UTC`<br/>`jdbc:postgresql://192.168.0.1:5432/testPostgresql`<br/>`jdbc:timescaledb://192.168.0.1:5432/testPostgresql`<br/>`jdbc:sqlite:./testSqlite.db`.<br/><br/>If no database is available it will be created; for example the url `jdbc:h2:./testH2` creates a new H2 database in openHAB folder. Example to create your own MySQL database directly:<br/><br/>`CREATE DATABASE 'yourDB' CHARACTER SET utf8 COLLATE utf8_general_ci;` |
 | user                      |                                                              | if needed | database user name                                           |
 | password                  |                                                              | if needed | database user password                                       |
 | errReconnectThreshold     | 0                                                            |    No     | when the service is deactivated (0 means ignore)             |

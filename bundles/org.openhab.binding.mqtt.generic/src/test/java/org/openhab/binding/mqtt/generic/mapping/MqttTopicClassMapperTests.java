@@ -29,7 +29,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Stream;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -59,7 +59,8 @@ import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
  * @author David Graeff - Initial contribution
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@NonNullByDefault
 public class MqttTopicClassMapperTests {
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ FIELD })
@@ -72,15 +73,15 @@ public class MqttTopicClassMapperTests {
         public transient String ignoreTransient = "";
         public final String ignoreFinal = "";
 
-        public @TestValue("string") String aString;
-        public @TestValue("false") Boolean aBoolean;
-        public @TestValue("10") Long aLong;
-        public @TestValue("10") Integer aInteger;
-        public @TestValue("10") BigDecimal aDecimal;
+        public @TestValue("string") @Nullable String aString;
+        public @TestValue("false") @Nullable Boolean aBoolean;
+        public @TestValue("10") @Nullable Long aLong;
+        public @TestValue("10") @Nullable Integer aInteger;
+        public @TestValue("10") @Nullable BigDecimal aDecimal;
 
-        public @TestValue("10") @TopicPrefix("a") int Int = 24;
+        public @TestValue("10") @TopicPrefix("a") int aInt = 24;
         public @TestValue("false") boolean aBool = true;
-        public @TestValue("abc,def") @MQTTvalueTransform(splitCharacter = ",") String[] properties;
+        public @TestValue("abc,def") @MQTTvalueTransform(splitCharacter = ",") String @Nullable [] properties;
 
         public enum ReadyState {
             unknown,
@@ -99,22 +100,16 @@ public class MqttTopicClassMapperTests {
         public @TestValue("integer") @MQTTvalueTransform(suffix = "_") DataTypeEnum datatype = DataTypeEnum.unknown;
 
         @Override
-        public @NonNull Object getFieldsOf() {
+        public Object getFieldsOf() {
             return this;
         }
     }
 
-    @Mock
-    MqttBrokerConnection connection;
+    private @Mock @NonNullByDefault({}) MqttBrokerConnection connectionMock;
+    private @Mock @NonNullByDefault({}) ScheduledExecutorService executorMock;
+    private @Mock @NonNullByDefault({}) AttributeChanged fieldChangedObserverMock;
+    private @Spy Object countInjectedFields = new Object();
 
-    @Mock
-    ScheduledExecutorService executor;
-
-    @Mock
-    AttributeChanged fieldChangedObserver;
-
-    @Spy
-    Object countInjectedFields = new Object();
     int injectedFields = 0;
 
     // A completed future is returned for a subscribe call to the attributes
@@ -122,8 +117,8 @@ public class MqttTopicClassMapperTests {
 
     @BeforeEach
     public void setUp() {
-        doReturn(CompletableFuture.completedFuture(true)).when(connection).subscribe(any(), any());
-        doReturn(CompletableFuture.completedFuture(true)).when(connection).unsubscribe(any(), any());
+        doReturn(CompletableFuture.completedFuture(true)).when(connectionMock).subscribe(any(), any());
+        doReturn(CompletableFuture.completedFuture(true)).when(connectionMock).unsubscribe(any(), any());
         injectedFields = (int) Stream.of(countInjectedFields.getClass().getDeclaredFields())
                 .filter(AbstractMqttAttributeClass::filterField).count();
     }
@@ -148,8 +143,8 @@ public class MqttTopicClassMapperTests {
                 anyBoolean());
 
         // Subscribe now to all fields
-        CompletableFuture<Void> future = attributes.subscribeAndReceive(connection, executor, "homie/device123", null,
-                10);
+        CompletableFuture<@Nullable Void> future = attributes.subscribeAndReceive(connectionMock, executorMock,
+                "homie/device123", null, 10);
         assertThat(future.isDone(), is(true));
         assertThat(attributes.subscriptions.size(), is(10 + injectedFields));
     }
@@ -157,17 +152,17 @@ public class MqttTopicClassMapperTests {
     // TODO timeout
     @SuppressWarnings({ "null", "unused" })
     @Test
-    public void subscribeAndReceive() throws IllegalArgumentException, IllegalAccessException {
+    public void subscribeAndReceive() throws Exception {
         final Attributes attributes = spy(new Attributes());
 
         doAnswer(this::createSubscriberAnswer).when(attributes).createSubscriber(any(), any(), anyString(),
                 anyBoolean());
 
-        verify(connection, times(0)).subscribe(anyString(), any());
+        verify(connectionMock, times(0)).subscribe(anyString(), any());
 
         // Subscribe now to all fields
-        CompletableFuture<Void> future = attributes.subscribeAndReceive(connection, executor, "homie/device123",
-                fieldChangedObserver, 10);
+        CompletableFuture<@Nullable Void> future = attributes.subscribeAndReceive(connectionMock, executorMock,
+                "homie/device123", fieldChangedObserverMock, 10);
         assertThat(future.isDone(), is(true));
 
         // We expect 10 subscriptions now
@@ -190,7 +185,7 @@ public class MqttTopicClassMapperTests {
 
             // Simulate a received MQTT value and use the annotation data as input.
             f.processMessage(f.topic, annotation.value().getBytes());
-            verify(fieldChangedObserver, times(++loopCounter)).attributeChanged(any(), any(), any(), any(),
+            verify(fieldChangedObserverMock, times(++loopCounter)).attributeChanged(any(), any(), any(), any(),
                     anyBoolean());
 
             // Check each value if the assignment worked
@@ -210,5 +205,26 @@ public class MqttTopicClassMapperTests {
         }
 
         assertThat(future.isDone(), is(true));
+    }
+
+    @Test
+    public void ignoresInvalidEnum() throws Exception {
+        final Attributes attributes = spy(new Attributes());
+
+        doAnswer(this::createSubscriberAnswer).when(attributes).createSubscriber(any(), any(), anyString(),
+                anyBoolean());
+
+        verify(connectionMock, times(0)).subscribe(anyString(), any());
+
+        // Subscribe now to all fields
+        CompletableFuture<@Nullable Void> future = attributes.subscribeAndReceive(connectionMock, executorMock,
+                "homie/device123", fieldChangedObserverMock, 10);
+        assertThat(future.isDone(), is(true));
+
+        SubscribeFieldToMQTTtopic field = attributes.subscriptions.stream().filter(f -> f.field.getName() == "state")
+                .findFirst().get();
+        field.processMessage(field.topic, "garbage".getBytes());
+        verify(fieldChangedObserverMock, times(0)).attributeChanged(any(), any(), any(), any(), anyBoolean());
+        assertThat(attributes.state.toString(), is("unknown"));
     }
 }

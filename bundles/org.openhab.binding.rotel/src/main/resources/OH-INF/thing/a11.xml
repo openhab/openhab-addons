@@ -17,6 +17,11 @@
 			<channel id="bass" typeId="bass"/>
 			<channel id="treble" typeId="treble"/>
 			<channel id="brightness" typeId="brightness"/>
+			<channel id="tcbypass" typeId="tcbypass"/>
+			<channel id="balance" typeId="balance"/>
+			<channel id="speakera" typeId="speakera"/>
+			<channel id="speakerb" typeId="speakerb"/>
+			<channel id="otherCommand" typeId="otherCommand"/>
 		</channels>
 
 		<properties>

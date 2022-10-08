@@ -30,8 +30,12 @@ Settings -> System Settings -> Connect PS Vita System Using Network.
 | outboundIP          |         | No       | Use this if your PS4 is not on the normal openHAB network.               |
 | ipPort              |  997    | No       | The port to probe the PS4 on, no need to change normally.                |
 
-If you want to control your PS4 the first thing you need is your user-credentials, this is a 64 characters HEX string that is easiest obtained by using PS4-waker https://github.com/dhleong/ps4-waker.
-The result file is called ".ps4-wake.credentials.json" in your home directory.
+If you want to control your PS4 the first thing you need is your user-credentials, this is a 64 characters HEX string that is easiest obtained by using PS4-waker https://github.com/dhleong/ps4-waker. 
+To run the PS4-waker you will need a Node.js command prompt (for example: https://nodejs.org/en/download/). 
+Enter "npx ps4-waker --help" int the command prompt. Agree to install by entering "y". 
+After that send "npx ps4-waker --check". You will get asked to connect the "PS4 Second screen" Android app to the running clone. 
+Do this and then you will need to get the pairing key from your PS4 --> Settings ---> Mobile device pairing settings. 
+On the PS4 screen you will see your pairing code and in the command prompt you will find the user credentials.
 
 Then you need to pair your openHAB device with the PS4.
 This can be done by saving the Thing while the pairing screen is open on the PS4. The code is only needed during pairing.

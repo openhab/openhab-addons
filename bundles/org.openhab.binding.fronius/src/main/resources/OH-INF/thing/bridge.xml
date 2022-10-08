@@ -13,7 +13,7 @@
 				<label>Hostname</label>
 				<description>The hostname or IP address of the Fronius gateway/device</description>
 			</parameter>
-			<parameter name="refreshInterval" type="integer" min="2">
+			<parameter name="refreshInterval" type="integer" min="1">
 				<label>Refresh Interval</label>
 				<description>Specifies the refresh interval in seconds.</description>
 				<default>10</default>

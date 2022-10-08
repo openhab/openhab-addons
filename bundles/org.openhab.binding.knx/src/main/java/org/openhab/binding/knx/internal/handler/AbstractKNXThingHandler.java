@@ -19,7 +19,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.knx.internal.client.DeviceInspector;
@@ -118,7 +117,7 @@ public abstract class AbstractKNXThingHandler extends BaseThingHandler implement
     }
 
     @Override
-    public void bridgeStatusChanged(@NonNull ThingStatusInfo bridgeStatusInfo) {
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
             attachToClient();
         } else if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
@@ -163,7 +162,8 @@ public abstract class AbstractKNXThingHandler extends BaseThingHandler implement
                 }
             }
         } catch (KNXException e) {
-            logger.debug("An error occurred while testing the reachability of a thing '{}'", getThing().getUID(), e);
+            logger.debug("An error occurred while testing the reachability of a thing '{}': {}", getThing().getUID(),
+                    e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
         }
     }
@@ -175,7 +175,7 @@ public abstract class AbstractKNXThingHandler extends BaseThingHandler implement
         }
         DeviceConfig config = getConfigAs(DeviceConfig.class);
         try {
-            if (config.getAddress() != null && !config.getAddress().isEmpty()) {
+            if (!config.getAddress().isEmpty()) {
                 updateStatus(ThingStatus.UNKNOWN);
                 address = new IndividualAddress(config.getAddress());
 
@@ -192,7 +192,8 @@ public abstract class AbstractKNXThingHandler extends BaseThingHandler implement
                 updateStatus(ThingStatus.ONLINE);
             }
         } catch (KNXFormatException e) {
-            logger.debug("An exception occurred while setting the individual address '{}'", config.getAddress(), e);
+            logger.debug("An exception occurred while setting the individual address '{}': {}", config.getAddress(),
+                    e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getLocalizedMessage());
         }
         getClient().registerGroupAddressListener(this);
@@ -200,12 +201,14 @@ public abstract class AbstractKNXThingHandler extends BaseThingHandler implement
     }
 
     protected void detachFromClient() {
-        if (pollingJob != null) {
-            pollingJob.cancel(true);
+        final var pollingJobSynced = pollingJob;
+        if (pollingJobSynced != null) {
+            pollingJobSynced.cancel(true);
             pollingJob = null;
         }
-        if (descriptionJob != null) {
-            descriptionJob.cancel(true);
+        final var descriptionJobSynced = descriptionJob;
+        if (descriptionJobSynced != null) {
+            descriptionJobSynced.cancel(true);
             descriptionJob = null;
         }
         cancelReadFutures();

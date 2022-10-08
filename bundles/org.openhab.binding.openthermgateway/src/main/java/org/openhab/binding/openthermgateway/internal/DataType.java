@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.openthermgateway.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link DataType} enum indicates the type of data from a DataItem.
- * 
+ *
  * @author Arjen Korevaar - Initial contribution
  */
+@NonNullByDefault
 public enum DataType {
     FLAGS,
     UINT8,

@@ -191,14 +191,16 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
     protected void initDevice() {
         String udn = getUDN();
         if ((udn != null) && !udn.isEmpty()) {
+            updateStatus(ThingStatus.UNKNOWN);
+
             if (config.refresh == 0) {
                 upnpScheduler.submit(this::initJob);
             } else {
                 pollingJob = upnpScheduler.scheduleWithFixedDelay(this::initJob, 0, config.refresh, TimeUnit.SECONDS);
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "No UDN configured for " + thing.getLabel());
+            String msg = String.format("@text/offline.no-udn [ \"%s\" ]", thing.getLabel());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
         }
     }
 
@@ -396,8 +398,9 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
                 service);
         if (!succeeded) {
             upnpSubscribed = false;
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Could not subscribe to service " + service + "for" + thing.getLabel());
+            String msg = String.format("@text/offline.subscription-failed [ \"%1$s\", \"%2$s\" ]", service,
+                    thing.getLabel());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msg);
         }
     }
 
@@ -407,8 +410,8 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
         if (status) {
             initJob();
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Communication lost with " + thing.getLabel());
+            String msg = String.format("@text/offline.communication-lost [ \"%s\" ]", thing.getLabel());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msg);
         }
     }
 

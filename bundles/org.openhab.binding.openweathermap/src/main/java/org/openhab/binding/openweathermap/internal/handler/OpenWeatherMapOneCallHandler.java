@@ -26,12 +26,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.openweathermap.internal.config.OpenWeatherMapOneCallConfiguration;
 import org.openhab.binding.openweathermap.internal.connection.OpenWeatherMapConnection;
+import org.openhab.binding.openweathermap.internal.dto.OpenWeatherMapOneCallAPIData;
+import org.openhab.binding.openweathermap.internal.dto.forecast.daily.FeelsLikeTemp;
+import org.openhab.binding.openweathermap.internal.dto.forecast.daily.Temp;
 import org.openhab.binding.openweathermap.internal.dto.onecall.Alert;
-import org.openhab.binding.openweathermap.internal.dto.onecall.FeelsLike;
-import org.openhab.binding.openweathermap.internal.dto.onecall.OpenWeatherMapOneCallAPIData;
-import org.openhab.binding.openweathermap.internal.dto.onecall.Rain;
-import org.openhab.binding.openweathermap.internal.dto.onecall.Snow;
-import org.openhab.binding.openweathermap.internal.dto.onecall.Temp;
+import org.openhab.binding.openweathermap.internal.dto.onecall.Precipitation;
 import org.openhab.core.i18n.CommunicationException;
 import org.openhab.core.i18n.ConfigurationException;
 import org.openhab.core.i18n.TimeZoneProvider;
@@ -264,7 +263,7 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
                 }
                 Matcher alertsMatcher = CHANNEL_GROUP_ALERTS_PREFIX_PATTERN.matcher(channelGroupId);
                 if (alertsMatcher.find() && (i = Integer.parseInt(alertsMatcher.group(1))) >= 1) {
-                    updateAlertsChannel(channelUID, i);
+                    updateAlertsChannel(channelUID, i - 1);
                     break;
                 }
                 break;
@@ -348,11 +347,11 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
                     state = getDecimalTypeState(localWeatherData.getCurrent().getUvi());
                     break;
                 case CHANNEL_RAIN:
-                    Rain rain = localWeatherData.getCurrent().getRain();
+                    Precipitation rain = localWeatherData.getCurrent().getRain();
                     state = getQuantityTypeState(rain == null ? 0 : rain.get1h(), MILLI(METRE));
                     break;
                 case CHANNEL_SNOW:
-                    Snow snow = localWeatherData.getCurrent().getSnow();
+                    Precipitation snow = localWeatherData.getCurrent().getSnow();
                     state = getQuantityTypeState(snow == null ? 0 : snow.get1h(), MILLI(METRE));
                     break;
                 case CHANNEL_VISIBILITY:
@@ -372,6 +371,12 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
         }
     }
 
+    /**
+     * Update the channel from the last OpenWeatherMap data retrieved.
+     *
+     * @param channelUID the id identifying the channel to be updated
+     * @param count the index of the minutely data referenced by the channel (minute 1 is count 0)
+     */
     private void updateMinutelyForecastChannel(ChannelUID channelUID, int count) {
         String channelId = channelUID.getIdWithoutGroup();
         String channelGroupId = channelUID.getGroupId();
@@ -411,7 +416,7 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
      * Update the channel from the last OpenWeatherMap data retrieved.
      *
      * @param channelUID the id identifying the channel to be updated
-     * @param count the number of the hour referenced by the channel
+     * @param count the index of the hourly data referenced by the channel (hour 1 is count 0)
      */
     private void updateHourlyForecastChannel(ChannelUID channelUID, int count) {
         String channelId = channelUID.getIdWithoutGroup();
@@ -487,11 +492,11 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
                     state = getQuantityTypeState(forecastData.getPop() * 100.0, PERCENT);
                     break;
                 case CHANNEL_RAIN:
-                    Rain rain = forecastData.getRain();
+                    Precipitation rain = forecastData.getRain();
                     state = getQuantityTypeState(rain == null ? 0 : rain.get1h(), MILLI(METRE));
                     break;
                 case CHANNEL_SNOW:
-                    Snow snow = forecastData.getSnow();
+                    Precipitation snow = forecastData.getSnow();
                     state = getQuantityTypeState(snow == null ? 0 : snow.get1h(), MILLI(METRE));
                     break;
                 default:
@@ -510,7 +515,7 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
      * Update the channel from the last OpenWeatherMap data retrieved.
      *
      * @param channelUID the id identifying the channel to be updated
-     * @param count
+     * @param count the index of the daily data referenced by the channel (today is count 0)
      */
     private void updateDailyForecastChannel(ChannelUID channelUID, int count) {
         String channelId = channelUID.getIdWithoutGroup();
@@ -527,7 +532,7 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
                     .get(count);
             State state = UnDefType.UNDEF;
             Temp temp;
-            FeelsLike feelsLike;
+            FeelsLikeTemp feelsLike;
             switch (channelId) {
                 case CHANNEL_TIME_STAMP:
                     state = getDateTimeTypeState(forecastData.getDt());
@@ -673,7 +678,7 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
      * Update the channel from the last OpenWeaterhMap data retrieved.
      *
      * @param channelUID the id identifying the channel to be updated
-     * @param count
+     * @param count the index of the alert data referenced by the channel (alert 1 is count 0)
      */
     private void updateAlertsChannel(ChannelUID channelUID, int count) {
         String channelId = channelUID.getIdWithoutGroup();
@@ -682,7 +687,7 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
         List<Alert> alerts = localWeatherData != null ? localWeatherData.alerts : null;
         State state = UnDefType.UNDEF;
         if (alerts != null && alerts.size() > count) {
-            Alert alert = alerts.get(count - 1);
+            Alert alert = alerts.get(count);
             switch (channelId) {
                 case CHANNEL_ALERT_EVENT:
                     state = getStringTypeState(alert.event);

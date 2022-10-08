@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.atlona.internal.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Any model specific capabilities class should inherit from this base class. Currently doesn't provide any generic
  * functionality.
  *
  * @author Tim Roberts - Initial contribution
  */
+@NonNullByDefault
 public abstract class AtlonaCapabilities {
 
 }

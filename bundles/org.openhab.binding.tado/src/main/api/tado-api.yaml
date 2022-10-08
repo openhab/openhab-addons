@@ -552,6 +552,44 @@ definitions:
     - HIGH
     - AUTO
 
+  ACFanLevel:
+    type: string
+    description: Cooling system fan speed.
+    enum:
+    - SILENT
+    - LEVEL1
+    - LEVEL2
+    - LEVEL3
+    - LEVEL4
+    - LEVEL5
+    - AUTO
+
+  ACHorizontalSwing: 
+    type: string
+    description: Horizontal swing.
+    enum:
+    - 'OFF'
+    - 'ON'
+    - LEFT
+    - MID_LEFT
+    - MID
+    - MID_RIGHT
+    - RIGHT
+    - AUTO
+
+  ACVerticalSwing:
+    type: string
+    description: Vertical swing.
+    enum:
+    - 'OFF'
+    - 'ON'
+    - UP
+    - MID_UP
+    - MID
+    - MID_DOWN
+    - DOWN
+    - AUTO
+ 
   AcMode:
     type: string
     description: Cooling system mode.
@@ -582,6 +620,18 @@ definitions:
         swing:
           description: Whether the angle of the air stream should be fixed or not, if power is `ON` and configuring this is supported in this AC mode.
           $ref: "#/definitions/Power"
+        light:
+          description: State of the control panel light.
+          $ref: "#/definitions/Power"
+        fanLevel:
+          description: The desired fan speed level, if power is `ON` and fan speeds are supported in this AC mode.
+          $ref: "#/definitions/ACFanLevel"
+        verticalSwing:
+          description: Whether the angle of the vertical air stream should be fixed or not, if power is `ON` and configuring this is supported in this AC mode. And if it is fixed, determines the respective position.
+          $ref: "#/definitions/ACVerticalSwing"
+        horizontalSwing:
+          description: Whether the angle of the horizontal air stream should be fixed or not, if power is `ON` and configuring this is supported in this AC mode. And if it is fixed, determines the respective position.
+          $ref: "#/definitions/ACHorizontalSwing"
       required:
       - power
 
@@ -981,15 +1031,35 @@ definitions:
       temperatures:
         $ref: "#/definitions/TemperatureRange"
       fanSpeeds:
-        description: Cooling system fan speed.
+        description: Cooling system fan speeds.
         type: array
         items:
           $ref: "#/definitions/AcFanSpeed"
       swings:
-        description: Cooling system swing mode.
+        description: Cooling system swing modes.
         type: array
         items:
           $ref: "#/definitions/Power"
+      light:
+        description: Control panel light state. (Tado confusingly names this array without an 's')
+        type: array
+        items:
+          $ref: "#/definitions/Power"
+      fanLevel:
+        description: Cooling system fan speeds. (Tado confusingly names this array without an 's')
+        type: array
+        items:
+          $ref: "#/definitions/ACFanLevel"
+      verticalSwing:
+        description: Cooling system vertical swing modes. (Tado confusingly names this array without an 's')
+        type: array
+        items:
+          $ref: "#/definitions/ACVerticalSwing"
+      horizontalSwing:
+        description: Cooling system horizontal swing modes. (Tado confusingly names this array without an 's')
+        type: array
+        items:
+          $ref: "#/definitions/ACHorizontalSwing"
 
   HeatingCapabilities:
     x-discriminator-value: HEATING

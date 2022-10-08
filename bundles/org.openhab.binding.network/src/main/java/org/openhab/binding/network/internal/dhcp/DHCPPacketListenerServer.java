@@ -13,7 +13,6 @@
 package org.openhab.binding.network.internal.dhcp;
 
 import java.io.IOException;
-import java.net.BindException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -36,25 +35,27 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class DHCPPacketListenerServer extends Thread {
+    private static final int PRIVILEGED_PORT = 67;
+    private static final int UNPRIVILEGED_PORT = 6767;
     private byte[] buffer = new byte[1024];
-    protected @Nullable DatagramSocket dsocket;
+    private @Nullable DatagramSocket dsocket;
     private DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-    boolean willbeclosed = false;
-    Logger logger = LoggerFactory.getLogger(DHCPPacketListenerServer.class);
-    private boolean useUnprevilegedPort = false;
     private final IPRequestReceivedCallback listener;
+    private final Logger logger = LoggerFactory.getLogger(DHCPPacketListenerServer.class);
+    private boolean willbeclosed = false;
+    private int currentPort = PRIVILEGED_PORT;
 
-    DHCPPacketListenerServer(IPRequestReceivedCallback listener) throws SocketException, BindException {
+    DHCPPacketListenerServer(IPRequestReceivedCallback listener) throws SocketException {
         this.listener = listener;
         try {
-            bindSocketTo(67);
+            bindSocketTo(currentPort);
         } catch (SocketException e) {
-            useUnprevilegedPort = true;
-            bindSocketTo(6767);
+            currentPort = UNPRIVILEGED_PORT;
+            bindSocketTo(currentPort);
         }
     }
 
-    protected void bindSocketTo(int port) throws SocketException {
+    private void bindSocketTo(int port) throws SocketException {
         DatagramSocket dsocket = new DatagramSocket(null);
         dsocket.setReuseAddress(true);
         dsocket.setBroadcast(true);
@@ -70,7 +71,7 @@ public class DHCPPacketListenerServer extends Thread {
 
         Byte dhcpMessageType = request.getDHCPMessageType();
 
-        if (dhcpMessageType != DHCPPacket.DHCPREQUEST) {
+        if (dhcpMessageType == null || dhcpMessageType != DHCPPacket.DHCPREQUEST) {
             return; // skipping non DHCPREQUEST message types
         }
 
@@ -112,10 +113,9 @@ public class DHCPPacketListenerServer extends Thread {
         return dsocket;
     }
 
-    // Return true if the instance couldn't bind to port 67 and used port 6767 instead
-    // to listen to DHCP traffic (port forwarding necessary).
-    public boolean isUseUnprevilegedPort() {
-        return useUnprevilegedPort;
+    // Return true if the instance is using port 67 to listen to DHCP traffic (no port forwarding necessary).
+    public boolean usingPrivilegedPort() {
+        return currentPort == PRIVILEGED_PORT;
     }
 
     /**
@@ -136,5 +136,9 @@ public class DHCPPacketListenerServer extends Thread {
             interrupt();
             dsocket = null;
         }
+    }
+
+    public int getCurrentPort() {
+        return currentPort;
     }
 }

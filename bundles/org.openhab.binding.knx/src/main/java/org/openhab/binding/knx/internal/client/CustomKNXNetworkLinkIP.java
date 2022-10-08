@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.knx.internal.client;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import tuwien.auto.calimero.KNXException;
 import tuwien.auto.calimero.knxnetip.KNXnetIPConnection;
 import tuwien.auto.calimero.link.KNXNetworkLinkIP;
@@ -24,9 +26,11 @@ import tuwien.auto.calimero.link.medium.KNXMediumSettings;
  * @author Simon Kaufmann - initial contribution and API
  *
  */
+@NonNullByDefault
 public class CustomKNXNetworkLinkIP extends KNXNetworkLinkIP {
 
     public static final int TUNNELING = KNXNetworkLinkIP.TUNNELING;
+    public static final int TUNNELINGV2 = KNXNetworkLinkIP.TunnelingV2;
     public static final int ROUTING = KNXNetworkLinkIP.ROUTING;
 
     CustomKNXNetworkLinkIP(final int serviceMode, KNXnetIPConnection conn, KNXMediumSettings settings)

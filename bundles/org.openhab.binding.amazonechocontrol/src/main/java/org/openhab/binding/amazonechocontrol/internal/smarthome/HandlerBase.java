@@ -33,6 +33,8 @@ import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.StateDescription;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonObject;
 
@@ -41,6 +43,9 @@ import com.google.gson.JsonObject;
  */
 @NonNullByDefault
 public abstract class HandlerBase {
+    // Logger
+    private final Logger logger = LoggerFactory.getLogger(HandlerBase.class);
+
     protected SmartHomeDeviceHandler smartHomeDeviceHandler;
     protected Map<String, ChannelInfo> channels = new HashMap<>();
 
@@ -76,6 +81,7 @@ public abstract class HandlerBase {
             if (properties != null) {
                 List<JsonSmartHomeCapabilities.Property> supported = Objects.requireNonNullElse(properties.supported,
                         List.of());
+                logger.trace("{} | {}", capability.toString(), supported.toString());
                 for (Property property : supported) {
                     String name = property.name;
                     if (name != null) {

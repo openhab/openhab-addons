@@ -12,9 +12,12 @@
  */
 package org.openhab.binding.velux.internal.handler;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -43,6 +46,7 @@ import org.openhab.binding.velux.internal.bridge.common.BridgeCommunicationProto
 import org.openhab.binding.velux.internal.bridge.common.RunProductCommand;
 import org.openhab.binding.velux.internal.bridge.common.RunReboot;
 import org.openhab.binding.velux.internal.bridge.json.JsonVeluxBridge;
+import org.openhab.binding.velux.internal.bridge.slip.FunctionalParameters;
 import org.openhab.binding.velux.internal.bridge.slip.SlipVeluxBridge;
 import org.openhab.binding.velux.internal.config.VeluxBridgeConfiguration;
 import org.openhab.binding.velux.internal.development.Threads;
@@ -55,6 +59,7 @@ import org.openhab.binding.velux.internal.things.VeluxExistingScenes;
 import org.openhab.binding.velux.internal.things.VeluxProduct;
 import org.openhab.binding.velux.internal.things.VeluxProduct.ProductBridgeIndex;
 import org.openhab.binding.velux.internal.things.VeluxProductPosition;
+import org.openhab.binding.velux.internal.things.VeluxProductPosition.PositionType;
 import org.openhab.binding.velux.internal.utils.Localization;
 import org.openhab.core.common.AbstractUID;
 import org.openhab.core.common.NamedThreadFactory;
@@ -66,6 +71,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -135,25 +141,28 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
 
     private VeluxBridge myJsonBridge = new JsonVeluxBridge(this);
     private VeluxBridge mySlipBridge = new SlipVeluxBridge(this);
+    private boolean disposing = false;
 
     /*
      * **************************************
      * ***** Default visibility Objects *****
      */
 
-    VeluxBridge thisBridge = myJsonBridge;
+    public VeluxBridge thisBridge = myJsonBridge;
     public BridgeParameters bridgeParameters = new BridgeParameters();
-    Localization localization;
+    public Localization localization;
 
     /**
      * Mapping from ChannelUID to class Thing2VeluxActuator, which return Velux device information, probably cached.
      */
-    Map<ChannelUID, Thing2VeluxActuator> channel2VeluxActuator = new ConcurrentHashMap<>();
+    public final Map<ChannelUID, Thing2VeluxActuator> channel2VeluxActuator = new ConcurrentHashMap<>();
 
     /**
      * Information retrieved by {@link VeluxBinding#VeluxBinding}.
      */
     private VeluxBridgeConfiguration veluxBridgeConfiguration = new VeluxBridgeConfiguration();
+
+    private Duration offlineDelay = Duration.ofMinutes(5);
 
     /*
      * ************************
@@ -278,7 +287,19 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
         logger.trace("initialize(): initialize bridge configuration parameters.");
         veluxBridgeConfiguration = new VeluxBinding(getConfigAs(VeluxBridgeConfiguration.class)).checked();
 
+        /*
+         * When a binding call to the hub fails with a communication error, it will retry the call for a maximum of
+         * veluxBridgeConfiguration.retries times, where the interval between retry attempts increases on each attempt
+         * calculated as veluxBridgeConfiguration.refreshMSecs * 2^retry (i.e. 1, 2, 4, 8, 16, 32 etc.) so a complete
+         * retry series takes (veluxBridgeConfiguration.refreshMSecs * ((2^(veluxBridgeConfiguration.retries + 1)) - 1)
+         * milliseconds. So we have to let this full retry series to have been tried (and failed), before we consider
+         * the thing to be actually offline.
+         */
+        offlineDelay = Duration.ofMillis(
+                ((long) Math.pow(2, veluxBridgeConfiguration.retries + 1) - 1) * veluxBridgeConfiguration.refreshMSecs);
+
         scheduler.execute(() -> {
+            disposing = false;
             initializeSchedulerJob();
         });
     }
@@ -314,6 +335,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
     @Override
     public void dispose() {
         scheduler.submit(() -> {
+            disposing = true;
             disposeSchedulerJob();
         });
     }
@@ -459,6 +481,8 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
             }
         }
 
+        updateDynamicChannels();
+
         veluxBridgeConfiguration.hasChanged = false;
         logger.debug("Velux veluxBridge is online, now.");
         updateStatus(ThingStatus.ONLINE);
@@ -538,20 +562,27 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
                 if (!channelPbi.equals(productPbi)) {
                     continue;
                 }
-                // Handle value inversion
-                boolean isInverted = actuator.isInverted();
-                logger.trace("syncChannelsWithProducts(): isInverted is {}.", isInverted);
-                VeluxProductPosition position = new VeluxProductPosition(product.getDisplayPosition());
+                boolean isInverted;
+                VeluxProductPosition position;
+                if (channelUID.getId().equals(VeluxBindingConstants.CHANNEL_VANE_POSITION)) {
+                    isInverted = false;
+                    position = new VeluxProductPosition(product.getVanePosition());
+                } else {
+                    // Handle value inversion
+                    isInverted = actuator.isInverted();
+                    logger.trace("syncChannelsWithProducts(): isInverted is {}.", isInverted);
+                    position = new VeluxProductPosition(product.getDisplayPosition());
+                }
                 if (position.isValid()) {
                     PercentType positionAsPercent = position.getPositionAsPercentType(isInverted);
                     logger.debug("syncChannelsWithProducts(): updating channel {} to position {}%.", channelUID,
                             positionAsPercent);
                     updateState(channelUID, positionAsPercent);
-                    break;
+                    continue;
                 }
-                logger.trace("syncChannelsWithProducts(): update channel {} to 'UNDEFINED'.", channelUID);
+                logger.trace("syncChannelsWithProducts(): updating channel {} to 'UNDEFINED'.", channelUID);
                 updateState(channelUID, UnDefType.UNDEF);
-                break;
+                continue;
             }
         }
         logger.trace("syncChannelsWithProducts(): resetting dirty flag.");
@@ -671,6 +702,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
                         case ACTUATOR_STATE:
                         case ROLLERSHUTTER_POSITION:
                         case WINDOW_POSITION:
+                        case ROLLERSHUTTER_VANE_POSITION:
                             newState = ChannelActuatorPosition.handleRefresh(channelUID, channelId, this);
                             break;
                         case ACTUATOR_LIMIT_MINIMUM:
@@ -691,9 +723,8 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
                             break;
 
                         default:
-                            logger.trace(
-                                    "handleCommandCommsJob(): cannot handle REFRESH on channel {} as it is of type {}.",
-                                    itemName, channelId);
+                            logger.warn("{} Cannot handle REFRESH on channel {} as it is of type {}.",
+                                    VeluxBindingConstants.LOGGING_CONTACT, itemName, channelId);
                     }
                 } catch (IllegalArgumentException e) {
                     logger.warn("Cannot handle REFRESH on channel {} as it isn't (yet) known to the bridge.", itemName);
@@ -766,6 +797,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
                     case ACTUATOR_STATE:
                     case ROLLERSHUTTER_POSITION:
                     case WINDOW_POSITION:
+                    case ROLLERSHUTTER_VANE_POSITION:
                         newValue = ChannelActuatorPosition.handleCommand(channelUID, channelId, command, this);
                         break;
                     case ACTUATOR_LIMIT_MINIMUM:
@@ -795,10 +827,28 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
                 postCommand(channelUID, newValue);
             }
         }
+
+        Instant lastCommunication = Instant.ofEpochMilli(thisBridge.lastCommunication());
+        Instant lastSuccessfulCommunication = Instant.ofEpochMilli(thisBridge.lastSuccessfulCommunication());
+        boolean lastCommunicationSucceeded = lastSuccessfulCommunication.equals(lastCommunication);
+        ThingStatus thingStatus = getThing().getStatus();
+
+        if (lastCommunicationSucceeded) {
+            if (thingStatus == ThingStatus.OFFLINE || thingStatus == ThingStatus.UNKNOWN) {
+                updateStatus(ThingStatus.ONLINE);
+            }
+        } else {
+            if ((thingStatus == ThingStatus.ONLINE || thingStatus == ThingStatus.UNKNOWN)
+                    && lastSuccessfulCommunication.plus(offlineDelay).isBefore(lastCommunication)) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            }
+        }
+
         ThingProperty.setValue(this, VeluxBindingConstants.PROPERTY_BRIDGE_TIMESTAMP_ATTEMPT,
-                new java.util.Date(thisBridge.lastCommunication()).toString());
+                lastCommunication.toString());
         ThingProperty.setValue(this, VeluxBindingConstants.PROPERTY_BRIDGE_TIMESTAMP_SUCCESS,
-                new java.util.Date(thisBridge.lastSuccessfulCommunication()).toString());
+                lastSuccessfulCommunication.toString());
+
         logger.trace("handleCommandCommsJob({}) done.", Thread.currentThread());
     }
 
@@ -807,7 +857,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
      */
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singletonList(VeluxActions.class);
+        return Set.of(VeluxActions.class);
     }
 
     /**
@@ -815,7 +865,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
      *
      * @return true if the command could be issued
      */
-    public boolean runReboot() {
+    public boolean rebootBridge() {
         logger.trace("runReboot() called on {}", getThing().getUID());
         RunReboot bcp = thisBridge.bridgeAPI().runReboot();
         if (bcp != null) {
@@ -842,13 +892,17 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
         logger.trace("moveRelative() called on {}", getThing().getUID());
         RunProductCommand bcp = thisBridge.bridgeAPI().runProductCommand();
         if (bcp != null) {
-            bcp.setNodeAndMainParameter(nodeId, new VeluxProductPosition(new PercentType(Math.abs(relativePercent)))
-                    .getAsRelativePosition((relativePercent >= 0)));
             // background execution of moveRelative
             submitCommunicationsJob(() -> {
-                if (thisBridge.bridgeCommunicate(bcp)) {
-                    logger.trace("moveRelative() command {}sucessfully sent to {}",
-                            bcp.isCommunicationSuccessful() ? "" : "un", getThing().getUID());
+                synchronized (bcp) {
+                    bcp.setNodeIdAndParameters(nodeId,
+                            new VeluxProductPosition(new PercentType(Math.abs(relativePercent))).overridePositionType(
+                                    relativePercent > 0 ? PositionType.OFFSET_POSITIVE : PositionType.OFFSET_NEGATIVE),
+                            null);
+                    if (thisBridge.bridgeCommunicate(bcp)) {
+                        logger.trace("moveRelative() command {}sucessfully sent to {}",
+                                bcp.isCommunicationSuccessful() ? "" : "un", getThing().getUID());
+                    }
                 }
             });
             return true;
@@ -881,5 +935,74 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
             threadFactory = new NamedThreadFactory(getThing().getUID().getAsString());
         }
         return threadFactory;
+    }
+
+    /**
+     * Indicates if the bridge thing is being disposed.
+     *
+     * @return true if the bridge thing is being disposed.
+     */
+    public boolean isDisposing() {
+        return disposing;
+    }
+
+    /**
+     * Exported method (called by an OpenHAB Rules Action) to simultaneously move the shade main position and the vane
+     * position.
+     *
+     * @param node the node index in the bridge.
+     * @param mainPosition the desired main position.
+     * @param vanePosition the desired vane position.
+     * @return true if the command could be issued.
+     */
+    public Boolean moveMainAndVane(ProductBridgeIndex node, PercentType mainPosition, PercentType vanePosition) {
+        logger.trace("moveMainAndVane() called on {}", getThing().getUID());
+        RunProductCommand bcp = thisBridge.bridgeAPI().runProductCommand();
+        if (bcp != null) {
+            VeluxProduct product = existingProducts().get(node).clone();
+            FunctionalParameters functionalParameters = null;
+            if (product.supportsVanePosition()) {
+                int vanePos = new VeluxProductPosition(vanePosition).getPositionAsVeluxType();
+                product.setVanePosition(vanePos);
+                functionalParameters = product.getFunctionalParameters();
+            }
+            VeluxProductPosition mainPos = new VeluxProductPosition(mainPosition);
+            bcp.setNodeIdAndParameters(node.toInt(), mainPos, functionalParameters);
+            submitCommunicationsJob(() -> {
+                if (thisBridge.bridgeCommunicate(bcp)) {
+                    logger.trace("moveMainAndVane() command {}sucessfully sent to {}",
+                            bcp.isCommunicationSuccessful() ? "" : "un", getThing().getUID());
+                }
+            });
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Get the bridge product index for a given thing name.
+     *
+     * @param thingName the thing name
+     * @return the bridge product index or ProductBridgeIndex.UNKNOWN if not found.
+     */
+    public ProductBridgeIndex getProductBridgeIndex(String thingName) {
+        for (Entry<ChannelUID, Thing2VeluxActuator> entry : channel2VeluxActuator.entrySet()) {
+            if (thingName.equals(entry.getKey().getThingUID().getAsString())) {
+                return entry.getValue().getProductBridgeIndex();
+            }
+        }
+        return ProductBridgeIndex.UNKNOWN;
+    }
+
+    /**
+     * Ask all things in the hub to initialise their dynamic vane position channel if they support it.
+     */
+    private void updateDynamicChannels() {
+        getThing().getThings().stream().forEach(thing -> {
+            ThingHandler thingHandler = thing.getHandler();
+            if (thingHandler instanceof VeluxHandler) {
+                ((VeluxHandler) thingHandler).updateDynamicChannels(this);
+            }
+        });
     }
 }

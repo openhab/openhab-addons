@@ -50,7 +50,7 @@ public class DeutscheBahnHandlerFactory extends BaseThingHandlerFactory {
         final ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (TIMETABLE_TYPE.equals(thingTypeUID)) {
-            return new DeutscheBahnTimetableHandler((Bridge) thing, TimetablesV1Impl::new, Date::new);
+            return new DeutscheBahnTimetableHandler((Bridge) thing, TimetablesV1Impl::new, Date::new, null);
         } else if (TRAIN_TYPE.equals(thingTypeUID)) {
             return new DeutscheBahnTrainHandler(thing);
         }

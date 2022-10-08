@@ -12,14 +12,17 @@
  */
 package org.openhab.binding.miele.internal.handler;
 
-import static org.openhab.binding.miele.internal.MieleBindingConstants.APPLIANCE_ID;
 import static org.openhab.binding.miele.internal.MieleBindingConstants.MIELE_DEVICE_CLASS_WASHING_MACHINE;
 import static org.openhab.binding.miele.internal.MieleBindingConstants.POWER_CONSUMPTION_CHANNEL_ID;
 import static org.openhab.binding.miele.internal.MieleBindingConstants.WATER_CONSUMPTION_CHANNEL_ID;
 
 import java.math.BigDecimal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.miele.internal.api.dto.DeviceProperty;
+import org.openhab.binding.miele.internal.exceptions.MieleRpcException;
 import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -42,6 +45,7 @@ import com.google.gson.JsonElement;
  * @author Martin Lepsy - fixed handling of empty JSON results
  * @author Jacob Laursen - Fixed multicast and protocol support (ZigBee/LAN), added power/water consumption channels
  **/
+@NonNullByDefault
 public class WashingMachineHandler extends MieleApplianceHandler<WashingMachineChannelSelector>
         implements ExtendedDeviceStateListener {
 
@@ -51,8 +55,9 @@ public class WashingMachineHandler extends MieleApplianceHandler<WashingMachineC
 
     private final Logger logger = LoggerFactory.getLogger(WashingMachineHandler.class);
 
-    public WashingMachineHandler(Thing thing, TranslationProvider i18nProvider, LocaleProvider localeProvider) {
-        super(thing, i18nProvider, localeProvider, WashingMachineChannelSelector.class,
+    public WashingMachineHandler(Thing thing, TranslationProvider i18nProvider, LocaleProvider localeProvider,
+            TimeZoneProvider timeZoneProvider) {
+        super(thing, i18nProvider, localeProvider, timeZoneProvider, WashingMachineChannelSelector.class,
                 MIELE_DEVICE_CLASS_WASHING_MACHINE);
     }
 
@@ -61,28 +66,35 @@ public class WashingMachineHandler extends MieleApplianceHandler<WashingMachineC
         super.handleCommand(channelUID, command);
 
         String channelID = channelUID.getId();
-        String applianceId = (String) getThing().getConfiguration().getProperties().get(APPLIANCE_ID);
+        String applianceId = this.applianceId;
+        if (applianceId == null) {
+            logger.warn("Command '{}' failed, appliance id is unknown", command);
+            return;
+        }
 
         WashingMachineChannelSelector selector = (WashingMachineChannelSelector) getValueSelectorFromChannelID(
                 channelID);
         JsonElement result = null;
 
         try {
-            if (selector != null) {
-                switch (selector) {
-                    case SWITCH: {
-                        if (command.equals(OnOffType.ON)) {
-                            result = bridgeHandler.invokeOperation(applianceId, modelID, "start");
-                        } else if (command.equals(OnOffType.OFF)) {
-                            result = bridgeHandler.invokeOperation(applianceId, modelID, "stop");
-                        }
-                        break;
+            switch (selector) {
+                case SWITCH: {
+                    MieleBridgeHandler bridgeHandler = getMieleBridgeHandler();
+                    if (bridgeHandler == null) {
+                        logger.warn("Command '{}' failed, missing bridge handler", command);
+                        return;
                     }
-                    default: {
-                        if (!(command instanceof RefreshType)) {
-                            logger.debug("{} is a read-only channel that does not accept commands",
-                                    selector.getChannelID());
-                        }
+                    if (command.equals(OnOffType.ON)) {
+                        result = bridgeHandler.invokeOperation(applianceId, modelID, "start");
+                    } else if (command.equals(OnOffType.OFF)) {
+                        result = bridgeHandler.invokeOperation(applianceId, modelID, "stop");
+                    }
+                    break;
+                }
+                default: {
+                    if (!(command instanceof RefreshType)) {
+                        logger.debug("{} is a read-only channel that does not accept commands",
+                                selector.getChannelID());
                     }
                 }
             }
@@ -94,12 +106,26 @@ public class WashingMachineHandler extends MieleApplianceHandler<WashingMachineC
             logger.warn(
                     "An error occurred while trying to set the read-only variable associated with channel '{}' to '{}'",
                     channelID, command.toString());
+        } catch (MieleRpcException e) {
+            Throwable cause = e.getCause();
+            if (cause == null) {
+                logger.warn("An error occurred while trying to invoke operation: {}", e.getMessage());
+            } else {
+                logger.warn("An error occurred while trying to invoke operation: {} -> {}", e.getMessage(),
+                        cause.getMessage());
+            }
         }
+    }
+
+    @Override
+    public void onAppliancePropertyChanged(DeviceProperty dp) {
+        super.onAppliancePropertyChanged(dp);
+        updateSwitchStartStopFromState(dp);
     }
 
     public void onApplianceExtendedStateChanged(byte[] extendedDeviceState) {
         if (extendedDeviceState.length < EXTENDED_STATE_MIN_SIZE_BYTES) {
-            logger.warn("Unexpected size of extended state: {}", extendedDeviceState);
+            logger.debug("Insufficient extended state data to extract consumption values: {}", extendedDeviceState);
             return;
         }
 

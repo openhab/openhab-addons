@@ -25,17 +25,16 @@ An account must be specified, all things for an account are discovered automatic
 
 There are several settings for an account:
 
-| Name                  | Required | Description                                                                                         |
-|-----------------------|----------|-----------------------------------------------------------------------------------------------------|
-| **email**             | yes      | The email address for logging into the Gardena smart system                                         |
-| **password**          | yes      | The password for logging into the Gardena smart system                                              |
-| **apiKey**            | yes      | The Gardena smart system integration API key                                                    |
-| **connectionTimeout** | no       | The timeout in seconds for connections to Gardena smart system integration API (default = 10)       |
+| Name                  | Required | Description                                                                                   |
+|-----------------------|----------|-----------------------------------------------------------------------------------------------|
+| **apiSecret**         | yes      | The Gardena smart system integration API secret                                               |
+| **apiKey**            | yes      | The Gardena smart system integration API key                                                  |
+| **connectionTimeout** | no       | The timeout in seconds for connections to Gardena smart system integration API (default = 10) |
 
 ### Obtaining your API Key
 
 1. Goto https://developer.husqvarnagroup.cloud/, sign in using your GARDENA smart system account and accept the terms of use
-2. Create and save a new application via the 'Create application' button
+2. Create and save a new application via the 'Create application' button. The Redirect URLs do not matter, you can enter what you want (e.g. http://localhost:8080)
 3. Connect both _Authentication API_ and _GARDENA smart system API_ to your application via the 'Connect new API' button
 4. Copy the application key to use with this binding as _apiKey_
 
@@ -46,14 +45,14 @@ There are several settings for an account:
 Minimal Thing configuration:
 
 ```java
-Bridge gardena:account:home [ email="...", password="...", apiKey="..." ]
+Bridge gardena:account:home [ apiSecret="...", apiKey="..." ]
 ```
 
 Configuration of multiple bridges:
 
 ```java
-Bridge gardena:account:home1 [ email="...", password="...", apiKey="..." ]
-Bridge gardena:account:home2 [ email="...", password="...", apiKey="..." ]
+Bridge gardena:account:home1 [ apiSecret="...", apiKey="..." ]
+Bridge gardena:account:home2 [ apiSecret="...", apiKey="..." ]
 ```
 
 Once a connection to an account is established, connected Things are discovered automatically.
@@ -61,7 +60,7 @@ Once a connection to an account is established, connected Things are discovered 
 Alternatively, you can manually configure Things:
 
 ```java
-Bridge gardena:account:home [ email="...", password="...", apiKey="..." ]
+Bridge gardena:account:home [ apiSecret="...", apiKey="..." ]
 {
   Thing mower myMower [ deviceId="c81ad682-6e45-42ce-bed1-6b4eff5620c8" ]
   Thing water_control myWaterControl [ deviceId="c81ad682-6e45-42ce-bed1-6b4eff5620c8" ]
@@ -108,12 +107,27 @@ openhab:send WC_Valve_cmd_CloseValve.sendCommand(ON) // stop any active watering
 ```
 
 If you send a REFRESH command to the last update timestamp (no matter which thing), **ALL** items from **ALL** things are updated
+
 ```
 DateTime LastUpdate "LastUpdate [%1$td.%1$tm.%1$tY %1$tH:%1$tM]" { channel="gardena:water_control:home:myWateringComputer:common#lastUpdate_timestamp" }
 
 // refresh ALL items
 openhab:send LastUpdate REFRESH
 ```
+
+### Server Call Rate Limitation
+
+The Gardena server imposes call rate limits to prevent malicious use of its API.
+The limits are:
+
+- On average not more than one call every 15 minutes.
+- 3000 calls per month.
+
+Normally the binding does not exceed these limits.
+But from time to time the server may nevertheless consider the limits to have been exceeded, in which case it reports an HTTP 429 Error (Limit Exceeded).
+If such an error occurs you will be locked out of your Gardena account for 24 hours.
+In this case the binding will wait in an offline state for the respective 24 hours, after which it will automatically try to reconnect again.
+Attempting to force reconnect within the 24 hours causes the call rate to be exceeded further, and therefore just exacerbates the problem.
 
 ### Debugging and Tracing
 

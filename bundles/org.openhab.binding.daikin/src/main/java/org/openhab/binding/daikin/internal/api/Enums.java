@@ -139,7 +139,7 @@ public class Enums {
         }
     }
 
-    public enum SpecialMode {
+    public enum AdvancedMode {
         STREAMER("13"),
         ECO("12"),
         POWERFUL("2"),
@@ -148,7 +148,43 @@ public class Enums {
         OFF(""),
         UNKNOWN("??");
 
-        private static final Logger LOGGER = LoggerFactory.getLogger(SpecialMode.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger(AdvancedMode.class);
+        private final String value;
+
+        AdvancedMode(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public boolean isStreamerActive() {
+            return this.equals(STREAMER) || this.equals(POWERFUL_STREAMER) || this.equals(ECO_STREAMER);
+        }
+
+        public boolean isUndefined() {
+            return this.equals(UNKNOWN);
+        }
+
+        public static AdvancedMode fromValue(String value) {
+            for (AdvancedMode m : AdvancedMode.values()) {
+                if (m.getValue().equals(value)) {
+                    return m;
+                }
+            }
+            LOGGER.debug("Unexpected AdvancedMode value of \"{}\"", value);
+
+            // Default to UNKNOWN
+            return UNKNOWN;
+        }
+    }
+
+    public enum SpecialMode {
+        NORMAL("0"),
+        POWERFUL("1"),
+        ECO("2");
+
         private final String value;
 
         SpecialMode(String value) {
@@ -159,54 +195,16 @@ public class Enums {
             return value;
         }
 
-        public boolean isPowerfulActive() {
-            return this.equals(POWERFUL) || this.equals(POWERFUL_STREAMER);
-        }
-
-        public boolean isUndefined() {
-            return this.equals(UNKNOWN);
-        }
-
-        public static SpecialMode fromValue(String value) {
-            for (SpecialMode m : SpecialMode.values()) {
-                if (m.getValue().equals(value)) {
-                    return m;
-                }
+        public static SpecialMode fromAdvancedMode(AdvancedMode advMode) {
+            switch (advMode) {
+                case POWERFUL:
+                case POWERFUL_STREAMER:
+                    return SpecialMode.POWERFUL;
+                case ECO:
+                case ECO_STREAMER:
+                    return SpecialMode.ECO;
             }
-            LOGGER.debug("Unexpected SpecialMode value of \"{}\"", value);
-
-            // Default to UNKNOWN
-            return UNKNOWN;
-        }
-    }
-
-    public enum SpecialModeKind {
-        UNKNOWN(-1),
-        STREAMER(0),
-        POWERFUL(1),
-        ECO(2);
-
-        private static final Logger LOGGER = LoggerFactory.getLogger(SpecialModeKind.class);
-        private final int value;
-
-        SpecialModeKind(int value) {
-            this.value = value;
-        }
-
-        public int getValue() {
-            return value;
-        }
-
-        public static SpecialModeKind fromValue(int value) {
-            for (SpecialModeKind m : SpecialModeKind.values()) {
-                if (m.getValue() == value) {
-                    return m;
-                }
-            }
-            LOGGER.debug("Unexpected SpecialModeKind value of \"{}\"", value);
-
-            // Default to UNKNOWN
-            return UNKNOWN;
+            return NORMAL;
         }
     }
 }

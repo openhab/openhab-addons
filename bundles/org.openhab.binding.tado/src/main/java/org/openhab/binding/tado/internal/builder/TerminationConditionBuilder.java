@@ -16,6 +16,8 @@ import static org.openhab.binding.tado.internal.api.TadoApiTypeUtils.*;
 
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tado.internal.api.ApiException;
 import org.openhab.binding.tado.internal.api.model.OverlayTerminationCondition;
 import org.openhab.binding.tado.internal.api.model.OverlayTerminationConditionType;
@@ -28,11 +30,13 @@ import org.openhab.binding.tado.internal.handler.TadoZoneHandler;
  *
  * @author Dennis Frommknecht - Initial contribution
  */
+@NonNullByDefault
 public class TerminationConditionBuilder {
-    private TadoZoneHandler zoneHandler;
 
-    private OverlayTerminationConditionType terminationType = null;
-    private Integer timerDurationInSeconds = null;
+    private final TadoZoneHandler zoneHandler;
+
+    private @Nullable OverlayTerminationConditionType terminationType;
+    private int timerDurationInSeconds = 0;
 
     protected TerminationConditionBuilder(TadoZoneHandler zoneHandler) {
         this.zoneHandler = zoneHandler;
@@ -45,23 +49,23 @@ public class TerminationConditionBuilder {
     public TerminationConditionBuilder withTerminationType(OverlayTerminationConditionType terminationType) {
         this.terminationType = terminationType;
         if (terminationType != OverlayTerminationConditionType.TIMER) {
-            timerDurationInSeconds = null;
+            timerDurationInSeconds = 0;
         }
-
         return this;
     }
 
-    public TerminationConditionBuilder withTimerDurationInSeconds(Integer timerDurationInSeconds) {
+    public TerminationConditionBuilder withTimerDurationInSeconds(int timerDurationInSeconds) {
         this.terminationType = OverlayTerminationConditionType.TIMER;
         this.timerDurationInSeconds = timerDurationInSeconds;
         return this;
     }
 
     public OverlayTerminationCondition build(ZoneStateProvider zoneStateProvider) throws IOException, ApiException {
-        OverlayTerminationCondition terminationCondition = null;
+        OverlayTerminationCondition terminationCondition;
 
+        OverlayTerminationConditionType terminationType = this.terminationType;
         if (terminationType != null) {
-            if (terminationType != OverlayTerminationConditionType.TIMER || timerDurationInSeconds != null) {
+            if (terminationType != OverlayTerminationConditionType.TIMER || timerDurationInSeconds > 0) {
                 terminationCondition = getTerminationCondition(terminationType, timerDurationInSeconds);
             } else {
                 terminationCondition = getCurrentOrDefaultTimerTermination(zoneStateProvider);
@@ -75,18 +79,19 @@ public class TerminationConditionBuilder {
                 terminationCondition = getDefaultTerminationCondition();
             }
         }
+
         return terminationCondition;
     }
 
     private OverlayTerminationCondition getDefaultTerminationCondition() throws IOException, ApiException {
         OverlayTerminationCondition defaultTerminationCondition = zoneHandler.getDefaultTerminationCondition();
-        return defaultTerminationCondition != null ? defaultTerminationCondition : manualTermination();
+        return defaultTerminationCondition;
     }
 
     private TimerTerminationCondition getCurrentOrDefaultTimerTermination(ZoneStateProvider zoneStateProvider)
             throws IOException, ApiException {
         // Timer without duration
-        int duration = zoneHandler.getFallbackTimerDuration() * 60;
+        Integer duration = zoneHandler.getFallbackTimerDuration() * 60;
 
         ZoneState zoneState = zoneStateProvider.getZoneState();
 

@@ -12,10 +12,13 @@
  */
 package org.openhab.binding.miele.internal.handler;
 
-import static org.openhab.binding.miele.internal.MieleBindingConstants.APPLIANCE_ID;
 import static org.openhab.binding.miele.internal.MieleBindingConstants.MIELE_DEVICE_CLASS_COFFEE_SYSTEM;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.miele.internal.api.dto.DeviceProperty;
+import org.openhab.binding.miele.internal.exceptions.MieleRpcException;
 import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
@@ -35,12 +38,14 @@ import com.google.gson.JsonElement;
  * @author Martin Lepsy - fixed handling of empty JSON results
  * @author Jacob Laursen - Fixed multicast and protocol support (ZigBee/LAN)
  */
+@NonNullByDefault
 public class CoffeeMachineHandler extends MieleApplianceHandler<CoffeeMachineChannelSelector> {
 
     private final Logger logger = LoggerFactory.getLogger(CoffeeMachineHandler.class);
 
-    public CoffeeMachineHandler(Thing thing, TranslationProvider i18nProvider, LocaleProvider localeProvider) {
-        super(thing, i18nProvider, localeProvider, CoffeeMachineChannelSelector.class,
+    public CoffeeMachineHandler(Thing thing, TranslationProvider i18nProvider, LocaleProvider localeProvider,
+            TimeZoneProvider timeZoneProvider) {
+        super(thing, i18nProvider, localeProvider, timeZoneProvider, CoffeeMachineChannelSelector.class,
                 MIELE_DEVICE_CLASS_COFFEE_SYSTEM);
     }
 
@@ -49,27 +54,34 @@ public class CoffeeMachineHandler extends MieleApplianceHandler<CoffeeMachineCha
         super.handleCommand(channelUID, command);
 
         String channelID = channelUID.getId();
-        String applianceId = (String) getThing().getConfiguration().getProperties().get(APPLIANCE_ID);
+        String applianceId = this.applianceId;
+        if (applianceId == null) {
+            logger.warn("Command '{}' failed, appliance id is unknown", command);
+            return;
+        }
 
         CoffeeMachineChannelSelector selector = (CoffeeMachineChannelSelector) getValueSelectorFromChannelID(channelID);
         JsonElement result = null;
 
         try {
-            if (selector != null) {
-                switch (selector) {
-                    case SWITCH: {
-                        if (command.equals(OnOffType.ON)) {
-                            result = bridgeHandler.invokeOperation(applianceId, modelID, "switchOn");
-                        } else if (command.equals(OnOffType.OFF)) {
-                            result = bridgeHandler.invokeOperation(applianceId, modelID, "switchOff");
-                        }
-                        break;
+            switch (selector) {
+                case SWITCH: {
+                    MieleBridgeHandler bridgeHandler = getMieleBridgeHandler();
+                    if (bridgeHandler == null) {
+                        logger.warn("Command '{}' failed, missing bridge handler", command);
+                        return;
                     }
-                    default: {
-                        if (!(command instanceof RefreshType)) {
-                            logger.debug("{} is a read-only channel that does not accept commands",
-                                    selector.getChannelID());
-                        }
+                    if (command.equals(OnOffType.ON)) {
+                        result = bridgeHandler.invokeOperation(applianceId, modelID, "switchOn");
+                    } else if (command.equals(OnOffType.OFF)) {
+                        result = bridgeHandler.invokeOperation(applianceId, modelID, "switchOff");
+                    }
+                    break;
+                }
+                default: {
+                    if (!(command instanceof RefreshType)) {
+                        logger.debug("{} is a read-only channel that does not accept commands",
+                                selector.getChannelID());
                     }
                 }
             }
@@ -81,6 +93,20 @@ public class CoffeeMachineHandler extends MieleApplianceHandler<CoffeeMachineCha
             logger.warn(
                     "An error occurred while trying to set the read-only variable associated with channel '{}' to '{}'",
                     channelID, command.toString());
+        } catch (MieleRpcException e) {
+            Throwable cause = e.getCause();
+            if (cause == null) {
+                logger.warn("An error occurred while trying to invoke operation: {}", e.getMessage());
+            } else {
+                logger.warn("An error occurred while trying to invoke operation: {} -> {}", e.getMessage(),
+                        cause.getMessage());
+            }
         }
+    }
+
+    @Override
+    public void onAppliancePropertyChanged(DeviceProperty dp) {
+        super.onAppliancePropertyChanged(dp);
+        updateSwitchOnOffFromState(dp);
     }
 }

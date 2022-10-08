@@ -29,17 +29,28 @@ public interface TimetablesV1ImplTestHelper {
 
     public static final String EVA_LEHRTE = "8000226";
     public static final String EVA_HANNOVER_HBF = "8000152";
-    public static final String AUTH_TOKEN = "354c8161cd7fb0936c840240280c131e";
+    public static final String CLIENT_ID = "bdwrpmxuo6157jrekftlbcc6ju9awo";
+    public static final String CLIENT_SECRET = "354c8161cd7fb0936c840240280c131e";
 
     /**
      * Creates an {@link TimetablesApiTestModule} that uses http response data from file system.
+     * Uses default-testdata from directory /timetablesData
      */
     public default TimetablesApiTestModule createApiWithTestdata() throws Exception {
-        final URL timetablesData = getClass().getResource("/timetablesData");
+        return this.createApiWithTestdata("/timetablesData");
+    }
+
+    /**
+     * Creates an {@link TimetablesApiTestModule} that uses http response data from file system.
+     * 
+     * @param dataDirectory Directory within test-resources containing the stub-data.
+     */
+    public default TimetablesApiTestModule createApiWithTestdata(String dataDirectory) throws Exception {
+        final URL timetablesData = getClass().getResource(dataDirectory);
         assertNotNull(timetablesData);
         final File testDataDir = new File(timetablesData.toURI());
         final TimetableStubHttpCallable httpStub = new TimetableStubHttpCallable(testDataDir);
-        final TimetablesV1Impl timeTableApi = new TimetablesV1Impl(AUTH_TOKEN, httpStub);
+        final TimetablesV1Impl timeTableApi = new TimetablesV1Impl(CLIENT_ID, CLIENT_SECRET, httpStub);
         return new TimetablesApiTestModule(timeTableApi, httpStub);
     }
 }

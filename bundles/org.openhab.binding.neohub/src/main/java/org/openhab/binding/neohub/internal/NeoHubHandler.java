@@ -58,12 +58,14 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 public class NeoHubHandler extends BaseBridgeHandler {
 
+    private static final String SEE_README = "See documentation chapter \"Connection Refused Errors\"";
+
     private final Logger logger = LoggerFactory.getLogger(NeoHubHandler.class);
 
     private final Map<String, Boolean> connectionStates = new HashMap<>();
 
     private @Nullable NeoHubConfiguration config;
-    private @Nullable NeoHubSocket socket;
+    private @Nullable NeoHubSocketBase socket;
     private @Nullable ScheduledFuture<?> lazyPollingScheduler;
     private @Nullable ScheduledFuture<?> fastPollingScheduler;
 
@@ -111,7 +113,7 @@ public class NeoHubHandler extends BaseBridgeHandler {
             logger.debug("hub '{}' port={}", getThing().getUID(), config.portNumber);
         }
 
-        if (config.portNumber <= 0 || config.portNumber > 0xFFFF) {
+        if (config.portNumber < 0 || config.portNumber > 0xFFFF) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "portNumber is invalid!");
             return;
         }
@@ -140,8 +142,38 @@ public class NeoHubHandler extends BaseBridgeHandler {
             logger.debug("hub '{}' preferLegacyApi={}", getThing().getUID(), config.preferLegacyApi);
         }
 
-        socket = new NeoHubSocket(config.hostName, config.portNumber, config.socketTimeout);
+        // create a web or TCP socket based on the port number in the configuration
+        NeoHubSocketBase socket;
+        try {
+            if (config.useWebSocket) {
+                socket = new NeoHubWebSocket(config);
+            } else {
+                socket = new NeoHubSocket(config);
+            }
+        } catch (NeoHubException e) {
+            logger.debug("\"hub '{}' error creating web/tcp socket: '{}'", getThing().getUID(), e.getMessage());
+            return;
+        }
+
+        this.socket = socket;
         this.config = config;
+
+        /*
+         * Try to 'ping' the hub, and if there is a 'connection refused', it is probably due to the mobile App |
+         * Settings | Legacy API Enable switch not being On, so go offline and log a warning message.
+         */
+        try {
+            socket.sendMessage(CMD_CODE_FIRMWARE);
+        } catch (IOException e) {
+            String error = e.getMessage();
+            if (error != null && error.toLowerCase().startsWith("connection refused")) {
+                logger.warn("CONNECTION REFUSED!! (hub '{}') => {}", getThing().getUID(), SEE_README);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, SEE_README);
+                return;
+            }
+        } catch (NeoHubException e) {
+            // NeoHubException won't actually occur here
+        }
 
         if (logger.isDebugEnabled()) {
             logger.debug("hub '{}' start background polling..", getThing().getUID());
@@ -187,6 +219,15 @@ public class NeoHubHandler extends BaseBridgeHandler {
             fast.cancel(true);
             this.fastPollingScheduler = null;
         }
+
+        NeoHubSocketBase socket = this.socket;
+        if (socket != null) {
+            try {
+                socket.close();
+            } catch (IOException e) {
+            }
+            this.socket = null;
+        }
     }
 
     /*
@@ -201,7 +242,7 @@ public class NeoHubHandler extends BaseBridgeHandler {
      * device handlers call this method to issue commands to the NeoHub
      */
     public synchronized NeoHubReturnResult toNeoHubSendChannelValue(String commandStr) {
-        NeoHubSocket socket = this.socket;
+        NeoHubSocketBase socket = this.socket;
 
         if (socket == null || config == null) {
             return NeoHubReturnResult.ERR_INITIALIZATION;
@@ -227,7 +268,7 @@ public class NeoHubHandler extends BaseBridgeHandler {
      * @return a class that contains the full status of all devices
      */
     protected @Nullable NeoHubAbstractDeviceData fromNeoHubGetDeviceData() {
-        NeoHubSocket socket = this.socket;
+        NeoHubSocketBase socket = this.socket;
 
         if (socket == null || config == null) {
             logger.warn(MSG_HUB_CONFIG, getThing().getUID());
@@ -303,7 +344,7 @@ public class NeoHubHandler extends BaseBridgeHandler {
      * @return a class that contains the status of the system
      */
     protected @Nullable NeoHubReadDcbResponse fromNeoHubReadSystemData() {
-        NeoHubSocket socket = this.socket;
+        NeoHubSocketBase socket = this.socket;
 
         if (socket == null) {
             return null;
@@ -424,7 +465,7 @@ public class NeoHubHandler extends BaseBridgeHandler {
         boolean supportsLegacyApi = false;
         boolean supportsFutureApi = false;
 
-        NeoHubSocket socket = this.socket;
+        NeoHubSocketBase socket = this.socket;
         if (socket != null) {
             String responseJson;
             NeoHubReadDcbResponse systemData;
@@ -479,7 +520,7 @@ public class NeoHubHandler extends BaseBridgeHandler {
      * get the Engineers data
      */
     public @Nullable NeoHubGetEngineersData fromNeoHubGetEngineersData() {
-        NeoHubSocket socket = this.socket;
+        NeoHubSocketBase socket = this.socket;
         if (socket != null) {
             String responseJson;
             try {

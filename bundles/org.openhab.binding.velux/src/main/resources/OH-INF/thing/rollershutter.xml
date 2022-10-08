@@ -17,6 +17,7 @@
 		<category>Blinds</category>
 		<channels>
 			<channel id="position" typeId="position"/>
+			<channel id="vanePosition" typeId="vanePosition"/>
 			<channel id="limitMinimum" typeId="limitMinimum"/>
 			<channel id="limitMaximum" typeId="limitMaximum"/>
 		</channels>

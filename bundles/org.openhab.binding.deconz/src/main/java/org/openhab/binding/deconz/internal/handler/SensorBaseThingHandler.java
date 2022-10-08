@@ -116,7 +116,7 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler {
 
         // Add some information about the sensor
         if (!sensorConfig.reachable) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "Not reachable");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/offline.sensor-not-reachable");
             return;
         }
 
@@ -135,6 +135,10 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler {
         // any battery-powered sensor
         if (sensorConfig.battery != null) {
             createChannel(CHANNEL_BATTERY_LEVEL, ChannelKind.STATE);
+            createChannel(CHANNEL_BATTERY_LOW, ChannelKind.STATE);
+        }
+
+        if (sensorState.lowbattery != null) {
             createChannel(CHANNEL_BATTERY_LOW, ChannelKind.STATE);
         }
 
@@ -208,6 +212,12 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler {
                 String lastUpdated = newState.lastupdated;
                 if (lastUpdated != null && !"none".equals(lastUpdated)) {
                     updateState(channelUID, Util.convertTimestampToDateTime(lastUpdated));
+                }
+                break;
+            case CHANNEL_BATTERY_LOW:
+                Boolean lowBattery = newState.lowbattery;
+                if (lowBattery != null) {
+                    updateState(channelUID, OnOffType.from(lowBattery));
                 }
                 break;
             default:

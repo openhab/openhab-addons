@@ -28,7 +28,16 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.BluetoothBindingConstants;
 import org.openhab.binding.bluetooth.BluetoothCharacteristic;
 import org.openhab.binding.bluetooth.BluetoothDevice.ConnectionState;
+import org.openhab.binding.bluetooth.BluetoothService;
 import org.openhab.binding.bluetooth.ConnectedBluetoothHandler;
+import org.openhab.binding.bluetooth.notification.BluetoothScanNotification;
+import org.openhab.bluetooth.gattparser.BluetoothGattParser;
+import org.openhab.bluetooth.gattparser.BluetoothGattParserFactory;
+import org.openhab.bluetooth.gattparser.FieldHolder;
+import org.openhab.bluetooth.gattparser.GattRequest;
+import org.openhab.bluetooth.gattparser.GattResponse;
+import org.openhab.bluetooth.gattparser.spec.Characteristic;
+import org.openhab.bluetooth.gattparser.spec.Field;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -44,20 +53,13 @@ import org.openhab.core.types.State;
 import org.openhab.core.util.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.sputnikdev.bluetooth.gattparser.BluetoothGattParser;
-import org.sputnikdev.bluetooth.gattparser.BluetoothGattParserFactory;
-import org.sputnikdev.bluetooth.gattparser.FieldHolder;
-import org.sputnikdev.bluetooth.gattparser.GattRequest;
-import org.sputnikdev.bluetooth.gattparser.GattResponse;
-import org.sputnikdev.bluetooth.gattparser.spec.Characteristic;
-import org.sputnikdev.bluetooth.gattparser.spec.Field;
 
 /**
  * This is a handler for generic connected bluetooth devices that dynamically generates
  * channels based off of a bluetooth device's GATT characteristics.
  *
  * @author Connor Petty - Initial contribution
- * @author Peter Rosenberg - Use notifications
+ * @author Peter Rosenberg - Use notifications, add support for ServiceData
  *
  */
 @NonNullByDefault
@@ -157,6 +159,71 @@ public class GenericBluetoothHandler extends ConnectedBluetoothHandler {
     public void onCharacteristicUpdate(BluetoothCharacteristic characteristic, byte[] value) {
         super.onCharacteristicUpdate(characteristic, value);
         getCharacteristicHandler(characteristic).handleCharacteristicUpdate(value);
+    }
+
+    @Override
+    public void onScanRecordReceived(BluetoothScanNotification scanNotification) {
+        super.onScanRecordReceived(scanNotification);
+
+        handleServiceData(scanNotification);
+    }
+
+    /**
+     * Service data is specified in the "Core Specification Supplement"
+     * https://www.bluetooth.com/specifications/specs/
+     * 1.11 SERVICE DATA
+     * <p>
+     * Broadcast configuration to configure what to advertise in service data
+     * is specified in "Core Specification 5.3"
+     * https://www.bluetooth.com/specifications/specs/
+     * Part G: GENERIC ATTRIBUTE PROFILE (GATT): 2.7 CONFIGURED BROADCAST
+     *
+     * This method extracts ServiceData, finds the Service and the Characteristic it belongs
+     * to and notifies a value change.
+     *
+     * @param scanNotification to get serviceData from
+     */
+    private void handleServiceData(BluetoothScanNotification scanNotification) {
+        Map<String, byte[]> serviceData = scanNotification.getServiceData();
+        if (serviceData != null) {
+            for (String uuidStr : serviceData.keySet()) {
+                @Nullable
+                BluetoothService service = device.getServices(UUID.fromString(uuidStr));
+                if (service == null) {
+                    logger.warn("Service with UUID {} not found on {}, ignored.", uuidStr,
+                            scanNotification.getAddress());
+                } else {
+                    // The ServiceData contains the UUID of the Service but no identifier of the
+                    // Characteristic the data belongs to.
+                    // Check which Characteristic within this service has the `Broadcast` property set
+                    // and select this one as the Characteristic to assign the data to.
+                    List<BluetoothCharacteristic> broadcastCharacteristics = service.getCharacteristics().stream()
+                            .filter((characteristic) -> characteristic
+                                    .hasPropertyEnabled(BluetoothCharacteristic.PROPERTY_BROADCAST))
+                            .collect(Collectors.toUnmodifiableList());
+
+                    if (broadcastCharacteristics.size() == 0) {
+                        logger.info(
+                                "No Characteristic of service with UUID {} on {} has the broadcast property set, ignored.",
+                                uuidStr, scanNotification.getAddress());
+                    } else if (broadcastCharacteristics.size() > 1) {
+                        logger.warn(
+                                "Multiple Characteristics of service with UUID {} on {} have the broadcast property set what is not supported, ignored.",
+                                uuidStr, scanNotification.getAddress());
+                    } else {
+                        BluetoothCharacteristic broadcastCharacteristic = broadcastCharacteristics.get(0);
+
+                        byte[] value = serviceData.get(uuidStr);
+                        if (value != null) {
+                            onCharacteristicUpdate(broadcastCharacteristic, value);
+                        } else {
+                            logger.warn("Service Data for Service with UUID {} on {} is null, ignored.", uuidStr,
+                                    scanNotification.getAddress());
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private void updateThingChannels() {

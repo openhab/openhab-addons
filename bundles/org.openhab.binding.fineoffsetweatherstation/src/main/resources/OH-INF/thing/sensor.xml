@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="fineoffsetweatherstation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="battery-voltage">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Battery Voltage</label>
+		<description>The voltage of the battery</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<thing-type id="sensor" listed="false">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+
+		<label>Sensor Device</label>
+		<description>A Sensor connected to the gateway (WN1900, GW1000, GW1100, WH2680, WH2650)</description>
+		<category>Sensor</category>
+
+		<channels>
+			<channel id="signal" typeId="system.signal-strength"/>
+			<channel id="batteryLevel" typeId="system.battery-level"/>
+			<channel id="batteryVoltage" typeId="battery-voltage"/>
+			<channel id="lowBattery" typeId="system.low-battery"/>
+		</channels>
+
+		<representation-property>sensor</representation-property>
+		<config-description-ref uri="thing-type:fineoffsetweatherstation:sensor"/>
+	</thing-type>
+</thing:thing-descriptions>

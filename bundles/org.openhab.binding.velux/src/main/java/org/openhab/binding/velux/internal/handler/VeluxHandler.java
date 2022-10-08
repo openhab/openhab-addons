@@ -16,11 +16,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.velux.internal.config.VeluxThingConfiguration;
+import org.openhab.binding.velux.internal.VeluxBindingConstants;
 import org.openhab.binding.velux.internal.handler.utils.ExtendedBaseThingHandler;
+import org.openhab.binding.velux.internal.handler.utils.Thing2VeluxActuator;
+import org.openhab.binding.velux.internal.things.VeluxProduct;
 import org.openhab.binding.velux.internal.utils.Localization;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -40,8 +43,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class VeluxHandler extends ExtendedBaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(VeluxHandler.class);
-
-    VeluxThingConfiguration configuration = new VeluxThingConfiguration();
 
     public VeluxHandler(Thing thing, Localization localization) {
         super(thing);
@@ -70,7 +71,6 @@ public class VeluxHandler extends ExtendedBaseThingHandler {
     }
 
     private synchronized void initializeProperties() {
-        configuration = getConfigAs(VeluxThingConfiguration.class);
         logger.trace("initializeProperties() done.");
     }
 
@@ -123,6 +123,39 @@ public class VeluxHandler extends ExtendedBaseThingHandler {
             initialize();
         } else {
             super.handleConfigurationUpdate(configurationParameters);
+        }
+    }
+
+    /**
+     * Remove previously statically created vane channel if the device does not support it. Or log a warning if it does
+     * support a vane and the respective channel is missing.
+     *
+     * @param bridgeHandler the calling bridge handler.
+     * @throws IllegalStateException if something went wrong.
+     */
+    public void updateDynamicChannels(VeluxBridgeHandler bridgeHandler) throws IllegalStateException {
+        // roller shutters are the only things with a previously statically created vane channel
+        if (!VeluxBindingConstants.THING_TYPE_VELUX_ROLLERSHUTTER.equals(thing.getThingTypeUID())) {
+            return;
+        }
+
+        String id = VeluxBindingConstants.CHANNEL_VANE_POSITION;
+        ChannelUID uid = new ChannelUID(thing.getUID(), id);
+        Thing2VeluxActuator actuator = new Thing2VeluxActuator(bridgeHandler, uid);
+        VeluxProduct product = bridgeHandler.existingProducts().get(actuator.getProductBridgeIndex());
+
+        if (product.equals(VeluxProduct.UNKNOWN)) {
+            throw new IllegalStateException("updateDynamicChannels(): Product unknown in the bridge");
+        }
+
+        Channel channel = thing.getChannel(id);
+        boolean required = product.supportsVanePosition();
+
+        if (!required && channel != null) {
+            logger.debug("Removing unsupported channel for {}: {}", thing.getUID(), id);
+            updateThing(editThing().withoutChannels(channel).build());
+        } else if (required && channel == null) {
+            logger.warn("Thing {} does not have a '{}' channel => please re-create it", thing.getUID(), id);
         }
     }
 }

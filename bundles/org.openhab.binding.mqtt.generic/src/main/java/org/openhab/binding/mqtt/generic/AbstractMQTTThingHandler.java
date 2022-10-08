@@ -23,9 +23,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.mqtt.generic.utils.FutureCollector;
 import org.openhab.binding.mqtt.generic.values.OnOffValue;
 import org.openhab.binding.mqtt.generic.values.Value;
 import org.openhab.binding.mqtt.handler.AbstractBrokerHandler;
@@ -104,7 +104,10 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler
      * @param connection A started broker connection
      * @return A future that completes normal on success and exceptionally on any errors.
      */
-    protected abstract CompletableFuture<@Nullable Void> start(MqttBrokerConnection connection);
+    protected CompletableFuture<@Nullable Void> start(MqttBrokerConnection connection) {
+        return availabilityStates.values().parallelStream().map(cChannel -> cChannel.start(connection, scheduler, 0))
+                .collect(FutureCollector.allOf());
+    }
 
     /**
      * Called when the MQTT connection disappeared.
@@ -289,9 +292,16 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler
     @Override
     public void addAvailabilityTopic(String availability_topic, String payload_available,
             String payload_not_available) {
+        addAvailabilityTopic(availability_topic, payload_available, payload_not_available, null, null);
+    }
+
+    @Override
+    public void addAvailabilityTopic(String availability_topic, String payload_available, String payload_not_available,
+            @Nullable String transformation_pattern,
+            @Nullable TransformationServiceProvider transformationServiceProvider) {
         availabilityStates.computeIfAbsent(availability_topic, topic -> {
             Value value = new OnOffValue(payload_available, payload_not_available);
-            ChannelGroupUID groupUID = new ChannelGroupUID(getThing().getUID(), "availablility");
+            ChannelGroupUID groupUID = new ChannelGroupUID(getThing().getUID(), "availability");
             ChannelUID channelUID = new ChannelUID(groupUID, UIDUtils.encode(topic));
             ChannelState state = new ChannelState(ChannelConfigBuilder.create().withStateTopic(topic).build(),
                     channelUID, value, new ChannelStateUpdateListener() {
@@ -308,6 +318,9 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler
                         public void postChannelCommand(ChannelUID channelUID, Command value) {
                         }
                     });
+            if (transformation_pattern != null && transformationServiceProvider != null) {
+                state.addTransformation(transformation_pattern, transformationServiceProvider);
+            }
             MqttBrokerConnection connection = getConnection();
             if (connection != null) {
                 state.start(connection, scheduler, 0);
@@ -318,8 +331,8 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler
     }
 
     @Override
-    public void removeAvailabilityTopic(@NonNull String availability_topic) {
-        availabilityStates.computeIfPresent(availability_topic, (topic, state) -> {
+    public void removeAvailabilityTopic(String availabilityTopic) {
+        availabilityStates.computeIfPresent(availabilityTopic, (topic, state) -> {
             if (connection != null && state != null) {
                 state.stop();
             }

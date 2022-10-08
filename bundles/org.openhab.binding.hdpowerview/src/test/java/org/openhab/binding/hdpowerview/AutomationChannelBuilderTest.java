@@ -29,10 +29,16 @@ import org.openhab.binding.hdpowerview.internal.api.responses.Scenes.Scene;
 import org.openhab.binding.hdpowerview.internal.api.responses.ScheduledEvents;
 import org.openhab.binding.hdpowerview.internal.api.responses.ScheduledEvents.ScheduledEvent;
 import org.openhab.binding.hdpowerview.internal.builders.AutomationChannelBuilder;
+import org.openhab.binding.hdpowerview.providers.MockedLocaleProvider;
+import org.openhab.binding.hdpowerview.providers.MockedTranslationProvider;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.framework.Bundle;
+import org.slf4j.LoggerFactory;
+
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
 
 /**
  * Unit tests for {@link AutomationChannelBuilder}.
@@ -46,15 +52,18 @@ public class AutomationChannelBuilderTest {
             new ThingUID(HDPowerViewBindingConstants.BINDING_ID, AutomationChannelBuilderTest.class.getSimpleName()),
             HDPowerViewBindingConstants.CHANNELTYPE_AUTOMATION_ENABLED);
 
-    private static final HDPowerViewTranslationProvider translationProvider = new HDPowerViewTranslationProvider(
-            mock(Bundle.class), new TranslationProviderForTests(), new LocaleProviderForTests());
-    private AutomationChannelBuilder builder = AutomationChannelBuilder.create(translationProvider, CHANNEL_GROUP_UID);
+    private static final HDPowerViewTranslationProvider TRANSLATION_PROVIDER = new HDPowerViewTranslationProvider(
+            mock(Bundle.class), new MockedTranslationProvider(), new MockedLocaleProvider());
+
+    private AutomationChannelBuilder builder = AutomationChannelBuilder.create(TRANSLATION_PROVIDER, CHANNEL_GROUP_UID);
     private List<Scene> scenes = new ArrayList<>();
     private List<SceneCollection> sceneCollections = new ArrayList<>();
 
     @BeforeEach
     private void setUp() {
-        builder = AutomationChannelBuilder.create(translationProvider, CHANNEL_GROUP_UID);
+        final Logger logger = (Logger) LoggerFactory.getLogger(AutomationChannelBuilder.class);
+        logger.setLevel(Level.OFF);
+        builder = AutomationChannelBuilder.create(TRANSLATION_PROVIDER, CHANNEL_GROUP_UID);
 
         Scene scene = new Scene();
         scene.id = 1;

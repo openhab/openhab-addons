@@ -40,8 +40,8 @@ import org.openhab.binding.openweathermap.internal.dto.OpenWeatherMapJsonDailyFo
 import org.openhab.binding.openweathermap.internal.dto.OpenWeatherMapJsonHourlyForecastData;
 import org.openhab.binding.openweathermap.internal.dto.OpenWeatherMapJsonUVIndexData;
 import org.openhab.binding.openweathermap.internal.dto.OpenWeatherMapJsonWeatherData;
-import org.openhab.binding.openweathermap.internal.dto.onecall.OpenWeatherMapOneCallAPIData;
-import org.openhab.binding.openweathermap.internal.dto.onecallhist.OpenWeatherMapOneCallHistAPIData;
+import org.openhab.binding.openweathermap.internal.dto.OpenWeatherMapOneCallAPIData;
+import org.openhab.binding.openweathermap.internal.dto.OpenWeatherMapOneCallHistAPIData;
 import org.openhab.binding.openweathermap.internal.handler.OpenWeatherMapAPIHandler;
 import org.openhab.core.cache.ByteArrayFileCache;
 import org.openhab.core.cache.ExpiringCacheMap;
@@ -97,8 +97,9 @@ public class OpenWeatherMapConnection {
     // Weather icons (see https://openweathermap.org/weather-conditions)
     private static final String ICON_URL = "https://openweathermap.org/img/w/%s.png";
     // One Call API (see https://openweathermap.org/api/one-call-api )
-    private static final String ONECALL_URL = "https://api.openweathermap.org/data/2.5/onecall";
-    private static final String ONECALL_HISTORY_URL = "https://api.openweathermap.org/data/2.5/onecall/timemachine";
+    private static final String ONECALL_URL = "https://api.openweathermap.org/data";
+    private static final String ONECALL_DATA_SUFFIX_URL = "onecall";
+    private static final String ONECALL_HISTORY_SUFFIX_URL = "onecall/timemachine";
 
     private final OpenWeatherMapAPIHandler handler;
     private final HttpClient httpClient;
@@ -325,7 +326,8 @@ public class OpenWeatherMapConnection {
         if (!exclude.isEmpty()) {
             params.put(PARAM_EXCLUDE, exclude.stream().collect(Collectors.joining(",")));
         }
-        return gson.fromJson(getResponseFromCache(buildURL(ONECALL_URL, params)), OpenWeatherMapOneCallAPIData.class);
+        return gson.fromJson(getResponseFromCache(buildURL(buildOneCallURL(), params)),
+                OpenWeatherMapOneCallAPIData.class);
     }
 
     /**
@@ -346,7 +348,7 @@ public class OpenWeatherMapConnection {
         // the API requests the history as timestamp in Unix time format.
         params.put(PARAM_HISTORY_DATE,
                 Long.toString(ZonedDateTime.now(ZoneId.of("UTC")).minusDays(days).toEpochSecond()));
-        return gson.fromJson(getResponseFromCache(buildURL(ONECALL_HISTORY_URL, params)),
+        return gson.fromJson(getResponseFromCache(buildURL(buildOneCallHistoryURL(), params)),
                 OpenWeatherMapOneCallHistAPIData.class);
     }
 
@@ -381,6 +383,16 @@ public class OpenWeatherMapConnection {
     private String buildURL(String url, Map<String, String> requestParams) {
         return requestParams.keySet().stream().map(key -> key + "=" + encodeParam(requestParams.get(key)))
                 .collect(Collectors.joining("&", url + "?", ""));
+    }
+
+    private String buildOneCallURL() {
+        var config = handler.getOpenWeatherMapAPIConfig();
+        return ONECALL_URL + "/" + config.apiVersion + "/" + ONECALL_DATA_SUFFIX_URL;
+    }
+
+    private String buildOneCallHistoryURL() {
+        var config = handler.getOpenWeatherMapAPIConfig();
+        return ONECALL_URL + "/" + config.apiVersion + "/" + ONECALL_HISTORY_SUFFIX_URL;
     }
 
     private String encodeParam(@Nullable String value) {
@@ -428,9 +440,15 @@ public class OpenWeatherMapConnection {
                 throw new CommunicationException(
                         errorMessage == null ? "@text/offline.communication-error" : errorMessage, e.getCause());
             }
-        } catch (InterruptedException | TimeoutException e) {
+        } catch (TimeoutException e) {
             String errorMessage = e.getMessage();
-            logger.debug("InterruptedException or TimeoutException occurred during execution: {}", errorMessage, e);
+            logger.debug("TimeoutException occurred during execution: {}", errorMessage, e);
+            throw new CommunicationException(errorMessage == null ? "@text/offline.communication-error" : errorMessage,
+                    e.getCause());
+        } catch (InterruptedException e) {
+            String errorMessage = e.getMessage();
+            logger.debug("InterruptedException occurred during execution: {}", errorMessage, e);
+            Thread.currentThread().interrupt();
             throw new CommunicationException(errorMessage == null ? "@text/offline.communication-error" : errorMessage,
                     e.getCause());
         }

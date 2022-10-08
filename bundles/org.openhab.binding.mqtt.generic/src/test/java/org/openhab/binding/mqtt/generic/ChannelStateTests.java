@@ -24,12 +24,11 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -61,26 +60,27 @@ import org.openhab.core.thing.ChannelUID;
  * @author David Graeff - Initial contribution
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@NonNullByDefault
 public class ChannelStateTests {
 
-    private @Mock MqttBrokerConnection connection;
-    private @Mock ChannelStateUpdateListener channelStateUpdateListener;
-    private @Mock ChannelUID channelUID;
-    private @Spy TextValue textValue;
+    private @Mock @NonNullByDefault({}) MqttBrokerConnection connectionMock;
+    private @Mock @NonNullByDefault({}) ChannelStateUpdateListener channelStateUpdateListenerMock;
+    private @Mock @NonNullByDefault({}) ChannelUID channelUIDMock;
+    private @Spy @NonNullByDefault({}) TextValue textValue;
 
-    private ScheduledExecutorService scheduler;
+    private @NonNullByDefault({}) ScheduledExecutorService scheduler;
 
     private ChannelConfig config = ChannelConfigBuilder.create("state", "command").build();
 
     @BeforeEach
     public void setUp() {
-        CompletableFuture<Void> voidFutureComplete = new CompletableFuture<>();
+        CompletableFuture<@Nullable Void> voidFutureComplete = new CompletableFuture<>();
         voidFutureComplete.complete(null);
-        doReturn(voidFutureComplete).when(connection).unsubscribeAll();
-        doReturn(CompletableFuture.completedFuture(true)).when(connection).subscribe(any(), any());
-        doReturn(CompletableFuture.completedFuture(true)).when(connection).unsubscribe(any(), any());
-        doReturn(CompletableFuture.completedFuture(true)).when(connection).publish(any(), any(), anyInt(),
+        doReturn(voidFutureComplete).when(connectionMock).unsubscribeAll();
+        doReturn(CompletableFuture.completedFuture(true)).when(connectionMock).subscribe(any(), any());
+        doReturn(CompletableFuture.completedFuture(true)).when(connectionMock).unsubscribe(any(), any());
+        doReturn(CompletableFuture.completedFuture(true)).when(connectionMock).publish(any(), any(), anyInt(),
                 anyBoolean());
 
         scheduler = new ScheduledThreadPoolExecutor(1);
@@ -92,74 +92,74 @@ public class ChannelStateTests {
     }
 
     @Test
-    public void noInteractionTimeoutTest() throws InterruptedException, ExecutionException, TimeoutException {
-        ChannelState c = spy(new ChannelState(config, channelUID, textValue, channelStateUpdateListener));
-        c.start(connection, scheduler, 50).get(100, TimeUnit.MILLISECONDS);
-        verify(connection).subscribe(eq("state"), eq(c));
+    public void noInteractionTimeoutTest() throws Exception {
+        ChannelState c = spy(new ChannelState(config, channelUIDMock, textValue, channelStateUpdateListenerMock));
+        c.start(connectionMock, scheduler, 50).get(100, TimeUnit.MILLISECONDS);
+        verify(connectionMock).subscribe(eq("state"), eq(c));
         c.stop().get();
-        verify(connection).unsubscribe(eq("state"), eq(c));
+        verify(connectionMock).unsubscribe(eq("state"), eq(c));
     }
 
     @Test
-    public void publishFormatTest() throws InterruptedException, ExecutionException, TimeoutException {
-        ChannelState c = spy(new ChannelState(config, channelUID, textValue, channelStateUpdateListener));
+    public void publishFormatTest() throws Exception {
+        ChannelState c = spy(new ChannelState(config, channelUIDMock, textValue, channelStateUpdateListenerMock));
 
-        c.start(connection, scheduler, 0).get(50, TimeUnit.MILLISECONDS);
-        verify(connection).subscribe(eq("state"), eq(c));
+        c.start(connectionMock, scheduler, 0).get(50, TimeUnit.MILLISECONDS);
+        verify(connectionMock).subscribe(eq("state"), eq(c));
 
         c.publishValue(new StringType("UPDATE")).get();
-        verify(connection).publish(eq("command"), argThat(p -> Arrays.equals(p, "UPDATE".getBytes())), anyInt(),
+        verify(connectionMock).publish(eq("command"), argThat(p -> Arrays.equals(p, "UPDATE".getBytes())), anyInt(),
                 eq(false));
 
         c.config.formatBeforePublish = "prefix%s";
         c.publishValue(new StringType("UPDATE")).get();
-        verify(connection).publish(eq("command"), argThat(p -> Arrays.equals(p, "prefixUPDATE".getBytes())), anyInt(),
-                eq(false));
+        verify(connectionMock).publish(eq("command"), argThat(p -> Arrays.equals(p, "prefixUPDATE".getBytes())),
+                anyInt(), eq(false));
 
         c.config.formatBeforePublish = "%1$s-%1$s";
         c.publishValue(new StringType("UPDATE")).get();
-        verify(connection).publish(eq("command"), argThat(p -> Arrays.equals(p, "UPDATE-UPDATE".getBytes())), anyInt(),
-                eq(false));
+        verify(connectionMock).publish(eq("command"), argThat(p -> Arrays.equals(p, "UPDATE-UPDATE".getBytes())),
+                anyInt(), eq(false));
 
         c.config.formatBeforePublish = "%s";
         c.config.retained = true;
         c.publishValue(new StringType("UPDATE")).get();
-        verify(connection).publish(eq("command"), any(), anyInt(), eq(true));
+        verify(connectionMock).publish(eq("command"), any(), anyInt(), eq(true));
 
         c.stop().get();
-        verify(connection).unsubscribe(eq("state"), eq(c));
+        verify(connectionMock).unsubscribe(eq("state"), eq(c));
     }
 
     @Test
-    public void receiveWildcardTest() throws InterruptedException, ExecutionException, TimeoutException {
+    public void receiveWildcardTest() throws Exception {
         ChannelState c = spy(new ChannelState(ChannelConfigBuilder.create("state/+/topic", "command").build(),
-                channelUID, textValue, channelStateUpdateListener));
+                channelUIDMock, textValue, channelStateUpdateListenerMock));
 
-        CompletableFuture<@Nullable Void> future = c.start(connection, scheduler, 100);
+        CompletableFuture<@Nullable Void> future = c.start(connectionMock, scheduler, 100);
         c.processMessage("state/bla/topic", "A TEST".getBytes());
         future.get(300, TimeUnit.MILLISECONDS);
 
         assertThat(textValue.getChannelState().toString(), is("A TEST"));
-        verify(channelStateUpdateListener).updateChannelState(eq(channelUID), any());
+        verify(channelStateUpdateListenerMock).updateChannelState(eq(channelUIDMock), any());
     }
 
     @Test
-    public void receiveStringTest() throws InterruptedException, ExecutionException, TimeoutException {
-        ChannelState c = spy(new ChannelState(config, channelUID, textValue, channelStateUpdateListener));
+    public void receiveStringTest() throws Exception {
+        ChannelState c = spy(new ChannelState(config, channelUIDMock, textValue, channelStateUpdateListenerMock));
 
-        CompletableFuture<@Nullable Void> future = c.start(connection, scheduler, 100);
+        CompletableFuture<@Nullable Void> future = c.start(connectionMock, scheduler, 100);
         c.processMessage("state", "A TEST".getBytes());
         future.get(300, TimeUnit.MILLISECONDS);
 
         assertThat(textValue.getChannelState().toString(), is("A TEST"));
-        verify(channelStateUpdateListener).updateChannelState(eq(channelUID), any());
+        verify(channelStateUpdateListenerMock).updateChannelState(eq(channelUIDMock), any());
     }
 
     @Test
     public void receiveDecimalTest() {
         NumberValue value = new NumberValue(null, null, new BigDecimal(10), null);
-        ChannelState c = spy(new ChannelState(config, channelUID, value, channelStateUpdateListener));
-        c.start(connection, mock(ScheduledExecutorService.class), 100);
+        ChannelState c = spy(new ChannelState(config, channelUIDMock, value, channelStateUpdateListenerMock));
+        c.start(connectionMock, mock(ScheduledExecutorService.class), 100);
 
         c.processMessage("state", "15".getBytes());
         assertThat(value.getChannelState().toString(), is("15"));
@@ -170,14 +170,14 @@ public class ChannelStateTests {
         c.processMessage("state", "DECREASE".getBytes());
         assertThat(value.getChannelState().toString(), is("15"));
 
-        verify(channelStateUpdateListener, times(3)).updateChannelState(eq(channelUID), any());
+        verify(channelStateUpdateListenerMock, times(3)).updateChannelState(eq(channelUIDMock), any());
     }
 
     @Test
     public void receiveDecimalFractionalTest() {
         NumberValue value = new NumberValue(null, null, new BigDecimal(10.5), null);
-        ChannelState c = spy(new ChannelState(config, channelUID, value, channelStateUpdateListener));
-        c.start(connection, mock(ScheduledExecutorService.class), 100);
+        ChannelState c = spy(new ChannelState(config, channelUIDMock, value, channelStateUpdateListenerMock));
+        c.start(connectionMock, mock(ScheduledExecutorService.class), 100);
 
         c.processMessage("state", "5.5".getBytes());
         assertThat(value.getChannelState().toString(), is("5.5"));
@@ -189,8 +189,8 @@ public class ChannelStateTests {
     @Test
     public void receiveDecimalUnitTest() {
         NumberValue value = new NumberValue(null, null, new BigDecimal(10), Units.WATT);
-        ChannelState c = spy(new ChannelState(config, channelUID, value, channelStateUpdateListener));
-        c.start(connection, mock(ScheduledExecutorService.class), 100);
+        ChannelState c = spy(new ChannelState(config, channelUIDMock, value, channelStateUpdateListenerMock));
+        c.start(connectionMock, mock(ScheduledExecutorService.class), 100);
 
         c.processMessage("state", "15".getBytes());
         assertThat(value.getChannelState().toString(), is("15 W"));
@@ -201,27 +201,27 @@ public class ChannelStateTests {
         c.processMessage("state", "DECREASE".getBytes());
         assertThat(value.getChannelState().toString(), is("15 W"));
 
-        verify(channelStateUpdateListener, times(3)).updateChannelState(eq(channelUID), any());
+        verify(channelStateUpdateListenerMock, times(3)).updateChannelState(eq(channelUIDMock), any());
     }
 
     @Test
     public void receiveDecimalAsPercentageUnitTest() {
         NumberValue value = new NumberValue(null, null, new BigDecimal(10), Units.PERCENT);
-        ChannelState c = spy(new ChannelState(config, channelUID, value, channelStateUpdateListener));
-        c.start(connection, mock(ScheduledExecutorService.class), 100);
+        ChannelState c = spy(new ChannelState(config, channelUIDMock, value, channelStateUpdateListenerMock));
+        c.start(connectionMock, mock(ScheduledExecutorService.class), 100);
 
         c.processMessage("state", "63.7".getBytes());
         assertThat(value.getChannelState().toString(), is("63.7 %"));
 
-        verify(channelStateUpdateListener, times(1)).updateChannelState(eq(channelUID), any());
+        verify(channelStateUpdateListenerMock, times(1)).updateChannelState(eq(channelUIDMock), any());
     }
 
     @Test
     public void receivePercentageTest() {
         PercentageValue value = new PercentageValue(new BigDecimal(-100), new BigDecimal(100), new BigDecimal(10), null,
                 null);
-        ChannelState c = spy(new ChannelState(config, channelUID, value, channelStateUpdateListener));
-        c.start(connection, mock(ScheduledExecutorService.class), 100);
+        ChannelState c = spy(new ChannelState(config, channelUIDMock, value, channelStateUpdateListenerMock));
+        c.start(connectionMock, mock(ScheduledExecutorService.class), 100);
 
         c.processMessage("state", "-100".getBytes()); // 0%
         assertThat(value.getChannelState().toString(), is("0"));
@@ -241,8 +241,8 @@ public class ChannelStateTests {
     @Test
     public void receiveRGBColorTest() {
         ColorValue value = new ColorValue(ColorMode.RGB, "FON", "FOFF", 10);
-        ChannelState c = spy(new ChannelState(config, channelUID, value, channelStateUpdateListener));
-        c.start(connection, mock(ScheduledExecutorService.class), 100);
+        ChannelState c = spy(new ChannelState(config, channelUIDMock, value, channelStateUpdateListenerMock));
+        c.start(connectionMock, mock(ScheduledExecutorService.class), 100);
 
         c.processMessage("state", "ON".getBytes()); // Normal on state
         assertThat(value.getChannelState().toString(), is("0,0,10"));
@@ -261,15 +261,15 @@ public class ChannelStateTests {
         c.processMessage("state", "12,18,231".getBytes());
         assertThat(value.getChannelState(), is(t)); // HSB
         // rgb -> hsv -> rgb is quite lossy
-        assertThat(value.getMQTTpublishValue(null), is("13,20,225"));
-        assertThat(value.getMQTTpublishValue("%3$d,%2$d,%1$d"), is("225,20,13"));
+        assertThat(value.getMQTTpublishValue(null), is("13,20,229"));
+        assertThat(value.getMQTTpublishValue("%3$d,%2$d,%1$d"), is("229,20,13"));
     }
 
     @Test
     public void receiveHSBColorTest() {
         ColorValue value = new ColorValue(ColorMode.HSB, "FON", "FOFF", 10);
-        ChannelState c = spy(new ChannelState(config, channelUID, value, channelStateUpdateListener));
-        c.start(connection, mock(ScheduledExecutorService.class), 100);
+        ChannelState c = spy(new ChannelState(config, channelUIDMock, value, channelStateUpdateListenerMock));
+        c.start(connectionMock, mock(ScheduledExecutorService.class), 100);
 
         c.processMessage("state", "ON".getBytes()); // Normal on state
         assertThat(value.getChannelState().toString(), is("0,0,10"));
@@ -291,8 +291,8 @@ public class ChannelStateTests {
     @Test
     public void receiveXYYColorTest() {
         ColorValue value = new ColorValue(ColorMode.XYY, "FON", "FOFF", 10);
-        ChannelState c = spy(new ChannelState(config, channelUID, value, channelStateUpdateListener));
-        c.start(connection, mock(ScheduledExecutorService.class), 100);
+        ChannelState c = spy(new ChannelState(config, channelUIDMock, value, channelStateUpdateListenerMock));
+        c.start(connectionMock, mock(ScheduledExecutorService.class), 100);
 
         c.processMessage("state", "ON".getBytes()); // Normal on state
         assertThat(value.getChannelState().toString(), is("0,0,10"));
@@ -317,8 +317,8 @@ public class ChannelStateTests {
     @Test
     public void receiveLocationTest() {
         LocationValue value = new LocationValue();
-        ChannelState c = spy(new ChannelState(config, channelUID, value, channelStateUpdateListener));
-        c.start(connection, mock(ScheduledExecutorService.class), 100);
+        ChannelState c = spy(new ChannelState(config, channelUIDMock, value, channelStateUpdateListenerMock));
+        c.start(connectionMock, mock(ScheduledExecutorService.class), 100);
 
         c.processMessage("state", "46.833974, 7.108433".getBytes());
         assertThat(value.getChannelState().toString(), is("46.833974,7.108433"));
@@ -328,8 +328,8 @@ public class ChannelStateTests {
     @Test
     public void receiveDateTimeTest() {
         DateTimeValue value = new DateTimeValue();
-        ChannelState subject = spy(new ChannelState(config, channelUID, value, channelStateUpdateListener));
-        subject.start(connection, mock(ScheduledExecutorService.class), 100);
+        ChannelState subject = spy(new ChannelState(config, channelUIDMock, value, channelStateUpdateListenerMock));
+        subject.start(connectionMock, mock(ScheduledExecutorService.class), 100);
 
         ZonedDateTime zd = ZonedDateTime.now();
         String datetime = zd.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
@@ -345,10 +345,10 @@ public class ChannelStateTests {
     @Test
     public void receiveImageTest() {
         ImageValue value = new ImageValue();
-        ChannelState c = spy(new ChannelState(config, channelUID, value, channelStateUpdateListener));
-        c.start(connection, mock(ScheduledExecutorService.class), 100);
+        ChannelState c = spy(new ChannelState(config, channelUIDMock, value, channelStateUpdateListenerMock));
+        c.start(connectionMock, mock(ScheduledExecutorService.class), 100);
 
-        byte[] payload = new byte[] { (byte) 0xFF, (byte) 0xD8, 0x01, 0x02, (byte) 0xFF, (byte) 0xD9 };
+        byte[] payload = { (byte) 0xFF, (byte) 0xD8, 0x01, 0x02, (byte) 0xFF, (byte) 0xD9 };
         c.processMessage("state", payload);
         assertThat(value.getChannelState(), is(instanceOf(RawType.class)));
         assertThat(((RawType) value.getChannelState()).getMimeType(), is("image/jpeg"));

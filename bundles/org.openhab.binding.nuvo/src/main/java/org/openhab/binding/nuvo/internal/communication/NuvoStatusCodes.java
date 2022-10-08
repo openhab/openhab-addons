@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.nuvo.internal.communication;
 
-import java.util.HashMap;
+import static java.util.Map.entry;
+
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -32,22 +33,21 @@ public class NuvoStatusCodes {
     private static final String ZERO = "0";
 
     // map to lookup play mode
-    public static final Map<String, String> PLAY_MODE = new HashMap<>();
-    static {
-        PLAY_MODE.put("0", "Normal");
-        PLAY_MODE.put("1", "Idle");
-        PLAY_MODE.put("2", "Playing");
-        PLAY_MODE.put("3", "Paused");
-        PLAY_MODE.put("4", "Fast Forward");
-        PLAY_MODE.put("5", "Rewind");
-        PLAY_MODE.put("6", "Play Shuffle");
-        PLAY_MODE.put("7", "Play Repeat");
-        PLAY_MODE.put("8", "Play Shuffle Repeat");
-        PLAY_MODE.put("9", "unknown-9");
-        PLAY_MODE.put("10", "unknown-10");
-        PLAY_MODE.put("11", "Radio"); // undocumented
-        PLAY_MODE.put("12", "unknown-12");
-    }
+    public static final Map<String, String> PLAY_MODE = Map.ofEntries(entry("0", "Normal"), entry("1", "Idle"),
+            entry("2", "Playing"), entry("3", "Paused"), entry("4", "Fast Forward"), entry("5", "Rewind"),
+            entry("6", "Play Shuffle"), entry("7", "Play Repeat"), entry("8", "Play Shuffle Repeat"),
+            entry("9", "Step Tune"), entry("10", "Seek Tune"), entry("11", "Preset Tune"), entry("12", "unknown-12"));
+
+    // map to lookup button action name from NuvoNet button code
+    public static final Map<String, String> BUTTON_CODE = Map.ofEntries(entry("1", "OK"), entry("2", "PLAYPAUSE"),
+            entry("3", "PREV"), entry("4", "NEXT"), entry("5", "POWERMUTE"), // source will not receive this
+            entry("6", "UP"), // source will not receive this
+            entry("7", "DOWN"), // source will not receive this
+            entry("41", "DISCRETEPLAYPAUSE"), entry("42", "DISCRETENEXTTRACK"), entry("43", "DISCRETEPREVIOUSTRACK"),
+            entry("44", "SHUFFLETOGGLE"), entry("45", "REPEATTOGGLE"), entry("46", "TUNEUP"), entry("47", "TUNEDOWN"),
+            entry("48", "SEEKUP"), entry("49", "SEEKDOWN"), entry("50", "PRESETUP"), entry("51", "PRESETDOWN"),
+            entry("52", "DIRECTFREQUENCYENTRY"), entry("53", "DIRECTPRESETENTRY"), entry("54", "NEXTBAND"),
+            entry("55", "THUMBSUP"), entry("56", "THUMBSDOWN"));
 
     /*
      * This looks broken because the controller is seriously broken...

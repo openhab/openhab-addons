@@ -5,12 +5,13 @@ The integration happens either through the WeMo-Link bridge, which acts as an IP
 
 ## Supported Things
 
-The WeMo Binding supports the Socket, Insight, Lightswitch, Motion, Dimmer, Coffemaker and Maker devices, as well as the WeMo-Link bridge with WeMo LED bulbs. 
+The WeMo Binding supports the Socket, Outdoor Plug, Insight, Lightswitch, Motion, Dimmer, Coffemaker and Maker devices, as well as the WeMo-Link bridge with WeMo LED bulbs.
 The Binding also supports the Crock-Pot Smart Slow Cooker, Mr. Coffee Smart Coffemaker as well as the Holmes Smart Air Purifier, Holmes Smart Humidifier and Holmes Smart Heater.
 
 ## Discovery
 
-The WeMo devices are discovered through UPnP discovery service in the network. Devices will show up in the inbox and can be easily added as Things.
+The WeMo devices are discovered through UPnP discovery service in the network.
+Devices will show up in the inbox and can be easily added as Things.
 
 ## Binding Configuration
 
@@ -18,23 +19,48 @@ The binding does not need any configuration.
 
 ## Thing Configuration
 
-For manual Thing configuration, one needs to know the UUID of a certain WeMo device.
-In the thing file, this looks e.g. like
+For manual Thing configuration, one needs to know the UDN of a certain WeMo device.
+It can most easily be obtained by performing an auto-discovery before configuring the thing manually.
 
-```
-wemo:socket:Switch1 [udn="Socket-1_0-221242K11xxxxx"]
-```
+Most devices share the `udn` configuration parameter:
 
-For a WeMo Link bridge and paired LED Lights, please use the following Thing definition
+| Configuration Parameter | Description                        |
+|-------------------------|------------------------------------|
+| udn                     | The UDN identifies the WeMo device |
 
-```
-Bridge wemo:bridge:Bridge-1_0-231445B01006A0 [udn="Bridge-1_0-231445B010xxxx"] {
-MZ100 94103EA2B278xxxx [ deviceID="94103EA2B278xxxx" ]
-MZ100 94103EA2B278xxxx [ deviceID="94103EA2B278xxxx" ]
-}
-```
+### WeMo LED Light
 
+For LED Lights paired to a WeMo Link bridge, please use the following configuration parameter:
 
+| Configuration Parameter | Description                                     |
+|-------------------------|-------------------------------------------------|
+| deviceID                | The device ID identifies one certain WeMo light |
+
+### WeMo Insight Switch
+
+The WeMo Insight Switch has some additional parameters for controlling the behavior for channel `currentPower`.
+This channel reports the current power consumption in Watt.
+The internal theoretical accuracy is 5 mW, i.e. three decimals.
+These raw values are reported with high frequency, often multiple updates can occur within a single second.
+For example, the sequence of 40.440 W, 40.500 W and 40.485 W would result in the channel being updated with values rounded to nearest integer, respectively 40 W, 41 W and 40 W.
+
+When persisting items linked to this channel, this can result in a significant amount of data being stored.
+To mitigate this issue, a sliding window with a moving average calculation has been introduced.
+This window is defined with a one minute default period.
+This is combined with a delta trigger value, which is defaulted to 1 W.
+This means that the channel is only updated when one of the following conditions are met:
+
+1. The rounded value received is equal to the rounded average for the past minute, i.e. this value has stabilized. This introduces a delay for very small changes in consumption, but on the other hand it prevents excessive logging and persistence caused by temporary small changes and rounding.
+2. The rounded value received is more than 1 W from the previous value. So when changes are happening fast, the channel will also be updated fast.
+
+| Configuration Parameter    | Description                                                                           |
+|----------------------------|---------------------------------------------------------------------------------------|
+| udn                        | The UDN identifies the WeMo Insight Switch                                            |
+| currentPowerSlidingSeconds | Sliding window in seconds for which moving average power is calculated (0 = disabled) |
+| currentPowerDeltaTrigger   | Delta triggering immediate channel update (in Watt)                                   |
+
+The moving average calculation can be disabled by setting either `currentPowerSlidingSeconds` or `currentPowerDeltaTrigger` to 0.
+This will cause the channel to be updated the same way as in openHAB versions prior to 3.3.
 
 ## Channels
 
@@ -52,6 +78,7 @@ Devices support some of the following channels:
 | timespan            | Number        | Time in seconds over which onTotal applies. Typically 2 weeks except first used.                                           | Insight                                              |
 | averagePower        | Number:Power  | Average power consumption in Watts.                                                                                        | Insight                                              |
 | currentPower        | Number:Power  | Current power consumption of an Insight device. 0 if switched off.                                                         | Insight                                              |
+| currentPowerRaw     | Number:Power  | Current power consumption of an Insight device with full precision (5 mW accuracy, three decimals). 0 if switched off.     | Insight                                              |
 | energyToday         | Number:Energy | Energy in Wh used today.                                                                                                   | Insight                                              |
 | energyTotal         | Number:Energy | Energy in Wh used in total.                                                                                                | Insight                                              |
 | standbyLimit        | Number:Power  | Minimum energy draw in W to register device as switched on (default 8W, configurable via WeMo App).                        | Insight                                              |
@@ -94,7 +121,6 @@ Devices support some of the following channels:
 | autoOffTime         | DateTime      | Time when the heater switches off                                                                                          | Heater                                               |
 | heatingRemaining    | Number        | Shows the remaining heating time                                                                                           | Heater                                               |
 
-
 ## Full Example
 
 demo.things:
@@ -102,6 +128,7 @@ demo.things:
 ```
 wemo:socket:Switch1     "DemoSwitch"   @ "Office"   [udn="Socket-1_0-221242K11xxxxx"]
 wemo:motion:Sensor1     "MotionSensor" @ "Entrance" [udn="Sensor-1_0-221337L11xxxxx"]
+wemo:insight:Insight1   "Insight"      @ "Attic"    [udn="Insight-1_0-xxxxxxxxxxxxxx", currentPowerSlidingSeconds=120, currentPowerDeltaTrigger=2]
 
 Bridge wemo:bridge:Bridge-1_0-231445B010xxxx [udn="Bridge-1_0-231445B010xxxx"] {
 MZ100 94103EA2B278xxxx  "DemoLight1"   @ "Living"   [ deviceID="94103EA2B278xxxx" ]
@@ -185,7 +212,6 @@ Number currentTemp          { channel="wemo:heater:HeaterB-1_0-231445B010xxxx:cu
 Number targetTemp           { channel="wemo:heater:HeaterB-1_0-231445B010xxxx:targetTemp" }
 DateTime autoOffTime        { channel="wemo:heater:HeaterB-1_0-231445B010xxxx:autoOffTime" }
 String heaterRemaining      { channel="wemo:heater:HeaterB-1_0-231445B010xxxx:heaterRemaining" }
-
 ```
 
 demo.sitemap:
@@ -266,8 +292,6 @@ sitemap demo label="Main Menu"
        Setpoint item=targetTemp
        Text item=autoOffTime
        Number item=heaterRemaining
-
-
     }
 }
 ```

@@ -17,6 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.jupnp.UpnpService;
 import org.openhab.binding.wemo.internal.WemoBindingConstants;
 import org.openhab.binding.wemo.internal.http.WemoHttpCall;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
@@ -40,8 +41,16 @@ public class WemoMotionHandler extends WemoHandler {
     private final Logger logger = LoggerFactory.getLogger(WemoMotionHandler.class);
     private final Map<String, String> stateMap = new ConcurrentHashMap<String, String>();
 
-    public WemoMotionHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemoHttpCaller) {
-        super(thing, upnpIOService, wemoHttpCaller);
+    public WemoMotionHandler(Thing thing, UpnpIOService upnpIOService, UpnpService upnpService,
+            WemoHttpCall wemoHttpCaller) {
+        super(thing, upnpIOService, upnpService, wemoHttpCaller);
+    }
+
+    @Override
+    public void initialize() {
+        logger.debug("Initializing WemoMotionHandler for thing '{}'", thing.getUID());
+        updateStatus(ThingStatus.UNKNOWN);
+        super.initialize();
     }
 
     @Override
@@ -66,10 +75,10 @@ public class WemoMotionHandler extends WemoHandler {
                 if (oldValue == null || !oldValue.equals(binaryState)) {
                     State state = "0".equals(binaryState) ? OnOffType.OFF : OnOffType.ON;
                     logger.debug("State '{}' for device '{}' received", state, getThing().getUID());
-                    updateState(WemoBindingConstants.CHANNEL_MOTIONDETECTION, state);
+                    updateState(WemoBindingConstants.CHANNEL_MOTION_DETECTION, state);
                     if (OnOffType.ON.equals(state)) {
                         State lastMotionDetected = new DateTimeType();
-                        updateState(WemoBindingConstants.CHANNEL_LASTMOTIONDETECTED, lastMotionDetected);
+                        updateState(WemoBindingConstants.CHANNEL_LAST_MOTION_DETECTED, lastMotionDetected);
                     }
                 }
             }

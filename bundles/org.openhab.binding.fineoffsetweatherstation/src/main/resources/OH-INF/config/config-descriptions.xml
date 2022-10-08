@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
+		https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:fineoffsetweatherstation:gateway">
+		<parameter name="ip" type="text" required="true">
+			<label>IP Address</label>
+			<description>The Hostname or IP address of the device</description>
+			<context>network-address</context>
+		</parameter>
+		<parameter name="port" type="integer" required="true">
+			<label>Port</label>
+			<description>The network port of the gateway</description>
+			<default>45000</default>
+		</parameter>
+		<parameter name="protocol" type="text" required="false">
+			<label>Protocol</label>
+			<description>The protocol to use for communicating with the gateway, valid values are: `DEFAULT` or `ELV`</description>
+			<default>DEFAULT</default>
+		</parameter>
+		<parameter name="pollingInterval" type="integer" required="true">
+			<label>Polling Interval</label>
+			<description>Polling interval for refreshing the data in seconds</description>
+			<default>16</default>
+			<unitLabel>s</unitLabel>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="discoverInterval" type="integer" required="true">
+			<label>Discover Interval</label>
+			<description>Interval in seconds to fetch registered sensors, battery status and signal strength</description>
+			<unitLabel>s</unitLabel>
+			<default>900</default>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:fineoffsetweatherstation:sensor">
+		<parameter name="sensor" type="text" required="true">
+			<label>Sensor</label>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>

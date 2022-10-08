@@ -24,12 +24,12 @@
 				<default>false</default>
 			</parameter>
 			<parameter name="pingInterval" type="integer">
-				<label>Interval</label>
+				<label>Ping Interval</label>
 				<description>Interval (in seconds) between attempts to poll the device status</description>
 				<default>600</default>
 			</parameter>
 			<parameter name="readInterval" type="integer">
-				<label>Interval</label>
+				<label>Read Interval</label>
 				<description>Interval (in seconds) between attempts to read the status group addresses on the bus</description>
 				<default>0</default>
 			</parameter>
@@ -142,7 +142,7 @@
 		<config-description-ref uri="channel-type:knx:single"/>
 	</channel-type>
 	<channel-type id="datetime-control">
-		<item-type>DateTime Control</item-type>
+		<item-type>DateTime</item-type>
 		<label>DateTime Control</label>
 		<description>Control a date/time item (i.e. the status is not owned by KNX)</description>
 		<config-description-ref uri="channel-type:knx:single"/>

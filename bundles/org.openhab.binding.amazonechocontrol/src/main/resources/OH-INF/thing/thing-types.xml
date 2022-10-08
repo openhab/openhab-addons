@@ -634,11 +634,51 @@
 		<description>Temperature</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
+	<!-- Alexa.HumiditySensor -->
+	<channel-type id="relativeHumidity">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Humidity</label>
+		<description>Relative humidity measured by the thermostat.</description>
+		<category>Humidity</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true" pattern=":.1%"/>
+	</channel-type>
 	<!-- Alexa.ThermostatController -->
 	<channel-type id="targetSetpoint">
 		<item-type>Number:Temperature</item-type>
 		<label>Target Setpoint</label>
 		<description>Target Setpoint</description>
 		<state pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="upperSetpoint">
+		<item-type>Number:Temperature</item-type>
+		<label>Upper Setpoint</label>
+		<description>Upper Setpoint</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="lowerSetpoint">
+		<item-type>Number:Temperature</item-type>
+		<label>Lower Setpoint</label>
+		<description>Lower Setpoint</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="thermostatMode">
+		<item-type>String</item-type>
+		<label>Thermostat Mode</label>
+		<description>Thermostat Mode</description>
+		<state pattern="%s"/>
 	</channel-type>
 </thing:thing-descriptions>

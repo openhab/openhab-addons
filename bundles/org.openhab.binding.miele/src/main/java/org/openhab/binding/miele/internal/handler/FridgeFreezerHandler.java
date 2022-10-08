@@ -14,8 +14,11 @@ package org.openhab.binding.miele.internal.handler;
 
 import static org.openhab.binding.miele.internal.MieleBindingConstants.*;
 
-import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceProperty;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.miele.internal.api.dto.DeviceProperty;
+import org.openhab.binding.miele.internal.exceptions.MieleRpcException;
 import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
@@ -35,12 +38,14 @@ import com.google.gson.JsonElement;
  * @author Martin Lepsy - fixed handling of empty JSON results
  * @author Jacob Laursen - Fixed multicast and protocol support (ZigBee/LAN)
  */
+@NonNullByDefault
 public class FridgeFreezerHandler extends MieleApplianceHandler<FridgeFreezerChannelSelector> {
 
     private final Logger logger = LoggerFactory.getLogger(FridgeFreezerHandler.class);
 
-    public FridgeFreezerHandler(Thing thing, TranslationProvider i18nProvider, LocaleProvider localeProvider) {
-        super(thing, i18nProvider, localeProvider, FridgeFreezerChannelSelector.class,
+    public FridgeFreezerHandler(Thing thing, TranslationProvider i18nProvider, LocaleProvider localeProvider,
+            TimeZoneProvider timeZoneProvider) {
+        super(thing, i18nProvider, localeProvider, timeZoneProvider, FridgeFreezerChannelSelector.class,
                 MIELE_DEVICE_CLASS_FRIDGE_FREEZER);
     }
 
@@ -49,34 +54,40 @@ public class FridgeFreezerHandler extends MieleApplianceHandler<FridgeFreezerCha
         super.handleCommand(channelUID, command);
 
         String channelID = channelUID.getId();
-        String applianceId = (String) getThing().getConfiguration().getProperties().get(APPLIANCE_ID);
+        String applianceId = this.applianceId;
+        if (applianceId == null) {
+            logger.warn("Command '{}' failed, appliance id is unknown", command);
+            return;
+        }
 
         FridgeFreezerChannelSelector selector = (FridgeFreezerChannelSelector) getValueSelectorFromChannelID(channelID);
         JsonElement result = null;
 
         try {
-            if (selector != null) {
-                switch (selector) {
-                    case SUPERCOOL: {
-                        if (command.equals(OnOffType.ON)) {
-                            result = bridgeHandler.invokeOperation(applianceId, modelID, "startSuperCooling");
-                        } else if (command.equals(OnOffType.OFF)) {
-                            result = bridgeHandler.invokeOperation(applianceId, modelID, "stopSuperCooling");
-                        }
-                        break;
+            MieleBridgeHandler bridgeHandler = getMieleBridgeHandler();
+            if (bridgeHandler == null) {
+                logger.warn("Command '{}' failed, missing bridge handler", command);
+                return;
+            }
+            switch (selector) {
+                case SUPERCOOL: {
+                    if (command.equals(OnOffType.ON)) {
+                        result = bridgeHandler.invokeOperation(applianceId, modelID, "startSuperCooling");
+                    } else if (command.equals(OnOffType.OFF)) {
+                        result = bridgeHandler.invokeOperation(applianceId, modelID, "stopSuperCooling");
                     }
-                    case SUPERFREEZE: {
-                        if (command.equals(OnOffType.ON)) {
-                            result = bridgeHandler.invokeOperation(applianceId, modelID, "startSuperFreezing");
-                        } else if (command.equals(OnOffType.OFF)) {
-                            result = bridgeHandler.invokeOperation(applianceId, modelID, "stopSuperFreezing");
-                        }
-                        break;
+                    break;
+                }
+                case SUPERFREEZE: {
+                    if (command.equals(OnOffType.ON)) {
+                        result = bridgeHandler.invokeOperation(applianceId, modelID, "startSuperFreezing");
+                    } else if (command.equals(OnOffType.OFF)) {
+                        result = bridgeHandler.invokeOperation(applianceId, modelID, "stopSuperFreezing");
                     }
-                    default: {
-                        logger.debug("{} is a read-only channel that does not accept commands",
-                                selector.getChannelID());
-                    }
+                    break;
+                }
+                default: {
+                    logger.debug("{} is a read-only channel that does not accept commands", selector.getChannelID());
                 }
             }
             // process result
@@ -87,11 +98,19 @@ public class FridgeFreezerHandler extends MieleApplianceHandler<FridgeFreezerCha
             logger.warn(
                     "An error occurred while trying to set the read-only variable associated with channel '{}' to '{}'",
                     channelID, command.toString());
+        } catch (MieleRpcException e) {
+            Throwable cause = e.getCause();
+            if (cause == null) {
+                logger.warn("An error occurred while trying to invoke operation: {}", e.getMessage());
+            } else {
+                logger.warn("An error occurred while trying to invoke operation: {} -> {}", e.getMessage(),
+                        cause.getMessage());
+            }
         }
     }
 
     @Override
-    protected void onAppliancePropertyChanged(DeviceProperty dp) {
+    public void onAppliancePropertyChanged(DeviceProperty dp) {
         super.onAppliancePropertyChanged(dp);
 
         if (!STATE_PROPERTY_NAME.equals(dp.Name)) {

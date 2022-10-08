@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-    <version>3.3.0-SNAPSHOT</version>
+    <version>3.4.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.binding.ipp</artifactId>
@@ -15,14 +15,14 @@
   <name>openHAB Add-ons :: Bundles :: IPP Binding</name>
 
   <properties>
-    <bnd.importpackage>!org.simpleframework.xml.*,!org.cups4j,!net.sf.ehcache.*,!net.spy.*</bnd.importpackage>
+    <bnd.importpackage>!org.simpleframework.xml.*,!org.cups4j,!net.sf.ehcache.*,!net.spy.*,!sun.nio.ch</bnd.importpackage>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>org.cups4j</groupId>
       <artifactId>cups4j</artifactId>
-      <version>0.7.6</version>
+      <version>0.7.8</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -37,21 +37,27 @@
       <version>1.1.3.1</version>
     </dependency>
     <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+      <version>2.6</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
-      <version>1.4</version>
+      <version>2.11.0</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpcore-osgi</artifactId>
-      <version>4.4.4</version>
+      <version>4.4.15</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient-osgi</artifactId>
-      <version>4.5.3</version>
+      <version>4.5.13</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>

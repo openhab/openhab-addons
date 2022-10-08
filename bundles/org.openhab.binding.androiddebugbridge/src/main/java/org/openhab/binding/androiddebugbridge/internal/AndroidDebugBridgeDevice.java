@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -25,6 +26,8 @@ import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
@@ -33,6 +36,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -64,6 +68,11 @@ public class AndroidDebugBridgeDevice {
             "https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,4}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)$");
     private static final Pattern INPUT_EVENT_PATTERN = Pattern
             .compile("/(?<input>\\S+): (?<n1>\\S+) (?<n2>\\S+) (?<n3>\\S+)$", Pattern.MULTILINE);
+    private static final Pattern VERSION_PATTERN = Pattern
+            .compile("^(?<major>\\d+)(\\.)?(?<minor>\\d+)?(\\.)?(?<patch>\\*|\\d+)?");
+    private static final Pattern MAC_PATTERN = Pattern.compile("^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$");
+
+    private static final Pattern SECURE_SHELL_INPUT_PATTERN = Pattern.compile("^[^\\|\\&;\\\"]+$");
 
     private static @Nullable AdbCrypto adbCrypto;
 
@@ -91,6 +100,9 @@ public class AndroidDebugBridgeDevice {
     private @Nullable Socket socket;
     private @Nullable AdbConnection connection;
     private @Nullable Future<String> commandFuture;
+    private int majorVersionNumber = 0;
+    private int minorVersionNumber = 0;
+    private int patchVersionNumber = 0;
 
     public AndroidDebugBridgeDevice(ScheduledExecutorService scheduler) {
         this.scheduler = scheduler;
@@ -170,7 +182,7 @@ public class AndroidDebugBridgeDevice {
             logger.warn("{} is not a valid package name", packageName);
             return;
         }
-        if (!PACKAGE_NAME_PATTERN.matcher(activityName).matches()) {
+        if (!SECURE_SHELL_INPUT_PATTERN.matcher(activityName).matches()) {
             logger.warn("{} is not a valid activity name", activityName);
             return;
         }
@@ -195,7 +207,12 @@ public class AndroidDebugBridgeDevice {
 
     public String getCurrentPackage() throws AndroidDebugBridgeDeviceException, InterruptedException,
             AndroidDebugBridgeDeviceReadException, TimeoutException, ExecutionException {
-        var out = runAdbShell("dumpsys", "window", "windows", "|", "grep", "mFocusedApp");
+        String out;
+        if (isAtLeastVersion(10)) {
+            out = runAdbShell("dumpsys", "window", "displays", "|", "grep", "mFocusedApp");
+        } else {
+            out = runAdbShell("dumpsys", "window", "windows", "|", "grep", "mFocusedApp");
+        }
         var targetLine = Arrays.stream(out.split("\n")).findFirst().orElse("");
         var lineParts = targetLine.split(" ");
         if (lineParts.length >= 2) {
@@ -287,6 +304,19 @@ public class AndroidDebugBridgeDevice {
         return getDeviceProp("ro.build.version.release");
     }
 
+    public void setAndroidVersion(String version) {
+        var matcher = VERSION_PATTERN.matcher(version);
+        if (!matcher.find()) {
+            logger.warn("Unable to parse android version");
+            return;
+        }
+        this.majorVersionNumber = Integer.parseInt(matcher.group("major"));
+        var minorMatch = matcher.group("minor");
+        var patchMatch = matcher.group("patch");
+        this.minorVersionNumber = minorMatch != null ? Integer.parseInt(minorMatch) : 0;
+        this.patchVersionNumber = patchMatch != null ? Integer.parseInt(patchMatch) : 0;
+    }
+
     public String getBrand() throws AndroidDebugBridgeDeviceException, InterruptedException,
             AndroidDebugBridgeDeviceReadException, TimeoutException, ExecutionException {
         return getDeviceProp("ro.product.brand");
@@ -299,7 +329,17 @@ public class AndroidDebugBridgeDevice {
 
     public String getMacAddress() throws AndroidDebugBridgeDeviceException, InterruptedException,
             AndroidDebugBridgeDeviceReadException, TimeoutException, ExecutionException {
-        return getDeviceProp("ro.boot.wifimacaddr").toLowerCase();
+        var macAddress = runAdbShell("cat", "/sys/class/net/wlan0/address").replace("\n", "").replace("\r", "");
+        var matcher = MAC_PATTERN.matcher(macAddress);
+        if (!matcher.find()) {
+            macAddress = runAdbShell("ip", "address", "|", "grep", "-m", "1", "link/ether", "|", "awk", "'{print $2}'")
+                    .replace("\n", "").replace("\r", "");
+            matcher = MAC_PATTERN.matcher(macAddress);
+            if (matcher.find()) {
+                return macAddress;
+            }
+        }
+        return "00:00:00:00:00:00";
     }
 
     private String getDeviceProp(String name) throws AndroidDebugBridgeDeviceException, InterruptedException,
@@ -372,6 +412,270 @@ public class AndroidDebugBridgeDevice {
         } finally {
             disconnect();
         }
+    }
+
+    public void startIntent(String command)
+            throws AndroidDebugBridgeDeviceException, ExecutionException, InterruptedException, TimeoutException {
+        String[] commandParts = command.split("\\|\\|");
+        if (commandParts.length == 0) {
+            throw new AndroidDebugBridgeDeviceException("Empty command");
+        }
+        String targetPackage = commandParts[0];
+        var targetPackageParts = targetPackage.split("/");
+        if (targetPackageParts.length > 2) {
+            throw new AndroidDebugBridgeDeviceException("Invalid target package " + targetPackage);
+        }
+        if (!PACKAGE_NAME_PATTERN.matcher(targetPackageParts[0]).matches()) {
+            logger.warn("{} is not a valid package name", targetPackageParts[0]);
+            return;
+        }
+        if (targetPackageParts.length == 2 && !SECURE_SHELL_INPUT_PATTERN.matcher(targetPackageParts[1]).matches()) {
+            logger.warn("{} is not a valid activity name", targetPackageParts[1]);
+            return;
+        }
+        @Nullable
+        String action = null;
+        @Nullable
+        String dataUri = null;
+        @Nullable
+        String mimeType = null;
+        @Nullable
+        String category = null;
+        @Nullable
+        String component = null;
+        @Nullable
+        String flags = null;
+        Map<String, Boolean> extraBooleans = new HashMap<>();
+        Map<String, String> extraStrings = new HashMap<>();
+        Map<String, Integer> extraIntegers = new HashMap<>();
+        Map<String, Float> extraFloats = new HashMap<>();
+        Map<String, Long> extraLongs = new HashMap<>();
+        Map<String, URI> extraUris = new HashMap<>();
+        for (var i = 1; i < commandParts.length; i++) {
+            var commandPart = commandParts[i];
+            var endToken = commandPart.indexOf(">");
+            var argName = commandPart.substring(0, endToken + 1);
+            var argValue = commandPart.substring(endToken + 1);
+
+            String[] valueParts;
+            switch (argName) {
+                case "<a>":
+                case "<action>":
+                    if (!PACKAGE_NAME_PATTERN.matcher(argValue).matches()) {
+                        logger.warn("{} is not a valid action name", argValue);
+                        return;
+                    }
+                    action = argValue;
+                    break;
+                case "<d>":
+                case "<data_uri>":
+                    if (!SECURE_SHELL_INPUT_PATTERN.matcher(argValue).matches()) {
+                        logger.warn("{}, insecure input value", argValue);
+                        return;
+                    }
+                    dataUri = argValue;
+                    break;
+                case "<t>":
+                case "<mime_type>":
+                    if (!SECURE_SHELL_INPUT_PATTERN.matcher(argValue).matches()) {
+                        logger.warn("{}, insecure input value", argValue);
+                        return;
+                    }
+                    mimeType = argValue;
+                    break;
+                case "<c>":
+                case "<category>":
+                    if (!SECURE_SHELL_INPUT_PATTERN.matcher(argValue).matches()) {
+                        logger.warn("{}, insecure input value", argValue);
+                        return;
+                    }
+                    category = argValue;
+                    break;
+                case "<n>":
+                case "<component>":
+                    if (!SECURE_SHELL_INPUT_PATTERN.matcher(argValue).matches()) {
+                        logger.warn("{}, insecure input value", argValue);
+                        return;
+                    }
+                    component = argValue;
+                    break;
+                case "<f>":
+                case "<flags>":
+                    if (!SECURE_SHELL_INPUT_PATTERN.matcher(argValue).matches()) {
+                        logger.warn("{}, insecure input value", argValue);
+                        return;
+                    }
+                    flags = argValue;
+                    break;
+                case "<e>":
+                case "<es>":
+                    valueParts = argValue.split(" ");
+                    if (valueParts.length != 2) {
+                        logger.warn("argument '{}' requires a key value pair separated by space, current value '{}'",
+                                argName, argValue);
+                        return;
+                    }
+                    if (!SECURE_SHELL_INPUT_PATTERN.matcher(valueParts[0]).matches()) {
+                        logger.warn("{}, insecure input value", valueParts[0]);
+                        return;
+                    }
+                    if (!SECURE_SHELL_INPUT_PATTERN.matcher(valueParts[1]).matches()) {
+                        logger.warn("{}, insecure input value", valueParts[1]);
+                        return;
+                    }
+                    extraStrings.put(valueParts[0], valueParts[1]);
+                    break;
+                case "<ez>":
+                    valueParts = argValue.split(" ");
+                    if (valueParts.length != 2) {
+                        logger.warn("argument '{}' requires a key value pair separated by space, current value '{}'",
+                                argName, argValue);
+                        return;
+                    }
+                    if (!SECURE_SHELL_INPUT_PATTERN.matcher(valueParts[0]).matches()) {
+                        logger.warn("{}, insecure input value", valueParts[0]);
+                        return;
+                    }
+                    if (!SECURE_SHELL_INPUT_PATTERN.matcher(valueParts[1]).matches()) {
+                        logger.warn("{}, insecure input value", valueParts[1]);
+                        return;
+                    }
+                    extraBooleans.put(valueParts[0], Boolean.parseBoolean(valueParts[1]));
+                    break;
+                case "<ei>":
+                    valueParts = argValue.split(" ");
+                    if (valueParts.length != 2) {
+                        logger.warn("argument '{}' requires a key value pair separated by space, current value '{}'",
+                                argName, argValue);
+                        return;
+                    }
+                    if (!SECURE_SHELL_INPUT_PATTERN.matcher(valueParts[0]).matches()) {
+                        logger.warn("{}, insecure input value", valueParts[0]);
+                        return;
+                    }
+                    if (!SECURE_SHELL_INPUT_PATTERN.matcher(valueParts[1]).matches()) {
+                        logger.warn("{}, insecure input value", valueParts[1]);
+                        return;
+                    }
+                    try {
+                        extraIntegers.put(valueParts[0], Integer.parseInt(valueParts[1]));
+                    } catch (NumberFormatException e) {
+                        logger.warn("Unable to parse {} as integer", valueParts[1]);
+                        return;
+                    }
+                    break;
+                case "<el>":
+                    valueParts = argValue.split(" ");
+                    if (valueParts.length != 2) {
+                        logger.warn("argument '{}' requires a key value pair separated by space, current value '{}'",
+                                argName, argValue);
+                        return;
+                    }
+                    if (!SECURE_SHELL_INPUT_PATTERN.matcher(valueParts[0]).matches()) {
+                        logger.warn("{}, insecure input value", valueParts[0]);
+                        return;
+                    }
+                    if (!SECURE_SHELL_INPUT_PATTERN.matcher(valueParts[1]).matches()) {
+                        logger.warn("{}, insecure input value", valueParts[1]);
+                        return;
+                    }
+                    try {
+                        extraLongs.put(valueParts[0], Long.parseLong(valueParts[1]));
+                    } catch (NumberFormatException e) {
+                        logger.warn("Unable to parse {} as long", valueParts[1]);
+                        return;
+                    }
+                    break;
+                case "<ef>":
+                    valueParts = argValue.split(" ");
+                    if (valueParts.length != 2) {
+                        logger.warn("argument '{}' requires a key value pair separated by space, current value '{}'",
+                                argName, argValue);
+                        return;
+                    }
+                    if (!SECURE_SHELL_INPUT_PATTERN.matcher(valueParts[0]).matches()) {
+                        logger.warn("{}, insecure input value", valueParts[0]);
+                        return;
+                    }
+                    if (!SECURE_SHELL_INPUT_PATTERN.matcher(valueParts[1]).matches()) {
+                        logger.warn("{}, insecure input value", valueParts[1]);
+                        return;
+                    }
+                    try {
+                        extraFloats.put(valueParts[0], Float.parseFloat(valueParts[1]));
+                    } catch (NumberFormatException e) {
+                        logger.warn("Unable to parse {} as float", valueParts[1]);
+                        return;
+                    }
+                    break;
+                case "<eu>":
+                    valueParts = argValue.split(" ");
+                    if (valueParts.length != 2) {
+                        logger.warn("argument '{}' requires a key value pair separated by space, current value '{}'",
+                                argName, argValue);
+                        return;
+                    }
+                    if (!SECURE_SHELL_INPUT_PATTERN.matcher(valueParts[0]).matches()) {
+                        logger.warn("{}, insecure input value", valueParts[0]);
+                        return;
+                    }
+                    if (!SECURE_SHELL_INPUT_PATTERN.matcher(valueParts[1]).matches()) {
+                        logger.warn("{}, insecure input value", valueParts[1]);
+                        return;
+                    }
+                    extraUris.put(valueParts[0], URI.create(valueParts[1]));
+                    break;
+                default:
+                    throw new AndroidDebugBridgeDeviceException("Unsupported arg " + argName
+                            + ". Open an issue or pr for it if you think support should be added.");
+            }
+        }
+
+        StringBuilder adbCommandBuilder = new StringBuilder("am start -n " + targetPackage);
+        if (action != null) {
+            adbCommandBuilder.append(" -a ").append(action);
+        }
+        if (dataUri != null) {
+            adbCommandBuilder.append(" -d ").append(dataUri);
+        }
+        if (mimeType != null) {
+            adbCommandBuilder.append(" -t ").append(mimeType);
+        }
+        if (category != null) {
+            adbCommandBuilder.append(" -c ").append(category);
+        }
+        if (component != null) {
+            adbCommandBuilder.append(" -n ").append(component);
+        }
+        if (flags != null) {
+            adbCommandBuilder.append(" -f ").append(flags);
+        }
+        if (!extraStrings.isEmpty()) {
+            adbCommandBuilder.append(extraStrings.entrySet().stream()
+                    .map(entry -> " --es \"" + entry.getKey() + "\" \"" + entry.getValue() + "\"")
+                    .collect(Collectors.joining(" ")));
+        }
+        if (!extraBooleans.isEmpty()) {
+            adbCommandBuilder.append(extraBooleans.entrySet().stream()
+                    .map(entry -> " --ez \"" + entry.getKey() + "\" " + entry.getValue())
+                    .collect(Collectors.joining(" ")));
+        }
+        if (!extraIntegers.isEmpty()) {
+            adbCommandBuilder.append(extraIntegers.entrySet().stream()
+                    .map(entry -> " --ei \"" + entry.getKey() + "\" " + entry.getValue())
+                    .collect(Collectors.joining(" ")));
+        }
+        if (!extraFloats.isEmpty()) {
+            adbCommandBuilder.append(
+                    extraFloats.entrySet().stream().map(entry -> " --ef \"" + entry.getKey() + "\" " + entry.getValue())
+                            .collect(Collectors.joining(" ")));
+        }
+        if (!extraLongs.isEmpty()) {
+            adbCommandBuilder.append(
+                    extraLongs.entrySet().stream().map(entry -> " --el \"" + entry.getKey() + "\" " + entry.getValue())
+                            .collect(Collectors.joining(" ")));
+        }
+        runAdbShell(adbCommandBuilder.toString());
     }
 
     public boolean isConnected() {
@@ -496,6 +800,19 @@ public class AndroidDebugBridgeDevice {
             }
             socket = null;
         }
+    }
+
+    private boolean isAtLeastVersion(int major) {
+        return isAtLeastVersion(major, 0);
+    }
+
+    private boolean isAtLeastVersion(int major, int minor) {
+        return isAtLeastVersion(major, minor, 0);
+    }
+
+    private boolean isAtLeastVersion(int major, int minor, int patch) {
+        return majorVersionNumber > major || (majorVersionNumber == major
+                && (minorVersionNumber > minor || (minorVersionNumber == minor && patchVersionNumber >= patch)));
     }
 
     public static class VolumeInfo {

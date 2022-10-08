@@ -16,25 +16,26 @@ on:
 jobs:
   build:
     strategy:
+      fail-fast: false
       matrix:
-        java: [ '11' ]
-        maven: [ '3.8.4']
+        java: [ '11', '17' ]
+        maven: [ '3.8.6' ]
         os: [ 'ubuntu-20.04' ]
     name: Build (Java ${{ matrix.java }}, ${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
         if: github.head_ref == ''
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Checkout merge
         if: github.head_ref != ''
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           ref: refs/pull/${{github.event.pull_request.number}}/merge
 
       - name: Set up Cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: |
             ~/.m2/repository
@@ -44,22 +45,24 @@ jobs:
             ${{ runner.os }}-maven-
 
       - name: Set up Java ${{ matrix.java }}
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
-          distribution: 'zulu'
+          distribution: 'temurin'
           java-version: ${{ matrix.java }}
 
       - name: Set up Maven ${{ matrix.maven }}
-        uses: stCarolas/setup-maven@v4.2
+        uses: stCarolas/setup-maven@v4.4
         with:
           maven-version: ${{ matrix.maven }}
 
       - name: Register Problem Matchers
+        if: ${{ matrix.java == '11' }}
         id: problem_matchers
         run: |
           echo "::add-matcher::.github/openhab-compile-problems.json"
 
       - name: Get Changed Files
+        if: github.head_ref != ''
         id: files
         uses: Ana06/get-changed-files@v2.0.0
         with:
@@ -78,21 +81,21 @@ jobs:
 
       - name: Upload Build Log
         if: ${{ always() && ((steps.build.outcome == 'success') || (steps.build.outcome == 'failure')) }}
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: build-log-java-${{ matrix.java }}-${{ matrix.os }}
           path: build.log
 
       - name: Upload SAT Summary Report
         if: ${{ always() && ((steps.build.outcome == 'success') || (steps.build.outcome == 'failure')) }}
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: sat-summary-report
           path: target/summary_report.html
 
       - name: Report SAT Errors as Annotations
+        if: ${{ matrix.java == '11' && always() && ((steps.build.outcome == 'success') || (steps.build.outcome == 'failure')) }}
         uses: ghys/checkstyle-github-action@main
-        if: ${{ always() && ((steps.build.outcome == 'success') || (steps.build.outcome == 'failure')) }}
         with:
           title: CheckStyle Violations
           path: '**/checkstyle-result.xml'

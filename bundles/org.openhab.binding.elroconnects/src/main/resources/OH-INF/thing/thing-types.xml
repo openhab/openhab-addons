@@ -1,0 +1,350 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="elroconnects"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="account">
+		<label>ELRO Connects Account</label>
+		<description>This bridge represents an ELRO Connects Account, used for discovering K1 Connector hubs linked to the
+			account</description>
+		<config-description>
+			<parameter name="username" type="text" required="true">
+				<label>Username</label>
+				<description>Username for the ELRO Connects cloud</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<label>Password</label>
+				<description>Password for the ELRO Connects cloud account</description>
+				<context>password</context>
+			</parameter>
+			<parameter name="enableBackgroundDiscovery" type="boolean">
+				<label>Background Discovery</label>
+				<description>Enable background discovery of hubs, polling the ELRO Connects cloud account every 5 min.</description>
+				<default>true</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+	<bridge-type id="connector">
+		<label>ELRO Connects Connector</label>
+		<description>This bridge represents an ELRO Connects K1 Connector</description>
+		<channels>
+			<channel id="scene" typeId="scene"/>
+			<channel id="alarm" typeId="alarm"/>
+		</channels>
+		<representation-property>connectorId</representation-property>
+		<config-description>
+			<parameter name="connectorId" type="text" required="true">
+				<label>Connector ID</label>
+				<description>ID of the ELRO Connects K1 Connector, should be ST_xxxxxxxxxxxx with xxxxxxxxxxxx the lowercase MAC
+					address of the connector</description>
+			</parameter>
+			<parameter name="ipAddress" type="text">
+				<label>IP Address</label>
+				<description>IP address of the ELRO Connects K1 Connector, not required if connector and openHAB server in same
+					subnet</description>
+				<context>network-address</context>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="refreshInterval" type="integer">
+				<label>Refresh Interval</label>
+				<description>Heartbeat device refresh interval for communication with ELRO Connects K1 Connector in seconds, default
+					60s</description>
+				<default>60</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="legacyFirmware" type="boolean">
+				<label>Legacy Firmware</label>
+				<description>Flag for legacy firmware, should be set to true if ELRO Connects K1 Connector firmware has version
+					lower or equal to 2.0.14</description>
+				<default>false</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="smokealarm">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="connector"/>
+		</supported-bridge-type-refs>
+		<label>Smoke Alarm</label>
+		<description>ELRO Connects smoke alarm</description>
+		<category>SmokeDetector</category>
+		<channels>
+			<channel id="smokeAlarm" typeId="smokealarm"/>
+			<channel id="muteAlarm" typeId="mutealarm"/>
+			<channel id="testAlarm" typeId="testalarm"/>
+			<channel id="signal" typeId="system.signal-strength"/>
+			<channel id="battery" typeId="system.battery-level"/>
+			<channel id="lowBattery" typeId="system.low-battery"/>
+		</channels>
+		<representation-property>deviceId</representation-property>
+		<config-description>
+			<parameter name="deviceId" type="integer" required="true">
+				<label>Device ID</label>
+				<description>ID of the ELRO Connects Device</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+	<thing-type id="coalarm">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="connector"/>
+		</supported-bridge-type-refs>
+		<label>CO Alarm</label>
+		<description>ELRO Connects CO alarm</description>
+		<channels>
+			<channel id="coAlarm" typeId="coalarm"/>
+			<channel id="muteAlarm" typeId="mutealarm"/>
+			<channel id="testAlarm" typeId="testalarm"/>
+			<channel id="signal" typeId="system.signal-strength"/>
+			<channel id="battery" typeId="system.battery-level"/>
+			<channel id="lowBattery" typeId="system.low-battery"/>
+		</channels>
+		<representation-property>deviceId</representation-property>
+		<config-description>
+			<parameter name="deviceId" type="integer" required="true">
+				<label>Device ID</label>
+				<description>ID of the ELRO Connects Device.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+	<thing-type id="heatalarm">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="connector"/>
+		</supported-bridge-type-refs>
+		<label>Heat Alarm</label>
+		<description>ELRO Connects heat alarm</description>
+		<channels>
+			<channel id="heatAlarm" typeId="heatalarm"/>
+			<channel id="muteAlarm" typeId="mutealarm"/>
+			<channel id="testAlarm" typeId="testalarm"/>
+			<channel id="signal" typeId="system.signal-strength"/>
+			<channel id="battery" typeId="system.battery-level"/>
+			<channel id="lowBattery" typeId="system.low-battery"/>
+		</channels>
+		<representation-property>deviceId</representation-property>
+		<config-description>
+			<parameter name="deviceId" type="integer" required="true">
+				<label>Device ID</label>
+				<description>ID of the ELRO Connects Device</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+	<thing-type id="wateralarm">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="connector"/>
+		</supported-bridge-type-refs>
+		<label>Water Alarm</label>
+		<description>ELRO Connects water alarm</description>
+		<channels>
+			<channel id="waterAlarm" typeId="wateralarm"/>
+			<channel id="muteAlarm" typeId="mutealarm"/>
+			<channel id="testAlarm" typeId="testalarm"/>
+			<channel id="signal" typeId="system.signal-strength"/>
+			<channel id="battery" typeId="system.battery-level"/>
+			<channel id="lowBattery" typeId="system.low-battery"/>
+		</channels>
+		<representation-property>deviceId</representation-property>
+		<config-description>
+			<parameter name="deviceId" type="integer" required="true">
+				<label>Device ID</label>
+				<description>ID of the ELRO Connects Device</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+	<thing-type id="entrysensor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="connector"/>
+		</supported-bridge-type-refs>
+		<label>Door/Window Sensor</label>
+		<description>ELRO Connects door/window contact sensor</description>
+		<category>Door</category>
+		<channels>
+			<channel id="entryAlarm" typeId="entryalarm"/>
+			<channel id="entry" typeId="entry"/>
+			<channel id="signal" typeId="system.signal-strength"/>
+			<channel id="battery" typeId="system.battery-level"/>
+			<channel id="lowBattery" typeId="system.low-battery"/>
+		</channels>
+		<representation-property>deviceId</representation-property>
+		<config-description>
+			<parameter name="deviceId" type="integer" required="true">
+				<label>Device ID</label>
+				<description>ID of the ELRO Connects Device</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+	<thing-type id="motionsensor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="connector"/>
+		</supported-bridge-type-refs>
+		<label>Motion Sensor</label>
+		<description>ELRO Connects motion sensor</description>
+		<category>MotionDetector</category>
+		<channels>
+			<channel id="motionAlarm" typeId="motionalarm"/>
+			<channel id="motion" typeId="system.motion"/>
+			<channel id="signal" typeId="system.signal-strength"/>
+			<channel id="battery" typeId="system.battery-level"/>
+			<channel id="lowBattery" typeId="system.low-battery"/>
+		</channels>
+		<representation-property>deviceId</representation-property>
+		<config-description>
+			<parameter name="deviceId" type="integer" required="true">
+				<label>Device ID</label>
+				<description>ID of the ELRO Connects Device</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+	<thing-type id="temperaturesensor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="connector"/>
+		</supported-bridge-type-refs>
+		<label>Temperature Sensor</label>
+		<description>ELRO Connects temperature sensor</description>
+		<category>Sensor</category>
+		<channels>
+			<channel id="temperature" typeId="temperature"/>
+			<channel id="humidity" typeId="system.atmospheric-humidity"/>
+			<channel id="signal" typeId="system.signal-strength"/>
+			<channel id="battery" typeId="system.battery-level"/>
+			<channel id="lowBattery" typeId="system.low-battery"/>
+		</channels>
+		<representation-property>deviceId</representation-property>
+		<config-description>
+			<parameter name="deviceId" type="integer" required="true">
+				<label>Device ID</label>
+				<description>ID of the ELRO Connects Device</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+	<thing-type id="powersocket">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="connector"/>
+		</supported-bridge-type-refs>
+		<label>Power Socket</label>
+		<description>ELRO Connects power socket</description>
+		<category>PowerOutlet</category>
+		<channels>
+			<channel id="signal" typeId="system.signal-strength"/>
+			<channel id="powerState" typeId="system.power"/>
+		</channels>
+		<representation-property>deviceId</representation-property>
+		<config-description>
+			<parameter name="deviceId" type="integer" required="true">
+				<label>Device ID</label>
+				<description>ID of the ELRO Connects Device</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="scene">
+		<item-type>String</item-type>
+		<label>Scene</label>
+		<description>Scene selection from scenes configured in the ELRO Connects app, enables configuring alarm modes</description>
+	</channel-type>
+
+	<channel-type id="alarm">
+		<kind>trigger</kind>
+		<label>Alarm</label>
+		<description>Alarm triggered</description>
+		<category>Alarm</category>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
+	</channel-type>
+	<channel-type id="smokealarm">
+		<kind>trigger</kind>
+		<label>Smoke Alarm</label>
+		<description>Smoke alarm triggered</description>
+		<category>Alarm</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Smoke</tag>
+		</tags>
+	</channel-type>
+	<channel-type id="coalarm">
+		<kind>trigger</kind>
+		<label>CO Alarm</label>
+		<description>CO alarm triggered</description>
+		<category>Alarm</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>CO</tag>
+		</tags>
+	</channel-type>
+	<channel-type id="heatalarm">
+		<kind>trigger</kind>
+		<label>Heat Alarm</label>
+		<description>Heat alarm triggered</description>
+		<category>Fire</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Temperature</tag>
+		</tags>
+	</channel-type>
+	<channel-type id="wateralarm">
+		<kind>trigger</kind>
+		<label>Water Alarm</label>
+		<description>Water alarm triggered</description>
+		<category>Alarm</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Water</tag>
+		</tags>
+	</channel-type>
+	<channel-type id="entryalarm">
+		<kind>trigger</kind>
+		<label>Entry Alarm</label>
+		<description>Entry alarm triggered</description>
+		<category>Alarm</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>OpenState</tag>
+		</tags>
+	</channel-type>
+	<channel-type id="motionalarm">
+		<kind>trigger</kind>
+		<label>Motion Alarm</label>
+		<description>Motion alarm triggered</description>
+		<category>Alarm</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Presence</tag>
+		</tags>
+	</channel-type>
+	<channel-type id="entry">
+		<item-type>Contact</item-type>
+		<label>Entry Contact</label>
+		<description>Door/window contact open/closed</description>
+		<tags>
+			<tag>OpenState</tag>
+		</tags>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="mutealarm">
+		<item-type>Switch</item-type>
+		<label>Mute Alarm</label>
+		<description>Mute</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="testalarm">
+		<item-type>Switch</item-type>
+		<label>Test Alarm</label>
+		<description>Trigger alarm test sound</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Current temperature</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+</thing:thing-descriptions>

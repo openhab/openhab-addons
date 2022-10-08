@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
@@ -26,6 +27,7 @@ import org.openhab.core.thing.ThingTypeUID;
  *
  * @author Karel Goderis - Initial contribution
  */
+@NonNullByDefault
 public class KNXBindingConstants {
 
     public static final String BINDING_ID = "knx";
@@ -51,6 +53,11 @@ public class KNXBindingConstants {
     public static final String LOCAL_SOURCE_ADDRESS = "localSourceAddr";
     public static final String PORT_NUMBER = "portNumber";
     public static final String SERIAL_PORT = "serialPort";
+    public static final String USE_CEMI = "useCemi";
+    public static final String ROUTER_BACKBONE_GROUP_KEY = "routerBackboneGroupKey";
+    public static final String TUNNEL_USER_ID = "tunnelUserId";
+    public static final String TUNNEL_USER_PASSWORD = "tunnelUserPassword";
+    public static final String TUNNEL_DEVICE_AUTHENTICATION = "tunnelDeviceAuthentication";
 
     // The default multicast ip address (see <a
     // href="http://www.iana.org/assignments/multicast-addresses/multicast-addresses.xml">iana</a> EIBnet/IP

@@ -77,7 +77,7 @@ class GoogleCloudAPI {
 
     private static final String GCP_AUTH_URI = "https://accounts.google.com/o/oauth2/auth";
     private static final String GCP_TOKEN_URI = "https://accounts.google.com/o/oauth2/token";
-    private static final String GCP_REDIRECT_URI = "urn:ietf:wg:oauth:2.0:oob";
+    private static final String GCP_REDIRECT_URI = "https://www.google.com";
     /**
      * Google Cloud Platform authorization scope
      */
@@ -189,7 +189,11 @@ class GoogleCloudAPI {
         if (authcode != null && !authcode.isEmpty()) {
             logger.debug("Trying to get access and refresh tokens.");
             try {
-                oAuthService.getAccessTokenResponseByAuthorizationCode(authcode, GCP_REDIRECT_URI);
+                AccessTokenResponse response = oAuthService.getAccessTokenResponseByAuthorizationCode(authcode,
+                        GCP_REDIRECT_URI);
+                if (response.getRefreshToken() == null || response.getRefreshToken().isEmpty()) {
+                    throw new AuthenticationException("Error fetching refresh token. Please reauthorize");
+                }
             } catch (OAuthException | OAuthResponseException e) {
                 logger.debug("Error fetching access token: {}", e.getMessage(), e);
                 throw new AuthenticationException(
@@ -231,6 +235,9 @@ class GoogleCloudAPI {
         if (accessTokenResponse == null || accessTokenResponse.getAccessToken() == null
                 || accessTokenResponse.getAccessToken().isEmpty()) {
             throw new AuthenticationException("No access token. Is this thing authorized?");
+        }
+        if (accessTokenResponse.getRefreshToken() == null || accessTokenResponse.getRefreshToken().isEmpty()) {
+            throw new AuthenticationException("No refresh token. Please reauthorize");
         }
         return BEARER + accessTokenResponse.getAccessToken();
     }

@@ -129,6 +129,7 @@
 				<option value="InputHDMI4">Input HDMI4</option>
 				<option value="InputAV1">Input AV1</option>
 				<option value="PowerOff">Power Off</option>
+				<option value="PowerOn">Power On</option>
 			</options>
 		</state>
 	</channel-type>

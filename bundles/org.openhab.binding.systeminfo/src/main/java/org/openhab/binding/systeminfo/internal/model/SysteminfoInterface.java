@@ -15,6 +15,7 @@ package org.openhab.binding.systeminfo.internal.model;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StringType;
 
 /**
@@ -70,6 +71,13 @@ public interface SysteminfoInterface {
      * Get the number of physical CPUs/cores available for processing.
      */
     public DecimalType getCpuPhysicalCores();
+
+    /**
+     * Returns the system cpu load.
+     *
+     * @return the system cpu load between 0 and 1 or null, if no information is available
+     */
+    public @Nullable PercentType getSystemCpuLoad();
 
     /**
      * Returns the system load average for the last minute.
@@ -411,7 +419,7 @@ public interface SysteminfoInterface {
      * @return - percentage value /0-100/
      * @throws DeviceNotFoundException - thrown if process with this PID can not be found
      */
-    public @Nullable DecimalType getProcessCpuUsage(int pid) throws DeviceNotFoundException;
+    public @Nullable PercentType getProcessCpuUsage(int pid) throws DeviceNotFoundException;
 
     /**
      * Returns the size of RAM memory only usage of the process

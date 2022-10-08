@@ -13,6 +13,7 @@
 package org.openhab.binding.shelly.internal.manager;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
+import static org.openhab.binding.shelly.internal.discovery.ShellyThingCreator.*;
 import static org.openhab.binding.shelly.internal.manager.ShellyManagerConstants.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 import static org.openhab.core.thing.Thing.*;
@@ -44,7 +45,7 @@ import org.openhab.binding.shelly.internal.ShellyHandlerFactory;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyApiResult;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
-import org.openhab.binding.shelly.internal.api.ShellyHttpApi;
+import org.openhab.binding.shelly.internal.api.ShellyHttpClient;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyDeviceStats;
@@ -211,11 +212,11 @@ public class ShellyManagerPage {
         ShellyDeviceStats stats = th.getStats();
         properties.putAll(stats.asProperties());
 
-        for (Map.Entry<String, Object> p : thing.getConfiguration().getProperties().entrySet()) {
+        for (Map.Entry<String, @Nullable Object> p : thing.getConfiguration().getProperties().entrySet()) {
             String key = p.getKey();
-            if (p.getValue() != null) {
-                String value = p.getValue().toString();
-                properties.put(key, value);
+            Object o = p.getValue();
+            if (o != null) {
+                properties.put(key, o.toString());
             }
         }
 
@@ -260,6 +261,9 @@ public class ShellyManagerPage {
         properties.put(ATTRIBUTE_ACTIONS_SKIPPED,
                 profile.status.astats != null ? String.valueOf(profile.status.astats.skipped) : "n/a");
         properties.put(ATTRIBUTE_MAX_ITEMP, stats.maxInternalTemp > 0 ? stats.maxInternalTemp + " °C" : "n/a");
+        if (stats.maxInternalTemp == 0) {
+            properties.replace(CHANNEL_DEVST_ITEMP, "n/a");
+        }
 
         // Shelly H&T: When external power is connected the battery level is not valid
         if (!profile.isHT || (getInteger(profile.settings.externalPower) == 0)) {
@@ -491,7 +495,7 @@ public class ShellyManagerPage {
         try {
             Request request = httpClient.newRequest(url).method(method).timeout(SHELLY_API_TIMEOUT_MS,
                     TimeUnit.MILLISECONDS);
-            request.header(HttpHeader.ACCEPT, ShellyHttpApi.CONTENT_TYPE_JSON);
+            request.header(HttpHeader.ACCEPT, ShellyHttpClient.CONTENT_TYPE_JSON);
             logger.trace("{}: HTTP {} {}", LOG_PREFIX, method, url);
             ContentResponse contentResponse = request.send();
             apiResult = new ShellyApiResult(contentResponse);

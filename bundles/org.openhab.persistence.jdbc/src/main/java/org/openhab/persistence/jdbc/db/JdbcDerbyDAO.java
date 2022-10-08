@@ -19,6 +19,8 @@ import java.util.stream.Collectors;
 import javax.measure.Quantity;
 import javax.measure.Unit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.knowm.yank.Yank;
 import org.openhab.core.items.Item;
 import org.openhab.core.library.items.NumberItem;
@@ -40,6 +42,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Helmut Lehmeyer - Initial contribution
  */
+@NonNullByDefault
 public class JdbcDerbyDAO extends JdbcBaseDAO {
     private final Logger logger = LoggerFactory.getLogger(JdbcDerbyDAO.class);
 
@@ -99,8 +102,8 @@ public class JdbcDerbyDAO extends JdbcBaseDAO {
      * ITEMS DAOs *
      **************/
     @Override
-    public Integer doPingDB() {
-        return Yank.queryScalar(sqlPingDB, Integer.class, null);
+    public @Nullable Integer doPingDB() {
+        return Yank.queryScalar(sqlPingDB, (Class<@Nullable Integer>) Integer.class, null);
     }
 
     @Override
@@ -108,7 +111,7 @@ public class JdbcDerbyDAO extends JdbcBaseDAO {
         String sql = StringUtilsExt.replaceArrayMerge(sqlIfTableExists, new String[] { "#searchTable#" },
                 new String[] { vo.getItemsManageTable().toUpperCase() });
         logger.debug("JDBC::doIfTableExists sql={}", sql);
-        return Yank.queryScalar(sql, String.class, null) != null;
+        return Yank.queryScalar(sql, (Class<@Nullable String>) String.class, null) != null;
     }
 
     @Override
@@ -171,7 +174,7 @@ public class JdbcDerbyDAO extends JdbcBaseDAO {
         Unit<? extends Quantity<?>> unit = item instanceof NumberItem ? ((NumberItem) item).getUnit() : null;
         return m.stream().map(o -> {
             logger.debug("JDBC::doGetHistItemFilterQuery 0='{}' 1='{}'", o[0], o[1]);
-            return new JdbcHistoricItem(itemName, objectAsState(item, unit, o[1]), objectAsDate(o[0]));
+            return new JdbcHistoricItem(itemName, objectAsState(item, unit, o[1]), objectAsZonedDateTime(o[0]));
         }).collect(Collectors.<HistoricItem> toList());
     }
 

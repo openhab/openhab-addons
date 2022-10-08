@@ -42,20 +42,22 @@ public class StringUtilsExt {
      * @return
      */
     public static final String replaceArrayMerge(String str, String separate, Object[] separators) {
+        String s = str;
         for (int i = 0; i < separators.length; i++) {
-            str = str.replaceFirst(separate, (String) separators[i]);
+            s = s.replaceFirst(separate, (String) separators[i]);
         }
-        return str;
+        return s;
     }
 
     /**
      * @see #replaceArrayMerge(String str, String separate, Object[] separators)
      */
     public static final String replaceArrayMerge(String str, String[] separate, String[] separators) {
+        String s = str;
         for (int i = 0; i < separators.length; i++) {
-            str = str.replaceFirst(separate[i], separators[i]);
+            s = s.replaceFirst(separate[i], separators[i]);
         }
-        return str;
+        return s;
     }
 
     /**
@@ -99,7 +101,7 @@ public class StringUtilsExt {
             props = new Properties(def);
         }
 
-        if (url == null || url.length() < 9) {
+        if (url.length() < 9) {
             return props;
         }
 

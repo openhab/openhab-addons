@@ -25,14 +25,13 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link SynopAnalyzerBinding} class defines common constants, which are
- * used across the whole binding.
+ * The {@link SynopAnalyzerBinding} class defines common constants used across the whole binding.
  *
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
 public class SynopAnalyzerBindingConstants {
-    public static final String BINDING_ID = "synopanalyzer";
+    private static final String BINDING_ID = "synopanalyzer";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_SYNOP = new ThingTypeUID(BINDING_ID, "synopanalyzer");

@@ -45,6 +45,7 @@ import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.library.items.NumberItem;
 import org.openhab.core.library.items.StringItem;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.test.java.JavaOSGiTest;
 import org.openhab.core.test.storage.VolatileStorageService;
@@ -344,6 +345,18 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
 
         initializeThingWithChannel(channnelID, acceptedItemType);
         assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_CHANNEL_TEST_PRIORITY, UnDefType.UNDEF);
+    }
+
+    @Test
+    public void assertChannelCpuLoadIsUpdated() {
+        String channnelID = SysteminfoBindingConstants.CHANNEL_CPU_LOAD;
+        String acceptedItemType = "Number";
+
+        PercentType mockedCpuLoadValue = new PercentType(9);
+        when(mockedSystemInfo.getSystemCpuLoad()).thenReturn(mockedCpuLoadValue);
+
+        initializeThingWithChannel(channnelID, acceptedItemType);
+        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_CHANNEL_TEST_PRIORITY, mockedCpuLoadValue);
     }
 
     @Test
@@ -1007,7 +1020,7 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         // The pid of the System idle process in Windows
         int pid = 0;
 
-        DecimalType mockedProcessLoad = new DecimalType(3);
+        PercentType mockedProcessLoad = new PercentType(3);
         when(mockedSystemInfo.getProcessCpuUsage(pid)).thenReturn(mockedProcessLoad);
 
         initializeThingWithChannelAndPID(channnelID, acceptedItemType, pid);

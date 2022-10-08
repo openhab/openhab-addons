@@ -6,28 +6,64 @@
 		https://openhab.org/schemas/config-description-1.0.0.xsd">
 	<config-description uri="automation:jruby">
 
-		<parameter-group name="system">
-			<label>System Properties</label>
-			<description>This group defines JRuby system properties.</description>
-			<advanced>true</advanced>
+		<parameter-group name="gems">
+			<label>Ruby Gems</label>
+			<description>This group defines the list of Ruby Gems to install.</description>
 		</parameter-group>
 
 		<parameter-group name="environment">
 			<label>Ruby Environment</label>
 			<description>This group defines Ruby's environment.</description>
-			<advanced>false</advanced>
 		</parameter-group>
 
-		<parameter-group name="gems">
-			<label>Ruby Gems</label>
-			<description>This group defines the list of Ruby Gems to install.</description>
-			<advanced>false</advanced>
+		<parameter-group name="system">
+			<label>System Properties</label>
+			<description>This group defines JRuby system properties.</description>
 		</parameter-group>
+
+		<parameter name="gems" type="text" required="false" groupName="gems">
+			<label>Ruby Gems</label>
+			<description><![CDATA[A comma separated list of Ruby Gems to install. Versions may be constrained by separating with an
+			    <tt>=</tt> and then the standard RubyGems version constraint, such as "<tt>openhab-scripting=~>4.0</tt>".
+				]]></description>
+		</parameter>
+
+		<parameter name="check_update" type="boolean" required="true" groupName="gems">
+			<label>Check for Gem Updates</label>
+			<description>Check RubyGems for updates to the above gems when OpenHAB starts or JRuby settings are changed.
+				Otherwise it will try to fulfill the requirements with locally installed gems, and you can manage them yourself with
+				an external Ruby by setting the same GEM_HOME.</description>
+			<options>
+				<option value="true">Check For Updates</option>
+				<option value="false">Do Not Check For Updates</option>
+			</options>
+			<default>true</default>
+		</parameter>
+
+		<parameter name="require" type="text" required="false" groupName="gems">
+			<label>Require Scripts</label>
+			<description>A comma separated list of script names to be required by the JRuby Scripting Engine before running user
+				scripts.</description>
+		</parameter>
+
+		<parameter name="gem_home" type="text" required="false" groupName="environment">
+			<label>GEM_HOME</label>
+			<description><![CDATA[Location Ruby Gems will be installed and loaded, directory will be created if missing and gem
+			    installs are specified. Defaults to "<tt>OPENHAB_CONF/scripts/lib/ruby/gem_home</tt>" when not specified.
+				]]></description>
+		</parameter>
+
+		<parameter name="rubylib" type="text" required="false" groupName="environment">
+			<label>RUBYLIB</label>
+			<description><![CDATA[Search path for user libraries. Separate each path with a colon (semicolon in Windows). Defaults to
+				"<tt>OPENHAB_CONF/automation/lib/ruby</tt>" when not specified.]]></description>
+		</parameter>
 
 		<parameter name="local_context" type="text" required="false" groupName="system">
 			<label>Context Instance Type</label>
-			<description>The local context holds Ruby runtime, name-value pairs for sharing variables between Java and Ruby. See
-				https://github.com/jruby/jruby/wiki/RedBridge#Context_Instance_Type for options and details.</description>
+			<description><![CDATA[The local context holds Ruby runtime, name-value pairs for sharing variables between Java and Ruby. See
+				<a href="https://github.com/jruby/jruby/wiki/RedBridge#Context_Instance_Type">the documentation</a> for options and details.
+				]]></description>
 			<default>singlethread</default>
 			<options>
 				<option value="singleton">Singleton</option>
@@ -35,36 +71,23 @@
 				<option value="singlethread">SingleThread</option>
 				<option value="concurrent">Concurrent</option>
 			</options>
+			<advanced>true</advanced>
 		</parameter>
 
 		<parameter name="local_variable" type="text" required="false" groupName="system">
 			<label>Local Variable Behavior</label>
-			<description>Defines how variables are shared between Ruby and Java. See
-				https://github.com/jruby/jruby/wiki/RedBridge#local-variable-behavior-options for options and details.</description>
+			<description><![CDATA[Defines how variables are shared between Ruby and Java. See
+				<a href="https://github.com/jruby/jruby/wiki/RedBridge#local-variable-behavior-options">the documentation</a> for options and details.
+				]]></description>
 			<default>transient</default>
 			<options>
 				<option value="transient">Transient</option>
 				<option value="persistent">Persistent</option>
 				<option value="global">Global</option>
 			</options>
+			<advanced>true</advanced>
 		</parameter>
 
-		<parameter name="gem_home" type="text" required="false" groupName="environment">
-			<label>GEM_HOME</label>
-			<description>Location Ruby Gems will be installed and loaded, directory will be created if missing and gem installs
-				are specified</description>
-			<default></default>
-		</parameter>
-
-		<parameter name="rubylib" type="text" required="false" groupName="environment">
-			<label>RUBYLIB</label>
-			<description>Search path for user libraries. Separate each path with a colon (semicolon in Windows).</description>
-		</parameter>
-
-		<parameter name="gems" type="text" required="false" groupName="gems">
-			<label>Ruby Gems</label>
-			<description>Comma separated list of Ruby Gems to install.</description>
-		</parameter>
 
 	</config-description>
 </config-description:config-descriptions>

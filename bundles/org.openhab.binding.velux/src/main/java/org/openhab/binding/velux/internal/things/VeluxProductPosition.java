@@ -64,13 +64,32 @@ public class VeluxProductPosition {
     public static final int VPP_VELUX_UNKNOWN = 0xF7FF;
 
     // relative mode commands
-    private static final int VPP_VELUX_RELATIVE_ORIGIN = 0xCCE8;
-    private static final int VPP_VELUX_RELATIVE_RANGE = 1000; // same for positive and negative offsets
+    public static final int VPP_VELUX_RELATIVE_ORIGIN = 0xCCE8;
+    public static final int VPP_VELUX_RELATIVE_RANGE = 1000; // same for positive and negative offsets
+
+    /**
+     * Enum that determines whether the position is an absolute value, or a positive / negative offset relative to the
+     * current position.
+     *
+     * @author AndrewFG - Initial contribution.
+     */
+    public static enum PositionType {
+        ABSOLUTE_VALUE(0f),
+        OFFSET_POSITIVE(1f),
+        OFFSET_NEGATIVE(-1f);
+
+        private float value;
+
+        private PositionType(float i) {
+            value = i;
+        }
+    }
 
     // Class internal
 
     private PercentType position;
     private boolean isValid = false;
+    private PositionType positionType = PositionType.ABSOLUTE_VALUE;
 
     // Constructor
 
@@ -102,19 +121,26 @@ public class VeluxProductPosition {
      *            0xc800, or 0xD200 for stop).
      */
     public VeluxProductPosition(int veluxPosition) {
-        logger.trace("VeluxProductPosition(constructur with {} as veluxPosition) called.", veluxPosition);
-        if ((veluxPosition == VPP_VELUX_UNKNOWN) || (veluxPosition == VPP_VELUX_STOP) || (veluxPosition < VPP_VELUX_MIN)
-                || (veluxPosition > VPP_VELUX_MAX)) {
-            logger.trace("VeluxProductPosition() gives up.");
-            this.position = new PercentType(VPP_UNKNOWN);
-            this.isValid = false;
-        } else {
+        logger.trace("VeluxProductPosition(constructor with {} as veluxPosition) called.", veluxPosition);
+        if (isValid(veluxPosition)) {
             float result = (ONE * veluxPosition - VPP_VELUX_MIN) / (VPP_VELUX_MAX - VPP_VELUX_MIN);
             result = Math.round(VPP_OPENHAB_MIN + result * (VPP_OPENHAB_MAX - VPP_OPENHAB_MIN));
-            logger.trace("VeluxProductPosition() created with percent-type {}.", (int) result);
             this.position = new PercentType((int) result);
             this.isValid = true;
+            logger.trace("VeluxProductPosition() created with percent-type {}.", (int) result);
+        } else {
+            this.position = new PercentType(VPP_UNKNOWN);
+            this.isValid = false;
+            logger.trace("VeluxProductPosition() gives up.");
         }
+    }
+
+    public static boolean isValid(int position) {
+        return (position <= VeluxProductPosition.VPP_VELUX_MAX) && (position >= VeluxProductPosition.VPP_VELUX_MIN);
+    }
+
+    public static boolean isUnknownOrValid(int position) {
+        return (position == VeluxProductPosition.VPP_UNKNOWN) || isValid(position);
     }
 
     /**
@@ -142,8 +168,15 @@ public class VeluxProductPosition {
 
     public int getPositionAsVeluxType() {
         if (this.isValid) {
-            float result = (ONE * position.intValue() - VPP_OPENHAB_MIN) / (VPP_OPENHAB_MAX - VPP_OPENHAB_MIN);
-            result = VPP_VELUX_MIN + result * (VPP_VELUX_MAX - VPP_VELUX_MIN);
+            float result;
+            if (positionType == PositionType.ABSOLUTE_VALUE) {
+                result = (ONE * position.intValue() - VPP_OPENHAB_MIN) / (VPP_OPENHAB_MAX - VPP_OPENHAB_MIN);
+                result = VPP_VELUX_MIN + result * (VPP_VELUX_MAX - VPP_VELUX_MIN);
+            } else {
+                result = VPP_VELUX_RELATIVE_ORIGIN
+                        + ((positionType.value * position.intValue() * VPP_VELUX_RELATIVE_RANGE)
+                                / (VPP_OPENHAB_MAX - VPP_OPENHAB_MIN));
+            }
             return (int) result;
         } else {
             return VPP_VELUX_STOP;
@@ -161,8 +194,8 @@ public class VeluxProductPosition {
 
     // Helper methods
 
-    public int getAsRelativePosition(boolean positive) {
-        int offset = position.intValue() * VPP_VELUX_RELATIVE_RANGE / (VPP_OPENHAB_MAX - VPP_OPENHAB_MIN);
-        return positive ? VPP_VELUX_RELATIVE_ORIGIN + offset : VPP_VELUX_RELATIVE_ORIGIN - offset;
+    public VeluxProductPosition overridePositionType(PositionType positionType) {
+        this.positionType = positionType;
+        return this;
     }
 }

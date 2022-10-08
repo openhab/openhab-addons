@@ -34,6 +34,7 @@ import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
@@ -94,6 +95,7 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
     private final Logger logger = LoggerFactory.getLogger(KNXCoreTypeMapper.class);
 
     private static final String TIME_DAY_FORMAT = new String("EEE, HH:mm:ss");
+    private static final String TIME_FORMAT = new String("HH:mm:ss");
     private static final String DATE_FORMAT = new String("yyyy-MM-dd");
 
     /**
@@ -231,7 +233,6 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
          * 7.011: DPT_Length_mm values: 0...65535 mm
          * 7.012: DPT_UElCurrentmA values: 0...65535 mA
          * 7.013: DPT_Brightness values: 0...65535 lx
-         * Calimero does not map: (map/use to 7.000 until then)
          * 7.600: DPT_Colour_Temperature values: 0...65535 K, 2000K 3000K 5000K 8000K
          */
         dptMainTypeMap.put(7, DecimalType.class);
@@ -250,6 +251,7 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
          * 8.007: DPT_DeltaTimeHrs
          * 8.010: DPT_Percent_V16
          * 8.011: DPT_Rotation_Angle
+         * 8.012: DPT_Length_m
          */
         dptMainTypeMap.put(8, DecimalType.class);
 
@@ -275,6 +277,8 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
          * 9.026: DPT_Rain_Amount values: -671088.64...670760.96 l/m²
          * 9.027: DPT_Value_Temp_F values: -459.6...670760.96 °F
          * 9.028: DPT_Value_Wsp_kmh values: 0...670760.96 km/h
+         * 9.029: DPT_Value_Absolute_Humidity: 0...670760 g/m³
+         * 9.030: DPT_Concentration_μgm3: 0...670760 µg/m³
          */
         dptMainTypeMap.put(9, DecimalType.class);
         /** Exceptions Datapoint Types "2-Octet Float Value", Main number 9 */
@@ -300,6 +304,11 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
          * MainType: 12
          * 12.000: General unsigned long
          * 12.001: DPT_Value_4_Ucount values: 0...4294967295 counter pulses
+         * 12.100: DPT_LongTimePeriod_Sec values: 0...4294967295 s
+         * 12.101: DPT_LongTimePeriod_Min values: 0...4294967295 min
+         * 12.102: DPT_LongTimePeriod_Hrs values: 0...4294967295 h
+         * 12.1200: DPT_VolumeLiquid_Litre values: 0..4294967295 l
+         * 12.1201: DPT_Volume_m3 values: 0..4294967295 m3
          */
         dptMainTypeMap.put(12, DecimalType.class);
         /** Exceptions Datapoint Types "4-Octet Unsigned Value", Main number 12 */
@@ -316,7 +325,10 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
          * 13.013: DPT_ActiveEnergy_kWh values: -2147483648...2147483647 kWh
          * 13.014: DPT_ApparantEnergy_kVAh values: -2147483648...2147483647 kVAh
          * 13.015: DPT_ReactiveEnergy_kVARh values: -2147483648...2147483647 kVAR
+         * 13.016: DPT_ActiveEnergy_MWh4 values: -2147483648...2147483647 MWh
          * 13.100: DPT_LongDeltaTimeSec values: -2147483648...2147483647 s
+         * 13.1200: DPT_DeltaVolumeLiquid_Litre values: -2147483648...2147483647 l
+         * 13.1201: DPT_DeltaVolume_m3 values: -2147483648...2147483647 m³
          */
         dptMainTypeMap.put(13, DecimalType.class);
         /** Exceptions Datapoint Types "4-Octet Signed Value", Main number 13 */
@@ -404,6 +416,7 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
          * 14.077: Volume flux, values: m³/s
          * 14.078: Weight, values: N
          * 14.079: Work, values: J
+         * 14.080: apparent power: VA
          */
         dptMainTypeMap.put(14, DecimalType.class);
         /** Exceptions Datapoint Types "4-Octet Float Value", Main number 14 */
@@ -571,6 +584,156 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
         defaultDptMap.put(HSBType.class, DPTXlatorRGB.DPT_RGB.getID());
     }
 
+    /*
+     * This function computes the target unit for type conversion from OH quantity type to DPT types.
+     * Calimero library provides units which can be used for most of the DPTs. There are some deviations
+     * from the OH unit scheme which are handled.
+     */
+    private String quantityTypeToDPTValue(QuantityType<?> qt, int mainNumber, int subNumber, String dpUnit)
+            throws KNXException {
+        String targetOhUnit = dpUnit;
+        double scaleFactor = 1.0;
+        switch (mainNumber) {
+            case 7:
+                switch (subNumber) {
+                    case 3:
+                    case 4:
+                        targetOhUnit = "ms";
+                        break;
+                }
+                break;
+            case 9:
+                switch (subNumber) {
+                    // special case: temperature deltas specified in different units
+                    // ignore the offset, but run a conversion to handle prefixes like mK
+                    // scaleFactor is needed to properly handle °F
+                    case 2: {
+                        final String unit = qt.getUnit().toString();
+                        // find out if the unit is based on °C or K, getSystemUnit() does not help here as it always
+                        // gives "K"
+                        if (unit.contains("°C")) {
+                            targetOhUnit = "°C";
+                        } else if (unit.contains("°F")) {
+                            targetOhUnit = "°F";
+                            scaleFactor = 5.0 / 9.0;
+                        } else if (unit.contains("K")) {
+                            targetOhUnit = "K";
+                        } else {
+                            targetOhUnit = "";
+                        }
+                        break;
+                    }
+                    case 3: {
+                        final String unit = qt.getUnit().toString();
+                        if (unit.contains("°C")) {
+                            targetOhUnit = "°C/h";
+                        } else if (unit.contains("°F")) {
+                            targetOhUnit = "°F/h";
+                            scaleFactor = 5.0 / 9.0;
+                        } else if (unit.contains("K")) {
+                            targetOhUnit = "K/h";
+                        } else {
+                            targetOhUnit = "";
+                        }
+                        break;
+                    }
+                    case 23: {
+                        final String unit = qt.getUnit().toString();
+                        if (unit.contains("°C")) {
+                            targetOhUnit = "°C/%";
+                        } else if (unit.contains("°F")) {
+                            targetOhUnit = "°F/%";
+                            scaleFactor = 5.0 / 9.0;
+                        } else if (unit.contains("K")) {
+                            targetOhUnit = "K/%";
+                        } else {
+                            targetOhUnit = "";
+                        }
+                        break;
+                    }
+                }
+                break;
+            case 12:
+                switch (subNumber) {
+                    case 1200:
+                        // Calimero uses "litre"
+                        targetOhUnit = "l";
+                        break;
+                }
+                break;
+            case 13:
+                switch (subNumber) {
+                    case 12:
+                    case 15:
+                        // Calimero uses VARh, OH uses varh
+                        targetOhUnit = targetOhUnit.replace("VARh", "varh");
+                        break;
+                    case 14:
+                        // OH does not accept kVAh, only VAh
+                        targetOhUnit = targetOhUnit.replace("kVAh", "VAh");
+                        scaleFactor = 1.0 / 1000.0;
+                        break;
+                }
+                break;
+
+            case 14:
+                targetOhUnit = targetOhUnit.replace("Ω\u207B¹", "S");
+                // Calimero uses a special unicode character to specify units like m*s^-2
+                // this needs to be rewritten to m/s²
+                final int posMinus = targetOhUnit.indexOf("\u207B");
+                if (posMinus > 0) {
+                    targetOhUnit = targetOhUnit.substring(0, posMinus - 1) + "/" + targetOhUnit.charAt(posMinus - 1)
+                            + targetOhUnit.substring(posMinus + 1);
+                }
+                switch (subNumber) {
+                    case 8:
+                        // OH does not support unut Js, need to expand
+                        targetOhUnit = "J*s";
+                        break;
+                    case 21:
+                        targetOhUnit = "C*m";
+                        break;
+                    case 24:
+                        targetOhUnit = "C";
+                        break;
+                    case 29:
+                    case 47:
+                        targetOhUnit = "A*m²";
+                        break;
+                    case 40:
+                        if (qt.getUnit().toString().contains("J")) {
+                            targetOhUnit = "J";
+                        } else {
+                            targetOhUnit = "lm*s";
+                        }
+                        break;
+                    case 61:
+                        targetOhUnit = "Ohm*m";
+                        break;
+                    case 75:
+                        targetOhUnit = "N*m";
+                        break;
+                }
+                break;
+            case 29:
+                switch (subNumber) {
+                    case 12:
+                        // Calimero uses VARh, OH uses varh
+                        targetOhUnit = targetOhUnit.replace("VARh", "varh");
+                        break;
+                }
+                break;
+        }
+        // replace e.g. m3 by m³
+        targetOhUnit = targetOhUnit.replace("3", "³").replace("2", "²");
+
+        final QuantityType<?> result = qt.toUnit(targetOhUnit);
+        if (result == null) {
+            throw new KNXException("incompatible types: " + qt.getUnit().toString() + ", " + targetOhUnit);
+        }
+        return String.valueOf(result.doubleValue() * scaleFactor);
+    }
+
     @Override
     public String toDPTValue(Type type, String dptID) {
         DPT dpt;
@@ -659,6 +822,9 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
                 return type.toString();
             } else if (type instanceof DateTimeType) {
                 return formatDateTime((DateTimeType) type, dptID);
+            } else if (type instanceof QuantityType) {
+                final QuantityType<?> qt = (QuantityType<?>) type;
+                return quantityTypeToDPTValue(qt, mainNumber, subNumber, dpt.getUnit());
             }
         } catch (Exception e) {
             logger.warn("An exception occurred converting type {} to dpt id {}: error message={}", type, dptID,
@@ -920,7 +1086,11 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
                     stb.replace(start, end, String.format(Locale.US, "%1$ta", Calendar.getInstance()));
                     value = stb.toString();
                 }
-                date = new SimpleDateFormat(TIME_DAY_FORMAT, Locale.US).parse(value);
+                try {
+                    date = new SimpleDateFormat(TIME_DAY_FORMAT, Locale.US).parse(value);
+                } catch (ParseException pe) {
+                    date = new SimpleDateFormat(TIME_FORMAT, Locale.US).parse(value);
+                }
             }
         } catch (ParseException pe) {
             // do nothing but logging

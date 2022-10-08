@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.lcn.internal.subhandler;
 
-import static org.mockito.Mockito.verify;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,6 +22,7 @@ import org.openhab.binding.lcn.internal.common.LcnChannelGroup;
 import org.openhab.binding.lcn.internal.common.LcnException;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.UpDownType;
 
 /**
  * Test class.
@@ -41,7 +43,7 @@ public class LcnModuleRelaySubHandlerTest extends AbstractTestLcnModuleSubHandle
 
     @Test
     public void testStatusAllOff() {
-        l.tryParse("=M000005Rx000");
+        tryParseAllHandlers("=M000005Rx000");
         verify(handler).updateChannel(LcnChannelGroup.RELAY, "1", OnOffType.OFF);
         verify(handler).updateChannel(LcnChannelGroup.RELAY, "2", OnOffType.OFF);
         verify(handler).updateChannel(LcnChannelGroup.RELAY, "3", OnOffType.OFF);
@@ -50,11 +52,16 @@ public class LcnModuleRelaySubHandlerTest extends AbstractTestLcnModuleSubHandle
         verify(handler).updateChannel(LcnChannelGroup.RELAY, "6", OnOffType.OFF);
         verify(handler).updateChannel(LcnChannelGroup.RELAY, "7", OnOffType.OFF);
         verify(handler).updateChannel(LcnChannelGroup.RELAY, "8", OnOffType.OFF);
+        verify(handler).updateChannel(LcnChannelGroup.ROLLERSHUTTERRELAY, "1", UpDownType.UP);
+        verify(handler).updateChannel(LcnChannelGroup.ROLLERSHUTTERRELAY, "2", UpDownType.UP);
+        verify(handler).updateChannel(LcnChannelGroup.ROLLERSHUTTERRELAY, "3", UpDownType.UP);
+        verify(handler).updateChannel(LcnChannelGroup.ROLLERSHUTTERRELAY, "4", UpDownType.UP);
+        verify(handler, times(12)).updateChannel(any(), any(), any());
     }
 
     @Test
     public void testStatusAllOn() {
-        l.tryParse("=M000005Rx255");
+        tryParseAllHandlers("=M000005Rx255");
         verify(handler).updateChannel(LcnChannelGroup.RELAY, "1", OnOffType.ON);
         verify(handler).updateChannel(LcnChannelGroup.RELAY, "2", OnOffType.ON);
         verify(handler).updateChannel(LcnChannelGroup.RELAY, "3", OnOffType.ON);
@@ -62,11 +69,16 @@ public class LcnModuleRelaySubHandlerTest extends AbstractTestLcnModuleSubHandle
         verify(handler).updateChannel(LcnChannelGroup.RELAY, "6", OnOffType.ON);
         verify(handler).updateChannel(LcnChannelGroup.RELAY, "7", OnOffType.ON);
         verify(handler).updateChannel(LcnChannelGroup.RELAY, "8", OnOffType.ON);
+        verify(handler).updateChannel(LcnChannelGroup.ROLLERSHUTTERRELAY, "1", UpDownType.DOWN);
+        verify(handler).updateChannel(LcnChannelGroup.ROLLERSHUTTERRELAY, "2", UpDownType.DOWN);
+        verify(handler).updateChannel(LcnChannelGroup.ROLLERSHUTTERRELAY, "3", UpDownType.DOWN);
+        verify(handler).updateChannel(LcnChannelGroup.ROLLERSHUTTERRELAY, "4", UpDownType.DOWN);
+        verify(handler, times(12)).updateChannel(any(), any(), any());
     }
 
     @Test
     public void testStatusRelay1Relay7On() {
-        l.tryParse("=M000005Rx065");
+        tryParseAllHandlers("=M000005Rx065");
         verify(handler).updateChannel(LcnChannelGroup.RELAY, "1", OnOffType.ON);
         verify(handler).updateChannel(LcnChannelGroup.RELAY, "2", OnOffType.OFF);
         verify(handler).updateChannel(LcnChannelGroup.RELAY, "3", OnOffType.OFF);
@@ -75,6 +87,11 @@ public class LcnModuleRelaySubHandlerTest extends AbstractTestLcnModuleSubHandle
         verify(handler).updateChannel(LcnChannelGroup.RELAY, "6", OnOffType.OFF);
         verify(handler).updateChannel(LcnChannelGroup.RELAY, "7", OnOffType.ON);
         verify(handler).updateChannel(LcnChannelGroup.RELAY, "8", OnOffType.OFF);
+        verify(handler).updateChannel(LcnChannelGroup.ROLLERSHUTTERRELAY, "1", UpDownType.UP);
+        verify(handler).updateChannel(LcnChannelGroup.ROLLERSHUTTERRELAY, "2", UpDownType.UP);
+        verify(handler).updateChannel(LcnChannelGroup.ROLLERSHUTTERRELAY, "3", UpDownType.UP);
+        verify(handler).updateChannel(LcnChannelGroup.ROLLERSHUTTERRELAY, "4", UpDownType.UP);
+        verify(handler, times(12)).updateChannel(any(), any(), any());
     }
 
     @Test

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="hdpowerview"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="hub">
+		<label>PowerView Hub</label>
+		<description>Hunter Douglas (Luxaflex) PowerView Hub</description>
+
+		<channel-groups>
+			<channel-group id="scenes" typeId="scenes"/>
+			<channel-group id="sceneGroups" typeId="sceneGroups"/>
+			<channel-group id="automations" typeId="automations"/>
+		</channel-groups>
+
+		<properties>
+			<property name="vendor">Hunter Douglas (Luxaflex)</property>
+			<property name="modelId">PowerView Hub</property>
+		</properties>
+
+		<representation-property>host</representation-property>
+
+		<config-description>
+			<parameter name="host" type="text" required="true">
+				<label>Host</label>
+				<description>The Host address of the PowerView Hub</description>
+				<context>network-address</context>
+			</parameter>
+			<parameter name="refresh" type="integer" required="false">
+				<label>Refresh Interval</label>
+				<description>The number of milliseconds between fetches of the PowerView Hub shade state</description>
+				<default>60000</default>
+			</parameter>
+			<parameter name="hardRefresh" type="integer" required="false">
+				<label>Hard Position Refresh Interval</label>
+				<description>The number of minutes between hard refreshes of positions from the PowerView Hub (or 0 to disable)</description>
+				<default>180</default>
+			</parameter>
+			<parameter name="hardRefreshBatteryLevel" type="integer" required="false">
+				<label>Hard Battery Level Refresh Interval</label>
+				<description>The number of hours between hard refreshes of battery levels from the PowerView Hub (or 0 to disable,
+					default is weekly)</description>
+				<advanced>true</advanced>
+				<default>0</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+</thing:thing-descriptions>

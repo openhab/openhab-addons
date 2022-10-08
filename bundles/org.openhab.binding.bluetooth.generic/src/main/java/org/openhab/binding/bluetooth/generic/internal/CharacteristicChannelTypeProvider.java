@@ -25,6 +25,10 @@ import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.BluetoothBindingConstants;
+import org.openhab.bluetooth.gattparser.BluetoothGattParser;
+import org.openhab.bluetooth.gattparser.BluetoothGattParserFactory;
+import org.openhab.bluetooth.gattparser.spec.Enumerations;
+import org.openhab.bluetooth.gattparser.spec.Field;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeBuilder;
 import org.openhab.core.thing.type.ChannelTypeProvider;
@@ -34,10 +38,6 @@ import org.openhab.core.types.StateOption;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.sputnikdev.bluetooth.gattparser.BluetoothGattParser;
-import org.sputnikdev.bluetooth.gattparser.BluetoothGattParserFactory;
-import org.sputnikdev.bluetooth.gattparser.spec.Enumerations;
-import org.sputnikdev.bluetooth.gattparser.spec.Field;
 
 /**
  * {@link CharacteristicChannelTypeProvider} that provides channel types for dynamically discovered characteristics.

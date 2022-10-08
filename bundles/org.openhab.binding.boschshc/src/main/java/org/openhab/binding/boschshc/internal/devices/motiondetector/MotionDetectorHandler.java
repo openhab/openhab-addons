@@ -17,7 +17,7 @@ import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConst
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
+import org.openhab.binding.boschshc.internal.devices.BoschSHCDeviceHandler;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.services.latestmotion.LatestMotionService;
 import org.openhab.binding.boschshc.internal.services.latestmotion.dto.LatestMotionServiceState;
@@ -32,7 +32,7 @@ import org.openhab.core.thing.Thing;
  * @author Christian Oeing - Use service instead of custom logic
  */
 @NonNullByDefault
-public class MotionDetectorHandler extends BoschSHCHandler {
+public class MotionDetectorHandler extends BoschSHCDeviceHandler {
 
     public MotionDetectorHandler(Thing thing) {
         super(thing);

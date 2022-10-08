@@ -13,7 +13,6 @@
 package org.openhab.binding.hdpowerview.internal.api.responses;
 
 import java.util.List;
-import java.util.StringJoiner;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -30,18 +29,6 @@ import com.google.gson.annotations.SerializedName;
 public class Survey {
     @SerializedName("shade_id")
     public int shadeId;
-    @Nullable
     @SerializedName("survey")
-    public List<SurveyData> surveyData;
-
-    @Override
-    public String toString() {
-        List<SurveyData> surveyData = this.surveyData;
-        if (surveyData == null) {
-            return "{}";
-        }
-        StringJoiner joiner = new StringJoiner(", ");
-        surveyData.forEach(data -> joiner.add(data.toString()));
-        return joiner.toString();
-    }
+    public @Nullable List<SurveyData> surveyData;
 }

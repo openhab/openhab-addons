@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.openhab.addons</groupId>
     <artifactId>org.openhab.addons.reactor</artifactId>
-    <version>3.3.0-SNAPSHOT</version>
+    <version>3.4.0-SNAPSHOT</version>
   </parent>
 
   <groupId>org.openhab.addons.itests</groupId>
@@ -24,10 +24,8 @@
     <module>org.openhab.binding.max.tests</module>
     <module>org.openhab.binding.mielecloud.tests</module>
     <module>org.openhab.binding.modbus.tests</module>
-    <!-- MQTT tests need to be refactored to not use the embedded broker bundle anymore
-      <module>org.openhab.binding.mqtt.homeassistant.tests</module>
-      <module>org.openhab.binding.mqtt.homie.tests</module>
-    -->
+    <module>org.openhab.binding.mqtt.homeassistant.tests</module>
+    <module>org.openhab.binding.mqtt.homie.tests</module>
     <module>org.openhab.binding.nest.tests</module>
     <module>org.openhab.binding.ntp.tests</module>
     <module>org.openhab.binding.systeminfo.tests</module>

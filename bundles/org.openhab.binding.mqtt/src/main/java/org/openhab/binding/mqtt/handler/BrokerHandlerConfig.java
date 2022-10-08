@@ -36,4 +36,14 @@ public class BrokerHandlerConfig extends MqttBrokerConnectionConfig {
     public String publickey = "";
 
     public boolean enableDiscovery = true;
+
+    // Birth message parameters
+    public @Nullable String birthTopic;
+    public @Nullable String birthMessage;
+    public Boolean birthRetain = true;
+
+    // Shutdown message parameters
+    public @Nullable String shutdownTopic;
+    public @Nullable String shutdownMessage;
+    public Boolean shutdownRetain = true;
 }

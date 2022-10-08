@@ -228,7 +228,7 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
             }
         }
 
-        logger.debug("UUID = {}, secret = {}", InstanceUUID.get(), getSecret());
+        logger.debug("UUID = {}, secret = {}", censored(InstanceUUID.get()), censored(getSecret()));
 
         if (cloudClient != null) {
             cloudClient.shutdown();
@@ -284,7 +284,7 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
         file.getParentFile().mkdirs();
         try {
             Files.writeString(file.toPath(), content, StandardCharsets.UTF_8);
-            logger.debug("Created file '{}' with content '{}'", file.getAbsolutePath(), content);
+            logger.debug("Created file '{}' with content '{}'", file.getAbsolutePath(), censored(content));
         } catch (FileNotFoundException e) {
             logger.error("Couldn't create file '{}'.", file.getPath(), e);
         } catch (IOException e) {
@@ -311,14 +311,21 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
 
         if (!file.exists()) {
             newSecretString = randomString(20);
-            logger.debug("New secret = {}", newSecretString);
+            logger.debug("New secret = {}", censored(newSecretString));
             writeFile(file, newSecretString);
         } else {
             newSecretString = readFirstLine(file);
-            logger.debug("Using secret at '{}' with content '{}'", file.getAbsolutePath(), newSecretString);
+            logger.debug("Using secret at '{}' with content '{}'", file.getAbsolutePath(), censored(newSecretString));
         }
 
         return newSecretString;
+    }
+
+    private static String censored(String secret) {
+        if (secret.length() < 4) {
+            return "*******";
+        }
+        return secret.substring(0, 2) + "..." + secret.substring(secret.length() - 2, secret.length());
     }
 
     @Override
@@ -367,8 +374,12 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
     @Override
     public void receive(Event event) {
         ItemStateEvent ise = (ItemStateEvent) event;
-        if (exposedItems != null && exposedItems.contains(ise.getItemName())) {
+        if (supportsUpdates() && exposedItems != null && exposedItems.contains(ise.getItemName())) {
             cloudClient.sendItemUpdate(ise.getItemName(), ise.getItemState().toString());
         }
+    }
+
+    private boolean supportsUpdates() {
+        return cloudBaseUrl.indexOf(CFG_BASE_URL) >= 0;
     }
 }

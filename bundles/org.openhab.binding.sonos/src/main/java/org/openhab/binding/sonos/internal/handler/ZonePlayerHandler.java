@@ -92,6 +92,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     private static final String STREAM_URI = "x-sonosapi-stream:";
     private static final String RADIO_URI = "x-sonosapi-radio:";
     private static final String RADIO_MP3_URI = "x-rincon-mp3radio:";
+    private static final String RADIOAPP_URI = "x-sonosapi-hls:radioapp_";
     private static final String OPML_TUNE = "http://opml.radiotime.com/Tune.ashx";
     private static final String FILE_URI = "x-file-cifs:";
     private static final String SPDIF = ":spdif";
@@ -100,6 +101,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     private static final String STATE_PLAYING = "PLAYING";
     private static final String STATE_PAUSED_PLAYBACK = "PAUSED_PLAYBACK";
     private static final String STATE_STOPPED = "STOPPED";
+    private static final String STATE_TRANSITIONING = "TRANSITIONING";
 
     private static final String LINEINCONNECTED = "LineInConnected";
     private static final String TOSLINEINCONNECTED = "TOSLinkConnected";
@@ -150,8 +152,6 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     private static final String ACTION_SET_LOUDNESS = "SetLoudness";
     private static final String ACTION_SET_EQ = "SetEQ";
 
-    private static final int SOCKET_TIMEOUT = 5000;
-
     private static final int TUNEIN_DEFAULT_SERVICE_TYPE = 65031;
 
     private static final int MIN_BASS = -10;
@@ -164,6 +164,8 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     private static final int MAX_SURROUND_LEVEL = 15;
     private static final int MIN_HEIGHT_LEVEL = -10;
     private static final int MAX_HEIGHT_LEVEL = 10;
+
+    private static final int HTTP_TIMEOUT = 5000;
 
     private final Logger logger = LoggerFactory.getLogger(ZonePlayerHandler.class);
 
@@ -763,7 +765,8 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
             case STATE:
                 value = getTransportState();
                 if (value != null) {
-                    newState = new StringType(value);
+                    // Ignoring state TRANSITIONING
+                    newState = STATE_TRANSITIONING.equals(value) ? null : new StringType(value);
                 }
                 break;
             case CONTROL:
@@ -774,12 +777,15 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                     newState = PlayPauseType.PAUSE;
                 } else if (STATE_PAUSED_PLAYBACK.equals(value)) {
                     newState = PlayPauseType.PAUSE;
+                } else if (STATE_TRANSITIONING.equals(value)) {
+                    // Ignoring state TRANSITIONING
+                    newState = null;
                 }
                 break;
             case STOP:
                 value = getTransportState();
                 if (value != null) {
-                    newState = OnOffType.from(STATE_STOPPED.equals(value));
+                    newState = STATE_TRANSITIONING.equals(value) ? null : OnOffType.from(STATE_STOPPED.equals(value));
                 }
                 break;
             case SHUFFLE:
@@ -1228,18 +1234,14 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         SonosMetaData currentTrack = getTrackMetadata();
         SonosMetaData currentUriMetaData = getCurrentURIMetadata();
 
-        String artist = null;
-        String album = null;
-        String title = null;
-        String resultString = null;
         String stationID = null;
-        boolean needsUpdating = false;
+        SonosMediaInformation mediaInfo = new SonosMediaInformation();
 
         // if currentURI == null, we do nothing
         if (currentURI != null) {
             if (currentURI.isEmpty()) {
                 // Reset data
-                needsUpdating = true;
+                mediaInfo = new SonosMediaInformation(true);
             }
 
             // if (currentURI.contains(GROUP_URI)) we do nothing, because
@@ -1249,76 +1251,23 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
 
             else if (isPlayingStream(currentURI) || isPlayingRadioStartedByAmazonEcho(currentURI)) {
                 // Radio stream (tune-in)
-                boolean opmlUrlSucceeded = false;
                 stationID = extractStationId(currentURI);
-                String url = opmlUrl;
-                if (url != null) {
-                    String mac = getMACAddress();
-                    if (stationID != null && !stationID.isEmpty() && mac != null && !mac.isEmpty()) {
-                        url = url.replace("%id", stationID);
-                        url = url.replace("%serial", mac);
+                mediaInfo = SonosMediaInformation.parseTuneInMediaInfo(getOpmlData(stationID),
+                        currentUriMetaData != null ? currentUriMetaData.getTitle() : null, currentTrack);
+            }
 
-                        String response = null;
-                        try {
-                            response = HttpUtil.executeUrl("GET", url, SOCKET_TIMEOUT);
-                        } catch (IOException e) {
-                            logger.debug("Request to device failed", e);
-                        }
-
-                        if (response != null) {
-                            List<String> fields = SonosXMLParser.getRadioTimeFromXML(response);
-
-                            if (!fields.isEmpty()) {
-                                opmlUrlSucceeded = true;
-
-                                resultString = "";
-                                for (String field : fields) {
-                                    if (resultString.isEmpty()) {
-                                        // radio name should be first field
-                                        title = field;
-                                    } else {
-                                        resultString += " - ";
-                                    }
-                                    resultString += field;
-                                }
-
-                                needsUpdating = true;
-                            }
-                        }
-                    }
-                }
-                if (!opmlUrlSucceeded) {
-                    if (currentUriMetaData != null) {
-                        title = currentUriMetaData.getTitle();
-                        if (currentTrack == null || currentTrack.getStreamContent().isEmpty()) {
-                            resultString = title;
-                        } else {
-                            resultString = title + " - " + currentTrack.getStreamContent();
-                        }
-                        needsUpdating = true;
-                    }
-                }
+            else if (isPlayingRadioApp(currentURI)) {
+                mediaInfo = SonosMediaInformation.parseRadioAppMediaInfo(
+                        currentUriMetaData != null ? currentUriMetaData.getTitle() : null, currentTrack);
             }
 
             else if (isPlayingLineIn(currentURI)) {
-                if (currentTrack != null) {
-                    title = currentTrack.getTitle();
-                    resultString = title;
-                    needsUpdating = true;
-                }
+                mediaInfo = SonosMediaInformation.parseTrackTitle(currentTrack);
             }
 
             else if (isPlayingRadio(currentURI)
                     || (!currentURI.contains("x-rincon-mp3") && !currentURI.contains("x-sonosapi"))) {
-                // isPlayingRadio(currentURI) is true for Google Play Music radio or Apple Music radio
-                if (currentTrack != null) {
-                    artist = !currentTrack.getAlbumArtist().isEmpty() ? currentTrack.getAlbumArtist()
-                            : currentTrack.getCreator();
-                    album = currentTrack.getAlbum();
-                    title = currentTrack.getTitle();
-                    resultString = artist + " - " + album + " - " + title;
-                    needsUpdating = true;
-                }
+                mediaInfo = SonosMediaInformation.parseTrack(currentTrack);
             }
         }
 
@@ -1337,14 +1286,18 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                     }
                     memberHandler.onValueReceived("CurrentTuneInStationId", (stationID != null) ? stationID : "",
                             SERVICE_AV_TRANSPORT);
-                    if (needsUpdating) {
+                    if (mediaInfo.needsUpdate()) {
+                        String artist = mediaInfo.getArtist();
+                        String album = mediaInfo.getAlbum();
+                        String title = mediaInfo.getTitle();
+                        String combinedInfo = mediaInfo.getCombinedInfo();
                         memberHandler.onValueReceived("CurrentArtist", (artist != null) ? artist : "",
                                 SERVICE_AV_TRANSPORT);
                         memberHandler.onValueReceived("CurrentAlbum", (album != null) ? album : "",
                                 SERVICE_AV_TRANSPORT);
                         memberHandler.onValueReceived("CurrentTitle", (title != null) ? title : "",
                                 SERVICE_AV_TRANSPORT);
-                        memberHandler.onValueReceived("CurrentURIFormatted", (resultString != null) ? resultString : "",
+                        memberHandler.onValueReceived("CurrentURIFormatted", (combinedInfo != null) ? combinedInfo : "",
                                 SERVICE_AV_TRANSPORT);
                         memberHandler.onValueReceived("CurrentAlbumArtURI", albumArtURI, SERVICE_AV_TRANSPORT);
                     }
@@ -1353,9 +1306,29 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                 logger.debug("Cannot update media data for group member ({})", e.getMessage());
             }
         }
-        if (needsUpdating && handlerForImageUpdate != null) {
+        if (mediaInfo.needsUpdate() && handlerForImageUpdate != null) {
             handlerForImageUpdate.updateAlbumArtChannel(true);
         }
+    }
+
+    private @Nullable String getOpmlData(@Nullable String stationId) {
+        String url = opmlUrl;
+        if (url != null && stationId != null && !stationId.isEmpty()) {
+            String mac = getMACAddress();
+            if (mac != null && !mac.isEmpty()) {
+                url = url.replace("%id", stationId);
+                url = url.replace("%serial", mac);
+                String response = null;
+                try {
+                    response = HttpUtil.executeUrl("GET", url, HTTP_TIMEOUT);
+                } catch (IOException e) {
+                    logger.debug("OPML request failed ({})", url, e);
+                }
+                logger.trace("OPML response = {}", response);
+                return response;
+            }
+        }
+        return null;
     }
 
     private @Nullable String extractStationId(String uri) {
@@ -1711,8 +1684,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
             savedState.volume = getVolume();
 
             if (currentURI != null) {
-                if (isPlayingStream(currentURI) || isPlayingRadioStartedByAmazonEcho(currentURI)
-                        || isPlayingRadio(currentURI)) {
+                if (isPlayingStreamOrRadio(currentURI)) {
                     // we are streaming music, like tune-in radio or Google Play Music radio
                     SonosMetaData track = getTrackMetadata();
                     SonosMetaData current = getCurrentURIMetadata();
@@ -2653,8 +2625,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                 logger.debug("playNotificationSoundURI: currentURI {} metadata {}", currentURI,
                         coordinator.getCurrentURIMetadataAsString());
 
-                if (isPlayingStream(currentURI) || isPlayingRadioStartedByAmazonEcho(currentURI)
-                        || isPlayingRadio(currentURI)) {
+                if (isPlayingStreamOrRadio(currentURI)) {
                     handleNotifForRadioStream(currentURI, notificationURL, coordinator);
                 } else if (isPlayingLineIn(currentURI)) {
                     handleNotifForLineIn(currentURI, notificationURL, coordinator);
@@ -2692,11 +2663,22 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     }
 
     private boolean isPlayingRadio(@Nullable String currentURI) {
+        // Google Play Music radio or Apple Music radio
         return currentURI != null && currentURI.contains(RADIO_URI);
+    }
+
+    private boolean isPlayingRadioApp(@Nullable String currentURI) {
+        // RadioApp music service
+        return currentURI != null && currentURI.contains(RADIOAPP_URI);
     }
 
     private boolean isPlayingRadioStartedByAmazonEcho(@Nullable String currentURI) {
         return currentURI != null && currentURI.contains(RADIO_MP3_URI) && currentURI.contains(OPML_TUNE);
+    }
+
+    private boolean isPlayingStreamOrRadio(@Nullable String currentURI) {
+        return isPlayingStream(currentURI) || isPlayingRadioStartedByAmazonEcho(currentURI)
+                || isPlayingRadio(currentURI) || isPlayingRadioApp(currentURI);
     }
 
     private boolean isPlayingLineIn(@Nullable String currentURI) {
@@ -3292,7 +3274,8 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         URL descriptor = service.getDescriptorURL(this);
         if (descriptor != null) {
             String sonosModelDescription = SonosXMLParser.parseModelDescription(descriptor);
-            return sonosModelDescription == null ? null : SonosXMLParser.extractModelName(sonosModelDescription);
+            return sonosModelDescription == null ? null
+                    : SonosXMLParser.buildThingTypeIdFromModelName(sonosModelDescription);
         } else {
             return null;
         }

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="netatmo"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="temperature-room">
+		<label>Room Temperature</label>
+		<channels>
+			<channel id="value" typeId="system.indoor-temperature"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="properties-room">
+		<label>Room Status</label>
+		<channels>
+			<channel id="window-open" typeId="window-open"/>
+			<channel id="anticipating" typeId="anticipating-heating"/>
+			<channel id="heating-power-request" typeId="room-heating-percent"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="setpoint">
+		<label>Setpoint</label>
+		<channels>
+			<channel id="value" typeId="setpoint"/>
+			<channel id="mode" typeId="th-mode"/>
+			<channel id="start" typeId="timestamp">
+				<label>Setpoint Start</label>
+				<description>Start time of the currently applied setpoint.</description>
+			</channel>
+			<channel id="end" typeId="timestamp">
+				<label>Setpoint End</label>
+				<description>End time of the currently applied setpoint.</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="properties-thermostat">
+		<label>Thermostat</label>
+		<channels>
+			<channel id="relay" typeId="heating-status"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="energy">
+		<label>Home Energy</label>
+		<channels>
+			<channel id="setpoint-duration" typeId="setpoint-duration"/>
+			<channel id="planning" typeId="planning"/>
+			<channel id="mode" typeId="energy-mode"/>
+			<channel id="end" typeId="timestamp">
+				<label>Mode End</label>
+				<description>End time of the currently applied setpoint.</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>

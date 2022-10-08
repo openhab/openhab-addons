@@ -46,7 +46,11 @@ public class HDPowerViewBindingConstants {
     public static final String CHANNEL_SHADE_BATTERY_LEVEL = "batteryLevel";
     public static final String CHANNEL_SHADE_BATTERY_VOLTAGE = "batteryVoltage";
     public static final String CHANNEL_SHADE_SIGNAL_STRENGTH = "signalStrength";
+    public static final String CHANNEL_SHADE_HUB_RSSI = "hubRssi";
+    public static final String CHANNEL_SHADE_REPEATER_RSSI = "repeaterRssi";
 
+    public static final String CHANNEL_REPEATER_COLOR = "color";
+    public static final String CHANNEL_REPEATER_BRIGHTNESS = "brightness";
     public static final String CHANNEL_REPEATER_IDENTIFY = "identify";
     public static final String CHANNEL_REPEATER_BLINKING_ENABLED = "blinkingEnabled";
 
@@ -61,12 +65,11 @@ public class HDPowerViewBindingConstants {
     // Hub properties
     public static final String PROPERTY_FIRMWARE_NAME = "firmwareName";
     public static final String PROPERTY_RADIO_FIRMWARE_VERSION = "radioFirmwareVersion";
+    public static final String PROPERTY_HUB_NAME = "hubName";
 
     // Shade properties
     public static final String PROPERTY_SHADE_TYPE = "type";
     public static final String PROPERTY_SHADE_CAPABILITIES = "capabilities";
-    public static final String PROPERTY_SECONDARY_RAIL_DETECTED = "secondaryRailDetected";
-    public static final String PROPERTY_TILT_ANYWHERE_DETECTED = "tiltAnywhereDetected";
     public static final String PROPERTY_MOTOR_FIRMWARE_VERSION = "motorFirmwareVersion";
 
     public static final List<String> NETBIOS_NAMES = Arrays.asList("PDBU-Hub3.0", "PowerView-Hub");

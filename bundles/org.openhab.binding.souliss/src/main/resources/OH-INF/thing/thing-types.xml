@@ -1042,14 +1042,14 @@
 	</channel-type>
 
 	<channel-type id="button">
-		<kind>trigger</kind>
+		<item-type>Switch</item-type>
 		<label>Button</label>
 		<description>Button to trigger something</description>
 		<category>Switch</category>
 	</channel-type>
 
 	<channel-type id="buttonReadOnly">
-		<kind>trigger</kind>
+		<item-type>Switch</item-type>
 		<label>Button</label>
 		<description>Button to trigger something</description>
 		<category>Switch</category>
@@ -1097,7 +1097,7 @@
 	</channel-type>
 
 	<channel-type id="rollerShutter">
-		<item-type>RollerShutter</item-type>
+		<item-type>Rollershutter</item-type>
 		<label>Rollershutter</label>
 		<description>Rollershutter Up/Down</description>
 		<category>Blinds</category>
@@ -1142,9 +1142,6 @@
 		<item-type>Number</item-type>
 		<label>Healthy</label>
 		<description>Souliss Healthy</description>
-		<tags>
-			<tag>QualityOfService</tag>
-		</tags>
 		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 
@@ -1152,15 +1149,11 @@
 		<item-type>Number</item-type>
 		<label>Value</label>
 		<description>Floating Point Input</description>
-		<tags>
-			<tag>sensors</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f "/>
 	</channel-type>
 
 	<channel-type id="float6n">
 		<item-type>Number</item-type>
-		<kind>trigger</kind>
 		<label>Setpoint</label>
 		<description>Floating Point Input</description>
 		<category>Temperature</category>
@@ -1171,9 +1164,10 @@
 		<item-type>Number</item-type>
 		<label>Humidity</label>
 		<description>Current humidity in %</description>
-		<category>Temperature</category>
+		<category>Humidity</category>
 		<tags>
-			<tag>sensors</tag>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
 		</tags>
 		<state readOnly="true" pattern="%d %%"/>
 	</channel-type>
@@ -1185,18 +1179,20 @@
 		<description>Current temperature</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>sensors</tag>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="setpointTemperature" advanced="true">
+	<channel-type id="setpointTemperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Setpoint Temperature</label>
 		<description>Setpoint temperature</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>sensors</tag>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
 		</tags>
 		<state min="12" max="30" step="0.5" pattern="%.1f %unit%" readOnly="false"/>
 	</channel-type>
@@ -1206,7 +1202,8 @@
 		<label>Illuminance</label>
 		<description>Lux</description>
 		<tags>
-			<tag>sensors</tag>
+			<tag>Measurement</tag>
+			<tag>Light</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f kLux"/>
 	</channel-type>
@@ -1217,7 +1214,8 @@
 		<description>Current Voltage</description>
 		<category>Energy</category>
 		<tags>
-			<tag>sensors</tag>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f V"/>
 	</channel-type>
@@ -1227,7 +1225,8 @@
 		<description>Current Ampere</description>
 		<category>Energy</category>
 		<tags>
-			<tag>sensors</tag>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f A"/>
 	</channel-type>
@@ -1237,9 +1236,6 @@
 		<label>Power</label>
 		<description>Current Power</description>
 		<category>Energy</category>
-		<tags>
-			<tag>sensors</tag>
-		</tags>
 		<state readOnly="true" pattern="%d W"/>
 	</channel-type>
 
@@ -1248,7 +1244,8 @@
 		<label>Pressure</label>
 		<description>Pressure</description>
 		<tags>
-			<tag>sensors</tag>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f hPa"/>
 	</channel-type>
@@ -1265,7 +1262,7 @@
 		<item-type>Dimmer</item-type>
 		<label>Dimmer Brightness</label>
 		<description>The brightness can be set in 16 steps for RGBW/White leds and in 64 steps for RGBWW leds</description>
-		<category>DimmableLight</category>
+		<category>Light</category>
 		<state min="0" max="100" step="1" pattern="%d"/>
 	</channel-type>
 
@@ -1273,14 +1270,14 @@
 		<item-type>Switch</item-type>
 		<label>White Mode</label>
 		<description>Switch lamp to white mode</description>
-		<category>DimmableLight</category>
+		<category>Light</category>
 	</channel-type>
 
 	<channel-type id="rollerBrightness">
-		<item-type>RollerShutter</item-type>
+		<item-type>Rollershutter</item-type>
 		<label>Roller Brightness</label>
 		<description>Brightness Up/Down</description>
-		<category>DimmableLight</category>
+		<category>Light</category>
 		<state readOnly="false"/>
 	</channel-type>
 </thing:thing-descriptions>

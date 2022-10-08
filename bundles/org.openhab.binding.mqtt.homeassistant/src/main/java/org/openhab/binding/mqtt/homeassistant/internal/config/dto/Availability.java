@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal.config.dto;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -25,6 +27,8 @@ public class Availability {
     protected String payloadAvailable = "online";
     @SerializedName("payload_not_available")
     protected String payloadNotAvailable = "offline";
+    @SerializedName("value_template")
+    protected @Nullable String valueTemplate;
     protected String topic;
 
     public String getPayloadAvailable() {
@@ -37,5 +41,9 @@ public class Availability {
 
     public String getTopic() {
         return topic;
+    }
+
+    public @Nullable String getValueTemplate() {
+        return valueTemplate;
     }
 }

@@ -89,12 +89,18 @@ public class HomekitAccessoryFactory {
                     new HomekitCharacteristicType[] { SECURITY_SYSTEM_CURRENT_STATE, SECURITY_SYSTEM_TARGET_STATE });
             put(OUTLET, new HomekitCharacteristicType[] { ON_STATE, INUSE_STATUS });
             put(SPEAKER, new HomekitCharacteristicType[] { MUTE });
+            put(SMART_SPEAKER, new HomekitCharacteristicType[] { CURRENT_MEDIA_STATE, TARGET_MEDIA_STATE });
             put(GARAGE_DOOR_OPENER,
                     new HomekitCharacteristicType[] { CURRENT_DOOR_STATE, TARGET_DOOR_STATE, OBSTRUCTION_STATUS });
             put(HEATER_COOLER, new HomekitCharacteristicType[] { ACTIVE_STATUS, CURRENT_HEATER_COOLER_STATE,
                     TARGET_HEATER_COOLER_STATE, CURRENT_TEMPERATURE });
             put(WINDOW, new HomekitCharacteristicType[] { CURRENT_POSITION, TARGET_POSITION, POSITION_STATE });
             put(DOOR, new HomekitCharacteristicType[] { CURRENT_POSITION, TARGET_POSITION, POSITION_STATE });
+            put(BATTERY, new HomekitCharacteristicType[] { BATTERY_LEVEL, BATTERY_LOW_STATUS });
+            put(FILTER_MAINTENANCE, new HomekitCharacteristicType[] { FILTER_CHANGE_INDICATION });
+            put(SLAT, new HomekitCharacteristicType[] { CURRENT_SLAT_STATE });
+            put(FAUCET, new HomekitCharacteristicType[] { ACTIVE_STATUS });
+            put(MICROPHONE, new HomekitCharacteristicType[] { MUTE });
         }
     };
 
@@ -122,15 +128,35 @@ public class HomekitAccessoryFactory {
             put(SECURITY_SYSTEM, HomekitSecuritySystemImpl.class);
             put(OUTLET, HomekitOutletImpl.class);
             put(SPEAKER, HomekitSpeakerImpl.class);
+            put(SMART_SPEAKER, HomekitSmartSpeakerImpl.class);
             put(GARAGE_DOOR_OPENER, HomekitGarageDoorOpenerImpl.class);
             put(DOOR, HomekitDoorImpl.class);
             put(WINDOW, HomekitWindowImpl.class);
             put(HEATER_COOLER, HomekitHeaterCoolerImpl.class);
+            put(BATTERY, HomekitBatteryImpl.class);
+            put(FILTER_MAINTENANCE, HomekitFilterMaintenanceImpl.class);
+            put(SLAT, HomekitSlatImpl.class);
+            put(FAUCET, HomekitFaucetImpl.class);
+            put(MICROPHONE, HomekitMicrophoneImpl.class);
         }
     };
 
+    private static List<HomekitCharacteristicType> getRequiredCharacteristics(HomekitTaggedItem taggedItem) {
+        final List<HomekitCharacteristicType> characteristics = new ArrayList<>();
+        if (MANDATORY_CHARACTERISTICS.containsKey(taggedItem.getAccessoryType())) {
+            characteristics.addAll(Arrays.asList(MANDATORY_CHARACTERISTICS.get(taggedItem.getAccessoryType())));
+        }
+        if (taggedItem.getAccessoryType() == BATTERY) {
+            final boolean isChargeable = taggedItem.getConfigurationAsBoolean(HomekitBatteryImpl.BATTERY_TYPE, false);
+            if (isChargeable) {
+                characteristics.add(BATTERY_CHARGING_STATE);
+            }
+        }
+        return characteristics;
+    }
+
     /**
-     * creates HomeKit accessory for a openhab item.
+     * creates HomeKit accessory for an openhab item.
      *
      * @param taggedItem openhab item tagged as HomeKit item
      * @param metadataRegistry openhab metadata registry required to get item meta information
@@ -146,12 +172,12 @@ public class HomekitAccessoryFactory {
             HomekitAccessoryUpdater updater, HomekitSettings settings) throws HomekitException {
         final HomekitAccessoryType accessoryType = taggedItem.getAccessoryType();
         logger.trace("Constructing {} of accessory type {}", taggedItem.getName(), accessoryType.getTag());
-        final List<HomekitTaggedItem> requiredCharacteristics = getMandatoryCharacteristics(taggedItem,
+        final List<HomekitTaggedItem> foundCharacteristics = getMandatoryCharacteristicsFromItem(taggedItem,
                 metadataRegistry);
-        final HomekitCharacteristicType[] mandatoryCharacteristics = MANDATORY_CHARACTERISTICS.get(accessoryType);
-        if ((mandatoryCharacteristics != null) && (requiredCharacteristics.size() < mandatoryCharacteristics.length)) {
+        final List<HomekitCharacteristicType> mandatoryCharacteristics = getRequiredCharacteristics(taggedItem);
+        if (foundCharacteristics.size() < mandatoryCharacteristics.size()) {
             logger.warn("Accessory of type {} must have following characteristics {}. Found only {}",
-                    accessoryType.getTag(), mandatoryCharacteristics, requiredCharacteristics);
+                    accessoryType.getTag(), mandatoryCharacteristics, foundCharacteristics);
             throw new HomekitException("Missing mandatory characteristics");
         }
         AbstractHomekitAccessoryImpl accessoryImpl;
@@ -159,10 +185,9 @@ public class HomekitAccessoryFactory {
             final @Nullable Class<? extends AbstractHomekitAccessoryImpl> accessoryImplClass = SERVICE_IMPL_MAP
                     .get(accessoryType);
             if (accessoryImplClass != null) {
-                accessoryImpl = accessoryImplClass
-                        .getConstructor(HomekitTaggedItem.class, List.class, HomekitAccessoryUpdater.class,
-                                HomekitSettings.class)
-                        .newInstance(taggedItem, requiredCharacteristics, updater, settings);
+                accessoryImpl = accessoryImplClass.getConstructor(HomekitTaggedItem.class, List.class,
+                        HomekitAccessoryUpdater.class, HomekitSettings.class)
+                        .newInstance(taggedItem, foundCharacteristics, updater, settings);
                 addOptionalCharacteristics(taggedItem, accessoryImpl, metadataRegistry);
                 return accessoryImpl;
             } else {
@@ -225,7 +250,7 @@ public class HomekitAccessoryFactory {
      */
     public static List<GroupItem> getAccessoryGroups(Item item, ItemRegistry itemRegistry,
             MetadataRegistry metadataRegistry) {
-        return item.getGroupNames().stream().flatMap(name -> {
+        return (item instanceof GroupItem) ? Collections.emptyList() : item.getGroupNames().stream().flatMap(name -> {
             final @Nullable Item groupItem = itemRegistry.get(name);
             if ((groupItem instanceof GroupItem) && ((GroupItem) groupItem).getBaseItem() == null) {
                 return Stream.of((GroupItem) groupItem);
@@ -243,18 +268,17 @@ public class HomekitAccessoryFactory {
      * @param metadataRegistry meta data registry
      * @return list of mandatory
      */
-    private static List<HomekitTaggedItem> getMandatoryCharacteristics(HomekitTaggedItem taggedItem,
+    private static List<HomekitTaggedItem> getMandatoryCharacteristicsFromItem(HomekitTaggedItem taggedItem,
             MetadataRegistry metadataRegistry) {
         List<HomekitTaggedItem> collectedCharacteristics = new ArrayList<>();
         if (taggedItem.isGroup()) {
-            for (Item item : ((GroupItem) taggedItem.getItem()).getAllMembers()) {
+            for (Item item : ((GroupItem) taggedItem.getItem()).getMembers()) {
                 addMandatoryCharacteristics(taggedItem, collectedCharacteristics, item, metadataRegistry);
             }
         } else {
             addMandatoryCharacteristics(taggedItem, collectedCharacteristics, taggedItem.getItem(), metadataRegistry);
         }
-        logger.trace("Mandatory characteristics for item {} characteristics {}", taggedItem.getName(),
-                collectedCharacteristics);
+        logger.trace("Mandatory characteristics: {}", collectedCharacteristics);
         return collectedCharacteristics;
     }
 
@@ -273,34 +297,35 @@ public class HomekitAccessoryFactory {
     private static void addMandatoryCharacteristics(HomekitTaggedItem mainItem, List<HomekitTaggedItem> characteristics,
             Item item, MetadataRegistry metadataRegistry) {
         // get list of mandatory characteristics
-        HomekitCharacteristicType[] mandatoryCharacteristics = MANDATORY_CHARACTERISTICS
-                .get(mainItem.getAccessoryType());
-        if ((mandatoryCharacteristics == null) || (mandatoryCharacteristics.length == 0)) {
+        List<HomekitCharacteristicType> mandatoryCharacteristics = getRequiredCharacteristics(mainItem);
+        if (mandatoryCharacteristics.isEmpty()) {
             // no mandatory characteristics linked to accessory type of mainItem. we are done
             return;
         }
-        // check whether we adding characteristic to the main item, and if yes, use existing item proxy.
-        // if we adding no to the main item (typical for groups), create new proxy item.
+        // check whether we are adding characteristic to the main item, and if yes, use existing item proxy.
+        // if we are adding not to the main item (typical for groups), create new proxy item.
         final HomekitOHItemProxy itemProxy = mainItem.getItem().equals(item) ? mainItem.getProxyItem()
                 : new HomekitOHItemProxy(item);
         // an item can have several tags, e.g. "ActiveStatus, InUse". we iterate here over all his tags
         for (Entry<HomekitAccessoryType, HomekitCharacteristicType> accessory : getAccessoryTypes(item,
                 metadataRegistry)) {
             // if the item has only accessory tag, e.g. TemperatureSensor,
-            // the we will link all mandatory characteristic to this item,
+            // then we will link all mandatory characteristic to this item,
             // e.g. we will link CurrentTemperature in case of TemperatureSensor.
-            if (isRootAccessory(accessory)) {
-                Arrays.stream(mandatoryCharacteristics)
-                        .forEach(c -> characteristics.add(new HomekitTaggedItem(itemProxy, accessory.getKey(), c,
-                                mainItem.isGroup() ? (GroupItem) mainItem.getItem() : null,
-                                HomekitAccessoryFactory.getItemConfiguration(item, metadataRegistry))));
+            // Note that accessories that are members of other accessories do _not_
+            // count - we're already constructing another root accessory.
+            if (isRootAccessory(accessory) && mainItem.getItem().equals(item)) {
+                mandatoryCharacteristics.forEach(c -> characteristics.add(new HomekitTaggedItem(itemProxy,
+                        accessory.getKey(), c, mainItem.isGroup() ? (GroupItem) mainItem.getItem() : null,
+                        HomekitAccessoryFactory.getItemConfiguration(item, metadataRegistry))));
             } else {
                 // item has characteristic tag on it, so, adding it as that characteristic.
 
                 final HomekitCharacteristicType characteristic = accessory.getValue();
 
                 // check whether it is a mandatory characteristic. optional will be added later by another method.
-                if (isMandatoryCharacteristic(mainItem.getAccessoryType(), characteristic)) {
+                if (belongsToType(mainItem.getAccessoryType(), accessory)
+                        && isMandatoryCharacteristic(mainItem, characteristic)) {
                     characteristics.add(new HomekitTaggedItem(itemProxy, accessory.getKey(), characteristic,
                             mainItem.isGroup() ? (GroupItem) mainItem.getItem() : null,
                             HomekitAccessoryFactory.getItemConfiguration(item, metadataRegistry)));
@@ -359,31 +384,29 @@ public class HomekitAccessoryFactory {
         if (taggedItem.isGroup()) {
             GroupItem groupItem = (GroupItem) taggedItem.getItem();
             groupItem.getMembers().forEach(item -> getAccessoryTypes(item, metadataRegistry).stream()
-                    .filter(c -> !isRootAccessory(c))
-                    .filter(c -> !isMandatoryCharacteristic(taggedItem.getAccessoryType(), c.getValue()))
+                    .filter(c -> !isRootAccessory(c)).filter(c -> belongsToType(taggedItem.getAccessoryType(), c))
+                    .filter(c -> !isMandatoryCharacteristic(taggedItem, c.getValue()))
                     .forEach(characteristic -> characteristicItems.put(characteristic.getValue(), (GenericItem) item)));
         } else {
             getAccessoryTypes(taggedItem.getItem(), metadataRegistry).stream().filter(c -> !isRootAccessory(c))
-                    .filter(c -> !isMandatoryCharacteristic(taggedItem.getAccessoryType(), c.getValue()))
+                    .filter(c -> !isMandatoryCharacteristic(taggedItem, c.getValue()))
                     .forEach(characteristic -> characteristicItems.put(characteristic.getValue(),
                             (GenericItem) taggedItem.getItem()));
         }
-        logger.trace("Optional characteristics for item {} characteristics {}", taggedItem.getName(),
-                characteristicItems);
+        logger.trace("Optional characteristics for item {}: {}", taggedItem.getName(), characteristicItems.values());
         return Collections.unmodifiableMap(characteristicItems);
     }
 
     /**
      * return true is characteristic is a mandatory characteristic for the accessory.
      *
-     * @param accessory accessory
+     * @param item item
      * @param characteristic characteristic
      * @return true if characteristic is mandatory, false if not mandatory
      */
-    private static boolean isMandatoryCharacteristic(HomekitAccessoryType accessory,
-            HomekitCharacteristicType characteristic) {
-        return MANDATORY_CHARACTERISTICS.containsKey(accessory)
-                && Arrays.asList(MANDATORY_CHARACTERISTICS.get(accessory)).contains(characteristic);
+    private static boolean isMandatoryCharacteristic(HomekitTaggedItem item, HomekitCharacteristicType characteristic) {
+        return MANDATORY_CHARACTERISTICS.containsKey(item.getAccessoryType())
+                && getRequiredCharacteristics(item).contains(characteristic);
     }
 
     /**
@@ -394,5 +417,18 @@ public class HomekitAccessoryFactory {
      */
     private static boolean isRootAccessory(Entry<HomekitAccessoryType, HomekitCharacteristicType> accessory) {
         return ((accessory.getValue() == null) || (accessory.getValue() == EMPTY));
+    }
+
+    /**
+     * check whether characteristic belongs to the specific accessory type.
+     * characteristic with no accessory type mentioned in metadata are considered as candidates for all types.
+     *
+     * @param accessoryType accessory type
+     * @param characteristic characteristic
+     * @return true if characteristic belongs to the accessory type.
+     */
+    private static boolean belongsToType(HomekitAccessoryType accessoryType,
+            Entry<HomekitAccessoryType, HomekitCharacteristicType> characteristic) {
+        return ((characteristic.getKey() == accessoryType) || (characteristic.getKey() == DUMMY));
     }
 }

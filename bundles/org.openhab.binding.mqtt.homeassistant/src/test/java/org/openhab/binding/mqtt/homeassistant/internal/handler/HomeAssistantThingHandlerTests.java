@@ -13,20 +13,15 @@
 package org.openhab.binding.mqtt.homeassistant.internal.handler;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.timeout;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,6 +42,7 @@ import org.openhab.core.thing.binding.ThingHandlerCallback;
  */
 @SuppressWarnings({ "ConstantConditions" })
 @ExtendWith(MockitoExtension.class)
+@NonNullByDefault
 public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
     private static final int SUBSCRIBE_TIMEOUT = 10000;
     private static final int ATTRIBUTE_RECEIVE_TIMEOUT = 2000;
@@ -62,8 +58,8 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
     private static final List<String> MQTT_TOPICS = CONFIG_TOPICS.stream()
             .map(AbstractHomeAssistantTests::configTopicToMqtt).collect(Collectors.toList());
 
-    private @Mock ThingHandlerCallback callback;
-    private HomeAssistantThingHandler thingHandler;
+    private @Mock @NonNullByDefault({}) ThingHandlerCallback callbackMock;
+    private @NonNullByDefault({}) HomeAssistantThingHandler thingHandler;
 
     @BeforeEach
     public void setup() {
@@ -72,12 +68,12 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
         config.put(HandlerConfiguration.PROPERTY_BASETOPIC, HandlerConfiguration.DEFAULT_BASETOPIC);
         config.put(HandlerConfiguration.PROPERTY_TOPICS, CONFIG_TOPICS);
 
-        when(callback.getBridge(eq(BRIDGE_UID))).thenReturn(bridgeThing);
+        when(callbackMock.getBridge(eq(BRIDGE_UID))).thenReturn(bridgeThing);
 
         thingHandler = new HomeAssistantThingHandler(haThing, channelTypeProvider, transformationServiceProvider,
                 SUBSCRIBE_TIMEOUT, ATTRIBUTE_RECEIVE_TIMEOUT);
         thingHandler.setConnection(bridgeConnection);
-        thingHandler.setCallback(callback);
+        thingHandler.setCallback(callbackMock);
         thingHandler = spy(thingHandler);
     }
 
@@ -86,7 +82,7 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
         // When initialize
         thingHandler.initialize();
 
-        verify(callback).statusUpdated(eq(haThing), any());
+        verify(callbackMock).statusUpdated(eq(haThing), any());
         // Expect a call to the bridge status changed, the start, the propertiesChanged method
         verify(thingHandler).bridgeStatusChanged(any());
         verify(thingHandler, timeout(SUBSCRIBE_TIMEOUT)).start(any());

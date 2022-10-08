@@ -48,6 +48,7 @@ public class RefreshingUrlCache {
     private final Logger logger = LoggerFactory.getLogger(RefreshingUrlCache.class);
 
     private final String url;
+    private final boolean escapedUrl;
     private final RateLimitedHttpClient httpClient;
     private final int timeout;
     private final int bufferSize;
@@ -61,9 +62,10 @@ public class RefreshingUrlCache {
     private @Nullable Content lastContent;
 
     public RefreshingUrlCache(ScheduledExecutorService executor, RateLimitedHttpClient httpClient, String url,
-            HttpThingConfig thingConfig, String httpContent) {
+            boolean escapedUrl, HttpThingConfig thingConfig, String httpContent) {
         this.httpClient = httpClient;
         this.url = url;
+        this.escapedUrl = escapedUrl;
         this.timeout = thingConfig.timeout;
         this.bufferSize = thingConfig.bufferSize;
         this.headers = thingConfig.headers;
@@ -87,7 +89,8 @@ public class RefreshingUrlCache {
 
         // format URL
         try {
-            URI uri = Util.uriFromString(String.format(this.url, new Date()));
+            String url = String.format(this.url, new Date());
+            URI uri = escapedUrl ? new URI(url) : Util.uriFromString(url);
             logger.trace("Requesting refresh (retry={}) from '{}' with timeout {}ms", isRetry, uri, timeout);
 
             httpClient.newRequest(uri, httpMethod, httpContent).thenAccept(request -> {

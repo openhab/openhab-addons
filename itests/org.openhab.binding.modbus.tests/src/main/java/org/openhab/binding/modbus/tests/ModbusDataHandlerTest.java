@@ -1066,8 +1066,8 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
         dataConfig.put("readStart", "0");
         dataConfig.put("readValueType", "foobar");
         testInitGeneric(ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, dataConfig, status -> {
-            assertThat(status.getStatus(), is(equalTo(ThingStatus.OFFLINE)));
-            assertThat(status.getStatusDetail(), is(equalTo(ThingStatusDetail.CONFIGURATION_ERROR)));
+            assertThat(status.getStatus(), is(equalTo(ThingStatus.UNINITIALIZED)));
+            assertThat(status.getStatusDetail(), is(equalTo(ThingStatusDetail.HANDLER_CONFIGURATION_PENDING)));
         });
     }
 
@@ -1111,8 +1111,8 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
         dataConfig.put("writeValueType", "int8");
         dataConfig.put("writeType", "holding");
         testInitGeneric(null, dataConfig, status -> {
-            assertEquals(ThingStatus.OFFLINE, status.getStatus(), status.getDescription());
-            assertThat(status.getStatusDetail(), is(equalTo(ThingStatusDetail.CONFIGURATION_ERROR)));
+            assertThat(status.getStatus(), is(equalTo(ThingStatus.UNINITIALIZED)));
+            assertThat(status.getStatusDetail(), is(equalTo(ThingStatusDetail.HANDLER_CONFIGURATION_PENDING)));
         });
     }
 
@@ -1147,7 +1147,8 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
         dataConfig.put("writeType", "holding");
         // OFFLINE since sub-register writes are not supported for other than bit
         testInitGeneric(ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, dataConfig, status -> {
-            assertEquals(status.getStatus(), ThingStatus.OFFLINE, status.getDescription());
+            assertThat(status.getStatus(), is(equalTo(ThingStatus.UNINITIALIZED)));
+            assertThat(status.getStatusDetail(), is(equalTo(ThingStatusDetail.HANDLER_CONFIGURATION_PENDING)));
         });
     }
 
@@ -1209,8 +1210,8 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
         dataConfig.put("writeValueType", "int8");
         dataConfig.put("writeType", "holding");
         testInitGeneric(ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, dataConfig, status -> {
-            assertEquals(ThingStatus.OFFLINE, status.getStatus(), status.getDescription());
-            assertThat(status.getStatusDetail(), is(equalTo(ThingStatusDetail.CONFIGURATION_ERROR)));
+            assertThat(status.getStatus(), is(equalTo(ThingStatus.UNINITIALIZED)));
+            assertThat(status.getStatusDetail(), is(equalTo(ThingStatusDetail.HANDLER_CONFIGURATION_PENDING)));
         });
     }
 
@@ -1255,8 +1256,8 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
         dataConfig.put("writeType", "coil");
         dataConfig.put("writeValueType", "foobar");
         testInitGeneric(ModbusReadFunctionCode.READ_COILS, dataConfig, status -> {
-            assertThat(status.getStatus(), is(equalTo(ThingStatus.OFFLINE)));
-            assertThat(status.getStatusDetail(), is(equalTo(ThingStatusDetail.CONFIGURATION_ERROR)));
+            assertThat(status.getStatus(), is(equalTo(ThingStatus.UNINITIALIZED)));
+            assertThat(status.getStatusDetail(), is(equalTo(ThingStatusDetail.HANDLER_CONFIGURATION_PENDING)));
         });
     }
 
@@ -1266,8 +1267,8 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
         dataConfig.put("writeStart", "0");
         dataConfig.put("writeType", "foobar");
         testInitGeneric(ModbusReadFunctionCode.READ_COILS, dataConfig, status -> {
-            assertThat(status.getStatus(), is(equalTo(ThingStatus.OFFLINE)));
-            assertThat(status.getStatusDetail(), is(equalTo(ThingStatusDetail.CONFIGURATION_ERROR)));
+            assertThat(status.getStatus(), is(equalTo(ThingStatus.UNINITIALIZED)));
+            assertThat(status.getStatusDetail(), is(equalTo(ThingStatusDetail.HANDLER_CONFIGURATION_PENDING)));
         });
     }
 
@@ -1332,8 +1333,8 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
         dataConfig.put("readType", "holding");
         dataConfig.put("readValueType", "foobar");
         testInitGeneric(ModbusReadFunctionCode.READ_COILS, dataConfig, status -> {
-            assertThat(status.getStatus(), is(equalTo(ThingStatus.OFFLINE)));
-            assertThat(status.getStatusDetail(), is(equalTo(ThingStatusDetail.CONFIGURATION_ERROR)));
+            assertThat(status.getStatus(), is(equalTo(ThingStatus.UNINITIALIZED)));
+            assertThat(status.getStatusDetail(), is(equalTo(ThingStatusDetail.HANDLER_CONFIGURATION_PENDING)));
         });
     }
 

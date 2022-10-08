@@ -14,6 +14,7 @@ package org.openhab.binding.nuki.internal.handler;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.nuki.internal.configuration.NukiDeviceConfiguration;
@@ -35,8 +36,8 @@ import org.openhab.core.types.Command;
 @NonNullByDefault
 public class NukiOpenerHandler extends AbstractNukiDeviceHandler<NukiDeviceConfiguration> {
 
-    public NukiOpenerHandler(Thing thing) {
-        super(thing);
+    public NukiOpenerHandler(Thing thing, boolean readOnly) {
+        super(thing, readOnly);
     }
 
     private volatile Instant lastRingAction = Instant.EPOCH;
@@ -49,7 +50,8 @@ public class NukiOpenerHandler extends AbstractNukiDeviceHandler<NukiDeviceConfi
         updateState(NukiBindingConstants.CHANNEL_OPENER_RING_ACTION_TIMESTAMP, state.getRingactionTimestamp(),
                 this::toDateTime);
 
-        if (state.getRingactionState() && Duration.between(lastRingAction, Instant.now()).getSeconds() > 30) {
+        if (Objects.equals(state.getRingactionState(), true)
+                && Duration.between(lastRingAction, Instant.now()).getSeconds() > 30) {
             triggerChannel(NukiBindingConstants.CHANNEL_OPENER_RING_ACTION_STATE, NukiBindingConstants.EVENT_RINGING);
             lastRingAction = Instant.now();
         }

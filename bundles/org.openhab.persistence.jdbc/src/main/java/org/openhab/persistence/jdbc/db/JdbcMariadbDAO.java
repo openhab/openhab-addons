@@ -13,6 +13,7 @@
 package org.openhab.persistence.jdbc.db;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.knowm.yank.Yank;
 import org.openhab.persistence.jdbc.utils.DbMetaData;
 import org.slf4j.Logger;
@@ -75,7 +76,8 @@ public class JdbcMariadbDAO extends JdbcBaseDAO {
     @Override
     public void initAfterFirstDbConnection() {
         logger.debug("JDBC::initAfterFirstDbConnection: Initializing step, after db is connected.");
-        dbMeta = new DbMetaData();
+        DbMetaData dbMeta = new DbMetaData();
+        this.dbMeta = dbMeta;
         // Initialize sqlTypes, depending on DB version for example
         if (dbMeta.isDbVersionGreater(5, 1)) {
             sqlTypes.put("DATETIMEITEM", "TIMESTAMP(3)");
@@ -88,8 +90,9 @@ public class JdbcMariadbDAO extends JdbcBaseDAO {
      * ITEMS DAOs *
      **************/
     @Override
-    public Integer doPingDB() {
-        return Yank.queryScalar(sqlPingDB, Long.class, null).intValue();
+    public @Nullable Integer doPingDB() {
+        final @Nullable Long result = Yank.queryScalar(sqlPingDB, (Class<@Nullable Long>) Long.class, null);
+        return result != null ? result.intValue() : null;
     }
 
     /*************

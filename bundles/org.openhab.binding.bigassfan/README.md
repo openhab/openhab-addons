@@ -9,6 +9,11 @@ There is a single thing created for each fan, light, or controller that's connec
 Each thing has channels that allow control of the fan and light, as well as to monitor the status.
 When a fan or light is controlled from the remote control, Wall Controller, or smartphone app, the openHAB items linked to the device's channels will be updated to reflect the status.
 
+### Important Notice
+
+The latest firmware for Haiku devices no longer uses the SenseMe protocol.
+As a result, this binding will not work with fans running firmware version 3.0.0 or later.
+
 ## Supported Things
 
 The binding currently supports the following devices.

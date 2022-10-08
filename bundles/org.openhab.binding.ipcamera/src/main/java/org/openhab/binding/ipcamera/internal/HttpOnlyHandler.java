@@ -62,11 +62,11 @@ public class HttpOnlyHandler extends ChannelDuplexHandler {
         switch (channelUID.getId()) {
             case CHANNEL_THRESHOLD_AUDIO_ALARM:
                 if (OnOffType.ON.equals(command)) {
-                    ipCameraHandler.audioAlarmEnabled = true;
+                    ipCameraHandler.ffmpegAudioAlarmEnabled = true;
                 } else if (OnOffType.OFF.equals(command) || DecimalType.ZERO.equals(command)) {
-                    ipCameraHandler.audioAlarmEnabled = false;
+                    ipCameraHandler.ffmpegAudioAlarmEnabled = false;
                 } else {
-                    ipCameraHandler.audioAlarmEnabled = true;
+                    ipCameraHandler.ffmpegAudioAlarmEnabled = true;
                     try {
                         ipCameraHandler.audioThreshold = Integer.valueOf(command.toString());
                     } catch (NumberFormatException e) {

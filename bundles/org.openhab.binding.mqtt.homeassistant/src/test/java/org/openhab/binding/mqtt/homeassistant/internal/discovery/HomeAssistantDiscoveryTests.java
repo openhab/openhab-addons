@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal.discovery;
 
-import static org.hamcrest.CoreMatchers.hasItems;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.Collection;
@@ -22,6 +21,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -46,12 +46,21 @@ import org.openhab.core.thing.ThingUID;
  */
 @SuppressWarnings({ "ConstantConditions", "unchecked" })
 @ExtendWith(MockitoExtension.class)
+@NonNullByDefault
 public class HomeAssistantDiscoveryTests extends AbstractHomeAssistantTests {
-    private HomeAssistantDiscovery discovery;
+    private @NonNullByDefault({}) HomeAssistantDiscovery discovery;
 
     @BeforeEach
     public void beforeEach() {
         discovery = new TestHomeAssistantDiscovery(channelTypeProvider);
+    }
+
+    @Test
+    public void testComponentNameSummary() {
+        assertThat(
+                HomeAssistantDiscovery.getComponentNamesSummary(
+                        Stream.of("Sensor", "Switch", "Sensor", "Foobar", "Foobar", "Foobar")), //
+                is("3x Foobar, 2x Sensor, Switch"));
     }
 
     @Test
@@ -79,6 +88,7 @@ public class HomeAssistantDiscoveryTests extends AbstractHomeAssistantTests {
         assertThat(result.getProperties().get(Thing.PROPERTY_VENDOR), is("TuYa"));
         assertThat(result.getProperties().get(Thing.PROPERTY_FIRMWARE_VERSION), is("Zigbee2MQTT 1.18.2"));
         assertThat(result.getProperties().get(HandlerConfiguration.PROPERTY_BASETOPIC), is("homeassistant"));
+        assertThat(result.getLabel(), is("th1 (Climate Control, Switch)"));
         assertThat((List<String>) result.getProperties().get(HandlerConfiguration.PROPERTY_TOPICS), hasItems(
                 "climate/0x847127fffe11dd6a_climate_zigbee2mqtt", "switch/0x847127fffe11dd6a_auto_lock_zigbee2mqtt"));
     }
@@ -89,11 +99,11 @@ public class HomeAssistantDiscoveryTests extends AbstractHomeAssistantTests {
         }
     }
 
-    @NonNullByDefault
     private static class LatchDiscoveryListener implements DiscoveryListener {
         private final CopyOnWriteArrayList<DiscoveryResult> discoveryResults = new CopyOnWriteArrayList<>();
         private @Nullable CountDownLatch latch;
 
+        @Override
         public void thingDiscovered(DiscoveryService source, DiscoveryResult result) {
             discoveryResults.add(result);
             if (latch != null) {
@@ -101,9 +111,11 @@ public class HomeAssistantDiscoveryTests extends AbstractHomeAssistantTests {
             }
         }
 
+        @Override
         public void thingRemoved(DiscoveryService source, ThingUID thingUID) {
         }
 
+        @Override
         public @Nullable Collection<ThingUID> removeOlderResults(DiscoveryService source, long timestamp,
                 @Nullable Collection<ThingTypeUID> thingTypeUIDs, @Nullable ThingUID bridgeUID) {
             return Collections.emptyList();

@@ -65,13 +65,14 @@ Different things support a subset of the following groups.
 
 This group contains general operational information about the device.
 
-| Channel ID              | Item Type             | Description                                                                        |
-|-------------------------|-----------------------|------------------------------------------------------------------------------------|
-| cabinet-temperature     | Number:Temperature    | Temperature of the cabinet if supported in Celsius                                 |
-| heatsink-temperature    | Number:Temperature    | Device heat sink temperature in Celsius                                            |
-| transformer-temperature | Number:Temperature    | Temperature of the transformer in Celsius                                          |
-| other-temperature       | Number:Temperature    | Any other temperature reading not covered by the above items if available. Celsius |
-| status                  | String                | Device status: OFF=Off, SLEEP=Sleeping/night mode, ON=On - producing power         |
+| Channel ID              | Item Type             | Description                                                                                                                                                                                                                                                                                                     |
+|-------------------------|-----------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| cabinet-temperature     | Number:Temperature    | Temperature of the cabinet if supported in Celsius                                                                                                                                                                                                                                                              |
+| heatsink-temperature    | Number:Temperature    | Device heat sink temperature in Celsius                                                                                                                                                                                                                                                                         |
+| transformer-temperature | Number:Temperature    | Temperature of the transformer in Celsius                                                                                                                                                                                                                                                                       |
+| other-temperature       | Number:Temperature    | Any other temperature reading not covered by the above items if available. Celsius                                                                                                                                                                                                                              |
+| status                  | String                | Device status: <ul><li>OFF=Off</li><li>SLEEP=Sleeping/night mode</li><li>STARTING=Grid Monitoring/wake-up</li><li>ON=On - producing power (also called MPPT by Specification)</li><li>THROTTLED=Production (curtailed)<li>SHUTTING_DOWN=Shutting down<li>FAULT=Fault<li> STANDBY=Standby/Maintenance/Setup</ul> |
+| status-vendor           | Number                | Vendor Specific Status Code                                                                                                                                                                                                                                                                                     |
 
 Supported by: all inverter things
 
@@ -157,8 +158,8 @@ acPhaseC: available only for meter-wye-phase and meter-delta-phase meters type i
 | ac-voltage-to-n                | Number:ElectricPotential | Voltage of this line relative to the neutral line                   |
 | ac-voltage-to-next             | Number:ElectricPotential | Voltage of this line relative to the next line                      |
 | ac-real-power                  | Number:Power             | AC Real Power value (W)                                             |
-| ac-apparent-power              | Number:Power             | AC Apparent Power value                                             |
-| ac-reactive-power              | Number:Power             | AC Reactive Power value                                             |
+| ac-apparent-power              | Number:Power             | AC Apparent Power value (VA)                                        |
+| ac-reactive-power              | Number:Power             | AC Reactive Power value (VAR)                                       |
 | ac-power-factor                | Number:Dimensionless     | AC Power Factor (%)                                                 |
 | ac-exported-real-energy        | Number:Energy            | Real Energy Exported (Wh                                            |
 | ac-imported-real-energy        | Number:Energy            | Real Energy Imported (Wh)                                           |

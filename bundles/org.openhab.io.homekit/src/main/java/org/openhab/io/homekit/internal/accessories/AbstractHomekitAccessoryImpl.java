@@ -12,6 +12,7 @@
  */
 package org.openhab.io.homekit.internal.accessories;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -197,6 +198,18 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
     }
 
     /**
+     * return configuration attached to the root accessory, e.g. groupItem.
+     *
+     * @param key configuration key
+     * @param defaultValue default value
+     * @return configuration value
+     */
+    @NonNullByDefault
+    protected boolean getAccessoryConfigurationAsBoolean(String key, boolean defaultValue) {
+        return accessory.getConfigurationAsBoolean(key, defaultValue);
+    }
+
+    /**
      * return configuration of the characteristic item, e.g. currentTemperature.
      * Note: result will be casted to the type of the default value.
      * The type for number is BigDecimal.
@@ -300,6 +313,25 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
                 getItem(characteristicType, GenericItem.class)
                         .orElseThrow(() -> new IncompleteAccessoryException(characteristicType)),
                 trueOnOffValue, trueOpenClosedValue);
+    }
+
+    /**
+     * create boolean reader for a number item with ON state mapped to the value of the
+     * item being above a given threshold
+     *
+     * @param characteristicType characteristic id
+     * @param trueThreshold threshold for true of number item
+     * @param invertThreshold result is true if item is less than threshold, instead of more
+     * @return boolean read
+     * @throws IncompleteAccessoryException
+     */
+    @NonNullByDefault
+    protected BooleanItemReader createBooleanReader(HomekitCharacteristicType characteristicType,
+            BigDecimal trueThreshold, boolean invertThreshold) throws IncompleteAccessoryException {
+        final HomekitTaggedItem taggedItem = getCharacteristic(characteristicType)
+                .orElseThrow(() -> new IncompleteAccessoryException(characteristicType));
+        return new BooleanItemReader(taggedItem.getItem(), taggedItem.isInverted() ? OnOffType.OFF : OnOffType.ON,
+                taggedItem.isInverted() ? OpenClosedType.CLOSED : OpenClosedType.OPEN, trueThreshold, invertThreshold);
     }
 
     /**

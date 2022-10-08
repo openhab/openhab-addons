@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.gardena.internal.model.dto.api;
 
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.gardena.internal.util.StringUtils;
 
 /**
@@ -20,7 +22,7 @@ import org.openhab.binding.gardena.internal.util.StringUtils;
  * @author Gerhard Riegler - Initial contribution
  */
 
-public class DataItem<T> {
+public class DataItem<@NonNull T> {
     public String id;
     public String type;
 
@@ -28,5 +30,5 @@ public class DataItem<T> {
         return StringUtils.substringBeforeLast(id, ":");
     }
 
-    public T attributes;
+    public @Nullable T attributes;
 }

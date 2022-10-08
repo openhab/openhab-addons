@@ -10,6 +10,7 @@
 
 		<channels>
 			<channel id="maxCurrent" typeId="current"/>
+			<channel id="maxCurrentTemp" typeId="maxCurrTmp"/>
 			<channel id="pwmSignal" typeId="pwm"/>
 			<channel id="error" typeId="err"/>
 			<channel id="voltageL1" typeId="vl1"/>
@@ -21,15 +22,19 @@
 			<channel id="powerL1" typeId="pl1"/>
 			<channel id="powerL2" typeId="pl2"/>
 			<channel id="powerL3" typeId="pl3"/>
-			<channel id="phases" typeId="pha"/>
-			<channel id="sessionChargeEnergyLimit" typeId="scl"/>
-			<channel id="sessionChargedEnergy" typeId="scs"/>
-			<channel id="totalChargedEnergy" typeId="eto"/>
+			<channel id="powerAll" typeId="pAll"/>
+			<channel id="transaction" typeId="trx"/>
 			<channel id="allowCharging" typeId="alw"/>
 			<channel id="cableCurrent" typeId="cbl"/>
-			<channel id="temperature" typeId="tmp"/>
 			<channel id="firmware" typeId="fmw"/>
 			<channel id="accessConfiguration" typeId="ast"/>
+			<channel id="phases" typeId="pha"/>
+			<channel id="forceState" typeId="fs"/>
+			<channel id="sessionChargedEnergy" typeId="scs"/>
+			<channel id="sessionChargeEnergyLimit" typeId="scl"/>
+			<channel id="totalChargedEnergy" typeId="eto"/>
+			<channel id="temperatureType2Port" typeId="tmpT2p"/>
+			<channel id="temperature" typeId="tmp"/>
 		</channels>
 
 		<config-description>
@@ -37,6 +42,10 @@
 				<label>IP Address</label>
 				<description>The IP address of the Go-eCharger</description>
 				<context>network-address</context>
+			</parameter>
+			<parameter name="apiVersion" type="integer" required="false" min="1" max="2">
+				<label>API version</label>
+				<description>The API version of the Go-eCharger</description>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" required="false" unit="s">
 				<label>Refresh Interval</label>
@@ -63,6 +72,12 @@
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Maximum Current</label>
 		<description>Maximum current per phase allowed to use for charging</description>
+		<state pattern="%d %unit%" readOnly="false"/>
+	</channel-type>
+	<channel-type id="maxCurrTmp">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Maximum Current Temporary</label>
+		<description>Maximum current temporary (not written to EEPROM)</description>
 		<state pattern="%d %unit%" readOnly="false"/>
 	</channel-type>
 	<channel-type id="pwm">
@@ -145,10 +160,22 @@
 		<description>Power on L3</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
+	<channel-type id="pAll">
+		<item-type>Number:Power</item-type>
+		<label>Power All</label>
+		<description>Power All</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
 	<channel-type id="pha">
 		<item-type>Number</item-type>
 		<label>Phases</label>
 		<description>Amount of phases currently used for charging</description>
+		<state readOnly="false"/>
+	</channel-type>
+	<channel-type id="fs">
+		<item-type>Number</item-type>
+		<label>Force state</label>
+		<description>Force state (Neutral=0, Off=1, On=2)</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="scl">
@@ -169,6 +196,12 @@
 		<description>Amount of energy that has been charged since installation</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
+	<channel-type id="trx">
+		<item-type>Number</item-type>
+		<label>Transaction</label>
+		<description>0 for no card, otherwise card ID</description>
+		<state readOnly="false"/>
+	</channel-type>
 	<channel-type id="alw">
 		<item-type>Switch</item-type>
 		<label>Allow Charging</label>
@@ -181,10 +214,18 @@
 		<description>Specifies the max amps that can be charged with that cable</description>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
+	<channel-type id="tmpT2p">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature type 2 port</label>
+		<description>Temperature of the Go-eCharger on the type 2 port</description>
+		<category>Temperature</category>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
 	<channel-type id="tmp">
 		<item-type>Number:Temperature</item-type>
-		<label>Temperature</label>
-		<description>Temperature of the Go-eCharger</description>
+		<label>Temperature circuit board</label>
+		<description>Temperature of the Go-eCharger on circuit board</description>
+		<category>Temperature</category>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="fmw">

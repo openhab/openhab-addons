@@ -13,7 +13,7 @@
 package org.openhab.binding.shelly.internal.handler;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
-import static org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.*;
+import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.Map;
@@ -22,13 +22,13 @@ import java.util.TreeMap;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsRgbwLight;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsStatus;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyShortLightStatus;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyStatusLight;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyStatusLightChannel;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
-import org.openhab.binding.shelly.internal.coap.ShellyCoapServer;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRgbwLight;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyShortLightStatus;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusLight;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusLightChannel;
+import org.openhab.binding.shelly.internal.api1.Shelly1CoapServer;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
 import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
@@ -66,9 +66,9 @@ public class ShellyLightHandler extends ShellyBaseHandler {
      * @param httpPort port of the openHAB HTTP API
      */
     public ShellyLightHandler(final Thing thing, final ShellyTranslationProvider translationProvider,
-            final ShellyBindingConfiguration bindingConfig, final ShellyCoapServer coapServer, final String localIP,
-            int httpPort, final HttpClient httpClient) {
-        super(thing, translationProvider, bindingConfig, coapServer, localIP, httpPort, httpClient);
+            final ShellyBindingConfiguration bindingConfig, final ShellyThingTable thingTable,
+            final Shelly1CoapServer coapServer, final HttpClient httpClient) {
+        super(thing, translationProvider, bindingConfig, thingTable, coapServer, httpClient);
         channelColors = new TreeMap<>();
     }
 
@@ -143,7 +143,7 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                     int value = -1;
                     if (command instanceof OnOffType) { // Switch
                         logger.debug("{}: Switch light {}", thingName, command);
-                        ShellyShortLightStatus light = api.setRelayTurn(lightId,
+                        ShellyShortLightStatus light = api.setLightTurn(lightId,
                                 command == OnOffType.ON ? SHELLY_API_ON : SHELLY_API_OFF);
                         col.power = getOnOff(light.ison);
                         col.setBrightness(light.brightness);
@@ -164,7 +164,7 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                     }
                     if (value == 0) {
                         logger.debug("{}: Brightness=0 -> switch light OFF", thingName);
-                        api.setRelayTurn(lightId, SHELLY_API_OFF);
+                        api.setLightTurn(lightId, SHELLY_API_OFF);
                         update = false;
                     } else {
                         if (command instanceof IncreaseDecreaseType) {
@@ -347,12 +347,17 @@ public class ShellyLightHandler extends ShellyBaseHandler {
             ShellyColorUtils col = getCurrentColors(lightId);
             col.power = getOnOff(light.ison);
 
-            // Channel control/timer
-            ShellySettingsRgbwLight ls = profile.settings.lights.get(lightId);
-            updated |= updateChannel(controlGroup, CHANNEL_TIMER_AUTOON, getDecimal(ls.autoOn));
-            updated |= updateChannel(controlGroup, CHANNEL_TIMER_AUTOOFF, getDecimal(ls.autoOff));
-            updated |= updateChannel(controlGroup, CHANNEL_LIGHT_POWER, col.power);
-            updated |= updateChannel(controlGroup, CHANNEL_TIMER_ACTIVE, getOnOff(light.hasTimer));
+            if (profile.settings.lights != null) {
+                // Channel control/timer
+                ShellySettingsRgbwLight ls = profile.settings.lights.get(lightId);
+                updated |= updateChannel(controlGroup, CHANNEL_TIMER_AUTOON,
+                        toQuantityType(getDouble(ls.autoOn), Units.SECOND));
+                updated |= updateChannel(controlGroup, CHANNEL_TIMER_AUTOOFF,
+                        toQuantityType(getDouble(ls.autoOff), Units.SECOND));
+                updated |= updateChannel(controlGroup, CHANNEL_LIGHT_POWER, col.power);
+                updated |= updateChannel(controlGroup, CHANNEL_TIMER_ACTIVE, getOnOff(light.hasTimer));
+                updated |= updateChannel(controlGroup, CHANNEL_LIGHT_POWER, col.power);
+            }
 
             if (getBool(light.overpower)) {
                 postEvent(ALARM_TYPE_OVERPOWER, false);
@@ -374,7 +379,7 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                 updated |= updateChannel(colorGroup, CHANNEL_COLOR_BLUE, col.percentBlue);
                 updated |= updateChannel(colorGroup, CHANNEL_COLOR_WHITE, col.percentWhite);
                 updated |= updateChannel(colorGroup, CHANNEL_COLOR_GAIN, col.percentGain);
-                updated |= updateChannel(colorGroup, CHANNEL_COLOR_EFFECT, new DecimalType(col.effect));
+                updated |= updateChannel(colorGroup, CHANNEL_COLOR_EFFECT, getDecimal(col.effect));
                 setFullColor(colorGroup, col);
 
                 logger.trace("{}: update {}.color picker", thingName, colorGroup);

@@ -3,8 +3,8 @@
 	xmlns:binding="https://openhab.org/schemas/binding/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
 
-	<name>Shelly Binding</name>
-	<description>This binding supports the Shelly series of devices.</description>
+	<name>@text/binding.shelly.name</name>
+	<description>@text/binding.shelly.description</description>
 	<author>Markus Michels</author>
 
 	<config-description>
@@ -17,6 +17,7 @@
 			<default>admin</default>
 			<label>@text/binding.shelly.config.defaultPassword.label</label>
 			<description>@text/binding.shelly.config.defaultPassword.description</description>
+			<context>password</context>
 		</parameter>
 		<parameter name="localIP" type="text">
 			<label>@text/binding.shelly.config.localIP.label</label>

@@ -50,17 +50,21 @@ public class RotelHandlerFactory extends BaseThingHandlerFactory {
                     THING_TYPE_RA12, THING_TYPE_RA1570, THING_TYPE_RA1572, THING_TYPE_RA1592, THING_TYPE_RAP1580,
                     THING_TYPE_RC1570, THING_TYPE_RC1572, THING_TYPE_RC1590, THING_TYPE_RCD1570, THING_TYPE_RCD1572,
                     THING_TYPE_RCX1500, THING_TYPE_RDD1580, THING_TYPE_RDG1520, THING_TYPE_RSP1576, THING_TYPE_RSP1582,
-                    THING_TYPE_RT09, THING_TYPE_RT11, THING_TYPE_RT1570, THING_TYPE_T11, THING_TYPE_T14)
+                    THING_TYPE_RT09, THING_TYPE_RT11, THING_TYPE_RT1570, THING_TYPE_T11, THING_TYPE_T14, THING_TYPE_C8,
+                    THING_TYPE_M8, THING_TYPE_P5, THING_TYPE_S5, THING_TYPE_X3, THING_TYPE_X5)
             .collect(Collectors.toSet()));
 
     private final SerialPortManager serialPortManager;
     private final RotelStateDescriptionOptionProvider stateDescriptionProvider;
+    private final RotelCommandDescriptionOptionProvider commandDescriptionProvider;
 
     @Activate
     public RotelHandlerFactory(final @Reference SerialPortManager serialPortManager,
-            final @Reference RotelStateDescriptionOptionProvider stateDescriptionProvider) {
+            final @Reference RotelStateDescriptionOptionProvider stateDescriptionProvider,
+            final @Reference RotelCommandDescriptionOptionProvider commandDescriptionProvider) {
         this.serialPortManager = serialPortManager;
         this.stateDescriptionProvider = stateDescriptionProvider;
+        this.commandDescriptionProvider = commandDescriptionProvider;
     }
 
     @Override
@@ -73,7 +77,7 @@ public class RotelHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
-            return new RotelHandler(thing, stateDescriptionProvider, serialPortManager);
+            return new RotelHandler(thing, stateDescriptionProvider, commandDescriptionProvider, serialPortManager);
         }
 
         return null;

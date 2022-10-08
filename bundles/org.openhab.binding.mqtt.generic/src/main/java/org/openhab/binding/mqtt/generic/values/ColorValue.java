@@ -13,9 +13,8 @@
 package org.openhab.binding.mqtt.generic.values;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Locale;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.ws.rs.NotSupportedException;
 
@@ -47,6 +46,8 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ColorValue extends Value {
+    private static BigDecimal factor = new BigDecimal("2.55"); // string to not lose precision
+
     private final Logger logger = LoggerFactory.getLogger(ColorValue.class);
 
     private final ColorMode colorMode;
@@ -63,8 +64,7 @@ public class ColorValue extends Value {
      * @param onBrightness When receiving a ON command, the brightness percentage is set to this value
      */
     public ColorValue(ColorMode colorMode, @Nullable String onValue, @Nullable String offValue, int onBrightness) {
-        super(CoreItemFactory.COLOR,
-                Stream.of(OnOffType.class, PercentType.class, StringType.class).collect(Collectors.toList()));
+        super(CoreItemFactory.COLOR, List.of(OnOffType.class, PercentType.class, StringType.class));
 
         if (onBrightness > 100) {
             throw new IllegalArgumentException("Brightness parameter must be <= 100");
@@ -112,8 +112,8 @@ public class ColorValue extends Value {
                                 Integer.parseInt(split[2]));
                         break;
                     case XYY:
-                        HSBType temp_state = HSBType.fromXY(Float.parseFloat(split[0]), Float.parseFloat(split[1]));
-                        state = new HSBType(temp_state.getHue(), temp_state.getSaturation(), new PercentType(split[2]));
+                        HSBType tempState = HSBType.fromXY(Float.parseFloat(split[0]), Float.parseFloat(split[1]));
+                        state = new HSBType(tempState.getHue(), tempState.getSaturation(), new PercentType(split[2]));
                         break;
                     default:
                         logger.warn("Non supported color mode");
@@ -121,8 +121,6 @@ public class ColorValue extends Value {
             }
         }
     }
-
-    private static BigDecimal factor = new BigDecimal(2.5);
 
     /**
      * Converts the color state to a string.
@@ -146,21 +144,21 @@ public class ColorValue extends Value {
             }
         }
 
-        HSBType hsb_state = (HSBType) state;
+        HSBType hsbState = (HSBType) state;
 
         switch (this.colorMode) {
             case HSB:
-                return String.format(formatPattern, hsb_state.getHue().intValue(), hsb_state.getSaturation().intValue(),
-                        hsb_state.getBrightness().intValue());
+                return String.format(formatPattern, hsbState.getHue().intValue(), hsbState.getSaturation().intValue(),
+                        hsbState.getBrightness().intValue());
             case RGB:
-                PercentType[] rgb = hsb_state.toRGB();
+                PercentType[] rgb = hsbState.toRGB();
                 return String.format(formatPattern, rgb[0].toBigDecimal().multiply(factor).intValue(),
                         rgb[1].toBigDecimal().multiply(factor).intValue(),
                         rgb[2].toBigDecimal().multiply(factor).intValue());
             case XYY:
-                PercentType[] xyY = hsb_state.toXY();
+                PercentType[] xyY = hsbState.toXY();
                 return String.format(Locale.ROOT, formatPattern, xyY[0].floatValue() / 100.0f,
-                        xyY[1].floatValue() / 100.0f, hsb_state.getBrightness().floatValue());
+                        xyY[1].floatValue() / 100.0f, hsbState.getBrightness().floatValue());
             default:
                 throw new NotSupportedException(String.format("Non supported color mode: {}", this.colorMode));
         }

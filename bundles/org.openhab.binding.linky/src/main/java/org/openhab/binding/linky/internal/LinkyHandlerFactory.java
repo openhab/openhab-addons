@@ -14,8 +14,13 @@ package org.openhab.binding.linky.internal;
 
 import static org.openhab.binding.linky.internal.LinkyBindingConstants.THING_TYPE_LINKY;
 
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -23,6 +28,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.linky.internal.handler.LinkyHandler;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.io.net.http.TrustAllTrustManager;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -48,31 +54,39 @@ import com.google.gson.JsonDeserializer;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.linky")
 public class LinkyHandlerFactory extends BaseThingHandlerFactory {
     private static final DateTimeFormatter LINKY_FORMATTER = DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss.SSSX");
+    private static final int REQUEST_BUFFER_SIZE = 8000;
 
     private final Logger logger = LoggerFactory.getLogger(LinkyHandlerFactory.class);
-
+    private final Gson gson = new GsonBuilder().registerTypeAdapter(ZonedDateTime.class,
+            (JsonDeserializer<ZonedDateTime>) (json, type, jsonDeserializationContext) -> ZonedDateTime
+                    .parse(json.getAsJsonPrimitive().getAsString(), LINKY_FORMATTER))
+            .create();
     private final LocaleProvider localeProvider;
-    private final Gson gson;
     private final HttpClient httpClient;
 
     @Activate
     public LinkyHandlerFactory(final @Reference LocaleProvider localeProvider,
             final @Reference HttpClientFactory httpClientFactory) {
         this.localeProvider = localeProvider;
-        this.gson = new GsonBuilder().registerTypeAdapter(ZonedDateTime.class,
-                (JsonDeserializer<ZonedDateTime>) (json, type, jsonDeserializationContext) -> ZonedDateTime
-                        .parse(json.getAsJsonPrimitive().getAsString(), LINKY_FORMATTER))
-                .create();
         this.httpClient = httpClientFactory.createHttpClient(LinkyBindingConstants.BINDING_ID);
     }
 
     @Override
     protected void activate(ComponentContext componentContext) {
         super.activate(componentContext);
-        httpClient.getSslContextFactory().setExcludeCipherSuites(new String[0]);
         httpClient.setFollowRedirects(false);
+        httpClient.setRequestBufferSize(REQUEST_BUFFER_SIZE);
+
         try {
+            SSLContext sslContext = SSLContext.getInstance("SSL");
+            sslContext.init(null, new TrustManager[] { TrustAllTrustManager.getInstance() }, null);
+            httpClient.getSslContextFactory().setSslContext(sslContext);
             httpClient.start();
+        } catch (NoSuchAlgorithmException e) {
+            logger.warn("An exception occurred while requesting the SSL encryption algorithm : '{}'", e.getMessage(),
+                    e);
+        } catch (KeyManagementException e) {
+            logger.warn("An exception occurred while initialising the SSL context : '{}'", e.getMessage(), e);
         } catch (Exception e) {
             logger.warn("Unable to start Jetty HttpClient {}", e.getMessage());
         }
@@ -95,8 +109,7 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
-        ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-
-        return supportsThingType(thingTypeUID) ? new LinkyHandler(thing, localeProvider, gson, httpClient) : null;
+        return supportsThingType(thing.getThingTypeUID()) ? new LinkyHandler(thing, localeProvider, gson, httpClient)
+                : null;
     }
 }

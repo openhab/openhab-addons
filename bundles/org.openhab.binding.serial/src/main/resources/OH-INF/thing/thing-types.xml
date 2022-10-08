@@ -18,6 +18,7 @@
 		<config-description>
 			<parameter name="serialPort" type="text" required="true">
 				<context>serial-port</context>
+				<limitToOptions>false</limitToOptions>
 				<label>Serial Port</label>
 				<description>The serial port to use (e.g. Linux: /dev/ttyUSB0, Windows: COM1)</description>
 			</parameter>
@@ -25,8 +26,10 @@
 				<advanced>true</advanced>
 				<label>Baud Rate</label>
 				<description>Set the baud rate</description>
+				<limitToOptions>false</limitToOptions>
 				<default>9600</default>
 				<options>
+					<option value="2400">2400</option>
 					<option value="4800">4800</option>
 					<option value="9600">9600</option>
 					<option value="19200">19200</option>

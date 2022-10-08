@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-    <version>3.3.0-SNAPSHOT</version>
+    <version>3.4.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.persistence.dynamodb</artifactId>
@@ -178,6 +178,13 @@
       <groupId>com.almworks.sqlite4java</groupId>
       <artifactId>libsqlite4java-linux-amd64</artifactId>
       <type>so</type>
+      <version>[1.0, 2.0)</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.github.ganadist.sqlite4java</groupId>
+      <artifactId>libsqlite4java-osx-aarch64</artifactId>
+      <type>dylib</type>
       <version>[1.0, 2.0)</version>
       <scope>test</scope>
     </dependency>

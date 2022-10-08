@@ -89,7 +89,7 @@ public class WemoInsightHandlerTest {
     public void assertThatChannelLASTONFORIsUpdatedOnReceivedValue() {
         insightParams.lastOnFor = TIME_PARAM;
         State expectedStateType = new DecimalType(TIME_PARAM);
-        String expectedChannel = CHANNEL_LASTONFOR;
+        String expectedChannel = CHANNEL_LAST_ON_FOR;
 
         testOnValueReceived(expectedChannel, expectedStateType, insightParams.toString());
     }
@@ -98,7 +98,7 @@ public class WemoInsightHandlerTest {
     public void assertThatChannelONTODAYIsUpdatedOnReceivedValue() {
         insightParams.onToday = TIME_PARAM;
         State expectedStateType = new DecimalType(TIME_PARAM);
-        String expectedChannel = CHANNEL_ONTODAY;
+        String expectedChannel = CHANNEL_ON_TODAY;
 
         testOnValueReceived(expectedChannel, expectedStateType, insightParams.toString());
     }
@@ -107,7 +107,7 @@ public class WemoInsightHandlerTest {
     public void assertThatChannelONTOTALIsUpdatedOnReceivedValue() {
         insightParams.onTotal = TIME_PARAM;
         State expectedStateType = new DecimalType(TIME_PARAM);
-        String expectedChannel = CHANNEL_ONTOTAL;
+        String expectedChannel = CHANNEL_ON_TOTAL;
 
         testOnValueReceived(expectedChannel, expectedStateType, insightParams.toString());
     }
@@ -125,7 +125,7 @@ public class WemoInsightHandlerTest {
     public void assertThatChannelAVERAGEPOWERIsUpdatedOnReceivedValue() {
         insightParams.avgPower = POWER_PARAM;
         State expectedStateType = new QuantityType<>(POWER_PARAM, Units.WATT);
-        String expectedChannel = CHANNEL_AVERAGEPOWER;
+        String expectedChannel = CHANNEL_AVERAGE_POWER;
 
         testOnValueReceived(expectedChannel, expectedStateType, insightParams.toString());
     }
@@ -143,7 +143,7 @@ public class WemoInsightHandlerTest {
         String channelToWatch;
 
         public MockWemoInsightHandler(Thing thing, String channelToWatch) {
-            super(thing, null, new WemoHttpCall());
+            super(thing, null, null, new WemoHttpCall());
             this.channelToWatch = channelToWatch;
         }
 

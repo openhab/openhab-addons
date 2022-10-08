@@ -96,17 +96,26 @@ public class HydrawiseControllerHandler extends BaseThingHandler implements Hydr
     public void initialize() {
         HydrawiseControllerConfiguration config = getConfigAs(HydrawiseControllerConfiguration.class);
         controllerId = config.controllerId;
-        Bridge bridge = getBridge();
-        if (bridge != null) {
-            HydrawiseAccountHandler handler = (HydrawiseAccountHandler) bridge.getHandler();
-            if (handler != null) {
-                handler.addControllerListeners(this);
+        HydrawiseAccountHandler handler = getAccountHandler();
+        if (handler != null) {
+            handler.addControllerListeners(this);
+            Bridge bridge = getBridge();
+            if (bridge != null) {
                 if (bridge.getStatus() == ThingStatus.ONLINE) {
                     updateStatus(ThingStatus.ONLINE);
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
                 }
             }
+        }
+    }
+
+    @Override
+    public void dispose() {
+        logger.debug("Controller Handler disposed.");
+        HydrawiseAccountHandler handler = getAccountHandler();
+        if (handler != null) {
+            handler.removeControllerListeners(this);
         }
     }
 
@@ -274,9 +283,15 @@ public class HydrawiseControllerHandler extends BaseThingHandler implements Hydr
     private void updateZones(List<Zone> zones) {
         AtomicReference<Boolean> anyRunning = new AtomicReference<Boolean>(false);
         AtomicReference<Boolean> anySuspended = new AtomicReference<Boolean>(false);
-        int i = 1;
         for (Zone zone : zones) {
-            String group = "zone" + (i++);
+            // there are 12 relays per expander, expanders will have a zoneNumber like:
+            // 10 for expander 0, relay 10 = zone10
+            // 101 for expander 1, relay 1 = zone13
+            // 212 for expander 2, relay 12 = zone36
+            // division of integers in Java give whole numbers, not remainders FYI
+            int zoneNumber = ((zone.number.value / 100) * 12) + (zone.number.value % 100);
+
+            String group = "zone" + zoneNumber;
             zoneMaps.put(group, zone);
             logger.trace("Updateing Zone {} {} ", group, zone.name);
             updateGroupState(group, CHANNEL_ZONE_NAME, new StringType(zone.name));

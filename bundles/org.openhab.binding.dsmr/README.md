@@ -72,6 +72,7 @@ The configuration for the `smartyBridge` consists of the following parameters:
 |---------------------|-------------------------------------------------------------------------------------------------------------|
 | serialPort          | The serial port where the P1-port is connected to (e.g. Linux: `/dev/ttyUSB1`, Windows: `COM2`) (mandatory) |
 | decryptionKey       | The meter specific decryption key (mandatory)                                                               |
+| additionalKey       | Additional key for meters that require a secondary key. Some meters in Austria require this                 |
 | receivedTimeout     | The time out period in which messages are expected to arrive, default is 120 seconds                        |
 
 

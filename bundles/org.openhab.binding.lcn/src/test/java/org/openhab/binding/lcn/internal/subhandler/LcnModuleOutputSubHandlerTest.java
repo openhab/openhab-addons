@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.lcn.internal.subhandler;
 
-import static org.mockito.Mockito.verify;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 import java.math.BigDecimal;
 
@@ -25,6 +26,8 @@ import org.openhab.binding.lcn.internal.common.LcnDefs;
 import org.openhab.binding.lcn.internal.common.LcnException;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.types.UpDownType;
 
 /**
  * Test class.
@@ -45,62 +48,78 @@ public class LcnModuleOutputSubHandlerTest extends AbstractTestLcnModuleSubHandl
 
     @Test
     public void testStatusOutput1OffPercent() {
-        l.tryParse("=M000005A1000");
+        tryParseAllHandlers(":M000005A1000");
         verify(handler).updateChannel(LcnChannelGroup.OUTPUT, "1", new PercentType(0));
+        verify(handler).updateChannel(any(), any(), any());
     }
 
     @Test
     public void testStatusOutput2OffPercent() {
-        l.tryParse("=M000005A2000");
+        tryParseAllHandlers(":M000005A2000");
         verify(handler).updateChannel(LcnChannelGroup.OUTPUT, "2", new PercentType(0));
+        verify(handler).updateChannel(any(), any(), any());
     }
 
     @Test
     public void testStatusOutput1OffNative() {
-        l.tryParse("=M000005O1000");
+        tryParseAllHandlers(":M000005O1000");
         verify(handler).updateChannel(LcnChannelGroup.OUTPUT, "1", new PercentType(0));
+        verify(handler).updateChannel(any(), any(), any());
     }
 
     @Test
     public void testStatusOutput2OffNative() {
-        l.tryParse("=M000005O2000");
+        tryParseAllHandlers(":M000005O2000");
         verify(handler).updateChannel(LcnChannelGroup.OUTPUT, "2", new PercentType(0));
+        verify(handler).updateChannel(any(), any(), any());
     }
 
     @Test
     public void testStatusOutput1OnPercent() {
-        l.tryParse("=M000005A1100");
+        tryParseAllHandlers(":M000005A1100");
         verify(handler).updateChannel(LcnChannelGroup.OUTPUT, "1", new PercentType(100));
+        verify(handler).updateChannel(LcnChannelGroup.ROLLERSHUTTEROUTPUT, "1", UpDownType.UP);
+        verify(handler, times(2)).updateChannel(any(), any(), any());
     }
 
     @Test
     public void testStatusOutput2OnPercent() {
-        l.tryParse("=M000005A2100");
+        tryParseAllHandlers(":M000005A2100");
         verify(handler).updateChannel(LcnChannelGroup.OUTPUT, "2", new PercentType(100));
+        verify(handler).updateChannel(LcnChannelGroup.ROLLERSHUTTEROUTPUT, "1", UpDownType.DOWN);
+        verify(handler, times(2)).updateChannel(any(), any(), any());
     }
 
     @Test
     public void testStatusOutput1OnNative() {
-        l.tryParse("=M000005O1200");
+        tryParseAllHandlers(":M000005O1200");
         verify(handler).updateChannel(LcnChannelGroup.OUTPUT, "1", new PercentType(100));
+        verify(handler).updateChannel(LcnChannelGroup.ROLLERSHUTTEROUTPUT, "1", UpDownType.UP);
+        verify(handler, times(2)).updateChannel(any(), any(), any());
     }
 
     @Test
     public void testStatusOutput2OnNative() {
-        l.tryParse("=M000005O2200");
+        tryParseAllHandlers(":M000005O2200");
         verify(handler).updateChannel(LcnChannelGroup.OUTPUT, "2", new PercentType(100));
+        verify(handler).updateChannel(LcnChannelGroup.ROLLERSHUTTEROUTPUT, "1", UpDownType.DOWN);
+        verify(handler, times(2)).updateChannel(any(), any(), any());
     }
 
     @Test
     public void testStatusOutput2On50Percent() {
-        l.tryParse("=M000005A2050");
+        tryParseAllHandlers(":M000005A2050");
         verify(handler).updateChannel(LcnChannelGroup.OUTPUT, "2", new PercentType(50));
+        verify(handler).updateChannel(LcnChannelGroup.ROLLERSHUTTEROUTPUT, "1", UpDownType.DOWN);
+        verify(handler, times(2)).updateChannel(any(), any(), any());
     }
 
     @Test
     public void testStatusOutput1On50Native() {
-        l.tryParse("=M000005O1100");
+        tryParseAllHandlers(":M000005O1100");
         verify(handler).updateChannel(LcnChannelGroup.OUTPUT, "1", new PercentType(50));
+        verify(handler).updateChannel(LcnChannelGroup.ROLLERSHUTTEROUTPUT, "1", UpDownType.UP);
+        verify(handler, times(2)).updateChannel(any(), any(), any());
     }
 
     @Test
@@ -194,5 +213,23 @@ public class LcnModuleOutputSubHandlerTest extends AbstractTestLcnModuleSubHandl
     public void testHandleCommandDimmerOutput12Value40() throws LcnException {
         l.handleCommandDimmerOutput(new DimmerOutputCommand(BigDecimal.valueOf(40), false, true, 0), 0);
         verify(handler).sendPck("AY040040");
+    }
+
+    @Test
+    public void testHandleCommandTuneableWhite0() throws LcnException {
+        l.handleCommandString(new StringType("DISABLE"), 0);
+        verify(handler).sendPck("AW0");
+    }
+
+    @Test
+    public void testHandleCommandTuneableWhite1() throws LcnException {
+        l.handleCommandString(new StringType("OUTPUT1"), 0);
+        verify(handler).sendPck("AW1");
+    }
+
+    @Test
+    public void testHandleCommandTuneableWhite2() throws LcnException {
+        l.handleCommandString(new StringType("BOTH"), 0);
+        verify(handler).sendPck("AW2");
     }
 }

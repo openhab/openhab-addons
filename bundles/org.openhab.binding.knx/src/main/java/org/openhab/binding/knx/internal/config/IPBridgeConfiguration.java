@@ -14,20 +14,27 @@ package org.openhab.binding.knx.internal.config;
 
 import java.math.BigDecimal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * IP Bridge handler configuration object.
  *
  * @author Simon Kaufmann - initial contribution and API
  *
  */
+@NonNullByDefault
 public class IPBridgeConfiguration extends BridgeConfiguration {
 
-    private boolean useNAT;
-    private String type;
-    private String ipAddress;
-    private BigDecimal portNumber;
-    private String localIp;
-    private String localSourceAddr;
+    private boolean useNAT = false;
+    private String type = "";
+    private String ipAddress = "";
+    private BigDecimal portNumber = BigDecimal.valueOf(0);
+    private String localIp = "";
+    private String localSourceAddr = "";
+    private String routerBackboneKey = "";
+    private String tunnelUserId = "";
+    private String tunnelUserPassword = "";
+    private String tunnelDeviceAuthentication = "";
 
     public Boolean getUseNAT() {
         return useNAT;
@@ -51,5 +58,21 @@ public class IPBridgeConfiguration extends BridgeConfiguration {
 
     public String getLocalSourceAddr() {
         return localSourceAddr;
+    }
+
+    public String getRouterBackboneKey() {
+        return routerBackboneKey;
+    }
+
+    public String getTunnelUserId() {
+        return tunnelUserId;
+    }
+
+    public String getTunnelUserPassword() {
+        return tunnelUserPassword;
+    }
+
+    public String getTunnelDeviceAuthentication() {
+        return tunnelDeviceAuthentication;
     }
 }
