@@ -54,9 +54,9 @@ The Account bridge has the following configuration elements:
 
 **Supported channels for the Account bridge thing:**
 
-| Channel Group | Channel Id    | Item Type | Description                                                       |
-|---------------|---------------|-----------|-------------------------------------------------------------------|
-| monitoring    | request-count | Number    | Number of request transmitted to Netatmo API during the last hour |
+| Channel Group | Channel Id    | Item Type | Description                                                        |
+|---------------|---------------|-----------|--------------------------------------------------------------------|
+| monitoring    | request-count | Number    | Number of requests transmitted to Netatmo API during the last hour |
 
 
 ### Configure the Bridge
