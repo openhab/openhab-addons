@@ -13,9 +13,7 @@
 package org.openhab.binding.meater.internal.dto;
 
 import java.time.Instant;
-import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.TimeZone;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -70,10 +68,9 @@ public class MeaterProbeDTO {
         @SerializedName("updated_at")
         private long lastConnection;
 
-        public @Nullable ZonedDateTime getLastConnection() {
+        public @Nullable Instant getLastConnection() {
             if (lastConnection > 0) {
-                Instant instant = Instant.ofEpochSecond(lastConnection);
-                return ZonedDateTime.ofInstant(instant, TimeZone.getDefault().toZoneId());
+                return Instant.ofEpochSecond(lastConnection);
             }
             return null;
         }

@@ -2,7 +2,7 @@
 
 This is an openHAB binding for the MEATER probe, MEATER® is a trademark of Apption Labs™ Limited. A Traeger Company.
 
-This binding uses the MEATER cloud REST API.
+This binding uses the MEATER Cloud REST API.
 
 ![Meater+ Probe](doc/meater-plus-side.png)
 
@@ -11,7 +11,7 @@ This binding uses the MEATER cloud REST API.
 
 This binding supports the following thing types:
 
-- meaterapi: Bridge - Communicates with the MEATER cloud REST API.
+- meaterapi: Bridge - Communicates with the MEATER Cloud REST API.
 
 
 - meaterprobe: The MEATER probe - Only support for cloud connected MEATER probes (MEATER Block and MEATER Plus) 
@@ -33,9 +33,9 @@ After the configuration of the Bridge, you need to perform a manual scan and the
 
 | Parameter | Description                                                  | Type   | Default  | Required | 
 |-----------|--------------------------------------------------------------|--------|----------|----------|
-| email     | The email used to connect to your MEATER cloud account       | String | NA       | yes      |
-| password  | The password used to connect to your MEATER cloud account    | String | NA       | yes      |
-| refresh   | Specifies the refresh interval in second                     | Number | 30       | no     |
+| email     | The email used to connect to your MEATER Cloud account       | String | NA       | yes      |
+| password  | The password used to connect to your MEATER Cloud account    | String | NA       | yes      |
+| refresh   | Specifies the refresh interval in seconds                    | Number | 30       | no       |
 
 ## Channels
 
@@ -51,7 +51,7 @@ After the configuration of the Bridge, you need to perform a manual scan and the
 | cookName              | String             | Name of selected meat or user given custom name      |   
 | cookState             | String             | One of Not Started, Configured, Started, Ready For Resting, Resting, Slightly Underdone, Finished, Slightly Overdone, OVERCOOK!                                 |
 | cookElapsedTime       | Number:Time        | Time since the start of cook in seconds. Default: 0  |
-| cookRemainingTime     | Number:Time        | Remaining time in seconds. When unknown/calculating default is used. Default: -1                                                                                   |
+| cookRemainingTime     | Number:Time        | Remaining time in seconds. When unknown/calculating UnDefType.UNDEF is used.                                                                                  |
 | cookEstimatedEndTime  | DateTime           | Date and time of estimated end time for current cook |
 
 
@@ -61,10 +61,10 @@ After the configuration of the Bridge, you need to perform a manual scan and the
 
 ````
 Bridge meater:meaterapi:block     "MEATER Block"   [email="", password=""] {
-  meater:meaterprobe:block:probe1 "MEATER Probe 1" [deviceId=""]
-  meater:meaterprobe:block:probe2 "MEATER Probe 2" [deviceId=""]
-  meater:meaterprobe:block:probe3 "MEATER Probe 3" [deviceId=""]
-  meater:meaterprobe:block:probe4 "MEATER Probe 4" [deviceId=""]
+  meaterprobe probe1 "Meater Probe 1" [deviceId=""]
+  meaterprobe probe2 "Meater Probe 2" [deviceId=""]
+  meaterprobe probe3 "Meater Probe 3" [deviceId=""]
+  meaterprobe probe4 "Meater Probe 4" [deviceId=""]
 }
 ````
 

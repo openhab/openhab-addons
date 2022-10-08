@@ -13,26 +13,39 @@
 package org.openhab.binding.meater.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * {@link MeaterException} is used when there is exception communicating with MEATER REST API.
+ * {@link MeaterException} is used when there is an authentication exception with MEATER REST API.
  *
  * @author Jan Gustafsson - Initial contribution
  */
 @NonNullByDefault
-public class MeaterException extends Exception {
+public class MeaterAuthenticationException extends Exception {
 
     private static final long serialVersionUID = 2543564118231301158L;
 
-    public MeaterException(Exception source) {
+    public MeaterAuthenticationException(Exception source) {
         super(source);
     }
 
-    public MeaterException(String message) {
+    public MeaterAuthenticationException(String message) {
         super(message);
     }
 
-    public MeaterException(String message, Throwable cause) {
+    public MeaterAuthenticationException(String message, Throwable cause) {
         super(message, cause);
+    }
+
+    @Override
+    public @Nullable String getMessage() {
+        Throwable throwable = getCause();
+        if (throwable != null) {
+            String localMessage = throwable.getMessage();
+            if (localMessage != null) {
+                return localMessage;
+            }
+        }
+        return "";
     }
 }

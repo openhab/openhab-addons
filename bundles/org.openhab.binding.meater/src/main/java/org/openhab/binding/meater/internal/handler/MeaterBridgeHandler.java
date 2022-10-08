@@ -26,11 +26,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.meater.internal.MeaterBridgeConfiguration;
-import org.openhab.binding.meater.internal.MeaterException;
 import org.openhab.binding.meater.internal.api.MeaterRestAPI;
 import org.openhab.binding.meater.internal.discovery.MeaterDiscoveryService;
 import org.openhab.binding.meater.internal.dto.MeaterProbeDTO;
 import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -57,16 +57,19 @@ public class MeaterBridgeHandler extends BaseBridgeHandler {
 
     private final Gson gson;
     private final HttpClient httpClient;
+    private final TranslationProvider i18nProvider;
     private LocaleProvider localeProvider;
     private final Map<String, MeaterProbeDTO.Device> meaterProbeThings = new ConcurrentHashMap<>();
 
     private @Nullable MeaterRestAPI api;
     private @Nullable ScheduledFuture<?> refreshJob;
 
-    public MeaterBridgeHandler(Bridge bridge, HttpClient httpClient, Gson gson, LocaleProvider localeProvider) {
+    public MeaterBridgeHandler(Bridge bridge, HttpClient httpClient, Gson gson, TranslationProvider i18nProvider,
+            LocaleProvider localeProvider) {
         super(bridge);
         this.httpClient = httpClient;
         this.gson = gson;
+        this.i18nProvider = i18nProvider;
         this.localeProvider = localeProvider;
     }
 
@@ -74,24 +77,22 @@ public class MeaterBridgeHandler extends BaseBridgeHandler {
     public void initialize() {
         MeaterBridgeConfiguration config = getConfigAs(MeaterBridgeConfiguration.class);
 
-        MeaterRestAPI meaterRestAPI = new MeaterRestAPI(config, gson, httpClient, localeProvider);
+        api = new MeaterRestAPI(config, gson, httpClient, localeProvider);
         refreshTimeInSeconds = config.refresh;
 
         if (config.email == null || config.password == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Configuration of username and password is mandatory");
+                    "@text/config.missing-username-password.description");
         } else if (refreshTimeInSeconds < 0) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Refresh time cannot be negative!");
+                    "@text/config.negative-refresh-interval.description");
         } else {
             try {
-                this.api = meaterRestAPI;
-                api.login();
                 scheduler.execute(() -> {
                     updateStatus(ThingStatus.UNKNOWN);
                     startAutomaticRefresh();
                 });
-            } catch (MeaterException | RuntimeException e) {
+            } catch (RuntimeException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }
@@ -148,5 +149,13 @@ public class MeaterBridgeHandler extends BaseBridgeHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         return;
+    }
+
+    public TranslationProvider getI18nProvider() {
+        return i18nProvider;
+    }
+
+    public LocaleProvider getLocaleProvider() {
+        return localeProvider;
     }
 }

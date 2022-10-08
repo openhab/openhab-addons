@@ -28,7 +28,7 @@ import org.openhab.core.thing.binding.ThingHandlerService;
 
 /**
  * The {@link MeaterDiscoveryService} searches for available
- * Meater probes discoverable through Meater REST API.
+ * Meater probes discoverable through MEATER REST API.
  *
  * @author Jan Gustafsson - Initial contribution
  */
@@ -45,6 +45,8 @@ public class MeaterDiscoveryService extends AbstractDiscoveryService implements 
     public void setThingHandler(@Nullable ThingHandler handler) {
         if (handler instanceof MeaterBridgeHandler) {
             this.handler = (MeaterBridgeHandler) handler;
+            i18nProvider = ((MeaterBridgeHandler) handler).getI18nProvider();
+            localeProvider = ((MeaterBridgeHandler) handler).getLocaleProvider();
         }
     }
 
@@ -71,7 +73,7 @@ public class MeaterDiscoveryService extends AbstractDiscoveryService implements 
             bridgeHandler.getMeaterThings().entrySet().stream().forEach(thing -> {
                 thingDiscovered(
                         DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_MEATER_PROBE, bridgeUID, thing.getKey()))
-                                .withLabel("Meater Probe").withBridge(bridgeUID)
+                                .withLabel("@text/discovery.probe.label").withBridge(bridgeUID)
                                 .withProperty(MeaterConfiguration.DEVICE_ID_LABEL, thing.getKey())
                                 .withRepresentationProperty(MeaterConfiguration.DEVICE_ID_LABEL).build());
             });

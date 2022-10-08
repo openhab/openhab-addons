@@ -91,7 +91,7 @@
 	<channel-type id="cookRemainingTime">
 		<item-type>Number:Time</item-type>
 		<label>Cook Remaining Time</label>
-		<description>Remaining time in seconds. When unknown/calculating default is used. Default: -1</description>
+		<description>Remaining time in seconds. When unknown/calculating default is used. Default: UnDefType.UNDEF</description>
 		<category>Time</category>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>

@@ -14,6 +14,7 @@ package org.openhab.binding.meater.internal.handler;
 
 import static org.openhab.binding.meater.internal.MeaterBindingConstants.*;
 
+import java.time.Instant;
 import java.time.ZonedDateTime;
 
 import javax.measure.quantity.Temperature;
@@ -86,7 +87,7 @@ public class MeaterHandler extends BaseThingHandler {
             update(meaterProbe);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.communication-error.probe-offline");
+                    "@text/offline.communication-error.description");
         }
     }
 
@@ -135,7 +136,8 @@ public class MeaterHandler extends BaseThingHandler {
                 break;
             case CHANNEL_COOK_REMAINING_TIME:
                 if (cook != null) {
-                    return new QuantityType<>(cook.time.remaining, Units.SECOND);
+                    return cook.time.remaining == -1 ? UnDefType.UNDEF
+                            : new QuantityType<>(cook.time.remaining, Units.SECOND);
                 }
                 break;
             case CHANNEL_COOK_ID:
@@ -154,9 +156,9 @@ public class MeaterHandler extends BaseThingHandler {
                 }
                 break;
             case CHANNEL_LAST_CONNECTION:
-                ZonedDateTime zdt = meaterProbe.getLastConnection();
-                if (zdt != null) {
-                    return new DateTimeType(zdt).toZone(timeZoneProvider.getTimeZone());
+                Instant instant = meaterProbe.getLastConnection();
+                if (instant != null) {
+                    return new DateTimeType(ZonedDateTime.ofInstant(instant, timeZoneProvider.getTimeZone()));
                 }
             case CHANNEL_COOK_ESTIMATED_END_TIME:
                 if (cook != null) {
