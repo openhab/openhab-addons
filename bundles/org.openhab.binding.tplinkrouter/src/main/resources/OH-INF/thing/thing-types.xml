@@ -20,7 +20,6 @@
 				<description>Hostname or IP address of the device</description>
 			</parameter>
 			<parameter name="username" type="text" required="true">
-				<context>username</context>
 				<label>Username</label>
 				<description>User to access the device</description>
 			</parameter>
