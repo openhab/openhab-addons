@@ -105,6 +105,12 @@ public class LinkyHandler extends BaseThingHandler {
         });
 
         this.cachedPowerData = new ExpiringDayCache<>("power cache", REFRESH_FIRST_HOUR_OF_DAY, () -> {
+            // We request data for yesterday and the day before yesterday, even if the data for the day before yesterday
+            // is not needed by the binding. This is only a workaround to an API bug that will return
+            // INTERNAL_SERVER_ERROR rather than the expected data with a NaN value when the data for yesterday is not
+            // yet available.
+            // By requesting two days, the API is not failing and you get the expected NaN value for yesterday when the
+            // data is not yet available.
             LocalDate today = LocalDate.now();
             Consumption consumption = getPowerData(today.minusDays(2), today);
             if (consumption != null) {
