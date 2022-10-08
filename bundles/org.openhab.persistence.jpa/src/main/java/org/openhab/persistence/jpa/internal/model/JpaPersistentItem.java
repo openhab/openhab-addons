@@ -26,6 +26,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.persistence.HistoricItem;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -39,11 +40,12 @@ import org.openhab.core.types.UnDefType;
 
 @Entity
 @Table(name = "HISTORIC_ITEM")
+@NonNullByDefault
 public class JpaPersistentItem implements HistoricItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private @NonNullByDefault({}) Long id;
 
     private String name = "";
     private String realName = "";
