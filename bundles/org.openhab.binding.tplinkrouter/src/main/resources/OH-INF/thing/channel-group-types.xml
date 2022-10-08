@@ -8,23 +8,23 @@
 		<label>Wifi</label>
 		<description>Wifi channels</description>
 		<channels>
-			<channel id="Status" typeId="switch-type">
+			<channel id="status" typeId="switch-type">
 				<label>Wifi Status</label>
 				<description>Wifi status</description>
 			</channel>
-			<channel id="SSID" typeId="string-type">
+			<channel id="ssid" typeId="string-type">
 				<label>Wifi SSID</label>
 				<description>Wifi SSID</description>
 			</channel>
-			<channel id="bandWidth" typeId="bandwidth-type">
+			<channel id="bandwidth" typeId="bandwidth-type">
 				<label>Wifi BandWidth</label>
 				<description>Wifi bandwidth</description>
 			</channel>
-			<channel id="QSS" typeId="switch-type">
+			<channel id="qss" typeId="switch-type">
 				<label>Wifi QSS</label>
 				<description>Wifi QSS</description>
 			</channel>
-			<channel id="SecMode" typeId="security-mode-type">
+			<channel id="secMode" typeId="security-mode-type">
 				<label>Wifi Security Mode</label>
 				<description>Wifi Security Mode</description>
 			</channel>
@@ -36,7 +36,7 @@
 				<label>Wifi Encryption Mode</label>
 				<description>Wifi Encryption Mode (only for PSK security mode)</description>
 			</channel>
-			<channel id="Key" typeId="string-type">
+			<channel id="key" typeId="string-type">
 				<label>Wifi Key</label>
 				<description>Wifi Key</description>
 			</channel>

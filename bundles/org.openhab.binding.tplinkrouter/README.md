@@ -26,11 +26,11 @@ This binding provides only the `router` Thing.
 
 | Channel               | Type   | Read/Write | Description                              |
 |-----------------------|--------|------------|------------------------------------------|
-| `wifi#Status`         | Switch | RW         | State of the wifi                        |
-| `wifi#SSID`           | String | R          | SSID of the wifi network                 |
+| `wifi#status`         | Switch | RW         | State of the wifi                        |
+| `wifi#ssid`           | String | R          | SSID of the wifi network                 |
 | `wifi#bandWidth`      | String | R          | Bandwidth of the wifi network            |
-| `wifi#QSS`            | Switch | RW         | Quick Security Setup of the wifi network |
-| `wifi#SecMode`        | String | R          | Security Mode of the wifi network        |
+| `wifi#qss`            | Switch | RW         | Quick Security Setup of the wifi network |
+| `wifi#secMode`        | String | R          | Security Mode of the wifi network        |
 | `wifi#authentication` | String | R          | Authentication Mode of the wifi network  |
 | `wifi#encryption`     | String | R          | Encryption Mode of the wifi network      |
 | `wifi#Key`            | String | R          | Password of the wifi network             |
@@ -46,11 +46,11 @@ Thing tplinkrouter:router:myRouter [hostname="192.168.0.1", username="admin", pa
 `.items` configuration file:
 
 ```
-Switch Wifi "Wifi" <QualityOfService> {channel="tplinkrouter:TD-W9970:myRouter:wifi#Status", autoupdate="false"}
-Switch WifiSSID "Wifi SSID" <QualityOfService> {channel="tplinkrouter:TD-W9970:myRouter:wifi#SSID", autoupdate="false"}
-String BandWidth "Wifi Bandwidth" <QualityOfService> {channel="tplinkrouter:TD-W9970:myRouter:wifi#Bandwidth", autoupdate="false"}
-String QSS "Wifi QSS" <QualityOfService> {channel="tplinkrouter:TD-W9970:myRouter:wifi#QSS", autoupdate="false"}
-String SecMode "Wifi Security Mode" <QualityOfService> {channel="tplinkrouter:TD-W9970:myRouter:wifi#SecMode", autoupdate="false"}
+Switch Wifi "Wifi" <QualityOfService> {channel="tplinkrouter:TD-W9970:myRouter:wifi#status", autoupdate="false"}
+Switch WifiSSID "Wifi SSID" <QualityOfService> {channel="tplinkrouter:TD-W9970:myRouter:wifi#ssid", autoupdate="false"}
+String BandWidth "Wifi Bandwidth" <QualityOfService> {channel="tplinkrouter:TD-W9970:myRouter:wifi#bandwidth", autoupdate="false"}
+String QSS "Wifi QSS" <QualityOfService> {channel="tplinkrouter:TD-W9970:myRouter:wifi#qss", autoupdate="false"}
+String SecMode "Wifi Security Mode" <QualityOfService> {channel="tplinkrouter:TD-W9970:myRouter:wifi#secMode", autoupdate="false"}
 String Authentication "Wifi Authentication Mode" <QualityOfService> {channel="tplinkrouter:TD-W9970:myRouter:wifi#authentication", autoupdate="false"}
 String Encryption "Wifi Encryption Mode" <QualityOfService> {channel="tplinkrouter:TD-W9970:myRouter:wifi#encryption", autoupdate="false"}
 ```
