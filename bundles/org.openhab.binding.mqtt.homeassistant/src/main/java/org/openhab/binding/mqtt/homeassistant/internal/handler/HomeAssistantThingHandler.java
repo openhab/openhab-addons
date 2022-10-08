@@ -13,6 +13,7 @@
 package org.openhab.binding.mqtt.homeassistant.internal.handler;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -81,6 +82,8 @@ import com.google.gson.GsonBuilder;
 public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
         implements ComponentDiscovered, Consumer<List<AbstractComponent<?>>> {
     public static final String AVAILABILITY_CHANNEL = "availability";
+    private static final Comparator<Channel> CHANNEL_COMPARATOR_BY_UID = Comparator
+            .comparing(channel -> channel.getUID().toString());;
 
     private final Logger logger = LoggerFactory.getLogger(HomeAssistantThingHandler.class);
 
@@ -297,7 +300,9 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
                     removeJustRediscoveredChannels(discoveredChannels);
                 }
 
-                // Add newly discovered channels
+                // Add newly discovered channels. We sort the channels
+                // for (mostly) consistent jsondb serialization
+                discoveredChannels.sort(CHANNEL_COMPARATOR_BY_UID);
                 ThingHelper.addChannelsToThing(thing, discoveredChannels);
             }
             updateThingType();
@@ -312,6 +317,8 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
                 .filter(existingChannel -> !newChannelUIDs.contains(existingChannel.getUID()))
                 .collect(Collectors.toList());
         if (existingChannelsWithNewlyDiscoveredChannelsRemoved.size() < mutableChannels.size()) {
+            // We sort the channels for (mostly) consistent jsondb serialization
+            existingChannelsWithNewlyDiscoveredChannelsRemoved.sort(CHANNEL_COMPARATOR_BY_UID);
             updateThingChannels(existingChannelsWithNewlyDiscoveredChannelsRemoved);
         }
     }
