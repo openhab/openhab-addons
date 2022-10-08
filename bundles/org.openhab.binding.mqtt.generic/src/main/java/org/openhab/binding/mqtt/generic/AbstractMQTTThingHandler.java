@@ -25,6 +25,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.mqtt.generic.utils.FutureCollector;
 import org.openhab.binding.mqtt.generic.values.OnOffValue;
 import org.openhab.binding.mqtt.generic.values.Value;
 import org.openhab.binding.mqtt.handler.AbstractBrokerHandler;
@@ -103,7 +104,10 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler
      * @param connection A started broker connection
      * @return A future that completes normal on success and exceptionally on any errors.
      */
-    protected abstract CompletableFuture<@Nullable Void> start(MqttBrokerConnection connection);
+    protected CompletableFuture<@Nullable Void> start(MqttBrokerConnection connection) {
+        return availabilityStates.values().parallelStream().map(cChannel -> cChannel.start(connection, scheduler, 0))
+                .collect(FutureCollector.allOf());
+    }
 
     /**
      * Called when the MQTT connection disappeared.
