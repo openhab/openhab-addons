@@ -35,5 +35,7 @@ public class TpLinkRouterBindingConstants {
     public static final String WIFI_BANDWIDTH = "wifi#bandWidth";
     public static final String WIFI_QSS = "wifi#QSS";
     public static final String WIFI_SECMODE = "wifi#SecMode";
+    public static final String WIFI_AUTHENTICATION = "wifi#authentication";
+    public static final String WIFI_ENCRYPTION = "wifi#encryption";
     public static final String WIFI_KEY = "wifi#Key";
 }

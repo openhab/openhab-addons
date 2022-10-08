@@ -77,11 +77,21 @@ public class TpLinkRouterHandler extends BaseThingHandler implements TpLinkRoute
             } else if (command == OnOffType.OFF) {
                 connector.sendCommand("wlctl set --switch off");
             }
-
-            // Note: if communication with thing fails for some reason,
-            // indicate that by setting the status with detail information:
-            // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-            // "Could not control device at IP address x.x.x.x");
+        } else if (WIFI_QSS.equals(channelUID.getId())) {
+            try {
+                commandQueue.put(new ChannelUIDCommand(channelUID, command));
+            } catch (InterruptedException e) {
+                logger.error("Got exception", e);
+                Thread.currentThread().interrupt();
+            }
+            if (command instanceof RefreshType) {
+                connector.sendCommand("wlctl show");
+            }
+            if (command == OnOffType.ON) {
+                connector.sendCommand("wlctl set --qss on");
+            } else if (command == OnOffType.OFF) {
+                connector.sendCommand("wlctl set --qss off");
+            }
         }
     }
 
@@ -138,10 +148,23 @@ public class TpLinkRouterHandler extends BaseThingHandler implements TpLinkRoute
                     updateState(WIFI_BANDWIDTH, StringType.valueOf(value));
                     break;
                 case "QSS":
-                    updateState(WIFI_QSS, StringType.valueOf(value));
+                    if ("Disabled".equals(value)) {
+                        updateState(WIFI_QSS, OnOffType.OFF);
+                    } else if ("Enable".equals(value)) {
+                        updateState(WIFI_QSS, OnOffType.ON);
+                    } else {
+                        logger.warn("Unsupported value {} for label {}", value, label);
+                    }
                     break;
                 case "SecMode":
-                    updateState(WIFI_SECMODE, StringType.valueOf(value));
+                    String[] parts = value.split("\\s|-");
+                    updateState(WIFI_SECMODE, StringType.valueOf(parts[0]));
+                    updateState(WIFI_AUTHENTICATION, StringType.valueOf(parts[1]));
+                    if (parts.length >= 3) {
+                        updateState(WIFI_ENCRYPTION, StringType.valueOf(parts[2]));
+                    } else {
+                        updateState(WIFI_ENCRYPTION, StringType.EMPTY);
+                    }
                     break;
                 case "Key":
                     updateState(WIFI_KEY, StringType.valueOf(value));
