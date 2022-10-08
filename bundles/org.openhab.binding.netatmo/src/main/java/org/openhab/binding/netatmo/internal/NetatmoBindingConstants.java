@@ -55,6 +55,7 @@ public class NetatmoBindingConstants {
     public static final String GROUP_PRESENCE = "presence";
     public static final String GROUP_SIREN = "siren";
     public static final String GROUP_PERSON = "person";
+    public static final String GROUP_TAG = "tag";
     public static final String GROUP_PROPERTIES = "properties";
     public static final String GROUP_SETPOINT = "setpoint";
     public static final String GROUP_LOCATION = "location";

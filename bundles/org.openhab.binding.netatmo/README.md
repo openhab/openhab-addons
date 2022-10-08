@@ -9,6 +9,7 @@ The Netatmo binding integrates the following Netatmo products:
 - *Outdoor Camera / Presence*. Reports last event, consult picture and video from event/camera.
 - *Doorbell* 
 - *Smoke Detector*
+- *Smart Door Sensor*
 
 See https://www.netatmo.com/ for details on their product.
 
@@ -94,6 +95,7 @@ Now that you have got your bridge _ONLINE_ you can now start a scan with the bin
 | thermostat      | Thing  | NATherm1       | The Thermostat device placed in a given room.                                                        | id                                                                        |
 | room            | Thing  | NARoom         | A room in your house.                                                                                | id                                                                        |
 | valve           | Thing  | NRV            | A valve controlling a radiator.                                                                      | id                                                                        |
+| tag             | Thing  | NACamDoorTag   | A door / window sensor                                                                               | id                                                                        |
 
 
 
@@ -609,6 +611,17 @@ Note: live feeds either locally or via VPN are not available in Netatmo API.
 | battery       | value             | Number       | Read-only  | Battery level                                        |
 | battery       | low-battery       | Switch       | Read-only  | Low battery                                          |
 
+
+**Supported channels for the Door Tag thing:**
+
+| Channel Group | Channel ID        | Item Type    | Read/Write | Description                                          |
+|---------------|-------------------|--------------|------------|------------------------------------------------------|
+| tag           | status            | Contact      | Read-only  | Status of tag (OPEN,CLOSED)                          |
+| signal        | strength          | Number       | Read-only  | Signal strength (0 for no signal, 1 for weak...)     |
+| signal        | value             | Number:Power | Read-only  | Signal strength in dBm                               |
+| timestamp     | last-seen         | DateTime     | Read-only  | Last time the module reported its presence           |
+| battery       | value             | Number       | Read-only  | Battery level                                        |
+| battery       | low-battery       | Switch       | Read-only  | Low battery                                          |
 
 ### Welcome Person
 
