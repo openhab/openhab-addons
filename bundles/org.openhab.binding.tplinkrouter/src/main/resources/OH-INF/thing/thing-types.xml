@@ -19,6 +19,11 @@
 				<label>Hostname</label>
 				<description>Hostname or IP address of the device</description>
 			</parameter>
+			<parameter name="port" type="integer">
+				<default>23</default>
+				<label>Port</label>
+				<description>Port for telnet connection</description>
+			</parameter>
 			<parameter name="username" type="text" required="true">
 				<label>Username</label>
 				<description>User to access the device</description>

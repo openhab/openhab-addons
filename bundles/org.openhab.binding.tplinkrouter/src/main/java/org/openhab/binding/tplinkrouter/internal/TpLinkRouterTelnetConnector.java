@@ -20,6 +20,7 @@ import java.io.OutputStreamWriter;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -27,14 +28,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link TpLinkRouterTelnetConnector} is responsible of the telnet connection.
+ * The {@link TpLinkRouterTelnetConnector} is responsible for the telnet connection.
  *
  * @author Olivier Marceau - Initial contribution
  */
 @NonNullByDefault
 public class TpLinkRouterTelnetConnector {
 
-    private static final Integer TIMEOUT = 60000; // 1 minute
+    private static final int TIMEOUT_MS = (int) TimeUnit.MINUTES.toMillis(1);
 
     private final Logger logger = LoggerFactory.getLogger(TpLinkRouterTelnetConnector.class);
 
@@ -48,7 +49,7 @@ public class TpLinkRouterTelnetConnector {
 
         Socket socketLocal = new Socket();
         socketLocal.connect(new InetSocketAddress(config.hostname, config.port));
-        socketLocal.setSoTimeout(TIMEOUT);
+        socketLocal.setSoTimeout(TIMEOUT_MS);
         socketLocal.setKeepAlive(true);
 
         InputStreamReader inputStream = new InputStreamReader(socketLocal.getInputStream());
@@ -67,14 +68,16 @@ public class TpLinkRouterTelnetConnector {
         Thread clientThread = telnetClientThread;
         if (clientThread != null) {
             clientThread.interrupt();
+            telnetClientThread = null;
         }
         Socket socketLocal = socket;
         if (socketLocal != null) {
             try {
                 socketLocal.close();
             } catch (IOException e) {
-                logger.error("Error while disconnecting telnet client", e);
+                logger.debug("Error while disconnecting telnet client", e);
             }
+            socket = null;
         }
     }
 
@@ -86,7 +89,7 @@ public class TpLinkRouterTelnetConnector {
                 output.write(command + '\n');
                 output.flush();
             } catch (IOException e) {
-                logger.debug("Error sending command", e);
+                logger.warn("Error sending command", e);
             }
         } else {
             logger.debug("Cannot send command, no telnet connection");

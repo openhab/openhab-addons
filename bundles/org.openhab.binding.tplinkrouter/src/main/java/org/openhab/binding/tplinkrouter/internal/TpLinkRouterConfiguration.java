@@ -22,12 +22,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class TpLinkRouterConfiguration {
 
-    /**
-     * Sample configuration parameters. Replace with your own.
-     */
     public String hostname = "";
     public int port = 23;
     public String username = "";
     public String password = "";
-    public int refreshInterval = 600;
+    public int refreshInterval = 60;
 }

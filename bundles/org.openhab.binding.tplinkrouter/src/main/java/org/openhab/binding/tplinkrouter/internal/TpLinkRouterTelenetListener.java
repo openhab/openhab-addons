@@ -30,13 +30,22 @@ public interface TpLinkRouterTelenetListener {
     void receivedLine(String line);
 
     /**
-     * The telnet client has successfully connected to the receiver.
+     * The telnet client encountered an IO error.
      */
     void onReaderThreadStopped();
 
+    /**
+     * The telnet client has been interrupted.
+     */
     void onReaderThreadInterrupted();
 
+    /**
+     * The telnet client has successfully connected to the receiver.
+     */
     void onReaderThreadStarted();
 
+    /**
+     * The telnet socket is unavailable.
+     */
     void onCommunicationUnavailable();
 }

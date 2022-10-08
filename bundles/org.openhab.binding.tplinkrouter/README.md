@@ -46,11 +46,11 @@ Thing tplinkrouter:router:myRouter [hostname="192.168.0.1", username="admin", pa
 `.items` configuration file:
 
 ```
-Switch Wifi "Wifi" <QualityOfService> {channel="tplinkrouter:TD-W9970:myRouter:wifi#status", autoupdate="false"}
-Switch WifiSSID "Wifi SSID" <QualityOfService> {channel="tplinkrouter:TD-W9970:myRouter:wifi#ssid", autoupdate="false"}
-String BandWidth "Wifi Bandwidth" <QualityOfService> {channel="tplinkrouter:TD-W9970:myRouter:wifi#bandwidth", autoupdate="false"}
-String QSS "Wifi QSS" <QualityOfService> {channel="tplinkrouter:TD-W9970:myRouter:wifi#qss", autoupdate="false"}
-String SecMode "Wifi Security Mode" <QualityOfService> {channel="tplinkrouter:TD-W9970:myRouter:wifi#secMode", autoupdate="false"}
-String Authentication "Wifi Authentication Mode" <QualityOfService> {channel="tplinkrouter:TD-W9970:myRouter:wifi#authentication", autoupdate="false"}
-String Encryption "Wifi Encryption Mode" <QualityOfService> {channel="tplinkrouter:TD-W9970:myRouter:wifi#encryption", autoupdate="false"}
+Switch Wifi "Wifi" <QualityOfService> {channel="tplinkrouter:router:myRouter:wifi#status", autoupdate="false"}
+String WifiSSID "Wifi SSID" <QualityOfService> {channel="tplinkrouter:router:myRouter:wifi#ssid"}
+String BandWidth "Wifi Bandwidth" <QualityOfService> {channel="tplinkrouter:router:myRouter:wifi#bandwidth"}
+Switch QSS "Wifi QSS" <QualityOfService> {channel="tplinkrouter:router:myRouter:wifi#qss", autoupdate="false"}
+String SecMode "Wifi Security Mode" <QualityOfService> {channel="tplinkrouter:router:myRouter:wifi#secMode"}
+String Authentication "Wifi Authentication Mode" <QualityOfService> {channel="tplinkrouter:router:myRouter:wifi#authentication"}
+String Encryption "Wifi Encryption Mode" <QualityOfService> {channel="tplinkrouter:router:myRouter:wifi#encryption"}
 ```

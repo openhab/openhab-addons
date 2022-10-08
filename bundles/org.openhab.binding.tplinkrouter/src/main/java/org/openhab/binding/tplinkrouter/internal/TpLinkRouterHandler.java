@@ -26,7 +26,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -47,13 +46,20 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class TpLinkRouterHandler extends BaseThingHandler implements TpLinkRouterTelenetListener {
 
-    private static final Integer RECONNECT_DELAY = 60000; // 1 minute
+    private static final long RECONNECT_DELAY = TimeUnit.MINUTES.toMillis(1);
+
+    private static final String REFRESH_CMD = "wlctl show";
+    private static final String WIFI_ON_CMD = "wlctl set --switch on";
+    private static final String WIFI_OFF_CMD = "wlctl set --switch off";
+    private static final String QSS_ON_CMD = "wlctl set --qss on";
+    private static final String QSS_OFF_CMD = "wlctl set --qss off";
 
     private final Logger logger = LoggerFactory.getLogger(TpLinkRouterHandler.class);
 
-    private TpLinkRouterConfiguration config = new TpLinkRouterConfiguration();
     private final TpLinkRouterTelnetConnector connector = new TpLinkRouterTelnetConnector();
     private final BlockingQueue<ChannelUIDCommand> commandQueue = new ArrayBlockingQueue<>(1);
+
+    private TpLinkRouterConfiguration config = new TpLinkRouterConfiguration();
     private @Nullable ScheduledFuture<?> scheduledFuture;
 
     public TpLinkRouterHandler(Thing thing) {
@@ -66,31 +72,29 @@ public class TpLinkRouterHandler extends BaseThingHandler implements TpLinkRoute
             try {
                 commandQueue.put(new ChannelUIDCommand(channelUID, command));
             } catch (InterruptedException e) {
-                logger.error("Got exception", e);
+                logger.warn("Got exception", e);
                 Thread.currentThread().interrupt();
             }
             if (command instanceof RefreshType) {
-                connector.sendCommand("wlctl show");
-            }
-            if (command == OnOffType.ON) {
-                connector.sendCommand("wlctl set --switch on");
+                connector.sendCommand(REFRESH_CMD);
+            } else if (command == OnOffType.ON) {
+                connector.sendCommand(WIFI_ON_CMD);
             } else if (command == OnOffType.OFF) {
-                connector.sendCommand("wlctl set --switch off");
+                connector.sendCommand(WIFI_OFF_CMD);
             }
         } else if (WIFI_QSS.equals(channelUID.getId())) {
             try {
                 commandQueue.put(new ChannelUIDCommand(channelUID, command));
             } catch (InterruptedException e) {
-                logger.error("Got exception", e);
+                logger.warn("Got exception", e);
                 Thread.currentThread().interrupt();
             }
             if (command instanceof RefreshType) {
-                connector.sendCommand("wlctl show");
-            }
-            if (command == OnOffType.ON) {
-                connector.sendCommand("wlctl set --qss on");
+                connector.sendCommand(REFRESH_CMD);
+            } else if (command == OnOffType.ON) {
+                connector.sendCommand(QSS_ON_CMD);
             } else if (command == OnOffType.OFF) {
-                connector.sendCommand("wlctl set --qss off");
+                connector.sendCommand(QSS_OFF_CMD);
             }
         }
     }
@@ -107,6 +111,7 @@ public class TpLinkRouterHandler extends BaseThingHandler implements TpLinkRoute
         ScheduledFuture<?> scheduledFutureLocal = scheduledFuture;
         if (scheduledFutureLocal != null) {
             scheduledFutureLocal.cancel(true);
+            scheduledFuture = null;
         }
         commandQueue.clear();
         connector.dispose();
@@ -169,6 +174,8 @@ public class TpLinkRouterHandler extends BaseThingHandler implements TpLinkRoute
                 case "Key":
                     updateState(WIFI_KEY, StringType.valueOf(value));
                     break;
+                default:
+                    logger.debug("Unrecognized label {}", label);
             }
         } else if ("cmd:SUCC".equals(line)) {
             ChannelUIDCommand channelUIDCommand = commandQueue.poll();
@@ -182,23 +189,20 @@ public class TpLinkRouterHandler extends BaseThingHandler implements TpLinkRoute
 
     @Override
     public void onReaderThreadStopped() {
-        updateStatus(ThingStatus.UNINITIALIZED);
+        updateStatus(ThingStatus.OFFLINE);
         logger.debug("try to reconnect in {} ms", RECONNECT_DELAY);
         scheduler.schedule(this::createConnection, RECONNECT_DELAY, TimeUnit.MILLISECONDS);
     }
 
     @Override
     public void onReaderThreadInterrupted() {
-        updateStatus(ThingStatus.UNINITIALIZED);
+        updateStatus(ThingStatus.OFFLINE);
     }
 
     @Override
     public void onReaderThreadStarted() {
         scheduledFuture = scheduler.scheduleWithFixedDelay(() -> {
-            Channel wifiStateChannel = this.getThing().getChannel(WIFI_STATUS);
-            if (wifiStateChannel != null) {
-                this.handleCommand(wifiStateChannel.getUID(), RefreshType.REFRESH);
-            }
+            handleCommand(new ChannelUID(getThing().getUID(), WIFI_STATUS), RefreshType.REFRESH);
         }, 0, config.refreshInterval, TimeUnit.SECONDS);
         updateStatus(ThingStatus.ONLINE);
     }
