@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
+	https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="persistence:jpa">
+
+		<parameter name="url" type="text" required="true">
+			<label>Database URL</label>
+			<description><![CDATA[JDBC connection URL.<br>Examples:<br>jdbc:derby://hab.local:1527/openhab;create=true<br>jdbc:mariadb://localhost:3306/openhab<br>jdbc:mysql://localhost:3306/openhab<br>jdbc:postgresql://hab.local:5432/openhab]]></description>
+		</parameter>
+
+		<parameter name="driver" type="text" required="true">
+			<label>Database Driver</label>
+			<description><![CDATA[The JDBC driver class name for the connection.<br>Examples:<br>com.mysql.jdbc.Driver<br>org.apache.derby.jdbc.ClientDriver<br>org.mariadb.jdbc.Driver<br>org.postgresql.Driver]]></description>
+		</parameter>
+
+		<parameter name="user" type="text">
+			<label>Database User</label>
+			<description>The database user name for the connection.</description>
+		</parameter>
+
+		<parameter name="password" type="text">
+			<context>password</context>
+			<label>Database Password</label>
+			<description>The database user password for the connection.</description>
+		</parameter>
+
+		<parameter name="syncmappings" type="text">
+			<label>Synchronize Mappings</label>
+			<description>The OpenJPA synchronize mappings configuration.</description>
+		</parameter>
+
+	</config-description>
+
+</config-description:config-descriptions>
