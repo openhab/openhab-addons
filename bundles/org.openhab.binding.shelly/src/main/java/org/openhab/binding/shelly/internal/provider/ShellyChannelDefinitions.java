@@ -234,7 +234,9 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_ESENDOR_TEMP1, "sensorExtTemp", ITEMT_TEMP))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_ESENDOR_TEMP2, "sensorExtTemp", ITEMT_TEMP))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_ESENDOR_TEMP3, "sensorExtTemp", ITEMT_TEMP))
-                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_ESENDOR_HUMIDITY, "sensorExtHum", ITEMT_PERCENT))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_ESENSOR_HUMIDITY, "sensorExtHum", ITEMT_PERCENT))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_ESENSOR_VOLTAGE, "sensorExtVolt", ITEMT_VOLT))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_ESENSOR_AINPUT, "sensorExtAInput", ITEMT_PERCENT))
 
                 // Battery
                 .add(new ShellyChannel(m, CHGR_BAT, CHANNEL_SENSOR_BAT_LEVEL, "system:battery-level", ITEMT_PERCENT))
@@ -337,15 +339,15 @@ public class ShellyChannelDefinitions {
             addChannel(thing, add, rs.autoOff != null, group, CHANNEL_TIMER_AUTOOFF);
         }
 
-        // Shelly 1/1PM Addon
+        // Shelly 1/1PM and Plus 1/1PM Addon
         if (profile.status.extTemperature != null) {
             addChannel(thing, add, profile.status.extTemperature.sensor1 != null, CHGR_SENSOR, CHANNEL_ESENDOR_TEMP1);
             addChannel(thing, add, profile.status.extTemperature.sensor2 != null, CHGR_SENSOR, CHANNEL_ESENDOR_TEMP2);
             addChannel(thing, add, profile.status.extTemperature.sensor3 != null, CHGR_SENSOR, CHANNEL_ESENDOR_TEMP3);
         }
-        if (profile.settings.extHumidity != null) {
-            addChannel(thing, add, profile.settings.extHumidity.sensor1 != null, CHGR_SENSOR, CHANNEL_ESENDOR_HUMIDITY);
-        }
+        addChannel(thing, add, profile.status.extHumidity != null, CHGR_SENSOR, CHANNEL_ESENSOR_HUMIDITY);
+        addChannel(thing, add, profile.status.extVoltage != null, CHGR_SENSOR, CHANNEL_ESENSOR_VOLTAGE);
+        addChannel(thing, add, profile.status.extAnalogInput != null, CHGR_SENSOR, CHANNEL_ESENSOR_AINPUT);
 
         return add;
     }
@@ -534,7 +536,10 @@ public class ShellyChannelDefinitions {
 
     public ChannelTypeUID getChannelTypeUID(String channelId) {
         ShellyChannel channelDef = getDefinition(channelId);
-        return new ChannelTypeUID(BINDING_ID, channelDef.typeId);
+        if (channelDef != null) {
+            return new ChannelTypeUID(BINDING_ID, channelDef.typeId);
+        }
+        throw new IllegalArgumentException("Invalid channelId:" + channelId);
     }
 
     private static void addChannel(Thing thing, Map<String, Channel> newChannels, boolean supported, String group,

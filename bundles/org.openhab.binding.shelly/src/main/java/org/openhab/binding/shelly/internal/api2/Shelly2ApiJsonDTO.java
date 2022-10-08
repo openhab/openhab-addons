@@ -456,6 +456,16 @@ public class Shelly2ApiJsonDTO {
                 public Double rh;
             }
 
+            public class Shelly2DeviceStatusVoltage {
+                public Integer id;
+                public Double voltage;
+            }
+
+            public class Shelly2DeviceStatusAnalogInput {
+                public Integer id;
+                public Double percent;
+            }
+
             public class Shelly2DeviceStatusTempId extends Shelly2DeviceStatusTemp {
                 public Integer id;
             }
@@ -503,10 +513,30 @@ public class Shelly2ApiJsonDTO {
             @SerializedName("cover:0")
             public Shelly2CoverStatus cover0;
 
-            @SerializedName("humidity:0")
-            public Shelly2DeviceStatusHumidity humidity0;
             @SerializedName("temperature:0")
             public Shelly2DeviceStatusTempId temperature0;
+            @SerializedName("temperature:100")
+            public Shelly2DeviceStatusTempId temperature100;
+            @SerializedName("temperature:101")
+            public Shelly2DeviceStatusTempId temperature101;
+            @SerializedName("temperature:102")
+            public Shelly2DeviceStatusTempId temperature102;
+            @SerializedName("temperature:103")
+            public Shelly2DeviceStatusTempId temperature103;
+            @SerializedName("temperature:104")
+            public Shelly2DeviceStatusTempId temperature104;
+
+            @SerializedName("humidity:0")
+            public Shelly2DeviceStatusHumidity humidity0;
+            @SerializedName("humidity:100")
+            public Shelly2DeviceStatusHumidity humidity100;
+
+            @SerializedName("voltage:100")
+            public Shelly2DeviceStatusVoltage voltage100;
+
+            @SerializedName("analoginput:100")
+            public Shelly2DeviceStatusAnalogInput analogInput100;
+
             @SerializedName("devicepower:0")
             public Shelly2DeviceStatusPower devicepower0;
         }

@@ -124,6 +124,7 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_SENSOR_LUX = "lux";
     public static final String CHANNEL_SENSOR_PPM = "ppm";
     public static final String CHANNEL_SENSOR_VOLTAGE = "voltage";
+    public static final String CHANNEL_SENSOR_AINPUT = "analogInput";
     public static final String CHANNEL_SENSOR_ILLUM = "illumination";
     public static final String CHANNEL_SENSOR_VIBRATION = "vibration";
     public static final String CHANNEL_SENSOR_TILT = "tilt";
@@ -152,7 +153,11 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_ESENDOR_TEMP1 = CHANNEL_SENSOR_TEMP + "1";
     public static final String CHANNEL_ESENDOR_TEMP2 = CHANNEL_SENSOR_TEMP + "2";
     public static final String CHANNEL_ESENDOR_TEMP3 = CHANNEL_SENSOR_TEMP + "3";
-    public static final String CHANNEL_ESENDOR_HUMIDITY = CHANNEL_SENSOR_HUM;
+    public static final String CHANNEL_ESENDOR_TEMP4 = CHANNEL_SENSOR_TEMP + "4";
+    public static final String CHANNEL_ESENDOR_TEMP5 = CHANNEL_SENSOR_TEMP + "5";
+    public static final String CHANNEL_ESENSOR_HUMIDITY = CHANNEL_SENSOR_HUM;
+    public static final String CHANNEL_ESENSOR_VOLTAGE = CHANNEL_SENSOR_VOLTAGE;
+    public static final String CHANNEL_ESENSOR_AINPUT = CHANNEL_SENSOR_AINPUT;
 
     public static final String CHANNEL_GROUP_CONTROL = "control";
     public static final String CHANNEL_SENSE_KEY = "key";

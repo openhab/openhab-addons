@@ -337,9 +337,14 @@ public class ShellyDeviceProfile {
     }
 
     public String[] getValveProfileList(int valveId) {
-        if (isTRV && settings.thermostats != null && valveId <= settings.thermostats.size()) {
-            ShellyThermnostat t = settings.thermostats.get(valveId);
-            return t.profileNames;
+        if (isTRV && settings.thermostats != null) {
+            int sz = settings.thermostats.size();
+            if (valveId <= sz) {
+                if (settings.thermostats != null) {
+                    ShellyThermnostat t = settings.thermostats.get(valveId);
+                    return t.profileNames;
+                }
+            }
         }
         return new String[0];
     }

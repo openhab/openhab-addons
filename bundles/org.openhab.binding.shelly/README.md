@@ -27,6 +27,13 @@ Also check out the [Shelly Manager](doc/ShellyManager.md), which
 
 ## Supported Devices
 
+The binding supports both hardware generations
+
+- Generation 1: The original Shelly devices like the Shelly 1, Shelly 2.5, Shelly Flood etc.
+- Generation 2: The new Plus / Pro series of devices
+
+The binding provides the same feature set across all devices as good as possible and depending on device specific features.
+
 ### Generation 1
 
 | thing-type         | Model                                                  | Vendor ID |
@@ -68,7 +75,7 @@ Also check out the [Shelly Manager](doc/ShellyManager.md), which
 | shellytrv          | Shelly TRV                                             | SHTRV-01  |
 | shellydevice       | A password protected Shelly device or an unknown type  |           |
 
-### Generation 2 Plus series:
+### Generation 2 Plus series
 
 | thing-type          | Model                                                    | Vendor ID      |
 |---------------------|----------------------------------------------------------|----------------|
@@ -80,7 +87,7 @@ Also check out the [Shelly Manager](doc/ShellyManager.md), which
 | shellyplusi4dc      | Shelly Plus i4 with 4x DC input                          | SNSN-0D24X     |
 | shellyplusht        | Shelly Plus HT with temperature + humidity sensor        | SNSN-0013A     |
 
-### Generation 2 Pro series:
+### Generation 2 Pro series
 
 | thing-type          | Model                                                    | Vendor ID      |
 |---------------------|----------------------------------------------------------|----------------|
@@ -97,21 +104,26 @@ Also check out the [Shelly Manager](doc/ShellyManager.md), which
 
 The binding has the following configuration options:
 
-| Parameter      |Description                                                       |Mandatory|Default                                         |
-|----------------|------------------------------------------------------------------|---------|------------------------------------------------|
-| defaultUserId  |Default user id for HTTP authentication when not set in the Thing |    no   |admin                                           |
-| defaultPassword|Default password for HTTP authentication when not set in the Thing|    no   |admin                                           |
-| autoCoIoT      |Auto-enable CoIoT events when firmware 1.6+ is enabled.           |    no   |true                                            |
+### Generation 1
 
-The binding defaults to CoIoT events when firmware 1.6 or newer is detected. CoIoT provides near-realtime updates on device status changes.
-This mode also overrules event settings in the Thing configuration. 
+| Parameter      |Description                                                         |Mandatory|Default                                         |
+|----------------|--------------------------------------------------------------------|---------|------------------------------------------------|
+| defaultUserId  |Default user id for HTTP authentication when not set in the Thing   |    no   |admin                                           |
+| defaultPassword|Default password for HTTP authentication when not set in the Thing  |    no   |admin                                           |
+| autoCoIoT      |Auto-enable CoIoT events when firmware 1.6+ is enabled (Gen1 only). |    no   |true                                            |
 
-Disabling this feature allows granular control, which event types will be used. This is also required when the Shelly devices are not located on the same IP subnet (e.g. using a VPN).
-In this case autoCoIoT should be disabled, CoIoT events will not work, because the underlying CoAP protocol is based on Multicast IP, which usually doesn't passes a VPN or routed network.
+`defaultUserId` and `defaultPassword:` will be used by the binding if device protection is enabled. However, the Plus/Pro devices have a fixed user id àdmin`. Nevertheless the binding provide that option to allow a mixed operation of Gen 1 and 2 devices in the same installation having same defaults.
+
+`Generation 1`: The binding defaults to CoIoT events when firmware 1.6 or newer is detected. CoIoT provides near-realtime updates on device status changes.
+This mode also overrules event settings in the Thing configuration. Disabling this feature allows granular control, which event types will be used. This is also required when the Shelly devices are not located on the same IP subnet (e.g. using a VPN). In this case autoCoIoT should be disabled, CoIoT events will not work, because the underlying CoAP protocol is based on Multicast IP, which usually doesn't passes a VPN or routed network.
+
+'Generation 2:' 
+
+### Generation 2 (Plus
 
 ## Firmware
 
-The binding requires firmware version 1.7.0 or newer to enable all features, version 1.9.2 is recommended.
+The binding requires firmware version 1.8.2 or newer for generation 1  to enable all features, version 1.9.2+ is recommended. Generation 2 devices require 0.10.2 or newer, the Plus HT at least 0.11.0.
 Some of the features are enabled dynamically or are not available depending on device type and firmware release.
 The Web UI of the Shelly device displays the current firmware version under Settings:Firmware and shows an update option when a newer version is available.
 
@@ -134,10 +146,10 @@ The binding uses mDNS to discover the Shelly devices.
 They periodically announce their presence, which is used by the binding to find them on the local network.
 Sometimes you need to run the manual discovery multiple times until you see all your devices.
 
-`Important`: 
+`Important for Generation 1 Devices`: 
 It's recommended to enable CoIoT in the device settings for faster response times (event driven rather than polling).
 Open the device's Web UI, section "COIOT settings" and select "Enable COCIOT".
-It's recommended to switch the Shelly devices to CoAP Unicast mode if you have only your openHAB system controlling the device.
+It's recommended to switch the Shelly devices to CoAP peer mode if you have only your openHAB system controlling the device.
 This allows routing the CoIoT/CoAP messages across multiple IP subnets without special network setup required.
 You could use Shelly Manager (doc/ShellyManager.md) to easily do the setup (configuring the openHAB host as CoAP peer address).
 Keep Multicast mode if you have multiple hosts, which should receive the CoAP updates.
@@ -170,7 +182,7 @@ Sometimes you need to run the discovery multiple times.
 
 ### Roller Favorites
 
-Firmware 1.9.2 for Shelly 2.5 in roller mode supports so called favorites for positions.
+Firmware 1.9.2+ for Shelly 2.5 and 0.11+ for Plus 2PM in roller mode supports so called roller favorites for positions.
 You could use the Shelly App to setup 4 different positions (percentage) and assign id 1-4.
 The channel `roller#rollerFav` allows to select those from openHAB and the roller moves to the desired position.
 In the Thing configuration you could also configure an id when the `roller#control` channel receives UP or DOWN.
@@ -186,14 +198,14 @@ The binding sets the following Thing status depending on the device status:
 | UNKNOWN        | Indicates that the status is currently unknown, which must not show a problem. Usually the Thing stays in this status when the device is in sleep mode. Once the device is reachable and was initialized the Thing switches to status ONLINE.|
 | ONLINE         | ONLINE indicates that the device can be accessed and is responding properly. Battery powered devices also stay ONLINE when in sleep mode. The binding has an integrated watchdog timer supervising the device, see below. The Thing switches to status OFFLINE when some type of communication error occurs. | 
 | OFFLINE        | Communication with the device failed. Check the Thing status in the UI and openHAB's log for an indication of the error. Try restarting OH or deleting and re-discovering the Thing. You could also post to the community thread if the problem persists. |
-| CONFIG PENDING | CONFIG PENDING description |
-| ERROR: COMM    | ERROR: COMM description |
+| CONFIG PENDING | The thing has been initialized, but device initialization is in progress or pending (e.g. waiting for device wake-up) |
+| ERROR: COMM    | Communication with the device has reported an error, check detailed status. |
 
 `Battery powered devices:` 
 If the device is in sleep mode and can't be reached by the binding, the Thing will change into CONFIG_PENDING.
 Once the device wakes up, the Thing will perform initialization and the state will change to ONLINE.
 
-The first time a device is discovered and initialized successfully, the binding will be able to perform auto-initialization when OH is restarted.  Waking up the device triggers the event URL and/or CoIoT packet, which is processed by the binding and triggers initialization. Once a device is initialized, it is no longer necessary to manually wake it up after an openHAB restart unless you change the battery. In this case press the button and run the discovery again.
+The first time a device is discovered and initialized successfully, the binding will be able to perform auto-initialization when OH is restarted.  Waking up the device triggers the a status report (CoIoT packet for event url for Gen1 and WebSocket call for Gen2), which is processed by the binding and triggers initialization. Once a device is initialized, it is no longer necessary to manually wake it up after an openHAB restart unless you change the battery. In this case press the button and run the discovery again.
 
 ### Device Watchdog
 
@@ -208,7 +220,7 @@ The binding also monitors that the device is responding at least once within a g
 The period is computed depending on the device type and configuration:
 
 - battery  powered devices: &lt;sleepPeriod from device config&gt; + 10min, usually 12h+10min=730min
-- else, if CoIoT is enabled: 3*&lt;update Period from device settings&gt;+10sec, usually3*15+10=45sec
+- else, if CoIoT or WevSocket is enabled: 3*&lt;update Period from device settings&gt;+10sec, usually3*15+10=45sec
 - else 2*60+10sec = 130sec
 
 Once the timer expires the device switches to OFFFLINE and the bindings starts to re-initialize the device periodically. 
@@ -266,7 +278,7 @@ The LED channels are available for the Plug-S with firmware 1.6x and for various
 
 ## Events
 
-### Action URLs vs. CoIoT
+### Generation 1: Action URLs vs. CoIoT
 
 Depending on the firmware release the Shelly devices supports 2 different mechanims to report sensor updates or events.
 
@@ -298,6 +310,10 @@ Version 1.8 introduces CoIoT version 2, which fixes various issues with version 
 If there is no specific reason you should enable CoIoT. Check section Network Settings [here](doc/AdvancedUsers.md) for more information.
 
 Enable the autoCoIoT option in the binding configuration or eventsCoIoT in the Thing configuration to activate CoIoT.
+
+### Generation 2: WebSockets
+
+The Plus and Pro series of devices use WebSockets for device communication. Usually the binding establishes a WebSocket connection to the device (http port 88). However, battery powered devices like the Plus HT are not reachable while the device is in sleep mode. For those the binding sets up a so called "Outbound WebSocket" during device initialization. Afterwards the device wakes up and calls the configured URL, which is the processed by the binding. The device UI shows the URL when active. Battery powered devices could only report events to a single host, take care if you have multiple openHAB instances on the same network.
 
 ### Button events
 
@@ -980,6 +996,12 @@ You should calibrate the valve using the device Web UI or Shelly App before star
 |          |autoOff      |Number   |r/w      |Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds|
 |          |timerActive  |Switch   |yes      |Relay #1: ON: An auto-on/off timer is active                                     |
 |          |button       |Trigger  |yes      |Event trigger, see section Button Events                                         |
+|sensors   |temperature1 |Number   |yes      |Temperature value of external sensor #1 (if connected to temp/hum addon)         |
+|          |temperature2 |Number   |yes      |Temperature value of external sensor #2 (if connected to temp/hum addon)         |
+|          |temperature3 |Number   |yes      |Temperature value of external sensor #3 (if connected to temp/hum addon)         |
+|          |temperature4 |Number   |yes      |Temperature value of external sensor #4 (if connected to temp/hum addon)         |
+|          |temperature5 |Number   |yes      |Temperature value of external sensor #5 (if connected to temp/hum addon)         |
+|          |humidity     |Number   |yes      |Humidity in percent (if connected to temp/hum addon)                             |
 
 ### Shelly Plus 1PM (thing-type: shellyplus1pm)
 
@@ -996,6 +1018,12 @@ You should calibrate the valve using the device Web UI or Shelly App before star
 |          |lastPower1   |Number   |yes      |Energy consumption for a round minute, 1 minute  ago                             |
 |          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (resets on restart)|
 |          |lastUpdate   |DateTime |yes      |Timestamp of the last measurement                                                |
+|sensors   |temperature1 |Number   |yes      |Temperature value of external sensor #1 (if connected to temp/hum addon)         |
+|          |temperature2 |Number   |yes      |Temperature value of external sensor #2 (if connected to temp/hum addon)         |
+|          |temperature3 |Number   |yes      |Temperature value of external sensor #3 (if connected to temp/hum addon)         |
+|          |temperature4 |Number   |yes      |Temperature value of external sensor #4 (if connected to temp/hum addon)         |
+|          |temperature5 |Number   |yes      |Temperature value of external sensor #5 (if connected to temp/hum addon)         |
+|          |humidity     |Number   |yes      |Humidity in percent (if connected to temp/hum addon)                             |
 
 ### Shelly Plus 2PM - relay mode (thing-type: shellyplus2pm-relay)
 

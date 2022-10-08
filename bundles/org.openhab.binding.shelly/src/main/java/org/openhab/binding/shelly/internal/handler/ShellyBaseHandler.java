@@ -187,12 +187,18 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 start = initializeThing();
             } catch (ShellyApiException e) {
                 ShellyApiResult res = e.getApiResult();
-                if (profile.alwaysOn && e.isConnectionError()) {
-                    setThingOffline(ThingStatusDetail.COMMUNICATION_ERROR, "offline.status-error-connect",
-                            e.toString());
-                }
-                if (isAuthorizationFailed(res)) {
+                String mid = "";
+                if (e.isJsonError()) { // invalid JSON format
+                    mid = "offline.status-error-unexpected-error";
                     start = false;
+                } else if (isAuthorizationFailed(res)) {
+                    mid = "offline.conf-error-access-denied";
+                    start = false;
+                } else if (profile.alwaysOn && e.isConnectionError()) {
+                    mid = "offline.status-error-connect";
+                }
+                if (!mid.isEmpty()) {
+                    setThingOffline(ThingStatusDetail.COMMUNICATION_ERROR, mid, e.toString());
                 }
                 logger.debug("{}: Unable to initialize: {}, retrying later", thingName, e.toString());
             } catch (IllegalArgumentException e) {

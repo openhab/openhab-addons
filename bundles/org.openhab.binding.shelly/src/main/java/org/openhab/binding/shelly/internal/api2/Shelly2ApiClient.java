@@ -41,6 +41,11 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettings
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyShortStatusRelay;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusRelay;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtAnalogInput;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtHumidity;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtTemperature;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtTemperature.ShellyShortTemp;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtVoltage;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellySensorBat;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellySensorHum;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2AuthRequest;
@@ -182,8 +187,8 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         updateHumidityStatus(sensorData, result.humidity0);
         updateTemperatureStatus(sensorData, result.temperature0);
         updateBatteryStatus(sensorData, result.devicepower0);
+        updateAddonStatus(status, result);
         updated |= ShellyComponents.updateSensors(getThing(), status);
-
         return updated;
     }
 
@@ -378,6 +383,48 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         }
 
         return updateChannels ? ShellyComponents.updateRoller((ShellyBaseHandler) getThing(), rs, cs.id) : false;
+    }
+
+    // Addon
+    private void updateAddonStatus(ShellySettingsStatus status, @Nullable Shelly2DeviceStatusResult ds)
+            throws ShellyApiException {
+        if (ds == null) {
+            return;
+        }
+
+        if (ds.temperature101 != null) {
+            if (status.extTemperature == null) {
+                status.extTemperature = new ShellyExtTemperature();
+            }
+            status.extTemperature.sensor1 = updateExtTempSensor(ds.temperature100);
+            status.extTemperature.sensor2 = updateExtTempSensor(ds.temperature101);
+            status.extTemperature.sensor3 = updateExtTempSensor(ds.temperature102);
+            status.extTemperature.sensor4 = updateExtTempSensor(ds.temperature103);
+            status.extTemperature.sensor5 = updateExtTempSensor(ds.temperature104);
+        }
+
+        if (ds.humidity100 != null) {
+            status.extHumidity = new ShellyExtHumidity(ds.humidity100.rh);
+        }
+
+        if (ds.voltage100 != null) {
+            status.extVoltage = new ShellyExtVoltage(ds.voltage100.voltage);
+        }
+
+        if (ds.analogInput100 != null) {
+            status.extAnalogInput = new ShellyExtAnalogInput(ds.analogInput100.percent);
+        }
+    }
+
+    private @Nullable ShellyShortTemp updateExtTempSensor(@Nullable Shelly2DeviceStatusTempId value) {
+        if (value != null) {
+            ShellyShortTemp temp = new ShellyShortTemp();
+            temp.hwID = value.id.toString();
+            temp.tC = value.tC;
+            temp.tF = value.tF;
+            return temp;
+        }
+        return null;
     }
 
     protected void updateHumidityStatus(ShellyStatusSensor sdata, @Nullable Shelly2DeviceStatusHumidity value) {

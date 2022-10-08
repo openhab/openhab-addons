@@ -622,6 +622,10 @@ public class Shelly1ApiJsonDTO {
         public ShellyStatusSensor.ShellyExtTemperature extTemperature; // Shelly 1/1PM: sensor values
         @SerializedName("ext_humidity")
         public ShellyStatusSensor.ShellyExtHumidity extHumidity; // Shelly 1/1PM: sensor values
+        @SerializedName("ext_voltage")
+        public ShellyStatusSensor.ShellyExtVoltage extVoltage; // Shelly ´Plus 1/1PM: sensor values
+        @SerializedName("ext_ainput")
+        public ShellyStatusSensor.ShellyExtAnalogInput extAnalogInput; // Shelly ´Plus 1/1PM: sensor values
 
         @SerializedName("temperature_units")
         public String temperatureUnits = "C"; // Either'C'or'F'
@@ -736,6 +740,10 @@ public class Shelly1ApiJsonDTO {
         public ShellyStatusSensor.ShellyExtTemperature extTemperature; // Shelly 1/1PM: sensor values
         @SerializedName("ext_humidity")
         public ShellyStatusSensor.ShellyExtHumidity extHumidity; // Shelly 1/1PM: sensor values
+        @SerializedName("ext_voltage")
+        public ShellyStatusSensor.ShellyExtVoltage extVoltage; // Shelly ´Plus 1/1PM: sensor values
+        @SerializedName("ext_ainput")
+        public ShellyStatusSensor.ShellyExtAnalogInput extAnalogInput; // Shelly ´Plus 1/1PM: sensor values
 
         // Internal device temp
         public ShellySensorTmp tmp = new ShellySensorTmp(); // Shelly 1PM
@@ -984,6 +992,10 @@ public class Shelly1ApiJsonDTO {
             public ShellyShortTemp sensor2;
             @SerializedName("2")
             public ShellyShortTemp sensor3;
+            @SerializedName("3")
+            public ShellyShortTemp sensor4;
+            @SerializedName("4")
+            public ShellyShortTemp sensor5;
         }
 
         public static class ShellyExtHumidity {
@@ -991,10 +1003,50 @@ public class Shelly1ApiJsonDTO {
                 public Double hum; // Humidity reading of sensor 0, percent
             }
 
-            // Shelly 1/1PM have up to 3 sensors
-            // for whatever reasons it's not an array, but 3 independent elements
+            public ShellyExtHumidity() {
+            }
+
+            public ShellyExtHumidity(double hum) {
+                sensor1 = new ShellyShortHum();
+                sensor1.hum = hum;
+            }
+
             @SerializedName("0")
             public ShellyShortHum sensor1;
+        }
+
+        public static class ShellyExtVoltage {
+            public static class ShellyShortVoltage {
+                public Double voltage;
+            }
+
+            public ShellyExtVoltage() {
+            }
+
+            public ShellyExtVoltage(double voltage) {
+                sensor1 = new ShellyShortVoltage();
+                sensor1.voltage = voltage;
+            }
+
+            @SerializedName("0")
+            public ShellyShortVoltage sensor1;
+        }
+
+        public static class ShellyExtAnalogInput {
+            public static class ShellyShortAnalogInput {
+                public Double percent;
+            }
+
+            public ShellyExtAnalogInput() {
+            }
+
+            public ShellyExtAnalogInput(double percent) {
+                sensor1 = new ShellyShortAnalogInput();
+                sensor1.percent = percent;
+            }
+
+            @SerializedName("0")
+            public ShellyShortAnalogInput sensor1;
         }
 
         public static class ShellyADC {

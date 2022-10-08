@@ -15,6 +15,7 @@ package org.openhab.binding.shelly.internal.api1;
 import static org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO.COIOT_PORT;
 
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Set;
@@ -84,8 +85,10 @@ public class Shelly1CoapServer {
             NetworkConfig nc = NetworkConfig.getStandard();
             InetAddress localAddr = InetAddress.getByName(localIp);
             // Join the multicast group on the selected network interface
-            statusConnector = new UdpMulticastConnector.Builder().setLocalAddress(localAddr, port)
-                    .addMulticastGroup(CoAP.MULTICAST_IPV4).build(); // bind UDP listener
+            InetSocketAddress localPort = new InetSocketAddress(port);
+            statusConnector = new UdpMulticastConnector(localAddr, localPort, CoAP.MULTICAST_IPV4);
+            // statusConnector = new UdpMulticastConnector.Builder().setLocalAddress(localAddr, port)
+            // .addMulticastGroup(CoAP.MULTICAST_IPV4).build(); // bind UDP listener
             statusEndpoint = new CoapEndpoint.Builder().setNetworkConfig(nc).setConnector(statusConnector).build();
             server = new CoapServer(NetworkConfig.getStandard(), port);
             server.addEndpoint(statusEndpoint);
