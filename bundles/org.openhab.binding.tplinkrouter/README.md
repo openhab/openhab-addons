@@ -2,19 +2,18 @@
 
 The tplinkrouter Binding allows monitoring and controlling TP-Link routers.
 
-The binding use a telnet connection to communicate with the router.
+The binding uses a telnet connection to communicate with the router.
 
-At the moment only wifi part is supported.
+At the moment only wifi part is supported and `TD-W9970` is the only model tested.
+This binding may work with other TP-Link router provided that they use the same telnet API.
 
 ## Supported Things
 
-This binding provides only the `TD-W9970` Thing since it's the only model tested.
-
-This Thing may work with other TP-Link router provided that they use the same telnet API.
+This binding provides only the `router` Thing.
 
 ## Thing Configuration
 
-### `TD-W9970` Thing Configuration
+### `router` Thing Configuration
 
 | Name            | Type    | Description                                   | Default | Required | Advanced |
 |-----------------|---------|-----------------------------------------------|---------|----------|----------|
