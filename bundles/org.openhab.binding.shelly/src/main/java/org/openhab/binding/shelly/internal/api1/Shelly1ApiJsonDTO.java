@@ -622,10 +622,9 @@ public class Shelly1ApiJsonDTO {
         public ShellyStatusSensor.ShellyExtTemperature extTemperature; // Shelly 1/1PM: sensor values
         @SerializedName("ext_humidity")
         public ShellyStatusSensor.ShellyExtHumidity extHumidity; // Shelly 1/1PM: sensor values
-        @SerializedName("ext_voltage")
         public ShellyStatusSensor.ShellyExtVoltage extVoltage; // Shelly ´Plus 1/1PM: sensor values
-        @SerializedName("ext_ainput")
         public ShellyStatusSensor.ShellyExtAnalogInput extAnalogInput; // Shelly ´Plus 1/1PM: sensor values
+        public ShellyStatusSensor.ShellyExtDigitalInput extDigitalInput; // Shelly ´Plus 1/1PM: state of digital input
 
         @SerializedName("temperature_units")
         public String temperatureUnits = "C"; // Either'C'or'F'
@@ -740,10 +739,9 @@ public class Shelly1ApiJsonDTO {
         public ShellyStatusSensor.ShellyExtTemperature extTemperature; // Shelly 1/1PM: sensor values
         @SerializedName("ext_humidity")
         public ShellyStatusSensor.ShellyExtHumidity extHumidity; // Shelly 1/1PM: sensor values
-        @SerializedName("ext_voltage")
         public ShellyStatusSensor.ShellyExtVoltage extVoltage; // Shelly ´Plus 1/1PM: sensor values
-        @SerializedName("ext_ainput")
         public ShellyStatusSensor.ShellyExtAnalogInput extAnalogInput; // Shelly ´Plus 1/1PM: sensor values
+        public ShellyStatusSensor.ShellyExtDigitalInput extDigitalInput; // Shelly ´Plus 1/1PM: sensor values
 
         // Internal device temp
         public ShellySensorTmp tmp = new ShellySensorTmp(); // Shelly 1PM
@@ -1030,6 +1028,23 @@ public class Shelly1ApiJsonDTO {
 
             @SerializedName("0")
             public ShellyShortVoltage sensor1;
+        }
+
+        public static class ShellyExtDigitalInput {
+            public static class ShellyShortDigitalInput {
+                public Boolean state;
+            }
+
+            public ShellyExtDigitalInput() {
+            }
+
+            public ShellyExtDigitalInput(boolean state) {
+                sensor1 = new ShellyShortDigitalInput();
+                sensor1.state = state;
+            }
+
+            @SerializedName("0")
+            public ShellyShortDigitalInput sensor1;
         }
 
         public static class ShellyExtAnalogInput {

@@ -138,8 +138,16 @@ public class ShellyComponents {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_ESENSOR_HUMIDITY,
                         toQuantityType(getDouble(status.extHumidity.sensor1.hum), DIGITS_PERCENT, Units.PERCENT));
             }
+            if ((status.extVoltage != null) && (status.extVoltage.sensor1 != null)) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_ESENSOR_VOLTAGE,
+                        toQuantityType(getDouble(status.extVoltage.sensor1.voltage), 4, Units.VOLT));
+            }
+            if ((status.extDigitalInput != null) && (status.extDigitalInput.sensor1 != null)) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_ESENSOR_DIGITALINPUT,
+                        getOnOff(status.extDigitalInput.sensor1.state));
+            }
             if ((status.extAnalogInput != null) && (status.extAnalogInput.sensor1 != null)) {
-                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_ESENSOR_AINPUT, toQuantityType(
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_ESENSOR_ANALOGINPUT, toQuantityType(
                         getDouble(status.extAnalogInput.sensor1.percent), DIGITS_PERCENT, Units.PERCENT));
             }
 

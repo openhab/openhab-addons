@@ -695,7 +695,7 @@ This information applies to the Shelly Duo-1 as well as the Duo White for the G1
 |          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (resets on restart)|
 |          |lastUpdate   |DateTime |yes      |Timestamp of the last measurement                                      |
  
-#### Shelly Vintage (thing-type: shellyvintage)
+### Shelly Vintage (thing-type: shellyvintage)
 
 |Group     |Channel      |Type     |read-only|Description                                                            |
 |----------|-------------|---------|---------|-----------------------------------------------------------------------|
@@ -996,12 +996,20 @@ You should calibrate the valve using the device Web UI or Shelly App before star
 |          |autoOff      |Number   |r/w      |Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds|
 |          |timerActive  |Switch   |yes      |Relay #1: ON: An auto-on/off timer is active                                     |
 |          |button       |Trigger  |yes      |Event trigger, see section Button Events                                         |
-|sensors   |temperature1 |Number   |yes      |Temperature value of external sensor #1 (if connected to temp/hum addon)         |
-|          |temperature2 |Number   |yes      |Temperature value of external sensor #2 (if connected to temp/hum addon)         |
-|          |temperature3 |Number   |yes      |Temperature value of external sensor #3 (if connected to temp/hum addon)         |
-|          |temperature4 |Number   |yes      |Temperature value of external sensor #4 (if connected to temp/hum addon)         |
-|          |temperature5 |Number   |yes      |Temperature value of external sensor #5 (if connected to temp/hum addon)         |
-|          |humidity     |Number   |yes      |Humidity in percent (if connected to temp/hum addon)                             |
+
+If the Shelly Add-On is installed:
+
+|Group     |Channel      |Type     |read-only|Description                                                                      |
+|----------|-------------|---------|---------|---------------------------------------------------------------------------------|
+|sensors   |temperature1 |Number   |yes      |Temperature value of external sensor #1                                          |
+|          |temperature2 |Number   |yes      |Temperature value of external sensor #2                                          |
+|          |temperature3 |Number   |yes      |Temperature value of external sensor #3                                          |
+|          |temperature4 |Number   |yes      |Temperature value of external sensor #4                                          |
+|          |temperature5 |Number   |yes      |Temperature value of external sensor #5                                          |
+|          |humidity     |Number   |yes      |Relative Humidity in percent                                                     |
+|          |voltage      |Number   |yes      |Measured voltage                                                                 |
+|          |analogInput  |Number   |yes      |Percentage of reference voltage (VREF) at analogous input                        |
+|          |digitalInput |Switch   |yes      |State of digital input (ON/OFF)                                                  |
 
 ### Shelly Plus 1PM (thing-type: shellyplus1pm)
 
@@ -1018,12 +1026,20 @@ You should calibrate the valve using the device Web UI or Shelly App before star
 |          |lastPower1   |Number   |yes      |Energy consumption for a round minute, 1 minute  ago                             |
 |          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (resets on restart)|
 |          |lastUpdate   |DateTime |yes      |Timestamp of the last measurement                                                |
-|sensors   |temperature1 |Number   |yes      |Temperature value of external sensor #1 (if connected to temp/hum addon)         |
-|          |temperature2 |Number   |yes      |Temperature value of external sensor #2 (if connected to temp/hum addon)         |
-|          |temperature3 |Number   |yes      |Temperature value of external sensor #3 (if connected to temp/hum addon)         |
-|          |temperature4 |Number   |yes      |Temperature value of external sensor #4 (if connected to temp/hum addon)         |
-|          |temperature5 |Number   |yes      |Temperature value of external sensor #5 (if connected to temp/hum addon)         |
-|          |humidity     |Number   |yes      |Humidity in percent (if connected to temp/hum addon)                             |
+
+If the Shelly Add-On is installed:
+
+|Group     |Channel      |Type     |read-only|Description                                                                      |
+|----------|-------------|---------|---------|---------------------------------------------------------------------------------|
+|sensors   |temperature1 |Number   |yes      |Temperature value of external sensor #1                                          |
+|          |temperature2 |Number   |yes      |Temperature value of external sensor #2                                          |
+|          |temperature3 |Number   |yes      |Temperature value of external sensor #3                                          |
+|          |temperature4 |Number   |yes      |Temperature value of external sensor #4                                          |
+|          |temperature5 |Number   |yes      |Temperature value of external sensor #5                                          |
+|          |humidity     |Number   |yes      |Relative Humidity in percent                                                     |
+|          |voltage      |Number   |yes      |Measured voltage                                                                 |
+|          |analogInput  |Number   |yes      |Percentage of reference voltage (VREF) at analogous input                        |
+|          |digitalInput |Switch   |yes      |State of digital input (ON/OFF)                                                  |
 
 ### Shelly Plus 2PM - relay mode (thing-type: shellyplus2pm-relay)
 

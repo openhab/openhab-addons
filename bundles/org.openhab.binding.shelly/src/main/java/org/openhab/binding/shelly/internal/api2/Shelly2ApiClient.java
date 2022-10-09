@@ -42,6 +42,7 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyShortSta
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusRelay;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtAnalogInput;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtDigitalInput;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtHumidity;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtTemperature;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtTemperature.ShellyShortTemp;
@@ -392,7 +393,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             return;
         }
 
-        if (ds.temperature101 != null) {
+        if (ds.temperature100 != null) {
             if (status.extTemperature == null) {
                 status.extTemperature = new ShellyExtTemperature();
             }
@@ -402,17 +403,17 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             status.extTemperature.sensor4 = updateExtTempSensor(ds.temperature103);
             status.extTemperature.sensor5 = updateExtTempSensor(ds.temperature104);
         }
-
         if (ds.humidity100 != null) {
             status.extHumidity = new ShellyExtHumidity(ds.humidity100.rh);
         }
-
-        if (ds.voltage100 != null) {
-            status.extVoltage = new ShellyExtVoltage(ds.voltage100.voltage);
+        if (ds.voltmeter100 != null) {
+            status.extVoltage = new ShellyExtVoltage(ds.voltmeter100.voltage);
         }
-
+        if (ds.input100 != null) {
+            status.extDigitalInput = new ShellyExtDigitalInput(getBool(ds.input100.state));
+        }
         if (ds.analogInput100 != null) {
-            status.extAnalogInput = new ShellyExtAnalogInput(ds.analogInput100.percent);
+            status.extAnalogInput = new ShellyExtAnalogInput(getDouble(ds.analogInput100.percent));
         }
     }
 

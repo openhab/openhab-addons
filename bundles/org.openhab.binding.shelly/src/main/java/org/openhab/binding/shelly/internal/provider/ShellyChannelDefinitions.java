@@ -236,7 +236,10 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_ESENDOR_TEMP3, "sensorExtTemp", ITEMT_TEMP))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_ESENSOR_HUMIDITY, "sensorExtHum", ITEMT_PERCENT))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_ESENSOR_VOLTAGE, "sensorExtVolt", ITEMT_VOLT))
-                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_ESENSOR_AINPUT, "sensorExtAInput", ITEMT_PERCENT))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_ESENSOR_DIGITALINPUT, "sensorExtDigitalInput",
+                        ITEMT_SWITCH))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_ESENSOR_ANALOGINPUT, "sensorExtAnalogInput",
+                        ITEMT_PERCENT))
 
                 // Battery
                 .add(new ShellyChannel(m, CHGR_BAT, CHANNEL_SENSOR_BAT_LEVEL, "system:battery-level", ITEMT_PERCENT))
@@ -347,7 +350,8 @@ public class ShellyChannelDefinitions {
         }
         addChannel(thing, add, profile.status.extHumidity != null, CHGR_SENSOR, CHANNEL_ESENSOR_HUMIDITY);
         addChannel(thing, add, profile.status.extVoltage != null, CHGR_SENSOR, CHANNEL_ESENSOR_VOLTAGE);
-        addChannel(thing, add, profile.status.extAnalogInput != null, CHGR_SENSOR, CHANNEL_ESENSOR_AINPUT);
+        addChannel(thing, add, profile.status.extDigitalInput != null, CHGR_SENSOR, CHANNEL_ESENSOR_DIGITALINPUT);
+        addChannel(thing, add, profile.status.extAnalogInput != null, CHGR_SENSOR, CHANNEL_ESENSOR_ANALOGINPUT);
 
         return add;
     }

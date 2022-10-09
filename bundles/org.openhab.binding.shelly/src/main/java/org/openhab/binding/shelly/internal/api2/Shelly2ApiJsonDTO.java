@@ -500,6 +500,8 @@ public class Shelly2ApiJsonDTO {
             public Shelly2InputStatus input2;
             @SerializedName("input:3")
             public Shelly2InputStatus input3;
+            @SerializedName("input:100")
+            public Shelly2InputStatus input100; // Digital Input from Add-On
 
             @SerializedName("switch:0")
             public Shelly2RelayStatus switch0;
@@ -531,8 +533,8 @@ public class Shelly2ApiJsonDTO {
             @SerializedName("humidity:100")
             public Shelly2DeviceStatusHumidity humidity100;
 
-            @SerializedName("voltage:100")
-            public Shelly2DeviceStatusVoltage voltage100;
+            @SerializedName("voltmeter:100")
+            public Shelly2DeviceStatusVoltage voltmeter100;
 
             @SerializedName("analoginput:100")
             public Shelly2DeviceStatusAnalogInput analogInput100;

@@ -590,6 +590,10 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 profile.hasBattery ? " (low battery threshold=" + config.lowBattery + "%)" : "", profile.isSense,
                 profile.isMotion, profile.isLight, profile.isBulb, profile.isDuo, profile.isRGBW2, profile.inColor,
                 profile.alwaysOn, profile.updatePeriod);
+        if (profile.status.extTemperature != null || profile.status.extHumidity != null
+                || profile.status.extVoltage != null || profile.status.extAnalogInput != null) {
+            logger.debug("{}: Shelly Add-On detected with at least 1 external sensor", thingName);
+        }
     }
 
     private void addStateOptions(ShellyDeviceProfile prf) {
