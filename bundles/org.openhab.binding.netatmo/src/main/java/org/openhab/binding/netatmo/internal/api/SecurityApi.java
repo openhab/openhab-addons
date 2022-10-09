@@ -81,18 +81,18 @@ public class SecurityApi extends RestManager {
         throw new NetatmoException("home should not be null");
     }
 
-    public List<HomeEvent> getHomeEvents(String homeId, @Nullable ZonedDateTime oldestKnown) throws NetatmoException {
+    public List<HomeEvent> getHomeEvents(String homeId, @Nullable ZonedDateTime freshestEventTime) throws NetatmoException {
         List<HomeEvent> events = getEvents(PARAM_HOME_ID, homeId);
 
         // we have to rewind to the latest event just after oldestKnown
         HomeEvent oldestRetrieved = events.get(events.size() - 1);
-        while (oldestKnown != null && oldestRetrieved.getTime().isAfter(oldestKnown)) {
+        while (freshestEventTime != null && oldestRetrieved.getTime().isAfter(freshestEventTime)) {
             events.addAll(getEvents(PARAM_HOME_ID, homeId, PARAM_EVENT_ID, oldestRetrieved.getId()));
             oldestRetrieved = events.get(events.size() - 1);
         }
 
         // Remove unneeded events being before oldestKnown
-        return events.stream().filter(event -> oldestKnown == null || event.getTime().isAfter(oldestKnown))
+        return events.stream().filter(event -> freshestEventTime == null || event.getTime().isAfter(freshestEventTime))
                 .sorted(Comparator.comparing(HomeEvent::getTime).reversed()).collect(Collectors.toList());
     }
 

@@ -48,7 +48,7 @@ class SecurityCapability extends RestCapability<SecurityApi> {
     private final Logger logger = LoggerFactory.getLogger(SecurityCapability.class);
 
     private static final Map<String, HomeEvent> eventBuffer = new HashMap<>();
-    private @Nullable ZonedDateTime oldestKnown;
+    private @Nullable ZonedDateTime freshestEventTime;
 
     SecurityCapability(CommonInterface handler) {
         super(handler, SecurityApi.class);
@@ -57,7 +57,7 @@ class SecurityCapability extends RestCapability<SecurityApi> {
     @Override
     public void initialize() {
         super.initialize();
-        oldestKnown = null;
+        freshestEventTime = null;
     }
 
     @Override
@@ -128,7 +128,7 @@ class SecurityCapability extends RestCapability<SecurityApi> {
     protected List<NAObject> updateReadings(SecurityApi api) {
         List<NAObject> result = new ArrayList<>();
         try {
-            for (HomeEvent event : api.getHomeEvents(handler.getId(), oldestKnown)) {
+            for (HomeEvent event : api.getHomeEvents(handler.getId(), freshestEventTime)) {
                 HomeEvent previousEvent = eventBuffer.get(event.getCameraId());
                 if (previousEvent == null || previousEvent.getTime().isBefore(event.getTime())) {
                     eventBuffer.put(event.getCameraId(), event);
@@ -140,8 +140,8 @@ class SecurityCapability extends RestCapability<SecurityApi> {
                         eventBuffer.put(personId, event);
                     }
                 }
-                if (oldestKnown == null || event.getTime().isBefore(oldestKnown)) {
-                    oldestKnown = event.getTime();
+                if (freshestEventTime == null || event.getTime().isAfter(freshestEventTime)) {
+                    freshestEventTime = event.getTime();
                 }
             }
         } catch (NetatmoException e) {
