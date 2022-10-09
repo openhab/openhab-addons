@@ -10,21 +10,21 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.boschshc.internal.devices.lightcontrol;
+package org.openhab.binding.boschshc.internal.devices.plug;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.boschshc.internal.devices.AbstractPowerSwitchHandler;
 import org.openhab.core.thing.Thing;
 
 /**
- * A simple light control.
+ * A handler for compact smart plugs.
  *
- * @author Stefan Kästle - Initial contribution
+ * @author David Pace - Initial contribution
  */
 @NonNullByDefault
-public class LightControlHandler extends AbstractPowerSwitchHandler {
+public class PlugHandler extends AbstractPowerSwitchHandler {
 
-    public LightControlHandler(Thing thing) {
+    public PlugHandler(Thing thing) {
         super(thing);
     }
 }
