@@ -297,6 +297,9 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
                 if (known != null) {
                     // We had previously known component with different config hash
                     // We remove all conflicting old channels, they will be re-added below based on the new discovery
+                    logger.debug(
+                            "Received component {} with slightly different config. Making sure we re-create conflicting channels...",
+                            discovered.getGroupUID());
                     removeJustRediscoveredChannels(discoveredChannels);
                 }
 
@@ -323,7 +326,7 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
         }
     }
 
-    private synchronized void updateThingChannels(List<Channel> channelList) {
+    private void updateThingChannels(List<Channel> channelList) {
         ThingBuilder thingBuilder = editThing();
         thingBuilder.withChannels(channelList);
         updateThing(thingBuilder.build());
