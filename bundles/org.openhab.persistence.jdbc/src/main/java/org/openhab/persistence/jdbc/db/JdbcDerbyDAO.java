@@ -14,6 +14,7 @@ package org.openhab.persistence.jdbc.db;
 
 import java.time.ZoneId;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.measure.Quantity;
@@ -114,7 +115,8 @@ public class JdbcDerbyDAO extends JdbcBaseDAO {
         String sql = StringUtilsExt.replaceArrayMerge(sqlIfTableExists, new String[] { "#searchTable#" },
                 new String[] { vo.getItemsManageTable().toUpperCase() });
         logger.debug("JDBC::doIfTableExists sql={}", sql);
-        return Yank.queryScalar(sql, String.class, null) != null;
+        final @Nullable String result = Yank.queryScalar(sql, String.class, null);
+        return Objects.nonNull(result);
     }
 
     @Override

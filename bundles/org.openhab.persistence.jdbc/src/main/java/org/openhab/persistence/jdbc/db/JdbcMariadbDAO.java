@@ -12,6 +12,8 @@
  */
 package org.openhab.persistence.jdbc.db;
 
+import java.util.Objects;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.knowm.yank.Yank;
@@ -95,7 +97,7 @@ public class JdbcMariadbDAO extends JdbcBaseDAO {
     @Override
     public @Nullable Integer doPingDB() {
         final @Nullable Long result = Yank.queryScalar(sqlPingDB, Long.class, null);
-        return result != null ? result.intValue() : null;
+        return Objects.nonNull(result) ? result.intValue() : null;
     }
 
     /*************
