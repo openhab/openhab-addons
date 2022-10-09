@@ -32,13 +32,16 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class JdbcMysqlDAO extends JdbcBaseDAO {
+    private static final String DRIVER_CLASS_NAME = com.mysql.jdbc.Driver.class.getName();
+    @SuppressWarnings("unused")
+    private static final String DATA_SOURCE_CLASS_NAME = com.mysql.cj.jdbc.MysqlDataSource.class.getName();
+
     private final Logger logger = LoggerFactory.getLogger(JdbcMysqlDAO.class);
 
     /********
      * INIT *
      ********/
     public JdbcMysqlDAO() {
-        super();
         initSqlTypes();
         initDbProps();
         initSqlQueries();
@@ -69,9 +72,9 @@ public class JdbcMysqlDAO extends JdbcBaseDAO {
 
         // Properties for HikariCP
         // Use driverClassName
-        databaseProps.setProperty("driverClassName", "com.mysql.jdbc.Driver");
+        databaseProps.setProperty("driverClassName", DRIVER_CLASS_NAME);
         // OR dataSourceClassName
-        // databaseProps.setProperty("dataSourceClassName", "com.mysql.jdbc.jdbc2.optional.MysqlDataSource");
+        // databaseProps.setProperty("dataSourceClassName", DATA_SOURCE_CLASS_NAME);
         databaseProps.setProperty("maximumPoolSize", "3");
         databaseProps.setProperty("minimumIdle", "2");
     }
@@ -94,7 +97,7 @@ public class JdbcMysqlDAO extends JdbcBaseDAO {
      **************/
     @Override
     public @Nullable Integer doPingDB() {
-        final @Nullable Long result = Yank.queryScalar(sqlPingDB, (Class<@Nullable Long>) Long.class, null);
+        final @Nullable Long result = Yank.queryScalar(sqlPingDB, Long.class, null);
         return result != null ? result.intValue() : null;
     }
 

@@ -44,13 +44,16 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class JdbcDerbyDAO extends JdbcBaseDAO {
+    private static final String DRIVER_CLASS_NAME = org.apache.derby.jdbc.EmbeddedDriver.class.getName();
+    @SuppressWarnings("unused")
+    private static final String DATA_SOURCE_CLASS_NAME = org.apache.derby.jdbc.EmbeddedDataSource.class.getName();
+
     private final Logger logger = LoggerFactory.getLogger(JdbcDerbyDAO.class);
 
     /********
      * INIT *
      ********/
     public JdbcDerbyDAO() {
-        super();
         initSqlTypes();
         initDbProps();
         initSqlQueries();
@@ -84,9 +87,9 @@ public class JdbcDerbyDAO extends JdbcBaseDAO {
     private void initDbProps() {
         // Properties for HikariCP
         // Use driverClassName
-        databaseProps.setProperty("driverClassName", "org.apache.derby.jdbc.EmbeddedDriver");
+        databaseProps.setProperty("driverClassName", DRIVER_CLASS_NAME);
         // OR dataSourceClassName
-        // databaseProps.setProperty("dataSourceClassName", "org.apache.derby.jdbc.EmbeddedDataSource");
+        // databaseProps.setProperty("dataSourceClassName", DATA_SOURCE_CLASS_NAME);
         databaseProps.setProperty("maximumPoolSize", "1");
         databaseProps.setProperty("minimumIdle", "1");
     }
@@ -103,7 +106,7 @@ public class JdbcDerbyDAO extends JdbcBaseDAO {
      **************/
     @Override
     public @Nullable Integer doPingDB() {
-        return Yank.queryScalar(sqlPingDB, (Class<@Nullable Integer>) Integer.class, null);
+        return Yank.queryScalar(sqlPingDB, Integer.class, null);
     }
 
     @Override
@@ -111,7 +114,7 @@ public class JdbcDerbyDAO extends JdbcBaseDAO {
         String sql = StringUtilsExt.replaceArrayMerge(sqlIfTableExists, new String[] { "#searchTable#" },
                 new String[] { vo.getItemsManageTable().toUpperCase() });
         logger.debug("JDBC::doIfTableExists sql={}", sql);
-        return Yank.queryScalar(sql, (Class<@Nullable String>) String.class, null) != null;
+        return Yank.queryScalar(sql, String.class, null) != null;
     }
 
     @Override
@@ -158,7 +161,7 @@ public class JdbcDerbyDAO extends JdbcBaseDAO {
                 new String[] { "#tableName#", "#dbType#", "#tablePrimaryValue#" },
                 new String[] { storedVO.getTableName().toUpperCase(), storedVO.getDbType(),
                         sqlTypes.get("tablePrimaryValue") });
-        Object[] params = new Object[] { storedVO.getValue() };
+        Object[] params = { storedVO.getValue() };
         logger.debug("JDBC::doStoreItemValue sql={} value='{}'", sql, storedVO.getValue());
         Yank.execute(sql, params);
     }

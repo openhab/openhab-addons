@@ -32,13 +32,16 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class JdbcHsqldbDAO extends JdbcBaseDAO {
+    private static final String DRIVER_CLASS_NAME = org.hsqldb.jdbcDriver.class.getName();
+    @SuppressWarnings("unused")
+    private static final String DATA_SOURCE_CLASS_NAME = org.hsqldb.jdbc.JDBCDataSource.class.getName();
+
     private final Logger logger = LoggerFactory.getLogger(JdbcHsqldbDAO.class);
 
     /********
      * INIT *
      ********/
     public JdbcHsqldbDAO() {
-        super();
         initSqlQueries();
         initSqlTypes();
         initDbProps();
@@ -71,7 +74,9 @@ public class JdbcHsqldbDAO extends JdbcBaseDAO {
      */
     private void initDbProps() {
         // Properties for HikariCP
-        databaseProps.setProperty("driverClassName", "org.hsqldb.jdbcDriver");
+        databaseProps.setProperty("driverClassName", DRIVER_CLASS_NAME);
+        // driverClassName OR BETTER USE dataSourceClassName
+        // databaseProps.setProperty("dataSourceClassName", DATA_SOURCE_CLASS_NAME);
     }
 
     /**************
@@ -79,7 +84,7 @@ public class JdbcHsqldbDAO extends JdbcBaseDAO {
      **************/
     @Override
     public @Nullable Integer doPingDB() {
-        return Yank.queryScalar(sqlPingDB, (Class<@Nullable Integer>) Integer.class, null);
+        return Yank.queryScalar(sqlPingDB, Integer.class, null);
     }
 
     @Override
@@ -111,7 +116,7 @@ public class JdbcHsqldbDAO extends JdbcBaseDAO {
                 new String[] { "#tableName#", "#dbType#", "#tableName#", "#tablePrimaryValue#" },
                 new String[] { storedVO.getTableName(), storedVO.getDbType(), storedVO.getTableName(),
                         sqlTypes.get("tablePrimaryValue") });
-        Object[] params = new Object[] { storedVO.getValue() };
+        Object[] params = { storedVO.getValue() };
         logger.debug("JDBC::doStoreItemValue sql={} value='{}'", sql, storedVO.getValue());
         Yank.execute(sql, params);
     }

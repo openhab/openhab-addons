@@ -28,13 +28,16 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class JdbcMariadbDAO extends JdbcBaseDAO {
+    private static final String DRIVER_CLASS_NAME = org.mariadb.jdbc.Driver.class.getName();
+    @SuppressWarnings("unused")
+    private static final String DATA_SOURCE_CLASS_NAME = org.mariadb.jdbc.MariaDbDataSource.class.getName();
+
     private final Logger logger = LoggerFactory.getLogger(JdbcMariadbDAO.class);
 
     /********
      * INIT *
      ********/
     public JdbcMariadbDAO() {
-        super();
         initSqlTypes();
         initDbProps();
         initSqlQueries();
@@ -66,9 +69,9 @@ public class JdbcMariadbDAO extends JdbcBaseDAO {
 
         // Properties for HikariCP
         // Use driverClassName
-        databaseProps.setProperty("driverClassName", "org.mariadb.jdbc.Driver");
+        databaseProps.setProperty("driverClassName", DRIVER_CLASS_NAME);
         // driverClassName OR BETTER USE dataSourceClassName
-        // databaseProps.setProperty("dataSourceClassName", "org.mariadb.jdbc.MySQLDataSource");
+        // databaseProps.setProperty("dataSourceClassName", DATA_SOURCE_CLASS_NAME);
         databaseProps.setProperty("maximumPoolSize", "3");
         databaseProps.setProperty("minimumIdle", "2");
     }
@@ -91,7 +94,7 @@ public class JdbcMariadbDAO extends JdbcBaseDAO {
      **************/
     @Override
     public @Nullable Integer doPingDB() {
-        final @Nullable Long result = Yank.queryScalar(sqlPingDB, (Class<@Nullable Long>) Long.class, null);
+        final @Nullable Long result = Yank.queryScalar(sqlPingDB, Long.class, null);
         return result != null ? result.intValue() : null;
     }
 
