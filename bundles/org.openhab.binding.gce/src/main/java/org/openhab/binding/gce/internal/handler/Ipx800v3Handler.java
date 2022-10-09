@@ -101,7 +101,8 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
         @Override
         public void run() {
             PortData currentData = portDatas.get(port);
-            if (currentData != null && currentData.getValue() == 1 && currentData.getTimestamp() == referenceTime) {
+            if (currentData != null && currentData.getValue() == 1
+                    && referenceTime.equals(currentData.getTimestamp())) {
                 triggerChannel(eventChannelId, EVENT_LONG_PRESS);
             }
         }
@@ -114,7 +115,6 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
 
     @Override
     public void initialize() {
-
         configuration = getConfigAs(Ipx800Configuration.class);
 
         logger.debug("Initializing IPX800 handler for uid '{}'", getThing().getUID());
@@ -160,7 +160,7 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
                 statusFile.getElement(StatusEntry.CONFIG_MAC)));
 
         List<Channel> channels = new ArrayList<>(getThing().getChannels());
-        if (channels.size() == 0) {
+        if (channels.isEmpty()) {
             ThingBuilder thingBuilder = editThing();
             PortDefinition.asStream().forEach(portDefinition -> {
                 int nbElements = statusFile.getMaxNumberofNodeType(portDefinition);
