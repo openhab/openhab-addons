@@ -42,7 +42,7 @@ public class Ipx800DeviceConnector extends Thread {
     private static final String ENDL = "\r\n";
 
     private final String hostname;
-    public final int portNumber;
+    private final int portNumber;
     private @Nullable M2MMessageParser parser;
 
     private @NonNullByDefault({}) Socket client;
