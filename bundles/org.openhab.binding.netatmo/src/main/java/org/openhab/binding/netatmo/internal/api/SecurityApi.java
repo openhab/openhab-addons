@@ -81,7 +81,8 @@ public class SecurityApi extends RestManager {
         throw new NetatmoException("home should not be null");
     }
 
-    public List<HomeEvent> getHomeEvents(String homeId, @Nullable ZonedDateTime freshestEventTime) throws NetatmoException {
+    public List<HomeEvent> getHomeEvents(String homeId, @Nullable ZonedDateTime freshestEventTime)
+            throws NetatmoException {
         List<HomeEvent> events = getEvents(PARAM_HOME_ID, homeId);
 
         // we have to rewind to the latest event just after oldestKnown
