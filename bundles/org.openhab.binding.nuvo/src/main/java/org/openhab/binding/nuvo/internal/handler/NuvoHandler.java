@@ -573,13 +573,13 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                                     } else {
                                         albumArtMap.put(target.getId(), NO_ART);
                                         albumArtIds.put(target.getId(), 0);
-                                        updateChannelState(target, CHANNEL_ALBUM_ART, BLANK, NO_ART);
+                                        updateChannelState(target, CHANNEL_ALBUM_ART, UNDEF);
                                         return;
                                     }
                                 } catch (InterruptedException | TimeoutException | ExecutionException e) {
                                     albumArtMap.put(target.getId(), NO_ART);
                                     albumArtIds.put(target.getId(), 0);
-                                    updateChannelState(target, CHANNEL_ALBUM_ART, BLANK, NO_ART);
+                                    updateChannelState(target, CHANNEL_ALBUM_ART, UNDEF);
                                     return;
                                 }
                                 albumArtIds.put(target.getId(), Math.abs(url.hashCode()));
@@ -592,7 +592,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                             } else {
                                 albumArtMap.put(target.getId(), NO_ART);
                                 albumArtIds.put(target.getId(), 0);
-                                updateChannelState(target, CHANNEL_ALBUM_ART, BLANK, NO_ART);
+                                updateChannelState(target, CHANNEL_ALBUM_ART, UNDEF);
                             }
                         }
                 }
@@ -1263,7 +1263,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
 
         State state = UnDefType.UNDEF;
 
-        if (UNDEF.equals(value) || (CHANNEL_ALBUM_ART.equals(channelType) && NO_ART == bytes)) {
+        if (UNDEF.equals(value)) {
             updateState(channel, state);
             return;
         }
