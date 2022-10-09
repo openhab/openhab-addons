@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -79,11 +80,12 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
 
     private @NonNullByDefault({}) Ipx800Configuration configuration;
     private @NonNullByDefault({}) Ipx800DeviceConnector connector;
-    private @Nullable M2MMessageParser parser;
     private @NonNullByDefault({}) StatusFileInterpreter statusFile;
-    private @Nullable ScheduledFuture<?> refreshJob;
 
-    private final Map<String, PortData> portDatas = new HashMap<>();
+    private Optional<M2MMessageParser> parser = Optional.empty();
+    private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
+
+    private final Map<String, @Nullable PortData> portDatas = new HashMap<>();
 
     private class LongPressEvaluator implements Runnable {
         private final ZonedDateTime referenceTime;
@@ -97,7 +99,6 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
         }
 
         @Override
-        @SuppressWarnings("PMD.CompareObjectsWithEquals")
         public void run() {
             PortData currentData = portDatas.get(port);
             if (currentData != null && currentData.getValue() == 1 && currentData.getTimestamp() == referenceTime) {
@@ -125,54 +126,51 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
         }
 
         connector = new Ipx800DeviceConnector(configuration.hostname, configuration.portNumber, getThing().getUID());
-        parser = new M2MMessageParser(connector, this);
+        parser = Optional.of(new M2MMessageParser(connector, this));
 
         updateStatus(ThingStatus.UNKNOWN);
 
-        refreshJob = scheduler.scheduleWithFixedDelay(statusFile::read, 3000, configuration.pullInterval,
-                TimeUnit.MILLISECONDS);
+        refreshJob = Optional.of(scheduler.scheduleWithFixedDelay(statusFile::read, 3000, configuration.pullInterval,
+                TimeUnit.MILLISECONDS));
 
         connector.start();
     }
 
     @Override
     public void dispose() {
-        if (refreshJob != null) {
-            refreshJob.cancel(true);
-            refreshJob = null;
-        }
+        refreshJob.ifPresent(job -> job.cancel(true));
+        refreshJob = Optional.empty();
 
         if (connector != null) {
             connector.destroyAndExit();
         }
-        parser = null;
+        parser = Optional.empty();
 
         portDatas.values().stream().forEach(portData -> {
-            portData.destroy();
+            if (portData != null) {
+                portData.dispose();
+            }
         });
         super.dispose();
     }
 
     protected void discoverAttributes() {
-        final Map<String, String> properties = new HashMap<>();
+        updateProperties(Map.of(Thing.PROPERTY_VENDOR, "GCE Electronics", Thing.PROPERTY_FIRMWARE_VERSION,
+                statusFile.getElement(StatusEntry.VERSION), Thing.PROPERTY_MAC_ADDRESS,
+                statusFile.getElement(StatusEntry.CONFIG_MAC)));
 
-        properties.put(Thing.PROPERTY_VENDOR, "GCE Electronics");
-        properties.put(Thing.PROPERTY_FIRMWARE_VERSION, statusFile.getElement(StatusEntry.VERSION));
-        properties.put(Thing.PROPERTY_MAC_ADDRESS, statusFile.getElement(StatusEntry.CONFIG_MAC));
-        updateProperties(properties);
-
-        ThingBuilder thingBuilder = editThing();
         List<Channel> channels = new ArrayList<>(getThing().getChannels());
-
-        PortDefinition.asStream().forEach(portDefinition -> {
-            int nbElements = statusFile.getMaxNumberofNodeType(portDefinition);
-            for (int i = 0; i < nbElements; i++) {
-                createChannels(portDefinition, i, channels);
-            }
-        });
-
-        thingBuilder.withChannels(channels);
-        updateThing(thingBuilder.build());
+        if (channels.size() == 0) {
+            ThingBuilder thingBuilder = editThing();
+            PortDefinition.asStream().forEach(portDefinition -> {
+                int nbElements = statusFile.getMaxNumberofNodeType(portDefinition);
+                for (int i = 0; i < nbElements; i++) {
+                    createChannels(portDefinition, i, channels);
+                }
+            });
+            thingBuilder.withChannels(channels);
+            updateThing(thingBuilder.build());
+        }
     }
 
     private void createChannels(PortDefinition portDefinition, int portIndex, List<Channel> channels) {
@@ -338,9 +336,7 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
                 && PortDefinition.fromGroupId(groupId) == PortDefinition.RELAY) {
             RelayOutputConfiguration config = channel.getConfiguration().as(RelayOutputConfiguration.class);
             String id = channelUID.getIdWithoutGroup();
-            if (parser != null) {
-                parser.setOutput(id, (OnOffType) command == OnOffType.ON ? 1 : 0, config.pulse);
-            }
+            parser.ifPresent(p -> p.setOutput(id, (OnOffType) command == OnOffType.ON ? 1 : 0, config.pulse));
             return;
         }
         logger.debug("Can not handle command '{}' on channel '{}'", command, channelUID);
@@ -368,20 +364,16 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
         super.channelUnlinked(channelUID);
         PortData portData = portDatas.remove(channelUID.getId());
         if (portData != null) {
-            portData.destroy();
+            portData.dispose();
         }
     }
 
     public void resetCounter(int counter) {
-        if (parser != null) {
-            parser.resetCounter(counter);
-        }
+        parser.ifPresent(p -> p.resetCounter(counter));
     }
 
     public void reset() {
-        if (parser != null) {
-            parser.resetPLC();
-        }
+        parser.ifPresent(M2MMessageParser::resetPLC);
     }
 
     @Override
