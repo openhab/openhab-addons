@@ -804,7 +804,7 @@ public class HomekitCharacteristicFactory {
                         VOCDensityCharacteristic.DEFAULT_MIN_VALUE),
                 taggedItem.getConfigurationAsDouble(HomekitTaggedItem.MAX_VALUE,
                         VOCDensityCharacteristic.DEFAULT_MAX_VALUE),
-                1.0,
+                taggedItem.getConfigurationAsDouble(HomekitTaggedItem.STEP, VOCDensityCharacteristic.DEFAULT_STEP),
                 getDoubleSupplier(taggedItem,
                         taggedItem.getConfigurationAsDouble(HomekitTaggedItem.MIN_VALUE,
                                 VOCDensityCharacteristic.DEFAULT_MIN_VALUE)),
