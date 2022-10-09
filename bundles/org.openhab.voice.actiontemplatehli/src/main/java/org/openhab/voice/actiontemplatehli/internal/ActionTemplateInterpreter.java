@@ -19,9 +19,8 @@ import static org.openhab.voice.actiontemplatehli.internal.ActionTemplateInterpr
 import static org.openhab.voice.actiontemplatehli.internal.ActionTemplateInterpreterConstants.ITEM_LABEL_PLACEHOLDER_SYMBOL;
 import static org.openhab.voice.actiontemplatehli.internal.ActionTemplateInterpreterConstants.ITEM_OPTION_PLACEHOLDER;
 import static org.openhab.voice.actiontemplatehli.internal.ActionTemplateInterpreterConstants.ITEM_OPTION_PLACEHOLDER_SYMBOL;
-import static org.openhab.voice.actiontemplatehli.internal.ActionTemplateInterpreterConstants.NER_FOLDER;
+import static org.openhab.voice.actiontemplatehli.internal.ActionTemplateInterpreterConstants.MAPPED_VALUES_FOLDER;
 import static org.openhab.voice.actiontemplatehli.internal.ActionTemplateInterpreterConstants.NLP_FOLDER;
-import static org.openhab.voice.actiontemplatehli.internal.ActionTemplateInterpreterConstants.POS_FOLDER;
 import static org.openhab.voice.actiontemplatehli.internal.ActionTemplateInterpreterConstants.SERVICE_CATEGORY;
 import static org.openhab.voice.actiontemplatehli.internal.ActionTemplateInterpreterConstants.SERVICE_ID;
 import static org.openhab.voice.actiontemplatehli.internal.ActionTemplateInterpreterConstants.SERVICE_NAME;
@@ -29,6 +28,7 @@ import static org.openhab.voice.actiontemplatehli.internal.ActionTemplateInterpr
 import static org.openhab.voice.actiontemplatehli.internal.ActionTemplateInterpreterConstants.STATE_PLACEHOLDER;
 import static org.openhab.voice.actiontemplatehli.internal.ActionTemplateInterpreterConstants.STATE_PLACEHOLDER_SYMBOL;
 import static org.openhab.voice.actiontemplatehli.internal.ActionTemplateInterpreterConstants.TYPE_ACTION_CONFIGS_FOLDER;
+import static org.openhab.voice.actiontemplatehli.internal.ActionTemplateInterpreterConstants.VALUES_FOLDER;
 
 import java.awt.Color;
 import java.io.File;
@@ -38,12 +38,12 @@ import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -67,7 +67,9 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.CommandOption;
 import org.openhab.core.types.State;
+import org.openhab.core.types.StateOption;
 import org.openhab.core.types.TypeParser;
 import org.openhab.core.types.UnDefType;
 import org.openhab.core.voice.text.HumanLanguageInterpreter;
@@ -75,6 +77,9 @@ import org.openhab.core.voice.text.InterpretationException;
 import org.openhab.voice.actiontemplatehli.internal.configuration.ActionTemplateConfiguration;
 import org.openhab.voice.actiontemplatehli.internal.configuration.ActionTemplateGroupTargets;
 import org.openhab.voice.actiontemplatehli.internal.configuration.ActionTemplatePlaceholder;
+import org.openhab.voice.actiontemplatehli.internal.utils.ActionTemplateComparatorResult;
+import org.openhab.voice.actiontemplatehli.internal.utils.ActionTemplateDiceComparator;
+import org.openhab.voice.actiontemplatehli.internal.utils.ActionTemplateTokenComparator;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -84,14 +89,15 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import opennlp.tools.dictionary.Dictionary;
 import opennlp.tools.lemmatizer.DictionaryLemmatizer;
 import opennlp.tools.lemmatizer.Lemmatizer;
 import opennlp.tools.lemmatizer.LemmatizerME;
 import opennlp.tools.lemmatizer.LemmatizerModel;
 import opennlp.tools.namefind.DictionaryNameFinder;
-import opennlp.tools.namefind.NameFinderME;
-import opennlp.tools.namefind.TokenNameFinderModel;
 import opennlp.tools.postag.POSDictionary;
 import opennlp.tools.postag.POSModel;
 import opennlp.tools.postag.POSTaggerME;
@@ -116,8 +122,8 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
     static {
         Logger logger = LoggerFactory.getLogger(ActionTemplateInterpreter.class);
         createFolder(logger, NLP_FOLDER);
-        createFolder(logger, NER_FOLDER);
-        createFolder(logger, POS_FOLDER);
+        createFolder(logger, VALUES_FOLDER);
+        createFolder(logger, MAPPED_VALUES_FOLDER);
         createFolder(logger, TYPE_ACTION_CONFIGS_FOLDER);
     }
     private static final Pattern COLOR_HEX_PATTERN = Pattern.compile("^#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$");
@@ -125,28 +131,12 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
     private final ItemRegistry itemRegistry;
     private final MetadataRegistry metadataRegistry;
     private final EventPublisher eventPublisher;
+    private final ActionTemplateInterpreterChangeListener<Item> registryListener;
+    private final ActionTemplateInterpreterChangeListener<Metadata> metadataListener;
     private ActionTemplateInterpreterConfiguration config = new ActionTemplateInterpreterConfiguration();
     private Tokenizer tokenizer = WhitespaceTokenizer.INSTANCE;
-    private List<String> optionalLanguageTags = List.of();
     @Nullable
     private NLPItemMaps nlpItemMaps;
-
-    private final RegistryChangeListener<Item> registryChangeListener = new RegistryChangeListener<>() {
-        @Override
-        public void added(Item element) {
-            invalidate();
-        }
-
-        @Override
-        public void removed(Item element) {
-            invalidate();
-        }
-
-        @Override
-        public void updated(Item oldElement, Item element) {
-            invalidate();
-        }
-    };
 
     @Activate
     public ActionTemplateInterpreter(@Reference ItemRegistry itemRegistry, @Reference MetadataRegistry metadataRegistry,
@@ -154,7 +144,11 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
         this.itemRegistry = itemRegistry;
         this.metadataRegistry = metadataRegistry;
         this.eventPublisher = eventPublisher;
-        itemRegistry.addRegistryChangeListener(registryChangeListener);
+        registryListener = new ActionTemplateInterpreterChangeListener<>(this);
+        itemRegistry.addRegistryChangeListener(registryListener);
+        metadataListener = new ActionTemplateInterpreterChangeListener<>(this,
+                metadata -> SERVICE_ID.equals(metadata.getUID().getNamespace()));
+        metadataRegistry.addRegistryChangeListener(metadataListener);
     }
 
     @Activate
@@ -165,12 +159,13 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
     @Modified
     protected void modified(Map<String, Object> config) {
         this.config = new Configuration(config).as(ActionTemplateInterpreterConfiguration.class);
-        reloadConfigs();
+        tokenizer = getTokenizer();
     }
 
     @Deactivate
     protected void deactivate() {
-        itemRegistry.removeRegistryChangeListener(registryChangeListener);
+        itemRegistry.removeRegistryChangeListener(registryListener);
+        metadataRegistry.removeRegistryChangeListener(metadataListener);
     }
 
     @Override
@@ -257,11 +252,12 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
     private @Nullable NLPInterpretationResult checkActionConfigs(String text, String[] tokens, String[] tags,
             String[] lemmas) throws IOException {
         // item defined actions have priority over type defined actions
-        var result = checkItemActions(text, tokens, tags, lemmas);
-        if (result != null) {
-            return result;
+        var itemActionResult = checkItemActions(text, tokens, tags, lemmas);
+        var typeActionResult = checkTypeActionsConfigs(text, tokens, tags, lemmas);
+        if (itemActionResult == null || typeActionResult == null) {
+            return itemActionResult != null ? itemActionResult : typeActionResult;
         }
-        return checkTypeActionsConfigs(text, tokens, tags, lemmas);
+        return typeActionResult.score > itemActionResult.score ? typeActionResult : itemActionResult;
     }
 
     private @Nullable NLPInterpretationResult checkItemActions(String text, String[] tokens, String[] tags,
@@ -274,7 +270,7 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
         List<NLPPlaceholderData> placeholderValues = null;
         // store span of dynamic placeholder, to invalidate others
         Span dynamicSpan = null;
-        int matchScore = 0;
+        double matchScore = 0;
         for (var entry : itemsWithActions.entrySet()) {
             var actionConfigs = entry.getValue();
             for (var actionConfig : actionConfigs) {
@@ -311,7 +307,7 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
                 placeholderValues = updatePlaceholderValues(text, tokens, placeholderValues, dynamicSpan);
             }
             return new NLPInterpretationResult(targetItem, targetActionConfig, placeholderValues.stream()
-                    .collect(Collectors.toMap(i -> i.placeholderName, i -> i.placeholderValue)));
+                    .collect(Collectors.toMap(i -> i.placeholderName, i -> i.placeholderValue)), matchScore);
         }
         return null;
     }
@@ -331,7 +327,7 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
         List<NLPPlaceholderData> placeholderValues = null;
         // store span of dynamic placeholder, to invalidate others
         Span dynamicSpan = null;
-        int matchScore = 0;
+        double matchScore = 0;
         // iterate itemLabelSpan to score the templates with each of them
         for (var itemLabelSpan : itemLabelSpans) {
             var labelTokens = getTargetItemTokens(tokens, itemLabelSpan);
@@ -395,7 +391,7 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
             if (dynamicSpan != null) {
                 placeholderValues = updatePlaceholderValues(text, tokens, placeholderValues, dynamicSpan);
             }
-            return NLPInterpretationResult.from(finalTargetItem, targetActionConfig, placeholderValues);
+            return NLPInterpretationResult.from(finalTargetItem, targetActionConfig, placeholderValues, matchScore);
         }
         return null;
     }
@@ -508,7 +504,7 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
                 .findFirst();
         var itemState = state;
         if (statePlaceholder.isPresent()) {
-            state = applyPOSTransformation(state, statePlaceholder.get());
+            state = applyMappedValues(state, statePlaceholder.get(), true);
         }
         var template = actionConfigMatch.value;
         if (!actionConfigMatch.emptyValue.isEmpty() && (state.isEmpty()
@@ -521,7 +517,7 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
             if (templateText.contains(ITEM_OPTION_PLACEHOLDER)) {
                 var itemOptionPlaceholder = getItemOptionPlaceholder(finalTargetItem, true, null);
                 if (itemOptionPlaceholder != null) {
-                    itemState = applyPOSTransformation(itemState, itemOptionPlaceholder);
+                    itemState = applyMappedValues(itemState, itemOptionPlaceholder, true);
                 }
             }
             return templateText.replace(STATE_PLACEHOLDER_SYMBOL, state)
@@ -532,10 +528,10 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
         return state;
     }
 
-    private NLPTokenComparisonResult getScoreWithPlaceholders(String text, Item targetItem,
+    private ActionTemplateComparatorResult getScoreWithPlaceholders(String text, Item targetItem,
             @Nullable ActionTemplateGroupTargets targetMembers, boolean isRead, String[] tokens, String[] tags,
             String[] lemmas, ActionTemplateConfiguration actionConfiguration, String template,
-            List<NLPPlaceholderData> placeholderValues) throws IOException {
+            List<NLPPlaceholderData> placeholderCapturedValues) throws IOException {
         var placeholders = new ArrayList<>(actionConfiguration.placeholders);
         var finalTokens = tokens;
         var finalLemmas = lemmas;
@@ -543,7 +539,7 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
         if (template.contains(ITEM_OPTION_PLACEHOLDER_SYMBOL)) {
             var itemOptionPlaceholder = getItemOptionPlaceholder(targetItem, isRead, targetMembers);
             if (itemOptionPlaceholder == null) {
-                return NLPTokenComparisonResult.ZERO;
+                return ActionTemplateComparatorResult.ZERO;
             }
             placeholders.add(itemOptionPlaceholder);
         }
@@ -556,23 +552,20 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
                 logger.warn("the name {} is reserved for the dynamic placeholder", DYNAMIC_PLACEHOLDER);
                 continue;
             }
-            var nerStaticValues = placeholder.nerStaticValues;
-            var nerFile = placeholder.nerFile;
+            var possibleValues = getValues(placeholder);
             Span[] nerSpans;
             Map<String[], String> possibleValuesByTokensMap = null;
-            if (nerStaticValues != null) {
-                possibleValuesByTokensMap = getStringsByTokensMap(nerStaticValues);
+            if (!possibleValues.isEmpty()) {
+                possibleValuesByTokensMap = getStringsByTokensMap(possibleValues);
                 nerSpans = nerValues(finalTokens, possibleValuesByTokensMap.keySet().toArray(String[][]::new),
                         placeholder.label);
-            } else if (nerFile != null) {
-                nerSpans = nerWithFile(finalTokens, nerFile);
             } else {
-                logger.warn("Placeholder {} could not be applied due to missing ner config", placeholder.label);
+                logger.warn("Placeholder {} could not be applied due to missing values", placeholder.label);
                 continue;
             }
             for (Span nerSpan : nerSpans) {
                 var placeholderName = placeholder.label;
-                finalTokens = replacePlaceholder(text, finalTokens, nerSpan, placeholderName, placeholderValues,
+                finalTokens = replacePlaceholder(text, finalTokens, nerSpan, placeholderName, placeholderCapturedValues,
                         possibleValuesByTokensMap);
                 if (finalLemmas.length > 0) {
                     finalLemmas = replacePlaceholder(text, finalLemmas, nerSpan, placeholderName, null, null);
@@ -585,22 +578,64 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
         return getScore(finalTokens, finalTags, finalLemmas, actionConfiguration, template);
     }
 
-    private NLPTokenComparisonResult getScore(String[] tokens, String[] tags, String[] lemmas,
+    private List<String> getValues(ActionTemplatePlaceholder placeholder) {
+        var allowed = new ArrayList<String>();
+        if (placeholder.valuesFile != null) {
+            try {
+                File optionsFile = Path.of(VALUES_FOLDER, placeholder.valuesFile + ".json").toFile();
+                if (optionsFile.exists()) {
+                    ObjectMapper mapper = new ObjectMapper();
+                    var optionsFromFile = mapper.readValue(optionsFile, String[].class);
+                    allowed.addAll(List.of(optionsFromFile));
+                } else {
+                    logger.warn("Missing file options {}", optionsFile);
+                }
+            } catch (Exception e) {
+                logger.warn("Unable to parse options file: {}", e.getMessage());
+            }
+        }
+        if (placeholder.mappedValuesFile != null) {
+            try {
+                File valuesFile = Path.of(VALUES_FOLDER, placeholder.valuesFile + ".json").toFile();
+                if (valuesFile.exists()) {
+                    ObjectMapper mapper = new ObjectMapper();
+                    TypeReference<HashMap<String, String>> typeRef = new TypeReference<>() {
+                    };
+                    var valuesFromFile = mapper.readValue(valuesFile, typeRef);
+                    allowed.addAll(valuesFromFile.keySet());
+                } else {
+                    logger.warn("Missing file options {}", valuesFile);
+                }
+            } catch (Exception e) {
+                logger.warn("Unable to parse values file: {}", e.getMessage());
+            }
+        }
+        if (placeholder.mappedValues != null) {
+            allowed.addAll(placeholder.mappedValues.keySet());
+        }
+        if (placeholder.values != null) {
+            allowed.addAll(List.of(placeholder.values));
+        }
+        return allowed.stream().distinct().collect(Collectors.toList());
+    }
+
+    private ActionTemplateComparatorResult getScore(String[] tokens, String[] tags, String[] lemmas,
             ActionTemplateConfiguration actionConfiguration, String template) {
         switch (actionConfiguration.type) {
             case "tokens":
                 String[] tokensTemplate = splitString(template, "\\s");
-                var scoreByTokens = compareTokens(tokens, tags, tokensTemplate);
-                logger.debug("tokens '{}' score: {}", List.of(tokensTemplate), scoreByTokens.score);
+                var scoreByTokens = new ActionTemplateTokenComparator(tokens, lemmas, tags).compare(tokensTemplate);
+                logger.debug("tokens '{}' score: {}%", List.of(tokensTemplate), scoreByTokens.score);
                 return scoreByTokens;
-            case "lemmas":
-                String[] lemmasTemplate = splitString(template, "\\s");
-                var scoreByLemmas = compareTokens(lemmas, tags, lemmasTemplate);
-                logger.debug("lemmas '{}' score: {}", List.of(lemmasTemplate), scoreByLemmas.score);
-                return scoreByLemmas;
+            case "dice":
+                String[] diceTemplate = splitString(template, "\\s");
+                var scoreByDice = new ActionTemplateDiceComparator(tokens, lemmas, tags, config.diceComparisonThreshold)
+                        .compare(diceTemplate);
+                logger.debug("lemmas '{}' score: {}%", List.of(diceTemplate), scoreByDice.score);
+                return scoreByDice;
             default:
                 logger.warn("Unsupported template type '{}'", actionConfiguration.type);
-                return NLPTokenComparisonResult.ZERO;
+                return ActionTemplateComparatorResult.ZERO;
         }
     }
 
@@ -691,10 +726,19 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
             if (!targetMembers.isEmpty()) {
                 return targetMembers.stream().map(member -> getItemOptionPlaceholder(member, isRead, null))
                         .reduce(ActionTemplatePlaceholder.withLabel(ITEM_OPTION_PLACEHOLDER), (a, b) -> {
-                            a.nerStaticValues = a.nerStaticValues != null
-                                    ? Stream.concat(Arrays.stream(a.nerStaticValues), Arrays.stream(b.nerStaticValues))
-                                            .distinct().toArray(String[]::new)
-                                    : b.nerStaticValues;
+                            if (a.values != null && b.values != null) {
+                                a.values = a.values != null
+                                        ? Stream.concat(Arrays.stream(a.values), Arrays.stream(b.values)).distinct()
+                                                .toArray(String[]::new)
+                                        : b.values;
+                            } else if (b.mappedValues != null) {
+                                a.values = b.values;
+                            }
+                            if (a.mappedValues != null && b.mappedValues != null) {
+                                a.mappedValues.putAll(Objects.requireNonNull(b.mappedValues));
+                            } else if (b.mappedValues != null) {
+                                a.mappedValues = b.mappedValues;
+                            }
                             return a;
                         });
             }
@@ -703,31 +747,17 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
         var stateDescription = targetItem.getStateDescription();
         var itemOptionPlaceholder = ActionTemplatePlaceholder.withLabel(ITEM_OPTION_PLACEHOLDER);
         if (!isRead && cmdDescription != null) {
-            itemOptionPlaceholder.nerStaticValues = cmdDescription.getCommandOptions().stream()
-                    .map(option -> option.getLabel() != null ? option.getLabel() : option.getCommand())
-                    .filter(Objects::nonNull).toArray(String[]::new);
-            itemOptionPlaceholder.posStaticValues = cmdDescription.getCommandOptions().stream()
+            itemOptionPlaceholder.mappedValues = cmdDescription.getCommandOptions().stream()
                     .collect(Collectors.toMap(
-                            option -> option.getLabel() != null ? option.getLabel().replaceAll(" ", "__")
-                                    : option.getCommand().replaceAll(" ", "__"),
-                            option -> option.getCommand().replaceAll(" ", "__")));
+                            option -> Optional.ofNullable(option.getLabel()).orElseGet(option::getCommand),
+                            CommandOption::getCommand));
             return itemOptionPlaceholder;
         } else if (stateDescription != null) {
-            itemOptionPlaceholder.nerStaticValues = stateDescription.getOptions().stream()
-                    .map(option -> option.getLabel() != null ? option.getLabel() : option.getValue())
-                    .filter(Objects::nonNull).toArray(String[]::new);
-            if (isRead) {
-                itemOptionPlaceholder.posStaticValues = stateDescription.getOptions().stream()
-                        .collect(Collectors.toMap(option -> option.getValue().replaceAll(" ", "__"),
-                                option -> option.getLabel() != null ? option.getLabel().replaceAll(" ", "__")
-                                        : option.getValue().replaceAll(" ", "__")));
-            } else {
-                itemOptionPlaceholder.posStaticValues = stateDescription.getOptions().stream()
-                        .collect(Collectors.toMap(
-                                option -> option.getLabel() != null ? option.getLabel().replaceAll(" ", "__")
-                                        : option.getValue().replaceAll(" ", "__"),
-                                option -> option.getValue().replaceAll(" ", "__")));
-            }
+            itemOptionPlaceholder.mappedValues = stateDescription.getOptions().stream()
+                    .collect(Collectors.toMap(
+                            option -> Optional.ofNullable(option.getLabel()).orElseGet(option::getValue),
+                            StateOption::getValue));
+
             return itemOptionPlaceholder;
         }
         logger.warn(
@@ -769,7 +799,7 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
         for (var placeholder : placeholdersCopy) {
             var placeholderValue = placeholderValues.getOrDefault(placeholder.label, "");
             if (!placeholderValue.isBlank()) {
-                placeholderValue = applyPOSTransformation(placeholderValue, placeholder);
+                placeholderValue = applyMappedValues(placeholderValue, placeholder, false);
             }
             finalText = finalText.replace(getPlaceholderSymbol(placeholder.label), placeholderValue);
         }
@@ -896,35 +926,9 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
         return tokenizer.tokenize(text);
     }
 
-    private Span[] nerWithFile(String[] tokens, String placeholderFileName) throws IOException {
-        File nerModelFile = Path.of(NER_FOLDER, placeholderFileName + ".bin").toFile();
-        File nerDictionaryFile = Path.of(NER_FOLDER, placeholderFileName + ".xml").toFile();
-        if (nerModelFile.exists()) {
-            return nerWithModel(tokens, nerModelFile);
-        } else if (nerDictionaryFile.exists()) {
-            return nerWithDictionary(tokens, nerDictionaryFile, getPlaceholderSymbol(placeholderFileName));
-        } else {
-            logger.debug("No model or dictionary found for '{}'", placeholderFileName);
-            throw new IOException("Unable to find model or dictionary with name: " + placeholderFileName);
-        }
-    }
-
     private Span[] nerItemLabels(String[] tokens) {
         return nerValues(tokens, getItemsByLabelTokensMap().keySet().toArray(String[][]::new), ITEM_LABEL_PLACEHOLDER,
                 false);
-    }
-
-    private Span[] nerWithModel(String[] tokens, File nerModelFile) throws IOException {
-        logger.debug("applying NER with model {}", nerModelFile.getAbsolutePath());
-        TokenNameFinderModel model = new TokenNameFinderModel(nerModelFile);
-        var nameFinder = new NameFinderME(model);
-        return nameFinder.find(tokens);
-    }
-
-    private Span[] nerWithDictionary(String[] tokens, File nerDictFile, String type) throws IOException {
-        logger.debug("applying NER with dictionary {}", nerDictFile);
-        var dictionary = new opennlp.tools.dictionary.Dictionary(new FileInputStream(nerDictFile));
-        return nerWithDictionary(tokens, dictionary, type);
     }
 
     private Span[] nerValues(String[] tokens, String[][] valueTokens, String type) {
@@ -977,7 +981,7 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
         return lemmatizer.lemmatize(tokens, tags);
     }
 
-    private Map<String[], String> getStringsByTokensMap(String[] values) {
+    private Map<String[], String> getStringsByTokensMap(List<String> values) {
         var map = new HashMap<String[], String>();
         for (String value : values) {
             map.put(tokenizeText(value), value);
@@ -985,44 +989,50 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
         return map;
     }
 
-    private String applyPOSTransformation(String text, ActionTemplatePlaceholder placeholderConfig) throws IOException {
-        var singleWorldText = text.replaceAll("\\s", "__");
+    private String applyMappedValues(String text, ActionTemplatePlaceholder placeholder, boolean isRead)
+            throws IOException {
+        var singleWorldText = text;
         String tag = null;
-        if (placeholderConfig.posFile != null) {
-            File posTaggingDictionary = Path.of(POS_FOLDER, placeholderConfig.posFile + ".xml").toFile();
-            File posTaggingModel = Path.of(POS_FOLDER, placeholderConfig.posFile + ".bin").toFile();
-            if (posTaggingModel.exists()) {
-                POSModel posModel = new POSModel(posTaggingModel);
-                var tags = new POSTaggerME(posModel).tag(new String[] { singleWorldText });
-                if (tags.length > 0 && !"O".equals(tags[0])) {
-                    tag = tags[0];
+        var dictionary = new POSDictionary(config.caseSensitive);
+        if (placeholder.mappedValuesFile != null) {
+            try {
+                File mappedValuesFile = Path.of(VALUES_FOLDER, placeholder.mappedValuesFile + ".json").toFile();
+                if (mappedValuesFile.exists()) {
+                    ObjectMapper mapper = new ObjectMapper();
+                    TypeReference<HashMap<String, String>> typeRef = new TypeReference<>() {
+                    };
+                    var mappedValuesFromFile = mapper.readValue(mappedValuesFile, typeRef);
+                    mappedValuesFromFile.forEach((key, value) -> {
+                        if (isRead) {
+                            dictionary.put(value, key);
+                        } else {
+                            dictionary.put(key, value);
+                        }
+                    });
+                } else {
+                    logger.warn("Missing mapped values file {}", mappedValuesFile);
                 }
-            } else if (posTaggingDictionary.exists()) {
-                POSDictionary posDictionary = POSDictionary.create(new FileInputStream(posTaggingDictionary));
-                var tags = posDictionary.getTags(singleWorldText);
-                if (tags != null && tags.length > 0 && !"O".equals(tags[0])) {
-                    tag = tags[0];
+            } catch (Exception e) {
+                logger.warn("Unable to parse options file: {}", e.getMessage());
+            }
+        }
+        if (placeholder.mappedValues != null) {
+            for (var entry : placeholder.mappedValues.entrySet()) {
+                if (isRead) {
+                    dictionary.put(entry.getValue(), entry.getKey());
+                } else {
+                    dictionary.put(entry.getKey(), entry.getValue());
                 }
-            } else {
-                logger.warn("configured pos transformation file not found {}", placeholderConfig.posFile);
             }
-        } else if (placeholderConfig.posStaticValues != null) {
-            var dictionary = new POSDictionary(config.caseSensitive);
-            for (var entry : placeholderConfig.posStaticValues.entrySet()) {
-                dictionary.put(entry.getKey(), entry.getValue());
-            }
-            var tokenTags = dictionary.getTags(singleWorldText);
-            if (tokenTags != null && tokenTags.length > 0) {
-                tag = tokenTags[0];
-            }
-        } else {
-            // no transformation configured
-            return text;
+        }
+        var tokenTags = dictionary.getTags(singleWorldText);
+        if (tokenTags != null && tokenTags.length > 0) {
+            tag = tokenTags[0];
         }
         if (tag == null) {
-            return "";
+            return text;
         }
-        return tag.replaceAll("__", " ");
+        return tag;
     }
 
     private Map<String[], Item> getItemsByLabelTokensMap() {
@@ -1081,86 +1091,6 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
         return itemMaps;
     }
 
-    private NLPTokenComparisonResult compareTokens(String[] tokens, String[] tokenTags, String[] tokensTemplate) {
-        if (tokens.length == 0 || tokensTemplate.length == 0) {
-            return NLPTokenComparisonResult.ZERO;
-        }
-        int score = 0;
-        int processedIndex = 0;
-        // avoid use tags if not available for all tokens
-        var tagsEnabled = tokenTags.length == tokens.length;
-        for (int i = 0; i < tokens.length; i++) {
-            String token = tokens[i];
-            // Tag is used here to allow optional matching by language POS tag
-            String tag = tagsEnabled ? tokenTags[i] : null;
-            if (processedIndex == tokensTemplate.length) {
-                return NLPTokenComparisonResult.ZERO;
-            }
-            String tokenTemplate = tokensTemplate[processedIndex];
-            var tokenAlternatives = splitString(tokenTemplate, "\\|");
-            boolean isMatch = false;
-            for (var tokenAlternative : tokenAlternatives) {
-                if (DYNAMIC_PLACEHOLDER_SYMBOL.equals(tokenAlternative)) {
-                    if (tokenAlternatives.length > 1) {
-                        logger.warn("Providing the dynamic placeholder as an optional token is not allowed");
-                        return NLPTokenComparisonResult.ZERO;
-                    }
-                    if (tokensTemplate.length == 1) {
-                        logger.warn("Providing the dynamic placeholder alone is not allowed");
-                        return NLPTokenComparisonResult.ZERO;
-                    }
-                    if (processedIndex + 1 == tokensTemplate.length) {
-                        // the dynamic placeholder is the last value in the template token array, returning score
-                        // note that the dynamic placeholder does not count for score
-                        return new NLPTokenComparisonResult(score, new Span(i, tokensTemplate.length));
-                    }
-                    // here we cut and reverse the arrays to run score backwards until the dynamic placeholder
-                    var unprocessedTokens = Arrays.copyOfRange(tokens, i, tokens.length);
-                    var unprocessedTags = tagsEnabled ? Arrays.copyOfRange(tokenTags, i, tokenTags.length)
-                            : new String[] {};
-                    var unprocessedTokensTemplate = Arrays.copyOfRange(tokensTemplate, processedIndex,
-                            tokensTemplate.length);
-                    Collections.reverse(Arrays.asList(unprocessedTokens));
-                    Collections.reverse(Arrays.asList(unprocessedTags));
-                    Collections.reverse(Arrays.asList(unprocessedTokensTemplate));
-                    if (DYNAMIC_PLACEHOLDER_SYMBOL.equals(unprocessedTokens[0])) {
-                        // here dynamic placeholder should be at the end, but if it's also at the beginning we should
-                        // abort
-                        logger.warn("Using multiple dynamic placeholders is not supported");
-                        return NLPTokenComparisonResult.ZERO;
-                    }
-                    var partialScoreResult = compareTokens(unprocessedTokens, unprocessedTags,
-                            unprocessedTokensTemplate);
-                    if (NLPTokenComparisonResult.ZERO.equals(partialScoreResult)) {
-                        return NLPTokenComparisonResult.ZERO;
-                    } else {
-                        var dynamicSpan = partialScoreResult.dynamicSpan;
-                        if (dynamicSpan == null) {
-                            logger.error(
-                                    "dynamic span missed, this should never happen, please open an issue; aborting");
-                            return NLPTokenComparisonResult.ZERO;
-                        }
-                        return new NLPTokenComparisonResult(score + partialScoreResult.score,
-                                new Span(i, tokens.length - (dynamicSpan.getStart())));
-                    }
-                }
-                if (tokenAlternative.equals(token)) {
-                    isMatch = true;
-                    break;
-                }
-            }
-            if (isMatch) {
-                processedIndex++;
-                score++;
-            } else if (tag != null && optionalLanguageTags.contains(tag)) {
-                logger.debug("part '{}' tagged as '{}' skipped", token, tag);
-            } else {
-                return NLPTokenComparisonResult.ZERO;
-            }
-        }
-        return new NLPTokenComparisonResult(score, null);
-    }
-
     private String[] splitString(String template, String regex) {
         return Arrays.stream(template.split(regex)).map(String::trim).toArray(String[]::new);
     }
@@ -1168,12 +1098,6 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
     private void invalidate() {
         logger.debug("Invalidate cached item data");
         nlpItemMaps = null;
-    }
-
-    private void reloadConfigs() {
-        optionalLanguageTags = Arrays.stream(this.config.optionalLanguageTags.split(",")).filter(i -> !i.isEmpty())
-                .collect(Collectors.toList());
-        tokenizer = getTokenizer();
     }
 
     private static class NLPInfo {
@@ -1205,18 +1129,20 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
         public final Item targetItem;
         public final ActionTemplateConfiguration actionConfig;
         public final Map<String, String> placeholderValues;
+        private final double score;
 
         public NLPInterpretationResult(Item targetItem, ActionTemplateConfiguration actionConfig,
-                Map<String, String> placeholderValues) {
+                Map<String, String> placeholderValues, double score) {
             this.targetItem = targetItem;
             this.actionConfig = actionConfig;
             this.placeholderValues = placeholderValues;
+            this.score = score;
         }
 
         public static NLPInterpretationResult from(Item item, ActionTemplateConfiguration actionConfig,
-                List<NLPPlaceholderData> placeholderValues) {
+                List<NLPPlaceholderData> placeholderValues, double score) {
             return new NLPInterpretationResult(item, actionConfig, placeholderValues.stream()
-                    .collect(Collectors.toMap(i -> i.placeholderName, i -> i.placeholderValue)));
+                    .collect(Collectors.toMap(i -> i.placeholderName, i -> i.placeholderValue)), score);
         }
     }
 
@@ -1232,17 +1158,6 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
         }
     }
 
-    private static class NLPTokenComparisonResult {
-        public static final NLPTokenComparisonResult ZERO = new NLPTokenComparisonResult(0, null);
-        public final int score;
-        public final @Nullable Span dynamicSpan;
-
-        private NLPTokenComparisonResult(int score, @Nullable Span dynamicSpan) {
-            this.score = score;
-            this.dynamicSpan = dynamicSpan;
-        }
-    }
-
     private static class NLPItemMaps {
         private final Map<String[], Item> itemLabelByTokens;
         private final Map<Item, ActionTemplateConfiguration[]> itemsWithActionConfigs;
@@ -1253,4 +1168,45 @@ public class ActionTemplateInterpreter implements HumanLanguageInterpreter {
             this.itemsWithActionConfigs = itemsWithActionConfigs;
         }
     }
+
+    private static class ActionTemplateInterpreterChangeListener<T> implements RegistryChangeListener<T> {
+
+        private final ActionTemplateInterpreter interpreter;
+        private final @Nullable ActionTemplateInterpreterChangeListenerFilter<T> invalidationFilter;
+
+        public ActionTemplateInterpreterChangeListener(ActionTemplateInterpreter interpreter) {
+            this(interpreter, null);
+        }
+
+        public ActionTemplateInterpreterChangeListener(ActionTemplateInterpreter interpreter,
+                @Nullable ActionTemplateInterpreterChangeListenerFilter<T> invalidationFilter) {
+            this.interpreter = interpreter;
+            this.invalidationFilter = invalidationFilter;
+        }
+
+        @Override
+        public void added(T element) {
+            tryInvalidate(element);
+        }
+
+        @Override
+        public void removed(T element) {
+            tryInvalidate(element);
+        }
+
+        @Override
+        public void updated(T oldElement, T element) {
+            tryInvalidate(element);
+        }
+
+        private void tryInvalidate(T element) {
+            if (invalidationFilter == null || invalidationFilter.filter(element)) {
+                interpreter.invalidate();
+            }
+        }
+
+        public interface ActionTemplateInterpreterChangeListenerFilter<T> {
+            boolean filter(T el);
+        }
+    };
 }

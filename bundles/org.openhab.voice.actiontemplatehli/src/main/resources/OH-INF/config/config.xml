@@ -37,9 +37,9 @@
 			<default>true</default>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="optionalLanguageTags" type="text" groupName="nlp">
-			<label>Optional Language Tags</label>
-			<description>Comma separated POS language tags that will be optional when comparing.</description>
+		<parameter name="diceComparisonThreshold" type="decimal" min="0" max="100" groupName="nlp">
+			<label>Dice Comparison Threshold</label>
+			<description>Minimum score for dice type actions to not be discarded.</description>
 		</parameter>
 		<parameter name="commandSentMessage" type="text" groupName="messages">
 			<label>Command Sent Message</label>

@@ -42,9 +42,9 @@ public class ActionTemplateInterpreterConfiguration {
      */
     public String failureMessage = "There was an error";
     /**
-     * POS tags that will be optional when comparing
+     * Minimum score for dice type actions to not be discarded.
      */
-    public String optionalLanguageTags = "";
+    public double diceComparisonThreshold = 70.0;
     /**
      * Prefer simple tokenizer over white space tokenizer
      */

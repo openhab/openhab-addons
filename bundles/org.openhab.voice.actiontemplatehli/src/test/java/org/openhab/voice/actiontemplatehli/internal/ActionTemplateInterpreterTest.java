@@ -46,6 +46,8 @@ import org.openhab.core.voice.text.InterpretationException;
 import org.openhab.voice.actiontemplatehli.internal.configuration.ActionTemplateConfiguration;
 import org.openhab.voice.actiontemplatehli.internal.configuration.ActionTemplateGroupTargets;
 import org.openhab.voice.actiontemplatehli.internal.configuration.ActionTemplatePlaceholder;
+import org.openhab.voice.actiontemplatehli.internal.utils.ActionTemplateDiceComparator;
+import org.openhab.voice.actiontemplatehli.internal.utils.ActionTemplateTokenComparator;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -77,8 +79,8 @@ public class ActionTemplateInterpreterTest {
         switchNPLWriteAction.value = "$onOff";
         var onOffPlaceholder = new ActionTemplatePlaceholder();
         onOffPlaceholder.label = "onOff";
-        onOffPlaceholder.nerStaticValues = new String[] { "turn on", "turn off" };
-        onOffPlaceholder.posStaticValues = Map.of("turn__on", "ON", "turn__off", "OFF");
+        onOffPlaceholder.values = new String[] { "turn on", "turn off" };
+        onOffPlaceholder.mappedValues = Map.of("turn on", "ON", "turn off", "OFF");
         switchNPLWriteAction.placeholders = List.of(onOffPlaceholder);
         // Prepare Switch Read action
         var switchNPLReadAction = new ActionTemplateConfiguration();
@@ -95,11 +97,9 @@ public class ActionTemplateInterpreterTest {
         numberItem.setState(DecimalType.valueOf("1"));
         numberItem.setLabel("channel");
         numberItem.addTag("tv_channel");
-        numberItem
-                .setStateDescriptionService((text, locale) -> StateDescriptionFragmentBuilder
-                        .create().withOptions(List.of(new StateOption("1", "channel one"),
-                                new StateOption("2", "channel two"), new StateOption("3", "channel three")))
-                        .build().toStateDescription());
+        numberItem.setStateDescriptionService((text, locale) -> StateDescriptionFragmentBuilder.create().withOptions(
+                List.of(new StateOption("1", "hbo"), new StateOption("2", "fox"), new StateOption("3", "discovery")))
+                .build().toStateDescription());
         Mockito.when(itemRegistryMock.get(numberItem.getName())).thenReturn(numberItem);
         // Prepare Group Write action
         var groupNPLWriteAction = new ActionTemplateConfiguration();
@@ -117,14 +117,14 @@ public class ActionTemplateInterpreterTest {
         groupNPLReadAction.value = "$itemLabel in $groupLabel is $state";
         var statePlaceholder = new ActionTemplatePlaceholder();
         statePlaceholder.label = "state";
-        statePlaceholder.posStaticValues = Map.of("ON", "on", "OFF", "off");
+        statePlaceholder.mappedValues = Map.of("on", "ON", "off", "OFF");
         groupNPLReadAction.placeholders = List.of(statePlaceholder);
         groupNPLReadAction.memberTargets = new ActionTemplateGroupTargets();
         groupNPLReadAction.memberTargets.itemName = switchItem.getName();
         groupNPLReadAction.memberTargets.requiredItemTags = new String[] { "Light" };
         // Prepare group write action using item option
         var groupNPLOptionWriteAction = new ActionTemplateConfiguration();
-        groupNPLOptionWriteAction.template = "set $itemLabel channel to $itemOption";
+        groupNPLOptionWriteAction.template = "set? $itemLabel channel to $itemOption";
         groupNPLOptionWriteAction.requiredItemTags = new String[] { "Location" };
         groupNPLOptionWriteAction.value = "$itemOption";
         groupNPLOptionWriteAction.memberTargets = new ActionTemplateGroupTargets();
@@ -147,6 +147,9 @@ public class ActionTemplateInterpreterTest {
         var stringItem = new StringItem("testString");
         stringItem.setLabel("message example");
         Mockito.when(itemRegistryMock.get(stringItem.getName())).thenReturn(stringItem);
+        var stringItem2 = new StringItem("testString2");
+        stringItem2.setLabel("message example 2");
+        Mockito.when(itemRegistryMock.get(stringItem2.getName())).thenReturn(stringItem2);
         // Prepare string write action
         var stringNPLWriteAction = new ActionTemplateConfiguration();
         stringNPLWriteAction.template = "send message $* to $contact";
@@ -154,15 +157,27 @@ public class ActionTemplateInterpreterTest {
         stringNPLWriteAction.silent = true;
         var contactPlaceholder = new ActionTemplatePlaceholder();
         contactPlaceholder.label = "contact";
-        contactPlaceholder.nerStaticValues = new String[] { "Mark", "Andrea" };
-        contactPlaceholder.posStaticValues = Map.of("Mark", "+34000000000", "Andrea", "+34000000001");
+        contactPlaceholder.values = new String[] { "Mark", "Andrea" };
+        contactPlaceholder.mappedValues = Map.of("Mark", "+34000000000", "Andrea", "+34000000001");
         stringNPLWriteAction.placeholders = List.of(contactPlaceholder);
-        var stringConfig = mapper.readValue(mapper.writeValueAsString(stringNPLWriteAction), Map.class);
         // Mock metadata for 'testString'
         Mockito.when(metadataRegistryMock.get(new MetadataKey(SERVICE_ID, stringItem.getName())))
-                .thenReturn(new Metadata(new MetadataKey(SERVICE_ID, stringItem.getName()), "", stringConfig));
+                .thenReturn(new Metadata(new MetadataKey(SERVICE_ID, stringItem.getName()), "",
+                        mapper.readValue(mapper.writeValueAsString(stringNPLWriteAction), Map.class)));
+        // Prepare string write action type dice
+        var stringDiceWriteAction = new ActionTemplateConfiguration();
+        stringDiceWriteAction.template = "please? send alert|warning $* to $contact";
+        stringDiceWriteAction.value = "$contact:$*";
+        stringDiceWriteAction.silent = true;
+        stringDiceWriteAction.placeholders = List.of(contactPlaceholder);
+        stringDiceWriteAction.type = "dice";
+        // Mock metadata for 'testString2'
+        Mockito.when(metadataRegistryMock.get(new MetadataKey(SERVICE_ID, stringItem2.getName())))
+                .thenReturn(new Metadata(new MetadataKey(SERVICE_ID, stringItem2.getName()), "",
+                        mapper.readValue(mapper.writeValueAsString(stringDiceWriteAction), Map.class)));
         // Mock items
-        Mockito.when(itemRegistryMock.getAll()).thenReturn(List.of(switchItem, stringItem, groupItem, numberItem));
+        Mockito.when(itemRegistryMock.getAll())
+                .thenReturn(List.of(switchItem, stringItem, stringItem2, groupItem, numberItem));
 
         interpreter = new ActionTemplateInterpreter(itemRegistryMock, metadataRegistryMock, eventPublisherMock) {
             @Override
@@ -227,11 +242,16 @@ public class ActionTemplateInterpreterTest {
     @Test
     public void groupItemOptionTest() throws InterpretationException {
         var response = interpreter.interpret(Locale.ENGLISH, "what channel is on the bedroom tv");
-        assertThat(response, is("bedroom tv is on channel one"));
-        response = interpreter.interpret(Locale.ENGLISH, "set bedroom channel to channel two");
+        assertThat(response, is("bedroom tv is on hbo"));
+        response = interpreter.interpret(Locale.ENGLISH, "set bedroom channel to fox");
         assertThat(response, is("Done"));
         Mockito.verify(eventPublisherMock)
                 .post(ItemEventFactory.createCommandEvent("testNumber", new DecimalType("2")));
+        // try omitting optional token
+        response = interpreter.interpret(Locale.ENGLISH, "bedroom channel to discovery");
+        assertThat(response, is("Done"));
+        Mockito.verify(eventPublisherMock)
+                .post(ItemEventFactory.createCommandEvent("testNumber", new DecimalType("3")));
     }
 
     /**
@@ -244,5 +264,62 @@ public class ActionTemplateInterpreterTest {
         assertThat(response, is(""));
         Mockito.verify(eventPublisherMock).post(ItemEventFactory.createCommandEvent("testString",
                 new StringType("+34000000000:please turn off the bedroom light")));
+    }
+
+    /**
+     * Test write action using the dynamic label and dice comparison
+     */
+    @Test
+    public void diceMessageTest() throws InterpretationException {
+        // Note one word is incorrect
+        var response = interpreter.interpret(Locale.ENGLISH, "send pallet please turn off the bedroom light to mark");
+        // silent mode is enabled so no response
+        assertThat(response, is(""));
+        Mockito.verify(eventPublisherMock).post(ItemEventFactory.createCommandEvent("testString2",
+                new StringType("+34000000000:please turn off the bedroom light")));
+    }
+
+    /**
+     * Test unitary to lemmas usage while using token comparison
+     */
+    @Test
+    public void lemmaTokenComparisonUnitTest() {
+        var comparator = new ActionTemplateTokenComparator(new String[] { "it", "is", "really", "cool" },
+                new String[] { "it", "be", "really", "cool" }, new String[] { "" });
+        var result = comparator.compare(new String[] { "it", "<lemma>be", "really", "cool" });
+        assertThat(result.score, is(100.0));
+    }
+
+    /**
+     * Test unitary to tags usage while token comparison
+     */
+    @Test
+    public void tagTokenComparisonUnitTest() {
+        var comparator = new ActionTemplateTokenComparator(new String[] { "that", "sounds", "good" }, new String[] {},
+                new String[] { "DT", "VBZ", "JJ" });
+        var result = comparator.compare(new String[] { "<tag>DT", "sounds", "good" });
+        assertThat(result.score, is(100.0));
+    }
+
+    /**
+     * Test unitary to lemmas usage while using dice comparison
+     */
+    @Test
+    public void lemmaDiceComparisonUnitTest() {
+        var comparator = new ActionTemplateDiceComparator(new String[] { "she", "is", "really", "cool" },
+                new String[] { "she", "be", "really", "cool" }, new String[] { "" }, 50.0);
+        var result = comparator.compare(new String[] { "she", "<lemma>be", "really", "cool" });
+        assertThat(result.score, is(100.0));
+    }
+
+    /**
+     * Test unitary to tags usage while dice comparison
+     */
+    @Test
+    public void tagDiceComparisonUnitTest() {
+        var comparator = new ActionTemplateDiceComparator(new String[] { "that", "sounds", "good" }, new String[] {},
+                new String[] { "DT", "VBZ", "JJ" }, 50.0);
+        var result = comparator.compare(new String[] { "<tag>DT", "sounds", "good" });
+        assertThat(result.score, is(100.0));
     }
 }
