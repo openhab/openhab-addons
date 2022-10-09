@@ -147,6 +147,7 @@ public class NetatmoConstants {
     public static final String PARAM_HOME_ID = "home_id";
     public static final String PARAM_ROOM_ID = "room_id";
     public static final String PARAM_PERSON_ID = "person_id";
+    public static final String PARAM_EVENT_ID = "event_id";
     public static final String PARAM_SCHEDULE_ID = "schedule_id";
     public static final String PARAM_OFFSET = "offset";
     public static final String PARAM_GATEWAY_TYPE = "gateway_types";
