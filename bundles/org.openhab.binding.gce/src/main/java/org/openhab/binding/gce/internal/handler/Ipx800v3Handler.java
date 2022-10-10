@@ -125,6 +125,17 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
             discoverAttributes();
         }
 
+        List<Channel> channels = new ArrayList<>(getThing().getChannels());
+        ThingBuilder thingBuilder = editThing();
+        PortDefinition.asStream().forEach(portDefinition -> {
+            int nbElements = statusFile.getMaxNumberofNodeType(portDefinition);
+            for (int i = 0; i < nbElements; i++) {
+                createChannels(portDefinition, i, channels);
+            }
+        });
+        thingBuilder.withChannels(channels);
+        updateThing(thingBuilder.build());
+
         connector = new Ipx800DeviceConnector(configuration.hostname, configuration.portNumber, getThing().getUID());
         parser = Optional.of(new M2MMessageParser(connector, this));
 
@@ -158,18 +169,12 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
         updateProperties(Map.of(Thing.PROPERTY_VENDOR, "GCE Electronics", Thing.PROPERTY_FIRMWARE_VERSION,
                 statusFile.getElement(StatusEntry.VERSION), Thing.PROPERTY_MAC_ADDRESS,
                 statusFile.getElement(StatusEntry.CONFIG_MAC)));
+    }
 
-        List<Channel> channels = new ArrayList<>(getThing().getChannels());
-        if (channels.isEmpty()) {
-            ThingBuilder thingBuilder = editThing();
-            PortDefinition.asStream().forEach(portDefinition -> {
-                int nbElements = statusFile.getMaxNumberofNodeType(portDefinition);
-                for (int i = 0; i < nbElements; i++) {
-                    createChannels(portDefinition, i, channels);
-                }
-            });
-            thingBuilder.withChannels(channels);
-            updateThing(thingBuilder.build());
+    private void addIfChannelAbsent(ChannelBuilder channelBuilder, List<Channel> channels) {
+        Channel newChannel = channelBuilder.build();
+        if (channels.stream().noneMatch(c -> c.getUID().equals(newChannel.getUID()))) {
+            channels.add(newChannel);
         }
     }
 
@@ -182,32 +187,32 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
         ChannelTypeUID channelType = new ChannelTypeUID(BINDING_ID, advancedChannelTypeName);
         switch (portDefinition) {
             case ANALOG:
-                channels.add(ChannelBuilder.create(mainChannelUID, CoreItemFactory.NUMBER)
-                        .withLabel("Analog Input " + ndx).withType(channelType).build());
-                channels.add(ChannelBuilder
-                        .create(new ChannelUID(groupUID, ndx + "-voltage"), "Number:ElectricPotential")
-                        .withLabel("Voltage " + ndx).withType(new ChannelTypeUID(BINDING_ID, CHANNEL_VOLTAGE)).build());
+                addIfChannelAbsent(ChannelBuilder.create(mainChannelUID, CoreItemFactory.NUMBER)
+                        .withLabel("Analog Input " + ndx).withType(channelType), channels);
+                addIfChannelAbsent(
+                        ChannelBuilder.create(new ChannelUID(groupUID, ndx + "-voltage"), "Number:ElectricPotential")
+                                .withType(new ChannelTypeUID(BINDING_ID, CHANNEL_VOLTAGE)).withLabel("Voltage " + ndx),
+                        channels);
                 break;
             case CONTACT:
-                channels.add(ChannelBuilder.create(mainChannelUID, CoreItemFactory.CONTACT).withLabel("Contact " + ndx)
-                        .withType(channelType).build());
-                channels.add(ChannelBuilder.create(new ChannelUID(groupUID, ndx + "-event"), null)
-                        .withLabel("Contact " + ndx + " Event").withKind(ChannelKind.TRIGGER)
+                addIfChannelAbsent(ChannelBuilder.create(mainChannelUID, CoreItemFactory.CONTACT)
+                        .withLabel("Contact " + ndx).withType(channelType), channels);
+                addIfChannelAbsent(ChannelBuilder.create(new ChannelUID(groupUID, ndx + "-event"), null)
                         .withType(new ChannelTypeUID(BINDING_ID, TRIGGER_CONTACT + (portIndex < 8 ? "" : "Advanced")))
-                        .build());
+                        .withLabel("Contact " + ndx + " Event").withKind(ChannelKind.TRIGGER), channels);
                 break;
             case COUNTER:
-                channels.add(ChannelBuilder.create(mainChannelUID, CoreItemFactory.NUMBER).withLabel("Counter " + ndx)
-                        .withType(channelType).build());
+                addIfChannelAbsent(ChannelBuilder.create(mainChannelUID, CoreItemFactory.NUMBER)
+                        .withLabel("Counter " + ndx).withType(channelType), channels);
                 break;
             case RELAY:
-                channels.add(ChannelBuilder.create(mainChannelUID, CoreItemFactory.SWITCH).withLabel("Relay " + ndx)
-                        .withType(channelType).build());
+                addIfChannelAbsent(ChannelBuilder.create(mainChannelUID, CoreItemFactory.SWITCH)
+                        .withLabel("Relay " + ndx).withType(channelType), channels);
                 break;
         }
-        channels.add(ChannelBuilder.create(new ChannelUID(groupUID, ndx + "-duration"), "Number:Time")
-                .withLabel("Previous state duration " + ndx)
-                .withType(new ChannelTypeUID(BINDING_ID, CHANNEL_LAST_STATE_DURATION)).build());
+        addIfChannelAbsent(ChannelBuilder.create(new ChannelUID(groupUID, ndx + "-duration"), "Number:Time")
+                .withType(new ChannelTypeUID(BINDING_ID, CHANNEL_LAST_STATE_DURATION))
+                .withLabel("Previous state duration " + ndx), channels);
     }
 
     @Override
@@ -225,16 +230,11 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
             if (portDefinition == PortDefinition.ANALOG) { // For analog values, check histeresis
                 AnalogInputConfiguration config = configuration.as(AnalogInputConfiguration.class);
                 long hysteresis = config.hysteresis / 2;
-                if (newValue <= prevValue + hysteresis && newValue >= prevValue - hysteresis) {
-                    return true;
-                }
-            }
-            if (portDefinition == PortDefinition.CONTACT) { // For contact values, check debounce
+                return (newValue <= prevValue + hysteresis && newValue >= prevValue - hysteresis);
+            } else if (portDefinition == PortDefinition.CONTACT) { // For contact values, check debounce
                 DigitalInputConfiguration config = configuration.as(DigitalInputConfiguration.class);
-                if (config.debouncePeriod != 0
-                        && now.isBefore(portData.getTimestamp().plus(config.debouncePeriod, ChronoUnit.MILLIS))) {
-                    return true;
-                }
+                return (config.debouncePeriod != 0
+                        && now.isBefore(portData.getTimestamp().plus(config.debouncePeriod, ChronoUnit.MILLIS)));
             }
         }
         return false;
