@@ -152,7 +152,6 @@ public class MeaterRestAPI {
                              * HttpResponseException. We need to handle this in order to attempt
                              * reauthentication.
                              */
-                            logger.debug("getFromApi failed, authentication failed, HTTP status: 401");
                             throw new MeaterAuthenticationException("Authentication failed");
                         }
                     } else if (!HttpStatus.isSuccess(response.getStatus())) {
@@ -194,7 +193,7 @@ public class MeaterRestAPI {
 
         try {
             json = getFromApi(uri);
-        } catch (MeaterException e) {
+        } catch (MeaterAuthenticationException e) {
             logger.debug("getFromApi failed {}", e.getMessage());
             this.authToken = "";
             login();
