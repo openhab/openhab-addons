@@ -50,6 +50,8 @@ import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.vosk.LibVosk;
+import org.vosk.LogLevel;
 import org.vosk.Model;
 import org.vosk.Recognizer;
 
@@ -74,6 +76,11 @@ public class VoskSTTService implements STTService {
             if (directory.mkdir()) {
                 logger.info("vosk dir created {}", VOSK_FOLDER);
             }
+        }
+        try {
+            LibVosk.setLogLevel(LogLevel.WARNINGS);
+        } catch (UnsatisfiedLinkError e) {
+            logger.warn("UnsatisfiedLinkError: {}", e.getMessage());
         }
     }
     private final Logger logger = LoggerFactory.getLogger(VoskSTTService.class);
