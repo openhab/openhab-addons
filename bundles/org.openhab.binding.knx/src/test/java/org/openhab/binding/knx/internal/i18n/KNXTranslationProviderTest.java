@@ -31,19 +31,15 @@ public class KNXTranslationProviderTest {
     static final String UNKNOWN_PATTERN = "unknown text {0}";
     static final String UNKNOWN_FIVE = "unknown text 5";
     static final String UNKNOWN_NULL = "unknown text null";
-    static final String KNOWN_DAY_KEY = "dynamic-channel.automation.weekdays";
-    static final String KNOWN_DAY_VALUE = "Weekdays";
-    static final String KNOWN_DAY_PATTERN_KEY = "dynamic-channel.automation.after-sunset";
-    static final String KNOWN_DAY_PATTERN_VALUE = "{0} after sunset";
-    static final String KNOWN_DAY_FIVE_VALUE = "5 after sunset";
-    static final String KNOWN_DAY_ORIG_VALUE = "null after sunset";
-    static final String KNOWN_DAY_NULL_VALUE = "null after sunset";
+    static final String KNX_BINDING_KEY = "binding.knx.name";
+    static final String KNX_BINDING_VALUE = "KNX Binding";
+    static final String CONN_TYPE_PATTERN_KEY = "error.knx-unknown-ip-connection-type";
+    static final String CONN_TYPE_PATTERN_VALUE = "Unknown IP connection type: {0}.";
+    static final String CONN_TYPE_FIVE_VALUE = "Unknown IP connection type: 5.";
+    static final String CONN_TYPE_NULL_VALUE = "Unknown IP connection type: null.";
 
     @Test
     public void testGetBeforeInit() {
-        // NonNull, compilation error
-        // assertNull(KNXTranslationProvider.I18N.get(null));
-
         // initial state, should not crash and preferrably return original strings (w. pattern substitution)
         assertEquals(UNKNOWN, KNXTranslationProvider.I18N.get(UNKNOWN));
         assertEquals(UNKNOWN, KNXTranslationProvider.I18N.get(UNKNOWN, 5));
@@ -64,8 +60,8 @@ public class KNXTranslationProviderTest {
 
         // use mockup classes with known dictionary
         KNXTranslationProvider.I18N.setProvider(new MockedLocaleProvider(), new MockedTranslationProvider());
-        assertEquals(KNOWN_DAY_VALUE, KNXTranslationProvider.I18N.get(KNOWN_DAY_KEY));
-        assertEquals(KNOWN_DAY_FIVE_VALUE, KNXTranslationProvider.I18N.get(KNOWN_DAY_PATTERN_KEY, 5));
+        assertEquals(KNX_BINDING_VALUE, KNXTranslationProvider.I18N.get(KNX_BINDING_KEY));
+        assertEquals(CONN_TYPE_FIVE_VALUE, KNXTranslationProvider.I18N.get(CONN_TYPE_PATTERN_KEY, 5));
         assertEquals(UNKNOWN, KNXTranslationProvider.I18N.get(UNKNOWN));
         assertEquals(UNKNOWN, KNXTranslationProvider.I18N.get(UNKNOWN, 5));
         assertEquals(UNKNOWN_NULL, KNXTranslationProvider.I18N.get(UNKNOWN_PATTERN, null, null));
@@ -76,20 +72,20 @@ public class KNXTranslationProviderTest {
         assertEquals(UNKNOWN, KNXTranslationProvider.I18N.get(UNKNOWN, s));
         assertEquals(UNKNOWN_NULL, KNXTranslationProvider.I18N.get(UNKNOWN_PATTERN, s));
 
-        assertEquals(KNOWN_DAY_NULL_VALUE, KNXTranslationProvider.I18N.get(KNOWN_DAY_PATTERN_KEY, s));
-        assertEquals(KNOWN_DAY_PATTERN_VALUE, KNXTranslationProvider.I18N.get(KNOWN_DAY_PATTERN_KEY));
+        assertEquals(CONN_TYPE_NULL_VALUE, KNXTranslationProvider.I18N.get(CONN_TYPE_PATTERN_KEY, s));
+        assertEquals(CONN_TYPE_PATTERN_VALUE, KNXTranslationProvider.I18N.get(CONN_TYPE_PATTERN_KEY));
 
         // no locale, should work as fallback to default locale
         KNXTranslationProvider.I18N.setProvider(null, new MockedTranslationProvider());
-        assertEquals(KNXTranslationProvider.I18N.get(KNOWN_DAY_KEY), KNOWN_DAY_VALUE);
+        assertEquals(KNXTranslationProvider.I18N.get(KNX_BINDING_KEY), KNX_BINDING_VALUE);
 
         // no translations, should return initial string
         KNXTranslationProvider.I18N.setProvider(new MockedLocaleProvider(), null);
-        assertEquals(KNOWN_DAY_KEY, KNXTranslationProvider.I18N.get(KNOWN_DAY_KEY));
+        assertEquals(KNX_BINDING_KEY, KNXTranslationProvider.I18N.get(KNX_BINDING_KEY));
 
         // initial state, dictionary should be gone
         KNXTranslationProvider.I18N.setProvider(null, null);
-        assertEquals(KNOWN_DAY_KEY, KNXTranslationProvider.I18N.get(KNOWN_DAY_KEY));
+        assertEquals(KNX_BINDING_KEY, KNXTranslationProvider.I18N.get(KNX_BINDING_KEY));
     }
 
     @Test

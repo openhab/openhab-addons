@@ -32,9 +32,8 @@ import org.osgi.framework.Bundle;
 @NonNullByDefault
 public class MockedTranslationProvider implements TranslationProvider {
 
-    private static final Map<String, String> TEXTS = Map.ofEntries(
-            entry("dynamic-channel.automation.after-sunset", "{0} after sunset"),
-            entry("dynamic-channel.automation.weekdays", "Weekdays"),
+    private static final Map<String, String> TEXTS = Map.ofEntries(entry("binding.knx.name", "KNX Binding"),
+            entry("error.knx-unknown-ip-connection-type", "Unknown IP connection type: {0}."),
             entry("exception.KNXException", "Translated KNX Exception"));
 
     public MockedTranslationProvider() {

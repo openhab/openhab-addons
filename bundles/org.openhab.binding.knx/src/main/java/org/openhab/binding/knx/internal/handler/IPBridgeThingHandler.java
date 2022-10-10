@@ -89,8 +89,9 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
             logger.debug("{}, {}", thing.getUID(), e.toString());
 
             Throwable cause = e.getCause();
-            if (cause == null)
+            if (cause == null) {
                 cause = e;
+            }
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     KNXTranslationProvider.I18N.getLocalizedException(cause));
             return;

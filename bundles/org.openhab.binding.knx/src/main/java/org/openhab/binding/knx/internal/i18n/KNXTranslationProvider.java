@@ -62,11 +62,12 @@ public enum KNXTranslationProvider {
             // locale cannot be cached, as getLocale() will return different result once locale is changed by user
             final Locale locale = (localeProvider != null) ? localeProvider.getLocale() : Locale.getDefault();
             final String res = translationProvider.getText(bundle, text, text, locale, arguments);
-            if (res != null)
+            if (res != null) {
                 return res;
+            }
         }
         // translating not possible, we still have the original text without any subsititutions
-        if ((arguments == null) || (arguments.length == 0)) {
+        if (arguments == null || arguments.length == 0) {
             return text;
         }
         // else execute pattern substitution in untranslated text
