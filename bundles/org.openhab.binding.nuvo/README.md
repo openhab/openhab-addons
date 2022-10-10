@@ -113,6 +113,7 @@ The following channels are available:
 | sourceN#track_position (where N= 1-6)| Number:Time | The running time elapsed of the current playing track (ReadOnly) See rules example for updating                             |
 | sourceN#button_press (where N= 1-6)  | String      | Indicates the last button pressed on the keypad for a non NuvoNet source or openHAB NuvoNet source (ReadOnly)               |
 | sourceN#art_url (where N= 1-6)       | String      | MPS4 Only! The URL of the Album Art JPG for this source that is displayed on a CTP-36. See *very advanced* rules (SendOnly) |
+| sourceN#album_art (where N= 1-6)     | Image       | The Album Art loaded from the art_url channel for display in a UI widget (ReadOnly)                                         |
 
 ## Full Example
 
@@ -166,6 +167,7 @@ Number:Time nuvo_s1_track_length "Track Length: [%s s]" { channel="nuvo:amplifie
 Number:Time nuvo_s1_track_position "Track Position: [%s s]" { channel="nuvo:amplifier:myamp:source1#track_position" }
 String nuvo_s1_button_press "Button: [%s]" { channel="nuvo:amplifier:myamp:source1#button_press" }
 // String nuvo_s1_art_url "URL: [%s]" { channel="nuvo:amplifier:myamp:source1#art_url" }
+// Image nuvo_s1_album_art { channel="nuvo:amplifier:myamp:source1#album_art" }
 
 String nuvo_s2_display_line1 "Line 1: [%s]" { channel="nuvo:amplifier:myamp:source2#display_line1" }
 String nuvo_s2_display_line2 "Line 2: [%s]" { channel="nuvo:amplifier:myamp:source2#display_line2" }
@@ -176,6 +178,7 @@ Number:Time nuvo_s2_track_length "Track Length: [%s s]" { channel="nuvo:amplifie
 Number:Time nuvo_s2_track_position "Track Position: [%s s]" { channel="nuvo:amplifier:myamp:source2#track_position" }
 String nuvo_s2_button_press "Button: [%s]" { channel="nuvo:amplifier:myamp:source2#button_press" }
 // String nuvo_s2_art_url "URL: [%s]" { channel="nuvo:amplifier:myamp:source2#art_url" }
+// Image nuvo_s2_album_art { channel="nuvo:amplifier:myamp:source2#album_art" }
 
 String nuvo_s3_display_line1 "Line 1: [%s]" { channel="nuvo:amplifier:myamp:source3#display_line1" }
 String nuvo_s3_display_line2 "Line 2: [%s]" { channel="nuvo:amplifier:myamp:source3#display_line2" }
@@ -186,6 +189,7 @@ Number:Time nuvo_s3_track_length "Track Length: [%s s]" { channel="nuvo:amplifie
 Number:Time nuvo_s3_track_position "Track Position: [%s s]" { channel="nuvo:amplifier:myamp:source3#track_position" }
 String nuvo_s3_button_press "Button: [%s]" { channel="nuvo:amplifier:myamp:source3#button_press" }
 // String nuvo_s3_art_url "URL: [%s]" { channel="nuvo:amplifier:myamp:source3#art_url" }
+// Image nuvo_s3_album_art { channel="nuvo:amplifier:myamp:source3#album_art" }
 
 String nuvo_s4_display_line1 "Line 1: [%s]" { channel="nuvo:amplifier:myamp:source4#display_line1" }
 String nuvo_s4_display_line2 "Line 2: [%s]" { channel="nuvo:amplifier:myamp:source4#display_line2" }
@@ -196,6 +200,7 @@ Number:Time nuvo_s4_track_length "Track Length: [%s s]" { channel="nuvo:amplifie
 Number:Time nuvo_s4_track_position "Track Position: [%s s]" { channel="nuvo:amplifier:myamp:source4#track_position" }
 String nuvo_s4_button_press "Button: [%s]" { channel="nuvo:amplifier:myamp:source4#button_press" }
 // String nuvo_s4_art_url "URL: [%s]" { channel="nuvo:amplifier:myamp:source4#art_url" }
+// Image nuvo_s4_album_art { channel="nuvo:amplifier:myamp:source4#album_art" }
 
 String nuvo_s5_display_line1 "Line 1: [%s]" { channel="nuvo:amplifier:myamp:source5#display_line1" }
 String nuvo_s5_display_line2 "Line 2: [%s]" { channel="nuvo:amplifier:myamp:source5#display_line2" }
@@ -206,6 +211,7 @@ Number:Time nuvo_s5_track_length "Track Length: [%s s]" { channel="nuvo:amplifie
 Number:Time nuvo_s5_track_position "Track Position: [%s s]" { channel="nuvo:amplifier:myamp:source5#track_position" }
 String nuvo_s5_button_press "Button: [%s]" { channel="nuvo:amplifier:myamp:source5#button_press" }
 // String nuvo_s5_art_url "URL: [%s]" { channel="nuvo:amplifier:myamp:source5#art_url" }
+// Image nuvo_s5_album_art { channel="nuvo:amplifier:myamp:source5#album_art" }
 
 String nuvo_s6_display_line1 "Line 1: [%s]" { channel="nuvo:amplifier:myamp:source6#display_line1" }
 String nuvo_s6_display_line2 "Line 2: [%s]" { channel="nuvo:amplifier:myamp:source6#display_line2" }
@@ -216,6 +222,7 @@ Number:Time nuvo_s6_track_length "Track Length: [%s s]" { channel="nuvo:amplifie
 Number:Time nuvo_s6_track_position "Track Position: [%s s]" { channel="nuvo:amplifier:myamp:source6#track_position" }
 String nuvo_s6_button_press "Button: [%s]" { channel="nuvo:amplifier:myamp:source6#button_press" }
 // String nuvo_s6_art_url "URL: [%s]" { channel="nuvo:amplifier:myamp:source6#art_url" }
+// Image nuvo_s6_album_art { channel="nuvo:amplifier:myamp:source6#album_art" }
 
 ```
 
@@ -301,8 +308,15 @@ sitemap nuvo label="Audio Control" {
             Switch item=nuvo_z1_party
         }
         Text item=nuvo_z1_lock label="Zone Locked: [%s]" icon="lock" visibility=[nuvo_z1_lock=="1"]
+
+        // Image item=nuvo_s1_album_art visibility=[nuvo_z1_source=="1"]
+        // Image item=nuvo_s2_album_art visibility=[nuvo_z1_source=="2"]
+        // Image item=nuvo_s3_album_art visibility=[nuvo_z1_source=="3"]
+        // Image item=nuvo_s4_album_art visibility=[nuvo_z1_source=="4"]
+        // Image item=nuvo_s5_album_art visibility=[nuvo_z1_source=="5"]
+        // Image item=nuvo_s6_album_art visibility=[nuvo_z1_source=="6"]
     }
-    
+
     // repeat for zones 2-20 (substitute z1)
 }
 

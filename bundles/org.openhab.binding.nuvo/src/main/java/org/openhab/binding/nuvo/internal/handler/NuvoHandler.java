@@ -75,6 +75,7 @@ import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.PlayPauseType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
@@ -566,14 +567,19 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                                     if (httpStatus == OK_200) {
                                         albumArtMap.put(target.getId(),
                                                 NuvoImageResizer.resizeImage(contentResponse.getContent(), 80, 80));
+
+                                        updateChannelState(target, CHANNEL_ALBUM_ART, BLANK,
+                                                contentResponse.getContent());
                                     } else {
                                         albumArtMap.put(target.getId(), NO_ART);
                                         albumArtIds.put(target.getId(), 0);
+                                        updateChannelState(target, CHANNEL_ALBUM_ART, UNDEF);
                                         return;
                                     }
                                 } catch (InterruptedException | TimeoutException | ExecutionException e) {
                                     albumArtMap.put(target.getId(), NO_ART);
                                     albumArtIds.put(target.getId(), 0);
+                                    updateChannelState(target, CHANNEL_ALBUM_ART, UNDEF);
                                     return;
                                 }
                                 albumArtIds.put(target.getId(), Math.abs(url.hashCode()));
@@ -586,6 +592,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                             } else {
                                 albumArtMap.put(target.getId(), NO_ART);
                                 albumArtIds.put(target.getId(), 0);
+                                updateChannelState(target, CHANNEL_ALBUM_ART, UNDEF);
                             }
                         }
                 }
@@ -1229,13 +1236,25 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
     }
 
     /**
-     * Update the state of a channel
+     * Update the state of a channel (original method signature)
      *
      * @param target the channel group
      * @param channelType the channel group item
      * @param value the value to be updated
      */
     private void updateChannelState(NuvoEnum target, String channelType, String value) {
+        updateChannelState(target, channelType, value, NO_ART);
+    }
+
+    /**
+     * Update the state of a channel (overloaded method to handle album_art channel)
+     *
+     * @param target the channel group
+     * @param channelType the channel group item
+     * @param value the value to be updated
+     * @param bytes the byte[] to load into the Image channel
+     */
+    private void updateChannelState(NuvoEnum target, String channelType, String value, byte[] bytes) {
         String channel = target.name().toLowerCase() + CHANNEL_DELIMIT + channelType;
 
         if (!isLinked(channel)) {
@@ -1287,6 +1306,9 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
             case CHANNEL_TRACK_LENGTH:
             case CHANNEL_TRACK_POSITION:
                 state = new QuantityType<Time>(Integer.parseInt(value) / 10, NuvoHandler.API_SECOND_UNIT);
+                break;
+            case CHANNEL_ALBUM_ART:
+                state = new RawType(bytes, RawType.DEFAULT_MIME_TYPE);
                 break;
             default:
                 break;
