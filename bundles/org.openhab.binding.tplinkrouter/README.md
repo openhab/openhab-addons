@@ -18,6 +18,7 @@ This binding provides only the `router` Thing.
 | Name            | Type    | Description                                   | Default | Required | Advanced |
 |-----------------|---------|-----------------------------------------------|---------|----------|----------|
 | hostname        | text    | Hostname or IP address of the device          | N/A     | yes      | no       |
+| port            | integer | Port for telnet connection                    | 23      | no       | no       |
 | username        | text    | Username to access the router (same as WebUI) | N/A     | yes      | no       |
 | password        | text    | Password to access the device (same as WebUI) | N/A     | yes      | no       |
 | refreshInterval | integer | Interval the device is polled in sec.         | 60      | no       | yes      |
@@ -28,12 +29,12 @@ This binding provides only the `router` Thing.
 |-----------------------|--------|------------|------------------------------------------|
 | `wifi#status`         | Switch | RW         | State of the wifi                        |
 | `wifi#ssid`           | String | R          | SSID of the wifi network                 |
-| `wifi#bandWidth`      | String | R          | Bandwidth of the wifi network            |
+| `wifi#bandwidth`      | String | R          | Bandwidth of the wifi network            |
 | `wifi#qss`            | Switch | RW         | Quick Security Setup of the wifi network |
 | `wifi#secMode`        | String | R          | Security Mode of the wifi network        |
 | `wifi#authentication` | String | R          | Authentication Mode of the wifi network  |
 | `wifi#encryption`     | String | R          | Encryption Mode of the wifi network      |
-| `wifi#Key`            | String | R          | Password of the wifi network             |
+| `wifi#key`            | String | R          | Password of the wifi network             |
 
 ## Full Example
 
