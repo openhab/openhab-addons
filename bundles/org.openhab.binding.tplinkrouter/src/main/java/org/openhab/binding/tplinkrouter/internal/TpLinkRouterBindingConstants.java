@@ -27,7 +27,7 @@ public class TpLinkRouterBindingConstants {
     private static final String BINDING_ID = "tplinkrouter";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_TDW9970 = new ThingTypeUID(BINDING_ID, "router");
+    public static final ThingTypeUID THING_TYPE_ROUTER = new ThingTypeUID(BINDING_ID, "router");
 
     // List of all Channel ids
     public static final String WIFI_STATUS = "wifi#status";
@@ -37,5 +37,5 @@ public class TpLinkRouterBindingConstants {
     public static final String WIFI_SECMODE = "wifi#secMode";
     public static final String WIFI_AUTHENTICATION = "wifi#authentication";
     public static final String WIFI_ENCRYPTION = "wifi#encryption";
-    public static final String WIFI_KEY = "wifi#Key";
+    public static final String WIFI_KEY = "wifi#key";
 }
