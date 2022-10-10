@@ -10,29 +10,29 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.meater.internal;
+package org.openhab.binding.meater.internal.exceptions;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * {@link MeaterException} is used when there is exception communicating with MEATER REST API.
+ * {@link MeaterAuthenticationException} is used when there is an authentication exception with MEATER REST API.
  *
  * @author Jan Gustafsson - Initial contribution
  */
 @NonNullByDefault
-public class MeaterException extends Exception {
+public class MeaterAuthenticationException extends MeaterException {
 
     private static final long serialVersionUID = 2543564118231301158L;
 
-    public MeaterException(Exception source) {
+    public MeaterAuthenticationException(Exception source) {
         super(source);
     }
 
-    public MeaterException(String message) {
+    public MeaterAuthenticationException(String message) {
         super(message);
     }
 
-    public MeaterException(String message, Throwable cause) {
+    public MeaterAuthenticationException(String message, Throwable cause) {
         super(message, cause);
     }
 }

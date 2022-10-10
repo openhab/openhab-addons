@@ -51,7 +51,7 @@ After the configuration of the Bridge, you need to perform a manual scan and the
 | cookName              | String             | Name of selected meat or user given custom name      |   
 | cookState             | String             | One of Not Started, Configured, Started, Ready For Resting, Resting, Slightly Underdone, Finished, Slightly Overdone, OVERCOOK!                                 |
 | cookElapsedTime       | Number:Time        | Time since the start of cook in seconds. Default: 0  |
-| cookRemainingTime     | Number:Time        | Remaining time in seconds. When unknown/calculating UnDefType.UNDEF is used.                                                                                  |
+| cookRemainingTime     | Number:Time        | Remaining time in seconds or UNDEF when unknown.                                                                                  |
 | cookEstimatedEndTime  | DateTime           | Date and time of estimated end time for current cook |
 
 

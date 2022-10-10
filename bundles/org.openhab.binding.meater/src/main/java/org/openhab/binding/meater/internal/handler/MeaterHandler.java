@@ -160,6 +160,7 @@ public class MeaterHandler extends BaseThingHandler {
                 if (instant != null) {
                     return new DateTimeType(ZonedDateTime.ofInstant(instant, timeZoneProvider.getTimeZone()));
                 }
+                break;
             case CHANNEL_COOK_ESTIMATED_END_TIME:
                 if (cook != null) {
                     if (cook.time.remaining > -1) {

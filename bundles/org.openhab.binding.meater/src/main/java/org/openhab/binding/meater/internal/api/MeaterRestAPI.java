@@ -27,11 +27,11 @@ import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
-import org.openhab.binding.meater.internal.MeaterAuthenticationException;
 import org.openhab.binding.meater.internal.MeaterBridgeConfiguration;
-import org.openhab.binding.meater.internal.MeaterException;
 import org.openhab.binding.meater.internal.dto.MeaterProbeDTO;
 import org.openhab.binding.meater.internal.dto.MeaterProbeDTO.Device;
+import org.openhab.binding.meater.internal.exceptions.MeaterAuthenticationException;
+import org.openhab.binding.meater.internal.exceptions.MeaterException;
 import org.openhab.core.i18n.LocaleProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,7 +85,7 @@ public class MeaterRestAPI {
                 }
             }
             return true;
-        } catch (MeaterException | MeaterAuthenticationException e) {
+        } catch (MeaterException e) {
             logger.warn("Failed to refresh! {}", e.getMessage());
         }
         return false;
@@ -115,7 +115,7 @@ public class MeaterRestAPI {
             if (tokenJson != null) {
                 this.authToken = tokenJson.getAsString();
             } else {
-                throw new MeaterException("Tken JSON is null");
+                throw new MeaterException("Token is not present in the JSON response");
             }
         } catch (TimeoutException | ExecutionException | JsonParseException e) {
             throw new MeaterException(e);
@@ -125,11 +125,11 @@ public class MeaterRestAPI {
         }
     }
 
-    private String getFromApi(String uri) throws MeaterException, MeaterAuthenticationException {
+    private String getFromApi(String uri) throws MeaterException {
         try {
             for (int i = 0; i < MAX_RETRIES; i++) {
                 try {
-                    if ("".equals(authToken)) {
+                    if (authToken.isEmpty()) {
                         login();
                     }
                     Request request = httpClient.newRequest(API_ENDPOINT + uri).method(HttpMethod.GET);
@@ -144,8 +144,17 @@ public class MeaterRestAPI {
 
                     if (response.getStatus() == HttpStatus.UNAUTHORIZED_401) {
                         // This will currently not happen because "WWW-Authenticate" header is missing; see below.
-                        logger.debug("getFromApi failed, HTTP status: 401");
-                        login();
+                        logger.debug("getFromApi failed, authentication failed, HTTP status: 401");
+                        if (response.getStatus() == HttpStatus.UNAUTHORIZED_401) {
+                            /*
+                             * When contextId is not valid, the service will respond with HTTP code 401 without
+                             * any "WWW-Authenticate" header, violating RFC 7235. Jetty will then throw
+                             * HttpResponseException. We need to handle this in order to attempt
+                             * reauthentication.
+                             */
+                            logger.debug("getFromApi failed, authentication failed, HTTP status: 401");
+                            throw new MeaterAuthenticationException("Authentication failed");
+                        }
                     } else if (!HttpStatus.isSuccess(response.getStatus())) {
                         logger.debug("getFromApi failed, HTTP status: {}", response.getStatus());
                         throw new MeaterException("Failed to fetch from API!");
@@ -168,7 +177,7 @@ public class MeaterRestAPI {
                      * HttpResponseException. We need to handle this in order to attempt
                      * reauthentication.
                      */
-                    logger.debug("getFromApi failed, HTTP status: 401");
+                    logger.debug("getFromApi failed, authentication failed, HTTP status: 401");
                     throw new MeaterAuthenticationException("Authentication failed");
                 }
             }
@@ -179,13 +188,14 @@ public class MeaterRestAPI {
         }
     }
 
-    public <T> T getDevices(Class<T> dto) throws MeaterException, MeaterAuthenticationException {
+    public <T> T getDevices(Class<T> dto) throws MeaterException {
         String uri = DEVICES;
         String json = "";
 
         try {
             json = getFromApi(uri);
-        } catch (MeaterAuthenticationException e) {
+        } catch (MeaterException e) {
+            logger.debug("getFromApi failed {}", e.getMessage());
             this.authToken = "";
             login();
             json = getFromApi(uri);
