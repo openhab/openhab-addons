@@ -11,6 +11,7 @@
 			<channel id="current_total" typeId="price"/>
 			<channel id="current_startsAt" typeId="timestamp"/>
 			<channel id="current_level" typeId="level"/>
+			<channel id="tomorrow_prices" typeId="tomorrow_prices"/>
 			<channel id="daily_from" typeId="timestamp"/>
 			<channel id="daily_to" typeId="timestamp"/>
 			<channel id="daily_cost" typeId="cost"/>
@@ -114,5 +115,11 @@
 		<label>Total Production</label>
 		<description>Accumulated Production since Midnight</description>
 		<state pattern="%.3f %unit%"></state>
+	</channel-type>
+	<channel-type id="tomorrow_prices" advanced="true">
+		<item-type>String</item-type>
+		<label>Prices for tomorrow as a JSON array</label>
+		<description>JSON array of tuples startsAt,total, e.g. {["startsAt": "2022-09-10T00:00:00+02:00", "total": 5.332},
+			{"startsAt": ...}]. See binding documantation for full example.</description>
 	</channel-type>
 </thing:thing-descriptions>

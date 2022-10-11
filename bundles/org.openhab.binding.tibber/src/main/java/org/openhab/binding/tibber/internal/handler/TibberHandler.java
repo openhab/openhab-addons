@@ -53,6 +53,7 @@ import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
@@ -149,20 +150,24 @@ public class TibberHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.ONLINE);
             }
 
-            JsonObject object = (JsonObject) JsonParser.parseString(jsonResponse);
+            JsonObject rootJsonObject = (JsonObject) JsonParser.parseString(jsonResponse);
 
             if (jsonResponse.contains("total")) {
                 try {
-                    JsonObject myObject = object.getAsJsonObject("data").getAsJsonObject("viewer")
+                    JsonObject current = rootJsonObject.getAsJsonObject("data").getAsJsonObject("viewer")
                             .getAsJsonObject("home").getAsJsonObject("currentSubscription").getAsJsonObject("priceInfo")
                             .getAsJsonObject("current");
 
-                    updateState(CURRENT_TOTAL, new DecimalType(myObject.get("total").toString()));
-                    String timestamp = myObject.get("startsAt").toString().substring(1, 20);
+                    updateState(CURRENT_TOTAL, new DecimalType(current.get("total").toString()));
+                    String timestamp = current.get("startsAt").toString().substring(1, 20);
                     updateState(CURRENT_STARTSAT, new DateTimeType(timestamp));
                     updateState(CURRENT_LEVEL,
-                            new StringType(myObject.get("level").toString().replaceAll("^\"|\"$", "")));
+                            new StringType(current.get("level").toString().replaceAll("^\"|\"$", "")));
 
+                    JsonArray tomorrow = rootJsonObject.getAsJsonObject("data").getAsJsonObject("viewer")
+                            .getAsJsonObject("home").getAsJsonObject("currentSubscription").getAsJsonObject("priceInfo")
+                            .getAsJsonArray("tomorrow");
+                    updateState(TOMORROW_PRICES, new StringType(tomorrow.toString()));
                 } catch (JsonSyntaxException e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "Error communicating with Tibber API: " + e.getMessage());
@@ -171,7 +176,7 @@ public class TibberHandler extends BaseThingHandler {
             if (jsonResponse.contains("daily") && !jsonResponse.contains("\"daily\":{\"nodes\":[]")
                     && !jsonResponse.contains("\"daily\":null")) {
                 try {
-                    JsonObject myObject = (JsonObject) object.getAsJsonObject("data").getAsJsonObject("viewer")
+                    JsonObject myObject = (JsonObject) rootJsonObject.getAsJsonObject("data").getAsJsonObject("viewer")
                             .getAsJsonObject("home").getAsJsonObject("daily").getAsJsonArray("nodes").get(0);
 
                     String timestampDailyFrom = myObject.get("from").toString().substring(1, 20);
@@ -191,7 +196,7 @@ public class TibberHandler extends BaseThingHandler {
             if (jsonResponse.contains("hourly") && !jsonResponse.contains("\"hourly\":{\"nodes\":[]")
                     && !jsonResponse.contains("\"hourly\":null")) {
                 try {
-                    JsonObject myObject = (JsonObject) object.getAsJsonObject("data").getAsJsonObject("viewer")
+                    JsonObject myObject = (JsonObject) rootJsonObject.getAsJsonObject("data").getAsJsonObject("viewer")
                             .getAsJsonObject("home").getAsJsonObject("hourly").getAsJsonArray("nodes").get(0);
 
                     String timestampHourlyFrom = myObject.get("from").toString().substring(1, 20);
