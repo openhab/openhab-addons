@@ -256,16 +256,19 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
         TokenResponse token = logonToken;
 
         boolean hasExpired = true;
+        logger.debug("Current authentication time {}", dateFormatter.format(Instant.now()));
 
         if (token != null) {
             Instant tokenCreationInstant = Instant.ofEpochMilli(token.created_at * 1000);
+            Instant tokenExpiresInstant = Instant.ofEpochMilli((token.created_at + token.expires_in) * 1000);
             logger.debug("Found a request token created at {}", dateFormatter.format(tokenCreationInstant));
-            Instant tokenExpiresInstant = Instant.ofEpochMilli(token.created_at * 1000 + 60 * token.expires_in);
+            logger.debug("Token expiration time {}", dateFormatter.format(tokenExpiresInstant));
 
             if (tokenExpiresInstant.isBefore(Instant.now())) {
-                logger.debug("The token has expired at {}", dateFormatter.format(tokenExpiresInstant));
+                logger.debug("The token has expired");
                 hasExpired = true;
             } else {
+                logger.debug("The token has not expired yet");
                 hasExpired = false;
             }
         }
