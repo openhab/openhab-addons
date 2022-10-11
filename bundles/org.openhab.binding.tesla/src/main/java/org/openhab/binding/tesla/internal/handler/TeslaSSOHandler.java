@@ -74,7 +74,7 @@ public class TeslaSSOHandler {
 
             if (tokenResponse != null && tokenResponse.access_token != null && !tokenResponse.access_token.isEmpty()) {
                 tokenResponse.created_at = Instant.now().getEpochSecond();
-                logger.debug("Token expires in {} seconds at {}", tokenResponse.expires_in, dateFormatter
+                logger.debug("Access token expires in {} seconds at {}", tokenResponse.expires_in, dateFormatter
                         .format(Instant.ofEpochMilli((tokenResponse.created_at + tokenResponse.expires_in) * 1000)));
                 return tokenResponse;
             } else {

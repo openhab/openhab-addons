@@ -592,7 +592,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
 
         if (vehicleState.homelink_nearby) {
             computedInactivityPeriod = MOVE_THRESHOLD_INTERVAL_MINUTES_DEFAULT;
-            logger.debug("Car is at home. Movemement or drive state threshold defaults to {} min.",
+            logger.debug("Car is at home. Movement or drive state threshold is {} min.",
                     MOVE_THRESHOLD_INTERVAL_MINUTES_DEFAULT);
         }
 
@@ -605,7 +605,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                         - (computedInactivityPeriod * 60 * 1000));
                 if (status) {
                     logger.debug(
-                            "Drivestate is null but hasn't changed to null recently, therefore continuing to poll.");
+                            "Drivestate is null but has changed recently, therefore continuing to poll.");
                     return status;
                 } else {
                     logger.debug("Drivestate has changed to null after interval {} min and can now be put to sleep.",
@@ -871,7 +871,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                             lastValidDriveStateNotNull = false;
                             lastDriveStateChangeToNullTimestamp = System.currentTimeMillis();
                         } else if (driveState.shift_state != null) {
-                            logger.trace("Set NULL shiftstate time");
+                            logger.trace("Clear NULL shiftstate time");
                             lastValidDriveStateNotNull = true;
                         }
 
@@ -903,7 +903,12 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                         break;
                     }
                     case "queryVehicle": {
-                        logger.debug("Vehicle state is {}", vehicle.state);
+                        if (vehicle != null) {
+                            logger.debug("Vehicle state is {}", vehicle.state);
+                        } else {
+                            logger.debug("Vehicle state is initializing or unknown");
+                            break;
+                        }
 
                         if (vehicle != null && "asleep".equals(vehicle.state)) {
                             logger.debug("Vehicle is asleep.");
