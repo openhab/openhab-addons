@@ -25,23 +25,22 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 class AccessTokenRequest {
     @SerializedName("grant_type")
-    @Nullable
-    private String grantType;
+    private @Nullable String grantType;
+
     @SerializedName("client_id")
-    @Nullable
-    private String clientId;
+    private @Nullable String clientId;
+
     @SerializedName("client_secret")
-    @Nullable
-    private String clientSecret;
+    private @Nullable String clientSecret;
+
     @SerializedName("code")
-    @Nullable
-    private String code;
+    private @Nullable String code;
+
     @SerializedName("refresh_token")
-    @Nullable
-    private String refreshToken;
+    private @Nullable String refreshToken;
+
     @SerializedName("redirect_uri")
-    @Nullable
-    private URI redirectUri;
+    private @Nullable URI redirectUri;
 
     @Nullable
     public String getClientId() {

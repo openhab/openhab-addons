@@ -23,17 +23,16 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 class AccessTokenResponse {
     @SerializedName("access_token")
-    @Nullable
-    private String accessToken;
+    private @Nullable String accessToken;
+
     @SerializedName("expires_in")
-    @Nullable
-    private Integer expiresIn;
+    private @Nullable Integer expiresIn;
+
     @SerializedName("refresh_token")
-    @Nullable
-    private String refreshToken;
+    private @Nullable String refreshToken;
+
     @SerializedName("refresh_token_expires_in")
-    @Nullable
-    private Integer refreshTokenExpiresIn;
+    private @Nullable Integer refreshTokenExpiresIn;
 
     @Nullable
     public String getAccessToken() {

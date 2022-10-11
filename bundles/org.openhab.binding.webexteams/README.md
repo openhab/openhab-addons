@@ -20,16 +20,16 @@ Webex Teams supports two main types of app integration:
 * Bot: a separate identity that can be used to communicate with people and rooms.
 * Integration: OAuth integration that allows the binding to act on a persons behalf.
 
-Both of these integrations must be first configured on the [Webex Developers](https://developer.webex.com/) website.
+Both of these integrations must be first configured on the [Webex Developers](https://developer.webex.com/) 
+website.
 
 To use the bot identity, only configure the `token` (Authentication token).
 
-To use the OAuth interation, configure: client id, client secret, auth code and redirect URL.  The auth code is obtained
-by using the Authorization URL from the Webex Developers integration setup page.  The same goes for the redirect URL.  The URL
-is not effectively used, but must be configured in the binding with the same value as on the Webex Developers integration 
-setup page.  If unsure, use *https://www.example.com*.
-As long as the binding is configured with credentials it will refresh tokens.  There's an annoying *feature* today that requires you 
-provide a new authCode when the binding was down for a while.
+To use the OAuth interation, configure: client id, client secret, auth code and redirect URL.  
+The auth code is obtained by using the Authorization URL from the Webex Developers integration setup page.  
+The same goes for the redirect URL.  The URL is not effectively used, but must be configured in the binding with the same value as on the Webex Developers integration setup page.  If unsure, use *https://www.example.com*.
+As long as the binding is configured with credentials it will refresh tokens.  
+There's an annoying *feature* today that requires you provide a new authCode when the binding was down for a while.
 
 When both bot auth token and OAuth details are configure, the binding will prefer the bot auth token.
 

@@ -6,12 +6,6 @@
 
 	<!-- Account Thing Type -->
 	<thing-type id="account">
-		<!-- Comment this in for Things which need a Bridge to function.
-			<supported-bridge-type-refs>
-			<bridge-type-ref id="WebexTeamsBridge" />
-			</supported-bridge-type-refs>
-		-->
-
 		<label>WebexTeams Account</label>
 		<description>WebexTeams account used to send messages.</description>
 

@@ -85,13 +85,6 @@ public class WebexTeamsApi {
         this.authCode = config.authCode;
         this.redirectUrl = config.redirectUrl;
         this.refreshToken = config.refreshToken;
-
-        try {
-
-            httpClient.start();
-        } catch (Exception e) {
-            throw new WebexTeamsApiException("Failed to start httpClient", e);
-        }
     }
 
     /**
@@ -253,14 +246,6 @@ public class WebexTeamsApi {
         } catch (InterruptedException | ExecutionException e) {
             logger.error("Request error", e);
             throw new WebexTeamsApiException("Request error", e);
-        }
-    }
-
-    public void stop() {
-        try {
-            httpClient.stop();
-        } catch (Exception e) {
-            throw new WebexTeamsApiException("failed to stop httpClient", e);
         }
     }
 
