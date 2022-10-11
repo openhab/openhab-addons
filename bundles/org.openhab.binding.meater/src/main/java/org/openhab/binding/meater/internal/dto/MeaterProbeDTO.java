@@ -47,8 +47,9 @@ public class MeaterProbeDTO {
         }
 
         public @Nullable Device getDevice(String id) {
-            if (devices != null) {
-                for (Device meaterProbe : devices) {
+            List<Device> localDevices = devices;
+            if (localDevices != null) {
+                for (Device meaterProbe : localDevices) {
                     if (id.equals(meaterProbe.id)) {
                         return meaterProbe;
                     }

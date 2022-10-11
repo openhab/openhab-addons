@@ -113,8 +113,9 @@ public class MeaterBridgeHandler extends BaseBridgeHandler {
     }
 
     private boolean refreshAndUpdateStatus() {
-        if (api != null) {
-            if (api.refresh(meaterProbeThings)) {
+        MeaterRestAPI localAPI = api;
+        if (localAPI != null) {
+            if (localAPI.refresh(meaterProbeThings)) {
                 getThing().getThings().stream().forEach(thing -> {
                     MeaterHandler handler = (MeaterHandler) thing.getHandler();
                     if (handler != null) {
