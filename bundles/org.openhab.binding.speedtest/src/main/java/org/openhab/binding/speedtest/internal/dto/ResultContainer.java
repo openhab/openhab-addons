@@ -1,8 +1,26 @@
+/**
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
 package org.openhab.binding.speedtest.internal.dto;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+/**
+ * The {@link ResultContainer} class defines a container for Speedtest results.
+ *
+ * @author Brian Homeyer - Initial contribution
+ */
 public class ResultContainer {
 
     @SerializedName("type")
@@ -151,7 +169,6 @@ public class ResultContainer {
         public void setElapsed(String elapsed) {
             this.elapsed = elapsed;
         }
-
     }
 
     public class Interface {
@@ -211,7 +228,6 @@ public class ResultContainer {
         public void setExternalIp(String externalIp) {
             this.externalIp = externalIp;
         }
-
     }
 
     public class Ping {
@@ -238,7 +254,6 @@ public class ResultContainer {
         public void setLatency(String latency) {
             this.latency = latency;
         }
-
     }
 
     public class Result {
@@ -265,7 +280,6 @@ public class ResultContainer {
         public void setUrl(String url) {
             this.url = url;
         }
-
     }
 
     public class Server {
@@ -347,7 +361,6 @@ public class ResultContainer {
         public void setIp(String ip) {
             this.ip = ip;
         }
-
     }
 
     public class Upload {
@@ -385,7 +398,5 @@ public class ResultContainer {
         public void setElapsed(String elapsed) {
             this.elapsed = elapsed;
         }
-
     }
-
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,6 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
+
 package org.openhab.binding.speedtest.internal;
 
 import java.io.BufferedReader;
@@ -41,15 +42,15 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 
 /**
- * The {@link speedtestHandler} is responsible for handling commands, which are
+ * The {@link SpeedtestHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Brian Homeyer - Initial contribution
  */
 @NonNullByDefault
-public class speedtestHandler extends BaseThingHandler {
-    private final Logger logger = LoggerFactory.getLogger(speedtestHandler.class);
-    private @Nullable speedtestConfiguration config;
+public class SpeedtestHandler extends BaseThingHandler {
+    private final Logger logger = LoggerFactory.getLogger(SpeedtestHandler.class);
+    private SpeedtestConfiguration config = new SpeedtestConfiguration();
     private Gson GSON = new Gson();
     private static Runtime rt = Runtime.getRuntime();
     private long pollingInterval = 1440;
@@ -90,7 +91,7 @@ public class speedtestHandler extends BaseThingHandler {
         NOT_SET
     }
 
-    public speedtestHandler(Thing thing) {
+    public SpeedtestHandler(Thing thing) {
         super(thing);
     }
 
@@ -102,15 +103,14 @@ public class speedtestHandler extends BaseThingHandler {
             updateChannels();
             return;
         }
-        if (ch.equals(speedtestBindingConstants.TRIGGER_TEST)) {
+        if (ch.equals(SpeedtestBindingConstants.TRIGGER_TEST)) {
             getSpeed();
         }
-
     }
 
     @Override
     public void initialize() {
-        config = getConfigAs(speedtestConfiguration.class);
+        config = getConfigAs(SpeedtestConfiguration.class);
         pollingInterval = config.refreshInterval;
         serverID = config.serverID;
         if (!config.execPath.isEmpty()) {
@@ -134,7 +134,7 @@ public class speedtestHandler extends BaseThingHandler {
 
         if (!checkConfig(speedTestCommand)) { // check the config
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Speedtest Executable not found.   Please check configuration.");
+                    "Speedtest executable not found. Please check configuration.");
             return;
         }
         if (!getSpeedTestVersion()) {
@@ -150,7 +150,7 @@ public class speedtestHandler extends BaseThingHandler {
      * This is called to start the refresh job and also to reset that refresh job when a config change is done.
      */
     private void onUpdate() {
-        logger.debug("Polling Interval Set : {} ", pollingInterval);
+        logger.debug("Polling Interval Set: {} ", pollingInterval);
         if (pollingInterval > 0) {
             if (pollingJob == null || pollingJob.isCancelled()) {
                 pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 0, pollingInterval, TimeUnit.MINUTES);
@@ -203,7 +203,7 @@ public class speedtestHandler extends BaseThingHandler {
                 return true;
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Speedtest version not recognized, Ookla version REQUIRED.  Please check configuration.");
+                        "Speedtest version not recognized, Speedtest from Ookla is REQUIRED. Please check configuration.");
                 return false;
             }
         }
@@ -224,34 +224,34 @@ public class speedtestHandler extends BaseThingHandler {
                 serverListTxt = "ID : " + server.id.toString() + " " + server.host + "( " + server.location + " )";
                 switch (id) {
                     case 1:
-                        properties.replace(speedtestBindingConstants.PROPERTY_SERVER_LIST1, serverListTxt);
+                        properties.replace(SpeedtestBindingConstants.PROPERTY_SERVER_LIST1, serverListTxt);
                         break;
                     case 2:
-                        properties.replace(speedtestBindingConstants.PROPERTY_SERVER_LIST2, serverListTxt);
+                        properties.replace(SpeedtestBindingConstants.PROPERTY_SERVER_LIST2, serverListTxt);
                         break;
                     case 3:
-                        properties.replace(speedtestBindingConstants.PROPERTY_SERVER_LIST3, serverListTxt);
+                        properties.replace(SpeedtestBindingConstants.PROPERTY_SERVER_LIST3, serverListTxt);
                         break;
                     case 4:
-                        properties.replace(speedtestBindingConstants.PROPERTY_SERVER_LIST4, serverListTxt);
+                        properties.replace(SpeedtestBindingConstants.PROPERTY_SERVER_LIST4, serverListTxt);
                         break;
                     case 5:
-                        properties.replace(speedtestBindingConstants.PROPERTY_SERVER_LIST5, serverListTxt);
+                        properties.replace(SpeedtestBindingConstants.PROPERTY_SERVER_LIST5, serverListTxt);
                         break;
                     case 6:
-                        properties.replace(speedtestBindingConstants.PROPERTY_SERVER_LIST6, serverListTxt);
+                        properties.replace(SpeedtestBindingConstants.PROPERTY_SERVER_LIST6, serverListTxt);
                         break;
                     case 7:
-                        properties.replace(speedtestBindingConstants.PROPERTY_SERVER_LIST7, serverListTxt);
+                        properties.replace(SpeedtestBindingConstants.PROPERTY_SERVER_LIST7, serverListTxt);
                         break;
                     case 8:
-                        properties.replace(speedtestBindingConstants.PROPERTY_SERVER_LIST8, serverListTxt);
+                        properties.replace(SpeedtestBindingConstants.PROPERTY_SERVER_LIST8, serverListTxt);
                         break;
                     case 9:
-                        properties.replace(speedtestBindingConstants.PROPERTY_SERVER_LIST9, serverListTxt);
+                        properties.replace(SpeedtestBindingConstants.PROPERTY_SERVER_LIST9, serverListTxt);
                         break;
                     case 10:
-                        properties.replace(speedtestBindingConstants.PROPERTY_SERVER_LIST10, serverListTxt);
+                        properties.replace(SpeedtestBindingConstants.PROPERTY_SERVER_LIST10, serverListTxt);
                         break;
                 }
                 id++;
@@ -268,10 +268,11 @@ public class speedtestHandler extends BaseThingHandler {
     private void getSpeed() {
         logger.debug("Getting Speed Measurement");
         String postCommand = "";
-        if (!serverID.equals("")) {
+        if (!serverID.isBlank()) {
             postCommand = " -s " + serverID;
         }
-        ResultContainer tmpCont = doExecuteRequest(" -f json --accept-license" + postCommand, ResultContainer.class);
+        ResultContainer tmpCont = doExecuteRequest(" -f json --accept-license --accept-gdpr" + postCommand,
+                ResultContainer.class);
         if (tmpCont != null) {
             if (tmpCont.getType().equals("result")) {
                 ping_jitter = tmpCont.getPing().getJitter();
@@ -292,7 +293,7 @@ public class speedtestHandler extends BaseThingHandler {
             }
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Speedtest is not returning valid results. ");
+                    "Speedtest is not returning valid results.");
         }
     }
 
@@ -308,7 +309,7 @@ public class speedtestHandler extends BaseThingHandler {
                 return obj;
             }
         } catch (Exception e) {
-            logger.debug(e.getMessage(), e);
+            logger.debug("Exception: {}", e.getMessage());
         }
         return null;
     }
@@ -318,31 +319,31 @@ public class speedtestHandler extends BaseThingHandler {
      */
     private void updateChannels() {
         logger.debug("Updating channels");
-        updateState(new ChannelUID(getThing().getUID(), speedtestBindingConstants.PING_JITTER),
+        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.PING_JITTER),
                 new DecimalType(ping_jitter));
-        updateState(new ChannelUID(getThing().getUID(), speedtestBindingConstants.PING_LATENCY),
+        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.PING_LATENCY),
                 new DecimalType(ping_latency));
-        updateState(new ChannelUID(getThing().getUID(), speedtestBindingConstants.DOWNLOAD_BANDWIDTH),
+        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.DOWNLOAD_BANDWIDTH),
                 new DecimalType(Double.parseDouble(download_bandwidth) / 125000));
-        updateState(new ChannelUID(getThing().getUID(), speedtestBindingConstants.DOWNLOAD_BYTES),
+        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.DOWNLOAD_BYTES),
                 new DecimalType(download_bytes));
-        updateState(new ChannelUID(getThing().getUID(), speedtestBindingConstants.DOWNLOAD_ELAPSED),
+        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.DOWNLOAD_ELAPSED),
                 new DecimalType(download_elapsed));
-        updateState(new ChannelUID(getThing().getUID(), speedtestBindingConstants.UPLOAD_BANDWIDTH),
+        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.UPLOAD_BANDWIDTH),
                 new DecimalType(Double.parseDouble(upload_bandwidth) / 125000));
-        updateState(new ChannelUID(getThing().getUID(), speedtestBindingConstants.UPLOAD_BYTES),
+        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.UPLOAD_BYTES),
                 new DecimalType(upload_bytes));
-        updateState(new ChannelUID(getThing().getUID(), speedtestBindingConstants.UPLOAD_ELAPSED),
+        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.UPLOAD_ELAPSED),
                 new DecimalType(upload_elapsed));
-        updateState(new ChannelUID(getThing().getUID(), speedtestBindingConstants.INTERFACE_EXTERNALIP),
+        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.INTERFACE_EXTERNALIP),
                 new StringType(String.valueOf(interface_externalIp)));
-        updateState(new ChannelUID(getThing().getUID(), speedtestBindingConstants.INTERFACE_INTERNALIP),
+        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.INTERFACE_INTERNALIP),
                 new StringType(String.valueOf(interface_internalIp)));
-        updateState(new ChannelUID(getThing().getUID(), speedtestBindingConstants.ISP),
+        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.ISP),
                 new StringType(String.valueOf(isp)));
-        updateState(new ChannelUID(getThing().getUID(), speedtestBindingConstants.RESULT_URL),
+        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.RESULT_URL),
                 new StringType(String.valueOf(result_url)));
-        updateState(new ChannelUID(getThing().getUID(), speedtestBindingConstants.SERVER),
+        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.SERVER),
                 new StringType(String.valueOf(server_name)));
     }
 
@@ -394,7 +395,7 @@ public class speedtestHandler extends BaseThingHandler {
         try {
             proc = rt.exec(cmdArray);
         } catch (Exception e) {
-            logger.debug("An exception occurred while executing '{}' : '{}'", Arrays.asList(cmdArray), e.getMessage());
+            logger.debug("An exception occurred while executing '{}': '{}'", Arrays.asList(cmdArray), e.getMessage());
             return "";
         }
 
@@ -407,7 +408,7 @@ public class speedtestHandler extends BaseThingHandler {
                 logger.debug("Exec [{}]: '{}'", "OUTPUT", line);
             }
         } catch (IOException e) {
-            logger.warn("An exception occurred while reading the stdout when executing '{}' : '{}'", commandLine,
+            logger.warn("An exception occurred while reading the stdout when executing '{}': '{}'", commandLine,
                     e.getMessage());
         }
 
@@ -415,7 +416,7 @@ public class speedtestHandler extends BaseThingHandler {
         try {
             exitVal = proc.waitFor(timeOut, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
-            logger.debug("An exception occurred while waiting for the process ('{}') to finish : '{}'", commandLine,
+            logger.debug("An exception occurred while waiting for the process ('{}') to finish: '{}'", commandLine,
                     e.getMessage());
         }
 
@@ -452,7 +453,7 @@ public class speedtestHandler extends BaseThingHandler {
             try {
                 return commandLine.split(" ");
             } catch (PatternSyntaxException e) {
-                logger.warn("An exception occurred while splitting '{}' : '{}'", commandLine, e.getMessage());
+                logger.warn("An exception occurred while splitting '{}': '{}'", commandLine, e.getMessage());
                 return new String[] {};
             }
         }

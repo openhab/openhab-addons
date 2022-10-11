@@ -1,6 +1,7 @@
-# speedtest Binding
+# Speedtest Binding
 
-This binding simplifies the addition of network speed tests from your openHAB instance.   Simply put, it's a wrapper around Ookla's SpeedTest ( https://www.speedtest.net/apps/cli ).  
+This binding simplifies the addition of network speed tests from your openHAB instance.
+Simply put, it's a wrapper around Ookla's SpeedTest (https://www.speedtest.net/apps/cli).  
 
 You MUST have the Ookla cli application installed on your machine prior to using this.
 
@@ -14,17 +15,20 @@ For this binding to work, you MUST install Ookla's speedtest, this will not work
 
 To install Ookla's version of speedtest, head to https://www.speedtest.net/apps/cli and follow the instructions for your Operating System.   
 
-Linux based systems will assume a default install location of /usr/bin/speedtest .  If your environment is different, just enter the path in the Thing config.  
+Linux based systems will assume a default install location of /usr/bin/speedtest.
+If your environment is different, just enter the path in the Thing config.  
 
 ## Thing Configuration
+
 | config option  |  description                  |
 |----------|------------------------------|
 | Refresh Rate  | This will change the refresh rate(or how often) the binding checks the speed  |
 | Speedtest Path  | This is the full URL to the speedtest executable ** |
 
-The refresh rate can also be set to "Do not test automtically" which will never test.   This can be used if you want to use the trigger_test to test via rules, or an item instead.
+The refresh rate can also be set to "Do not test automatically" which will never test.
+This can be used if you want to use the trigger_test to test via rules, or an item instead.
 
-** You must also check that you have permission as the user that openhab is running under to access and run this.   
+** You must also check that you have permission as the user that openHAB is running under to access and run this.   
 
 ## Channels
 
@@ -44,5 +48,3 @@ The refresh rate can also be set to "Do not test automtically" which will never 
 | interface_externalIp  | String | The IP of the external interface that was used for the test |
 | result_url  | String | The URL of your results of the test on Ookla |
 | trigger_test  | Switch | Allows a manual trigger to test speed now |
-
-

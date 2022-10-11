@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,6 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
+
 package org.openhab.binding.speedtest.internal;
 
 import java.util.Set;
@@ -20,13 +21,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link speedtestBindingConstants} class defines common constants, which are
+ * The {@link SpeedtestBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Brian Homeyer - Initial contribution
  */
 @NonNullByDefault
-public class speedtestBindingConstants {
+public class SpeedtestBindingConstants {
 
     private static final String BINDING_ID = "speedtest";
 
@@ -41,19 +42,19 @@ public class speedtestBindingConstants {
 
     // Channels
     public static final String SERVER = "server";
-    public static final String PING_JITTER = "ping_jitter";
-    public static final String PING_LATENCY = "ping_latency";
-    public static final String DOWNLOAD_BANDWIDTH = "download_bandwidth";
-    public static final String DOWNLOAD_BYTES = "download_bytes";
-    public static final String DOWNLOAD_ELAPSED = "download_elapsed";
-    public static final String UPLOAD_BANDWIDTH = "upload_bandwidth";
-    public static final String UPLOAD_BYTES = "upload_bytes";
-    public static final String UPLOAD_ELAPSED = "upload_elapsed";
+    public static final String PING_JITTER = "pingJitter";
+    public static final String PING_LATENCY = "pingLatency";
+    public static final String DOWNLOAD_BANDWIDTH = "downloadBandwidth";
+    public static final String DOWNLOAD_BYTES = "downloadBytes";
+    public static final String DOWNLOAD_ELAPSED = "downloadElapsed";
+    public static final String UPLOAD_BANDWIDTH = "uploadBandwidth";
+    public static final String UPLOAD_BYTES = "uploadBytes";
+    public static final String UPLOAD_ELAPSED = "uploadElapsed";
     public static final String ISP = "isp";
-    public static final String INTERFACE_INTERNALIP = "interface_internalIp";
-    public static final String INTERFACE_EXTERNALIP = "interface_externalIp";
-    public static final String RESULT_URL = "result_url";
-    public static final String TRIGGER_TEST = "trigger_test";
+    public static final String INTERFACE_INTERNALIP = "interfaceInternalIp";
+    public static final String INTERFACE_EXTERNALIP = "interfaceExternalIp";
+    public static final String RESULT_URL = "resultUrl";
+    public static final String TRIGGER_TEST = "triggerTest";
 
     public static final String PROPERTY_SERVER_LIST1 = "Server List 1";
     public static final String PROPERTY_SERVER_LIST2 = "Server List 2";
