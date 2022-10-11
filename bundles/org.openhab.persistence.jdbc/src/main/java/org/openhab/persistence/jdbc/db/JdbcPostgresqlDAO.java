@@ -36,13 +36,16 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class JdbcPostgresqlDAO extends JdbcBaseDAO {
+    private static final String DRIVER_CLASS_NAME = org.postgresql.Driver.class.getName();
+    @SuppressWarnings("unused")
+    private static final String DATA_SOURCE_CLASS_NAME = org.postgresql.ds.PGSimpleDataSource.class.getName();
+
     private final Logger logger = LoggerFactory.getLogger(JdbcPostgresqlDAO.class);
 
     /********
      * INIT *
      ********/
     public JdbcPostgresqlDAO() {
-        super();
         initSqlQueries();
         initSqlTypes();
         initDbProps();
@@ -94,9 +97,9 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
         // databaseProps.setProperty("dataSource.prepStmtCacheSqlLimit", "2048");
 
         // Properties for HikariCP
-        databaseProps.setProperty("driverClassName", "org.postgresql.Driver");
+        databaseProps.setProperty("driverClassName", DRIVER_CLASS_NAME);
         // driverClassName OR BETTER USE dataSourceClassName
-        // databaseProps.setProperty("dataSourceClassName", "org.postgresql.ds.PGSimpleDataSource");
+        // databaseProps.setProperty("dataSourceClassName", DATA_SOURCE_CLASS_NAME);
         // databaseProps.setProperty("maximumPoolSize", "3");
         // databaseProps.setProperty("minimumIdle", "2");
     }
@@ -141,7 +144,7 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
         String sql = StringUtilsExt.replaceArrayMerge(sqlInsertItemValue,
                 new String[] { "#tableName#", "#dbType#", "#tablePrimaryValue#" },
                 new String[] { storedVO.getTableName(), storedVO.getDbType(), sqlTypes.get("tablePrimaryValue") });
-        Object[] params = new Object[] { storedVO.getValue() };
+        Object[] params = { storedVO.getValue() };
         logger.debug("JDBC::doStoreItemValue sql={} value='{}'", sql, storedVO.getValue());
         Yank.execute(sql, params);
     }

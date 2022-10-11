@@ -32,13 +32,16 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class JdbcSqliteDAO extends JdbcBaseDAO {
+    private static final String DRIVER_CLASS_NAME = org.sqlite.JDBC.class.getName();
+    @SuppressWarnings("unused")
+    private static final String DATA_SOURCE_CLASS_NAME = org.sqlite.SQLiteDataSource.class.getName();
+
     private final Logger logger = LoggerFactory.getLogger(JdbcSqliteDAO.class);
 
     /********
      * INIT *
      ********/
     public JdbcSqliteDAO() {
-        super();
         initSqlQueries();
         initSqlTypes();
         initDbProps();
@@ -66,9 +69,9 @@ public class JdbcSqliteDAO extends JdbcBaseDAO {
      */
     private void initDbProps() {
         // Properties for HikariCP
-        databaseProps.setProperty("driverClassName", "org.sqlite.JDBC");
+        databaseProps.setProperty("driverClassName", DRIVER_CLASS_NAME);
         // driverClassName OR BETTER USE dataSourceClassName
-        // databaseProps.setProperty("dataSourceClassName", "org.sqlite.SQLiteDataSource");
+        // databaseProps.setProperty("dataSourceClassName", DATA_SOURCE_CLASS_NAME);
     }
 
     /**************
@@ -77,7 +80,7 @@ public class JdbcSqliteDAO extends JdbcBaseDAO {
 
     @Override
     public @Nullable String doGetDB() {
-        return Yank.queryColumn(sqlGetDB, "file", (Class<@Nullable String>) String.class, null).get(0);
+        return Yank.queryColumn(sqlGetDB, "file", String.class, null).get(0);
     }
 
     @Override
@@ -99,7 +102,7 @@ public class JdbcSqliteDAO extends JdbcBaseDAO {
         String sql = StringUtilsExt.replaceArrayMerge(sqlInsertItemValue,
                 new String[] { "#tableName#", "#dbType#", "#tablePrimaryValue#" },
                 new String[] { storedVO.getTableName(), storedVO.getDbType(), sqlTypes.get("tablePrimaryValue") });
-        Object[] params = new Object[] { storedVO.getValue() };
+        Object[] params = { storedVO.getValue() };
         logger.debug("JDBC::doStoreItemValue sql={} value='{}'", sql, storedVO.getValue());
         Yank.execute(sql, params);
     }

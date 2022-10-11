@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -245,18 +246,21 @@ public class JdbcBaseDAO {
      * ITEMS DAOs *
      **************/
     public @Nullable Integer doPingDB() {
-        return Yank.queryScalar(sqlPingDB, (Class<@Nullable Integer>) Integer.class, null);
+        final @Nullable Integer result = Yank.queryScalar(sqlPingDB, Integer.class, null);
+        return result;
     }
 
     public @Nullable String doGetDB() {
-        return Yank.queryScalar(sqlGetDB, (Class<@Nullable String>) String.class, null);
+        final @Nullable String result = Yank.queryScalar(sqlGetDB, String.class, null);
+        return result;
     }
 
     public boolean doIfTableExists(ItemsVO vo) {
         String sql = StringUtilsExt.replaceArrayMerge(sqlIfTableExists, new String[] { "#searchTable#" },
                 new String[] { vo.getItemsManageTable() });
         logger.debug("JDBC::doIfTableExists sql={}", sql);
-        return Yank.queryScalar(sql, (Class<@Nullable String>) String.class, null) != null;
+        final @Nullable String result = Yank.queryScalar(sql, String.class, null);
+        return Objects.nonNull(result);
     }
 
     public Long doCreateNewEntryInItemsTable(ItemsVO vo) {
@@ -321,7 +325,7 @@ public class JdbcBaseDAO {
         String sql = StringUtilsExt.replaceArrayMerge(sqlInsertItemValue,
                 new String[] { "#tableName#", "#tablePrimaryValue#" },
                 new String[] { storedVO.getTableName(), sqlTypes.get("tablePrimaryValue") });
-        Object[] params = new Object[] { storedVO.getValue(), storedVO.getValue() };
+        Object[] params = { storedVO.getValue(), storedVO.getValue() };
         logger.debug("JDBC::doStoreItemValue sql={} value='{}'", sql, storedVO.getValue());
         Yank.execute(sql, params);
     }
@@ -331,7 +335,7 @@ public class JdbcBaseDAO {
         String sql = StringUtilsExt.replaceArrayMerge(sqlInsertItemValue,
                 new String[] { "#tableName#", "#tablePrimaryValue#" }, new String[] { storedVO.getTableName(), "?" });
         java.sql.Timestamp timestamp = new java.sql.Timestamp(date.toInstant().toEpochMilli());
-        Object[] params = new Object[] { timestamp, storedVO.getValue(), storedVO.getValue() };
+        Object[] params = { timestamp, storedVO.getValue(), storedVO.getValue() };
         logger.debug("JDBC::doStoreItemValue sql={} timestamp={} value='{}'", sql, timestamp, storedVO.getValue());
         Yank.execute(sql, params);
     }
