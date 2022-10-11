@@ -27,8 +27,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.speedtest.internal.dto.ResultContainer;
 import org.openhab.binding.speedtest.internal.dto.ResultsContainerServerList;
-import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -36,6 +37,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -195,15 +197,15 @@ public class SpeedtestHandler extends BaseThingHandler {
      */
     private boolean getSpeedTestVersion() {
         String versionString = doExecuteRequest(" -V", String.class);
-        if (!versionString.isEmpty()) {
+        if ((versionString != null) && !versionString.isEmpty()) {
             int newLI = versionString.indexOf("\n");
             String versionLine = versionString.substring(0, newLI);
             if (versionString.indexOf("Speedtest by Ookla") > -1) {
-                logger.debug("Speedtest Version : {}", versionLine);
+                logger.debug("Speedtest Version: {}", versionLine);
                 return true;
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Speedtest version not recognized, Speedtest from Ookla is REQUIRED. Please check configuration.");
+                        "Speedtest version not recognized, Speedtest CLI tool from Ookla is REQUIRED (https://www.speedtest.net/). Please check installation/configuration.");
                 return false;
             }
         }
@@ -221,7 +223,7 @@ public class SpeedtestHandler extends BaseThingHandler {
             int id = 1;
             Map<String, String> properties = editProperties();
             for (ResultsContainerServerList.Server server : tmpCont.servers) {
-                serverListTxt = "ID : " + server.id.toString() + " " + server.host + "( " + server.location + " )";
+                serverListTxt = "ID: " + server.id.toString() + ", " + server.host + " (" + server.location + ")";
                 switch (id) {
                     case 1:
                         properties.replace(SpeedtestBindingConstants.PROPERTY_SERVER_LIST1, serverListTxt);
@@ -264,7 +266,6 @@ public class SpeedtestHandler extends BaseThingHandler {
     /*
      * Get the speedtest data and convert it from JSON and send it to update the channels.
      */
-    @SuppressWarnings("unused")
     private void getSpeed() {
         logger.debug("Getting Speed Measurement");
         String postCommand = "";
@@ -297,10 +298,11 @@ public class SpeedtestHandler extends BaseThingHandler {
         }
     }
 
-    private <T> T doExecuteRequest(String arguments, Class<T> type) {
+    private @Nullable <T> T doExecuteRequest(String arguments, Class<T> type) {
         try {
             String dataOut = executeCmd(speedTestCommand + arguments);
             if (type != String.class) {
+                @Nullable
                 T obj = GSON.fromJson(dataOut, type);
                 return obj;
             } else {
@@ -319,22 +321,39 @@ public class SpeedtestHandler extends BaseThingHandler {
      */
     private void updateChannels() {
         logger.debug("Updating channels");
-        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.PING_JITTER),
-                new DecimalType(ping_jitter));
-        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.PING_LATENCY),
-                new DecimalType(ping_latency));
-        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.DOWNLOAD_BANDWIDTH),
-                new DecimalType(Double.parseDouble(download_bandwidth) / 125000));
-        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.DOWNLOAD_BYTES),
-                new DecimalType(download_bytes));
-        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.DOWNLOAD_ELAPSED),
-                new DecimalType(download_elapsed));
-        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.UPLOAD_BANDWIDTH),
-                new DecimalType(Double.parseDouble(upload_bandwidth) / 125000));
-        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.UPLOAD_BYTES),
-                new DecimalType(upload_bytes));
-        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.UPLOAD_ELAPSED),
-                new DecimalType(upload_elapsed));
+
+        State newState = new QuantityType<>(Double.parseDouble(ping_jitter) / 1000.0, Units.SECOND);
+        logger.debug("ping_jitter: {}", newState);
+        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.PING_JITTER), newState);
+
+        newState = new QuantityType<>(Double.parseDouble(ping_latency) / 1000.0, Units.SECOND);
+        logger.debug("ping_latency: {}", newState);
+        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.PING_LATENCY), newState);
+
+        newState = new QuantityType<>(Double.parseDouble(download_bandwidth) / 125000.0, Units.MEGABIT_PER_SECOND);
+        logger.debug("download_bandwidth: {}", newState);
+        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.DOWNLOAD_BANDWIDTH), newState);
+
+        newState = new QuantityType<>(Double.parseDouble(download_bytes), Units.BYTE);
+        logger.debug("download_bytes: {}", newState);
+        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.DOWNLOAD_BYTES), newState);
+
+        newState = new QuantityType<>(Double.parseDouble(download_elapsed) / 1000.0, Units.SECOND);
+        logger.debug("download_elapsed: {}", newState);
+        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.DOWNLOAD_ELAPSED), newState);
+
+        newState = new QuantityType<>(Double.parseDouble(upload_bandwidth) / 125000.0, Units.MEGABIT_PER_SECOND);
+        logger.debug("upload_bandwidth: {}", newState);
+        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.UPLOAD_BANDWIDTH), newState);
+
+        newState = new QuantityType<>(Double.parseDouble(upload_bytes), Units.BYTE);
+        logger.debug("upload_bytes: {}", newState);
+        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.UPLOAD_BYTES), newState);
+
+        newState = new QuantityType<>(Double.parseDouble(upload_elapsed) / 1000.0, Units.SECOND);
+        logger.debug("upload_elapsed: {}", newState);
+        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.UPLOAD_ELAPSED), newState);
+
         updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.INTERFACE_EXTERNALIP),
                 new StringType(String.valueOf(interface_externalIp)));
         updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.INTERFACE_INTERNALIP),
@@ -451,7 +470,8 @@ public class SpeedtestHandler extends BaseThingHandler {
         } else {
             logger.debug("Splitting by spaces");
             try {
-                return commandLine.split(" ");
+                String[] splitCmd = commandLine.split(" ");
+                return splitCmd;
             } catch (PatternSyntaxException e) {
                 logger.warn("An exception occurred while splitting '{}': '{}'", commandLine, e.getMessage());
                 return new String[] {};
@@ -461,17 +481,23 @@ public class SpeedtestHandler extends BaseThingHandler {
 
     public static OS getOperatingSystemType() {
         if (os == OS.NOT_SET) {
-            String operSys = System.getProperty("os.name").toLowerCase();
-            if (operSys.contains("win")) {
-                os = OS.WINDOWS;
-            } else if (operSys.contains("nix") || operSys.contains("nux") || operSys.contains("aix")) {
-                os = OS.LINUX;
-            } else if (operSys.contains("mac")) {
-                os = OS.MAC;
-            } else if (operSys.contains("sunos")) {
-                os = OS.SOLARIS;
-            } else {
+            String operSys = System.getProperty("os.name");
+            if (operSys == null) {
                 os = OS.UNKNOWN;
+            } else {
+                operSys = operSys.toLowerCase();
+
+                if (operSys.contains("win")) {
+                    os = OS.WINDOWS;
+                } else if (operSys.contains("nix") || operSys.contains("nux") || operSys.contains("aix")) {
+                    os = OS.LINUX;
+                } else if (operSys.contains("mac")) {
+                    os = OS.MAC;
+                } else if (operSys.contains("sunos")) {
+                    os = OS.SOLARIS;
+                } else {
+                    os = OS.UNKNOWN;
+                }
             }
         }
         return os;

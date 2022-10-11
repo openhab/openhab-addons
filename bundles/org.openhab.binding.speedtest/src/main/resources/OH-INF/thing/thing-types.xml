@@ -80,52 +80,52 @@
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="pingJitter" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Ping Jitter</label>
 		<description>Ping Jitter</description>
-		<state readOnly="true"></state>
+		<state readOnly="true" pattern="%.2f ms"></state>
 	</channel-type>
 	<channel-type id="pingLatency">
-		<item-type>Number</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Ping Latency</label>
 		<description>Ping Latency</description>
-		<state readOnly="true"></state>
+		<state readOnly="true" pattern="%.2f ms"></state>
 	</channel-type>
 	<channel-type id="downloadBandwidth">
-		<item-type>Number</item-type>
+		<item-type>Number:DataTransferRate</item-type>
 		<label>Download Bandwidth</label>
 		<description>Download Bandwidth</description>
-		<state readOnly="true"></state>
+		<state readOnly="true" pattern="%.2f Mbit/s"></state>
 	</channel-type>
 	<channel-type id="downloadBytes" advanced="true">
-		<item-type>Number</item-type>
-		<label>Download Bytes</label>
-		<description>Download Bytes</description>
-		<state readOnly="true"></state>
+		<item-type>Number:DataAmount</item-type>
+		<label>Downloaded Bytes</label>
+		<description>Downloaded Bytes</description>
+		<state readOnly="true" pattern="%.0f MB"></state>
 	</channel-type>
 	<channel-type id="downloadElapsed" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Download Elapsed Time</label>
 		<description>Download Elapsed Time</description>
-		<state readOnly="true"></state>
+		<state readOnly="true" pattern="%.2f s"></state>
 	</channel-type>
 	<channel-type id="uploadBandwidth">
-		<item-type>Number</item-type>
+		<item-type>Number:DataTransferRate</item-type>
 		<label>Upload Bandwidth</label>
 		<description>Upload Bandwidth</description>
-		<state readOnly="true"></state>
+		<state readOnly="true" pattern="%.2f Mbit/s"></state>
 	</channel-type>
 	<channel-type id="uploadBytes" advanced="true">
-		<item-type>Number</item-type>
-		<label>Upload Bytes</label>
-		<description>Upload Bytes</description>
-		<state readOnly="true"></state>
+		<item-type>Number:DataAmount</item-type>
+		<label>Uploaded Bytes</label>
+		<description>Uploaded Bytes</description>
+		<state readOnly="true" pattern="%.0f MB"></state>
 	</channel-type>
 	<channel-type id="uploadElapsed" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Upload Elapsed Time</label>
 		<description>Upload Elapsed Time</description>
-		<state readOnly="true"></state>
+		<state readOnly="true" pattern="%.2f s"></state>
 	</channel-type>
 	<channel-type id="isp">
 		<item-type>String</item-type>
