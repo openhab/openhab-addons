@@ -4,6 +4,6 @@
 	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
 
 	<name>Speedtest Binding</name>
-	<description>This is the binding for Ookla Speedtest</description>
+	<description>Binding for Ookla Speedtest (https://www.speedtest.net/)</description>
 
 </binding:binding>
