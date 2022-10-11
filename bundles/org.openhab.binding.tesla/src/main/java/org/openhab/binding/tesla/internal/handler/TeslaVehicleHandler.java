@@ -604,8 +604,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                 status = lastDriveStateChangeToNullTimestamp > (System.currentTimeMillis()
                         - (computedInactivityPeriod * 60 * 1000));
                 if (status) {
-                    logger.debug(
-                            "Drivestate is null but has changed recently, therefore continuing to poll.");
+                    logger.debug("Drivestate is null but has changed recently, therefore continuing to poll.");
                     return status;
                 } else {
                     logger.debug("Drivestate has changed to null after interval {} min and can now be put to sleep.",
