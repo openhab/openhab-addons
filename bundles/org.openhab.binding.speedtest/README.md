@@ -1,50 +1,60 @@
 # Speedtest Binding
 
-This binding simplifies the addition of network speed tests from your openHAB instance.
-Simply put, it's a wrapper around Ookla's SpeedTest (https://www.speedtest.net/apps/cli).  
+The Speedtest Binding can be used to perform a network speed test for your openHAB instance.
+It is based on the command line interface (CLI) version of Ookla's Speedtest (https://www.speedtest.net/apps/cli).
 
-You MUST have the Ookla cli application installed on your machine prior to using this.
+The Ookla CLI Speedtest application MUST be installed on your openHAB instance when using the Speedtest Binding.
+
+When using this Binding, you automatically accept the License and Privacy Terms of Ookla's Speedtest. You can find the latest version of those terms at the following webpages:
+* https://www.speedtest.net/about/eula
+* https://www.speedtest.net/about/terms
+* https://www.speedtest.net/about/privacy
 
 ## Supported Things
 
-Speedtest thing.   
+Speedtest thing.
 
 ## Binding Configuration
 
-For this binding to work, you MUST install Ookla's speedtest, this will not work with other versions of "speedtest-cli" or packaged speedtest varieties.   
+For this binding to work, you MUST install Ookla's Speedtest command line tool (`speedtest` or `speedtest.exe`).
+It will not work with other versions like `speedtest-cli` or other `speedtest` variants.
 
-To install Ookla's version of speedtest, head to https://www.speedtest.net/apps/cli and follow the instructions for your Operating System.   
-
-Linux based systems will assume a default install location of /usr/bin/speedtest.
-If your environment is different, just enter the path in the Thing config.  
+To install Ookla's version of Speedtest, head to https://www.speedtest.net/apps/cli and follow the instructions for your Operating System.  
 
 ## Thing Configuration
 
-| config option  |  description                  |
-|----------|------------------------------|
-| Refresh Rate  | This will change the refresh rate(or how often) the binding checks the speed  |
-| Speedtest Path  | This is the full URL to the speedtest executable ** |
+| Parameter         |  Description                                                                                                                 | Default |
+|-------------------|------------------------------------------------------------------------------------------------------------------------------|---------|
+| `refreshInterval` | How often to test network speed, in minutes                                                                                  | `60`    |
+| `execPath`        | The path of the Ookla Speedtest executable.<br/>Linux machines may leave this blank and it defaults to `/usr/bin/speedtest`. |         |
+| `serverID`        | Optional: A specific server that shall be used for testing. You can pick the server ID from the "Thing Properties".<br/>If this is left blank the best option will be selected by Ookla.          |         |
 
-The refresh rate can also be set to "Do not test automatically" which will never test.
-This can be used if you want to use the trigger_test to test via rules, or an item instead.
+The `refreshInterval` parameter can also be set to "Do not test automatically".
+This can be used if you want to use the "Trigger Test" channel in order to test via rules, or an item instead.
 
-** You must also check that you have permission as the user that openHAB is running under to access and run this.   
+Ensure that the user that openHAB is running with, has the permissions to access and execute the executable.
+
+## Properties
+
+| Property            | Description                                                                                                |
+|---------------------|------------------------------------------------------------------------------------------------------------|
+| Server List 1...10  | A List of Ookla Speedtest servers that can be used in order to specify a specific server for the Speedtest.<br/>Configure the Server ID via the `serverID` Thing Configuration Parameter. |
 
 ## Channels
 
-| channel  | type   | description                  |
-|----------|--------|------------------------------|
-| server  | String | The remote server that the check was run against  |
-| ping_jitter  | Number | Ping jitter when the test was run  |
-| ping_latency  | Number | Ping latency when the test was run |
-| download_bandwidth  | Number | Download bandwidth in MB/s  |
-| download_bytes  | Number | The remote server that the check was run against  |
-| download_elapsed  | Number | The remote server that the check was run against  |
-| upload_bandwidth  | Number | Upload bandwidth in MB/s |
-| upload_bytes  | Number | How many bytes were used during the test  |
-| upload_elapsed  | Number | The elapsed time the upload portion took  |
-| isp  | String | Your ISP as calculated by Ookla  |
-| interface_internalIp  | String | The IP of the internal interface that was used for the test  |
-| interface_externalIp  | String | The IP of the external interface that was used for the test |
-| result_url  | String | The URL of your results of the test on Ookla |
-| trigger_test  | Switch | Allows a manual trigger to test speed now |
+| Channel               | Type                      | Description                                                       |
+|-----------------------|---------------------------|-------------------------------------------------------------------|
+| `server`              | `String`                  | The remote server that the Speedtest was run against              |
+| `pingJitter`          | `Number:Time`             | Ping Jitter                                                       |
+| `pingLatency`         | `Number:Time`             | Ping Latency                                                      |
+| `downloadBandwidth`   | `Number:DataTransferRate` | Download bandwidth, e.g. in Mbit/s                                |
+| `downloadBytes`       | `Number:DataAmount`       | Amount of data that were used for the download bandwith test      |
+| `downloadElapsed`     | `Number:Time`             | Time spend for the download bandwidth test                         |
+| `uploadBandwidth`     | `Number:DataTransferRate` | Upload bandwidth, e.g. in Mbit/s                                  |
+| `uploadBytes`         | `Number:DataAmount`       | Amount of data that were used for the upload bandwith test        |
+| `uploadElapsed`       | `Number:Time`             | Time spend for the upload bandwidth test                           |
+| `isp`                 | `String`                  | Your Internet Service Provider (ISP) as calculated by Ookla       |
+| `interfaceInternalIp` | `String`                  | IP address of the internal interface that was used for the test   |
+| `interfaceExternalIp` | `String`                  | IP address of the external interface that was used for the test   |
+| `resultUrl`           | `String`                  | The URL to the Speedtest results in HTML on the Ookla webserver    |
+| `triggerTest`         | `Switch`                  | Trigger in order to run Speedtest manually                        |
