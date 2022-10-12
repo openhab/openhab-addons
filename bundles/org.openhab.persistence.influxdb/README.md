@@ -50,7 +50,7 @@ Attention: The file-based configuration overrides the UI configuration.
 (\*) For 1.X version you must provide user and password, for 2.X you can use user and password or a token. That means
 that if you use all default values at minimum you must provide a password or a token.
 
-All item- and event-related configuration is defined in the file `persistence/influxdb.persist`.
+All item- and event-related configuration is defined in the file `persistence/influxdb.persist`. Please consider documentation [Persistence](https://www.openhab.org/docs/configuration/persistence.html#persistence) for further information.
 
 ### Additional configuration for customized storage options in InfluxDB
 
