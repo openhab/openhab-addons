@@ -42,6 +42,7 @@ The binding provides the same feature set across all devices as good as possible
 | shelly1l           | Shelly 1L Single Relay Switch                          | SHSW-L    |
 | shelly1pm          | Shelly Single Relay Switch with integrated Power Meter | SHSW-PM   |
 | shelly2-relay      | Shelly Double Relay Switch in relay mode               | SHSW-21   |
+| shelly2-roller     | Shelly2 in Roller Mode                                 | SHSW-21   |
 | shelly25-relay     | Shelly 2.5 in Relay Switch                             | SHSW-25   |
 | shelly25-roller    | Shelly 2.5 in Roller Mode                              | SHSW-25   |
 | shelly4pro         | Shelly 4x Relay Switch                                 | SHSW-44   |
@@ -532,6 +533,28 @@ The Thing id is derived from the service name, so that's the reason why the Thin
 |          |lastPower1   |Number   |yes      |Energy consumption for a round minute, 1 minute  ago                             |
 |          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (resets on restart)|
 |          |lastUpdate   |DateTime |yes      |Timestamp of the last measurement                                                |
+
+### Shelly 2 - roller mode thing-type: shelly2-roller)
+
+|Group     |Channel      |Type     |read-only|Description                                                                           |
+|----------|-------------|---------|---------|--------------------------------------------------------------------------------------|
+|roller    |control      |Rollershutter|r/w  |can be open (0%), stop, or close (100%); could also handle ON (open) and OFF (close)  |
+|          |input        |Switch   |yes      |ON: Input/Button is powered, see General Notes on Channels                            |
+|          |event        |Trigger  |yes      |Roller event/trigger with payload ROLLER_OPEN / ROLLER_CLOSE / ROLLER_STOP            |
+|          |rollerpos    |Number   |r/w      |Roller position: 100%=open...0%=closed; gets updated when the roller stops, see Notes |
+|          |rollerFav    |Number   |r/w      |Select roller position favorite (1-4, 0=no), see Notes                                |
+|          |state        |String   |yes      |Roller state: open/close/stop                                                         |
+|          |stopReason   |String   |yes      |Last stop reasons: normal, safety_switch or obstacle                                  |
+|          |safety       |Switch   |yes      |Indicates status of the Safety Switch, ON=problem detected, powered off               |
+|meter     |currentWatts |Number   |yes      |Current power consumption in Watts                                                    |
+|          |lastPower1   |Number   |yes      |Accumulated energy consumption in Watts for the full last minute                      |
+|          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (reset on restart)      |
+|          |lastUpdate   |DateTime |yes      |Timestamp of the last measurement                                                     |
+
+`Note: The Roller should be calibrated using the device Web UI or Shelly App, otherwise the position can .`
+
+The roller positioning calibration has to be performed using the Shelly Web UI or App before the position can be set in percent.
+Refer to [Smartify Roller Shutters with openHAB and Shelly](doc/UseCaseSmartRoller.md) for more information on roller integration. 
 
 ### Shelly 2.5 - relay mode (thing-type:shelly25-relay) 
 
