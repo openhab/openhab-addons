@@ -337,31 +337,9 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
         logger.debug("Can not handle command '{}' on channel '{}'", command, channelUID);
     }
 
-    // @Override
-    // public void channelLinked(ChannelUID channelUID) {
-    // logger.debug("channelLinked: {}", channelUID);
-    // final String channelId = channelUID.getId();
-    // if (isValidPortId(channelUID)) {
-    // Channel channel = thing.getChannel(channelUID);
-    // if (channel != null) {
-    // PortData data = new PortData();
-    // portDatas.put(channelId, data);
-    // }
-    // }
-    // }
-
     private boolean isValidPortId(ChannelUID channelUID) {
         return channelUID.getIdWithoutGroup().chars().allMatch(Character::isDigit);
     }
-
-    // @Override
-    // public void channelUnlinked(ChannelUID channelUID) {
-    // super.channelUnlinked(channelUID);
-    // PortData portData = portDatas.remove(channelUID.getId());
-    // if (portData != null) {
-    // portData.dispose();
-    // }
-    // }
 
     public void resetCounter(int counter) {
         parser.ifPresent(p -> p.resetCounter(counter));
