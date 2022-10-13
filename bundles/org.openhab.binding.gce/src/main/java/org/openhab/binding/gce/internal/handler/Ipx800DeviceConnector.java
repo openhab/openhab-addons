@@ -110,7 +110,7 @@ public class Ipx800DeviceConnector extends Thread {
     /**
      * Stop the device thread
      */
-    public void destroyAndExit() {
+    public void dispose() {
         interrupt();
         disconnect();
     }
@@ -161,7 +161,7 @@ public class Ipx800DeviceConnector extends Thread {
         try {
             Thread.sleep(DEFAULT_RECONNECT_TIMEOUT_MS);
         } catch (InterruptedException e) {
-            destroyAndExit();
+            dispose();
         }
     }
 
