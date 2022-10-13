@@ -377,16 +377,11 @@ public class JdbcMapper {
     }
 
     private String getTableName(int rowId, String itemName) {
-        return getTableNamePrefix(itemName) + formatRight(rowId, conf.getTableIdDigitCount());
-    }
-
-    private String getTableNamePrefix(String itemName) {
-        String name = conf.getTableNamePrefix();
         if (conf.getTableUseRealItemNames()) {
-            // Create the table name with real Item Names
-            name = (itemName.replaceAll(ITEM_NAME_PATTERN, "") + "_").toLowerCase();
+            return (itemName.replaceAll(ITEM_NAME_PATTERN, "")).toLowerCase();
+        } else {
+            return conf.getTableNamePrefix() + formatRight(rowId, conf.getTableIdDigitCount());
         }
-        return name;
     }
 
     public Set<PersistenceItemInfo> getItems() {
