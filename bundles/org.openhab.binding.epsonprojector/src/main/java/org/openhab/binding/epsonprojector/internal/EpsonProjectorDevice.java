@@ -182,7 +182,7 @@ public class EpsonProjectorDevice {
             return Integer.parseInt(str, radix);
         } catch (NumberFormatException nfe) {
             throw new EpsonProjectorCommandException(
-                    "Unable to parse response '" + response + "' as Integer for command: " + query);
+                    "Unable to parse response '" + str + "' as Integer for command: " + query);
         }
     }
 
