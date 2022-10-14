@@ -230,6 +230,7 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
         conf = new JdbcConfiguration(configuration);
         if (conf.valid && checkDBAccessability()) {
             checkDBSchema();
+            namingStrategy = new NamingStrategy(conf);
             // connection has been established ... initialization completed!
             initialized = true;
         } else {

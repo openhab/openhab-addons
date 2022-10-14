@@ -54,9 +54,9 @@ public class JdbcMapper {
     protected boolean initialized = false;
     protected @NonNullByDefault({}) JdbcConfiguration conf;
     protected final Map<String, String> sqlTables = new HashMap<>();
+    protected @NonNullByDefault({}) NamingStrategy namingStrategy;
     private long afterAccessMin = 10000;
     private long afterAccessMax = 0;
-    private static final String ITEM_NAME_PATTERN = "[^a-zA-Z_0-9\\-]";
 
     public JdbcMapper(TimeZoneProvider timeZoneProvider) {
         this.timeZoneProvider = timeZoneProvider;
@@ -262,7 +262,7 @@ public class JdbcMapper {
             // Reset the error counter
             errCnt = 0;
             for (ItemsVO vo : getItemIDTableNames()) {
-                sqlTables.put(vo.getItemname(), getTableName(vo.getItemid(), vo.getItemname()));
+                sqlTables.put(vo.getItemname(), namingStrategy.getTableName(vo.getItemid(), vo.getItemname()));
             }
         }
     }
@@ -292,7 +292,7 @@ public class JdbcMapper {
         }
         // Create the table name
         logger.debug("JDBC::getTable: getTableName with rowId={} itemName={}", rowId, itemName);
-        tableName = getTableName(rowId, itemName);
+        tableName = namingStrategy.getTableName(rowId, itemName);
 
         // Create table for item
         String dataType = conf.getDBDAO().getDataType(item);
@@ -327,7 +327,7 @@ public class JdbcMapper {
 
         //
         for (ItemsVO vo : getItemIDTableNames()) {
-            String t = getTableName(vo.getItemid(), vo.getItemname());
+            String t = namingStrategy.getTableName(vo.getItemid(), vo.getItemname());
             sqlTables.put(vo.getItemname(), t);
             tableIds.put(vo.getItemid(), t);
         }
@@ -376,33 +376,11 @@ public class JdbcMapper {
         initialized = tmpinit;
     }
 
-    private String getTableName(int rowId, String itemName) {
-        if (conf.getTableUseRealItemNames()) {
-            return (itemName.replaceAll(ITEM_NAME_PATTERN, "")).toLowerCase();
-        } else {
-            return conf.getTableNamePrefix() + formatRight(rowId, conf.getTableIdDigitCount());
-        }
-    }
-
     public Set<PersistenceItemInfo> getItems() {
         // TODO: in general it would be possible to query the count, earliest and latest values for each item too but it
         // would be a very costly operation
         return sqlTables.keySet().stream().map(itemName -> new JdbcPersistenceItemInfo(itemName))
                 .collect(Collectors.<PersistenceItemInfo> toSet());
-    }
-
-    private static String formatRight(final Object value, final int len) {
-        final String valueAsString = String.valueOf(value);
-        if (valueAsString.length() < len) {
-            final StringBuffer result = new StringBuffer(len);
-            for (int i = len - valueAsString.length(); i > 0; i--) {
-                result.append('0');
-            }
-            result.append(valueAsString);
-            return result.toString();
-        } else {
-            return valueAsString;
-        }
     }
 
     /*****************
