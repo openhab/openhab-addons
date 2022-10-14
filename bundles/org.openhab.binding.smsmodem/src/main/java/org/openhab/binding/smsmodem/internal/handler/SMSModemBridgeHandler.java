@@ -83,12 +83,12 @@ public class SMSModemBridgeHandler extends BaseBridgeHandler
     /**
      * The smslib object responsible for the serial communication with the modem
      */
-    private @NonNullByDefault({}) Modem modem;
+    private @Nullable Modem modem;
 
     /**
      * A scheduled watchdog check
      */
-    private @NonNullByDefault({}) ScheduledFuture<?> checkScheduled;
+    private @Nullable ScheduledFuture<?> checkScheduled;
 
     // we keep a list of msisdn sender for autodiscovery
     private Set<String> senderMsisdn = new HashSet<String>();
@@ -96,27 +96,36 @@ public class SMSModemBridgeHandler extends BaseBridgeHandler
 
     private boolean shouldRun = false;
 
-    @Override
-    public void dispose() {
-        shouldRun = false;
-        checkScheduled.cancel(true);
-        scheduler.execute(modem::stop);
-        modem.registerStatusListener(null);
-        modem.registerMessageListener(null);
-        modem.registerInformationListener(null);
-        modem = null;
-    }
-
     public SMSModemBridgeHandler(Bridge bridge, SerialPortManager serialPortManager) {
         super(bridge);
         this.serialPortManager = serialPortManager;
     }
 
     @Override
+    public void dispose() {
+        shouldRun = false;
+        ScheduledFuture<?> checkScheduledFinal = checkScheduled;
+        if (checkScheduledFinal != null) {
+            checkScheduledFinal.cancel(true);
+        }
+        Modem finalModem = modem;
+        if (finalModem != null) {
+            scheduler.execute(finalModem::stop);
+            finalModem.registerStatusListener(null);
+            finalModem.registerMessageListener(null);
+            finalModem.registerInformationListener(null);
+        }
+        modem = null;
+    }
+
+    @Override
     protected void updateConfiguration(Configuration configuration) {
         super.updateConfiguration(configuration);
         scheduler.execute(() -> {
-            modem.stop();
+            Modem finalModem = modem;
+            if (finalModem != null) {
+                finalModem.stop();
+            }
             checkAndStartModemIfNeeded();
         });
     }
@@ -124,19 +133,21 @@ public class SMSModemBridgeHandler extends BaseBridgeHandler
     @Override
     public void initialize() {
         shouldRun = true;
-        if (checkScheduled == null || (checkScheduled.isDone()) && this.shouldRun) {
+        ScheduledFuture<?> checkScheduledFinal = checkScheduled;
+        if (checkScheduledFinal == null || (checkScheduledFinal.isDone()) && this.shouldRun) {
             checkScheduled = scheduler.scheduleWithFixedDelay(this::checkAndStartModemIfNeeded, 0, 15,
                     TimeUnit.SECONDS);
         }
     }
 
-    private void checkAndStartModemIfNeeded() {
+    private synchronized void checkAndStartModemIfNeeded() {
         try {
             if (shouldRun && !isRunning()) {
                 logger.debug("Initializing smsmodem");
                 // ensure the underlying modem is stopped before trying to (re)starting it :
-                if (modem != null) {
-                    modem.stop();
+                Modem finalModem = modem;
+                if (finalModem != null) {
+                    finalModem.stop();
                 }
                 String logName;
                 if (getThing().getThingTypeUID().equals(SMSModemBindingConstants.SMSMODEMBRIDGE_THING_TYPE)) {
@@ -158,10 +169,13 @@ public class SMSModemBridgeHandler extends BaseBridgeHandler
                     throw new IllegalArgumentException("Invalid thing type");
                 }
                 logger.debug("Now trying to start SMSModem {}", logName);
-                modem.registerStatusListener(this);
-                modem.registerMessageListener(this);
-                modem.registerInformationListener(this);
-                modem.start();
+                finalModem = modem;
+                if (finalModem != null) {
+                    finalModem.registerStatusListener(this);
+                    finalModem.registerMessageListener(this);
+                    finalModem.registerInformationListener(this);
+                    finalModem.start();
+                }
                 logger.debug("SMSModem {} started", logName);
             }
         } catch (ModemConfigurationException e) {
@@ -210,7 +224,9 @@ public class SMSModemBridgeHandler extends BaseBridgeHandler
     }
 
     public boolean isRunning() {
-        return modem != null && (modem.getStatus() == Status.Started || modem.getStatus() == Status.Starting);
+        Modem finalModem = modem;
+        return finalModem != null
+                && (finalModem.getStatus() == Status.Started || finalModem.getStatus() == Status.Starting);
     }
 
     @Override
@@ -258,7 +274,10 @@ public class SMSModemBridgeHandler extends BaseBridgeHandler
             finalDiscoveryService.buildByAutoDiscovery(sender);
         }
         try { // delete message on the sim
-            modem.delete(message);
+            Modem finalModem = modem;
+            if (finalModem != null) {
+                finalModem.delete(message);
+            }
         } catch (CommunicationException e) {
             logger.warn("Cannot delete message after receiving it !", e);
         }
@@ -283,7 +302,10 @@ public class SMSModemBridgeHandler extends BaseBridgeHandler
         }
         out.setRequestDeliveryReport(deliveryReport);
         logger.debug("Sending message to {}", recipient);
-        modem.queue(out);
+        Modem finalModem = modem;
+        if (finalModem != null) {
+            finalModem.queue(out);
+        }
     }
 
     /**
@@ -304,8 +326,13 @@ public class SMSModemBridgeHandler extends BaseBridgeHandler
     public boolean processStatusCallback(Modem.Status oldStatus, Modem.Status newStatus) {
         switch (newStatus) {
             case Error:
+                String finalDescription = "unknown";
+                Modem finalModem = modem;
+                if (finalModem != null) {
+                    finalDescription = finalModem.getDescription();
+                }
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "SMSLib reported an error on the underlying modem " + modem.getDescription());
+                        "SMSLib reported an error on the underlying modem " + finalDescription);
                 break;
             case Started:
                 updateStatus(ThingStatus.ONLINE);
@@ -389,7 +416,10 @@ public class SMSModemBridgeHandler extends BaseBridgeHandler
             }
         }
         try {
-            modem.delete(message);
+            Modem finalModem = modem;
+            if (finalModem != null) {
+                finalModem.delete(message);
+            }
         } catch (CommunicationException e) {
             logger.warn("Cannot delete delivery report after receiving it !", e);
         }

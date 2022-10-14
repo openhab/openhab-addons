@@ -115,32 +115,9 @@ public class SMSConversationHandler extends BaseThingHandler {
         config = getConfigAs(SMSConversationConfiguration.class);
         try {
             checkBridgeHandler();
-            setStatusByBridgeStatus();
+            updateStatus(ThingStatus.ONLINE);
         } catch (ConfigurationException confe) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, confe.getMessage());
-        }
-    }
-
-    private void setStatusByBridgeStatus() {
-        SMSModemBridgeHandler bridgeHandlerFinal = bridgeHandler;
-        if (bridgeHandlerFinal != null) {
-            switch (bridgeHandlerFinal.getThing().getStatus()) {
-                case ONLINE:
-                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
-                    break;
-                case INITIALIZING:
-                case OFFLINE:
-                case REMOVED:
-                case REMOVING:
-                case UNINITIALIZED:
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-                    break;
-                case UNKNOWN:
-                    updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.BRIDGE_OFFLINE);
-                    break;
-            }
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }
 }
