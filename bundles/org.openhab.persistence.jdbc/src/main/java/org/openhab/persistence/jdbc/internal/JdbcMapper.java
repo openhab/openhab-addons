@@ -14,7 +14,6 @@ package org.openhab.persistence.jdbc.internal;
 
 import java.sql.SQLInvalidAuthorizationSpecException;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -325,50 +324,15 @@ public class JdbcMapper {
 
         Map<Integer, String> tableIds = new HashMap<>();
 
-        //
         for (ItemsVO vo : getItemIDTableNames()) {
             String t = namingStrategy.getTableName(vo.getItemid(), vo.getItemname());
             sqlTables.put(vo.getItemname(), t);
             tableIds.put(vo.getItemid(), t);
         }
 
-        //
-        List<ItemsVO> al = getItemTables();
+        List<ItemsVO> itemTables = getItemTables();
 
-        String oldName = "";
-        String newName = "";
-        List<ItemVO> oldNewTablenames = new ArrayList<>();
-        for (int i = 0; i < al.size(); i++) {
-            int id = -1;
-            oldName = al.get(i).getTable_name();
-            logger.info("JDBC::formatTableNames: found Table Name= {}", oldName);
-
-            if (oldName.startsWith(conf.getTableNamePrefix()) && !oldName.contains("_")) {
-                id = Integer.parseInt(oldName.substring(conf.getTableNamePrefix().length()));
-                logger.info("JDBC::formatTableNames: found Table with Prefix '{}' Name= {} id= {}",
-                        conf.getTableNamePrefix(), oldName, (id));
-            } else if (oldName.contains("_")) {
-                id = Integer.parseInt(oldName.substring(oldName.lastIndexOf("_") + 1));
-                logger.info("JDBC::formatTableNames: found Table Name= {} id= {}", oldName, (id));
-            }
-            logger.info("JDBC::formatTableNames: found Table id= {}", id);
-
-            newName = tableIds.get(id);
-            logger.info("JDBC::formatTableNames: found Table newName= {}", newName);
-
-            if (newName != null) {
-                if (!oldName.equalsIgnoreCase(newName)) {
-                    oldNewTablenames.add(new ItemVO(oldName, newName));
-                    logger.info("JDBC::formatTableNames: Table '{}' will be renamed to '{}'", oldName, newName);
-                } else {
-                    logger.info("JDBC::formatTableNames: Table oldName='{}' newName='{}' nothing to rename", oldName,
-                            newName);
-                }
-            } else {
-                logger.error("JDBC::formatTableNames: Table '{}' could NOT be renamed to '{}'", oldName, newName);
-                break;
-            }
-        }
+        List<ItemVO> oldNewTablenames = namingStrategy.prepareMigration(tableIds, itemTables);
 
         updateItemTableNames(oldNewTablenames);
         logger.info("JDBC::formatTableNames: Finished updating {} item table names", oldNewTablenames.size());
