@@ -236,6 +236,7 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
                             logger.debug("Querying the vehicle: VIN {}", vehicle.vin);
                             String vehicleJSON = gson.toJson(vehicle);
                             vehicleHandler.parseAndUpdate("queryVehicle", null, vehicleJSON);
+                            logger.trace("JSON_RECEIVED = {}", vehicleJSON);
                             logger.trace("Vehicle is id {}/vehicle_id {}/tokens {}", vehicle.id, vehicle.vehicle_id,
                                     vehicle.tokens);
                         }
