@@ -199,15 +199,15 @@ Sending `ON` to this channel will trigger a reconnect via the controller.
 
 The `poePort` information that is retrieved is available as these channels:
 
-| Channel ID | Item Type                | Description                                        | Permissions |
-|------------|--------------------------|----------------------------------------------------|-------------|
-| online     | Switch                   | Online status of the port                          | Read        |
-| mode       | Selection                | Select the PoE mode: off, auto, 24v or passthrough | Read, Write |
-| enable     | Switch                   | Enable Power over Ethernet                         | Read, Write |
-| cmd        | String                   | Command channel: `power-cycle`: Power Cycle port   | Write       |
-| power      | Number:Power             | Power consumption of the port in Watt              | Read        |
-| voltage    | Number:ElectricPotential | Voltage of the port in Volt                        | Read        |
-| current    | Number:ElectricCurrent   | Current used by the port in mA                     | Read        |
+| Channel ID | Item Type                | Description                                           | Permissions |
+|------------|--------------------------|-------------------------------------------------------|-------------|
+| online     | Switch                   | Online status of the port                             | Read        |
+| mode       | Selection                | Select the PoE mode: off, auto, pasv24 or passthrough | Read, Write |
+| enable     | Switch                   | Enable Power over Ethernet                            | Read, Write |
+| cmd        | String                   | Command channel: `power-cycle`: Power Cycle port      | Write       |
+| power      | Number:Power             | Power consumption of the port in Watt                 | Read        |
+| voltage    | Number:ElectricPotential | Voltage of the port in Volt                           | Read        |
+| current    | Number:ElectricCurrent   | Current used by the port in mA                        | Read        |
 
 The `enable` switch channel has a configuration parameter `mode` which is the value used to switch PoE on when the channel is switched to ON.
 The default mode value is `auto`.

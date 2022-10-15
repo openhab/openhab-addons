@@ -32,7 +32,7 @@ public class TeslaBindingConstants {
     public static final String PATH_VEHICLE_ID = "/{vid}/";
     public static final String PATH_WAKE_UP = "wake_up";
     public static final String PATH_ACCESS_TOKEN = "oauth/token";
-    public static final String URI_EVENT = "https://streaming.vn.teslamotors.com/stream/";
+    public static final String URI_EVENT = "wss://streaming.vn.teslamotors.com/streaming/";
     public static final String URI_OWNERS = "https://owner-api.teslamotors.com";
     public static final String VALETPIN = "valetpin";
     public static final String VEHICLES = "vehicles";
@@ -112,4 +112,7 @@ public class TeslaBindingConstants {
     public static final String CONFIG_ALLOWWAKEUPFORCOMMANDS = "allowWakeupForCommands";
     public static final String CONFIG_ENABLEEVENTS = "enableEvents";
     public static final String CONFIG_REFRESHTOKEN = "refreshToken";
+    public static final String CONFIG_INACTIVITY = "inactivity";
+    public static final String CONFIG_USEDRIVESTATE = "useDriveState";
+    public static final String CONFIG_USEDADVANCEDSTATES = "useAdvancedStatesForPolling";
 }

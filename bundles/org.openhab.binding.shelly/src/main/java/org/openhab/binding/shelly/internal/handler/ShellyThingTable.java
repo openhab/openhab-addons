@@ -31,6 +31,9 @@ public class ShellyThingTable {
     private Map<String, ShellyThingInterface> thingTable = new ConcurrentHashMap<>();
 
     public void addThing(String key, ShellyThingInterface thing) {
+        if (thingTable.containsKey(key)) {
+            thingTable.remove(key);
+        }
         thingTable.put(key, thing);
     }
 

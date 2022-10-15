@@ -16,6 +16,7 @@ import static java.util.Comparator.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -77,8 +78,8 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
                 if (weatherApi != null) { // Search owned or favorite stations
                     weatherApi.getFavoriteAndGuestStationsData().stream().forEach(station -> {
                         if (!station.isReadOnly() || localHandler.getReadFriends()) {
-                            ThingUID stationUID = createThing(station, accountUID);
-                            station.getModules().values().stream().forEach(module -> createThing(module, stationUID));
+                            createThing(station, accountUID).ifPresent(stationUID -> station.getModules().values()
+                                    .stream().forEach(module -> createThing(module, stationUID)));
                         }
                     });
                 }
@@ -88,31 +89,34 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
                             .filter(h -> !(h.getFeatures().isEmpty()
                                     || h.getFeatures().contains(FeatureArea.WEATHER) && h.getFeatures().size() == 1))
                             .forEach(home -> {
-                                ThingUID homeUID = createThing(home, accountUID);
+                                createThing(home, accountUID).ifPresent(homeUID -> {
+                                    home.getKnownPersons().forEach(person -> createThing(person, homeUID));
 
-                                home.getKnownPersons().forEach(person -> createThing(person, homeUID));
+                                    Map<String, ThingUID> bridgesUids = new HashMap<>();
 
-                                Map<String, ThingUID> bridgesUids = new HashMap<>();
+                                    home.getRooms().values().stream().forEach(room -> {
+                                        room.getModuleIds().stream().map(id -> home.getModules().get(id))
+                                                .map(m -> m != null ? m.getType().feature : FeatureArea.NONE)
+                                                .filter(f -> FeatureArea.ENERGY.equals(f)).findAny().ifPresent(f -> {
+                                                    createThing(room, homeUID).ifPresent(
+                                                            roomUID -> bridgesUids.put(room.getId(), roomUID));
+                                                });
+                                    });
 
-                                home.getRooms().values().stream().forEach(room -> {
-                                    room.getModuleIds().stream().map(id -> home.getModules().get(id))
-                                            .map(m -> m != null ? m.getType().feature : FeatureArea.NONE)
-                                            .filter(f -> FeatureArea.ENERGY.equals(f)).findAny()
-                                            .ifPresent(f -> bridgesUids.put(room.getId(), createThing(room, homeUID)));
+                                    // Creating modules that have no bridge first, avoiding weather station itself
+                                    home.getModules().values().stream()
+                                            .filter(module -> module.getType().feature != FeatureArea.WEATHER)
+                                            .sorted(comparing(HomeDataModule::getBridge, nullsFirst(naturalOrder())))
+                                            .forEach(module -> {
+                                                String bridgeId = module.getBridge();
+                                                if (bridgeId == null) {
+                                                    createThing(module, homeUID).ifPresent(
+                                                            moduleUID -> bridgesUids.put(module.getId(), moduleUID));
+                                                } else {
+                                                    createThing(module, bridgesUids.getOrDefault(bridgeId, homeUID));
+                                                }
+                                            });
                                 });
-
-                                // Creating modules that have no bridge first, avoiding weather station itself
-                                home.getModules().values().stream()
-                                        .filter(module -> module.getType().feature != FeatureArea.WEATHER)
-                                        .sorted(comparing(HomeDataModule::getBridge, nullsFirst(naturalOrder())))
-                                        .forEach(module -> {
-                                            String bridgeId = module.getBridge();
-                                            if (bridgeId == null) {
-                                                bridgesUids.put(module.getId(), createThing(module, homeUID));
-                                            } else {
-                                                createThing(module, bridgesUids.getOrDefault(bridgeId, homeUID));
-                                            }
-                                        });
                             });
                 }
             } catch (NetatmoException e) {
@@ -121,21 +125,25 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
         }
     }
 
-    private ThingUID findThingUID(ModuleType thingType, String thingId, ThingUID bridgeUID) {
+    private @Nullable ThingUID findThingUID(ModuleType thingType, String thingId, ThingUID bridgeUID) {
         ThingTypeUID thingTypeUID = thingType.thingTypeUID;
         return getSupportedThingTypes().stream().filter(supported -> supported.equals(thingTypeUID)).findFirst()
                 .map(supported -> new ThingUID(supported, bridgeUID, thingId.replaceAll("[^a-zA-Z0-9_]", "")))
-                .orElseThrow(() -> new IllegalArgumentException("Unsupported device type discovered : " + thingType));
+                .orElse(null);
     }
 
-    private ThingUID createThing(NAModule module, ThingUID bridgeUID) {
+    private Optional<ThingUID> createThing(NAModule module, ThingUID bridgeUID) {
         ThingUID moduleUID = findThingUID(module.getType(), module.getId(), bridgeUID);
-        DiscoveryResultBuilder resultBuilder = DiscoveryResultBuilder.create(moduleUID)
-                .withProperty(NAThingConfiguration.ID, module.getId())
-                .withRepresentationProperty(NAThingConfiguration.ID)
-                .withLabel(module.getName() != null ? module.getName() : module.getId()).withBridge(bridgeUID);
-        thingDiscovered(resultBuilder.build());
-        return moduleUID;
+        if (moduleUID != null) {
+            DiscoveryResultBuilder resultBuilder = DiscoveryResultBuilder.create(moduleUID)
+                    .withProperty(NAThingConfiguration.ID, module.getId())
+                    .withRepresentationProperty(NAThingConfiguration.ID)
+                    .withLabel(module.getName() != null ? module.getName() : module.getId()).withBridge(bridgeUID);
+            thingDiscovered(resultBuilder.build());
+        } else {
+            logger.info("Module '{}' is not handled by this version of the binding - it is ignored.", module.getName());
+        }
+        return Optional.ofNullable(moduleUID);
     }
 
     @Override

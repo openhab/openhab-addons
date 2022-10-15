@@ -15,6 +15,8 @@ package org.openhab.persistence.jdbc.utils;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.knowm.yank.Yank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +28,7 @@ import com.zaxxer.hikari.HikariDataSource;
  *
  * @author Helmut Lehmeyer - Initial contribution
  */
+@NonNullByDefault
 public class DbMetaData {
 
     private final Logger logger = LoggerFactory.getLogger(DbMetaData.class);
@@ -34,8 +37,8 @@ public class DbMetaData {
     private int dbMinorVersion;
     private int driverMajorVersion;
     private int driverMinorVersion;
-    private String dbProductName;
-    private String dbProductVersion;
+    private @Nullable String dbProductName;
+    private @Nullable String dbProductVersion;
 
     public DbMetaData() {
         HikariDataSource h = Yank.getDefaultConnectionPool();
@@ -116,11 +119,11 @@ public class DbMetaData {
         return false;
     }
 
-    public String getDbProductName() {
+    public @Nullable String getDbProductName() {
         return dbProductName;
     }
 
-    public String getDbProductVersion() {
+    public @Nullable String getDbProductVersion() {
         return dbProductVersion;
     }
 }

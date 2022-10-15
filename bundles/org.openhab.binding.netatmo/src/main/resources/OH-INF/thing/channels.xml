@@ -37,6 +37,13 @@
 		<state readOnly="true"/>
 	</channel-type>
 
+	<channel-type id="tag-status">
+		<item-type>Contact</item-type>
+		<label>Door Status</label>
+		<category>Door</category>
+		<state readOnly="true"/>
+	</channel-type>
+
 	<channel-type id="anticipating-heating">
 		<item-type>Switch</item-type>
 		<label>Anticipated Heating</label>
@@ -83,6 +90,13 @@
 		<label>Planning</label>
 		<description>Planning currently applied when following weekly schedule.</description>
 		<state readOnly="false" pattern="%s"/>
+	</channel-type>
+
+	<channel-type id="request-count" advanced="true">
+		<item-type>Number</item-type>
+		<label>Request Count</label>
+		<description>Number of requests transmitted to Netatmo API during the last hour.</description>
+		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 
 	<channel-type id="person-count">

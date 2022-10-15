@@ -151,6 +151,7 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
         String json = "";
         try {
             json = httpRequest(SHELLY_URL_STATUS);
+
             // Dimmer2 returns invalid json type for loaderror :-(
             json = json.replace("\"loaderror\":0,", "\"loaderror\":false,")
                     .replace("\"loaderror\":1,", "\"loaderror\":true,")
@@ -223,18 +224,23 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
             // SHelly H&T uses external_power, Sense uses charger
             status.charger = profile.settings.externalPower != 0;
         }
+        if (status.tmp != null && status.tmp.tC == null && status.tmp.value != null) { // Motion is is missing tC and tF
+            status.tmp.tC = getString(status.tmp.units).toUpperCase().equals(SHELLY_TEMP_FAHRENHEIT)
+                    ? ImperialUnits.FAHRENHEIT.getConverterTo(SIUnits.CELSIUS).convert(status.tmp.value).doubleValue()
+                    : status.tmp.value;
+        }
         return status;
     }
 
     @Override
-    public void setTimer(int index, String timerName, int value) throws ShellyApiException {
+    public void setAutoTimer(int index, String timerName, double value) throws ShellyApiException {
         String type = SHELLY_CLASS_RELAY;
         if (profile.isRoller) {
             type = SHELLY_CLASS_ROLLER;
         } else if (profile.isLight) {
             type = SHELLY_CLASS_LIGHT;
         }
-        String uri = SHELLY_URL_SETTINGS + "/" + type + "/" + index + "?" + timerName + "=" + value;
+        String uri = SHELLY_URL_SETTINGS + "/" + type + "/" + index + "?" + timerName + "=" + (int) value;
         httpRequest(uri);
     }
 
@@ -352,10 +358,26 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
     }
 
     @Override
+    public boolean setWiFiRangeExtender(boolean enable) throws ShellyApiException {
+        return false;
+    }
+
+    @Override
+    public boolean setEthernet(boolean enable) throws ShellyApiException {
+        return false;
+    }
+
+    @Override
+    public boolean setBluetooth(boolean enable) throws ShellyApiException {
+        return false;
+    }
+
+    @Override
     public String resetStaCache() throws ShellyApiException { // FW 1.10+: Reset cached STA/AP list and to a rescan
         return callApi("/sta_cache_reset", String.class);
     }
 
+    @Override
     public ShellySettingsUpdate firmwareUpdate(String uri) throws ShellyApiException {
         return callApi("/ota?" + uri, ShellySettingsUpdate.class);
     }
@@ -559,7 +581,7 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
                 // H&T adds the type=xx to report_url itself, so we need to ommit here
                 String eclass = profile.isSensor ? EVENT_TYPE_SENSORDATA : eventType;
                 String urlParm = eventType.contains("temp") || profile.isHT ? "" : "?type=" + eventType;
-                String callBackUrl = "http://" + config.localIp + ":" + config.localPort + SHELLY_CALLBACK_URI + "/"
+                String callBackUrl = "http://" + config.localIp + ":" + config.localPort + SHELLY1_CALLBACK_URI + "/"
                         + profile.thingName + "/" + eclass + urlParm;
                 String newUrl = enabled ? callBackUrl : SHELLY_NULL_URL;
                 String testUrl = "\"" + mkEventUrl(eventType) + "\":\"" + newUrl + "\"";
@@ -581,7 +603,7 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
             throws ShellyApiException {
         for (String eventType : eventTypes) {
             if (profile.containsEventUrl(eventType)) {
-                String callBackUrl = "http://" + config.localIp + ":" + config.localPort + SHELLY_CALLBACK_URI + "/"
+                String callBackUrl = "http://" + config.localIp + ":" + config.localPort + SHELLY1_CALLBACK_URI + "/"
                         + profile.thingName + "/" + deviceClass + "/" + index + "?type=" + eventType;
                 String newUrl = enabled ? callBackUrl : SHELLY_NULL_URL;
                 String test = "\"" + mkEventUrl(eventType) + "\":\"" + callBackUrl + "\"";
@@ -712,5 +734,9 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
     @Override
     public int getTimeoutsRecovered() {
         return timeoutsRecovered;
+    }
+
+    @Override
+    public void close() {
     }
 }

@@ -110,8 +110,10 @@
     <module>org.openhab.binding.dwdpollenflug</module>
     <module>org.openhab.binding.dwdunwetter</module>
     <module>org.openhab.binding.easee</module>
+    <module>org.openhab.binding.echonetlite</module>
     <module>org.openhab.binding.ecobee</module>
     <module>org.openhab.binding.ecotouch</module>
+    <module>org.openhab.binding.ecowatt</module>
     <module>org.openhab.binding.ekey</module>
     <module>org.openhab.binding.electroluxair</module>
     <module>org.openhab.binding.elerotransmitterstick</module>
@@ -336,6 +338,7 @@
     <module>org.openhab.binding.snmp</module>
     <module>org.openhab.binding.solaredge</module>
     <module>org.openhab.binding.solarlog</module>
+    <module>org.openhab.binding.solarmax</module>
     <module>org.openhab.binding.solarwatt</module>
     <module>org.openhab.binding.somfymylink</module>
     <module>org.openhab.binding.somfytahoma</module>

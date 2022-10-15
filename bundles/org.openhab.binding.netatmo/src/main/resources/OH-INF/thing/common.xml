@@ -4,6 +4,13 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
+	<channel-group-type id="monitoring">
+		<label>API Monitoring</label>
+		<channels>
+			<channel id="request-count" typeId="request-count"/>
+		</channels>
+	</channel-group-type>
+
 	<channel-group-type id="signal">
 		<label>Signal</label>
 		<channels>

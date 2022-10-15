@@ -222,7 +222,7 @@ public class WebInterface implements AtomicReferenceTrait {
         private synchronized void refreshAccessToken() {
             Instant now = Instant.now();
 
-            if (now.isAfter(tokenExpiry.minus(WEB_REQUEST_TOKEN_EXPIRY_BUFFER_MINUTES, ChronoUnit.MINUTES))
+            if (now.plus(WEB_REQUEST_TOKEN_EXPIRY_BUFFER_MINUTES, ChronoUnit.MINUTES).isAfter(tokenExpiry)
                     || now.isAfter(tokenRefreshDate.plus(WEB_REQUEST_TOKEN_MAX_AGE_MINUTES, ChronoUnit.MINUTES))) {
                 logger.debug("access token needs to be refreshed, last refresh: {}, expiry: {}",
                         Utils.formatDate(tokenRefreshDate), Utils.formatDate(tokenExpiry));

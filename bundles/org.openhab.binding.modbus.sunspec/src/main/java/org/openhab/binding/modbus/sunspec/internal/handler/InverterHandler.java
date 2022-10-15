@@ -23,8 +23,10 @@ import org.openhab.binding.modbus.sunspec.internal.InverterStatus;
 import org.openhab.binding.modbus.sunspec.internal.dto.InverterModelBlock;
 import org.openhab.binding.modbus.sunspec.internal.parser.InverterModelParser;
 import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,6 +84,9 @@ public class InverterHandler extends AbstractSunSpecHandler {
         updateState(channelUID(GROUP_DEVICE_INFO, CHANNEL_STATUS),
                 status == null ? UnDefType.UNDEF : new StringType(status.name()));
 
+        updateState(channelUID(GROUP_DEVICE_INFO, CHANNEL_STATUS_VENDOR),
+                block.statusVendor.<State> map(DecimalType::new).orElse(UnDefType.UNDEF));
+
         // AC General group
         updateState(channelUID(GROUP_AC_GENERAL, CHANNEL_AC_TOTAL_CURRENT),
                 getScaled(block.acCurrentTotal, block.acCurrentSF, AMPERE));
@@ -92,14 +97,10 @@ public class InverterHandler extends AbstractSunSpecHandler {
                 getScaled(block.acFrequency, block.acFrequencySF, HERTZ));
 
         updateState(channelUID(GROUP_AC_GENERAL, CHANNEL_AC_APPARENT_POWER),
-                getScaled(block.acApparentPower, block.acApparentPowerSF, WATT)); // TODO: VA currently not supported,
-                                                                                  // see:
-                                                                                  // https://github.com/openhab/openhab-core/pull/1347
+                getScaled(block.acApparentPower, block.acApparentPowerSF, VOLT_AMPERE));
 
         updateState(channelUID(GROUP_AC_GENERAL, CHANNEL_AC_REACTIVE_POWER),
-                getScaled(block.acReactivePower, block.acReactivePowerSF, WATT)); // TODO: var currently not supported,
-                                                                                  // see:
-                                                                                  // https://github.com/openhab/openhab-core/pull/1347
+                getScaled(block.acReactivePower, block.acReactivePowerSF, VAR));
 
         updateState(channelUID(GROUP_AC_GENERAL, CHANNEL_AC_POWER_FACTOR),
                 getScaled(block.acPowerFactor, block.acPowerFactorSF, PERCENT));

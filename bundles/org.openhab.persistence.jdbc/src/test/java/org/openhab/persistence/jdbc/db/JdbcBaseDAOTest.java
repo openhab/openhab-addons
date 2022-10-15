@@ -14,8 +14,10 @@ package org.openhab.persistence.jdbc.db;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -79,27 +81,22 @@ public class JdbcBaseDAOTest {
     public void testObjectAsStateReturnsValidState() {
         State decimalType = jdbcBaseDAO.objectAsState(new NumberItem("testNumberItem"), null, 7.3);
         assertInstanceOf(DecimalType.class, decimalType);
-        assertThat(decimalType, is(DecimalType.valueOf("7.3")));
+        assertEquals(DecimalType.valueOf("7.3"), decimalType);
         State quantityType = jdbcBaseDAO.objectAsState(new NumberItem("testNumberItem"), SIUnits.CELSIUS, 7.3);
         assertInstanceOf(QuantityType.class, quantityType);
-        assertThat(quantityType, is(QuantityType.valueOf("7.3 °C")));
-
-        State dateTimeType = jdbcBaseDAO.objectAsState(new DateTimeItem("testDateTimeItem"), null,
-                java.sql.Timestamp.valueOf("2021-02-01 23:30:02.049"));
-        assertInstanceOf(DateTimeType.class, dateTimeType);
-        assertThat(dateTimeType, is(DateTimeType.valueOf("2021-02-01T23:30:02.049")));
+        assertEquals(QuantityType.valueOf("7.3 °C"), quantityType);
 
         State hsbType = jdbcBaseDAO.objectAsState(new ColorItem("testColorItem"), null, "184,100,52");
         assertInstanceOf(HSBType.class, hsbType);
-        assertThat(hsbType, is(HSBType.valueOf("184,100,52")));
+        assertEquals(HSBType.valueOf("184,100,52"), hsbType);
 
         State percentType = jdbcBaseDAO.objectAsState(new DimmerItem("testDimmerItem"), null, 52);
         assertInstanceOf(PercentType.class, percentType);
-        assertThat(percentType, is(PercentType.valueOf("52")));
+        assertEquals(PercentType.valueOf("52"), percentType);
 
         percentType = jdbcBaseDAO.objectAsState(new RollershutterItem("testRollershutterItem"), null, 39);
         assertInstanceOf(PercentType.class, percentType);
-        assertThat(percentType, is(PercentType.valueOf("39")));
+        assertEquals(PercentType.valueOf("39"), percentType);
 
         State openClosedType = jdbcBaseDAO.objectAsState(new ContactItem("testContactItem"), null, "OPEN");
         assertInstanceOf(OpenClosedType.class, openClosedType);
@@ -118,7 +115,7 @@ public class JdbcBaseDAOTest {
 
         State stringListType = jdbcBaseDAO.objectAsState(new CallItem("testCallItem"), null, "0699222222,0179999998");
         assertInstanceOf(StringListType.class, stringListType);
-        assertThat(stringListType, is(StringListType.valueOf("0699222222,0179999998")));
+        assertEquals(StringListType.valueOf("0699222222,0179999998"), stringListType);
 
         State expectedRawType = new RawType(new byte[0], "application/octet-stream");
         State rawType = jdbcBaseDAO.objectAsState(new ImageItem("testImageItem"), null, expectedRawType.toFullString());
@@ -127,11 +124,65 @@ public class JdbcBaseDAOTest {
 
         State pointType = jdbcBaseDAO.objectAsState(new LocationItem("testLocationItem"), null, "1,2,3");
         assertInstanceOf(PointType.class, pointType);
-        assertThat(pointType, is(PointType.valueOf("1,2,3")));
+        assertEquals(PointType.valueOf("1,2,3"), pointType);
 
         State stringType = jdbcBaseDAO.objectAsState(new StringItem("testStringItem"), null, "String");
         assertInstanceOf(StringType.class, stringType);
-        assertThat(stringType, is(StringType.valueOf("String")));
+        assertEquals(StringType.valueOf("String"), stringType);
+    }
+
+    @Test
+    public void objectAsStateReturnsValiDateTimeTypeForTimestamp() {
+        State dateTimeType = jdbcBaseDAO.objectAsState(new DateTimeItem("testDateTimeItem"), null,
+                java.sql.Timestamp.valueOf("2021-02-01 23:30:02.049"));
+        assertInstanceOf(DateTimeType.class, dateTimeType);
+        assertEquals(DateTimeType.valueOf("2021-02-01T23:30:02.049"), dateTimeType);
+    }
+
+    @Test
+    public void objectAsStateReturnsValidDateTimeTypeForLocalDateTime() {
+        State dateTimeType = jdbcBaseDAO.objectAsState(new DateTimeItem("testDateTimeItem"), null,
+                LocalDateTime.parse("2021-02-01T23:30:02.049"));
+        assertInstanceOf(DateTimeType.class, dateTimeType);
+        assertEquals(DateTimeType.valueOf("2021-02-01T23:30:02.049"), dateTimeType);
+    }
+
+    @Test
+    public void objectAsStateReturnsValidDateTimeTypeForLong() {
+        State dateTimeType = jdbcBaseDAO.objectAsState(new DateTimeItem("testDateTimeItem"), null,
+                Long.valueOf("1612222202049"));
+        assertInstanceOf(DateTimeType.class, dateTimeType);
+        assertEquals(
+                new DateTimeType(
+                        ZonedDateTime.ofInstant(Instant.parse("2021-02-01T23:30:02.049Z"), ZoneId.systemDefault())),
+                dateTimeType);
+    }
+
+    @Test
+    public void objectAsStateReturnsValidDateTimeTypeForSqlDate() {
+        State dateTimeType = jdbcBaseDAO.objectAsState(new DateTimeItem("testDateTimeItem"), null,
+                java.sql.Date.valueOf("2021-02-01"));
+        assertInstanceOf(DateTimeType.class, dateTimeType);
+        assertEquals(DateTimeType.valueOf("2021-02-01T00:00:00.000"), dateTimeType);
+    }
+
+    @Test
+    public void objectAsStateReturnsValidDateTimeTypeForInstant() {
+        State dateTimeType = jdbcBaseDAO.objectAsState(new DateTimeItem("testDateTimeItem"), null,
+                Instant.parse("2021-02-01T23:30:02.049Z"));
+        assertInstanceOf(DateTimeType.class, dateTimeType);
+        assertEquals(
+                new DateTimeType(
+                        ZonedDateTime.ofInstant(Instant.parse("2021-02-01T23:30:02.049Z"), ZoneId.systemDefault())),
+                dateTimeType);
+    }
+
+    @Test
+    public void objectAsStateReturnsValidDateTimeTypeForString() {
+        State dateTimeType = jdbcBaseDAO.objectAsState(new DateTimeItem("testDateTimeItem"), null,
+                "2021-02-01 23:30:02.049");
+        assertInstanceOf(DateTimeType.class, dateTimeType);
+        assertEquals(DateTimeType.valueOf("2021-02-01T23:30:02.049"), dateTimeType);
     }
 
     @Test

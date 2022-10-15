@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="shellybulb">
-		<label>Shelly Bulb (SHBLB-1)</label>
+		<label>Shelly Bulb</label>
 		<description>@text/thing-type.shelly.shellybulb.description</description>
 		<category>Lightbulb</category>
 		<channel-groups>
@@ -20,7 +20,7 @@
 	</thing-type>
 
 	<thing-type id="shellybulbduo">
-		<label>Shelly Duo (SHBDUO-1)</label>
+		<label>Shelly Duo</label>
 		<description>@text/thing-type.shelly.shellybulbduo.description</description>
 		<category>Lightbulb</category>
 		<channel-groups>
@@ -35,7 +35,7 @@
 	</thing-type>
 
 	<thing-type id="shellycolorbulb">
-		<label>Shelly Color Bulb (SHCB-1)</label>
+		<label>Shelly Color Bulb</label>
 		<description>@text/thing-type.shelly.shellycolorbulb.description</description>
 		<category>ColorLight</category>
 		<channel-groups>
@@ -51,7 +51,7 @@
 	</thing-type>
 
 	<thing-type id="shellyvintage">
-		<label>Shelly Vintage (SHVIN-1)</label>
+		<label>Shelly Vintage</label>
 		<description>@text/thing-type.shelly.shellyvintage.description</description>
 		<category>Lightbulb</category>
 		<channel-groups>
@@ -66,7 +66,7 @@
 	</thing-type>
 
 	<thing-type id="shellyrgbw2-color">
-		<label>Shelly RGBW2 Color Mode (SHRGBW2)</label>
+		<label>Shelly RGBW2 Color Mode</label>
 		<description>@text/thing-type.shelly.shellyrgbw2-color.description</description>
 		<category>ColorLight</category>
 		<channel-groups>
@@ -81,7 +81,7 @@
 	</thing-type>
 
 	<thing-type id="shellyrgbw2-white">
-		<label>Shelly RGBW2 White Mode (SHRGBW2)</label>
+		<label>Shelly RGBW2 White Mode</label>
 		<description>@text/thing-type.shelly.shellyrgbw2-white.description</description>
 		<category>Lightbulb</category>
 		<channel-groups>

@@ -57,6 +57,7 @@ import org.openwebnet4j.message.FrameException;
 import org.openwebnet4j.message.GatewayMgmt;
 import org.openwebnet4j.message.Lighting;
 import org.openwebnet4j.message.OpenMessage;
+import org.openwebnet4j.message.Scenario;
 import org.openwebnet4j.message.Thermoregulation;
 import org.openwebnet4j.message.What;
 import org.openwebnet4j.message.Where;
@@ -68,9 +69,10 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link OpenWebNetBridgeHandler} is responsible for handling communication with gateways and handling events.
  *
- * @author Massimo Valla - Initial contribution
+ * @author Massimo Valla - Initial contribution, Lighting, Automation, Scenario
  * @author Andrea Conte - Energy management, Thermoregulation
  * @author Gilberto Cocchi - Thermoregulation
+ * @author Giovanni Fabiani - Aux
  */
 @NonNullByDefault
 public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implements GatewayListener {
@@ -326,7 +328,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         }
         // we support these types only
         if (baseMsg instanceof Lighting || baseMsg instanceof Automation || baseMsg instanceof EnergyManagement
-                || baseMsg instanceof Thermoregulation || baseMsg instanceof CEN) {
+                || baseMsg instanceof Thermoregulation || baseMsg instanceof CEN || baseMsg instanceof Scenario) {
             BaseOpenMessage bmsg = baseMsg;
             if (baseMsg instanceof Lighting) {
                 What what = baseMsg.getWhat();
@@ -498,7 +500,8 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         BaseOpenMessage baseMsg = (BaseOpenMessage) msg;
         // let's try to get the Thing associated with this message...
         if (baseMsg instanceof Lighting || baseMsg instanceof Automation || baseMsg instanceof EnergyManagement
-                || baseMsg instanceof Thermoregulation || baseMsg instanceof CEN || baseMsg instanceof Auxiliary) {
+                || baseMsg instanceof Thermoregulation || baseMsg instanceof CEN || baseMsg instanceof Auxiliary
+                || baseMsg instanceof Scenario) {
             String ownId = ownIdFromMessage(baseMsg);
             logger.debug("ownIdFromMessage({}) --> {}", baseMsg, ownId);
             OpenWebNetThingHandler deviceHandler = registeredDevices.get(ownId);

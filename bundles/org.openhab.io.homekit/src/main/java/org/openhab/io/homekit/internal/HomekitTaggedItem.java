@@ -22,7 +22,17 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.items.GroupItem;
 import org.openhab.core.items.Item;
+import org.openhab.core.library.items.DimmerItem;
+import org.openhab.core.library.items.NumberItem;
+import org.openhab.core.library.items.RollershutterItem;
+import org.openhab.core.library.items.StringItem;
+import org.openhab.core.library.items.SwitchItem;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.State;
+import org.openhab.core.types.StateDescription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,14 +46,15 @@ public class HomekitTaggedItem {
     private final Logger logger = LoggerFactory.getLogger(HomekitTaggedItem.class);
 
     /** configuration keywords at items level **/
-    public final static String MIN_VALUE = "minValue";
-    public final static String MAX_VALUE = "maxValue";
-    public final static String STEP = "step";
-    public final static String DIMMER_MODE = "dimmerMode";
     public final static String DELAY = "commandDelay";
-    public final static String INVERTED = "inverted";
-    public final static String PRIMARY_SERVICE = "primary";
+    public final static String DIMMER_MODE = "dimmerMode";
+    public static final String BATTERY_LOW_THRESHOLD = "lowThreshold";
     public final static String INSTANCE = "instance";
+    public final static String INVERTED = "inverted";
+    public final static String MAX_VALUE = "maxValue";
+    public final static String MIN_VALUE = "minValue";
+    public final static String PRIMARY_SERVICE = "primary";
+    public final static String STEP = "step";
 
     private static final Map<Integer, String> CREATED_ACCESSORY_IDS = new ConcurrentHashMap<>();
 
@@ -138,12 +149,91 @@ public class HomekitTaggedItem {
     }
 
     /**
+     * return the base item for a group, or the item itself, in order to do type checks
+     */
+    public Item getBaseItem() {
+        return HomekitOHItemProxy.getBaseItem(proxyItem.getItem());
+    }
+
+    /**
      * return proxy item which is used to group commands.
      * 
      * @return proxy item
      */
     public HomekitOHItemProxy getProxyItem() {
         return proxyItem;
+    }
+
+    /**
+     * Send DecimalType command to a NumberItem (or a Group:Number)
+     * 
+     * @param command
+     */
+    public void send(DecimalType command) {
+        if (getItem() instanceof GroupItem && getBaseItem() instanceof NumberItem) {
+            ((GroupItem) getItem()).send(command);
+            return;
+        } else if (getItem() instanceof NumberItem) {
+            ((NumberItem) getItem()).send(command);
+            return;
+        }
+        logger.warn("Received DecimalType command for item {} that doesn't support it. This is probably a bug.",
+                getName());
+    }
+
+    /**
+     * Send OnOffType command to a SwitchItem (or a Group:Switch)
+     * 
+     * @param command
+     */
+    public void send(OnOffType command) {
+        if (getItem() instanceof GroupItem && getBaseItem() instanceof SwitchItem) {
+            ((GroupItem) getItem()).send(command);
+            return;
+        } else if (getItem() instanceof SwitchItem) {
+            ((SwitchItem) getItem()).send(command);
+            return;
+        }
+        logger.warn("Received OnOffType command for item {} that doesn't support it. This is probably a bug.",
+                getName());
+    }
+
+    /**
+     * Send PercentType command to a DimmerItem or RollershutterItem (or a Group:Dimmer/Group:Rollershutter)
+     * 
+     * @param command
+     */
+    public void send(PercentType command) {
+        if (getItem() instanceof GroupItem
+                && (getBaseItem() instanceof DimmerItem || getBaseItem() instanceof RollershutterItem)) {
+            ((GroupItem) getItem()).send(command);
+            return;
+        } else if (getItem() instanceof DimmerItem) {
+            ((DimmerItem) getItem()).send(command);
+            return;
+        } else if (getItem() instanceof RollershutterItem) {
+            ((RollershutterItem) getItem()).send(command);
+            return;
+        }
+        logger.warn("Received PercentType command for item {} that doesn't support it. This is probably a bug.",
+                getName());
+    }
+
+    /**
+     * Send StringType command to a StringItem (or a Group:String)
+     * 
+     * @param command
+     */
+    public void send(StringType command) {
+        if (getItem() instanceof GroupItem && getBaseItem() instanceof StringItem) {
+            ((GroupItem) getItem()).send(command);
+            return;
+        } else if (getItem() instanceof StringItem) {
+            ((StringItem) getItem()).send(command);
+            return;
+        }
+        logger.warn("Received StringType command for item {} that doesn't support it. This is probably a bug.",
+                getName());
     }
 
     /**
@@ -194,7 +284,27 @@ public class HomekitTaggedItem {
     @SuppressWarnings({ "null", "unchecked" })
     public <T> T getConfiguration(String key, T defaultValue) {
         if (configuration != null) {
-            final @Nullable Object value = configuration.get(key);
+            @Nullable
+            Object value = configuration.get(key);
+            // No explicit configuration, but for certain things we can check the state description
+            // to see if the binding provided it
+            if (value == null) {
+                final @Nullable StateDescription stateDescription = getItem().getStateDescription();
+                if (stateDescription != null) {
+                    switch (key) {
+                        case MIN_VALUE:
+                            value = stateDescription.getMinimum();
+                            break;
+                        case MAX_VALUE:
+                            value = stateDescription.getMaximum();
+                            break;
+                        case STEP:
+                            value = stateDescription.getStep();
+                            break;
+                    }
+                }
+            }
+
             if (value != null) {
                 if (value.getClass().equals(defaultValue.getClass())) {
                     return (T) value;
@@ -205,6 +315,12 @@ public class HomekitTaggedItem {
                 }
                 if ((value instanceof Double) && (defaultValue instanceof BigDecimal)) {
                     return (T) BigDecimal.valueOf(((Double) value).doubleValue());
+                }
+                if ((value instanceof Long) && (defaultValue instanceof Double)) {
+                    return (T) Double.valueOf((Long) value);
+                }
+                if ((value instanceof Long) && (defaultValue instanceof BigDecimal)) {
+                    return (T) BigDecimal.valueOf((Long) value);
                 }
             }
 
