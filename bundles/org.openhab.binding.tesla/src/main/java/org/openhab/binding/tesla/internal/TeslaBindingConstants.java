@@ -112,4 +112,7 @@ public class TeslaBindingConstants {
     public static final String CONFIG_ALLOWWAKEUPFORCOMMANDS = "allowWakeupForCommands";
     public static final String CONFIG_ENABLEEVENTS = "enableEvents";
     public static final String CONFIG_REFRESHTOKEN = "refreshToken";
+    public static final String CONFIG_INACTIVITY = "inactivity";
+    public static final String CONFIG_USEDRIVESTATE = "useDriveState";
+    public static final String CONFIG_USEDADVANCEDSTATES = "useAdvancedStatesForPolling";
 }

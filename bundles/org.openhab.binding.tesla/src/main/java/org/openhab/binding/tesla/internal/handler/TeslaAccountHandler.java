@@ -110,7 +110,7 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        logger.trace("Initializing the Tesla account handler for {}", this.getStorageKey());
+        logger.debug("Initializing the Tesla account handler for {}", this.getStorageKey());
 
         updateStatus(ThingStatus.UNKNOWN);
 
@@ -129,7 +129,7 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
-        logger.trace("Disposing the Tesla account handler for {}", getThing().getUID());
+        logger.debug("Disposing the Tesla account handler for {}", getThing().getUID());
 
         lock.lock();
         try {
@@ -256,16 +256,19 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
         TokenResponse token = logonToken;
 
         boolean hasExpired = true;
+        logger.debug("Current authentication time {}", dateFormatter.format(Instant.now()));
 
         if (token != null) {
             Instant tokenCreationInstant = Instant.ofEpochMilli(token.created_at * 1000);
-            logger.debug("Found a request token created at {}", dateFormatter.format(tokenCreationInstant));
-            Instant tokenExpiresInstant = Instant.ofEpochMilli(token.created_at * 1000 + 60 * token.expires_in);
+            Instant tokenExpiresInstant = Instant.ofEpochMilli((token.created_at + token.expires_in) * 1000);
+            logger.debug("Found a request token from {}", dateFormatter.format(tokenCreationInstant));
+            logger.debug("Access token expiration time {}", dateFormatter.format(tokenExpiresInstant));
 
             if (tokenExpiresInstant.isBefore(Instant.now())) {
-                logger.debug("The token has expired at {}", dateFormatter.format(tokenExpiresInstant));
+                logger.debug("The access token has expired");
                 hasExpired = true;
             } else {
+                logger.debug("The access token has not expired yet");
                 hasExpired = false;
             }
         }
