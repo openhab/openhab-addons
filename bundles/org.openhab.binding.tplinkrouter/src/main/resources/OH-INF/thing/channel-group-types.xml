@@ -66,7 +66,6 @@
 		<description>Wifi Encryption Mode (only for PSK security mode)</description>
 		<state readOnly="true">
 			<options>
-
 				<option value="AUTO">AUTO</option>
 				<option value="TKIP">TKIP</option>
 				<option value="AES">AES</option>
