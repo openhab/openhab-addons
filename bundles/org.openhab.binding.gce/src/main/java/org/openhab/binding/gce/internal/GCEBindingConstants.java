@@ -38,6 +38,4 @@ public class GCEBindingConstants {
     public static final String EVENT_SHORT_PRESS = "SHORT_PRESS";
     public static final String EVENT_LONG_PRESS = "LONG_PRESS";
     public static final String EVENT_PULSE = "PULSE";
-
-    // Adressable thing
 }
