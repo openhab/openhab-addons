@@ -25,7 +25,7 @@ Fully supported and maintained by Ookla with the latest Speedtest technology for
 * Possiblity to pre-select a server used for testing
 
 
-## What functionality does the Speedtest Binding offers?
+## What functionality does the Speedtest Binding offer?
 
 * Execute Speedtest time based or triggered
 * Provide results via openHAB Channels
