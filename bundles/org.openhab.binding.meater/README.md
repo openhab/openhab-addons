@@ -35,8 +35,8 @@ After the configuration of the Bridge, you need to perform a manual scan and the
 
 | Parameter | Description                                                  | Type   | Default  | Required | 
 |-----------|--------------------------------------------------------------|--------|----------|----------|
-| email     | The email used to connect to your MEATER Cloud account       | String | NA       | yes      |
-| password  | The password used to connect to your MEATER Cloud account    | String | NA       | yes      |
+| email     | The email used to login to your MEATER Cloud account         | String | NA       | yes      |
+| password  | The password used to login to your MEATER Cloud account      | String | NA       | yes      |
 | refresh   | Specifies the refresh interval in seconds                    | Number | 30       | no       |
 
 #### Channels
@@ -53,7 +53,7 @@ The following channels are supported:
 
 | Parameter | Description                                                  | Type   | Default  | Required | 
 |-----------|--------------------------------------------------------------|--------|----------|----------|
-| deviceId  | The ID of your MEATER probe                                  | String | NA       | yes      |
+| deviceId  | Unique id for your MEATER Probe                              | String | NA       | yes      |
     
 
 
@@ -79,7 +79,7 @@ The following channels are supported:
 ### Things-file
 
 ````
-Bridge meater:meaterapi:block     "MEATER Block"   [email="", password=""] {
+Bridge meater:meaterapi:block     "MEATER Block"   [email="", password="", refresh=30] {
   meaterprobe probe1 "Meater Probe 1" [deviceId=""]
   meaterprobe probe2 "Meater Probe 2" [deviceId=""]
   meaterprobe probe3 "Meater Probe 3" [deviceId=""]

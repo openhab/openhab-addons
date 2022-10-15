@@ -85,8 +85,8 @@ public class MeaterRestAPI {
                     } else {
                         meaterProbeThings.clear();
                     }
+                    return true;
                 }
-                return true;
             }
         } catch (MeaterException e) {
             logger.warn("Failed to refresh! {}", e.getMessage());

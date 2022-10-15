@@ -58,14 +58,13 @@ public class MeaterBridgeHandler extends BaseBridgeHandler {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
 
-    private int refreshTimeInSeconds = 300;
-
     private final Gson gson;
     private final HttpClient httpClient;
     private final TranslationProvider i18nProvider;
-    private LocaleProvider localeProvider;
+    private final LocaleProvider localeProvider;
     private final Map<String, MeaterProbeDTO.Device> meaterProbeThings = new ConcurrentHashMap<>();
 
+    private int refreshTimeInSeconds = 300;
     private @Nullable MeaterRestAPI api;
     private @Nullable ScheduledFuture<?> refreshJob;
 
@@ -85,15 +84,12 @@ public class MeaterBridgeHandler extends BaseBridgeHandler {
         api = new MeaterRestAPI(config, gson, httpClient, localeProvider);
         refreshTimeInSeconds = config.refresh;
 
-        if (config.email == null || config.password == null) {
+        if (config.email.isEmpty() || config.password.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/config.missing-username-password.description");
-        } else if (refreshTimeInSeconds < 0) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/config.negative-refresh-interval.description");
         } else {
+            updateStatus(ThingStatus.UNKNOWN);
             scheduler.execute(() -> {
-                updateStatus(ThingStatus.UNKNOWN);
                 startAutomaticRefresh();
             });
         }
@@ -111,19 +107,20 @@ public class MeaterBridgeHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         stopAutomaticRefresh();
+        meaterProbeThings.clear();
     }
 
     private boolean refreshAndUpdateStatus() {
         MeaterRestAPI localAPI = api;
         if (localAPI != null) {
             if (localAPI.refresh(meaterProbeThings)) {
+                updateStatus(ThingStatus.ONLINE);
                 getThing().getThings().stream().forEach(thing -> {
                     MeaterHandler handler = (MeaterHandler) thing.getHandler();
                     if (handler != null) {
                         handler.update();
                     }
                 });
-                updateStatus(ThingStatus.ONLINE);
                 return true;
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
@@ -152,7 +149,7 @@ public class MeaterBridgeHandler extends BaseBridgeHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Command received: {}", command);
         if (command instanceof RefreshType) {
-            if (channelUID.getId().equals(CHANNEL_STATUS) && channelUID.getThingUID().equals(getThing().getUID())) {
+            if (channelUID.getId().equals(CHANNEL_STATUS)) {
                 logger.debug("Refresh command on status channel {} will trigger instant refresh", channelUID);
                 refreshAndUpdateStatus();
             }

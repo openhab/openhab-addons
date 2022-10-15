@@ -50,13 +50,12 @@ import org.openhab.core.types.UnDefType;
 @NonNullByDefault
 public class MeaterHandler extends BaseThingHandler {
 
-    private MeaterConfiguration config;
+    private String deviceId = "";
     private TimeZoneProvider timeZoneProvider;
 
     public MeaterHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
         super(thing);
         this.timeZoneProvider = timeZoneProvider;
-        config = getConfigAs(MeaterConfiguration.class);
     }
 
     @Override
@@ -65,6 +64,7 @@ public class MeaterHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
+        deviceId = getConfigAs(MeaterConfiguration.class).getDeviceId();
         updateStatus(ThingStatus.UNKNOWN);
 
         scheduler.execute(() -> {
@@ -84,10 +84,10 @@ public class MeaterHandler extends BaseThingHandler {
 
     private @Nullable Device getMeaterProbe() {
         Bridge bridge = getBridge();
-        if (bridge != null) {
+        if (bridge != null && bridge.getStatus() == ThingStatus.ONLINE) {
             MeaterBridgeHandler bridgeHandler = (MeaterBridgeHandler) bridge.getHandler();
             if (bridgeHandler != null) {
-                return bridgeHandler.getMeaterThings().get(config.getDeviceId());
+                return bridgeHandler.getMeaterThings().get(deviceId);
             }
         }
         return null;

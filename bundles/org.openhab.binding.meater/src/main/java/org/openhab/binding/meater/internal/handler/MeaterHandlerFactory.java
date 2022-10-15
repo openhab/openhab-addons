@@ -59,7 +59,6 @@ public class MeaterHandlerFactory extends BaseThingHandlerFactory {
             final @Reference TranslationProvider i18nProvider, @Reference LocaleProvider localeProvider,
             @Reference HttpClientFactory httpClientFactory) {
         this.timeZoneProvider = timeZoneProvider;
-        ;
         this.i18nProvider = i18nProvider;
         this.localeProvider = localeProvider;
         this.httpClient = httpClientFactory.getCommonHttpClient();

@@ -13,7 +13,6 @@
 package org.openhab.binding.meater.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link MeaterBridgeConfiguration} class contains fields mapping bridge configuration parameters.
@@ -22,7 +21,7 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class MeaterBridgeConfiguration {
-    public @Nullable String email;
-    public @Nullable String password;
+    public String email = "";
+    public String password = "";
     public int refresh = 30;
 }
