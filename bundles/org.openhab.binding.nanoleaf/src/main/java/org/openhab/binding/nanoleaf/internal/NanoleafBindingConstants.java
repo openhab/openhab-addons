@@ -58,6 +58,7 @@ public class NanoleafBindingConstants {
     public static final String CHANNEL_SWIPE_EVENT_DOWN = "DOWN";
     public static final String CHANNEL_SWIPE_EVENT_LEFT = "LEFT";
     public static final String CHANNEL_SWIPE_EVENT_RIGHT = "RIGHT";
+    public static final String CHANNEL_LAYOUT = "layout";
 
     // List of light panel channels
     public static final String CHANNEL_PANEL_COLOR = "color";
@@ -93,4 +94,8 @@ public class NanoleafBindingConstants {
 
     // Color channels increase/decrease brightness step size
     public static final int BRIGHTNESS_STEP_SIZE = 5;
+
+    // Layout rendering
+    public static final int LAYOUT_LIGHT_RADIUS = 8;
+    public static final int LAYOUT_BORDER_WIDTH = 30;
 }
