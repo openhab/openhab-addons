@@ -346,10 +346,8 @@ public class TibberHandler extends BaseThingHandler {
                     Thread.sleep(10 * 1000);
                 } catch (InterruptedException e) {
                 }
-                Session session = this.session;
-                if (!session.isOpen()) {
-                    close();
-                    logger.warn("Unable to establish websocket session");
+                if (!isConnected()) {
+                    logger.warn("Unable to establish websocket session - Reattempting connection on next refresh");
                 } else {
                     logger.debug("Websocket session established");
                 }
