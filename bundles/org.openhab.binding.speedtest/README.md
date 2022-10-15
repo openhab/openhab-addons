@@ -5,10 +5,42 @@ It is based on the command line interface (CLI) version of Ookla's Speedtest (ht
 
 The Ookla CLI Speedtest application MUST be installed on your openHAB instance when using the Speedtest Binding.
 
-When using this Binding, you automatically accept the License and Privacy Terms of Ookla's Speedtest. You can find the latest version of those terms at the following webpages:
+
+## Why Ookla's Speedtest?
+
+Fully supported and maintained by Ookla with the latest Speedtest technology for best results:
+
+* Consistent measurement, even on high bandwidth
+* Consistent measurement, very much independent from the performance of the host system
+
+
+## What functionality does Ookla's Speedtest offer?
+
+* Output of a timestamp instead of using the openHAB timestamp
+* Output of Ping time and Jitter
+* Output of Bandwidth, transferred Bytes and elapsed time for Down-/Upload
+* Output of the used interface with Internal/External IP, MAC Address and the Internet Service Provider (ISP)
+* Output of a result ID and a result URL
+* Output of the used Server and location
+* Possiblity to pre-select a server used for testing
+
+
+## What functionality does the Speedtest Binding offers?
+
+* Execute Speedtest time based or triggered
+* Provide results via openHAB Channels
+* List available Ookla Speedtest servers that can be used for testing (optional)
+
+
+## Ookla License and Privacy Terms
+
+When using this binding, you automatically accept the license and privacy terms of Ookla's Speedtest.
+You can find the latest version of those terms at the following webpages:
+
 * https://www.speedtest.net/about/eula
 * https://www.speedtest.net/about/terms
 * https://www.speedtest.net/about/privacy
+
 
 ## Supported Things
 
@@ -19,7 +51,7 @@ Speedtest thing.
 For this binding to work, you MUST install Ookla's Speedtest command line tool (`speedtest` or `speedtest.exe`).
 It will not work with other versions like `speedtest-cli` or other `speedtest` variants.
 
-To install Ookla's version of Speedtest, head to https://www.speedtest.net/apps/cli and follow the instructions for your Operating System.  
+To install Ookla's version of Speedtest, head to https://www.speedtest.net/apps/cli and follow the instructions for your Operating System.
 
 ## Thing Configuration
 
