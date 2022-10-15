@@ -27,8 +27,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.openhab.persistence.jdbc.dto.ItemVO;
-import org.openhab.persistence.jdbc.dto.ItemsVO;
 import org.slf4j.LoggerFactory;
 
 import ch.qos.logback.classic.Level;
@@ -40,8 +41,11 @@ import ch.qos.logback.classic.Logger;
  * @author Jacob Laursen - Initial contribution
  */
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 @NonNullByDefault
 public class NamingStrategyTest {
+    private static final String ITEMS_MANAGE_TABLE_NAME = "items";
+
     private @Mock @NonNullByDefault({}) JdbcConfiguration configurationMock;
     private NamingStrategy namingStrategy = new NamingStrategy(configurationMock);
 
@@ -77,17 +81,34 @@ public class NamingStrategyTest {
         final int itemId = 1;
         final String itemName = "Test";
         final String tableName = "Item1";
+        final boolean useRealItemNames = true;
 
+        List<ItemVO> actual = prepareMigration(itemId, itemName, tableName, useRealItemNames);
+
+        assertTableName(actual, "test");
+    }
+
+    @Test
+    public void prepareMigrationFromMixedNumberedToRealNames() {
         Mockito.doReturn(true).when(configurationMock).getTableUseRealItemNames();
         Mockito.doReturn("Item").when(configurationMock).getTableNamePrefix();
 
-        Map<Integer, String> tableIds = getTableIds(itemId, itemName);
-        List<ItemsVO> itemTables = getItemTables(tableName);
+        Map<Integer, String> itemIdToItemNameMap = new HashMap<>(3);
+        itemIdToItemNameMap.put(1, "First");
+        itemIdToItemNameMap.put(2, "Second");
+        itemIdToItemNameMap.put(3, "Third");
 
-        List<ItemVO> actual = namingStrategy.prepareMigration(tableIds, itemTables);
+        List<String> itemTables = new ArrayList<String>(3);
+        itemTables.add("Item1");
+        itemTables.add("Item002");
+        itemTables.add("third_0003");
 
-        assertThat(actual.size(), is(1));
-        assertThat(actual.get(0).getNewTableName(), is("test"));
+        List<ItemVO> actual = namingStrategy.prepareMigration(itemTables, itemIdToItemNameMap, ITEMS_MANAGE_TABLE_NAME);
+
+        assertThat(actual.size(), is(3));
+        assertThat(actual.get(0).getNewTableName(), is("first"));
+        assertThat(actual.get(1).getNewTableName(), is("second"));
+        assertThat(actual.get(2).getNewTableName(), is("third"));
     }
 
     @Test
@@ -95,17 +116,23 @@ public class NamingStrategyTest {
         final int itemId = 1;
         final String itemName = "Test";
         final String tableName = "test_0001";
+        final boolean useRealItemNames = true;
 
-        Mockito.doReturn(true).when(configurationMock).getTableUseRealItemNames();
-        Mockito.doReturn("Item").when(configurationMock).getTableNamePrefix();
+        List<ItemVO> actual = prepareMigration(itemId, itemName, tableName, useRealItemNames);
 
-        Map<Integer, String> tableIds = getTableIds(itemId, itemName);
-        List<ItemsVO> itemTables = getItemTables(tableName);
+        assertTableName(actual, "test");
+    }
 
-        List<ItemVO> actual = namingStrategy.prepareMigration(tableIds, itemTables);
+    @Test
+    public void prepareMigrationFromMixedRealNamesToNewRealNamesWhenUnknownItemId() {
+        final int itemId = 2;
+        final String itemName = "Test";
+        final String tableName = "test_0001";
+        final boolean useRealItemNames = true;
 
-        assertThat(actual.size(), is(1));
-        assertThat(actual.get(0).getNewTableName(), is("test"));
+        List<ItemVO> actual = prepareMigration(itemId, itemName, tableName, useRealItemNames);
+
+        assertThat(actual.size(), is(0));
     }
 
     @Test
@@ -113,30 +140,85 @@ public class NamingStrategyTest {
         final int itemId = 1;
         final String itemName = "Test";
         final String tableName = "test_0001";
+        final boolean useRealItemNames = false;
 
-        Mockito.doReturn(false).when(configurationMock).getTableUseRealItemNames();
+        List<ItemVO> actual = prepareMigration(itemId, itemName, tableName, useRealItemNames);
+
+        assertTableName(actual, "Item1");
+    }
+
+    @Test
+    public void prepareMigrationFromNewRealNamesToNumbered() {
+        final int itemId = 1;
+        final String itemName = "Test";
+        final String tableName = "test";
+        final boolean useRealItemNames = false;
+
+        List<ItemVO> actual = prepareMigration(itemId, itemName, tableName, useRealItemNames);
+
+        assertTableName(actual, "Item1");
+    }
+
+    @Test
+    public void prepareMigrationFromNewRealNamesToNumberedHavingUnderscore() {
+        final int itemId = 1;
+        final String itemName = "My_Test";
+        final String tableName = "my_test";
+        final boolean useRealItemNames = false;
+
+        List<ItemVO> actual = prepareMigration(itemId, itemName, tableName, useRealItemNames);
+
+        assertTableName(actual, "Item1");
+    }
+
+    @Test
+    public void prepareMigrationFromNewRealNamesToNumberedHavingUnderscoreAndNumber() {
+        final int itemId = 1;
+        final String itemName = "My_Test_1";
+        final String tableName = "my_test_1";
+        final boolean useRealItemNames = false;
+
+        List<ItemVO> actual = prepareMigration(itemId, itemName, tableName, useRealItemNames);
+
+        assertTableName(actual, "Item1");
+    }
+
+    @Test
+    public void prepareMigrationWhenConflictWithItemsManageTableSkip() {
+        final int itemId = 1;
+        final String itemName = "items";
+        final String tableName = "Item1";
+        final boolean useRealItemNames = true;
+
+        List<ItemVO> actual = prepareMigration(itemId, itemName, tableName, useRealItemNames);
+
+        assertThat(actual.size(), is(0));
+    }
+
+    private List<ItemVO> prepareMigration(int itemId, String itemName, String tableName, boolean useRealItemNames) {
+        Mockito.doReturn(useRealItemNames).when(configurationMock).getTableUseRealItemNames();
         Mockito.doReturn("Item").when(configurationMock).getTableNamePrefix();
 
-        Map<Integer, String> tableIds = getTableIds(itemId, itemName);
-        List<ItemsVO> itemTables = getItemTables(tableName);
+        Map<Integer, String> itemIdToItemNameMap = getItemIdToItemNameMap(itemId, itemName);
+        List<String> itemTables = getItemTables(tableName);
 
-        List<ItemVO> actual = namingStrategy.prepareMigration(tableIds, itemTables);
-
-        assertThat(actual.size(), is(1));
-        assertThat(actual.get(0).getNewTableName(), is("Item1"));
+        return namingStrategy.prepareMigration(itemTables, itemIdToItemNameMap, ITEMS_MANAGE_TABLE_NAME);
     }
 
-    private Map<Integer, String> getTableIds(int itemId, String itemName) {
-        Map<Integer, String> tableIds = new HashMap<>();
-        tableIds.put(itemId, namingStrategy.getTableName(1, itemName));
-        return tableIds;
+    private Map<Integer, String> getItemIdToItemNameMap(int itemId, String itemName) {
+        Map<Integer, String> itemIdToItemNameMap = new HashMap<>(1);
+        itemIdToItemNameMap.put(itemId, itemName);
+        return itemIdToItemNameMap;
     }
 
-    private List<ItemsVO> getItemTables(String tableName) {
-        List<ItemsVO> itemTables = new ArrayList<ItemsVO>();
-        ItemsVO itemTable = new ItemsVO();
-        itemTable.setTable_name(tableName);
-        itemTables.add(itemTable);
+    private List<String> getItemTables(String tableName) {
+        List<String> itemTables = new ArrayList<String>(1);
+        itemTables.add(tableName);
         return itemTables;
+    }
+
+    private void assertTableName(List<ItemVO> actual, String expected) {
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get(0).getNewTableName(), is(expected));
     }
 }

@@ -260,9 +260,9 @@ public class JdbcMapper {
         } else {
             // Reset the error counter
             errCnt = 0;
-            for (ItemsVO vo : getItemIDTableNames()) {
-                sqlTables.put(vo.getItemname(), namingStrategy.getTableName(vo.getItemid(), vo.getItemname()));
-            }
+        }
+        for (ItemsVO vo : getItemIDTableNames()) {
+            sqlTables.put(vo.getItemname(), namingStrategy.getTableName(vo.getItemid(), vo.getItemname()));
         }
     }
 
@@ -322,17 +322,19 @@ public class JdbcMapper {
             initialized = false;
         }
 
-        Map<Integer, String> tableIds = new HashMap<>();
+        Map<Integer, String> itemIdToItemNameMap = new HashMap<>();
+        String itemsManageTable = new ItemsVO().getItemsManageTable();
 
         for (ItemsVO vo : getItemIDTableNames()) {
-            String t = namingStrategy.getTableName(vo.getItemid(), vo.getItemname());
-            sqlTables.put(vo.getItemname(), t);
-            tableIds.put(vo.getItemid(), t);
+            int itemId = vo.getItemid();
+            String itemName = vo.getItemname();
+            itemIdToItemNameMap.put(itemId, itemName);
         }
 
-        List<ItemsVO> itemTables = getItemTables();
+        List<String> itemTables = getItemTables().stream().map(t -> t.getTable_name()).collect(Collectors.toList());
 
-        List<ItemVO> oldNewTablenames = namingStrategy.prepareMigration(tableIds, itemTables);
+        List<ItemVO> oldNewTablenames = namingStrategy.prepareMigration(itemTables, itemIdToItemNameMap,
+                itemsManageTable);
 
         updateItemTableNames(oldNewTablenames);
         logger.info("JDBC::formatTableNames: Finished updating {} item table names", oldNewTablenames.size());
