@@ -77,16 +77,16 @@ Ensure that the user that openHAB is running with, has the permissions to access
 | Channel               | Type                      | Description                                                       |
 |-----------------------|---------------------------|-------------------------------------------------------------------|
 | `server`              | `String`                  | The remote server that the Speedtest was run against              |
-| `pingJitter`          | `Number:Time`             | Ping Jitter                                                       |
-| `pingLatency`         | `Number:Time`             | Ping Latency                                                      |
+| `pingJitter`          | `Number:Time`             | Ping Jitter - the variation in the response time                  |
+| `pingLatency`         | `Number:Time`             | Ping Latency - the reaction time of your internet connection      |
 | `downloadBandwidth`   | `Number:DataTransferRate` | Download bandwidth, e.g. in Mbit/s                                |
-| `downloadBytes`       | `Number:DataAmount`       | Amount of data that were used for the download bandwith test      |
-| `downloadElapsed`     | `Number:Time`             | Time spend for the download bandwidth test                         |
+| `downloadBytes`       | `Number:DataAmount`       | Amount of data that was used for the last download bandwidth test |
+| `downloadElapsed`     | `Number:Time`             | Time spent for the last download bandwidth test                   |
 | `uploadBandwidth`     | `Number:DataTransferRate` | Upload bandwidth, e.g. in Mbit/s                                  |
-| `uploadBytes`         | `Number:DataAmount`       | Amount of data that were used for the upload bandwith test        |
-| `uploadElapsed`       | `Number:Time`             | Time spend for the upload bandwidth test                           |
+| `uploadBytes`         | `Number:DataAmount`       | Amount of data that was used for the last upload bandwidth test   |
+| `uploadElapsed`       | `Number:Time`             | Time spent for the last upload bandwidth test                     |
 | `isp`                 | `String`                  | Your Internet Service Provider (ISP) as calculated by Ookla       |
 | `interfaceInternalIp` | `String`                  | IP address of the internal interface that was used for the test   |
 | `interfaceExternalIp` | `String`                  | IP address of the external interface that was used for the test   |
-| `resultUrl`           | `String`                  | The URL to the Speedtest results in HTML on the Ookla webserver    |
+| `resultUrl`           | `String`                  | The URL to the Speedtest results in HTML on the Ookla webserver   |
 | `triggerTest`         | `Switch`                  | Trigger in order to run Speedtest manually                        |

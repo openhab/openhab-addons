@@ -81,13 +81,13 @@
 	<channel-type id="pingJitter" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Ping Jitter</label>
-		<description>Ping Jitter</description>
+		<description>Ping Jitter - the variation in the response time</description>
 		<state readOnly="true" pattern="%.2f ms"></state>
 	</channel-type>
 	<channel-type id="pingLatency">
 		<item-type>Number:Time</item-type>
 		<label>Ping Latency</label>
-		<description>Ping Latency</description>
+		<description>Ping Latency - the reaction time of your internet connection</description>
 		<state readOnly="true" pattern="%.2f ms"></state>
 	</channel-type>
 	<channel-type id="downloadBandwidth">
@@ -99,13 +99,13 @@
 	<channel-type id="downloadBytes" advanced="true">
 		<item-type>Number:DataAmount</item-type>
 		<label>Downloaded Bytes</label>
-		<description>Amount of data that were used for the download bandwidth test</description>
+		<description>Amount of data that was used for the last upload bandwidth test</description>
 		<state readOnly="true" pattern="%.0f MB"></state>
 	</channel-type>
 	<channel-type id="downloadElapsed" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Download Elapsed Time</label>
-		<description>Time spend for the download bandwidth test</description>
+		<description>Time spent for the last download bandwidth test</description>
 		<state readOnly="true" pattern="%.2f s"></state>
 	</channel-type>
 	<channel-type id="uploadBandwidth">
@@ -117,13 +117,13 @@
 	<channel-type id="uploadBytes" advanced="true">
 		<item-type>Number:DataAmount</item-type>
 		<label>Uploaded Bytes</label>
-		<description>Amount of data that were used for the upload bandwidth test</description>
+		<description>Amount of data that was used for the last upload bandwidth test</description>
 		<state readOnly="true" pattern="%.0f MB"></state>
 	</channel-type>
 	<channel-type id="uploadElapsed" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Upload Elapsed Time</label>
-		<description>Time spend for the upload bandwidth test</description>
+		<description>Time spent for the last upload bandwidth test</description>
 		<state readOnly="true" pattern="%.2f s"></state>
 	</channel-type>
 	<channel-type id="isp">
