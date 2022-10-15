@@ -27,9 +27,11 @@ After the configuration of the Bridge, you need to perform a manual scan and the
 
 
 
-## Thing Configuration
+## Supported Things and Channels
 
-#### Bridge
+### MEATER Bridge
+
+#### Configuration Options
 
 | Parameter | Description                                                  | Type   | Default  | Required | 
 |-----------|--------------------------------------------------------------|--------|----------|----------|
@@ -37,7 +39,25 @@ After the configuration of the Bridge, you need to perform a manual scan and the
 | password  | The password used to connect to your MEATER Cloud account    | String | NA       | yes      |
 | refresh   | Specifies the refresh interval in seconds                    | Number | 30       | no       |
 
-## Channels
+#### Channels
+
+The following channels are supported:
+
+| Channel Type ID | Item Type | Description                                                                                     |
+|-----------------|-----------|-------------------------------------------------------------------------------------------------|
+| status          | String    | Can be used to trigger an instant refresh by sending a RefreshType.REFRESH command.|
+
+### MEATER Probe
+
+#### Configuration Options
+
+| Parameter | Description                                                  | Type   | Default  | Required | 
+|-----------|--------------------------------------------------------------|--------|----------|----------|
+| deviceId     | The ID of your MEATER probe       | String | NA       | yes      |
+    
+
+
+#### Channels
 
 | Channel Type ID       | Item Type          | Description                                          | 
 |-----------------------|--------------------|------------------------------------------------------|
@@ -46,7 +66,6 @@ After the configuration of the Bridge, you need to perform a manual scan and the
 | cookTargetTemperature | Number:Temperature | Target temperature of current cook                   |
 | cookPeakTemperature   | Number:Temperature | Peak temperature of current cook                     |
 | lastConnection        | DateTime           | Date and time of last probe connection               |
-| status                | String             | Information on current status                        |
 | cookId                | String             | Unique cook ID of current cook                       |
 | cookName              | String             | Name of selected meat or user given custom name      |   
 | cookState             | String             | One of Not Started, Configured, Started, Ready For Resting, Resting, Slightly Underdone, Finished, Slightly Overdone, OVERCOOK!                                 |

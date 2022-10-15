@@ -8,6 +8,10 @@
 		<label>MEATER Cloud REST API</label>
 		<description>This bridge represents the MEATER Cloud REST API connector</description>
 
+		<channels>
+			<channel id="status" typeId="status"/>
+		</channels>
+
 		<config-description>
 			<parameter name="email" type="text" required="true">
 				<label>Email</label>
@@ -45,7 +49,6 @@
 			<channel id="cookElapsedTime" typeId="cookElapsedTime"/>
 			<channel id="cookRemainingTime" typeId="cookRemainingTime"/>
 			<channel id="cookEstimatedEndTime" typeId="cookEstimatedEndTime"/>
-			<channel id="status" typeId="status"/>
 			<channel id="lastConnection" typeId="lastConnection"/>
 		</channels>
 

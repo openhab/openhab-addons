@@ -38,11 +38,8 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link MeaterHandler} is responsible for handling commands, which are
@@ -52,8 +49,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class MeaterHandler extends BaseThingHandler {
-
-    private final Logger logger = LoggerFactory.getLogger(MeaterHandler.class);
 
     private MeaterConfiguration config;
     private TimeZoneProvider timeZoneProvider;
@@ -66,10 +61,6 @@ public class MeaterHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("Command received: {}", command);
-        if (CHANNEL_STATUS.equals(channelUID.getId()) || command instanceof RefreshType) {
-            update();
-        }
     }
 
     @Override

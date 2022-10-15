@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.meater.internal.handler;
 
-import static org.openhab.binding.meater.internal.MeaterBindingConstants.THING_TYPE_BRIDGE;
+import static org.openhab.binding.meater.internal.MeaterBindingConstants.*;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -39,6 +39,9 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
@@ -50,6 +53,8 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 public class MeaterBridgeHandler extends BaseBridgeHandler {
+
+    private final Logger logger = LoggerFactory.getLogger(MeaterBridgeHandler.class);
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
 
@@ -87,14 +92,10 @@ public class MeaterBridgeHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/config.negative-refresh-interval.description");
         } else {
-            try {
-                scheduler.execute(() -> {
-                    updateStatus(ThingStatus.UNKNOWN);
-                    startAutomaticRefresh();
-                });
-            } catch (RuntimeException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            }
+            scheduler.execute(() -> {
+                updateStatus(ThingStatus.UNKNOWN);
+                startAutomaticRefresh();
+            });
         }
     }
 
@@ -149,7 +150,13 @@ public class MeaterBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        return;
+        logger.debug("Command received: {}", command);
+        if (command instanceof RefreshType) {
+            if (channelUID.getId().equals(CHANNEL_STATUS) && channelUID.getThingUID().equals(getThing().getUID())) {
+                logger.debug("Refresh command on status channel {} will trigger instant refresh", channelUID);
+                refreshAndUpdateStatus();
+            }
+        }
     }
 
     public TranslationProvider getI18nProvider() {
