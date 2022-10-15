@@ -45,7 +45,7 @@ The following channels are supported:
 
 | Channel Type ID | Item Type | Description                                                                                     |
 |-----------------|-----------|-------------------------------------------------------------------------------------------------|
-| status          | String    | Can be used to trigger an instant refresh by sending a RefreshType.REFRESH command.|
+| status          | String    | Can be used to trigger an instant refresh by sending a `REFRESH` command.|
 
 ### MEATER Probe
 
@@ -53,7 +53,7 @@ The following channels are supported:
 
 | Parameter | Description                                                  | Type   | Default  | Required | 
 |-----------|--------------------------------------------------------------|--------|----------|----------|
-| deviceId     | The ID of your MEATER probe       | String | NA       | yes      |
+| deviceId  | The ID of your MEATER probe                                  | String | NA       | yes      |
     
 
 
