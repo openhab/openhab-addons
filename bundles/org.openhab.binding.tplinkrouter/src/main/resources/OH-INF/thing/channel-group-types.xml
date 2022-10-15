@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="tplinkrouter"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="wifiGroupType">
+		<label>Wifi</label>
+		<description>Wifi channels</description>
+		<channels>
+			<channel id="status" typeId="status"/>
+			<channel id="ssid" typeId="ssid"/>
+			<channel id="bandwidth" typeId="bandwidth"/>
+			<channel id="qss" typeId="qss"/>
+			<channel id="secMode" typeId="security-mode"/>
+			<channel id="authentication" typeId="authentication"/>
+			<channel id="encryption" typeId="encryption"/>
+			<channel id="key" typeId="key"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="qss">
+		<item-type>Switch</item-type>
+		<label>Wifi QSS</label>
+	</channel-type>
+	<channel-type id="status">
+		<item-type>Switch</item-type>
+		<label>Wifi Status</label>
+	</channel-type>
+	<channel-type id="ssid">
+		<item-type>String</item-type>
+		<label>Wifi SSID</label>
+		<state pattern="%s" readOnly="true"/>
+	</channel-type>
+	<channel-type id="key">
+		<item-type>String</item-type>
+		<label>Wifi Key</label>
+		<state pattern="%s" readOnly="true"/>
+	</channel-type>
+	<channel-type id="security-mode">
+		<item-type>String</item-type>
+		<label>Wifi Security Mode</label>
+		<state readOnly="true">
+			<options>
+				<option value="WEP">WEP</option>
+				<option value="WPA">PSK</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="authentication">
+		<item-type>String</item-type>
+		<label>Wifi Authentication Mode</label>
+		<state readOnly="true">
+			<options>
+				<option value="AUTO">AUTO</option>
+				<option value="OPEN">OPEN</option>
+				<option value="SHARED">SHARED</option>
+				<option value="WPA">WPA</option>
+				<option value="WPA2">WPA2</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="encryption">
+		<item-type>String</item-type>
+		<label>Wifi Encryption Mode</label>
+		<description>Wifi Encryption Mode (only for PSK security mode)</description>
+		<state readOnly="true">
+			<options>
+				<option value="AUTO">AUTO</option>
+				<option value="TKIP">TKIP</option>
+				<option value="AES">AES</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="bandwidth">
+		<item-type>String</item-type>
+		<label>Wifi BandWidth</label>
+		<state readOnly="true">
+			<options>
+				<option value="Auto">Auto</option>
+				<option value="20M">20 MHz</option>
+				<option value="40M">40 MHz</option>
+			</options>
+		</state>
+	</channel-type>
+</thing:thing-descriptions>
