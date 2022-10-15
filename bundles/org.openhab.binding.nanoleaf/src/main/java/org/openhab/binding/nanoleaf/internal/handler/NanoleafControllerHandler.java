@@ -716,7 +716,7 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
                 updateState(CHANNEL_LAYOUT, new RawType(bytes, "image/png"));
             }
         } catch (IOException ioex) {
-            logger.info("Failed to create layout image", ioex);
+            logger.warn("Failed to create layout image", ioex);
         }
     }
 

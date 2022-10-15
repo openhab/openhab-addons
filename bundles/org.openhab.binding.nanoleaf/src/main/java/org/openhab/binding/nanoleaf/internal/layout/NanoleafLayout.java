@@ -74,23 +74,23 @@ public class NanoleafLayout {
             Point2D current = new Point2D(NanoleafBindingConstants.LAYOUT_BORDER_WIDTH + rotated.getX() - min.getX(),
                     NanoleafBindingConstants.LAYOUT_BORDER_WIDTH - rotated.getY() - min.getY());
 
-            g2.fillOval((int) current.getX() - NanoleafBindingConstants.LAYOUT_LIGHT_RADIUS / 2,
-                    (int) current.getY() - NanoleafBindingConstants.LAYOUT_LIGHT_RADIUS / 2,
+            g2.fillOval(current.getX() - NanoleafBindingConstants.LAYOUT_LIGHT_RADIUS / 2,
+                    current.getY() - NanoleafBindingConstants.LAYOUT_LIGHT_RADIUS / 2,
                     NanoleafBindingConstants.LAYOUT_LIGHT_RADIUS, NanoleafBindingConstants.LAYOUT_LIGHT_RADIUS);
-            g2.drawString(Integer.toString(panel.getPanelId()), (int) current.getX(), (int) current.getY());
+            g2.drawString(Integer.toString(panel.getPanelId()), current.getX(), current.getY());
 
             if (sideCounter == 0) {
                 first = current;
             }
 
             if (sideCounter > 0 && sideCounter != expectedSides && prev != null) {
-                g2.drawLine((int) prev.getX(), (int) prev.getY(), (int) current.getX(), (int) current.getY());
+                g2.drawLine(prev.getX(), prev.getY(), current.getX(), current.getY());
             }
 
             sideCounter++;
 
             if (sideCounter == expectedSides && first != null) {
-                g2.drawLine((int) current.getX(), (int) current.getY(), (int) first.getX(), (int) first.getY());
+                g2.drawLine(current.getX(), current.getY(), first.getX(), first.getY());
                 sideCounter = 0;
             }
 
@@ -110,7 +110,6 @@ public class NanoleafLayout {
     }
 
     private static Point2D[] findSize(Collection<PositionDatum> panels, double rotationRadians) {
-
         int maxX = 0;
         int maxY = 0;
         int minX = 0;
@@ -118,11 +117,10 @@ public class NanoleafLayout {
 
         for (PositionDatum panel : panels) {
             var rotated = new Point2D(panel.getPosX(), panel.getPosY()).rotate(rotationRadians);
-
-            maxX = Math.max((int) rotated.getX(), maxX);
-            maxY = Math.max((int) rotated.getY(), maxY);
-            minX = Math.min((int) rotated.getX(), minX);
-            minY = Math.min((int) rotated.getY(), minY);
+            maxX = Math.max(rotated.getX(), maxX);
+            maxY = Math.max(rotated.getY(), maxY);
+            minX = Math.min(rotated.getX(), minX);
+            minY = Math.min(rotated.getY(), minY);
         }
 
         return new Point2D[] { new Point2D(minX, minY), new Point2D(maxX, maxY) };

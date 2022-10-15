@@ -70,8 +70,6 @@ In this case:
 
 ### Panel Layout
 
-Unfortunately it is not easy to find out which panel gets which id, and this becomes pretty important if you have lots of them and want to assign rules. 
-
 For canvas that use square panels, you can request the layout through a [console command](https://www.openhab.org/docs/administration/console.html):
 
 then issue the following command:
@@ -94,6 +92,8 @@ Compare the following output with the right picture at the beginning of the arti
                                     41451                                     
 
 ```
+
+For other canvases, use the Layout channel on the controller to get a picture of the layout with the thing IDs.
            
 ## Thing Configuration
 
