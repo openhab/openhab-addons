@@ -31,8 +31,10 @@ public class BroadlinkBindingConstants {
             "floureonthermostat");
     public static final ThingTypeUID HYSEN_THERMOSTAT_THING_TYPE = new ThingTypeUID(BINDING_ID, "hysenthermostat");
     public static final ThingTypeUID RM_UNIVERSAL_REMOTE_THING_TYPE = new ThingTypeUID(BINDING_ID, "rmuniversaldevice");
-    public static final ThingTypeUID UNKNOWN_broadlink_THING_TYPE = new ThingTypeUID(BINDING_ID,
+    public static final ThingTypeUID UNKNOWN_BROADLINK_THING_TYPE = new ThingTypeUID(BINDING_ID,
             "unknownbroadlinkdevice");
+    public static final ThingTypeUID UNKNOWN_BROADLINK_THERMOSTAT_THING_TYPE = new ThingTypeUID(BINDING_ID,
+            "unknownbroadlinkthermostatdevice");
 
     // List of Remote Infrared Channel ids
     public static final String LEARNING_MODE = "learningmode";

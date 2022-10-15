@@ -38,10 +38,8 @@ public abstract class BroadlinkBaseHandler extends BaseThingHandler {
 
     @Nullable
     BLDevice blDevice;
-    @Nullable
-    String host;
-    @Nullable
-    String macAddress;
+    String host = "";
+    String macAddress = "";
 
     /**
      * Creates a new instance of this class for the {@link Thing}.

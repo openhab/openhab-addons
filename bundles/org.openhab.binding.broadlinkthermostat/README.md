@@ -48,9 +48,9 @@ The autodiscovery process finds both parts automatically.
 
 | Channel Type ID               | Item Type          | Description                                                          |
 |-------------------------------|--------------------|----------------------------------------------------------------------|
-| learning_mode                 | Switch             | Put device in infrared learning mode when turned on                  |
-| save_learned                  | String             | Saves the learned keys using the provided name                       |
-| send_learned                  | String             | Send previously learned keys by name                                 |
+| learningmode                 | Switch             | Put device in infrared learning mode when turned on                  |
+| savelearned                  | String             | Saves the learned keys using the provided name                       |
+| sendlearned                  | String             | Send previously learned keys by name                                 |
 
 ## Full Example
 

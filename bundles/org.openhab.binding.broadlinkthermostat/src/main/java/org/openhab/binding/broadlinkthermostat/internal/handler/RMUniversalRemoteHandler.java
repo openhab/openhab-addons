@@ -24,6 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.broadlinkthermostat.internal.BroadlinkBindingConstants;
 import org.openhab.binding.broadlinkthermostat.internal.BroadlinkHandlerFactory;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -62,33 +63,37 @@ public class RMUniversalRemoteHandler extends BroadlinkBaseHandler {
     @Override
     public void initialize() {
         super.initialize();
-        if (host != null && macAddress != null) {
+        if (!host.isBlank() && !macAddress.isBlank()) {
             try {
                 blDevice = new RM2Device(host, new Mac(macAddress));
                 this.rm2Device = (RM2Device) blDevice;
                 updateStatus(ThingStatus.ONLINE);
             } catch (IOException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Could not find broadlink universal remote device at host" + host + "with MAC+" + macAddress
+                        "Could not find broadlink universal remote device at host " + host + " with MAC " + macAddress
                                 + ": " + e.getMessage());
             }
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Missing device configuration");
         }
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Command: {}", command.toFullString());
-        authenticate(false);
 
         if (command == RefreshType.REFRESH) {
-            logger.warn("Nothing to refresh on thing {}", thing.getUID());
+            logger.debug("Nothing to refresh on thing {}", thing.getUID());
             return;
         }
+        authenticate(false);
         String channelId = channelUID.getIdWithoutGroup();
         try {
             switch (channelId) {
                 case BroadlinkBindingConstants.LEARNING_MODE:
-                    handleLearningCommand();
+                    if (OnOffType.from(command.toFullString()).equals(ON)) {
+                        handleLearningCommand();
+                    }
                     break;
                 case BroadlinkBindingConstants.SAVE_LEARNED:
                     handleSaveLearned(command);
@@ -97,10 +102,10 @@ public class RMUniversalRemoteHandler extends BroadlinkBaseHandler {
                     handleSendLearned(command);
                     break;
                 default:
-                    logger.warn("Channel {} does not supported by thing {}", channelId, thing.getUID());
+                    logger.debug("Command {} not supported by channel {}", command.toFullString(), channelId);
             }
         } catch (Exception e) {
-            logger.warn("IOException while running channel {}", channelUID);
+            logger.warn("Exception while running channel {}", channelUID);
         }
     }
 

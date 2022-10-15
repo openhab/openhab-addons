@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.broadlinkthermostat.internal.discovery;
 
+import static org.openhab.binding.broadlinkthermostat.internal.BroadlinkBindingConstants.*;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -24,7 +26,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.broadlinkthermostat.internal.BroadlinkBindingConstants;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -55,9 +56,8 @@ public class BroadlinkDiscoveryService extends AbstractDiscoveryService {
 
     private final NetworkAddressService networkAddressService;
 
-    private static final Set<ThingTypeUID> DISCOVERABLE_THING_TYPES_UIDS = Set.of(
-            BroadlinkBindingConstants.FLOUREON_THERMOSTAT_THING_TYPE,
-            BroadlinkBindingConstants.UNKNOWN_broadlink_THING_TYPE);
+    private static final Set<ThingTypeUID> DISCOVERABLE_THING_TYPES_UIDS = Set.of(FLOUREON_THERMOSTAT_THING_TYPE,
+            RM_UNIVERSAL_REMOTE_THING_TYPE, UNKNOWN_BROADLINK_THING_TYPE);
     private static final int DISCOVERY_TIMEOUT_SECONDS = 30;
     private @Nullable ScheduledFuture<?> backgroundDiscoveryFuture;
 
@@ -101,22 +101,22 @@ public class BroadlinkDiscoveryService extends AbstractDiscoveryService {
             }
             switch (dev.getDeviceDescription()) {
                 case "Floureon Thermostat":
-                    thingUID = new ThingUID(BroadlinkBindingConstants.FLOUREON_THERMOSTAT_THING_TYPE, id);
+                    thingUID = new ThingUID(FLOUREON_THERMOSTAT_THING_TYPE, id);
                     break;
                 case "Hysen Thermostat":
-                    thingUID = new ThingUID(BroadlinkBindingConstants.HYSEN_THERMOSTAT_THING_TYPE, id);
+                    thingUID = new ThingUID(HYSEN_THERMOSTAT_THING_TYPE, id);
                     break;
                 case "RM Mini":
-                    thingUID = new ThingUID(BroadlinkBindingConstants.RM_UNIVERSAL_REMOTE_THING_TYPE, id);
+                    thingUID = new ThingUID(RM_UNIVERSAL_REMOTE_THING_TYPE, id);
                     break;
                 default:
-                    thingUID = new ThingUID(BroadlinkBindingConstants.UNKNOWN_broadlink_THING_TYPE, id);
+                    thingUID = new ThingUID(UNKNOWN_BROADLINK_THING_TYPE, id);
             }
 
             Map<String, Object> properties = new HashMap<>();
-            properties.put(BroadlinkBindingConstants.HOST, dev.getHost());
+            properties.put(HOST, dev.getHost());
             properties.put(Thing.PROPERTY_MAC_ADDRESS, dev.getMac().getMacString());
-            properties.put(BroadlinkBindingConstants.DESCRIPTION, dev.getDeviceDescription());
+            properties.put(DESCRIPTION, dev.getDeviceDescription());
 
             logger.debug("Thing {} property map: {}", thingUID, properties);
 
