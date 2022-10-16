@@ -306,8 +306,9 @@ public class JdbcBaseDAO {
      * ITEM DAOs *
      *************/
     public void doUpdateItemTableNames(List<ItemVO> vol) {
-        if (!vol.isEmpty()) {
-            String sql = updateItemTableNamesProvider(vol);
+        logger.debug("JDBC::doUpdateItemTableNames vol.size = {}", vol.size());
+        for (ItemVO itemTable : vol) {
+            String sql = updateItemTableNamesProvider(itemTable);
             Yank.execute(sql, null);
         }
     }
@@ -416,13 +417,8 @@ public class JdbcBaseDAO {
         return filterString;
     }
 
-    private String updateItemTableNamesProvider(List<ItemVO> namesList) {
-        logger.debug("JDBC::updateItemTableNamesProvider namesList.size = {}", namesList.size());
-        String queryString = "";
-        for (int i = 0; i < namesList.size(); i++) {
-            ItemVO it = namesList.get(i);
-            queryString += "ALTER TABLE " + it.getTableName() + " RENAME TO " + it.getNewTableName() + ";";
-        }
+    private String updateItemTableNamesProvider(ItemVO itemTable) {
+        String queryString = "ALTER TABLE " + itemTable.getTableName() + " RENAME TO " + itemTable.getNewTableName();
         logger.debug("JDBC::query queryString = {}", queryString);
         return queryString;
     }
