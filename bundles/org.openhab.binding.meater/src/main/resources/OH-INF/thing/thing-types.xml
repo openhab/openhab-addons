@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="meater"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="meaterapi">
+		<label>MEATER Cloud REST API</label>
+		<description>This bridge represents the MEATER Cloud REST API connector</description>
+
+		<channels>
+			<channel id="status" typeId="status"/>
+		</channels>
+
+		<config-description>
+			<parameter name="email" type="text" required="true">
+				<label>Email</label>
+				<description>The email used to login to MEATER Cloud account</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<label>Password</label>
+				<context>password</context>
+				<description>The password used to login to MEATER Cloud account</description>
+			</parameter>
+			<parameter name="refresh" type="integer" min="10" unit="s">
+				<label>Refresh Interval</label>
+				<description>Specifies the refresh interval in seconds</description>
+				<default>30</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="meaterprobe">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="meaterapi"/>
+		</supported-bridge-type-refs>
+
+		<label>MEATER Probe</label>
+		<description>This thing represents a MEATER Probe</description>
+
+		<channels>
+			<channel id="internalTemperature" typeId="internalTemperature"/>
+			<channel id="ambientTemperature" typeId="ambientTemperature"/>
+			<channel id="cookId" typeId="cookId"/>
+			<channel id="cookName" typeId="cookName"/>
+			<channel id="cookState" typeId="cookState"/>
+			<channel id="cookTargetTemperature" typeId="cookTargetTemperature"/>
+			<channel id="cookPeakTemperature" typeId="cookPeakTemperature"/>
+			<channel id="cookElapsedTime" typeId="cookElapsedTime"/>
+			<channel id="cookRemainingTime" typeId="cookRemainingTime"/>
+			<channel id="cookEstimatedEndTime" typeId="cookEstimatedEndTime"/>
+			<channel id="lastConnection" typeId="lastConnection"/>
+		</channels>
+
+		<properties>
+			<property name="vendor">Apption Labs</property>
+			<property name="model">MEATER</property>
+		</properties>
+
+		<representation-property>deviceId</representation-property>
+
+		<config-description>
+			<parameter name="deviceId" type="text" required="true">
+				<label>Device Id</label>
+				<description>Unique id for your MEATER Probe</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="status">
+		<item-type>String</item-type>
+		<label>Status</label>
+		<description>Can be used to trigger an instant refresh</description>
+		<state readOnly="true" pattern="%s"/>
+	</channel-type>
+
+	<channel-type id="lastConnection">
+		<item-type>DateTime</item-type>
+		<label>Last Probe Connection</label>
+		<description>Date and time of last probe connection</description>
+		<category>Time</category>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM"/>
+	</channel-type>
+
+	<channel-type id="cookElapsedTime">
+		<item-type>Number:Time</item-type>
+		<label>Cook Elapsed Time</label>
+		<description>Time since the start of cook in seconds. Default: 0</description>
+		<category>Time</category>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="cookRemainingTime">
+		<item-type>Number:Time</item-type>
+		<label>Cook Remaining Time</label>
+		<description>Remaining time in seconds or UNDEF when unknown</description>
+		<category>Time</category>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="cookEstimatedEndTime">
+		<item-type>DateTime</item-type>
+		<label>Cook Estimated End Time</label>
+		<description>Date and time of estimated end time for current cook</description>
+		<category>Time</category>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM"/>
+	</channel-type>
+
+	<channel-type id="internalTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Probe Internal Temperature</label>
+		<description>Internal temperature reading of MEATER Probe</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="ambientTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Probe Ambient Temperature</label>
+		<description>Ambient temperature reading of MEATER Probe. If ambient is less than internal, ambient will equal
+			internal</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="cookTargetTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Current Cook Target Temperature</label>
+		<description>Target temperature of current cook</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="cookPeakTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Current Cook Peak Temperature</label>
+		<description>Peak temperature of current cook</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="cookId">
+		<item-type>String</item-type>
+		<label>Current Cook ID</label>
+		<description>Unique cook ID of current cook</description>
+		<state readOnly="true" pattern="%s"/>
+	</channel-type>
+
+	<channel-type id="cookName">
+		<item-type>String</item-type>
+		<label>Current Cook Name</label>
+		<description>Name of selected meat in your language or user given custom name</description>
+		<state readOnly="true" pattern="%s"/>
+	</channel-type>
+
+	<channel-type id="cookState">
+		<item-type>String</item-type>
+		<label>Current Cook State</label>
+		<description>One of Not Started, Configured, Started, Ready For Resting, Resting, Slightly Underdone, Finished,
+			Slightly Overdone, OVERCOOK!</description>
+		<state readOnly="true" pattern="%s"/>
+	</channel-type>
+
+</thing:thing-descriptions>
