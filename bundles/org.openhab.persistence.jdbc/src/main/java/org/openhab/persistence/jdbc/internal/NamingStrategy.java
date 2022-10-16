@@ -46,21 +46,13 @@ public class NamingStrategy {
         if (configuration.getTableUseRealItemNames()) {
             return formatTableName(itemName);
         } else {
-            return configuration.getTableNamePrefix() + formatRight(rowId, configuration.getTableIdDigitCount());
-        }
-    }
-
-    private static String formatRight(final Object value, final int len) {
-        final String valueAsString = String.valueOf(value);
-        if (valueAsString.length() < len) {
-            final StringBuffer result = new StringBuffer(len);
-            for (int i = len - valueAsString.length(); i > 0; i--) {
-                result.append('0');
+            int digits = configuration.getTableIdDigitCount();
+            if (digits > 0) {
+                return configuration.getTableNamePrefix()
+                        + String.format("%0" + configuration.getTableIdDigitCount() + "d", rowId);
+            } else {
+                return configuration.getTableNamePrefix() + rowId;
             }
-            result.append(valueAsString);
-            return result.toString();
-        } else {
-            return valueAsString;
         }
     }
 
