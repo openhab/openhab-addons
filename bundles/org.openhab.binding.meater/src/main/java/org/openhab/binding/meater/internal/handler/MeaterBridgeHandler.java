@@ -84,7 +84,7 @@ public class MeaterBridgeHandler extends BaseBridgeHandler {
         api = new MeaterRestAPI(config, gson, httpClient, localeProvider);
         refreshTimeInSeconds = config.refresh;
 
-        if (config.email.isEmpty() || config.password.isEmpty()) {
+        if (config.email.isBlank() || config.password.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/config.missing-username-password.description");
         } else {
