@@ -8,7 +8,7 @@ The file format is documented [here](https://docs.oracle.com/javase/8/docs/api/j
 To organize the various transformations one might use subfolders.
 
 A default value can be provided if no matching entry is found by using "=value" syntax. 
-sDefining this default value using `%s` would then return the non transformed input string.
+Defining this default value using `%s` would then return the non transformed input string.
 
 
 ## Example
