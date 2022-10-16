@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.broadlinkthermostat.internal.discovery;
 
-import static org.openhab.binding.broadlinkthermostat.internal.BroadlinkThermostatBindingConstants.*;
+import static org.openhab.binding.broadlinkthermostat.internal.BroadlinkBindingConstants.*;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -26,7 +26,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.broadlinkthermostat.internal.BroadlinkThermostatBindingConstants;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -44,26 +43,26 @@ import org.slf4j.LoggerFactory;
 import com.github.mob41.blapi.BLDevice;
 
 /**
- * The {@link BroadlinkThermostatDiscoveryService} is responsible for discovering Broadlinkthermostat devices through
+ * The {@link BroadlinkDiscoveryService} is responsible for discovering Broadlink devices through
  * Broadcast.
  *
  * @author Florian Mueller - Initial contribution
  */
 @Component(service = DiscoveryService.class, configurationPid = "discovery.broadlinkthermostat")
 @NonNullByDefault
-public class BroadlinkThermostatDiscoveryService extends AbstractDiscoveryService {
+public class BroadlinkDiscoveryService extends AbstractDiscoveryService {
 
-    private final Logger logger = LoggerFactory.getLogger(BroadlinkThermostatDiscoveryService.class);
+    private final Logger logger = LoggerFactory.getLogger(BroadlinkDiscoveryService.class);
 
     private final NetworkAddressService networkAddressService;
 
     private static final Set<ThingTypeUID> DISCOVERABLE_THING_TYPES_UIDS = Set.of(FLOUREON_THERMOSTAT_THING_TYPE,
-            UNKNOWN_BROADLINKTHERMOSTAT_THING_TYPE);
+            RM_UNIVERSAL_REMOTE_THING_TYPE);
     private static final int DISCOVERY_TIMEOUT_SECONDS = 30;
     private @Nullable ScheduledFuture<?> backgroundDiscoveryFuture;
 
     @Activate
-    public BroadlinkThermostatDiscoveryService(@Reference NetworkAddressService networkAddressService) {
+    public BroadlinkDiscoveryService(@Reference NetworkAddressService networkAddressService) {
         super(DISCOVERABLE_THING_TYPES_UIDS, DISCOVERY_TIMEOUT_SECONDS);
         this.networkAddressService = networkAddressService;
     }
@@ -82,12 +81,12 @@ public class BroadlinkThermostatDiscoveryService extends AbstractDiscoveryServic
                 blDevices = BLDevice.discoverDevices(DISCOVERY_TIMEOUT_SECONDS * 1000);
             }
         } catch (IOException e) {
-            logger.debug("Error while trying to discover broadlinkthermostat devices: {}", e.getMessage());
+            logger.debug("Error while trying to discover broadlink devices: {}", e.getMessage());
         }
-        logger.debug("Discovery service found {} broadlinkthermostat devices.", blDevices.length);
+        logger.debug("Discovery service found {} broadlink devices.", blDevices.length);
 
         for (BLDevice dev : blDevices) {
-            logger.debug("Broadlinkthermostat device {} of type {} with Host {} and MAC {}", dev.getDeviceDescription(),
+            logger.debug("Broadlink device {} of type {} with Host {} and MAC {}", dev.getDeviceDescription(),
                     Integer.toHexString(dev.getDeviceType()), dev.getHost(), dev.getMac());
 
             ThingUID thingUID;
@@ -100,24 +99,28 @@ public class BroadlinkThermostatDiscoveryService extends AbstractDiscoveryServic
                 logger.debug("Discovered device with IP {} does not have a DNS name, using IP as thing UID.",
                         dev.getHost());
             }
-
-            switch (dev.getDeviceDescription()) {
+            var deviceDescription = dev.getDeviceDescription();
+            switch (deviceDescription) {
                 case "Floureon Thermostat":
                     thingUID = new ThingUID(FLOUREON_THERMOSTAT_THING_TYPE, id);
                     break;
                 case "Hysen Thermostat":
                     thingUID = new ThingUID(HYSEN_THERMOSTAT_THING_TYPE, id);
                     break;
+                case "RM Mini":
+                    thingUID = new ThingUID(RM_UNIVERSAL_REMOTE_THING_TYPE, id);
+                    break;
                 default:
-                    thingUID = new ThingUID(UNKNOWN_BROADLINKTHERMOSTAT_THING_TYPE, id);
+                    logger.debug("Unknown device description '{}'.", deviceDescription);
+                    continue;
             }
 
             Map<String, Object> properties = new HashMap<>();
-            properties.put(BroadlinkThermostatBindingConstants.HOST, dev.getHost());
+            properties.put(HOST, dev.getHost());
             properties.put(Thing.PROPERTY_MAC_ADDRESS, dev.getMac().getMacString());
-            properties.put(BroadlinkThermostatBindingConstants.DESCRIPTION, dev.getDeviceDescription());
+            properties.put(DESCRIPTION, dev.getDeviceDescription());
 
-            logger.debug("Property map: {}", properties);
+            logger.debug("Thing {} property map: {}", thingUID, properties);
 
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
                     .withLabel(dev.getDeviceDescription() + " (" + id + ")")
@@ -135,7 +138,7 @@ public class BroadlinkThermostatDiscoveryService extends AbstractDiscoveryServic
 
     @Override
     protected void startBackgroundDiscovery() {
-        logger.trace("Starting background scan for Broadlinkthermostat devices");
+        logger.trace("Starting background scan for Broadlink devices");
         ScheduledFuture<?> currentBackgroundDiscoveryFuture = backgroundDiscoveryFuture;
         if (currentBackgroundDiscoveryFuture != null) {
             currentBackgroundDiscoveryFuture.cancel(true);
@@ -145,7 +148,7 @@ public class BroadlinkThermostatDiscoveryService extends AbstractDiscoveryServic
 
     @Override
     protected void stopBackgroundDiscovery() {
-        logger.trace("Stopping background scan for Broadlinkthermostat devices");
+        logger.trace("Stopping background scan for Broadlink devices");
         @Nullable
         ScheduledFuture<?> backgroundDiscoveryFuture = this.backgroundDiscoveryFuture;
         if (backgroundDiscoveryFuture != null && !backgroundDiscoveryFuture.isCancelled()) {
@@ -180,8 +183,8 @@ public class BroadlinkThermostatDiscoveryService extends AbstractDiscoveryServic
     }
 
     private String getHostnameWithoutDomain(String hostname) {
-        String broadlinkthermostatRegex = "BroadLink-OEM[-A-Za-z0-9]{12}.*";
-        if (hostname.matches(broadlinkthermostatRegex)) {
+        String broadlinkRegex = "BroadLink-OEM[-A-Za-z0-9]{12}.*";
+        if (hostname.matches(broadlinkRegex)) {
             String[] dotSeparatedString = hostname.split("\\.");
             logger.debug("Found original broadlink DNS name {}, removing domain", hostname);
             return dotSeparatedString[0].replaceAll("\\.", "-");

@@ -15,17 +15,17 @@ package org.openhab.binding.broadlinkthermostat.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link BroadlinkThermostatConfig} class holds the configuration properties of the thing.
+ * The {@link BroadlinkConfig} class holds the configuration properties of the thing.
  *
  * @author Florian Mueller - Initial contribution
  */
 
 @NonNullByDefault
-public class BroadlinkThermostatConfig {
+public class BroadlinkConfig {
     private String host;
     private String macAddress;
 
-    public BroadlinkThermostatConfig() {
+    public BroadlinkConfig() {
         this.host = "0.0.0.0";
         this.macAddress = "00:00:00:00";
     }
