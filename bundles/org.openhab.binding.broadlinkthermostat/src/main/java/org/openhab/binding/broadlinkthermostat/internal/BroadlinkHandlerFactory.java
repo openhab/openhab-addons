@@ -41,9 +41,7 @@ public class BroadlinkHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(
             BroadlinkBindingConstants.FLOUREON_THERMOSTAT_THING_TYPE,
             BroadlinkBindingConstants.RM_UNIVERSAL_REMOTE_THING_TYPE,
-            BroadlinkBindingConstants.HYSEN_THERMOSTAT_THING_TYPE,
-            BroadlinkBindingConstants.UNKNOWN_BROADLINK_THING_TYPE,
-            BroadlinkBindingConstants.UNKNOWN_BROADLINK_THERMOSTAT_THING_TYPE);
+            BroadlinkBindingConstants.HYSEN_THERMOSTAT_THING_TYPE);
     private static final String BROADLINK_FOLDER = Path.of(OpenHAB.getUserDataFolder(), "broadlink").toString();
     public static final String INFRARED_FOLDER = Path.of(BROADLINK_FOLDER, "infrared_commands").toString();
     static {

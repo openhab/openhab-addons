@@ -57,7 +57,7 @@ public class BroadlinkDiscoveryService extends AbstractDiscoveryService {
     private final NetworkAddressService networkAddressService;
 
     private static final Set<ThingTypeUID> DISCOVERABLE_THING_TYPES_UIDS = Set.of(FLOUREON_THERMOSTAT_THING_TYPE,
-            RM_UNIVERSAL_REMOTE_THING_TYPE, UNKNOWN_BROADLINK_THING_TYPE);
+            RM_UNIVERSAL_REMOTE_THING_TYPE);
     private static final int DISCOVERY_TIMEOUT_SECONDS = 30;
     private @Nullable ScheduledFuture<?> backgroundDiscoveryFuture;
 
@@ -99,7 +99,8 @@ public class BroadlinkDiscoveryService extends AbstractDiscoveryService {
                 logger.debug("Discovered device with IP {} does not have a DNS name, using IP as thing UID.",
                         dev.getHost());
             }
-            switch (dev.getDeviceDescription()) {
+            var deviceDescription = dev.getDeviceDescription();
+            switch (deviceDescription) {
                 case "Floureon Thermostat":
                     thingUID = new ThingUID(FLOUREON_THERMOSTAT_THING_TYPE, id);
                     break;
@@ -110,7 +111,8 @@ public class BroadlinkDiscoveryService extends AbstractDiscoveryService {
                     thingUID = new ThingUID(RM_UNIVERSAL_REMOTE_THING_TYPE, id);
                     break;
                 default:
-                    thingUID = new ThingUID(UNKNOWN_BROADLINK_THING_TYPE, id);
+                    logger.debug("Unknown device description '{}'.", deviceDescription);
+                    continue;
             }
 
             Map<String, Object> properties = new HashMap<>();
