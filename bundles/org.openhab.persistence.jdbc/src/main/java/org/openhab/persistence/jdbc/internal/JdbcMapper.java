@@ -333,11 +333,32 @@ public class JdbcMapper {
 
         List<String> itemTables = getItemTables().stream().map(t -> t.getTable_name()).collect(Collectors.toList());
 
-        List<ItemVO> oldNewTablenames = namingStrategy.prepareMigration(itemTables, itemIdToItemNameMap,
+        List<ItemVO> oldNewTableNames = namingStrategy.prepareMigration(itemTables, itemIdToItemNameMap,
                 itemsManageTable);
 
-        updateItemTableNames(oldNewTablenames);
-        logger.info("JDBC::formatTableNames: Finished updating {} item table names", oldNewTablenames.size());
+        // Check for conflicts.
+        boolean anyConflicts = false;
+        for (int i = 0; i < oldNewTableNames.size(); i++) {
+            for (int j = i + 1; j < oldNewTableNames.size(); j++) {
+                ItemVO first = oldNewTableNames.get(i);
+                ItemVO second = oldNewTableNames.get(j);
+                if (first.getNewTableName().equals(second.getNewTableName())) {
+                    logger.error(
+                            "JDBC::formatTableNames: Tables {} and {} conflicts as both were attempted renamed to {}",
+                            first.getTableName(), second.getTableName(), first.getNewTableName());
+                    anyConflicts = true;
+                }
+            }
+        }
+
+        if (anyConflicts) {
+            logger.error(
+                    "JDBC::formatTableNames: Conflicts were detected. Consider renaming items with similar names or configuring other naming scheme with guaranteed uniqueness. Aborting migration of item table names.");
+            return;
+        }
+
+        updateItemTableNames(oldNewTableNames);
+        logger.info("JDBC::formatTableNames: Finished updating {} item table names", oldNewTableNames.size());
 
         initialized = tmpinit;
     }

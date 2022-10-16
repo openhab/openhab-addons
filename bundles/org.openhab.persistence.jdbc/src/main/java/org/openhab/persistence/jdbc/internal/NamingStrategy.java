@@ -57,48 +57,51 @@ public class NamingStrategy {
     }
 
     private String formatTableName(String itemName) {
-        return (itemName.replaceAll(ITEM_NAME_PATTERN, "")).toLowerCase();
+        String strippedName = itemName.replaceAll(ITEM_NAME_PATTERN, "");
+        return configuration.getTablePreserveCase() ? strippedName : strippedName.toLowerCase();
     }
 
     public List<ItemVO> prepareMigration(List<String> itemTables, Map<Integer, String> itemIdToItemNameMap,
             String itemsManageTable) {
         List<ItemVO> oldNewTablenames = new ArrayList<>();
-        Map<String, Integer> tableNameToItemIdMap = new HashMap<>();
+        Map<String, Integer> tableNameToItemIdMapExact = new HashMap<>();
+        Map<String, Integer> tableNameToItemIdMapLower = new HashMap<>();
         String tableNamePrefix = configuration.getTableNamePrefix();
-        boolean tableUseRealItemNames = configuration.getTableUseRealItemNames();
         int tableNamePrefixLength = tableNamePrefix.length();
 
         for (String oldName : itemTables) {
             int id = -1;
-            logger.info("JDBC::formatTableNames: found Table Name= {}", oldName);
 
             if (oldName.startsWith(tableNamePrefix) && !oldName.contains("_")) {
                 id = Integer.parseInt(oldName.substring(tableNamePrefixLength));
                 logger.info("JDBC::formatTableNames: found Table with Prefix '{}' Name= {} id= {}", tableNamePrefix,
-                        oldName, (id));
+                        oldName, id);
             } else if (oldName.contains("_")) {
                 try {
                     id = Integer.parseInt(oldName.substring(oldName.lastIndexOf("_") + 1));
-                    logger.info("JDBC::formatTableNames: found Table Name= {} id= {}", oldName, (id));
+                    logger.info("JDBC::formatTableNames: found Table Name= {} id= {}", oldName, id);
                 } catch (NumberFormatException e) {
                     // Fall through.
                 }
             }
 
-            if (id == -1 && !tableUseRealItemNames) {
-                if (tableNameToItemIdMap.isEmpty()) {
+            if (id == -1) {
+                if (tableNameToItemIdMapExact.isEmpty()) {
                     for (Entry<Integer, String> entry : itemIdToItemNameMap.entrySet()) {
-                        String itemName = entry.getValue();
-                        tableNameToItemIdMap.put(formatTableName(itemName), entry.getKey());
+                        String itemNameStripped = entry.getValue().replaceAll(ITEM_NAME_PATTERN, "");
+                        tableNameToItemIdMapExact.put(itemNameStripped, entry.getKey());
+                        tableNameToItemIdMapLower.put(itemNameStripped.toLowerCase(), entry.getKey());
                     }
                 }
-                Integer itemId = tableNameToItemIdMap.get(oldName);
-                if (itemId != null) {
-                    id = itemId;
+                Integer itemId = tableNameToItemIdMapExact.get(oldName);
+                if (Objects.isNull(itemId)) {
+                    itemId = tableNameToItemIdMapLower.get(oldName.toLowerCase());
                 }
-                logger.info("JDBC::formatTableNames: found Table Name= {} id= {}", oldName, (id));
+                if (Objects.nonNull(itemId)) {
+                    id = itemId;
+                    logger.info("JDBC::formatTableNames: found Table Name= {} id= {}", oldName, id);
+                }
             }
-            logger.info("JDBC::formatTableNames: found Table id= {}", id);
 
             String itemName = itemIdToItemNameMap.get(id);
 
@@ -108,7 +111,7 @@ public class NamingStrategy {
                     logger.error(
                             "JDBC::formatTableNames: Table '{}' could NOT be renamed to '{}' since it conflicts with manage table",
                             oldName, newName);
-                } else if (!oldName.equalsIgnoreCase(newName)) {
+                } else if (!oldName.equals(newName)) {
                     oldNewTablenames.add(new ItemVO(oldName, newName));
                     logger.info("JDBC::formatTableNames: Table '{}' will be renamed to '{}'", oldName, newName);
                 } else {
@@ -116,8 +119,7 @@ public class NamingStrategy {
                             newName);
                 }
             } else {
-                logger.error("JDBC::formatTableNames: Table '{}' could NOT be renamed for item '{}'", oldName,
-                        itemName);
+                logger.error("JDBC::formatTableNames: Table '{}' could NOT be renamed for id '{}'", oldName, id);
                 break;
             }
         }

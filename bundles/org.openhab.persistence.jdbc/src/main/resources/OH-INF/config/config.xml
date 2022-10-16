@@ -165,6 +165,15 @@
 				<option value="false">Disable</option>
 			</options>
 		</parameter>
+		<parameter name="tablePreserveCase" type="text">
+			<label>Tablename Preserve Case</label>
+			<description><![CDATA[Enables Tablename generation preserving item name case when "Tablename Realname Generation" is enabled <br>
+			(optional, default: disabled -> table names are lower cased).]]></description>
+			<options>
+				<option value="true">Enable</option>
+				<option value="false">Disable</option>
+			</options>
+		</parameter>
 		<parameter name="tableIdDigitCount" type="text">
 			<label>Tablename Suffix ID Count</label>
 			<description><![CDATA[Tablename Suffix ID Count <br>(optional, default: 4 -> 0001-9999). <br>
