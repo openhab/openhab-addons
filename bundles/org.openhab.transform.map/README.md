@@ -7,7 +7,8 @@ This file should be in property syntax, i.e. simple lines with "key=value" pairs
 The file format is documented [here](https://docs.oracle.com/javase/8/docs/api/java/util/Properties.html#load-java.io.Reader-).
 To organize the various transformations one might use subfolders.
 
-A default value can be provided if no matching entry is found by using "=value" syntax. Defining this default value using `%s`would then return the non transformed input string.
+A default value can be provided if no matching entry is found by using "=value" syntax. 
+sDefining this default value using `%s` would then return the non transformed input string.
 
 
 ## Example
