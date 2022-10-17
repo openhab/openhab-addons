@@ -288,6 +288,7 @@
 /bundles/org.openhab.binding.rotel/ @lolodomo
 /bundles/org.openhab.binding.russound/ @tmrobert8
 /bundles/org.openhab.binding.sagercaster/ @clinique
+/bundles/org.openhab.binding.saicismart/ @tisoft
 /bundles/org.openhab.binding.samsungtv/ @paulianttila
 /bundles/org.openhab.binding.satel/ @druciak
 /bundles/org.openhab.binding.semsportal/ @itb3
