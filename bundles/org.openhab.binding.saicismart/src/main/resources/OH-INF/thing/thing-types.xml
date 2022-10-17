@@ -17,6 +17,7 @@
 			<channel id="milage" typeId="mileage-channel"/>
 			<channel id="range-electric" typeId="range-electric-channel"/>
 			<channel id="soc" typeId="soc-channel"/>
+			<channel id="power" typeId="power-channel"/>
 		</channels>
 
 		<representation-property>vin</representation-property>
@@ -37,6 +38,11 @@
 	<channel-type id="soc-channel">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Battery Charge Level</label>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="power-channel">
+		<item-type>Number:Power</item-type>
+		<label>Power Usage</label>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>
