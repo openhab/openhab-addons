@@ -300,11 +300,12 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
 
     private void testInvalidConfiguration() {
         waitForAssert(() -> {
-            assertThat("Invalid configuratuin is used !", systemInfoThing.getStatus(),
+            assertThat("Invalid configuration is used !", systemInfoThing.getStatus(),
                     is(equalTo(ThingStatus.OFFLINE)));
             assertThat(systemInfoThing.getStatusInfo().getStatusDetail(),
                     is(equalTo(ThingStatusDetail.HANDLER_INITIALIZING_ERROR)));
-            assertThat(systemInfoThing.getStatusInfo().getDescription(), is(equalTo("Thing cannot be initialized!")));
+            assertThat(systemInfoThing.getStatusInfo().getDescription(),
+                    is(equalTo("@text/offline.cannot-initialize")));
         });
     }
 
