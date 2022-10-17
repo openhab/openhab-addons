@@ -30,13 +30,16 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class JdbcH2DAO extends JdbcBaseDAO {
+    private static final String DRIVER_CLASS_NAME = org.h2.Driver.class.getName();
+    @SuppressWarnings("unused")
+    private static final String DATA_SOURCE_CLASS_NAME = org.h2.jdbcx.JdbcDataSource.class.getName();
+
     private final Logger logger = LoggerFactory.getLogger(JdbcH2DAO.class);
 
     /********
      * INIT *
      ********/
     public JdbcH2DAO() {
-        super();
         initSqlQueries();
         initSqlTypes();
         initDbProps();
@@ -61,9 +64,9 @@ public class JdbcH2DAO extends JdbcBaseDAO {
      */
     private void initDbProps() {
         // Properties for HikariCP
-        databaseProps.setProperty("driverClassName", "org.h2.Driver");
+        databaseProps.setProperty("driverClassName", DRIVER_CLASS_NAME);
         // driverClassName OR BETTER USE dataSourceClassName
-        // databaseProps.setProperty("dataSourceClassName", "org.h2.jdbcx.JdbcDataSource");
+        // databaseProps.setProperty("dataSourceClassName", DATA_SOURCE_CLASS_NAME);
     }
 
     /**************
@@ -79,7 +82,7 @@ public class JdbcH2DAO extends JdbcBaseDAO {
         String sql = StringUtilsExt.replaceArrayMerge(sqlInsertItemValue,
                 new String[] { "#tableName#", "#dbType#", "#tablePrimaryValue#" },
                 new String[] { storedVO.getTableName(), storedVO.getDbType(), sqlTypes.get("tablePrimaryValue") });
-        Object[] params = new Object[] { storedVO.getValue() };
+        Object[] params = { storedVO.getValue() };
         logger.debug("JDBC::doStoreItemValue sql={} value='{}'", sql, storedVO.getValue());
         Yank.execute(sql, params);
     }

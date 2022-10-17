@@ -28,6 +28,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.knx.internal.KNXTypeMapper;
 import org.openhab.binding.knx.internal.dpt.KNXCoreTypeMapper;
 import org.openhab.binding.knx.internal.handler.GroupAddressListener;
+import org.openhab.binding.knx.internal.i18n.KNXTranslationProvider;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingUID;
@@ -289,9 +290,8 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
     private synchronized void disconnect(@Nullable Exception e, Optional<ThingStatusDetail> detail) {
         releaseConnection();
         if (e != null) {
-            final String message = e.getLocalizedMessage();
             statusUpdateCallback.updateStatus(ThingStatus.OFFLINE, detail.orElse(ThingStatusDetail.COMMUNICATION_ERROR),
-                    message != null ? message : "");
+                    KNXTranslationProvider.I18N.getLocalizedException(e));
         } else {
             statusUpdateCallback.updateStatus(ThingStatus.OFFLINE);
         }
@@ -406,8 +406,9 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
             return;
         }
         if (!link.isOpen() && CloseEvent.USER_REQUEST != closeEvent.getInitiator()) {
+            final String reason = closeEvent.getReason();
             statusUpdateCallback.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    closeEvent.getReason());
+                    KNXTranslationProvider.I18N.get(reason));
             logger.debug("KNX link has been lost (reason: {} on object {})", closeEvent.getReason(),
                     closeEvent.getSource().toString());
             scheduleReconnectJob();

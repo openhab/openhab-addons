@@ -237,6 +237,8 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
         if (!httpClient.isRunning()) {
             try {
                 httpClient.start();
+                // we act as a blind proxy, don't try to auto decode content
+                httpClient.getContentDecoderFactories().clear();
             } catch (Exception e) {
                 logger.error("Could not start Jetty http client", e);
             }

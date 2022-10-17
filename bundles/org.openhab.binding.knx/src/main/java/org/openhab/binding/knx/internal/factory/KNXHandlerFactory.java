@@ -20,7 +20,10 @@ import java.util.Collection;
 import org.openhab.binding.knx.internal.handler.DeviceThingHandler;
 import org.openhab.binding.knx.internal.handler.IPBridgeThingHandler;
 import org.openhab.binding.knx.internal.handler.SerialBridgeThingHandler;
+import org.openhab.binding.knx.internal.i18n.KNXTranslationProvider;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -29,6 +32,7 @@ import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -45,6 +49,12 @@ public class KNXHandlerFactory extends BaseThingHandlerFactory {
             THING_TYPE_IP_BRIDGE, THING_TYPE_SERIAL_BRIDGE);
 
     private NetworkAddressService networkAddressService;
+
+    @Activate
+    public KNXHandlerFactory(final @Reference TranslationProvider translationProvider,
+            final @Reference LocaleProvider localeProvider) {
+        KNXTranslationProvider.I18N.setProvider(localeProvider, translationProvider);
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

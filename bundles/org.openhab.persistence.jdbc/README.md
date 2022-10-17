@@ -9,7 +9,7 @@ The following databases are currently supported and tested:
 
 | Database                                     | Tested Driver / Version                                      |
 | -------------------------------------------- | ------------------------------------------------------------ |
-| [Apache Derby](https://db.apache.org/derby/) | [derby-10.12.1.1.jar](https://mvnrepository.com/artifact/org.apache.derby/derby) |
+| [Apache Derby](https://db.apache.org/derby/) | [derby-10.14.2.0.jar](https://mvnrepository.com/artifact/org.apache.derby/derby) |
 | [H2](https://www.h2database.com/)            | [h2-1.4.191.jar](https://mvnrepository.com/artifact/com.h2database/h2) |
 | [HSQLDB](http://hsqldb.org/)                 | [hsqldb-2.3.3.jar](https://mvnrepository.com/artifact/org.hsqldb/hsqldb) |
 | [MariaDB](https://mariadb.org/)              | [mariadb-java-client-1.4.6.jar](https://mvnrepository.com/artifact/org.mariadb.jdbc/mariadb-java-client) |

@@ -272,7 +272,7 @@ public class JdbcConfiguration {
             }
             matcher.reset();
             matcher.find();
-            if (!matcher.group(1).equals("sqltype")) {
+            if (!"sqltype".equals(matcher.group(1))) {
                 continue;
             }
             String itemType = matcher.group(2);
@@ -304,7 +304,7 @@ public class JdbcConfiguration {
             if (serviceName != null) {
                 switch (serviceName) {
                     case "derby":
-                        warn += "\tDerby:     version >= 10.11.1.1 from          https://mvnrepository.com/artifact/org.apache.derby/derby\n";
+                        warn += "\tDerby:     version >= 10.14.2.0 from          https://mvnrepository.com/artifact/org.apache.derby/derby\n";
                         break;
                     case "h2":
                         warn += "\tH2:        version >= 1.4.189 from            https://mvnrepository.com/artifact/com.h2database/h2\n";
@@ -313,13 +313,13 @@ public class JdbcConfiguration {
                         warn += "\tHSQLDB:    version >= 2.3.3 from              https://mvnrepository.com/artifact/org.hsqldb/hsqldb\n";
                         break;
                     case "mariadb":
-                        warn += "\tMariaDB:   version >= 1.2.0 from              https://mvnrepository.com/artifact/org.mariadb.jdbc/mariadb-java-client\n";
+                        warn += "\tMariaDB:   version >= 1.4.6 from              https://mvnrepository.com/artifact/org.mariadb.jdbc/mariadb-java-client\n";
                         break;
                     case "mysql":
-                        warn += "\tMySQL:     version >= 5.1.36 from             https://mvnrepository.com/artifact/mysql/mysql-connector-java\n";
+                        warn += "\tMySQL:     version >= 8.0.30 from             https://mvnrepository.com/artifact/mysql/mysql-connector-java\n";
                         break;
                     case "postgresql":
-                        warn += "\tPostgreSQL:version >= 9.4.1208 from           https://mvnrepository.com/artifact/org.postgresql/postgresql\n";
+                        warn += "\tPostgreSQL:version >= 42.4.1 from             https://mvnrepository.com/artifact/org.postgresql/postgresql\n";
                         break;
                     case "sqlite":
                         warn += "\tSQLite:    version >= 3.16.1 from             https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc\n";

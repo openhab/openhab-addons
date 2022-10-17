@@ -10,15 +10,14 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.broadlinkthermostat.internal;
+package org.openhab.binding.tplinkrouter.internal;
 
-import static org.openhab.binding.broadlinkthermostat.internal.BroadlinkThermostatBindingConstants.*;
+import static org.openhab.binding.tplinkrouter.internal.TpLinkRouterBindingConstants.*;
 
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.broadlinkthermostat.internal.handler.FloureonThermostatHandler;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -27,29 +26,30 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Component;
 
 /**
- * The {@link BroadlinkThermostatHandlerFactory} is responsible for creating things and thing handlers.
+ * The {@link TpLinkRouterHandlerFactory} is responsible for creating things and thing
+ * handlers.
  *
- * @author Florian Mueller - Initial contribution
+ * @author Olivier Marceau - Initial contribution
  */
-@Component(configurationPid = "binding.broadlinkthermostat", service = ThingHandlerFactory.class)
 @NonNullByDefault
-public class BroadlinkThermostatHandlerFactory extends BaseThingHandlerFactory {
+@Component(configurationPid = "binding.tplinkrouter", service = ThingHandlerFactory.class)
+public class TpLinkRouterHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(FLOUREON_THERMOSTAT_THING_TYPE,
-            HYSEN_THERMOSTAT_THING_TYPE, UNKNOWN_BROADLINKTHERMOSTAT_THING_TYPE);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_ROUTER);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return SUPPORTED_THING_TYPES.contains(thingTypeUID);
+        return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (FLOUREON_THERMOSTAT_THING_TYPE.equals(thingTypeUID) || HYSEN_THERMOSTAT_THING_TYPE.equals(thingTypeUID)) {
-            return new FloureonThermostatHandler(thing);
+        if (THING_TYPE_ROUTER.equals(thingTypeUID)) {
+            return new TpLinkRouterHandler(thing);
         }
+
         return null;
     }
 }
