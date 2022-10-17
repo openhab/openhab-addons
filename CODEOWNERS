@@ -77,6 +77,7 @@
 /bundles/org.openhab.binding.dsmr/ @Hilbrand
 /bundles/org.openhab.binding.dwdpollenflug/ @DerOetzi
 /bundles/org.openhab.binding.dwdunwetter/ @limdul79
+/bundles/org.openhab.binding.echonetlite/ @mikeb01
 /bundles/org.openhab.binding.ecobee/ @mhilbush
 /bundles/org.openhab.binding.ecotouch/ @sibbi77
 /bundles/org.openhab.binding.ecowatt/ @lolodomo
@@ -106,7 +107,7 @@
 /bundles/org.openhab.binding.fronius/ @trokohl
 /bundles/org.openhab.binding.fsinternetradio/ @paphko
 /bundles/org.openhab.binding.ftpupload/ @paulianttila
-/bundles/org.openhab.binding.gardena/ @gerrieg
+/bundles/org.openhab.binding.gardena/ @gerrieg @andrewfg
 /bundles/org.openhab.binding.gce/ @clinique
 /bundles/org.openhab.binding.generacmobilelink/ @digitaldan
 /bundles/org.openhab.binding.globalcache/ @mhilbush
@@ -240,7 +241,7 @@
 /bundles/org.openhab.binding.onkyo/ @pail23 @paulianttila
 /bundles/org.openhab.binding.opengarage/ @psmedley
 /bundles/org.openhab.binding.opensprinkler/ @CrackerStealth @FlorianSW
-/bundles/org.openhab.binding.openthermgateway/ @ArjenKorevaar
+/bundles/org.openhab.binding.openthermgateway/ @ArjenKorevaar @andrewfg
 /bundles/org.openhab.binding.openuv/ @clinique
 /bundles/org.openhab.binding.openweathermap/ @cweitkamp
 /bundles/org.openhab.binding.openwebnet/ @mvalla
@@ -302,6 +303,7 @@
 /bundles/org.openhab.binding.snmp/ @openhab/add-ons-maintainers
 /bundles/org.openhab.binding.solaredge/ @alexf2015
 /bundles/org.openhab.binding.solarlog/ @johannrichard
+/bundles/org.openhab.binding.solarmax/ @jamietownsend
 /bundles/org.openhab.binding.solarwatt/ @sven-carstens
 /bundles/org.openhab.binding.somfymylink/ @loungeflyz
 /bundles/org.openhab.binding.somfytahoma/ @octa22
@@ -317,7 +319,7 @@
 /bundles/org.openhab.binding.synopanalyzer/ @clinique
 /bundles/org.openhab.binding.systeminfo/ @svilenvul
 /bundles/org.openhab.binding.tacmi/ @twendt @Wolfgang1966 @marvkis
-/bundles/org.openhab.binding.tado/ @dfrommi
+/bundles/org.openhab.binding.tado/ @dfrommi @andrewfg
 /bundles/org.openhab.binding.tankerkoenig/ @dolic @JueBag
 /bundles/org.openhab.binding.tapocontrol/ @wildcs
 /bundles/org.openhab.binding.telegram/ @ZzetT
@@ -331,7 +333,7 @@
 /bundles/org.openhab.binding.tr064/ @openhab/add-ons-maintainers
 /bundles/org.openhab.binding.tradfri/ @cweitkamp @kaikreuzer
 /bundles/org.openhab.binding.twitter/ @computergeek1507
-/bundles/org.openhab.binding.unifi/ @mgbowman
+/bundles/org.openhab.binding.unifi/ @mgbowman @Hilbrand
 /bundles/org.openhab.binding.unifiedremote/ @GiviMAD
 /bundles/org.openhab.binding.upb/ @marcusb
 /bundles/org.openhab.binding.upnpcontrol/ @mherwege
@@ -340,7 +342,7 @@
 /bundles/org.openhab.binding.vdr/ @MatthiasKlocke
 /bundles/org.openhab.binding.vektiva/ @octa22
 /bundles/org.openhab.binding.velbus/ @cedricboon
-/bundles/org.openhab.binding.velux/ @gs4711
+/bundles/org.openhab.binding.velux/ @gs4711 @andrewfg
 /bundles/org.openhab.binding.venstarthermostat/ @hww3 @digitaldan
 /bundles/org.openhab.binding.ventaair/ @t2000
 /bundles/org.openhab.binding.verisure/ @jannegpriv

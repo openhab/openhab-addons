@@ -46,6 +46,8 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ColorValue extends Value {
+    private static BigDecimal factor = new BigDecimal("2.55"); // string to not lose precision
+
     private final Logger logger = LoggerFactory.getLogger(ColorValue.class);
 
     private final ColorMode colorMode;
@@ -119,8 +121,6 @@ public class ColorValue extends Value {
             }
         }
     }
-
-    private static BigDecimal factor = new BigDecimal(2.5);
 
     /**
      * Converts the color state to a string.

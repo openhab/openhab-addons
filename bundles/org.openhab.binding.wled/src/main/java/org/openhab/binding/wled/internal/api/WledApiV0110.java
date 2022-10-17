@@ -63,9 +63,9 @@ public class WledApiV0110 extends WledApiV084 {
             PresetState preset = gson.fromJson(presetEntry.getValue(), PresetState.class);
             if (preset != null && counter > 0) {
                 if (preset.bri == 0) {
-                    playlistsOptions.add(new StateOption(Integer.toString(counter), preset.n));
+                    playlistsOptions.add(new StateOption(presetEntry.getKey(), preset.n));
                 } else {
-                    presetsOptions.add(new StateOption(Integer.toString(counter), preset.n));
+                    presetsOptions.add(new StateOption(presetEntry.getKey(), preset.n));
                 }
             }
             counter++;

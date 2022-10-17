@@ -47,7 +47,7 @@ public class EnergyApi extends RestManager {
     public void switchSchedule(String homeId, String scheduleId) throws NetatmoException {
         UriBuilder uriBuilder = getAppUriBuilder(SUB_PATH_SWITCH_SCHEDULE, PARAM_HOME_ID, homeId, PARAM_SCHEDULE_ID,
                 scheduleId);
-        post(uriBuilder, ApiResponse.Ok.class, null, null);
+        post(uriBuilder, ApiResponse.Ok.class, null);
     }
 
     /**
@@ -64,7 +64,7 @@ public class EnergyApi extends RestManager {
      */
     public void setThermMode(String homeId, String mode) throws NetatmoException {
         UriBuilder uriBuilder = getApiUriBuilder(SUB_PATH_SET_THERM_MODE, PARAM_HOME_ID, homeId, PARAM_MODE, mode);
-        post(uriBuilder, ApiResponse.Ok.class, null, null);
+        post(uriBuilder, ApiResponse.Ok.class, null);
     }
 
     /**
@@ -88,6 +88,6 @@ public class EnergyApi extends RestManager {
                 uriBuilder.queryParam("temp", temp > THERM_MAX_SETPOINT ? THERM_MAX_SETPOINT : temp);
             }
         }
-        post(uriBuilder, ApiResponse.Ok.class, null, null);
+        post(uriBuilder, ApiResponse.Ok.class, null);
     }
 }

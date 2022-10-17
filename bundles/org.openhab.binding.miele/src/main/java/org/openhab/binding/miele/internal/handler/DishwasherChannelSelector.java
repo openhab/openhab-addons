@@ -73,20 +73,8 @@ public enum DishwasherChannelSelector implements ApplianceChannelSelector {
         }
     },
     PROGRAM_PHASE(RAW_PHASE_PROPERTY_NAME, PHASE_CHANNEL_ID, DecimalType.class, false, false),
-    START_TIME("startTime", "start", DateTimeType.class, false, false) {
-        @Override
-        public State getState(String s, @Nullable DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
-            Date date = new Date();
-            SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-            dateFormatter.setTimeZone(TimeZone.getTimeZone("GMT+0"));
-            try {
-                date.setTime(Long.valueOf(s) * 60000);
-            } catch (Exception e) {
-                date.setTime(0);
-            }
-            return getState(dateFormatter.format(date));
-        }
-    },
+    START_TIME("", START_CHANNEL_ID, DateTimeType.class, false, false),
+    END_TIME("", END_CHANNEL_ID, DateTimeType.class, false, false),
     DURATION("duration", "duration", DateTimeType.class, false, false) {
         @Override
         public State getState(String s, @Nullable DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
@@ -115,20 +103,7 @@ public enum DishwasherChannelSelector implements ApplianceChannelSelector {
             return getState(dateFormatter.format(date));
         }
     },
-    FINISH_TIME("finishTime", "finish", DateTimeType.class, false, false) {
-        @Override
-        public State getState(String s, @Nullable DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
-            Date date = new Date();
-            SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-            dateFormatter.setTimeZone(TimeZone.getTimeZone("GMT+0"));
-            try {
-                date.setTime(Long.valueOf(s) * 60000);
-            } catch (Exception e) {
-                date.setTime(0);
-            }
-            return getState(dateFormatter.format(date));
-        }
-    },
+    FINISH_TIME("", FINISH_CHANNEL_ID, DateTimeType.class, false, false),
     DOOR("signalDoor", "door", OpenClosedType.class, false, false) {
         @Override
         public State getState(String s, @Nullable DeviceMetaData dmd, MieleTranslationProvider translationProvider) {

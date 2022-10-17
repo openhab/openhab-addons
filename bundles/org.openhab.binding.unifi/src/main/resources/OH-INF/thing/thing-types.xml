@@ -341,7 +341,7 @@
 			<options>
 				<option value="off">Off</option>
 				<option value="auto">Auto</option>
-				<option value="24v">24V</option>
+				<option value="pasv24">24V</option>
 				<option value="passthrough">Passthrough</option>
 			</options>
 		</state>

@@ -55,9 +55,11 @@ public class NetatmoBindingConstants {
     public static final String GROUP_PRESENCE = "presence";
     public static final String GROUP_SIREN = "siren";
     public static final String GROUP_PERSON = "person";
+    public static final String GROUP_TAG = "tag";
     public static final String GROUP_PROPERTIES = "properties";
     public static final String GROUP_SETPOINT = "setpoint";
     public static final String GROUP_LOCATION = "location";
+    public static final String GROUP_MONITORING = "monitoring";
 
     // Alternative extended groups
     public static final String OPTION_EXTENDED = "-extended";
@@ -153,4 +155,5 @@ public class NetatmoBindingConstants {
     public static final String CHANNEL_HOME_EVENT = "home-event";
     public static final String CHANNEL_SETPOINT_DURATION = "setpoint-duration";
     public static final String CHANNEL_FLOODLIGHT = "floodlight";
+    public static final String CHANNEL_REQUEST_COUNT = "request-count";
 }

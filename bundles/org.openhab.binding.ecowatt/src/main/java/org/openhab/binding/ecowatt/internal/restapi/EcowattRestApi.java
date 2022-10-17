@@ -94,6 +94,8 @@ public class EcowattRestApi {
 
         int statusCode = response.getStatus();
 
+        logger.trace("API response statusCode={} content={}", statusCode, response.getContentAsString());
+
         if (statusCode == HttpStatus.TOO_MANY_REQUESTS_429) {
             int retryAfter = -1;
             if (response.getHeaders().contains(HttpHeader.RETRY_AFTER)) {

@@ -335,7 +335,12 @@ public class LcnModuleHandler extends BaseThingHandler {
 
         State convertedState = state;
         if (converter != null) {
-            convertedState = converter.onStateUpdateFromHandler(state);
+            try {
+                convertedState = converter.onStateUpdateFromHandler(state);
+            } catch (LcnException e) {
+                logger.warn("{}: {}{}: Value conversion failed: {}", moduleAddress, channelGroup, channelId,
+                        e.getMessage());
+            }
         }
 
         updateState(channelUid, convertedState);

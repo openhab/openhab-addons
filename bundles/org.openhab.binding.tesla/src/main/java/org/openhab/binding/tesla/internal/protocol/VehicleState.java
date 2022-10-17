@@ -23,12 +23,14 @@ public class VehicleState {
     public boolean dark_rims;
     public boolean has_spoiler;
     public boolean homelink_nearby;
+    public boolean is_user_present;
     public boolean locked;
     public boolean notifications_supported;
     public boolean parsed_calendar_supported;
     public boolean remote_start;
     public boolean remote_start_supported;
     public boolean rhd;
+    public boolean sentry_mode;
     public boolean valet_mode;
     public boolean valet_pin_needed;
     public float odometer;

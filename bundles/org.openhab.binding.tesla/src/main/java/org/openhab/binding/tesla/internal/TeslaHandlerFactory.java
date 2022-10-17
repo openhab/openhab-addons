@@ -24,6 +24,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tesla.internal.handler.TeslaAccountHandler;
 import org.openhab.binding.tesla.internal.handler.TeslaVehicleHandler;
 import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.io.net.http.WebSocketFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -54,13 +55,16 @@ public class TeslaHandlerFactory extends BaseThingHandlerFactory {
 
     private final ClientBuilder clientBuilder;
     private final HttpClientFactory httpClientFactory;
+    private final WebSocketFactory webSocketFactory;
 
     @Activate
-    public TeslaHandlerFactory(@Reference ClientBuilder clientBuilder, @Reference HttpClientFactory httpClientFactory) {
+    public TeslaHandlerFactory(@Reference ClientBuilder clientBuilder, @Reference HttpClientFactory httpClientFactory,
+            final @Reference WebSocketFactory webSocketFactory) {
         this.clientBuilder = clientBuilder //
                 .connectTimeout(EVENT_STREAM_CONNECT_TIMEOUT, TimeUnit.SECONDS)
                 .readTimeout(EVENT_STREAM_READ_TIMEOUT, TimeUnit.SECONDS);
         this.httpClientFactory = httpClientFactory;
+        this.webSocketFactory = webSocketFactory;
     }
 
     @Override
@@ -75,7 +79,7 @@ public class TeslaHandlerFactory extends BaseThingHandlerFactory {
         if (thingTypeUID.equals(THING_TYPE_ACCOUNT)) {
             return new TeslaAccountHandler((Bridge) thing, clientBuilder.build(), httpClientFactory);
         } else {
-            return new TeslaVehicleHandler(thing, clientBuilder);
+            return new TeslaVehicleHandler(thing, webSocketFactory);
         }
     }
 }

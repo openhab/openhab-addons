@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -38,6 +40,7 @@ import org.eclipse.jetty.util.URIUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.openhab.core.OpenHAB;
+import org.openhab.core.common.ThreadPoolManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +53,6 @@ import io.socket.emitter.Emitter;
 import io.socket.engineio.client.Transport;
 import io.socket.parser.Packet;
 import io.socket.parser.Parser;
-import io.socket.thread.EventThread;
 import okhttp3.OkHttpClient.Builder;
 import okhttp3.logging.HttpLoggingInterceptor;
 import okhttp3.logging.HttpLoggingInterceptor.Level;
@@ -134,6 +136,13 @@ public class CloudClient {
      * Back-off strategy for reconnecting when manual reconnection is needed
      */
     private final Backoff reconnectBackoff = new Backoff();
+
+    /*
+     * Delay reconnect scheduler pool
+     * 
+     */
+    protected final ScheduledExecutorService scheduler = ThreadPoolManager
+            .getScheduledPool(ThreadPoolManager.THREAD_POOL_NAME_COMMON);
 
     /**
      * Constructor of CloudClient
@@ -316,8 +325,12 @@ public class CloudClient {
                             logger.warn("Error connecting to the openHAB Cloud instance. Reconnecting.");
                         }
                         socket.close();
-                        sleepSocketIO(delay);
-                        socket.connect();
+                        scheduler.schedule(new Runnable() {
+                            @Override
+                            public void run() {
+                                socket.connect();
+                            }
+                        }, delay, TimeUnit.MILLISECONDS);
                     }
                 })//
 
@@ -683,16 +696,6 @@ public class CloudClient {
             logger.warn("Error forming response headers: {}", e.getMessage());
         }
         return headersJSON;
-    }
-
-    private void sleepSocketIO(long delay) {
-        EventThread.exec(() -> {
-            try {
-                Thread.sleep(delay);
-            } catch (InterruptedException e) {
-
-            }
-        });
     }
 
     private static String censored(String secret) {

@@ -41,7 +41,7 @@ import org.osgi.service.component.annotations.Modified;
  *
  * @author Christoph Weitkamp - Initial contribution
  */
-@Component(configurationPid = "discovery.androiddebugbridge")
+@Component(service = MDNSDiscoveryParticipant.class, configurationPid = "discovery.androiddebugbridge")
 @NonNullByDefault
 public class FireTVStickMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant {
 

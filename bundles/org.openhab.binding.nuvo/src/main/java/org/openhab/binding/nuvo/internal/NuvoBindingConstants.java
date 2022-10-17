@@ -62,6 +62,7 @@ public class NuvoBindingConstants {
     public static final String CHANNEL_TRACK_POSITION = "track_position";
     public static final String CHANNEL_BUTTON_PRESS = "button_press";
     public static final String CHANNEL_ART_URL = "art_url";
+    public static final String CHANNEL_ALBUM_ART = "album_art";
 
     // Message types
     public static final String TYPE_VERSION = "version";

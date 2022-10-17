@@ -30,8 +30,9 @@ public class Converter {
      *
      * @param state from the Thing
      * @return human readable representational State
+     * @throws LcnException
      */
-    public State onStateUpdateFromHandler(State state) {
+    public State onStateUpdateFromHandler(State state) throws LcnException {
         return state;
     }
 

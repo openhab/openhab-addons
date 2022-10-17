@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.velux.internal.handler;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -160,6 +162,8 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
      */
     private VeluxBridgeConfiguration veluxBridgeConfiguration = new VeluxBridgeConfiguration();
 
+    private Duration offlineDelay = Duration.ofMinutes(5);
+
     /*
      * ************************
      * ***** Constructors *****
@@ -282,6 +286,17 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
 
         logger.trace("initialize(): initialize bridge configuration parameters.");
         veluxBridgeConfiguration = new VeluxBinding(getConfigAs(VeluxBridgeConfiguration.class)).checked();
+
+        /*
+         * When a binding call to the hub fails with a communication error, it will retry the call for a maximum of
+         * veluxBridgeConfiguration.retries times, where the interval between retry attempts increases on each attempt
+         * calculated as veluxBridgeConfiguration.refreshMSecs * 2^retry (i.e. 1, 2, 4, 8, 16, 32 etc.) so a complete
+         * retry series takes (veluxBridgeConfiguration.refreshMSecs * ((2^(veluxBridgeConfiguration.retries + 1)) - 1)
+         * milliseconds. So we have to let this full retry series to have been tried (and failed), before we consider
+         * the thing to be actually offline.
+         */
+        offlineDelay = Duration.ofMillis(
+                ((long) Math.pow(2, veluxBridgeConfiguration.retries + 1) - 1) * veluxBridgeConfiguration.refreshMSecs);
 
         scheduler.execute(() -> {
             disposing = false;
@@ -812,10 +827,28 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
                 postCommand(channelUID, newValue);
             }
         }
+
+        Instant lastCommunication = Instant.ofEpochMilli(thisBridge.lastCommunication());
+        Instant lastSuccessfulCommunication = Instant.ofEpochMilli(thisBridge.lastSuccessfulCommunication());
+        boolean lastCommunicationSucceeded = lastSuccessfulCommunication.equals(lastCommunication);
+        ThingStatus thingStatus = getThing().getStatus();
+
+        if (lastCommunicationSucceeded) {
+            if (thingStatus == ThingStatus.OFFLINE || thingStatus == ThingStatus.UNKNOWN) {
+                updateStatus(ThingStatus.ONLINE);
+            }
+        } else {
+            if ((thingStatus == ThingStatus.ONLINE || thingStatus == ThingStatus.UNKNOWN)
+                    && lastSuccessfulCommunication.plus(offlineDelay).isBefore(lastCommunication)) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            }
+        }
+
         ThingProperty.setValue(this, VeluxBindingConstants.PROPERTY_BRIDGE_TIMESTAMP_ATTEMPT,
-                new java.util.Date(thisBridge.lastCommunication()).toString());
+                lastCommunication.toString());
         ThingProperty.setValue(this, VeluxBindingConstants.PROPERTY_BRIDGE_TIMESTAMP_SUCCESS,
-                new java.util.Date(thisBridge.lastSuccessfulCommunication()).toString());
+                lastSuccessfulCommunication.toString());
+
         logger.trace("handleCommandCommsJob({}) done.", Thread.currentThread());
     }
 

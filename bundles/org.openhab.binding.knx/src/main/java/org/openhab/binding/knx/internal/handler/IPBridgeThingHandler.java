@@ -23,6 +23,7 @@ import org.openhab.binding.knx.internal.client.IPClient;
 import org.openhab.binding.knx.internal.client.KNXClient;
 import org.openhab.binding.knx.internal.client.NoOpClient;
 import org.openhab.binding.knx.internal.config.IPBridgeConfiguration;
+import org.openhab.binding.knx.internal.i18n.KNXTranslationProvider;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingStatus;
@@ -87,11 +88,12 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
         } catch (KnxSecureException e) {
             logger.debug("{}, {}", thing.getUID(), e.toString());
 
-            String message = e.getLocalizedMessage();
-            if (message == null) {
-                message = e.getClass().getSimpleName();
+            Throwable cause = e.getCause();
+            if (cause == null) {
+                cause = e;
             }
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "KNX security: " + message);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    KNXTranslationProvider.I18N.getLocalizedException(cause));
             return;
         }
 
@@ -120,7 +122,7 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
             if (!securityAvailable) {
                 logger.warn("Bridge {} missing security configuration for secure tunnel", thing.getUID());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Security configuration missing for secure tunnel");
+                        "@text/error.knx-secure-tunnel-config-missing");
                 return;
             }
             boolean tunnelOk = ((secureTunnel.user > 0) && (secureTunnel.devKey.length == 16)
@@ -128,7 +130,7 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
             if (!tunnelOk) {
                 logger.warn("Bridge {} incomplete security configuration for secure tunnel", thing.getUID());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Security configuration for secure tunnel is incomplete");
+                        "@text/error.knx-secure-tunnel-config-incomplete");
                 return;
             }
 
@@ -150,22 +152,21 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
             if (!securityAvailable) {
                 logger.warn("Bridge {} missing security configuration for secure routing", thing.getUID());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Security configuration missing for secure routing");
+                        "@text/error.knx-secure-routing-config-missing");
                 return;
             }
             if (secureRouting.backboneGroupKey.length != 16) {
                 // failed to read shared backbone group key from config
-                logger.warn("Bridge {} missing security configuration for secure routing", thing.getUID());
+                logger.warn("Bridge {} invalid security configuration for secure routing", thing.getUID());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "backboneGroupKey required for secure routing; please configure");
+                        "@text/error.knx-secure-routing-backbonegroupkey-invalid");
                 return;
             }
             logger.debug("KNX secure routing needs a few seconds to establish connection");
         } else {
             logger.debug("Bridge {} unknown connection type", thing.getUID());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, MessageFormat.format(
-                    "Unknown IP connection type {0}. Known types are either 'TUNNEL', 'ROUTER', 'SECURETUNNEL', or 'SECUREROUTER'",
-                    connectionTypeString));
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    MessageFormat.format("@text/knx-unknown-ip-connection-type", connectionTypeString));
             return;
         }
 
