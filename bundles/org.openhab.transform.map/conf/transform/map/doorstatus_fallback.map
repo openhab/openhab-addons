@@ -1,0 +1,6 @@
+CLOSED=closed
+OPEN=open
+-=-
+
+# Default mapping for missing keys
+=_source_
