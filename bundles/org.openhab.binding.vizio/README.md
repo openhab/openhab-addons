@@ -155,13 +155,13 @@ vizio.items:
 ```
 // Vizio TV items:
 
-Switch TV_Power       "Power"              { channel="vizio:vizio_player:mytv1:power" }
-Dimmer TV_Volume      "Volume [%d %%]"     { channel="vizio:vizio_player:mytv1:volume" }
-Switch TV_Mute        "Mute"               { channel="vizio:vizio_player:mytv1:mute" }
-String TV_Source      "Source Input [%s]"  { channel="vizio:vizio_player:mytv1:source" }
-String TV_ActiveApp   "Current App: [%s]"  { channel="vizio:vizio_player:mytv1:activeApp" }
-Player TV_Control     "Playback Control"   { channel="vizio:vizio_player:mytv1:control" }
-String TV_Button      "Send Command to TV" { channel="vizio:vizio_player:mytv1:button" }
+Switch TV_Power       "Power"              { channel="vizio:vizio_tv:mytv1:power" }
+Dimmer TV_Volume      "Volume [%d %%]"     { channel="vizio:vizio_tv:mytv1:volume" }
+Switch TV_Mute        "Mute"               { channel="vizio:vizio_tv:mytv1:mute" }
+String TV_Source      "Source Input [%s]"  { channel="vizio:vizio_tv:mytv1:source" }
+String TV_ActiveApp   "Current App: [%s]"  { channel="vizio:vizio_tv:mytv1:activeApp" }
+Player TV_Control     "Playback Control"   { channel="vizio:vizio_tv:mytv1:control" }
+String TV_Button      "Send Command to TV" { channel="vizio:vizio_tv:mytv1:button" }
 
 ```
 
