@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="asuswrt"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+
+	<!-- ############################### CHANNEL-GROUPS ############################### -->
+	<!-- System Information -->
+	<channel-group-type id="sysInfoGroup">
+		<label>System Info</label>
+		<description>System-Information about the device</description>
+		<channels>
+			<channel id="model" typeId="productid"/>
+			<channel id="cpuusage" typeId="cpuusageType"/>
+			<channel id="memfree" typeId="memoryfreeType"/>
+			<channel id="memtotal" typeId="memorytotalType"/>
+			<channel id="memused" typeId="memoryusedType"/>
+		</channels>
+	</channel-group-type>
+
+	<!-- LAN Information -->
+	<channel-group-type id="lanInfoGroup">
+		<label>LAN-Status</label>
+		<description>LAN connection state</description>
+		<channels>
+			<channel id="lanMAC" typeId="macAddressType"></channel>
+			<channel id="lanIP" typeId="ipAddressType"></channel>
+			<channel id="lanProto" typeId="ipProtoType"></channel>
+			<channel id="lanSubnet" typeId="ipNetmaskType"></channel>
+			<channel id="lanGateway" typeId="ipGatewayType"></channel>
+		</channels>
+	</channel-group-type>
+
+	<!-- WAN Information -->
+	<channel-group-type id="wanInfoGroup">
+		<label>WAN-Status</label>
+		<description>WAN connection state</description>
+		<channels>
+			<channel id="wanDNS" typeId="dnsServerType"></channel>
+			<channel id="wanIP" typeId="ipAddressType"></channel>
+			<channel id="wanProto" typeId="ipProtoType"></channel>
+			<channel id="wanSubnet" typeId="ipNetmaskType"></channel>
+			<channel id="wanGateway" typeId="ipGatewayType"></channel>
+			<channel id="wanStatus" typeId="ipConnectionState"></channel>
+		</channels>
+	</channel-group-type>
+
+	<!--CLIENTS -->
+	<channel-group-type id="clientInfoGroup">
+		<label>Clients</label>
+		<description>Clients connected to router</description>
+		<channels>
+			<channel id="onlineNames" typeId="clientsOnlineNameType"></channel>
+			<channel id="onlineMACs" typeId="clientsOnlineMacType"></channel>
+		</channels>
+	</channel-group-type>
+
+	<!-- ############################### CHANNELS ############################### -->
+
+	<!-- Product Id -->
+	<channel-type id="productid">
+		<item-type>String</item-type>
+		<label>Router Model</label>
+		<description>Model/ProductID of your Router</description>
+	</channel-type>
+
+	<!-- CPU Usage -->
+	<channel-type id="cpuusageType">
+		<item-type>Number:Dimensionless</item-type>
+		<label>CPU Usage</label>
+		<description>CPU usage in %</description>
+		<!--<state pattern="%.1f %unit%" readOnly="true"></state> -->
+	</channel-type>
+
+	<!-- Memory -->
+	<channel-type id="memoryfrerType">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Free Memory</label>
+		<description>Free memory in MB</description>
+		<!--<state pattern="%.1f %unit%" readOnly="true"></state> -->
+	</channel-type>
+	<channel-type id="memorytotalType">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Total Memory</label>
+		<description>Total memory in MB</description>
+		<!--<state pattern="%.1f %unit%" readOnly="true"></state> -->
+	</channel-type>
+	<channel-type id="memoryusedType">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Used Memory</label>
+		<description>Used memory in MB</description>
+		<!--<state pattern="%.1f %unit%" readOnly="true"></state> -->
+	</channel-type>
+
+
+	<!-- LAN/WAN INFO -->
+	<channel-type id="dnsNameType">
+		<item-type>String</item-type>
+		<label>DNS-Name</label>
+		<description>DNS Name</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="dnsServerType">
+		<item-type>String</item-type>
+		<label>DNS-Server</label>
+		<description>Used DNS-Servers</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="ipAddressType">
+		<item-type>String</item-type>
+		<label>IP-Address</label>
+		<description>IP-Address of Interface</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="ipProtoType">
+		<item-type>String</item-type>
+		<label>IP-Protocol</label>
+		<description>IP-Address Protocol (DHCP/Static)</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="macAddressType">
+		<item-type>String</item-type>
+		<label>MAC-Address</label>
+		<description>MAC-Address of Device (LAN)</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="ipNetmaskType">
+		<item-type>String</item-type>
+		<label>Subnet</label>
+		<description>Subnet-Mask of Interface</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="ipGatewayType">
+		<item-type>String</item-type>
+		<label>Gateway</label>
+		<description>Gateway of Interface</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="ipConnectionState">
+		<item-type>Switch</item-type>
+		<label>Connected</label>
+		<description>Connection State of Interface</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<!-- CLIENTS -->
+	<channel-type id="clientsOnlineNameType">
+		<item-type>String</item-type>
+		<label>Online Clients</label>
+		<description>List with names of online clients</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="clientsOnlineMacType">
+		<item-type>String</item-type>
+		<label>Online MAC Addresses</label>
+		<description>List with mac-addresses of online clients</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+</thing:thing-descriptions>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="asuswrt"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Router Thing Type -->
+	<thing-type id="router">
+		<label>Asuswrt Router</label>
+		<description>Router with asuswrt or asuswrt-merlin OS</description>
+		<channel-groups>
+			<channel-group id="sysInfo" typeId="sysInfoGroup"></channel-group>
+			<channel-group id="lanInfo" typeId="lanInfoGroup"></channel-group>
+			<channel-group id="wanInfo" typeId="wanInfoGroup"></channel-group>
+			<channel-group id="clients" typeId="clientInfoGroup"></channel-group>
+		</channel-groups>
+
+		<config-description>
+			<parameter name="hostname" type="text" required="true">
+				<context>network-address</context>
+				<label>Hostname</label>
+				<description>Hostname or IP address of the device</description>
+				<default>router.asus.com</default>
+			</parameter>
+			<parameter name="username" type="text" required="true">
+				<label>Username</label>
+				<description>Username to access the device</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<context>password</context>
+				<label>Password</label>
+				<description>Password to access the device</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="s" min="1">
+				<label>Refresh Interval</label>
+				<description>Interval the device is polled in sec.</description>
+				<default>60</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+</thing:thing-descriptions>
