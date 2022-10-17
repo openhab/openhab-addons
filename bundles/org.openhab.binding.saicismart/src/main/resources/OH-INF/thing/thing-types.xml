@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="saicismart"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Sample Thing Type -->
+	<thing-type id="vehicle">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+
+		<label>SAICiSMART Binding Thing</label>
+		<description>Sample thing for SAICiSMART Binding</description>
+
+		<channels>
+			<channel id="milage" typeId="mileage-channel"/>
+			<channel id="range-electric" typeId="range-electric-channel"/>
+			<channel id="soc" typeId="soc-channel"/>
+		</channels>
+
+		<representation-property>vin</representation-property>
+
+		<config-description-ref uri="thing-type:saicismart:vehicle"/>
+	</thing-type>
+
+	<channel-type id="mileage-channel">
+		<item-type>Number:Length</item-type>
+		<label>Total Distance Driven</label>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="range-electric-channel">
+		<item-type>Number:Length</item-type>
+		<label>Electric Range</label>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="soc-channel">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Battery Charge Level</label>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+</thing:thing-descriptions>

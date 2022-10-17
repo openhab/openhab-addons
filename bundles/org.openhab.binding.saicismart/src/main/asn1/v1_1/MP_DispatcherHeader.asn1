@@ -1,0 +1,14 @@
+MP_DispatcherHeaderModule
+
+DEFINITIONS
+AUTOMATIC TAGS ::= 
+BEGIN
+MP_DispatcherHeader ::= SEQUENCE
+{
+  dispatcherBodyEncoding INTEGER(0..2),
+  dispatcherMessageLength INTEGER(0..255),
+  protocolVersion INTEGER(0..255),
+  securityContext INTEGER(0..255)
+}
+
+END
