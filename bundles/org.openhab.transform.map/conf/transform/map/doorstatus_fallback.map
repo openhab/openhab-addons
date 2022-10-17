@@ -3,4 +3,4 @@ OPEN=open
 -=-
 
 # Default mapping for missing keys
-=%s
+=_source_

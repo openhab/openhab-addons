@@ -52,7 +52,7 @@ import org.slf4j.LoggerFactory;
         "openhab.transform=MAP" })
 public class MapTransformationService
         implements TransformationService, ConfigOptionProvider, RegistryChangeListener<Transformation> {
-    private static final String STRING_VALUE = "%s";
+    private static final String SOURCE_VALUE = "_source_";
     private static final String PROFILE_CONFIG_URI = "profile:transform:MAP";
     private static final String CONFIG_PARAM_FUNCTION = "function";
     private static final Set<String> SUPPORTED_CONFIGURATION_TYPES = Set.of("map");
@@ -89,7 +89,7 @@ public class MapTransformationService
                     target = properties.getProperty("");
                     if (target == null) {
                         throw new TransformationException("Target value not found in map for '" + source + "'");
-                    } else if (STRING_VALUE.equals(target)) {
+                    } else if (SOURCE_VALUE.equals(target)) {
                         target = source;
                     }
                 }
