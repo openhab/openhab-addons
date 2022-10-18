@@ -12,6 +12,8 @@
  */
 package org.openhab.voice.actiontemplatehli.internal.utils;
 
+import java.util.Objects;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -31,5 +33,9 @@ public class ActionTemplateComparatorResult {
     protected ActionTemplateComparatorResult(double score, @Nullable Span dynamicSpan) {
         this.score = score;
         this.dynamicSpan = dynamicSpan;
+    }
+
+    public boolean equals(ActionTemplateComparatorResult other) {
+        return score == other.score && Objects.equals(dynamicSpan, other.dynamicSpan);
     }
 }

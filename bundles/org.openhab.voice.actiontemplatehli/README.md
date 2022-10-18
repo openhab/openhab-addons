@@ -230,7 +230,7 @@ These are the files needed:
         "placeholders": [
             {
                 "label": "app",
-                "mappedValues": "android_apps"
+                "mappedValuesFile": "android_apps"
             }
         ]
     },
@@ -244,7 +244,7 @@ These are the files needed:
         "placeholders": [
             {
                 "label": "state",
-                "mappedValues": "android_apps"
+                "mappedValuesFile": "android_apps"
             }
         ]
     }
