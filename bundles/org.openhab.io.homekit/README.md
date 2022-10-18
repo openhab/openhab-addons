@@ -51,7 +51,7 @@ HomeKit integration supports following accessory types:
   
   ![settings_qrcode.png](doc/settings_qrcode.png)
   
-- open home app on your iPhone or iPad
+- open Home app on your iPhone or iPad
 - create new home
   
   ![ios_add_new_home.png](doc/ios_add_new_home.png)
@@ -68,7 +68,7 @@ HomeKit integration supports following accessory types:
   
   ![ios_add_anyway.png](doc/ios_add_anyway.png)
   
-- follow the instruction of the home app wizard
+- follow the instruction of the Home app wizard
   
   ![ios_add_accessory_wizard.png](doc/ios_add_accessory_wizard.png)
   
@@ -134,7 +134,7 @@ Complex accessories require a tag on a Group Item indicating the accessory type,
 A HomeKit accessory has mandatory and optional characteristics (listed below in the table).
 The mapping between openHAB items and HomeKit accessory and characteristics is done by means of [metadata](https://www.openhab.org/docs/concepts/items.html#item-metadata)
 
-If the first word of the item name match the room name in home app, home app will hide it. 
+If the first word of the item name match the room name in Home app, Home app will hide it.
 E.g. item with the name "Kitchen Light" will be shown in "Kitchen" room as "Light". This is recommended naming convention for HomeKit items and rooms.
 
 ### UI based Configuration
@@ -167,12 +167,6 @@ In order to add metadata to an item:
 Switch leaksensor_metadata  "Leak Sensor"           {homekit="LeakSensor"}
 ```
 
-You can link one openHAB item to one or more HomeKit accessory, e.g.
-
-```xtend
-Switch occupancy_and_motion_sensor       "Occupancy and Motion Sensor Tag"  {homekit="OccupancySensor,MotionSensor"}
-```
-
 The tag can be:
 
 - full qualified: i.e. with accessory type and characteristic, e.g. "LeakSensor.LeakDetectedState"
@@ -197,18 +191,65 @@ Switch leaksensor                       "Leak Sensor"                           
 Switch leaksensor_battery               "Leak Sensor Battery"                   (gLeakSensor)            {homekit="LeakSensor.BatteryLowStatus"}
 ```
 
-You can use openHAB group to manage state of multiple items. (see [Group items](https://www.openhab.org/docs/configuration/items.html#derive-group-state-from-member-items))
-In this case, you can assign HomeKit accessory type to the group and to the group items
-Following example defines 3 HomeKit accessories of type Lighting:
+### Complex Multiple Service Accessories
 
-- "Light 1" and "Light 2" as independent lights
-- "Light Group" that controls "Light 1" and "Light 2" as group
+Alternatively, you may want to have a choice of controlling the items individually, OR as a group, from HomeKit.
+The following examples defines a single HomeKit accessory _with multiple services_ that the Home app will allow you to control together, or drill down and control individually.
+Note that `AccessoryGroup` doesn't expose any services itself, but allows you to group other services together underneath it.
+Also note that when nesting accessories, you cannot use the shorthand of naming only a characteristic, and not its accessory type, since it would be ambiguous if that item belongs to a secondary service, or to the primary service it's nested under.
+
+```xtend
+Group:Switch:OR(ON,OFF) gLight "Light Group" {homekit="AccessoryGroup"}
+Switch light1 "Light 1" (gLight) {homekit="Lighting"}
+Switch light2 "Light 2" (gLight) {homekit="Lighting"}
+```
+
+![Group of Lights](doc/group_of_lights.png)
+
+You can also group additional accessories directly under an another accessory.
+In this example, HomeKit will show three separate light controls.
+As this is somewhat confusing that Home will allow controlling all members as a group, and you also have the group as a distinct switch inside the HomeKit accessory, this is not a recommended configuration.
 
 ```xtend
 Group:Switch:OR(ON,OFF) gLight "Light Group" {homekit="Lighting"}
-Switch light1 "Light 1" (gLight) {homekit="Lighting.OnState"}
-Switch light2 "Light 2" (gLight) {homekit="Lighting.OnState"}
+Switch light1 "Light 1" (gLight) {homekit="Lighting"}
+Switch light2 "Light 2" (gLight) {homekit="Lighting"}
 ```
+
+![Light Group With Additional Lights](doc/group_of_lights_group_plus_lights.png)
+
+You can also mix and match accessories:
+
+```xtend
+Group gFan {homekit="Fan 1"}
+Switch fan1 "Fan" (gFan) {homekit="Fan.Active"}
+Switch fan1_light "Fan Light" (gFan) {homekit="Lighting"}
+```
+
+![Fan With Light](doc/fan_with_light.png)
+
+Finally, you can link one openHAB item to one or more HomeKit accessories, as well:
+
+```xtend
+Switch occupancy_and_motion_sensor       "Occupancy and Motion Sensor Tag"  {homekit="OccupancySensor,MotionSensor"}
+```
+
+You can even form complex sensors this way.
+Just be sure that you fully specify additional characteristics, so that the addon knows which root service to add it to.
+
+```xtend
+Group eBunkAirthings "Bunk Room Airthings Wave Plus" { homekit="AirQualitySensor,TemperatureSensor,HumiditySensor" }
+
+String Bunk_AirQuality "Bunk Room Air Quality" (eBunkAirthings) { homekit="AirQualitySensor.AirQuality" }
+Number:Dimensionless Bunk_Humidity "Bunk Room Relative Humidity [%d %%]" (eBunkAirthings) { homekit="HumiditySensor.RelativeHumidity" }
+Number:Temperature Bunk_AmbTemp "Bunk Room Temperature [%.1f °F]" (eBunkAirthings) { homekit="TemperatureSensor.CurrentTemperature" }
+Number:Dimensionless Bunk_tVOC "Bunk Room tVOC [%d ppb]" (eBunkAirthings)  { homekit="AirQualitySensor.VOCDensity" [ maxValue=10000 ] }
+```
+
+Note that for sensors that aren't interactive, the Home app will show the constituent pieces in the room and home summaries, and you'll only be able to see the combined accessory when viewing the accessories associated with a particular bridge in the home settings:
+
+![Triple Air Sensor](doc/triple_air_sensor.png)
+![Triple Air Sensor Broken Out](doc/triple_air_sensor_broken_out.png)
 
 ## Dummy Accessories
 
