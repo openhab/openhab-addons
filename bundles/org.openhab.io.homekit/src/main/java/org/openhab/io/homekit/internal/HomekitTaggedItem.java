@@ -30,6 +30,7 @@ import org.openhab.core.library.items.RollershutterItem;
 import org.openhab.core.library.items.StringItem;
 import org.openhab.core.library.items.SwitchItem;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
@@ -218,6 +219,24 @@ public class HomekitTaggedItem {
             return;
         }
         logger.warn("Received OnOffType command for item {} that doesn't support it. This is probably a bug.",
+                getName());
+    }
+
+    /**
+     * Send IncreaseDecreaseType command to a DimmerItem (or a Group:Dimmer)
+     *
+     * @param command
+     */
+    public void send(IncreaseDecreaseType command) {
+        if (getItem() instanceof GroupItem && getBaseItem() instanceof DimmerItem) {
+            ((GroupItem) getItem()).send(command);
+            return;
+        } else if (getItem() instanceof DimmerItem) {
+            ((DimmerItem) getItem()).send(command);
+            return;
+        }
+        logger.warn(
+                "Received IncreaseDecreaseType command for item {} that doesn't support it. This is probably a bug.",
                 getName());
     }
 

@@ -21,12 +21,12 @@ HomeKit integration supports following accessory types:
 - Motorized Door
 - Motorized Window
 - Window Covering/Blinds
-- Slat  
+- Slat
 - Valve
-- Faucet / Shower  
+- Faucet / Shower
 - Speaker
-- SmartSpeaker  
-- Microphone  
+- SmartSpeaker
+- Microphone
 - Air Quality Sensor
 - Contact Sensor
 - Leak Sensor
@@ -44,34 +44,34 @@ HomeKit integration supports following accessory types:
 ## Quick start
 
 - install homekit addon via UI
-  
+
 - add metadata to an existing item (see [UI based configuration](#UI-based-Configuration))
-  
+
 - scan QR code from UI->Settings->HomeKit Integration
-  
+
   ![settings_qrcode.png](doc/settings_qrcode.png)
-  
+
 - open Home app on your iPhone or iPad
 - create new home
-  
+
   ![ios_add_new_home.png](doc/ios_add_new_home.png)
-  
+
 - add accessory
-  
+
   ![ios_add_accessory.png](doc/ios_add_accessory.png)
-  
+
 - scan QR code from UI->Setting-HomeKit Integration
-  
-  ![ios_scan_qrcode.png](doc/ios_scan_qrcode.png)  
+
+  ![ios_scan_qrcode.png](doc/ios_scan_qrcode.png)
 
 - click "Add Anyway"
-  
+
   ![ios_add_anyway.png](doc/ios_add_anyway.png)
-  
+
 - follow the instruction of the Home app wizard
-  
+
   ![ios_add_accessory_wizard.png](doc/ios_add_accessory_wizard.png)
-  
+
 Add metadata to more items or fine-tune your configuration using further settings
 
 
@@ -142,21 +142,21 @@ In order to add metadata to an item:
 
 - select desired item in mainUI
 - click on "Add Metadata"
-  
+
   ![item_add_metadata_button.png](doc/item_add_metadata_button.png)
-  
+
 - select "Apple HomeKit" namespace
-  
+
   ![select_homekit_namespace.png](doc/select_homekit_namespace.png)
-  
+
 - click on "HomeKit Accessory/Characteristic"
-  
+
   ![add_homekit_tag.png](doc/add_homekit_tag.png)
 
 - select required HomeKit accessory type or characteristic
-  
+
   ![select_homekit_accessory_type.png](doc/select_homekit_accessory_type.png)
-  
+
 - click on "Save"
 
 
@@ -307,17 +307,17 @@ Alternatively, disabling, saving, and then re-enabling `useDummyAccessories` in 
 
 ## Accessory Configuration Details
 
-This section provides examples widely used accessory types. 
+This section provides examples widely used accessory types.
 For complete list of supported accessory types and characteristics please see section [Supported accessory type](#Supported accessory type)
 
 ### Dimmers
 
 The way HomeKit handles dimmer devices can be different to the actual dimmers' way of working.
-HomeKit home app sends following commands/update:
+HomeKit Home app sends following commands/update:
 
-- On brightness change home app sends "ON" event along with target brightness, e.g. "Brightness = 50%" + "State = ON".
-- On "ON" event home app sends "ON" along with brightness 100%, i.e. "Brightness = 100%" + "State = ON"
-- On "OFF" event home app sends "OFF" without brightness information.
+- On brightness change Home app sends "ON" event along with target brightness, e.g. "Brightness = 50%" + "State = ON".
+- On "ON" event Home app sends "ON" along with brightness 100%, i.e. "Brightness = 100%" + "State = ON"
+- On "OFF" event Home app sends "OFF" without brightness information.
 
 However, some dimmer devices for example do not expect brightness on "ON" event, some others do not expect "ON" upon brightness change.
 In order to support different devices HomeKit integration can filter some events. Which events should be filtered is defined via dimmerMode configuration.
@@ -372,6 +372,55 @@ Dimmer light_temp { homekit="Lighting.ColorTemperature"[ minValue="2700 K", maxV
 // that's ultimately interpreting the value in Kelvin instead of mireds)
 Dimmer light_temp { homekit="Lighting.ColorTemperature"[ minValue="2700 K", maxValue="5000 K", inverted=true ]}
 ```
+
+### Television
+
+HomeKit Televisions are represented as a complex accessory with multiple associated services.
+The base service is a Television.
+Then you need to add one or more InputSource services to describe the possible inputs.
+Finally you can add a TelevisionSpeaker to have control of the audio.
+A minimal example relying on multiple defaults with a single input, and no speaker:
+
+```java
+Group gTelevision "Television" { homekit="Television" }
+Switch Television_Switch "Power" (gTelevision) { homekit="Television.Active" }
+Group gInput1 "Input 1" (gTelevision) { homekit="InputSource" }
+```
+
+Or, you can go nuts, and fill out many of the optional characteristics, to fully customize your TV:
+
+```java
+Group gTelevision "Television" { homekit="Television" }
+Switch Television_Switch "Power" (gTelevision) { homekit="Television.Active" }
+String Television_Name "Name" (gTelevision) { homekit="Television.ConfiguredName" }
+Number Television_CurrentInput "Current Input" (gTelevision) { homekit="Television.ActiveIdentifier" }
+String Television_RemoteKey "Remote Key" (gTelevision) { homekit="Television.RemoteKey" }
+Switch Television_SleepDiscoveryMode "Sleep Discovery Mode" (gTelevision) { homekit="Television.SleepDiscoveryMode" }
+Dimmer Television_Brightness "Brightness" (gTelevision) { homekit="Television.Brightness" }
+Switch Television_PowerMode "Power Mode" (gTelevision) { homekit="Television.PowerMode" }
+Switch Television_ClosedCaptions "Closed Captions" (gTelevision) { homekit="Television.ClosedCaptions" }
+String Television_CurrentMediaState "Current Media State" (gTelevision) { homekit="Television.CurrentMediaState" }
+String Television_TargetMediaState "Target Media State" (gTelevision) { homekit="Television.TargetMediaState" }
+String Television_PictureMode "Picture Mode" (gTelevision) { homekit="Television.PictureMode" }
+
+Group gInput1 "Input 1" (gTelevision) { homekit="InputSource" }
+Switch Input1_Visible "Visibility" (gInput1) { homekit="InputSource.CurrentVisibility" }
+Switch Input1_TargetVisibility "Target Visibility" (gInput1) { homekit="InputSource.TargetVisibilityState" }
+
+Group gInput2 "Input 2" (gTelevision) { homekit="InputSource"[Identifier=2, InputDeviceType="AUDIO_SYSTEM", InputSourceType="HDMI"] }
+String Input2_Name "Name" (gInput2) { homekit="InputSource.ConfiguredName" }
+Switch Input2_Configured "Configured" (gInput2) { homekit="InputSource.Configured" }
+Switch Input2_Visible "Visibility" (gInput2) { homekit="InputSource.CurrentVisibility" }
+Switch Input2_TargetVisibility "Target Visibility" (gInput2) { homekit="InputSource.TargetVisibilityState" }
+
+Group gTelevisionSpeaker "Speaker" (gTelevision) { homekit="TelevisionSpeaker" }
+Switch Television_Mute "Mute" (gTelevisionSpeaker) { homekit="TelevisionSpeaker.Mute" }
+Switch Television_SpeakerActive "Speaker Active" (gTelevisionSpeaker) { homekit="TelevisionSpeaker.Active" }
+Dimmer Television_Volume "Volume" (gTelevisionSpeaker) { homekit="TelevisionSpeaker.Volume,TelevisionSpeaker.VolumeSelector" }
+```
+
+Note that seemingly most of these characteristics are not accessible from the Home app.
+At the least, you should be able to edit names, control main power, switch inputs, alter input visibility, and be notified when the user wants to open the TV's menu.
 
 ### Windows Covering (Blinds) / Window / Door
 
@@ -459,9 +508,9 @@ Example:
 ```xtend
 Group           gThermostat                "Thermostat"                                             {homekit = "Thermostat"}
 Number          thermostat_current_temp    "Thermostat Current Temp [%.1f °C]"  (gThermostat)       {homekit = "CurrentTemperature"}
-Number          thermostat_target_temp     "Thermostat Target Temp [%.1f °C]"   (gThermostat)       {homekit = "TargetTemperature"}  
-String          thermostat_current_mode    "Thermostat Current Mode"            (gThermostat)       {homekit = "CurrentHeatingCoolingMode"}          
-String          thermostat_target_mode     "Thermostat Target Mode"             (gThermostat)       {homekit = "TargetHeatingCoolingMode"}           
+Number          thermostat_target_temp     "Thermostat Target Temp [%.1f °C]"   (gThermostat)       {homekit = "TargetTemperature"}
+String          thermostat_current_mode    "Thermostat Current Mode"            (gThermostat)       {homekit = "CurrentHeatingCoolingMode"}
+String          thermostat_target_mode     "Thermostat Target Mode"             (gThermostat)       {homekit = "TargetHeatingCoolingMode"}
 ```
 
 In addition, thermostat can have thresholds for cooling and heating modes.
@@ -470,9 +519,9 @@ Example with thresholds:
 ```xtend
 Group           gThermostat                "Thermostat"                                             {homekit = "Thermostat"}
 Number          thermostat_current_temp    "Thermostat Current Temp [%.1f °C]"        (gThermostat) {homekit = "CurrentTemperature"}
-Number          thermostat_target_temp     "Thermostat Target Temp[%.1f °C]"          (gThermostat) {homekit = "TargetTemperature"}  
-String          thermostat_current_mode    "Thermostat Current Mode"                  (gThermostat) {homekit = "CurrentHeatingCoolingMode"}          
-String          thermostat_target_mode     "Thermostat Target Mode"                   (gThermostat) {homekit = "TargetHeatingCoolingMode"}           
+Number          thermostat_target_temp     "Thermostat Target Temp[%.1f °C]"          (gThermostat) {homekit = "TargetTemperature"}
+String          thermostat_current_mode    "Thermostat Current Mode"                  (gThermostat) {homekit = "CurrentHeatingCoolingMode"}
+String          thermostat_target_mode     "Thermostat Target Mode"                   (gThermostat) {homekit = "TargetHeatingCoolingMode"}
 Number          thermostat_cool_thrs       "Thermostat Cool Threshold Temp [%.1f °C]" (gThermostat) {homekit = "CoolingThresholdTemperature"}
 Number          thermostat_heat_thrs       "Thermostat Heat Threshold Temp [%.1f °C]" (gThermostat) {homekit = "HeatingThresholdTemperature"}
 ```
@@ -489,7 +538,7 @@ You can overwrite default values using minValue and maxValue configuration at it
 
 ```xtend
 Number          thermostat_current_temp    "Thermostat Current Temp [%.1f °C]"     (gThermostat)       {homekit = "CurrentTemperature" [minValue=5, maxValue=30]}
-Number          thermostat_target_temp     "Thermostat Target Temp[%.1f °C]"       (gThermostat)       {homekit = "TargetTemperature" [minValue=10.5, maxValue=27]} 
+Number          thermostat_target_temp     "Thermostat Target Temp[%.1f °C]"       (gThermostat)       {homekit = "TargetTemperature" [minValue=10.5, maxValue=27]}
 ```
 
 If "useFahrenheitTemperature" is set to true, the min and max temperature must be provided in Fahrenheit.
@@ -505,17 +554,17 @@ These modes are mapped to string values of openHAB items using either global con
 e.g. if your current mode item can have following values: "OFF", "HEATING", "COOLING" then you need following mapping at item level
 
 ```xtend
-String          thermostat_current_mode     "Thermostat Current Mode" (gThermostat) {homekit = "CurrentHeatingCoolingMode" [OFF="OFF", HEAT="HEATING", COOL="COOLING"]} 
+String          thermostat_current_mode     "Thermostat Current Mode" (gThermostat) {homekit = "CurrentHeatingCoolingMode" [OFF="OFF", HEAT="HEATING", COOL="COOLING"]}
 ```
 
 You can provide mapping for target mode in similar way.
 
-The custom mapping at item level can be also used to reduce number of modes shown in home app. The modes can be only reduced, but not added, i.e. it is not possible to add new custom mode to HomeKit thermostat.
+The custom mapping at item level can be also used to reduce number of modes shown in Home app. The modes can be only reduced, but not added, i.e. it is not possible to add new custom mode to HomeKit thermostat.
 
 Example: if your thermostat does not support cooling, then you need to limit mapping  to OFF and HEAT values only:
 
 ```xtend
-String          thermostat_current_mode    "Thermostat Current Mode"            (gThermostat) {homekit = "CurrentHeatingCoolingMode" [HEAT="HEATING", OFF="OFF"]}          
+String          thermostat_current_mode    "Thermostat Current Mode"            (gThermostat) {homekit = "CurrentHeatingCoolingMode" [HEAT="HEATING", OFF="OFF"]}
 String          thermostat_target_mode     "Thermostat Target Mode"             (gThermostat) {homekit = "TargetHeatingCoolingMode" [HEAT="HEATING", OFF="OFF"]}
 ```
 
@@ -531,7 +580,7 @@ The HomeKit valve accessory supports following 2 optional characteristics:
 
 - remaining duration: this describes the remaining duration on the valve. Notifications on this characteristic must only be used if the remaining duration increases/decreases from the accessoryʼs usual countdown of remaining duration.
 
-Upon valve activation in home app, home app starts to count down from the "duration" to "0" without contacting the server. Home app also does not trigger any action if it remaining duration get 0.
+Upon valve activation in Home app, Home app starts to count down from the "duration" to "0" without contacting the server. Home app also does not trigger any action if it remaining duration get 0.
 It is up to valve to have an own timer and stop valve once the timer is over.
 Some valves have such timer, e.g. pretty common for sprinklers.
 In case the valve has no timer capability, openHAB can take care on this -  start an internal timer and send "Off" command to the valve once the timer is over.
@@ -568,8 +617,8 @@ Following table summarizes the optional characteristics supported by sensors.
 | TamperedStatus               | Switch, Contact          | Accessory tampered status. "ON"/"OPEN" indicates that the accessory has been tampered. Value should return to "OFF"/"CLOSED" when the accessory has been reset to a non-tampered state.                                  |
 | BatteryLowStatus             | Switch, Contact, Number  | Accessory battery status. "ON"/"OPEN" indicates that the battery level of the accessory is low. Value should return to "OFF"/"CLOSED" when the battery charges to a level that's above the low threshold. Alternatively, you can give a Number item that's the battery level, and if it's lower than the lowThreshold configuration, it will report low. |
 
-Switch and Contact items support inversion of the state mapping, e.g. by default the openHAB switch state "ON" is mapped to HomeKit contact sensor state "Open", and "OFF" to "Closed". 
-The configuration "inverted=true" inverts this mapping, so that "ON" will be mapped to "Closed" and "OFF" to "Open".  
+Switch and Contact items support inversion of the state mapping, e.g. by default the openHAB switch state "ON" is mapped to HomeKit contact sensor state "Open", and "OFF" to "Closed".
+The configuration "inverted=true" inverts this mapping, so that "ON" will be mapped to "Closed" and "OFF" to "Open".
 
 Examples of sensor definitions.
 Sensors without optional characteristics:
@@ -613,7 +662,7 @@ or using UI
 | Accessory Tag        | Mandatory Characteristics   | Optional     Characteristics | Supported OH items            | Description                                                                                                                                                                                                                                                                                                                                         |
 |:---------------------|:----------------------------|:-----------------------------|:------------------------------|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | AirQualitySensor     |                             |                              |                               | Air Quality Sensor which can measure different parameters                                                                                                                                                                                                                                                                                           |
-|                      | AirQuality                  |                              | String                        | Air quality state, possible values (UNKNOWN,EXCELLENT,GOOD,FAIR,INFERIOR,POOR). Custom mapping can be defined at item level, e.g. [EXCELLENT="BEST", POOR="BAD"]                                                                                                                                                                                    |
+|                      | AirQuality                  |                              | String                        | Air quality state, possible values (UNKNOWN,EXCELLENT,GOOD,FAIR,INFERIOR,POOR). Custom mapping can be defined at item level, e.g. [EXCELLENT="BEST", POOR="BAD"].                                                                                                                                                                                   |
 |                      |                             | OzoneDensity                 | Number                        | Ozone density in micrograms/m3, max 1000                                                                                                                                                                                                                                                                                                            |
 |                      |                             | NitrogenDioxideDensity       | Number                        | NO2 density in micrograms/m3, max 1000                                                                                                                                                                                                                                                                                                              |
 |                      |                             | SulphurDioxideDensity        | Number                        | SO2 density in micrograms/m3, max 1000                                                                                                                                                                                                                                                                                                              |
@@ -759,7 +808,7 @@ or using UI
 | Thermostat           |                             |                              |                               | A thermostat requires all mandatory characteristics defined below                                                                                                                                                                                                                                                                                   |
 |                      | CurrentTemperature          |                              | Number                        | Current temperature. supported configuration: minValue, maxValue, step                                                                                                                                                                                                                                                                              |
 |                      | TargetTemperature           |                              | Number                        | Target temperature. supported configuration: minValue, maxValue, step                                                                                                                                                                                                                                                                               |
-|                      | CurrentHeatingCoolingMode   |                              | String                        | Current heating cooling mode (OFF, AUTO, HEAT, COOL). for mapping see homekit settings above.                                                                                                                                                                                                                                                       |
+|                      | CurrentHeatingCoolingMode   |                              | String                        | Current heating cooling mode (OFF, HEAT, COOL). for mapping see homekit settings above.                                                                                                                                                                                                                                                             |
 |                      | TargetHeatingCoolingMode    |                              | String                        | Target heating cooling mode (OFF, AUTO, HEAT, COOL). for mapping see homekit settings above.                                                                                                                                                                                                                                                        |
 |                      |                             | Name                         | String                        | Name of the thermostat                                                                                                                                                                                                                                                                                                                              |
 |                      |                             | CoolingThresholdTemperature  | Number                        | Maximum temperature that must be reached before cooling is turned on. min/max/step can configured at item level, e.g. minValue=10.5, maxValue=50, step=2]                                                                                                                                                                                           |
@@ -768,8 +817,8 @@ or using UI
 | HeaterCooler         |                             |                              |                               | Heater or/and cooler device                                                                                                                                                                                                                                                                                                                         |
 |                      | ActiveStatus                |                              | Switch, Dimmer                | Accessory current working status. A value of "ON"/"OPEN" indicates that the accessory is active and is functioning without any errors.                                                                                                                                                                                                              |
 |                      | CurrentTemperature          |                              | Number                        | Current temperature. supported configuration: minValue, maxValue, step                                                                                                                                                                                                                                                                              |
-|                      | CurrentHeaterCoolerState    |                              | String                        | Current heater/cooler mode (INACTIVE, IDLE, HEATING, COOLING). Mapping can be redefined at item level, e.g. [HEATING="HEAT", COOLING="COOL"]                                                                                                                                                                                                        |
-|                      | TargetHeaterCoolerState     |                              | String                        | Target heater/cooler mode (AUTO, HEAT, COOL). Mapping can be redefined at item level, e.g. [AUTO="AUTOMATIC"]                                                                                                                                                                                                                                       |
+|                      | CurrentHeaterCoolerState    |                              | String                        | Current heater/cooler mode (INACTIVE, IDLE, HEATING, COOLING). Mapping can be redefined at item level, e.g. [HEATING="HEAT", COOLING="COOL"].                                                                                                                                                                                                       |
+|                      | TargetHeaterCoolerState     |                              | String                        | Target heater/cooler mode (AUTO, HEAT, COOL). Mapping can be redefined at item level, e.g. [AUTO="AUTOMATIC"].                                                                                                                                                                                                                                      |
 |                      |                             | Name                         | String                        | Name of the heater/cooler                                                                                                                                                                                                                                                                                                                           |
 |                      |                             | RotationSpeed                | Number                        | Fan rotation speed in % (1-100)                                                                                                                                                                                                                                                                                                                     |
 |                      |                             | SwingMode                    | Number, Switch                | Swing mode.  values: 0/OFF=SWING DISABLED, 1/ON=SWING ENABLED                                                                                                                                                                                                                                                                                       |
@@ -812,7 +861,7 @@ or using UI
 | Filter               |                             |                              |                               | Accessory with filter maintenance indicator                                                                                                                                                                                                                                                                                                         |
 |                      | FilterChangeIndication      |                              | Switch, Contact, Dimmer       | Filter change indicator. ON/OPEN = filter change is required.                                                                                                                                                                                                                                                                                       |
 |                      |                             |  FilterLifeLevel             | Number                        | Current filter life level. 0% to 100%                                                                                                                                                                                                                                                                                                               |
-|                      |                             |  FilterResetIndication       | Switch                        | Send "filter reset" action triggered by user in iOS home app to openHAB ("ON" = reset requested by user).                                                                                                                                                                                                                                           |
+|                      |                             |  FilterResetIndication       | Switch                        | Send "filter reset" action triggered by user in iOS Home app to openHAB ("ON" = reset requested by user).                                                                                                                                                                                                                                           |
 |                      |                             | Name                         | String                        | Name of the filter accessory                                                                                                                                                                                                                                                                                                                        |
 | Microphone           |                             |                              |                               | Microphone accessory                                                                                                                                                                                                                                                                                                                                |
 |                      | Mute                        |                              | Switch, Contact, Dimmer       | Mute indication. ON/OPEN = microphone is muted                                                                                                                                                                                                                                                                                                      |
@@ -828,8 +877,36 @@ or using UI
 |                      | TargetMediaState            |                              | String                        | Target smart speaker state. possible values (STOP,PLAY,PAUSE). Custom mapping can be defined at item level, e.g. [STOP="STOPPED", PLAY="PLAYING"]                                                                                                                                                                                                   |
 |                      |                             | Mute                         | Switch, Contact               | Mute indication. ON/OPEN = speaker is muted                                                                                                                                                                                                                                                                                                         |
 |                      |                             | Name                         | String                        | Name of the speaker accessory                                                                                                                                                                                                                                                                                                                       |
-|                      |                             | ConfiguredName               | String                        | Name of the speaker accessory configured in iOS home app. User can rename speaker in iOS home app and this characteristic can be used to reflect change in openHAB and sync name changes from openHAB to home app.                                                                                                                                  |
+|                      |                             | ConfiguredName               | String                        | Name of the speaker accessory configured in iOS Home app. User can rename the speaker in iOS Home app and this characteristic can be used to reflect change in openHAB and sync name changes from openHAB to Home app.                                                                                                                                  |
 |                      |                             | Volume                       | Number                        | Speaker volume from 0% to 100%                                                                                                                                                                                                                                                                                                                      |
+| Television           |                             |                              |                               | Television accessory with inputs                                                                                                                                                                                                                                                                                                                    |
+|                      | Active                      |                              | Switch, Contact, Dimmer       | State of the television - On/Off |
+|                      |                             | ActiveIdentifier             | Number                        | The input that is currently active (based on its identifier). Can also be configured via metadata, e.g. [ActiveIdentifier=1] |
+|                      |                             | Name                         | String                        | Name of the television accessory                                                                                                                                                                                                                                                                                                                       |
+|                      |                             | ConfiguredName               | String                        | Name of the television accessory configured in the iOS Home app. User can rename the television in iOS Home app and this characteristic can be used to reflect change in openHAB and sync name changes from openHAB to Home app. |
+|                      |                             | RemoteKey                    | String                        | Receives a keypress event. |
+|                      |                             | SleepDiscoveryMode           | Switch, Contact, Dimmer       | Indicates if the television is discoverable while in standby mode. ON = always discoverable, OFF = not discoverable. Default is ON. Can also be configured via metadata, e.g. [SleepDiscoveryMode=true] |
+|                      |                             | Brightness                   | Dimmer                        | Screen brightness in % (1-100). |
+|                      |                             | PowerMode                    | Switch                        | This oddly named characteristic will receive an ON command when the user requests to open the TV's menu. |
+|                      |                             | ClosedCaptions               | Switch, Contact, Dimmer       | Indicates closed captions are enabled. Can also be configured via metadata, e.g. [ClosedCaptions=true] |
+|                      |                             | CurrentMediaState            | String                        | Current television state. possible values (STOP,PLAY,PAUSE,UNKNOWN). Custom mapping can be defined at item level, e.g. [STOP="STOPPED", PLAY="PLAYING"]                                                                                                                                                                                          |
+|                      |                             | TargetMediaState             | String                        | Target television state. possible values (STOP,PLAY,PAUSE). Custom mapping can be defined at item level, e.g. [STOP="STOPPED", PLAY="PLAYING"]                                                                                                                                                                                                   |
+|                      |                             | PictureMode                  | String                        | Selected picture mode. possible values (OTHER,STANDARD,CALIBRATED,CALIBRATED_DARK,VIVID,GAME,COMPUTER,CUSTOM). Custom mapping can be defined at the item level, e.g. [OTHER="unknown"] |
+| InputSource          |                             |                              |                               | Input source linked service. Can only be used with Television.
+|                      |                             | Name                         | String                        | Default name of the input source                                                                                                                                                                                                                                                                                                                       |
+|                      |                             | ConfiguredName               | String                        | Name of the input source configured in the iOS Home app. User can rename the source in iOS Home app and this characteristic can be used to reflect change in openHAB and sync name changes from openHAB to Home app. |
+|                      |                             | Configured                   | Switch, Contact, Dimmer       | If the source is configured on the device. Non-configured inputs will not show up in the Home app. - ON/OPEN = show, OFF/CLOSED = hide. Default is ON. Can also be configured via metadata, e.g. [Configured=true] |
+|                      |                             | InputSourceType              | String                        | Type of the input source. possible values (OTHER, HOME_SCREEN, TUNER, HDMI, COMPOSITE_VIDEO, S_VIDEO, COMPONENT_VIDEO, DVI, AIRPLAY, USB, APPLICATION). Custom mapping can be defined at item level. Can also be configured via metadata, e.g. [InputSourceType="OTHER"]. |
+|                      |                             | CurrentVisibility            | Switch, Contact, Dimmer       | If the source has been hidden by the user - ON/OPEN = visible, OFF/CLOSED = hidden. Default is ON. Can also be configured via metadata, e.g. [CurrentVisibility=false] |
+|                      |                             | Identifier                   | Number                        | The identifier of the source, to be used with the ActiveIdentifier characteristic. Can also be configured via metadata, e.g. [Identifier=1] |
+|                      |                             | InputDeviceType              | String                        | Type of the input device. possible values (OTHER, TV, RECORDING, TUNER, PLAYBACK, AUDIO_SYSTEM). Custom mapping can be defined at item level. Can also be configured via metadata, e.g. [InputDeviceType="OTHER"]. |
+|                      |                             | TargetVisibilityState        | Switch                        | The desired visibility state of the input source. ON = shown, OFF = hidden. |
+| TelevisionSpeaker    |                             |                              |                               | An accessory that can be added to a Television in order to control the speaker associated with it. |
+|                      | Mute                        |                              | Switch                        | If the television is muted. ON = muted, OFF = not muted. |
+|                      |                             | Active                       | Switch                        | ?? |
+|                      |                             | Volume                       | Dimmer, Number                | Current volume. min/max/step can configured at item level, e.g. minValue=10.5, maxValue=50, step=2] |
+|                      |                             | VolumeSelector               | Dimmer, String                | If linked do a dimmer item, will send INCREASE/DECREASE commands. If linked to a string item, will send INCREMENT and DECREMENT. |
+|                      |                             | VolumeControlType            | String                        | The type of control available. This will default to infer based on what other items are linked. NONE = status only, no control; RELATIVE = INCREMENT/DECREMENT only, no status; RELATIVE_WITH_CURRENT = INCREMENT/DECREMENT only with status; ABSOLUTE = direct status and control. Can also be configured via metadata, e.g. [VolumeControlType="ABSOLUTE"]. |
 
 ### Examples
 
@@ -974,21 +1051,21 @@ openhab> log:tail org.openhab.io.homekit.internal
 
 `openhab:homekit show <accessory_id | name>` - print additional details of the accessories which partially match provided ID or name.
 
-## Troubleshooting 
+## Troubleshooting
 
-### openHAB is not listed in home app
+### openHAB is not listed in Home app
 
-if you don't see openHAB in the home app, probably multicast DNS (mDNS) traffic is not routed correctly from openHAB to home app device or openHAB is already in paired state. 
-You can verify this with [Discovery DNS iOS app](https://apps.apple.com/us/app/discovery-dns-sd-browser/id305441017) as follow: 
+if you don't see openHAB in the Home app, probably multicast DNS (mDNS) traffic is not routed correctly from openHAB to Home app device or openHAB is already in paired state.
+You can verify this with [Discovery DNS iOS app](https://apps.apple.com/us/app/discovery-dns-sd-browser/id305441017) as follow:
 
-- install discovery dns app from app store 
+- install discovery dns app from app store
 - start discovery app
 - find `_hap._tcp`  in the list of service types
-- if you don't find _hap._tcp on the list, probably the traffic is blocked. 
+- if you don't find _hap._tcp on the list, probably the traffic is blocked.
   - to confirm this, check whether you can find _openhab-server._tcp. if you don't see it as well, traffic is blocked. check your network router/firewall settings.
 - if you found _hap._tcp, open it. you should see the name of your openHAB HomeKit bridge (default name is openHAB)
 
-![discovery_hap_list.png](doc/discovery_hap_list.png)  
+![discovery_hap_list.png](doc/discovery_hap_list.png)
 
 - if you don't see openHAB bridge name, the traffic is blocked
 - if you see openHAB HomeKit bridge, open it
@@ -996,10 +1073,10 @@ You can verify this with [Discovery DNS iOS app](https://apps.apple.com/us/app/d
 ![discovery_openhab_details.png](doc/discovery_openhab_details.png)
 
 - verify the IP address. it must be the IP address of your openHAB server, if not, set the correct IP address using `networkInterface` settings
-- verify the flag "sf". 
-  - if sf is equal 1, openHAB is accepting pairing from new iOS device. 
+- verify the flag "sf".
+  - if sf is equal 1, openHAB is accepting pairing from new iOS device.
   - if sf is equal 0 (as on screenshot), openHAB is already paired and does not accept any new pairing request. you can reset pairing using `openhab:homekit clearPairings` command in karaf console.
-- if you see openHAB bridge and sf is equal 1 but you dont see openHAB in home app, probably you home app still think it is already paired with openHAB. remove your home from home app and restart iOS device.
+- if you see openHAB bridge and sf is equal to 1 but you dont see openHAB in the Home app, the Home app probably still thinks it is already paired with openHAB. remove your home from the Home app and restart the iOS device.
 
 ### Re-adding the openHAB HomeKit bridge reports that a bridge is already added, even though it has clearly been removed.
 

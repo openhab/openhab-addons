@@ -105,6 +105,9 @@ public class HomekitAccessoryFactory {
             put(SLAT, new HomekitCharacteristicType[] { CURRENT_SLAT_STATE });
             put(FAUCET, new HomekitCharacteristicType[] { ACTIVE_STATUS });
             put(MICROPHONE, new HomekitCharacteristicType[] { MUTE });
+            put(TELEVISION, new HomekitCharacteristicType[] { ACTIVE });
+            put(INPUT_SOURCE, new HomekitCharacteristicType[] {});
+            put(TELEVISION_SPEAKER, new HomekitCharacteristicType[] { MUTE });
         }
     };
 
@@ -144,6 +147,9 @@ public class HomekitAccessoryFactory {
             put(SLAT, HomekitSlatImpl.class);
             put(FAUCET, HomekitFaucetImpl.class);
             put(MICROPHONE, HomekitMicrophoneImpl.class);
+            put(TELEVISION, HomekitTelevisionImpl.class);
+            put(INPUT_SOURCE, HomekitInputSourceImpl.class);
+            put(TELEVISION_SPEAKER, HomekitTelevisionSpeakerImpl.class);
         }
     };
 
@@ -208,6 +214,8 @@ public class HomekitAccessoryFactory {
                         HomekitAccessoryUpdater.class, HomekitSettings.class)
                         .newInstance(taggedItem, foundCharacteristics, updater, settings);
                 addOptionalCharacteristics(taggedItem, accessoryImpl, metadataRegistry);
+                addOptionalMetadataCharacteristics(taggedItem, accessoryImpl);
+                accessoryImpl.init();
                 addLinkedServices(taggedItem, accessoryImpl, metadataRegistry, updater, settings, ancestorServices);
                 return accessoryImpl;
             } else {
@@ -388,6 +396,28 @@ public class HomekitAccessoryFactory {
     }
 
     /**
+     * add optional characteristics for given accessory from metadata
+     *
+     * @param taggedItem main item
+     * @param accessory accessory
+     */
+    private static void addOptionalMetadataCharacteristics(HomekitTaggedItem taggedItem,
+            AbstractHomekitAccessoryImpl accessory)
+            throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, HomekitException {
+        // Check every metadata key looking for a characteristics we can create
+        var config = taggedItem.getConfiguration();
+        if (config == null)
+            return;
+        for (var entry : config.entrySet().stream().sorted((lhs, rhs) -> lhs.getKey().compareTo(rhs.getKey()))
+                .collect(Collectors.toList())) {
+            var characteristic = HomekitMetadataCharacteristicFactory.createCharacteristic(entry.getKey(),
+                    entry.getValue());
+            if (characteristic.isPresent())
+                accessory.addCharacteristic(characteristic.get());
+        }
+    }
+
+    /**
      * creates HomeKit services for an openhab item that are members of this group item.
      *
      * @param taggedItem openhab item tagged as HomeKit item
@@ -411,7 +441,7 @@ public class HomekitAccessoryFactory {
         for (var groupMember : ((GroupItem) item).getMembers().stream()
                 .sorted((lhs, rhs) -> lhs.getName().compareTo(rhs.getName())).collect(Collectors.toList())) {
             final var characteristicTypes = getAccessoryTypes(groupMember, metadataRegistry);
-            var accessoryTypes = characteristicTypes.stream().filter(c -> c.getValue() == EMPTY)
+            var accessoryTypes = characteristicTypes.stream().filter(HomekitAccessoryFactory::isRootAccessory)
                     .collect(Collectors.toList());
 
             logger.trace("accessory types for {} are {}", groupMember.getName(), accessoryTypes);
