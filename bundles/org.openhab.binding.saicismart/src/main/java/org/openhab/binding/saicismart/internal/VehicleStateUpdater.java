@@ -16,10 +16,10 @@ import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants
 
 import java.net.URISyntaxException;
 import java.time.Instant;
-import java.util.Random;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
+import org.openhab.binding.saicismart.internal.asn1.Util;
 import org.openhab.binding.saicismart.internal.asn1.v2_1.MP_DispatcherBody;
 import org.openhab.binding.saicismart.internal.asn1.v2_1.MP_DispatcherHeader;
 import org.openhab.binding.saicismart.internal.asn1.v2_1.Message;
@@ -53,7 +53,7 @@ class VehicleStateUpdater implements Runnable {
         try {
             Message<OTA_RVMVehicleStatusReq> chargingStatusMessage = new Message<>(new MP_DispatcherHeader(),
                     new byte[16], new MP_DispatcherBody(), new OTA_RVMVehicleStatusReq());
-            fillReserved(chargingStatusMessage);
+            Util.fillReserved(chargingStatusMessage.getReserved());
 
             chargingStatusMessage.getBody().setApplicationID("511");
             chargingStatusMessage.getBody().setTestFlag(2);
@@ -85,7 +85,7 @@ class VehicleStateUpdater implements Runnable {
                 chargingStatusMessage.getBody().setUid(saiCiSMARTHandler.getBridgeHandler().getUid());
                 chargingStatusMessage.getBody().setToken(saiCiSMARTHandler.getBridgeHandler().getToken());
 
-                fillReserved(chargingStatusMessage);
+                Util.fillReserved(chargingStatusMessage.getReserved());
 
                 chargingStatusRequestMessage = new MessageCoder<>(OTA_RVMVehicleStatusReq.class)
                         .encodeRequest(chargingStatusMessage);
@@ -121,10 +121,5 @@ class VehicleStateUpdater implements Runnable {
             saiCiSMARTHandler.updateStatus(ThingStatus.OFFLINE);
             logger.error("Could not get vehicle data for {}", saiCiSMARTHandler.config.vin, e);
         }
-    }
-
-    public static void fillReserved(Message<?> chargingStatusMessage) {
-        System.arraycopy(((new Random(System.currentTimeMillis())).nextLong() + "1111111111111111").getBytes(), 0,
-                chargingStatusMessage.getReserved(), 0, 16);
     }
 }
