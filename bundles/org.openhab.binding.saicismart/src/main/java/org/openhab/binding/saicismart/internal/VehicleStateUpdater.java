@@ -24,6 +24,8 @@ import org.openhab.binding.saicismart.internal.asn1.v2_1.Message;
 import org.openhab.binding.saicismart.internal.asn1.v2_1.MessageCoder;
 import org.openhab.binding.saicismart.internal.asn1.v2_1.OTA_RVMVehicleStatusReq;
 import org.openhab.binding.saicismart.internal.asn1.v2_1.OTA_RVMVehicleStatusResp25857;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ThingStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -93,16 +95,21 @@ class VehicleStateUpdater implements Runnable {
 
             }
 
-            // saiCiSMARTHandler.updateState(CHANNEL_SOC, new QuantityType<>(
-            // chargingStatusResponseMessage.getApplicationData().getBmsPackSOCDsp() / 10.d, Units.PERCENT));
-            // saiCiSMARTHandler.updateState(CHANNEL_MILAGE, new QuantityType<>(
-            // chargingStatusResponseMessage.getApplicationData().getChargeStatus().getMileage() / 10.d,
-            // MetricPrefix.KILO(SIUnits.METRE)));
-            // saiCiSMARTHandler.updateState(CHANNEL_RANGE_ELECTRIC, new QuantityType<>(
-            // chargingStatusResponseMessage.getApplicationData().getChargeStatus().getFuelRangeElec() / 10.d,
-            // MetricPrefix.KILO(SIUnits.METRE)));
             logger.info("Got message: {}", new GsonBuilder().setPrettyPrinting().create()
                     .toJson(chargingStatusResponseMessage.getApplicationData()));
+
+            saiCiSMARTHandler.updateState(SAICiSMARTBindingConstants.CHANNEL_TYRE_PRESSURE_FRONT_LEFT,
+                    new QuantityType<>(chargingStatusResponseMessage.getApplicationData().getBasicVehicleStatus()
+                            .getFrontLeftTyrePressure() * 4 / 100.d, Units.BAR));
+            saiCiSMARTHandler.updateState(SAICiSMARTBindingConstants.CHANNEL_TYRE_PRESSURE_FRONT_RIGHT,
+                    new QuantityType<>(chargingStatusResponseMessage.getApplicationData().getBasicVehicleStatus()
+                            .getFrontRrightTyrePressure() * 4 / 100.d, Units.BAR));
+            saiCiSMARTHandler.updateState(SAICiSMARTBindingConstants.CHANNEL_TYRE_PRESSURE_REAR_LEFT,
+                    new QuantityType<>(chargingStatusResponseMessage.getApplicationData().getBasicVehicleStatus()
+                            .getRearLeftTyrePressure() * 4 / 100.d, Units.BAR));
+            saiCiSMARTHandler.updateState(SAICiSMARTBindingConstants.CHANNEL_TYRE_PRESSURE_REAR_RIGHT,
+                    new QuantityType<>(chargingStatusResponseMessage.getApplicationData().getBasicVehicleStatus()
+                            .getRearRightTyrePressure() * 4 / 100.d, Units.BAR));
             saiCiSMARTHandler.updateStatus(ThingStatus.ONLINE);
         } catch (URISyntaxException | ExecutionException | InterruptedException | TimeoutException e) {
             saiCiSMARTHandler.updateStatus(ThingStatus.OFFLINE);
