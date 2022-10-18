@@ -12,12 +12,12 @@
  */
 package org.openhab.binding.saicismart.internal;
 
+import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_CHARGING;
 import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_MILAGE;
 import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_POWER;
 import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_RANGE_ELECTRIC;
 import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_SOC;
 
-import java.math.BigDecimal;
 import java.net.URISyntaxException;
 import java.time.Instant;
 import java.util.Random;
@@ -30,6 +30,7 @@ import org.openhab.binding.saicismart.internal.asn1.v3_0.MP_DispatcherHeader;
 import org.openhab.binding.saicismart.internal.asn1.v3_0.Message;
 import org.openhab.binding.saicismart.internal.asn1.v3_0.MessageCoder;
 import org.openhab.binding.saicismart.internal.asn1.v3_0.OTA_ChrgMangDataResp;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.SIUnits;
@@ -113,20 +114,24 @@ class ChargeStateUpdater implements Runnable {
             logger.info("Got message: {}", new GsonBuilder().setPrettyPrinting().create()
                     .toJson(chargingStatusResponseMessage.getApplicationData()));
 
-            double var6 =
-                    (chargingStatusResponseMessage.getApplicationData().getBmsPackCrnt() * 0.05d - 1000.0d)
-                            * ((double) chargingStatusResponseMessage.getApplicationData().getBmsPackVol() * 0.25d)
-                                    /1000d;
+            double var6 = (chargingStatusResponseMessage.getApplicationData().getBmsPackCrnt() * 0.05d - 1000.0d)
+                    * ((double) chargingStatusResponseMessage.getApplicationData().getBmsPackVol() * 0.25d) / 1000d;
 
             System.out.println("Unknown: " + var6);
 
             saiCiSMARTHandler.updateState(CHANNEL_POWER, new QuantityType<>(var6, MetricPrefix.KILO(Units.WATT)));
+            saiCiSMARTHandler.updateState(CHANNEL_CHARGING, OnOffType
+                    .from(isChargingStatus(chargingStatusResponseMessage.getApplicationData().getBmsChrgSts())));
 
             saiCiSMARTHandler.updateStatus(ThingStatus.ONLINE);
         } catch (URISyntaxException | ExecutionException | InterruptedException | TimeoutException e) {
             saiCiSMARTHandler.updateStatus(ThingStatus.OFFLINE);
             logger.error("Could not get vehicle data for {}", saiCiSMARTHandler.config.vin, e);
         }
+    }
+
+    private boolean isChargingStatus(Integer var1) {
+        return var1 == 1 || var1 == 3 || var1 == 10 || var1 == 12;
     }
 
     public static void fillReserved(Message<IASN1PreparedElement> chargingStatusMessage) {
