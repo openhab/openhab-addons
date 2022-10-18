@@ -141,7 +141,11 @@ public enum HomekitCharacteristicType {
     TARGET_VISIBILITY_STATE("TargetVisibilityState"),
 
     VOLUME_SELECTOR("VolumeSelector"),
-    VOLUME_CONTROL_TYPE("VolumeControlType");
+    VOLUME_CONTROL_TYPE("VolumeControlType"),
+
+    PROGRAM_MODE("ProgramMode"),
+    SERVICE_LABEL("ServiceLabel"),
+    SERVICE_INDEX("ServiceIndex");
 
     private static final Map<String, HomekitCharacteristicType> TAG_MAP = new HashMap<>();
 

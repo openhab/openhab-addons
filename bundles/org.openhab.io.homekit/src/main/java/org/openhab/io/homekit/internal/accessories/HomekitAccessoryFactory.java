@@ -108,6 +108,7 @@ public class HomekitAccessoryFactory {
             put(TELEVISION, new HomekitCharacteristicType[] { ACTIVE });
             put(INPUT_SOURCE, new HomekitCharacteristicType[] {});
             put(TELEVISION_SPEAKER, new HomekitCharacteristicType[] { MUTE });
+            put(IRRIGATION_SYSTEM, new HomekitCharacteristicType[] { ACTIVE, INUSE_STATUS, PROGRAM_MODE });
         }
     };
 
@@ -150,6 +151,7 @@ public class HomekitAccessoryFactory {
             put(TELEVISION, HomekitTelevisionImpl.class);
             put(INPUT_SOURCE, HomekitInputSourceImpl.class);
             put(TELEVISION_SPEAKER, HomekitTelevisionSpeakerImpl.class);
+            put(IRRIGATION_SYSTEM, HomekitIrrigationSystemImpl.class);
         }
     };
 

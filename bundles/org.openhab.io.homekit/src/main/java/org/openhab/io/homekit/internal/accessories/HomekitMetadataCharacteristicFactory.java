@@ -39,6 +39,7 @@ import io.github.hapjava.characteristics.impl.common.IdentifierCharacteristic;
 import io.github.hapjava.characteristics.impl.common.IsConfiguredCharacteristic;
 import io.github.hapjava.characteristics.impl.common.IsConfiguredEnum;
 import io.github.hapjava.characteristics.impl.common.NameCharacteristic;
+import io.github.hapjava.characteristics.impl.common.ServiceLabelIndexCharacteristic;
 import io.github.hapjava.characteristics.impl.heatercooler.CurrentHeaterCoolerStateCharacteristic;
 import io.github.hapjava.characteristics.impl.heatercooler.CurrentHeaterCoolerStateEnum;
 import io.github.hapjava.characteristics.impl.heatercooler.TargetHeaterCoolerStateCharacteristic;
@@ -90,6 +91,7 @@ public class HomekitMetadataCharacteristicFactory {
             put(INPUT_SOURCE_TYPE, HomekitMetadataCharacteristicFactory::createInputSourceTypeCharacteristic);
             put(NAME, HomekitMetadataCharacteristicFactory::createNameCharacteristic);
             put(PICTURE_MODE, HomekitMetadataCharacteristicFactory::createPictureModeCharacteristic);
+            put(SERVICE_INDEX, HomekitMetadataCharacteristicFactory::createServiceIndexCharacteristic);
             put(SLEEP_DISCOVERY_MODE, HomekitMetadataCharacteristicFactory::createSleepDiscoveryModeCharacteristic);
             put(TARGET_HEATER_COOLER_STATE,
                     HomekitMetadataCharacteristicFactory::createTargetHeaterCoolerStateCharacteristic);
@@ -246,6 +248,10 @@ public class HomekitMetadataCharacteristicFactory {
         }, v -> {
         }, () -> {
         });
+    }
+
+    private static Characteristic createServiceIndexCharacteristic(Object value) {
+        return new ServiceLabelIndexCharacteristic(getInteger(value));
     }
 
     private static Characteristic createSleepDiscoveryModeCharacteristic(Object value) {

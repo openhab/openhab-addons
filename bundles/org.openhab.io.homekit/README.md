@@ -591,7 +591,7 @@ configuration for these two cases looks as follow:
 - valve with timer:
 
 ```xtend
-Group           gValve                   "Valve Group"                             {homekit="Valve"  [homekitValveType="Irrigation"]}
+Group           gValve                   "Valve Group"                             {homekit="Valve"  [ValveType="Irrigation"]}
 Switch          valve_active             "Valve active"             (gValve)       {homekit = "Valve.ActiveStatus, Valve.InUseStatus"}
 Number          valve_duration           "Valve duration"           (gValve)       {homekit = "Valve.Duration"}
 Number          valve_remaining_duration "Valve remaining duration" (gValve)       {homekit = "Valve.RemainingDuration"}
@@ -600,9 +600,36 @@ Number          valve_remaining_duration "Valve remaining duration" (gValve)    
 - valve without timer (no item for remaining duration required)
 
 ```xtend
-Group           gValve             "Valve Group"                             {homekit="Valve"  [homekitValveType="Irrigation", homekitTimer="true"]}
+Group           gValve             "Valve Group"                             {homekit="Valve"  [ValveType="Irrigation", homekitTimer="true"]}
 Switch          valve_active       "Valve active"               (gValve)     {homekit = "Valve.ActiveStatus, Valve.InUseStatus"}
 Number          valve_duration     "Valve duration"             (gValve)     {homekit = "Valve.Duration" [homekitDefaultDuration = 1800]}
+```
+
+### Irrigation System
+
+An irrigation system is an accessory composed of multiple valves.
+You just need to link multiple valves within an irrigation system's group.
+When part of an irrigation system, valves are required to have Duration and RemainingDuration characteristics, as well as a ServiceIndex.
+The valve's types will also automatically be set to IRRIGATION.
+
+```java
+Group gIrrigationSystem "Irrigation System" { homekit="IrrigationSystem" }
+String irrigationSystemProgramMode (gIrrigationSystem) { homekit="ProgramMode" }
+Switch irrigationSystemEnabled (gIrrigationSystem) { homekit="Active" }
+Switch irrigationSystemInUse (gIrrigationSystem) { homekit="InUseStatus" }
+Group irrigationSystemTotalRemaining (gIrrigationSystem) { homekit="RemainingDuration" }
+
+Group gValve1 "Valve 1" (gIrrigationSystem) { homekit="Valve"[ServiceIndex=1] }
+Switch valve1Active (gValve1) { homekit="ActiveStatus" }
+Switch valve1InUse (gValve1) { homekit="InUseStatus" }
+Number valve1SetDuration (gValve1) { homekit="Duration" }
+Number valve1RemainingDuration (gValve1) { homekit="RemainingDuration" }
+
+Group gValve2 "Valve 2" (gIrrigationSystem) { homekit="Valve"[ServiceIndex=2] }
+Switch valve2Active (gValve2) { homekit="ActiveStatus" }
+Switch valve2InUse (gValve2) { homekit="InUseStatus" }
+Number valve2SetDuration (gValve2) { homekit="Duration" }
+Number valve2RemainingDuration (gValve2) { homekit="RemainingDuration" }
 ```
 
 ### Sensors
@@ -830,7 +857,7 @@ or using UI
 |                      | LockCurrentState            |                              | Switch, Number                | Current state of lock mechanism (1/ON=SECURED, 0/OFF=UNSECURED, 2=JAMMED, 3=UNKNOWN)                                                                                                                                                                                                                                                                |
 |                      | LockTargetState             |                              | Switch                        | Target state of lock mechanism (ON=SECURED, OFF=UNSECURED)                                                                                                                                                                                                                                                                                          |
 |                      |                             | Name                         | String                        | Name of the lock                                                                                                                                                                                                                                                                                                                                    |
-| Valve                |                             |                              |                               | Valve. additional configuration: homekitValveType = ["Generic", "Irrigation", "Shower", "Faucet"]                                                                                                                                                                                                                                                   |
+| Valve                |                             |                              |                               | Valve. additional configuration: ValveType = ["Generic", "Irrigation", "Shower", "Faucet"]                                                                                                                                                                                                                                                   |
 |                      | ActiveStatus                |                              | Switch, Dimmer                | Accessory current working status. A value of "ON"/"OPEN" indicates that the accessory is active and is functioning without any errors.                                                                                                                                                                                                              |
 |                      | InUseStatus                 |                              | Switch, Dimmer                | Indicates whether fluid flowing through the valve. A value of "ON"/"OPEN" indicates that fluid is flowing.                                                                                                                                                                                                                                          |
 |                      |                             | Duration                     | Number                        | Defines how long a valve should be set to ʼIn Useʼ in second. You can define the default duration via configuration homekitDefaultDuration = <default duration in seconds>                                                                                                                                                                          |
@@ -908,6 +935,13 @@ or using UI
 |                      |                             | Volume                       | Dimmer, Number                | Current volume. min/max/step can configured at item level, e.g. minValue=10.5, maxValue=50, step=2] |
 |                      |                             | VolumeSelector               | Dimmer, String                | If linked do a dimmer item, will send INCREASE/DECREASE commands. If linked to a string item, will send INCREMENT and DECREMENT. |
 |                      |                             | VolumeControlType            | String                        | The type of control available. This will default to infer based on what other items are linked. NONE = status only, no control; RELATIVE = INCREMENT/DECREMENT only, no status; RELATIVE_WITH_CURRENT = INCREMENT/DECREMENT only with status; ABSOLUTE = direct status and control. Can also be configured via metadata, e.g. [VolumeControlType="ABSOLUTE"]. |
+| IrrigationSystem     |                             |                              |                               | An accessory the represents multiple water valves and accomodates a programmed scheduled. |
+|                      | Active                      |                              | Switch                        | If the irrigation system as a whole is enabled. This must be ON if any of the valves are also enabled. |
+|                      | InUseStatus                 |                              | Switch                        | If the irrigation system as a whole is running. This must be ON if any of the valves are ON. |
+|                      | ProgramMode                 |                              | String                        | The current program mode of the irrigation system. possible values (NO_SCHEDULED - no programs scheduled, SCHEDULED - program scheduled, SCHEDULED_MANUAL - program scheduled, currently overriden to manual mode). |
+|                      |                             | RemainingDuration            | Number                        | The remaining duration for all scheduled valves in the current program in seconds. |
+|                      |                             | FaultStatus                  | Switch, Contact               | Accessory fault status.  "ON"/"OPEN" value indicates that the accessory has experienced a fault that may be interfering with its intended functionality. A value of "OFF"/"CLOSED" indicates that there is no fault.                                                                                                                                |
+
 
 ### Examples
 
