@@ -20,6 +20,7 @@ import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants
 
 import java.net.URISyntaxException;
 import java.time.Instant;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
@@ -45,7 +46,7 @@ import com.google.gson.GsonBuilder;
  *
  * @author Markus Heberling - Initial contribution
  */
-class ChargeStateUpdater implements Runnable {
+class ChargeStateUpdater implements Callable<Boolean> {
     private final Logger logger = LoggerFactory.getLogger(ChargeStateUpdater.class);
 
     private final SAICiSMARTHandler saiCiSMARTHandler;
@@ -54,8 +55,7 @@ class ChargeStateUpdater implements Runnable {
         this.saiCiSMARTHandler = saiCiSMARTHandler;
     }
 
-    @Override
-    public void run() {
+    public Boolean call() {
         try {
             Message<IASN1PreparedElement> chargingStatusMessage = new Message<>(new MP_DispatcherHeader(), new byte[16],
                     new MP_DispatcherBody(), null);
@@ -85,6 +85,10 @@ class ChargeStateUpdater implements Runnable {
             // ... use that to request the data again, until we have it
             // TODO: check for real errors (result!=0 and/or errorMessagePresent)
             while (chargingStatusResponseMessage.getApplicationData() == null) {
+
+                if (chargingStatusResponseMessage.getBody().isErrorMessagePresent()) {
+                    throw new TimeoutException(new String(chargingStatusResponseMessage.getBody().getErrorMessage()));
+                }
 
                 chargingStatusMessage.getBody().setUid(saiCiSMARTHandler.getBridgeHandler().getUid());
                 chargingStatusMessage.getBody().setToken(saiCiSMARTHandler.getBridgeHandler().getToken());
@@ -123,10 +127,12 @@ class ChargeStateUpdater implements Runnable {
             saiCiSMARTHandler.updateState(CHANNEL_CHARGING, OnOffType.from(isCharging));
 
             saiCiSMARTHandler.updateStatus(ThingStatus.ONLINE);
+            return isCharging;
         } catch (URISyntaxException | ExecutionException | InterruptedException | TimeoutException e) {
             saiCiSMARTHandler.updateStatus(ThingStatus.OFFLINE);
             logger.error("Could not get vehicle data for {}", saiCiSMARTHandler.config.vin, e);
         }
+        return false;
     }
 
     private boolean isChargingStatus(Integer var1) {

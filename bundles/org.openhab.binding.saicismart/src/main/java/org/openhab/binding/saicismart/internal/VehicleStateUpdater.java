@@ -16,6 +16,7 @@ import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants
 
 import java.net.URISyntaxException;
 import java.time.Instant;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
@@ -39,7 +40,7 @@ import com.google.gson.GsonBuilder;
  *
  * @author Markus Heberling - Initial contribution
  */
-class VehicleStateUpdater implements Runnable {
+class VehicleStateUpdater implements Callable<Boolean> {
     private final Logger logger = LoggerFactory.getLogger(VehicleStateUpdater.class);
 
     private final SAICiSMARTHandler saiCiSMARTHandler;
@@ -49,7 +50,7 @@ class VehicleStateUpdater implements Runnable {
     }
 
     @Override
-    public void run() {
+    public Boolean call() {
         try {
             Message<OTA_RVMVehicleStatusReq> chargingStatusMessage = new Message<>(new MP_DispatcherHeader(),
                     new byte[16], new MP_DispatcherBody(), new OTA_RVMVehicleStatusReq());
@@ -82,6 +83,10 @@ class VehicleStateUpdater implements Runnable {
             // TODO: check for real errors (result!=0 and/or errorMessagePresent)
             while (chargingStatusResponseMessage.getApplicationData() == null) {
 
+                if (chargingStatusResponseMessage.getBody().isErrorMessagePresent()) {
+                    throw new TimeoutException(new String(chargingStatusResponseMessage.getBody().getErrorMessage()));
+                }
+
                 chargingStatusMessage.getBody().setUid(saiCiSMARTHandler.getBridgeHandler().getUid());
                 chargingStatusMessage.getBody().setToken(saiCiSMARTHandler.getBridgeHandler().getToken());
 
@@ -101,8 +106,9 @@ class VehicleStateUpdater implements Runnable {
             logger.info("Got message: {}", new GsonBuilder().setPrettyPrinting().create()
                     .toJson(chargingStatusResponseMessage.getApplicationData()));
 
-            saiCiSMARTHandler.updateState(CHANNEL_ENGINE, OnOffType.from(
-                    chargingStatusResponseMessage.getApplicationData().getBasicVehicleStatus().getEngineStatus() == 1));
+            boolean engineRunning = chargingStatusResponseMessage.getApplicationData().getBasicVehicleStatus()
+                    .getEngineStatus() == 1;
+            saiCiSMARTHandler.updateState(CHANNEL_ENGINE, OnOffType.from(engineRunning));
 
             saiCiSMARTHandler.updateState(SAICiSMARTBindingConstants.CHANNEL_TYRE_PRESSURE_FRONT_LEFT,
                     new QuantityType<>(chargingStatusResponseMessage.getApplicationData().getBasicVehicleStatus()
@@ -117,9 +123,11 @@ class VehicleStateUpdater implements Runnable {
                     new QuantityType<>(chargingStatusResponseMessage.getApplicationData().getBasicVehicleStatus()
                             .getRearRightTyrePressure() * 4 / 100.d, Units.BAR));
             saiCiSMARTHandler.updateStatus(ThingStatus.ONLINE);
+            return engineRunning;
         } catch (URISyntaxException | ExecutionException | InterruptedException | TimeoutException e) {
             saiCiSMARTHandler.updateStatus(ThingStatus.OFFLINE);
             logger.error("Could not get vehicle data for {}", saiCiSMARTHandler.config.vin, e);
+            return false;
         }
     }
 }
