@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.saicismart.internal;
 
+import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_ENGINE;
+
 import java.net.URISyntaxException;
 import java.time.Instant;
 import java.util.Random;
@@ -24,6 +26,7 @@ import org.openhab.binding.saicismart.internal.asn1.v2_1.Message;
 import org.openhab.binding.saicismart.internal.asn1.v2_1.MessageCoder;
 import org.openhab.binding.saicismart.internal.asn1.v2_1.OTA_RVMVehicleStatusReq;
 import org.openhab.binding.saicismart.internal.asn1.v2_1.OTA_RVMVehicleStatusResp25857;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ThingStatus;
@@ -97,6 +100,9 @@ class VehicleStateUpdater implements Runnable {
 
             logger.info("Got message: {}", new GsonBuilder().setPrettyPrinting().create()
                     .toJson(chargingStatusResponseMessage.getApplicationData()));
+
+            saiCiSMARTHandler.updateState(CHANNEL_ENGINE, OnOffType.from(
+                    chargingStatusResponseMessage.getApplicationData().getBasicVehicleStatus().getEngineStatus() == 1));
 
             saiCiSMARTHandler.updateState(SAICiSMARTBindingConstants.CHANNEL_TYRE_PRESSURE_FRONT_LEFT,
                     new QuantityType<>(chargingStatusResponseMessage.getApplicationData().getBasicVehicleStatus()

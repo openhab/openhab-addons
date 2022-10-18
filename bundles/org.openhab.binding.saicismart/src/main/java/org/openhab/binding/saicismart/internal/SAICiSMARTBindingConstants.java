@@ -35,6 +35,7 @@ public class SAICiSMARTBindingConstants {
     public static final String CHANNEL_RANGE_ELECTRIC = "range-electric";
     public static final String CHANNEL_SOC = "soc";
     public static final String CHANNEL_POWER = "power";
+    public static final String CHANNEL_ENGINE = "engine";
     public static final String CHANNEL_CHARGING = "charging";
     public static final String CHANNEL_TYRE_PRESSURE_FRONT_LEFT = "tyre-pressure-front-left";
     public static final String CHANNEL_TYRE_PRESSURE_FRONT_RIGHT = "tyre-pressure-front-right";
