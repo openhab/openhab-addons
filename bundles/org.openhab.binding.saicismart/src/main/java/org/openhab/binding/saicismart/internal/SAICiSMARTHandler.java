@@ -68,15 +68,16 @@ public class SAICiSMARTHandler extends BaseThingHandler {
                 if (this.getBridgeHandler().getUid() == null || this.getBridgeHandler().getToken() == null) {
                     chargeOrRun = true;
                 } else {
-                    chargeOrRun = new ChargeStateUpdater(this).call();
-                    chargeOrRun |= new VehicleStateUpdater(this).call();
+                    chargeOrRun = new VehicleStateUpdater(this).call();
                 }
                 if (chargeOrRun) {
+                    // get precise data
+                    new ChargeStateUpdater(this).call();
                     waitTime = 1000;
                 } else {
                     waitTime += 1000;
                 }
-                waitTime = Math.min(waitTime, 1000 * 60 * 5);
+                waitTime = Math.min(waitTime, 1000L * 60 * 5);
                 logger.info("ChargeOrRun: {} waiting for {}", chargeOrRun, waitTime);
                 Thread.sleep(waitTime);
             }

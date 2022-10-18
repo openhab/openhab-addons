@@ -12,10 +12,7 @@
  */
 package org.openhab.binding.saicismart.internal;
 
-import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_CHARGING;
-import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_MILAGE;
 import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_POWER;
-import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_RANGE_ELECTRIC;
 import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_SOC;
 
 import java.net.URISyntaxException;
@@ -31,10 +28,8 @@ import org.openhab.binding.saicismart.internal.asn1.v3_0.MP_DispatcherHeader;
 import org.openhab.binding.saicismart.internal.asn1.v3_0.Message;
 import org.openhab.binding.saicismart.internal.asn1.v3_0.MessageCoder;
 import org.openhab.binding.saicismart.internal.asn1.v3_0.OTA_ChrgMangDataResp;
-import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.MetricPrefix;
-import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ThingStatus;
 import org.slf4j.Logger;
@@ -108,34 +103,19 @@ class ChargeStateUpdater implements Callable<Boolean> {
 
             saiCiSMARTHandler.updateState(CHANNEL_SOC, new QuantityType<>(
                     chargingStatusResponseMessage.getApplicationData().getBmsPackSOCDsp() / 10.d, Units.PERCENT));
-            saiCiSMARTHandler.updateState(CHANNEL_MILAGE,
-                    new QuantityType<>(
-                            chargingStatusResponseMessage.getApplicationData().getChargeStatus().getMileage() / 10.d,
-                            MetricPrefix.KILO(SIUnits.METRE)));
-            saiCiSMARTHandler.updateState(CHANNEL_RANGE_ELECTRIC, new QuantityType<>(
-                    chargingStatusResponseMessage.getApplicationData().getChargeStatus().getFuelRangeElec() / 10.d,
-                    MetricPrefix.KILO(SIUnits.METRE)));
             logger.info("Got message: {}", new GsonBuilder().setPrettyPrinting().create()
                     .toJson(chargingStatusResponseMessage.getApplicationData()));
 
             double power = (chargingStatusResponseMessage.getApplicationData().getBmsPackCrnt() * 0.05d - 1000.0d)
                     * ((double) chargingStatusResponseMessage.getApplicationData().getBmsPackVol() * 0.25d) / 1000d;
 
-            boolean isCharging = isChargingStatus(chargingStatusResponseMessage.getApplicationData().getBmsChrgSts());
-
             saiCiSMARTHandler.updateState(CHANNEL_POWER, new QuantityType<>(power, MetricPrefix.KILO(Units.WATT)));
-            saiCiSMARTHandler.updateState(CHANNEL_CHARGING, OnOffType.from(isCharging));
 
             saiCiSMARTHandler.updateStatus(ThingStatus.ONLINE);
-            return isCharging;
         } catch (URISyntaxException | ExecutionException | InterruptedException | TimeoutException e) {
             saiCiSMARTHandler.updateStatus(ThingStatus.OFFLINE);
             logger.error("Could not get vehicle data for {}", saiCiSMARTHandler.config.vin, e);
         }
         return false;
-    }
-
-    private boolean isChargingStatus(Integer var1) {
-        return var1 == 1 || var1 == 3 || var1 == 10 || var1 == 12;
     }
 }

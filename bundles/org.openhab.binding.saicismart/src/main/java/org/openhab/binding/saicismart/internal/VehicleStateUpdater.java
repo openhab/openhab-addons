@@ -12,7 +12,11 @@
  */
 package org.openhab.binding.saicismart.internal;
 
+import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_CHARGING;
 import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_ENGINE;
+import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_MILAGE;
+import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_RANGE_ELECTRIC;
+import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_SOC;
 
 import java.net.URISyntaxException;
 import java.time.Instant;
@@ -29,6 +33,8 @@ import org.openhab.binding.saicismart.internal.asn1.v2_1.OTA_RVMVehicleStatusReq
 import org.openhab.binding.saicismart.internal.asn1.v2_1.OTA_RVMVehicleStatusResp25857;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.MetricPrefix;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ThingStatus;
 import org.slf4j.Logger;
@@ -108,7 +114,29 @@ class VehicleStateUpdater implements Callable<Boolean> {
 
             boolean engineRunning = chargingStatusResponseMessage.getApplicationData().getBasicVehicleStatus()
                     .getEngineStatus() == 1;
+            boolean isCharging = chargingStatusResponseMessage.getApplicationData().getBasicVehicleStatus()
+                    .isExtendedData2Present()
+                    && chargingStatusResponseMessage.getApplicationData().getBasicVehicleStatus()
+                            .getExtendedData2() >= 1;
             saiCiSMARTHandler.updateState(CHANNEL_ENGINE, OnOffType.from(engineRunning));
+            saiCiSMARTHandler.updateState(CHANNEL_CHARGING, OnOffType.from(isCharging));
+
+            if (chargingStatusResponseMessage.getApplicationData().getBasicVehicleStatus().isExtendedData1Present()
+                    && !engineRunning && !isCharging) {
+                // if the engine is running or we are charging, we will use the more precise data from the charging API
+                saiCiSMARTHandler.updateState(CHANNEL_SOC, new QuantityType<>(
+                        chargingStatusResponseMessage.getApplicationData().getBasicVehicleStatus().getExtendedData1(),
+                        Units.PERCENT));
+            }
+
+            saiCiSMARTHandler.updateState(CHANNEL_MILAGE, new QuantityType<>(
+                    chargingStatusResponseMessage.getApplicationData().getBasicVehicleStatus().getMileage() / 10.d,
+                    MetricPrefix.KILO(SIUnits.METRE)));
+            saiCiSMARTHandler
+                    .updateState(CHANNEL_RANGE_ELECTRIC,
+                            new QuantityType<>(chargingStatusResponseMessage.getApplicationData()
+                                    .getBasicVehicleStatus().getFuelRangeElec() / 10.d,
+                                    MetricPrefix.KILO(SIUnits.METRE)));
 
             saiCiSMARTHandler.updateState(SAICiSMARTBindingConstants.CHANNEL_TYRE_PRESSURE_FRONT_LEFT,
                     new QuantityType<>(chargingStatusResponseMessage.getApplicationData().getBasicVehicleStatus()
@@ -122,8 +150,9 @@ class VehicleStateUpdater implements Callable<Boolean> {
             saiCiSMARTHandler.updateState(SAICiSMARTBindingConstants.CHANNEL_TYRE_PRESSURE_REAR_RIGHT,
                     new QuantityType<>(chargingStatusResponseMessage.getApplicationData().getBasicVehicleStatus()
                             .getRearRightTyrePressure() * 4 / 100.d, Units.BAR));
+
             saiCiSMARTHandler.updateStatus(ThingStatus.ONLINE);
-            return engineRunning;
+            return engineRunning || isCharging;
         } catch (URISyntaxException | ExecutionException | InterruptedException | TimeoutException e) {
             saiCiSMARTHandler.updateStatus(ThingStatus.OFFLINE);
             logger.error("Could not get vehicle data for {}", saiCiSMARTHandler.config.vin, e);
