@@ -19,6 +19,18 @@
 			<channel id="soc" typeId="soc-channel"/>
 			<channel id="power" typeId="power-channel"/>
 			<channel id="charging" typeId="charging-channel"/>
+			<channel id="tyre-pressure-front-left" typeId="tyre-pressure-channel">
+				<label>Pressure Front Left</label>
+			</channel>
+			<channel id="tyre-pressure-front-right" typeId="tyre-pressure-channel">
+				<label>Pressure Front Right</label>
+			</channel>
+			<channel id="tyre-pressure-rear-left" typeId="tyre-pressure-channel">
+				<label>Pressure Rear Left</label>
+			</channel>
+			<channel id="tyre-pressure-rear-right" typeId="tyre-pressure-channel">
+				<label>Pressure Rear Right</label>
+			</channel>
 		</channels>
 
 		<representation-property>vin</representation-property>
@@ -50,5 +62,10 @@
 		<item-type>Switch</item-type>
 		<label>Charging</label>
 		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="tyre-pressure-channel">
+		<item-type>Number:Pressure</item-type>
+		<label>Pressure</label>
+		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>
