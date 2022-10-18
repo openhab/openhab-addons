@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.saicismart.internal;
 
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -39,8 +39,7 @@ public class SAICiSMARTHandler extends BaseThingHandler {
 
     @Nullable
     SAICiSMARTVehicleConfiguration config;
-    private @Nullable ScheduledFuture<?> chargeStateJob;
-    private @Nullable ScheduledFuture<?> vehicleStateJob;
+    private @Nullable Future<?> pollingJob;
 
     public SAICiSMARTHandler(Thing thing) {
         super(thing);
@@ -61,22 +60,36 @@ public class SAICiSMARTHandler extends BaseThingHandler {
 
         updateStatus(ThingStatus.UNKNOWN);
 
-        chargeStateJob = scheduler.scheduleWithFixedDelay(new ChargeStateUpdater(this), 10, 30, TimeUnit.SECONDS);
-        vehicleStateJob = scheduler.scheduleWithFixedDelay(new VehicleStateUpdater(this), 10, 30, TimeUnit.SECONDS);
+        pollingJob = scheduler.submit((Callable<?>) () -> {
+            long waitTime = 1000;
+            while (pollingJob == null || !pollingJob.isCancelled()) {
+
+                boolean chargeOrRun;
+                if (this.getBridgeHandler().getUid() == null || this.getBridgeHandler().getToken() == null) {
+                    chargeOrRun = true;
+                } else {
+                    chargeOrRun = new ChargeStateUpdater(this).call();
+                    chargeOrRun |= new VehicleStateUpdater(this).call();
+                }
+                if (chargeOrRun) {
+                    waitTime = 1000;
+                } else {
+                    waitTime += 1000;
+                }
+                waitTime = Math.min(waitTime, 1000 * 60 * 5);
+                logger.info("ChargeOrRun: {} waiting for {}", chargeOrRun, waitTime);
+                Thread.sleep(waitTime);
+            }
+            return null;
+        });
     }
 
     @Override
     public void dispose() {
-        ScheduledFuture<?> job = chargeStateJob;
+        Future<?> job = pollingJob;
         if (job != null) {
             job.cancel(true);
-            chargeStateJob = null;
-        }
-
-        job = vehicleStateJob;
-        if (job != null) {
-            job.cancel(true);
-            vehicleStateJob = null;
+            pollingJob = null;
         }
     }
 
