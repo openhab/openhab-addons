@@ -114,14 +114,13 @@ class ChargeStateUpdater implements Runnable {
             logger.info("Got message: {}", new GsonBuilder().setPrettyPrinting().create()
                     .toJson(chargingStatusResponseMessage.getApplicationData()));
 
-            double var6 = (chargingStatusResponseMessage.getApplicationData().getBmsPackCrnt() * 0.05d - 1000.0d)
+            double power = (chargingStatusResponseMessage.getApplicationData().getBmsPackCrnt() * 0.05d - 1000.0d)
                     * ((double) chargingStatusResponseMessage.getApplicationData().getBmsPackVol() * 0.25d) / 1000d;
 
-            System.out.println("Unknown: " + var6);
+            boolean isCharging = isChargingStatus(chargingStatusResponseMessage.getApplicationData().getBmsChrgSts());
 
-            saiCiSMARTHandler.updateState(CHANNEL_POWER, new QuantityType<>(var6, MetricPrefix.KILO(Units.WATT)));
-            saiCiSMARTHandler.updateState(CHANNEL_CHARGING, OnOffType
-                    .from(isChargingStatus(chargingStatusResponseMessage.getApplicationData().getBmsChrgSts())));
+            saiCiSMARTHandler.updateState(CHANNEL_POWER, new QuantityType<>(power, MetricPrefix.KILO(Units.WATT)));
+            saiCiSMARTHandler.updateState(CHANNEL_CHARGING, OnOffType.from(isCharging));
 
             saiCiSMARTHandler.updateStatus(ThingStatus.ONLINE);
         } catch (URISyntaxException | ExecutionException | InterruptedException | TimeoutException e) {
