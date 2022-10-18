@@ -20,11 +20,11 @@ import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants
 
 import java.net.URISyntaxException;
 import java.time.Instant;
-import java.util.Random;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 import org.bn.coders.IASN1PreparedElement;
+import org.openhab.binding.saicismart.internal.asn1.Util;
 import org.openhab.binding.saicismart.internal.asn1.v3_0.MP_DispatcherBody;
 import org.openhab.binding.saicismart.internal.asn1.v3_0.MP_DispatcherHeader;
 import org.openhab.binding.saicismart.internal.asn1.v3_0.Message;
@@ -59,7 +59,7 @@ class ChargeStateUpdater implements Runnable {
         try {
             Message<IASN1PreparedElement> chargingStatusMessage = new Message<>(new MP_DispatcherHeader(), new byte[16],
                     new MP_DispatcherBody(), null);
-            fillReserved(chargingStatusMessage);
+            Util.fillReserved(chargingStatusMessage.getReserved());
 
             chargingStatusMessage.getBody().setApplicationID("516");
             chargingStatusMessage.getBody().setTestFlag(2);
@@ -89,7 +89,7 @@ class ChargeStateUpdater implements Runnable {
                 chargingStatusMessage.getBody().setUid(saiCiSMARTHandler.getBridgeHandler().getUid());
                 chargingStatusMessage.getBody().setToken(saiCiSMARTHandler.getBridgeHandler().getToken());
 
-                fillReserved(chargingStatusMessage);
+                Util.fillReserved(chargingStatusMessage.getReserved());
 
                 chargingStatusRequestMessage = new MessageCoder<>(IASN1PreparedElement.class)
                         .encodeRequest(chargingStatusMessage);
@@ -131,10 +131,5 @@ class ChargeStateUpdater implements Runnable {
 
     private boolean isChargingStatus(Integer var1) {
         return var1 == 1 || var1 == 3 || var1 == 10 || var1 == 12;
-    }
-
-    public static void fillReserved(Message<IASN1PreparedElement> chargingStatusMessage) {
-        System.arraycopy(((new Random(System.currentTimeMillis())).nextLong() + "1111111111111111").getBytes(), 0,
-                chargingStatusMessage.getReserved(), 0, 16);
     }
 }
