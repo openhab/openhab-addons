@@ -16,7 +16,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.io.console.Console;
 import org.openhab.core.io.console.extensions.AbstractConsoleCommandExtension;
@@ -123,19 +122,19 @@ public class HomekitCommandExtension extends AbstractConsoleCommandExtension {
     }
 
     private void printService(Console console, Service service, int indent) {
-        console.println(StringUtils.repeat(' ', indent) + "Service Type: " + service.getClass().getSimpleName() + " ("
+        console.println(" ".repeat(indent) + "Service Type: " + service.getClass().getSimpleName() + " ("
                 + service.getType() + ")");
-        console.println(StringUtils.repeat(' ', indent + 2) + "Characteristics:");
+        console.println(" ".repeat(indent + 2) + "Characteristics:");
         service.getCharacteristics().forEach((c) -> {
             try {
-                console.println(StringUtils.repeat(' ', indent + 4) + c.getClass().getSimpleName() + ": "
-                        + c.toJson(0).get().toString());
+                console.println(
+                        " ".repeat(indent + 4) + c.getClass().getSimpleName() + ": " + c.toJson(0).get().toString());
             } catch (InterruptedException | ExecutionException e) {
             }
         });
         if (service.getLinkedServices().isEmpty())
             return;
-        console.println(StringUtils.repeat(' ', indent + 2) + "Linked Services:");
+        console.println(" ".repeat(indent + 2) + "Linked Services:");
         service.getLinkedServices().forEach((s) -> printService(console, s, indent + 2));
     }
 
