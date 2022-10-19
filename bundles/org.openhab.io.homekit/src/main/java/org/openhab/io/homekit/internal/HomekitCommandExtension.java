@@ -132,8 +132,9 @@ public class HomekitCommandExtension extends AbstractConsoleCommandExtension {
             } catch (InterruptedException | ExecutionException e) {
             }
         });
-        if (service.getLinkedServices().isEmpty())
+        if (service.getLinkedServices().isEmpty()) {
             return;
+        }
         console.println(" ".repeat(indent + 2) + "Linked Services:");
         service.getLinkedServices().forEach((s) -> printService(console, s, indent + 2));
     }
