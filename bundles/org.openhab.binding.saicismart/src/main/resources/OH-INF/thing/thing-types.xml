@@ -20,6 +20,10 @@
 			<channel id="power" typeId="power-channel"/>
 			<channel id="charging" typeId="charging-channel"/>
 			<channel id="engine" typeId="engine-channel"/>
+			<channel id="speed" typeId="speed-channel"/>
+			<channel id="location" typeId="location-channel"/>
+			<channel id="heading" typeId="heading-channel"/>
+			<channel id="auxiliary-battery-voltage" typeId="auxiliary-battery-voltage-channel"/>
 			<channel id="tyre-pressure-front-left" typeId="tyre-pressure-channel">
 				<label>Pressure Front Left</label>
 			</channel>
@@ -73,5 +77,29 @@
 		<item-type>Number:Pressure</item-type>
 		<label>Pressure</label>
 		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="speed-channel">
+		<item-type>Number:Speed</item-type>
+		<label>Speed</label>
+		<description>Vehicle speed</description>
+		<state pattern="%d %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="location-channel">
+		<item-type>Location</item-type>
+		<label>Location</label>
+		<description>The actual position of the vehicle</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="heading-channel">
+		<item-type>Number:Angle</item-type>
+		<label>Heading</label>
+		<description>Indicates the (compass) heading of the car, in 0-360 degrees</description>
+		<state pattern="%d %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="auxiliary-battery-voltage-channel">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Auxiliary Battery Voltage</label>
+		<description>Voltage (V) of the auxiliary battery</description>
+		<state pattern="%.1f V" readOnly="true"></state>
 	</channel-type>
 </thing:thing-descriptions>

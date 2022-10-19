@@ -41,4 +41,8 @@ public class SAICiSMARTBindingConstants {
     public static final String CHANNEL_TYRE_PRESSURE_FRONT_RIGHT = "tyre-pressure-front-right";
     public static final String CHANNEL_TYRE_PRESSURE_REAR_LEFT = "tyre-pressure-rear-left";
     public static final String CHANNEL_TYRE_PRESSURE_REAR_RIGHT = "tyre-pressure-rear-right";
+    public static final String CHANNEL_SPEED = "speed";
+    public static final String CHANNEL_LOCATION = "location";
+    public static final String CHANNEL_HEADING = "heading";
+    public static final String CHANNEL_AUXILIARY_BATTERY_VOLTAGE = "auxiliary-battery-voltage";
 }
