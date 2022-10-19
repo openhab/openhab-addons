@@ -13,6 +13,7 @@
 
 package org.openhab.binding.nanoleaf.internal.layout;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
@@ -36,6 +37,11 @@ import org.openhab.binding.nanoleaf.internal.model.PositionDatum;
  */
 @NonNullByDefault
 public class NanoleafLayout {
+
+    private static final Color COLOR_BACKGROUND = Color.WHITE;
+    private static final Color COLOR_PANEL = Color.BLACK;
+    private static final Color COLOR_SIDE = Color.GRAY;
+    private static final Color COLOR_TEXT = Color.BLACK;
 
     public static byte[] render(PanelLayout panelLayout) throws IOException {
         double rotationRadians = 0;
@@ -67,6 +73,10 @@ public class NanoleafLayout {
                 (max.getY() - min.getY()) + 2 * NanoleafBindingConstants.LAYOUT_BORDER_WIDTH,
                 BufferedImage.TYPE_INT_RGB);
         Graphics2D g2 = image.createGraphics();
+
+        g2.setBackground(COLOR_BACKGROUND);
+        g2.clearRect(0, 0, image.getWidth(), image.getHeight());
+
         for (PositionDatum panel : panels) {
             final int expectedSides = ShapeType.valueOf(panel.getShapeType()).getNumSides();
             var rotated = new Point2D(panel.getPosX(), panel.getPosY()).rotate(rotationRadians);
@@ -74,15 +84,19 @@ public class NanoleafLayout {
             Point2D current = new Point2D(NanoleafBindingConstants.LAYOUT_BORDER_WIDTH + rotated.getX() - min.getX(),
                     NanoleafBindingConstants.LAYOUT_BORDER_WIDTH - rotated.getY() - min.getY());
 
+            g2.setColor(COLOR_PANEL);
             g2.fillOval(current.getX() - NanoleafBindingConstants.LAYOUT_LIGHT_RADIUS / 2,
                     current.getY() - NanoleafBindingConstants.LAYOUT_LIGHT_RADIUS / 2,
                     NanoleafBindingConstants.LAYOUT_LIGHT_RADIUS, NanoleafBindingConstants.LAYOUT_LIGHT_RADIUS);
+
+            g2.setColor(COLOR_TEXT);
             g2.drawString(Integer.toString(panel.getPanelId()), current.getX(), current.getY());
 
             if (sideCounter == 0) {
                 first = current;
             }
 
+            g2.setColor(COLOR_SIDE);
             if (sideCounter > 0 && sideCounter != expectedSides && prev != null) {
                 g2.drawLine(prev.getX(), prev.getY(), current.getX(), current.getY());
             }
