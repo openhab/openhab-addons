@@ -388,6 +388,10 @@ public class SysteminfoHandler extends BaseThingHandler {
     }
 
     private void publishData(Set<ChannelUID> channels) {
+        // if handler disposed while waiting for the links, don't update the channel states
+        if (!ThingStatus.ONLINE.equals(thing.getStatus())) {
+            return;
+        }
         Iterator<ChannelUID> iter = channels.iterator();
         while (iter.hasNext()) {
             ChannelUID channeUID = iter.next();

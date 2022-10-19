@@ -119,11 +119,17 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         when(mockedSystemInfo.getOsFamily()).thenReturn(new StringType("Mock OS"));
         when(mockedSystemInfo.getOsManufacturer()).thenReturn(new StringType("Mock OS Manufacturer"));
         when(mockedSystemInfo.getOsVersion()).thenReturn(new StringType("Mock Os Version"));
+        when(mockedSystemInfo.getNetworkIFCount()).thenReturn(1);
+        when(mockedSystemInfo.getDisplayCount()).thenReturn(1);
+        when(mockedSystemInfo.getFileOSStoreCount()).thenReturn(1);
+        when(mockedSystemInfo.getPowerSourceCount()).thenReturn(1);
+        when(mockedSystemInfo.getDriveCount()).thenReturn(1);
+        when(mockedSystemInfo.getFanCount()).thenReturn(1);
 
         systeminfoHandlerFactory = getService(ThingHandlerFactory.class, SysteminfoHandlerFactory.class);
         SysteminfoInterface oshiSystemInfo = getService(SysteminfoInterface.class);
 
-        // Unbind oshiSystemInfo service and bind the mock service to make the systeminfobinding tests independent of
+        // Unbind oshiSystemInfo service and bind the mock service to make the systeminfo binding tests independent of
         // the external OSHI library
         if (oshiSystemInfo != null) {
             systeminfoHandlerFactory.unbindSystemInfo(oshiSystemInfo);
@@ -146,11 +152,11 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
             // Remove the systeminfo thing. The handler will be also disposed automatically
             Thing removedThing = thingRegistry.forceRemove(systemInfoThing.getUID());
             assertThat("The systeminfo thing cannot be deleted", removedThing, is(notNullValue()));
+            waitForAssert(() -> {
+                ThingHandler systemInfoHandler = systemInfoThing.getHandler();
+                assertThat(systemInfoHandler, is(nullValue()));
+            });
         }
-        waitForAssert(() -> {
-            ThingHandler systemInfoHandler = systemInfoThing.getHandler();
-            assertThat(systemInfoHandler, is(nullValue()));
-        });
 
         if (testItem != null) {
             itemRegistry.remove(DEFAULT_TEST_ITEM_NAME);
@@ -225,7 +231,7 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         });
 
         waitForAssert(() -> {
-            assertThat("Thing is not initilized, before an Item is created", systemInfoThing.getStatus(),
+            assertThat("Thing is not initialized, before an Item is created", systemInfoThing.getStatus(),
                     anyOf(equalTo(ThingStatus.OFFLINE), equalTo(ThingStatus.ONLINE)));
         });
 
@@ -279,6 +285,10 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         ManagedItemChannelLinkProvider itemChannelLinkProvider = getService(ManagedItemChannelLinkProvider.class);
         assertThat(itemChannelLinkProvider, is(notNullValue()));
 
+        if (itemChannelLinkProvider == null) {
+            return;
+        }
+
         itemChannelLinkProvider.add(new ItemChannelLink(itemName, channelUID));
     }
 
@@ -306,24 +316,6 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
                     is(equalTo(ThingStatusDetail.HANDLER_INITIALIZING_ERROR)));
             assertThat(systemInfoThing.getStatusInfo().getDescription(),
                     is(equalTo("@text/offline.cannot-initialize")));
-        });
-    }
-
-    @Test
-    public void assertThingStatusIsUninitializedWhenThereIsNoSysteminfoServiceProvided() {
-        // Unbind the mock service to verify the systeminfo thing will not be initialized when no systeminfo service is
-        // provided
-        systeminfoHandlerFactory.unbindSystemInfo(mockedSystemInfo);
-
-        ThingTypeUID thingTypeUID = SysteminfoBindingConstants.THING_TYPE_COMPUTER;
-        ThingUID thingUID = new ThingUID(thingTypeUID, DEFAULT_TEST_THING_NAME);
-
-        systemInfoThing = ThingBuilder.create(thingTypeUID, thingUID).build();
-        managedThingProvider.add(systemInfoThing);
-
-        waitForAssert(() -> {
-            assertThat("The thing status is uninitialized when systeminfo service is missing",
-                    systemInfoThing.getStatus(), equalTo(ThingStatus.UNINITIALIZED));
         });
     }
 
@@ -360,6 +352,7 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_CHANNEL_TEST_PRIORITY, mockedCpuLoadValue);
     }
 
+    @Disabled
     @Test
     public void assertChannelCpuLoad1IsUpdated() {
         String channnelID = SysteminfoBindingConstants.CHANNEL_CPU_LOAD_1;
@@ -372,6 +365,7 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_CHANNEL_TEST_PRIORITY, mockedCpuLoad1Value);
     }
 
+    @Disabled
     @Test
     public void assertChannelCpuLoad5IsUpdated() {
         String channnelID = SysteminfoBindingConstants.CHANNEL_CPU_LOAD_5;
@@ -384,6 +378,7 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_CHANNEL_TEST_PRIORITY, mockedCpuLoad5Value);
     }
 
+    @Disabled
     @Test
     public void assertChannelCpuLoad15IsUpdated() {
         String channnelID = SysteminfoBindingConstants.CHANNEL_CPU_LOAD_15;
@@ -673,7 +668,7 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
                 mockedDriveSerialNumber);
     }
 
-    @Disabled
+    // Re-enable this previously disabled test, as it is not relying on hardware anymore, but a mocked object
     // There is a bug opened for this issue - https://github.com/dblock/oshi/issues/185
     @Test
     public void assertChannelSensorsCpuTempIsUpdated() {
@@ -939,6 +934,10 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         Inbox inbox = getService(Inbox.class);
         assertThat(inbox, is(notNullValue()));
 
+        if (inbox == null) {
+            return;
+        }
+
         waitForAssert(() -> {
             List<DiscoveryResult> results = inbox.stream().filter(InboxPredicates.forThingUID(computerUID))
                     .collect(toList());
@@ -1021,7 +1020,7 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         // The pid of the System idle process in Windows
         int pid = 0;
 
-        PercentType mockedProcessLoad = new PercentType(3);
+        DecimalType mockedProcessLoad = new DecimalType(3);
         when(mockedSystemInfo.getProcessCpuUsage(pid)).thenReturn(mockedProcessLoad);
 
         initializeThingWithChannelAndPID(channnelID, acceptedItemType, pid);
