@@ -15,6 +15,7 @@ package org.openhab.binding.saicismart.internal;
 import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_CHARGING;
 import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_ENGINE;
 import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_MILAGE;
+import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_POWER;
 import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_RANGE_ELECTRIC;
 import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_SOC;
 
@@ -127,6 +128,7 @@ class VehicleStateUpdater implements Callable<Boolean> {
                 saiCiSMARTHandler.updateState(CHANNEL_SOC, new QuantityType<>(
                         chargingStatusResponseMessage.getApplicationData().getBasicVehicleStatus().getExtendedData1(),
                         Units.PERCENT));
+                saiCiSMARTHandler.updateState(CHANNEL_POWER, new QuantityType<>(0, MetricPrefix.KILO(Units.WATT)));
             }
 
             saiCiSMARTHandler.updateState(CHANNEL_MILAGE, new QuantityType<>(
