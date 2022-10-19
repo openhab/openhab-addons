@@ -43,7 +43,7 @@ import org.osgi.service.component.annotations.Reference;
 @Component(service = ConsoleCommandExtension.class)
 public class NetatmoCommandExtension extends AbstractConsoleCommandExtension {
 
-    private static final String IDS = "ids";
+    private static final String SHOW_IDS = "showIds";
 
     private final ThingRegistry thingRegistry;
     private @Nullable Console console;
@@ -56,7 +56,7 @@ public class NetatmoCommandExtension extends AbstractConsoleCommandExtension {
 
     @Override
     public void execute(String[] args, Console console) {
-        if (args.length == 1 && IDS.equals(args[0])) {
+        if (args.length == 1 && SHOW_IDS.equals(args[0])) {
             this.console = console;
             for (Thing thing : thingRegistry.getAll()) {
                 ThingHandler thingHandler = thing.getHandler();
@@ -92,6 +92,6 @@ public class NetatmoCommandExtension extends AbstractConsoleCommandExtension {
 
     @Override
     public List<String> getUsages() {
-        return Arrays.asList(buildCommandUsage(IDS, "list all devices and modules ids"));
+        return Arrays.asList(buildCommandUsage(SHOW_IDS, "list all devices and modules ids"));
     }
 }
