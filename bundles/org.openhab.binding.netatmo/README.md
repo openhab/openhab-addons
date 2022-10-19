@@ -123,6 +123,12 @@ NB: Allowed ports for webhooks are 80, 88, 443 and 9443.
 
 ### Configure Things
 
+The easiest way to retrieve the IDs for all the devices and modules is to use the console command `openhab:netatmo showIds`.
+It shows the hierarchy of all the devices and modules including their IDs.
+This can help to define all your things in a configuration file.
+
+**Another way to get the IDs is to use the developer documentation on the netatmo site:**
+
 The IDs for the modules can be extracted from the developer documentation on the netatmo site.
 First login with your user.
 Then some examples of the documentation contain the **real results** of your weather station.
