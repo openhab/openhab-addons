@@ -75,6 +75,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -710,6 +711,15 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
     }
 
     private void updateLayout(PanelLayout panelLayout) {
+        ChannelUID layoutChannel = new ChannelUID(getThing().getUID(), CHANNEL_LAYOUT);
+        ThingHandlerCallback callback = getCallback();
+        if (callback != null) {
+            if (!callback.isChannelLinked(layoutChannel)) {
+                // Don't generate image unless it is used
+                return;
+            }
+        }
+
         try {
             byte[] bytes = NanoleafLayout.render(panelLayout);
             if (bytes.length > 0) {

@@ -22,6 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public enum ShapeType {
+    UNKNOWN("Unknown", -1, 0, 0),
     TRIANGLE("Triangle", 0, 150, 3),
     RHYTHM("Rhythm", 1, 0, 1),
     SQUUARE("Square", 2, 100, 4),
@@ -74,6 +75,6 @@ public enum ShapeType {
             }
         }
 
-        throw new IllegalArgumentException("Unknown shape type with id " + id);
+        return ShapeType.UNKNOWN;
     }
 }
