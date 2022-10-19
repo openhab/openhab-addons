@@ -12,12 +12,16 @@
  */
 package org.openhab.binding.saicismart.internal;
 
+import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_AUXILIARY_BATTERY_VOLTAGE;
 import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_CHARGING;
 import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_ENGINE;
+import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_HEADING;
+import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_LOCATION;
 import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_MILAGE;
 import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_POWER;
 import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_RANGE_ELECTRIC;
 import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_SOC;
+import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_SPEED;
 
 import java.net.URISyntaxException;
 import java.time.Instant;
@@ -32,7 +36,9 @@ import org.openhab.binding.saicismart.internal.asn1.v2_1.Message;
 import org.openhab.binding.saicismart.internal.asn1.v2_1.MessageCoder;
 import org.openhab.binding.saicismart.internal.asn1.v2_1.OTA_RVMVehicleStatusReq;
 import org.openhab.binding.saicismart.internal.asn1.v2_1.OTA_RVMVehicleStatusResp25857;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.SIUnits;
@@ -130,6 +136,26 @@ class VehicleStateUpdater implements Callable<Boolean> {
                         Units.PERCENT));
                 saiCiSMARTHandler.updateState(CHANNEL_POWER, new QuantityType<>(0, MetricPrefix.KILO(Units.WATT)));
             }
+
+            saiCiSMARTHandler.updateState(CHANNEL_AUXILIARY_BATTERY_VOLTAGE, new QuantityType<>(
+                    chargingStatusResponseMessage.getApplicationData().getBasicVehicleStatus().getBatteryVoltage()
+                            / 10.d,
+                    Units.VOLT));
+
+            saiCiSMARTHandler.updateState(CHANNEL_SPEED, new QuantityType<>(
+                    chargingStatusResponseMessage.getApplicationData().getGpsPosition().getWayPoint().getSpeed() / 10.d,
+                    SIUnits.KILOMETRE_PER_HOUR));
+            saiCiSMARTHandler.updateState(CHANNEL_HEADING, new QuantityType<>(
+                    chargingStatusResponseMessage.getApplicationData().getGpsPosition().getWayPoint().getHeading(),
+                    Units.DEGREE_ANGLE));
+            saiCiSMARTHandler.updateState(CHANNEL_LOCATION,
+                    new PointType(
+                            new DecimalType(chargingStatusResponseMessage.getApplicationData().getGpsPosition()
+                                    .getWayPoint().getPosition().getLatitude() / 1000000d),
+                            new DecimalType(chargingStatusResponseMessage.getApplicationData().getGpsPosition()
+                                    .getWayPoint().getPosition().getLongitude() / 1000000d),
+                            new DecimalType(chargingStatusResponseMessage.getApplicationData().getGpsPosition()
+                                    .getWayPoint().getPosition().getAltitude())));
 
             saiCiSMARTHandler.updateState(CHANNEL_MILAGE, new QuantityType<>(
                     chargingStatusResponseMessage.getApplicationData().getBasicVehicleStatus().getMileage() / 10.d,
