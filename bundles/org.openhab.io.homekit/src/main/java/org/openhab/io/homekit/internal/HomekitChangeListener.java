@@ -258,11 +258,6 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
         accessoryRegistry.setBridge(bridge);
     }
 
-    public synchronized void unsetBridge() {
-        applyUpdatesDebouncer.stop();
-        accessoryRegistry.unsetBridge();
-    }
-
     public void setUpdater(HomekitAccessoryUpdater updater) {
         this.updater = updater;
     }
@@ -271,9 +266,11 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
         this.settings = settings;
     }
 
-    public void stop() {
+    public synchronized void stop() {
         this.itemRegistry.removeRegistryChangeListener(this);
         this.metadataRegistry.removeRegistryChangeListener(metadataChangeListener);
+        applyUpdatesDebouncer.stop();
+        accessoryRegistry.unsetBridge();
     }
 
     public Map<String, HomekitAccessory> getAccessories() {
