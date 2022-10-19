@@ -151,7 +151,6 @@ public class SecondGenerationHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        Thread.currentThread().interrupt();
         // Set channel configuration parameters
         channelConfigs = SecondGenerationChannelConfiguration.getChannelConfiguration();
         channelConfigsExt = SecondGenerationChannelConfiguration.getChannelConfigurationExt();
@@ -325,6 +324,7 @@ public class SecondGenerationHandler extends BaseThingHandler {
                 }
             }
         }
+        return;
     }
 
     // Help method of handleCommand to with SecondGenerationConfigurationHandler.executeConfigurationChanges method send
@@ -335,6 +335,7 @@ public class SecondGenerationHandler extends BaseThingHandler {
             SecondGenerationConfigurationHandler.executeConfigurationChanges(httpClientHandleCommand, url, username,
                     password, dxsEntriesConf, valueConfiguration);
         } catch (InterruptedException | ExecutionException | TimeoutException | NoSuchAlgorithmException e) {
+            Thread.currentThread().interrupt();
             logger.debug("Connection to inverter disturbed during configuration");
         }
     }
@@ -345,6 +346,7 @@ public class SecondGenerationHandler extends BaseThingHandler {
         try {
             jsonDxsResponse = httpClient.GET(dxsEntriesCall).getContentAsString().replace("null", "0.000000");
         } catch (InterruptedException | ExecutionException | TimeoutException e2) {
+            Thread.currentThread().interrupt();
             logger.debug("Connection to inverter disturbed during scrape");
         }
         return jsonDxsResponse;
