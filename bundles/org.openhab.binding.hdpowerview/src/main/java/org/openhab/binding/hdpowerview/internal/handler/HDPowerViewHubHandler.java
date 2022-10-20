@@ -25,6 +25,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import javax.ws.rs.client.ClientBuilder;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -74,6 +76,7 @@ import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.osgi.service.jaxrs.client.SseEventSourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,6 +96,8 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler implements SseSinkV
     private final HDPowerViewTranslationProvider translationProvider;
     private final ConcurrentHashMap<ThingUID, ShadeData> pendingShadeInitializations = new ConcurrentHashMap<>();
     private final Duration firmwareVersionValidityPeriod = Duration.ofDays(1);
+    private final ClientBuilder clientBuilder;
+    private final SseEventSourceFactory eventSourceFactory;
 
     private long refreshInterval;
     private long hardRefreshPositionInterval;
@@ -119,10 +124,13 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler implements SseSinkV
             HDPowerViewBindingConstants.CHANNELTYPE_AUTOMATION_ENABLED);
 
     public HDPowerViewHubHandler(Bridge bridge, HttpClient httpClient,
-            HDPowerViewTranslationProvider translationProvider) {
+            HDPowerViewTranslationProvider translationProvider, ClientBuilder clientBuilder,
+            SseEventSourceFactory eventSourceFactory) {
         super(bridge);
         this.httpClient = httpClient;
         this.translationProvider = translationProvider;
+        this.clientBuilder = clientBuilder;
+        this.eventSourceFactory = eventSourceFactory;
     }
 
     @Override
@@ -717,10 +725,10 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler implements SseSinkV
             case 0: // for non breaking of existing installations
             case 1: // both generation 1 and 2 hubs use V1 web targets
             case 2:
-                webTargets = new HDPowerViewWebTargetsV1(httpClient, host);
+                webTargets = new HDPowerViewWebTargetsV1(httpClient, clientBuilder, eventSourceFactory, host);
                 break;
             case 3: // generation 3 hubs use V3 web targets
-                webTargets = new HDPowerViewWebTargetsV3(httpClient, host);
+                webTargets = new HDPowerViewWebTargetsV3(httpClient, clientBuilder, eventSourceFactory, host);
         }
         if (webTargets != null) {
             this.webTargets = webTargets;

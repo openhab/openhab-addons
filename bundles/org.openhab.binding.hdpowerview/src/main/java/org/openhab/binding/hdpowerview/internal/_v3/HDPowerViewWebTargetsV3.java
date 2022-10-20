@@ -16,8 +16,9 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.ws.rs.client.Client;
+import javax.net.ssl.SSLContext;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.sse.InboundSseEvent;
 import javax.ws.rs.sse.SseEventSource;
 
@@ -54,6 +55,7 @@ import org.openhab.binding.hdpowerview.internal.exceptions.HubInvalidResponseExc
 import org.openhab.binding.hdpowerview.internal.exceptions.HubMaintenanceException;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubProcessingException;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubShadeTimeoutException;
+import org.osgi.service.jaxrs.client.SseEventSourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -109,7 +111,6 @@ public class HDPowerViewWebTargetsV3 extends HDPowerViewWebTargets {
 
     private boolean isRegistered;
     private @Nullable SseSinkV3 sseSink;
-    private final Client sseClient = ClientBuilder.newClient();
     private @Nullable SseEventSource shadeEventSource;
     private @Nullable SseEventSource sceneEventSource;
 
@@ -119,8 +120,10 @@ public class HDPowerViewWebTargetsV3 extends HDPowerViewWebTargets {
      * @param httpClient the HTTP client (the binding)
      * @param ipAddress the IP address of the server (the hub)
      */
-    public HDPowerViewWebTargetsV3(HttpClient httpClient, String ipAddress) {
-        super(httpClient, ipAddress, SceneV3.class, ShadeDataV3.class, ShadePositionV3.class, ScheduledEventV3.class);
+    public HDPowerViewWebTargetsV3(HttpClient httpClient, ClientBuilder clientBuilder,
+            SseEventSourceFactory eventSourceFactory, String ipAddress) {
+        super(httpClient, clientBuilder, eventSourceFactory, ipAddress, SceneV3.class, ShadeDataV3.class,
+                ShadePositionV3.class, ScheduledEventV3.class);
 
         // initialize the urls
         String base = "http://" + ipAddress + "/";
@@ -314,24 +317,22 @@ public class HDPowerViewWebTargetsV3 extends HDPowerViewWebTargets {
             // open SSE channel for shades
             SseEventSource shadeEventSource = this.shadeEventSource;
             if (shadeEventSource == null || !shadeEventSource.isOpen()) {
-                source = SseEventSource.target(sseClient.target(shadeEvents)).build();
+                SSLContext context = httpClient.getSslContextFactory().getSslContext();
+                WebTarget target = clientBuilder.sslContext(context).build().target(shadeEvents);
+                source = eventSourceFactory.newSource(target);
                 source.register((event) -> onShadeEvent(event));
                 source.open();
-                if (!source.isOpen()) {
-                    throw new HubProcessingException("setEventSink(): failed to open SSE channel for shades");
-                }
                 this.shadeEventSource = source;
             }
 
             // open SSE channel for scenes
             SseEventSource sceneEventSource = this.sceneEventSource;
             if (sceneEventSource == null || !sceneEventSource.isOpen()) {
-                source = SseEventSource.target(sseClient.target(sceneEvents)).build();
+                SSLContext context = httpClient.getSslContextFactory().getSslContext();
+                WebTarget target = clientBuilder.sslContext(context).build().target(sceneEvents);
+                source = eventSourceFactory.newSource(target);
                 source.register((event) -> onSceneEvent(event));
                 source.open();
-                if (!source.isOpen()) {
-                    throw new HubProcessingException("setEventSink(): failed to open SSE channel for scenes");
-                }
                 this.sceneEventSource = source;
             }
             return true;

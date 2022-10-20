@@ -14,6 +14,8 @@ package org.openhab.binding.hdpowerview.internal;
 
 import java.util.Hashtable;
 
+import javax.ws.rs.client.ClientBuilder;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -35,6 +37,7 @@ import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.jaxrs.client.SseEventSourceFactory;
 
 /**
  * The {@link HDPowerViewHandlerFactory} is responsible for creating things and thing
@@ -48,15 +51,20 @@ public class HDPowerViewHandlerFactory extends BaseThingHandlerFactory {
 
     private final HttpClient httpClient;
     private final HDPowerViewTranslationProvider translationProvider;
+    private final ClientBuilder clientBuilder;
+    private final SseEventSourceFactory eventSourceFactory;
 
     @Activate
     public HDPowerViewHandlerFactory(@Reference HttpClientFactory httpClientFactory,
             final @Reference TranslationProvider i18nProvider, final @Reference LocaleProvider localeProvider,
+            final @Reference ClientBuilder clientBuilder, final @Reference SseEventSourceFactory eventSourceFactory,
             ComponentContext componentContext) {
         super.activate(componentContext);
         this.httpClient = httpClientFactory.getCommonHttpClient();
         this.translationProvider = new HDPowerViewTranslationProvider(getBundleContext().getBundle(), i18nProvider,
                 localeProvider);
+        this.clientBuilder = clientBuilder;
+        this.eventSourceFactory = eventSourceFactory;
     }
 
     @Override
@@ -69,7 +77,8 @@ public class HDPowerViewHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (HDPowerViewBindingConstants.THING_TYPE_HUB.equals(thingTypeUID)) {
-            HDPowerViewHubHandler handler = new HDPowerViewHubHandler((Bridge) thing, httpClient, translationProvider);
+            HDPowerViewHubHandler handler = new HDPowerViewHubHandler((Bridge) thing, httpClient, translationProvider,
+                    clientBuilder, eventSourceFactory);
             registerService(new HDPowerViewDeviceDiscoveryService(handler));
             return handler;
         } else if (HDPowerViewBindingConstants.THING_TYPE_SHADE.equals(thingTypeUID)) {

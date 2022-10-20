@@ -14,6 +14,8 @@ package org.openhab.binding.hdpowerview.internal._v1;
 
 import java.util.List;
 
+import javax.ws.rs.client.ClientBuilder;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpMethod;
@@ -52,6 +54,7 @@ import org.openhab.binding.hdpowerview.internal.exceptions.HubInvalidResponseExc
 import org.openhab.binding.hdpowerview.internal.exceptions.HubMaintenanceException;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubProcessingException;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubShadeTimeoutException;
+import org.osgi.service.jaxrs.client.SseEventSourceFactory;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -84,8 +87,10 @@ public class HDPowerViewWebTargetsV1 extends HDPowerViewWebTargets {
      * @param httpClient the HTTP client (the binding)
      * @param ipAddress the IP address of the server (the hub)
      */
-    public HDPowerViewWebTargetsV1(HttpClient httpClient, String ipAddress) {
-        super(httpClient, ipAddress, SceneV1.class, ShadeDataV1.class, ShadePositionV1.class, ScheduledEventV1.class);
+    public HDPowerViewWebTargetsV1(HttpClient httpClient, ClientBuilder clientBuilder,
+            SseEventSourceFactory eventSourceFactory, String ipAddress) {
+        super(httpClient, clientBuilder, eventSourceFactory, ipAddress, SceneV1.class, ShadeDataV1.class,
+                ShadePositionV1.class, ScheduledEventV1.class);
 
         // initialize the urls
         String base = "http://" + ipAddress + "/api/";
