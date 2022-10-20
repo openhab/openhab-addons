@@ -655,7 +655,6 @@ public class HomekitCharacteristicFactory {
         final int finalMinValue = minValue;
         final int range = maxValue - minValue;
 
-        // final int defaultValue = minValue;
         return new ColorTemperatureCharacteristic(minValue, maxValue, () -> {
             int value = finalMinValue;
             final State state = taggedItem.getItem().getState();
