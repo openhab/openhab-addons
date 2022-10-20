@@ -353,8 +353,8 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
 
     private void testInvalidConfiguration() {
         waitForAssert(() -> {
-            if (systemInfoThing != null) {
-                Thing thing = systemInfoThing;
+            Thing thing = systemInfoThing;
+            if (thing != null) {
                 assertThat("Invalid configuration is used !", thing.getStatus(), is(equalTo(ThingStatus.OFFLINE)));
                 assertThat(thing.getStatusInfo().getStatusDetail(),
                         is(equalTo(ThingStatusDetail.HANDLER_INITIALIZING_ERROR)));
