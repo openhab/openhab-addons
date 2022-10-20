@@ -43,6 +43,8 @@ import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.GsonBuilder;
+
 /**
  * The {@link SAICiSMARTBridgeHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -109,6 +111,9 @@ public class SAICiSMARTBridgeHandler extends BaseBridgeHandler {
 
                 Message<MP_UserLoggingInResp> loginResponseMessage = new MessageCoder<>(MP_UserLoggingInResp.class)
                         .decodeResponse(loginResponse);
+
+                logger.info("Got message: {}", new GsonBuilder().setPrettyPrinting().create()
+                        .toJson(loginResponseMessage.getApplicationData()));
 
                 uid = loginResponseMessage.getBody().getUid();
                 token = loginResponseMessage.getApplicationData().getToken();
