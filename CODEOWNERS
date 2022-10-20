@@ -182,6 +182,7 @@
 /bundles/org.openhab.binding.max/ @marcelrv
 /bundles/org.openhab.binding.mcd/ @simon-dengler
 /bundles/org.openhab.binding.mcp23017/ @aogorek
+/bundles/org.openhab.binding.meater/ @jannegpriv
 /bundles/org.openhab.binding.mecmeter/ @kaikreuzer
 /bundles/org.openhab.binding.melcloud/ @lucacalcaterra @paulianttila @thewiep
 /bundles/org.openhab.binding.meteoalerte/ @clinique
@@ -329,6 +330,7 @@
 /bundles/org.openhab.binding.tibber/ @kjoglum
 /bundles/org.openhab.binding.tivo/ @mlobstein
 /bundles/org.openhab.binding.touchwand/ @roieg
+/bundles/org.openhab.binding.tplinkrouter/ @olivierkeke
 /bundles/org.openhab.binding.tplinksmarthome/ @Hilbrand
 /bundles/org.openhab.binding.tr064/ @openhab/add-ons-maintainers
 /bundles/org.openhab.binding.tradfri/ @cweitkamp @kaikreuzer

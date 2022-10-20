@@ -16,13 +16,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link BroadlinkThermostatBindingConstants} class defines common constants, which are
+ * The {@link BroadlinkBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Florian Mueller - Initial contribution
  */
 @NonNullByDefault
-public class BroadlinkThermostatBindingConstants {
+public class BroadlinkBindingConstants {
 
     private static final String BINDING_ID = "broadlinkthermostat";
 
@@ -30,10 +30,14 @@ public class BroadlinkThermostatBindingConstants {
     public static final ThingTypeUID FLOUREON_THERMOSTAT_THING_TYPE = new ThingTypeUID(BINDING_ID,
             "floureonthermostat");
     public static final ThingTypeUID HYSEN_THERMOSTAT_THING_TYPE = new ThingTypeUID(BINDING_ID, "hysenthermostat");
-    public static final ThingTypeUID UNKNOWN_BROADLINKTHERMOSTAT_THING_TYPE = new ThingTypeUID(BINDING_ID,
-            "unknownbroadlinkthermostatdevice");
+    public static final ThingTypeUID RM_UNIVERSAL_REMOTE_THING_TYPE = new ThingTypeUID(BINDING_ID, "rmuniversaldevice");
 
-    // List of all Channel ids
+    // List of Remote Infrared Channel ids
+    public static final String LEARNING_MODE = "learningmode";
+    public static final String SAVE_LEARNED = "savelearned";
+    public static final String SEND_LEARNED = "sendlearned";
+
+    // List of Thermostat Channel ids
     public static final String ROOM_TEMPERATURE = "roomtemperature";
     public static final String ROOM_TEMPERATURE_EXTERNAL_SENSOR = "roomtemperatureexternalsensor";
     public static final String SETPOINT = "setpoint";

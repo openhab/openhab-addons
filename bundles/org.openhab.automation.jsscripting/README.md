@@ -428,9 +428,6 @@ thing.setEnabled(false);
 The actions namespace allows interactions with openHAB actions.
 The following are a list of standard actions.
 
-Additional actions provided by user installed addons can be accessed using their common name on the actions name space
-(example:  `actions.Pushsafer.pushsafer(...)`)
-
 See [openhab-js : actions](https://openhab.github.io/openhab-js/actions.html) for full API documentation and additional actions.
 
 #### Audio Actions
@@ -492,7 +489,7 @@ Replace `<url>` with the request url.
 See [openhab-js : actions.ScriptExecution](https://openhab.github.io/openhab-js/actions.html#.ScriptExecution) for complete documentation.
 
 ```javascript
-let now = time.ZonedDateTime.now();
+var now = time.ZonedDateTime.now();
 
 // Function to run when the timer goes off.
 function timerOver () {
@@ -500,23 +497,71 @@ function timerOver () {
 }
 
 // Create the Timer.
-this.myTimer = actions.ScriptExecution.createTimer('My Timer', now.plusSeconds(10), timerOver);
+var myTimer = actions.ScriptExecution.createTimer('My Timer', now.plusSeconds(10), timerOver);
 
 // Cancel the timer.
-this.myTimer.cancel();
+myTimer.cancel();
 
 // Check whether the timer is active. Returns true if the timer is active and will be executed as scheduled.
-let active = this.myTimer.isActive();
+var active = myTimer.isActive();
 
 // Reschedule the timer.
-this.myTimer.reschedule(now.plusSeconds(5));
+myTimer.reschedule(now.plusSeconds(5));
 ```
+
+If you need to pass some variables to the timer, there are two options to do so:
+
+**Use a function generator** <!-- markdownlint-disable-line MD036 -->
+
+This allows you to pass variables to the timer‘s callback function at timer creation.
+The variables can not be mutated after the timer function generator was used to create the function.
+
+```javascript
+var now = time.ZonedDateTime.now();
+
+// Function to run when the timer goes off.
+function timerOver (myVariable) {
+  return function () {
+    console.info('The timer is over. myVariable is: ' + myVariable);
+  }
+}
+
+// Create the Timer.
+var myTimer = actions.ScriptExecution.createTimer('My Timer', now.plusSeconds(10), timerOver('Hello world!'));
+```
+
+**Pass a single variable to the timer** <!--markdownlint-disable-line MD036 -->
+
+This allows you to pass a single variable to the timer's callback function.
+Variables can be mutated (changed) after the timer has been created.
+Be aware that this can lead to unattended side effects, e.g. when you change the variable after timer creation, which can make debugging quite difficult!
+
+```javascript
+var now = time.ZonedDateTime.now();
+
+// Function to run when the timer goes off.
+function timerOver () {
+  console.info('The timer is over. myVariable is: ' + myVariable);
+}
+
+var myVariable = 'Hello world!';
+
+// Create the Timer.
+var myTimer = actions.ScriptExecution.createTimerWithArgument('My Timer', now.plusSeconds(10), myVariable, timerOver);
+
+myVariable = 'Hello mutation!';
+// When the timer runs, it will log "Hello mutation!" instead of "Hello world!"
+```
+
+You may also pass `this` to the timer to have access to all variables from the current context.
 
 #### Semantics Actions
 
 See [openhab-js : actions.Semantics](https://openhab.github.io/openhab-js/actions.html#.Semantics) for complete documentation.
 
 #### Things Actions
+
+It is possible to get the actions for a Thing using `actions.Things.getActions(bindingId, thingUid)`, e.g. `actions.Things.getActions('network', 'network:pingdevice:pc')`.
 
 See [openhab-js : actions.Things](https://openhab.github.io/openhab-js/actions.html#.Things) for complete documentation.
 
