@@ -437,8 +437,11 @@ public class SysteminfoHandler extends BaseThingHandler {
 
         // The channelGroup or channel may contain deviceIndex. It must be deleted from the channelID, because otherwise
         // the switch will not find the correct method below.
-        // All digits are deleted from the ID
-        channelID = channelID.replaceAll("\\d+", "");
+        // All digits are deleted from the ID, except for CpuLoad channels.
+        if (!(CHANNEL_CPU_LOAD_1.equals(channelID) || CHANNEL_CPU_LOAD_5.equals(channelID)
+                || CHANNEL_CPU_LOAD_15.equals(channelID))) {
+            channelID = channelID.replaceAll("\\d+", "");
+        }
 
         try {
             switch (channelID) {
