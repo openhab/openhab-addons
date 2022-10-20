@@ -38,6 +38,7 @@ import org.openhab.binding.saicismart.internal.asn1.v2_1.OTA_RVMVehicleStatusReq
 import org.openhab.binding.saicismart.internal.asn1.v2_1.OTA_RVMVehicleStatusResp25857;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.MetricPrefix;
@@ -178,6 +179,23 @@ class VehicleStateUpdater implements Callable<Boolean> {
             saiCiSMARTHandler.updateState(SAICiSMARTBindingConstants.CHANNEL_TYRE_PRESSURE_REAR_RIGHT,
                     new QuantityType<>(chargingStatusResponseMessage.getApplicationData().getBasicVehicleStatus()
                             .getRearRightTyrePressure() * 4 / 100.d, Units.BAR));
+
+            saiCiSMARTHandler.updateState(SAICiSMARTBindingConstants.DOOR_DRIVER,
+                    chargingStatusResponseMessage.getApplicationData().getBasicVehicleStatus().getDriverDoor()
+                            ? OpenClosedType.OPEN
+                            : OpenClosedType.CLOSED);
+            saiCiSMARTHandler.updateState(SAICiSMARTBindingConstants.DOOR_PASSENGER,
+                    chargingStatusResponseMessage.getApplicationData().getBasicVehicleStatus().getPassengerDoor()
+                            ? OpenClosedType.OPEN
+                            : OpenClosedType.CLOSED);
+            saiCiSMARTHandler.updateState(SAICiSMARTBindingConstants.DOOR_REAR_LEFT,
+                    chargingStatusResponseMessage.getApplicationData().getBasicVehicleStatus().getRearLeftDoor()
+                            ? OpenClosedType.OPEN
+                            : OpenClosedType.CLOSED);
+            saiCiSMARTHandler.updateState(SAICiSMARTBindingConstants.DOOR_REAR_RIGHT,
+                    chargingStatusResponseMessage.getApplicationData().getBasicVehicleStatus().getRearRightDoor()
+                            ? OpenClosedType.OPEN
+                            : OpenClosedType.CLOSED);
 
             saiCiSMARTHandler.updateStatus(ThingStatus.ONLINE);
             return engineRunning || isCharging;
