@@ -183,14 +183,10 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener {
         bridges.add(bridge);
         bridge.setConfigurationIndex(changeListener.getConfigurationRevision());
         bridge.refreshAuthInfo();
-        if (settings.useDummyAccessories) {
-            bridge.start();
-            return bridge;
-        }
 
         final int lastAccessoryCount = changeListener.getLastAccessoryCount();
         int currentAccessoryCount = changeListener.getAccessories().size();
-        if (currentAccessoryCount < lastAccessoryCount) {
+        if (!settings.useDummyAccessories && currentAccessoryCount < lastAccessoryCount) {
             logger.debug(
                     "it looks like not all items were initialized yet. Old configuration had {} accessories, the current one has only {} accessories. Delay HomeKit bridge start for {} seconds.",
                     lastAccessoryCount, currentAccessoryCount, settings.startDelay);

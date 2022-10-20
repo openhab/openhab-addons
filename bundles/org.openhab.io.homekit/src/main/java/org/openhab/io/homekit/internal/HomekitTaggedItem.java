@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class HomekitTaggedItem {
-    private final static Logger logger = LoggerFactory.getLogger(HomekitTaggedItem.class);
+    private final Logger logger = LoggerFactory.getLogger(HomekitTaggedItem.class);
 
     /** configuration keywords at items level **/
     public final static String DELAY = "commandDelay";
@@ -412,7 +412,7 @@ public class HomekitTaggedItem {
 
         if (CREATED_ACCESSORY_IDS.containsKey(id)) {
             if (!CREATED_ACCESSORY_IDS.get(id).equals(name)) {
-                logger.warn(
+                LoggerFactory.getLogger(HomekitTaggedItem.class).warn(
                         "Could not create HomeKit accessory {} because its hash conflicts with {}. This is a 1:1,000,000 chance occurrence. Change one of the names and consider playing the lottery. See https://github.com/openhab/openhab-addons/issues/257#issuecomment-125886562",
                         name, CREATED_ACCESSORY_IDS.get(id));
                 return 0;

@@ -154,7 +154,9 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
         } else {
             logger.info("Created {} HomeKit items in instance {} (no change from prior configuration).",
                     accessoryRegistry.getAllAccessories().size(), instance);
-            checkForDummyAccessories();
+            if (settings.useDummyAccessories) {
+                checkForDummyAccessories();
+            }
         }
     }
 

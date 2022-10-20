@@ -357,7 +357,9 @@ public abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
 
     /**
      * Calculates a string as json of the configuration for this accessory, suitable for seeing
-     * if the structure has changed, and building a dummy accessory for it.
+     * if the structure has changed, and building a dummy accessory for it. It is _not_ suitable
+     * for actual publishing to by HAP-Java to iOS devices, since all the IIDs will be set to 0.
+     * The IIDs will get replaced by actual values by HAP-Java inside of DummyHomekitCharacteristic.
      */
     public String toJson() {
         var builder = Json.createArrayBuilder();

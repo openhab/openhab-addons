@@ -22,7 +22,7 @@ import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
 import io.github.hapjava.accessories.HomekitAccessory;
@@ -34,6 +34,7 @@ import io.github.hapjava.services.Service;
  *
  * @author Cody Cutrer - Initial contribution
  */
+@NonNullByDefault({})
 public class DummyHomekitAccessory implements HomekitAccessory {
     private static class DummyCharacteristic implements Characteristic {
         private JsonObject json;
@@ -100,11 +101,10 @@ public class DummyHomekitAccessory implements HomekitAccessory {
     };
 
     int id;
-    @NonNull
     String item;
     List<Service> services = new ArrayList();
 
-    public DummyHomekitAccessory(@NonNull String item, String data) {
+    public DummyHomekitAccessory(String item, String data) {
         this.id = HomekitTaggedItem.calculateId(item);
         this.item = item;
 
