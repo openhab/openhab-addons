@@ -45,4 +45,8 @@ public class SAICiSMARTBindingConstants {
     public static final String CHANNEL_LOCATION = "location";
     public static final String CHANNEL_HEADING = "heading";
     public static final String CHANNEL_AUXILIARY_BATTERY_VOLTAGE = "auxiliary-battery-voltage";
+    public static final String DOOR_DRIVER = "door-driver";
+    public static final String DOOR_PASSENGER = "door-passenger";
+    public static final String DOOR_REAR_LEFT = "door-rear-left";
+    public static final String DOOR_REAR_RIGHT = "door-rear-right";
 }

@@ -37,6 +37,18 @@
 			<channel id="tyre-pressure-rear-right" typeId="tyre-pressure-channel">
 				<label>Pressure Rear Right</label>
 			</channel>
+			<channel id="door-driver" typeId="door-channel">
+				<label>Driver Door</label>
+			</channel>
+			<channel id="door-passenger" typeId="door-channel">
+				<label>Passenger Door</label>
+			</channel>
+			<channel id="door-rear-left" typeId="door-channel">
+				<label>Rear Left Door</label>
+			</channel>
+			<channel id="door-rear-right" typeId="door-channel">
+				<label>Rear Right Door</label>
+			</channel>
 		</channels>
 
 		<representation-property>vin</representation-property>
@@ -120,5 +132,15 @@
 			<tag>Voltage</tag>
 		</tags>
 		<state pattern="%.1f V" readOnly="true"/>
+	</channel-type>
+	<channel-type id="door-channel">
+		<item-type>Contact</item-type>
+		<label>Door</label>
+		<description>Indicates if the door is opened</description>
+		<category>door</category>
+		<tags>
+			<tag>OpenState</tag>
+		</tags>
+		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>
