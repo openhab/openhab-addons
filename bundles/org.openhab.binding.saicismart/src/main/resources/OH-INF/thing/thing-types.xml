@@ -49,6 +49,21 @@
 			<channel id="door-rear-right" typeId="door-channel">
 				<label>Rear Right Door</label>
 			</channel>
+			<channel id="window-driver" typeId="window-channel">
+				<label>Driver Window</label>
+			</channel>
+			<channel id="window-passenger" typeId="window-channel">
+				<label>Passenger Window</label>
+			</channel>
+			<channel id="window-rear-left" typeId="window-channel">
+				<label>Rear Left Window</label>
+			</channel>
+			<channel id="window-rear-right" typeId="window-channel">
+				<label>Rear Right Window</label>
+			</channel>
+			<channel id="window-sun-roof" typeId="window-channel">
+				<label>Sun Roof</label>
+			</channel>
 		</channels>
 
 		<representation-property>vin</representation-property>
@@ -138,6 +153,16 @@
 		<label>Door</label>
 		<description>Indicates if the door is opened</description>
 		<category>door</category>
+		<tags>
+			<tag>OpenState</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="window-channel">
+		<item-type>Contact</item-type>
+		<label>Window</label>
+		<description>Indicates if the window is opened</description>
+		<category>window</category>
 		<tags>
 			<tag>OpenState</tag>
 		</tags>

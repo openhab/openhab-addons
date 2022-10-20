@@ -49,4 +49,9 @@ public class SAICiSMARTBindingConstants {
     public static final String DOOR_PASSENGER = "door-passenger";
     public static final String DOOR_REAR_LEFT = "door-rear-left";
     public static final String DOOR_REAR_RIGHT = "door-rear-right";
+    public static final String WINDOW_DRIVER = "window-driver";
+    public static final String WINDOW_PASSENGER = "window-passenger";
+    public static final String WINDOW_REAR_LEFT = "window-rear-left";
+    public static final String WINDOW_REAR_RIGHT = "window-rear-right";
+    public static final String WINDOW_SUN_ROOF = "window-sun-roof";
 }
