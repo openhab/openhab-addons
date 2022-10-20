@@ -298,9 +298,9 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         }
 
         int waitTime;
-        if (priority.equals("High")) {
+        if ("High".equals(priority)) {
             waitTime = DEFAULT_TEST_INTERVAL_HIGH * 1000;
-        } else if (priority.equals("Medium")) {
+        } else if ("Medium".equals(priority)) {
             waitTime = DEFAULT_TEST_INTERVAL_MEDIUM * 1000;
         } else {
             waitTime = 100;
@@ -314,9 +314,9 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
 
     private void intializeItem(ChannelUID channelUID, String itemName, String acceptedItemType) {
         GenericItem item = null;
-        if (acceptedItemType.equals("Number")) {
+        if ("Number".equals(acceptedItemType)) {
             item = new NumberItem(itemName);
-        } else if (acceptedItemType.equals("String")) {
+        } else if ("String".equals(acceptedItemType)) {
             item = new StringItem(itemName);
         }
         if (item == null) {
@@ -911,7 +911,7 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
 
         @Override
         protected String getHostName() throws UnknownHostException {
-            if (hostname.equals("unresolved")) {
+            if ("unresolved".equals(hostname)) {
                 throw new UnknownHostException();
             }
             return hostname;
