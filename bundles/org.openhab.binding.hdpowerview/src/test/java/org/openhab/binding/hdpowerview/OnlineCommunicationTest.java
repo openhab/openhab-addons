@@ -18,9 +18,12 @@ import static org.openhab.binding.hdpowerview.internal.api.CoordinateSystem.PRIM
 import java.util.List;
 import java.util.regex.Pattern;
 
+import javax.ws.rs.client.ClientBuilder;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewWebTargets;
 import org.openhab.binding.hdpowerview.internal._v1.HDPowerViewWebTargetsV1;
 import org.openhab.binding.hdpowerview.internal.api.ShadeData;
@@ -36,6 +39,7 @@ import org.openhab.binding.hdpowerview.internal.exceptions.HubMaintenanceExcepti
 import org.openhab.binding.hdpowerview.internal.exceptions.HubProcessingException;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.types.State;
+import org.osgi.service.jaxrs.client.SseEventSourceFactory;
 
 /**
  * Unit tests for HD PowerView binding.
@@ -85,7 +89,8 @@ public class OnlineCommunicationTest {
                 fail(e.getMessage());
             }
 
-            HDPowerViewWebTargets webTargets = new HDPowerViewWebTargetsV1(client, hubIPAddress);
+            HDPowerViewWebTargets webTargets = new HDPowerViewWebTargetsV1(client, Mockito.mock(ClientBuilder.class),
+                    Mockito.mock(SseEventSourceFactory.class), hubIPAddress);
             assertNotNull(webTargets);
 
             int shadeId = 0;

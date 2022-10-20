@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
+import javax.ws.rs.client.ClientBuilder;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -46,6 +48,7 @@ import org.openhab.binding.hdpowerview.internal.exceptions.HubInvalidResponseExc
 import org.openhab.binding.hdpowerview.internal.exceptions.HubMaintenanceException;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubProcessingException;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubShadeTimeoutException;
+import org.osgi.service.jaxrs.client.SseEventSourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,6 +91,8 @@ public abstract class HDPowerViewWebTargets {
 
     protected final Gson gson;
     protected final HttpClient httpClient;
+    protected final ClientBuilder clientBuilder;
+    protected final SseEventSourceFactory eventSourceFactory;
 
     /*
      * Private helper class for de-serialization of Scene
@@ -183,10 +188,13 @@ public abstract class HDPowerViewWebTargets {
      * @param httpClient the HTTP client (the binding)
      * @param ipAddress the IP address of the server (the hub)
      */
-    public HDPowerViewWebTargets(HttpClient httpClient, String ipAddress, Class<? extends Scene> sceneClass,
+    public HDPowerViewWebTargets(HttpClient httpClient, ClientBuilder clientBuilder,
+            SseEventSourceFactory eventSourceFactory, String ipAddress, Class<? extends Scene> sceneClass,
             Class<? extends ShadeData> shadeDataClass, Class<? extends ShadePosition> shadePositionClass,
             Class<? extends ScheduledEvent> scheduledEventClass) {
         this.httpClient = httpClient;
+        this.clientBuilder = clientBuilder;
+        this.eventSourceFactory = eventSourceFactory;
         this.sceneClass = sceneClass;
         this.shadeDataClass = shadeDataClass;
         this.shadePositionClass = shadePositionClass;

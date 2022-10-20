@@ -21,9 +21,12 @@ import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+import javax.ws.rs.client.ClientBuilder;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewWebTargets;
 import org.openhab.binding.hdpowerview.internal._v3.HDPowerViewWebTargetsV3;
 import org.openhab.binding.hdpowerview.internal.api.CoordinateSystem;
@@ -39,6 +42,7 @@ import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDataba
 import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDatabase.Capabilities;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.types.UnDefType;
+import org.osgi.service.jaxrs.client.SseEventSourceFactory;
 
 /**
  * Unit tests for Generation 3 DTO's.
@@ -48,7 +52,8 @@ import org.openhab.core.types.UnDefType;
 @NonNullByDefault
 public class Generation3DtoTest {
 
-    private final HDPowerViewWebTargets webTargets = new HDPowerViewWebTargetsV3(new HttpClient(), "");
+    private final HDPowerViewWebTargets webTargets = new HDPowerViewWebTargetsV3(new HttpClient(),
+            Mockito.mock(ClientBuilder.class), Mockito.mock(SseEventSourceFactory.class), "");
     private static final ShadeCapabilitiesDatabase DB = new ShadeCapabilitiesDatabase();
 
     private String loadJson(String filename) throws IOException {

@@ -21,9 +21,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Objects;
 
+import javax.ws.rs.client.ClientBuilder;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.openhab.binding.hdpowerview.internal._v1.HDPowerViewWebTargetsV1;
 import org.openhab.binding.hdpowerview.internal.api.BatteryKind;
 import org.openhab.binding.hdpowerview.internal.api.ShadeData;
@@ -38,6 +41,7 @@ import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDataba
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
+import org.osgi.service.jaxrs.client.SseEventSourceFactory;
 
 import com.google.gson.Gson;
 
@@ -50,7 +54,8 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public class HDPowerViewJUnitTests {
 
-    private final Gson gson = new HDPowerViewWebTargetsV1(new HttpClient(), "").getGson();
+    private final Gson gson = new HDPowerViewWebTargetsV1(new HttpClient(), Mockito.mock(ClientBuilder.class),
+            Mockito.mock(SseEventSourceFactory.class), "").getGson();
 
     private <T> T getObjectFromJson(String filename, Class<T> clazz) throws IOException {
         try (InputStream inputStream = HDPowerViewJUnitTests.class.getResourceAsStream(filename)) {
