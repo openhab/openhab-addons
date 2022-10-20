@@ -197,6 +197,27 @@ class VehicleStateUpdater implements Callable<Boolean> {
                             ? OpenClosedType.OPEN
                             : OpenClosedType.CLOSED);
 
+            saiCiSMARTHandler.updateState(SAICiSMARTBindingConstants.WINDOW_DRIVER,
+                    chargingStatusResponseMessage.getApplicationData().getBasicVehicleStatus().getDriverWindow()
+                            ? OpenClosedType.OPEN
+                            : OpenClosedType.CLOSED);
+            saiCiSMARTHandler.updateState(SAICiSMARTBindingConstants.WINDOW_PASSENGER,
+                    chargingStatusResponseMessage.getApplicationData().getBasicVehicleStatus().getPassengerWindow()
+                            ? OpenClosedType.OPEN
+                            : OpenClosedType.CLOSED);
+            saiCiSMARTHandler.updateState(SAICiSMARTBindingConstants.WINDOW_REAR_LEFT,
+                    chargingStatusResponseMessage.getApplicationData().getBasicVehicleStatus().getRearLeftWindow()
+                            ? OpenClosedType.OPEN
+                            : OpenClosedType.CLOSED);
+            saiCiSMARTHandler.updateState(SAICiSMARTBindingConstants.WINDOW_REAR_RIGHT,
+                    chargingStatusResponseMessage.getApplicationData().getBasicVehicleStatus().getRearRightWindow()
+                            ? OpenClosedType.OPEN
+                            : OpenClosedType.CLOSED);
+            saiCiSMARTHandler.updateState(SAICiSMARTBindingConstants.WINDOW_SUN_ROOF,
+                    chargingStatusResponseMessage.getApplicationData().getBasicVehicleStatus().getSunroofStatus()
+                            ? OpenClosedType.OPEN
+                            : OpenClosedType.CLOSED);
+
             saiCiSMARTHandler.updateStatus(ThingStatus.ONLINE);
             return engineRunning || isCharging;
         } catch (URISyntaxException | ExecutionException | InterruptedException | TimeoutException e) {
