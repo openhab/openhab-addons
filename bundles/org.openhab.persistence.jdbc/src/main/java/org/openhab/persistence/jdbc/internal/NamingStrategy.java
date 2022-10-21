@@ -20,6 +20,7 @@ import java.util.Map.Entry;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.items.ItemUtil;
 import org.openhab.persistence.jdbc.dto.ItemVO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,8 +33,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class NamingStrategy {
 
-    private static final String ITEM_NAME_PATTERN = "[^a-zA-Z_0-9\\-]";
-
     private final Logger logger = LoggerFactory.getLogger(NamingStrategy.class);
 
     private JdbcConfiguration configuration;
@@ -43,6 +42,9 @@ public class NamingStrategy {
     }
 
     public String getTableName(int rowId, String itemName) {
+        if (!ItemUtil.isValidItemName(itemName)) {
+            throw new IllegalArgumentException(itemName + " is not a valid item name");
+        }
         if (configuration.getTableUseRealItemNames()) {
             return formatTableName(itemName, rowId);
         } else {
@@ -51,11 +53,10 @@ public class NamingStrategy {
     }
 
     private String formatTableName(String itemName, int rowId) {
-        String strippedName = itemName.replaceAll(ITEM_NAME_PATTERN, "");
         if (configuration.getTableCaseSensitiveItemNames()) {
-            return strippedName;
+            return itemName;
         } else {
-            return strippedName.toLowerCase() + "_" + getSuffix(rowId);
+            return itemName.toLowerCase() + "_" + getSuffix(rowId);
         }
     }
 
@@ -71,8 +72,7 @@ public class NamingStrategy {
     public List<ItemVO> prepareMigration(List<String> itemTables, Map<Integer, String> itemIdToItemNameMap,
             String itemsManageTable) {
         List<ItemVO> oldNewTablenames = new ArrayList<>();
-        Map<String, Integer> tableNameToItemIdMapExact = new HashMap<>();
-        Map<String, Integer> tableNameToItemIdMapLower = new HashMap<>();
+        Map<String, Integer> tableNameToItemIdMap = new HashMap<>();
         String tableNamePrefix = configuration.getTableNamePrefix();
         int tableNamePrefixLength = tableNamePrefix.length();
 
@@ -93,17 +93,13 @@ public class NamingStrategy {
             }
 
             if (id == -1) {
-                if (tableNameToItemIdMapExact.isEmpty()) {
+                if (tableNameToItemIdMap.isEmpty()) {
                     for (Entry<Integer, String> entry : itemIdToItemNameMap.entrySet()) {
-                        String itemNameStripped = entry.getValue().replaceAll(ITEM_NAME_PATTERN, "");
-                        tableNameToItemIdMapExact.put(itemNameStripped, entry.getKey());
-                        tableNameToItemIdMapLower.put(itemNameStripped.toLowerCase(), entry.getKey());
+                        String itemName = entry.getValue();
+                        tableNameToItemIdMap.put(itemName, entry.getKey());
                     }
                 }
-                Integer itemId = tableNameToItemIdMapExact.get(oldName);
-                if (Objects.isNull(itemId)) {
-                    itemId = tableNameToItemIdMapLower.get(oldName.toLowerCase());
-                }
+                Integer itemId = tableNameToItemIdMap.get(oldName);
                 if (Objects.nonNull(itemId)) {
                     id = itemId;
                     logger.info("JDBC::formatTableNames: found Table Name= {} id= {}", oldName, id);

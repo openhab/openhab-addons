@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -57,6 +58,13 @@ public class NamingStrategyTest {
     }
 
     @Test
+    public void getTableNameWhenInvalidItemNameThrows() {
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            namingStrategy.getTableName(1, "4Two");
+        });
+    }
+
+    @Test
     public void getTableNameWhenUseRealItemNamesNameIsLowerCaseAndNumbered() {
         Mockito.doReturn(true).when(configurationMock).getTableUseRealItemNames();
         Mockito.doReturn(false).when(configurationMock).getTableCaseSensitiveItemNames();
@@ -75,13 +83,6 @@ public class NamingStrategyTest {
         Mockito.doReturn(true).when(configurationMock).getTableUseRealItemNames();
         Mockito.doReturn(true).when(configurationMock).getTableCaseSensitiveItemNames();
         assertThat(namingStrategy.getTableName(1, "lower"), is("lower"));
-    }
-
-    @Test
-    public void getTableNameWhenUseRealItemNamesSpecialCharsAreRemoved() {
-        Mockito.doReturn(true).when(configurationMock).getTableUseRealItemNames();
-        Mockito.doReturn(true).when(configurationMock).getTableCaseSensitiveItemNames();
-        assertThat(namingStrategy.getTableName(1, "Te%st"), is("Test"));
     }
 
     @Test
@@ -160,7 +161,7 @@ public class NamingStrategyTest {
     }
 
     @Test
-    public void prepareMigrationFromMixedRealNamesToCaseSensitiveRealNames() {
+    public void prepareMigrationFromNumberedRealNamesToCaseSensitiveRealNames() {
         final int itemId = 1;
         final String itemName = "Test";
         final String tableName = "test_0001";
@@ -179,17 +180,6 @@ public class NamingStrategyTest {
         List<ItemVO> actual = prepareMigrationRealItemNames(itemId, itemName, tableName, false);
 
         assertTableName(actual, "test_0001");
-    }
-
-    @Test
-    public void prepareMigrationFromRealNamesWithWrongCaseToCaseSensitiveRealNamesThenFixCase() {
-        final int itemId = 1;
-        final String itemName = "Test";
-        final String tableName = "test";
-
-        List<ItemVO> actual = prepareMigrationRealItemNames(itemId, itemName, tableName, true);
-
-        assertTableName(actual, "Test");
     }
 
     @Test
@@ -256,7 +246,7 @@ public class NamingStrategyTest {
     }
 
     @Test
-    public void prepareMigrationFromMixedRealNamesToNewRealNamesWhenUnknownItemIdThenSkip() {
+    public void prepareMigrationFromNumberedRealNamesToCaseSensitiveRealNamesWhenUnknownItemIdThenSkip() {
         final int itemId = 2;
         final String itemName = "Test";
         final String tableName = "test_0001";
@@ -267,7 +257,7 @@ public class NamingStrategyTest {
     }
 
     @Test
-    public void prepareMigrationFromMixedRealNamesToNumbered() {
+    public void prepareMigrationFromNumberedRealNamesToNumbered() {
         final int itemId = 1;
         final String itemName = "Test";
         final String tableName = "test_0001";
@@ -300,10 +290,10 @@ public class NamingStrategyTest {
     }
 
     @Test
-    public void prepareMigrationFromNewRealNamesToNumbered() {
+    public void prepareMigrationFromCaseSensitiveRealNamesToNumbered() {
         final int itemId = 1;
         final String itemName = "Test";
-        final String tableName = "test";
+        final String tableName = "Test";
 
         List<ItemVO> actual = prepareMigrationNumbered(itemId, itemName, tableName);
 
@@ -311,10 +301,10 @@ public class NamingStrategyTest {
     }
 
     @Test
-    public void prepareMigrationFromNewRealNamesToNumberedHavingUnderscore() {
+    public void prepareMigrationFromCaseSensitiveRealNamesToNumberedHavingUnderscore() {
         final int itemId = 1;
         final String itemName = "My_Test";
-        final String tableName = "my_test";
+        final String tableName = "My_Test";
 
         List<ItemVO> actual = prepareMigrationNumbered(itemId, itemName, tableName);
 
@@ -322,7 +312,7 @@ public class NamingStrategyTest {
     }
 
     @Test
-    public void prepareMigrationFromNewRealNamesToNumberedHavingUnderscoreAndNumber() {
+    public void prepareMigrationFromCaseSensitiveRealNamesToNumberedHavingUnderscoreAndNumber() {
         final int itemId = 1;
         final String itemName = "My_Test_1";
         final String tableName = "my_test_1";
