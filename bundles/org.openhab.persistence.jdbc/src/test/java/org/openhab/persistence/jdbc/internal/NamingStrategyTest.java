@@ -323,6 +323,26 @@ public class NamingStrategyTest {
     }
 
     @Test
+    public void prepareMigrationFromCaseSensitiveRealNamesToNumberedShouldSwap() {
+        Mockito.doReturn(false).when(configurationMock).getTableUseRealItemNames();
+        Mockito.doReturn("Item").when(configurationMock).getTableNamePrefix();
+
+        Map<Integer, String> itemIdToItemNameMap = new HashMap<>(2);
+        itemIdToItemNameMap.put(1, "Item2");
+        itemIdToItemNameMap.put(2, "Item1");
+
+        List<String> itemTables = new ArrayList<String>(2);
+        itemTables.add("Item2");
+        itemTables.add("Item1");
+
+        List<ItemVO> actual = namingStrategy.prepareMigration(itemTables, itemIdToItemNameMap, ITEMS_MANAGE_TABLE_NAME);
+
+        assertThat(actual.size(), is(2));
+        assertThat(actual.get(0).getNewTableName(), is("Item1"));
+        assertThat(actual.get(1).getNewTableName(), is("Item2"));
+    }
+
+    @Test
     public void prepareMigrationWhenConflictWithItemsManageTableThenSkip() {
         final int itemId = 1;
         final String itemName = "items";
