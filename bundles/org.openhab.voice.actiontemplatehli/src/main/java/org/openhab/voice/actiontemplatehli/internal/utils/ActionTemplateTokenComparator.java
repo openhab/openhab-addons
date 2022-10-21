@@ -105,6 +105,7 @@ public class ActionTemplateTokenComparator extends ActionTemplateBaseComparator 
                     var partialScoreResult = this.countMatches(unprocessedTokens, unprocessedLemmas, unprocessedTags,
                             unprocessedTokensTemplate);
                     if (ActionTemplateComparatorResult.ZERO.equals(partialScoreResult)) {
+                        tokenMatchCount = 0;
                         break;
                     } else {
                         var partialDynamicSpan = partialScoreResult.dynamicSpan;
@@ -114,7 +115,7 @@ public class ActionTemplateTokenComparator extends ActionTemplateBaseComparator 
                             tokenMatchCount = 0;
                             break;
                         }
-                        tokenMatchCount = tokenMatchCount + partialScoreResult.score;
+                        tokenMatchCount = tokenMatchCount + partialScoreResult.score + 0.99;
                         currentDynamicSpan = new Span(i, tokens.length - (partialDynamicSpan.getStart()));
                         break;
                     }
@@ -127,6 +128,9 @@ public class ActionTemplateTokenComparator extends ActionTemplateBaseComparator 
                     }
                 }
             }
+            // normalize
+            tokenMatchCount = tokenMatchCount / (currentDynamicSpan != null ? tokensTemplateAlternative.size() - 1
+                    : tokensTemplateAlternative.size());
             if (tokenMatchCount > maxMatchCount) {
                 maxMatchCount = tokenMatchCount;
                 dynamicSpan = currentDynamicSpan;
@@ -138,7 +142,8 @@ public class ActionTemplateTokenComparator extends ActionTemplateBaseComparator 
     public ActionTemplateComparatorResult compare(String[] tokensTemplate) {
         var countMatchesResult = countMatches(this.tokens, this.lemmas, this.tags, tokensTemplate);
         // transform to percent
-        return new ActionTemplateComparatorResult(calculateScore(countMatchesResult.score, tokensTemplate),
+        return new ActionTemplateComparatorResult(
+                calculateScore(countMatchesResult.score * tokensTemplate.length, tokensTemplate),
                 countMatchesResult.dynamicSpan);
     }
 

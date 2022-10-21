@@ -17,6 +17,8 @@ import static org.hamcrest.core.Is.is;
 import static org.openhab.voice.actiontemplatehli.internal.ActionTemplateInterpreterConstants.SERVICE_ID;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -321,5 +323,102 @@ public class ActionTemplateInterpreterTest {
                 new String[] { "DT", "VBZ", "JJ" }, 50.0);
         var result = comparator.compare(new String[] { "<tag>DT", "sounds", "good" });
         assertThat(result.score, is(100.0));
+    }
+
+    /**
+     * Test unitary to token comparison
+     */
+    @Test
+    public void tokenComparisonUnitTest() {
+        var template = new String[] { "play|watch", "something", "on|at", "the?", "television" };
+        assertThat(scoreByTokenComparison(new String[] { "play", "something" }, template), is(0.0));
+        assertThat(scoreByTokenComparison(new String[] { "play", "something", "else" }, template), is(0.0));
+        assertThat(scoreByTokenComparison(new String[] { "play", "something", "on", "television" }, template),
+                is(100.0));
+        assertThat(scoreByTokenComparison(new String[] { "play", "something", "on", "the", "television" }, template),
+                is(100.0));
+        assertThat(scoreByTokenComparison(new String[] { "play", "something", "at", "television" }, template),
+                is(100.0));
+        // bad transcription
+        assertThat(scoreByTokenComparison(new String[] { "pay", "something", "at", "television" }, template), is(0.0));
+    }
+
+    /**
+     * Test unitary to dynamic placeholder while token comparison
+     */
+    @Test
+    public void dynamicTokenComparisonUnitTest() {
+        var template = new String[] { "play|watch", "$*", "on|at", "the?", "television" };
+        assertThat(scoreByTokenComparison(new String[] { "play", "something" }, template), is(0.0));
+        assertThat(scoreByTokenComparison(new String[] { "play", "something", "else" }, template), is(0.0));
+        assertThat(scoreByTokenComparison(new String[] { "play", "something", "on", "television" }, template),
+                is(99.67));
+        assertThat(scoreByTokenComparison(new String[] { "play", "something", "else", "on", "television" }, template),
+                is(99.67));
+        assertThat(scoreByTokenComparison(new String[] { "play", "something", "on", "the", "television" }, template),
+                is(99.67));
+        assertThat(scoreByTokenComparison(new String[] { "play", "something", "at", "television" }, template),
+                is(99.67));
+        assertThat(scoreByTokenComparison(new String[] { "play", "something", "else", "on", "television" }, template),
+                is(99.67));
+        assertThat(scoreByTokenComparison(new String[] { "play", "something", "else", "at", "television" }, template),
+                is(99.67));
+        assertThat(scoreByTokenComparison(new String[] { "play", "something", "else", "on", "the", "television" },
+                template), is(99.67));
+        assertThat(scoreByTokenComparison(new String[] { "play", "something", "else", "at", "the", "television" },
+                template), is(99.67));
+    }
+
+    /**
+     * Test unitary to dice comparison
+     */
+    @Test
+    public void diceComparisonUnitTest() {
+        var template = new String[] { "play|watch", "something", "on|at", "the?", "television" };
+        assertThat(scoreByDiceComparison(new String[] { "play", "something" }, template), is(0.0));
+        assertThat(scoreByDiceComparison(new String[] { "play", "something", "else" }, template), is(0.0));
+        assertThat(scoreByDiceComparison(new String[] { "play", "something", "on", "television" }, template),
+                is(100.0));
+        assertThat(scoreByDiceComparison(new String[] { "play", "something", "on", "the", "television" }, template),
+                is(100.0));
+        assertThat(scoreByDiceComparison(new String[] { "play", "something", "at", "television" }, template),
+                is(100.0));
+        // bad transcription
+        assertThat(scoreByDiceComparison(new String[] { "pay", "something", "at", "television" }, template), is(94.34));
+    }
+
+    /**
+     * Test unitary to dynamic placeholder while dice comparison
+     */
+    @Test
+    public void dynamicDiceComparisonUnitTest() {
+        var template = new String[] { "play|watch", "$*", "on|at", "the?", "television" };
+        assertThat(scoreByDiceComparison(new String[] { "play", "something" }, template), is(0.0));
+        assertThat(scoreByDiceComparison(new String[] { "play", "something", "else" }, template), is(0.0));
+        assertThat(scoreByDiceComparison(new String[] { "play", "something", "on", "television" }, template), is(99.0));
+        assertThat(scoreByDiceComparison(new String[] { "play", "something", "else", "more", "on", "television" },
+                template), is(99.0));
+        assertThat(scoreByDiceComparison(new String[] { "play", "something", "on", "the", "television" }, template),
+                is(99.0));
+        assertThat(scoreByDiceComparison(new String[] { "play", "something", "at", "television" }, template), is(99.0));
+        assertThat(scoreByDiceComparison(new String[] { "play", "something", "else", "on", "television" }, template),
+                is(99.0));
+        assertThat(scoreByDiceComparison(new String[] { "play", "something", "else", "at", "television" }, template),
+                is(99.0));
+    }
+
+    private double scoreByTokenComparison(String[] phrase, String[] template) {
+        BigDecimal bd = BigDecimal.valueOf(
+                new ActionTemplateTokenComparator(phrase, new String[] {}, new String[] {}).compare(template).score);
+        bd = bd.setScale(2, RoundingMode.HALF_UP);
+        return bd.doubleValue();
+    }
+
+    private double scoreByDiceComparison(String[] phrase, String[] template) {
+        BigDecimal bd = BigDecimal
+                .valueOf(new ActionTemplateDiceComparator(phrase, new String[] {}, new String[] {}, 50.0)
+                        .compare(template).score);
+        bd = bd.setScale(2, RoundingMode.HALF_UP);
+        return bd.doubleValue();
     }
 }

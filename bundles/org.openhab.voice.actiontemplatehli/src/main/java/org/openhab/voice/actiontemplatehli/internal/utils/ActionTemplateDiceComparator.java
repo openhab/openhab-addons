@@ -53,6 +53,9 @@ public class ActionTemplateDiceComparator extends ActionTemplateBaseComparator {
         @Nullable
         Span dynamicSpan = null;
         for (var tokensTemplateAlternative : tokensTemplateAlternatives) {
+            if (tokensTemplateAlternative.size() > tokens.length) {
+                continue;
+            }
             var tokensList = Arrays.stream(tokens).collect(Collectors.toList());
             var lemmasList = Arrays.stream(lemmas).collect(Collectors.toList());
             var tagsList = Arrays.stream(tags).collect(Collectors.toList());
@@ -114,6 +117,9 @@ public class ActionTemplateDiceComparator extends ActionTemplateBaseComparator {
             }
             var currentScore = diceCoefficientOptimized(String.join(" ", tokensList),
                     String.join(" ", tokensTemplateAlternative));
+            if (currentDynamicSpan != null) {
+                currentScore = currentScore - 0.01;
+            }
             if (currentScore > score) {
                 score = currentScore;
                 dynamicSpan = currentDynamicSpan;
