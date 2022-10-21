@@ -312,14 +312,14 @@ public class NamingStrategyTest {
     }
 
     @Test
-    public void prepareMigrationFromCaseSensitiveRealNamesToNumberedHavingUnderscoreAndNumber() {
-        final int itemId = 1;
+    public void prepareMigrationFromCaseSensitiveRealNamesHavingUnderscoreAndNumberToNumbered() {
+        final int itemId = 2;
         final String itemName = "My_Test_1";
-        final String tableName = "my_test_1";
+        final String tableName = "My_Test_1";
 
         List<ItemVO> actual = prepareMigrationNumbered(itemId, itemName, tableName);
 
-        assertTableName(actual, "Item0001");
+        assertTableName(actual, "Item0002");
     }
 
     @Test
