@@ -153,4 +153,10 @@ public class SAICiSMARTBridgeHandler extends BaseBridgeHandler {
         return httpClient.POST(new URI(endpoint)).content(new StringContentProvider(request), "text/html").send()
                 .getContentAsString();
     }
+
+    public void relogin() {
+        uid = null;
+        token = null;
+        initialize();
+    }
 }
