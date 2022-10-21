@@ -113,6 +113,20 @@ public class NamingStrategyTest {
     }
 
     @Test
+    public void prepareMigrationWithChangedPrefix() {
+        Mockito.doReturn(0).when(configurationMock).getTableIdDigitCount();
+        Mockito.doReturn(false).when(configurationMock).getTableUseRealItemNames();
+
+        final int itemId = 1;
+        final String itemName = "Test";
+        final String tableName = "Item1";
+
+        List<ItemVO> actual = prepareMigration(itemId, itemName, tableName, "item");
+
+        assertTableName(actual, "item1");
+    }
+
+    @Test
     public void prepareMigrationFromMixedNumberedToNumberedRealNames() {
         Mockito.doReturn(true).when(configurationMock).getTableUseRealItemNames();
         Mockito.doReturn(false).when(configurationMock).getTableCaseSensitiveItemNames();
@@ -377,7 +391,11 @@ public class NamingStrategyTest {
     }
 
     private List<ItemVO> prepareMigration(int itemId, String itemName, String tableName) {
-        Mockito.doReturn("Item").when(configurationMock).getTableNamePrefix();
+        return prepareMigration(itemId, itemName, tableName, "Item");
+    }
+
+    private List<ItemVO> prepareMigration(int itemId, String itemName, String tableName, String prefix) {
+        Mockito.doReturn(prefix).when(configurationMock).getTableNamePrefix();
 
         Map<Integer, String> itemIdToItemNameMap = getItemIdToItemNameMap(itemId, itemName);
         List<String> itemTables = getItemTables(tableName);

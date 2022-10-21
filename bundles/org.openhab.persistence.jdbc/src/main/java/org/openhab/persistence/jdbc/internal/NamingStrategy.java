@@ -73,8 +73,6 @@ public class NamingStrategy {
             String itemsManageTable) {
         List<ItemVO> oldNewTablenames = new ArrayList<>();
         Map<String, Integer> tableNameToItemIdMap = new HashMap<>();
-        String tableNamePrefix = configuration.getTableNamePrefix();
-        int tableNamePrefixLength = tableNamePrefix.length();
 
         for (Entry<Integer, String> entry : itemIdToItemNameMap.entrySet()) {
             String itemName = entry.getValue();
@@ -87,15 +85,11 @@ public class NamingStrategy {
 
             if (Objects.nonNull(itemIdBoxed)) {
                 itemId = itemIdBoxed;
-                logger.info("JDBC::formatTableNames: found Table Name= {} id= {}", oldName, itemId);
-            } else if (oldName.startsWith(tableNamePrefix) && !oldName.contains("_")) {
-                itemId = Integer.parseInt(oldName.substring(tableNamePrefixLength));
-                logger.info("JDBC::formatTableNames: found Table with Prefix '{}' Name= {} id= {}", tableNamePrefix,
-                        oldName, itemId);
-            } else if (oldName.contains("_")) {
+                logger.info("JDBC::formatTableNames: found by name; table name= {} id= {}", oldName, itemId);
+            } else {
                 try {
-                    itemId = Integer.parseInt(oldName.substring(oldName.lastIndexOf("_") + 1));
-                    logger.info("JDBC::formatTableNames: found Table Name= {} id= {}", oldName, itemId);
+                    itemId = Integer.parseInt(oldName.replaceFirst("^.*\\D", ""));
+                    logger.info("JDBC::formatTableNames: found by id; table name= {} id= {}", oldName, itemId);
                 } catch (NumberFormatException e) {
                     // Fall through.
                 }
