@@ -82,6 +82,9 @@ class ChargeStateUpdater implements Callable<Boolean> {
             while (chargingStatusResponseMessage.getApplicationData() == null) {
 
                 if (chargingStatusResponseMessage.getBody().isErrorMessagePresent()) {
+                    if (chargingStatusResponseMessage.getBody().getResult() == 2) {
+                        saiCiSMARTHandler.getBridgeHandler().relogin();
+                    }
                     throw new TimeoutException(new String(chargingStatusResponseMessage.getBody().getErrorMessage()));
                 }
 
