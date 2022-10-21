@@ -57,7 +57,7 @@ public class JdbcConfiguration {
     // private String password;
     private int numberDecimalcount = 3;
     private boolean tableUseRealItemNames = false;
-    private boolean tablePreserveCase = false;
+    private boolean tableCaseSensitiveItemNames = false;
     private String tableNamePrefix = "item";
     private int tableIdDigitCount = 4;
     private boolean rebuildTableNames = false;
@@ -164,10 +164,10 @@ public class JdbcConfiguration {
             logger.debug("JDBC::updateConfig: tableUseRealItemNames={}", tableUseRealItemNames);
         }
 
-        String lc = (String) configuration.get("tablePreserveCase");
+        String lc = (String) configuration.get("tableCaseSensitiveItemNames");
         if (lc != null && !lc.isBlank()) {
-            tablePreserveCase = Boolean.parseBoolean(lc);
-            logger.debug("JDBC::updateConfig: tablePreserveCase={}", tablePreserveCase);
+            tableCaseSensitiveItemNames = Boolean.parseBoolean(lc);
+            logger.debug("JDBC::updateConfig: tableCaseSensitiveItemNames={}", tableCaseSensitiveItemNames);
         }
 
         String td = (String) configuration.get("tableIdDigitCount");
@@ -370,8 +370,8 @@ public class JdbcConfiguration {
         return tableUseRealItemNames;
     }
 
-    public boolean getTablePreserveCase() {
-        return tablePreserveCase;
+    public boolean getTableCaseSensitiveItemNames() {
+        return tableCaseSensitiveItemNames;
     }
 
     public int getTableIdDigitCount() {

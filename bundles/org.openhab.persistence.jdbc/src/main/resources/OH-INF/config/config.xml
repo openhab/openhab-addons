@@ -143,6 +143,11 @@
 			#tableUseRealItemNames=
 			tableUseRealItemNames=true
 
+			# Tablename Prefix generation, using case sensitive item names (optional, default: disabled -> table names are lower cased
+			# with numeric suffix appended).
+			# If true, no suffix is used.
+			#tableCaseSensitiveItemNames=true
+
 			# Tablename Suffix length (optional, default: 4 -> 0001-9999)
 			# for Migration from MYSQL-Bundle set to 0.
 			#tableIdDigitCount=
@@ -165,10 +170,11 @@
 				<option value="false">Disable</option>
 			</options>
 		</parameter>
-		<parameter name="tablePreserveCase" type="text">
-			<label>Tablename Preserve Case</label>
-			<description><![CDATA[Enables Tablename generation preserving item name case when "Tablename Realname Generation" is enabled <br>
-			(optional, default: disabled -> table names are lower cased).]]></description>
+		<parameter name="tableCaseSensitiveItemNames" type="text">
+			<label>Tablename Case Sensitive</label>
+			<description><![CDATA[Enables Tablename generation with case sensitive item names case when "Tablename Realname Generation" is enabled <br>
+			If true, no suffix is used.
+			(optional, default: disabled -> table names are lower cased with numeric suffix appended).]]></description>
 			<options>
 				<option value="true">Enable</option>
 				<option value="false">Disable</option>

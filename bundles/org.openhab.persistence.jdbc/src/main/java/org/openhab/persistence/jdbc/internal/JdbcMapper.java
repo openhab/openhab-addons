@@ -342,7 +342,8 @@ public class JdbcMapper {
             for (int j = i + 1; j < oldNewTableNames.size(); j++) {
                 ItemVO first = oldNewTableNames.get(i);
                 ItemVO second = oldNewTableNames.get(j);
-                if (first.getNewTableName().equals(second.getNewTableName())) {
+                String firstNewTableName = first.getNewTableName();
+                if (firstNewTableName != null && firstNewTableName.equals(second.getNewTableName())) {
                     logger.error(
                             "JDBC::formatTableNames: Tables {} and {} conflicts as both were attempted renamed to {}",
                             first.getTableName(), second.getTableName(), first.getNewTableName());

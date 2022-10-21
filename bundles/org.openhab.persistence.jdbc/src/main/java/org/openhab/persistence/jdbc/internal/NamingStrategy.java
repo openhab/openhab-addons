@@ -44,21 +44,28 @@ public class NamingStrategy {
 
     public String getTableName(int rowId, String itemName) {
         if (configuration.getTableUseRealItemNames()) {
-            return formatTableName(itemName);
+            return formatTableName(itemName, rowId);
         } else {
-            int digits = configuration.getTableIdDigitCount();
-            if (digits > 0) {
-                return configuration.getTableNamePrefix()
-                        + String.format("%0" + configuration.getTableIdDigitCount() + "d", rowId);
-            } else {
-                return configuration.getTableNamePrefix() + rowId;
-            }
+            return configuration.getTableNamePrefix() + getSuffix(rowId);
         }
     }
 
-    private String formatTableName(String itemName) {
+    private String formatTableName(String itemName, int rowId) {
         String strippedName = itemName.replaceAll(ITEM_NAME_PATTERN, "");
-        return configuration.getTablePreserveCase() ? strippedName : strippedName.toLowerCase();
+        if (configuration.getTableCaseSensitiveItemNames()) {
+            return strippedName;
+        } else {
+            return strippedName.toLowerCase() + "_" + getSuffix(rowId);
+        }
+    }
+
+    private String getSuffix(int rowId) {
+        int digits = configuration.getTableIdDigitCount();
+        if (digits > 0) {
+            return String.format("%0" + configuration.getTableIdDigitCount() + "d", rowId);
+        } else {
+            return String.valueOf(rowId);
+        }
     }
 
     public List<ItemVO> prepareMigration(List<String> itemTables, Map<Integer, String> itemIdToItemNameMap,

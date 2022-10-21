@@ -57,24 +57,31 @@ public class NamingStrategyTest {
     }
 
     @Test
-    public void getTableNameWhenUseRealItemNamesNameIsLowerCase() {
+    public void getTableNameWhenUseRealItemNamesNameIsLowerCaseAndNumbered() {
         Mockito.doReturn(true).when(configurationMock).getTableUseRealItemNames();
-        Mockito.doReturn(false).when(configurationMock).getTablePreserveCase();
-        assertThat(namingStrategy.getTableName(1, "Test"), is("test"));
+        Mockito.doReturn(false).when(configurationMock).getTableCaseSensitiveItemNames();
+        assertThat(namingStrategy.getTableName(1, "Test"), is("test_1"));
     }
 
     @Test
-    public void getTableNameWhenUseRealItemNamesNameIsSameCase() {
+    public void getTableNameWhenUseRealCaseSensitiveItemNamesNameIsSameCase() {
         Mockito.doReturn(true).when(configurationMock).getTableUseRealItemNames();
-        Mockito.doReturn(true).when(configurationMock).getTablePreserveCase();
-        assertThat(namingStrategy.getTableName(1, "Test"), is("Test"));
+        Mockito.doReturn(true).when(configurationMock).getTableCaseSensitiveItemNames();
+        assertThat(namingStrategy.getTableName(1, "Camel"), is("Camel"));
+    }
+
+    @Test
+    public void getTableNameWhenUseRealCaseSensitiveItemNamesNameIsSameCaseLower() {
+        Mockito.doReturn(true).when(configurationMock).getTableUseRealItemNames();
+        Mockito.doReturn(true).when(configurationMock).getTableCaseSensitiveItemNames();
+        assertThat(namingStrategy.getTableName(1, "lower"), is("lower"));
     }
 
     @Test
     public void getTableNameWhenUseRealItemNamesSpecialCharsAreRemoved() {
         Mockito.doReturn(true).when(configurationMock).getTableUseRealItemNames();
-        Mockito.doReturn(false).when(configurationMock).getTablePreserveCase();
-        assertThat(namingStrategy.getTableName(1, "Te%st"), is("test"));
+        Mockito.doReturn(true).when(configurationMock).getTableCaseSensitiveItemNames();
+        assertThat(namingStrategy.getTableName(1, "Te%st"), is("Test"));
     }
 
     @Test
@@ -101,13 +108,13 @@ public class NamingStrategyTest {
 
         List<ItemVO> actual = prepareMigrationRealItemNames(itemId, itemName, tableName);
 
-        assertTableName(actual, "test");
+        assertTableName(actual, "Test");
     }
 
     @Test
-    public void prepareMigrationFromMixedNumberedToRealNames() {
+    public void prepareMigrationFromMixedNumberedToNumberedRealNames() {
         Mockito.doReturn(true).when(configurationMock).getTableUseRealItemNames();
-        Mockito.doReturn(false).when(configurationMock).getTablePreserveCase();
+        Mockito.doReturn(false).when(configurationMock).getTableCaseSensitiveItemNames();
         Mockito.doReturn("Item").when(configurationMock).getTableNamePrefix();
 
         Map<Integer, String> itemIdToItemNameMap = new HashMap<>(3);
@@ -123,35 +130,59 @@ public class NamingStrategyTest {
         List<ItemVO> actual = namingStrategy.prepareMigration(itemTables, itemIdToItemNameMap, ITEMS_MANAGE_TABLE_NAME);
 
         assertThat(actual.size(), is(3));
-        assertThat(actual.get(0).getNewTableName(), is("first"));
-        assertThat(actual.get(1).getNewTableName(), is("second"));
-        assertThat(actual.get(2).getNewTableName(), is("third"));
+        assertThat(actual.get(0).getNewTableName(), is("first_1"));
+        assertThat(actual.get(1).getNewTableName(), is("second_2"));
+        assertThat(actual.get(2).getNewTableName(), is("third_3"));
     }
 
     @Test
-    public void prepareMigrationFromMixedRealNamesToNewRealNames() {
+    public void prepareMigrationFromMixedNumberedToCaseSensitiveRealNames() {
+        Mockito.doReturn(true).when(configurationMock).getTableUseRealItemNames();
+        Mockito.doReturn(true).when(configurationMock).getTableCaseSensitiveItemNames();
+        Mockito.doReturn("Item").when(configurationMock).getTableNamePrefix();
+
+        Map<Integer, String> itemIdToItemNameMap = new HashMap<>(3);
+        itemIdToItemNameMap.put(1, "First");
+        itemIdToItemNameMap.put(2, "Second");
+        itemIdToItemNameMap.put(3, "Third");
+
+        List<String> itemTables = new ArrayList<String>(3);
+        itemTables.add("Item1");
+        itemTables.add("Item002");
+        itemTables.add("third_0003");
+
+        List<ItemVO> actual = namingStrategy.prepareMigration(itemTables, itemIdToItemNameMap, ITEMS_MANAGE_TABLE_NAME);
+
+        assertThat(actual.size(), is(3));
+        assertThat(actual.get(0).getNewTableName(), is("First"));
+        assertThat(actual.get(1).getNewTableName(), is("Second"));
+        assertThat(actual.get(2).getNewTableName(), is("Third"));
+    }
+
+    @Test
+    public void prepareMigrationFromMixedRealNamesToCaseSensitiveRealNames() {
         final int itemId = 1;
         final String itemName = "Test";
         final String tableName = "test_0001";
 
-        List<ItemVO> actual = prepareMigrationRealItemNames(itemId, itemName, tableName);
+        List<ItemVO> actual = prepareMigrationRealItemNames(itemId, itemName, tableName, true);
 
-        assertTableName(actual, "test");
+        assertTableName(actual, "Test");
     }
 
     @Test
-    public void prepareMigrationFromRealNamesToRealNamesLowerCase() {
+    public void prepareMigrationFromCaseSensitiveRealNamesToNumberedRealNames() {
         final int itemId = 1;
         final String itemName = "Test";
         final String tableName = "Test";
 
-        List<ItemVO> actual = prepareMigrationRealItemNames(itemId, itemName, tableName);
+        List<ItemVO> actual = prepareMigrationRealItemNames(itemId, itemName, tableName, false);
 
-        assertTableName(actual, "test");
+        assertTableName(actual, "test_0001");
     }
 
     @Test
-    public void prepareMigrationFromRealNamesToRealNamesPreserveCase() {
+    public void prepareMigrationFromRealNamesWithWrongCaseToCaseSensitiveRealNamesThenFixCase() {
         final int itemId = 1;
         final String itemName = "Test";
         final String tableName = "test";
@@ -182,15 +213,11 @@ public class NamingStrategyTest {
         assertThat(actual.get(1).getNewTableName(), is("Item2"));
     }
 
-    /**
-     * This conflict scenario is currently handled outside {@link NamingStrategy} so test case
-     * serves as documentation.
-     */
     @Test
-    public void prepareMigrationNumberedWithTwoItemsWithDifferentCaseToRealNamesLower() {
+    public void prepareMigrationNumberedWithTwoItemsWithDifferentCaseToNumberedRealNames() {
         Mockito.doReturn(true).when(configurationMock).getTableUseRealItemNames();
         Mockito.doReturn("Item").when(configurationMock).getTableNamePrefix();
-        Mockito.doReturn(false).when(configurationMock).getTablePreserveCase();
+        Mockito.doReturn(false).when(configurationMock).getTableCaseSensitiveItemNames();
 
         Map<Integer, String> itemIdToItemNameMap = new HashMap<>(2);
         itemIdToItemNameMap.put(1, "MyItem");
@@ -203,8 +230,29 @@ public class NamingStrategyTest {
         List<ItemVO> actual = namingStrategy.prepareMigration(itemTables, itemIdToItemNameMap, ITEMS_MANAGE_TABLE_NAME);
 
         assertThat(actual.size(), is(2));
-        assertThat(actual.get(0).getNewTableName(), is("myitem"));
-        assertThat(actual.get(1).getNewTableName(), is("myitem"));
+        assertThat(actual.get(0).getNewTableName(), is("myitem_1"));
+        assertThat(actual.get(1).getNewTableName(), is("myitem_2"));
+    }
+
+    @Test
+    public void prepareMigrationNumberedWithTwoItemsWithDifferentCaseToCaseSensitiveRealNames() {
+        Mockito.doReturn(true).when(configurationMock).getTableUseRealItemNames();
+        Mockito.doReturn("Item").when(configurationMock).getTableNamePrefix();
+        Mockito.doReturn(true).when(configurationMock).getTableCaseSensitiveItemNames();
+
+        Map<Integer, String> itemIdToItemNameMap = new HashMap<>(2);
+        itemIdToItemNameMap.put(1, "MyItem");
+        itemIdToItemNameMap.put(2, "myItem");
+
+        List<String> itemTables = new ArrayList<String>(2);
+        itemTables.add("Item1");
+        itemTables.add("Item2");
+
+        List<ItemVO> actual = namingStrategy.prepareMigration(itemTables, itemIdToItemNameMap, ITEMS_MANAGE_TABLE_NAME);
+
+        assertThat(actual.size(), is(2));
+        assertThat(actual.get(0).getNewTableName(), is("MyItem"));
+        assertThat(actual.get(1).getNewTableName(), is("myItem"));
     }
 
     @Test
@@ -307,14 +355,14 @@ public class NamingStrategyTest {
     }
 
     private List<ItemVO> prepareMigrationRealItemNames(int itemId, String itemName, String tableName) {
-        return prepareMigrationRealItemNames(itemId, itemName, tableName, false);
+        return prepareMigrationRealItemNames(itemId, itemName, tableName, true);
     }
 
     private List<ItemVO> prepareMigrationRealItemNames(int itemId, String itemName, String tableName,
-            boolean preserveCase) {
+            boolean caseSensitive) {
         Mockito.doReturn(4).when(configurationMock).getTableIdDigitCount();
         Mockito.doReturn(true).when(configurationMock).getTableUseRealItemNames();
-        Mockito.doReturn(preserveCase).when(configurationMock).getTablePreserveCase();
+        Mockito.doReturn(caseSensitive).when(configurationMock).getTableCaseSensitiveItemNames();
         return prepareMigration(itemId, itemName, tableName);
     }
 
