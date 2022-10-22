@@ -87,7 +87,7 @@ public class OpenhabGraalJSScriptEngine
         this.globalScript = GLOBAL_REQUIRE + (injectionCode != null ? injectionCode : "");
         this.lock = new Object();
 
-        LOGGER.info("Initializing GraalJS script engine...");
+        LOGGER.debug("Initializing GraalJS script engine...");
 
         // Custom translate JS Objects - > Java Objects
         HostAccess hostAccess = HostAccess.newBuilder(HostAccess.ALL)
@@ -208,6 +208,7 @@ public class OpenhabGraalJSScriptEngine
 
         delegate.getBindings(ScriptContext.ENGINE_SCOPE).put(REQUIRE_WRAPPER_NAME, wrapRequireFn);
         delegate.put("require", wrapRequireFn.apply((Function<Object[], Object>) delegate.get("require")));
+        delegate.put("lockObj", lock);
 
         initialized = true;
 
