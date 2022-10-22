@@ -30,6 +30,7 @@ import org.openhab.core.library.items.SwitchItem;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.StateDescription;
@@ -55,6 +56,7 @@ public class HomekitTaggedItem {
     public final static String MIN_VALUE = "minValue";
     public final static String PRIMARY_SERVICE = "primary";
     public final static String STEP = "step";
+    public final static String UNIT = "unit";
 
     private static final Map<Integer, String> CREATED_ACCESSORY_IDS = new ConcurrentHashMap<>();
 
@@ -178,6 +180,23 @@ public class HomekitTaggedItem {
             return;
         }
         logger.warn("Received DecimalType command for item {} that doesn't support it. This is probably a bug.",
+                getName());
+    }
+
+    /**
+     * Send QuantityType command to a NumberItem (or a Group:Number)
+     * 
+     * @param command
+     */
+    public void send(QuantityType command) {
+        if (getItem() instanceof GroupItem && getBaseItem() instanceof NumberItem) {
+            ((GroupItem) getItem()).send(command);
+            return;
+        } else if (getItem() instanceof NumberItem) {
+            ((NumberItem) getItem()).send(command);
+            return;
+        }
+        logger.warn("Received QuantityType command for item {} that doesn't support it. This is probably a bug.",
                 getName());
     }
 
@@ -322,6 +341,9 @@ public class HomekitTaggedItem {
                 if ((value instanceof Long) && (defaultValue instanceof BigDecimal)) {
                     return (T) BigDecimal.valueOf((Long) value);
                 }
+                if (defaultValue instanceof String) {
+                    return (T) value.toString();
+                }
             }
 
         }
@@ -382,6 +404,27 @@ public class HomekitTaggedItem {
      */
     public double getConfigurationAsDouble(String key, double defaultValue) {
         return getConfiguration(key, BigDecimal.valueOf(defaultValue)).doubleValue();
+    }
+
+    /**
+     * return configuration as quantity of the given unit
+     * 
+     * @param key configuration key
+     * @param defaultValue default value
+     * @return value
+     */
+    public QuantityType getConfigurationAsQuantity(String key, QuantityType defaultValue) {
+        String stringValue = getConfiguration(key, new String());
+        if (stringValue.isEmpty()) {
+            return defaultValue;
+        }
+        var parsedValue = new QuantityType(stringValue);
+        var convertedValue = parsedValue.toInvertibleUnit(defaultValue.getUnit());
+        // not convertible? just assume it's in the expected unit
+        if (convertedValue == null) {
+            return new QuantityType(parsedValue.toBigDecimal(), defaultValue.getUnit());
+        }
+        return convertedValue;
     }
 
     /**
