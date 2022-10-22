@@ -68,6 +68,9 @@ public class OpenhabGraalJSScriptEngine
     // final CommonJS search path for our library
     private static final Path NODE_DIR = Paths.get("node_modules");
 
+    // shared lock object for synchronization of multi-thread access
+    private final Object lock;
+
     // these fields start as null because they are populated on first use
     private @NonNullByDefault({}) String engineIdentifier;
     private @NonNullByDefault({}) Consumer<String> scriptDependencyListener;
@@ -82,6 +85,9 @@ public class OpenhabGraalJSScriptEngine
     public OpenhabGraalJSScriptEngine(@Nullable String injectionCode) {
         super(null); // delegate depends on fields not yet initialised, so we cannot set it immediately
         this.globalScript = GLOBAL_REQUIRE + (injectionCode != null ? injectionCode : "");
+        this.lock = new Object();
+
+        LOGGER.info("Initializing GraalJS script engine...");
 
         // Custom translate JS Objects - > Java Objects
         HostAccess hostAccess = HostAccess.newBuilder(HostAccess.ALL)
@@ -194,7 +200,7 @@ public class OpenhabGraalJSScriptEngine
         }
 
         ScriptExtensionModuleProvider scriptExtensionModuleProvider = new ScriptExtensionModuleProvider(
-                scriptExtensionAccessor);
+                scriptExtensionAccessor, lock);
 
         Function<Function<Object[], Object>, Function<String, Object>> wrapRequireFn = originalRequireFn -> moduleName -> scriptExtensionModuleProvider
                 .locatorFor(delegate.getPolyglotContext(), engineIdentifier).locateModule(moduleName)
@@ -216,7 +222,7 @@ public class OpenhabGraalJSScriptEngine
      * Tests if this is a root node directory, `/node_modules`, `C:\node_modules`, etc...
      *
      * @param path
-     * @return
+     * @return whether the given path is a node root directory
      */
     private boolean isRootNodePath(Path path) {
         return path.startsWith(path.getRoot().resolve(NODE_DIR));

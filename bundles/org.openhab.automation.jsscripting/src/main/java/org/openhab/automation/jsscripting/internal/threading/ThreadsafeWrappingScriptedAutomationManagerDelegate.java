@@ -36,10 +36,11 @@ import org.openhab.core.automation.type.TriggerType;
 public class ThreadsafeWrappingScriptedAutomationManagerDelegate {
 
     private ScriptedAutomationManager delegate;
-    private Object lock = new Object();
+    private final Object lock;
 
-    public ThreadsafeWrappingScriptedAutomationManagerDelegate(ScriptedAutomationManager delegate) {
+    public ThreadsafeWrappingScriptedAutomationManagerDelegate(ScriptedAutomationManager delegate, Object lock) {
         this.delegate = delegate;
+        this.lock = lock;
     }
 
     public void removeModuleType(String UID) {
