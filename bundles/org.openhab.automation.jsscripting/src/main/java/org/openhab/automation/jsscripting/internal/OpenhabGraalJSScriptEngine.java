@@ -208,7 +208,8 @@ public class OpenhabGraalJSScriptEngine
 
         delegate.getBindings(ScriptContext.ENGINE_SCOPE).put(REQUIRE_WRAPPER_NAME, wrapRequireFn);
         delegate.put("require", wrapRequireFn.apply((Function<Object[], Object>) delegate.get("require")));
-        delegate.put("lockObj", lock);
+        // Inject the lock object used for synchronization of multi-thread access into the JS runtime
+        delegate.put("threadSynchronizationLockObj", lock);
 
         initialized = true;
 
