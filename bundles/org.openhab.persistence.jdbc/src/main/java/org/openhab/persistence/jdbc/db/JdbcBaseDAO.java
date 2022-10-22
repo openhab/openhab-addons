@@ -84,6 +84,7 @@ public class JdbcBaseDAO {
     protected String sqlIfTableExists = "SHOW TABLES LIKE '#searchTable#'";
     protected String sqlCreateNewEntryInItemsTable = "INSERT INTO #itemsManageTable# (ItemName) VALUES ('#itemname#')";
     protected String sqlCreateItemsTableIfNot = "CREATE TABLE IF NOT EXISTS #itemsManageTable# (ItemId INT NOT NULL AUTO_INCREMENT,#colname# #coltype# NOT NULL,PRIMARY KEY (ItemId))";
+    protected String sqlDropItemsTableIfExists = "DROP TABLE IF EXISTS #itemsManageTable#";
     protected String sqlDeleteItemsEntry = "DELETE FROM items WHERE ItemName=#itemname#";
     protected String sqlGetItemIDTableNames = "SELECT ItemId, ItemName FROM #itemsManageTable#";
     protected String sqlGetItemTables = "SELECT table_name FROM information_schema.tables WHERE table_type='BASE TABLE' AND table_schema='#jdbcUriDatabaseName#' AND NOT table_name='#itemsManageTable#'";
@@ -266,7 +267,7 @@ public class JdbcBaseDAO {
     public Long doCreateNewEntryInItemsTable(ItemsVO vo) {
         String sql = StringUtilsExt.replaceArrayMerge(sqlCreateNewEntryInItemsTable,
                 new String[] { "#itemsManageTable#", "#itemname#" },
-                new String[] { vo.getItemsManageTable(), vo.getItemname() });
+                new String[] { vo.getItemsManageTable(), vo.getItemName() });
         logger.debug("JDBC::doCreateNewEntryInItemsTable sql={}", sql);
         return Yank.insert(sql, null);
     }
@@ -280,9 +281,17 @@ public class JdbcBaseDAO {
         return vo;
     }
 
+    public ItemsVO doDropItemsTableIfExists(ItemsVO vo) {
+        String sql = StringUtilsExt.replaceArrayMerge(sqlDropItemsTableIfExists, new String[] { "#itemsManageTable#" },
+                new String[] { vo.getItemsManageTable() });
+        logger.debug("JDBC::doDropItemsTableIfExists sql={}", sql);
+        Yank.execute(sql, null);
+        return vo;
+    }
+
     public void doDeleteItemsEntry(ItemsVO vo) {
         String sql = StringUtilsExt.replaceArrayMerge(sqlDeleteItemsEntry, new String[] { "#itemname#" },
-                new String[] { vo.getItemname() });
+                new String[] { vo.getItemName() });
         logger.debug("JDBC::doDeleteItemsEntry sql={}", sql);
         Yank.execute(sql, null);
     }

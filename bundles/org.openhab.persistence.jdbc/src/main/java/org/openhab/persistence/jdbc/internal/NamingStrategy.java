@@ -71,7 +71,7 @@ public class NamingStrategy {
 
     public List<ItemVO> prepareMigration(List<String> itemTables, Map<Integer, String> itemIdToItemNameMap,
             String itemsManageTable) {
-        List<ItemVO> oldNewTablenames = new ArrayList<>();
+        List<ItemVO> oldNewTableNames = new ArrayList<>();
         Map<String, Integer> tableNameToItemIdMap = new HashMap<>();
 
         for (Entry<Integer, String> entry : itemIdToItemNameMap.entrySet()) {
@@ -104,7 +104,7 @@ public class NamingStrategy {
                             "JDBC::formatTableNames: Table '{}' could NOT be renamed to '{}' since it conflicts with manage table",
                             oldName, newName);
                 } else if (!oldName.equals(newName)) {
-                    oldNewTablenames.add(new ItemVO(oldName, newName));
+                    oldNewTableNames.add(new ItemVO(oldName, newName));
                     logger.info("JDBC::formatTableNames: Table '{}' will be renamed to '{}'", oldName, newName);
                 } else {
                     logger.info("JDBC::formatTableNames: Table oldName='{}' newName='{}' nothing to rename", oldName,
@@ -116,6 +116,6 @@ public class NamingStrategy {
             }
         }
 
-        return oldNewTablenames;
+        return oldNewTableNames;
     }
 }

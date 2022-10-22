@@ -28,9 +28,9 @@ public class ItemsVO implements Serializable {
     private String coltype = "VARCHAR(500)";
     private String colname = "itemname";
     private String itemsManageTable = "items";
-    private int itemid;
-    private String itemname;
-    private String table_name;
+    private int itemId;
+    private String itemName;
+    private String tableName;
     private String jdbcUriDatabaseName;
 
     public String getColtype() {
@@ -57,28 +57,28 @@ public class ItemsVO implements Serializable {
         this.itemsManageTable = itemsManageTable.replaceAll(STR_FILTER, "");
     }
 
-    public int getItemid() {
-        return itemid;
+    public int getItemId() {
+        return itemId;
     }
 
-    public void setItemid(int itemid) {
-        this.itemid = itemid;
+    public void setItemId(int itemId) {
+        this.itemId = itemId;
     }
 
-    public String getItemname() {
-        return itemname;
+    public String getItemName() {
+        return itemName;
     }
 
-    public void setItemname(String itemname) {
-        this.itemname = itemname;
+    public void setItemName(String itemName) {
+        this.itemName = itemName;
     }
 
-    public String getTable_name() {
-        return table_name;
+    public String getTableName() {
+        return tableName;
     }
 
-    public void setTable_name(String table_name) {
-        this.table_name = table_name;
+    public void setTableName(String tableName) {
+        this.tableName = tableName;
     }
 
     public String getJdbcUriDatabaseName() {
@@ -98,8 +98,8 @@ public class ItemsVO implements Serializable {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((itemname == null) ? 0 : itemname.hashCode());
-        result = prime * result + (itemid ^ (itemid >>> 32));
+        result = prime * result + ((itemName == null) ? 0 : itemName.hashCode());
+        result = prime * result + (itemId ^ (itemId >>> 32));
         return result;
     }
 
@@ -120,14 +120,14 @@ public class ItemsVO implements Serializable {
             return false;
         }
         ItemsVO other = (ItemsVO) obj;
-        if (itemname == null) {
-            if (other.itemname != null) {
+        if (itemName == null) {
+            if (other.itemName != null) {
                 return false;
             }
-        } else if (!itemname.equals(other.itemname)) {
+        } else if (!itemName.equals(other.itemName)) {
             return false;
         }
-        return itemid == other.itemid;
+        return itemId == other.itemId;
     }
 
     @Override
@@ -140,11 +140,11 @@ public class ItemsVO implements Serializable {
         builder.append(", itemsManageTable=");
         builder.append(itemsManageTable);
         builder.append(", itemid=");
-        builder.append(itemid);
+        builder.append(itemId);
         builder.append(", itemname=");
-        builder.append(itemname);
+        builder.append(itemName);
         builder.append(", table_name=");
-        builder.append(table_name);
+        builder.append(tableName);
         builder.append("]");
         return builder.toString();
     }

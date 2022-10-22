@@ -374,6 +374,15 @@ public class JdbcConfiguration {
         return tableCaseSensitiveItemNames;
     }
 
+    /**
+     * Checks if real item names (without number suffix) is enabled.
+     *
+     * @return true if both tableUseRealItemNames and tableCaseSensitiveItemNames are enabled.
+     */
+    public boolean getTableUseRealCaseSensitiveItemNames() {
+        return tableUseRealItemNames && tableCaseSensitiveItemNames;
+    }
+
     public int getTableIdDigitCount() {
         return tableIdDigitCount;
     }
