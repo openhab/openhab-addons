@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.nanoleaf.internal.model;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -35,6 +36,14 @@ public class Layout {
     private final Logger logger = LoggerFactory.getLogger(Layout.class);
 
     private @Nullable List<PositionDatum> positionData = null;
+
+    public Layout() {
+    }
+
+    public Layout(List<PositionDatum> positionData) {
+        this.positionData = new ArrayList<>(positionData);
+        this.numPanels = positionData.size();
+    }
 
     public int getNumPanels() {
         return numPanels;
@@ -142,5 +151,46 @@ public class Layout {
         } else {
             return "";
         }
+    }
+
+    @Override
+    public boolean equals(@Nullable Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        Layout l = (Layout) o;
+        List<PositionDatum> pd = getPositionData();
+        List<PositionDatum> otherPd = l.getPositionData();
+
+        boolean positionDataEquals = false;
+        if (pd == null || otherPd == null) {
+            if (pd == null && otherPd == null) {
+                positionDataEquals = true;
+            }
+        } else {
+            positionDataEquals = pd.equals(otherPd);
+        }
+
+        return (numPanels == l.getNumPanels()) && positionDataEquals;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + getNumPanels();
+        List<PositionDatum> pd = getPositionData();
+        if (pd != null) {
+            for (PositionDatum p : pd) {
+                result = prime * result + p.hashCode();
+            }
+        }
+
+        return result;
     }
 }

@@ -26,6 +26,14 @@ public class PanelLayout {
     private @Nullable Layout layout;
     private @Nullable GlobalOrientation globalOrientation;
 
+    public PanelLayout() {
+    }
+
+    public PanelLayout(GlobalOrientation globalOrientation, Layout layout) {
+        this.globalOrientation = globalOrientation;
+        this.layout = layout;
+    }
+
     public @Nullable Layout getLayout() {
         return layout;
     }
@@ -40,5 +48,60 @@ public class PanelLayout {
 
     public void setGlobalOrientation(GlobalOrientation globalOrientation) {
         this.globalOrientation = globalOrientation;
+    }
+
+    @Override
+    public boolean equals(@Nullable Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        PanelLayout pl = (PanelLayout) o;
+
+        GlobalOrientation go = globalOrientation;
+        GlobalOrientation otherGo = pl.getGlobalOrientation();
+        boolean goEquals = false;
+        if (go == null || otherGo == null) {
+            if (go == null && otherGo == null) {
+                goEquals = true;
+            }
+        } else {
+            goEquals = go.equals(otherGo);
+        }
+
+        Layout l = layout;
+        Layout otherL = pl.getLayout();
+        boolean lEquals = false;
+        if (l == null || otherL == null) {
+            if (l == null && otherL == null) {
+                lEquals = true;
+            }
+        } else {
+            lEquals = l.equals(otherL);
+        }
+
+        return goEquals && lEquals;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+
+        GlobalOrientation go = globalOrientation;
+        if (go != null) {
+            result = prime * result + go.hashCode();
+        }
+
+        Layout l = layout;
+        if (l != null) {
+            result = prime * result + l.hashCode();
+        }
+
+        return result;
     }
 }

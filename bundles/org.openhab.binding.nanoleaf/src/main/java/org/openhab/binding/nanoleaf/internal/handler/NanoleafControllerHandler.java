@@ -107,6 +107,7 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
     private @Nullable HttpClient httpClientSSETouchEvent;
     private @Nullable Request sseTouchjobRequest;
     private List<NanoleafControllerListener> controllerListeners = new CopyOnWriteArrayList<NanoleafControllerListener>();
+    private PanelLayout previousPanelLayout = new PanelLayout();
 
     private @NonNullByDefault({}) ScheduledFuture<?> pairingJob;
     private @NonNullByDefault({}) ScheduledFuture<?> updateJob;
@@ -720,11 +721,18 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
             }
         }
 
+        if (previousPanelLayout.equals(panelLayout)) {
+            logger.trace("Not rendering panel layout as it is the same as previous rendered panel layout");
+            return;
+        }
+
         try {
             byte[] bytes = NanoleafLayout.render(panelLayout);
             if (bytes.length > 0) {
                 updateState(CHANNEL_LAYOUT, new RawType(bytes, "image/png"));
             }
+
+            previousPanelLayout = panelLayout;
         } catch (IOException ioex) {
             logger.warn("Failed to create layout image", ioex);
         }

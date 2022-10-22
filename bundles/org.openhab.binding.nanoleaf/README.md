@@ -30,6 +30,7 @@ You can set the **color** for each panel and in the case of a Nanoleaf Canvas or
 | Light Panels           | NL22 | Triangles 1st Generation                                   |     X     |       -       |  
 | Shapes Triangle        | NL42 | Triangles 2nd Generation (rounded edges)                   |     X     |       X       |
 | Shapes Hexagon         | NL42 | Hexagons                                                   |     X     |       X       |
+| Elements Hexagon       | NL52 | Elements Hexagons                                          |     X     |       X       |
 | Shapes Mini Triangles  | NL42 | Mini Triangles                                             |     x     |       X       |
 | Canvas                 | NL29 | Squares                                                    |     X     |       X       |
 

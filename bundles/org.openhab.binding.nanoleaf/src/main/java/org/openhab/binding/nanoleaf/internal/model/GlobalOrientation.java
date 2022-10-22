@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.nanoleaf.internal.model;
 
+import java.util.Objects;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -26,6 +28,15 @@ public class GlobalOrientation {
     private int value;
     private @Nullable Integer max;
     private @Nullable Integer min;
+
+    public GlobalOrientation() {
+    }
+
+    public GlobalOrientation(Integer min, Integer max, int value) {
+        this.min = min;
+        this.max = max;
+        this.value = value;
+    }
 
     public int getValue() {
         return value;
@@ -49,5 +60,31 @@ public class GlobalOrientation {
 
     public void setMin(Integer min) {
         this.min = min;
+    }
+
+    @Override
+    public boolean equals(@Nullable Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        GlobalOrientation go = (GlobalOrientation) o;
+        return (value == go.getValue()) && (Objects.equals(min, go.getMin())) && (Objects.equals(max, go.getMax()));
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        Integer x = max;
+        Integer i = min;
+        result = prime * result + value;
+        result = prime * result + ((x == null) ? 0 : x.hashCode());
+        result = prime * result + ((i == null) ? 0 : i.hashCode());
+        return result;
     }
 }

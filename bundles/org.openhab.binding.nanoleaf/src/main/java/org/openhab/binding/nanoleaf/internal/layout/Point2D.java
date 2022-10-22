@@ -52,4 +52,30 @@ public class Point2D {
         int newY = (int) (sinAngle * x + cosAngle * y);
         return new Point2D(newX, newY);
     }
+
+    /**
+     * Move the point in x and y direction.
+     *
+     * @param moveX Amount to move in x direction
+     * @param moveY Amount to move in y direction
+     * @return
+     */
+    public Point2D move(int moveX, int moveY) {
+        return new Point2D(getX() + moveX, getY() + moveY);
+    }
+
+    /**
+     * Move the point in x and y direction,.
+     *
+     * @param offset Offset to move
+     * @return
+     */
+    public Point2D move(Point2D offset) {
+        return move(offset.getX(), offset.getY());
+    }
+
+    @Override
+    public String toString() {
+        return String.format("x:%d, y:%d", x, y);
+    }
 }
