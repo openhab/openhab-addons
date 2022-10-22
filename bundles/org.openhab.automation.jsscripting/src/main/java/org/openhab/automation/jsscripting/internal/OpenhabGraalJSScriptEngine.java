@@ -58,6 +58,7 @@ import com.oracle.truffle.js.scriptengine.GraalJSScriptEngine;
  *
  * @author Jonathan Gilbert - Initial contribution
  * @author Dan Cunningham - Script injections
+ * @author Florian Hotze - Create lock object for multi-thread synchronization
  */
 public class OpenhabGraalJSScriptEngine
         extends InvocationInterceptingScriptEngineWithInvocableAndAutoCloseable<GraalJSScriptEngine> {
@@ -223,7 +224,7 @@ public class OpenhabGraalJSScriptEngine
     /**
      * Tests if this is a root node directory, `/node_modules`, `C:\node_modules`, etc...
      *
-     * @param path
+     * @param path a root path
      * @return whether the given path is a node root directory
      */
     private boolean isRootNodePath(Path path) {
@@ -234,8 +235,8 @@ public class OpenhabGraalJSScriptEngine
      * Converts a root node path to a class resource path for loading local modules
      * Ex: C:\node_modules\foo.js -> /node_modules/foo.js
      *
-     * @param path
-     * @return
+     * @param path a root path, e.g. C:\node_modules\foo.js
+     * @return the class resource path for loading local modules
      */
     private String nodeFileToResource(Path path) {
         return "/" + path.subpath(0, path.getNameCount()).toString().replace('\\', '/');

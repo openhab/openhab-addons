@@ -29,6 +29,7 @@ import org.openhab.core.automation.module.script.rulesupport.shared.ScriptedAuto
  * Class providing script extensions via CommonJS modules.
  *
  * @author Jonathan Gilbert - Initial contribution
+ * @author Florian Hotze - Pass in lock object for multi-thread synchronization
  */
 
 @NonNullByDefault
