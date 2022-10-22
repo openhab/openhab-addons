@@ -46,7 +46,7 @@ public class HueCommandExtension extends AbstractConsoleCommandExtension {
 
     @Activate
     public HueCommandExtension(final @Reference ThingRegistry thingRegistry) {
-        super("hue", "Interact with the hue binding.");
+        super("hue", "Interact with the Hue binding.");
         this.thingRegistry = thingRegistry;
     }
 
@@ -78,7 +78,7 @@ public class HueCommandExtension extends AbstractConsoleCommandExtension {
                 console.println("No handler initialized for the thingUID '" + args[0] + "'");
                 printUsage(console);
             } else if (bridgeHandler == null && groupHandler == null) {
-                console.println("'" + args[0] + "' is neither a Hue bridgeUID nor a Hue groupThingUID");
+                console.println("'" + args[0] + "' is neither a Hue BridgeUID nor a Hue groupThingUID");
                 printUsage(console);
             } else {
                 switch (args[1]) {
@@ -87,7 +87,7 @@ public class HueCommandExtension extends AbstractConsoleCommandExtension {
                             String userName = bridgeHandler.getUserName();
                             console.println("Your user name is " + (userName != null ? userName : "undefined"));
                         } else {
-                            console.println("'" + args[0] + "' is not a Hue bridgeUID");
+                            console.println("'" + args[0] + "' is not a Hue BridgeUID");
                             printUsage(console);
                         }
                         break;

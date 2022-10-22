@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.hue.internal.exceptions;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Thrown when the specified user is no longer whitelisted on the bridge.
  *
@@ -19,6 +21,7 @@ package org.openhab.binding.hue.internal.exceptions;
  * @author Denis Dudnik - moved Jue library source code inside the smarthome Hue binding
  */
 @SuppressWarnings("serial")
+@NonNullByDefault
 public class UnauthorizedException extends ApiException {
     public UnauthorizedException() {
     }
