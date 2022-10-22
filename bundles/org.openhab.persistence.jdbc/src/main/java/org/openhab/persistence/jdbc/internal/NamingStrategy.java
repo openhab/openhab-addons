@@ -112,7 +112,6 @@ public class NamingStrategy {
                 }
             } else {
                 logger.error("JDBC::formatTableNames: Table '{}' could NOT be renamed for id '{}'", oldName, itemId);
-                break;
             }
         }
 

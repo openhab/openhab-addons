@@ -127,6 +127,28 @@ public class NamingStrategyTest {
     }
 
     @Test
+    public void prepareMigrationShouldNotStopWhenEncounteringUnknownItem() {
+        Mockito.doReturn(true).when(configurationMock).getTableUseRealItemNames();
+        Mockito.doReturn(true).when(configurationMock).getTableCaseSensitiveItemNames();
+        Mockito.doReturn("Item").when(configurationMock).getTableNamePrefix();
+
+        Map<Integer, String> itemIdToItemNameMap = new HashMap<>(2);
+        itemIdToItemNameMap.put(1, "First");
+        itemIdToItemNameMap.put(3, "Third");
+
+        List<String> itemTables = new ArrayList<String>(3);
+        itemTables.add("Item1");
+        itemTables.add("Item2");
+        itemTables.add("Item3");
+
+        List<ItemVO> actual = namingStrategy.prepareMigration(itemTables, itemIdToItemNameMap, ITEMS_MANAGE_TABLE_NAME);
+
+        assertThat(actual.size(), is(2));
+        assertThat(actual.get(0).getNewTableName(), is("First"));
+        assertThat(actual.get(1).getNewTableName(), is("Third"));
+    }
+
+    @Test
     public void prepareMigrationFromMixedNumberedToNumberedRealNames() {
         Mockito.doReturn(true).when(configurationMock).getTableUseRealItemNames();
         Mockito.doReturn(false).when(configurationMock).getTableCaseSensitiveItemNames();
