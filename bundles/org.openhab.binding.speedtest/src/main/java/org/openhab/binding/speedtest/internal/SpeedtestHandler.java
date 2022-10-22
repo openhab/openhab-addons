@@ -102,7 +102,9 @@ public class SpeedtestHandler extends BaseThingHandler {
         logger.debug("handleCommand channel: {} command: {}", channelUID, command);
         String ch = channelUID.getId();
         if (command instanceof RefreshType) {
-            updateChannels();
+            if (!server_name.isBlank()) {
+                updateChannels();
+            }
             return;
         }
         if (ch.equals(SpeedtestBindingConstants.TRIGGER_TEST)) {
