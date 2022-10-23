@@ -46,6 +46,7 @@ import org.openhab.automation.jsscripting.internal.fs.PrefixedSeekableByteChanne
 import org.openhab.automation.jsscripting.internal.fs.ReadOnlySeekableByteArrayChannel;
 import org.openhab.automation.jsscripting.internal.fs.watch.JSDependencyTracker;
 import org.openhab.automation.jsscripting.internal.scriptengine.InvocationInterceptingScriptEngineWithInvocableAndAutoCloseable;
+import org.openhab.automation.jsscripting.internal.threading.ThreadsafeTimers;
 import org.openhab.core.automation.module.script.ScriptExtensionAccessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,7 +70,7 @@ public class OpenhabGraalJSScriptEngine
     private static final Path NODE_DIR = Paths.get("node_modules");
 
     // shared lock object for synchronization of multi-thread access
-    private final Object lock;
+    private final Object lock = new Object();
 
     // these fields start as null because they are populated on first use
     private String engineIdentifier;
@@ -85,7 +86,6 @@ public class OpenhabGraalJSScriptEngine
     public OpenhabGraalJSScriptEngine(@Nullable String injectionCode) {
         super(null); // delegate depends on fields not yet initialised, so we cannot set it immediately
         this.globalScript = GLOBAL_REQUIRE + (injectionCode != null ? injectionCode : "");
-        this.lock = new Object();
 
         LOGGER.debug("Initializing GraalJS script engine...");
 
@@ -207,9 +207,9 @@ public class OpenhabGraalJSScriptEngine
                 .map(m -> (Object) m).orElseGet(() -> originalRequireFn.apply(new Object[] { moduleName }));
 
         delegate.getBindings(ScriptContext.ENGINE_SCOPE).put(REQUIRE_WRAPPER_NAME, wrapRequireFn);
+        // Injections into the JS runtime
         delegate.put("require", wrapRequireFn.apply((Function<Object[], Object>) delegate.get("require")));
-        // Inject the lock object used for synchronization of multi-thread access into the JS runtime
-        delegate.put("threadSynchronizationLockObj", lock);
+        delegate.put("ThreadsafeTimers", new ThreadsafeTimers(lock));
 
         initialized = true;
 
