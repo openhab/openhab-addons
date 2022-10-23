@@ -1,16 +1,16 @@
 # Kaleidescape Binding
 
-This binding is used to control and retrieve information from a Kaleidescape movie player.
-All movie player components including the original K-Player series, M Class Players, Cinema One, Alto, and Strato are supported.
-The 4 zone audio only KMUSIC-4000 is not supported at this time.
-As there are many good control options already available for these components, this binding focuses primarily on retrieving information
- for display purposes and to use in rules for controlling other Things such lighting, projector lens control, masking, etc.
-Basic playback transport controls are provided and any other command that is supported by the control protocol can be sent to the component through rules based commands.
+The Ultimate Movie Player - Kaleidescape elevates every component in your theater with higher fidelity
+source material for the ultimate cinematic experience.
+
+This binding now makes it possible to easily integrate almost all of the capabilities of the Kaleidescape control protocol into openHAB.
+Beyond just integrating playback transport controls, all meta-data provided via the control protocol is made available for display purposes and to use in rules.
+By using rules, it possible to control other Things such lighting, projector lens shift, screen masking, etc. based on events that occur during movie playback.
+Finally, any other command that is supported by the control protocol can be sent to the component through rules.
 See [Kaleidescape-System-Control-Protocol-Reference-Manual.pdf](https://support.kaleidescape.com/article/Control-Protocol-Reference-Manual) for a reference of available commands.
-To simplify the design of the binding code, a different Thing instance is created for each component
- in a multi-zone system and each Thing maintains its own socket connection to the target component.
-Overall this binding supports the majority of information and commands available in the Kaleidescape control protocol but is by no means exhaustive.
-Any feedback or suggestions for improvement are welcome.
+
+All movie player components including the original K-Player series, M Class Players, Cinema One, Alto, and Strato are supported.
+The 4-zone audio only KMUSIC-4000 is not supported.
 
 The binding supports two different kinds of connections:
 
@@ -30,8 +30,8 @@ The supported thing types are:
 
 ## Discovery
 
-Manually initiated Auto-discovery will locate all suported Kaleidescape components if they are on the same IP subnet of the openHAB server.
-In the Inbox, select Search For Things and then choose the Kaleidescape System Binding to initiate a discovery scan.
+Manually initiated Auto-discovery will locate all supported Kaleidescape components if they are on the same IP subnet of the openHAB server.
+In the Inbox, select Search For Things and then choose the Kaleidescape Binding to initiate a discovery scan.
 
 ## Binding Configuration
 
@@ -145,7 +145,6 @@ The following channels are available:
 | detail#country             | String      | The country that the selected movie originates from                                                              |
 | detail#aspect_ratio        | String      | The aspect ratio of the selected movie                                                                           |
 | detail#disc_location       | String      | Indicates where the disc for the selected item is currently residing in the system (ie Vault, Tray, etc.)        |
-
 
 ## Full Example
 
