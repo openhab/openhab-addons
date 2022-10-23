@@ -13,9 +13,9 @@
 package org.openhab.binding.boschshc.internal.devices.bridge.dto;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
 
 import com.google.gson.JsonElement;
-import com.google.gson.annotations.SerializedName;
 
 /**
  * Represents a device status update as represented by the Smart Home
@@ -24,17 +24,12 @@ import com.google.gson.annotations.SerializedName;
  * @author Stefan Kästle - Initial contribution
  * @author Christian Oeing - refactorings of e.g. server registration
  */
-public class DeviceStatusUpdate {
+public class DeviceServiceData extends BoschSHCServiceState {
+
     /**
      * Url path of the service the update came from.
      */
     public String path;
-
-    /**
-     * The type of message.
-     */
-    @SerializedName("@type")
-    public String type;
 
     /**
      * Name of service the update came from.
@@ -44,15 +39,26 @@ public class DeviceStatusUpdate {
     /**
      * Current state of device. Serialized as JSON.
      */
-    public JsonElement state;
+    public @Nullable JsonElement state;
 
     /**
      * Id of device the update is for.
      */
     public @Nullable String deviceId;
 
+    /**
+     * An optional object containing information about device faults.
+     * <p>
+     * Example: low battery warnings are stored as faults with category <code>WARNING</code>
+     */
+    public @Nullable Faults faults;
+
+    public DeviceServiceData() {
+        super("DeviceServiceData");
+    }
+
     @Override
     public String toString() {
-        return this.deviceId + "state: " + this.type;
+        return this.deviceId + " state: " + this.type;
     }
 }
