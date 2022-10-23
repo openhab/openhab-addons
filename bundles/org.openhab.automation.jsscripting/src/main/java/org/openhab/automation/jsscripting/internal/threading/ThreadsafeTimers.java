@@ -34,13 +34,13 @@ public class ThreadsafeTimers {
     }
 
     public Timer createTimer(ZonedDateTime instant, Runnable callable) {
-        return createTimer((String) null, instant, callable);
+        return createTimer(null, instant, callable);
     }
 
     public Timer createTimer(@Nullable String identifier, ZonedDateTime instant, Runnable callable) {
         Scheduler scheduler = ScriptServiceUtil.getScheduler();
 
-        return new TimerImpl(lock, scheduler, instant, () -> {
+        return new TimerImpl(scheduler, instant, () -> {
             synchronized (lock) {
                 callable.run();
             }
@@ -49,13 +49,13 @@ public class ThreadsafeTimers {
     }
 
     public Timer createTimerWithArgument(ZonedDateTime instant, Object arg1, Runnable callable) {
-        return createTimerWithArgument((String) null, instant, arg1, callable);
+        return createTimerWithArgument(null, instant, arg1, callable);
     }
 
     public Timer createTimerWithArgument(@Nullable String identifier, ZonedDateTime instant, Object arg1,
             Runnable callable) {
         Scheduler scheduler = ScriptServiceUtil.getScheduler();
-        return new TimerImpl(lock, scheduler, instant, () -> {
+        return new TimerImpl(scheduler, instant, () -> {
             synchronized (lock) {
                 callable.run();
             }

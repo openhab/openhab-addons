@@ -17,6 +17,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.automation.module.script.ScriptExtensionProvider;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
@@ -60,7 +61,7 @@ public abstract class AbstractScriptExtensionProvider implements ScriptExtension
     }
 
     @Override
-    public Object get(String scriptIdentifier, String type) throws IllegalArgumentException {
+    public @Nullable Object get(String scriptIdentifier, String type) throws IllegalArgumentException {
 
         Map<String, Object> forScript = idToTypes.computeIfAbsent(scriptIdentifier, k -> new HashMap<>());
         return forScript.computeIfAbsent(type,

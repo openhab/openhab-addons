@@ -36,16 +36,14 @@ public class TimerImpl implements Timer {
     private final ZonedDateTime startTime;
     private final SchedulerRunnable runnable;
     private final @Nullable String identifier;
-    private final Object lock;
     private ScheduledCompletableFuture<?> future;
 
-    public TimerImpl(Object lock, Scheduler scheduler, ZonedDateTime startTime, SchedulerRunnable runnable) {
-        this(lock, scheduler, startTime, runnable, null);
+    public TimerImpl(Scheduler scheduler, ZonedDateTime startTime, SchedulerRunnable runnable) {
+        this(scheduler, startTime, runnable, null);
     }
 
-    public TimerImpl(Object lock, Scheduler scheduler, ZonedDateTime startTime, SchedulerRunnable runnable,
+    public TimerImpl(Scheduler scheduler, ZonedDateTime startTime, SchedulerRunnable runnable,
             @Nullable String identifier) {
-        this.lock = lock;
         this.scheduler = scheduler;
         this.startTime = startTime;
         this.runnable = runnable;
