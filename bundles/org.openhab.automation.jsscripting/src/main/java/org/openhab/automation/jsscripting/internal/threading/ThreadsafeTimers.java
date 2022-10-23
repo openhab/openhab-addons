@@ -15,8 +15,6 @@ package org.openhab.automation.jsscripting.internal.threading;
 import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.xtext.xbase.lib.Procedures.Procedure0;
-import org.eclipse.xtext.xbase.lib.Procedures.Procedure1;
 import org.openhab.automation.jsscripting.internal.TimerImpl;
 import org.openhab.core.model.script.ScriptServiceUtil;
 import org.openhab.core.model.script.actions.Timer;
@@ -35,31 +33,31 @@ public class ThreadsafeTimers {
         this.lock = lock;
     }
 
-    public Timer createTimer(ZonedDateTime instant, Procedure0 closure) {
-        return createTimer((String) null, instant, closure);
+    public Timer createTimer(ZonedDateTime instant, Runnable callable) {
+        return createTimer((String) null, instant, callable);
     }
 
-    public Timer createTimer(@Nullable String identifier, ZonedDateTime instant, Procedure0 closure) {
+    public Timer createTimer(@Nullable String identifier, ZonedDateTime instant, Runnable callable) {
         Scheduler scheduler = ScriptServiceUtil.getScheduler();
 
         return new TimerImpl(lock, scheduler, instant, () -> {
             synchronized (lock) {
-                closure.apply();
+                callable.run();
             }
 
         }, identifier);
     }
 
-    public Timer createTimerWithArgument(ZonedDateTime instant, Object arg1, Procedure1<Object> closure) {
-        return createTimerWithArgument((String) null, instant, arg1, closure);
+    public Timer createTimerWithArgument(ZonedDateTime instant, Object arg1, Runnable callable) {
+        return createTimerWithArgument((String) null, instant, arg1, callable);
     }
 
     public Timer createTimerWithArgument(@Nullable String identifier, ZonedDateTime instant, Object arg1,
-            Procedure1<Object> closure) {
+            Runnable callable) {
         Scheduler scheduler = ScriptServiceUtil.getScheduler();
         return new TimerImpl(lock, scheduler, instant, () -> {
             synchronized (lock) {
-                closure.apply(arg1);
+                callable.run();
             }
 
         }, identifier);

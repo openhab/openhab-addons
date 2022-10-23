@@ -26,7 +26,6 @@
     <asm.version>6.2.1</asm.version>
     <oh.version>${project.version}</oh.version>
     <ohjs.version>openhab@2.0.4</ohjs.version>
-    <xtext.version>2.28.0</xtext.version>
   </properties>
 
   <build>
@@ -140,13 +139,6 @@
       <groupId>com.ibm.icu</groupId>
       <artifactId>icu4j</artifactId>
       <version>69.1</version>
-    </dependency>
-
-    <!-- include as this is required for the ThreadsafeTimers and not exported from core -->
-    <dependency>
-      <groupId>org.eclipse.xtext</groupId>
-      <artifactId>org.eclipse.xtext.xbase.lib</artifactId>
-      <version>${xtext.version}</version>
     </dependency>
 
     <!-- include as version required is older than OH provides -->
