@@ -36,7 +36,6 @@ import java.util.function.Function;
 import javax.script.ScriptContext;
 import javax.script.ScriptException;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.Engine;
@@ -73,8 +72,8 @@ public class OpenhabGraalJSScriptEngine
     private final Object lock;
 
     // these fields start as null because they are populated on first use
-    private @NonNullByDefault({}) String engineIdentifier;
-    private @NonNullByDefault({}) Consumer<String> scriptDependencyListener;
+    private String engineIdentifier;
+    private Consumer<String> scriptDependencyListener;
 
     private boolean initialized = false;
     private String globalScript;

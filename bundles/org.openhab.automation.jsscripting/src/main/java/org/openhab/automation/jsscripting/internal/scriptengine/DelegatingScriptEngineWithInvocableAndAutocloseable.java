@@ -22,6 +22,8 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 import javax.script.ScriptException;
 
+import org.eclipse.jdt.annotation.NonNull;
+
 /**
  * {@link ScriptEngine} implementation that delegates to a supplied ScriptEngine instance. Allows overriding specific
  * methods.
@@ -30,9 +32,10 @@ import javax.script.ScriptException;
  */
 public abstract class DelegatingScriptEngineWithInvocableAndAutocloseable<T extends ScriptEngine & Invocable & AutoCloseable>
         implements ScriptEngine, Invocable, AutoCloseable {
+    @NonNull
     protected T delegate;
 
-    public DelegatingScriptEngineWithInvocableAndAutocloseable(T delegate) {
+    public DelegatingScriptEngineWithInvocableAndAutocloseable(@NonNull T delegate) {
         this.delegate = delegate;
     }
 
