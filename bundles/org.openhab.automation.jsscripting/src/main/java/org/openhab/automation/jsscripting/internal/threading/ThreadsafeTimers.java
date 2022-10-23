@@ -68,7 +68,8 @@ public class ThreadsafeTimers {
 
     /**
      * This is an implementation of the {@link Timer} interface.
-     * Copy of {@link org.openhab.core.model.script.internal.actions.TimerImpl} as this is not accessible from outside the
+     * Copy of {@link org.openhab.core.model.script.internal.actions.TimerImpl} as this is not accessible from outside
+     * the
      * package.
      *
      * @author Kai Kreuzer - Initial contribution
