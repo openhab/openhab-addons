@@ -692,6 +692,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
             localServiceRegistration.unregister();
             serviceRegistration = null;
         }
+        propertiesInitializedSuccessfully = false;
     }
 
     @Override
