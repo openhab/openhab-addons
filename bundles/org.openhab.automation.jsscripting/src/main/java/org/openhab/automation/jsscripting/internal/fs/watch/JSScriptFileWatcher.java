@@ -32,7 +32,6 @@ import org.openhab.core.service.ReadyService;
  */
 public class JSScriptFileWatcher extends ScriptFileWatcher {
     private static final String FILE_DIRECTORY = "automation" + File.separator + "js";
-    // private static final String IGNORE_DIR_NAME = "node_modules";
 
     private final String ignorePath;
 

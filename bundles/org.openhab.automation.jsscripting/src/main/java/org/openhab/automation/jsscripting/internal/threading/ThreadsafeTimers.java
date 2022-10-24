@@ -25,9 +25,9 @@ import org.openhab.core.scheduler.SchedulerRunnable;
 
 /**
  * A replacement for the timer functionality of {@link org.openhab.core.model.script.actions.ScriptExecution
- * ScriptExecution} which controls multithreaded execution access to the single-threaded GraalJS Contexts.
+ * ScriptExecution} which controls multithreaded execution access to the single-threaded GraalJS contexts.
  *
- * @author Florian Hotze
+ * @author Florian Hotze - Initial contribution
  */
 public class ThreadsafeTimers {
     private final Object lock;
