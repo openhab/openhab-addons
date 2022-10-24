@@ -16,9 +16,12 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.meater.internal.MeaterBindingConstants;
 import org.openhab.binding.meater.internal.handler.MeaterBridgeHandler;
 import org.openhab.core.io.console.Console;
+import org.openhab.core.io.console.ConsoleCommandCompleter;
+import org.openhab.core.io.console.StringsCompleter;
 import org.openhab.core.io.console.extensions.AbstractConsoleCommandExtension;
 import org.openhab.core.io.console.extensions.ConsoleCommandExtension;
 import org.openhab.core.thing.Thing;
@@ -35,9 +38,10 @@ import org.osgi.service.component.annotations.Reference;
  */
 @NonNullByDefault
 @Component(service = ConsoleCommandExtension.class)
-public class MeaterCommandExtension extends AbstractConsoleCommandExtension {
+public class MeaterCommandExtension extends AbstractConsoleCommandExtension implements ConsoleCommandCompleter {
 
     private static final String SHOW_IDS = "showIds";
+    private static final StringsCompleter SUBCMD_COMPLETER = new StringsCompleter(List.of(SHOW_IDS), false);
 
     private final ThingRegistry thingRegistry;
 
@@ -69,5 +73,18 @@ public class MeaterCommandExtension extends AbstractConsoleCommandExtension {
     @Override
     public List<String> getUsages() {
         return Arrays.asList(buildCommandUsage(SHOW_IDS, "list all probes"));
+    }
+
+    @Override
+    public @Nullable ConsoleCommandCompleter getCompleter() {
+        return this;
+    }
+
+    @Override
+    public boolean complete(String[] args, int cursorArgumentIndex, int cursorPosition, List<String> candidates) {
+        if (cursorArgumentIndex <= 0) {
+            return SUBCMD_COMPLETER.complete(args, cursorArgumentIndex, cursorPosition, candidates);
+        }
+        return false;
     }
 }
