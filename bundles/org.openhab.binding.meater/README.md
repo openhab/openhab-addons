@@ -18,14 +18,18 @@ This binding supports the following thing types:
 
 ## Discovery
 
-The preferred way of adding MEATER probe(s) since the probe IDs are not easily found.
+The binding supports auto-discovery of all MEATER probes belonging to the configured cloud API account.
 
 **NOTE**: For The Original MEATER and MEATER Plus you need to have your MEATER app running and the MEATER probe(s) must connected to the cloud (out of the charger box) before you start the discovery.
 
-
 After the configuration of the Bridge, you need to perform a manual scan and then your MEATER probe(s) will be automatically discovered and placed as a thing(s) in the inbox.
 
+## Thing Configuration
 
+When manually configuring the probes, the console command `openhab:meater showIds` can be used to identify the IDs of all connected probes.
+Since the probes are unnamed, they can be hard to identify.
+For this reason, the ambient temperature is included in the list.
+This might help isolating an individual probe.
 
 ## Supported Things and Channels
 
