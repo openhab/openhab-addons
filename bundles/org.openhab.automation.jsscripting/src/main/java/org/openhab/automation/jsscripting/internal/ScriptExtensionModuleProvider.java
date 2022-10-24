@@ -29,6 +29,7 @@ import org.openhab.core.automation.module.script.rulesupport.shared.ScriptedAuto
  * Class providing script extensions via CommonJS modules.
  *
  * @author Jonathan Gilbert - Initial contribution
+ * @author Florian Hotze - Pass in lock object for multi-thread synchronization
  */
 
 @NonNullByDefault
@@ -36,11 +37,13 @@ public class ScriptExtensionModuleProvider {
 
     private static final String RUNTIME_MODULE_PREFIX = "@runtime";
     private static final String DEFAULT_MODULE_NAME = "Defaults";
+    private final Object lock;
 
     private final ScriptExtensionAccessor scriptExtensionAccessor;
 
-    public ScriptExtensionModuleProvider(ScriptExtensionAccessor scriptExtensionAccessor) {
+    public ScriptExtensionModuleProvider(ScriptExtensionAccessor scriptExtensionAccessor, Object lock) {
         this.scriptExtensionAccessor = scriptExtensionAccessor;
+        this.lock = lock;
     }
 
     public ModuleLocator locatorFor(Context ctx, String engineIdentifier) {
@@ -94,7 +97,7 @@ public class ScriptExtensionModuleProvider {
         for (Map.Entry<String, Object> entry : rv.entrySet()) {
             if (entry.getValue() instanceof ScriptedAutomationManager) {
                 entry.setValue(new ThreadsafeWrappingScriptedAutomationManagerDelegate(
-                        (ScriptedAutomationManager) entry.getValue()));
+                        (ScriptedAutomationManager) entry.getValue(), lock));
             }
         }
 

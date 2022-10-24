@@ -14,6 +14,7 @@
 package org.openhab.automation.jsscripting.internal.scriptengine;
 
 import java.io.Reader;
+import java.util.Objects;
 
 import javax.script.Bindings;
 import javax.script.Invocable;
@@ -21,6 +22,8 @@ import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 import javax.script.ScriptException;
+
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * {@link ScriptEngine} implementation that delegates to a supplied ScriptEngine instance. Allows overriding specific
@@ -37,83 +40,87 @@ public abstract class DelegatingScriptEngineWithInvocableAndAutocloseable<T exte
     }
 
     @Override
-    public Object eval(String s, ScriptContext scriptContext) throws ScriptException {
-        return delegate.eval(s, scriptContext);
+    public @Nullable Object eval(String s, ScriptContext scriptContext) throws ScriptException {
+        return Objects.nonNull(delegate) ? delegate.eval(s, scriptContext) : null;
     }
 
     @Override
-    public Object eval(Reader reader, ScriptContext scriptContext) throws ScriptException {
-        return delegate.eval(reader, scriptContext);
+    public @Nullable Object eval(Reader reader, ScriptContext scriptContext) throws ScriptException {
+        return Objects.nonNull(delegate) ? delegate.eval(reader, scriptContext) : null;
     }
 
     @Override
-    public Object eval(String s) throws ScriptException {
-        return delegate.eval(s);
+    public @Nullable Object eval(String s) throws ScriptException {
+        return Objects.nonNull(delegate) ? delegate.eval(s) : null;
     }
 
     @Override
-    public Object eval(Reader reader) throws ScriptException {
-        return delegate.eval(reader);
+    public @Nullable Object eval(Reader reader) throws ScriptException {
+        return Objects.nonNull(delegate) ? delegate.eval(reader) : null;
     }
 
     @Override
-    public Object eval(String s, Bindings bindings) throws ScriptException {
-        return delegate.eval(s, bindings);
+    public @Nullable Object eval(String s, Bindings bindings) throws ScriptException {
+        return Objects.nonNull(delegate) ? delegate.eval(s, bindings) : null;
     }
 
     @Override
-    public Object eval(Reader reader, Bindings bindings) throws ScriptException {
-        return delegate.eval(reader, bindings);
+    public @Nullable Object eval(Reader reader, Bindings bindings) throws ScriptException {
+        return Objects.nonNull(delegate) ? delegate.eval(reader, bindings) : null;
     }
 
     @Override
     public void put(String s, Object o) {
-        delegate.put(s, o);
+        if (Objects.nonNull(delegate))
+            delegate.put(s, o);
     }
 
     @Override
-    public Object get(String s) {
-        return delegate.get(s);
+    public @Nullable Object get(String s) {
+        return Objects.nonNull(delegate) ? delegate.get(s) : null;
     }
 
     @Override
-    public Bindings getBindings(int i) {
-        return delegate.getBindings(i);
+    public @Nullable Bindings getBindings(int i) {
+        return Objects.nonNull(delegate) ? delegate.getBindings(i) : null;
     }
 
     @Override
     public void setBindings(Bindings bindings, int i) {
-        delegate.setBindings(bindings, i);
+        if (Objects.nonNull(delegate))
+            delegate.setBindings(bindings, i);
     }
 
     @Override
-    public Bindings createBindings() {
-        return delegate.createBindings();
+    public @Nullable Bindings createBindings() {
+        return Objects.nonNull(delegate) ? delegate.createBindings() : null;
     }
 
     @Override
-    public ScriptContext getContext() {
-        return delegate.getContext();
+    public @Nullable ScriptContext getContext() {
+        return Objects.nonNull(delegate) ? delegate.getContext() : null;
     }
 
     @Override
     public void setContext(ScriptContext scriptContext) {
-        delegate.setContext(scriptContext);
+        if (Objects.nonNull(delegate))
+            delegate.setContext(scriptContext);
     }
 
     @Override
-    public ScriptEngineFactory getFactory() {
-        return delegate.getFactory();
+    public @Nullable ScriptEngineFactory getFactory() {
+        return Objects.nonNull(delegate) ? delegate.getFactory() : null;
     }
 
     @Override
-    public Object invokeMethod(Object o, String s, Object... objects) throws ScriptException, NoSuchMethodException {
-        return delegate.invokeMethod(o, s, objects);
+    public @Nullable Object invokeMethod(Object o, String s, Object... objects)
+            throws ScriptException, NoSuchMethodException {
+        return Objects.nonNull(delegate) ? delegate.invokeMethod(o, s, objects) : null;
     }
 
     @Override
-    public Object invokeFunction(String s, Object... objects) throws ScriptException, NoSuchMethodException {
-        return delegate.invokeFunction(s, objects);
+    public @Nullable Object invokeFunction(String s, Object... objects) throws ScriptException, NoSuchMethodException {
+        return Objects.nonNull(delegate) ? delegate.invokeFunction(s, objects) : null;
     }
 
     @Override
@@ -128,6 +135,7 @@ public abstract class DelegatingScriptEngineWithInvocableAndAutocloseable<T exte
 
     @Override
     public void close() throws Exception {
-        delegate.close();
+        if (Objects.nonNull(delegate))
+            delegate.close();
     }
 }
