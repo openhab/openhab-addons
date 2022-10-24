@@ -18,7 +18,7 @@ This binding supports the following thing types:
 
 ## Discovery
 
-The binding supports auto-discovery of all MEATER probe(s) belonging to the configured cloud API account.
+The binding supports auto-discovery of all MEATER probes belonging to the configured cloud API account.
 
 **NOTE**: For The Original MEATER and MEATER Plus you need to have your MEATER app running and the MEATER probe(s) must connected to the cloud (out of the charger box) before you start the discovery.
 
