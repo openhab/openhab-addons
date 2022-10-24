@@ -38,9 +38,20 @@ import io.github.hapjava.services.Service;
 public class DummyHomekitAccessory implements HomekitAccessory {
     private static class DummyCharacteristic implements Characteristic {
         private JsonObject json;
+        private String type;
 
         public DummyCharacteristic(JsonObject json) {
             this.json = json;
+            type = json.getString("type");
+            // reconstitute shortened IDs
+            if (type.length() < 8) {
+                type = "0".repeat(8 - type.length()) + type + "-0000-1000-8000-0026BB765291";
+            }
+        }
+
+        @Override
+        public String getType() {
+            return type;
         }
 
         @Override

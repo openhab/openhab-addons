@@ -281,22 +281,35 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
 
     private synchronized void applyUpdates() {
         logger.trace("Apply updates");
-        boolean changed = false;
-        boolean removed = false;
-        for (final String name : pendingUpdates) {
-            String oldValue = knownAccessories.get(name);
-            accessoryRegistry.remove(name);
-            logger.trace(" Add items {}", name);
-            getItemOptional(name).ifPresent(this::createRootAccessories);
-            if (accessoryChanged(name, oldValue)) {
-                changed = true;
-            }
+
+        HomekitRoot bridge = accessoryRegistry.getBridge();
+        if (bridge != null) {
+            bridge.batchUpdate();
         }
-        pendingUpdates.clear();
-        if (checkMissingAccessories() || changed) {
-            makeNewConfigurationRevision();
-        } else if (newDummies) {
-            checkForDummyAccessories();
+
+        boolean changed = false;
+        try {
+            boolean removed = false;
+            for (final String name : pendingUpdates) {
+                String oldValue = knownAccessories.get(name);
+                accessoryRegistry.remove(name);
+                logger.trace(" Add items {}", name);
+                getItemOptional(name).ifPresent(this::createRootAccessories);
+                if (accessoryChanged(name, oldValue)) {
+                    logger.error("{} changed", name);
+                    changed = true;
+                }
+            }
+            pendingUpdates.clear();
+            if (checkMissingAccessories() || changed) {
+                makeNewConfigurationRevision();
+            } else if (newDummies) {
+                checkForDummyAccessories();
+            }
+        } finally {
+            if (bridge != null) {
+                bridge.completeUpdateBatch();
+            }
         }
     }
 

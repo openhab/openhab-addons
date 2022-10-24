@@ -87,6 +87,10 @@ class HomekitAccessoryRegistry {
         bridge = null;
     }
 
+    public synchronized HomekitRoot getBridge() {
+        return bridge;
+    }
+
     public synchronized void addRootAccessory(String itemName, HomekitAccessory accessory) {
         createdAccessories.put(itemName, accessory);
         final HomekitRoot bridge = this.bridge;
