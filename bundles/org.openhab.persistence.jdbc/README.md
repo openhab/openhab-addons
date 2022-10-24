@@ -90,7 +90,7 @@ url=jdbc:postgresql://192.168.0.1:5432/testPostgresql
 
 To avoid numbered suffixes entirely, `tableUseRealItemNames` and `tableCaseSensitiveItemNames` must both be enabled.
 With this configuration, tables are named exactly like their corresponding items.
-In order for this to work correctly, the underlying OS, database server and configuration must support case sensitive table names.
+In order for this to work correctly, the underlying operating system, database server and configuration must support case sensitive table names.
 For MySQL, see [MySQL: Identifier Case Sensitivity](https://dev.mysql.com/doc/refman/8.0/en/identifier-case-sensitivity.html) for more information.
 
 ### Migration from MySQL to JDBC Persistence Services
