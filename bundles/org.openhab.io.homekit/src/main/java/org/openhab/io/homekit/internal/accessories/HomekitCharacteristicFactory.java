@@ -18,7 +18,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -301,6 +300,11 @@ public class HomekitCharacteristicFactory {
 
     public static double convertFromCelsius(double degrees) {
         return convertAndRound(degrees, SIUnits.CELSIUS, useFahrenheit() ? ImperialUnits.FAHRENHEIT : SIUnits.CELSIUS);
+    }
+
+    public static double getTemperatureStep(HomekitTaggedItem taggedItem, double defaultValue) {
+        return taggedItem.getConfigurationAsQuantity(HomekitTaggedItem.STEP,
+                new QuantityType(defaultValue, SIUnits.CELSIUS), true).doubleValue();
     }
 
     private static Supplier<CompletableFuture<Integer>> getAngleSupplier(HomekitTaggedItem taggedItem,
@@ -616,34 +620,16 @@ public class HomekitCharacteristicFactory {
 
     private static ColorTemperatureCharacteristic createColorTemperatureCharacteristic(HomekitTaggedItem taggedItem,
             HomekitAccessoryUpdater updater) {
-        // Check if units are expressed in Kelvin, not mireds, and adjust
-        // the min/max appropriately
-        Unit unit = null;
-        var numberItem = taggedItem.getBaseItem();
-        if (numberItem instanceof NumberItem) {
-            unit = ((NumberItem) numberItem).getUnit();
-        }
-        if (unit == null) {
-            unit = Units.MIRED;
-        }
-        final Unit finalUnit = unit;
-
         final boolean inverted = taggedItem.isInverted();
 
-        if (!unit.equals(Units.KELVIN) && !unit.equals(Units.MIRED)) {
-            logger.warn("Item {} must be in either K or mired. Given {}.", taggedItem.getName(), unit);
-            return new ColorTemperatureCharacteristic(null, null, null, null);
-        }
-
-        var minValueQt = taggedItem.getConfigurationAsQuantity(HomekitTaggedItem.MIN_VALUE,
-                Objects.requireNonNull(new QuantityType(ColorTemperatureCharacteristic.DEFAULT_MIN_VALUE, Units.MIRED)
-                        .toInvertibleUnit(unit)));
-        var maxValueQt = taggedItem.getConfigurationAsQuantity(HomekitTaggedItem.MAX_VALUE,
-                Objects.requireNonNull(new QuantityType(ColorTemperatureCharacteristic.DEFAULT_MAX_VALUE, Units.MIRED)
-                        .toInvertibleUnit(unit)));
-
-        int minValue = minValueQt.toInvertibleUnit(Units.MIRED).intValue();
-        int maxValue = maxValueQt.toInvertibleUnit(Units.MIRED).intValue();
+        int minValue = taggedItem
+                .getConfigurationAsQuantity(HomekitTaggedItem.MIN_VALUE,
+                        new QuantityType(ColorTemperatureCharacteristic.DEFAULT_MIN_VALUE, Units.MIRED), false)
+                .intValue();
+        int maxValue = taggedItem
+                .getConfigurationAsQuantity(HomekitTaggedItem.MAX_VALUE,
+                        new QuantityType(ColorTemperatureCharacteristic.DEFAULT_MAX_VALUE, Units.MIRED), false)
+                .intValue();
 
         // It's common to swap these if you're providing in Kelvin instead of mired
         if (minValue > maxValue) {
@@ -804,9 +790,8 @@ public class HomekitCharacteristicFactory {
                 HomekitTaggedItem.MIN_VALUE, CoolingThresholdTemperatureCharacteristic.DEFAULT_MIN_VALUE));
         double maxValue = HomekitCharacteristicFactory.convertToCelsius(taggedItem.getConfigurationAsDouble(
                 HomekitTaggedItem.MAX_VALUE, CoolingThresholdTemperatureCharacteristic.DEFAULT_MAX_VALUE));
-        return new CoolingThresholdTemperatureCharacteristic(minValue, maxValue,
-                taggedItem.getConfigurationAsDouble(HomekitTaggedItem.STEP,
-                        CoolingThresholdTemperatureCharacteristic.DEFAULT_STEP),
+        double step = getTemperatureStep(taggedItem, CoolingThresholdTemperatureCharacteristic.DEFAULT_STEP);
+        return new CoolingThresholdTemperatureCharacteristic(minValue, maxValue, step,
                 getTemperatureSupplier(taggedItem, minValue), setTemperatureConsumer(taggedItem),
                 getSubscriber(taggedItem, COOLING_THRESHOLD_TEMPERATURE, updater),
                 getUnsubscriber(taggedItem, COOLING_THRESHOLD_TEMPERATURE, updater));
@@ -818,9 +803,8 @@ public class HomekitCharacteristicFactory {
                 HomekitTaggedItem.MIN_VALUE, HeatingThresholdTemperatureCharacteristic.DEFAULT_MIN_VALUE));
         double maxValue = HomekitCharacteristicFactory.convertToCelsius(taggedItem.getConfigurationAsDouble(
                 HomekitTaggedItem.MAX_VALUE, HeatingThresholdTemperatureCharacteristic.DEFAULT_MAX_VALUE));
-        return new HeatingThresholdTemperatureCharacteristic(minValue, maxValue,
-                taggedItem.getConfigurationAsDouble(HomekitTaggedItem.STEP,
-                        HeatingThresholdTemperatureCharacteristic.DEFAULT_STEP),
+        double step = getTemperatureStep(taggedItem, HeatingThresholdTemperatureCharacteristic.DEFAULT_STEP);
+        return new HeatingThresholdTemperatureCharacteristic(minValue, maxValue, step,
                 getTemperatureSupplier(taggedItem, minValue), setTemperatureConsumer(taggedItem),
                 getSubscriber(taggedItem, HEATING_THRESHOLD_TEMPERATURE, updater),
                 getUnsubscriber(taggedItem, HEATING_THRESHOLD_TEMPERATURE, updater));

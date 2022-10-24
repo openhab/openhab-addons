@@ -18,6 +18,8 @@ import java.math.BigDecimal;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.measure.Unit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.items.GroupItem;
@@ -415,14 +417,34 @@ public class HomekitTaggedItem {
      * @param defaultValue default value
      * @return value
      */
-    public QuantityType getConfigurationAsQuantity(String key, QuantityType defaultValue) {
+    public QuantityType<?> getConfigurationAsQuantity(String key, QuantityType defaultValue,
+            boolean relativeConversion) {
         String stringValue = getConfiguration(key, new String());
         if (stringValue.isEmpty()) {
             return defaultValue;
         }
         var parsedValue = new QuantityType(stringValue);
-        var convertedValue = parsedValue.toInvertibleUnit(defaultValue.getUnit());
-        // not convertible? just assume it's in the expected unit
+        QuantityType<?> convertedValue;
+
+        if (relativeConversion) {
+            convertedValue = parsedValue.toUnitRelative(defaultValue.getUnit());
+        } else {
+            convertedValue = parsedValue.toInvertibleUnit(defaultValue.getUnit());
+        }
+        // not convertible? just assume it's in the item's unit
+        if (convertedValue == null) {
+            Unit unit;
+            if (getBaseItem() instanceof NumberItem && (unit = ((NumberItem) getBaseItem()).getUnit()) != null) {
+                var bdValue = new BigDecimal(stringValue);
+                parsedValue = new QuantityType(bdValue, unit);
+                if (relativeConversion) {
+                    convertedValue = parsedValue.toUnitRelative(defaultValue.getUnit());
+                } else {
+                    convertedValue = parsedValue.toInvertibleUnit(defaultValue.getUnit());
+                }
+            }
+        }
+        // still not convertible? just assume it's in the default's unit
         if (convertedValue == null) {
             return new QuantityType(parsedValue.toBigDecimal(), defaultValue.getUnit());
         }
