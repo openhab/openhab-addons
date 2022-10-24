@@ -9,24 +9,19 @@ By using rules, it possible to control other Things such lighting, projector len
 Finally, any other command that is supported by the control protocol can be sent to the component through rules.
 See [Kaleidescape-System-Control-Protocol-Reference-Manual.pdf](https://support.kaleidescape.com/article/Control-Protocol-Reference-Manual) for a reference of available commands.
 
-All movie player components including the original K-Player series, M Class Players, Cinema One, Alto, and Strato are supported.
-The 4-zone audio only KMUSIC-4000 is not supported.
-
-The binding supports two different kinds of connections:
-
-* direct IP connection (preferred),
-* serial connection (19200-8-N-1)
-
 ## Supported Things
 
-There are four supported thing types, which represent the different models of Kaleidescape components.
+All movie player components including the original K-Player series, M Class Players, Cinema One, Alto, and Strato are supported.
+The 4-zone audio only KMUSIC-4000 is not supported.
 It is important to choose the correct thing type to ensure the available channels are correct for the component being used.  
 
 The supported thing types are:  
 `player` Any KPlayer, M Class [M300, M500, M700] or Cinema One 1st Gen player  
 `cinemaone` Cinema One (2nd Gen)  
 `alto`  
-`strato` Includes Strato, Strato S, or Strato C   
+`strato` Includes Strato, Strato S, or Strato C  
+
+The binding supports either a TCP/IP connection or direct serial port connection (19200-8-N-1) to the Kaleidescape component.  
 
 ## Discovery
 
