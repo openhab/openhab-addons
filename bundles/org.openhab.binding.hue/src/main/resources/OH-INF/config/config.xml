@@ -117,7 +117,7 @@
 	<config-description uri="thing-type:hue:group">
 		<parameter name="groupId" type="text" required="true">
 			<label>Group ID</label>
-			<description>The group identifier identifies one certain hue group or room.</description>
+			<description>The group identifier identifies one certain Hue group or room.</description>
 		</parameter>
 		<parameter name="fadetime" type="integer" min="0" step="100" unit="ms">
 			<label>@text/config.fadetime.label</label>

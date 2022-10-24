@@ -12,15 +12,16 @@
  */
 package org.openhab.binding.hue.internal;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.hue.internal.dto.ApiVersion;
 
 /**
- *
- *
  * @author Samuel Leisering - Initial contribution
  */
+@NonNullByDefault
 public class ApiVersionTest {
 
     @Test

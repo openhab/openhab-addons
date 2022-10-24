@@ -185,6 +185,14 @@ public class ValueTests {
     }
 
     @Test
+    public void numberUpdateMireds() {
+        NumberValue v = new NumberValue(null, null, new BigDecimal(10), Units.MIRED);
+
+        v.update(new QuantityType<>(2700, Units.KELVIN));
+        assertThat(v.getMQTTpublishValue("%.0f"), is("370"));
+    }
+
+    @Test
     public void numberPercentageUpdate() {
         NumberValue v = new NumberValue(null, null, new BigDecimal(10), Units.PERCENT);
 

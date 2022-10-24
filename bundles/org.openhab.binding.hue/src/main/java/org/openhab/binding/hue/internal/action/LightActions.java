@@ -26,7 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link LightActions} defines {@link ThingActions} for the hue lights.
+ * The {@link LightActions} defines {@link ThingActions} for the Hue lights.
  *
  * @author Jochen Leopold - Initial contribution
  */

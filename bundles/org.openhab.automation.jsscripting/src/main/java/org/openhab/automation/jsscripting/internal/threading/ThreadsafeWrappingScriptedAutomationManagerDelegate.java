@@ -31,15 +31,17 @@ import org.openhab.core.automation.type.TriggerType;
  * instance of this class that they are registered with.
  *
  * @author Jonathan Gilbert - Initial contribution
+ * @author Florian Hotze - Pass in lock object for multi-thread synchronization
  */
 @NonNullByDefault
 public class ThreadsafeWrappingScriptedAutomationManagerDelegate {
 
     private ScriptedAutomationManager delegate;
-    private Object lock = new Object();
+    private final Object lock;
 
-    public ThreadsafeWrappingScriptedAutomationManagerDelegate(ScriptedAutomationManager delegate) {
+    public ThreadsafeWrappingScriptedAutomationManagerDelegate(ScriptedAutomationManager delegate, Object lock) {
         this.delegate = delegate;
+        this.lock = lock;
     }
 
     public void removeModuleType(String UID) {
