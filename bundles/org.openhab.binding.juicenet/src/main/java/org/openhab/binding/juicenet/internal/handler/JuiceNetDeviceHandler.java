@@ -28,6 +28,7 @@ import java.util.concurrent.TimeoutException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.juicenet.internal.api.JuiceNetApi;
 import org.openhab.binding.juicenet.internal.api.JuiceNetApiException;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -59,6 +60,8 @@ public class JuiceNetDeviceHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(JuiceNetDeviceHandler.class);
 
+    protected final TimeZoneProvider timeZoneProvider;
+
     protected String name = "";
     protected String id = "";
     protected String token = "";
@@ -71,8 +74,10 @@ public class JuiceNetDeviceHandler extends BaseThingHandler {
     JuiceNetApi.JuiceNetApiTouSchedule deviceTouSchedule = new JuiceNetApi.JuiceNetApiTouSchedule();
     JuiceNetApi.JuiceNetApiCar deviceCar = new JuiceNetApi.JuiceNetApiCar();
 
-    public JuiceNetDeviceHandler(Thing thing) {
+    public JuiceNetDeviceHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
         super(thing);
+
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -113,7 +118,7 @@ public class JuiceNetDeviceHandler extends BaseThingHandler {
 
         scheduler.execute(() -> {
             try {
-                _queryDeviceStatusAndInfo();
+                tryQueryDeviceStatusAndInfo();
             } catch (JuiceNetApiException | IOException | InterruptedException | TimeoutException
                     | ExecutionException e) {
                 handleApiException(e);
@@ -230,7 +235,7 @@ public class JuiceNetDeviceHandler extends BaseThingHandler {
         }
     }
 
-    public void _queryDeviceStatusAndInfo()
+    public void tryQueryDeviceStatusAndInfo()
             throws JuiceNetApiException, IOException, InterruptedException, TimeoutException, ExecutionException {
         deviceStatus = getApi().queryDeviceStatus(token);
 
@@ -260,12 +265,12 @@ public class JuiceNetDeviceHandler extends BaseThingHandler {
             return;
         }
 
-        if (getThing().getStatus() != ThingStatus.ONLINE) {
+        if (this.getThing().getStatus() != ThingStatus.ONLINE) {
             return;
         }
 
         try {
-            _queryDeviceStatusAndInfo();
+            tryQueryDeviceStatusAndInfo();
         } catch (JuiceNetApiException | IOException | InterruptedException | TimeoutException | ExecutionException e) {
             handleApiException(e);
             return;
@@ -276,10 +281,7 @@ public class JuiceNetDeviceHandler extends BaseThingHandler {
         Instant instant = Instant.ofEpochSecond(localEpochSeconds);
         ZonedDateTime zdt = instant.atZone(ZoneId.of("UTC"));
 
-        Bridge bridge = Objects.requireNonNull(getBridge());
-        JuiceNetBridgeHandler handler = (JuiceNetBridgeHandler) Objects.requireNonNull(bridge.getHandler());
-
-        return zdt.withZoneSameLocal(handler.getTimeZoneProvider().getTimeZone());
+        return zdt.withZoneSameLocal(this.timeZoneProvider.getTimeZone());
     }
 
     protected void refreshStatusChannels() {

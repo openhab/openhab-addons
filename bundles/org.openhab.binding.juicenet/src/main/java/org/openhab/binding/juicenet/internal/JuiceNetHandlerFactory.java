@@ -63,9 +63,9 @@ public class JuiceNetHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(BRIDGE_THING_TYPE)) {
-            return new JuiceNetBridgeHandler((Bridge) thing, httpClientFactory, timeZoneProvider);
+            return new JuiceNetBridgeHandler((Bridge) thing, httpClientFactory.getCommonHttpClient());
         } else if (thingTypeUID.equals(DEVICE_THING_TYPE)) {
-            return new JuiceNetDeviceHandler(thing);
+            return new JuiceNetDeviceHandler(thing, timeZoneProvider);
         }
 
         return null;

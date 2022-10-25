@@ -25,7 +25,6 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
-import org.openhab.core.io.net.http.HttpClientFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,10 +36,10 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class JuiceNetHttp {
     private final Logger logger = LoggerFactory.getLogger(JuiceNetHttp.class);
-    private final HttpClientFactory httpClientFactory;
+    private final HttpClient httpClient;
 
-    public JuiceNetHttp(HttpClientFactory httpClientFactory) throws Exception {
-        this.httpClientFactory = httpClientFactory;
+    public JuiceNetHttp(HttpClient httpClient) throws Exception {
+        this.httpClient = httpClient;
     }
 
     public ContentResponse httpGet(String url, @Nullable Map<String, Object> params)
@@ -56,9 +55,7 @@ public class JuiceNetHttp {
 
     public ContentResponse httpGet(String url, @Nullable String paramString)
             throws IOException, InterruptedException, ExecutionException, TimeoutException {
-        HttpClient httpClient = this.httpClientFactory.getCommonHttpClient();
-
-        return httpClient.GET(url + paramString);
+        return this.httpClient.GET(url + paramString);
     }
 
     public ContentResponse httpPost(String url, @Nullable Map<String, Object> params)
@@ -76,9 +73,7 @@ public class JuiceNetHttp {
             throws IOException, InterruptedException, TimeoutException, ExecutionException {
         logger.trace("{}", postData);
 
-        HttpClient httpClient = this.httpClientFactory.getCommonHttpClient();
-
-        Request request = httpClient.POST(url);
+        Request request = this.httpClient.POST(url);
         request.header(HttpHeader.CONTENT_TYPE, "application/json");
         request.content(new StringContentProvider(postData), "application/json");
 

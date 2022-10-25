@@ -55,22 +55,22 @@ public class JuiceNetBindingConstants {
     public static final String DEVICE_AMPS_LIMIT = "ampsLimit";
     public static final String DEVICE_AMPS_CURRENT = "ampsCurrent";
     public static final String DEVICE_VOLTAGE = "voltage";
-    public static final String DEVICE_ENERGY = "whEnergy";
+    public static final String DEVICE_ENERGY = "energy";
     public static final String DEVICE_SAVINGS = "savings";
-    public static final String DEVICE_POWER = "wattPower";
+    public static final String DEVICE_POWER = "chargingPower";
     public static final String DEVICE_CHARGING_TIME = "secondsCharging";
-    public static final String DEVICE_PLUGINENERGY = "whEnergyAtPlugin";
-    public static final String DEVICE_ENERGYTOADD = "whEnergyToAdd";
-    public static final String DEVICE_LIFETIME_ENERGY = "lifetimeWHEnergy";
+    public static final String DEVICE_PLUGINENERGY = "energyAtPlugin";
+    public static final String DEVICE_ENERGYTOADD = "energyToAdd";
+    public static final String DEVICE_LIFETIME_ENERGY = "lifetimeEnergy";
     public static final String DEVICE_LIFETIME_SAVINGS = "lifetimeSavings";
 
     public static final String DEVICE_GASCOST = "gasCost";
     public static final String DEVICE_FUELCONSUMPTION = "fuelConsumption";
     public static final String DEVICE_ECOST = "ecost";
-    public static final String DEVICE_WHPERMILE = "whPerMile";
+    public static final String DEVICE_WHPERMILE = "energyPerMile";
 
     public static final String DEVICE_CAR_DESCRIPTION = "carDescription";
-    public static final String DEVICE_CAR_BATTERY_SIZE = "carBatterySizeWH";
-    public static final String DEVICE_CAR_BATTERY_RANGE = "carBatteryRangeM";
-    public static final String DEVICE_CAR_CHARGING_RATE = "carChargingRateW";
+    public static final String DEVICE_CAR_BATTERY_SIZE = "carBatterySize";
+    public static final String DEVICE_CAR_BATTERY_RANGE = "carBatteryRange";
+    public static final String DEVICE_CAR_CHARGING_RATE = "carChargingRate";
 }

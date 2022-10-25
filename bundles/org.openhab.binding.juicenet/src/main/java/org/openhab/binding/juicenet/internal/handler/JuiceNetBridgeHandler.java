@@ -25,12 +25,11 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.juicenet.internal.api.JuiceNetApi;
 import org.openhab.binding.juicenet.internal.api.JuiceNetApiException;
 import org.openhab.binding.juicenet.internal.config.JuiceNetBridgeConfiguration;
 import org.openhab.binding.juicenet.internal.discovery.JuiceNetDiscoveryService;
-import org.openhab.core.i18n.TimeZoneProvider;
-import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -55,8 +54,7 @@ public class JuiceNetBridgeHandler extends BaseBridgeHandler {
 
     protected JuiceNetBridgeConfiguration config = new JuiceNetBridgeConfiguration();
     private final JuiceNetApi api = new JuiceNetApi();
-    private final HttpClientFactory httpClientFactory;
-    private final TimeZoneProvider timeZoneProvider;
+    private final HttpClient httpClient;
 
     public JuiceNetApi getApi() {
         return api;
@@ -66,12 +64,10 @@ public class JuiceNetBridgeHandler extends BaseBridgeHandler {
     protected List<JuiceNetApi.JuiceNetApiDevice> listDevices = Collections.<JuiceNetApi.JuiceNetApiDevice> emptyList();
     protected @Nullable JuiceNetDiscoveryService discoveryService;
 
-    public JuiceNetBridgeHandler(Bridge bridge, HttpClientFactory httpClientFactory,
-            TimeZoneProvider timeZoneProvider) {
+    public JuiceNetBridgeHandler(Bridge bridge, HttpClient httpClient) {
         super(bridge);
 
-        this.httpClientFactory = httpClientFactory;
-        this.timeZoneProvider = timeZoneProvider;
+        this.httpClient = httpClient;
     }
 
     @Override
@@ -85,7 +81,7 @@ public class JuiceNetBridgeHandler extends BaseBridgeHandler {
         logger.trace("JuiceNetBridgeHandler:initialize");
 
         try {
-            api.initialize(config.apiToken, this.getThing().getUID(), this.httpClientFactory);
+            api.initialize(config.apiToken, this.getThing().getUID(), this.httpClient);
         } catch (JuiceNetApiException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.toString());
             return;
@@ -188,9 +184,5 @@ public class JuiceNetBridgeHandler extends BaseBridgeHandler {
         } else if (getThing().getStatus() == ThingStatus.ONLINE) {
             queryDevices();
         }
-    }
-
-    public TimeZoneProvider getTimeZoneProvider() {
-        return timeZoneProvider;
     }
 }

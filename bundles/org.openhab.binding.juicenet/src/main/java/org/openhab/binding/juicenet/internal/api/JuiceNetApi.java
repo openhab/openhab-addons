@@ -23,8 +23,8 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
-import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.ThingUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,11 +53,11 @@ public class JuiceNetApi {
     @Nullable
     protected ThingUID bridgeUID;
 
-    public void initialize(String apiToken, ThingUID bridgeUID, HttpClientFactory httpClientFactory) throws Exception {
+    public void initialize(String apiToken, ThingUID bridgeUID, HttpClient httpClient) throws Exception {
         this.apiToken = apiToken;
         this.bridgeUID = bridgeUID;
 
-        httpApi = new JuiceNetHttp(httpClientFactory);
+        httpApi = new JuiceNetHttp(httpClient);
         logger.trace("JuiceNet API initialized");
     }
 
