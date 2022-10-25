@@ -18,8 +18,10 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -27,6 +29,8 @@ import org.openhab.binding.juicenet.internal.api.JuiceNetApi;
 import org.openhab.binding.juicenet.internal.api.JuiceNetApiException;
 import org.openhab.binding.juicenet.internal.config.JuiceNetBridgeConfiguration;
 import org.openhab.binding.juicenet.internal.discovery.JuiceNetDiscoveryService;
+import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -51,6 +55,8 @@ public class JuiceNetBridgeHandler extends BaseBridgeHandler {
 
     protected JuiceNetBridgeConfiguration config = new JuiceNetBridgeConfiguration();
     private final JuiceNetApi api = new JuiceNetApi();
+    private final HttpClientFactory httpClientFactory;
+    private final TimeZoneProvider timeZoneProvider;
 
     public JuiceNetApi getApi() {
         return api;
@@ -60,8 +66,12 @@ public class JuiceNetBridgeHandler extends BaseBridgeHandler {
     protected List<JuiceNetApi.JuiceNetApiDevice> listDevices = Collections.<JuiceNetApi.JuiceNetApiDevice> emptyList();
     protected @Nullable JuiceNetDiscoveryService discoveryService;
 
-    public JuiceNetBridgeHandler(Bridge bridge) {
+    public JuiceNetBridgeHandler(Bridge bridge, HttpClientFactory httpClientFactory,
+            TimeZoneProvider timeZoneProvider) {
         super(bridge);
+
+        this.httpClientFactory = httpClientFactory;
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -75,38 +85,20 @@ public class JuiceNetBridgeHandler extends BaseBridgeHandler {
         logger.trace("JuiceNetBridgeHandler:initialize");
 
         try {
-            api.initialize(config.api_token, this.getThing().getUID());
+            api.initialize(config.apiToken, this.getThing().getUID(), this.httpClientFactory);
         } catch (JuiceNetApiException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.toString());
+            return;
+        } catch (Exception e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.toString());
             return;
         }
 
         updateStatus(ThingStatus.UNKNOWN);
 
-        scheduler.execute(() -> {
-            try {
-                listDevices = api.queryDeviceList();
-            } catch (JuiceNetApiException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.toString());
-                return;
-            } catch (IOException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.toString());
-                return;
-            } catch (InterruptedException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.toString());
-                return;
-            }
+        goOnline();
 
-            for (JuiceNetApi.JuiceNetApiDevice dev : listDevices) {
-                discoveryService.notifyDiscoveryDevice(dev.unit_id, dev.name, dev.token);
-            }
-
-            pollingJob = scheduler.scheduleWithFixedDelay(this::pollDevices, 60, config.refreshInterval,
-                    TimeUnit.SECONDS);
-
-            logger.trace("Bridge is ONLINE");
-            updateStatus(ThingStatus.ONLINE);
-        });
+        pollingJob = scheduler.scheduleWithFixedDelay(this::pollDevices, 60, config.refreshInterval, TimeUnit.SECONDS);
     }
 
     @Override
@@ -129,9 +121,48 @@ public class JuiceNetBridgeHandler extends BaseBridgeHandler {
         return Collections.singleton(JuiceNetDiscoveryService.class);
     }
 
-    private void pollDevices() {
-        logger.debug("pollDevices");
+    public void handleApiException(Exception e) {
+        if (e instanceof JuiceNetApiException) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.toString());
+        } else if (e instanceof IOException) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.toString());
+        } else if (e instanceof InterruptedException) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.toString());
+        } else if (e instanceof TimeoutException) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.toString());
+        } else if (e instanceof ExecutionException) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.toString());
+        } else {
+            logger.error("Unhandled API Exception: {}", e.toString());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.NONE, e.toString());
+        }
+    }
 
+    private void goOnline() {
+        if (getThing().getStatus() == ThingStatus.ONLINE) {
+            return;
+        }
+
+        scheduler.execute(() -> {
+            try {
+                listDevices = api.queryDeviceList();
+            } catch (JuiceNetApiException | IOException | InterruptedException | TimeoutException
+                    | ExecutionException e) {
+                handleApiException(e);
+                return;
+            }
+
+            for (JuiceNetApi.JuiceNetApiDevice dev : listDevices) {
+                discoveryService.notifyDiscoveryDevice(dev.unit_id, dev.name, dev.token);
+            }
+
+            updateStatus(ThingStatus.ONLINE);
+
+            queryDevices();
+        });
+    }
+
+    private void queryDevices() {
         List<Thing> things = getThing().getThings();
 
         for (Thing t : things) {
@@ -144,15 +175,22 @@ public class JuiceNetBridgeHandler extends BaseBridgeHandler {
                 return;
             }
 
-            try {
-                handler.queryDeviceStatusAndInfo();
-            } catch (IOException e) {
-                logger.debug("Unable to open connection to api host: {}", e.getMessage());
-            } catch (InterruptedException e) {
-                logger.debug("Unable to open connection to api host: {}", e.getMessage());
-            } catch (JuiceNetApiException e) {
-                logger.debug("Malformed JuiceNet API error: {}", e.getMessage());
-            }
+            handler.queryDeviceStatusAndInfo();
         }
+    }
+
+    private void pollDevices() {
+        logger.debug("pollDevices");
+
+        if (getThing().getStatus() == ThingStatus.OFFLINE) {
+            goOnline();
+            // queryDevices is called in goOnline after successfully going online
+        } else if (getThing().getStatus() == ThingStatus.ONLINE) {
+            queryDevices();
+        }
+    }
+
+    public TimeZoneProvider getTimeZoneProvider() {
+        return timeZoneProvider;
     }
 }

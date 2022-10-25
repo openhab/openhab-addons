@@ -13,18 +13,19 @@
 package org.openhab.binding.juicenet.internal.api;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpRequest.BodyPublishers;
-import java.net.http.HttpResponse;
-import java.net.http.HttpResponse.BodyHandlers;
-import java.time.Duration;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.http.HttpHeader;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,15 +37,14 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class JuiceNetHttp {
     private final Logger logger = LoggerFactory.getLogger(JuiceNetHttp.class);
+    private final HttpClientFactory httpClientFactory;
 
-    private final HttpClient httpClient = HttpClient.newBuilder().version(HttpClient.Version.HTTP_2)
-            .connectTimeout(Duration.ofSeconds(20)).build();
-
-    public JuiceNetHttp() {
+    public JuiceNetHttp(HttpClientFactory httpClientFactory) throws Exception {
+        this.httpClientFactory = httpClientFactory;
     }
 
-    public HttpResponse<String> httpGet(String url, @Nullable Map<String, Object> params)
-            throws IOException, InterruptedException {
+    public ContentResponse httpGet(String url, @Nullable Map<String, Object> params)
+            throws IOException, InterruptedException, ExecutionException, TimeoutException {
         String paramString = "";
 
         if (params != null) {
@@ -54,15 +54,15 @@ public class JuiceNetHttp {
         return httpGet(url, paramString);
     }
 
-    public HttpResponse<String> httpGet(String url, @Nullable String paramString)
-            throws IOException, InterruptedException {
-        HttpRequest request = HttpRequest.newBuilder(URI.create(url + paramString)).GET().build();
+    public ContentResponse httpGet(String url, @Nullable String paramString)
+            throws IOException, InterruptedException, ExecutionException, TimeoutException {
+        HttpClient httpClient = this.httpClientFactory.getCommonHttpClient();
 
-        return httpClient.send(request, BodyHandlers.ofString());
+        return httpClient.GET(url + paramString);
     }
 
-    public HttpResponse<String> httpPost(String url, @Nullable Map<String, Object> params)
-            throws IOException, InterruptedException {
+    public ContentResponse httpPost(String url, @Nullable Map<String, Object> params)
+            throws IOException, InterruptedException, TimeoutException, ExecutionException {
         String paramString = "";
 
         if (params != null) {
@@ -72,15 +72,17 @@ public class JuiceNetHttp {
         return httpPost(url, paramString);
     }
 
-    public HttpResponse<String> httpPost(String url, String postData) throws IOException, InterruptedException {
+    public ContentResponse httpPost(String url, String postData)
+            throws IOException, InterruptedException, TimeoutException, ExecutionException {
         logger.trace("{}", postData);
 
-        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url)).header("Content-Type", "application/json")
-                .POST(BodyPublishers.ofString(postData)).build();
+        HttpClient httpClient = this.httpClientFactory.getCommonHttpClient();
 
-        HttpResponse<String> response = httpClient.send(request, BodyHandlers.ofString());
+        Request request = httpClient.POST(url);
+        request.header(HttpHeader.CONTENT_TYPE, "application/json");
+        request.content(new StringContentProvider(postData), "application/json");
 
-        return response;
+        return request.send();
     }
 
     public String paramsToUrl(Map<String, Object> params) {

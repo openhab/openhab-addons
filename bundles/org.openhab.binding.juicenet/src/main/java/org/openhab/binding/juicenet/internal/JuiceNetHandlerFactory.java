@@ -20,13 +20,17 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.juicenet.internal.handler.JuiceNetBridgeHandler;
 import org.openhab.binding.juicenet.internal.handler.JuiceNetDeviceHandler;
+import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link JuiceNetHandlerFactory} is responsible for creating things and thing
@@ -39,6 +43,15 @@ import org.osgi.service.component.annotations.Component;
 public class JuiceNetHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(BRIDGE_THING_TYPE, DEVICE_THING_TYPE);
+    private final HttpClientFactory httpClientFactory;
+    private final TimeZoneProvider timeZoneProvider;
+
+    @Activate
+    public JuiceNetHandlerFactory(@Reference HttpClientFactory httpClientFactory,
+            @Reference TimeZoneProvider timeZoneProvider) {
+        this.httpClientFactory = httpClientFactory;
+        this.timeZoneProvider = timeZoneProvider;
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -50,7 +63,7 @@ public class JuiceNetHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(BRIDGE_THING_TYPE)) {
-            return new JuiceNetBridgeHandler((Bridge) thing);
+            return new JuiceNetBridgeHandler((Bridge) thing, httpClientFactory, timeZoneProvider);
         } else if (thingTypeUID.equals(DEVICE_THING_TYPE)) {
             return new JuiceNetDeviceHandler(thing);
         }

@@ -4,12 +4,12 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<bridge-type id="juicenet-account">
+	<bridge-type id="account">
 		<label>JuiceNet Account</label>
 		<description>JuiceNet account</description>
 
 		<config-description>
-			<parameter name="api_token" type="text" required="true">
+			<parameter name="apiToken" type="text" required="true">
 				<label>API Token</label>
 				<description>API Token from the user profile page. (https://home.juice.net/Manage) </description>
 			</parameter>

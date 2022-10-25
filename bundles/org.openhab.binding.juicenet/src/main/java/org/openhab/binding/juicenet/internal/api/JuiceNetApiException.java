@@ -13,21 +13,15 @@
 package org.openhab.binding.juicenet.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.juicenet.internal.handler.JuiceNetBridgeHandler;
 
 /**
- * The {@link JuiceNetBridgeHandler} is responsible for handling commands, which are
- * sent to one of the channels.
+ * {@link JuiceNetApiException} implements an API Exception
  *
  * @author Jeff James - Initial contribution
  */
 @NonNullByDefault
 public class JuiceNetApiException extends Exception {
-
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 5421236828224242152L;
 
     public JuiceNetApiException(String message) {
         super(message);

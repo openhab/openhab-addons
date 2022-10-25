@@ -17,12 +17,13 @@ import static org.openhab.binding.juicenet.internal.JuiceNetBindingConstants.*;
 import java.io.IOException;
 import java.time.Instant;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoField;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.juicenet.internal.api.JuiceNetApi;
@@ -70,10 +71,6 @@ public class JuiceNetDeviceHandler extends BaseThingHandler {
     JuiceNetApi.JuiceNetApiTouSchedule deviceTouSchedule = new JuiceNetApi.JuiceNetApiTouSchedule();
     JuiceNetApi.JuiceNetApiCar deviceCar = new JuiceNetApi.JuiceNetApiCar();
 
-    // This holds the last time the info was updated and is compared everytime we get device status to determine
-    // if the deviceInfo should be updated. Set the time in the past to ensure info is updated on initial call.
-    protected ZonedDateTime infoTimestamp = ZonedDateTime.of(2000, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC);
-
     public JuiceNetDeviceHandler(Thing thing) {
         super(thing);
     }
@@ -89,18 +86,37 @@ public class JuiceNetDeviceHandler extends BaseThingHandler {
 
         updateStatus(ThingStatus.UNKNOWN);
 
-        // Example for background initialization:
+        goOnline();
+    }
+
+    public void handleApiException(Exception e) {
+        if (e instanceof JuiceNetApiException) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.toString());
+        } else if (e instanceof IOException) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.toString());
+        } else if (e instanceof InterruptedException) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.toString());
+        } else if (e instanceof TimeoutException) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.toString());
+        } else if (e instanceof ExecutionException) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.toString());
+        } else {
+            logger.error("Unhandled API Exception: {}", e.toString());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.NONE, e.toString());
+        }
+    }
+
+    public void goOnline() {
+        if (this.getThing().getStatus() == ThingStatus.ONLINE) {
+            return;
+        }
+
         scheduler.execute(() -> {
             try {
-                queryDeviceStatusAndInfo();
-            } catch (JuiceNetApiException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.toString());
-                return;
-            } catch (IOException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.toString());
-                return;
-            } catch (InterruptedException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.toString());
+                _queryDeviceStatusAndInfo();
+            } catch (JuiceNetApiException | IOException | InterruptedException | TimeoutException
+                    | ExecutionException e) {
+                handleApiException(e);
                 return;
             }
 
@@ -117,8 +133,6 @@ public class JuiceNetDeviceHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("handleCommand");
-
         if (command instanceof RefreshType) {
             switch (channelUID.getId()) {
                 case DEVICE_NAME:
@@ -210,20 +224,19 @@ public class JuiceNetDeviceHandler extends BaseThingHandler {
                     break;
                 }
             }
-        } catch (IOException e) {
-            logger.debug("Unable to open connection to api host: {}", e.getMessage());
-        } catch (InterruptedException e) {
-            logger.debug("Unable to open connection to api host: {}", e.getMessage());
-        } catch (JuiceNetApiException e) {
-            logger.debug("Malformed JuiceNet API error: {}", e.getMessage());
+        } catch (JuiceNetApiException | IOException | InterruptedException | TimeoutException | ExecutionException e) {
+            handleApiException(e);
+            return;
         }
     }
 
-    public void queryDeviceStatusAndInfo() throws JuiceNetApiException, IOException, InterruptedException {
+    public void _queryDeviceStatusAndInfo()
+            throws JuiceNetApiException, IOException, InterruptedException, TimeoutException, ExecutionException {
         deviceStatus = getApi().queryDeviceStatus(token);
 
         if (deviceStatus.info_timestamp > lastInfoTimestamp) {
             lastInfoTimestamp = deviceStatus.info_timestamp;
+
             deviceInfo = getApi().queryInfo(token);
             deviceTouSchedule = getApi().queryTOUSchedule(token);
             refreshInfoChannels();
@@ -240,11 +253,33 @@ public class JuiceNetDeviceHandler extends BaseThingHandler {
         refreshStatusChannels();
     }
 
+    public void queryDeviceStatusAndInfo() {
+        if (this.getThing().getStatus() == ThingStatus.OFFLINE) {
+            goOnline();
+            // _queryDeviceStatusAndInfo is called by goOnline
+            return;
+        }
+
+        if (getThing().getStatus() != ThingStatus.ONLINE) {
+            return;
+        }
+
+        try {
+            _queryDeviceStatusAndInfo();
+        } catch (JuiceNetApiException | IOException | InterruptedException | TimeoutException | ExecutionException e) {
+            handleApiException(e);
+            return;
+        }
+    }
+
     protected ZonedDateTime toZonedDateTime(long localEpochSeconds) {
         Instant instant = Instant.ofEpochSecond(localEpochSeconds);
         ZonedDateTime zdt = instant.atZone(ZoneId.of("UTC"));
 
-        return zdt.withZoneSameLocal(ZoneId.systemDefault());
+        Bridge bridge = Objects.requireNonNull(getBridge());
+        JuiceNetBridgeHandler handler = (JuiceNetBridgeHandler) Objects.requireNonNull(bridge.getHandler());
+
+        return zdt.withZoneSameLocal(handler.getTimeZoneProvider().getTimeZone());
     }
 
     protected void refreshStatusChannels() {
