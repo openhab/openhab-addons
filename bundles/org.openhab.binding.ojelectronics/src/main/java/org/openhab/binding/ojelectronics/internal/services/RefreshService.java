@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.ojelectronics.internal.services;
 
+import java.util.Objects;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -43,7 +44,7 @@ import com.google.gson.JsonSyntaxException;
 public final class RefreshService implements AutoCloseable {
 
     private final OJElectronicsBridgeConfiguration config;
-    private final Logger logger = LoggerFactory.getLogger(RefreshService.class);
+    private final Logger logger = Objects.requireNonNull(LoggerFactory.getLogger(RefreshService.class));
     private final HttpClient httpClient;
     private final Gson gson = OJGSonBuilder.getGSon();
 
@@ -125,7 +126,7 @@ public final class RefreshService implements AutoCloseable {
                                 handleConnectionLost();
                             }
                         } else if (status == HttpStatus.OK_200) {
-                            handleRefreshDone(getContentAsString());
+                            handleRefreshDone(Objects.requireNonNull(getContentAsString()));
                         } else {
                             logger.warn("unsupported HTTP-Status {}", status);
                             handleConnectionLost();
@@ -139,7 +140,7 @@ public final class RefreshService implements AutoCloseable {
     private Request createRequest() {
         Request request = httpClient.newRequest(config.apiUrl + "/Group/GroupContents").param("sessionid", sessionId)
                 .param("apiKey", config.apiKey).method(HttpMethod.GET);
-        return request;
+        return Objects.requireNonNull(request);
     }
 
     private void handleRefreshDone(String responseBody) {
@@ -164,7 +165,7 @@ public final class RefreshService implements AutoCloseable {
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         stop();
     }
 }

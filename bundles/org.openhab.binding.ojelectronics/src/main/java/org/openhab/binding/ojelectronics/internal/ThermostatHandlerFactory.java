@@ -15,6 +15,7 @@ package org.openhab.binding.ojelectronics.internal;
 import static org.openhab.binding.ojelectronics.internal.BindingConstants.THING_TYPE_OWD5;
 
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -38,7 +39,8 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.ojelectronics", service = ThingHandlerFactory.class)
 public class ThermostatHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_OWD5);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Objects
+            .requireNonNull(Collections.singleton(THING_TYPE_OWD5));
     private final TimeZoneProvider timeZoneProvider;
 
     /**

@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.ojelectronics.internal.common;
 
+import java.util.Objects;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import com.google.gson.FieldNamingPolicy;
@@ -32,7 +34,7 @@ public final class OJGSonBuilder {
      * @return {@link GSon}
      */
     public static Gson getGSon() {
-        return new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE).setPrettyPrinting()
-                .setDateFormat("yyyy-MM-dd'T'HH:mm:ss").create();
+        return Objects.requireNonNull(new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE)
+                .setPrettyPrinting().setDateFormat("yyyy-MM-dd'T'HH:mm:ss").create());
     }
 }

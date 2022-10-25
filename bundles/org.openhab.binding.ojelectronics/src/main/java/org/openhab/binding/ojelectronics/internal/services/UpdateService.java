@@ -13,6 +13,7 @@
 package org.openhab.binding.ojelectronics.internal.services;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -43,7 +44,7 @@ import com.google.gson.Gson;
 public final class UpdateService {
 
     private final Gson gson = OJGSonBuilder.getGSon();
-    private final Logger logger = LoggerFactory.getLogger(UpdateService.class);
+    private final Logger logger = Objects.requireNonNull(LoggerFactory.getLogger(UpdateService.class));
 
     private final String sessionId;
     private final HttpClient httpClient;
@@ -84,9 +85,7 @@ public final class UpdateService {
                         logger.warn("updateThermostat failed {}", thermostat);
                     }
                     SimpleResponseModel responseModel = gson.fromJson(getContentAsString(), SimpleResponseModel.class);
-                    if (responseModel == null) {
-                        logger.warn("updateThermostat failed with empty result {}", thermostat);
-                    } else if (responseModel.errorCode != 0) {
+                    if (responseModel.errorCode != 0) {
                         logger.warn("updateThermostat failed with errorCode {} {}", responseModel.errorCode,
                                 thermostat);
                     }

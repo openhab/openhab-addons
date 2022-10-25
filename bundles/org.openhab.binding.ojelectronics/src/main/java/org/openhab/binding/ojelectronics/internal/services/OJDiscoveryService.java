@@ -12,11 +12,13 @@
  */
 package org.openhab.binding.ojelectronics.internal.services;
 
-import static org.openhab.binding.ojelectronics.internal.BindingConstants.*;
+import static org.openhab.binding.ojelectronics.internal.BindingConstants.THING_TYPE_OJCLOUD;
+import static org.openhab.binding.ojelectronics.internal.BindingConstants.THING_TYPE_OWD5;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -39,10 +41,10 @@ import org.osgi.service.component.annotations.Component;
  */
 @NonNullByDefault
 @Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.ojelectronics")
-public final class OJDiscoveryService extends AbstractDiscoveryService
-        implements DiscoveryService, ThingHandlerService {
+public final class OJDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_OJCLOUD);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Objects
+            .requireNonNull(Collections.singleton(THING_TYPE_OJCLOUD));
     private @Nullable OJCloudHandler bridgeHandler;
     private @Nullable Collection<GroupContent> groupContents;
 
