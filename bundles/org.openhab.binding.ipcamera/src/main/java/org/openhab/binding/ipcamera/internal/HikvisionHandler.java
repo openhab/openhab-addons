@@ -422,5 +422,4 @@ public class HikvisionHandler extends ChannelDuplexHandler {
                 return;
         }
     }
-
 }
