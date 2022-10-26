@@ -422,4 +422,8 @@ public class HikvisionHandler extends ChannelDuplexHandler {
                 return;
         }
     }
+<<<<<<< HEAD
+=======
+
+>>>>>>> Fix never ending WARN when HIK camera does not support alarm inputs.
 }
