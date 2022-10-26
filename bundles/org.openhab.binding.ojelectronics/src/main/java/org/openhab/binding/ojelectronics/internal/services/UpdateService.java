@@ -27,7 +27,7 @@ import org.openhab.binding.ojelectronics.internal.ThermostatHandler;
 import org.openhab.binding.ojelectronics.internal.common.OJGSonBuilder;
 import org.openhab.binding.ojelectronics.internal.config.OJElectronicsBridgeConfiguration;
 import org.openhab.binding.ojelectronics.internal.models.SimpleResponseModel;
-import org.openhab.binding.ojelectronics.internal.models.Thermostat;
+import org.openhab.binding.ojelectronics.internal.models.thermostat.Thermostat;
 import org.openhab.binding.ojelectronics.internal.models.thermostat.UpdateThermostatRequestModel;
 import org.openhab.core.thing.Thing;
 import org.slf4j.Logger;
@@ -71,7 +71,7 @@ public final class UpdateService {
         if (thermostat == null) {
             return;
         }
-        Request request = httpClient.POST(configuration.apiUrl + "/Thermostat/UpdateThermostat")
+        Request request = httpClient.POST(configuration.getApiUrl() + "/Thermostat/UpdateThermostat")
                 .param("sessionid", sessionId).header(HttpHeader.CONTENT_TYPE, "application/json")
                 .content(new StringContentProvider(
                         gson.toJson(new UpdateThermostatRequestModel(thermostat).withApiKey(configuration.apiKey))));
@@ -84,7 +84,8 @@ public final class UpdateService {
                     if (result.isFailed()) {
                         logger.warn("updateThermostat failed {}", thermostat);
                     }
-                    SimpleResponseModel responseModel = gson.fromJson(getContentAsString(), SimpleResponseModel.class);
+                    SimpleResponseModel responseModel = Objects
+                            .requireNonNull(gson.fromJson(getContentAsString(), SimpleResponseModel.class));
                     if (responseModel.errorCode != 0) {
                         logger.warn("updateThermostat failed with errorCode {} {}", responseModel.errorCode,
                                 thermostat);

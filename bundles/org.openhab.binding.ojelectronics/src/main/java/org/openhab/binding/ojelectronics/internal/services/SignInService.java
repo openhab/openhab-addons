@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.ojelectronics.internal.services;
 
+import java.util.Objects;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -62,7 +63,7 @@ public class SignInService {
      * @param unauthorized This method is called if the result is unauthorized.
      */
     public void signIn(Consumer<String> signInDone, Runnable connectionLosed, Runnable unauthorized) {
-        Request request = httpClient.POST(config.apiUrl + "/UserProfile/SignIn")
+        Request request = httpClient.POST(config.getApiUrl() + "/UserProfile/SignIn")
                 .header(HttpHeader.CONTENT_TYPE, "application/json")
                 .content(new StringContentProvider(gson.toJson(getPostSignInQueryModel())));
 
@@ -74,9 +75,9 @@ public class SignInService {
                     return;
                 }
                 if (result.getResponse().getStatus() == 200) {
-                    PostSignInResponseModel signInModel = gson.fromJson(getContentAsString(),
-                            PostSignInResponseModel.class);
-                    if (signInModel == null || signInModel.errorCode != 0 || signInModel.sessionId.equals("")) {
+                    PostSignInResponseModel signInModel = Objects
+                            .requireNonNull(gson.fromJson(getContentAsString(), PostSignInResponseModel.class));
+                    if (signInModel.errorCode != 0 || signInModel.sessionId.equals("")) {
                         unauthorized.run();
                         return;
                     }

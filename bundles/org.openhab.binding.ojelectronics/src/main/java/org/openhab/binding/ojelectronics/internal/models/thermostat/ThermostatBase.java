@@ -1,5 +1,6 @@
+
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,22 +14,14 @@
 package org.openhab.binding.ojelectronics.internal.models.thermostat;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.ojelectronics.internal.models.RequestModelBase;
 
 /**
- * Model for updating a thermostat
+ * Base-Model for thermostat models
  *
  * @author Christian Kittel - Initial contribution
  */
 @NonNullByDefault
-public class UpdateThermostatRequestModel extends RequestModelBase {
+public class ThermostatBase {
 
-    public UpdateThermostatRequestModel(Thermostat thermostat) {
-        setThermostat = thermostat;
-        thermostatID = thermostat.serialNumber;
-    }
-
-    public Thermostat setThermostat;
-
-    public String thermostatID;
+    public String serialNumber = "";
 }

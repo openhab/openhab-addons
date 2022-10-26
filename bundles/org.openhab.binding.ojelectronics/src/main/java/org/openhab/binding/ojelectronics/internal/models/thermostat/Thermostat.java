@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.ojelectronics.internal.models;
+package org.openhab.binding.ojelectronics.internal.models.thermostat;
 
 import java.util.Date;
 
@@ -26,13 +26,11 @@ import com.google.gson.annotations.SerializedName;
  * @author Christian Kittel - Initial contribution
  */
 @NonNullByDefault
-public class Thermostat {
+public class Thermostat extends ThermostatBase {
 
     public int id;
 
     public int action;
-
-    public String serialNumber = "";
 
     public String groupName = "";
 

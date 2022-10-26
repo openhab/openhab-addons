@@ -17,7 +17,7 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.ojelectronics.internal.models.Thermostat;
+import org.openhab.binding.ojelectronics.internal.models.thermostat.Thermostat;
 
 /**
  * Model for content of a group

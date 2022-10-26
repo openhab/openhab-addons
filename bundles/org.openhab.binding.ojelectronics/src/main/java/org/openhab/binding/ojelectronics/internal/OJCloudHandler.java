@@ -22,10 +22,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.ojelectronics.internal.config.OJElectronicsBridgeConfiguration;
+import org.openhab.binding.ojelectronics.internal.models.SignalRResultModel;
 import org.openhab.binding.ojelectronics.internal.models.groups.GroupContentResponseModel;
 import org.openhab.binding.ojelectronics.internal.services.OJDiscoveryService;
 import org.openhab.binding.ojelectronics.internal.services.RefreshGroupContentService;
 import org.openhab.binding.ojelectronics.internal.services.RefreshService;
+import org.openhab.binding.ojelectronics.internal.services.RefreshThermostatsService;
 import org.openhab.binding.ojelectronics.internal.services.SignInService;
 import org.openhab.binding.ojelectronics.internal.services.UpdateService;
 import org.openhab.core.thing.Bridge;
@@ -54,6 +56,7 @@ public class OJCloudHandler extends BaseBridgeHandler {
     private @Nullable SignInService signInService;
     private OJElectronicsBridgeConfiguration configuration;
     private @Nullable ScheduledFuture<?> signTask;
+    private @Nullable ScheduledFuture<?> updateTask;
     private @Nullable OJDiscoveryService discoveryService;
 
     /**
@@ -99,6 +102,20 @@ public class OJCloudHandler extends BaseBridgeHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
     }
 
+    public synchronized void updateThinksChannelValuesToCloud() {
+        final UpdateService updateService = this.updateService;
+        if (updateService != null) {
+            final ScheduledFuture<?> updateTask = this.updateTask;
+            if (updateTask != null) {
+                updateTask.cancel(false);
+            }
+            this.updateTask = scheduler.schedule(() -> {
+                updateService.updateAllThermostats(getThing().getThings());
+                this.updateTask = null;
+            }, 2, TimeUnit.SECONDS);
+        }
+    }
+
     private void ensureSignIn() {
         if (signInService == null) {
             signInService = new SignInService(configuration, httpClient);
@@ -110,11 +127,11 @@ public class OJCloudHandler extends BaseBridgeHandler {
         }
     }
 
-    private void handleRefreshDone(@Nullable GroupContentResponseModel groupContentResponse,
+    private void initializationDone(@Nullable GroupContentResponseModel groupContentResponse,
             @Nullable String errorMessage) {
-        logger.trace("OJElectronicsCloudHandler.handleRefreshDone({})", groupContentResponse);
+        logger.trace("OJElectronicsCloudHandler.initializationDone({})", groupContentResponse);
         if (groupContentResponse != null && groupContentResponse.errorCode == 0) {
-            internalRefreshDone(groupContentResponse);
+            internalinitializationDone(groupContentResponse);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     (errorMessage == null) ? "Wrong or no result model; Refreshing stoppped" : errorMessage);
@@ -125,26 +142,37 @@ public class OJCloudHandler extends BaseBridgeHandler {
         }
     }
 
-    private void internalRefreshDone(GroupContentResponseModel groupContentResponse) {
+    private void refreshDone(@Nullable SignalRResultModel resultModel, @Nullable String errorMessage) {
+        logger.trace("OJElectronicsCloudHandler.refreshDone({})", resultModel);
+        if (resultModel != null) {
+            new RefreshThermostatsService(Objects.requireNonNull(resultModel.getThermostats()),
+                    Objects.requireNonNull(resultModel.getThermostatRealTimes()), getThing().getThings()).handle();
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    (errorMessage == null) ? "Wrong or no result model; Refreshing stoppped" : errorMessage);
+            final RefreshService refreshService = this.refreshService;
+            if (refreshService != null) {
+                refreshService.stop();
+            }
+        }
+    }
+
+    private void internalinitializationDone(GroupContentResponseModel groupContentResponse) {
         new RefreshGroupContentService(groupContentResponse.groupContents, getThing().getThings()).handle();
         final OJDiscoveryService discoveryService = this.discoveryService;
         if (discoveryService != null) {
             discoveryService.setScanResultForDiscovery(groupContentResponse.groupContents);
-        }
-        final UpdateService updateService = this.updateService;
-        if (updateService != null) {
-            updateService.updateAllThermostats(getThing().getThings());
         }
     }
 
     private void handleSignInDone(String sessionId) {
         logger.trace("OJElectronicsCloudHandler.handleSignInDone({})", sessionId);
         if (refreshService == null) {
-            refreshService = new RefreshService(configuration, httpClient, scheduler);
+            refreshService = new RefreshService(configuration, httpClient);
         }
         final RefreshService refreshService = this.refreshService;
         if (refreshService != null) {
-            refreshService.start(sessionId, this::handleRefreshDone, this::handleConnectionLost,
+            refreshService.start(sessionId, this::initializationDone, this::refreshDone, this::handleConnectionLost,
                     this::handleUnauthorized);
 
             updateStatus(ThingStatus.ONLINE);
@@ -178,7 +206,7 @@ public class OJCloudHandler extends BaseBridgeHandler {
         if (refreshService != null) {
             refreshService.stop();
         }
-        restartRefreshServiceAsync(configuration.refreshDelayInSeconds);
+        restartRefreshServiceAsync(30);
     }
 
     private void restartRefreshServiceAsync(long delayInSeconds) {

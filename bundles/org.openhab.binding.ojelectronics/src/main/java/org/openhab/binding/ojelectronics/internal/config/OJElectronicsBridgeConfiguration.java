@@ -40,7 +40,7 @@ public class OJElectronicsBridgeConfiguration {
     /**
      * Url for API
      */
-    public String apiUrl = "https://OWD5-OJ001-App.ojelectronics.com/api";
+    public String apiUrl = "https://OWD5-OJ001-App.ojelectronics.com";
 
     /**
      * API-Key
@@ -52,8 +52,17 @@ public class OJElectronicsBridgeConfiguration {
      */
     public int softwareVersion = 1060;
 
-    /**
-     * Refresh-Delay
+    /*
+     * Gets the Api-URL
      */
-    public long refreshDelayInSeconds = 30;
+    public String getApiUrl() {
+        return apiUrl.replace("/api", "") + "/api";
+    }
+
+    /*
+     * Gets the SignalR Notification URL
+     */
+    public String getSignalRUrl() {
+        return apiUrl.replace("/api", "") + "/ocd5notification";
+    }
 }
