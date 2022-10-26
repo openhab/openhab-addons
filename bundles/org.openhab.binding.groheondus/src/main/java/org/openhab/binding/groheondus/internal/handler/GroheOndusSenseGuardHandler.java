@@ -94,14 +94,10 @@ public class GroheOndusSenseGuardHandler<T, M> extends GroheOndusBaseHandler<App
                 newState = new StringType(appliance.getName());
                 break;
             case CHANNEL_PRESSURE:
-                if (lastMeasurement != null) {
-                    newState = new QuantityType<>(lastMeasurement.getPressure(), Units.BAR);
-                }
+                newState = new QuantityType<>(lastMeasurement.getPressure(), Units.BAR);
                 break;
             case CHANNEL_TEMPERATURE_GUARD:
-                if (lastMeasurement != null) {
-                    newState = new QuantityType<>(lastMeasurement.getTemperatureGuard(), SIUnits.CELSIUS);
-                }
+                newState = new QuantityType<>(lastMeasurement.getTemperatureGuard(), SIUnits.CELSIUS);
                 break;
             case CHANNEL_VALVE_OPEN:
 
@@ -119,9 +115,7 @@ public class GroheOndusSenseGuardHandler<T, M> extends GroheOndusBaseHandler<App
             default:
                 throw new IllegalArgumentException("Channel " + channelUID + " not supported.");
         }
-        if (newState != null) {
-            updateState(channelUID, newState);
-        }
+        updateState(channelUID, newState);
     }
 
     private QuantityType<Volume> sumWaterConsumptionSinceMidnight(Data dataPoint) {
@@ -138,7 +132,7 @@ public class GroheOndusSenseGuardHandler<T, M> extends GroheOndusBaseHandler<App
     private QuantityType<Volume> sumWaterConsumption(Data dataPoint) {
         Double waterConsumption = dataPoint.getWithdrawals().stream()
                 .mapToDouble(withdrawal -> withdrawal.getWaterconsumption()).sum();
-        return new QuantityType(waterConsumption, Units.LITRE);
+        return new QuantityType<Volume>(waterConsumption, Units.LITRE);
     }
 
     private Measurement getLastMeasurement(Data dataPoint) {

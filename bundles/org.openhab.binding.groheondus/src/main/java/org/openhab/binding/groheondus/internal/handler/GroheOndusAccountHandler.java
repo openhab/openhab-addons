@@ -87,12 +87,12 @@ public class GroheOndusAccountHandler extends BaseBridgeHandler {
         } else {
             // Config appears to be ok, lets try
             try {
+                OndusService ondusService;
                 if (storage.containsKey(STORAGE_KEY_REFRESH_TOKEN)) {
                     try {
                         logger.debug("Trying to login using refresh token");
                         ondusService = OndusService.login(storage.get(STORAGE_KEY_REFRESH_TOKEN));
                     } catch (LoginException e) {
-
                         logger.debug("Refresh token invalid, try again with username and password");
                         ondusService = OndusService.loginWebform(config.username, config.password);
                     }
@@ -100,23 +100,21 @@ public class GroheOndusAccountHandler extends BaseBridgeHandler {
                     logger.debug("No refresh token found, trying to log in using username and password");
                     ondusService = OndusService.loginWebform(config.username, config.password);
                 }
+                this.ondusService = ondusService;
 
                 // Assuming everything went fine...
                 Instant expiresAt = ondusService.authorizationExpiresAt();
                 // Refresh 5 minutes before expiry
                 Instant refreshTime = expiresAt.minus(5, ChronoUnit.MINUTES);
+                final OndusService ondusServiceInner = ondusService;
                 if (refreshTime.isAfter(Instant.now())) {
                     Duration durationUntilRefresh = Duration.between(Instant.now(), refreshTime);
                     reloginFuture = scheduler.schedule(() -> {
-                        OndusService ondusService = this.ondusService;
-                        if (ondusService == null) {
-                            logger.warn("Trying to refresh Ondus account without a service being present.");
-                            return;
-                        }
                         try {
                             logger.debug("Refreshing token");
-                            this.storage.put(STORAGE_KEY_REFRESH_TOKEN, ondusService.refreshAuthorization());
-                            logger.debug("Refreshed token, token expires at {}", ondusService.authorizationExpiresAt());
+                            this.storage.put(STORAGE_KEY_REFRESH_TOKEN, ondusServiceInner.refreshAuthorization());
+                            logger.debug("Refreshed token, token expires at {}",
+                                    ondusServiceInner.authorizationExpiresAt());
                         } catch (Exception e) {
                             logger.debug("Could not refresh token for GROHE ONDUS account, removing refresh token", e);
                             this.storage.remove(STORAGE_KEY_REFRESH_TOKEN);

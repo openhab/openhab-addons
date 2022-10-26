@@ -40,7 +40,6 @@ import org.osgi.framework.wiring.BundleWiring;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.http.HttpService;
 
 /**
  * @author Florian Schmidt and Arne Wohlert - Initial contribution
@@ -51,13 +50,11 @@ public class GroheOndusHandlerFactory extends BaseThingHandlerFactory {
 
     private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
-    private HttpService httpService;
     private StorageService storageService;
     private int thingCounter = 0;
 
     @Activate
-    public GroheOndusHandlerFactory(@Reference HttpService httpService, @Reference StorageService storageService) {
-        this.httpService = httpService;
+    public GroheOndusHandlerFactory(@Reference StorageService storageService) {
         this.storageService = storageService;
     }
 

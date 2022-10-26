@@ -44,7 +44,7 @@ public abstract class GroheOndusBaseHandler<T extends BaseAppliance, M> extends 
 
     protected @Nullable GroheOndusApplianceConfiguration config;
 
-    private @Nullable ScheduledFuture poller;
+    private @Nullable ScheduledFuture<?> poller;
 
     private final int applianceType;
 
@@ -71,11 +71,12 @@ public abstract class GroheOndusBaseHandler<T extends BaseAppliance, M> extends 
             return;
         }
         int pollingInterval = getPollingInterval(appliance);
+        ScheduledFuture<?> poller = this.poller;
         if (poller != null) {
             // Cancel any previous polling
             poller.cancel(true);
         }
-        poller = scheduler.scheduleWithFixedDelay(this::updateChannels, thingCounter, pollingInterval,
+        this.poller = scheduler.scheduleWithFixedDelay(this::updateChannels, thingCounter, pollingInterval,
                 TimeUnit.SECONDS);
         logger.debug("Scheduled polling every {}s for appliance {}", pollingInterval, thing.getUID());
     }
@@ -83,6 +84,7 @@ public abstract class GroheOndusBaseHandler<T extends BaseAppliance, M> extends 
     @Override
     public void dispose() {
         logger.debug("Disposing scheduled updater for thing {}", thing.getUID());
+        ScheduledFuture<?> poller = this.poller;
         if (poller != null) {
             poller.cancel(true);
         }
