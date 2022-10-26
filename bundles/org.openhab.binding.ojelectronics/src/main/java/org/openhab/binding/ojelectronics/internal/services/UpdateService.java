@@ -27,7 +27,7 @@ import org.openhab.binding.ojelectronics.internal.ThermostatHandler;
 import org.openhab.binding.ojelectronics.internal.common.OJGSonBuilder;
 import org.openhab.binding.ojelectronics.internal.config.OJElectronicsBridgeConfiguration;
 import org.openhab.binding.ojelectronics.internal.models.SimpleResponseModel;
-import org.openhab.binding.ojelectronics.internal.models.thermostat.Thermostat;
+import org.openhab.binding.ojelectronics.internal.models.thermostat.ThermostatModel;
 import org.openhab.binding.ojelectronics.internal.models.thermostat.UpdateThermostatRequestModel;
 import org.openhab.core.thing.Thing;
 import org.slf4j.Logger;
@@ -67,7 +67,7 @@ public final class UpdateService {
                 .map(handler -> handler.tryHandleAndGetUpdatedThermostat()).forEach(this::updateThermostat);
     }
 
-    private void updateThermostat(@Nullable Thermostat thermostat) {
+    private void updateThermostat(@Nullable ThermostatModel thermostat) {
         if (thermostat == null) {
             return;
         }

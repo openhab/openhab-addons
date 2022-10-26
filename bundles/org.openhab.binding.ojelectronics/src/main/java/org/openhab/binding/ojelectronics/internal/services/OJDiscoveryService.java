@@ -24,7 +24,7 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ojelectronics.internal.OJCloudHandler;
-import org.openhab.binding.ojelectronics.internal.models.groups.GroupContent;
+import org.openhab.binding.ojelectronics.internal.models.groups.GroupContentModel;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
@@ -46,7 +46,7 @@ public final class OJDiscoveryService extends AbstractDiscoveryService implement
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Objects
             .requireNonNull(Collections.singleton(THING_TYPE_OJCLOUD));
     private @Nullable OJCloudHandler bridgeHandler;
-    private @Nullable Collection<GroupContent> groupContents;
+    private @Nullable Collection<GroupContentModel> groupContents;
 
     /**
      * Creates a new instance of {@link OJDiscoveryService}
@@ -61,14 +61,14 @@ public final class OJDiscoveryService extends AbstractDiscoveryService implement
      *
      * @param groupContents Content from API
      */
-    public void setScanResultForDiscovery(List<GroupContent> groupContents) {
+    public void setScanResultForDiscovery(List<GroupContentModel> groupContents) {
         this.groupContents = groupContents;
     }
 
     @Override
     protected void startScan() {
         final OJCloudHandler bridgeHandler = this.bridgeHandler;
-        final Collection<GroupContent> groupContents = this.groupContents;
+        final Collection<GroupContentModel> groupContents = this.groupContents;
         if (groupContents != null && bridgeHandler != null) {
             groupContents.stream().flatMap(content -> content.thermostats.stream())
                     .forEach(thermostat -> thingDiscovered(bridgeHandler.getThing().getUID(), thermostat.serialNumber));

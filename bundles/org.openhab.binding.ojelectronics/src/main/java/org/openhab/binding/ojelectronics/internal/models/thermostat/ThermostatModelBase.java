@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Christian Kittel - Initial contribution
  */
 @NonNullByDefault
-public class ThermostatBase {
+public class ThermostatModelBase {
 
     public String serialNumber = "";
 }

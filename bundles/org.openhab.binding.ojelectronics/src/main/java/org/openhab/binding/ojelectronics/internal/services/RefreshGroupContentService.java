@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.ojelectronics.internal.ThermostatHandler;
-import org.openhab.binding.ojelectronics.internal.models.groups.GroupContent;
+import org.openhab.binding.ojelectronics.internal.models.groups.GroupContentModel;
 import org.openhab.core.thing.Thing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,17 +32,17 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class RefreshGroupContentService {
 
-    private final List<GroupContent> groupContentList;
+    private final List<GroupContentModel> groupContentList;
     private final Logger logger = Objects.requireNonNull(LoggerFactory.getLogger(RefreshGroupContentService.class));
     private List<Thing> things;
 
     /**
      * Creates a new instance of {@link RefreshGroupContentService}
      *
-     * @param groupContents {@link GroupContent}
+     * @param groupContents {@link GroupContentModel}
      * @param things Things
      */
-    public RefreshGroupContentService(List<GroupContent> groupContents, List<Thing> things) {
+    public RefreshGroupContentService(List<GroupContentModel> groupContents, List<Thing> things) {
         this.groupContentList = groupContents;
         this.things = things;
         if (this.things.isEmpty()) {

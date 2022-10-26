@@ -19,9 +19,9 @@ import java.util.function.BiConsumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.ojelectronics.internal.ThermostatHandler;
-import org.openhab.binding.ojelectronics.internal.models.thermostat.Thermostat;
-import org.openhab.binding.ojelectronics.internal.models.thermostat.ThermostatBase;
-import org.openhab.binding.ojelectronics.internal.models.thermostat.ThermostatRealTimeValues;
+import org.openhab.binding.ojelectronics.internal.models.thermostat.ThermostatModel;
+import org.openhab.binding.ojelectronics.internal.models.thermostat.ThermostatModelBase;
+import org.openhab.binding.ojelectronics.internal.models.thermostat.ThermostatRealTimeValuesModel;
 import org.openhab.core.thing.Thing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,30 +34,30 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class RefreshThermostatsService {
 
-    private final ArrayList<Thermostat> thermostats;
+    private final ArrayList<ThermostatModel> thermostats;
     private final Logger logger = Objects.requireNonNull(LoggerFactory.getLogger(RefreshThermostatsService.class));
     private final List<Thing> things;
-    private final ArrayList<ThermostatRealTimeValues> realTimeValues;
+    private final ArrayList<ThermostatRealTimeValuesModel> realTimeValues;
 
     /**
      * Creates a new instance of {@link RefreshThermostatsService}
      *
-     * @param thermostats {@link Thermostat}
+     * @param thermostats {@link ThermostatModel}
      * @param things Things
      */
-    public RefreshThermostatsService(ArrayList<Thermostat> thermostats, List<Thing> things) {
+    public RefreshThermostatsService(ArrayList<ThermostatModel> thermostats, List<Thing> things) {
         this(thermostats, new ArrayList<>(), things);
     }
 
     /**
      * Creates a new instance of {@link RefreshThermostatsService}
      *
-     * @param thermostats {@link Thermostat}
-     * @param realTimeValues {@link ThermostatRealTimeValues}
+     * @param thermostats {@link ThermostatModel}
+     * @param realTimeValues {@link ThermostatRealTimeValuesModel}
      * @param things Things
      */
-    public RefreshThermostatsService(ArrayList<Thermostat> thermostats,
-            ArrayList<ThermostatRealTimeValues> realTimeValues, List<Thing> things) {
+    public RefreshThermostatsService(ArrayList<ThermostatModel> thermostats,
+            ArrayList<ThermostatRealTimeValuesModel> realTimeValues, List<Thing> things) {
         this.thermostats = thermostats;
         this.things = things;
         this.realTimeValues = realTimeValues;
@@ -74,7 +74,7 @@ public class RefreshThermostatsService {
         realTimeValues.forEach(thermostat -> handleThermostat(thermostat, this::handleThermostatRealTimeValueRefresh));
     }
 
-    private <T extends ThermostatBase> void handleThermostat(T thermostat,
+    private <T extends ThermostatModelBase> void handleThermostat(T thermostat,
             BiConsumer<ThermostatHandler, T> refreshHandler) {
         things.stream().filter(thing -> thing.getHandler() instanceof ThermostatHandler)
                 .map(thing -> (ThermostatHandler) thing.getHandler())
@@ -88,12 +88,12 @@ public class RefreshThermostatsService {
                 });
     }
 
-    private void handleThermostatRefresh(ThermostatHandler thingHandler, Thermostat thermostat) {
+    private void handleThermostatRefresh(ThermostatHandler thingHandler, ThermostatModel thermostat) {
         thingHandler.handleThermostatRefresh(thermostat);
     }
 
     private void handleThermostatRealTimeValueRefresh(ThermostatHandler thingHandler,
-            ThermostatRealTimeValues thermostat) {
+            ThermostatRealTimeValuesModel thermostat) {
         thingHandler.handleThermostatRefresh(thermostat);
     }
 }

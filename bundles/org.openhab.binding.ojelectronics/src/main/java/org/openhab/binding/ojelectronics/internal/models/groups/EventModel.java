@@ -12,20 +12,23 @@
  */
 package org.openhab.binding.ojelectronics.internal.models.groups;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Model for a day
+ * Model for events
  *
  * @author Christian Kittel - Initial contribution
  */
 @NonNullByDefault
-public class Day {
+public class EventModel {
 
-    public int weekDayGrpNo;
+    public int scheduleType;
 
-    public List<Event> events = new ArrayList<>();
+    public String clock = "";
+
+    public int temperature;
+
+    public boolean active;
+
+    public boolean eventIsOnNextDay;
 }

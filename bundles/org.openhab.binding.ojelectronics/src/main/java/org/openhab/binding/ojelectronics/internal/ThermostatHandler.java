@@ -28,8 +28,8 @@ import javax.measure.quantity.Temperature;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ojelectronics.internal.config.OJElectronicsThermostatConfiguration;
-import org.openhab.binding.ojelectronics.internal.models.thermostat.Thermostat;
-import org.openhab.binding.ojelectronics.internal.models.thermostat.ThermostatRealTimeValues;
+import org.openhab.binding.ojelectronics.internal.models.thermostat.ThermostatModel;
+import org.openhab.binding.ojelectronics.internal.models.thermostat.ThermostatRealTimeValuesModel;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -60,13 +60,13 @@ public class ThermostatHandler extends BaseThingHandler {
 
     private final String serialNumber;
     private final Logger logger = Objects.requireNonNull(LoggerFactory.getLogger(ThermostatHandler.class));
-    private final Map<String, Consumer<Thermostat>> channelRefreshActions = createChannelRefreshActionMap();
-    private final Map<String, Consumer<ThermostatRealTimeValues>> channelRealTimeRefreshActions = createRealTimeChannelRefreshActionMap();
+    private final Map<String, Consumer<ThermostatModel>> channelRefreshActions = createChannelRefreshActionMap();
+    private final Map<String, Consumer<ThermostatRealTimeValuesModel>> channelRealTimeRefreshActions = createRealTimeChannelRefreshActionMap();
     private final Map<String, Consumer<Command>> updateThermostatValueActions = createUpdateThermostatValueActionMap();
     private final TimeZoneProvider timeZoneProvider;
 
     private LinkedList<AbstractMap.SimpleImmutableEntry<String, Command>> updatedValues = new LinkedList<>();
-    private @Nullable Thermostat currentThermostat;
+    private @Nullable ThermostatModel currentThermostat;
 
     /**
      * Creates a new instance of {@link ThermostatHandler}
@@ -95,9 +95,9 @@ public class ThermostatHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            final Thermostat thermostat = currentThermostat;
+            final ThermostatModel thermostat = currentThermostat;
             if (thermostat != null && channelRefreshActions.containsKey(channelUID.getId())) {
-                final @Nullable Consumer<Thermostat> consumer = channelRefreshActions.get(channelUID.getId());
+                final @Nullable Consumer<ThermostatModel> consumer = channelRefreshActions.get(channelUID.getId());
                 if (consumer != null) {
                     consumer.accept(thermostat);
                 }
@@ -124,7 +124,7 @@ public class ThermostatHandler extends BaseThingHandler {
      *
      * @param thermostat thermostat values
      */
-    public void handleThermostatRefresh(Thermostat thermostat) {
+    public void handleThermostatRefresh(ThermostatModel thermostat) {
         currentThermostat = thermostat;
         channelRefreshActions.forEach((channelUID, action) -> action.accept(thermostat));
     }
@@ -134,8 +134,8 @@ public class ThermostatHandler extends BaseThingHandler {
      *
      * @param thermostat thermostat values
      */
-    public void handleThermostatRefresh(ThermostatRealTimeValues thermostat) {
-        final Thermostat currentThermostat = this.currentThermostat;
+    public void handleThermostatRefresh(ThermostatRealTimeValuesModel thermostat) {
+        final ThermostatModel currentThermostat = this.currentThermostat;
         if (currentThermostat != null) {
             currentThermostat.heating = thermostat.heating;
             currentThermostat.floorTemperature = thermostat.floorTemperature;
@@ -147,11 +147,11 @@ public class ThermostatHandler extends BaseThingHandler {
     }
 
     /**
-     * Gets a {@link Thermostat} with changed values or null if nothing has changed
+     * Gets a {@link ThermostatModel} with changed values or null if nothing has changed
      *
-     * @return The changed {@link Thermostat}
+     * @return The changed {@link ThermostatModel}
      */
-    public @Nullable Thermostat tryHandleAndGetUpdatedThermostat() {
+    public @Nullable ThermostatModel tryHandleAndGetUpdatedThermostat() {
         final LinkedList<SimpleImmutableEntry<String, Command>> updatedValues = this.updatedValues;
         if (updatedValues.isEmpty()) {
             return null;
@@ -168,11 +168,11 @@ public class ThermostatHandler extends BaseThingHandler {
         return currentThermostat;
     }
 
-    private Thermostat GetCurrentThermostat() {
+    private ThermostatModel GetCurrentThermostat() {
         return Objects.requireNonNull(currentThermostat);
     }
 
-    private void updateManualSetpoint(Thermostat thermostat) {
+    private void updateManualSetpoint(ThermostatModel thermostat) {
         updateState(BindingConstants.CHANNEL_OWD5_MANUALSETPOINT,
                 new QuantityType<Temperature>(thermostat.manualModeSetpoint / (double) 100, SIUnits.CELSIUS));
     }
@@ -185,7 +185,7 @@ public class ThermostatHandler extends BaseThingHandler {
         }
     }
 
-    private void updateBoostEndTime(Thermostat thermostat) {
+    private void updateBoostEndTime(ThermostatModel thermostat) {
         updateState(BindingConstants.CHANNEL_OWD5_BOOSTENDTIME, new DateTimeType(Objects.requireNonNull(
                 ZonedDateTime.ofInstant(thermostat.boostEndTime.toInstant(), timeZoneProvider.getTimeZone()))));
     }
@@ -199,7 +199,7 @@ public class ThermostatHandler extends BaseThingHandler {
         }
     }
 
-    private void updateComfortEndTime(Thermostat thermostat) {
+    private void updateComfortEndTime(ThermostatModel thermostat) {
         updateState(BindingConstants.CHANNEL_OWD5_COMFORTENDTIME, new DateTimeType(Objects.requireNonNull(
                 ZonedDateTime.ofInstant(thermostat.comfortEndTime.toInstant(), timeZoneProvider.getTimeZone()))));
     }
@@ -213,7 +213,7 @@ public class ThermostatHandler extends BaseThingHandler {
         }
     }
 
-    private void updateComfortSetpoint(Thermostat thermostat) {
+    private void updateComfortSetpoint(ThermostatModel thermostat) {
         updateState(BindingConstants.CHANNEL_OWD5_COMFORTSETPOINT,
                 new QuantityType<Temperature>(thermostat.comfortSetpoint / (double) 100, SIUnits.CELSIUS));
     }
@@ -226,7 +226,7 @@ public class ThermostatHandler extends BaseThingHandler {
         }
     }
 
-    private void updateRegulationMode(Thermostat thermostat) {
+    private void updateRegulationMode(ThermostatModel thermostat) {
         updateState(BindingConstants.CHANNEL_OWD5_REGULATIONMODE,
                 StringType.valueOf(getRegulationMode(thermostat.regulationMode)));
     }
@@ -242,64 +242,64 @@ public class ThermostatHandler extends BaseThingHandler {
         }
     }
 
-    private void updateThermostatName(Thermostat thermostat) {
+    private void updateThermostatName(ThermostatModel thermostat) {
         updateState(BindingConstants.CHANNEL_OWD5_THERMOSTATNAME, StringType.valueOf(thermostat.thermostatName));
     }
 
-    private void updateFloorTemperature(Thermostat thermostat) {
+    private void updateFloorTemperature(ThermostatModel thermostat) {
         updateState(BindingConstants.CHANNEL_OWD5_FLOORTEMPERATURE,
                 new QuantityType<Temperature>(thermostat.floorTemperature / (double) 100, SIUnits.CELSIUS));
     }
 
-    private void updateFloorTemperature(ThermostatRealTimeValues thermostatRealTimeValues) {
+    private void updateFloorTemperature(ThermostatRealTimeValuesModel thermostatRealTimeValues) {
         updateState(BindingConstants.CHANNEL_OWD5_FLOORTEMPERATURE, new QuantityType<Temperature>(
                 thermostatRealTimeValues.floorTemperature / (double) 100, SIUnits.CELSIUS));
     }
 
-    private void updateRoomTemperature(Thermostat thermostat) {
+    private void updateRoomTemperature(ThermostatModel thermostat) {
         updateState(BindingConstants.CHANNEL_OWD5_ROOMTEMPERATURE,
                 new QuantityType<Temperature>(thermostat.roomTemperature / (double) 100, SIUnits.CELSIUS));
     }
 
-    private void updateRoomTemperature(ThermostatRealTimeValues thermostatRealTimeValues) {
+    private void updateRoomTemperature(ThermostatRealTimeValuesModel thermostatRealTimeValues) {
         updateState(BindingConstants.CHANNEL_OWD5_ROOMTEMPERATURE, new QuantityType<Temperature>(
                 thermostatRealTimeValues.roomTemperature / (double) 100, SIUnits.CELSIUS));
     }
 
-    private void updateHeating(Thermostat thermostat) {
+    private void updateHeating(ThermostatModel thermostat) {
         updateState(BindingConstants.CHANNEL_OWD5_HEATING,
                 thermostat.heating ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
     }
 
-    private void updateHeating(ThermostatRealTimeValues thermostatRealTimeValues) {
+    private void updateHeating(ThermostatRealTimeValuesModel thermostatRealTimeValues) {
         updateState(BindingConstants.CHANNEL_OWD5_HEATING,
                 thermostatRealTimeValues.heating ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
     }
 
-    private void updateOnline(Thermostat thermostat) {
+    private void updateOnline(ThermostatModel thermostat) {
         updateState(BindingConstants.CHANNEL_OWD5_ONLINE,
                 thermostat.online ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
     }
 
-    private void updateOnline(ThermostatRealTimeValues thermostatRealTimeValues) {
+    private void updateOnline(ThermostatRealTimeValuesModel thermostatRealTimeValues) {
         updateState(BindingConstants.CHANNEL_OWD5_ONLINE,
                 thermostatRealTimeValues.online ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
     }
 
-    private void updateGroupId(Thermostat thermostat) {
+    private void updateGroupId(ThermostatModel thermostat) {
         updateState(BindingConstants.CHANNEL_OWD5_GROUPID, new DecimalType(thermostat.groupId));
     }
 
-    private void updateGroupName(Thermostat thermostat) {
+    private void updateGroupName(ThermostatModel thermostat) {
         updateState(BindingConstants.CHANNEL_OWD5_GROUPNAME, StringType.valueOf(thermostat.groupName));
     }
 
-    private void updateVacationEnabled(Thermostat thermostat) {
+    private void updateVacationEnabled(ThermostatModel thermostat) {
         updateState(BindingConstants.CHANNEL_OWD5_VACATIONENABLED,
                 thermostat.online ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
     }
 
-    private void updateVacationBeginDay(Thermostat thermostat) {
+    private void updateVacationBeginDay(ThermostatModel thermostat) {
         updateState(BindingConstants.CHANNEL_OWD5_VACATIONBEGINDAY,
                 new DateTimeType(Objects.requireNonNull(
                         ZonedDateTime.ofInstant(thermostat.vacationBeginDay.toInstant(), timeZoneProvider.getTimeZone())
@@ -315,7 +315,7 @@ public class ThermostatHandler extends BaseThingHandler {
         }
     }
 
-    private void updateVacationEndDay(Thermostat thermostat) {
+    private void updateVacationEndDay(ThermostatModel thermostat) {
         updateState(BindingConstants.CHANNEL_OWD5_VACATIONENDDAY,
                 new DateTimeType(Objects.requireNonNull(
                         ZonedDateTime.ofInstant(thermostat.vacationEndDay.toInstant(), timeZoneProvider.getTimeZone())
@@ -359,8 +359,8 @@ public class ThermostatHandler extends BaseThingHandler {
         return map;
     };
 
-    private Map<String, Consumer<Thermostat>> createChannelRefreshActionMap() {
-        HashMap<String, Consumer<Thermostat>> map = new HashMap<>();
+    private Map<String, Consumer<ThermostatModel>> createChannelRefreshActionMap() {
+        HashMap<String, Consumer<ThermostatModel>> map = new HashMap<>();
         map.put(BindingConstants.CHANNEL_OWD5_GROUPNAME, this::updateGroupName);
         map.put(BindingConstants.CHANNEL_OWD5_GROUPID, this::updateGroupId);
         map.put(BindingConstants.CHANNEL_OWD5_ONLINE, this::updateOnline);
@@ -379,8 +379,8 @@ public class ThermostatHandler extends BaseThingHandler {
         return map;
     }
 
-    private Map<String, Consumer<ThermostatRealTimeValues>> createRealTimeChannelRefreshActionMap() {
-        HashMap<String, Consumer<ThermostatRealTimeValues>> map = new HashMap<>();
+    private Map<String, Consumer<ThermostatRealTimeValuesModel>> createRealTimeChannelRefreshActionMap() {
+        HashMap<String, Consumer<ThermostatRealTimeValuesModel>> map = new HashMap<>();
         map.put(BindingConstants.CHANNEL_OWD5_ONLINE, this::updateOnline);
         map.put(BindingConstants.CHANNEL_OWD5_HEATING, this::updateHeating);
         map.put(BindingConstants.CHANNEL_OWD5_ROOMTEMPERATURE, this::updateRoomTemperature);

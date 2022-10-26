@@ -20,7 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Christian Kittel - Initial contribution
  */
 @NonNullByDefault
-public class ThermostatRealTimeValues extends ThermostatBase {
+public class ThermostatRealTimeValuesModel extends ThermostatModelBase {
 
     public int action;
 

@@ -23,12 +23,12 @@ import org.openhab.binding.ojelectronics.internal.models.RequestModelBase;
 @NonNullByDefault
 public class UpdateThermostatRequestModel extends RequestModelBase {
 
-    public UpdateThermostatRequestModel(Thermostat thermostat) {
+    public UpdateThermostatRequestModel(ThermostatModel thermostat) {
         setThermostat = thermostat;
         thermostatID = thermostat.serialNumber;
     }
 
-    public Thermostat setThermostat;
+    public ThermostatModel setThermostat;
 
     public String thermostatID;
 }

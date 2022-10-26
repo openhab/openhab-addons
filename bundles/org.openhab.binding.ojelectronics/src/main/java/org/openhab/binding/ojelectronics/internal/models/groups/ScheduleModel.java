@@ -23,9 +23,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Christian Kittel - Initial contribution
  */
 @NonNullByDefault
-public class Schedule {
+public class ScheduleModel {
 
-    public List<Day> days = new ArrayList<Day>();
+    public List<DayModel> days = new ArrayList<DayModel>();
 
     public boolean modifiedDueToVerification;
 }
