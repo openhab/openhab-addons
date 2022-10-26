@@ -1629,6 +1629,7 @@ public class IpCameraHandler extends BaseThingHandler {
                     snapshotUri = "/ISAPI/Streaming/channels/" + cameraConfig.getNvrChannel() + "01/picture";
                 }
 <<<<<<< HEAD
+<<<<<<< HEAD
                 if (lowPriorityRequests.isEmpty()) {
                     lowPriorityRequests.add("/ISAPI/System/IO/inputs/" + cameraConfig.getNvrChannel() + "/status");
                 }
@@ -1637,6 +1638,11 @@ public class IpCameraHandler extends BaseThingHandler {
                 lowPriorityRequests.add("/ISAPI/System/IO/inputs/" + cameraConfig.getNvrChannel() + "/status");
                 this.lowPriorityRequests = lowPriorityRequests;
 >>>>>>> Fix never ending WARN when HIK camera does not support alarm inputs.
+=======
+                if (lowPriorityRequests.isEmpty()) {
+                    lowPriorityRequests.add("/ISAPI/System/IO/inputs/" + cameraConfig.getNvrChannel() + "/status");
+                }
+>>>>>>> Streamline code.
                 break;
             case INSTAR_THING:
                 if (snapshotUri.isEmpty()) {
