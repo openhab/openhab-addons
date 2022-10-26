@@ -34,9 +34,9 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 @Component
-public class HDPowerViewHubDiscoveryParticipantV3 extends HDPowerViewHubDiscoveryParticipant {
+public class HDPowerViewHubDiscoveryParticipant3 extends HDPowerViewHubDiscoveryParticipant {
 
-    private final Logger logger = LoggerFactory.getLogger(HDPowerViewHubDiscoveryParticipantV3.class);
+    private final Logger logger = LoggerFactory.getLogger(HDPowerViewHubDiscoveryParticipant3.class);
 
     @Override
     public @Nullable DiscoveryResult createResult(ServiceInfo service) {

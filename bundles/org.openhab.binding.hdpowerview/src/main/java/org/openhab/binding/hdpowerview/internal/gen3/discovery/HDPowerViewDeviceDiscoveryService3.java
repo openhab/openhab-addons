@@ -37,15 +37,15 @@ import org.slf4j.LoggerFactory;
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class HDPowerViewDeviceDiscoveryServiceV3 extends AbstractDiscoveryService {
+public class HDPowerViewDeviceDiscoveryService3 extends AbstractDiscoveryService {
 
-    private final Logger logger = LoggerFactory.getLogger(HDPowerViewDeviceDiscoveryServiceV3.class);
+    private final Logger logger = LoggerFactory.getLogger(HDPowerViewDeviceDiscoveryService3.class);
     private final HDPowerViewHubHandler3 hub;
     private final Runnable scanner;
     private @Nullable ScheduledFuture<?> backgroundFuture;
     private final ShadeCapabilitiesDatabase db = new ShadeCapabilitiesDatabase();
 
-    public HDPowerViewDeviceDiscoveryServiceV3(HDPowerViewHubHandler3 hub) {
+    public HDPowerViewDeviceDiscoveryService3(HDPowerViewHubHandler3 hub) {
         super(Collections.singleton(HDPowerViewBindingConstants.THING_TYPE_SHADE_GEN3), 600, true);
         this.hub = hub;
         this.scanner = createScanner();

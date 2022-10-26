@@ -20,7 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class SceneEvent {
+public class SceneEvent3 {
     private int id;
     // private @NonNullByDefault({}) String evt;
     // private @NonNullByDefault({}) String isoDate;
