@@ -201,7 +201,6 @@ public class GroheOndusSenseGuardHandler<T, M> extends GroheOndusBaseHandler<App
                 }
                 return (ApplianceData) applianceData;
             } else {
-                logger.debug("Could not load appliance data for thing {}", thing.getUID());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "@text/error.failedtoloaddata");
             }
