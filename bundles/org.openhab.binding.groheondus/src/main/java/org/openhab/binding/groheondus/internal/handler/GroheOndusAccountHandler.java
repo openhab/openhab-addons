@@ -82,7 +82,7 @@ public class GroheOndusAccountHandler extends BaseBridgeHandler {
     private void login() {
         GroheOndusAccountConfiguration config = getConfigAs(GroheOndusAccountConfiguration.class);
         if (config.username == null || config.password == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/error.login.missing.credentials");
         } else {
             // Config appears to be ok, lets try
