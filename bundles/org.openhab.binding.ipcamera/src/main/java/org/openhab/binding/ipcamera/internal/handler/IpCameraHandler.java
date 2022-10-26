@@ -1628,9 +1628,9 @@ public class IpCameraHandler extends BaseThingHandler {
                 if (snapshotUri.isEmpty()) {
                     snapshotUri = "/ISAPI/Streaming/channels/" + cameraConfig.getNvrChannel() + "01/picture";
                 }
-                ArrayList<String> lowPriorityRequests = new ArrayList<String>(1);
-                lowPriorityRequests.add("/ISAPI/System/IO/inputs/" + cameraConfig.getNvrChannel() + "/status");
-                this.lowPriorityRequests = lowPriorityRequests;
+                if (lowPriorityRequests.isEmpty()) {
+                    lowPriorityRequests.add("/ISAPI/System/IO/inputs/" + cameraConfig.getNvrChannel() + "/status");
+                }
                 break;
             case INSTAR_THING:
                 if (snapshotUri.isEmpty()) {
