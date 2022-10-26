@@ -14,7 +14,7 @@ package org.openhab.binding.hdpowerview.internal.api.responses;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.hdpowerview.internal.api.ShadeData;
+import org.openhab.binding.hdpowerview.internal.api.responses.Shades.ShadeData;
 
 /**
  * State of a single Shade, as returned by an HD PowerView hub

@@ -10,14 +10,13 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.hdpowerview.internal.api.responses._v3;
+package org.openhab.binding.hdpowerview.internal.gen3.dto;
 
 import java.time.DayOfWeek;
 import java.util.EnumSet;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.hdpowerview.internal.api.responses.ScheduledEvent;
 import org.openhab.binding.hdpowerview.internal.api.responses.ScheduledEvents;
 
 /**
@@ -26,9 +25,14 @@ import org.openhab.binding.hdpowerview.internal.api.responses.ScheduledEvents;
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class ScheduledEventV3 extends ScheduledEvent {
-    // fields specific to Generation 3
-    public @Nullable String days;
+public class ScheduledEvent3 {
+    public int id;
+    public int type;
+    public boolean enabled;
+    public int hour;
+    public int minute;
+    public int sceneId;
+    public @NonNullByDefault({}) String days;
 
     private static final int MON = 0x01;
     private static final int TUE = 0x02;
@@ -49,31 +53,16 @@ public class ScheduledEventV3 extends ScheduledEvent {
         if (o == this) {
             return true;
         }
-        if (!(o instanceof ScheduledEventV3)) {
+        if (!(o instanceof ScheduledEvent3)) {
             return false;
         }
-        ScheduledEventV3 other = (ScheduledEventV3) o;
+        ScheduledEvent3 other = (ScheduledEvent3) o;
         String days = this.days;
 
         return this.id == other.id && this.enabled == other.enabled && this.sceneId == other.sceneId
                 && (days != null && days.equals(other.days)) && this.hour == other.hour && this.minute == other.minute;
     }
 
-    @Override
-    public final int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        String days = this.days;
-        result = prime * result + id;
-        result = prime * result + (enabled ? 1 : 0);
-        result = prime * result + sceneId;
-        result = prime * result + (days != null ? days.hashCode() : 0);
-        result = prime * result + hour;
-        result = prime * result + minute;
-        return result;
-    }
-
-    @Override
     public EnumSet<DayOfWeek> getDays() {
         EnumSet<DayOfWeek> daySet = EnumSet.noneOf(DayOfWeek.class);
         String days = this.days;
@@ -108,7 +97,6 @@ public class ScheduledEventV3 extends ScheduledEvent {
         return daySet;
     }
 
-    @Override
     public int getEventType() {
         switch (type) {
             case CLOCK_BASED:
@@ -125,10 +113,5 @@ public class ScheduledEventV3 extends ScheduledEvent {
                 return ScheduledEvents.SCHEDULED_EVENT_TYPE_SUNSET;
         }
         return 0;
-    }
-
-    @Override
-    public int version() {
-        return 3;
     }
 }

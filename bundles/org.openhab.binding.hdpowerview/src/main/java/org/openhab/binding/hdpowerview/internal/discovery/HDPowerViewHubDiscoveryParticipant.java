@@ -22,20 +22,28 @@ import javax.jmdns.ServiceInfo;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.hdpowerview.internal.config.HDPowerViewHubConfiguration;
 import org.openhab.core.config.discovery.DiscoveryResult;
+import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.mdns.MDNSDiscoveryParticipant;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
+import org.osgi.service.component.annotations.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * Abstract (component) class that discovers HD PowerView hubs by means of mDNS
+ * Discovers HD PowerView hubs by means of mDNS
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public abstract class HDPowerViewHubDiscoveryParticipant implements MDNSDiscoveryParticipant {
+@Component
+public class HDPowerViewHubDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
-    protected static final Pattern VALID_IP_V4_ADDRESS = Pattern
+    private final Logger logger = LoggerFactory.getLogger(HDPowerViewHubDiscoveryParticipant.class);
+
+    public static final Pattern VALID_IP_V4_ADDRESS = Pattern
             .compile("\\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\\.|$)){4}\\b");
 
     @Override
@@ -44,10 +52,25 @@ public abstract class HDPowerViewHubDiscoveryParticipant implements MDNSDiscover
     }
 
     @Override
-    public abstract String getServiceType();
+    public String getServiceType() {
+        return "_powerview._tcp.local.";
+    }
 
     @Override
-    public abstract @Nullable DiscoveryResult createResult(ServiceInfo service);
+    public @Nullable DiscoveryResult createResult(ServiceInfo service) {
+        for (String host : service.getHostAddresses()) {
+            if (VALID_IP_V4_ADDRESS.matcher(host).matches()) {
+                ThingUID thingUID = new ThingUID(THING_TYPE_HUB, host.replace('.', '_'));
+                DiscoveryResult hub = DiscoveryResultBuilder.create(thingUID)
+                        .withProperty(HDPowerViewHubConfiguration.HOST, host)
+                        .withRepresentationProperty(HDPowerViewHubConfiguration.HOST)
+                        .withLabel("PowerView Hub (" + host + ")").build();
+                logger.debug("mDNS discovered hub on host '{}'", host);
+                return hub;
+            }
+        }
+        return null;
+    }
 
     @Override
     public @Nullable ThingUID getThingUID(ServiceInfo service) {

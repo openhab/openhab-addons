@@ -20,6 +20,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.hdpowerview.internal.discovery.HDPowerViewDeviceDiscoveryService;
+import org.openhab.binding.hdpowerview.internal.gen3.discovery.HDPowerViewDeviceDiscoveryServiceV3;
+import org.openhab.binding.hdpowerview.internal.gen3.handler.HDPowerViewHubHandler3;
+import org.openhab.binding.hdpowerview.internal.gen3.handler.HDPowerViewShadeHandler3;
 import org.openhab.binding.hdpowerview.internal.handler.HDPowerViewHubHandler;
 import org.openhab.binding.hdpowerview.internal.handler.HDPowerViewRepeaterHandler;
 import org.openhab.binding.hdpowerview.internal.handler.HDPowerViewShadeHandler;
@@ -75,10 +78,18 @@ public class HDPowerViewHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-
-        if (HDPowerViewBindingConstants.THING_TYPE_HUB.equals(thingTypeUID)) {
-            HDPowerViewHubHandler handler = new HDPowerViewHubHandler((Bridge) thing, httpClient, translationProvider,
+        // generation 3
+        if (HDPowerViewBindingConstants.THING_TYPE_HUB_GEN3.equals(thingTypeUID)) {
+            HDPowerViewHubHandler3 handler = new HDPowerViewHubHandler3((Bridge) thing, httpClient, translationProvider,
                     clientBuilder, eventSourceFactory);
+            registerService(new HDPowerViewDeviceDiscoveryServiceV3(handler));
+            return handler;
+        } else if (HDPowerViewBindingConstants.THING_TYPE_SHADE_GEN3.equals(thingTypeUID)) {
+            return new HDPowerViewShadeHandler3(thing);
+        } else
+        // generation 1/2
+        if (HDPowerViewBindingConstants.THING_TYPE_HUB.equals(thingTypeUID)) {
+            HDPowerViewHubHandler handler = new HDPowerViewHubHandler((Bridge) thing, httpClient, translationProvider);
             registerService(new HDPowerViewDeviceDiscoveryService(handler));
             return handler;
         } else if (HDPowerViewBindingConstants.THING_TYPE_SHADE.equals(thingTypeUID)) {

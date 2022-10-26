@@ -25,11 +25,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewTranslationProvider;
-import org.openhab.binding.hdpowerview.internal.api.responses.Scene;
 import org.openhab.binding.hdpowerview.internal.api.responses.SceneCollections.SceneCollection;
-import org.openhab.binding.hdpowerview.internal.api.responses.ScheduledEvent;
+import org.openhab.binding.hdpowerview.internal.api.responses.Scenes.Scene;
 import org.openhab.binding.hdpowerview.internal.api.responses.ScheduledEvents;
-import org.openhab.binding.hdpowerview.internal.api.responses._v1.ScheduledEventV1;
+import org.openhab.binding.hdpowerview.internal.api.responses.ScheduledEvents.ScheduledEvent;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
@@ -64,7 +63,7 @@ public class AutomationChannelBuilder extends BaseChannelBuilder {
     /**
      * Creates an {@link AutomationChannelBuilder} for the given {@link HDPowerViewTranslationProvider} and
      * {@link ChannelGroupUID}.
-     *
+     * 
      * @param translationProvider the {@link HDPowerViewTranslationProvider}
      * @param channelGroupUid parent {@link ChannelGroupUID} for created channels
      * @return channel builder
@@ -76,7 +75,7 @@ public class AutomationChannelBuilder extends BaseChannelBuilder {
 
     /**
      * Adds created channels to existing list.
-     *
+     * 
      * @param channels list that channels will be added to
      * @return channel builder
      */
@@ -87,7 +86,7 @@ public class AutomationChannelBuilder extends BaseChannelBuilder {
 
     /**
      * Sets the scenes.
-     *
+     * 
      * @param scenes the scenes
      * @return channel builder
      */
@@ -98,7 +97,7 @@ public class AutomationChannelBuilder extends BaseChannelBuilder {
 
     /**
      * Sets the scene collections.
-     *
+     * 
      * @param sceneCollections the scene collections
      * @return channel builder
      */
@@ -110,7 +109,7 @@ public class AutomationChannelBuilder extends BaseChannelBuilder {
 
     /**
      * Sets the scheduled events.
-     *
+     * 
      * @param scheduledEvents the sceduled events
      * @return channel builder
      */
@@ -169,21 +168,20 @@ public class AutomationChannelBuilder extends BaseChannelBuilder {
             }
             logger.warn("Scene '{}' was not found for scheduled event '{}'", scheduledEvent.sceneId, scheduledEvent.id);
             return null;
-        } else if (scheduledEvent.version() == 1 && ((ScheduledEventV1) scheduledEvent).sceneCollectionId > 0) {
+        } else if (scheduledEvent.sceneCollectionId > 0) {
             Map<Integer, SceneCollection> sceneCollections = this.sceneCollections;
-            ScheduledEventV1 scheduledEventV1 = (ScheduledEventV1) scheduledEvent;
             if (sceneCollections == null) {
                 logger.warn(
                         "Scheduled event '{}' references scene collection '{}', but no scene collections are loaded",
-                        scheduledEvent.id, scheduledEventV1.sceneCollectionId);
+                        scheduledEvent.id, scheduledEvent.sceneCollectionId);
                 return null;
             }
-            SceneCollection sceneCollection = sceneCollections.get(scheduledEventV1.sceneCollectionId);
+            SceneCollection sceneCollection = sceneCollections.get(scheduledEvent.sceneCollectionId);
             if (sceneCollection != null) {
                 return sceneCollection.getName();
             }
             logger.warn("Scene collection '{}' was not found for scheduled event '{}'",
-                    scheduledEventV1.sceneCollectionId, scheduledEvent.id);
+                    scheduledEvent.sceneCollectionId, scheduledEvent.id);
             return null;
         } else {
             logger.warn("Scheduled event '{}'' not related to any scene or scene collection", scheduledEvent.id);
@@ -193,7 +191,8 @@ public class AutomationChannelBuilder extends BaseChannelBuilder {
 
     private String getScheduledEventName(String sceneName, ScheduledEvent scheduledEvent) {
         String timeString, daysString;
-        switch (scheduledEvent.getEventType()) {
+
+        switch (scheduledEvent.eventType) {
             case ScheduledEvents.SCHEDULED_EVENT_TYPE_TIME:
                 timeString = LocalTime.of(scheduledEvent.hour, scheduledEvent.minute).toString();
                 break;
