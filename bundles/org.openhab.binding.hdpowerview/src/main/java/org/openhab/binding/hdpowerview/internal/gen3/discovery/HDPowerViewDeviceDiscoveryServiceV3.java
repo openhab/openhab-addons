@@ -13,7 +13,6 @@
 package org.openhab.binding.hdpowerview.internal.gen3.discovery;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -89,19 +88,19 @@ public class HDPowerViewDeviceDiscoveryServiceV3 extends AbstractDiscoveryServic
     }
 
     private void discoverShades(HDPowerViewWebTargets3 webTargets) throws HubProcessingException {
-        List<Shade3> shades = webTargets.getShades();
         ThingUID bridgeUid = hub.getThing().getUID();
-        for (Shade3 shadeData : shades) {
-            if (shadeData.getId() == 0) {
+        for (Shade3 shade : webTargets.getShades()) {
+            if (shade.getId() == 0) {
                 continue;
             }
-            String id = Integer.toString(shadeData.getId());
+
+            String id = Integer.toString(shade.getId());
             ThingUID thingUID = new ThingUID(HDPowerViewBindingConstants.THING_TYPE_SHADE_GEN3, bridgeUid, id);
 
-            DiscoveryResultBuilder builder = DiscoveryResultBuilder.create(thingUID).withLabel(shadeData.getName())
+            DiscoveryResultBuilder builder = DiscoveryResultBuilder.create(thingUID).withLabel(shade.getName())
                     .withBridge(bridgeUid).withProperty(HDPowerViewShadeConfiguration.ID, id)
                     .withRepresentationProperty(HDPowerViewShadeConfiguration.ID);
-            String type = shadeData.getTypeString();
+            String type = shade.getTypeString();
             if (type != null) {
                 builder.withProperty(HDPowerViewBindingConstants.PROPERTY_SHADE_TYPE, type);
             }
