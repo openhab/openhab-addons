@@ -39,7 +39,10 @@ public class ACSnapshot implements Snapshot {
 
     private boolean coolJetModeOn;
 
+    private double airCleanMode;
     private double coolJetMode;
+    private double autoDryMode;
+    private double energySavingMode;
 
     private int operationMode;
     @Nullable
@@ -74,6 +77,36 @@ public class ACSnapshot implements Snapshot {
     @JsonAlias("Jet")
     public Double getCoolJetMode() {
         return coolJetMode;
+    }
+
+    @JsonProperty("airState.wMode.airClean")
+    @JsonAlias("AirClean")
+    public Double getAirCleanMode() {
+        return airCleanMode;
+    }
+
+    @JsonProperty("airState.miscFuncState.autoDry")
+    @JsonAlias("AutoDry")
+    public Double getAutoDryMode() {
+        return autoDryMode;
+    }
+
+    @JsonProperty("airState.powerSave.basic")
+    @JsonAlias("PowerSave")
+    public Double getEnergySavingMode() {
+        return energySavingMode;
+    }
+
+    public void setAirCleanMode(double airCleanMode) {
+        this.airCleanMode = airCleanMode;
+    }
+
+    public void setAutoDryMode(double autoDryMode) {
+        this.autoDryMode = autoDryMode;
+    }
+
+    public void setEnergySavingMode(double energySavingMode) {
+        this.energySavingMode = energySavingMode;
     }
 
     public void setCoolJetMode(Double coolJetMode) {
