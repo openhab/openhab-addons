@@ -36,13 +36,13 @@ There is currently no configuration available, as it is automatically obtained b
 
 LG ThinQ Air Conditioners support the following channels to interact with the OpenHab automation framework:
 
-| channel            | type             | description                                                                                                                                                 |
-|--------------------|------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Target Temperature | Temperature      | Defines the desired target temperature for the device                                                                                                       |
-| Temperature        | Temperature      | Read-Only channel that indicates the current temperature informed by the device                                                                             |
-| Fan Speed          | Number (Labeled) | This channel let you choose the current label value for the fan speed (Low, Medium, High, Nature, etc.). These values are pre-configured in discovery time. |
-| Operation Mode     | Number (Labeled) | Defines device's operation mode (Fan, Cool, Dry, etc). These values are pre-configured at discovery time.                                                   |
-| Power              | Switch           | Define the device's current power state.                                                                                                                    |
+| channel            | type             | description                                                                                                                                               |
+|--------------------|------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Target Temperature | Temperature      | Defines the desired target temperature for the device                                                                                                     |
+| Temperature        | Temperature      | Read-Only channel that indicates the current temperature informed by the device                                                                           |
+| Fan Speed          | Number (Labeled) | This channel let you choose the current label value for the fan speed (Low, Medium, High, Auto, etc.). These values are pre-configured in discovery time. |
+| Operation Mode     | Number (Labeled) | Defines device's operation mode (Fan, Cool, Dry, etc). These values are pre-configured at discovery time.                                                 |
+| Power              | Switch           | Define the device's current power state.                                                                                                                  |
 
 **Important:** this binding will always interact with the LG API server to get information about the device. This is the Smart ThinQ way to work, there is no other way (like direct access) to the devices. Hence, some side effects will happen in the following situations:
 1. **Internet Link** - if you OpenHab server doesn't have a good internet connection this binding will not work properly! In the same way, if the internet link goes down, your Things and Bridge going to be Offline as well, and you won't be able to control the devices though OpenHab until the link comes back.
