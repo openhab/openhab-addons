@@ -24,10 +24,10 @@ import org.junit.jupiter.api.Test;
 import org.openhab.binding.hdpowerview.HDPowerViewJUnitTests;
 import org.openhab.binding.hdpowerview.internal.api.CoordinateSystem;
 import org.openhab.binding.hdpowerview.internal.gen3.dto.Scene3;
-import org.openhab.binding.hdpowerview.internal.gen3.dto.SceneEvent;
+import org.openhab.binding.hdpowerview.internal.gen3.dto.SceneEvent3;
 import org.openhab.binding.hdpowerview.internal.gen3.dto.ScheduledEvent3;
 import org.openhab.binding.hdpowerview.internal.gen3.dto.Shade3;
-import org.openhab.binding.hdpowerview.internal.gen3.dto.ShadeEvent;
+import org.openhab.binding.hdpowerview.internal.gen3.dto.ShadeEvent3;
 import org.openhab.binding.hdpowerview.internal.gen3.dto.ShadePosition3;
 import org.openhab.binding.hdpowerview.internal.gen3.webtargets.HDPowerViewWebTargets3;
 import org.openhab.core.library.types.PercentType;
@@ -78,7 +78,7 @@ public class Generation3DtoTest {
     @Test
     public void testSceneEventParsing() throws IOException {
         String json = loadJson("gen3/scene-event.json");
-        SceneEvent sceneEvent = gson.fromJson(json, SceneEvent.class);
+        SceneEvent3 sceneEvent = gson.fromJson(json, SceneEvent3.class);
         assertNotNull(sceneEvent);
         Scene3 scene = sceneEvent.getScene();
         assertNotNull(scene);
@@ -106,7 +106,7 @@ public class Generation3DtoTest {
     @Test
     public void testShadeEventParsing() throws IOException {
         String json = loadJson("gen3/shade-event.json");
-        ShadeEvent shadeEvent = gson.fromJson(json, ShadeEvent.class);
+        ShadeEvent3 shadeEvent = gson.fromJson(json, ShadeEvent3.class);
         assertNotNull(shadeEvent);
         ShadePosition3 position = shadeEvent.getCurrentPositions();
         assertNotNull(position);

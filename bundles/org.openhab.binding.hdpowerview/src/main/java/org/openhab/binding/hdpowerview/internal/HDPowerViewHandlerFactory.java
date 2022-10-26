@@ -20,7 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.hdpowerview.internal.discovery.HDPowerViewDeviceDiscoveryService;
-import org.openhab.binding.hdpowerview.internal.gen3.discovery.HDPowerViewDeviceDiscoveryServiceV3;
+import org.openhab.binding.hdpowerview.internal.gen3.discovery.HDPowerViewDeviceDiscoveryService3;
 import org.openhab.binding.hdpowerview.internal.gen3.handler.HDPowerViewHubHandler3;
 import org.openhab.binding.hdpowerview.internal.gen3.handler.HDPowerViewShadeHandler3;
 import org.openhab.binding.hdpowerview.internal.handler.HDPowerViewHubHandler;
@@ -82,7 +82,7 @@ public class HDPowerViewHandlerFactory extends BaseThingHandlerFactory {
         if (HDPowerViewBindingConstants.THING_TYPE_HUB_GEN3.equals(thingTypeUID)) {
             HDPowerViewHubHandler3 handler = new HDPowerViewHubHandler3((Bridge) thing, httpClient, translationProvider,
                     clientBuilder, eventSourceFactory);
-            registerService(new HDPowerViewDeviceDiscoveryServiceV3(handler));
+            registerService(new HDPowerViewDeviceDiscoveryService3(handler));
             return handler;
         } else if (HDPowerViewBindingConstants.THING_TYPE_SHADE_GEN3.equals(thingTypeUID)) {
             return new HDPowerViewShadeHandler3(thing);

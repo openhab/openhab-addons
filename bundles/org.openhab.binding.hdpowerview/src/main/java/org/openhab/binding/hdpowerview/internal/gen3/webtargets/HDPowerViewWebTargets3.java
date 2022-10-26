@@ -42,10 +42,10 @@ import org.openhab.binding.hdpowerview.internal.api.responses.ScheduledEvents;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubProcessingException;
 import org.openhab.binding.hdpowerview.internal.gen3.dto.Info3;
 import org.openhab.binding.hdpowerview.internal.gen3.dto.Scene3;
-import org.openhab.binding.hdpowerview.internal.gen3.dto.SceneEvent;
+import org.openhab.binding.hdpowerview.internal.gen3.dto.SceneEvent3;
 import org.openhab.binding.hdpowerview.internal.gen3.dto.ScheduledEvent3;
 import org.openhab.binding.hdpowerview.internal.gen3.dto.Shade3;
-import org.openhab.binding.hdpowerview.internal.gen3.dto.ShadeEvent;
+import org.openhab.binding.hdpowerview.internal.gen3.dto.ShadeEvent3;
 import org.openhab.binding.hdpowerview.internal.gen3.dto.ShadePosition3;
 import org.openhab.binding.hdpowerview.internal.gen3.handler.HDPowerViewHubHandler3;
 import org.openhab.core.thing.Thing;
@@ -370,7 +370,7 @@ public class HDPowerViewWebTargets3 implements Closeable {
     private void onSceneEvent(InboundSseEvent sseEvent) {
         String json = sseEvent.readData();
         logger.trace("onSceneEvent() json:{}", json);
-        SceneEvent sceneEvent = gson.fromJson(json, SceneEvent.class);
+        SceneEvent3 sceneEvent = gson.fromJson(json, SceneEvent3.class);
         if (sceneEvent != null) {
             Scene3 scene = sceneEvent.getScene();
             hubHandler.onSceneEvent(scene);
@@ -385,7 +385,7 @@ public class HDPowerViewWebTargets3 implements Closeable {
     private void onShadeEvent(InboundSseEvent sseEvent) {
         String json = sseEvent.readData();
         logger.trace("onShadeEvent() json:{}", json);
-        ShadeEvent shadeEvent = gson.fromJson(json, ShadeEvent.class);
+        ShadeEvent3 shadeEvent = gson.fromJson(json, ShadeEvent3.class);
         if (shadeEvent != null) {
             ShadePosition3 positions = shadeEvent.getCurrentPositions();
             hubHandler
