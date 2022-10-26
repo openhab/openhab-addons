@@ -75,7 +75,7 @@ public class DefaultSchemaLight extends Light {
                                     channelConfiguration.brightnessValueTemplate)
                             .commandTopic(channelConfiguration.brightnessCommandTopic, channelConfiguration.isRetain(),
                                     channelConfiguration.getQos())
-                            .withFormat("%.0f").commandFilter(command -> handleBrightnessCommand(command)).build(false);
+                            .withFormat("%.0f").commandFilter(this::handleBrightnessCommand).build(false);
         }
 
         if (channelConfiguration.whiteCommandTopic != null) {
@@ -161,7 +161,7 @@ public class DefaultSchemaLight extends Light {
             }
             buildChannel(COLOR_CHANNEL_ID, colorValue, "Color", this)
                     .commandTopic(DUMMY_TOPIC, channelConfiguration.isRetain(), channelConfiguration.getQos())
-                    .commandFilter(command -> handleColorCommand(command)).build();
+                    .commandFilter(this::handleColorCommand).build();
         } else if (localBrightnessChannel != null) {
             hiddenChannels.add(localOnOffChannel);
             channels.put(BRIGHTNESS_CHANNEL_ID, localBrightnessChannel);

@@ -15,6 +15,7 @@ package org.openhab.binding.mqtt.homeassistant.internal.component;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Stream;
@@ -303,8 +304,8 @@ public abstract class Light extends AbstractComponent<Light.ChannelConfiguration
     @Override
     public CompletableFuture<@Nullable Void> stop() {
         return Stream.concat(channels.values().stream(), hiddenChannels.stream()) //
-                .filter(v -> v != null) //
-                .map(v -> v.stop()) //
+                .filter(Objects::nonNull) //
+                .map(ComponentChannel::stop) //
                 .reduce(CompletableFuture.completedFuture(null), (f, v) -> f.thenCompose(b -> v));
     }
 
