@@ -1,8 +1,7 @@
 # GROHE ONDUS Binding
 
-The GROHE ONDUS Binding provides access to data collected by a GROHE ONDUS appliance, such as
-an [GROHE Sense Guard](https://www.grohe.de/de_de/smarthome/grohe-sense-guard/). The binding uses the REST API
-interface (the same as used by the Android App) to retrieve the collected data.
+The GROHE ONDUS Binding provides access to data collected by a GROHE ONDUS appliance, such as an [GROHE Sense Guard](https://www.grohe.de/de_de/smarthome/grohe-sense-guard/).
+The binding uses the REST API interface (the same as used by the Android App) to retrieve the collected data.
 
 ## Supported Things
 
@@ -16,9 +15,8 @@ This binding should support all appliances from GROHE, however, only the GROHE S
 
 ## Discovery
 
-The binding requires you to create at least one Account thing as a bridge manually. The discovery process will look
-through all locations and rooms of your configured GROHE account and adds each found appliance as a new thing
-automatically to the inbox.
+The binding requires you to create at least one Account thing as a bridge manually.
+The discovery process will look through all locations and rooms of your configured GROHE account and adds each found appliance as a new thing automatically to the inbox.
 
 ## Binding Configuration
 
@@ -26,31 +24,28 @@ This binding does not require any configuration outside of things.
 
 ## Thing Configuration
 
-There is only one thing and one bridge that needs to be configured together to get this binding to work, see the full
-example section for a self-explaining example.
+There is only one thing and one bridge that needs to be configured together to get this binding to work, see the full example section for a self-explaining example.
 
 ### Account Bridge
 
-The `groheondus:account` bridge is used to configure the API interface for a specific account, which is used to access
-the collected and saved data of your GROHE account. Use the same credentials as in the mobile app.
+The `groheondus:account` bridge is used to configure the API interface for a specific account, which is used to access the collected and saved data of your GROHE account.
+Use the same credentials as in the mobile app.
 
 ### Appliance
 
-The `groheondus:sense` and `groheondus:senseguard` things are used to retrieve information of a specific appliance from
-GROHE. This appliance needs to be connected with your GROHE ONDUS account as configured in the corresponding Account
-Bridge. The appliance needs to be configured with the unique appliance ID (with the `applianceId` configuration) as well
-as the `roomId`
-and the `locationId`. Once the account bridge is configured, the appliances in your account will be discovered as
-Appliance things.
+The `groheondus:sense` and `groheondus:senseguard` things are used to retrieve information of a specific appliance from GROHE.
+This appliance needs to be connected with your GROHE ONDUS account as configured in the corresponding Account Bridge.
+The appliance needs to be configured with the unique appliance ID (with the `applianceId` configuration) as well as the `roomId` and the `locationId`.
+Once the account bridge is configured, the appliances in your account will be discovered as Appliance things.
 `pollingInterval` has a minimum value of 900 seconds to avoid service rate limiting.
 
-| Configuration            | Default value            | Description                                          |
-|--------------------------|--------------------------|------------------------------------------------------|
+| Configuration            | Default value            | Description                                           |
+|--------------------------|--------------------------|-------------------------------------------------------|
 | applianceId              | ''                       | Unique ID of the appliance in the GROHE ONDUS account |
-| roomId                   | ''                       | ID of the room the appliance is in                   |
-| locationId               | ''                       | ID of the location (building) the appliance is in    |
-| pollingInterval          | Retrieved from API,      | Interval in seconds to get new data from the API     |
-|                          | usually 900              | The `sense` thing uses 900 by default.               |
+| roomId                   | ''                       | ID of the room the appliance is in                    |
+| locationId               | ''                       | ID of the location (building) the appliance is in     |
+| pollingInterval          | Retrieved from API,      | Interval in seconds to get new data from the API      |
+|                          | usually 900              | The `sense` thing uses 900 by default.                |
 
 #### Channels
 
@@ -74,8 +69,7 @@ Appliance things.
 | temperature              | Number:Temperature       | The ambient temperature of the appliance              |
 | battery                  | Number                   | The battery level of the appliance                    |
 
-Note: Be aware that the Sense reports data once a day (at most), and that the value posted in the channel - however the
-latest - may be up to 48 hours old.
+Note: Be aware that the Sense reports data once a day (at most), and that the value posted in the channel - however the latest - may be up to 48 hours old.
 
 ## Full Example
 
