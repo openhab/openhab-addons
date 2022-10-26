@@ -64,7 +64,7 @@ public class DefaultSchemaLight extends Light {
                 .stateTopic(channelConfiguration.stateTopic, channelConfiguration.stateValueTemplate)
                 .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
                         channelConfiguration.getQos())
-                .commandFilter(command -> handleRawOnOffCommand(command)).build(false);
+                .commandFilter(this::handleRawOnOffCommand).build(false);
 
         @Nullable
         ComponentChannel localBrightnessChannel = null;
@@ -162,7 +162,7 @@ public class DefaultSchemaLight extends Light {
             buildChannel(COLOR_CHANNEL_ID, colorValue, "Color", this)
                     .commandTopic(DUMMY_TOPIC, channelConfiguration.isRetain(), channelConfiguration.getQos())
                     .commandFilter(command -> handleColorCommand(command)).build();
-        } else if (!hasColorChannel && localBrightnessChannel != null) {
+        } else if (localBrightnessChannel != null) {
             hiddenChannels.add(localOnOffChannel);
             channels.put(BRIGHTNESS_CHANNEL_ID, localBrightnessChannel);
         } else {
@@ -217,15 +217,14 @@ public class DefaultSchemaLight extends Light {
     }
 
     private boolean handleBrightnessCommand(Command command) {
-        if (!handleOnOffCommand(command)) {
-            return false;
-        }
-        // Otherwise, PercentType commands get handled as normal
-        return true;
+        // if it's OnOffType, it'll get handled by this; otherwise it'll return
+        // true and PercentType will be handled as normal
+        return handleOnOffCommand(command);
     }
 
     private boolean handleColorCommand(Command command) {
         if (!handleOnOffCommand(command)) {
+            return false;
         } else if (command instanceof HSBType) {
             HSBType color = (HSBType) command;
             if (channelConfiguration.hsCommandTopic != null) {
@@ -244,7 +243,11 @@ public class DefaultSchemaLight extends Light {
                 // TODO
             } else if (channelConfiguration.xyCommandTopic != null) {
                 PercentType[] xy = color.toXY();
-                brightnessChannel.getState().publishValue(color.getBrightness());
+                // If we don't have a brightness channel, something is probably busted
+                // but don't choke
+                if (channelConfiguration.brightnessCommandTopic != null) {
+                    brightnessChannel.getState().publishValue(color.getBrightness());
+                }
                 String xyString = String.format("%f,%f", xy[0].doubleValue(), xy[1].doubleValue());
                 xyChannel.getState().publishValue(new StringType(xyString));
             }

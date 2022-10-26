@@ -32,6 +32,7 @@ import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannel;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.exception.UnsupportedComponentException;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.Command;
 
@@ -284,7 +285,7 @@ public abstract class Light extends AbstractComponent<Light.ChannelConfiguration
         if (channelConfiguration.maxMireds != null) {
             max = new BigDecimal(channelConfiguration.maxMireds);
         }
-        colorTempValue = new NumberValue(min, max, null, null);
+        colorTempValue = new NumberValue(min, max, BigDecimal.ONE, Units.MIRED);
 
         buildChannels();
     }
