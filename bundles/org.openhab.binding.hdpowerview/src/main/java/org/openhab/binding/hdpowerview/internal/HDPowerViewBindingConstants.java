@@ -76,4 +76,12 @@ public class HDPowerViewBindingConstants {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_HUB, THING_TYPE_SHADE,
             THING_TYPE_REPEATER);
+
+    // generation 3
+    public static final ThingTypeUID THING_TYPE_HUB_GEN3 = new ThingTypeUID(BINDING_ID, "gen3");
+    public static final ThingTypeUID THING_TYPE_SHADE_GEN3 = new ThingTypeUID(BINDING_ID, "shade3");
+
+    public static final String PROPERTY_NAME = "name";
+    public static final String PROPERTY_POWER_TYPE = "powerType";
+    public static final String PROPERTY_BLE_NAME = "bleName";
 }

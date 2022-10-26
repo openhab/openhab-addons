@@ -10,13 +10,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.hdpowerview.internal.api._v3;
+package org.openhab.binding.hdpowerview.internal.gen3.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hdpowerview.internal.api.CoordinateSystem;
-import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
-import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDatabase.Capabilities;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -27,15 +24,13 @@ import org.openhab.core.types.UnDefType;
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class ShadePositionV3 extends ShadePosition {
+public class ShadePosition3 {
+    private @NonNullByDefault({}) Double primary;
+    private @NonNullByDefault({}) Double secondary;
+    private @NonNullByDefault({}) Double tilt;
+    // private @NonNullByDefault({}) Double velocity;
 
-    private @Nullable Double primary;
-    private @Nullable Double secondary;
-    private @Nullable Double tilt;
-    // private @Nullable Double velocity;
-
-    @Override
-    public State getState(Capabilities shadeCapabilities, CoordinateSystem posKindCoords) {
+    public State getState(CoordinateSystem posKindCoords) {
         Double value;
         switch (posKindCoords) {
             case PRIMARY_POSITION:
@@ -53,34 +48,39 @@ public class ShadePositionV3 extends ShadePosition {
         return value != null ? new PercentType((int) (value.doubleValue() * 100)) : UnDefType.UNDEF;
     }
 
-    @Override
-    public boolean secondaryRailDetected() {
-        return secondary != null;
-    }
-
-    @Override
-    public boolean tiltAnywhereDetected() {
-        return tilt != null;
-    }
-
-    @Override
-    public ShadePositionV3 setPosition(Capabilities shadeCapabilities, CoordinateSystem posKindCoords, int percent) {
+    /**
+     * Set a new position value for this object based on the given coordinates, and the given new value.
+     *
+     * @param coordinates which of the position fields shall be set.
+     * @param percent the new value in percent.
+     * @return this object.
+     */
+    public ShadePosition3 setPosition(CoordinateSystem coordinates, int percent) {
         Double value = Double.valueOf(percent) / 100.0;
-        switch (posKindCoords) {
+        switch (coordinates) {
             case PRIMARY_POSITION:
-                primary = shadeCapabilities.supportsPrimary() ? value : null;
+                primary = value;
                 break;
             case SECONDARY_POSITION:
-                secondary = shadeCapabilities.supportsSecondary() || shadeCapabilities.supportsSecondaryOverlapped()
-                        ? value
-                        : null;
+                secondary = value;
                 break;
             case VANE_TILT_POSITION:
-                tilt = shadeCapabilities.supportsTiltOnClosed() || shadeCapabilities.supportsTiltAnywhere() ? value
-                        : null;
+                tilt = value;
                 break;
             default:
         }
         return this;
+    }
+
+    public boolean supportsPrimary() {
+        return primary != null;
+    }
+
+    public boolean supportsSecondary() {
+        return secondary != null;
+    }
+
+    public boolean supportsTilt() {
+        return tilt != null;
     }
 }
