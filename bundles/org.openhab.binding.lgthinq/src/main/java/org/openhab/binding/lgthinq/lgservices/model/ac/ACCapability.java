@@ -33,8 +33,20 @@ public class ACCapability extends AbstractCapability {
     private List<String> supportedOpMode = Collections.emptyList();
     private List<String> supportedFanSpeed = Collections.emptyList();
     private boolean isJetModeAvailable;
+    private boolean isAutoDryModeAvailable;
+    private boolean isEnergySavingAvailable;
+    private boolean isAirCleanAvailable;
     private String coolJetModeCommandOn = "";
     private String coolJetModeCommandOff = "";
+
+    private String autoDryModeCommandOn = "";
+    private String autoDryModeCommandOff = "";
+
+    private String energySavingModeCommandOn = "";
+    private String energySavingModeCommandOff = "";
+
+    private String airCleanModeCommandOn = "";
+    private String airCleanModeCommandOff = "";
 
     public String getCoolJetModeCommandOff() {
         return coolJetModeCommandOff;
@@ -88,7 +100,79 @@ public class ACCapability extends AbstractCapability {
         this.isJetModeAvailable = jetModeAvailable;
     }
 
+    public boolean isAutoDryModeAvailable() {
+        return isAutoDryModeAvailable;
+    }
+
+    public void setAutoDryModeAvailable(boolean autoDryModeAvailable) {
+        isAutoDryModeAvailable = autoDryModeAvailable;
+    }
+
+    public boolean isEnergySavingAvailable() {
+        return isEnergySavingAvailable;
+    }
+
+    public void setEnergySavingAvailable(boolean energySavingAvailable) {
+        isEnergySavingAvailable = energySavingAvailable;
+    }
+
+    public boolean isAirCleanAvailable() {
+        return isAirCleanAvailable;
+    }
+
+    public void setAirCleanAvailable(boolean airCleanAvailable) {
+        isAirCleanAvailable = airCleanAvailable;
+    }
+
     public boolean isJetModeAvailable() {
         return this.isJetModeAvailable;
+    }
+
+    public String getAutoDryModeCommandOn() {
+        return autoDryModeCommandOn;
+    }
+
+    public void setAutoDryModeCommandOn(String autoDryModeCommandOn) {
+        this.autoDryModeCommandOn = autoDryModeCommandOn;
+    }
+
+    public String getAutoDryModeCommandOff() {
+        return autoDryModeCommandOff;
+    }
+
+    public void setAutoDryModeCommandOff(String autoDryModeCommandOff) {
+        this.autoDryModeCommandOff = autoDryModeCommandOff;
+    }
+
+    public String getEnergySavingModeCommandOn() {
+        return energySavingModeCommandOn;
+    }
+
+    public void setEnergySavingModeCommandOn(String energySavingModeCommandOn) {
+        this.energySavingModeCommandOn = energySavingModeCommandOn;
+    }
+
+    public String getEnergySavingModeCommandOff() {
+        return energySavingModeCommandOff;
+    }
+
+    public void setEnergySavingModeCommandOff(String energySavingModeCommandOff) {
+        this.energySavingModeCommandOff = energySavingModeCommandOff;
+    }
+
+    public String getAirCleanModeCommandOn() {
+        return airCleanModeCommandOn;
+    }
+
+    public void setAirCleanModeCommandOn(String airCleanModeCommandOn) {
+        this.airCleanModeCommandOn = airCleanModeCommandOn;
+    }
+
+    public String getAirCleanModeCommandOff() {
+        return airCleanModeCommandOff;
+    }
+
+    public void setAirCleanModeCommandOff(String airCleanModeCommandOff) {
+        this.airCleanModeCommandOff = airCleanModeCommandOff;
     }
 }
