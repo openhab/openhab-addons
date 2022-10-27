@@ -15,6 +15,7 @@ package org.openhab.binding.hdpowerview.internal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
@@ -77,9 +78,12 @@ public class HDPowerViewBindingConstants {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_HUB, THING_TYPE_SHADE,
             THING_TYPE_REPEATER);
 
+    public static final Pattern VALID_IP_V4_ADDRESS = Pattern
+            .compile("\\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\\.|$)){4}\\b");
+
     // generation 3
-    public static final ThingTypeUID THING_TYPE_HUB_GEN3 = new ThingTypeUID(BINDING_ID, "gen3");
-    public static final ThingTypeUID THING_TYPE_SHADE_GEN3 = new ThingTypeUID(BINDING_ID, "shade3");
+    public static final ThingTypeUID THING_TYPE_GATEWAY3 = new ThingTypeUID(BINDING_ID, "gateway3");
+    public static final ThingTypeUID THING_TYPE_SHADE3 = new ThingTypeUID(BINDING_ID, "shade3");
 
     public static final String PROPERTY_NAME = "name";
     public static final String PROPERTY_POWER_TYPE = "powerType";

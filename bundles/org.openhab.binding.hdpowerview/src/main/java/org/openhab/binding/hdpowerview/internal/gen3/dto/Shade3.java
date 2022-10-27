@@ -26,7 +26,7 @@ import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
 /**
- * State of a Shade as returned by an HD PowerView hub of Generation 3.
+ * State of a Shade as returned by an HD PowerView Generation 3 Gateway.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
@@ -39,7 +39,6 @@ public class Shade3 {
     private @Nullable Integer capabilities;
     private @Nullable String powerType; // TODO unclear if this is String or Integer
     private @Nullable Integer batteryStatus;
-    // private @Nullable Integer roomId;
     private @Nullable Integer signalStrength;
     private @Nullable String bleName;
     private @Nullable Firmware firmware;

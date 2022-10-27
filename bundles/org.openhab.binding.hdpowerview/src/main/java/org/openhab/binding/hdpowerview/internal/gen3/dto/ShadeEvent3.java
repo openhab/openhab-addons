@@ -15,18 +15,14 @@ package org.openhab.binding.hdpowerview.internal.gen3.dto;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Shade SSE event object as supplied an HD PowerView hub of Generation 3.
+ * Shade SSE event object as supplied an HD PowerView Generation 3 Gateway.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
 public class ShadeEvent3 {
     private int id;
-    // private @NonNullByDefault({}) String evt;
-    // private @NonNullByDefault({}) String isoDate;
-    // private @NonNullByDefault({}) String bleName;
     private @NonNullByDefault({}) ShadePosition3 currentPositions;
-    // private @NonNullByDefault({}) ShadePosition3 targetPositions;
 
     public ShadePosition3 getCurrentPositions() {
         return currentPositions;

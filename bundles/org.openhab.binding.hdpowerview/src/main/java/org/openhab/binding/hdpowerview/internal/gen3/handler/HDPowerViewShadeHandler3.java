@@ -46,7 +46,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Thing handler for an HD PowerView shade of Generation 3.
+ * Thing handler for shades in an HD PowerView Generation 3 Gateway.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */

@@ -15,15 +15,13 @@ package org.openhab.binding.hdpowerview.internal.gen3.dto;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Scene SSE event object as supplied an HD PowerView hub of Generation 3.
+ * Scene SSE event object as supplied an HD PowerView Generation 3 Gateway.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
 public class SceneEvent3 {
     private int id;
-    // private @NonNullByDefault({}) String evt;
-    // private @NonNullByDefault({}) String isoDate;
     private @NonNullByDefault({}) Scene3 scene;
 
     public int getId() {

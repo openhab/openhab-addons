@@ -49,7 +49,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Bridge handler for an HD PowerView hub of Generation 3.
+ * Bridge handler for an HD PowerView Generation 3 Gateway.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */

@@ -19,7 +19,7 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Scene object as returned by an HD PowerView hub of Generation 3.
+ * Scene object as returned by an HD PowerView Generation 3 Gateway.
  *
  * @author Andrew Fiddian-Green - Initial contribution.
  */
