@@ -15,10 +15,15 @@ package org.openhab.binding.saicismart.internal;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -32,10 +37,14 @@ import org.openhab.binding.saicismart.internal.asn1.v1_1.MessageCoder;
 import org.openhab.binding.saicismart.internal.asn1.v1_1.MessageCounter;
 import org.openhab.binding.saicismart.internal.asn1.v1_1.entity.MP_UserLoggingInReq;
 import org.openhab.binding.saicismart.internal.asn1.v1_1.entity.MP_UserLoggingInResp;
+import org.openhab.binding.saicismart.internal.asn1.v1_1.entity.MessageListReq;
+import org.openhab.binding.saicismart.internal.asn1.v1_1.entity.MessageListResp;
+import org.openhab.binding.saicismart.internal.asn1.v1_1.entity.StartEndNumber;
 import org.openhab.binding.saicismart.internal.asn1.v1_1.entity.VinInfo;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
@@ -64,6 +73,7 @@ public class SAICiSMARTBridgeHandler extends BaseBridgeHandler {
 
     private @Nullable Collection<VinInfo> vinList;
     private HttpClientFactory httpClientFactory;
+    private @Nullable Future<?> pollingJob;
 
     public SAICiSMARTBridgeHandler(Bridge bridge, HttpClientFactory httpClientFactory) {
         super(bridge);
@@ -81,50 +91,116 @@ public class SAICiSMARTBridgeHandler extends BaseBridgeHandler {
 
         updateStatus(ThingStatus.UNKNOWN);
 
-        scheduler.execute(() -> {
-            Message<MP_UserLoggingInReq> loginRequestMessage = new Message<>(new MP_DispatcherHeader(),
-                    new MP_DispatcherBody(), new MP_UserLoggingInReq());
+        pollingJob = scheduler.scheduleWithFixedDelay(() -> {
+            if (uid == null || token == null) {
+                Message<MP_UserLoggingInReq> loginRequestMessage = new Message<>(new MP_DispatcherHeader(),
+                        new MP_DispatcherBody(), new MP_UserLoggingInReq());
 
-            MessageCounter messageCounter = new MessageCounter();
-            messageCounter.setDownlinkCounter(0);
-            messageCounter.setUplinkCounter(1);
-            loginRequestMessage.getBody().setMessageCounter(messageCounter);
+                MessageCounter messageCounter = new MessageCounter();
+                messageCounter.setDownlinkCounter(0);
+                messageCounter.setUplinkCounter(1);
+                loginRequestMessage.getBody().setMessageCounter(messageCounter);
 
-            loginRequestMessage.getBody().setMessageID(1);
-            loginRequestMessage.getBody().setIccID("12345678901234567890");
-            loginRequestMessage.getBody().setSimInfo("1234567890987654321");
-            loginRequestMessage.getBody().setEventCreationTime(Instant.now().getEpochSecond());
-            loginRequestMessage.getBody().setApplicationID("501");
-            loginRequestMessage.getBody().setApplicationDataProtocolVersion(513);
-            loginRequestMessage.getBody().setTestFlag(2);
+                loginRequestMessage.getBody().setMessageID(1);
+                loginRequestMessage.getBody().setIccID("12345678901234567890");
+                loginRequestMessage.getBody().setSimInfo("1234567890987654321");
+                loginRequestMessage.getBody().setEventCreationTime(Instant.now().getEpochSecond());
+                loginRequestMessage.getBody().setApplicationID("501");
+                loginRequestMessage.getBody().setApplicationDataProtocolVersion(513);
+                loginRequestMessage.getBody().setTestFlag(2);
 
-            loginRequestMessage.getBody()
-                    .setUid("0000000000000000000000000000000000000000000000000#".substring(config.username.length())
-                            + config.username);
+                loginRequestMessage.getBody()
+                        .setUid("0000000000000000000000000000000000000000000000000#".substring(config.username.length())
+                                + config.username);
 
-            loginRequestMessage.getApplicationData().setPassword(config.password);
+                loginRequestMessage.getApplicationData().setPassword(config.password);
 
-            String loginRequest = new MessageCoder<>(MP_UserLoggingInReq.class).encodeRequest(loginRequestMessage);
+                String loginRequest = new MessageCoder<>(MP_UserLoggingInReq.class).encodeRequest(loginRequestMessage);
 
-            try {
-                String loginResponse = sendRequest(loginRequest, "https://tap-eu.soimt.com/TAP.Web/ota.mp");
+                try {
+                    String loginResponse = sendRequest(loginRequest, "https://tap-eu.soimt.com/TAP.Web/ota.mp");
 
-                Message<MP_UserLoggingInResp> loginResponseMessage = new MessageCoder<>(MP_UserLoggingInResp.class)
-                        .decodeResponse(loginResponse);
+                    Message<MP_UserLoggingInResp> loginResponseMessage = new MessageCoder<>(MP_UserLoggingInResp.class)
+                            .decodeResponse(loginResponse);
 
-                logger.info("Got message: {}", new GsonBuilder().setPrettyPrinting().create()
-                        .toJson(loginResponseMessage.getApplicationData()));
+                    logger.info("Got message: {}", new GsonBuilder().setPrettyPrinting().create()
+                            .toJson(loginResponseMessage.getApplicationData()));
 
-                uid = loginResponseMessage.getBody().getUid();
-                token = loginResponseMessage.getApplicationData().getToken();
-                vinList = loginResponseMessage.getApplicationData().getVinList();
-                updateStatus(ThingStatus.ONLINE);
+                    uid = loginResponseMessage.getBody().getUid();
+                    token = loginResponseMessage.getApplicationData().getToken();
+                    vinList = loginResponseMessage.getApplicationData().getVinList();
+                    updateStatus(ThingStatus.ONLINE);
 
-            } catch (TimeoutException | URISyntaxException | ExecutionException | InterruptedException e) {
-                updateStatus(ThingStatus.OFFLINE);
-                logger.error("Could not login to SAIC iSMART account", e);
+                } catch (TimeoutException | URISyntaxException | ExecutionException | InterruptedException e) {
+                    updateStatus(ThingStatus.OFFLINE);
+                    logger.error("Could not login to SAIC iSMART account", e);
+                }
+            } else {
+                Message<MessageListReq> loginRequestMessage = new Message<>(new MP_DispatcherHeader(),
+                        new MP_DispatcherBody(), new MessageListReq());
+
+                loginRequestMessage.getHeader().setProtocolVersion(18);
+
+                MessageCounter messageCounter = new MessageCounter();
+                messageCounter.setDownlinkCounter(0);
+                messageCounter.setUplinkCounter(1);
+                loginRequestMessage.getBody().setMessageCounter(messageCounter);
+
+                loginRequestMessage.getBody().setMessageID(1);
+                loginRequestMessage.getBody().setIccID("12345678901234567890");
+                loginRequestMessage.getBody().setSimInfo("1234567890987654321");
+                loginRequestMessage.getBody().setEventCreationTime(Instant.now().getEpochSecond());
+                loginRequestMessage.getBody().setApplicationID("531");
+                loginRequestMessage.getBody().setApplicationDataProtocolVersion(513);
+                loginRequestMessage.getBody().setTestFlag(2);
+
+                loginRequestMessage.getBody().setUid(uid);
+                loginRequestMessage.getBody().setToken(token);
+
+                // We currently assume that the newest message is the first.
+                // TODO: get all messages
+                // TODO: delete old messages
+                // TODO: handle case when no messages are there
+                // TODO: create a message channel, that delivers the messages to openhab
+                // TODO: automatically subscribe for engine start messages
+                loginRequestMessage.getApplicationData().setStartEndNumber(new StartEndNumber());
+                loginRequestMessage.getApplicationData().getStartEndNumber().setStartNumber(1L);
+                loginRequestMessage.getApplicationData().getStartEndNumber().setEndNumber(5L);
+                loginRequestMessage.getApplicationData().setMessageGroup("ALARM");
+
+                String loginRequest = new MessageCoder<>(MessageListReq.class).encodeRequest(loginRequestMessage);
+
+                try {
+                    String loginResponse = sendRequest(loginRequest, "https://tap-eu.soimt.com/TAP.Web/ota.mp");
+
+                    Message<MessageListResp> loginResponseMessage = new MessageCoder<>(MessageListResp.class)
+                            .decodeResponse(loginResponse);
+
+                    logger.info("Got message: {}", new GsonBuilder().setPrettyPrinting().create()
+                            .toJson(loginResponseMessage.getApplicationData()));
+
+                    for (org.openhab.binding.saicismart.internal.asn1.v1_1.entity.Message message : loginResponseMessage
+                            .getApplicationData().getMessages()) {
+                        if (message.isVinPresent()) {
+                            ZonedDateTime time = ZonedDateTime.ofInstant(
+                                    Instant.ofEpochSecond(message.getMessageTime().getSeconds()),
+                                    ZoneId.systemDefault());
+                            String vin = message.getVin();
+                            getThing().getThings().stream().filter(t -> t.getUID().getId().equals(vin))
+                                    .map(Thing::getHandler).filter(Objects::nonNull)
+                                    .filter(SAICiSMARTHandler.class::isInstance).map(SAICiSMARTHandler.class::cast)
+                                    .forEach(t -> t.notifyCarActivity(time, false));
+                        }
+                    }
+
+                    updateStatus(ThingStatus.ONLINE);
+
+                } catch (TimeoutException | URISyntaxException | ExecutionException | InterruptedException e) {
+                    updateStatus(ThingStatus.OFFLINE);
+                    logger.error("Could not get messages from SAIC iSMART account", e);
+                }
             }
-        });
+        }, 1, 1, TimeUnit.SECONDS);
     }
 
     @Override
@@ -157,6 +233,14 @@ public class SAICiSMARTBridgeHandler extends BaseBridgeHandler {
     public void relogin() {
         uid = null;
         token = null;
-        initialize();
+    }
+
+    @Override
+    public void dispose() {
+        Future<?> job = pollingJob;
+        if (job != null) {
+            job.cancel(true);
+            pollingJob = null;
+        }
     }
 }
