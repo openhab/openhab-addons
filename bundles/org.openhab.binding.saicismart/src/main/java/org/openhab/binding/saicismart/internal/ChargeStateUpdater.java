@@ -27,7 +27,7 @@ import org.openhab.binding.saicismart.internal.asn1.v3_0.MP_DispatcherBody;
 import org.openhab.binding.saicismart.internal.asn1.v3_0.MP_DispatcherHeader;
 import org.openhab.binding.saicismart.internal.asn1.v3_0.Message;
 import org.openhab.binding.saicismart.internal.asn1.v3_0.MessageCoder;
-import org.openhab.binding.saicismart.internal.asn1.v3_0.OTA_ChrgMangDataResp;
+import org.openhab.binding.saicismart.internal.asn1.v3_0.entity.OTA_ChrgMangDataResp;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.Units;
