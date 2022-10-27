@@ -59,7 +59,9 @@ public class MessageCoder<E extends IASN1PreparedElement>
             final byte[] bodyData = bos.toByteArray();
 
             MP_DispatcherHeader header = message.getHeader();
-            header.setProtocolVersion(17);
+            if (header.getProtocolVersion() == null) {
+                header.setProtocolVersion(17);
+            }
             header.setSecurityContext(0);
             header.setDispatcherMessageLength(bodyData.length + 4 /* header length */);
             header.setDispatcherBodyEncoding(0); // PER
