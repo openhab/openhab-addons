@@ -58,7 +58,7 @@ import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
 
 /**
- * JAX-RS targets for communicating with an HD PowerView hub Generation 3.
+ * JAX-RS targets for communicating with an HD PowerView Generation 3 Gateway.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */

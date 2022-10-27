@@ -20,7 +20,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hdpowerview.internal.api.responses.ScheduledEvents;
 
 /**
- * class for scheduled event as returned by an HD PowerView Generation 3 hub.
+ * class for scheduled event as returned by an HD PowerView Generation 3 Gateway.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */

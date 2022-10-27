@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.hdpowerview.internal.gen3.discovery;
 
-import static org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants.THING_TYPE_HUB_GEN3;
+import static org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants.*;
 
 import javax.jmdns.ServiceInfo;
 
@@ -28,7 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Discovers HD PowerView generation 3 hubs by means of mDNS.
+ * Discovers HD PowerView Generation 3 Gateways by means of mDNS.
  *
  * @author Andrew Fiddian-Green - Initial contribution.
  */
@@ -42,7 +42,7 @@ public class HDPowerViewHubDiscoveryParticipant3 extends HDPowerViewHubDiscovery
     public @Nullable DiscoveryResult createResult(ServiceInfo service) {
         for (String host : service.getHostAddresses()) {
             if (VALID_IP_V4_ADDRESS.matcher(host).matches()) {
-                ThingUID thingUID = new ThingUID(THING_TYPE_HUB_GEN3, host.replace('.', '_'));
+                ThingUID thingUID = new ThingUID(THING_TYPE_GATEWAY3, host.replace('.', '_'));
                 DiscoveryResult hub = DiscoveryResultBuilder.create(thingUID)
                         .withProperty(HDPowerViewHubConfiguration.HOST, host)
                         .withRepresentationProperty(HDPowerViewHubConfiguration.HOST)

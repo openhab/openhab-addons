@@ -79,12 +79,12 @@ public class HDPowerViewHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         // generation 3
-        if (HDPowerViewBindingConstants.THING_TYPE_HUB_GEN3.equals(thingTypeUID)) {
+        if (HDPowerViewBindingConstants.THING_TYPE_GATEWAY3.equals(thingTypeUID)) {
             HDPowerViewHubHandler3 handler = new HDPowerViewHubHandler3((Bridge) thing, httpClient, translationProvider,
                     clientBuilder, eventSourceFactory);
             registerService(new HDPowerViewDeviceDiscoveryService3(handler));
             return handler;
-        } else if (HDPowerViewBindingConstants.THING_TYPE_SHADE_GEN3.equals(thingTypeUID)) {
+        } else if (HDPowerViewBindingConstants.THING_TYPE_SHADE3.equals(thingTypeUID)) {
             return new HDPowerViewShadeHandler3(thing);
         } else
         // generation 1/2

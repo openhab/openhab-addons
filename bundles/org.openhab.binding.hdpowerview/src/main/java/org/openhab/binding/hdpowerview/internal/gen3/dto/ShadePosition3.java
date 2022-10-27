@@ -19,7 +19,7 @@ import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
 /**
- * The position of a single shade, as returned by an HD PowerView hub of Generation 3
+ * The position of a shade as returned by an HD PowerView Generation 3 Gateway.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
@@ -28,7 +28,6 @@ public class ShadePosition3 {
     private @NonNullByDefault({}) Double primary;
     private @NonNullByDefault({}) Double secondary;
     private @NonNullByDefault({}) Double tilt;
-    // private @NonNullByDefault({}) Double velocity;
 
     public State getState(CoordinateSystem posKindCoords) {
         Double value;

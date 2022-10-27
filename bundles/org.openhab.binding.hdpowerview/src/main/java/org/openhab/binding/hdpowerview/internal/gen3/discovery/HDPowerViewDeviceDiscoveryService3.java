@@ -20,7 +20,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants;
 import org.openhab.binding.hdpowerview.internal.config.HDPowerViewShadeConfiguration;
-import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDatabase;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubProcessingException;
 import org.openhab.binding.hdpowerview.internal.gen3.dto.Shade3;
 import org.openhab.binding.hdpowerview.internal.gen3.handler.HDPowerViewHubHandler3;
@@ -32,7 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Discovers HD PowerView Shades and Repeaters from an existing hub
+ * Discovers shades in an HD PowerView Generation 3 Gateway.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
@@ -43,10 +42,9 @@ public class HDPowerViewDeviceDiscoveryService3 extends AbstractDiscoveryService
     private final HDPowerViewHubHandler3 hub;
     private final Runnable scanner;
     private @Nullable ScheduledFuture<?> backgroundFuture;
-    private final ShadeCapabilitiesDatabase db = new ShadeCapabilitiesDatabase();
 
     public HDPowerViewDeviceDiscoveryService3(HDPowerViewHubHandler3 hub) {
-        super(Collections.singleton(HDPowerViewBindingConstants.THING_TYPE_SHADE_GEN3), 600, true);
+        super(Collections.singleton(HDPowerViewBindingConstants.THING_TYPE_SHADE3), 600, true);
         this.hub = hub;
         this.scanner = createScanner();
     }
@@ -95,7 +93,7 @@ public class HDPowerViewDeviceDiscoveryService3 extends AbstractDiscoveryService
             }
 
             String id = Integer.toString(shade.getId());
-            ThingUID thingUID = new ThingUID(HDPowerViewBindingConstants.THING_TYPE_SHADE_GEN3, bridgeUid, id);
+            ThingUID thingUID = new ThingUID(HDPowerViewBindingConstants.THING_TYPE_SHADE3, bridgeUid, id);
 
             DiscoveryResultBuilder builder = DiscoveryResultBuilder.create(thingUID).withLabel(shade.getName())
                     .withBridge(bridgeUid).withProperty(HDPowerViewShadeConfiguration.ID, id)

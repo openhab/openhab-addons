@@ -15,7 +15,7 @@ package org.openhab.binding.hdpowerview.internal.gen3.dto;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * DTO for the Generation 3 gateway information.
+ * DTO for the Generation 3 Gateway information.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
