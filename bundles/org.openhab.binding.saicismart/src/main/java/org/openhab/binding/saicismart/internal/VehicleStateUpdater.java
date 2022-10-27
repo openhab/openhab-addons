@@ -183,40 +183,40 @@ class VehicleStateUpdater implements Callable<Boolean> {
                     new QuantityType<>(chargingStatusResponseMessage.getApplicationData().getBasicVehicleStatus()
                             .getRearRightTyrePressure() * 4 / 100.d, Units.BAR));
 
-            saiCiSMARTHandler.updateState(SAICiSMARTBindingConstants.DOOR_DRIVER,
+            saiCiSMARTHandler.updateState(SAICiSMARTBindingConstants.CHANNEL_DOOR_DRIVER,
                     chargingStatusResponseMessage.getApplicationData().getBasicVehicleStatus().getDriverDoor()
                             ? OpenClosedType.OPEN
                             : OpenClosedType.CLOSED);
-            saiCiSMARTHandler.updateState(SAICiSMARTBindingConstants.DOOR_PASSENGER,
+            saiCiSMARTHandler.updateState(SAICiSMARTBindingConstants.CHANNEL_DOOR_PASSENGER,
                     chargingStatusResponseMessage.getApplicationData().getBasicVehicleStatus().getPassengerDoor()
                             ? OpenClosedType.OPEN
                             : OpenClosedType.CLOSED);
-            saiCiSMARTHandler.updateState(SAICiSMARTBindingConstants.DOOR_REAR_LEFT,
+            saiCiSMARTHandler.updateState(SAICiSMARTBindingConstants.CHANNEL_DOOR_REAR_LEFT,
                     chargingStatusResponseMessage.getApplicationData().getBasicVehicleStatus().getRearLeftDoor()
                             ? OpenClosedType.OPEN
                             : OpenClosedType.CLOSED);
-            saiCiSMARTHandler.updateState(SAICiSMARTBindingConstants.DOOR_REAR_RIGHT,
+            saiCiSMARTHandler.updateState(SAICiSMARTBindingConstants.CHANNEL_DOOR_REAR_RIGHT,
                     chargingStatusResponseMessage.getApplicationData().getBasicVehicleStatus().getRearRightDoor()
                             ? OpenClosedType.OPEN
                             : OpenClosedType.CLOSED);
 
-            saiCiSMARTHandler.updateState(SAICiSMARTBindingConstants.WINDOW_DRIVER,
+            saiCiSMARTHandler.updateState(SAICiSMARTBindingConstants.CHANNEL_WINDOW_DRIVER,
                     chargingStatusResponseMessage.getApplicationData().getBasicVehicleStatus().getDriverWindow()
                             ? OpenClosedType.OPEN
                             : OpenClosedType.CLOSED);
-            saiCiSMARTHandler.updateState(SAICiSMARTBindingConstants.WINDOW_PASSENGER,
+            saiCiSMARTHandler.updateState(SAICiSMARTBindingConstants.CHANNEL_WINDOW_PASSENGER,
                     chargingStatusResponseMessage.getApplicationData().getBasicVehicleStatus().getPassengerWindow()
                             ? OpenClosedType.OPEN
                             : OpenClosedType.CLOSED);
-            saiCiSMARTHandler.updateState(SAICiSMARTBindingConstants.WINDOW_REAR_LEFT,
+            saiCiSMARTHandler.updateState(SAICiSMARTBindingConstants.CHANNEL_WINDOW_REAR_LEFT,
                     chargingStatusResponseMessage.getApplicationData().getBasicVehicleStatus().getRearLeftWindow()
                             ? OpenClosedType.OPEN
                             : OpenClosedType.CLOSED);
-            saiCiSMARTHandler.updateState(SAICiSMARTBindingConstants.WINDOW_REAR_RIGHT,
+            saiCiSMARTHandler.updateState(SAICiSMARTBindingConstants.CHANNEL_WINDOW_REAR_RIGHT,
                     chargingStatusResponseMessage.getApplicationData().getBasicVehicleStatus().getRearRightWindow()
                             ? OpenClosedType.OPEN
                             : OpenClosedType.CLOSED);
-            saiCiSMARTHandler.updateState(SAICiSMARTBindingConstants.WINDOW_SUN_ROOF,
+            saiCiSMARTHandler.updateState(SAICiSMARTBindingConstants.CHANNEL_WINDOW_SUN_ROOF,
                     chargingStatusResponseMessage.getApplicationData().getBasicVehicleStatus().getSunroofStatus()
                             ? OpenClosedType.OPEN
                             : OpenClosedType.CLOSED);

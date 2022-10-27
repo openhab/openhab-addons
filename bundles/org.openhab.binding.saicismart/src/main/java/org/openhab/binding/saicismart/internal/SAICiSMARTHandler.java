@@ -12,11 +12,18 @@
  */
 package org.openhab.binding.saicismart.internal;
 
-import java.util.concurrent.Callable;
+import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_FORCE_REFRESH;
+import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_LAST_ACTIVITY;
+
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -41,6 +48,9 @@ public class SAICiSMARTHandler extends BaseThingHandler {
     SAICiSMARTVehicleConfiguration config;
     private @Nullable Future<?> pollingJob;
 
+    // if the binding is initialized, treat the car as active to get some first data
+    private ZonedDateTime lastCarActivity = ZonedDateTime.now();
+
     public SAICiSMARTHandler(Thing thing) {
         super(thing);
     }
@@ -48,6 +58,15 @@ public class SAICiSMARTHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         // no commands supported yet
+        if (channelUID.getId().equals(SAICiSMARTBindingConstants.CHANNEL_FORCE_REFRESH) && command == OnOffType.ON) {
+            // reset channel to off
+            updateState(CHANNEL_FORCE_REFRESH, OnOffType.from(false));
+            // notify of new last activity date
+            notifyCarActivity(ZonedDateTime.now(), true);
+        } else if (channelUID.getId().equals(CHANNEL_LAST_ACTIVITY) && command instanceof DateTimeType) {
+            // update internal activity date
+            notifyCarActivity(((DateTimeType) command).getZonedDateTime(), true);
+        }
     }
 
     protected @Nullable SAICiSMARTBridgeHandler getBridgeHandler() {
@@ -60,29 +79,31 @@ public class SAICiSMARTHandler extends BaseThingHandler {
 
         updateStatus(ThingStatus.UNKNOWN);
 
-        pollingJob = scheduler.submit((Callable<?>) () -> {
-            long waitTime = 1000;
-            while (pollingJob == null || !pollingJob.isCancelled()) {
+        pollingJob = scheduler.scheduleWithFixedDelay(() -> {
+            if (lastCarActivity.isAfter(ZonedDateTime.now().minus(10, ChronoUnit.MINUTES))) {
 
-                boolean chargeOrRun;
-                if (this.getBridgeHandler().getUid() == null || this.getBridgeHandler().getToken() == null) {
-                    chargeOrRun = true;
-                } else {
-                    chargeOrRun = new VehicleStateUpdater(this).call();
+                if (this.getBridgeHandler().getUid() != null && this.getBridgeHandler().getToken() != null) {
+                    try {
+                        boolean chargeOrRun = new VehicleStateUpdater(this).call();
+                        if (chargeOrRun) {
+                            // get precise data
+                            new ChargeStateUpdater(this).call();
+                            notifyCarActivity(ZonedDateTime.now(), true);
+                        }
+                    } catch (Exception e) {
+                        logger.error("Could not refresh car data for {}", config.vin, e);
+                    }
                 }
-                if (chargeOrRun) {
-                    // get precise data
-                    new ChargeStateUpdater(this).call();
-                    waitTime = 1000;
-                } else {
-                    waitTime += 1000;
-                }
-                waitTime = Math.min(waitTime, 1000L * 60 * 5);
-                logger.info("ChargeOrRun: {} waiting for {}", chargeOrRun, waitTime);
-                Thread.sleep(waitTime);
             }
-            return null;
-        });
+        }, 1, 1, TimeUnit.SECONDS);
+    }
+
+    public void notifyCarActivity(ZonedDateTime now, boolean allowBackwardsTime) {
+        // if the car activity changed, notify the channel
+        if (allowBackwardsTime || lastCarActivity.isBefore(now)) {
+            lastCarActivity = now;
+            updateState(CHANNEL_LAST_ACTIVITY, new DateTimeType(lastCarActivity));
+        }
     }
 
     @Override
