@@ -15,7 +15,6 @@ package org.openhab.binding.ipcamera.internal;
 import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.*;
 
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -422,13 +421,5 @@ public class HikvisionHandler extends ChannelDuplexHandler {
                 }
                 return;
         }
-    }
-
-    // If a camera does not need to poll a request as often as snapshots, it can be
-    // added here. Binding steps through the list.
-    public ArrayList<String> getLowPriorityRequests() {
-        ArrayList<String> lowPriorityRequests = new ArrayList<String>(1);
-        lowPriorityRequests.add("/ISAPI/System/IO/inputs/" + nvrChannel + "/status"); // must stay in element 0.
-        return lowPriorityRequests;
     }
 }
