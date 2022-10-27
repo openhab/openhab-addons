@@ -75,7 +75,7 @@ public class SensorTests extends AbstractComponentTests {
         publishMessage("zigbee2mqtt/sensor/state", "20");
         assertState(component, Sensor.SENSOR_CHANNEL_ID, new QuantityType<>(20, Units.WATT));
         assertThat(component.getChannel(Sensor.SENSOR_CHANNEL_ID).getState().getCache().createStateDescription(true)
-                .build().getPattern(), is("%s %unit%"));
+                .build().getPattern(), is("%s W"));
 
         waitForAssert(() -> assertState(component, Sensor.SENSOR_CHANNEL_ID, UnDefType.UNDEF), 5000, 200);
 

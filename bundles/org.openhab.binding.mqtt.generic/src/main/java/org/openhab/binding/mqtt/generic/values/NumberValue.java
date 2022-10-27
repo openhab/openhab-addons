@@ -149,6 +149,11 @@ public class NumberValue extends Value {
         if (min != null) {
             builder = builder.withMinimum(min);
         }
-        return builder.withStep(step).withPattern("%s %unit%");
+        if (!unit.equals(Units.ONE)) {
+            builder.withPattern("%s " + unit);
+        } else {
+            builder.withPattern("%s %unit%");
+        }
+        return builder.withStep(step);
     }
 }
