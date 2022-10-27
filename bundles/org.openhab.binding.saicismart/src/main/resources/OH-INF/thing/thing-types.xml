@@ -64,6 +64,11 @@
 			<channel id="window-sun-roof" typeId="window-channel">
 				<label>Sun Roof</label>
 			</channel>
+			<channel id="last-activity" typeId="timestamp-channel">
+				<label>Last Car Activity</label>
+				<description>Last time either the engine was on or the car was charging</description>
+			</channel>
+			<channel id="force-refresh" typeId="force-refresh-channel"/>
 		</channels>
 
 		<representation-property>vin</representation-property>
@@ -167,5 +172,16 @@
 			<tag>OpenState</tag>
 		</tags>
 		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="timestamp-channel">
+		<item-type>DateTime</item-type>
+		<label>Timestamp</label>
+		<description>The time of the event</description>
+		<state readOnly="true" pattern="%1$tF %1$tR"/>
+	</channel-type>
+	<channel-type id="force-refresh-channel" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Force Refresh</label>
+		<description>Force an immediate refresh of the car data</description>
 	</channel-type>
 </thing:thing-descriptions>

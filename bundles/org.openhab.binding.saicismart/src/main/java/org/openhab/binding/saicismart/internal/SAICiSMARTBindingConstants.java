@@ -45,13 +45,15 @@ public class SAICiSMARTBindingConstants {
     public static final String CHANNEL_LOCATION = "location";
     public static final String CHANNEL_HEADING = "heading";
     public static final String CHANNEL_AUXILIARY_BATTERY_VOLTAGE = "auxiliary-battery-voltage";
-    public static final String DOOR_DRIVER = "door-driver";
-    public static final String DOOR_PASSENGER = "door-passenger";
-    public static final String DOOR_REAR_LEFT = "door-rear-left";
-    public static final String DOOR_REAR_RIGHT = "door-rear-right";
-    public static final String WINDOW_DRIVER = "window-driver";
-    public static final String WINDOW_PASSENGER = "window-passenger";
-    public static final String WINDOW_REAR_LEFT = "window-rear-left";
-    public static final String WINDOW_REAR_RIGHT = "window-rear-right";
-    public static final String WINDOW_SUN_ROOF = "window-sun-roof";
+    public static final String CHANNEL_DOOR_DRIVER = "door-driver";
+    public static final String CHANNEL_DOOR_PASSENGER = "door-passenger";
+    public static final String CHANNEL_DOOR_REAR_LEFT = "door-rear-left";
+    public static final String CHANNEL_DOOR_REAR_RIGHT = "door-rear-right";
+    public static final String CHANNEL_WINDOW_DRIVER = "window-driver";
+    public static final String CHANNEL_WINDOW_PASSENGER = "window-passenger";
+    public static final String CHANNEL_WINDOW_REAR_LEFT = "window-rear-left";
+    public static final String CHANNEL_WINDOW_REAR_RIGHT = "window-rear-right";
+    public static final String CHANNEL_WINDOW_SUN_ROOF = "window-sun-roof";
+    public static final String CHANNEL_LAST_ACTIVITY = "last-activity";
+    public static final String CHANNEL_FORCE_REFRESH = "force-refresh";
 }
