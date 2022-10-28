@@ -29,7 +29,7 @@ import org.openhab.binding.hdpowerview.internal.config.HDPowerViewHubConfigurati
 import org.openhab.binding.hdpowerview.internal.exceptions.HubProcessingException;
 import org.openhab.binding.hdpowerview.internal.gen3.dto.Scene3;
 import org.openhab.binding.hdpowerview.internal.gen3.dto.Shade3;
-import org.openhab.binding.hdpowerview.internal.gen3.webtargets.HDPowerViewWebTargets3;
+import org.openhab.binding.hdpowerview.internal.gen3.webtargets.GatewayWebTargets;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Bridge;
@@ -54,9 +54,9 @@ import org.slf4j.LoggerFactory;
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class HDPowerViewHubHandler3 extends BaseBridgeHandler {
+public class GatewayBridgeHandler extends BaseBridgeHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(HDPowerViewHubHandler3.class);
+    private final Logger logger = LoggerFactory.getLogger(GatewayBridgeHandler.class);
     private final String channelTypeId = HDPowerViewBindingConstants.CHANNELTYPE_SCENE_ACTIVATE;
     private final String channelGroupId = HDPowerViewBindingConstants.CHANNEL_GROUP_SCENES;
 
@@ -65,14 +65,14 @@ public class HDPowerViewHubHandler3 extends BaseBridgeHandler {
     private final ClientBuilder clientBuilder;
     private final SseEventSourceFactory eventSourceFactory;
 
-    private @Nullable HDPowerViewWebTargets3 webTargets;
+    private @Nullable GatewayWebTargets webTargets;
     private @Nullable ScheduledFuture<?> refreshTask;
 
     private boolean scenesLoaded;
     private boolean propertiesLoaded;
     private boolean isDisposing;
 
-    public HDPowerViewHubHandler3(Bridge bridge, HttpClient httpClient,
+    public GatewayBridgeHandler(Bridge bridge, HttpClient httpClient,
             HDPowerViewTranslationProvider translationProvider, ClientBuilder clientBuilder,
             SseEventSourceFactory eventSourceFactory) {
         super(bridge);
@@ -91,7 +91,7 @@ public class HDPowerViewHubHandler3 extends BaseBridgeHandler {
         }
         this.refreshTask = null;
 
-        HDPowerViewWebTargets3 webTargets = this.webTargets;
+        GatewayWebTargets webTargets = this.webTargets;
         if (webTargets != null) {
             try {
                 webTargets.close();
@@ -119,18 +119,18 @@ public class HDPowerViewHubHandler3 extends BaseBridgeHandler {
     }
 
     /**
-     * Getter for the list of all HDPowerViewShadeHandler3 child thing handlers.
+     * Getter for the list of all child shade thing handlers.
      *
-     * @return the list of handlers.
+     * @return the list of shade handlers.
      * @throws IllegalStateException if the bridge is not properly initialized.
      */
-    private List<HDPowerViewShadeHandler3> getThingHandlers() throws IllegalStateException {
+    private List<ShadeThingHandler> getShadeThingHandlers() throws IllegalStateException {
         Bridge bridge = getBridge();
         if (bridge != null) {
-            List<HDPowerViewShadeHandler3> result = new ArrayList<>();
+            List<ShadeThingHandler> result = new ArrayList<>();
             bridge.getThings().stream().map(thing -> thing.getHandler()).forEach(handler -> {
-                if (handler instanceof HDPowerViewShadeHandler3) {
-                    result.add((HDPowerViewShadeHandler3) handler);
+                if (handler instanceof ShadeThingHandler) {
+                    result.add((ShadeThingHandler) handler);
                 }
             });
             return result;
@@ -144,8 +144,8 @@ public class HDPowerViewHubHandler3 extends BaseBridgeHandler {
      * @return the webTargets.
      * @throws IllegalStateException if webTargets is not initialized.
      */
-    public HDPowerViewWebTargets3 getWebTargets() throws IllegalStateException {
-        HDPowerViewWebTargets3 webTargets = this.webTargets;
+    public GatewayWebTargets getWebTargets() throws IllegalStateException {
+        GatewayWebTargets webTargets = this.webTargets;
         if (webTargets != null) {
             return webTargets;
         }
@@ -186,7 +186,7 @@ public class HDPowerViewHubHandler3 extends BaseBridgeHandler {
             return;
         }
 
-        webTargets = new HDPowerViewWebTargets3(this, httpClient, clientBuilder, eventSourceFactory, host);
+        webTargets = new GatewayWebTargets(this, httpClient, clientBuilder, eventSourceFactory, host);
         scenesLoaded = false;
         propertiesLoaded = false;
         isDisposing = false;
@@ -223,7 +223,7 @@ public class HDPowerViewHubHandler3 extends BaseBridgeHandler {
      */
     public void onShadeEvent(Shade3 shade) {
         try {
-            for (HDPowerViewShadeHandler3 handler : getThingHandlers()) {
+            for (ShadeThingHandler handler : getShadeThingHandlers()) {
                 if (isDisposing || handler.notify(shade)) {
                     break;
                 }
@@ -272,9 +272,9 @@ public class HDPowerViewHubHandler3 extends BaseBridgeHandler {
      * @throws IllegalStateException if this handler is in an illegal state.
      */
     private void refreshShades() throws HubProcessingException, IllegalStateException {
-        List<HDPowerViewShadeHandler3> handlers = getThingHandlers();
+        List<ShadeThingHandler> handlers = getShadeThingHandlers();
         for (Shade3 shade : getWebTargets().getShades()) {
-            for (HDPowerViewShadeHandler3 handler : handlers) {
+            for (ShadeThingHandler handler : handlers) {
                 if (isDisposing || handler.notify(shade)) {
                     break;
                 }

@@ -82,7 +82,7 @@ public class HDPowerViewBindingConstants {
             .compile("\\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\\.|$)){4}\\b");
 
     // generation 3
-    public static final ThingTypeUID THING_TYPE_GATEWAY3 = new ThingTypeUID(BINDING_ID, "gateway3");
+    public static final ThingTypeUID THING_TYPE_GATEWAY = new ThingTypeUID(BINDING_ID, "gateway");
     public static final ThingTypeUID THING_TYPE_SHADE3 = new ThingTypeUID(BINDING_ID, "shade3");
 
     public static final String PROPERTY_NAME = "name";

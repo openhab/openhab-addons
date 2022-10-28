@@ -27,7 +27,7 @@ import org.openhab.binding.hdpowerview.internal.config.HDPowerViewShadeConfigura
 import org.openhab.binding.hdpowerview.internal.exceptions.HubProcessingException;
 import org.openhab.binding.hdpowerview.internal.gen3.dto.Shade3;
 import org.openhab.binding.hdpowerview.internal.gen3.dto.ShadePosition3;
-import org.openhab.binding.hdpowerview.internal.gen3.webtargets.HDPowerViewWebTargets3;
+import org.openhab.binding.hdpowerview.internal.gen3.webtargets.GatewayWebTargets;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.StringType;
@@ -51,9 +51,9 @@ import org.slf4j.LoggerFactory;
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class HDPowerViewShadeHandler3 extends BaseThingHandler {
+public class ShadeThingHandler extends BaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(HDPowerViewShadeHandler3.class);
+    private final Logger logger = LoggerFactory.getLogger(ShadeThingHandler.class);
 
     private static final String INVALID_CHANNEL = "invalid channel";
     private static final String INVALID_COMMAND = "invalid command";
@@ -63,7 +63,7 @@ public class HDPowerViewShadeHandler3 extends BaseThingHandler {
     private final Shade3 thisShade = new Shade3();
     private boolean isInitialized;
 
-    public HDPowerViewShadeHandler3(Thing thing) {
+    public ShadeThingHandler(Thing thing) {
         super(thing);
     }
 
@@ -78,16 +78,16 @@ public class HDPowerViewShadeHandler3 extends BaseThingHandler {
      * @return the hub handler.
      * @throws IllegalStateException if the bridge or its handler are not initialized.
      */
-    private HDPowerViewHubHandler3 getHandler() throws IllegalStateException {
+    private GatewayBridgeHandler getHandler() throws IllegalStateException {
         Bridge bridge = this.getBridge();
         if (bridge == null) {
             throw new IllegalStateException("Bridge not initialised.");
         }
         BridgeHandler handler = bridge.getHandler();
-        if (!(handler instanceof HDPowerViewHubHandler3)) {
+        if (!(handler instanceof GatewayBridgeHandler)) {
             throw new IllegalStateException("Bridge handler not initialised.");
         }
-        return (HDPowerViewHubHandler3) handler;
+        return (GatewayBridgeHandler) handler;
     }
 
     @Override
@@ -97,7 +97,7 @@ public class HDPowerViewShadeHandler3 extends BaseThingHandler {
             return;
         }
 
-        HDPowerViewWebTargets3 webTargets = getHandler().getWebTargets();
+        GatewayWebTargets webTargets = getHandler().getWebTargets();
         ShadePosition3 position = new ShadePosition3();
         int shadeId = thisShade.getId();
         try {

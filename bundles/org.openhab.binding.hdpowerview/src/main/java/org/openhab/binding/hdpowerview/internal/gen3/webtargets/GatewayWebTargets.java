@@ -40,14 +40,14 @@ import org.openhab.binding.hdpowerview.internal.HDPowerViewWebTargets.Query;
 import org.openhab.binding.hdpowerview.internal.api.requests.ShadeMotion;
 import org.openhab.binding.hdpowerview.internal.api.responses.ScheduledEvents;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubProcessingException;
+import org.openhab.binding.hdpowerview.internal.gen3.dto.Automation3;
 import org.openhab.binding.hdpowerview.internal.gen3.dto.Info3;
 import org.openhab.binding.hdpowerview.internal.gen3.dto.Scene3;
 import org.openhab.binding.hdpowerview.internal.gen3.dto.SceneEvent3;
-import org.openhab.binding.hdpowerview.internal.gen3.dto.ScheduledEvent3;
 import org.openhab.binding.hdpowerview.internal.gen3.dto.Shade3;
 import org.openhab.binding.hdpowerview.internal.gen3.dto.ShadeEvent3;
 import org.openhab.binding.hdpowerview.internal.gen3.dto.ShadePosition3;
-import org.openhab.binding.hdpowerview.internal.gen3.handler.HDPowerViewHubHandler3;
+import org.openhab.binding.hdpowerview.internal.gen3.handler.GatewayBridgeHandler;
 import org.openhab.core.thing.Thing;
 import org.osgi.service.jaxrs.client.SseEventSourceFactory;
 import org.slf4j.Logger;
@@ -63,17 +63,17 @@ import com.google.gson.reflect.TypeToken;
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class HDPowerViewWebTargets3 implements Closeable {
+public class GatewayWebTargets implements Closeable {
 
     private static final String IDS = "ids";
 
     // @formatter:off
     public static final Type LIST_SHADES = new TypeToken<ArrayList<Shade3>>() {}.getType();
     public static final Type LIST_SCENES = new TypeToken<ArrayList<Scene3>>() {}.getType();
-    public static final Type LIST_EVENTS =new TypeToken<ArrayList<ScheduledEvent3>>() {}.getType();
+    public static final Type LIST_EVENTS =new TypeToken<ArrayList<Automation3>>() {}.getType();
     // @formatter:on
 
-    private final Logger logger = LoggerFactory.getLogger(HDPowerViewWebTargets3.class);
+    private final Logger logger = LoggerFactory.getLogger(GatewayWebTargets.class);
     private final String shades;
     private final String scenes;
     private final String sceneActivate;
@@ -91,7 +91,7 @@ public class HDPowerViewWebTargets3 implements Closeable {
 
     private final ClientBuilder clientBuilder;
     private final SseEventSourceFactory eventSourceFactory;
-    private final HDPowerViewHubHandler3 hubHandler;
+    private final GatewayBridgeHandler hubHandler;
 
     private boolean isRegistered;
 
@@ -114,7 +114,7 @@ public class HDPowerViewWebTargets3 implements Closeable {
      * @param httpClient the HTTP client (the binding)
      * @param ipAddress the IP address of the server (the hub)
      */
-    public HDPowerViewWebTargets3(HDPowerViewHubHandler3 hubHandler, HttpClient httpClient, ClientBuilder clientBuilder,
+    public GatewayWebTargets(GatewayBridgeHandler hubHandler, HttpClient httpClient, ClientBuilder clientBuilder,
             SseEventSourceFactory eventSourceFactory, String ipAddress) {
         String base = "http://" + ipAddress + "/";
         String home = base + "home/";

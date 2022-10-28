@@ -47,7 +47,7 @@
 		</config-description>
 	</bridge-type>
 
-	<bridge-type id="gateway3">
+	<bridge-type id="gateway">
 		<label>PowerView Gen3 Gateway</label>
 		<description>Hunter Douglas (Luxaflex) PowerView Generation 3 Gateway/Gateway Pro</description>
 
@@ -57,7 +57,7 @@
 
 		<properties>
 			<property name="vendor">Hunter Douglas (Luxaflex)</property>
-			<property name="modelId">PowerView Gateway</property>
+			<property name="modelId">PowerView Gen 3 Gateway</property>
 		</properties>
 
 		<representation-property>host</representation-property>

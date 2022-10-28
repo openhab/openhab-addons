@@ -15,7 +15,7 @@ package org.openhab.binding.hdpowerview.internal.gen3.dto;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Shade SSE event object as supplied an HD PowerView Generation 3 Gateway.
+ * DTO for a shade SSE event object as supplied an HD PowerView Generation 3 Gateway.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */

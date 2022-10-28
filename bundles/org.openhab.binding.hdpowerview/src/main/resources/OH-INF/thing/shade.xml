@@ -45,7 +45,7 @@
 
 	<thing-type id="shade3">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="gen3"/>
+			<bridge-type-ref id="gateway"/>
 		</supported-bridge-type-refs>
 		<label>PowerView Shade</label>
 		<description>Hunter Douglas (Luxaflex) PowerView Shade</description>

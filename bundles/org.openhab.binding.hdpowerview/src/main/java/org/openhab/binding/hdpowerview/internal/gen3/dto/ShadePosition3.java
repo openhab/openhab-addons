@@ -19,7 +19,7 @@ import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
 /**
- * The position of a shade as returned by an HD PowerView Generation 3 Gateway.
+ * DTO for the position of a shade as returned by an HD PowerView Generation 3 Gateway.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */

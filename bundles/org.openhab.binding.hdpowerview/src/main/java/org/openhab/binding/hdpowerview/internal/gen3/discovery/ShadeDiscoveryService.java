@@ -22,8 +22,8 @@ import org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants;
 import org.openhab.binding.hdpowerview.internal.config.HDPowerViewShadeConfiguration;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubProcessingException;
 import org.openhab.binding.hdpowerview.internal.gen3.dto.Shade3;
-import org.openhab.binding.hdpowerview.internal.gen3.handler.HDPowerViewHubHandler3;
-import org.openhab.binding.hdpowerview.internal.gen3.webtargets.HDPowerViewWebTargets3;
+import org.openhab.binding.hdpowerview.internal.gen3.handler.GatewayBridgeHandler;
+import org.openhab.binding.hdpowerview.internal.gen3.webtargets.GatewayWebTargets;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingUID;
@@ -36,14 +36,14 @@ import org.slf4j.LoggerFactory;
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class HDPowerViewDeviceDiscoveryService3 extends AbstractDiscoveryService {
+public class ShadeDiscoveryService extends AbstractDiscoveryService {
 
-    private final Logger logger = LoggerFactory.getLogger(HDPowerViewDeviceDiscoveryService3.class);
-    private final HDPowerViewHubHandler3 hub;
+    private final Logger logger = LoggerFactory.getLogger(ShadeDiscoveryService.class);
+    private final GatewayBridgeHandler hub;
     private final Runnable scanner;
     private @Nullable ScheduledFuture<?> backgroundFuture;
 
-    public HDPowerViewDeviceDiscoveryService3(HDPowerViewHubHandler3 hub) {
+    public ShadeDiscoveryService(GatewayBridgeHandler hub) {
         super(Collections.singleton(HDPowerViewBindingConstants.THING_TYPE_SHADE3), 600, true);
         this.hub = hub;
         this.scanner = createScanner();
@@ -75,7 +75,7 @@ public class HDPowerViewDeviceDiscoveryService3 extends AbstractDiscoveryService
 
     private Runnable createScanner() {
         return () -> {
-            HDPowerViewWebTargets3 webTargets = hub.getWebTargets();
+            GatewayWebTargets webTargets = hub.getWebTargets();
             try {
                 discoverShades(webTargets);
             } catch (HubProcessingException e) {
@@ -85,7 +85,7 @@ public class HDPowerViewDeviceDiscoveryService3 extends AbstractDiscoveryService
         };
     }
 
-    private void discoverShades(HDPowerViewWebTargets3 webTargets) throws HubProcessingException {
+    private void discoverShades(GatewayWebTargets webTargets) throws HubProcessingException {
         ThingUID bridgeUid = hub.getThing().getUID();
         for (Shade3 shade : webTargets.getShades()) {
             if (shade.getId() == 0) {
