@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.hdpowerview.internal.gen3.handler;
+package org.openhab.binding.hdpowerview.internal.handler;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,13 +23,13 @@ import javax.ws.rs.client.ClientBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.hdpowerview.internal.GatewayWebTargets;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewTranslationProvider;
+import org.openhab.binding.hdpowerview.internal.api.gen3.Scene;
+import org.openhab.binding.hdpowerview.internal.api.gen3.Shade;
 import org.openhab.binding.hdpowerview.internal.config.HDPowerViewHubConfiguration;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubProcessingException;
-import org.openhab.binding.hdpowerview.internal.gen3.dto.Scene3;
-import org.openhab.binding.hdpowerview.internal.gen3.dto.Shade3;
-import org.openhab.binding.hdpowerview.internal.gen3.webtargets.GatewayWebTargets;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Bridge;
@@ -212,7 +212,7 @@ public class GatewayBridgeHandler extends BaseBridgeHandler {
      *
      * @param scene the one that changed.
      */
-    public void onSceneEvent(Scene3 scene) {
+    public void onSceneEvent(Scene scene) {
         // TODO perhaps we should trigger an OH core event here ??
     }
 
@@ -221,7 +221,7 @@ public class GatewayBridgeHandler extends BaseBridgeHandler {
      *
      * @param shade the one that changed.
      */
-    public void onShadeEvent(Shade3 shade) {
+    public void onShadeEvent(Shade shade) {
         try {
             for (ShadeThingHandler handler : getShadeThingHandlers()) {
                 if (isDisposing || handler.notify(shade)) {
@@ -254,7 +254,7 @@ public class GatewayBridgeHandler extends BaseBridgeHandler {
         ChannelTypeUID typeUID = new ChannelTypeUID(channelTypeId);
         ChannelGroupUID groupUID = new ChannelGroupUID(thing.getUID(), channelGroupId);
         List<Channel> channels = new ArrayList<>();
-        for (Scene3 scene : getWebTargets().getScenes()) {
+        for (Scene scene : getWebTargets().getScenes()) {
             ChannelUID channelUID = new ChannelUID(groupUID, Integer.toString(scene.getId()));
             String name = scene.getName();
             String description = translationProvider.getText("dynamic-channel.scene-activate.description", name);
@@ -273,7 +273,7 @@ public class GatewayBridgeHandler extends BaseBridgeHandler {
      */
     private void refreshShades() throws HubProcessingException, IllegalStateException {
         List<ShadeThingHandler> handlers = getShadeThingHandlers();
-        for (Shade3 shade : getWebTargets().getShades()) {
+        for (Shade shade : getWebTargets().getShades()) {
             for (ShadeThingHandler handler : handlers) {
                 if (isDisposing || handler.notify(shade)) {
                     break;

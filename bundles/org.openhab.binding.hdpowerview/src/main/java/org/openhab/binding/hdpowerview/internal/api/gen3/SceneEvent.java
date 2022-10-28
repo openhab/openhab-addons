@@ -10,25 +10,25 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.hdpowerview.internal.gen3.dto;
+package org.openhab.binding.hdpowerview.internal.api.gen3;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * DTO for a shade SSE event object as supplied an HD PowerView Generation 3 Gateway.
+ * DTO for scene SSE event object as supplied an HD PowerView Generation 3 Gateway.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class ShadeEvent3 {
+public class SceneEvent {
     private int id;
-    private @NonNullByDefault({}) ShadePosition3 currentPositions;
-
-    public ShadePosition3 getCurrentPositions() {
-        return currentPositions;
-    }
+    private @NonNullByDefault({}) Scene scene;
 
     public int getId() {
         return id;
+    }
+
+    public Scene getScene() {
+        return scene;
     }
 }

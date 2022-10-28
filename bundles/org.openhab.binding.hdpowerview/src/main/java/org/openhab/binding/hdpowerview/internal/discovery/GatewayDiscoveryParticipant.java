@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.hdpowerview.internal.gen3.discovery;
+package org.openhab.binding.hdpowerview.internal.discovery;
 
 import static org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants.*;
 

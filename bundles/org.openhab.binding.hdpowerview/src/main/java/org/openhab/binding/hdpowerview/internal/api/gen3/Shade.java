@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.hdpowerview.internal.gen3.dto;
+package org.openhab.binding.hdpowerview.internal.api.gen3;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
@@ -31,7 +31,7 @@ import org.openhab.core.types.UnDefType;
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class Shade3 {
+public class Shade {
     private int id;
     private @Nullable Integer type;
     private @Nullable String name;
@@ -42,7 +42,7 @@ public class Shade3 {
     private @Nullable Integer signalStrength;
     private @Nullable String bleName;
     private @Nullable Firmware firmware;
-    private @Nullable ShadePosition3 positions;
+    private @Nullable ShadePosition positions;
 
     private transient boolean partialState;
 
@@ -86,7 +86,7 @@ public class Shade3 {
     }
 
     public State getPosition(CoordinateSystem posKindCoords) {
-        ShadePosition3 positions = this.positions;
+        ShadePosition positions = this.positions;
         return positions == null ? UnDefType.UNDEF : positions.getState(posKindCoords);
     }
 
@@ -94,7 +94,7 @@ public class Shade3 {
         return powerType;
     }
 
-    public @Nullable ShadePosition3 getShadePositions() {
+    public @Nullable ShadePosition getShadePositions() {
         return positions;
     }
 
@@ -121,37 +121,37 @@ public class Shade3 {
         return false;
     }
 
-    public Shade3 setCapabilities(int capabilities) {
+    public Shade setCapabilities(int capabilities) {
         this.capabilities = capabilities;
         return this;
     }
 
-    public Shade3 setId(int id) {
+    public Shade setId(int id) {
         this.id = id;
         return this;
     }
 
-    public Shade3 setPartialState() {
+    public Shade setPartialState() {
         this.partialState = true;
         return this;
     }
 
-    public Shade3 setPosition(CoordinateSystem coordinates, int percent) {
-        ShadePosition3 positions = this.positions;
+    public Shade setPosition(CoordinateSystem coordinates, int percent) {
+        ShadePosition positions = this.positions;
         if (positions == null) {
-            positions = new ShadePosition3();
+            positions = new ShadePosition();
             this.positions = positions;
         }
         positions.setPosition(coordinates, percent);
         return this;
     }
 
-    public Shade3 setShadePosition(ShadePosition3 position) {
+    public Shade setShadePosition(ShadePosition position) {
         this.positions = position;
         return this;
     }
 
-    public Shade3 setType(int type) {
+    public Shade setType(int type) {
         this.type = type;
         return this;
     }

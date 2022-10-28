@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.hdpowerview.internal.gen3.webtargets;
+package org.openhab.binding.hdpowerview.internal;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -37,17 +37,15 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewWebTargets.Query;
+import org.openhab.binding.hdpowerview.internal.api.gen3.Info;
+import org.openhab.binding.hdpowerview.internal.api.gen3.Scene;
+import org.openhab.binding.hdpowerview.internal.api.gen3.SceneEvent;
+import org.openhab.binding.hdpowerview.internal.api.gen3.Shade;
+import org.openhab.binding.hdpowerview.internal.api.gen3.ShadeEvent;
+import org.openhab.binding.hdpowerview.internal.api.gen3.ShadePosition;
 import org.openhab.binding.hdpowerview.internal.api.requests.ShadeMotion;
-import org.openhab.binding.hdpowerview.internal.api.responses.ScheduledEvents;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubProcessingException;
-import org.openhab.binding.hdpowerview.internal.gen3.dto.Automation3;
-import org.openhab.binding.hdpowerview.internal.gen3.dto.Info3;
-import org.openhab.binding.hdpowerview.internal.gen3.dto.Scene3;
-import org.openhab.binding.hdpowerview.internal.gen3.dto.SceneEvent3;
-import org.openhab.binding.hdpowerview.internal.gen3.dto.Shade3;
-import org.openhab.binding.hdpowerview.internal.gen3.dto.ShadeEvent3;
-import org.openhab.binding.hdpowerview.internal.gen3.dto.ShadePosition3;
-import org.openhab.binding.hdpowerview.internal.gen3.handler.GatewayBridgeHandler;
+import org.openhab.binding.hdpowerview.internal.handler.GatewayBridgeHandler;
 import org.openhab.core.thing.Thing;
 import org.osgi.service.jaxrs.client.SseEventSourceFactory;
 import org.slf4j.Logger;
@@ -68,9 +66,8 @@ public class GatewayWebTargets implements Closeable {
     private static final String IDS = "ids";
 
     // @formatter:off
-    public static final Type LIST_SHADES = new TypeToken<ArrayList<Shade3>>() {}.getType();
-    public static final Type LIST_SCENES = new TypeToken<ArrayList<Scene3>>() {}.getType();
-    public static final Type LIST_EVENTS =new TypeToken<ArrayList<Automation3>>() {}.getType();
+    public static final Type LIST_SHADES = new TypeToken<ArrayList<Shade>>() {}.getType();
+    public static final Type LIST_SCENES = new TypeToken<ArrayList<Scene>>() {}.getType();
     // @formatter:on
 
     private final Logger logger = LoggerFactory.getLogger(GatewayWebTargets.class);
@@ -81,7 +78,6 @@ public class GatewayWebTargets implements Closeable {
     private final String shadeStop;
     private final String shadePositions;
     private final String info;
-    private final String automations;
 
     private final String register;
     private final String shadeEvents;
@@ -125,7 +121,6 @@ public class GatewayWebTargets implements Closeable {
         shadeMotion = home + "shades/%d/motion";
         shadeStop = home + "shades/stop";
         shadePositions = home + "shades/positions";
-        automations = home + "automations";
         shadeEvents = home + "shades/events";
         sceneEvents = home + "scenes/events";
 
@@ -196,7 +191,7 @@ public class GatewayWebTargets implements Closeable {
     public Map<String, String> getInformation() throws HubProcessingException {
         String json = invoke(HttpMethod.GET, info, null, null);
         try {
-            Info3 result = gson.fromJson(json, Info3.class);
+            Info result = gson.fromJson(json, Info.class);
             if (result == null) {
                 throw new HubProcessingException("getInformation(): missing response");
             }
@@ -214,10 +209,10 @@ public class GatewayWebTargets implements Closeable {
      * @return the list of scenes.
      * @throws HubProcessingException if any error occurs.
      */
-    public List<Scene3> getScenes() throws HubProcessingException {
+    public List<Scene> getScenes() throws HubProcessingException {
         String json = invoke(HttpMethod.GET, scenes, null, null);
         try {
-            List<Scene3> result = gson.fromJson(json, LIST_SCENES);
+            List<Scene> result = gson.fromJson(json, LIST_SCENES);
             if (result == null) {
                 throw new HubProcessingException("getScenes() missing response");
             }
@@ -228,35 +223,16 @@ public class GatewayWebTargets implements Closeable {
     }
 
     /**
-     * Get the list of scheduled events.
-     *
-     * @return the list of scheduled events.
-     * @throws HubProcessingException if any error occurs.
-     */
-    public List<ScheduledEvents> getScheduledEvents() throws HubProcessingException {
-        String json = invoke(HttpMethod.GET, automations, null, null);
-        try {
-            List<ScheduledEvents> result = gson.fromJson(json, LIST_EVENTS);
-            if (result == null) {
-                throw new HubProcessingException("getScheduledEvents() missing response");
-            }
-            return result;
-        } catch (JsonParseException e) {
-            throw new HubProcessingException("getScheduledEvents() JsonParseException");
-        }
-    }
-
-    /**
      * Get the data for a single shade.
      *
      * @param shadeId the id of the shade to get.
      * @return the shade.
      * @throws HubProcessingException if any error occurs.
      */
-    public Shade3 getShade(int shadeId) throws HubProcessingException {
+    public Shade getShade(int shadeId) throws HubProcessingException {
         String json = invoke(HttpMethod.GET, shades + Integer.toString(shadeId), null, null);
         try {
-            Shade3 result = gson.fromJson(json, Shade3.class);
+            Shade result = gson.fromJson(json, Shade.class);
             if (result == null) {
                 throw new HubProcessingException("getShade() missing response");
             }
@@ -272,10 +248,10 @@ public class GatewayWebTargets implements Closeable {
      * @return the list of shades.
      * @throws HubProcessingException if any error occurs.
      */
-    public List<Shade3> getShades() throws HubProcessingException {
+    public List<Shade> getShades() throws HubProcessingException {
         String json = invoke(HttpMethod.GET, shades, null, null);
         try {
-            List<Shade3> result = gson.fromJson(json, LIST_SHADES);
+            List<Shade> result = gson.fromJson(json, LIST_SHADES);
             if (result == null) {
                 throw new HubProcessingException("getShades() missing response");
             }
@@ -357,7 +333,7 @@ public class GatewayWebTargets implements Closeable {
      * @param position the new position.
      * @throws HubProcessingException if any error occurs.
      */
-    public void moveShade(int shadeId, ShadePosition3 position) throws HubProcessingException {
+    public void moveShade(int shadeId, ShadePosition position) throws HubProcessingException {
         invoke(HttpMethod.PUT, shadePositions, Query.of(IDS, Integer.valueOf(shadeId).toString()),
                 gson.toJson(position));
     }
@@ -370,9 +346,9 @@ public class GatewayWebTargets implements Closeable {
     private void onSceneEvent(InboundSseEvent sseEvent) {
         String json = sseEvent.readData();
         logger.trace("onSceneEvent() json:{}", json);
-        SceneEvent3 sceneEvent = gson.fromJson(json, SceneEvent3.class);
+        SceneEvent sceneEvent = gson.fromJson(json, SceneEvent.class);
         if (sceneEvent != null) {
-            Scene3 scene = sceneEvent.getScene();
+            Scene scene = sceneEvent.getScene();
             hubHandler.onSceneEvent(scene);
         }
     }
@@ -385,11 +361,11 @@ public class GatewayWebTargets implements Closeable {
     private void onShadeEvent(InboundSseEvent sseEvent) {
         String json = sseEvent.readData();
         logger.trace("onShadeEvent() json:{}", json);
-        ShadeEvent3 shadeEvent = gson.fromJson(json, ShadeEvent3.class);
+        ShadeEvent shadeEvent = gson.fromJson(json, ShadeEvent.class);
         if (shadeEvent != null) {
-            ShadePosition3 positions = shadeEvent.getCurrentPositions();
+            ShadePosition positions = shadeEvent.getCurrentPositions();
             hubHandler
-                    .onShadeEvent(new Shade3().setId(shadeEvent.getId()).setShadePosition(positions).setPartialState());
+                    .onShadeEvent(new Shade().setId(shadeEvent.getId()).setShadePosition(positions).setPartialState());
         }
     }
 
