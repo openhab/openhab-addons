@@ -81,7 +81,8 @@ public class Shade3 {
     }
 
     public String getName() {
-        return String.join(" ", new String(Base64.getDecoder().decode(name), StandardCharsets.UTF_8), ptName);
+        return String.join(" ", new String(Base64.getDecoder().decode(name), StandardCharsets.UTF_8), ptName)
+                .replaceAll("\n", "").replaceAll("\r", "");
     }
 
     public State getPosition(CoordinateSystem posKindCoords) {
