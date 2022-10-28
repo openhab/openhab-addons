@@ -1963,7 +1963,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | total-clean-area     | Number:Area          | Clean Record - Total Clean Area          |            |
 | total-clean-time     | Number               | Clean Record - Total Clean Time          |            |
 | total-clean-count    | Number               | Clean Record - Total Clean Count         |            |
-| language             | Number               | Language - Language                      | Value mapping `["0"="English","1"="ç®€ä½“ä¸­æ–‡","2"="EspaÃ±ol","3"="Ð ÑƒÑ�Ñ�ÐºÐ¸Ð¹","4"="Italiano","5"="FranÃ§ais","6"="Deutsch","7"="í•œêµ­ì–´","8"="Polski"]` |
+| language             | Number               | Language - Language                      | Value mapping `["0"="English","1"="简体中文","2"="Español","3"="Русский","4"="Italiano","5"="Français","6"="Deutsch","7"="한국어","8"="Polski"]` |
 | not-disturb-switch   | Switch               | Language - Not Disturb Switch            |            |
 | mop-status           | Number               | Other Status - Mop Status                | Value mapping `["0"="Mop Uninstall","1"="Mop Install"]` |
 
@@ -2793,7 +2793,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | mode                 | Number               | Robot Cleaner - Mode                     | Value mapping `["0"="Silent","1"="Basic","2"="Medium","3"="Strong"]` |
 | battery-level        | Number:Dimensionless | Battery - Battery Level                  |            |
 | repeat-state         | Switch               | Viomi Vacuum - Repeat State              |            |
-| remember-state       | Switch               | Viomi Vacuum - Remember State            | Value mapping ["0"="å…³","1"="å¼€"] |
+| remember-state       | Switch               | Viomi Vacuum - Remember State            | Value mapping ["0"="关","1"="开"] |
 | mop-route            | Number               | Viomi Vacuum - Mop Route                 | Value mapping `["0"="C-Curved","1"="Y-Route"]` |
 | side-brush-life      | Number:Dimensionless | Viomi Vacuum - Side Brush Life           |            |
 | side-brush-hours     | Number:Time          | Viomi Vacuum - Side Brush Hours          |            |
