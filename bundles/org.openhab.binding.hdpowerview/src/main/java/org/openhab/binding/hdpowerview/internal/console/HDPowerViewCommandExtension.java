@@ -68,7 +68,7 @@ public class HDPowerViewCommandExtension extends AbstractConsoleCommandExtension
         for (Thing thing : thingRegistry.getAll()) {
             ThingHandler thingHandler = thing.getHandler();
             if (thingHandler instanceof HDPowerViewHubHandler) {
-                console.println("Generation 1/2 API bridge: " + thing.getLabel());
+                console.println("Generation 1/2 API hub: " + thing.getLabel());
                 HDPowerViewWebTargets webTargets = ((HDPowerViewHubHandler) thingHandler).getWebTargets();
 
                 try {
@@ -91,7 +91,7 @@ public class HDPowerViewCommandExtension extends AbstractConsoleCommandExtension
                     console.println("Error retrieving ID's: " + e.getMessage());
                 }
             } else if (thingHandler instanceof GatewayBridgeHandler) {
-                console.println("Generation 3 API bridge: " + thing.getLabel());
+                console.println("Generation 3 API gateway: " + thing.getLabel());
                 GatewayWebTargets webTargets = ((GatewayBridgeHandler) thingHandler).getWebTargets();
 
                 try {
@@ -111,7 +111,7 @@ public class HDPowerViewCommandExtension extends AbstractConsoleCommandExtension
 
     @Override
     public List<String> getUsages() {
-        return Arrays.asList(buildCommandUsage(SHOW_IDS, "list all shades and repeaters"));
+        return Arrays.asList(buildCommandUsage(SHOW_IDS, "list all shades and eventually repeaters"));
     }
 
     @Override
