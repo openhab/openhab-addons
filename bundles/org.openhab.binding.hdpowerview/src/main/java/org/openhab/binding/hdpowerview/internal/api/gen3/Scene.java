@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.hdpowerview.internal.gen3.dto;
+package org.openhab.binding.hdpowerview.internal.api.gen3;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
@@ -24,7 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Andrew Fiddian-Green - Initial contribution.
  */
 @NonNullByDefault
-public class Scene3 {
+public class Scene {
     private int id;
     private @NonNullByDefault({}) String name;
     private @NonNullByDefault({}) String ptName;

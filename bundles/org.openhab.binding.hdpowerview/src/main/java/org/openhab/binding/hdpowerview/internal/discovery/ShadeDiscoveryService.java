@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.hdpowerview.internal.gen3.discovery;
+package org.openhab.binding.hdpowerview.internal.discovery;
 
 import java.util.Collections;
 import java.util.concurrent.ScheduledFuture;
@@ -18,12 +18,12 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.hdpowerview.internal.GatewayWebTargets;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants;
+import org.openhab.binding.hdpowerview.internal.api.gen3.Shade;
 import org.openhab.binding.hdpowerview.internal.config.HDPowerViewShadeConfiguration;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubProcessingException;
-import org.openhab.binding.hdpowerview.internal.gen3.dto.Shade3;
-import org.openhab.binding.hdpowerview.internal.gen3.handler.GatewayBridgeHandler;
-import org.openhab.binding.hdpowerview.internal.gen3.webtargets.GatewayWebTargets;
+import org.openhab.binding.hdpowerview.internal.handler.GatewayBridgeHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingUID;
@@ -87,7 +87,7 @@ public class ShadeDiscoveryService extends AbstractDiscoveryService {
 
     private void discoverShades(GatewayWebTargets webTargets) throws HubProcessingException {
         ThingUID bridgeUid = hub.getThing().getUID();
-        for (Shade3 shade : webTargets.getShades()) {
+        for (Shade shade : webTargets.getShades()) {
             if (shade.getId() == 0) {
                 continue;
             }

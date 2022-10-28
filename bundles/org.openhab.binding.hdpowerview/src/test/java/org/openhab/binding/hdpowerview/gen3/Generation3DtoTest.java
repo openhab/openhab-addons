@@ -22,14 +22,13 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.hdpowerview.HDPowerViewJUnitTests;
+import org.openhab.binding.hdpowerview.internal.GatewayWebTargets;
 import org.openhab.binding.hdpowerview.internal.api.CoordinateSystem;
-import org.openhab.binding.hdpowerview.internal.gen3.dto.Automation3;
-import org.openhab.binding.hdpowerview.internal.gen3.dto.Scene3;
-import org.openhab.binding.hdpowerview.internal.gen3.dto.SceneEvent3;
-import org.openhab.binding.hdpowerview.internal.gen3.dto.Shade3;
-import org.openhab.binding.hdpowerview.internal.gen3.dto.ShadeEvent3;
-import org.openhab.binding.hdpowerview.internal.gen3.dto.ShadePosition3;
-import org.openhab.binding.hdpowerview.internal.gen3.webtargets.GatewayWebTargets;
+import org.openhab.binding.hdpowerview.internal.api.gen3.Scene;
+import org.openhab.binding.hdpowerview.internal.api.gen3.SceneEvent;
+import org.openhab.binding.hdpowerview.internal.api.gen3.Shade;
+import org.openhab.binding.hdpowerview.internal.api.gen3.ShadeEvent;
+import org.openhab.binding.hdpowerview.internal.api.gen3.ShadePosition;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.types.UnDefType;
 
@@ -59,28 +58,14 @@ public class Generation3DtoTest {
     }
 
     /**
-     * Test JSON automation response.
-     */
-    @Test
-    public void testAutomationParsing() throws IOException {
-        String json = loadJson("gen3/automations.json");
-        List<Automation3> scheduledEventList = gson.fromJson(json, GatewayWebTargets.LIST_EVENTS);
-        assertNotNull(scheduledEventList);
-        assertEquals(1, scheduledEventList.size());
-        Automation3 scheduledEvent = scheduledEventList.get(0);
-        assertEquals(33, scheduledEvent.id);
-        assertTrue(scheduledEvent.enabled);
-    }
-
-    /**
      * Test JSON scene event response.
      */
     @Test
     public void testSceneEventParsing() throws IOException {
         String json = loadJson("gen3/scene-event.json");
-        SceneEvent3 sceneEvent = gson.fromJson(json, SceneEvent3.class);
+        SceneEvent sceneEvent = gson.fromJson(json, SceneEvent.class);
         assertNotNull(sceneEvent);
-        Scene3 scene = sceneEvent.getScene();
+        Scene scene = sceneEvent.getScene();
         assertNotNull(scene);
         assertEquals("Open All Office Shades\n Open All Office Shades", scene.getName());
         assertEquals(234, scene.getId());
@@ -92,10 +77,10 @@ public class Generation3DtoTest {
     @Test
     public void testScenesParsing() throws IOException {
         String json = loadJson("gen3/scenes.json");
-        List<Scene3> sceneList = gson.fromJson(json, GatewayWebTargets.LIST_SCENES);
+        List<Scene> sceneList = gson.fromJson(json, GatewayWebTargets.LIST_SCENES);
         assertNotNull(sceneList);
         assertEquals(1, sceneList.size());
-        Scene3 scene = sceneList.get(0);
+        Scene scene = sceneList.get(0);
         assertEquals("Open All Office Shades\n ABC", scene.getName());
         assertEquals(234, scene.getId());
     }
@@ -106,9 +91,9 @@ public class Generation3DtoTest {
     @Test
     public void testShadeEventParsing() throws IOException {
         String json = loadJson("gen3/shade-event.json");
-        ShadeEvent3 shadeEvent = gson.fromJson(json, ShadeEvent3.class);
+        ShadeEvent shadeEvent = gson.fromJson(json, ShadeEvent.class);
         assertNotNull(shadeEvent);
-        ShadePosition3 position = shadeEvent.getCurrentPositions();
+        ShadePosition position = shadeEvent.getCurrentPositions();
         assertNotNull(position);
         assertEquals(PercentType.valueOf("99"), position.getState(CoordinateSystem.PRIMARY_POSITION));
         assertEquals(PercentType.valueOf("98"), position.getState(CoordinateSystem.SECONDARY_POSITION));
@@ -120,15 +105,15 @@ public class Generation3DtoTest {
      */
     @Test
     public void testShadePositions() {
-        ShadePosition3 pos;
+        ShadePosition pos;
 
-        pos = new ShadePosition3();
+        pos = new ShadePosition();
         pos.setPosition(CoordinateSystem.PRIMARY_POSITION, 11);
         assertEquals(PercentType.valueOf("11"), pos.getState(CoordinateSystem.PRIMARY_POSITION));
         assertEquals(UnDefType.UNDEF, pos.getState(CoordinateSystem.SECONDARY_POSITION));
         assertEquals(UnDefType.UNDEF, pos.getState(CoordinateSystem.VANE_TILT_POSITION));
 
-        pos = new ShadePosition3();
+        pos = new ShadePosition();
         pos.setPosition(CoordinateSystem.PRIMARY_POSITION, 11);
         pos.setPosition(CoordinateSystem.SECONDARY_POSITION, 22);
         pos.setPosition(CoordinateSystem.VANE_TILT_POSITION, 33);
@@ -143,10 +128,10 @@ public class Generation3DtoTest {
     @Test
     public void testShadesParsing() throws IOException {
         String json = loadJson("gen3/shades.json");
-        List<Shade3> shadeList = gson.fromJson(json, GatewayWebTargets.LIST_SHADES);
+        List<Shade> shadeList = gson.fromJson(json, GatewayWebTargets.LIST_SHADES);
         assertNotNull(shadeList);
         assertEquals(1, shadeList.size());
-        Shade3 shadeData = shadeList.get(0);
+        Shade shadeData = shadeList.get(0);
         assertEquals("Shade 2 ABC", shadeData.getName());
         assertEquals(789, shadeData.getId());
     }

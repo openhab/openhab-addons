@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.hdpowerview.internal.gen3.dto;
+package org.openhab.binding.hdpowerview.internal.api.gen3;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.hdpowerview.internal.api.CoordinateSystem;
@@ -24,7 +24,7 @@ import org.openhab.core.types.UnDefType;
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class ShadePosition3 {
+public class ShadePosition {
     private @NonNullByDefault({}) Double primary;
     private @NonNullByDefault({}) Double secondary;
     private @NonNullByDefault({}) Double tilt;
@@ -54,7 +54,7 @@ public class ShadePosition3 {
      * @param percent the new value in percent.
      * @return this object.
      */
-    public ShadePosition3 setPosition(CoordinateSystem coordinates, int percent) {
+    public ShadePosition setPosition(CoordinateSystem coordinates, int percent) {
         Double value = Double.valueOf(percent) / 100.0;
         switch (coordinates) {
             case PRIMARY_POSITION:

@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.hdpowerview.internal.gen3.handler;
+package org.openhab.binding.hdpowerview.internal.handler;
 
 import static org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants.*;
 import static org.openhab.binding.hdpowerview.internal.api.CoordinateSystem.*;
@@ -22,12 +22,12 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.hdpowerview.internal.GatewayWebTargets;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants;
+import org.openhab.binding.hdpowerview.internal.api.gen3.Shade;
+import org.openhab.binding.hdpowerview.internal.api.gen3.ShadePosition;
 import org.openhab.binding.hdpowerview.internal.config.HDPowerViewShadeConfiguration;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubProcessingException;
-import org.openhab.binding.hdpowerview.internal.gen3.dto.Shade3;
-import org.openhab.binding.hdpowerview.internal.gen3.dto.ShadePosition3;
-import org.openhab.binding.hdpowerview.internal.gen3.webtargets.GatewayWebTargets;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.StringType;
@@ -60,7 +60,7 @@ public class ShadeThingHandler extends BaseThingHandler {
     private static final String COMMAND_CALIBRATE = "CALIBRATE";
     private static final String COMMAND_IDENTIFY = "IDENTIFY";
 
-    private final Shade3 thisShade = new Shade3();
+    private final Shade thisShade = new Shade();
     private boolean isInitialized;
 
     public ShadeThingHandler(Thing thing) {
@@ -98,7 +98,7 @@ public class ShadeThingHandler extends BaseThingHandler {
         }
 
         GatewayWebTargets webTargets = getHandler().getWebTargets();
-        ShadePosition3 position = new ShadePosition3();
+        ShadePosition position = new ShadePosition();
         int shadeId = thisShade.getId();
         try {
             switch (channelUID.getId()) {
@@ -184,11 +184,11 @@ public class ShadeThingHandler extends BaseThingHandler {
      * @param shade the new shade state.
      * @return true if we handled the call.
      */
-    public boolean notify(Shade3 shade) {
+    public boolean notify(Shade shade) {
         if (thisShade.getId() == shade.getId()) {
             updateStatus(ThingStatus.ONLINE);
             if (!isInitialized) {
-                ShadePosition3 position = shade.getShadePositions();
+                ShadePosition position = shade.getShadePositions();
                 if (position != null) {
                     thisShade.setShadePosition(position);
                 }
@@ -207,7 +207,7 @@ public class ShadeThingHandler extends BaseThingHandler {
      *
      * @param shade containing the channel data.
      */
-    private void updateChannels(Shade3 shade) {
+    private void updateChannels(Shade shade) {
         updateState(CHANNEL_SHADE_POSITION, shade.getPosition(PRIMARY_POSITION));
         updateState(CHANNEL_SHADE_VANE, shade.getPosition(VANE_TILT_POSITION));
         updateState(CHANNEL_SHADE_SECONDARY_POSITION, shade.getPosition(SECONDARY_POSITION));
@@ -241,10 +241,10 @@ public class ShadeThingHandler extends BaseThingHandler {
      *
      * @param shade containing the channel data.
      */
-    private void updateDynamicChannels(Shade3 shade) {
+    private void updateDynamicChannels(Shade shade) {
         List<Channel> removeChannels = new ArrayList<>();
 
-        ShadePosition3 positions = shade.getShadePositions();
+        ShadePosition positions = shade.getShadePositions();
         if (positions != null) {
             updateDynamicChannel(removeChannels, CHANNEL_SHADE_POSITION, positions.supportsPrimary());
             updateDynamicChannel(removeChannels, CHANNEL_SHADE_SECONDARY_POSITION, positions.supportsSecondary());
@@ -270,7 +270,7 @@ public class ShadeThingHandler extends BaseThingHandler {
      *
      * @param shade containing the property data.
      */
-    private void updateProperties(Shade3 shade) {
+    private void updateProperties(Shade shade) {
         if (shade.hasFullState()) {
             thing.setProperties(Stream.of(new String[][] { //
                     { HDPowerViewBindingConstants.PROPERTY_NAME, shade.getName() },
