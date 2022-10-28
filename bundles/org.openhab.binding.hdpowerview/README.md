@@ -67,8 +67,8 @@ If in the future, you add additional shades, scenes, repeaters, scene groups or 
 ### Thing Configuration for PowerView Shades and Accessories<sup>[3]</sup>
 
 PowerView shades and repeaters<sup>[3]</sup> should preferably be configured via the automatic discovery process.
-It is quite difficult to configure manually as the `id` of the shade or repeater is not exposed in the
-PowerView app. However, the configuration parameters are described below.
+However, for manual configuration of shades and repeaters, the console command `openhab:hdpowerview showIds` can be used to identify the IDs of all connected equipment.
+This can be used for the `id` parameters described below.
 
 #### Thing Configuration for PowerView Shades
 
@@ -118,6 +118,7 @@ All of these channels appear in the binding, but only those which have a physica
 | repeaterRssi<sup>[1/2]</sup>        | Number:Power             | Received Signal Strength Indicator for Repeater |
 
 Notes:
+
 - The channels `position`, `secondary` and `vane` exist if the shade physically supports such channels.
 - The shade's Power Option is set via the PowerView app with possible values 'Battery Wand', 'Rechargeable Battery Wand' or 'Hardwired Power Supply'.
 The channels `lowBattery` and `batteryLevel` exist if you have _not_ selected 'Hardwired Power Supply' in the app.
