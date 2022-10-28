@@ -1,18 +1,14 @@
 # Kaleidescape Binding
 
-The Ultimate Movie Player - Kaleidescape elevates every component in your theater with higher fidelity
-source material for the ultimate cinematic experience.
-
 This binding now makes it possible to easily integrate almost all of the capabilities of the Kaleidescape control protocol into openHAB.
-Beyond just integrating playback transport controls, all meta-data provided via the control protocol is made available for display purposes and to use in rules.
-By using rules, it possible to control other Things such lighting, projector lens shift, screen masking, etc. based on events that occur during movie playback.
+Beyond just integrating playback transport controls, all meta-data provided via the control protocol are made available for display purposes and to use in rules.
+By using rules, it is possible to control other Things such lighting, projector lens shift, screen masking, etc. based on events that occur during movie playback.
 Finally, any other command that is supported by the control protocol can be sent to the component through rules.
 See [Kaleidescape-System-Control-Protocol-Reference-Manual.pdf](https://support.kaleidescape.com/article/Control-Protocol-Reference-Manual) for a reference of available commands.
 
 ## Supported Things
 
 All movie player components including the original K-Player series, M Class Players, Cinema One, Alto, and Strato are supported.
-The 4-zone audio only KMUSIC-4000 is not supported.
 It is important to choose the correct thing type to ensure the available channels are correct for the component being used.  
 
 The supported thing types are:  
