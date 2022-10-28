@@ -6,7 +6,7 @@
 	<!-- Hue Bridge -->
 	<bridge-type id="bridge">
 		<label>Hue Bridge</label>
-		<description>The Hue bridge represents the Philips Hue bridge.</description>
+		<description>The Hue Bridge represents the Philips Hue Bridge.</description>
 
 		<channels>
 			<channel id="scene" typeId="scene"/>
@@ -21,26 +21,41 @@
 			<parameter name="ipAddress" type="text" required="true">
 				<context>network-address</context>
 				<label>Network Address</label>
-				<description>Network address of the Hue bridge.</description>
+				<description>Network address of the Hue Bridge.</description>
 			</parameter>
 			<parameter name="port" type="integer" required="false" min="1" max="65535">
 				<label>Port</label>
-				<description>Port of the Hue bridge.</description>
+				<description>Port of the Hue Bridge.</description>
+			</parameter>
+			<parameter name="protocol" type="text">
+				<label>Protocol</label>
+				<description>Protocol to connect to the Hue Bridge (http or https).</description>
+				<default>https</default>
+				<options>
+					<option value="http">HTTP</option>
+					<option value="https">HTTPS</option>
+				</options>
+			</parameter>
+			<parameter name="useSelfSignedCertificate" type="boolean">
+				<label>Use Self-Signed Certificate</label>
+				<description>Use self-signed certificate for HTTPS connection to Hue Bridge.</description>
+				<default>true</default>
+				<advanced>true</advanced>
 			</parameter>
 			<parameter name="userName" type="text">
 				<context>password</context>
 				<label>Username</label>
-				<description>Name of a registered Hue bridge user, that allows to access the API.</description>
+				<description>Name of a registered Hue Bridge user, that allows to access the API.</description>
 			</parameter>
 			<parameter name="pollingInterval" type="integer" min="1" step="1" unit="s">
 				<label>Polling Interval</label>
-				<description>Seconds between fetching values from the Hue bridge. Default is 10.</description>
+				<description>Seconds between fetching values from the Hue Bridge. Default is 10.</description>
 				<default>10</default>
 			</parameter>
 			<parameter name="sensorPollingInterval" type="integer" min="0" step="1" unit="ms">
 				<label>Sensor Polling Interval</label>
-				<description>Milliseconds between fetching sensor-values from the Hue bridge. A higher value means more delay for
-					the sensor values, but a too low value can cause congestion on the Hue bridge. Use 0 to disable the polling for
+				<description>Milliseconds between fetching sensor-values from the Hue Bridge. A higher value means more delay for
+					the sensor values, but a too low value can cause congestion on the Hue Bridge. Use 0 to disable the polling for
 					sensors. Default is 500.</description>
 				<default>500</default>
 			</parameter>

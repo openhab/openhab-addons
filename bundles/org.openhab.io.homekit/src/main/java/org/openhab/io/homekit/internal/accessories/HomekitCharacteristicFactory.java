@@ -18,6 +18,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -43,6 +44,7 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.openhab.io.homekit.Homekit;
@@ -614,13 +616,83 @@ public class HomekitCharacteristicFactory {
 
     private static ColorTemperatureCharacteristic createColorTemperatureCharacteristic(HomekitTaggedItem taggedItem,
             HomekitAccessoryUpdater updater) {
-        int minValue = taggedItem.getConfigurationAsInt(HomekitTaggedItem.MIN_VALUE,
-                ColorTemperatureCharacteristic.DEFAULT_MIN_VALUE);
-        return new ColorTemperatureCharacteristic(minValue,
-                taggedItem.getConfigurationAsInt(HomekitTaggedItem.MAX_VALUE,
-                        ColorTemperatureCharacteristic.DEFAULT_MAX_VALUE),
-                getIntSupplier(taggedItem, minValue), setIntConsumer(taggedItem),
-                getSubscriber(taggedItem, COLOR_TEMPERATURE, updater),
+        // Check if units are expressed in Kelvin, not mireds, and adjust
+        // the min/max appropriately
+        Unit unit = null;
+        var numberItem = taggedItem.getBaseItem();
+        if (numberItem instanceof NumberItem) {
+            unit = ((NumberItem) numberItem).getUnit();
+        }
+        if (unit == null) {
+            unit = Units.MIRED;
+        }
+        final Unit finalUnit = unit;
+
+        final boolean inverted = taggedItem.isInverted();
+
+        if (!unit.equals(Units.KELVIN) && !unit.equals(Units.MIRED)) {
+            logger.warn("Item {} must be in either K or mired. Given {}.", taggedItem.getName(), unit);
+            return new ColorTemperatureCharacteristic(null, null, null, null);
+        }
+
+        var minValueQt = taggedItem.getConfigurationAsQuantity(HomekitTaggedItem.MIN_VALUE,
+                Objects.requireNonNull(new QuantityType(ColorTemperatureCharacteristic.DEFAULT_MIN_VALUE, Units.MIRED)
+                        .toInvertibleUnit(unit)));
+        var maxValueQt = taggedItem.getConfigurationAsQuantity(HomekitTaggedItem.MAX_VALUE,
+                Objects.requireNonNull(new QuantityType(ColorTemperatureCharacteristic.DEFAULT_MAX_VALUE, Units.MIRED)
+                        .toInvertibleUnit(unit)));
+
+        int minValue = minValueQt.toInvertibleUnit(Units.MIRED).intValue();
+        int maxValue = maxValueQt.toInvertibleUnit(Units.MIRED).intValue();
+
+        // It's common to swap these if you're providing in Kelvin instead of mired
+        if (minValue > maxValue) {
+            int temp = minValue;
+            minValue = maxValue;
+            maxValue = temp;
+        }
+
+        final int finalMinValue = minValue;
+        final int range = maxValue - minValue;
+
+        return new ColorTemperatureCharacteristic(minValue, maxValue, () -> {
+            int value = finalMinValue;
+            final State state = taggedItem.getItem().getState();
+            if (state instanceof QuantityType<?>) {
+                // Number:Temperature
+                QuantityType<?> qt = (QuantityType<?>) state;
+                qt = qt.toInvertibleUnit(Units.MIRED);
+                if (qt == null) {
+                    logger.warn("Item {}'s state '{}' is not convertible to mireds.", taggedItem.getName(), state);
+                } else {
+                    value = qt.intValue();
+                }
+            } else if (state instanceof PercentType) {
+                double percent = ((PercentType) state).doubleValue();
+                // invert so that 0% == coolest
+                if (inverted) {
+                    percent = 100.0 - percent;
+                }
+
+                // Dimmer
+                // scale to the originally configured range
+                value = (int) (percent * range / 100) + finalMinValue;
+            } else if (state instanceof DecimalType) {
+                value = ((DecimalType) state).intValue();
+            }
+            return CompletableFuture.completedFuture(value);
+        }, (value) -> {
+            if (taggedItem.getBaseItem() instanceof DimmerItem) {
+                // scale to a percent
+                double percent = (((double) value) - finalMinValue) * 100 / range;
+                if (inverted) {
+                    percent = 100.0 - percent;
+                }
+                taggedItem.send(new PercentType(BigDecimal.valueOf(percent)));
+            } else if (taggedItem.getBaseItem() instanceof NumberItem) {
+                taggedItem.send(new QuantityType(value, Units.MIRED));
+            }
+        }, getSubscriber(taggedItem, COLOR_TEMPERATURE, updater),
                 getUnsubscriber(taggedItem, COLOR_TEMPERATURE, updater));
     }
 

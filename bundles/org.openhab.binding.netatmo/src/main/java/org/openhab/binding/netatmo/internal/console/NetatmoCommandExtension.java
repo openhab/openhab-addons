@@ -23,6 +23,8 @@ import org.openhab.binding.netatmo.internal.api.data.ModuleType;
 import org.openhab.binding.netatmo.internal.api.dto.NAModule;
 import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
 import org.openhab.core.io.console.Console;
+import org.openhab.core.io.console.ConsoleCommandCompleter;
+import org.openhab.core.io.console.StringsCompleter;
 import org.openhab.core.io.console.extensions.AbstractConsoleCommandExtension;
 import org.openhab.core.io.console.extensions.ConsoleCommandExtension;
 import org.openhab.core.thing.Thing;
@@ -41,9 +43,10 @@ import org.osgi.service.component.annotations.Reference;
 
 @NonNullByDefault
 @Component(service = ConsoleCommandExtension.class)
-public class NetatmoCommandExtension extends AbstractConsoleCommandExtension {
+public class NetatmoCommandExtension extends AbstractConsoleCommandExtension implements ConsoleCommandCompleter {
 
     private static final String SHOW_IDS = "showIds";
+    private static final StringsCompleter SUBCMD_COMPLETER = new StringsCompleter(List.of(SHOW_IDS), false);
 
     private final ThingRegistry thingRegistry;
     private @Nullable Console console;
@@ -93,5 +96,18 @@ public class NetatmoCommandExtension extends AbstractConsoleCommandExtension {
     @Override
     public List<String> getUsages() {
         return Arrays.asList(buildCommandUsage(SHOW_IDS, "list all devices and modules ids"));
+    }
+
+    @Override
+    public @Nullable ConsoleCommandCompleter getCompleter() {
+        return this;
+    }
+
+    @Override
+    public boolean complete(String[] args, int cursorArgumentIndex, int cursorPosition, List<String> candidates) {
+        if (cursorArgumentIndex <= 0) {
+            return SUBCMD_COMPLETER.complete(args, cursorArgumentIndex, cursorPosition, candidates);
+        }
+        return false;
     }
 }

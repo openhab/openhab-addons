@@ -30,7 +30,7 @@ import org.openhab.core.config.core.ConfigDescriptionParameter;
 import org.openhab.core.config.core.Configuration;
 
 /**
- * An version of {@link SimpleRule} which controls multithreaded execution access to this specific rule. This is useful
+ * A version of {@link SimpleRule} which controls multithreaded execution access to this specific rule. This is useful
  * for rules which wrap GraalJS Contexts, which are not multithreaded.
  *
  * @author Jonathan Gilbert - Initial contribution

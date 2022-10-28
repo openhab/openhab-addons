@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.hue.internal.exceptions;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Thrown if the link button hasn't been pressed in the last 30 seconds.
  *
@@ -19,6 +21,7 @@ package org.openhab.binding.hue.internal.exceptions;
  * @author Denis Dudnik - moved Jue library source code inside the smarthome Hue binding
  */
 @SuppressWarnings("serial")
+@NonNullByDefault
 public class LinkButtonException extends ApiException {
     public LinkButtonException() {
     }

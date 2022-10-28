@@ -18,11 +18,16 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import java.util.Arrays;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.hue.internal.dto.FullGroup;
+import org.openhab.binding.hue.internal.dto.Scene;
+import org.openhab.binding.hue.internal.dto.State;
 
 /**
  * @author HJiang - initial contribution
  */
+@NonNullByDefault
 public class SceneTest {
 
     private static final State PLACEHOLDER_STATE = new State();

@@ -68,6 +68,7 @@ public class ShadeCapabilitiesDatabase {
             new Type( 7).capabilities(6).text("Top Down"),
             new Type( 8).capabilities(7).text("Duette Top Down Bottom Up"),
             new Type( 9).capabilities(7).text("Duette DuoLite Top Down Bottom Up"),
+            new Type(10).capabilities(0).text("Duette/Applause Skylift"),
             new Type(18).capabilities(1).text("Pirouette"),
             new Type(23).capabilities(1).text("Silhouette"),
             new Type(26).capabilities(3).text("Skyline Panel, Left Stack"),

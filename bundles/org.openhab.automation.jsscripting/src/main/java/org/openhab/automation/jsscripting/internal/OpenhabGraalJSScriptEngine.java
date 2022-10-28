@@ -36,7 +36,6 @@ import java.util.function.Function;
 import javax.script.ScriptContext;
 import javax.script.ScriptException;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.Engine;
@@ -47,6 +46,7 @@ import org.openhab.automation.jsscripting.internal.fs.PrefixedSeekableByteChanne
 import org.openhab.automation.jsscripting.internal.fs.ReadOnlySeekableByteArrayChannel;
 import org.openhab.automation.jsscripting.internal.fs.watch.JSDependencyTracker;
 import org.openhab.automation.jsscripting.internal.scriptengine.InvocationInterceptingScriptEngineWithInvocableAndAutoCloseable;
+import org.openhab.automation.jsscripting.internal.threading.ThreadsafeTimers;
 import org.openhab.core.automation.module.script.ScriptExtensionAccessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,6 +58,7 @@ import com.oracle.truffle.js.scriptengine.GraalJSScriptEngine;
  *
  * @author Jonathan Gilbert - Initial contribution
  * @author Dan Cunningham - Script injections
+ * @author Florian Hotze - Create lock object for multi-thread synchronization
  */
 public class OpenhabGraalJSScriptEngine
         extends InvocationInterceptingScriptEngineWithInvocableAndAutoCloseable<GraalJSScriptEngine> {
@@ -68,9 +69,12 @@ public class OpenhabGraalJSScriptEngine
     // final CommonJS search path for our library
     private static final Path NODE_DIR = Paths.get("node_modules");
 
+    // shared lock object for synchronization of multi-thread access
+    private final Object lock = new Object();
+
     // these fields start as null because they are populated on first use
-    private @NonNullByDefault({}) String engineIdentifier;
-    private @NonNullByDefault({}) Consumer<String> scriptDependencyListener;
+    private String engineIdentifier;
+    private Consumer<String> scriptDependencyListener;
 
     private boolean initialized = false;
     private String globalScript;
@@ -82,6 +86,8 @@ public class OpenhabGraalJSScriptEngine
     public OpenhabGraalJSScriptEngine(@Nullable String injectionCode) {
         super(null); // delegate depends on fields not yet initialised, so we cannot set it immediately
         this.globalScript = GLOBAL_REQUIRE + (injectionCode != null ? injectionCode : "");
+
+        LOGGER.debug("Initializing GraalJS script engine...");
 
         // Custom translate JS Objects - > Java Objects
         HostAccess hostAccess = HostAccess.newBuilder(HostAccess.ALL)
@@ -194,14 +200,16 @@ public class OpenhabGraalJSScriptEngine
         }
 
         ScriptExtensionModuleProvider scriptExtensionModuleProvider = new ScriptExtensionModuleProvider(
-                scriptExtensionAccessor);
+                scriptExtensionAccessor, lock);
 
         Function<Function<Object[], Object>, Function<String, Object>> wrapRequireFn = originalRequireFn -> moduleName -> scriptExtensionModuleProvider
                 .locatorFor(delegate.getPolyglotContext(), engineIdentifier).locateModule(moduleName)
                 .map(m -> (Object) m).orElseGet(() -> originalRequireFn.apply(new Object[] { moduleName }));
 
         delegate.getBindings(ScriptContext.ENGINE_SCOPE).put(REQUIRE_WRAPPER_NAME, wrapRequireFn);
+        // Injections into the JS runtime
         delegate.put("require", wrapRequireFn.apply((Function<Object[], Object>) delegate.get("require")));
+        delegate.put("ThreadsafeTimers", new ThreadsafeTimers(lock));
 
         initialized = true;
 
@@ -215,8 +223,8 @@ public class OpenhabGraalJSScriptEngine
     /**
      * Tests if this is a root node directory, `/node_modules`, `C:\node_modules`, etc...
      *
-     * @param path
-     * @return
+     * @param path a root path
+     * @return whether the given path is a node root directory
      */
     private boolean isRootNodePath(Path path) {
         return path.startsWith(path.getRoot().resolve(NODE_DIR));
@@ -226,8 +234,8 @@ public class OpenhabGraalJSScriptEngine
      * Converts a root node path to a class resource path for loading local modules
      * Ex: C:\node_modules\foo.js -> /node_modules/foo.js
      *
-     * @param path
-     * @return
+     * @param path a root path, e.g. C:\node_modules\foo.js
+     * @return the class resource path for loading local modules
      */
     private String nodeFileToResource(Path path) {
         return "/" + path.subpath(0, path.getNameCount()).toString().replace('\\', '/');
