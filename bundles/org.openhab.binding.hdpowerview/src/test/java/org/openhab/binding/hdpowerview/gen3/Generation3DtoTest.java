@@ -23,13 +23,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.hdpowerview.HDPowerViewJUnitTests;
 import org.openhab.binding.hdpowerview.internal.api.CoordinateSystem;
+import org.openhab.binding.hdpowerview.internal.gen3.dto.Automation3;
 import org.openhab.binding.hdpowerview.internal.gen3.dto.Scene3;
 import org.openhab.binding.hdpowerview.internal.gen3.dto.SceneEvent3;
-import org.openhab.binding.hdpowerview.internal.gen3.dto.ScheduledEvent3;
 import org.openhab.binding.hdpowerview.internal.gen3.dto.Shade3;
 import org.openhab.binding.hdpowerview.internal.gen3.dto.ShadeEvent3;
 import org.openhab.binding.hdpowerview.internal.gen3.dto.ShadePosition3;
-import org.openhab.binding.hdpowerview.internal.gen3.webtargets.HDPowerViewWebTargets3;
+import org.openhab.binding.hdpowerview.internal.gen3.webtargets.GatewayWebTargets;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.types.UnDefType;
 
@@ -64,10 +64,10 @@ public class Generation3DtoTest {
     @Test
     public void testAutomationParsing() throws IOException {
         String json = loadJson("gen3/automations.json");
-        List<ScheduledEvent3> scheduledEventList = gson.fromJson(json, HDPowerViewWebTargets3.LIST_EVENTS);
+        List<Automation3> scheduledEventList = gson.fromJson(json, GatewayWebTargets.LIST_EVENTS);
         assertNotNull(scheduledEventList);
         assertEquals(1, scheduledEventList.size());
-        ScheduledEvent3 scheduledEvent = scheduledEventList.get(0);
+        Automation3 scheduledEvent = scheduledEventList.get(0);
         assertEquals(33, scheduledEvent.id);
         assertTrue(scheduledEvent.enabled);
     }
@@ -92,7 +92,7 @@ public class Generation3DtoTest {
     @Test
     public void testScenesParsing() throws IOException {
         String json = loadJson("gen3/scenes.json");
-        List<Scene3> sceneList = gson.fromJson(json, HDPowerViewWebTargets3.LIST_SCENES);
+        List<Scene3> sceneList = gson.fromJson(json, GatewayWebTargets.LIST_SCENES);
         assertNotNull(sceneList);
         assertEquals(1, sceneList.size());
         Scene3 scene = sceneList.get(0);
@@ -143,7 +143,7 @@ public class Generation3DtoTest {
     @Test
     public void testShadesParsing() throws IOException {
         String json = loadJson("gen3/shades.json");
-        List<Shade3> shadeList = gson.fromJson(json, HDPowerViewWebTargets3.LIST_SHADES);
+        List<Shade3> shadeList = gson.fromJson(json, GatewayWebTargets.LIST_SHADES);
         assertNotNull(shadeList);
         assertEquals(1, shadeList.size());
         Shade3 shadeData = shadeList.get(0);

@@ -26,7 +26,7 @@ import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
 /**
- * State of a Shade as returned by an HD PowerView Generation 3 Gateway.
+ * DTO for a shade as returned by an HD PowerView Generation 3 Gateway.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */

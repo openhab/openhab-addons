@@ -20,9 +20,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.hdpowerview.internal.discovery.HDPowerViewDeviceDiscoveryService;
-import org.openhab.binding.hdpowerview.internal.gen3.discovery.HDPowerViewDeviceDiscoveryService3;
-import org.openhab.binding.hdpowerview.internal.gen3.handler.HDPowerViewHubHandler3;
-import org.openhab.binding.hdpowerview.internal.gen3.handler.HDPowerViewShadeHandler3;
+import org.openhab.binding.hdpowerview.internal.gen3.discovery.ShadeDiscoveryService;
+import org.openhab.binding.hdpowerview.internal.gen3.handler.GatewayBridgeHandler;
+import org.openhab.binding.hdpowerview.internal.gen3.handler.ShadeThingHandler;
 import org.openhab.binding.hdpowerview.internal.handler.HDPowerViewHubHandler;
 import org.openhab.binding.hdpowerview.internal.handler.HDPowerViewRepeaterHandler;
 import org.openhab.binding.hdpowerview.internal.handler.HDPowerViewShadeHandler;
@@ -79,13 +79,13 @@ public class HDPowerViewHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         // generation 3
-        if (HDPowerViewBindingConstants.THING_TYPE_GATEWAY3.equals(thingTypeUID)) {
-            HDPowerViewHubHandler3 handler = new HDPowerViewHubHandler3((Bridge) thing, httpClient, translationProvider,
+        if (HDPowerViewBindingConstants.THING_TYPE_GATEWAY.equals(thingTypeUID)) {
+            GatewayBridgeHandler handler = new GatewayBridgeHandler((Bridge) thing, httpClient, translationProvider,
                     clientBuilder, eventSourceFactory);
-            registerService(new HDPowerViewDeviceDiscoveryService3(handler));
+            registerService(new ShadeDiscoveryService(handler));
             return handler;
         } else if (HDPowerViewBindingConstants.THING_TYPE_SHADE3.equals(thingTypeUID)) {
-            return new HDPowerViewShadeHandler3(thing);
+            return new ShadeThingHandler(thing);
         } else
         // generation 1/2
         if (HDPowerViewBindingConstants.THING_TYPE_HUB.equals(thingTypeUID)) {

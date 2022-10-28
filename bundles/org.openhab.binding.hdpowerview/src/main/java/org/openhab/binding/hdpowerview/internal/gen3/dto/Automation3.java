@@ -20,12 +20,12 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hdpowerview.internal.api.responses.ScheduledEvents;
 
 /**
- * class for scheduled event as returned by an HD PowerView Generation 3 Gateway.
+ * DTO for automation object as returned by an HD PowerView Generation 3 Gateway.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class ScheduledEvent3 {
+public class Automation3 {
     public int id;
     public int type;
     public boolean enabled;
@@ -53,10 +53,10 @@ public class ScheduledEvent3 {
         if (o == this) {
             return true;
         }
-        if (!(o instanceof ScheduledEvent3)) {
+        if (!(o instanceof Automation3)) {
             return false;
         }
-        ScheduledEvent3 other = (ScheduledEvent3) o;
+        Automation3 other = (Automation3) o;
         String days = this.days;
 
         return this.id == other.id && this.enabled == other.enabled && this.sceneId == other.sceneId
