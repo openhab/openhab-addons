@@ -27,7 +27,6 @@ public class WebexTeamsConfiguration {
     public static final String CLIENT_ID = "clientId";
     public static final String CLIENT_SECRET = "clientSecret";
     public static final String AUTH_CODE = "authCode";
-    public static final String REDIRECT_URL = "redirectUrl";
     public static final String REFRESH_TOKEN = "refreshToken";
     public static final String ROOM_ID = "roomId";
 
@@ -38,7 +37,6 @@ public class WebexTeamsConfiguration {
     public String clientId = "";
     public String clientSecret = "";
     public String authCode = "";
-    public String redirectUrl = "";
     public String refreshToken = "";
     public String roomId = "";
 }

@@ -35,8 +35,9 @@ public class WebexTeamsBindingConstants {
     public static final String CHANNEL_LASTACTIVITY = "lastactivity";
 
     // OAuth constants
-    public static final String OAUTH_REDIRECT_URL = "https://www.example.com";
+    public static final String OAUTH_REDIRECT_URL = "https://files.ducbase.com/authcode/index.html";
     public static final String OAUTH_TOKEN_URL = "https://webexapis.com/v1/access_token";
+    public static final String OAUTH_AUTH_URL = "https://webexapis.com/v1/authorize";
     public static final String OAUTH_AUTHORIZATION_URL = "https://webexapis.com/v1/authorize";
     public static final String OAUTH_SCOPE = "spark:all";
 

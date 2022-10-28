@@ -17,6 +17,7 @@
 
 		<properties>
 			<property name="personType">Unknown type</property>
+			<property name="name">Unknown name</property>
 		</properties>
 
 		<config-description>
@@ -35,17 +36,15 @@
 				<description>OAuth client secret (Integration)</description>
 			</parameter>
 			<parameter name="authCode" type="text" required="false">
-				<label>Auth Code</label>
-				<description>OAuth auth code (Integration)</description>
-			</parameter>
-			<parameter name="redirectUrl" type="text" required="false">
-				<label>Redirect URL</label>
-				<description>OAuth redirect url (Integration)</description>
+				<label>Auth Code (Integration)</label>
+				<description>Get the auth code from https://developer.webex.com/my-apps
+					by navigating to OAuth Authorization URL</description>
 			</parameter>
 			<parameter name="refreshToken" type="text" required="false">
+				<label>RefreshToken</label>
 				<context>password</context>
-				<label>Refresh Token</label>
-				<description>OAuth refresh token (Integration)</description>
+				<advanced>true</advanced>
+				<description>Used internally. No need to manually set.</description>
 			</parameter>
 			<parameter name="roomId" type="text" required="false">
 				<label>Default room Id</label>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>        
+        <!-- Basic Page Needs
+        –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+        <meta charset="utf-8">
+        <title>Openhab-Webex Teams Auth Code</title>
+        <meta name="description" content="">
+        <meta name="author" content="tom@ducbase.com">
+
+        <!-- Mobile Specific Metas
+        –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- FONT
+        –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+        <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+
+        <!-- CSS
+        –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+        <link rel="stylesheet" href="css/normalize.css">
+        <link rel="stylesheet" href="css/skeleton.css">
+        <link rel="stylesheet" href="css/custom.css">
+
+        <!-- Favicon
+        –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+        <link rel="shortcut icon" href="images/favicon.ico">
+    </head>
+    <body>
+        <div class="container">
+            <div class="row bottom-one">
+                <h2>OAuth authorization code</h2>
+                <div>
+                    This page provides a convienient way to get the authorization code for the Webex Teams integration.
+                </div>
+        
+            </div>
+    
+            <div class="row">
+                <label for="code">Auth code:</label>
+                <input type="text" value="" id="code" class="u-full-width">
+                <button onclick="copy()">Copy code to clipboard</button>
+
+            </div>
+    
+        </div>
+        <script>
+            const queryString = window.location.search;
+            const urlParams = new URLSearchParams(queryString);
+            document.getElementById("code").value = urlParams.get('code');
+
+           function copy() {
+               // Get the text field
+               var copyText = document.getElementById("code");
+
+               // Select the text field
+               copyText.select();
+               copyText.setSelectionRange(0, 99999); // For mobile devices
+
+               // Copy the text inside the text field
+               navigator.clipboard.writeText(copyText.value);
+
+               // Alert the copied text
+               alert("Copied the text: " + copyText.value);
+            }
+            console.log(urlParams.get('code'));
+        </script>
+
+    </body>
+</html>

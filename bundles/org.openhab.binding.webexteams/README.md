@@ -20,18 +20,18 @@ Webex Teams supports two main types of app integration:
 * Bot: a separate identity that can be used to communicate with people and rooms.
 * Integration: OAuth integration that allows the binding to act on a persons behalf.
 
-Both of these integrations must be first configured on the [Webex Developers](https://developer.webex.com/) 
+Both of these integrations must be first configured on the [Webex Developers](https://developer.webex.com/my-apps) 
 website.
 
 To use the bot identity, only configure the `token` (Authentication token).
 
-To use the OAuth interation, configure: client id, client secret, auth code and redirect URL.  
-The auth code is obtained by using the Authorization URL from the Webex Developers integration setup page.  
-The same goes for the redirect URL.  The URL is not effectively used, but must be configured in the binding with the same value as on the Webex Developers integration setup page.  If unsure, use *https://www.example.com*.
-As long as the binding is configured with credentials it will refresh tokens.  
-There's an annoying *feature* today that requires you provide a new authCode when the binding was down for a while.
+To use the OAuth interation, configure `clientId`, `clientSecret` and `authCode`.  To make life easier, use the following redirect URL: `https://files.ducbase.com/authcode/index.html` when creating the Webex Teams app at the URL above.  This will provide you with a convenient way to copy the auth code once redirected by Webex Teams.  The auth code is obtained by using the Authorization URL from the Webex Developers integration setup page.
 
-When both bot auth token and OAuth details are configure, the binding will prefer the bot auth token.
+As long as the binding is configured with credentials it will refresh tokens.  When the binding was down for a prolongued time
+you may have to obtain a new auth code.  In this case, delete the refresh token from the configuration and apply the new auth token.
+
+You shouldn't configure both an authentication token (used for bots) AND clientId/clientSecret (used for integrations).  In that
+case the binding will use the clientId/clientSecret.
 
 A default room id is required for use with the `sendMessage` action.
 
@@ -39,16 +39,20 @@ A default room id is required for use with the `sendMessage` action.
 
 | Name            | Type    | Description                           | Default | Required | Advanced |
 |-----------------|---------|---------------------------------------|---------|----------|----------|
-| token           | password| (Bot) authentication token            | N/A     | no      | no       |
-| clientId        | text    | (OAuth) client id                     | N/A     | no      | no       |
-| clientSecret    | password| (OAuth) client secret                 | N/A     | no      | no       |
-| authCode        | text    | (OAuth) auth code                     | N/A     | no      | no       |
-| redirectUrl     | text    | (OAuth) redirect url                  | N/A     | no      | no       |
-| roomId          | text    | ID of the default room                | N/A     | no      | no       |
+| token           | password| (Bot) authentication token            | N/A     | no       | no       |
+| clientId        | text    | (OAuth) client id                     | N/A     | no       | no       |
+| clientSecret    | password| (OAuth) client secret                 | N/A     | no       | no       |
+| authCode        | text    | (OAuth) auth code                     | N/A     | no       | no       |
+| refreshToken    | password| (OAuth) refresh token                 | N/A     | no       | yes      |
+| roomId          | text    | ID of the default room                | N/A     | no       | no       |
 
 ## Channels
 
-No channels are implemented.
+| Thing              | channel      | type      | description                                                  |
+|--------------------|--------------|-----------|--------------------------------------------------------------|
+| WebexTeams Account | botname      | String    | Name of the bot as configured at developer.webex.com/my-apps |
+| WebexTeams Account | status       | String    | Account presence status: active, call, inactive, ...         |
+| WebexTeams Account | lastactivity | DateTime  | The date and time of the person's last activity within Webex |
 
 ## Full Example
 

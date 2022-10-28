@@ -38,6 +38,12 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.webexteams.internal.WebexTeamsConfiguration;
 import org.openhab.binding.webexteams.internal.WebexTeamsHandler;
+import org.openhab.core.auth.client.oauth2.AccessTokenRefreshListener;
+import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
+import org.openhab.core.auth.client.oauth2.OAuthClientService;
+import org.openhab.core.auth.client.oauth2.OAuthException;
+import org.openhab.core.auth.client.oauth2.OAuthFactory;
+import org.openhab.core.auth.client.oauth2.OAuthResponseException;
 import org.openhab.core.config.core.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,28 +60,32 @@ import com.google.gson.Gson;
  * 
  */
 @NonNullByDefault
-public class WebexTeamsApi {
+public class WebexTeamsApi implements AccessTokenRefreshListener {
 
     private final Logger logger = LoggerFactory.getLogger(WebexTeamsApi.class);
 
     private final WebexTeamsHandler handler;
+    private final OAuthFactory oAuthFactory;
     private final HttpClient httpClient;
 
-    // OAuth members
-    private @Nullable String authToken;
-    private @Nullable String clientId;
-    private @Nullable String clientSecret;
-    private @Nullable String authCode;
-    private @Nullable String redirectUrl;
-    private @Nullable String refreshToken;
+    private @NonNullByDefault({}) OAuthClientService authService;
+
+    // Config variables.
+    private String authToken;
+    private String clientId;
+    private String clientSecret;
+    private String authCode;
+    private String refreshToken;
 
     /**
      * Constructor.
      * 
      * @param WebexTeamsHandler hander interact with handler context.
      */
-    public WebexTeamsApi(WebexTeamsHandler handler, HttpClient httpClient) {
+    public WebexTeamsApi(WebexTeamsHandler handler, OAuthFactory oAuthFactory, HttpClient httpClient) {
         this.handler = handler;
+
+        this.oAuthFactory = oAuthFactory;
         this.httpClient = httpClient;
 
         WebexTeamsConfiguration config = handler.getConfigAs(WebexTeamsConfiguration.class);
@@ -83,74 +93,98 @@ public class WebexTeamsApi {
         this.clientId = config.clientId;
         this.clientSecret = config.clientSecret;
         this.authCode = config.authCode;
-        this.redirectUrl = config.redirectUrl;
         this.refreshToken = config.refreshToken;
+
+        // If clientId is provided, we're using a webex integration and we'll need to run OAuth
+        if (!this.clientId.isBlank()) {
+            createIntegrationOAuthClientService();
+            // if we have a refresh token, try it.
+            if (!this.refreshToken.isBlank()) {
+                String token = refreshToken();
+                if (token.isBlank()) {
+                    final String msg = "Failed to use refresh token.  Set new auth code.";
+                    logger.error(msg);
+                    throw new NotAuthenticatedException(msg);
+                }
+            } else { // use authCode to get initial authCode
+                getInitialToken();
+            }
+        } else { // otherwise use the configured bot token
+            createBotOAuthClientService();
+        }
     }
 
-    /**
-     * authenticate against the webex service.
-     * 
-     * @return <code>boolean</code> representing success of failure.
-     */
-    public boolean authenticate() {
-        logger.debug("Authenticating...");
-        if (this.clientId != null && !this.clientId.isEmpty() && this.clientSecret != null
-                && !this.clientSecret.isEmpty()) {
+    public void createIntegrationOAuthClientService() {
+        String thingUID = handler.getThing().getUID().getAsString();
+        logger.debug("Creating OAuth Client Service for {}", thingUID);
+        OAuthClientService service = oAuthFactory.createOAuthClientService(thingUID, OAUTH_TOKEN_URL, OAUTH_AUTH_URL,
+                this.clientId, this.clientSecret, "", false);
+        service.addAccessTokenRefreshListener(this);
+        this.authService = service;
+    }
 
-            logger.debug("Client id and secret configured");
-            if (this.authCode != null && !this.authCode.isEmpty() && this.redirectUrl != null
-                    && !this.redirectUrl.isEmpty()) {
-                logger.debug("Auth code and redirect url configured");
-                URI url = this.getUrl(OAUTH_TOKEN_URL);
-                AccessTokenRequest request = new AccessTokenRequest();
-                request.setGrantType("authorization_code");
-                request.setClientId(this.clientId);
-                request.setClientSecret(this.clientSecret);
-                request.setCode(this.authCode);
-                request.setRedirectUri(getUrl(this.redirectUrl));
-
-                AccessTokenResponse response = doRequest(url, HttpMethod.POST, AccessTokenResponse.class, request);
-                // TODO: remove this line:
-                logger.debug("Access: {}, refresh: {}", response.getAccessToken(), response.getRefreshToken());
-
-                logger.debug("Updating tokens");
-                Configuration localConfig = handler.editConfiguration();
-                // add access token
-                this.authToken = response.getAccessToken();
-                localConfig.put(WebexTeamsConfiguration.TOKEN, this.authToken);
-                // remove authCode - single use
-                this.authCode = "";
-                localConfig.put(WebexTeamsConfiguration.AUTH_CODE, "");
-
-                // set refresh token
-                this.refreshToken = response.getRefreshToken();
-                localConfig.put(WebexTeamsConfiguration.REFRESH_TOKEN, this.refreshToken);
-
-                handler.updateConfiguration(localConfig);
-
-                return true;
-
-            } else if (this.refreshToken != null && this.refreshToken.isEmpty()) {
-                logger.debug("Refreshing token.");
-                URI url = this.getUrl(OAUTH_TOKEN_URL);
-                AccessTokenRequest request = new AccessTokenRequest();
-                request.setGrantType("authorization_code");
-                request.setClientId(this.clientId);
-                request.setClientSecret(this.clientSecret);
-                request.setRefreshToken(this.refreshToken);
-                AccessTokenResponse response = doRequest(url, HttpMethod.POST, AccessTokenResponse.class, request);
-
-                logger.debug("Updating auth token after refresh");
-                Configuration localConfig = handler.editConfiguration();
-                // add access token
-                this.authToken = response.getAccessToken();
-                localConfig.put(WebexTeamsConfiguration.TOKEN, this.authToken);
-                handler.updateConfiguration(localConfig);
-
-                return true;
-            }
+    public String refreshToken() {
+        AccessTokenResponse response = new AccessTokenResponse();
+        response.setRefreshToken(this.refreshToken);
+        try {
+            this.authService.importAccessTokenResponse(response);
+            response = this.authService.refreshToken();
+            logger.debug("Initialized from refreshToken");
+            logger.debug("Token {} of type {} created on {} expiring after {} seconds", response.getAccessToken(),
+                    response.getTokenType(), response.getCreatedOn(), response.getExpiresIn());
+        } catch (OAuthException | OAuthResponseException | IOException e) {
+            logger.error("Failed to import refreshToken", e);
+            return "";
         }
-        return false;
+        return response.getAccessToken();
+    }
+
+    public String getInitialToken() {
+        try {
+            AccessTokenResponse response = authService.getAccessTokenResponseByAuthorizationCode(this.authCode,
+                    OAUTH_REDIRECT_URL);
+            logger.debug("Token {} of type {} created on {} expiring after {} seconds", response.getAccessToken(),
+                    response.getTokenType(), response.getCreatedOn(), response.getExpiresIn());
+
+            // Need to call this manually here. The authService callback only fires on actual refreshes.
+            onAccessTokenResponse(response);
+            return response.getAccessToken();
+        } catch (OAuthException | IOException | OAuthResponseException e) {
+            logger.error("Failed to get initial token: {}", e.getMessage());
+            throw new NotAuthenticatedException("@text/confErrorInitial", e);
+        }
+    }
+
+    public void createBotOAuthClientService() {
+        String thingUID = handler.getThing().getUID().getAsString();
+        AccessTokenResponse response = new AccessTokenResponse();
+        response.setAccessToken(this.authToken);
+        response.setScope(OAUTH_SCOPE);
+        response.setTokenType("Bearer");
+        response.setExpiresIn(Long.MAX_VALUE); // Bot access tokens don't expire
+        OAuthClientService service = oAuthFactory.createOAuthClientService(thingUID, OAUTH_TOKEN_URL,
+                OAUTH_AUTHORIZATION_URL, "not used", null, OAUTH_SCOPE, false);
+        try {
+            service.importAccessTokenResponse(response);
+        } catch (OAuthException e) {
+            throw new WebexTeamsApiException("Failed to create oauth client with bot token", e);
+        }
+        this.authService = service;
+    }
+
+    @Override
+    public void onAccessTokenResponse(AccessTokenResponse tokenResponse) {
+        // Update access token and refreshToken in config
+        logger.debug("Updating refreshToken");
+        String refreshToken = tokenResponse.getRefreshToken();
+        Configuration configuration = handler.editConfiguration();
+        configuration.put("refreshToken", refreshToken);
+        handler.updateConfiguration(configuration);
+    }
+
+    public void dispose() {
+        String thingUID = handler.getThing().getUID().getAsString();
+        this.oAuthFactory.ungetOAuthService(thingUID);
     }
 
     public Person getPerson() {
@@ -171,35 +205,23 @@ public class WebexTeamsApi {
     }
 
     private <I, O> O request(URI url, HttpMethod method, Class<O> clazz, I body) {
-        // If we don't have an auth token, get it first.
-        if (this.authToken == null || this.authToken.isEmpty()) {
-            if (!authenticate()) {
-                logger.warn("Failed to authenticate");
-                throw new NotAuthenticatedException();
-            }
-        }
-
         try {
-            // try a request
-            return doRequest(url, method, clazz, body);
-        } catch (NotAuthenticatedException e) {
-            // possible we need to refresh the token
-            logger.debug("Authenticating and retrying...");
-            if (authenticate()) {
-                return doRequest(url, method, clazz, body);
-            } else {
-                // something else is going on
-                logger.error("Failed to request", e);
-                throw e;
-            }
+            // Refresh is handled automatically by this method
+            AccessTokenResponse response = this.authService.getAccessTokenResponse();
+
+            String authToken = response.getAccessToken();
+            return doRequest(url, method, authToken, clazz, body);
+
+        } catch (OAuthException | IOException | OAuthResponseException e) {
+            throw new NotAuthenticatedException("Not authenticated", e);
         }
     }
 
-    private <I, O> O doRequest(URI url, HttpMethod method, Class<O> clazz, I body) {
+    private <I, O> O doRequest(URI url, HttpMethod method, String authToken, Class<O> clazz, I body) {
         Gson gson = new Gson();
         try {
             Request req = httpClient.newRequest(url).method(method);
-            req.header("Authorization", "Bearer " + this.authToken);
+            req.header("Authorization", "Bearer " + authToken);
             logger.debug("Requesting {} with ({}, {})", url, clazz, body);
 
             if (body != null) {

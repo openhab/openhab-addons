@@ -30,6 +30,7 @@ import org.openhab.binding.webexteams.internal.api.NotAuthenticatedException;
 import org.openhab.binding.webexteams.internal.api.Person;
 import org.openhab.binding.webexteams.internal.api.WebexTeamsApi;
 import org.openhab.binding.webexteams.internal.api.WebexTeamsApiException;
+import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.StringType;
@@ -56,6 +57,7 @@ public class WebexTeamsHandler extends BaseThingHandler {
 
     private @Nullable WebexTeamsConfiguration config;
 
+    private final OAuthFactory oAuthFactory;
     private final HttpClient httpClient;
     private @Nullable WebexTeamsApi client;
 
@@ -63,8 +65,9 @@ public class WebexTeamsHandler extends BaseThingHandler {
 
     private @Nullable ScheduledFuture<?> refreshService = null;
 
-    public WebexTeamsHandler(Thing thing, HttpClient httpClient) {
+    public WebexTeamsHandler(Thing thing, OAuthFactory oAuthFactory, HttpClient httpClient) {
         super(thing);
+        this.oAuthFactory = oAuthFactory;
         this.httpClient = httpClient;
     }
 
@@ -94,22 +97,14 @@ public class WebexTeamsHandler extends BaseThingHandler {
         final String token = config.token;
         final String clientId = config.clientId;
         final String clientSecret = config.clientSecret;
-        final String redirectUrl = config.redirectUrl;
-        // final String authCode = config.authCode; // TODO: can this be removed?
 
-        if (token != null && !token.isEmpty()) {
-            logger.debug("Token is configured.");
-
-        } else if (clientId != null && !clientId.isEmpty()) {
-            logger.debug("We're a person.");
-            if (clientSecret == null || clientSecret.isEmpty()) {
+        if (!token.isBlank() && clientId.isBlank()) { // For bots
+            logger.debug("I'm a bot");
+        } else if (!clientId.isBlank()) { // For integrations
+            logger.debug("I'm a person.");
+            if (clientSecret.isEmpty()) {
                 this.status = ThingStatus.OFFLINE;
                 updateStatus(this.status, ThingStatusDetail.CONFIGURATION_ERROR, "@text/confErrorNoSecret");
-                return;
-            }
-            if (redirectUrl == null || redirectUrl.isEmpty()) {
-                this.status = ThingStatus.OFFLINE;
-                updateStatus(this.status, ThingStatusDetail.CONFIGURATION_ERROR, "@text/confErrorNoRedirectUrl");
                 return;
             }
         } else {
@@ -121,43 +116,39 @@ public class WebexTeamsHandler extends BaseThingHandler {
         // background initialization:
         scheduler.execute(() -> {
             try {
-                this.client = new WebexTeamsApi(this, httpClient);
+                this.client = new WebexTeamsApi(this, oAuthFactory, httpClient);
                 logger.debug("Trying to fetch account details");
                 Person p = this.client.getPerson();
                 logger.debug("Success: {}", p.getDisplayName());
+
+                this.status = ThingStatus.ONLINE;
+                updateStatus(this.status);
+
+                refresh();
+
             } catch (NotAuthenticatedException e) {
                 logger.error("Failed to initialize client", e);
                 this.status = ThingStatus.OFFLINE;
-                updateStatus(this.status, ThingStatusDetail.CONFIGURATION_ERROR, "@text/confErrorNotAuth");
-                return;
+                updateStatus(this.status, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             }
-
-            this.status = ThingStatus.ONLINE;
-            updateStatus(this.status);
-
-            refresh();
-
         });
 
         // TODO: make interval configurable.
-        refreshService = scheduler.scheduleWithFixedDelay(this::refresh, 0, 60, TimeUnit.SECONDS);
+        refreshService = scheduler.scheduleWithFixedDelay(this::refresh, 0, 300, TimeUnit.SECONDS);
     }
 
     @Override
     public void dispose() {
         logger.debug("Disposing...");
-        // TODO: need to clean up 'client'?
         final ScheduledFuture<?> job = refreshService;
         if (job != null) {
             job.cancel(true);
             refreshService = null;
         }
+        this.client.dispose();
     }
 
     // mainly used to refresh the auth token when using OAuth
-
-    // see: https://github.com/webex/webex-java-sdk/blob/master/src/main/java/com/ciscospark/Client.java
-    // TODO: only refresh when we've been able to login once first (in initialize)
     private void refresh() {
         if (status == ThingStatus.ONLINE) {
             Person person;
@@ -165,6 +156,7 @@ public class WebexTeamsHandler extends BaseThingHandler {
                 person = client.getPerson();
                 updateState(CHANNEL_BOTNAME, StringType.valueOf(person.getDisplayName()));
                 updateProperty("personType", person.getType());
+                updateProperty("name", person.getDisplayName());
 
                 // Only when the identity is a person:
                 if (person.getType().equalsIgnoreCase("person")) {

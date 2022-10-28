@@ -23,6 +23,10 @@ public class NotAuthenticatedException extends WebexTeamsApiException {
         super();
     }
 
+    public NotAuthenticatedException(String msg) {
+        super(msg);
+    }
+
     public NotAuthenticatedException(String msg, Throwable t) {
         super(msg, t);
     }

@@ -19,6 +19,7 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -41,10 +42,13 @@ public class WebexTeamsHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_ACCOUNT);
 
+    private final OAuthFactory oAuthFactory;
     private final HttpClient httpClient;
 
     @Activate
-    public WebexTeamsHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
+    public WebexTeamsHandlerFactory(@Reference OAuthFactory oAuthFactory,
+            @Reference HttpClientFactory httpClientFactory) {
+        this.oAuthFactory = oAuthFactory;
         this.httpClient = httpClientFactory.getCommonHttpClient();
     }
 
@@ -58,7 +62,7 @@ public class WebexTeamsHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_ACCOUNT.equals(thingTypeUID)) {
-            return new WebexTeamsHandler(thing, httpClient);
+            return new WebexTeamsHandler(thing, oAuthFactory, httpClient);
         }
 
         return null;
