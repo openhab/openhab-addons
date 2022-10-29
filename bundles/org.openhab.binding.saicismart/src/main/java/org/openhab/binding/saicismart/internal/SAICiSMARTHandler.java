@@ -61,10 +61,10 @@ public class SAICiSMARTHandler extends BaseThingHandler {
         if (channelUID.getId().equals(SAICiSMARTBindingConstants.CHANNEL_FORCE_REFRESH) && command == OnOffType.ON) {
             // reset channel to off
             updateState(CHANNEL_FORCE_REFRESH, OnOffType.from(false));
-            // notify of new last activity date
-            notifyCarActivity(ZonedDateTime.now(), true);
+            // update internal activity date, to query the car for about a minute
+            notifyCarActivity(ZonedDateTime.now().minus(9, ChronoUnit.MINUTES), true);
         } else if (channelUID.getId().equals(CHANNEL_LAST_ACTIVITY) && command instanceof DateTimeType) {
-            // update internal activity date
+            // update internal activity date from external date
             notifyCarActivity(((DateTimeType) command).getZonedDateTime(), true);
         }
     }
@@ -78,6 +78,9 @@ public class SAICiSMARTHandler extends BaseThingHandler {
         config = getConfigAs(SAICiSMARTVehicleConfiguration.class);
 
         updateStatus(ThingStatus.UNKNOWN);
+
+        // just started, make sure we start querying
+        notifyCarActivity(ZonedDateTime.now(), true);
 
         pollingJob = scheduler.scheduleWithFixedDelay(() -> {
             if (lastCarActivity.isAfter(ZonedDateTime.now().minus(10, ChronoUnit.MINUTES))) {
@@ -98,9 +101,9 @@ public class SAICiSMARTHandler extends BaseThingHandler {
         }, 1, 1, TimeUnit.SECONDS);
     }
 
-    public void notifyCarActivity(ZonedDateTime now, boolean allowBackwardsTime) {
+    public void notifyCarActivity(ZonedDateTime now, boolean force) {
         // if the car activity changed, notify the channel
-        if (allowBackwardsTime || lastCarActivity.isBefore(now)) {
+        if (force || lastCarActivity.isBefore(now)) {
             lastCarActivity = now;
             updateState(CHANNEL_LAST_ACTIVITY, new DateTimeType(lastCarActivity));
         }
