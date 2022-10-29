@@ -120,8 +120,8 @@ class VehicleStateUpdater implements Callable<Boolean> {
 
             }
 
-            logger.info("Got message: {}", new GsonBuilder().setPrettyPrinting().create()
-                    .toJson(chargingStatusResponseMessage.getApplicationData()));
+            logger.info("Got message: {}",
+                    new GsonBuilder().setPrettyPrinting().create().toJson(chargingStatusResponseMessage));
 
             boolean engineRunning = chargingStatusResponseMessage.getApplicationData().getBasicVehicleStatus()
                     .getEngineStatus() == 1;

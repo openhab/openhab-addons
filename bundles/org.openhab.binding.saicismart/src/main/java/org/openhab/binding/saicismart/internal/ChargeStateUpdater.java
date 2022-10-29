@@ -106,8 +106,8 @@ class ChargeStateUpdater implements Callable<Boolean> {
 
             saiCiSMARTHandler.updateState(CHANNEL_SOC, new QuantityType<>(
                     chargingStatusResponseMessage.getApplicationData().getBmsPackSOCDsp() / 10.d, Units.PERCENT));
-            logger.info("Got message: {}", new GsonBuilder().setPrettyPrinting().create()
-                    .toJson(chargingStatusResponseMessage.getApplicationData()));
+            logger.info("Got message: {}",
+                    new GsonBuilder().setPrettyPrinting().create().toJson(chargingStatusResponseMessage));
 
             double power = (chargingStatusResponseMessage.getApplicationData().getBmsPackCrnt() * 0.05d - 1000.0d)
                     * ((double) chargingStatusResponseMessage.getApplicationData().getBmsPackVol() * 0.25d) / 1000d;
