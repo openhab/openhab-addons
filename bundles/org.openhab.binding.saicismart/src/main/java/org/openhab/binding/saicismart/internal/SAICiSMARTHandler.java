@@ -14,11 +14,13 @@ package org.openhab.binding.saicismart.internal;
 
 import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_FORCE_REFRESH;
 import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_LAST_ACTIVITY;
+import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_WINDOW_SUN_ROOF;
 
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -28,6 +30,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
@@ -76,6 +79,13 @@ public class SAICiSMARTHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         config = getConfigAs(SAICiSMARTVehicleConfiguration.class);
+
+        ThingBuilder thingBuilder = editThing();
+        thingBuilder.withChannels(thing.getChannels().stream().filter(c -> {
+            // TODO: check properties
+            return !c.getUID().getId().equals(CHANNEL_WINDOW_SUN_ROOF);
+        }).collect(Collectors.toList()));
+        updateThing(thingBuilder.build());
 
         updateStatus(ThingStatus.UNKNOWN);
 
