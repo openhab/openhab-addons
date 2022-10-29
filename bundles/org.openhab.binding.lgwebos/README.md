@@ -314,9 +314,9 @@ Sends a button press event to a WebOS device.
 
 Parameters:
 
-| Name    | Description                                                            |
-|---------|------------------------------------------------------------------------|
-| button  | Can be one of UP, DOWN, LEFT, RIGHT, BACK, DELETE, ENTER, HOME, or OK  |
+| Name    | Description                                                                            |
+|---------|----------------------------------------------------------------------------------------|
+| button  | Can be one of UP, DOWN, LEFT, RIGHT, BACK, EXIT, DELETE, ENTER, ENTER_ALT, HOME, or OK |
 
 Example:
 
