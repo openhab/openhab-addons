@@ -31,18 +31,23 @@ public class ThreadsafeTimers {
     private final Scheduler scheduler;
     // Mapping of positive, non-zero integer values (used as timeoutID or intervalID) and the Scheduler
     private final HashMap<Integer, ScheduledCompletableFuture<Object>> idSchedulerMapping = new HashMap<>();
+    private String identifier = "noIdentifier.timerId.";
 
     public ThreadsafeTimers(Object lock) {
         this.lock = lock;
         this.scheduler = ScriptServiceUtil.getScheduler();
     }
 
-    private ScheduledCompletableFuture<Object> createFuture(ZonedDateTime zdt, Runnable callback) {
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier + ".timerId.";
+    }
+
+    private ScheduledCompletableFuture<Object> createFuture(Integer id, ZonedDateTime zdt, Runnable callback) {
         return scheduler.schedule(() -> {
             synchronized (lock) {
                 callback.run();
             }
-        }, zdt.toInstant());
+        }, identifier + id, zdt.toInstant());
     }
 
     private Integer createNewId() {
@@ -58,7 +63,7 @@ public class ThreadsafeTimers {
 
     public Integer setTimeout(Runnable callback, Long delay, Object... args) {
         Integer id = createNewId();
-        ScheduledCompletableFuture<Object> future = createFuture(ZonedDateTime.now().plusNanos(delay * 1000000),
+        ScheduledCompletableFuture<Object> future = createFuture(id, ZonedDateTime.now().plusNanos(delay * 1000000),
                 callback);
         idSchedulerMapping.put(id, future);
         return id;
@@ -77,7 +82,7 @@ public class ThreadsafeTimers {
                 if (idSchedulerMapping.get(id) != null)
                     createLoopingFuture(id, delay, callback);
             }
-        }, ZonedDateTime.now().plusNanos(delay * 1000000).toInstant());
+        }, identifier + id, ZonedDateTime.now().plusNanos(delay * 1000000).toInstant());
         idSchedulerMapping.put(id, future);
     }
 
