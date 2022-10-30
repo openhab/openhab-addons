@@ -706,20 +706,35 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
                     "@text/offline.conf-error-no-ip-address");
         } else {
             if (hueBridge == null) {
-                if (HueBridgeConfig.HTTPS.equals(hueBridgeConfig.protocol)) {
-                    // register trustmanager service
-                    HueTlsTrustManagerProvider tlsTrustManagerProvider = new HueTlsTrustManagerProvider(
-                            ip + ":" + hueBridgeConfig.getPort(), hueBridgeConfig.useSelfSignedCertificate);
-                    serviceRegistration = FrameworkUtil.getBundle(getClass()).getBundleContext()
-                            .registerService(TlsTrustManagerProvider.class.getName(), tlsTrustManagerProvider, null);
-                }
-
                 hueBridge = new HueBridge(httpClient, ip, hueBridgeConfig.getPort(), hueBridgeConfig.protocol,
                         scheduler);
 
                 updateStatus(ThingStatus.UNKNOWN);
+
+                if (HueBridgeConfig.HTTPS.equals(hueBridgeConfig.protocol)) {
+                    scheduler.submit(() -> {
+                        // register trustmanager service
+                        HueTlsTrustManagerProvider tlsTrustManagerProvider = new HueTlsTrustManagerProvider(
+                                ip + ":" + hueBridgeConfig.getPort(), hueBridgeConfig.useSelfSignedCertificate);
+
+                        // Check before registering that the PEM certificate can be downloaded
+                        if (tlsTrustManagerProvider.getPEMTrustManager() == null) {
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                                    "@text/offline.conf-error-https-connection");
+                            return;
+                        }
+
+                        serviceRegistration = FrameworkUtil.getBundle(getClass()).getBundleContext().registerService(
+                                TlsTrustManagerProvider.class.getName(), tlsTrustManagerProvider, null);
+
+                        onUpdate();
+                    });
+                } else {
+                    onUpdate();
+                }
+            } else {
+                onUpdate();
             }
-            onUpdate();
         }
     }
 
