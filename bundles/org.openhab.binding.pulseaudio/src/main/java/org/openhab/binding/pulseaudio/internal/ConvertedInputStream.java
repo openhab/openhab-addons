@@ -62,7 +62,7 @@ public class ConvertedInputStream extends InputStream {
             length = ((FixedLengthAudioStream) innerInputStream).length();
         }
 
-        pcmNormalizedInputStream = getPCMStreamNormalized(getPCMStream(new BufferedInputStream(innerInputStream)));
+        pcmNormalizedInputStream = getPCMStreamNormalized(getPCMStream(innerInputStream));
     }
 
     @Override
@@ -127,16 +127,17 @@ public class ConvertedInputStream extends InputStream {
      * If necessary, this method convert MP3 to PCM, and try to
      * extract duration information.
      *
-     * @param resetableInnerInputStream A stream supporting reset operation
-     *            (reset is mandatory to parse formation without loosing data)
+     * @param innerInputStream The internal audio stream
      *
      * @return PCM stream
      * @throws UnsupportedAudioFileException
      * @throws IOException
      * @throws UnsupportedAudioFormatException
      */
-    private AudioInputStream getPCMStream(InputStream resetableInnerInputStream)
+    private AudioInputStream getPCMStream(AudioStream innerInputStream)
             throws UnsupportedAudioFileException, IOException, UnsupportedAudioFormatException {
+        // Wrap in a stream supporting reset operation (reset is mandatory to parse formation without loosing data)
+        InputStream resetableInnerInputStream = new BufferedInputStream(innerInputStream);
         if (AudioFormat.MP3.isCompatible(audioFormat)) {
             MpegAudioFileReader mpegAudioFileReader = new MpegAudioFileReader();
 
@@ -170,7 +171,27 @@ public class ConvertedInputStream extends InputStream {
             return mpegconverter.getAudioInputStream(convertFormat, sourceAIS);
         } else if (AudioFormat.WAV.isCompatible(audioFormat)) {
             // return the same input stream, but try to compute the duration first
-            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(resetableInnerInputStream);
+            AudioInputStream audioInputStream;
+            try {
+                audioInputStream = AudioSystem.getAudioInputStream(resetableInnerInputStream);
+            } catch (UnsupportedAudioFileException e) {
+                var audioFormat = innerInputStream.getFormat();
+                var frequency = audioFormat.getFrequency();
+                var bitDepth = audioFormat.getBitDepth();
+                var channels = audioFormat.getChannels();
+                var bitRate = audioFormat.getBitRate();
+                var bigEndian = audioFormat.isBigEndian();
+                if (frequency != null && bitDepth != null && channels != null && bitRate != null && bigEndian != null) {
+                    logger.debug("raw stream, using provided audio format");
+                    var jAudioFormat = new javax.sound.sampled.AudioFormat(
+                            new javax.sound.sampled.AudioFormat.Encoding(audioFormat.getCodec()), (float) frequency,
+                            bitDepth, channels, bitDepth / 8, bitRate, bigEndian);
+                    audioInputStream = new AudioInputStream(innerInputStream, jAudioFormat,
+                            length > 0 ? length : AudioSystem.NOT_SPECIFIED);
+                } else {
+                    throw e;
+                }
+            }
             if (length > 0) {
                 int frameSize = audioInputStream.getFormat().getFrameSize();
                 float frameRate = audioInputStream.getFormat().getFrameRate();
