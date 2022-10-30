@@ -72,7 +72,7 @@ public class ThreadsafeTimers {
             synchronized (lock) {
                 callback.run();
             }
-        }, identifier + ".setTimeout." + id, zdt.toInstant());
+        }, identifier + ".timeout." + id, zdt.toInstant());
     }
 
     /**
@@ -133,7 +133,7 @@ public class ThreadsafeTimers {
                 if (idSchedulerMapping.get(id) != null)
                     createLoopingFuture(id, delay, callback);
             }
-        }, identifier + ".setInterval." + id, ZonedDateTime.now().plusNanos(delay * 1000000).toInstant());
+        }, identifier + ".interval." + id, ZonedDateTime.now().plusNanos(delay * 1000000).toInstant());
         idSchedulerMapping.put(id, future);
     }
 
