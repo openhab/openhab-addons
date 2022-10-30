@@ -91,7 +91,7 @@ public class LGWebOSActions implements ThingActions {
         EXIT,
         DELETE,
         ENTER,
-        ENTER_ALT,
+        ENTER_NAV,
         HOME,
         OK
     }
@@ -211,7 +211,7 @@ public class LGWebOSActions implements ThingActions {
                 case ENTER:
                     getConnectedSocket().ifPresent(control -> control.sendEnter());
                     break;
-                case ENTER_ALT:
+                case ENTER_NAV:
                     getConnectedSocket().ifPresent(control -> control.executeMouse(s -> s.button(ButtonType.ENTER)));
                     break;
                 case HOME:

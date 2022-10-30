@@ -316,7 +316,10 @@ Parameters:
 
 | Name    | Description                                                                            |
 |---------|----------------------------------------------------------------------------------------|
-| button  | Can be one of UP, DOWN, LEFT, RIGHT, BACK, EXIT, DELETE, ENTER, ENTER_ALT, HOME, or OK |
+| button  | Can be one of UP, DOWN, LEFT, RIGHT, BACK, EXIT, DELETE, ENTER, ENTER_NAV, HOME, or OK |
+
+ENTER is to validate a text being filled in an input field.
+ENTER_NAV is to validate the currently selected item.
 
 Example:
 
