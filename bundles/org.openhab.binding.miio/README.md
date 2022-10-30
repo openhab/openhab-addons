@@ -258,7 +258,7 @@ Currently the miio binding supports more than 330 different models.
 | HUIZUO ZIWEI Ceiling Lamp          | miio:basic       | [huayi.light.zw131](#huayi-light-zw131) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | MiJia Rice Cooker                  | miio:unsupported | hunmi.cooker.normal3   | No           |            |
 | Jinxing Smart Air Conditioner      | miio:unsupported | idelan.aircondition.v1 | No           |            |
-| Xiaomi Robot Vacuum-Mop 2S         | miio:basic       | [ijai.vacuum.v19](#ijai-vacuum-v19) | Yes       |            |
+| Xiaomi Robot Vacuum-Mop 2S         | miio:basic       | [ijai.vacuum.v19](#ijai-vacuum-v19) | Yes          |            |
 | IKEA E27 white spectrum opal       | miio:lumi        | [ikea.light.led1545g12](#ikea-light-led1545g12) | Experimental | Needs to have the Xiaomi gateway configured in the binding as bridge.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | IKEA E27 white spectrum clear      | miio:lumi        | [ikea.light.led1546g12](#ikea-light-led1546g12) | Experimental | Needs to have the Xiaomi gateway configured in the binding as bridge.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | IKEA E14 white spectrum            | miio:lumi        | [ikea.light.led1536g5](#ikea-light-led1536g5) | Experimental | Needs to have the Xiaomi gateway configured in the binding as bridge.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
@@ -708,7 +708,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
-| battery              | Number               | Battery                                  |            |
+| battery              | Number               | Battery                                  | The device with firmware "4.1.8_9999" stops recognizing parameter "battery" in "get_value" command. The "battery" value request was extracted to separate command in order to keep backward compatibility to the devices with older firmware. |
 | pm25                 | Number               | PM2.5                                    |            |
 | co2                  | Number               | CO2                                      |            |
 | tvoc                 | Number               | tVOC                                     |            |
@@ -2604,15 +2604,14 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
 | power                | Switch               | Power                                    |            |
-| mode                 | String               | Mode                                     | Value mapping `["normal"="Normal","green"="Green"]` |
-| powerUsage           | Number:Power         | Power Consumption                        |            |
-| voltage              | Number:ElectricPotential | Voltage                                  |            |
+| powerUsage           | Number               | Power Consumption                        |            |
 | led                  | Switch               | wifi LED                                 |            |
-| power_price          | Number               | Power Price                              |            |
-| power_factor         | Number               | Power Factor                             |            |
-| current              | Number:ElectricCurrent | Current                                  |            |
-| elec_leakage         | Number:ElectricCurrent | Electic Leakage                          |            |
+| power_price          | Number               | power_price                              |            |
+| current              | Number               | Current                                  |            |
 | temperature          | Number:Temperature   | Temperature                              |            |
+| lp_autooff           | Number               | Low Power Auto Off                       |            |
+| lp_autooff_delay     | Number               | Low Power Limit Time                     |            |
+| lp_threshold         | Number               | Low Power Threshold                      |            |
 
 ### ROIDMI EVE vacuum (<a name="roidmi-vacuum-v60">roidmi.vacuum.v60</a>) Channels
 
@@ -4123,7 +4122,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | colorTemperature     | Number:Temperature   | Color Temperature                        |            |
 | colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | rgbColor             | Color                | RGB Color                                |            |
-| ambientBrightness    | Number               | Ambient Brightness                       |            |
+| ambientBrightness    | Dimmer               | Ambient Brightness                       |            |
 | ambientPower         | Switch               | Ambient Power                            |            |
 | ambientColor         | Color                | Ambient Color                            |            |
 | ambientColorTemperature | Number               | Ambient Color Temperature                |            |
@@ -4216,8 +4215,6 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | colorTemperature     | Number               | Color Temperature                        |            |
 | colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
-| customScene          | String               | Set Scene                                |            |
-| nightlightBrightness | Number               | Nightlight Brightness                    |            |
 
 ### Yeelight Lightstrip (<a name="yeelink-light-strip1">yeelink.light.strip1</a>) Channels
 
@@ -5194,21 +5191,15 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
 | power                | Switch               | Power                                    |            |
-| mode                 | String               | Mode                                     | Value mapping `["auto"="Auto","favorite"="Favorite","silent"="Silent","high"="High","medium"="Medium","idle"="Idle","strong"="Strong"]` |
+| mode                 | String               | Mode                                     |            |
 | humidity             | Number:Dimensionless | Humidity                                 |            |
 | aqi                  | Number               | Air Quality Index                        |            |
-| averageaqi           | Number               | Average Air Quality Index                |            |
+| brightness           | Dimmer               | Brightness                               |            |
 | led                  | Switch               | LED Status                               |            |
+| act_det              | Switch               | Air AutoDetect                           |            |
 | buzzer               | Switch               | Buzzer Status                            |            |
 | filtermaxlife        | Number               | Filter Max Life                          |            |
-| filterhours          | Number:Time          | Filter Hours used                        |            |
-| usedhours            | Number:Time          | Run Time                                 |            |
-| motorspeed           | Number               | Motor Speed                              |            |
-| filterlife           | Number               | Filter Life                              |            |
-| favoritelevel        | Number               | Favorite Level                           | Value mapping `["0"="Favorite 0","1"="Favorite 1","2"="Favorite 2","3"="Favorite 3","4"="Favorite 4","5"="Favorite 5","6"="Favorite 6","7"="Favorite 7","8"="Favorite 8","9"="Favorite 9","10"="Favorite 10","11"="Favorite 11","12"="Favorite 13","13"="Favorite 13","14"="Favorite 14","15"="Favorite 15"]` |
-| temperature          | Number:Temperature   | Temperature                              |            |
-| purifyvolume         | Number:Volume        | Purified Volume                          |            |
-| childlock            | Switch               | Child Lock                               |            |
+| filterlive           | Number               | Filter Life                              |            |
 
 ### Mi Air Purifier v2 (<a name="zhimi-airpurifier-v2">zhimi.airpurifier.v2</a>) Channels
 
@@ -8237,15 +8228,14 @@ note: Autogenerated example. Replace the id (powerstrip) in the channel with you
 ```
 Group G_powerstrip "CHINGMI Smart Power Strip v1" <status>
 Switch power "Power" (G_powerstrip) {channel="miio:basic:powerstrip:power"}
-String mode "Mode" (G_powerstrip) {channel="miio:basic:powerstrip:mode"}
-Number:Power powerUsage "Power Consumption" (G_powerstrip) {channel="miio:basic:powerstrip:powerUsage"}
-Number:ElectricPotential voltage "Voltage" (G_powerstrip) {channel="miio:basic:powerstrip:voltage"}
+Number powerUsage "Power Consumption" (G_powerstrip) {channel="miio:basic:powerstrip:powerUsage"}
 Switch led "wifi LED" (G_powerstrip) {channel="miio:basic:powerstrip:led"}
-Number power_price "Power Price" (G_powerstrip) {channel="miio:basic:powerstrip:power_price"}
-Number power_factor "Power Factor" (G_powerstrip) {channel="miio:basic:powerstrip:power_factor"}
-Number:ElectricCurrent current "Current" (G_powerstrip) {channel="miio:basic:powerstrip:current"}
-Number:ElectricCurrent elec_leakage "Electic Leakage" (G_powerstrip) {channel="miio:basic:powerstrip:elec_leakage"}
+Number power_price "power_price" (G_powerstrip) {channel="miio:basic:powerstrip:power_price"}
+Number current "Current" (G_powerstrip) {channel="miio:basic:powerstrip:current"}
 Number:Temperature temperature "Temperature" (G_powerstrip) {channel="miio:basic:powerstrip:temperature"}
+Number lp_autooff "Low Power Auto Off" (G_powerstrip) {channel="miio:basic:powerstrip:lp_autooff"}
+Number lp_autooff_delay "Low Power Limit Time" (G_powerstrip) {channel="miio:basic:powerstrip:lp_autooff_delay"}
+Number lp_threshold "Low Power Threshold" (G_powerstrip) {channel="miio:basic:powerstrip:lp_threshold"}
 ```
 
 ### ROIDMI EVE vacuum (roidmi.vacuum.v60) item file lines
@@ -10032,7 +10022,7 @@ Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delay
 Number:Temperature colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 Color rgbColor "RGB Color" (G_light) {channel="miio:basic:light:rgbColor"}
-Number ambientBrightness "Ambient Brightness" (G_light) {channel="miio:basic:light:ambientBrightness"}
+Dimmer ambientBrightness "Ambient Brightness" (G_light) {channel="miio:basic:light:ambientBrightness"}
 Switch ambientPower "Ambient Power" (G_light) {channel="miio:basic:light:ambientPower"}
 Color ambientColor "Ambient Color" (G_light) {channel="miio:basic:light:ambientColor"}
 Number ambientColorTemperature "Ambient Color Temperature" (G_light) {channel="miio:basic:light:ambientColorTemperature"}
@@ -10149,8 +10139,6 @@ Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delay
 Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
-String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
-Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
 ```
 
 ### Yeelight Lightstrip (yeelink.light.strip1) item file lines
@@ -11253,18 +11241,12 @@ Switch power "Power" (G_airpurifier) {channel="miio:basic:airpurifier:power"}
 String mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
 Number:Dimensionless humidity "Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:humidity"}
 Number aqi "Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:aqi"}
-Number averageaqi "Average Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:averageaqi"}
+Dimmer brightness "Brightness" (G_airpurifier) {channel="miio:basic:airpurifier:brightness"}
 Switch led "LED Status" (G_airpurifier) {channel="miio:basic:airpurifier:led"}
+Switch act_det "Air AutoDetect" (G_airpurifier) {channel="miio:basic:airpurifier:act_det"}
 Switch buzzer "Buzzer Status" (G_airpurifier) {channel="miio:basic:airpurifier:buzzer"}
 Number filtermaxlife "Filter Max Life" (G_airpurifier) {channel="miio:basic:airpurifier:filtermaxlife"}
-Number:Time filterhours "Filter Hours used" (G_airpurifier) {channel="miio:basic:airpurifier:filterhours"}
-Number:Time usedhours "Run Time" (G_airpurifier) {channel="miio:basic:airpurifier:usedhours"}
-Number motorspeed "Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motorspeed"}
-Number filterlife "Filter Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
-Number favoritelevel "Favorite Level" (G_airpurifier) {channel="miio:basic:airpurifier:favoritelevel"}
-Number:Temperature temperature "Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
-Number:Volume purifyvolume "Purified Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purifyvolume"}
-Switch childlock "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:childlock"}
+Number filterlive "Filter Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlive"}
 ```
 
 ### Mi Air Purifier v2 (zhimi.airpurifier.v2) item file lines
