@@ -70,8 +70,8 @@ Here are examples of values that could be available for your TV: airplay, amazon
 
 ### Remote Control Buttons
 
-The rcButton channel has only been tested on an LGUJ657A TV. and this is a list of button codes that are known to work with this device.
-This list has been compiled mostly through trial and error. Your mileage may vary.
+This is a list of button codes that are known to work with several LG WebOS TV models.
+This list has been compiled mostly through trial and error, but the codes applicable to your model may vary.
 
 | Code String | Description                                              |
 |-------------|----------------------------------------------------------|
