@@ -16,7 +16,6 @@ import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants
 
 import java.util.Set;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants;
 import org.openhab.core.library.types.OnOffType;
@@ -67,12 +66,12 @@ public class OpenWebNetAlarmHandler extends OpenWebNetThingHandler {
     }
 
     @Override
-    protected void handleChannelCommand(@NonNull ChannelUID channel, @NonNull Command command) {
+    protected void handleChannelCommand(ChannelUID channel, Command command) {
         logger.warn("Alarm.handleChannelCommand() Read only channel, unsupported command {}", command);
     }
 
     @Override
-    protected void requestChannelState(@NonNull ChannelUID channel) {
+    protected void requestChannelState(ChannelUID channel) {
         super.requestChannelState(channel);
         Where w = deviceWhere;
         ThingTypeUID thingType = thing.getThingTypeUID();
@@ -81,7 +80,11 @@ public class OpenWebNetAlarmHandler extends OpenWebNetThingHandler {
                 send(Alarm.requestSystemStatus());
                 lastAllDevicesRefreshTS = System.currentTimeMillis();
             } else {
-                send(Alarm.requestZoneStatus(w.value()));
+                if (w != null) {
+                    send(Alarm.requestZoneStatus(w.value()));
+                } else {
+                    logger.debug("null where while requesting state for channel {}", channel);
+                }
             }
         } catch (OWNException e) {
             logger.debug("Exception while requesting state for channel {}: {} ", channel, e.getMessage());
@@ -232,16 +235,15 @@ public class OpenWebNetAlarmHandler extends OpenWebNetThingHandler {
         } else {
             updateState(CHANNEL_ALARM_ZONE_ALARM_STATE, new StringType(TAMPERING));
         }
-
     }
 
     @Override
-    protected @NonNull Where buildBusWhere(@NonNull String wStr) throws IllegalArgumentException {
+    protected Where buildBusWhere(String wStr) throws IllegalArgumentException {
         return new WhereAlarm(wStr);
     }
 
     @Override
-    protected @NonNull String ownIdPrefix() {
+    protected String ownIdPrefix() {
         return Who.BURGLAR_ALARM.value().toString();
     }
 }
