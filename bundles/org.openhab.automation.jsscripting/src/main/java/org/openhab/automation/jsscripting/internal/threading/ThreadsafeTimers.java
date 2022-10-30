@@ -20,8 +20,8 @@ import org.openhab.core.scheduler.ScheduledCompletableFuture;
 import org.openhab.core.scheduler.Scheduler;
 
 /**
- * A replacement for the timer functionality of {@link org.openhab.core.model.script.actions.ScriptExecution
- * ScriptExecution} which controls multithreaded execution access to the single-threaded GraalJS contexts.
+ * A polyfill implementation of NodeJS timer functionality (<code>setTimeout()</code>, <code>setInterval()</code> and
+ * the cancel methods) which controls multithreaded execution access to the single-threaded GraalJS contexts.
  *
  * @author Florian Hotze - Initial contribution
  * @author Florian Hotze - Reimplementation to conform standard JS setTimeout and setInterval
@@ -72,7 +72,7 @@ public class ThreadsafeTimers {
             synchronized (lock) {
                 callback.run();
             }
-        }, identifier + id, zdt.toInstant());
+        }, identifier + id.toString(), zdt.toInstant());
     }
 
     /**
@@ -81,7 +81,8 @@ public class ThreadsafeTimers {
      *
      * @param callback function to run after the given delay
      * @param delay time in milliseconds that the timer should wait before the callback is executed
-     * @return Positive integer value which identifies the timer created; this value can be passed to <code>clearTimeout()</code> to cancel the timeout.
+     * @return Positive integer value which identifies the timer created; this value can be passed to
+     *         <code>clearTimeout()</code> to cancel the timeout.
      */
     public Integer setTimeout(Runnable callback, Long delay) {
         return setTimeout(callback, delay, new Object());
@@ -94,7 +95,8 @@ public class ThreadsafeTimers {
      * @param callback function to run after the given delay
      * @param delay time in milliseconds that the timer should wait before the callback is executed
      * @param args
-     * @return Positive integer value which identifies the timer created; this value can be passed to <code>clearTimeout()</code> to cancel the timeout.
+     * @return Positive integer value which identifies the timer created; this value can be passed to
+     *         <code>clearTimeout()</code> to cancel the timeout.
      */
     public Integer setTimeout(Runnable callback, Long delay, Object... args) {
         Integer id = createNewId();
@@ -108,7 +110,8 @@ public class ThreadsafeTimers {
      * <a href="https://developer.mozilla.org/en-US/docs/Web/API/clearTimeout"><code>clearTimeout()</code></a> polyfill.
      * Cancels a timeout previously created by <code>setTimeout()</code>.
      *
-     * @param timeoutId The identifier of the timeout you want to cancel. This ID was returned by the corresponding call to setTimeout().
+     * @param timeoutId The identifier of the timeout you want to cancel. This ID was returned by the corresponding call
+     *            to setTimeout().
      */
     public void clearTimeout(Integer timeoutId) {
         ScheduledCompletableFuture<Object> scheduled = idSchedulerMapping.get(timeoutId);
@@ -140,7 +143,8 @@ public class ThreadsafeTimers {
      *
      * @param callback function to run
      * @param delay time in milliseconds that the timer should delay in between executions of the callback
-     * @return Numeric, non-zero value which identifies the timer created; this value can be passed to <code>clearInterval()</code> to cancel the interval.
+     * @return Numeric, non-zero value which identifies the timer created; this value can be passed to
+     *         <code>clearInterval()</code> to cancel the interval.
      */
     public Integer setInterval(Runnable callback, Long delay) {
         return setInterval(callback, delay, new Object());
@@ -153,7 +157,8 @@ public class ThreadsafeTimers {
      * @param callback function to run
      * @param delay time in milliseconds that the timer should delay in between executions of the callback
      * @param args
-     * @return Numeric, non-zero value which identifies the timer created; this value can be passed to <code>clearInterval()</code> to cancel the interval.
+     * @return Numeric, non-zero value which identifies the timer created; this value can be passed to
+     *         <code>clearInterval()</code> to cancel the interval.
      */
     public Integer setInterval(Runnable callback, Long delay, Object... args) {
         Integer id = createNewId();
@@ -162,10 +167,12 @@ public class ThreadsafeTimers {
     }
 
     /**
-     * <a href="https://developer.mozilla.org/en-US/docs/Web/API/clearInterval"><code>clearInterval()</code></a> polyfill.
+     * <a href="https://developer.mozilla.org/en-US/docs/Web/API/clearInterval"><code>clearInterval()</code></a>
+     * polyfill.
      * Cancels a timed, repeating action which was previously established by a call to <code>setInterval()</code>.
      *
-     * @param intervalID The identifier of the repeated action you want to cancel. This ID was returned by the corresponding call to <code>setInterval()</code>.
+     * @param intervalID The identifier of the repeated action you want to cancel. This ID was returned by the
+     *            corresponding call to <code>setInterval()</code>.
      */
     public void clearInterval(Integer intervalID) {
         clearTimeout(intervalID);
