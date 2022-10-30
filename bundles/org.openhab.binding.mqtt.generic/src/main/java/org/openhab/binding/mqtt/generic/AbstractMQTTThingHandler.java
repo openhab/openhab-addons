@@ -105,7 +105,7 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler
      * @return A future that completes normal on success and exceptionally on any errors.
      */
     protected CompletableFuture<@Nullable Void> start(MqttBrokerConnection connection) {
-        return availabilityStates.values().parallelStream().map(cChannel -> cChannel.start(connection, scheduler, 0))
+        return availabilityStates.values().stream().map(cChannel -> cChannel.start(connection, scheduler, 0))
                 .collect(FutureCollector.allOf());
     }
 

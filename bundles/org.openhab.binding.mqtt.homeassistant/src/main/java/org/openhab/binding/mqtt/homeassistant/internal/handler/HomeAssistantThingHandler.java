@@ -21,8 +21,10 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.AbstractMQTTThingHandler;
@@ -195,7 +197,7 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
         // Start all known components and channels within the components and put the Thing offline
         // if any subscribing failed ( == broker connection lost)
         CompletableFuture<@Nullable Void> future = CompletableFuture.allOf(super.start(connection),
-                haComponents.values().parallelStream().map(e -> e.start(connection, scheduler, attributeReceiveTimeout))
+                haComponents.values().stream().map(e -> e.start(connection, scheduler, attributeReceiveTimeout))
                         .reduce(CompletableFuture.completedFuture(null), (a, v) -> a.thenCompose(b -> v)) // reduce to
                                                                                                           // one
                         .exceptionally(e -> {
@@ -212,10 +214,13 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
         if (started) {
             discoverComponents.stopDiscovery();
             delayedProcessing.join();
+            @NonNull
+            Collector<@NonNull CompletableFuture<@Nullable Void>, @NonNull Set<@NonNull CompletableFuture<@Nullable Void>>, @NonNull CompletableFuture<@Nullable Void>> allOfCollector = FutureCollector
+                    .allOf();
             // haComponents does not need to be synchronised -> the discovery thread is disabled
-            haComponents.values().parallelStream().map(AbstractComponent::stop) //
+            haComponents.values().stream().map(AbstractComponent::stop) //
                     // we need to join all the stops, otherwise they might not be done when start is called
-                    .collect(FutureCollector.allOf()).join();
+                    .collect(allOfCollector).join();
 
             started = false;
         }
