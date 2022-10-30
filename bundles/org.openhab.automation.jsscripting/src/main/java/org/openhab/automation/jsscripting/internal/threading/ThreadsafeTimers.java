@@ -31,7 +31,7 @@ public class ThreadsafeTimers {
     private final Scheduler scheduler;
     // Mapping of positive, non-zero integer values (used as timeoutID or intervalID) and the Scheduler
     private final HashMap<Integer, ScheduledCompletableFuture<Object>> idSchedulerMapping = new HashMap<>();
-    private String identifier = "noIdentifier.timerId.";
+    private String identifier = "noIdentifier";
 
     public ThreadsafeTimers(Object lock) {
         this.lock = lock;
@@ -44,7 +44,7 @@ public class ThreadsafeTimers {
      * @param identifier identifier to use
      */
     public void setIdentifier(String identifier) {
-        this.identifier = identifier + ".timerId.";
+        this.identifier = identifier;
     }
 
     /**
@@ -72,7 +72,7 @@ public class ThreadsafeTimers {
             synchronized (lock) {
                 callback.run();
             }
-        }, identifier + id.toString(), zdt.toInstant());
+        }, identifier + ".setTimeout." + id, zdt.toInstant());
     }
 
     /**
@@ -133,7 +133,7 @@ public class ThreadsafeTimers {
                 if (idSchedulerMapping.get(id) != null)
                     createLoopingFuture(id, delay, callback);
             }
-        }, identifier + id, ZonedDateTime.now().plusNanos(delay * 1000000).toInstant());
+        }, identifier + ".setInterval." + id, ZonedDateTime.now().plusNanos(delay * 1000000).toInstant());
         idSchedulerMapping.put(id, future);
     }
 
@@ -178,7 +178,7 @@ public class ThreadsafeTimers {
         clearTimeout(intervalID);
     }
 
-    public void cancelAll() {
+    public void clearAll() {
         idSchedulerMapping.forEach((id, future) -> {
             future.cancel(true);
         });
