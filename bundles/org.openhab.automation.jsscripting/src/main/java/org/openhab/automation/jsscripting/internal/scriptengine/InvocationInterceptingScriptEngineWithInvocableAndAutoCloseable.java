@@ -119,7 +119,8 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndAutoClos
     @Override
     public Object invokeFunction(String s, Object... objects) throws ScriptException, NoSuchMethodException {
         try {
-            // Synchronize multi-thread access to avoid exceptions when reloading a script file while the script is running
+            // Synchronize multi-thread access to avoid exceptions when reloading a script file while the script is
+            // running
             synchronized (lock) {
                 beforeInvocation();
                 return super.invokeFunction(s, objects);

@@ -30,7 +30,8 @@ public class ThreadsafeTimers {
     private final Object lock;
     private final Scheduler scheduler;
     // Mapping of positive, non-zero integer values (used as timeoutID or intervalID) and the Scheduler
-    private final HashMap<Integer, ScheduledCompletableFuture<Object>> idSchedulerMapping = new HashMap<>();
+    private final HashMap<Long, ScheduledCompletableFuture<Object>> idSchedulerMapping = new HashMap<>();
+    private long lastId = 0;
     private String identifier = "noIdentifier";
 
     public ThreadsafeTimers(Object lock) {
@@ -48,18 +49,6 @@ public class ThreadsafeTimers {
     }
 
     /**
-     * Creates a new and unused timerId.
-     *
-     * @return an unused timerId
-     */
-    private Integer createNewId() {
-        Integer id = idSchedulerMapping.size() + 1;
-        while (idSchedulerMapping.get(id) != null)
-            id++;
-        return id;
-    }
-
-    /**
      * Schedules a callback to run at a given time.
      *
      * @param id timerId to append to the identifier base for naming the scheduled job
@@ -67,7 +56,7 @@ public class ThreadsafeTimers {
      * @param callback function to run at the given time
      * @return a {@link ScheduledCompletableFuture}
      */
-    private ScheduledCompletableFuture<Object> createFuture(Integer id, ZonedDateTime zdt, Runnable callback) {
+    private ScheduledCompletableFuture<Object> createFuture(long id, ZonedDateTime zdt, Runnable callback) {
         return scheduler.schedule(() -> {
             synchronized (lock) {
                 callback.run();
@@ -84,7 +73,7 @@ public class ThreadsafeTimers {
      * @return Positive integer value which identifies the timer created; this value can be passed to
      *         <code>clearTimeout()</code> to cancel the timeout.
      */
-    public Integer setTimeout(Runnable callback, Long delay) {
+    public long setTimeout(Runnable callback, Long delay) {
         return setTimeout(callback, delay, new Object());
     }
 
@@ -98,8 +87,9 @@ public class ThreadsafeTimers {
      * @return Positive integer value which identifies the timer created; this value can be passed to
      *         <code>clearTimeout()</code> to cancel the timeout.
      */
-    public Integer setTimeout(Runnable callback, Long delay, Object... args) {
-        Integer id = createNewId();
+    public long setTimeout(Runnable callback, Long delay, Object... args) {
+        lastId++;
+        long id = lastId;
         ScheduledCompletableFuture<Object> future = createFuture(id, ZonedDateTime.now().plusNanos(delay * 1000000),
                 callback);
         idSchedulerMapping.put(id, future);
@@ -113,7 +103,7 @@ public class ThreadsafeTimers {
      * @param timeoutId The identifier of the timeout you want to cancel. This ID was returned by the corresponding call
      *            to setTimeout().
      */
-    public void clearTimeout(Integer timeoutId) {
+    public void clearTimeout(long timeoutId) {
         ScheduledCompletableFuture<Object> scheduled = idSchedulerMapping.get(timeoutId);
         scheduled.cancel(true);
         idSchedulerMapping.remove(timeoutId);
@@ -126,7 +116,7 @@ public class ThreadsafeTimers {
      * @param delay time in milliseconds that the timer should delay in between executions of the callback
      * @param callback function to run
      */
-    private void createLoopingFuture(Integer id, Long delay, Runnable callback) {
+    private void createLoopingFuture(long id, Long delay, Runnable callback) {
         ScheduledCompletableFuture<Object> future = scheduler.schedule(() -> {
             synchronized (lock) {
                 callback.run();
@@ -146,7 +136,7 @@ public class ThreadsafeTimers {
      * @return Numeric, non-zero value which identifies the timer created; this value can be passed to
      *         <code>clearInterval()</code> to cancel the interval.
      */
-    public Integer setInterval(Runnable callback, Long delay) {
+    public long setInterval(Runnable callback, Long delay) {
         return setInterval(callback, delay, new Object());
     }
 
@@ -160,8 +150,9 @@ public class ThreadsafeTimers {
      * @return Numeric, non-zero value which identifies the timer created; this value can be passed to
      *         <code>clearInterval()</code> to cancel the interval.
      */
-    public Integer setInterval(Runnable callback, Long delay, Object... args) {
-        Integer id = createNewId();
+    public long setInterval(Runnable callback, Long delay, Object... args) {
+        lastId++;
+        long id = lastId;
         createLoopingFuture(id, delay, callback);
         return id;
     }
@@ -174,7 +165,7 @@ public class ThreadsafeTimers {
      * @param intervalID The identifier of the repeated action you want to cancel. This ID was returned by the
      *            corresponding call to <code>setInterval()</code>.
      */
-    public void clearInterval(Integer intervalID) {
+    public void clearInterval(long intervalID) {
         clearTimeout(intervalID);
     }
 
