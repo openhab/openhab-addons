@@ -69,8 +69,7 @@ public class OpenhabGraalJSScriptEngine
     // final CommonJS search path for our library
     private static final Path NODE_DIR = Paths.get("node_modules");
 
-    // shared lock object for synchronization of multi-thread access
-    private final Object lock = new Object();
+    private final ThreadsafeTimers threadsafeTimers = new ThreadsafeTimers(lock);
 
     // these fields start as null because they are populated on first use
     private String engineIdentifier;
@@ -209,7 +208,7 @@ public class OpenhabGraalJSScriptEngine
         delegate.getBindings(ScriptContext.ENGINE_SCOPE).put(REQUIRE_WRAPPER_NAME, wrapRequireFn);
         // Injections into the JS runtime
         delegate.put("require", wrapRequireFn.apply((Function<Object[], Object>) delegate.get("require")));
-        delegate.put("ThreadsafeTimers", new ThreadsafeTimers(lock));
+        delegate.put("ThreadsafeTimers", threadsafeTimers);
 
         initialized = true;
 

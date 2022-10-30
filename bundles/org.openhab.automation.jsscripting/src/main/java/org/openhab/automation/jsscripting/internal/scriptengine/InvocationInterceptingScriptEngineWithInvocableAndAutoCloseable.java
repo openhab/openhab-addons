@@ -27,9 +27,13 @@ import javax.script.ScriptException;
  *
  * @param <T> The delegate class
  * @author Jonathan Gilbert - Initial contribution
+ * @author Florian Hotze - Synchronize multi-thread access to invokeFunction using a lock object
  */
 public abstract class InvocationInterceptingScriptEngineWithInvocableAndAutoCloseable<T extends ScriptEngine & Invocable & AutoCloseable>
         extends DelegatingScriptEngineWithInvocableAndAutocloseable<T> {
+
+    // shared lock object for synchronization of multi-thread access
+    public final Object lock = new Object();
 
     public InvocationInterceptingScriptEngineWithInvocableAndAutoCloseable(T delegate) {
         super(delegate);
@@ -115,8 +119,11 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndAutoClos
     @Override
     public Object invokeFunction(String s, Object... objects) throws ScriptException, NoSuchMethodException {
         try {
-            beforeInvocation();
-            return super.invokeFunction(s, objects);
+            // Synchronize multi-thread access to avoid exceptions when reloading a script file while the script is running
+            synchronized (lock) {
+                beforeInvocation();
+                return super.invokeFunction(s, objects);
+            }
         } catch (ScriptException se) {
             throw afterThrowsInvocation(se);
         }
