@@ -178,6 +178,10 @@ public class ThreadsafeTimers {
         clearTimeout(intervalID);
     }
 
+    /**
+     * Cancels all timed actions (i.e. timeouts and intervals) that were created with this instance of {@link ThreadsafeTimers}.
+     * Should be called in a de-initialization/unload hook of the script engine to avoid having scheduled jobs that are running endless.
+     */
     public void clearAll() {
         idSchedulerMapping.forEach((id, future) -> {
             future.cancel(true);
