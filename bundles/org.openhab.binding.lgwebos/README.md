@@ -318,8 +318,9 @@ Parameters:
 |---------|----------------------------------------------------------------------------------------|
 | button  | Can be one of UP, DOWN, LEFT, RIGHT, BACK, EXIT, DELETE, ENTER, ENTER_NAV, HOME, or OK |
 
-ENTER is to validate a text being filled in an input field.
-ENTER_NAV is to validate the currently selected item.
+DELETE will delete the last character when on-screen keyboard is displayed with focus in the text field.
+ENTER will remove the keyboard when on-screen keyboard is displayed with focus in the text field.
+ENTER_NAV will validate the currently selected item.
 
 Example:
 
