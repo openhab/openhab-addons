@@ -219,6 +219,11 @@ public class OpenhabGraalJSScriptEngine
         }
     }
 
+    @Override
+    public void close() {
+        threadsafeTimers.clearAll();
+    }
+
     /**
      * Tests if this is a root node directory, `/node_modules`, `C:\node_modules`, etc...
      *
