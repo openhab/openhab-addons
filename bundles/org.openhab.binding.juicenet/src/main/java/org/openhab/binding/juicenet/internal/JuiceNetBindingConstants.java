@@ -52,12 +52,12 @@ public class JuiceNetBindingConstants {
     public static final String DEVICE_TARGET_TIME = "targetTime";
     public static final String DEVICE_UNIT_TIME = "unitTime";
     public static final String DEVICE_TEMPERATURE = "temperature";
-    public static final String DEVICE_AMPS_LIMIT = "ampsLimit";
-    public static final String DEVICE_AMPS_CURRENT = "ampsCurrent";
+    public static final String DEVICE_AMPS_LIMIT = "currentLimit";
+    public static final String DEVICE_AMPS_CURRENT = "current";
     public static final String DEVICE_VOLTAGE = "voltage";
     public static final String DEVICE_ENERGY = "energy";
     public static final String DEVICE_SAVINGS = "savings";
-    public static final String DEVICE_POWER = "chargingPower";
+    public static final String DEVICE_POWER = "power";
     public static final String DEVICE_CHARGING_TIME = "secondsCharging";
     public static final String DEVICE_PLUGINENERGY = "energyAtPlugin";
     public static final String DEVICE_ENERGYTOADD = "energyToAdd";

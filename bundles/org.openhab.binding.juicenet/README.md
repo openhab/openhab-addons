@@ -25,33 +25,34 @@ Once, the JuiceNet Account thing has been created, all JuiceBox EV-chargers asso
 
 | channel           | type              | read-only | description                  |
 |----------         |--------           |------------------------------|
+| name              | String            | Y         | Name of device.|
 | chargingState     | String            | N         | Current charging state (Start Charging, Smart Charging, Stop Charging). |
 | state             | String            | Y         | This is the current device state (Available, Plugged-In, Charging, Error, Disconnected).  |
 | override          | Switch            | Y         | Smart charging is overridden. |
-| chargingTimeL eft | Number:Time       | Y         | Charging time left (seconds). |
+| chargingTimeLeft | Number:Time        | Y         | Charging time left (seconds). |
 | plugUnplugTime    | DateTime          | Y         | Last time of either plug-in or plug-out. |
 | targetTime        | DateTime          | N         | “Start charging” start time, or time to start when overriding smart charging. |
 | unitTime          | DateTime          | Y         | Current time on the unit. |
 | temperature       | Number:Temperature | Y        | Current temperature at the unit. |
-| ampsLimit         | Number:ElectricCurrent | N    | Max charging current allowed. (A) |
-| ampsCurrent       | Number:ElectricCurrent | Y    | Current charging current. (A) |
+| currentLimit      | Number:ElectricCurrent | N    | Max charging current allowed. (A) |
+| current           | Number:ElectricCurrent | Y    | Current charging current. (A) |
 | voltage           | Number:ElectricPotential | Y  | Current voltage. (V) |
-| whEnergy          | Number:Energy     | Y         | Current amount of energy poured to the vehicle. (Wh) |
+| energy            | Number:Energy     | Y         | Current amount of energy poured to the vehicle. |
 | savings           | Number            | Y         | Current session EV savings. |
-| wattPower         | Number:Power      | Y         | Current charging power. (W) |
-| secondsCharging   | Number:Time       | Y         | Charging time since plug-in time. (s) |
-| whEnergyAtPlugin  | Number:Energy     | Y         | Energy value at the plugging time. (Wh) |
-| whEnergyToAdd     | Number:Energy     | N         | Amount of energy to be added in current session. (Wh) |
-| lifetimeWHEnergyType | Number:Energy  | Y         | Total energy poured to vehicles during lifetime. (Wh) |
+| power             | Number:Power      | Y         | Current charging power. |
+| secondsCharging   | Number:Time       | Y         | Charging time since plug-in time. |
+| energyAtPlugin    | Number:Energy     | Y         | Energy value at the plugging time. |
+| energyToAdd       | Number:Energy     | N         | Amount of energy to be added in current session. |
+| lifetimeEnergy    | Number:Energy     | Y         | Total energy delivered to vehicles during lifetime. |
 | lifetimeSavings   | Number            | Y         | EV driving saving during lifetime. |
 | gasCost           | Number            | Y         | Cost of gasoline used in savings calculations. |
 | fuelConsumption   | Number            | Y         | Miles per gallon used in savings calculations. |
 | ecost             | Number            | Y         | Cost of electricity from utility company. ($/kWh) |
-| whPerMile         | Number            | Y         | Watts per mile. |
+| energyPerMile     | Number            | Y         | Energy per mile. |
 | carDescription    | String            | Y         | Car description of vehicle currently or last charged. |
-| carBatterySize    | Number:Energy     | Y         | Car battery pack size. (Wh) |
+| carBatterySize    | Number:Energy     | Y         | Car battery pack size. |
 | carBatteryRange   | Number:Length     | Y         | Car range. |
-| carChargingRate   | Number:Power      | Y         | Car charging rate. (W) |
+| carChargingRate   | Number:Power      | Y         | Car charging rate. |
 
 ## Widget
 

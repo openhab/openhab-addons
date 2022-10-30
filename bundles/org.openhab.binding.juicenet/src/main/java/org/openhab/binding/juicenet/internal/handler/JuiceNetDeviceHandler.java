@@ -16,7 +16,6 @@ import static org.openhab.binding.juicenet.internal.JuiceNetBindingConstants.*;
 
 import java.io.IOException;
 import java.time.Instant;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoField;
 import java.util.Map;
@@ -106,7 +105,6 @@ public class JuiceNetDeviceHandler extends BaseThingHandler {
         } else if (e instanceof ExecutionException) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.toString());
         } else {
-            logger.error("Unhandled API Exception: {}", e.toString());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.NONE, e.toString());
         }
     }
@@ -278,10 +276,7 @@ public class JuiceNetDeviceHandler extends BaseThingHandler {
     }
 
     protected ZonedDateTime toZonedDateTime(long localEpochSeconds) {
-        Instant instant = Instant.ofEpochSecond(localEpochSeconds);
-        ZonedDateTime zdt = instant.atZone(ZoneId.of("UTC"));
-
-        return zdt.withZoneSameLocal(this.timeZoneProvider.getTimeZone());
+        return Instant.ofEpochSecond(localEpochSeconds).atZone(timeZoneProvider.getTimeZone());
     }
 
     protected void refreshStatusChannels() {
@@ -299,7 +294,7 @@ public class JuiceNetDeviceHandler extends BaseThingHandler {
         updateState(DEVICE_CHARGING_TIME_LEFT, new QuantityType<>(deviceStatus.charging_time_left, Units.SECOND));
         updateState(DEVICE_PLUG_UNPLUG_TIME, new DateTimeType(toZonedDateTime(deviceStatus.plug_unplug_time)));
         updateState(DEVICE_TARGET_TIME, new DateTimeType(toZonedDateTime(deviceStatus.target_time)));
-        updateState(DEVICE_UNIT_TIME, new DateTimeType(toZonedDateTime(deviceStatus.unit_time)));
+        updateState(DEVICE_UNIT_TIME, new DateTimeType(toZonedDateTime(deviceStatus.utc_time)));
         updateState(DEVICE_TEMPERATURE, new QuantityType<>(deviceStatus.temperature, SIUnits.CELSIUS));
         updateState(DEVICE_AMPS_LIMIT, new QuantityType<>(deviceStatus.charging.amps_limit, Units.AMPERE));
         updateState(DEVICE_AMPS_CURRENT, new QuantityType<>(deviceStatus.charging.amps_current, Units.AMPERE));

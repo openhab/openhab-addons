@@ -38,7 +38,7 @@ public class JuiceNetHttp {
     private final Logger logger = LoggerFactory.getLogger(JuiceNetHttp.class);
     private final HttpClient httpClient;
 
-    public JuiceNetHttp(HttpClient httpClient) throws Exception {
+    public JuiceNetHttp(HttpClient httpClient) {
         this.httpClient = httpClient;
     }
 

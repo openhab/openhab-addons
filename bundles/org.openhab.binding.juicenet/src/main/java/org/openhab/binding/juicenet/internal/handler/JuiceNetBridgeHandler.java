@@ -80,15 +80,7 @@ public class JuiceNetBridgeHandler extends BaseBridgeHandler {
 
         logger.trace("JuiceNetBridgeHandler:initialize");
 
-        try {
-            api.initialize(config.apiToken, this.getThing().getUID(), this.httpClient);
-        } catch (JuiceNetApiException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.toString());
-            return;
-        } catch (Exception e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.toString());
-            return;
-        }
+        api.initialize(config.apiToken, this.getThing().getUID(), this.httpClient);
 
         updateStatus(ThingStatus.UNKNOWN);
 
@@ -129,7 +121,6 @@ public class JuiceNetBridgeHandler extends BaseBridgeHandler {
         } else if (e instanceof ExecutionException) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.toString());
         } else {
-            logger.error("Unhandled API Exception: {}", e.toString());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.NONE, e.toString());
         }
     }

@@ -53,7 +53,7 @@ public class JuiceNetApi {
     @Nullable
     protected ThingUID bridgeUID;
 
-    public void initialize(String apiToken, ThingUID bridgeUID, HttpClient httpClient) throws Exception {
+    public void initialize(String apiToken, ThingUID bridgeUID, HttpClient httpClient) {
         this.apiToken = apiToken;
         this.bridgeUID = bridgeUID;
 
@@ -234,6 +234,7 @@ public class JuiceNetApi {
         public Long plug_unplug_time = (long) 0;
         public Long target_time = (long) 0;
         public Long unit_time = (long) 0;
+        public Long utc_time = (long) 0;
         public long default_target_time = 0;
         public int car_id;
         public int temperature;
