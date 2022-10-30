@@ -69,7 +69,7 @@ The devices support the following channels:
 | currenttrack        | String    | R           | Name of the current track or radio station currently playing                                                                                              | all                                  |
 | currenttrackuri     | String    | R           | URI of the current track                                                                                                                                  | all                                  |
 | currenttransporturi | String    | R           | URI of the current AV transport                                                                                                                           | all                                  |
-| favorite            | String    | W           | Play the given favorite entry. The favorite entry has to be predefined in the Sonos Controller app                                                        | all                                  |
+| favorite            | String    | W           | Play the given favorite entry. The favorite entry has to be predefined in the Sonos Controller app. Use the exact name of the favorite shown in the app for start playing from rules.                                                      | all                                  |
 | heightlevel         | Number    | RW          | Set or get the height level adjustment (value in range -10 / 10)                                                                                          | Arc, Arc SL                          |
 | led                 | Switch    | RW          | Set or get the status of the white LED on the front of the Zone Player                                                                                    | all                                  |
 | linein              | Switch    | R           | Indicator set to ON when the line-in of the Zone Player is connected                                                                                      | PLAY5, Five, CONNECT, CONNECTAMP, PLAYBAR, PLAYBASE, Beam, Port |
@@ -149,6 +149,7 @@ Switch Sonos_Mute         "Mute"             <soundvolume_mute> (Sonos) {channel
 Switch Sonos_LED          "LED"              <switch>           (Sonos) {channel="sonos:PLAY1:living:led"}
 String Sonos_CurrentTrack "Now playing [%s]" <text>             (Sonos) {channel="sonos:PLAY1:living:currenttrack"}
 String Sonos_State        "Status [%s]"      <text>             (Sonos) {channel="sonos:PLAY1:living:state"}
+String Sonos_Favorite     "Favorite [%s]"    <text>             (Sonos) {channel="sonos:PLAY1:living:favorite"}
 ```
 
 demo.sitemap:
@@ -165,4 +166,15 @@ sitemap demo label="Main Menu"
 			Text    item=Sonos_State
 		}
 }
+```
+
+sonos.rules:
+
+```
+rule "Sonos Play Favorite"
+    when Item test changed to ON
+    then
+        Sonos_Favorite.sendCommand("egoFM")
+	Sonos_Volume.sendCommand(30)
+end
 ```
