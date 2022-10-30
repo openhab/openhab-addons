@@ -19,6 +19,8 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -36,8 +38,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link OpenWebNetAlarmHandler} is responsible for handling commands/messages for Alarm Central Unit and zones. It
- * extends the abstract {@link OpenWebNetThingHandler}.
+ * The {@link OpenWebNetAlarmHandler} is responsible for handling
+ * commands/messages for Alarm system and zones. It extends the abstract
+ * {@link OpenWebNetThingHandler}.
  *
  * @author Massimo Valla - Initial contribution
  */
@@ -50,13 +53,22 @@ public class OpenWebNetAlarmHandler extends OpenWebNetThingHandler {
 
     private static long lastAllDevicesRefreshTS = 0; // ts when last all device refresh was sent for this handler
 
+    private static final String BATTERY_OK = "OK";
+    private static final String BATTERY_FAULT = "FAULT";
+    private static final String BATTERY_UNLOADED = "UNLOADED";
+
+    private static final String SILENT = "SILENT";
+    private static final String INTRUSION = "INTRUSION";
+    private static final String ANTI_PANIC = "ANTI_PANIC";
+    private static final String TAMPERING = "TAMPERING";
+
     public OpenWebNetAlarmHandler(Thing thing) {
         super(thing);
     }
 
     @Override
     protected void handleChannelCommand(@NonNull ChannelUID channel, @NonNull Command command) {
-        logger.warn("handleChannelCommand() Read only channel, unsupported command {}", command);
+        logger.warn("Alarm.handleChannelCommand() Read only channel, unsupported command {}", command);
     }
 
     @Override
@@ -65,7 +77,7 @@ public class OpenWebNetAlarmHandler extends OpenWebNetThingHandler {
         Where w = deviceWhere;
         ThingTypeUID thingType = thing.getThingTypeUID();
         try {
-            if (THING_TYPE_BUS_ALARM_CENTRAL_UNIT.equals(thingType)) {
+            if (THING_TYPE_BUS_ALARM_SYSTEM.equals(thingType)) {
                 send(Alarm.requestSystemStatus());
                 lastAllDevicesRefreshTS = System.currentTimeMillis();
             } else {
@@ -94,7 +106,7 @@ public class OpenWebNetAlarmHandler extends OpenWebNetThingHandler {
             }
         } else {
             logger.debug("--- refreshDevice() : refreshing SINGLE... ({})", thing.getUID());
-            requestChannelState(new ChannelUID(thing.getUID(), CHANNEL_ALARM));
+            requestChannelState(new ChannelUID(thing.getUID(), CHANNEL_ALARM_SYSTEM_STATE));
         }
     }
 
@@ -103,7 +115,7 @@ public class OpenWebNetAlarmHandler extends OpenWebNetThingHandler {
         logger.debug("handleMessage({}) for thing: {}", msg, thing.getUID());
         super.handleMessage(msg);
         ThingTypeUID thingType = thing.getThingTypeUID();
-        if (THING_TYPE_BUS_ALARM_CENTRAL_UNIT.equals(thingType)) {
+        if (THING_TYPE_BUS_ALARM_SYSTEM.equals(thingType)) {
             updateCU((Alarm) msg);
         } else {
             updateZone((Alarm) msg);
@@ -112,32 +124,115 @@ public class OpenWebNetAlarmHandler extends OpenWebNetThingHandler {
 
     private void updateCU(Alarm msg) {
         WhatAlarm w = (WhatAlarm) msg.getWhat();
+        if (w == null) {
+            logger.debug("Alarm.updateCU() WHAT is null. Frame={}", msg);
+            return;
+        }
         switch (w) {
-            case START_PROGRAMMING:
-            case STOP_PROGRAMMING:
-                break;
             case SYSTEM_ACTIVE:
             case SYSTEM_INACTIVE:
             case SYSTEM_MAINTENANCE:
-                break;
-            case SYSTEM_BATTERY_FAULT:
-                break;
-            case SYSTEM_BATTERY_OK:
-            case SYSTEM_BATTERY_UNLOADED:
+                updateAlarmSystemState(w);
                 break;
             case SYSTEM_DISENGAGED:
             case SYSTEM_ENGAGED:
+                updateAlarmSystemArmed(w);
+                break;
+            case SYSTEM_BATTERY_FAULT:
+            case SYSTEM_BATTERY_OK:
+            case SYSTEM_BATTERY_UNLOADED:
+                updateBatteryState(w);
                 break;
             case SYSTEM_NETWORK_ERROR:
             case SYSTEM_NETWORK_OK:
+                updateNetworkState(w);
                 break;
+            case START_PROGRAMMING:
+            case STOP_PROGRAMMING:
+            case DELAY_END:
+            case NO_CONNECTION_TO_DEVICE:
             default:
-                break;
+                logger.debug("Alarm.updateCU() Ignoring unsupported WHAT {}. Frame={}", msg.getWhat(), msg);
+        }
+    }
+
+    private void updateAlarmSystemState(WhatAlarm w) {
+        if (w == Alarm.WhatAlarm.SYSTEM_ACTIVE) {
+            updateState(CHANNEL_ALARM_SYSTEM_STATE, OnOffType.ON);
+        } else {
+            updateState(CHANNEL_ALARM_SYSTEM_STATE, OnOffType.OFF);
+        }
+    }
+
+    private void updateAlarmSystemArmed(WhatAlarm w) {
+        if (w == Alarm.WhatAlarm.SYSTEM_ENGAGED) {
+            updateState(CHANNEL_ALARM_SYSTEM_ARMED, OnOffType.ON);
+        } else {
+            updateState(CHANNEL_ALARM_SYSTEM_ARMED, OnOffType.OFF);
+        }
+    }
+
+    private void updateNetworkState(WhatAlarm w) {
+        if (w == Alarm.WhatAlarm.SYSTEM_NETWORK_ERROR) {
+            updateState(CHANNEL_ALARM_SYSTEM_NETWORK, OnOffType.OFF);
+        } else {
+            updateState(CHANNEL_ALARM_SYSTEM_NETWORK, OnOffType.ON);
+        }
+    }
+
+    private void updateBatteryState(WhatAlarm w) {
+        if (w == Alarm.WhatAlarm.SYSTEM_BATTERY_OK) {
+            updateState(CHANNEL_ALARM_SYSTEM_BATTERY, new StringType(BATTERY_OK));
+        } else if (w == Alarm.WhatAlarm.SYSTEM_BATTERY_UNLOADED) {
+            updateState(CHANNEL_ALARM_SYSTEM_BATTERY, new StringType(BATTERY_UNLOADED));
+        } else {
+            updateState(CHANNEL_ALARM_SYSTEM_BATTERY, new StringType(BATTERY_FAULT));
         }
     }
 
     private void updateZone(Alarm msg) {
-        // TODO Auto-generated method stub
+        WhatAlarm w = (WhatAlarm) msg.getWhat();
+        if (w == null) {
+            logger.debug("Alarm.updateZone() WHAT is null. Frame={}", msg);
+            return;
+        }
+        switch (w) {
+            case ZONE_DISENGAGED:
+            case ZONE_ENGAGED:
+                updateZoneArmed(w);
+                break;
+            case ZONE_ALARM_INTRUSION:
+            case ZONE_ALARM_TAMPERING:
+            case ZONE_ALARM_ANTI_PANIC:
+            case ZONE_ALARM_SILENT:
+                updateZoneAlarmState(w);
+                break;
+            case ZONE_ALARM_TECHNICAL:// not handled for now
+            case ZONE_ALARM_TECHNICAL_RESET:
+            default:
+                logger.debug("Alarm.updateZone() Ignoring unsupported WHAT {}. Frame={}", msg.getWhat(), msg);
+        }
+    }
+
+    private void updateZoneArmed(WhatAlarm w) {
+        if (w == Alarm.WhatAlarm.ZONE_ENGAGED) {
+            updateState(CHANNEL_ALARM_ZONE_ARMED, OnOffType.ON);
+        } else {
+            updateState(CHANNEL_ALARM_ZONE_ARMED, OnOffType.OFF);
+        }
+    }
+
+    private void updateZoneAlarmState(WhatAlarm w) {
+        if (w == Alarm.WhatAlarm.ZONE_ALARM_SILENT) {
+            updateState(CHANNEL_ALARM_ZONE_ALARM_STATE, new StringType(SILENT));
+        } else if (w == Alarm.WhatAlarm.ZONE_ALARM_INTRUSION) {
+            updateState(CHANNEL_ALARM_ZONE_ALARM_STATE, new StringType(INTRUSION));
+        } else if (w == Alarm.WhatAlarm.ZONE_ALARM_ANTI_PANIC) {
+            updateState(CHANNEL_ALARM_ZONE_ALARM_STATE, new StringType(ANTI_PANIC));
+        } else {
+            updateState(CHANNEL_ALARM_ZONE_ALARM_STATE, new StringType(TAMPERING));
+        }
+
     }
 
     @Override

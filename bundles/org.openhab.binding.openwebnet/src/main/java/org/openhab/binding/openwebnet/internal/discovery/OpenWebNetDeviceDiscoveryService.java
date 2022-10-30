@@ -31,6 +31,7 @@ import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openwebnet4j.OpenDeviceType;
 import org.openwebnet4j.message.BaseOpenMessage;
 import org.openwebnet4j.message.Where;
+import org.openwebnet4j.message.WhereAlarm;
 import org.openwebnet4j.message.WhereThermo;
 import org.openwebnet4j.message.WhereZigBee;
 import org.openwebnet4j.message.Who;
@@ -90,12 +91,13 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
      * Create and notify to Inbox a new DiscoveryResult based on WHERE,
      * OpenDeviceType and BaseOpenMessage
      *
-     * @param where the discovered device's address (WHERE)
+     * @param where      the discovered device's address (WHERE)
      * @param deviceType {@link OpenDeviceType} of the discovered device
-     * @param message the OWN message received that identified the device
-     *            (optional)
+     * @param message    the OWN message received that identified the device
+     *                   (optional)
      */
-    public void newDiscoveryResult(Where where, OpenDeviceType deviceType, @Nullable BaseOpenMessage baseMsg) {
+    public void newDiscoveryResult(@Nullable Where where, OpenDeviceType deviceType,
+            @Nullable BaseOpenMessage baseMsg) {
         logger.debug("newDiscoveryResult() WHERE={}, deviceType={}", where, deviceType);
         ThingTypeUID thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_GENERIC_DEVICE; // generic device
         String thingLabel = OpenWebNetBindingConstants.THING_LABEL_GENERIC_DEVICE;
@@ -190,8 +192,8 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
                 break;
             }
             case SCS_ALARM_CENTRAL_UNIT: {
-                thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_BUS_ALARM_CENTRAL_UNIT;
-                thingLabel = OpenWebNetBindingConstants.THING_LABEL_BUS_ALARM_CENTRAL_UNIT;
+                thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_BUS_ALARM_SYSTEM;
+                thingLabel = OpenWebNetBindingConstants.THING_LABEL_BUS_ALARM_SYSTEM;
                 deviceWho = Who.BURGLAR_ALARM;
                 break;
             }
@@ -209,6 +211,10 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
                 if (baseMsg != null) {
                     deviceWho = baseMsg.getWho();
                 }
+        }
+
+        if (OpenWebNetBindingConstants.THING_TYPE_BUS_ALARM_SYSTEM.equals(thingTypeUID) && where == null) {
+            where = new WhereAlarm("0");
         }
 
         String ownId = bridgeHandler.ownIdFromWhoWhere(deviceWho, where);

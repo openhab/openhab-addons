@@ -4,23 +4,26 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Thing for BUS Alarm Central Unit -->
-	<thing-type id="bus_alarm_cu">
+	<!-- Thing for BUS Alarm System -->
+	<thing-type id="bus_alarm_system">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bus_gateway"/>
 		</supported-bridge-type-refs>
 
-		<label>Alarm Central Unit</label>
-		<description>A OpenWebNet BUS/SCS alarm central unit</description>
+		<label>Alarm System</label>
+		<description>A OpenWebNet BUS/SCS alarm system</description>
 
 		<channels>
 			<!-- read only -->
-			<channel id="state" typeId="alarmState"/>
+			<channel id="state" typeId="alarmSystemState"/>
+			<channel id="armed" typeId="armedState"/>
+			<channel id="network" typeId="alarmNetwork"/>
+			<channel id="battery" typeId="alarmBattery"/>
 		</channels>
 
 		<properties>
 			<property name="vendor">BTicino/Legrand</property>
-			<property name="model">Alarm Central Unit</property>
+			<property name="model">Alarm System</property>
 			<property name="ownDeviceType">5100</property>
 		</properties>
 
@@ -29,7 +32,7 @@
 		<config-description>
 			<parameter name="where" type="text" readOnly="true">
 				<label>OpenWebNet Address (where)</label>
-				<description>The Central Unit can only assume where=0</description>
+				<description>The Alarm system has no where address (set where to 0 as default)</description>
 				<default>0</default>
 			</parameter>
 		</config-description>

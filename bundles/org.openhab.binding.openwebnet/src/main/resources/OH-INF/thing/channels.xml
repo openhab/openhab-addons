@@ -410,46 +410,52 @@
 	</channel-type>
 
 	<!-- Alarm channels -->
-	<channel-type id="alarmState">
-		<item-type>String</item-type>
-		<label>Alarm State</label>
-		<description>Alarm State</description>
-		<state readOnly="true">
-			<options>
-				<option value="ARMED">Armed</option>
-				<option value="DISARMED">Disarmed</option>
-			</options>
-		</state>
-	</channel-type>
+    <channel-type id="alarmSystemState">
+        <item-type>Switch</item-type>
+        <label>System State</label>
+        <description>Alarm system is active (ON) or inactive (OFF) (read only)</description>
+        <state readOnly="true" pattern="%s" />
+    </channel-type>
 
-	<channel-type id="alarmSystemBattery">
-		<item-type>String</item-type>
-		<label>Alarm System Battery</label>
-		<description>Alarm System Battery</description>
-		<state readOnly="true">
-			<options>
-				<option value="BATTERY_OK">OK</option>
-				<option value="BATTERY_FAULT">Fault</option>
-				<option value="BATTERY_UNLOADED">Unloaded</option>
-			</options>
-		</state>
-	</channel-type>
+    <channel-type id="armedState">
+		<item-type>Switch</item-type>
+		<label>Armed State</label>
+		<description>Alarm is armed (ON) or disarmed (OFF) (read only)</description>
+		<state readOnly="true" pattern="%s" />
+    </channel-type>
 
-	<channel-type id="zoneAlarm">
-		<item-type>String</item-type>
-		<label>Zone Alarm</label>
-		<description>Zone Alarm</description>
-		<state readOnly="true">
-			<options>
-				<option value="TECHNICAL">Technical</option>
-				<option value="TECHNICAL_RESET">Technical Reset</option>
-				<option value="INTRUSION">Intrusion</option>
-				<option value="TAMPERING">Tampering</option>
-				<option value="ANTI_PANIC">Anti Panic</option>
-				<option value="SILENT">Silent</option>
-			</options>
-		</state>
-	</channel-type>
+    <channel-type id="alarmNetwork">
+        <item-type>Switch</item-type>
+        <label>Network State</label>
+        <description>Alarm network state (ON = network ok, OFF = no network) (read only)</description>
+        <state readOnly="true" pattern="%s" />
+    </channel-type>
 
+    <channel-type id="alarmBattery">
+        <item-type>String</item-type>
+        <label>Battery State</label>
+        <description>Alarm battery state (read only)</description>
+        <state>
+            <options>
+                <option value="OK">Ok</option>
+                <option value="FAULT">Fault</option>
+                <option value="UNLOADED">Unloaded</option>
+            </options>
+        </state>
+    </channel-type>
+
+    <channel-type id="zoneAlarm">
+        <item-type>String</item-type>
+        <label>Zone Alarm</label>
+        <description>Current alarm for the zone (read only)</description>
+        <state readOnly="true">
+            <options>
+                <option value="INTRUSION">Intrusion</option>
+                <option value="TAMPERING">Tampering</option>
+                <option value="ANTI_PANIC">Anti Panic</option>
+                <option value="SILENT">Silent</option>
+            </options>
+        </state>
+    </channel-type>
 
 </thing:thing-descriptions>

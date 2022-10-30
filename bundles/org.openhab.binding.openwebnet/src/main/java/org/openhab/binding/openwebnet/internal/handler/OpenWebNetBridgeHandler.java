@@ -68,7 +68,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link OpenWebNetBridgeHandler} is responsible for handling communication with gateways and handling events.
+ * The {@link OpenWebNetBridgeHandler} is responsible for handling communication
+ * with gateways and handling events.
  *
  * @author Massimo Valla - Initial contribution, Lighting, Automation, Scenario
  * @author Andrea Conte - Energy management, Thermoregulation
@@ -96,7 +97,8 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = OpenWebNetBindingConstants.BRIDGE_SUPPORTED_THING_TYPES;
 
     // ConcurrentHashMap of devices registered to this BridgeHandler
-    // association is: ownId (String) -> OpenWebNetThingHandler, with ownId = WHO.WHERE
+    // association is: ownId (String) -> OpenWebNetThingHandler, with ownId =
+    // WHO.WHERE
     private Map<String, @Nullable OpenWebNetThingHandler> registeredDevices = new ConcurrentHashMap<>();
     private Map<String, Long> discoveringDevices = new ConcurrentHashMap<>();
 
@@ -297,10 +299,10 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     public void onNewDevice(@Nullable Where w, @Nullable OpenDeviceType deviceType, @Nullable BaseOpenMessage message) {
         OpenWebNetDeviceDiscoveryService discService = deviceDiscoveryService;
         if (discService != null) {
-            if (w != null && deviceType != null) {
+            if (deviceType != null) {
                 discService.newDiscoveryResult(w, deviceType, message);
             } else {
-                logger.warn("onNewDevice with null where/deviceType, msg={}", message);
+                logger.warn("onNewDevice with null deviceType, msg={}", message);
             }
         } else {
             logger.warn("onNewDevice but null deviceDiscoveryService");
@@ -313,7 +315,8 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     }
 
     /**
-     * Notifies that the scan has been stopped/aborted by OpenWebNetDeviceDiscoveryService
+     * Notifies that the scan has been stopped/aborted by
+     * OpenWebNetDeviceDiscoveryService
      */
     public void scanStopped() {
         scanIsActive = false;
@@ -329,7 +332,8 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         }
         // we support these types only
         if (baseMsg instanceof Lighting || baseMsg instanceof Automation || baseMsg instanceof EnergyManagement
-                || baseMsg instanceof Thermoregulation || baseMsg instanceof CEN || baseMsg instanceof Scenario) {
+                || baseMsg instanceof Thermoregulation || baseMsg instanceof CEN || baseMsg instanceof Scenario
+                || baseMsg instanceof Alarm) {
             BaseOpenMessage bmsg = baseMsg;
             if (baseMsg instanceof Lighting) {
                 What what = baseMsg.getWhat();
@@ -377,7 +381,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     /**
      * Register a device ThingHandler to this BridgHandler
      *
-     * @param ownId the device OpenWebNet id
+     * @param ownId        the device OpenWebNet id
      * @param thingHandler the thing handler to be registered
      */
     protected void registerDevice(String ownId, OpenWebNetThingHandler thingHandler) {
@@ -434,7 +438,8 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
                     return;
                 }
             } else if (System.currentTimeMillis() - lastRegisteredDeviceTS < REFRESH_ALL_DEVICES_DELAY_MSEC) {
-                // a device has been registered with the bridge just now, let's wait for other devices: re-schedule
+                // a device has been registered with the bridge just now, let's wait for other
+                // devices: re-schedule
                 // refreshAllDevices
                 logger.debug("--- REGISTER device just called... re-scheduling refreshAllBridgeDevices()");
                 refreshAllSchedule = scheduler.schedule(this::refreshAllBridgeDevices, REFRESH_ALL_DEVICES_DELAY_MSEC,
@@ -640,7 +645,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     /**
      * Return a ownId string (=WHO.WHERE) from the device Where address and handler
      *
-     * @param where the Where address (to be normalized)
+     * @param where   the Where address (to be normalized)
      * @param handler the device handler
      * @return the ownId String
      */
@@ -651,7 +656,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     /**
      * Returns a ownId string (=WHO.WHERE) from a Who and Where address
      *
-     * @param who the Who
+     * @param who   the Who
      * @param where the Where address (to be normalized)
      * @return the ownId String
      */
@@ -666,7 +671,12 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
      * @return the ownId String
      */
     public String ownIdFromMessage(BaseOpenMessage baseMsg) {
-        return baseMsg.getWho().value() + "." + normalizeWhere(baseMsg.getWhere());
+        Where w = baseMsg.getWhere();
+        if (w == null && baseMsg instanceof Alarm) {
+            return baseMsg.getWho().value() + "." + "0"; // Alarm System --> where=0
+        } else {
+            return baseMsg.getWho().value() + "." + normalizeWhere(w);
+        }
     }
 
     /**
@@ -691,7 +701,8 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
             str = ((WhereZigBee) where).valueWithUnit(WhereZigBee.UNIT_ALL); // 76543210X#9 --> 765432100#9
         } else {
             if (str.indexOf("#4#") == -1) { // skip APL#4#bus case
-                if (str.indexOf('#') == 0) { // Thermo central unit (#0) or zone via central unit (#Z, Z=[1-99]) --> Z
+                if (str.indexOf('#') == 0) { // Thermo central unit (#0) or zone via central unit (#Z, Z=[1-99]) --> Z,
+                                             // Alarm Zone (#Z) --> Z
                     str = str.substring(1);
                 } else if (str.indexOf('#') > 0) { // Thermo zone Z and actuator N (Z#N, Z=[1-99], N=[1-9]) --> Z
                     str = str.substring(0, str.indexOf('#'));
