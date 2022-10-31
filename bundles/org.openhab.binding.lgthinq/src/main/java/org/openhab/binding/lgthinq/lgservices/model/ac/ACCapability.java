@@ -36,6 +36,8 @@ public class ACCapability extends AbstractCapability {
     private boolean isAutoDryModeAvailable;
     private boolean isEnergySavingAvailable;
     private boolean isAirCleanAvailable;
+
+    private boolean isFanSpeedAvailable;
     private String coolJetModeCommandOn = "";
     private String coolJetModeCommandOff = "";
 
@@ -114,6 +116,14 @@ public class ACCapability extends AbstractCapability {
 
     public void setEnergySavingAvailable(boolean energySavingAvailable) {
         isEnergySavingAvailable = energySavingAvailable;
+    }
+
+    public boolean isFanSpeedAvailable() {
+        return isFanSpeedAvailable;
+    }
+
+    public void setFanSpeedAvailable(boolean fanSpeedAvailable) {
+        isFanSpeedAvailable = fanSpeedAvailable;
     }
 
     public boolean isAirCleanAvailable() {

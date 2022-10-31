@@ -30,7 +30,7 @@ public class LGThinQConfiguration {
     public String language = "";
     public String manualCountry = "";
     public String manualLanguage = "";
-    public Integer pollingIntervalSec = 0;
+    public Integer poolingIntervalSec = 0;
     public String alternativeServer = "";
 
     public LGThinQConfiguration() {
@@ -42,7 +42,7 @@ public class LGThinQConfiguration {
         this.password = password;
         this.country = country;
         this.language = language;
-        this.pollingIntervalSec = pollingIntervalSec;
+        this.poolingIntervalSec = pollingIntervalSec;
         this.alternativeServer = alternativeServer;
     }
 
@@ -68,8 +68,8 @@ public class LGThinQConfiguration {
         return language;
     }
 
-    public Integer getPollingIntervalSec() {
-        return pollingIntervalSec;
+    public Integer getPoolingIntervalSec() {
+        return poolingIntervalSec;
     }
 
     public void setUsername(String username) {
@@ -88,8 +88,8 @@ public class LGThinQConfiguration {
         this.language = language;
     }
 
-    public void setPollingIntervalSec(Integer pollingIntervalSec) {
-        this.pollingIntervalSec = pollingIntervalSec;
+    public void setPoolingIntervalSec(Integer poolingIntervalSec) {
+        this.poolingIntervalSec = poolingIntervalSec;
     }
 
     public String getAlternativeServer() {
