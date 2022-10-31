@@ -73,5 +73,6 @@ public class PanelLayoutTest {
     public void testEquals() {
         assertThat(pl1, is(equalTo(pl3)));
         assertThat(pl2, is(not(equalTo(pl3))));
+        assertThat(pl3, is(not(equalTo(null))));
     }
 }

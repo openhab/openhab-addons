@@ -22,12 +22,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public enum ShapeType {
+    // side lengths are taken from https://forum.nanoleaf.me/docs chapter 3.3
     UNKNOWN("Unknown", -1, 0, 0, DrawingAlgorithm.NONE),
     TRIANGLE("Triangle", 0, 150, 3, DrawingAlgorithm.TRIANGLE),
     RHYTHM("Rhythm", 1, 0, 1, DrawingAlgorithm.NONE),
     SQUARE("Square", 2, 100, 0, DrawingAlgorithm.SQUARE),
     CONTROL_SQUARE_MASTER("Control Square Master", 3, 100, 0, DrawingAlgorithm.SQUARE),
-    CONTROL_SQUARE_PASSIVE("Control Square Passive", 4, 100, 0, DrawingAlgorithm.NONE),
+    CONTROL_SQUARE_PASSIVE("Control Square Passive", 4, 100, 0, DrawingAlgorithm.SQUARE),
     SHAPES_HEXAGON("Hexagon (Shapes)", 7, 67, 6, DrawingAlgorithm.HEXAGON),
     SHAPES_TRIANGLE("Triangle (Shapes)", 8, 134, 3, DrawingAlgorithm.TRIANGLE),
     SHAPES_MINI_TRIANGLE("Mini Triangle (Shapes)", 9, 67, 3, DrawingAlgorithm.TRIANGLE),

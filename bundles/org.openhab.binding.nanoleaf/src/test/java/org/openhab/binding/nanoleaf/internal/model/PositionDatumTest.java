@@ -61,5 +61,6 @@ public class PositionDatumTest {
     public void testEquals() {
         assertThat(pd1, is(equalTo(pd3)));
         assertThat(pd2, is(not(equalTo(pd3))));
+        assertThat(pd3, is(not(equalTo(null))));
     }
 }

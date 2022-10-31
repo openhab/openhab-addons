@@ -22,7 +22,7 @@ import org.openhab.binding.nanoleaf.internal.layout.Point2D;
 import org.openhab.binding.nanoleaf.internal.layout.ShapeType;
 
 /**
- * A triangular shape.
+ * A hexagon shape.
  *
  * @author Jørgen Austvik - Initial contribution
  */

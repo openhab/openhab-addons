@@ -16,7 +16,7 @@ package org.openhab.binding.nanoleaf.internal.layout;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Simple pair class.
+ * Coordinate in 2D space.
  *
  * @author Jørgen Austvik - Initial contribution
  */

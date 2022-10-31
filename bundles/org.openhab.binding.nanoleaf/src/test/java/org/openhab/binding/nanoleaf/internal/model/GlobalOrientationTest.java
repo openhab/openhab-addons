@@ -61,5 +61,6 @@ public class GlobalOrientationTest {
     public void testEquals() {
         assertThat(go1, is(equalTo(go3)));
         assertThat(go2, is(not(equalTo(go3))));
+        assertThat(go3, is(not(equalTo(null))));
     }
 }

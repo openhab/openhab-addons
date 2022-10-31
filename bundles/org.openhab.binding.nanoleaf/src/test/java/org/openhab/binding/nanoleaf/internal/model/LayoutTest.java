@@ -67,5 +67,6 @@ public class LayoutTest {
     public void testEquals() {
         assertThat(lo1, is(equalTo(lo3)));
         assertThat(lo2, is(not(equalTo(lo3))));
+        assertThat(lo3, is(not(equalTo(null))));
     }
 }
