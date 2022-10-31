@@ -25,6 +25,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.core.thing.ThingUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,8 +35,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 /**
- * The {@link JuiceNetApi} is responsible for handling commands, which are
- * sent to one of the channels.
+ * The {@link JuiceNetApi} is responsible for implementing the api interface to the JuiceNet cloud server
  *
  * @author Jeff James - Initial contribution
  */
@@ -48,17 +48,17 @@ public class JuiceNetApi {
     private static final String API_DEVICE = API_HOST + "box_api_secure";
 
     protected String apiToken = "";
-    @Nullable
     protected JuiceNetHttp httpApi;
     @Nullable
     protected ThingUID bridgeUID;
 
-    public void initialize(String apiToken, ThingUID bridgeUID, HttpClient httpClient) {
+    public JuiceNetApi(HttpClient httpClient) {
+        this.httpApi = new JuiceNetHttp(httpClient);
+    }
+
+    public void initialize(String apiToken, ThingUID bridgeUID) {
         this.apiToken = apiToken;
         this.bridgeUID = bridgeUID;
-
-        httpApi = new JuiceNetHttp(httpClient);
-        logger.trace("JuiceNet API initialized");
     }
 
     public List<JuiceNetApiDevice> queryDeviceList()
@@ -72,8 +72,9 @@ public class JuiceNetApi {
 
         response = httpApi.httpPost(API_ACCOUNT, params);
 
-        if (response.getStatus() != 200) {
-            throw new JuiceNetApiException("Unable to retrieve device list, please check configuration.");
+        if (response.getStatus() != HttpStatus.OK_200) {
+            throw new JuiceNetApiException("Unable to retrieve device list, please check configuration (HTTP code: "
+                    + response.getStatus() + ").");
         }
 
         logger.trace("{}", response.getContentAsString());
@@ -103,8 +104,9 @@ public class JuiceNetApi {
 
         response = httpApi.httpPost(API_DEVICE, params);
 
-        if (response.getStatus() != 200) {
-            throw new JuiceNetApiException("Unable to retrieve device status, please check configuration.");
+        if (response.getStatus() != HttpStatus.OK_200) {
+            throw new JuiceNetApiException("Unable to retrieve device status, please check configuration (HTTP code: "
+                    + response.getStatus() + ").");
         }
 
         logger.trace("{}", response.getContentAsString());
@@ -133,8 +135,9 @@ public class JuiceNetApi {
 
         response = httpApi.httpPost(API_DEVICE, params);
 
-        if (response.getStatus() != 200) {
-            throw new JuiceNetApiException("Unable to retrieve device status, please check configuration.");
+        if (response.getStatus() != HttpStatus.OK_200) {
+            throw new JuiceNetApiException("Unable to retrieve device info, please check configuration (HTTP code: "
+                    + response.getStatus() + ").");
         }
 
         logger.trace("{}", response.getContentAsString());
@@ -156,8 +159,10 @@ public class JuiceNetApi {
 
         response = httpApi.httpPost(API_DEVICE, params);
 
-        if (response.getStatus() != 200) {
-            throw new JuiceNetApiException("Unable to retrieve device TOU schedule, please check configuration.");
+        if (response.getStatus() != HttpStatus.OK_200) {
+            throw new JuiceNetApiException(
+                    "Unable to retrieve device TOU Schedule, please check configuration (HTTP code: "
+                            + response.getStatus() + ").");
         }
 
         logger.trace("{}", response.getContentAsString());
@@ -190,8 +195,9 @@ public class JuiceNetApi {
 
         response = httpApi.httpPost(API_DEVICE, params);
 
-        if (response.getStatus() != 200) {
-            throw new JuiceNetApiException("Unable to setOverride, please check configuration.");
+        if (response.getStatus() != HttpStatus.OK_200) {
+            throw new JuiceNetApiException(
+                    "Unable to set Override, please check configuration (HTTP code: " + response.getStatus() + ").");
         }
 
         logger.trace("{}", response.getContentAsString());
@@ -210,8 +216,9 @@ public class JuiceNetApi {
 
         response = httpApi.httpPost(API_DEVICE, params);
 
-        if (response.getStatus() != 200) {
-            throw new JuiceNetApiException("Unable to setOverride, please check configuration.");
+        if (response.getStatus() != HttpStatus.OK_200) {
+            throw new JuiceNetApiException("Unable to set current limit, please check configuration (HTTP code: "
+                    + response.getStatus() + ").");
         }
 
         logger.trace("{}", response.getContentAsString());

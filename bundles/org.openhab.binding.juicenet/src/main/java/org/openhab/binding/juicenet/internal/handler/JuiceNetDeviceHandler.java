@@ -100,6 +100,7 @@ public class JuiceNetDeviceHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.toString());
         } else if (e instanceof InterruptedException) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.toString());
+            Thread.currentThread().interrupt();
         } else if (e instanceof TimeoutException) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.toString());
         } else if (e instanceof ExecutionException) {
@@ -146,15 +147,15 @@ public class JuiceNetDeviceHandler extends BaseThingHandler {
                 case DEVICE_TARGET_TIME:
                 case DEVICE_UNIT_TIME:
                 case DEVICE_TEMPERATURE:
-                case DEVICE_AMPS_LIMIT:
-                case DEVICE_AMPS_CURRENT:
+                case DEVICE_CURRENT_LIMIT:
+                case DEVICE_CURRENT:
                 case DEVICE_VOLTAGE:
                 case DEVICE_ENERGY:
                 case DEVICE_SAVINGS:
                 case DEVICE_POWER:
                 case DEVICE_CHARGING_TIME:
-                case DEVICE_PLUGINENERGY:
-                case DEVICE_ENERGYTOADD:
+                case DEVICE_ENERGY_AT_PLUGIN:
+                case DEVICE_ENERGY_TO_ADD:
                 case DEVICE_LIFETIME_ENERGY:
                 case DEVICE_LIFETIME_SAVINGS:
                 case DEVICE_CAR_DESCRIPTION:
@@ -163,10 +164,10 @@ public class JuiceNetDeviceHandler extends BaseThingHandler {
                 case DEVICE_CAR_CHARGING_RATE:
                     refreshStatusChannels();
                     break;
-                case DEVICE_GASCOST:
-                case DEVICE_FUELCONSUMPTION:
+                case DEVICE_GAS_COST:
+                case DEVICE_FUEL_CONSUMPTION:
                 case DEVICE_ECOST:
-                case DEVICE_WHPERMILE:
+                case DEVICE_ENERGY_PER_MILE:
                     refreshInfoChannels();
                     break;
             }
@@ -176,7 +177,7 @@ public class JuiceNetDeviceHandler extends BaseThingHandler {
 
         try {
             switch (channelUID.getId()) {
-                case DEVICE_AMPS_LIMIT:
+                case DEVICE_CURRENT_LIMIT:
                     int limit = ((QuantityType<?>) command).intValue();
 
                     getApi().setCurrentLimit(token, limit);
@@ -259,7 +260,6 @@ public class JuiceNetDeviceHandler extends BaseThingHandler {
     public void queryDeviceStatusAndInfo() {
         if (this.getThing().getStatus() == ThingStatus.OFFLINE) {
             goOnline();
-            // _queryDeviceStatusAndInfo is called by goOnline
             return;
         }
 
@@ -296,16 +296,16 @@ public class JuiceNetDeviceHandler extends BaseThingHandler {
         updateState(DEVICE_TARGET_TIME, new DateTimeType(toZonedDateTime(deviceStatus.target_time)));
         updateState(DEVICE_UNIT_TIME, new DateTimeType(toZonedDateTime(deviceStatus.utc_time)));
         updateState(DEVICE_TEMPERATURE, new QuantityType<>(deviceStatus.temperature, SIUnits.CELSIUS));
-        updateState(DEVICE_AMPS_LIMIT, new QuantityType<>(deviceStatus.charging.amps_limit, Units.AMPERE));
-        updateState(DEVICE_AMPS_CURRENT, new QuantityType<>(deviceStatus.charging.amps_current, Units.AMPERE));
+        updateState(DEVICE_CURRENT_LIMIT, new QuantityType<>(deviceStatus.charging.amps_limit, Units.AMPERE));
+        updateState(DEVICE_CURRENT, new QuantityType<>(deviceStatus.charging.amps_current, Units.AMPERE));
         updateState(DEVICE_VOLTAGE, new QuantityType<>(deviceStatus.charging.voltage, Units.VOLT));
         updateState(DEVICE_ENERGY, new QuantityType<>(deviceStatus.charging.wh_energy, Units.WATT_HOUR));
         updateState(DEVICE_SAVINGS, new DecimalType(deviceStatus.charging.savings / 100.0));
         updateState(DEVICE_POWER, new QuantityType<>(deviceStatus.charging.watt_power, Units.WATT));
         updateState(DEVICE_CHARGING_TIME, new QuantityType<>(deviceStatus.charging.seconds_charging, Units.SECOND));
-        updateState(DEVICE_PLUGINENERGY,
+        updateState(DEVICE_ENERGY_AT_PLUGIN,
                 new QuantityType<>(deviceStatus.charging.wh_energy_at_plugin, Units.WATT_HOUR));
-        updateState(DEVICE_ENERGYTOADD, new QuantityType<>(deviceStatus.charging.wh_energy_to_add, Units.WATT_HOUR));
+        updateState(DEVICE_ENERGY_TO_ADD, new QuantityType<>(deviceStatus.charging.wh_energy_to_add, Units.WATT_HOUR));
         updateState(DEVICE_LIFETIME_ENERGY, new QuantityType<>(deviceStatus.lifetime.wh_energy, Units.WATT_HOUR));
         updateState(DEVICE_LIFETIME_SAVINGS, new DecimalType(deviceStatus.lifetime.savings / 100.0));
 
@@ -318,10 +318,10 @@ public class JuiceNetDeviceHandler extends BaseThingHandler {
 
     protected void refreshInfoChannels() {
         updateState(DEVICE_NAME, new StringType(name));
-        updateState(DEVICE_GASCOST, new DecimalType(deviceInfo.gascost / 100.0));
-        updateState(DEVICE_FUELCONSUMPTION, new DecimalType(deviceInfo.mpg)); // currently there is no Unit defined for
-                                                                              // fuel consumption
+        updateState(DEVICE_GAS_COST, new DecimalType(deviceInfo.gascost / 100.0));
+        updateState(DEVICE_FUEL_CONSUMPTION, new DecimalType(deviceInfo.mpg)); // currently there is no Unit defined for
+                                                                               // fuel consumption
         updateState(DEVICE_ECOST, new DecimalType(deviceInfo.ecost / 100.0));
-        updateState(DEVICE_WHPERMILE, new DecimalType(deviceInfo.whpermile));
+        updateState(DEVICE_ENERGY_PER_MILE, new DecimalType(deviceInfo.whpermile));
     }
 }

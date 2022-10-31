@@ -30,7 +30,7 @@
 			<channel id="energy" typeId="energy"/>
 			<channel id="savings" typeId="savings"/>
 			<channel id="chargingPower" typeId="chargingPower"/>
-			<channel id="secondsCharging" typeId="secondsCharging"/>
+			<channel id="chargingTime" typeId="chargingTime"/>
 			<channel id="energyAtPlugin" typeId="energyAtPlugin"/>
 			<channel id="energyToAdd" typeId="energyToAdd"/>
 
@@ -102,16 +102,16 @@
 	<channel-type id="chargingTimeLeft">
 		<item-type>Number:Time</item-type>
 		<label>Charging Time Left</label>
-		<description>Charging time left (seconds).</description>
-		<category>time</category>
-		<state readOnly="true" pattern="%.0f min"/>
+		<description>Charging time left.</description>
+		<category>Time</category>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="plugUnplugTime">
 		<item-type>DateTime</item-type>
 		<label>Plug/Unplug Time</label>
 		<description>Last time of either plug-in or plug-out.</description>
-		<category>time</category>
+		<category>Time</category>
 		<state readOnly="true" pattern="%1$tB %1$te, %1$tY %1$tl:%1$tM %1$tp"/>
 	</channel-type>
 
@@ -119,7 +119,7 @@
 		<item-type>DateTime</item-type>
 		<label>Target Time</label>
 		<description>“Start charging” start time, or time to start when overriding smart charging.</description>
-		<category>time</category>
+		<category>Time</category>
 		<state pattern="%1$tB %1$te, %1$tY %1$tl:%1$tM %1$tp"/>
 	</channel-type>
 
@@ -127,7 +127,7 @@
 		<item-type>DateTime</item-type>
 		<label>Unit Time</label>
 		<description>Current time on the unit.</description>
-		<category>time</category>
+		<category>Time</category>
 		<state readOnly="true" pattern="%1$tB %1$te, %1$tY %1$tl:%1$tM %1$tp"/>
 	</channel-type>
 
@@ -135,36 +135,36 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>Current temperature at the unit.</description>
-		<category>temperature</category>
+		<category>Temperature</category>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="currentLimit">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Current Limit</label>
-		<description>Max charging current allowed. (A)</description>
-		<state pattern="%d A"/>
+		<description>Max charging current allowed.</description>
+		<state pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="current">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Current</label>
-		<description>Current charging current. (A)</description>
-		<state readOnly="true" pattern="%.1f A"/>
+		<description>Current charging current.</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="voltage">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Voltage</label>
-		<description>Current voltage. (V)</description>
-		<state readOnly="true" pattern="%d V"/>
+		<description>Current voltage.</description>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="energy">
 		<item-type>Number:Energy</item-type>
 		<label>Current Energy</label>
-		<description>Current power level of vehicle. (Wh)</description>
-		<state readOnly="true" pattern="%.1f kWh"/>
+		<description>Current power level of vehicle.</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="savings">
@@ -181,33 +181,33 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
-	<channel-type id="secondsCharging">
+	<channel-type id="chargingTime">
 		<item-type>Number:Time</item-type>
 		<label>Charging Time</label>
 		<description>Charging time since plug-in time.</description>
-		<category>time</category>
-		<state readOnly="true" pattern="%.0f min"/>
+		<category>Time</category>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="energyAtPlugin">
 		<item-type>Number:Energy</item-type>
 		<label>Energy at Plugin</label>
 		<description>Energy value at the plugging time.</description>
-		<state readOnly="true" pattern="%.2f kWh"/>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="energyToAdd">
 		<item-type>Number:Energy</item-type>
 		<label>Energy to Add</label>
 		<description>Amount of energy to be added in current session.</description>
-		<state pattern="%.2f kWh"/>
+		<state pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="lifetimeEnergy">
 		<item-type>Number:Energy</item-type>
 		<label>Lifetime Energy</label>
 		<description>Total energy delivered to vehicles during lifetime.</description>
-		<state readOnly="true" pattern="%,.2f kWh"/>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="lifetimeSavings">
@@ -242,7 +242,7 @@
 		<item-type>Number:Power</item-type>
 		<label>Energy Hours Per Mile</label>
 		<description>Energy Hours Per Mile.</description>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="carDescription">
@@ -255,22 +255,22 @@
 	<channel-type id="carBatterySize">
 		<item-type>Number:Energy</item-type>
 		<label>Car Battery Pack Size</label>
-		<description>Car battery pack size. (Wh)</description>
-		<state readOnly="true" pattern="%.2f kWh"/>
+		<description>Car battery pack size.</description>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="carBatteryRange">
 		<item-type>Number:Length</item-type>
 		<label>Mileage Range</label>
 		<description>Car distance range.</description>
-		<state readOnly="true" pattern="%,d"/>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="carChargingRate">
 		<item-type>Number:Power</item-type>
 		<label>Car Charging Rate</label>
-		<description>Car charging rate. (W)</description>
-		<state readOnly="true" pattern="%.2f kW"/>
+		<description>Car charging rate.</description>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 </thing:thing-descriptions>

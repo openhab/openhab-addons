@@ -7,10 +7,10 @@ In addition to getting the status of various items from the ev-charger, it is al
 
 This binding supports the following things:
 
-| thing  | type   | description                  |
-|----------|--------|------------------------------|
-| JuiceNet Account  | Bridge | This represents the cloud account to interface with the JuiceNet API.  |
-| JuiceBox EV-Charger | Device | This interfaces to a specific JuiceBox EV-charger associated with the JuiceNet account. |
+| thing               | type    | description                  |
+|----------           |-------- |------------------------------ | 
+| JuiceNet Account    | Bridge  | This represents the cloud account to interface with the JuiceNet API.  |
+| JuiceBox EV-Charger | Device  | This interfaces to a specific JuiceBox EV-charger associated with the JuiceNet account. |
 
 This binding should work with multiple JuiceBox EV-chargers associated with the account, however it is currently only tested with a single EV-charger.
 
@@ -29,7 +29,7 @@ Once, the JuiceNet Account thing has been created, all JuiceBox EV-chargers asso
 | chargingState     | String            | N         | Current charging state (Start Charging, Smart Charging, Stop Charging). |
 | state             | String            | Y         | This is the current device state (Available, Plugged-In, Charging, Error, Disconnected).  |
 | override          | Switch            | Y         | Smart charging is overridden. |
-| chargingTimeLeft | Number:Time        | Y         | Charging time left (seconds). |
+| chargingTimeLeft  | Number:Time       | Y         | Charging time left (seconds). |
 | plugUnplugTime    | DateTime          | Y         | Last time of either plug-in or plug-out. |
 | targetTime        | DateTime          | N         | “Start charging” start time, or time to start when overriding smart charging. |
 | unitTime          | DateTime          | Y         | Current time on the unit. |

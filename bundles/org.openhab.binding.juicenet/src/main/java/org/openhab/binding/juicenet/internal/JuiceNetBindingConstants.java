@@ -52,22 +52,22 @@ public class JuiceNetBindingConstants {
     public static final String DEVICE_TARGET_TIME = "targetTime";
     public static final String DEVICE_UNIT_TIME = "unitTime";
     public static final String DEVICE_TEMPERATURE = "temperature";
-    public static final String DEVICE_AMPS_LIMIT = "currentLimit";
-    public static final String DEVICE_AMPS_CURRENT = "current";
+    public static final String DEVICE_CURRENT_LIMIT = "currentLimit";
+    public static final String DEVICE_CURRENT = "current";
     public static final String DEVICE_VOLTAGE = "voltage";
     public static final String DEVICE_ENERGY = "energy";
     public static final String DEVICE_SAVINGS = "savings";
     public static final String DEVICE_POWER = "power";
-    public static final String DEVICE_CHARGING_TIME = "secondsCharging";
-    public static final String DEVICE_PLUGINENERGY = "energyAtPlugin";
-    public static final String DEVICE_ENERGYTOADD = "energyToAdd";
+    public static final String DEVICE_CHARGING_TIME = "chargingTime";
+    public static final String DEVICE_ENERGY_AT_PLUGIN = "energyAtPlugin";
+    public static final String DEVICE_ENERGY_TO_ADD = "energyToAdd";
     public static final String DEVICE_LIFETIME_ENERGY = "lifetimeEnergy";
     public static final String DEVICE_LIFETIME_SAVINGS = "lifetimeSavings";
 
-    public static final String DEVICE_GASCOST = "gasCost";
-    public static final String DEVICE_FUELCONSUMPTION = "fuelConsumption";
+    public static final String DEVICE_GAS_COST = "gasCost";
+    public static final String DEVICE_FUEL_CONSUMPTION = "fuelConsumption";
     public static final String DEVICE_ECOST = "ecost";
-    public static final String DEVICE_WHPERMILE = "energyPerMile";
+    public static final String DEVICE_ENERGY_PER_MILE = "energyPerMile";
 
     public static final String DEVICE_CAR_DESCRIPTION = "carDescription";
     public static final String DEVICE_CAR_BATTERY_SIZE = "carBatterySize";

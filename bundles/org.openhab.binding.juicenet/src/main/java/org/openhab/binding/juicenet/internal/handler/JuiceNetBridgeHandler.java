@@ -53,8 +53,7 @@ public class JuiceNetBridgeHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(JuiceNetBridgeHandler.class);
 
     protected JuiceNetBridgeConfiguration config = new JuiceNetBridgeConfiguration();
-    private final JuiceNetApi api = new JuiceNetApi();
-    private final HttpClient httpClient;
+    private final JuiceNetApi api;
 
     public JuiceNetApi getApi() {
         return api;
@@ -67,7 +66,7 @@ public class JuiceNetBridgeHandler extends BaseBridgeHandler {
     public JuiceNetBridgeHandler(Bridge bridge, HttpClient httpClient) {
         super(bridge);
 
-        this.httpClient = httpClient;
+        this.api = new JuiceNetApi(httpClient);
     }
 
     @Override
@@ -80,13 +79,11 @@ public class JuiceNetBridgeHandler extends BaseBridgeHandler {
 
         logger.trace("JuiceNetBridgeHandler:initialize");
 
-        api.initialize(config.apiToken, this.getThing().getUID(), this.httpClient);
+        api.initialize(config.apiToken, this.getThing().getUID());
 
         updateStatus(ThingStatus.UNKNOWN);
 
-        goOnline();
-
-        pollingJob = scheduler.scheduleWithFixedDelay(this::pollDevices, 60, config.refreshInterval, TimeUnit.SECONDS);
+        pollingJob = scheduler.scheduleWithFixedDelay(this::pollDevices, 0, config.refreshInterval, TimeUnit.SECONDS);
     }
 
     @Override
@@ -116,6 +113,7 @@ public class JuiceNetBridgeHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.toString());
         } else if (e instanceof InterruptedException) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.toString());
+            Thread.currentThread().interrupt();
         } else if (e instanceof TimeoutException) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.toString());
         } else if (e instanceof ExecutionException) {
@@ -169,10 +167,10 @@ public class JuiceNetBridgeHandler extends BaseBridgeHandler {
     private void pollDevices() {
         logger.debug("pollDevices");
 
-        if (getThing().getStatus() == ThingStatus.OFFLINE) {
+        if (getThing().getStatus() != ThingStatus.ONLINE) {
             goOnline();
             // queryDevices is called in goOnline after successfully going online
-        } else if (getThing().getStatus() == ThingStatus.ONLINE) {
+        } else {
             queryDevices();
         }
     }
