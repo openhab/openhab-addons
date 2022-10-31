@@ -79,7 +79,7 @@ public class NanoleafBindingConstants {
     public static final String API_MIN_FW_VER_CANVAS = "1.1.0";
     public static final String MODEL_ID_LIGHTPANELS = "NL22";
 
-    public static final List<String> MODELS_WITH_TOUCHSUPPORT = Arrays.asList("NL29", "NL42", "NL52");
+    public static final List<String> MODELS_WITH_TOUCHSUPPORT = Arrays.asList("NL29", "NL42", "NL47", "NL48", "NL52");
     public static final String DEVICE_TYPE_LIGHTPANELS = "lightPanels";
     public static final String DEVICE_TYPE_TOUCHSUPPORT = "canvas"; // we need to keep this enum for backward
                                                                     // compatibility even though not only canvas type

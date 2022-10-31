@@ -34,7 +34,7 @@ import org.openhab.binding.nanoleaf.internal.model.PanelLayout;
 import org.openhab.binding.nanoleaf.internal.model.PositionDatum;
 
 /**
- * Renders the Nonoleaf layout to an image.
+ * Renders the Nanoleaf layout to an image.
  *
  * @author Jørgen Austvik - Initial contribution
  */
@@ -108,6 +108,9 @@ public class NanoleafLayout {
             g2.setColor(COLOR_SIDE);
             final int expectedSides = shapeType.getNumSides();
             if (shapeType.getDrawingAlgorithm() == DrawingAlgorithm.CORNER) {
+                // Special handling of Elements Hexagon Corners, where we get 6 corners instead of 1 shape. They seem to
+                // come after each other in the JSON, so this algorithm connects them based on the number of sides the
+                // shape is expected to have.
                 if (sideCounter > 0 && sideCounter != expectedSides && prev != null) {
                     g2.drawLine(prev.getX(), prev.getY(), current.getX(), current.getY());
                 }
