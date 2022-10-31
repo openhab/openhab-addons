@@ -39,8 +39,6 @@ import org.openhab.binding.lgwebos.internal.handler.command.ServiceCommand;
 import org.openhab.binding.lgwebos.internal.handler.command.ServiceSubscription;
 import org.openhab.binding.lgwebos.internal.handler.core.ResponseListener;
 import org.openhab.binding.lgwebos.internal.handler.core.TextInputStatusInfo;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonObject;
 
@@ -51,7 +49,6 @@ import com.google.gson.JsonObject;
  * @author Sebastian Prehn - Adoption for openHAB
  */
 public class LGWebOSTVKeyboardInput {
-    private final Logger logger = LoggerFactory.getLogger(LGWebOSTVKeyboardInput.class);
 
     private LGWebOSTVSocket service;
     private boolean waiting;
@@ -123,7 +120,6 @@ public class LGWebOSTVKeyboardInput {
             payload.addProperty("text", sb.toString());
             payload.addProperty("replace", 0);
         }
-        logger.debug("Message [out]: {} {}", uri, payload.toString());
 
         ResponseListener<JsonObject> responseListener = new ResponseListener<JsonObject>() {
 
