@@ -44,6 +44,7 @@ public class BoschSHCBindingConstants {
     public static final ThingTypeUID THING_TYPE_CAMERA_EYES = new ThingTypeUID(BINDING_ID, "security-camera-eyes");
     public static final ThingTypeUID THING_TYPE_INTRUSION_DETECTION_SYSTEM = new ThingTypeUID(BINDING_ID,
             "intrusion-detection-system");
+    public static final ThingTypeUID THING_TYPE_SMART_PLUG_COMPACT = new ThingTypeUID(BINDING_ID, "smart-plug-compact");
 
     // List of all Channel IDs
     // Auto-generated from thing-types.xml via script, don't modify
