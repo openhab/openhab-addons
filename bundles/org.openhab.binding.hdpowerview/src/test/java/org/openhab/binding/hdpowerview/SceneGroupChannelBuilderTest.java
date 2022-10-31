@@ -24,7 +24,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewTranslationProvider;
-import org.openhab.binding.hdpowerview.internal.api.responses.SceneCollections.SceneCollection;
+import org.openhab.binding.hdpowerview.internal.api.SceneCollection;
 import org.openhab.binding.hdpowerview.internal.builders.SceneGroupChannelBuilder;
 import org.openhab.binding.hdpowerview.providers.MockedLocaleProvider;
 import org.openhab.binding.hdpowerview.providers.MockedTranslationProvider;
