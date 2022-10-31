@@ -50,7 +50,7 @@ public class NanoleafLayout {
         double rotationRadians = 0;
         GlobalOrientation globalOrientation = panelLayout.getGlobalOrientation();
         if (globalOrientation != null) {
-            rotationRadians = calculateRotation(globalOrientation);
+            rotationRadians = calculateRotationRadians(globalOrientation);
         }
 
         Layout layout = panelLayout.getLayout();
@@ -137,7 +137,7 @@ public class NanoleafLayout {
         return out.toByteArray();
     }
 
-    private static double calculateRotation(GlobalOrientation globalOrientation) {
+    private static double calculateRotationRadians(GlobalOrientation globalOrientation) {
         Integer maxObj = globalOrientation.getMax();
         int maxValue = maxObj == null ? 360 : (int) maxObj;
         int value = globalOrientation.getValue(); // 0 - 360 measured counter clockwise.
