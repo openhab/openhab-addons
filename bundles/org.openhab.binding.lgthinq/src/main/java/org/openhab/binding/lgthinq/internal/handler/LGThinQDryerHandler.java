@@ -68,8 +68,16 @@ public class LGThinQDryerHandler extends LGThinQAbstractDeviceHandler<DryerCapab
         dryLevelChannelUUID = new ChannelUID(getThing().getUID(), DR_CHANNEL_DRY_LEVEL_ID);
     }
 
+    @Override
     protected DeviceTypes getDeviceType() {
-        return DeviceTypes.DRYER;
+        if (THING_TYPE_DRYER.equals(getThing().getThingTypeUID())) {
+            return DeviceTypes.DRYER;
+        } else if (THING_TYPE_DRYER_TOWER.equals(getThing().getThingTypeUID())) {
+            return DeviceTypes.DRYER_TOWER;
+        } else {
+            throw new IllegalArgumentException(
+                    "DeviceTypeUuid [" + getThing().getThingTypeUID() + "] not expected for DryerTower/Machine");
+        }
     }
 
     @Override
@@ -162,11 +170,6 @@ public class LGThinQDryerHandler extends LGThinQAbstractDeviceHandler<DryerCapab
     @Override
     public void onDeviceAdded(LGDevice device) {
         // TODO - handle it. Think if it's needed
-    }
-
-    @Override
-    public String getDeviceId() {
-        return getThing().getUID().getId();
     }
 
     @Override
