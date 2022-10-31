@@ -142,6 +142,7 @@ public class SnapshotFactory {
         LGAPIVerion version = discoveryAPIVersion(snapMap, type);
         switch (type) {
             case AIR_CONDITIONER:
+            case HEAT_PUMP:
                 return clazz.cast(objectMapper.convertValue(snapMap, ACSnapshot.class));
             case WASHING_TOWER:
             case WASHING_MACHINE:
@@ -188,13 +189,16 @@ public class SnapshotFactory {
 
     private DeviceTypes getDeviceType(Map<String, Object> rootMap) {
         Integer deviceTypeId = (Integer) rootMap.get("deviceType");
+        // device code is only present in v2 devices snapshot.
+        String deviceCode = Objects.requireNonNullElse((String) rootMap.get("deviceCode"), "");
         Objects.requireNonNull(deviceTypeId, "Unexpected error. deviceType field not present in snapshot schema");
-        return DeviceTypes.fromDeviceTypeId(deviceTypeId);
+        return DeviceTypes.fromDeviceTypeId(deviceTypeId, deviceCode);
     }
 
     private LGAPIVerion discoveryAPIVersion(Map<String, Object> snapMap, DeviceTypes type) {
         switch (type) {
             case AIR_CONDITIONER:
+            case HEAT_PUMP:
                 if (snapMap.containsKey("airState.opMode")) {
                     return LGAPIVerion.V2_0;
                 } else if (snapMap.containsKey("OpMode")) {
