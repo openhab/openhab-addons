@@ -70,7 +70,7 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler
 
     private IParadoxCommunicator communicator;
 
-    private static ParadoxIP150BridgeConfiguration config;
+    private ParadoxIP150BridgeConfiguration config;
     private @Nullable ScheduledFuture<?> refreshCacheUpdateSchedule;
 
     private long timeStamp = 0;
