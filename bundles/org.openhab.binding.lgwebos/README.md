@@ -314,18 +314,33 @@ Sends a button press event to a WebOS device.
 
 Parameters:
 
-| Name    | Description                                                                            |
-|---------|----------------------------------------------------------------------------------------|
-| button  | Can be one of UP, DOWN, LEFT, RIGHT, BACK, EXIT, DELETE, ENTER, ENTER_NAV, HOME, or OK |
-
-DELETE will delete the last character when on-screen keyboard is displayed with focus in the text field.
-ENTER will remove the keyboard when on-screen keyboard is displayed with focus in the text field.
-ENTER_NAV will validate the currently selected item.
+| Name    | Description                                                                                    |
+|---------|------------------------------------------------------------------------------------------------|
+| button  | Can be one of UP, DOWN, LEFT, RIGHT, BACK, EXIT, ENTER, HOME, OK or any other supported value. |
 
 Example:
 
 ```
-actions.sendButton("OK")
+actions.sendButton("HOME")
+```
+
+### sendKeyboard(key)
+
+Sends a keyboard input to the WebOS on-screen keyboard.
+
+Parameters:
+
+| Name    | Description                    |
+|---------|--------------------------------|
+| key     | Can be either DELETE or ENTER. |
+
+DELETE will delete the last character when on-screen keyboard is displayed with focus in the text field.
+ENTER will remove the keyboard when on-screen keyboard is displayed with focus in the text field.
+
+Example:
+
+```
+actions.sendKeyboard("ENTER")
 ```
 
 ### increaseChannel()
