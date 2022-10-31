@@ -30,7 +30,6 @@ import javax.imageio.ImageIO;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lgwebos.internal.handler.LGWebOSHandler;
-import org.openhab.binding.lgwebos.internal.handler.LGWebOSTVMouseSocket.ButtonType;
 import org.openhab.binding.lgwebos.internal.handler.LGWebOSTVSocket;
 import org.openhab.binding.lgwebos.internal.handler.LGWebOSTVSocket.State;
 import org.openhab.binding.lgwebos.internal.handler.command.ServiceSubscription;
@@ -82,16 +81,9 @@ public class LGWebOSActions implements ThingActions {
         return lgWebOSHandler;
     }
 
-    private enum Button {
-        UP,
-        DOWN,
-        LEFT,
-        RIGHT,
-        BACK,
+    private enum Key {
         DELETE,
-        ENTER,
-        HOME,
-        OK
+        ENTER
     }
 
     @RuleAction(label = "@text/actionShowToastLabel", description = "@text/actionShowToastDesc")
@@ -182,40 +174,29 @@ public class LGWebOSActions implements ThingActions {
 
     @RuleAction(label = "@text/actionSendButtonLabel", description = "@text/actionSendButtonDesc")
     public void sendButton(
-            @ActionInput(name = "text", label = "@text/actionSendButtonInputButtonLabel", description = "@text/actionSendButtonInputButtonDesc") String button) {
+            @ActionInput(name = "button", label = "@text/actionSendButtonInputButtonLabel", description = "@text/actionSendButtonInputButtonDesc") String button) {
+        if ("OK".equals(button)) {
+            getConnectedSocket().ifPresent(control -> control.executeMouse(s -> s.click()));
+        } else {
+            getConnectedSocket().ifPresent(control -> control.executeMouse(s -> s.button(button)));
+        }
+    }
+
+    @RuleAction(label = "@text/actionSendKeyboardLabel", description = "@text/actionSendKeyboardDesc")
+    public void sendKeyboard(
+            @ActionInput(name = "key", label = "@text/actionSendKeyboardInputKeyLabel", description = "@text/actionSendKeyboardInputKeyDesc") String key) {
         try {
-            switch (Button.valueOf(button)) {
-                case UP:
-                    getConnectedSocket().ifPresent(control -> control.executeMouse(s -> s.button(ButtonType.UP)));
-                    break;
-                case DOWN:
-                    getConnectedSocket().ifPresent(control -> control.executeMouse(s -> s.button(ButtonType.DOWN)));
-                    break;
-                case LEFT:
-                    getConnectedSocket().ifPresent(control -> control.executeMouse(s -> s.button(ButtonType.LEFT)));
-                    break;
-                case RIGHT:
-                    getConnectedSocket().ifPresent(control -> control.executeMouse(s -> s.button(ButtonType.RIGHT)));
-                    break;
-                case BACK:
-                    getConnectedSocket().ifPresent(control -> control.executeMouse(s -> s.button(ButtonType.BACK)));
-                    break;
+            switch (Key.valueOf(key)) {
                 case DELETE:
                     getConnectedSocket().ifPresent(control -> control.sendDelete());
                     break;
                 case ENTER:
                     getConnectedSocket().ifPresent(control -> control.sendEnter());
                     break;
-                case HOME:
-                    getConnectedSocket().ifPresent(control -> control.executeMouse(s -> s.button("HOME")));
-                    break;
-                case OK:
-                    getConnectedSocket().ifPresent(control -> control.executeMouse(s -> s.click()));
-                    break;
             }
         } catch (IllegalArgumentException ex) {
-            logger.warn("{} is not a valid value for button - available are: {}", button,
-                    Stream.of(Button.values()).map(b -> b.name()).collect(Collectors.joining(", ")));
+            logger.warn("{} is not a valid value for key - available are: {}", key,
+                    Stream.of(Key.values()).map(b -> b.name()).collect(Collectors.joining(", ")));
         }
     }
 
@@ -227,12 +208,6 @@ public class LGWebOSActions implements ThingActions {
     @RuleAction(label = "@text/actionDecreaseChannelLabel", description = "@text/actionDecreaseChannelDesc")
     public void decreaseChannel() {
         getConnectedSocket().ifPresent(control -> control.channelDown(createResponseListener()));
-    }
-
-    @RuleAction(label = "@text/actionSendRCButtonLabel", description = "@text/actionSendRCButtonDesc")
-    public void sendRCButton(
-            @ActionInput(name = "text", label = "@text/actionSendRCButtonInputTextLabel", description = "@text/actionSendRCButtonInputTextDesc") String rcButton) {
-        getConnectedSocket().ifPresent(control -> control.executeMouse(s -> s.button(rcButton)));
     }
 
     private Optional<LGWebOSTVSocket> getConnectedSocket() {
@@ -307,15 +282,15 @@ public class LGWebOSActions implements ThingActions {
         ((LGWebOSActions) actions).sendButton(button);
     }
 
+    public static void sendKeyboard(ThingActions actions, String key) {
+        ((LGWebOSActions) actions).sendKeyboard(key);
+    }
+
     public static void increaseChannel(ThingActions actions) {
         ((LGWebOSActions) actions).increaseChannel();
     }
 
     public static void decreaseChannel(ThingActions actions) {
         ((LGWebOSActions) actions).decreaseChannel();
-    }
-
-    public static void sendRCButton(ThingActions actions, String rcButton) {
-        ((LGWebOSActions) actions).sendRCButton(rcButton);
     }
 }
