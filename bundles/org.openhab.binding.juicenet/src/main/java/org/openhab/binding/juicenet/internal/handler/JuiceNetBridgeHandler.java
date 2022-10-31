@@ -28,6 +28,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.juicenet.internal.api.JuiceNetApi;
 import org.openhab.binding.juicenet.internal.api.JuiceNetApiException;
+import org.openhab.binding.juicenet.internal.api.dto.JuiceNetApiDevice;
 import org.openhab.binding.juicenet.internal.config.JuiceNetBridgeConfiguration;
 import org.openhab.binding.juicenet.internal.discovery.JuiceNetDiscoveryService;
 import org.openhab.core.thing.Bridge;
@@ -60,7 +61,7 @@ public class JuiceNetBridgeHandler extends BaseBridgeHandler {
     }
 
     protected @Nullable ScheduledFuture<?> pollingJob;
-    protected List<JuiceNetApi.JuiceNetApiDevice> listDevices = Collections.<JuiceNetApi.JuiceNetApiDevice> emptyList();
+    protected List<JuiceNetApiDevice> listDevices = Collections.<JuiceNetApiDevice> emptyList();
     protected @Nullable JuiceNetDiscoveryService discoveryService;
 
     public JuiceNetBridgeHandler(Bridge bridge, HttpClient httpClient) {
@@ -137,7 +138,7 @@ public class JuiceNetBridgeHandler extends BaseBridgeHandler {
                 return;
             }
 
-            for (JuiceNetApi.JuiceNetApiDevice dev : listDevices) {
+            for (JuiceNetApiDevice dev : listDevices) {
                 discoveryService.notifyDiscoveryDevice(dev.unit_id, dev.name, dev.token);
             }
 

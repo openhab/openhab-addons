@@ -26,6 +26,10 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.http.HttpStatus;
+import org.openhab.binding.juicenet.internal.api.dto.JuiceNetApiDevice;
+import org.openhab.binding.juicenet.internal.api.dto.JuiceNetApiDeviceStatus;
+import org.openhab.binding.juicenet.internal.api.dto.JuiceNetApiInfo;
+import org.openhab.binding.juicenet.internal.api.dto.JuiceNetApiTouSchedule;
 import org.openhab.core.thing.ThingUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -222,84 +226,5 @@ public class JuiceNetApi {
         }
 
         logger.trace("{}", response.getContentAsString());
-    }
-
-    public static class JuiceNetApiDevice {
-        public String name = "";
-        public String token = "";
-        public String unit_id = "";
-    }
-
-    public static class JuiceNetApiDeviceStatus {
-        public String ID = "";
-        public Long info_timestamp = (long) 0;
-        public boolean show_override;
-        public String state = "";
-        public JuiceNetApiDeviceChargingStatus charging = new JuiceNetApiDeviceChargingStatus();
-        public JuiceNetApiDeviceLifetimeStatus lifetime = new JuiceNetApiDeviceLifetimeStatus();
-        public int charging_time_left;
-        public Long plug_unplug_time = (long) 0;
-        public Long target_time = (long) 0;
-        public Long unit_time = (long) 0;
-        public Long utc_time = (long) 0;
-        public long default_target_time = 0;
-        public int car_id;
-        public int temperature;
-    }
-
-    public static class JuiceNetApiDeviceChargingStatus {
-        public int amps_limit;
-        public float amps_current;
-        public int voltage;
-        public int wh_energy;
-        public int savings;
-        public int watt_power;
-        public int seconds_charging;
-        public int wh_energy_at_plugin;
-        public int wh_energy_to_add;
-        public int flags;
-    }
-
-    public static class JuiceNetApiDeviceLifetimeStatus {
-        public int wh_energy;
-        public int savings;
-    }
-
-    public static class JuiceNetApiInfo {
-        public String name = "";
-        public String address = "";
-        public String city = "";
-        public String zip = "";
-        public String country_code = "";
-        public String ip = "";
-        public int gascost;
-        public int mpg;
-        public int ecost;
-        public int whpermile;
-        public String timeZoneId = "";
-        public int amps_wire_rating;
-        public int amps_unit_rating;
-        public JuiceNetApiCar[] cars = {};
-    }
-
-    public static class JuiceNetApiCar {
-        public int car_id;
-        public String description = "";
-        public int battery_size_wh;
-        public int battery_range_m;
-        public int charging_rate_w;
-        public String model_id = "";
-    }
-
-    public static class JuiceNetApiTouSchedule {
-        public String type = "";
-        public JuiceNetApiTouDay weekday = new JuiceNetApiTouDay();
-        public JuiceNetApiTouDay weenend = new JuiceNetApiTouDay();
-    }
-
-    public static class JuiceNetApiTouDay {
-        public int start;
-        public int end;
-        public int car_ready_by;
     }
 }

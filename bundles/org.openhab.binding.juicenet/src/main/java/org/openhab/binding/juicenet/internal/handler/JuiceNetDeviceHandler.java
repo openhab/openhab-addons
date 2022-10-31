@@ -27,6 +27,10 @@ import java.util.concurrent.TimeoutException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.juicenet.internal.api.JuiceNetApi;
 import org.openhab.binding.juicenet.internal.api.JuiceNetApiException;
+import org.openhab.binding.juicenet.internal.api.dto.JuiceNetApiCar;
+import org.openhab.binding.juicenet.internal.api.dto.JuiceNetApiDeviceStatus;
+import org.openhab.binding.juicenet.internal.api.dto.JuiceNetApiInfo;
+import org.openhab.binding.juicenet.internal.api.dto.JuiceNetApiTouSchedule;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -68,10 +72,10 @@ public class JuiceNetDeviceHandler extends BaseThingHandler {
     protected long targetTimeTou = 0;
     protected long lastInfoTimestamp = 0;
 
-    JuiceNetApi.JuiceNetApiDeviceStatus deviceStatus = new JuiceNetApi.JuiceNetApiDeviceStatus();
-    JuiceNetApi.JuiceNetApiInfo deviceInfo = new JuiceNetApi.JuiceNetApiInfo();
-    JuiceNetApi.JuiceNetApiTouSchedule deviceTouSchedule = new JuiceNetApi.JuiceNetApiTouSchedule();
-    JuiceNetApi.JuiceNetApiCar deviceCar = new JuiceNetApi.JuiceNetApiCar();
+    JuiceNetApiDeviceStatus deviceStatus = new JuiceNetApiDeviceStatus();
+    JuiceNetApiInfo deviceInfo = new JuiceNetApiInfo();
+    JuiceNetApiTouSchedule deviceTouSchedule = new JuiceNetApiTouSchedule();
+    JuiceNetApiCar deviceCar = new JuiceNetApiCar();
 
     public JuiceNetDeviceHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
         super(thing);
@@ -247,7 +251,7 @@ public class JuiceNetDeviceHandler extends BaseThingHandler {
         }
 
         int carId = deviceStatus.car_id;
-        for (JuiceNetApi.JuiceNetApiCar car : deviceInfo.cars) {
+        for (JuiceNetApiCar car : deviceInfo.cars) {
             if (car.car_id == carId) {
                 this.deviceCar = car;
                 break;
