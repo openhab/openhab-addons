@@ -143,6 +143,7 @@ public class SnapshotFactory {
         switch (type) {
             case AIR_CONDITIONER:
                 return clazz.cast(objectMapper.convertValue(snapMap, ACSnapshot.class));
+            case WASHING_TOWER:
             case WASHING_MACHINE:
                 switch (version) {
                     case V1_0: {
@@ -155,6 +156,7 @@ public class SnapshotFactory {
                         return clazz.cast(objectMapper.convertValue(washerDryerMap, WasherSnapshot.class));
                     }
                 }
+            case DRYER_TOWER:
             case DRYER:
                 switch (version) {
                     case V1_0: {
@@ -201,8 +203,10 @@ public class SnapshotFactory {
                     throw new IllegalStateException(
                             "Unexpected error. Can't find key node attributes to determine AC API version.");
                 }
+            case DRYER_TOWER:
             case DRYER:
                 return LGAPIVerion.V2_0;
+            case WASHING_TOWER:
             case WASHING_MACHINE:
                 if (snapMap.containsKey(WM_SNAPSHOT_WASHER_DRYER_NODE_V2)) {
                     return LGAPIVerion.V2_0;

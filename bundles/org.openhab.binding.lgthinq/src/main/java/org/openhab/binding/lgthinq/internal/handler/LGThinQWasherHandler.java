@@ -157,7 +157,14 @@ public class LGThinQWasherHandler extends LGThinQAbstractDeviceHandler<WasherCap
 
     @Override
     protected DeviceTypes getDeviceType() {
-        return DeviceTypes.WASHING_MACHINE;
+        if (THING_TYPE_WASHING_MACHINE.equals(getThing().getThingTypeUID())) {
+            return DeviceTypes.WASHING_MACHINE;
+        } else if (THING_TYPE_WASHING_TOWER.equals(getThing().getThingTypeUID())) {
+            return DeviceTypes.WASHING_TOWER;
+        } else {
+            throw new IllegalArgumentException(
+                    "DeviceTypeUuid [" + getThing().getThingTypeUID() + "] not expected for WashingTower/Machine");
+        }
     }
 
     @Override
@@ -182,11 +189,6 @@ public class LGThinQWasherHandler extends LGThinQAbstractDeviceHandler<WasherCap
     @Override
     public void onDeviceAdded(LGDevice device) {
         // TODO - handle it. Think if it's needed
-    }
-
-    @Override
-    public String getDeviceId() {
-        return getThing().getUID().getId();
     }
 
     @Override
