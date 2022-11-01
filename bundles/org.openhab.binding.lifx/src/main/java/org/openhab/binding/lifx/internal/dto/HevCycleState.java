@@ -73,10 +73,7 @@ public class HevCycleState {
         } else if (!duration.equals(other.duration)) {
             return false;
         }
-        if (enable != other.enable) {
-            return false;
-        }
-        return true;
+        return enable == other.enable;
     }
 
     @Override
