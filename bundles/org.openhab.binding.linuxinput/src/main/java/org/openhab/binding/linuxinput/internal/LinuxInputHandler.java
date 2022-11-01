@@ -95,6 +95,9 @@ public final class LinuxInputHandler extends DeviceReadingHandler {
         EvdevDevice newDevice = new EvdevDevice(config.path);
         for (EvdevDevice.Key o : newDevice.enumerateKeys()) {
             String name = o.getName();
+            if (name == null) {
+                name = Integer.toString(o.getCode());
+            }
             Channel channel = ChannelBuilder
                     .create(new ChannelUID(thing.getUID(), CHANNEL_GROUP_KEYPRESSES_ID, name), CoreItemFactory.CONTACT)
                     .withLabel(name).withType(CHANNEL_TYPE_KEY_PRESS).build();

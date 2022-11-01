@@ -81,3 +81,10 @@ The following happens when pressing and releasing a key:
 #### Rationale
 
 Channel states are updated first to allow rules triggered by channel triggers to access the new state.
+
+#### Channel names
+
+The binding tries to translate the numeric event codes to their symbolic names; `KEY_1`, `KEY_A`, `KEY_BACKSPACE` etc.
+
+If the currently installed version of libevdev does not know the symbolic name of a key, the numeric value is used.
+Please note that future versions of libevdev may start translating the symbolic names.
