@@ -34,9 +34,11 @@ public class Partition extends Entity implements Commandable {
     private final Logger logger = LoggerFactory.getLogger(Partition.class);
 
     private PartitionState state = new PartitionState();
+    private IParadoxCommunicator communicator;
 
-    public Partition(int id, String label) {
+    public Partition(IParadoxCommunicator com, int id, String label) {
         super(id, label);
+        communicator = com;
     }
 
     public PartitionState getState() {
@@ -62,7 +64,6 @@ public class Partition extends Entity implements Commandable {
         ParadoxIPPacket packet = new ParadoxIPPacket(payload.getBytes())
                 .setMessageType(HeaderMessageType.SERIAL_PASSTHRU_REQUEST);
         PartitionCommandRequest request = new PartitionCommandRequest(RequestType.PARTITION_COMMAND, packet, null);
-        IParadoxCommunicator communicator = ParadoxPanel.getInstance().getCommunicator();
         communicator.submitRequest(request);
     }
 }
