@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.lgthinq.lgservices.model.washer;
+package org.openhab.binding.lgthinq.lgservices.model.washerdryer;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

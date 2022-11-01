@@ -38,12 +38,6 @@ public class ModelUtils {
         return fromDeviceTypeAcron(productType, modelType);
     }
 
-    public static DeviceTypes getDeviceType(JsonNode rootNode) {
-        Map<String, Object> mapper = objectMapper.convertValue(rootNode, new TypeReference<>() {
-        });
-        return getDeviceType(mapper);
-    }
-
     public static LGAPIVerion discoveryAPIVersion(JsonNode rootNode) {
         Map<String, Object> mapper = objectMapper.convertValue(rootNode, new TypeReference<>() {
         });
@@ -62,10 +56,10 @@ public class ModelUtils {
                     return LGAPIVerion.V1_0;
                 } else {
                     throw new IllegalStateException(
-                            "Unexpected error. Can't find key node attributes to determine ACCapability API version.");
+                            "Unexpected error. Can't find key node attributes to determine AC API version.");
                 }
 
-            case WASHERDRYER_MACHINE:
+            case WASHING_MACHINE:
             case DRYER:
             case REFRIGERATOR:
                 if (rootMap.containsKey("Value")) {
@@ -74,7 +68,7 @@ public class ModelUtils {
                     return LGAPIVerion.V2_0;
                 } else {
                     throw new IllegalStateException(
-                            "Unexpected error. Can't find key node attributes to determine ACCapability API version.");
+                            "Unexpected error. Can't find key node attributes to determine AC API version.");
                 }
             case DISH_WASHER:
                 return LGAPIVerion.V2_0;

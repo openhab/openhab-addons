@@ -13,8 +13,9 @@
 package org.openhab.binding.lgthinq.lgservices;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.lgthinq.lgservices.model.dryer.DryerCapability;
-import org.openhab.binding.lgthinq.lgservices.model.dryer.DryerSnapshot;
+import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
+import org.openhab.binding.lgthinq.lgservices.model.washerdryer.DryerCapability;
+import org.openhab.binding.lgthinq.lgservices.model.washerdryer.DryerSnapshot;
 
 /**
  * The {@link LGThinQDRApiClientService}
@@ -23,4 +24,7 @@ import org.openhab.binding.lgthinq.lgservices.model.dryer.DryerSnapshot;
  */
 @NonNullByDefault
 public interface LGThinQDRApiClientService extends LGThinQApiClientService<DryerCapability, DryerSnapshot> {
+    void remoteStart(String bridgeName, String deviceId) throws LGThinqApiException;
+
+    void wakeUp(String bridgeName, String deviceId) throws LGThinqApiException;
 }
