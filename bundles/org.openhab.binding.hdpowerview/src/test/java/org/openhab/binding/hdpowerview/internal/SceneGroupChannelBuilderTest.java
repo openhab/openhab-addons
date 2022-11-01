@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.hdpowerview;
+package org.openhab.binding.hdpowerview.internal;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -22,12 +22,10 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants;
-import org.openhab.binding.hdpowerview.internal.HDPowerViewTranslationProvider;
-import org.openhab.binding.hdpowerview.internal.api.SceneCollection;
 import org.openhab.binding.hdpowerview.internal.builders.SceneGroupChannelBuilder;
-import org.openhab.binding.hdpowerview.providers.MockedLocaleProvider;
-import org.openhab.binding.hdpowerview.providers.MockedTranslationProvider;
+import org.openhab.binding.hdpowerview.internal.dto.SceneCollection;
+import org.openhab.binding.hdpowerview.internal.providers.MockedLocaleProvider;
+import org.openhab.binding.hdpowerview.internal.providers.MockedTranslationProvider;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ThingUID;

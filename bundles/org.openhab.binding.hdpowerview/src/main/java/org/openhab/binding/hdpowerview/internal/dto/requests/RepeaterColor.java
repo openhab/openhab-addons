@@ -10,10 +10,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.hdpowerview.internal.api.requests;
+package org.openhab.binding.hdpowerview.internal.dto.requests;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.hdpowerview.internal.api.Color;
+import org.openhab.binding.hdpowerview.internal.dto.Color;
 
 /**
  * Color state of a single Repeater for being updated by an HD PowerView Hub

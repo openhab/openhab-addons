@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.hdpowerview.internal.api;
+package org.openhab.binding.hdpowerview.internal.dto;
 
-import static org.openhab.binding.hdpowerview.internal.api.CoordinateSystem.*;
+import static org.openhab.binding.hdpowerview.internal.dto.CoordinateSystem.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;

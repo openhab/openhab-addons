@@ -10,13 +10,13 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.hdpowerview.internal.api.responses;
+package org.openhab.binding.hdpowerview.internal.dto.responses;
 
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.hdpowerview.internal.api.SurveyData;
+import org.openhab.binding.hdpowerview.internal.dto.SurveyData;
 
 import com.google.gson.annotations.SerializedName;
 

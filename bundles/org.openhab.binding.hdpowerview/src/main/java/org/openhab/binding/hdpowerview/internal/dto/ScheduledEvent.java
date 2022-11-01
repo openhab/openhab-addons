@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.hdpowerview.internal.api;
+package org.openhab.binding.hdpowerview.internal.dto;
 
 import java.time.DayOfWeek;
 import java.util.EnumSet;

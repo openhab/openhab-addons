@@ -10,10 +10,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.hdpowerview.internal.api.requests;
+package org.openhab.binding.hdpowerview.internal.dto.requests;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
+import org.openhab.binding.hdpowerview.internal.dto.ShadePosition;
 
 /**
  * The position of a shade to set

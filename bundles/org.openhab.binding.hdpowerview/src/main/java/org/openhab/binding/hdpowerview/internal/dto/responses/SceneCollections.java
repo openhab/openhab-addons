@@ -10,13 +10,13 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.hdpowerview.internal.api.responses;
+package org.openhab.binding.hdpowerview.internal.dto.responses;
 
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.hdpowerview.internal.api.SceneCollection;
+import org.openhab.binding.hdpowerview.internal.dto.SceneCollection;
 
 /**
  * State of all Scene Collections in an HD PowerView hub

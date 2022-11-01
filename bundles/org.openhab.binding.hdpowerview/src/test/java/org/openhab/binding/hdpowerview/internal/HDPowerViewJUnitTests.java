@@ -10,10 +10,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.hdpowerview;
+package org.openhab.binding.hdpowerview.internal;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.openhab.binding.hdpowerview.internal.api.CoordinateSystem.*;
+import static org.openhab.binding.hdpowerview.internal.dto.CoordinateSystem.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,16 +23,16 @@ import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.hdpowerview.internal.api.BatteryKind;
-import org.openhab.binding.hdpowerview.internal.api.Scene;
-import org.openhab.binding.hdpowerview.internal.api.SceneCollection;
-import org.openhab.binding.hdpowerview.internal.api.ShadeData;
-import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
-import org.openhab.binding.hdpowerview.internal.api.responses.SceneCollections;
-import org.openhab.binding.hdpowerview.internal.api.responses.Scenes;
-import org.openhab.binding.hdpowerview.internal.api.responses.Shades;
 import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDatabase;
 import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDatabase.Capabilities;
+import org.openhab.binding.hdpowerview.internal.dto.BatteryKind;
+import org.openhab.binding.hdpowerview.internal.dto.Scene;
+import org.openhab.binding.hdpowerview.internal.dto.SceneCollection;
+import org.openhab.binding.hdpowerview.internal.dto.ShadeData;
+import org.openhab.binding.hdpowerview.internal.dto.ShadePosition;
+import org.openhab.binding.hdpowerview.internal.dto.responses.SceneCollections;
+import org.openhab.binding.hdpowerview.internal.dto.responses.Scenes;
+import org.openhab.binding.hdpowerview.internal.dto.responses.Shades;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;

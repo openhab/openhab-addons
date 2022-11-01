@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.hdpowerview.providers;
+package org.openhab.binding.hdpowerview.internal.providers;
 
 import static java.util.Map.entry;
 
