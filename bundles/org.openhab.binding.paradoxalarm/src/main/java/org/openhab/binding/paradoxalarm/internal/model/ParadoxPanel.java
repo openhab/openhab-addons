@@ -64,7 +64,7 @@ public class ParadoxPanel implements IDataUpdateListener {
             throw new ParadoxRuntimeException(
                     "Unsupported panel type. Type: " + panelInformation.getPanelType().name());
         }
-    }
+    } 
 
     public boolean isPanelSupported() {
         PanelType panelType = panelInformation.getPanelType();
