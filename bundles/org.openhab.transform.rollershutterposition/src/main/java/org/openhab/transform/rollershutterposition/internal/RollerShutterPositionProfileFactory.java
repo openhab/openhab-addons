@@ -12,6 +12,8 @@
  */
 package org.openhab.transform.rollershutterposition.internal;
 
+import static org.openhab.transform.rollershutterposition.internal.RollerShutterPositionConstants.PROFILE_TYPE_UID;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
@@ -30,18 +32,16 @@ import org.openhab.core.thing.profiles.ProfileTypeUID;
 import org.osgi.service.component.annotations.Component;
 
 /**
- * {@link ProfileFactory} that creates the transformation profile for the {@link ScaleTransformationService}
+ * {@link RollerShutterPositionProfileFactory } Factory to create the profile
  *
- * @author Stefan Triller - Initial contribution
+ * @author Jeff James - Initial contribution
  */
 @NonNullByDefault
 @Component(service = { ProfileFactory.class, ProfileTypeProvider.class })
 public class RollerShutterPositionProfileFactory implements ProfileFactory, ProfileTypeProvider {
     @Override
     public Collection<ProfileType> getProfileTypes(@Nullable Locale locale) {
-        return List.of(ProfileTypeBuilder
-                .newState(RollerShutterPositionProfile.PROFILE_TYPE_UID,
-                        RollerShutterPositionProfile.PROFILE_TYPE_UID.getId())
+        return List.of(ProfileTypeBuilder.newState(PROFILE_TYPE_UID, PROFILE_TYPE_UID.getId())
                 .withSupportedItemTypes(CoreItemFactory.ROLLERSHUTTER).build());
     }
 
@@ -53,6 +53,6 @@ public class RollerShutterPositionProfileFactory implements ProfileFactory, Prof
 
     @Override
     public Collection<ProfileTypeUID> getSupportedProfileTypeUIDs() {
-        return List.of(RollerShutterPositionProfile.PROFILE_TYPE_UID);
+        return List.of(PROFILE_TYPE_UID);
     }
 }

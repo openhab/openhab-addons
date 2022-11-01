@@ -1,12 +1,17 @@
 # Rollershutter Position Emulation Profile Service
 
-The Rollershutter Position emulates absolute position setting for Rollershutter devices which only support basic UP/DOWN/STOP commands.  This allows Rollershutter to be set to an absolution position from 0..100.
+The Rollershutter Position emulates absolute position setting for Rollershutter devices which only support basic UP/DOWN/STOP commands.
+This allows a Rollershutter to be set to an absolution position from 0..100 even if the controller does not support.
 
-The logic code used for this profile service was adapted from Tarag Gautier's javascript implementation VASRollershutter.js.  By implementing as a profile, it eliminates the need for setting up a jsr233 js environment and simplifies the configuration.
+The logic code used for this profile service was adapted from Tarag Gautier's javascript implementation VASRollershutter.js.
+By implementing as a profile, it eliminates the need for setting up a jsr233 js environment and simplifies the configuration.
 
-To use this profile, simply include the profile on the Rollershutter item which is assigned to the Rollershutter channel.  The parameters <uptime> and <downtime> are the time it takes for the Rollershutter to fully extend or close in seconds. The precision parameter can be used to specify the minimum movement that can be made.  This is useful when latencies in the system limit prevent very small movements and will reduce the accuracy of the position estimation.
+To use this profile, simply include the profile on the Rollershutter item which is assigned to the Rollershutter channel.
+The parameters <uptime> and <downtime> are the time it takes for the Rollershutter to fully extend or close in seconds.
+The precision parameter can be used to specify the minimum movement that can be made.
+This is useful when latencies in the system limit prevent very small movements and will reduce the accuracy of the position estimation.
 
 ```java
-Rollershutter <itemName> { channel="<channelUID>"[profile="rollershutter:rollershutter-position", uptime=<uptime>, downtime=<downtime>, precision=<minimun percent movement>]]}
+Rollershutter <itemName> { channel="<channelUID>"[profile="rollershutter:position", uptime=<uptime>, downtime=<downtime>, precision=<minimun percent movement>]]}
 ```
 
