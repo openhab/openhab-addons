@@ -18,6 +18,7 @@ import java.util.*;
 import java.util.concurrent.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lgthinq.internal.LGThinQDeviceDynStateDescriptionProvider;
 import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
 import org.openhab.binding.lgthinq.lgservices.LGThinQApiClientService;
@@ -26,12 +27,16 @@ import org.openhab.binding.lgthinq.lgservices.LGThinQWMApiV2ClientServiceImpl;
 import org.openhab.binding.lgthinq.lgservices.model.DevicePowerState;
 import org.openhab.binding.lgthinq.lgservices.model.DeviceTypes;
 import org.openhab.binding.lgthinq.lgservices.model.LGDevice;
-import org.openhab.binding.lgthinq.lgservices.model.washer.WasherCapability;
-import org.openhab.binding.lgthinq.lgservices.model.washer.WasherSnapshot;
+import org.openhab.binding.lgthinq.lgservices.model.washerdryer.WasherCapability;
+import org.openhab.binding.lgthinq.lgservices.model.washerdryer.WasherSnapshot;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.*;
+import org.openhab.core.thing.binding.ThingHandlerCallback;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.StateOption;
 import org.slf4j.Logger;
@@ -53,6 +58,10 @@ public class LGThinQWasherHandler extends LGThinQAbstractDeviceHandler<WasherCap
     private final ChannelUID downloadedCourseChannelUUID;
     private final ChannelUID temperatureChannelUUID;
     private final ChannelUID doorLockChannelUUID;
+    private final ChannelUID remoteStartChannelUUID;
+    private final ChannelUID standbyChannelUUID;
+    @Nullable
+    private WasherSnapshot lastShot;
 
     private final Logger logger = LoggerFactory.getLogger(LGThinQWasherHandler.class);
     @NonNullByDefault
@@ -75,6 +84,8 @@ public class LGThinQWasherHandler extends LGThinQAbstractDeviceHandler<WasherCap
         downloadedCourseChannelUUID = new ChannelUID(getThing().getUID(), WM_CHANNEL_DOWNLOADED_COURSE_ID);
         temperatureChannelUUID = new ChannelUID(getThing().getUID(), WM_CHANNEL_TEMP_LEVEL_ID);
         doorLockChannelUUID = new ChannelUID(getThing().getUID(), WM_CHANNEL_DOOR_LOCK_ID);
+        remoteStartChannelUUID = new ChannelUID(getThing().getUID(), WM_CHANNEL_REMOTE_START_ID);
+        standbyChannelUUID = new ChannelUID(getThing().getUID(), WM_CHANNEL_STAND_BY_ID);
     }
 
     static class AsyncCommandParams {
@@ -129,6 +140,21 @@ public class LGThinQWasherHandler extends LGThinQAbstractDeviceHandler<WasherCap
             options.add(new StateOption("1", "Locked"));
             stateDescriptionProvider.setStateOptions(doorLockChannelUUID, options);
         }
+        if (isLinked(remoteStartChannelUUID)) {
+            List<StateOption> options = new ArrayList<>();
+            options.add(new StateOption("REMOTE_START_OFF", "OFF"));
+            options.add(new StateOption("REMOTE_START_ON", "ON"));
+            stateDescriptionProvider.setStateOptions(remoteStartChannelUUID, options);
+        }
+        if (getThing().getChannel(standbyChannelUUID) == null) {
+            createDynChannel(WM_CHANNEL_STAND_BY_ID, standbyChannelUUID, "Switch");
+        }
+        if (isLinked(standbyChannelUUID)) {
+            List<StateOption> options = new ArrayList<>();
+            options.add(new StateOption("STANDBY_OFF", "OFF"));
+            options.add(new StateOption("STANDBY_ON", "ON"));
+            stateDescriptionProvider.setStateOptions(remoteStartChannelUUID, options);
+        }
     }
 
     @Override
@@ -143,6 +169,7 @@ public class LGThinQWasherHandler extends LGThinQAbstractDeviceHandler<WasherCap
 
     @Override
     protected void updateDeviceChannels(WasherSnapshot shot) {
+        lastShot = shot;
         updateState(CHANNEL_POWER_ID,
                 (DevicePowerState.DV_POWER_ON.equals(shot.getPowerStatus()) ? OnOffType.ON : OnOffType.OFF));
         updateState(WM_CHANNEL_STATE_ID, new StringType(shot.getState()));
@@ -153,6 +180,27 @@ public class LGThinQWasherHandler extends LGThinQAbstractDeviceHandler<WasherCap
         updateState(WM_CHANNEL_REMAIN_TIME_ID, new DateTimeType(shot.getRemainingTime()));
         updateState(WM_CHANNEL_DELAY_TIME_ID, new DateTimeType(shot.getReserveTime()));
         updateState(WM_CHANNEL_DOWNLOADED_COURSE_ID, new StringType(shot.getDownloadedCourse()));
+        updateState(WM_CHANNEL_STAND_BY_ID, shot.isStandBy() ? OnOffType.ON : OnOffType.OFF);
+        Channel remoteStartChannel = getThing().getChannel(remoteStartChannelUUID);
+        // only can have remote start channel is the WM is not in sleep mode, and remote start is enabled.
+        if (shot.isRemoteStartEnabled() && !shot.isStandBy()) {
+            ThingHandlerCallback callback = getCallback();
+            if (remoteStartChannel == null && callback != null) {
+                ChannelBuilder builder = getCallback().createChannelBuilder(remoteStartChannelUUID,
+                        new ChannelTypeUID(BINDING_ID, WM_CHANNEL_REMOTE_START_ID));
+                Channel newChannel = builder.build();
+                ThingBuilder thingBuilder = editThing();
+                updateThing(thingBuilder.withChannel(newChannel).build());
+            }
+            if (isLinked(remoteStartChannelUUID)) {
+                updateState(WM_CHANNEL_REMOTE_START_ID, new StringType(shot.getRemoteStart()));
+            }
+        } else {
+            if (remoteStartChannel != null) {
+                ThingBuilder builder = editThing().withoutChannels(remoteStartChannel);
+                updateThing(builder.build());
+            }
+        }
     }
 
     @Override
@@ -171,12 +219,40 @@ public class LGThinQWasherHandler extends LGThinQAbstractDeviceHandler<WasherCap
     protected void processCommand(LGThinQAbstractDeviceHandler.AsyncCommandParams params) throws LGThinqApiException {
         Command command = params.command;
         switch (params.channelUID) {
-            case CHANNEL_POWER_ID: {
-                if (command instanceof OnOffType) {
-                    lgThinqWMApiClientService.turnDevicePower(getBridgeId(), getDeviceId(),
-                            command == OnOffType.ON ? DevicePowerState.DV_POWER_ON : DevicePowerState.DV_POWER_OFF);
+            case WM_CHANNEL_REMOTE_START_ID: {
+                if (command instanceof StringType) {
+                    if ("START".equalsIgnoreCase(command.toString())) {
+                        if (lastShot != null && !lastShot.isStandBy()) {
+                            lgThinqWMApiClientService.remoteStart(getBridgeId(), getDeviceId());
+                        } else {
+                            logger.warn(
+                                    "WM is in StandBy mode. Command START can't be sent to Remote Start channel. Ignoring");
+                        }
+                    } else {
+                        logger.warn(
+                                "Command [{}] sent to Remote Start channel is invalid. Only command START is valid.",
+                                command);
+                    }
                 } else {
-                    logger.warn("Received command different of OnOffType in Power Channel. Ignoring");
+                    logger.warn("Received command different of StringType in Remote Start Channel. Ignoring");
+                }
+                break;
+            }
+            case WM_CHANNEL_STAND_BY_ID: {
+                if (command instanceof OnOffType) {
+                    if (OnOffType.OFF.equals(command)) {
+                        if (lastShot == null || !lastShot.isStandBy()) {
+                            logger.warn(
+                                    "Command OFF was sent to StandBy channel, but the state of the WM is unknown or already waked up. Ignoring");
+                            break;
+                        }
+                        lgThinqWMApiClientService.wakeUp(getBridgeId(), getDeviceId());
+                    } else {
+                        logger.warn("Command [{}] sent to StandBy channel is invalid. Only command OFF is valid.",
+                                command);
+                    }
+                } else {
+                    logger.warn("Received command different of OnOffType in StandBy Channel. Ignoring");
                 }
                 break;
             }
