@@ -46,7 +46,6 @@ import org.openhab.automation.jsscripting.internal.fs.PrefixedSeekableByteChanne
 import org.openhab.automation.jsscripting.internal.fs.ReadOnlySeekableByteArrayChannel;
 import org.openhab.automation.jsscripting.internal.fs.watch.JSDependencyTracker;
 import org.openhab.automation.jsscripting.internal.scriptengine.InvocationInterceptingScriptEngineWithInvocableAndAutoCloseable;
-import org.openhab.automation.jsscripting.internal.threading.ThreadsafeTimers;
 import org.openhab.core.automation.module.script.ScriptExtensionAccessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,6 +58,7 @@ import com.oracle.truffle.js.scriptengine.GraalJSScriptEngine;
  * @author Jonathan Gilbert - Initial contribution
  * @author Dan Cunningham - Script injections
  * @author Florian Hotze - Create lock object for multi-thread synchronization
+ * @author Florian Hotze - Inject the {@link JSRuntimeFeatures} into the JS context
  */
 public class OpenhabGraalJSScriptEngine
         extends InvocationInterceptingScriptEngineWithInvocableAndAutoCloseable<GraalJSScriptEngine> {
@@ -69,7 +69,7 @@ public class OpenhabGraalJSScriptEngine
     // final CommonJS search path for our library
     private static final Path NODE_DIR = Paths.get("node_modules");
 
-    private final ThreadsafeTimers threadsafeTimers = new ThreadsafeTimers(lock);
+    private final JSRuntimeFeatures jsRuntimeFeatures = new JSRuntimeFeatures(lock);
 
     // these fields start as null because they are populated on first use
     private String engineIdentifier;
@@ -208,7 +208,7 @@ public class OpenhabGraalJSScriptEngine
         delegate.getBindings(ScriptContext.ENGINE_SCOPE).put(REQUIRE_WRAPPER_NAME, wrapRequireFn);
         // Injections into the JS runtime
         delegate.put("require", wrapRequireFn.apply((Function<Object[], Object>) delegate.get("require")));
-        delegate.put("ThreadsafeTimers", threadsafeTimers);
+        jsRuntimeFeatures.getFeatures().forEach((key, obj) -> delegate.put(key, obj));
 
         initialized = true;
 
@@ -221,7 +221,7 @@ public class OpenhabGraalJSScriptEngine
 
     @Override
     public void close() {
-        threadsafeTimers.clearAll();
+        jsRuntimeFeatures.close();
     }
 
     /**
