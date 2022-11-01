@@ -101,10 +101,6 @@ public class MACAddress {
         }
 
         final MACAddress other = (MACAddress) obj;
-        if (!this.hex.equalsIgnoreCase(other.hex)) {
-            return false;
-        }
-
-        return true;
+        return this.hex.equalsIgnoreCase(other.hex);
     }
 }
