@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.binding.paradoxalarm.internal.communication.IDataUpdateListener;
 import org.openhab.binding.paradoxalarm.internal.communication.IParadoxCommunicator;
 import org.openhab.binding.paradoxalarm.internal.exceptions.ParadoxRuntimeException;
