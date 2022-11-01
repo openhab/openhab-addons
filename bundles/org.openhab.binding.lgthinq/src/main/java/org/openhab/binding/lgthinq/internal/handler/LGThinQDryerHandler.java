@@ -15,9 +15,9 @@ package org.openhab.binding.lgthinq.internal.handler;
 import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.*;
 
 import java.util.*;
-import java.util.concurrent.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lgthinq.internal.LGThinQDeviceDynStateDescriptionProvider;
 import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
 import org.openhab.binding.lgthinq.lgservices.LGThinQApiClientService;
@@ -26,12 +26,16 @@ import org.openhab.binding.lgthinq.lgservices.LGThinQDRApiV2ClientServiceImpl;
 import org.openhab.binding.lgthinq.lgservices.model.DevicePowerState;
 import org.openhab.binding.lgthinq.lgservices.model.DeviceTypes;
 import org.openhab.binding.lgthinq.lgservices.model.LGDevice;
-import org.openhab.binding.lgthinq.lgservices.model.dryer.DryerCapability;
-import org.openhab.binding.lgthinq.lgservices.model.dryer.DryerSnapshot;
+import org.openhab.binding.lgthinq.lgservices.model.washerdryer.DryerCapability;
+import org.openhab.binding.lgthinq.lgservices.model.washerdryer.DryerSnapshot;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.*;
+import org.openhab.core.thing.binding.ThingHandlerCallback;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.StateOption;
 import org.slf4j.Logger;
@@ -52,7 +56,10 @@ public class LGThinQDryerHandler extends LGThinQAbstractDeviceHandler<DryerCapab
     private final ChannelUID errorChannelUUID;
     private final ChannelUID courseChannelUUID;
     private final ChannelUID smartCourseChannelUUID;
-
+    private final ChannelUID remoteStartChannelUUID;
+    private final ChannelUID standbyChannelUUID;
+    @Nullable
+    private DryerSnapshot lastShot;
     private final Logger logger = LoggerFactory.getLogger(LGThinQDryerHandler.class);
     @NonNullByDefault
     private final LGThinQDRApiClientService lgThinqDRApiClientService;
@@ -66,6 +73,8 @@ public class LGThinQDryerHandler extends LGThinQAbstractDeviceHandler<DryerCapab
         processStateChannelUUID = new ChannelUID(getThing().getUID(), DR_CHANNEL_PROCESS_STATE_ID);
         errorChannelUUID = new ChannelUID(getThing().getUID(), DR_CHANNEL_ERROR_ID);
         dryLevelChannelUUID = new ChannelUID(getThing().getUID(), DR_CHANNEL_DRY_LEVEL_ID);
+        remoteStartChannelUUID = new ChannelUID(getThing().getUID(), WM_CHANNEL_REMOTE_START_ID);
+        standbyChannelUUID = new ChannelUID(getThing().getUID(), WM_CHANNEL_STAND_BY_ID);
     }
 
     @Override
@@ -89,6 +98,7 @@ public class LGThinQDryerHandler extends LGThinQAbstractDeviceHandler<DryerCapab
 
     @Override
     protected void updateDeviceChannels(DryerSnapshot shot) {
+        lastShot = shot;
         updateState(CHANNEL_POWER_ID, OnOffType.from(shot.getPowerStatus() == DevicePowerState.DV_POWER_ON));
         updateState(DR_CHANNEL_STATE_ID, new StringType(shot.getState()));
         updateState(DR_CHANNEL_COURSE_ID, new StringType(shot.getCourse()));
@@ -98,18 +108,67 @@ public class LGThinQDryerHandler extends LGThinQAbstractDeviceHandler<DryerCapab
         updateState(DR_CHANNEL_REMAIN_TIME_ID, new DateTimeType(shot.getRemainingTime()));
         updateState(DR_CHANNEL_DRY_LEVEL_ID, new StringType(shot.getDryLevel()));
         updateState(DR_CHANNEL_ERROR_ID, new StringType(shot.getError()));
+        updateState(WM_CHANNEL_STAND_BY_ID, shot.isStandBy() ? OnOffType.ON : OnOffType.OFF);
+        Channel remoteStartChannel = getThing().getChannel(remoteStartChannelUUID);
+        // only can have remote start channel is the WM is not in sleep mode, and remote start is enabled.
+        if (shot.isRemoteStartEnabled() && !shot.isStandBy()) {
+            ThingHandlerCallback callback = getCallback();
+            if (remoteStartChannel == null && callback != null) {
+                ChannelBuilder builder = getCallback().createChannelBuilder(remoteStartChannelUUID,
+                        new ChannelTypeUID(BINDING_ID, WM_CHANNEL_REMOTE_START_ID));
+                Channel newChannel = builder.build();
+                ThingBuilder thingBuilder = editThing();
+                updateThing(thingBuilder.withChannel(newChannel).build());
+            }
+            if (isLinked(remoteStartChannelUUID)) {
+                updateState(WM_CHANNEL_REMOTE_START_ID, new StringType(shot.getRemoteStart()));
+            }
+        } else {
+            if (remoteStartChannel != null) {
+                ThingBuilder builder = editThing().withoutChannels(remoteStartChannel);
+                updateThing(builder.build());
+            }
+        }
     }
 
     @Override
     protected void processCommand(LGThinQAbstractDeviceHandler.AsyncCommandParams params) throws LGThinqApiException {
         Command command = params.command;
         switch (params.channelUID) {
-            case CHANNEL_POWER_ID: {
-                if (command instanceof OnOffType) {
-                    lgThinqDRApiClientService.turnDevicePower(getBridgeId(), getDeviceId(),
-                            command == OnOffType.ON ? DevicePowerState.DV_POWER_ON : DevicePowerState.DV_POWER_OFF);
+            case WM_CHANNEL_REMOTE_START_ID: {
+                if (command instanceof StringType) {
+                    if ("START".equalsIgnoreCase(command.toString())) {
+                        if (lastShot != null && !lastShot.isStandBy()) {
+                            lgThinqDRApiClientService.remoteStart(getBridgeId(), getDeviceId());
+                        } else {
+                            logger.warn(
+                                    "WM is in StandBy mode. Command START can't be sent to Remote Start channel. Ignoring");
+                        }
+                    } else {
+                        logger.warn(
+                                "Command [{}] sent to Remote Start channel is invalid. Only command START is valid.",
+                                command);
+                    }
                 } else {
-                    logger.warn("Received command different of OnOffType in Power Channel. Ignoring");
+                    logger.warn("Received command different of StringType in Remote Start Channel. Ignoring");
+                }
+                break;
+            }
+            case WM_CHANNEL_STAND_BY_ID: {
+                if (command instanceof OnOffType) {
+                    if (OnOffType.OFF.equals(command)) {
+                        if (lastShot == null || !lastShot.isStandBy()) {
+                            logger.warn(
+                                    "Command OFF was sent to StandBy channel, but the state of the WM is unknown or already waked up. Ignoring");
+                            break;
+                        }
+                        lgThinqDRApiClientService.wakeUp(getBridgeId(), getDeviceId());
+                    } else {
+                        logger.warn("Command [{}] sent to StandBy channel is invalid. Only command OFF is valid.",
+                                command);
+                    }
+                } else {
+                    logger.warn("Received command different of OnOffType in StandBy Channel. Ignoring");
                 }
                 break;
             }
@@ -154,6 +213,21 @@ public class LGThinQDryerHandler extends LGThinQAbstractDeviceHandler<DryerCapab
             drCap.getDryLevels()
                     .forEach((k, v) -> options.add(new StateOption(k, keyIfValueNotFound(CAP_DR_DRY_LEVEL, v))));
             stateDescriptionProvider.setStateOptions(dryLevelChannelUUID, options);
+        }
+        if (isLinked(remoteStartChannelUUID)) {
+            List<StateOption> options = new ArrayList<>();
+            options.add(new StateOption("REMOTE_START_OFF", "OFF"));
+            options.add(new StateOption("REMOTE_START_ON", "ON"));
+            stateDescriptionProvider.setStateOptions(remoteStartChannelUUID, options);
+        }
+        if (getThing().getChannel(standbyChannelUUID) == null) {
+            createDynChannel(WM_CHANNEL_STAND_BY_ID, standbyChannelUUID, "Switch");
+        }
+        if (isLinked(standbyChannelUUID)) {
+            List<StateOption> options = new ArrayList<>();
+            options.add(new StateOption("STANDBY_OFF", "OFF"));
+            options.add(new StateOption("STANDBY_ON", "ON"));
+            stateDescriptionProvider.setStateOptions(remoteStartChannelUUID, options);
         }
     }
 

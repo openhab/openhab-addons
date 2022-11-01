@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Nemer Daud - Initial contribution
  */
 @NonNullByDefault
-public class LGThinqDeviceV1OfflineException extends LGThinqException {
+public class LGThinqDeviceV1OfflineException extends LGThinqApiException {
     public LGThinqDeviceV1OfflineException(String message, Throwable cause) {
         super(message, cause);
     }

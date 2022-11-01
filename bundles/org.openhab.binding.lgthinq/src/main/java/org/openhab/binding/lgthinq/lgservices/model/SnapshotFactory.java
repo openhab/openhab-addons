@@ -26,9 +26,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
 import org.openhab.binding.lgthinq.internal.errors.LGThinqUnmarshallException;
 import org.openhab.binding.lgthinq.lgservices.model.ac.ACSnapshot;
-import org.openhab.binding.lgthinq.lgservices.model.dryer.DryerSnapshot;
 import org.openhab.binding.lgthinq.lgservices.model.fridge.v2.FridgeSnapshotV2;
-import org.openhab.binding.lgthinq.lgservices.model.washer.WasherSnapshot;
+import org.openhab.binding.lgthinq.lgservices.model.washerdryer.DryerSnapshot;
+import org.openhab.binding.lgthinq.lgservices.model.washerdryer.WasherSnapshot;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;

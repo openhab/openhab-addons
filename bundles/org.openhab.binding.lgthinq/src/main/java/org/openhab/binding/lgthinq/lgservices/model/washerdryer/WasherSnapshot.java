@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.lgthinq.lgservices.model.washer;
+package org.openhab.binding.lgthinq.lgservices.model.washerdryer;
 
 import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.WM_POWER_OFF_VALUE;
 
@@ -46,6 +46,13 @@ public class WasherSnapshot implements Snapshot {
     private Double remainingMinute = 0.00;
     private Double reserveHour = 0.00;
     private Double reserveMinute = 0.00;
+
+    private String remoteStart = "";
+    private boolean remoteStartEnabled = false;
+
+    private String standByStatus = "";
+
+    private boolean standBy = false;
 
     @JsonAlias({ "Course", "courseFL24inchBaseTitan" })
     @JsonProperty("courseFL24inchBaseTitan")
@@ -180,5 +187,35 @@ public class WasherSnapshot implements Snapshot {
         } else {
             powerState = DevicePowerState.DV_POWER_ON;
         }
+    }
+
+    public boolean isRemoteStartEnabled() {
+        return remoteStartEnabled;
+    }
+
+    @JsonProperty("remoteStart")
+    @JsonAlias({ "RemoteStart" })
+    public String getRemoteStart() {
+        return remoteStart;
+    }
+
+    public void setRemoteStart(String remoteStart) {
+        this.remoteStart = remoteStart;
+        remoteStartEnabled = remoteStart.contains("ON");
+    }
+
+    public String getStandByStatus() {
+        return standByStatus;
+    }
+
+    @JsonProperty("standby")
+    @JsonAlias({ "Standby" })
+    public void setStandByStatus(String standByStatus) {
+        this.standByStatus = standByStatus;
+        standBy = standByStatus.contains("ON");
+    }
+
+    public boolean isStandBy() {
+        return standBy;
     }
 }
