@@ -50,13 +50,13 @@ Binding general configuration options. If you do not see all options, ensure `Sh
 
 Host
 ```
-Set `Host` to the address of the Pi that gpiod is running on. Default is 127.0.0.1.
-Note: If you are running pigpiod on same host as openHAB, set the host to **::1** (IPV6) or **127.0.0.1** (IPV4).
+Set Host to the address of the Pi that gpiod is running on. Default is 127.0.0.1.
+Note: If you are running pigpiod on same host as openHAB, set the host to ::1 (IPV6) or 127.0.0.1 (IPV4).
 ```
 
 Port
 ```
-Set `Port` to the network port that gpiod is listening on. Default is 8888.
+Set Port to the network port that gpiod is listening on. Default is 8888.
 ```
 
 Heart Beat Interval
@@ -204,7 +204,7 @@ of time.
                     OFF command after the Pulse duration.
   On              : When the OFF command is issued to the channel. The Pulse feature will send an
                     ON command after the Pulse duration.
-  Blnk            : Cycles the channel ON, OFF, ON indefinitely with a 50% duty cycle. The Blink
+  Blink            : Cycles the channel ON, OFF, ON indefinitely with a 50% duty cycle. The Blink
                     operation continues regardless of the commanded channel state. This was originaly
                     developed as a way to flash a status LED to visually confirm that a remote gpiod 
                     instance has connectivity to OpenHAB.
