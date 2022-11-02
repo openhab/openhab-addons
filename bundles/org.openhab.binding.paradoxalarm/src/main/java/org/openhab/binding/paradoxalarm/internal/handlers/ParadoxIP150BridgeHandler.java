@@ -208,6 +208,7 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler
     public void dispose() {
         cancelSchedule(refreshCacheUpdateSchedule);
         CommunicationState.logout(communicator);
+        panel.dispose();
         super.dispose();
     }
 
