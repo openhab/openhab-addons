@@ -48,24 +48,28 @@ sudo systemctl start pigpiod
 
 Binding general configuration options. If you do not see all options, ensure `Show Advanced` is selected.
 
-Host
+Host:
+
 ```
 Set Host to the address of the Pi that gpiod is running on. Default is 127.0.0.1.
 Note: If you are running pigpiod on same host as openHAB, set the host to ::1 (IPV6) or 127.0.0.1 (IPV4).
 ```
 
-Port
+Port:
+
 ```
 Set Port to the network port that gpiod is listening on. Default is 8888.
 ```
 
-Heart Beat Interval
+Heart Beat Interval:
+
 ```
 The binding will poll gpiod running on the Pi to determine if a network disconnect has occurred. 
 This is the interval in milliseconds that the heart beat poll occurs. Defaults to 30000 (30 seconds).
 ```
 
 Input Channel Connect Action:
+
 ```
 Input Channel Connect Action determines what happens when the binding initially connects to pigpiod. 
 This action only occurs once after binding startup.
@@ -76,6 +80,7 @@ This action only occurs once after binding startup.
 ```
 
 Input Channel Disconnect Connect Action:
+
 ```
 Input Channel Disconnect Connect Action determines what happens when the binding disconnects from pigpiod. 
   
@@ -84,6 +89,7 @@ Input Channel Disconnect Connect Action determines what happens when the binding
 ```
 
 Input Channel Reconnect Connect Action:
+
 ```
 Input Channel Reconnect Action determines what happens when the binding reconnects to pigpiod
 after a disconnect. This action does not occur on the initial binding connect to pigpiod.
@@ -95,6 +101,7 @@ startup.
 ```
 
 Output Channel Connect Action:
+
 ```
 Output Channel Connect Action determines what happens when the binding initially connects to pigpiod. 
 This action only occurs once after binding startup.
@@ -109,6 +116,7 @@ This action only occurs once after binding startup.
 ```
 
 Output Channel Disconnect Connect Action:
+
 ```
 Output Channel Disconnect Connect Action determines what happens when the binding disconnects from pigpiod. 
   
@@ -117,6 +125,7 @@ Output Channel Disconnect Connect Action determines what happens when the bindin
 ```
 
 Output Channel Reconnect Connect Action:
+
 ```
 Output Channel Reconnect Action determines what happens when the binding reconnects to pigpiod
 after a disconnect. This action does not occur on the initial binding connect to pigpiod.
@@ -141,32 +150,37 @@ The binding has two channel types. One for gpio input pins, and another for gpio
 
 Input channels provide a read-only value of the gpio pin state using the OnOffType datatype.
 
-GPIO Pin
+GPIO Pin:
+
 ```
 The gpio pin number on the Pi that the channel will monitor.
 ```
 
-Invert
+Invert:
+
 ```
 Inverts the value of the gpio pin before reflecting the value on the channel. Useful
 for active low gpio pins where you want the channel state to reflect an ON value when
 the pin is low (OFF).
 ```
 
-Delay Time
+Delay Time:
+
 ```
 Sets a delay value in milliseconds that the gpio pin must remain at prior to updating the channel state. 
 This is the same as switch debouncing or hysteresis. Default value is 10 milliseconds. Increase this value
 for noisy inputs.
 ```
 
-Pull Up/Down Resistor 
+Pull Up/Down Resistor:
+
 ```
 Sets the mode of operation for the internal pull up/ down resistor on the gpio pin.
 Set this to OFF if you use external pull up/down resistors.
 ```
 
-Edge Detection Mode
+Edge Detection Mode:
+
 ```
 Sets the mode of operation for the pin edge detection mode. If you are not sure what
 the use case is for this, leave at the default value of `Either Edge`. This is the most common
@@ -177,26 +191,30 @@ mode that gpio inputs are used.
 
 Output channels provide a means of controlling the output  value of the gpio pin using the OnOffType datatype.
 
-GPIO Pin
+GPIO Pin:
+
 ```
 The gpio pin number on the Pi that the channel will control.
 ```
 
-Invert
+Invert:
+
 ```
 Inverts the value of the channel state before commanding the gpio pin. Useful to 
 simulate active low gpio pins.
 ```
 
-Pulse
+Pulse:
+
 ```
-Time in milliseconds that must elapse before the `Pulse Command` is sent to the channel.
+Time in milliseconds that must elapse before the Pulse Command is sent to the channel.
 Default value is 0, which disables the Pulse feature.
 ```
 
-Pulse Command
+Pulse Command:
+
 ```
-Together with the `Pulse` configuration, can be used to create a one shot or momentary output.
+Together with the Pulse configuration, can be used to create a one shot or momentary output.
 This is useful to simulate momentary button presses or to drive motors for a predefined amount
 of time.
 
@@ -204,7 +222,7 @@ of time.
                     OFF command after the Pulse duration.
   On              : When the OFF command is issued to the channel. The Pulse feature will send an
                     ON command after the Pulse duration.
-  Blink            : Cycles the channel ON, OFF, ON indefinitely with a 50% duty cycle. The Blink
+  Blink           : Cycles the channel ON, OFF, ON indefinitely with a 50% duty cycle. The Blink
                     operation continues regardless of the commanded channel state. This was originaly
                     developed as a way to flash a status LED to visually confirm that a remote gpiod 
                     instance has connectivity to OpenHAB.
