@@ -16,13 +16,16 @@ import static org.openhab.binding.gpio.internal.GPIOBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.gpio.internal.InvalidPullUpDownException;
-import org.openhab.binding.gpio.internal.NoGpioIdException;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.gpio.internal.ChannelConfigurationException;
 import org.openhab.binding.gpio.internal.configuration.GPIOInputConfiguration;
 import org.openhab.binding.gpio.internal.configuration.GPIOOutputConfiguration;
 import org.openhab.binding.gpio.internal.configuration.PigpioConfiguration;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -30,6 +33,8 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,6 +49,7 @@ import eu.xeli.jpigpio.PigpioSocket;
  *
  * @author Nils Bauer - Initial contribution
  * @author Jan N. Klug - Channel redesign
+ * @author Jeremy Rumpf - Improve JPigpio connection handling
  */
 @NonNullByDefault
 public class PigpioRemoteHandler extends BaseThingHandler {
@@ -57,60 +63,361 @@ public class PigpioRemoteHandler extends BaseThingHandler {
      */
     public PigpioRemoteHandler(Thing thing) {
         super(thing);
+        logger.debug("gpio : ctor");
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         ChannelHandler channelHandler = channelHandlers.get(channelUID);
-        if (channelHandler != null) {
-            channelHandler.handleCommand(command);
+
+        try {
+            synchronized (this.connectionLock) {
+                if (!(thing.getStatus().equals(ThingStatus.ONLINE))) {
+                    // We raced with the connectPoll and lost
+                    return;
+                }
+
+                if (channelHandler instanceof PigpioDigitalInputHandler) {
+                    PigpioDigitalInputHandler inputHandler = (PigpioDigitalInputHandler) channelHandler;
+
+                    try {
+                        inputHandler.handleCommand(command);
+                    } catch (PigpioException pe) {
+                        logger.warn("Input command exception on channel {} {}", channelUID, pe.toString());
+                        if (pe.getErrorCode() == -99999999) {
+                            runDisconnectActions();
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                                    pe.getLocalizedMessage());
+                        }
+                    }
+                } else if (channelHandler instanceof PigpioDigitalOutputHandler) {
+                    PigpioDigitalOutputHandler outputHandler = (PigpioDigitalOutputHandler) channelHandler;
+
+                    try {
+                        outputHandler.handleCommand(command);
+                    } catch (PigpioException pe) {
+                        logger.warn("Output command exception on channel {} {}", channelUID, pe.toString());
+                        if (pe.getErrorCode() == -99999999) {
+                            runDisconnectActions();
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                                    pe.getLocalizedMessage());
+                        }
+                    }
+                } else {
+                    logger.error("Command received for an unknown channel: {}", channelUID);
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Command exception on channel {} {}", channelUID, e.toString());
         }
     }
 
+    @Nullable
+    protected PigpioConfiguration config = null;
+    @Nullable
+    protected JPigpio jPigpio = null;
+
     @Override
     public void initialize() {
-        PigpioConfiguration config = getConfigAs(PigpioConfiguration.class);
-        String host = config.host;
-        int port = config.port;
-        JPigpio jPigpio;
-        if (host == null) {
+        this.config = getConfigAs(PigpioConfiguration.class);
+
+        if (this.config.host == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                     "Cannot connect to PiGPIO Service on remote raspberry. IP address not set.");
             return;
         }
-        try {
-            jPigpio = new PigpioSocket(host, port);
-            updateStatus(ThingStatus.ONLINE);
-        } catch (PigpioException e) {
-            if (e.getErrorCode() == PigpioException.PI_BAD_SOCKET_PORT) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "Port out of range");
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                        e.getLocalizedMessage());
-            }
+        if (this.config.port < 1 && this.config.port > 65535) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                    "Cannot connect to PiGPIO Service on remote raspberry. Invalid Port.");
             return;
         }
+
+        createChannelHandlers();
+
+        logger.debug("gpio binding initialized");
+
+        connectionJob = scheduler.submit(() -> {
+            connectionPollWorker();
+        });
+    }
+
+    protected void clearChannelHandlers() {
+        for (ChannelHandler handler : channelHandlers.values()) {
+            handler.dispose();
+        }
+        channelHandlers.clear();
+    }
+
+    protected void createChannelHandlers() {
+        clearChannelHandlers();
         thing.getChannels().forEach(channel -> {
             ChannelUID channelUID = channel.getUID();
             ChannelTypeUID type = channel.getChannelTypeUID();
             try {
                 if (CHANNEL_TYPE_DIGITAL_INPUT.equals(type)) {
                     GPIOInputConfiguration configuration = channel.getConfiguration().as(GPIOInputConfiguration.class);
-                    channelHandlers.put(channelUID, new PigpioDigitalInputHandler(configuration, jPigpio, scheduler,
+                    this.channelHandlers.put(channelUID, new PigpioDigitalInputHandler(configuration, scheduler,
                             state -> updateState(channelUID.getId(), state)));
                 } else if (CHANNEL_TYPE_DIGITAL_OUTPUT.equals(type)) {
                     GPIOOutputConfiguration configuration = channel.getConfiguration()
                             .as(GPIOOutputConfiguration.class);
-                    channelHandlers.put(channelUID, new PigpioDigitalOutputHandler(configuration, jPigpio,
-                            state -> updateState(channelUID.getId(), state)));
+                    PigpioDigitalOutputHandler handler = new PigpioDigitalOutputHandler(configuration, scheduler,
+                            state -> updateState(channelUID.getId(), state));
+                    this.channelHandlers.put(channelUID, handler);
                 }
             } catch (PigpioException e) {
-                logger.warn("Failed to initialize {}: {}", channelUID, e.getMessage());
-            } catch (InvalidPullUpDownException e) {
-                logger.warn("Failed to initialize {}: Invalid Pull Up/Down resistor configuration", channelUID);
-            } catch (NoGpioIdException e) {
-                logger.warn("Failed to initialize {}: GpioId is not set", channelUID);
+                logger.warn("Failed to initialize channel {} {}", channelUID, e.toString());
+            } catch (ChannelConfigurationException e) {
+                logger.error("Failed to initialize channel {} {}", channelUID, e.toString());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                        String.format("Invalid configuration for channel {}", channelUID));
             }
         });
+        logger.debug("gpio channels initialized");
+    }
+
+    protected void setChannelJPigpio(JPigpio jPigpio) throws PigpioException {
+        if (this.channelHandlers.size() == 0) {
+            createChannelHandlers();
+        }
+        for (ChannelHandler handler : this.channelHandlers.values()) {
+            handler.listen(jPigpio);
+        }
+        logger.debug("gpio jPigpio listening");
+    }
+
+    @Nullable
+    private Future<?> connectionJob = null;
+    private Object connectionLock = new Object();
+
+    protected void killConnectionPoll() {
+        if (this.connectionJob != null) {
+            synchronized (this.connectionLock) {
+                if (this.connectionJob != null) {
+                    @Nullable
+                    Future<?> job = this.connectionJob;
+                    this.connectionJob = null;
+                    logger.debug("gpio connection poll : killing");
+                    job.cancel(true);
+                }
+            }
+        }
+    }
+
+    protected void connectionPollWorker() {
+        Thing thing = this.getThing();
+        ThingStatus currentStatus;
+
+        if (thing == null) {
+            return;
+        }
+
+        currentStatus = thing.getStatus();
+        synchronized (connectionLock) {
+            if (currentStatus.equals(ThingStatus.ONLINE) && jPigpio != null) {
+                try {
+                    logger.debug("gpio connection poll : CMD_TICK");
+                    this.jPigpio.getCurrentTick();
+                } catch (PigpioException e) {
+                    logger.debug("gpio connection poll : disconnect");
+                    runDisconnectActions();
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                            e.getLocalizedMessage());
+
+                    // Try a quick reconnect if the user specified a long(ish) interval
+                    int interval = this.config.heartBeatInterval;
+                    if (interval > 1000) {
+                        interval = 1000;
+                    }
+
+                    this.connectionJob = scheduler.schedule(() -> {
+                        connectionPollWorker();
+                    }, interval, TimeUnit.MILLISECONDS);
+
+                    return;
+                }
+            } else {
+                try {
+                    if (this.jPigpio == null) {
+                        // First initialization or re-initialization after dispose()
+                        logger.debug("gpio connection poll : connecting");
+                        this.jPigpio = new PigpioSocket(this.config.host, this.config.port);
+                        setChannelJPigpio(this.jPigpio);
+                        updateStatus(ThingStatus.ONLINE);
+                        runConnectActions();
+                    } else {
+                        logger.debug("gpio connection poll : reconnecting");
+                        this.jPigpio.reconnect();
+                        // JPigpio listeners are not re-established after reconnect.
+                        setChannelJPigpio(this.jPigpio);
+                        updateStatus(ThingStatus.ONLINE);
+                        runReconnectActions();
+                    }
+                } catch (PigpioException e) {
+                    logger.debug("gpio connection poll : failed, {}", e.getErrorCode());
+                    if (currentStatus.equals(ThingStatus.ONLINE) || currentStatus.equals(ThingStatus.INITIALIZING)) {
+                        runDisconnectActions();
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                                e.getLocalizedMessage());
+                    }
+                }
+            }
+
+            if (this.config.heartBeatInterval > 0) {
+                this.connectionJob = scheduler.schedule(() -> {
+                    connectionPollWorker();
+                }, this.config.heartBeatInterval, TimeUnit.MILLISECONDS);
+            } else {
+                // User disabled periodic connections, one shot
+                logger.debug("gpio connection poll : disabled");
+                this.connectionJob = null;
+            }
+        }
+    }
+
+    protected void runConnectActions() throws PigpioException {
+        if (this.config.inputConnectAction != null) {
+            if (ACTION_REFRESH.equals(this.config.inputConnectAction)) {
+                refreshInputChannels();
+            }
+        }
+
+        if (this.config.outputConnectAction != null) {
+            if (ACTION_ALL_ON.equals(this.config.outputConnectAction)) {
+                setOutputChannels(OnOffType.ON);
+            } else if (ACTION_ALL_OFF.equals(this.config.outputConnectAction)) {
+                setOutputChannels(OnOffType.OFF);
+            } else if (ACTION_REFRESH.equals(this.config.outputConnectAction)) {
+                refreshOutputChannels();
+            }
+        }
+    }
+
+    protected void runReconnectActions() throws PigpioException {
+        if (this.config.inputConnectAction != null) {
+            if (ACTION_REFRESH.equals(this.config.inputConnectAction)) {
+                refreshInputChannels();
+            }
+        }
+
+        if (this.config.outputConnectAction != null) {
+            if (ACTION_REFRESH.equals(this.config.outputConnectAction)) {
+                refreshOutputChannels();
+            }
+        }
+    }
+
+    protected void runDisconnectActions() {
+        if (this.config.inputDisconnectAction != null) {
+            if (ACTION_SET_UNDEF.equals(this.config.inputDisconnectAction)) {
+                undefInputChannels();
+            }
+        }
+
+        if (this.config.outputDisconnectAction != null) {
+            if (ACTION_SET_UNDEF.equals(this.config.outputDisconnectAction)) {
+                undefOutputChannels();
+            }
+        }
+    }
+
+    protected void refreshInputChannels() throws PigpioException {
+        if (channelHandlers == null) {
+            return;
+        }
+        logger.debug("gpio refresh input channels");
+        for (ChannelUID channelUID : channelHandlers.keySet()) {
+            ChannelHandler handler = channelHandlers.get(channelUID);
+            if (handler instanceof PigpioDigitalInputHandler) {
+                handler.handleCommand(RefreshType.REFRESH);
+                postCommand(channelUID, RefreshType.REFRESH);
+            }
+        }
+    }
+
+    protected void refreshOutputChannels() throws PigpioException {
+        if (this.channelHandlers == null) {
+            return;
+        }
+        logger.debug("gpio refresh output channels");
+        for (ChannelUID channelUID : this.channelHandlers.keySet()) {
+            ChannelHandler handler = this.channelHandlers.get(channelUID);
+            if (handler instanceof PigpioDigitalOutputHandler) {
+                handler.handleCommand(RefreshType.REFRESH);
+                postCommand(channelUID, RefreshType.REFRESH);
+            }
+        }
+    }
+
+    protected void undefInputChannels() {
+        if (this.channelHandlers == null) {
+            return;
+        }
+        logger.debug("gpio undef input channels");
+        for (ChannelUID channelUID : this.channelHandlers.keySet()) {
+            ChannelHandler handler = this.channelHandlers.get(channelUID);
+            if (handler instanceof PigpioDigitalInputHandler) {
+                updateState(channelUID, UnDefType.UNDEF);
+            }
+        }
+    }
+
+    protected void undefOutputChannels() {
+        if (this.channelHandlers == null) {
+            return;
+        }
+        logger.debug("gpio undef output channels");
+        for (ChannelUID channelUID : channelHandlers.keySet()) {
+            ChannelHandler handler = channelHandlers.get(channelUID);
+            if (handler instanceof PigpioDigitalOutputHandler) {
+                updateState(channelUID, UnDefType.UNDEF);
+            }
+        }
+    }
+
+    protected void setOutputChannels(OnOffType command) throws PigpioException {
+        if (channelHandlers == null) {
+            return;
+        }
+        logger.debug("gpio setting output channels: {}", command.toString());
+        for (ChannelUID channelUID : this.channelHandlers.keySet()) {
+            ChannelHandler handler = this.channelHandlers.get(channelUID);
+            if (handler instanceof PigpioDigitalOutputHandler) {
+                handler.handleCommand(command);
+                postCommand(channelUID, command);
+            }
+        }
+    }
+
+    @Override
+    public void dispose() {
+        try {
+            synchronized (this.connectionLock) {
+                killConnectionPoll();
+
+                if (ACTION_SET_UNDEF.equals(this.config.inputDisconnectAction)) {
+                    undefInputChannels();
+                }
+                if (ACTION_SET_UNDEF.equals(this.config.outputDisconnectAction)) {
+                    undefOutputChannels();
+                }
+
+                clearChannelHandlers();
+
+                if (this.jPigpio != null) {
+                    try {
+                        this.jPigpio.gpioTerminate();
+                    } catch (PigpioException e) {
+                        // Best effort at a socket shutdown
+                    }
+                    this.jPigpio = null;
+                }
+            }
+            logger.debug("gpio disposed");
+        } catch (Exception e) {
+            logger.error("gpio dispose exception  : {}", e);
+        }
+
+        super.dispose();
     }
 }

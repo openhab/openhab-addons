@@ -17,10 +17,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.gpio.internal.ChannelConfigurationException;
 import org.openhab.binding.gpio.internal.GPIOBindingConstants;
-import org.openhab.binding.gpio.internal.InvalidPullUpDownException;
-import org.openhab.binding.gpio.internal.NoGpioIdException;
 import org.openhab.binding.gpio.internal.configuration.GPIOInputConfiguration;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.types.Command;
@@ -30,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import eu.xeli.jpigpio.GPIO;
+import eu.xeli.jpigpio.GPIOListener;
 import eu.xeli.jpigpio.JPigpio;
 import eu.xeli.jpigpio.PigpioException;
 
@@ -39,63 +38,159 @@ import eu.xeli.jpigpio.PigpioException;
  * @author Nils Bauer - Initial contribution
  * @author Jan N. Klug - Channel redesign
  * @author Martin Dagarin - Pull Up/Down GPIO pin
+ * @author Jeremy Rumpf - Refactored for network disruptions
  */
-@NonNullByDefault
 public class PigpioDigitalInputHandler implements ChannelHandler {
-
     private final Logger logger = LoggerFactory.getLogger(PigpioDigitalInputHandler.class);
     private Date lastChanged = new Date();
 
     private final GPIOInputConfiguration configuration;
-    private final GPIO gpio;
-    private final Consumer<State> updateStatus;
+    private final ScheduledExecutorService scheduler;
+    private final Integer gpioId;
+    private GPIO gpio;
+    private Consumer<State> updateStatus;
+    private Integer pullupdown = JPigpio.PI_PUD_OFF;
+    private final GPIOListener listener;
+    private int edgeMode = JPigpio.PI_EITHER_EDGE;
 
-    public PigpioDigitalInputHandler(GPIOInputConfiguration configuration, JPigpio jPigpio,
-            ScheduledExecutorService scheduler, Consumer<State> updateStatus)
-            throws PigpioException, InvalidPullUpDownException, NoGpioIdException {
+    /**
+     * Constructor for PigpioDigitalOutputHandler
+     * 
+     * @param configuration The channel configuration
+     * @param jPigpio The jPigpio instance
+     * @param updateStatus Is called when the state should be changed
+     * 
+     * @throws PigpioException Can be thrown by Pigpio
+     * @throws ChannelConfigurationException Thrown on configuration error
+     */
+    public PigpioDigitalInputHandler(GPIOInputConfiguration configuration, ScheduledExecutorService scheduler,
+            Consumer<State> updateStatus) throws PigpioException, ChannelConfigurationException {
         this.configuration = configuration;
+        this.scheduler = scheduler;
         this.updateStatus = updateStatus;
-        Integer gpioId = configuration.gpioId;
-        if (gpioId == null) {
-            throw new NoGpioIdException();
+        this.gpioId = configuration.gpioId;
+
+        if (this.gpioId == null || this.gpioId <= 0) {
+            throw new ChannelConfigurationException("Invalid gpioId value.");
         }
-        Integer pullupdown = JPigpio.PI_PUD_OFF;
+
         String pullupdownStr = configuration.pullupdown.toUpperCase();
         if (pullupdownStr.equals(GPIOBindingConstants.PUD_DOWN)) {
             pullupdown = JPigpio.PI_PUD_DOWN;
         } else if (pullupdownStr.equals(GPIOBindingConstants.PUD_UP)) {
             pullupdown = JPigpio.PI_PUD_UP;
+        } else if (pullupdownStr.equals(GPIOBindingConstants.PUD_OFF)) {
+            pullupdown = JPigpio.PI_PUD_OFF;
         } else {
-            if (!pullupdownStr.equals(GPIOBindingConstants.PUD_OFF))
-                throw new InvalidPullUpDownException();
+            throw new ChannelConfigurationException("Invalid pull up/down value.");
         }
-        gpio = new GPIO(jPigpio, gpioId, JPigpio.PI_INPUT);
-        jPigpio.gpioSetAlertFunc(gpio.getPin(), (gpio, level, tick) -> {
-            lastChanged = new Date();
-            Date thisChange = new Date();
-            scheduler.schedule(() -> afterDebounce(thisChange), configuration.debouncingTime, TimeUnit.MILLISECONDS);
-        });
-        jPigpio.gpioSetPullUpDown(gpio.getPin(), pullupdown);
+
+        String edgeModeStr = configuration.edgeMode;
+        if (edgeModeStr.equals(GPIOBindingConstants.EDGE_RISING)) {
+            edgeMode = JPigpio.PI_RISING_EDGE;
+        } else if (edgeModeStr.equals(GPIOBindingConstants.EDGE_FALLING)) {
+            edgeMode = JPigpio.PI_FALLING_EDGE;
+        } else if (edgeModeStr.equals(GPIOBindingConstants.EDGE_EITHER)) {
+            edgeMode = JPigpio.PI_EITHER_EDGE;
+        } else {
+            throw new ChannelConfigurationException("Invalid edgeMode value.");
+        }
+
+        // Maybe add LEVEL as well as EDGE?
+        this.listener = new GPIOListener(this.gpioId, edgeMode) {
+            @Override
+            public void alert(int gpio, int level, long tick) {
+                alertFunc(gpio, level, tick);
+            }
+        };
     }
 
+    public void alertFunc(int gpio, int level, long tick) {
+        lastChanged = new Date();
+        Date thisChange = new Date();
+        if (configuration.debouncingTime > 0) {
+            scheduler.schedule(() -> afterDebounce(thisChange), configuration.debouncingTime, TimeUnit.MILLISECONDS);
+        } else {
+            afterDebounce(thisChange);
+        }
+    }
+
+    /**
+     * Syncronize debouncing callbacks to
+     * ensure they are not out of order.
+     */
+    private Object debounceLock = new Object();
+
     private void afterDebounce(Date thisChange) {
+        synchronized (debounceLock) {
+            try {
+                // Check if value changed over time
+                if (!thisChange.before(lastChanged)) {
+                    if (updateStatus != null) {
+                        updateStatus.accept(OnOffType.from(configuration.invert != this.gpio.getValue()));
+                    }
+                }
+            } catch (PigpioException e) {
+                // -99999999 is communication related, we will let the Thing connect poll refresh it.
+                if (e.getErrorCode() != -99999999) {
+                    logger.warn("PigpioDigitalInputHandler exception : {}{}", e.getLocalizedMessage(), e);
+                }
+            }
+        }
+    }
+
+    /**
+     * Establishes or re-establishes a listener on the JPigpio
+     * instance for the configured gpio pin.
+     */
+    public void listen(JPigpio jPigpio) throws PigpioException {
+        this.gpio = new GPIO(jPigpio, this.gpioId, JPigpio.PI_INPUT);
+
         try {
-            // Check if value changed over time
-            if (!thisChange.before(lastChanged)) {
+            gpio.setDirection(JPigpio.PI_INPUT);
+            jPigpio.gpioSetPullUpDown(gpio.getPin(), pullupdown);
+            jPigpio.removeCallback(this.listener);
+        } catch (PigpioException e) {
+            // If there is a communication error, the set alert below will throw.
+            if (e.getErrorCode() != -99999999) {
+                logger.warn("PigpioDigitalInputHandler exception on listen : {}{}", e.getLocalizedMessage(), e);
+            }
+        }
+
+        jPigpio.gpioSetAlertFunc(gpio.getPin(), this.listener);
+    }
+
+    @Override
+    public void handleCommand(Command command) throws PigpioException {
+        if (gpio == null) {
+            logger.warn("An attempt to submit a command was made when the gpio was offline: {}", command.toString());
+        }
+
+        if (command instanceof RefreshType) {
+            if (updateStatus != null) {
                 updateStatus.accept(OnOffType.from(configuration.invert != gpio.getValue()));
             }
-        } catch (PigpioException e) {
-            logger.warn("Unknown pigpio exception", e);
         }
     }
 
     @Override
-    public void handleCommand(Command command) {
-        if (command instanceof RefreshType) {
-            try {
-                updateStatus.accept(OnOffType.from(configuration.invert != gpio.getValue()));
-            } catch (PigpioException e) {
-                logger.warn("Unknown pigpio exception while handling Refresh", e);
+    public void dispose() {
+        synchronized (debounceLock) {
+            updateStatus = null;
+            if (gpio != null) {
+                JPigpio jPigpio = gpio.getPigpio();
+                if (jPigpio != null && listener != null) {
+                    try {
+                        jPigpio.removeCallback(listener);
+                    } catch (PigpioException e) {
+                        // Best effort to remove listener,
+                        // the command socket could already be dead.
+                        if (e.getErrorCode() != -99999999) {
+                            logger.warn("PigpioDigitalInputHandler exception on dispose : {}{}",
+                                    e.getLocalizedMessage(), e);
+                        }
+                    }
+                }
             }
         }
     }

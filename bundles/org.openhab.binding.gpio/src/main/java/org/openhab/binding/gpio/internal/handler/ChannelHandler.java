@@ -12,8 +12,10 @@
  */
 package org.openhab.binding.gpio.internal.handler;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.types.Command;
+
+import eu.xeli.jpigpio.JPigpio;
+import eu.xeli.jpigpio.PigpioException;
 
 /**
  * The {@link ChannelHandler} provides an interface for different pin
@@ -21,8 +23,22 @@ import org.openhab.core.types.Command;
  *
  * @author Jan N. Klug - Initial contribution
  */
-@NonNullByDefault
 public interface ChannelHandler {
 
-    void handleCommand(Command command);
+    /**
+     * Handles a Command being sent from the
+     * Openhab framework.
+     */
+    void handleCommand(Command command) throws PigpioException;
+
+    /**
+     * (Re)Establishes the JPigpio listeners.
+     */
+    void listen(JPigpio jPigpio) throws PigpioException;
+
+    /**
+     * Terminates sending Channels status updates and
+     * shuts down any JPigpio listeners.
+     */
+    void dispose();
 }

@@ -12,15 +12,12 @@
  */
 package org.openhab.binding.gpio.internal.configuration;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-
 /**
  * The {@link GPIOInputConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Nils Bauer - Initial contribution
  * @author Martin Dagarin - Pull Up/Down GPIO pin
  */
-@NonNullByDefault
 public class GPIOInputConfiguration extends GPIOConfiguration {
     /**
      * Time in ms to double check if value hasn't changed
@@ -32,4 +29,11 @@ public class GPIOInputConfiguration extends GPIOConfiguration {
      * OFF = PI_PUD_OFF, DOWN = PI_PUD_DOWN, UP = PI_PUD_UP
      */
     public String pullupdown = "OFF";
+
+    /**
+     * Sets the input detection type.
+     * EDGE_EITHER = PI_EITHER_EDGE, EDGE_FALLING = PI_FALLING_EDGE,
+     * EDGE_RISING = PI_RISING_EDGE
+     */
+    public String edgeMode = "EDGE_EITHER";
 }

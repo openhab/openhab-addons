@@ -12,14 +12,14 @@
  */
 package org.openhab.binding.gpio.internal.configuration;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
+import java.math.BigDecimal;
 
 /**
  * The {@link GPIOOutputConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Nils Bauer - Initial contribution
  */
-@NonNullByDefault
 public class GPIOOutputConfiguration extends GPIOConfiguration {
-
+    public BigDecimal pulse;
+    public String pulseCommand = "OFF";
 }
