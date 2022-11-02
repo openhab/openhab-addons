@@ -45,7 +45,7 @@ public class BondDeviceProperties {
     public boolean trustState;
     // The device address
     @Expose(serialize = true, deserialize = true)
-    public long addr;
+    public String addr = "";
     // The fan radio frequency
     @Expose(serialize = true, deserialize = true)
     public int freq;
