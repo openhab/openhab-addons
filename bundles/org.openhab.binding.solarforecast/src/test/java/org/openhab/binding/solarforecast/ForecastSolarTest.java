@@ -14,6 +14,13 @@ package org.openhab.binding.solarforecast;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.net.http.HttpResponse.BodyHandlers;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -186,5 +193,21 @@ class ForecastSolarTest {
         assertEquals(UnDefType.UNDEF, fo.getDay(query.toLocalDate(), "optimistic"));
         assertEquals(UnDefType.UNDEF, fo.getDay(query.toLocalDate(), "pessimistic"));
         assertEquals(UnDefType.UNDEF, fo.getDay(query.toLocalDate(), "total", "rubbish"));
+    }
+
+    @Test
+    public void testHorizon() throws URISyntaxException, IOException, InterruptedException {
+        String url = "https://api.forecast.solar/estimate/50.55598767987004/8.49558522179684/12/-40/5.525?damping=0.25,0.25";
+        String horizon = "2,2,2,2,1,1,3,3,4,3,3,4,3,3,3,3,4,5,7,5,4,2,2,2,2,1,1,1,1,1,2,2,2,2,1,2";
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder().uri(new URI(url)).GET().build();
+        HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
+        System.out.println(response.body());
+        url += "?horizon=" + horizon;
+        request = HttpRequest.newBuilder().uri(new URI(url)).GET().build();
+        response = client.send(request, BodyHandlers.ofString());
+        System.out.println(response.body());
+
     }
 }

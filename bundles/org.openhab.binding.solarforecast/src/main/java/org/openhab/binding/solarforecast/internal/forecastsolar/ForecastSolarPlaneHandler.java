@@ -26,6 +26,7 @@ import java.util.concurrent.TimeoutException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
+import org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants;
 import org.openhab.binding.solarforecast.internal.actions.SolarForecast;
 import org.openhab.binding.solarforecast.internal.actions.SolarForecastActions;
 import org.openhab.binding.solarforecast.internal.actions.SolarForecastProvider;
@@ -135,6 +136,9 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
                             + location.get().getLongitude() + SLASH + configuration.get().declination + SLASH
                             + configuration.get().azimuth + SLASH + configuration.get().kwp + "?damping="
                             + configuration.get().dampAM + "," + configuration.get().dampPM;
+                }
+                if (!SolarForecastBindingConstants.EMPTY.equals(configuration.get().horizon)) {
+                    url += "?horizon=" + configuration.get().horizon;
                 }
                 logger.debug("{} Call {}", thing.getLabel(), url);
                 try {

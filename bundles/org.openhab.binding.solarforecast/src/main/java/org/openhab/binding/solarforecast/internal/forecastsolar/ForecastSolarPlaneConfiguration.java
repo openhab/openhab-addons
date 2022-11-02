@@ -13,6 +13,7 @@
 package org.openhab.binding.solarforecast.internal.forecastsolar;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants;
 
 /**
  * The {@link ForecastSolarPlaneConfiguration} class contains fields mapping thing configuration parameters.
@@ -27,6 +28,7 @@ public class ForecastSolarPlaneConfiguration {
     public int refreshInterval = -1;
     public double dampAM = 0.25;
     public double dampPM = 0.25;
+    public String horizon = SolarForecastBindingConstants.EMPTY;
 
     @Override
     public String toString() {

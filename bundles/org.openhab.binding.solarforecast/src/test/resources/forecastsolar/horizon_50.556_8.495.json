@@ -1,0 +1,674 @@
+{
+	"inputs": {
+		"location": {
+			"latitude": 50.556,
+			"longitude": 8.495,
+			"elevation": 149.0
+		},
+		"horizon_db": "DEM-calculated"
+	},
+	"outputs": {
+		"horizon_profile": [
+			{
+				"A": -180.0,
+				"H_hor": 1.5
+			},
+			{
+				"A": -172.5,
+				"H_hor": 1.5
+			},
+			{
+				"A": -165.0,
+				"H_hor": 1.5
+			},
+			{
+				"A": -157.5,
+				"H_hor": 1.5
+			},
+			{
+				"A": -150.0,
+				"H_hor": 1.5
+			},
+			{
+				"A": -142.5,
+				"H_hor": 1.1
+			},
+			{
+				"A": -135.0,
+				"H_hor": 1.1
+			},
+			{
+				"A": -127.5,
+				"H_hor": 2.7
+			},
+			{
+				"A": -120.0,
+				"H_hor": 3.1
+			},
+			{
+				"A": -112.5,
+				"H_hor": 3.4
+			},
+			{
+				"A": -105.0,
+				"H_hor": 3.8
+			},
+			{
+				"A": -97.5,
+				"H_hor": 3.4
+			},
+			{
+				"A": -90.0,
+				"H_hor": 3.4
+			},
+			{
+				"A": -82.5,
+				"H_hor": 3.4
+			},
+			{
+				"A": -75.0,
+				"H_hor": 3.8
+			},
+			{
+				"A": -67.5,
+				"H_hor": 3.1
+			},
+			{
+				"A": -60.0,
+				"H_hor": 3.1
+			},
+			{
+				"A": -52.5,
+				"H_hor": 3.1
+			},
+			{
+				"A": -45.0,
+				"H_hor": 3.1
+			},
+			{
+				"A": -37.5,
+				"H_hor": 3.8
+			},
+			{
+				"A": -30.0,
+				"H_hor": 3.4
+			},
+			{
+				"A": -22.5,
+				"H_hor": 3.8
+			},
+			{
+				"A": -15.0,
+				"H_hor": 5.3
+			},
+			{
+				"A": -7.5,
+				"H_hor": 6.9
+			},
+			{
+				"A": 0.0,
+				"H_hor": 6.9
+			},
+			{
+				"A": 7.5,
+				"H_hor": 5.3
+			},
+			{
+				"A": 15.0,
+				"H_hor": 3.8
+			},
+			{
+				"A": 22.5,
+				"H_hor": 3.1
+			},
+			{
+				"A": 30.0,
+				"H_hor": 2.3
+			},
+			{
+				"A": 37.5,
+				"H_hor": 2.3
+			},
+			{
+				"A": 45.0,
+				"H_hor": 2.3
+			},
+			{
+				"A": 52.5,
+				"H_hor": 2.7
+			},
+			{
+				"A": 60.0,
+				"H_hor": 2.3
+			},
+			{
+				"A": 67.5,
+				"H_hor": 1.1
+			},
+			{
+				"A": 75.0,
+				"H_hor": 0.8
+			},
+			{
+				"A": 82.5,
+				"H_hor": 0.4
+			},
+			{
+				"A": 90.0,
+				"H_hor": 0.8
+			},
+			{
+				"A": 97.5,
+				"H_hor": 1.1
+			},
+			{
+				"A": 105.0,
+				"H_hor": 1.1
+			},
+			{
+				"A": 112.5,
+				"H_hor": 1.5
+			},
+			{
+				"A": 120.0,
+				"H_hor": 1.9
+			},
+			{
+				"A": 127.5,
+				"H_hor": 1.9
+			},
+			{
+				"A": 135.0,
+				"H_hor": 1.5
+			},
+			{
+				"A": 142.5,
+				"H_hor": 1.5
+			},
+			{
+				"A": 150.0,
+				"H_hor": 1.5
+			},
+			{
+				"A": 157.5,
+				"H_hor": 1.1
+			},
+			{
+				"A": 165.0,
+				"H_hor": 1.5
+			},
+			{
+				"A": 172.5,
+				"H_hor": 1.9
+			},
+			{
+				"A": 180.0,
+				"H_hor": 1.5
+			}
+		],
+		"winter_solstice": [
+			{
+				"A_sun(w)": -180.0,
+				"H_sun(w)": 0.0
+			},
+			{
+				"A_sun(w)": -165.1,
+				"H_sun(w)": 0.0
+			},
+			{
+				"A_sun(w)": -151.2,
+				"H_sun(w)": 0.0
+			},
+			{
+				"A_sun(w)": -138.8,
+				"H_sun(w)": 0.0
+			},
+			{
+				"A_sun(w)": -128.2,
+				"H_sun(w)": 0.0
+			},
+			{
+				"A_sun(w)": -119.0,
+				"H_sun(w)": 0.0
+			},
+			{
+				"A_sun(w)": -110.9,
+				"H_sun(w)": 0.0
+			},
+			{
+				"A_sun(w)": -103.8,
+				"H_sun(w)": 0.0
+			},
+			{
+				"A_sun(w)": -97.3,
+				"H_sun(w)": 0.0
+			},
+			{
+				"A_sun(w)": -91.2,
+				"H_sun(w)": 0.0
+			},
+			{
+				"A_sun(w)": -85.5,
+				"H_sun(w)": 0.0
+			},
+			{
+				"A_sun(w)": -80.0,
+				"H_sun(w)": 0.0
+			},
+			{
+				"A_sun(w)": -74.6,
+				"H_sun(w)": 0.0
+			},
+			{
+				"A_sun(w)": -69.2,
+				"H_sun(w)": 0.0
+			},
+			{
+				"A_sun(w)": -63.8,
+				"H_sun(w)": 0.0
+			},
+			{
+				"A_sun(w)": -58.3,
+				"H_sun(w)": 0.0
+			},
+			{
+				"A_sun(w)": -52.6,
+				"H_sun(w)": 0.0
+			},
+			{
+				"A_sun(w)": -46.8,
+				"H_sun(w)": 2.7
+			},
+			{
+				"A_sun(w)": -40.7,
+				"H_sun(w)": 6.0
+			},
+			{
+				"A_sun(w)": -34.4,
+				"H_sun(w)": 8.9
+			},
+			{
+				"A_sun(w)": -27.9,
+				"H_sun(w)": 11.4
+			},
+			{
+				"A_sun(w)": -21.2,
+				"H_sun(w)": 13.4
+			},
+			{
+				"A_sun(w)": -14.2,
+				"H_sun(w)": 14.8
+			},
+			{
+				"A_sun(w)": -7.1,
+				"H_sun(w)": 15.7
+			},
+			{
+				"A_sun(w)": 0.0,
+				"H_sun(w)": 16.0
+			},
+			{
+				"A_sun(w)": 7.1,
+				"H_sun(w)": 15.7
+			},
+			{
+				"A_sun(w)": 14.2,
+				"H_sun(w)": 14.8
+			},
+			{
+				"A_sun(w)": 21.2,
+				"H_sun(w)": 13.4
+			},
+			{
+				"A_sun(w)": 27.9,
+				"H_sun(w)": 11.4
+			},
+			{
+				"A_sun(w)": 34.4,
+				"H_sun(w)": 8.9
+			},
+			{
+				"A_sun(w)": 40.7,
+				"H_sun(w)": 6.0
+			},
+			{
+				"A_sun(w)": 46.8,
+				"H_sun(w)": 2.7
+			},
+			{
+				"A_sun(w)": 52.6,
+				"H_sun(w)": 0.0
+			},
+			{
+				"A_sun(w)": 58.3,
+				"H_sun(w)": 0.0
+			},
+			{
+				"A_sun(w)": 63.8,
+				"H_sun(w)": 0.0
+			},
+			{
+				"A_sun(w)": 69.2,
+				"H_sun(w)": 0.0
+			},
+			{
+				"A_sun(w)": 74.6,
+				"H_sun(w)": 0.0
+			},
+			{
+				"A_sun(w)": 80.0,
+				"H_sun(w)": 0.0
+			},
+			{
+				"A_sun(w)": 85.5,
+				"H_sun(w)": 0.0
+			},
+			{
+				"A_sun(w)": 91.2,
+				"H_sun(w)": 0.0
+			},
+			{
+				"A_sun(w)": 97.3,
+				"H_sun(w)": 0.0
+			},
+			{
+				"A_sun(w)": 103.8,
+				"H_sun(w)": 0.0
+			},
+			{
+				"A_sun(w)": 110.9,
+				"H_sun(w)": 0.0
+			},
+			{
+				"A_sun(w)": 119.0,
+				"H_sun(w)": 0.0
+			},
+			{
+				"A_sun(w)": 128.2,
+				"H_sun(w)": 0.0
+			},
+			{
+				"A_sun(w)": 138.8,
+				"H_sun(w)": 0.0
+			},
+			{
+				"A_sun(w)": 151.2,
+				"H_sun(w)": 0.0
+			},
+			{
+				"A_sun(w)": 165.1,
+				"H_sun(w)": 0.0
+			},
+			{
+				"A_sun(w)": 180.0,
+				"H_sun(w)": 0.0
+			}
+		],
+		"summer_solstice": [
+			{
+				"A_sun(s)": -180.0,
+				"H_sun(s)": 0.0
+			},
+			{
+				"A_sun(s)": -172.9,
+				"H_sun(s)": 0.0
+			},
+			{
+				"A_sun(s)": -165.8,
+				"H_sun(s)": 0.0
+			},
+			{
+				"A_sun(s)": -158.8,
+				"H_sun(s)": 0.0
+			},
+			{
+				"A_sun(s)": -152.1,
+				"H_sun(s)": 0.0
+			},
+			{
+				"A_sun(s)": -145.6,
+				"H_sun(s)": 0.0
+			},
+			{
+				"A_sun(s)": -139.3,
+				"H_sun(s)": 0.0
+			},
+			{
+				"A_sun(s)": -133.2,
+				"H_sun(s)": 0.0
+			},
+			{
+				"A_sun(s)": -127.4,
+				"H_sun(s)": 0.9
+			},
+			{
+				"A_sun(s)": -121.7,
+				"H_sun(s)": 4.8
+			},
+			{
+				"A_sun(s)": -116.2,
+				"H_sun(s)": 9.0
+			},
+			{
+				"A_sun(s)": -110.8,
+				"H_sun(s)": 13.4
+			},
+			{
+				"A_sun(s)": -105.4,
+				"H_sun(s)": 17.9
+			},
+			{
+				"A_sun(s)": -100.0,
+				"H_sun(s)": 22.5
+			},
+			{
+				"A_sun(s)": -94.5,
+				"H_sun(s)": 27.3
+			},
+			{
+				"A_sun(s)": -88.8,
+				"H_sun(s)": 32.0
+			},
+			{
+				"A_sun(s)": -82.7,
+				"H_sun(s)": 36.8
+			},
+			{
+				"A_sun(s)": -76.2,
+				"H_sun(s)": 41.5
+			},
+			{
+				"A_sun(s)": -69.1,
+				"H_sun(s)": 46.0
+			},
+			{
+				"A_sun(s)": -61.0,
+				"H_sun(s)": 50.3
+			},
+			{
+				"A_sun(s)": -51.8,
+				"H_sun(s)": 54.3
+			},
+			{
+				"A_sun(s)": -41.2,
+				"H_sun(s)": 57.8
+			},
+			{
+				"A_sun(s)": -28.8,
+				"H_sun(s)": 60.5
+			},
+			{
+				"A_sun(s)": -14.9,
+				"H_sun(s)": 62.3
+			},
+			{
+				"A_sun(s)": 0.0,
+				"H_sun(s)": 62.9
+			},
+			{
+				"A_sun(s)": 14.9,
+				"H_sun(s)": 62.3
+			},
+			{
+				"A_sun(s)": 28.8,
+				"H_sun(s)": 60.5
+			},
+			{
+				"A_sun(s)": 41.2,
+				"H_sun(s)": 57.8
+			},
+			{
+				"A_sun(s)": 51.8,
+				"H_sun(s)": 54.3
+			},
+			{
+				"A_sun(s)": 61.0,
+				"H_sun(s)": 50.3
+			},
+			{
+				"A_sun(s)": 69.1,
+				"H_sun(s)": 46.0
+			},
+			{
+				"A_sun(s)": 76.2,
+				"H_sun(s)": 41.5
+			},
+			{
+				"A_sun(s)": 82.7,
+				"H_sun(s)": 36.8
+			},
+			{
+				"A_sun(s)": 88.8,
+				"H_sun(s)": 32.0
+			},
+			{
+				"A_sun(s)": 94.5,
+				"H_sun(s)": 27.3
+			},
+			{
+				"A_sun(s)": 100.0,
+				"H_sun(s)": 22.5
+			},
+			{
+				"A_sun(s)": 105.4,
+				"H_sun(s)": 17.9
+			},
+			{
+				"A_sun(s)": 110.8,
+				"H_sun(s)": 13.4
+			},
+			{
+				"A_sun(s)": 116.2,
+				"H_sun(s)": 9.0
+			},
+			{
+				"A_sun(s)": 121.7,
+				"H_sun(s)": 4.8
+			},
+			{
+				"A_sun(s)": 127.4,
+				"H_sun(s)": 0.9
+			},
+			{
+				"A_sun(s)": 133.2,
+				"H_sun(s)": 0.0
+			},
+			{
+				"A_sun(s)": 139.3,
+				"H_sun(s)": 0.0
+			},
+			{
+				"A_sun(s)": 145.6,
+				"H_sun(s)": 0.0
+			},
+			{
+				"A_sun(s)": 152.1,
+				"H_sun(s)": 0.0
+			},
+			{
+				"A_sun(s)": 158.8,
+				"H_sun(s)": 0.0
+			},
+			{
+				"A_sun(s)": 165.8,
+				"H_sun(s)": 0.0
+			},
+			{
+				"A_sun(s)": 172.9,
+				"H_sun(s)": 0.0
+			},
+			{
+				"A_sun(s)": 180.0,
+				"H_sun(s)": 0.0
+			}
+		]
+	},
+	"meta": {
+		"inputs": {
+			"location": {
+				"description": "Selected location",
+				"variables": {
+					"latitude": {
+						"description": "Latitude",
+						"units": "decimal degree"
+					},
+					"longitude": {
+						"description": "Longitude",
+						"units": "decimal degree"
+					},
+					"elevation": {
+						"description": "Elevation",
+						"units": "m"
+					}
+				}
+			},
+			"horizon_db": {
+				"description": "Source of horizon data"
+			}
+		},
+		"outputs": {
+			"horizon_profile": {
+				"type": "series",
+				"description": "Horizon profile",
+				"variables": {
+					"A": {
+						"description": "Azimuth (0 = S, 90 = W, -90 = E)",
+						"units": "degree"
+					},
+					"H_hor": {
+						"description": "Horizon height",
+						"units": "degree"
+					}
+				}
+			},
+			"winter_solstice": {
+				"type": "series",
+				"description": "Winter solstice",
+				"variables": {
+					"A_sun(w)": {
+						"description": "Sun azimuth in the winter solstice (Dec 21) (0 = S, 90 = W, -90 = E)",
+						"units": "degree"
+					},
+					"H_sun(w)": {
+						"description": "Sun height in the winter solstice (Dec 21)",
+						"units": "degree"
+					}
+				}
+			},
+			"summer_solstice": {
+				"type": "series",
+				"description": "Summer solstice profile",
+				"variables": {
+					"A_sun(s)": {
+						"description": "Sun azimuth in the summer solstice (June 21) (0 = S, 90 = W, -90 = E)",
+						"units": "degree"
+					},
+					"H_sun(s)": {
+						"description": "Sun height in the summer solstice (June 21)",
+						"units": "degree"
+					}
+				}
+			}
+		}
+	}
+}

@@ -146,6 +146,11 @@ In case of auto-detect the location configured in openHAB is obtained.
 
 Note: `channelRefreshInterval` from [Bridge Configuration](#forecastsolar-bridge-configuration) will calculate intermediate values without requesting new forecast data.
 
+https://doc.forecast.solar/doku.php?id=damping
+https://doc.forecast.solar/doku.php?id=api
+https://joint-research-centre.ec.europa.eu/pvgis-photovoltaic-geographical-information-system/getting-started-pvgis/pvgis-user-manual_en#ref-2-using-horizon-information
+https://re.jrc.ec.europa.eu/pvg_tools/en/
+
 ## ForecastSolar Channels
 
 Each `fs-plane` reports it's own values including a `raw` channel holding json content.
