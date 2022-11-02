@@ -84,8 +84,9 @@ public class BondHttpApi {
         JsonObject obj = element.getAsJsonObject();
         Set<Map.Entry<String, JsonElement>> entries = obj.entrySet();
         for (Map.Entry<String, JsonElement> entry : entries) {
-            if (!entry.getKey().equals("_")) {
-                list.add(entry.getKey());
+            String key = entry.getKey();
+            if (!key.startsWith("_")) {
+                list.add(key);
             }
         }
         return list;
