@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.gpio.internal.configuration;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link GPIOInputConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Nils Bauer - Initial contribution
  * @author Martin Dagarin - Pull Up/Down GPIO pin
  */
+@NonNullByDefault
 public class GPIOInputConfiguration extends GPIOConfiguration {
     /**
      * Time in ms to double check if value hasn't changed

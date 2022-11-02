@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.gpio.internal.configuration;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link GPIOConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Nils Bauer - Initial contribution
  */
+@NonNullByDefault
 public class GPIOConfiguration {
 
     /**

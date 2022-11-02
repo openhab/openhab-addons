@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.gpio.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.type.ChannelTypeUID;
 
@@ -21,8 +22,9 @@ import org.openhab.core.thing.type.ChannelTypeUID;
  *
  * @author Nils Bauer - Initial contribution
  * @author Martin Dagarin - Pull Up/Down GPIO pin
- * @author Martin Dagarin - Added Action constants
+ * @author Jeremy Rumpf - Added Action/Edge constants
  */
+@NonNullByDefault
 public class GPIOBindingConstants {
 
     private static final String BINDING_ID = "gpio";

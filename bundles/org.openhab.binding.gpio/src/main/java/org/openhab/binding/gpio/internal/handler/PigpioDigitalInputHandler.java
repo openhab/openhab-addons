@@ -17,6 +17,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.gpio.internal.ChannelConfigurationException;
 import org.openhab.binding.gpio.internal.GPIOBindingConstants;
 import org.openhab.binding.gpio.internal.configuration.GPIOInputConfiguration;
@@ -40,6 +41,7 @@ import eu.xeli.jpigpio.PigpioException;
  * @author Martin Dagarin - Pull Up/Down GPIO pin
  * @author Jeremy Rumpf - Refactored for network disruptions
  */
+@NonNullByDefault
 public class PigpioDigitalInputHandler implements ChannelHandler {
     private final Logger logger = LoggerFactory.getLogger(PigpioDigitalInputHandler.class);
     private Date lastChanged = new Date();
@@ -133,7 +135,7 @@ public class PigpioDigitalInputHandler implements ChannelHandler {
             } catch (PigpioException e) {
                 // -99999999 is communication related, we will let the Thing connect poll refresh it.
                 if (e.getErrorCode() != -99999999) {
-                    logger.warn("PigpioDigitalInputHandler exception : {}{}", e.getLocalizedMessage(), e);
+                    logger.error("Debounce exception :", e);
                 }
             }
         }
@@ -153,7 +155,7 @@ public class PigpioDigitalInputHandler implements ChannelHandler {
         } catch (PigpioException e) {
             // If there is a communication error, the set alert below will throw.
             if (e.getErrorCode() != -99999999) {
-                logger.warn("PigpioDigitalInputHandler exception on listen : {}{}", e.getLocalizedMessage(), e);
+                logger.error("Listen exception :", e);
             }
         }
 
@@ -163,7 +165,8 @@ public class PigpioDigitalInputHandler implements ChannelHandler {
     @Override
     public void handleCommand(Command command) throws PigpioException {
         if (gpio == null) {
-            logger.warn("An attempt to submit a command was made when the gpio was offline: {}", command.toString());
+            logger.warn("An attempt to submit a command was made when pigpiod was offline: {}", command.toString());
+            return;
         }
 
         if (command instanceof RefreshType) {
@@ -186,8 +189,7 @@ public class PigpioDigitalInputHandler implements ChannelHandler {
                         // Best effort to remove listener,
                         // the command socket could already be dead.
                         if (e.getErrorCode() != -99999999) {
-                            logger.warn("PigpioDigitalInputHandler exception on dispose : {}{}",
-                                    e.getLocalizedMessage(), e);
+                            logger.error("Dispose exception :", e);
                         }
                     }
                 }

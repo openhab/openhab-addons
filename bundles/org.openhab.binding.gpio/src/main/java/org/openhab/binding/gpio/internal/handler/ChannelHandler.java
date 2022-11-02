@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.gpio.internal.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.types.Command;
 
 import eu.xeli.jpigpio.JPigpio;
@@ -23,6 +24,7 @@ import eu.xeli.jpigpio.PigpioException;
  *
  * @author Jan N. Klug - Initial contribution
  */
+@NonNullByDefault
 public interface ChannelHandler {
 
     /**

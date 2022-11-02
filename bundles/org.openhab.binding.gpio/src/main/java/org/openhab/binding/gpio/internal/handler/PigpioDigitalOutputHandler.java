@@ -18,6 +18,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.gpio.internal.ChannelConfigurationException;
 import org.openhab.binding.gpio.internal.configuration.GPIOOutputConfiguration;
 import org.openhab.core.library.types.OnOffType;
@@ -38,6 +40,7 @@ import eu.xeli.jpigpio.PigpioException;
  * @author Jan N. Klug - Channel redesign
  * @author Jeremy Rumpf - Refactored for network disruptions
  */
+@NonNullByDefault
 public class PigpioDigitalOutputHandler implements ChannelHandler {
     private final Logger logger = LoggerFactory.getLogger(PigpioDigitalOutputHandler.class);
 
@@ -46,7 +49,9 @@ public class PigpioDigitalOutputHandler implements ChannelHandler {
     private final Integer gpioId;
     private Integer pulseTimeout = -1;
     private String pulseCommand = "";
+    @Nullable
     private GPIO gpio;
+    @Nullable
     private Consumer<State> updateStatus;
 
     /**
@@ -90,6 +95,7 @@ public class PigpioDigitalOutputHandler implements ChannelHandler {
     /**
      * Future to track pulse commands.
      */
+    @Nullable
     private Future<?> pulseJob = null;
     private OnOffType lastPulseCommand;
 
@@ -180,7 +186,7 @@ public class PigpioDigitalOutputHandler implements ChannelHandler {
                 }
             }
         } catch (Exception e) {
-            logger.error("Pulse command exception on gpio pin {} {}", this.configuration.gpioId, e.toString());
+            logger.error("Pulse command exception :", e);
         }
     }
 

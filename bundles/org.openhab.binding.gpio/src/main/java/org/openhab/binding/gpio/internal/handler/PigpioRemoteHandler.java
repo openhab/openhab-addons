@@ -68,12 +68,12 @@ public class PigpioRemoteHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        ChannelHandler channelHandler = channelHandlers.get(channelUID);
-
         try {
             synchronized (this.connectionLock) {
-                if (!(thing.getStatus().equals(ThingStatus.ONLINE))) {
-                    // We raced with the connectPoll and lost
+                ChannelHandler channelHandler = channelHandlers.get(channelUID);
+
+                if (channelHandler == null || !(ThingStatus.ONLINE.equals(thing.getStatus()))) {
+                    // We raced with connectPollWorker and lost
                     return;
                 }
 
@@ -112,9 +112,7 @@ public class PigpioRemoteHandler extends BaseThingHandler {
         }
     }
 
-    @Nullable
-    protected PigpioConfiguration config = null;
-    @Nullable
+    protected PigpioConfiguration config;
     protected JPigpio jPigpio = null;
 
     @Override
@@ -143,14 +141,15 @@ public class PigpioRemoteHandler extends BaseThingHandler {
 
     protected void clearChannelHandlers() {
         for (ChannelHandler handler : channelHandlers.values()) {
-            handler.dispose();
+            if (handler != null)
+                handler.dispose();
         }
         channelHandlers.clear();
     }
 
     protected void createChannelHandlers() {
         clearChannelHandlers();
-        thing.getChannels().forEach(channel -> {
+        this.getThing().getChannels().forEach(channel -> {
             ChannelUID channelUID = channel.getUID();
             ChannelTypeUID type = channel.getChannelTypeUID();
             try {
@@ -176,17 +175,16 @@ public class PigpioRemoteHandler extends BaseThingHandler {
         logger.debug("gpio channels initialized");
     }
 
-    protected void setChannelJPigpio(JPigpio jPigpio) throws PigpioException {
-        if (this.channelHandlers.size() == 0) {
+    protected void setChannelJPigpio(@Nullable JPigpio jPigpio) throws PigpioException {
+        if (this.channelHandlers.isEmpty())
             createChannelHandlers();
-        }
-        for (ChannelHandler handler : this.channelHandlers.values()) {
+
+        for (ChannelHandler handler : this.channelHandlers.values())
             handler.listen(jPigpio);
-        }
+
         logger.debug("gpio jPigpio listening");
     }
 
-    @Nullable
     private Future<?> connectionJob = null;
     private Object connectionLock = new Object();
 
@@ -194,8 +192,7 @@ public class PigpioRemoteHandler extends BaseThingHandler {
         if (this.connectionJob != null) {
             synchronized (this.connectionLock) {
                 if (this.connectionJob != null) {
-                    @Nullable
-                    Future<?> job = this.connectionJob;
+                    final Future<?> job = this.connectionJob;
                     this.connectionJob = null;
                     logger.debug("gpio connection poll : killing");
                     job.cancel(true);
@@ -206,15 +203,12 @@ public class PigpioRemoteHandler extends BaseThingHandler {
 
     protected void connectionPollWorker() {
         Thing thing = this.getThing();
-        ThingStatus currentStatus;
 
-        if (thing == null) {
-            return;
-        }
-
-        currentStatus = thing.getStatus();
         synchronized (connectionLock) {
-            if (currentStatus.equals(ThingStatus.ONLINE) && jPigpio != null) {
+            final ThingStatus currentStatus = thing.getStatus();
+
+            if (ThingStatus.ONLINE.equals(currentStatus) && jPigpio != null) {
+                // We are ONLINE and jPigpio is instantiated, this is the normal path
                 try {
                     logger.debug("gpio connection poll : CMD_TICK");
                     this.jPigpio.getCurrentTick();
@@ -224,7 +218,8 @@ public class PigpioRemoteHandler extends BaseThingHandler {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                             e.getLocalizedMessage());
 
-                    // Try a quick reconnect if the user specified a long(ish) interval
+                    // We disconnected, reschedule ourselves to try a reconnect.
+                    // First, try a quick reconnect if the user specified a long(ish) interval
                     int interval = this.config.heartBeatInterval;
                     if (interval > 1000) {
                         interval = 1000;
@@ -234,25 +229,34 @@ public class PigpioRemoteHandler extends BaseThingHandler {
                         connectionPollWorker();
                     }, interval, TimeUnit.MILLISECONDS);
 
+                    logger.warn("Pigpiod disconnected : {}", this.config.host);
+
                     return;
                 }
             } else {
+                // We are OFFLINE and jPigpio may or may not be instantiated
                 try {
                     if (this.jPigpio == null) {
                         // First initialization or re-initialization after dispose()
+                        // jPigpio is not up and running yet.
                         logger.debug("gpio connection poll : connecting");
                         this.jPigpio = new PigpioSocket(this.config.host, this.config.port);
                         setChannelJPigpio(this.jPigpio);
                         updateStatus(ThingStatus.ONLINE);
                         runConnectActions();
                     } else {
+                        // jPigpio is instantiated, but not connected.
+                        // Use it's internal reconnect logic.
                         logger.debug("gpio connection poll : reconnecting");
                         this.jPigpio.reconnect();
-                        // JPigpio listeners are not re-established after reconnect.
+                        // jPigpio listeners are not re-established after reconnect.
+                        // We need to reinject them into the channel handlers.
                         setChannelJPigpio(this.jPigpio);
                         updateStatus(ThingStatus.ONLINE);
                         runReconnectActions();
                     }
+
+                    logger.info("Pigpiod connected : {}", this.config.host);
                 } catch (PigpioException e) {
                     logger.debug("gpio connection poll : failed, {}", e.getErrorCode());
                     if (currentStatus.equals(ThingStatus.ONLINE) || currentStatus.equals(ThingStatus.INITIALIZING)) {
@@ -322,11 +326,11 @@ public class PigpioRemoteHandler extends BaseThingHandler {
     }
 
     protected void refreshInputChannels() throws PigpioException {
-        if (channelHandlers == null) {
-            return;
-        }
         logger.debug("gpio refresh input channels");
         for (ChannelUID channelUID : channelHandlers.keySet()) {
+            if (channelUID == null)
+                continue;
+
             ChannelHandler handler = channelHandlers.get(channelUID);
             if (handler instanceof PigpioDigitalInputHandler) {
                 handler.handleCommand(RefreshType.REFRESH);
@@ -336,11 +340,11 @@ public class PigpioRemoteHandler extends BaseThingHandler {
     }
 
     protected void refreshOutputChannels() throws PigpioException {
-        if (this.channelHandlers == null) {
-            return;
-        }
         logger.debug("gpio refresh output channels");
         for (ChannelUID channelUID : this.channelHandlers.keySet()) {
+            if (channelUID == null)
+                continue;
+
             ChannelHandler handler = this.channelHandlers.get(channelUID);
             if (handler instanceof PigpioDigitalOutputHandler) {
                 handler.handleCommand(RefreshType.REFRESH);
@@ -350,11 +354,11 @@ public class PigpioRemoteHandler extends BaseThingHandler {
     }
 
     protected void undefInputChannels() {
-        if (this.channelHandlers == null) {
-            return;
-        }
         logger.debug("gpio undef input channels");
         for (ChannelUID channelUID : this.channelHandlers.keySet()) {
+            if (channelUID == null)
+                continue;
+
             ChannelHandler handler = this.channelHandlers.get(channelUID);
             if (handler instanceof PigpioDigitalInputHandler) {
                 updateState(channelUID, UnDefType.UNDEF);
@@ -363,11 +367,11 @@ public class PigpioRemoteHandler extends BaseThingHandler {
     }
 
     protected void undefOutputChannels() {
-        if (this.channelHandlers == null) {
-            return;
-        }
         logger.debug("gpio undef output channels");
         for (ChannelUID channelUID : channelHandlers.keySet()) {
+            if (channelUID == null)
+                continue;
+
             ChannelHandler handler = channelHandlers.get(channelUID);
             if (handler instanceof PigpioDigitalOutputHandler) {
                 updateState(channelUID, UnDefType.UNDEF);
@@ -376,11 +380,11 @@ public class PigpioRemoteHandler extends BaseThingHandler {
     }
 
     protected void setOutputChannels(OnOffType command) throws PigpioException {
-        if (channelHandlers == null) {
-            return;
-        }
         logger.debug("gpio setting output channels: {}", command.toString());
         for (ChannelUID channelUID : this.channelHandlers.keySet()) {
+            if (channelUID == null)
+                continue;
+
             ChannelHandler handler = this.channelHandlers.get(channelUID);
             if (handler instanceof PigpioDigitalOutputHandler) {
                 handler.handleCommand(command);
@@ -415,7 +419,7 @@ public class PigpioRemoteHandler extends BaseThingHandler {
             }
             logger.debug("gpio disposed");
         } catch (Exception e) {
-            logger.error("gpio dispose exception  : {}", e);
+            logger.error("Dispose exception :", e);
         }
 
         super.dispose();
