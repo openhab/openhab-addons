@@ -311,6 +311,8 @@ public class MetadataUtils {
                     case "V":
                         return ITEM_TYPE_NUMBER + ":ElectricPotential";
                     case "100%":
+                    case "% rH":
+                    case "% rF":
                     case "%":
                         return ITEM_TYPE_NUMBER + ":Dimensionless";
                     case "mHz":
