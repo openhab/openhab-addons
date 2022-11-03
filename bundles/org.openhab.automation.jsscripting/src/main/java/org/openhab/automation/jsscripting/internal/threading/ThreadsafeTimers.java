@@ -12,12 +12,18 @@
  */
 package org.openhab.automation.jsscripting.internal.threading;
 
+import java.time.Duration;
 import java.time.ZonedDateTime;
-import java.util.HashMap;
+import java.time.temporal.Temporal;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.model.script.ScriptServiceUtil;
 import org.openhab.core.scheduler.ScheduledCompletableFuture;
 import org.openhab.core.scheduler.Scheduler;
+import org.openhab.core.scheduler.SchedulerTemporalAdjuster;
 
 /**
  * A polyfill implementation of NodeJS timer functionality (<code>setTimeout()</code>, <code>setInterval()</code> and
@@ -30,8 +36,8 @@ public class ThreadsafeTimers {
     private final Object lock;
     private final Scheduler scheduler;
     // Mapping of positive, non-zero integer values (used as timeoutID or intervalID) and the Scheduler
-    private final HashMap<Long, ScheduledCompletableFuture<Object>> idSchedulerMapping = new HashMap<>();
-    private long lastId = 0;
+    private final Map<Long, ScheduledCompletableFuture<Object>> idSchedulerMapping = new ConcurrentHashMap<>();
+    private AtomicLong lastId = new AtomicLong();
     private String identifier = "noIdentifier";
 
     public ThreadsafeTimers(Object lock) {
@@ -88,8 +94,7 @@ public class ThreadsafeTimers {
      *         <code>clearTimeout()</code> to cancel the timeout.
      */
     public long setTimeout(Runnable callback, Long delay, Object... args) {
-        lastId++;
-        long id = lastId;
+        long id = lastId.incrementAndGet();
         ScheduledCompletableFuture<Object> future = createFuture(id, ZonedDateTime.now().plusNanos(delay * 1000000),
                 callback);
         idSchedulerMapping.put(id, future);
@@ -104,9 +109,10 @@ public class ThreadsafeTimers {
      *            to setTimeout().
      */
     public void clearTimeout(long timeoutId) {
-        ScheduledCompletableFuture<Object> scheduled = idSchedulerMapping.get(timeoutId);
-        scheduled.cancel(true);
-        idSchedulerMapping.remove(timeoutId);
+        ScheduledCompletableFuture<Object> scheduled = idSchedulerMapping.remove(timeoutId);
+        if (scheduled != null) {
+            scheduled.cancel(true);
+        }
     }
 
     /**
@@ -120,10 +126,8 @@ public class ThreadsafeTimers {
         ScheduledCompletableFuture<Object> future = scheduler.schedule(() -> {
             synchronized (lock) {
                 callback.run();
-                if (idSchedulerMapping.get(id) != null)
-                    createLoopingFuture(id, delay, callback);
             }
-        }, identifier + ".interval." + id, ZonedDateTime.now().plusNanos(delay * 1000000).toInstant());
+        }, identifier + ".interval." + id, new LoopingAdjuster(Duration.ofMillis(delay)));
         idSchedulerMapping.put(id, future);
     }
 
@@ -151,8 +155,7 @@ public class ThreadsafeTimers {
      *         <code>clearInterval()</code> to cancel the interval.
      */
     public long setInterval(Runnable callback, Long delay, Object... args) {
-        lastId++;
-        long id = lastId;
+        long id = lastId.incrementAndGet();
         createLoopingFuture(id, delay, callback);
         return id;
     }
@@ -178,5 +181,37 @@ public class ThreadsafeTimers {
     public void clearAll() {
         idSchedulerMapping.forEach((id, future) -> future.cancel(true));
         idSchedulerMapping.clear();
+    }
+
+    /**
+     * This is a temporal adjuster that takes a single delay.
+     * This adjuster makes the scheduler run as a fixed rate scheduler from the first time adjustInto was called.
+     *
+     * @author Florian Hotze - Initial contribution
+     */
+    private static class LoopingAdjuster implements SchedulerTemporalAdjuster {
+
+        private Duration delay;
+        private @Nullable Temporal timeDone;
+
+        LoopingAdjuster(Duration delay) {
+            this.delay = delay;
+        }
+
+        @Override
+        public boolean isDone(Temporal temporal) {
+            // Always return false so that a new job will be scheduled
+            return false;
+        }
+
+        @Override
+        public Temporal adjustInto(@Nullable Temporal temporal) {
+            if (timeDone == null) {
+                timeDone = temporal;
+            }
+            Temporal nextTime = timeDone.plus(delay);
+            timeDone = nextTime;
+            return nextTime;
+        }
     }
 }
