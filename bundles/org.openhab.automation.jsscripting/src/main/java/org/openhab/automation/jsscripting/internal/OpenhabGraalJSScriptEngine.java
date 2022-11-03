@@ -70,7 +70,7 @@ public class OpenhabGraalJSScriptEngine
     private static final Path NODE_DIR = Paths.get("node_modules");
 
     // shared lock object for synchronization of multi-thread access
-    public final Object lock = new Object();
+    private final Object lock = new Object();
     private final JSRuntimeFeatures jsRuntimeFeatures = new JSRuntimeFeatures(lock);
 
     // these fields start as null because they are populated on first use
