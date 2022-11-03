@@ -41,6 +41,80 @@ public class ICloudService {
 
   private String clientId;
 
+  private String accountCountry = null;
+
+  /**
+   * @return sessionId
+   */
+  public String getSessionId() {
+
+    return this.sessionId;
+  }
+
+  /**
+   * @param sessionId new value of {@link #getsessionId}.
+   */
+  public void setSessionId(String sessionId) {
+
+    this.sessionId = sessionId;
+  }
+
+  /**
+   * @return sessionToken
+   */
+  public String getSessionToken() {
+
+    return this.sessionToken;
+  }
+
+  /**
+   * @param sessionToken new value of {@link #getsessionToken}.
+   */
+  public void setSessionToken(String sessionToken) {
+
+    this.sessionToken = sessionToken;
+  }
+
+  /**
+   * @return trustToken
+   */
+  public String getTrustToken() {
+
+    return this.trustToken;
+  }
+
+  /**
+   * @param trustToken new value of {@link #gettrustToken}.
+   */
+  public void setTrustToken(String trustToken) {
+
+    this.trustToken = trustToken;
+  }
+
+  /**
+   * @return scnt
+   */
+  public String getScnt() {
+
+    return this.scnt;
+  }
+
+  /**
+   * @param scnt new value of {@link #getscnt}.
+   */
+  public void setScnt(String scnt) {
+
+    this.scnt = scnt;
+  }
+
+  private String sessionId = null;
+
+  private String sessionToken = null;
+
+  private String trustToken = null;
+
+  private String scnt = null;
+
   private boolean verify;
 
   private boolean withFamily;
@@ -49,9 +123,12 @@ public class ICloudService {
 
   private Map<String, Object> data = new HashMap();
 
+  // TODO why this pyicloud
+  private Object params;
+
   // private Map<String, String> sessionData = new HashMap();
 
-  private Map<String, String> webservices;
+  private Map<String, Object> webservices;
 
   public ICloudService(String appleId, String password) throws IOException, InterruptedException {
 
@@ -71,7 +148,7 @@ public class ICloudService {
     this.clientId = clientId;
 
     this.session = new ICloudSession(this);
-    this.session.updateHeaders(Pair.of("Content-Type", "application/json"), Pair.of("Origin", HOME_ENDPOINT),
+    this.session.updateHeaders(Pair.of("Accept", "*/*"), Pair.of("Origin", HOME_ENDPOINT),
         Pair.of("Referer", HOME_ENDPOINT + "/"));
 
     // loadCookies();
@@ -85,7 +162,7 @@ public class ICloudService {
 
     boolean loginSuccessful = false;
     // pyicloud 286
-    if (this.session.hasToken() && !forceRefresh) {
+    if (hasToken() && !forceRefresh) {
       this.data = validateToken();
       loginSuccessful = true;
     }
@@ -111,8 +188,8 @@ public class ICloudService {
       localdata.put("accountName", this.appleId);
       localdata.put("password", this.password);
       localdata.put("rememberMe", true);
-      if (this.session.hasToken()) {
-        localdata.put("trustTokens", this.session.getTrustToken());
+      if (hasToken()) {
+        localdata.put("trustTokens", getTrustToken());
       } else {
         localdata.put("trustTokens", new String[0]);
       }
@@ -126,10 +203,9 @@ public class ICloudService {
        * !this.sessionData.get("session_id").isEmpty()) { headers.add(Pair.of("X-Apple-ID-Session-Id",
        * this.sessionData.get("session_id"))); }
        *
-       * if (this.session.getScnt() != null && !this.session.getScnt().isEmpty()) { headers.add(Pair.of("scnt",
-       * this.session.getSessionId())); } if (this.session.getSessionId() != null &&
-       * !this.session.getSessionId().isEmpty()) { headers.add(Pair.of("X-Apple-ID-Session-Id",
-       * this.session.getSessionId())); }
+       * if (this.getScnt() != null && !this.getScnt().isEmpty()) { headers.add(Pair.of("scnt", this.getSessionId())); }
+       * if (this.getSessionId() != null && !this.getSessionId().isEmpty()) {
+       * headers.add(Pair.of("X-Apple-ID-Session-Id", this.getSessionId())); }
        */
       try {
         this.session.post(AUTH_ENDPOINT + "/signin?isRememberMeEnabled=true", this.gson.toJson(localdata), headers);
@@ -139,7 +215,7 @@ public class ICloudService {
 
       authenticateWithToken();
 
-      this.webservices = (Map<String, String>) this.data.get("webservices");
+      this.webservices = (Map<String, Object>) this.data.get("webservices");
     }
   }
 
@@ -152,13 +228,13 @@ public class ICloudService {
 
     // TODO use TO here?
     HashMap localdata = new HashMap();
-    localdata.put("accountCountryCode", this.session.getAccountCountry());
-    localdata.put("dsWebAuthToken", this.session.getSessionToken());
+    localdata.put("accountCountryCode", getAccountCountry());
+    localdata.put("dsWebAuthToken", getSessionToken());
     localdata.put("extended_login", true);
-    if (this.session.hasToken()) {
-      localdata.put("trustTokens", this.session.getTrustToken());
+    if (hasToken()) {
+      localdata.put("trustToken", getTrustToken());
     } else {
-      localdata.put("trustTokens", new String[0]);
+      localdata.put("trustToken", "");
     }
 
     try {
@@ -262,11 +338,11 @@ public class ICloudService {
      * this.sessionData.get("session_id"))); }
      */
 
-    if (this.session.getScnt() != null && !this.session.getScnt().isEmpty()) {
-      headers.add(Pair.of("scnt", this.session.getScnt()));
+    if (getScnt() != null && !getScnt().isEmpty()) {
+      headers.add(Pair.of("scnt", getScnt()));
     }
-    if (this.session.getSessionId() != null && !this.session.getSessionId().isEmpty()) {
-      headers.add(Pair.of("X-Apple-ID-Session-Id", this.session.getSessionId()));
+    if (getSessionId() != null && !getSessionId().isEmpty()) {
+      headers.add(Pair.of("X-Apple-ID-Session-Id", getSessionId()));
     }
 
     try {
@@ -286,13 +362,58 @@ public class ICloudService {
     // return not self.requires_2sa
   }
 
+  private String getWebserviceUrl(String wsKey) {
+
+    return (String) ((Map) this.webservices.get(wsKey)).get("url");
+  }
+
   /**
+   * @throws InterruptedException
+   * @throws IOException
    *
    */
-  public void trustSession() {
+  public void trustSession() throws IOException, InterruptedException {
 
-    // TODO Auto-generated method stub
+    List<Pair<String, String>> headers = getAuthHeaders();
 
+    if (getScnt() != null && !getScnt().isEmpty()) {
+      headers.add(Pair.of("scnt", getScnt()));
+    }
+    if (getSessionId() != null && !getSessionId().isEmpty()) {
+      headers.add(Pair.of("X-Apple-ID-Session-Id", getSessionId()));
+    }
+    this.session.get(AUTH_ENDPOINT + "/2sv/trust", null, headers);
+    authenticateWithToken();
+
+  }
+
+  public FindMyIPhoneServiceManager getDevices() throws IOException, InterruptedException {
+
+    return new FindMyIPhoneServiceManager(this.session, getWebserviceUrl("findme"), this.params, this.withFamily);
+  }
+
+  /**
+   * @return
+   */
+  public boolean hasToken() {
+
+    return this.sessionToken != null && !this.sessionToken.isEmpty();
+  }
+
+  /**
+   * @return accountCountry
+   */
+  public String getAccountCountry() {
+
+    return this.accountCountry;
+  }
+
+  /**
+   * @param accountCountry new value of {@link #getaccountCountry}.
+   */
+  public void setAccountCountry(String accountCountry) {
+
+    this.accountCountry = accountCountry;
   }
 
 }

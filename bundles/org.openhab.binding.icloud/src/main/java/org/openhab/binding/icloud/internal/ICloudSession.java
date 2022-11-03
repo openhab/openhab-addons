@@ -29,30 +29,6 @@ import com.google.gson.GsonBuilder;
  */
 public class ICloudSession {
 
-  /**
-   * @return sessionId
-   */
-  public String getSessionId() {
-
-    return this.sessionId;
-  }
-
-  /**
-   * @return scnt
-   */
-  public String getScnt() {
-
-    return this.scnt;
-  }
-
-  /**
-   * @return sessionToken
-   */
-  public String getSessionToken() {
-
-    return this.sessionToken;
-  }
-
   private final static Logger LOGGER = LoggerFactory.getLogger(ICloudService.class);
 
   private final ICloudService iCloudService;
@@ -62,16 +38,6 @@ public class ICloudSession {
   private final CookieManager cookieManager;
 
   private final List<Pair<String, String>> headers = new ArrayList();
-
-  private String accountCountry = null;
-
-  private String sessionId = null;
-
-  private String sessionToken = null;
-
-  private String trustToken = null;
-
-  private String scnt = null;
 
   private final Gson gson = new GsonBuilder().create();
 
@@ -105,28 +71,22 @@ public class ICloudSession {
     if (overrideHeaders != null) {
       requestHeaders = overrideHeaders;
     } else {
-      if (this.accountCountry != null) {
-        requestHeaders.add(Pair.of("X-Apple-ID-Account-Country", this.accountCountry));
-      }
-      if (this.sessionId != null) {
-        requestHeaders.add(Pair.of("X-Apple-ID-Session-Id", this.sessionId));
-      }
-      if (this.sessionToken != null) {
-        requestHeaders.add(Pair.of("X-Apple-Session-Token", this.sessionToken));
-      }
-      if (this.trustToken != null) {
-        requestHeaders.add(Pair.of("X-Apple-TwoSV-Trust-Token", this.trustToken));
-      }
-      if (this.scnt != null) {
-        requestHeaders.add(Pair.of("scnt", this.scnt));
-      }
+      /*
+       * if (this.accountCountry != null) { requestHeaders.add(Pair.of("X-Apple-ID-Account-Country",
+       * this.accountCountry)); } if (this.sessionId != null) { requestHeaders.add(Pair.of("X-Apple-ID-Session-Id",
+       * this.sessionId)); } if (this.sessionToken != null) { requestHeaders.add(Pair.of("X-Apple-Session-Token",
+       * this.sessionToken)); } if (this.trustToken != null) { requestHeaders.add(Pair.of("X-Apple-TwoSV-Trust-Token",
+       * this.trustToken)); } if (this.scnt != null) { requestHeaders.add(Pair.of("scnt", this.scnt)); }
+       */
     }
 
     for (Pair<String, String> header : requestHeaders) {
       builder.header(header.key, header.value);
     }
 
-    builder.method(method, BodyPublishers.ofString(kwargs));
+    if (kwargs != null) {
+      builder.method(method, BodyPublishers.ofString(kwargs));
+    }
 
     HttpRequest request = builder.build();
 
@@ -137,7 +97,7 @@ public class ICloudSession {
         response.headers().toString(), response.body().toString());
 
     // TODO Error Handling pyicloud 99-162
-    if (response.statusCode() != 200) {
+    if (response.statusCode() >= 34100) {
       throw new ICloudAPIResponseException();
       /*
        * 826 if (response.statusCode() == 421 || response.statusCode() == 450 || response.statusCode() == 500) { throw
@@ -145,11 +105,15 @@ public class ICloudSession {
        */
     }
 
-    this.accountCountry = response.headers().firstValue("X-Apple-ID-Account-Country").orElse(this.accountCountry);
-    this.sessionId = response.headers().firstValue("X-Apple-ID-Session-Id").orElse(this.sessionId);
-    this.sessionToken = response.headers().firstValue("X-Apple-Session-Token").orElse(this.sessionToken);
-    this.trustToken = response.headers().firstValue("X-Apple-TwoSV-Trust-Token").orElse(this.trustToken);
-    this.scnt = response.headers().firstValue("scnt").orElse(this.scnt);
+    this.iCloudService.setAccountCountry(
+        response.headers().firstValue("X-Apple-ID-Account-Country").orElse(this.iCloudService.getAccountCountry()));
+    this.iCloudService
+        .setSessionId(response.headers().firstValue("X-Apple-ID-Session-Id").orElse(this.iCloudService.getSessionId()));
+    this.iCloudService.setSessionToken(
+        response.headers().firstValue("X-Apple-Session-Token").orElse(this.iCloudService.getSessionToken()));
+    this.iCloudService.setTrustToken(
+        response.headers().firstValue("X-Apple-TwoSV-Trust-Token").orElse(this.iCloudService.getTrustToken()));
+    this.iCloudService.setScnt(response.headers().firstValue("scnt").orElse(this.iCloudService.getScnt()));
 
     return response.body().toString();
 
@@ -187,29 +151,5 @@ public class ICloudSession {
         originalList.add(newHeader);
       }
     }
-  }
-
-  /**
-   * @return
-   */
-  public boolean hasToken() {
-
-    return this.sessionToken != null && !this.sessionToken.isEmpty();
-  }
-
-  /**
-   * @return
-   */
-  public String getTrustToken() {
-
-    return this.trustToken;
-  }
-
-  /**
-   * @return
-   */
-  public String getAccountCountry() {
-
-    return this.accountCountry;
   }
 }

@@ -30,6 +30,11 @@ public class TestICloud {
       if (!service.isTrustedSession()) {
         service.trustSession();
       }
+      if (!service.isTrustedSession()) {
+        System.err.println("Trust failed!!!");
+      }
+
+      service.getDevices();
     }
   }
 
