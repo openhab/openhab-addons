@@ -164,19 +164,22 @@ public class Layout {
         }
 
         Layout l = (Layout) o;
-        List<PositionDatum> pd = getPositionData();
-        List<PositionDatum> otherPd = l.getPositionData();
 
-        boolean positionDataEquals = false;
-        if (pd == null || otherPd == null) {
-            if (pd == null && otherPd == null) {
-                positionDataEquals = true;
-            }
-        } else {
-            positionDataEquals = pd.equals(otherPd);
+        if (numPanels != l.getNumPanels()) {
+            return false;
         }
 
-        return (numPanels == l.getNumPanels()) && positionDataEquals;
+        List<PositionDatum> pd = getPositionData();
+        List<PositionDatum> otherPd = l.getPositionData();
+        if (pd == null && otherPd == null) {
+            return true;
+        }
+
+        if (pd == null || otherPd == null) {
+            return false;
+        }
+
+        return pd.equals(otherPd);
     }
 
     @Override

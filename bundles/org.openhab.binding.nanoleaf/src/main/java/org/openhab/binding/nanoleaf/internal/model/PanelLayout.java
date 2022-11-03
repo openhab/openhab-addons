@@ -62,29 +62,39 @@ public class PanelLayout {
 
         PanelLayout pl = (PanelLayout) o;
 
+        // For a panel layout to be equal to another panel layouit, all inner data structures must
+        // be equal, or they must be null both in this object or the object it is compared with.
+
         GlobalOrientation go = globalOrientation;
         GlobalOrientation otherGo = pl.getGlobalOrientation();
         boolean goEquals = false;
         if (go == null || otherGo == null) {
             if (go == null && otherGo == null) {
+                // If one of the global oriantations are null, the other must also be null
+                // for them to be equal
                 goEquals = true;
             }
         } else {
             goEquals = go.equals(otherGo);
         }
 
-        Layout l = layout;
-        Layout otherL = pl.getLayout();
-        boolean lEquals = false;
-        if (l == null || otherL == null) {
-            if (l == null && otherL == null) {
-                lEquals = true;
-            }
-        } else {
-            lEquals = l.equals(otherL);
+        if (goEquals == false) {
+            // No reason to compare layout if global oriantation is different
+            return false;
         }
 
-        return goEquals && lEquals;
+        Layout l = layout;
+        Layout otherL = pl.getLayout();
+
+        if (l == null && otherL == null) {
+            return true;
+        }
+
+        if (l == null || otherL == null) {
+            return false;
+        }
+
+        return l.equals(otherL);
     }
 
     @Override
