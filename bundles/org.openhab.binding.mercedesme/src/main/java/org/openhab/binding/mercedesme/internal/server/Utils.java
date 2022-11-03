@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.mercedesme.internal.server;
 
+import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -70,7 +71,9 @@ public class Utils {
                         for (Enumeration<InetAddress> addresses = iface.getInetAddresses(); addresses
                                 .hasMoreElements();) {
                             InetAddress address = addresses.nextElement();
-                            return address.getHostAddress();
+                            if (address instanceof Inet4Address) {
+                                return address.getHostAddress();
+                            }
                         }
                     }
                 }

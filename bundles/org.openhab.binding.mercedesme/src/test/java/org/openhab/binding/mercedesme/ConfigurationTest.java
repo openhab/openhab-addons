@@ -62,10 +62,11 @@ class ConfigurationTest {
     @Test
     public void testCallbackUrl() throws SocketException {
         String ip = Utils.getCallbackIP();
+        String message = "IP " + ip + " not reachable";
         try {
-            assertTrue(InetAddress.getByName(ip).isReachable(10));
+            assertTrue(InetAddress.getByName(ip).isReachable(10000), message);
         } catch (IOException e) {
-            assertTrue(false, "IP " + ip + " not reachable");
+            fail(message);
         }
     }
 }
