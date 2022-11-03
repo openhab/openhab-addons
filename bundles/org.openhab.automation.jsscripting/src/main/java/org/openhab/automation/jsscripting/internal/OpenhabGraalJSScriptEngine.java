@@ -69,6 +69,8 @@ public class OpenhabGraalJSScriptEngine
     // final CommonJS search path for our library
     private static final Path NODE_DIR = Paths.get("node_modules");
 
+    // shared lock object for synchronization of multi-thread access
+    public final Object lock = new Object();
     private final JSRuntimeFeatures jsRuntimeFeatures = new JSRuntimeFeatures(lock);
 
     // these fields start as null because they are populated on first use
@@ -216,6 +218,14 @@ public class OpenhabGraalJSScriptEngine
             eval(globalScript);
         } catch (ScriptException e) {
             LOGGER.error("Could not inject global script", e);
+        }
+    }
+
+    @Override
+    public Object invokeFunction(String s, Object... objects) throws ScriptException, NoSuchMethodException {
+        // Synchronize multi-thread access to avoid exceptions when reloading a script file while the script is running
+        synchronized (lock) {
+            return super.invokeFunction(s, objects);
         }
     }
 
