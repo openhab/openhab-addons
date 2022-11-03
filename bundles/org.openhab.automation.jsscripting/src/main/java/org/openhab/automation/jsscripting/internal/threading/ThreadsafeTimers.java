@@ -205,11 +205,14 @@ public class ThreadsafeTimers {
         }
 
         @Override
-        public Temporal adjustInto(@Nullable Temporal temporal) {
-            if (timeDone == null) {
-                timeDone = temporal;
+        public Temporal adjustInto(Temporal temporal) {
+            Temporal localTimeDone = timeDone;
+            Temporal nextTime;
+            if (localTimeDone != null) {
+                nextTime = localTimeDone.plus(delay);
+            } else {
+                nextTime = temporal.plus(delay);
             }
-            Temporal nextTime = timeDone.plus(delay);
             timeDone = nextTime;
             return nextTime;
         }

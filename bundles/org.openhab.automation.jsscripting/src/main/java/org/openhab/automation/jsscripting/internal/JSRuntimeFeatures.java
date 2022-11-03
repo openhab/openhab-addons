@@ -15,6 +15,7 @@ package org.openhab.automation.jsscripting.internal;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.automation.jsscripting.internal.threading.ThreadsafeTimers;
 
 /**
@@ -22,16 +23,15 @@ import org.openhab.automation.jsscripting.internal.threading.ThreadsafeTimers;
  *
  * @author Florian Hotze - Initial contribution
  */
+@NonNullByDefault
 public class JSRuntimeFeatures {
     /**
      * All elements of this Map are injected into the JS runtime using their key as the name.
      */
     private final Map<String, Object> features = new HashMap<>();
-    private final Object lock;
     public final ThreadsafeTimers threadsafeTimers;
 
     JSRuntimeFeatures(Object lock) {
-        this.lock = lock;
         this.threadsafeTimers = new ThreadsafeTimers(lock);
 
         features.put("ThreadsafeTimers", threadsafeTimers);

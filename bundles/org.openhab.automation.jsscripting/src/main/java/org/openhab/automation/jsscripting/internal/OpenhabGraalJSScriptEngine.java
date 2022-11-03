@@ -57,8 +57,8 @@ import com.oracle.truffle.js.scriptengine.GraalJSScriptEngine;
  *
  * @author Jonathan Gilbert - Initial contribution
  * @author Dan Cunningham - Script injections
- * @author Florian Hotze - Create lock object for multi-thread synchronization
- * @author Florian Hotze - Inject the {@link JSRuntimeFeatures} into the JS context
+ * @author Florian Hotze - Create lock object for multi-thread synchronization; Inject the {@link JSRuntimeFeatures}
+ *         into the JS context
  */
 public class OpenhabGraalJSScriptEngine
         extends InvocationInterceptingScriptEngineWithInvocableAndAutoCloseable<GraalJSScriptEngine> {
