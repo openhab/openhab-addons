@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewTranslationProvider;
-import org.openhab.binding.hdpowerview.internal.api.responses.SceneCollections.SceneCollection;
+import org.openhab.binding.hdpowerview.internal.dto.SceneCollection;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
