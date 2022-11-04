@@ -107,12 +107,24 @@
 		<channels>
 			<channel id="name" typeId="name"/>
 			<channel id="description" typeId="description"/>
-			<channel id="load" typeId="cpuLoad"/>
+			<channel id="load" typeId="load"/>
 			<channel id="load1" typeId="loadAverage"/>
 			<channel id="load5" typeId="loadAverage"/>
 			<channel id="load15" typeId="loadAverage"/>
 			<channel id="uptime" typeId="uptime"/>
 			<channel id="threads" typeId="threads"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="currentProcessGroup">
+		<label>Current Process</label>
+		<description>Current process information</description>
+		<channels>
+			<channel id="load" typeId="load"/>
+			<channel id="used" typeId="used"/>
+			<channel id="name" typeId="name"/>
+			<channel id="threads" typeId="threads"/>
+			<channel id="path" typeId="path"/>
 		</channels>
 	</channel-group-type>
 
@@ -142,6 +154,14 @@
 		<description>How much data in percent has been used from the max size the Java heap can grow to.</description>
 		<state pattern="%.1f %%" readOnly="true"/>
 		<config-description-ref uri="channel-type:systeminfo:mediumpriority"/>
+	</channel-type>
+
+	<channel-type id="path">
+		<item-type>String</item-type>
+		<label>Path</label>
+		<description>The full path</description>
+		<state readOnly="true" pattern="%s"/>
+		<config-description-ref uri="channel-type:systeminfo:lowpriority"/>
 	</channel-type>
 
 	<channel-type id="path_process">
@@ -288,20 +308,20 @@
 		<config-description-ref uri="channel-type:systeminfo:mediumpriority"/>
 	</channel-type>
 
+	<channel-type id="load">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Load</label>
+		<description>Load in percent</description>
+		<state readOnly="true" pattern="%.1f %%"/>
+		<config-description-ref uri="channel-type:systeminfo:highpriority"/>
+	</channel-type>
+
 	<channel-type id="load_process">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Load</label>
 		<description>Load in percent</description>
 		<state readOnly="true" pattern="%.1f %%"/>
 		<config-description-ref uri="channel-type:systeminfo:highpriority_process"/>
-	</channel-type>
-
-	<channel-type id="cpuLoad">
-		<item-type>Number:Dimensionless</item-type>
-		<label>CPU Load</label>
-		<description>CPU load in percent</description>
-		<state readOnly="true" pattern="%.1f %%"/>
-		<config-description-ref uri="channel-type:systeminfo:highpriority"/>
 	</channel-type>
 
 	<channel-type id="loadAverage" advanced="true">
