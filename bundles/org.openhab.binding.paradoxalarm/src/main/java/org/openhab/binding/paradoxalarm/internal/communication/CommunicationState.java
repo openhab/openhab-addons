@@ -22,7 +22,6 @@ import org.openhab.binding.paradoxalarm.internal.communication.messages.HeaderMe
 import org.openhab.binding.paradoxalarm.internal.communication.messages.IPPacket;
 import org.openhab.binding.paradoxalarm.internal.communication.messages.IpMessagesConstants;
 import org.openhab.binding.paradoxalarm.internal.communication.messages.ParadoxIPPacket;
-import org.openhab.binding.paradoxalarm.internal.model.ParadoxPanel;
 import org.openhab.binding.paradoxalarm.internal.util.ParadoxUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -368,7 +367,6 @@ public enum CommunicationState implements IResponseReceiver {
             if (communicator != null) {
                 communicator.close();
             }
-            ParadoxPanel.getInstance().dispose();
         }
     };
 
