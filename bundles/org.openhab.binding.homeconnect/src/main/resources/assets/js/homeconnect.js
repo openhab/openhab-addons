@@ -6,6 +6,7 @@
     feather.replace();
 
     $(".redirectUri").text(window.location.href.substring(0, window.location.href.lastIndexOf('/homeconnect') + 12));
+    $(".redirectUriInput").val(window.location.href.substring(0, window.location.href.lastIndexOf('/homeconnect') + 12));
 
     $('#apiDetailModal').on('show.bs.modal', function (event) {
         var button = $(event.relatedTarget);

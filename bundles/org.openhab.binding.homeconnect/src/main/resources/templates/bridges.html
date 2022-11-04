@@ -71,12 +71,13 @@
                             <dd class="col-sm-8">
                                 <form method="post" style="display: inline-block">
                                     <input type="hidden" name="bridgeId" th:value="${uid}"/>
-                                    <input type="hidden" name="action" value="clearCredentials">
+                                    <input type="hidden" name="action" value="clearCredentials" />
                                     <button type="submit" class="btn btn-secondary btn-sm">Clear stored credentials</button>
                                 </form>
                                 <form method="post" style="display: inline-block">
-                                    <input type="hidden" name="bridgeId" th:value="${uid}"/>
-                                    <input type="hidden" name="action" value="authorize">
+                                    <input type="hidden" name="bridgeId" th:value="${uid}" />
+                                    <input type="hidden" name="action" value="authorize" />
+                                    <input type="hidden" name="redirectUri" value="" class="redirectUriInput" />
                                     <button type="submit" class="btn btn-primary btn-sm">Authorize bridge</button>
                                 </form>
                             </dd>
