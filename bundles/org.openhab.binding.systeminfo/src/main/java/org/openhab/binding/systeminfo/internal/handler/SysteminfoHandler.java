@@ -243,12 +243,11 @@ public class SysteminfoHandler extends BaseThingHandler {
             if (thingTypeProvider.updateThingType(thingTypeUID, newChannelGroups)) {
                 logger.trace("Channel groups were added, changing the thing type");
                 changeThingType(thingTypeUID, thing.getConfiguration());
-                return true;
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
                         "@text/offline.cannot-initialize");
-                return false;
             }
+            return true;
         }
 
         List<Channel> newChannels = new ArrayList<>();
