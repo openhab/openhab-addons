@@ -123,7 +123,7 @@ public class JdbcDerbyDAO extends JdbcBaseDAO {
     public Long doCreateNewEntryInItemsTable(ItemsVO vo) {
         String sql = StringUtilsExt.replaceArrayMerge(sqlCreateNewEntryInItemsTable,
                 new String[] { "#itemsManageTable#", "#itemname#" },
-                new String[] { vo.getItemsManageTable().toUpperCase(), vo.getItemname() });
+                new String[] { vo.getItemsManageTable().toUpperCase(), vo.getItemName() });
         logger.debug("JDBC::doCreateNewEntryInItemsTable sql={}", sql);
         return Yank.insert(sql, null);
     }

@@ -57,6 +57,7 @@ public class JdbcConfiguration {
     // private String password;
     private int numberDecimalcount = 3;
     private boolean tableUseRealItemNames = false;
+    private boolean tableCaseSensitiveItemNames = false;
     private String tableNamePrefix = "item";
     private int tableIdDigitCount = 4;
     private boolean rebuildTableNames = false;
@@ -161,6 +162,12 @@ public class JdbcConfiguration {
         if (rn != null && !rn.isBlank()) {
             tableUseRealItemNames = "true".equals(rn) ? Boolean.parseBoolean(rn) : false;
             logger.debug("JDBC::updateConfig: tableUseRealItemNames={}", tableUseRealItemNames);
+        }
+
+        String lc = (String) configuration.get("tableCaseSensitiveItemNames");
+        if (lc != null && !lc.isBlank()) {
+            tableCaseSensitiveItemNames = Boolean.parseBoolean(lc);
+            logger.debug("JDBC::updateConfig: tableCaseSensitiveItemNames={}", tableCaseSensitiveItemNames);
         }
 
         String td = (String) configuration.get("tableIdDigitCount");
@@ -361,6 +368,19 @@ public class JdbcConfiguration {
 
     public boolean getTableUseRealItemNames() {
         return tableUseRealItemNames;
+    }
+
+    public boolean getTableCaseSensitiveItemNames() {
+        return tableCaseSensitiveItemNames;
+    }
+
+    /**
+     * Checks if real item names (without number suffix) is enabled.
+     *
+     * @return true if both tableUseRealItemNames and tableCaseSensitiveItemNames are enabled.
+     */
+    public boolean getTableUseRealCaseSensitiveItemNames() {
+        return tableUseRealItemNames && tableCaseSensitiveItemNames;
     }
 
     public int getTableIdDigitCount() {

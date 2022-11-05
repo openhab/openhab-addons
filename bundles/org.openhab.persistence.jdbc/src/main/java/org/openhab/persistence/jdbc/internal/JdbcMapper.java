@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -53,10 +54,10 @@ public class JdbcMapper {
     protected int errCnt;
     protected boolean initialized = false;
     protected @NonNullByDefault({}) JdbcConfiguration conf;
-    protected final Map<String, String> sqlTables = new HashMap<>();
+    protected final Map<String, String> itemNameToTableNameMap = new HashMap<>();
+    protected @NonNullByDefault({}) NamingStrategy namingStrategy;
     private long afterAccessMin = 10000;
     private long afterAccessMax = 0;
-    private static final String ITEM_NAME_PATTERN = "[^a-zA-Z_0-9\\-]";
 
     public JdbcMapper(TimeZoneProvider timeZoneProvider) {
         this.timeZoneProvider = timeZoneProvider;
@@ -97,11 +98,19 @@ public class JdbcMapper {
         return res != null ? res : "";
     }
 
+    public boolean ifItemsTableExists() {
+        logger.debug("JDBC::ifItemsTableExists");
+        long timerStart = System.currentTimeMillis();
+        boolean res = conf.getDBDAO().doIfTableExists(new ItemsVO());
+        logTime("doIfTableExists", timerStart, System.currentTimeMillis());
+        return res;
+    }
+
     public ItemsVO createNewEntryInItemsTable(ItemsVO vo) {
         logger.debug("JDBC::createNewEntryInItemsTable");
         long timerStart = System.currentTimeMillis();
         Long i = conf.getDBDAO().doCreateNewEntryInItemsTable(vo);
-        vo.setItemid(i.intValue());
+        vo.setItemId(i.intValue());
         logTime("doCreateNewEntryInItemsTable", timerStart, System.currentTimeMillis());
         return vo;
     }
@@ -111,6 +120,14 @@ public class JdbcMapper {
         long timerStart = System.currentTimeMillis();
         conf.getDBDAO().doCreateItemsTableIfNot(vo);
         logTime("doCreateItemsTableIfNot", timerStart, System.currentTimeMillis());
+        return true;
+    }
+
+    public boolean dropItemsTableIfExists(ItemsVO vo) {
+        logger.debug("JDBC::dropItemsTableIfExists");
+        long timerStart = System.currentTimeMillis();
+        conf.getDBDAO().doDropItemsTableIfExists(vo);
+        logTime("doDropItemsTableIfExists", timerStart, System.currentTimeMillis());
         return true;
     }
 
@@ -252,47 +269,66 @@ public class JdbcMapper {
      * DATABASE TABLEHANDLING *
      **************************/
     protected void checkDBSchema() {
-        // Create Items Table if does not exist
-        createItemsTableIfNot(new ItemsVO());
+        if (!conf.getTableUseRealCaseSensitiveItemNames()) {
+            createItemsTableIfNot(new ItemsVO());
+        }
         if (conf.getRebuildTableNames()) {
             formatTableNames();
+
+            if (conf.getTableUseRealCaseSensitiveItemNames()) {
+                dropItemsTableIfExists(new ItemsVO());
+            }
             logger.info(
                     "JDBC::checkDBSchema: Rebuild complete, configure the 'rebuildTableNames' setting to 'false' to stop rebuilds on startup");
-        } else {
             // Reset the error counter
             errCnt = 0;
+        }
+        populateItemNameToTableNameMap();
+    }
+
+    private void populateItemNameToTableNameMap() {
+        itemNameToTableNameMap.clear();
+        if (conf.getTableUseRealCaseSensitiveItemNames()) {
+            for (String itemName : getItemTables().stream().map(t -> t.getTableName()).collect(Collectors.toList())) {
+                itemNameToTableNameMap.put(itemName, itemName);
+            }
+        } else {
             for (ItemsVO vo : getItemIDTableNames()) {
-                sqlTables.put(vo.getItemname(), getTableName(vo.getItemid(), vo.getItemname()));
+                itemNameToTableNameMap.put(vo.getItemName(),
+                        namingStrategy.getTableName(vo.getItemId(), vo.getItemName()));
             }
         }
     }
 
     protected String getTable(Item item) {
-        int rowId = 0;
+        int itemId = 0;
         ItemsVO isvo;
         ItemVO ivo;
 
         String itemName = item.getName();
-        String tableName = sqlTables.get(itemName);
+        String tableName = itemNameToTableNameMap.get(itemName);
 
         // Table already exists - return the name
-        if (tableName != null) {
+        if (!Objects.isNull(tableName)) {
             return tableName;
         }
 
         logger.debug("JDBC::getTable: no table found for item '{}' in sqlTables", itemName);
 
-        // Create a new entry in items table
-        isvo = new ItemsVO();
-        isvo.setItemname(itemName);
-        isvo = createNewEntryInItemsTable(isvo);
-        rowId = isvo.getItemid();
-        if (rowId == 0) {
-            logger.error("JDBC::getTable: Creating table for item '{}' failed.", itemName);
+        if (!conf.getTableUseRealCaseSensitiveItemNames()) {
+            // Create a new entry in items table
+            isvo = new ItemsVO();
+            isvo.setItemName(itemName);
+            isvo = createNewEntryInItemsTable(isvo);
+            itemId = isvo.getItemId();
+            if (itemId == 0) {
+                logger.error("JDBC::getTable: Creating items entry for item '{}' failed.", itemName);
+            }
         }
+
         // Create the table name
-        logger.debug("JDBC::getTable: getTableName with rowId={} itemName={}", rowId, itemName);
-        tableName = getTableName(rowId, itemName);
+        logger.debug("JDBC::getTable: getTableName with rowId={} itemName={}", itemId, itemName);
+        tableName = namingStrategy.getTableName(itemId, itemName);
 
         // Create table for item
         String dataType = conf.getDBDAO().getDataType(item);
@@ -301,18 +337,8 @@ public class JdbcMapper {
         ivo = createItemTable(ivo);
         logger.debug("JDBC::getTable: Table created for item '{}' with dataType {} in SQL database.", itemName,
                 dataType);
-        sqlTables.put(itemName, tableName);
 
-        // Check if the new entry is in the table list
-        // If it's not in the list, then there was an error and we need to do
-        // some tidying up
-        // The item needs to be removed from the index table to avoid duplicates
-        if (sqlTables.get(itemName) == null) {
-            logger.error("JDBC::getTable: Item '{}' was not added to the table - removing index", itemName);
-            isvo = new ItemsVO();
-            isvo.setItemname(itemName);
-            deleteItemsEntry(isvo);
-        }
+        itemNameToTableNameMap.put(itemName, tableName);
 
         return tableName;
     }
@@ -323,91 +349,55 @@ public class JdbcMapper {
             initialized = false;
         }
 
-        Map<Integer, String> tableIds = new HashMap<>();
+        List<ItemsVO> itemIdTableNames = ifItemsTableExists() ? getItemIDTableNames() : new ArrayList<ItemsVO>();
+        List<String> itemTables = getItemTables().stream().map(t -> t.getTableName()).collect(Collectors.toList());
+        List<ItemVO> oldNewTableNames;
 
-        //
-        for (ItemsVO vo : getItemIDTableNames()) {
-            String t = getTableName(vo.getItemid(), vo.getItemname());
-            sqlTables.put(vo.getItemname(), t);
-            tableIds.put(vo.getItemid(), t);
-        }
-
-        //
-        List<ItemsVO> al = getItemTables();
-
-        String oldName = "";
-        String newName = "";
-        List<ItemVO> oldNewTablenames = new ArrayList<>();
-        for (int i = 0; i < al.size(); i++) {
-            int id = -1;
-            oldName = al.get(i).getTable_name();
-            logger.info("JDBC::formatTableNames: found Table Name= {}", oldName);
-
-            if (oldName.startsWith(conf.getTableNamePrefix()) && !oldName.contains("_")) {
-                id = Integer.parseInt(oldName.substring(conf.getTableNamePrefix().length()));
-                logger.info("JDBC::formatTableNames: found Table with Prefix '{}' Name= {} id= {}",
-                        conf.getTableNamePrefix(), oldName, (id));
-            } else if (oldName.contains("_")) {
-                id = Integer.parseInt(oldName.substring(oldName.lastIndexOf("_") + 1));
-                logger.info("JDBC::formatTableNames: found Table Name= {} id= {}", oldName, (id));
+        if (itemIdTableNames.isEmpty()) {
+            // Without mappings we can only migrate from direct item name to numeric mapping.
+            if (conf.getTableUseRealCaseSensitiveItemNames()) {
+                logger.info("JDBC::formatTableNames: Nothing to migrate.");
+                initialized = tmpinit;
+                return;
             }
-            logger.info("JDBC::formatTableNames: found Table id= {}", id);
-
-            newName = tableIds.get(id);
-            logger.info("JDBC::formatTableNames: found Table newName= {}", newName);
-
-            if (newName != null) {
-                if (!oldName.equalsIgnoreCase(newName)) {
-                    oldNewTablenames.add(new ItemVO(oldName, newName));
-                    logger.info("JDBC::formatTableNames: Table '{}' will be renamed to '{}'", oldName, newName);
+            oldNewTableNames = new ArrayList<>();
+            for (String itemName : itemTables) {
+                ItemsVO isvo = new ItemsVO();
+                isvo.setItemName(itemName);
+                isvo = createNewEntryInItemsTable(isvo);
+                int itemId = isvo.getItemId();
+                if (itemId == 0) {
+                    logger.error("JDBC::formatTableNames: Creating items entry for item '{}' failed.", itemName);
                 } else {
-                    logger.info("JDBC::formatTableNames: Table oldName='{}' newName='{}' nothing to rename", oldName,
-                            newName);
+                    String newTableName = namingStrategy.getTableName(itemId, itemName);
+                    oldNewTableNames.add(new ItemVO(itemName, newTableName));
+                    logger.info("JDBC::formatTableNames: Table '{}' will be renamed to '{}'", itemName, newTableName);
                 }
-            } else {
-                logger.error("JDBC::formatTableNames: Table '{}' could NOT be renamed to '{}'", oldName, newName);
-                break;
             }
+        } else {
+            String itemsManageTable = new ItemsVO().getItemsManageTable();
+            Map<Integer, String> itemIdToItemNameMap = new HashMap<>();
+
+            for (ItemsVO vo : itemIdTableNames) {
+                int itemId = vo.getItemId();
+                String itemName = vo.getItemName();
+                itemIdToItemNameMap.put(itemId, itemName);
+            }
+
+            oldNewTableNames = namingStrategy.prepareMigration(itemTables, itemIdToItemNameMap, itemsManageTable);
         }
 
-        updateItemTableNames(oldNewTablenames);
-        logger.info("JDBC::formatTableNames: Finished updating {} item table names", oldNewTablenames.size());
+        updateItemTableNames(oldNewTableNames);
+        logger.info("JDBC::formatTableNames: Finished updating {} item table names", oldNewTableNames.size());
 
         initialized = tmpinit;
-    }
-
-    private String getTableName(int rowId, String itemName) {
-        return getTableNamePrefix(itemName) + formatRight(rowId, conf.getTableIdDigitCount());
-    }
-
-    private String getTableNamePrefix(String itemName) {
-        String name = conf.getTableNamePrefix();
-        if (conf.getTableUseRealItemNames()) {
-            // Create the table name with real Item Names
-            name = (itemName.replaceAll(ITEM_NAME_PATTERN, "") + "_").toLowerCase();
-        }
-        return name;
     }
 
     public Set<PersistenceItemInfo> getItems() {
         // TODO: in general it would be possible to query the count, earliest and latest values for each item too but it
         // would be a very costly operation
-        return sqlTables.keySet().stream().map(itemName -> new JdbcPersistenceItemInfo(itemName))
+        return itemNameToTableNameMap.keySet().stream().map(itemName -> new JdbcPersistenceItemInfo(itemName))
                 .collect(Collectors.<PersistenceItemInfo> toSet());
-    }
-
-    private static String formatRight(final Object value, final int len) {
-        final String valueAsString = String.valueOf(value);
-        if (valueAsString.length() < len) {
-            final StringBuffer result = new StringBuffer(len);
-            for (int i = len - valueAsString.length(); i > 0; i--) {
-                result.append('0');
-            }
-            result.append(valueAsString);
-            return result.toString();
-        } else {
-            return valueAsString;
-        }
     }
 
     /*****************
