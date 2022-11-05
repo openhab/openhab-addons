@@ -166,7 +166,7 @@ public class TelldusDevicesHandler extends BaseThingHandler implements DeviceSta
             if (bridge != null) {
                 bridgeStatusChanged(bridge.getStatusInfo());
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No bridge defined");
             }
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,

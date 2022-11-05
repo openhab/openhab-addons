@@ -13,9 +13,9 @@
 package org.openhab.binding.tellstick.internal.local;
 
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -59,7 +59,7 @@ public class TelldusLocalBridgeHandler extends BaseBridgeHandler implements Tell
     private TellstickLocalDevicesDTO deviceList = null;
     private TellstickLocalSensorsDTO sensorList = null;
     private TelldusLocalDeviceController controller = null;
-    private List<DeviceStatusListener> deviceStatusListeners = Collections.synchronizedList(new ArrayList<>());
+    private Set<DeviceStatusListener> deviceStatusListeners = ConcurrentHashMap.newKeySet();
     private final HttpClient httpClient;
     private ScheduledFuture<?> pollingJob;
     /**
@@ -231,8 +231,7 @@ public class TelldusLocalBridgeHandler extends BaseBridgeHandler implements Tell
         if (deviceStatusListener == null) {
             throw new IllegalArgumentException("It's not allowed to pass a null deviceStatusListener.");
         }
-        return deviceStatusListeners.contains(deviceStatusListener) ? false
-                : deviceStatusListeners.add(deviceStatusListener);
+        return deviceStatusListeners.add(deviceStatusListener);
     }
 
     @Override

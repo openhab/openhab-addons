@@ -14,8 +14,8 @@ package org.openhab.binding.tellstick.internal.live;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -83,7 +83,7 @@ public class TelldusLiveDeviceController implements DeviceChangeListener, Sensor
 
     private int nbRequest;
     private long sumRequestDuration;
-    private long minRequestDuration = 1000000;
+    private long minRequestDuration = 1_000_000;
     private long maxRequestDuration;
     private int nbTimeouts;
     private int nbErrors;
@@ -285,24 +285,29 @@ public class TelldusLiveDeviceController implements DeviceChangeListener, Sensor
     }
 
     <T> T callRestMethod(String uri, Class<T> response) throws TelldusLiveException {
-        LocalDateTime start = LocalDateTime.now();
+        Instant start = Instant.now();
         T resultObj = null;
         try {
             resultObj = innerCallRest(uri, response);
-        } catch (TimeoutException | InterruptedException | ExecutionException | JAXBException | XMLStreamException e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             logResponse(uri, e);
-            monitorAdditionalRequest(start, LocalDateTime.now(), e);
+            monitorAdditionalRequest(start, Instant.now(), e);
+            throw new TelldusLiveException(e);
+        } catch (TimeoutException | ExecutionException | JAXBException | XMLStreamException e) {
+            logResponse(uri, e);
+            monitorAdditionalRequest(start, Instant.now(), e);
             throw new TelldusLiveException(e);
         }
-        monitorAdditionalRequest(start, LocalDateTime.now(), null);
+        monitorAdditionalRequest(start, Instant.now(), null);
         return resultObj;
     }
 
-    private void monitorAdditionalRequest(LocalDateTime start, LocalDateTime end, @Nullable Throwable exception) {
+    private void monitorAdditionalRequest(Instant start, Instant end, @Nullable Throwable exception) {
         if (!logger.isDebugEnabled()) {
             return;
         }
-        long duration = ChronoUnit.MILLIS.between(start, end);
+        long duration = Duration.between(start, end).toMillis();
         sumRequestDuration += duration;
         nbRequest++;
         if (duration < minRequestDuration) {

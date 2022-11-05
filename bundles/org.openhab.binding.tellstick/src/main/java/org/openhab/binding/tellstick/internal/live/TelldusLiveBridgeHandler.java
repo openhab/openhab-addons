@@ -12,10 +12,11 @@
  */
 package org.openhab.binding.tellstick.internal.live;
 
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
-import java.util.Vector;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -60,11 +61,11 @@ public class TelldusLiveBridgeHandler extends BaseBridgeHandler implements Telld
     private TellstickNetDevices deviceList = null;
     private TellstickNetSensors sensorList = null;
     private TelldusLiveDeviceController controller = new TelldusLiveDeviceController();
-    private List<DeviceStatusListener> deviceStatusListeners = new Vector<>();
+    private Set<DeviceStatusListener> deviceStatusListeners = ConcurrentHashMap.newKeySet();
 
     private int nbRefresh;
     private long sumRefreshDuration;
-    private long minRefreshDuration = 1000000;
+    private long minRefreshDuration = 1_000_000;
     private long maxRefreshDuration;
 
     public TelldusLiveBridgeHandler(Bridge bridge) {
@@ -118,7 +119,7 @@ public class TelldusLiveBridgeHandler extends BaseBridgeHandler implements Telld
     }
 
     synchronized void refreshDeviceList() {
-        LocalDateTime start = LocalDateTime.now();
+        Instant start = Instant.now();
         try {
             updateDevices(deviceList);
             updateSensors(sensorList);
@@ -127,14 +128,14 @@ public class TelldusLiveBridgeHandler extends BaseBridgeHandler implements Telld
             logger.warn("Failed to update", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
-        monitorAdditionalRefresh(start, LocalDateTime.now());
+        monitorAdditionalRefresh(start, Instant.now());
     }
 
-    private void monitorAdditionalRefresh(LocalDateTime start, LocalDateTime end) {
+    private void monitorAdditionalRefresh(Instant start, Instant end) {
         if (!logger.isDebugEnabled()) {
             return;
         }
-        long duration = ChronoUnit.MILLIS.between(start, end);
+        long duration = Duration.between(start, end).toMillis();
         sumRefreshDuration += duration;
         nbRefresh++;
         if (duration < minRefreshDuration) {
@@ -283,8 +284,7 @@ public class TelldusLiveBridgeHandler extends BaseBridgeHandler implements Telld
         if (deviceStatusListener == null) {
             throw new IllegalArgumentException("It's not allowed to pass a null deviceStatusListener.");
         }
-        return deviceStatusListeners.contains(deviceStatusListener) ? false
-                : deviceStatusListeners.add(deviceStatusListener);
+        return deviceStatusListeners.add(deviceStatusListener);
     }
 
     @Override

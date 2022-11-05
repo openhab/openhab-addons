@@ -16,6 +16,8 @@ import static org.openhab.binding.tellstick.internal.TellstickBindingConstants.*
 
 import java.util.Hashtable;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.tellstick.internal.core.TelldusCoreBridgeHandler;
 import org.openhab.binding.tellstick.internal.discovery.TellstickDiscoveryService;
@@ -44,13 +46,15 @@ import org.slf4j.LoggerFactory;
  *
  * @author Jarle Hjortland - Initial contribution
  * @author Jan Gustafsson - Adding support for local API
+ * @author Laurent Garnier - fix discovery service registering/unregistering
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.tellstick")
+@NonNullByDefault
 public class TellstickHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(TellstickHandlerFactory.class);
     private final HttpClient httpClient;
-    private TellstickDiscoveryService discoveryService = null;
-    private ServiceRegistration<DiscoveryService> discoveryServiceRegistration = null;
+    private @Nullable TellstickDiscoveryService discoveryService = null;
+    private @Nullable ServiceRegistration<DiscoveryService> discoveryServiceRegistration = null;
 
     @Activate
     public TellstickHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
@@ -93,7 +97,7 @@ public class TellstickHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         if (thing.getThingTypeUID().equals(TELLDUSCOREBRIDGE_THING_TYPE)) {
             TelldusCoreBridgeHandler handler = new TelldusCoreBridgeHandler((Bridge) thing);
             registerDeviceDiscoveryService(handler);
