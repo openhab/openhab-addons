@@ -51,6 +51,7 @@ import org.openhab.binding.mqtt.homeassistant.internal.handler.HomeAssistantThin
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
+import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 
 /**
@@ -242,6 +243,19 @@ public abstract class AbstractComponentTests extends AbstractHomeAssistantTests 
             return true;
         }
         return false;
+    }
+
+    /**
+     * Send command to a thing's channel
+     * 
+     * @param component component
+     * @param channelId channel
+     * @param command command to send
+     */
+    protected void sendCommand(AbstractComponent<@NonNull ? extends AbstractChannelConfiguration> component,
+            String channelId, Command command) {
+        var channel = Objects.requireNonNull(component.getChannel(channelId));
+        thingHandler.handleCommand(channel.getChannelUID(), command);
     }
 
     protected static class LatchThingHandler extends HomeAssistantThingHandler {

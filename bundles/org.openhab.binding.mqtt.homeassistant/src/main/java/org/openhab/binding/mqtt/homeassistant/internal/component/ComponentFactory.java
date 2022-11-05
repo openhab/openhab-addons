@@ -66,7 +66,7 @@ public class ComponentFactory {
             case "climate":
                 return new Climate(componentConfiguration);
             case "light":
-                return new Light(componentConfiguration);
+                return Light.create(componentConfiguration);
             case "lock":
                 return new Lock(componentConfiguration);
             case "sensor":
