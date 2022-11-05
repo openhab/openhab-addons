@@ -134,22 +134,36 @@ In case of auto-detect the location configured in openHAB is obtained.
 
 ### ForecastSolar Plane Configuration
 
-| Name            | Type    | Description                                                                  | Default | Required |
-|-----------------|---------|------------------------------------------------------------------------------|---------|----------|
-| refreshInterval | integer | Forecast Refresh Interval in minutes                                         | 30      | yes      |
-| declination     | integer | Plane Declination: 0 for horizontal till 90 for vertical declination         | N/A     | yes      |
-| azimuth         | integer | Plane Azimuth: -180 = north, -90 = east, 0 = south, 90 = west, 180 = north   | N/A     | yes      |
-| kwp             | decimal | Installed Kilowatt Peak                                                      | N/A     | yes      |
+| Name            | Type    | Description                                                                  | Default | Required | Advanced |
+|-----------------|---------|------------------------------------------------------------------------------|---------|----------|----------|
+| refreshInterval | integer | Forecast Refresh Interval in minutes                                         | 30      | yes      | false    |
+| declination     | integer | Plane Declination: 0 for horizontal till 90 for vertical declination         | N/A     | yes      | false    |
+| azimuth         | integer | Plane Azimuth: -180 = north, -90 = east, 0 = south, 90 = west, 180 = north   | N/A     | yes      | false    |
+| kwp             | decimal | Installed Kilowatt Peak                                                      | N/A     | yes      | false    |
+| dampAM          | decimal | Damping factor of morning hours                                              | N/A     | no       | true     |
+| dampPM          | decimal | Damping factor of evening hours                                              | N/A     | no       | true     |
+| horizon         | text    | Horizon definition as comma separated integer values                         | N/A     | no       | true     |
 
 `refreshInterval` of forecast data needs to respect the throttling of the ForecastSolar service. 
 12 calls per hour allowed from your caller IP address so for 2 planes lowest possible refresh rate is 10 minutes.
 
 Note: `channelRefreshInterval` from [Bridge Configuration](#forecastsolar-bridge-configuration) will calculate intermediate values without requesting new forecast data.
 
-https://doc.forecast.solar/doku.php?id=damping
-https://doc.forecast.solar/doku.php?id=api
-https://joint-research-centre.ec.europa.eu/pvgis-photovoltaic-geographical-information-system/getting-started-pvgis/pvgis-user-manual_en#ref-2-using-horizon-information
-https://re.jrc.ec.europa.eu/pvg_tools/en/
+#### Advanced Configuration
+
+Advanced configuration parameters are available to *fine tune* your forecast data.
+Read linked documentation in order to know what you're doing.
+
+[Damping factors](https://doc.forecast.solar/doku.php?id=damping) for morning and evening.
+
+[Horizon information](https://doc.forecast.solar/doku.php?id=api) as comma separated integer list.
+This configuration item is aimed to expert users.
+You need to understand the [horizon concept](https://joint-research-centre.ec.europa.eu/pvgis-photovoltaic-geographical-information-system/getting-started-pvgis/pvgis-user-manual_en#ref-2-using-horizon-information).
+Shadow obstacles like mountains, hills, buildings can be expressed here.
+First step can be a download from [PVGIS tool](https://re.jrc.ec.europa.eu/pvg_tools/en/) and downloading the *terrain shadows*.
+But it doesn't fit 100% to the required configuration.
+Currently there's no tool available which is providing the configuration information 1 to 1.
+So you need to know what you're doing.
 
 ## ForecastSolar Channels
 

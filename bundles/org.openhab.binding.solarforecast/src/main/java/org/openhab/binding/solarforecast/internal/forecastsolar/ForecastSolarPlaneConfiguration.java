@@ -26,8 +26,8 @@ public class ForecastSolarPlaneConfiguration {
     public int azimuth = 360;
     public double kwp = 0;
     public int refreshInterval = -1;
-    public double dampAM = 0.25;
-    public double dampPM = 0.25;
+    public double dampAM = 0;
+    public double dampPM = 0;
     public String horizon = SolarForecastBindingConstants.EMPTY;
 
     @Override

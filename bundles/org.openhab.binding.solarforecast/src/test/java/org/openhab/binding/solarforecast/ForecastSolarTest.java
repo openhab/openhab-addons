@@ -197,16 +197,18 @@ class ForecastSolarTest {
 
     @Test
     public void testHorizon() throws URISyntaxException, IOException, InterruptedException {
-        String url = "https://api.forecast.solar/estimate/50.55598767987004/8.49558522179684/12/-40/5.525?damping=0.25,0.25";
+        String url = "https://api.forecast.solar/estimate/50.55598767987004/8.49558522179684/12/-40/5.525";
         String horizon = "2,2,2,2,1,1,3,3,4,3,3,4,3,3,3,3,4,5,7,5,4,2,2,2,2,1,1,1,1,1,2,2,2,2,1,2";
 
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder().uri(new URI(url)).GET().build();
         HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
+        System.out.println(url);
         System.out.println(response.body());
         url += "?horizon=" + horizon;
         request = HttpRequest.newBuilder().uri(new URI(url)).GET().build();
         response = client.send(request, BodyHandlers.ofString());
+        System.out.println(url);
         System.out.println(response.body());
 
     }
