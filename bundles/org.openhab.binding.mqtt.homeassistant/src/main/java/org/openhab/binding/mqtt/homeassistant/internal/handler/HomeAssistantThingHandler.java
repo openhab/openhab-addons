@@ -124,7 +124,7 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
                 this.transformationServiceProvider);
     }
 
-    @SuppressWarnings({ "null", "unused" })
+    @SuppressWarnings({ "null" })
     @Override
     public void initialize() {
         started = false;
@@ -226,7 +226,6 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
         super.stop();
     }
 
-    @SuppressWarnings({ "null", "unused" })
     @Override
     public @Nullable ChannelState getChannelState(ChannelUID channelUID) {
         String groupID = channelUID.getGroupId();
@@ -259,7 +258,6 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
      * Callback of {@link DelayedBatchProcessing}.
      * Add all newly discovered components to the Thing and start the components.
      */
-    @SuppressWarnings({ "null" })
     @Override
     public void accept(List<AbstractComponent<?>> discoveredComponentsList) {
         MqttBrokerConnection connection = this.connection;

@@ -27,11 +27,11 @@ import org.openhab.core.library.types.OnOffType;
  *
  * @author Anton Kharuzhy - Initial contribution
  */
-@SuppressWarnings("ALL")
 @NonNullByDefault
 public class FanTests extends AbstractComponentTests {
     public static final String CONFIG_TOPIC = "fan/0x0000000000000000_fan_zigbee2mqtt";
 
+    @SuppressWarnings("null")
     @Test
     public void test() throws InterruptedException {
         // @formatter:off

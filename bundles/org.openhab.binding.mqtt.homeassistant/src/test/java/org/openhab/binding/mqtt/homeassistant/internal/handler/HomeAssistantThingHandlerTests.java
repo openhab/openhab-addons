@@ -43,7 +43,6 @@ import org.openhab.core.thing.binding.ThingHandlerCallback;
  *
  * @author Anton Kharuzhy - Initial contribution
  */
-@SuppressWarnings({ "ConstantConditions" })
 @ExtendWith(MockitoExtension.class)
 @NonNullByDefault
 public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {

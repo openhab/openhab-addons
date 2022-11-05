@@ -31,11 +31,11 @@ import org.openhab.core.types.UnDefType;
  *
  * @author Anton Kharuzhy - Initial contribution
  */
-@SuppressWarnings("ConstantConditions")
 @NonNullByDefault
 public class SensorTests extends AbstractComponentTests {
     public static final String CONFIG_TOPIC = "sensor/0x0000000000000000_sensor_zigbee2mqtt";
 
+    @SuppressWarnings("null")
     @Test
     public void test() throws InterruptedException {
         // @formatter:off

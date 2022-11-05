@@ -202,11 +202,11 @@ public class Vacuum extends AbstractComponent<Vacuum.ChannelConfiguration> {
                 : channelConfiguration.supportedFeatures;
         List<String> deviceSupportedFeatures = Collections.emptyList();
 
-        if (!configSupportedFeatures.isEmpty()) {
+        if (configSupportedFeatures != null && !configSupportedFeatures.isEmpty()) {
             deviceSupportedFeatures = allowedSupportedFeatures.stream().filter(configSupportedFeatures::contains)
                     .collect(Collectors.toList());
         }
-        if (deviceSupportedFeatures.size() != configSupportedFeatures.size()) {
+        if (configSupportedFeatures != null && deviceSupportedFeatures.size() != configSupportedFeatures.size()) {
             LOGGER.warn("Vacuum discovery config has unsupported or duplicated features. Supported: {}, provided: {}",
                     Arrays.toString(allowedSupportedFeatures.toArray()),
                     Arrays.toString(configSupportedFeatures.toArray()));

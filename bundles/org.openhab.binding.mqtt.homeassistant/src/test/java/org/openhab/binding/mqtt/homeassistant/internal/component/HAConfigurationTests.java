@@ -148,6 +148,7 @@ public class HAConfigurationTests {
         }
     }
 
+    @SuppressWarnings("null")
     @Test
     public void testTS0601ClimateConfig() {
         String json = readTestJson("configTS0601ClimateThermostat.json");
