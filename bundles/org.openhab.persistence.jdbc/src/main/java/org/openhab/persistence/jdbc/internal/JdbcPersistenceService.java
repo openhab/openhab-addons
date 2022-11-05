@@ -13,11 +13,14 @@
 package org.openhab.persistence.jdbc.internal;
 
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -36,6 +39,9 @@ import org.openhab.core.persistence.QueryablePersistenceService;
 import org.openhab.core.persistence.strategy.PersistenceStrategy;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
+import org.openhab.persistence.jdbc.ItemTableCheckEntry;
+import org.openhab.persistence.jdbc.ItemTableCheckEntryStatus;
+import org.openhab.persistence.jdbc.dto.ItemsVO;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
@@ -55,12 +61,8 @@ import org.slf4j.LoggerFactory;
 @Component(service = { PersistenceService.class,
         QueryablePersistenceService.class }, configurationPid = "org.openhab.jdbc", //
         property = Constants.SERVICE_PID + "=org.openhab.jdbc")
-@ConfigurableService(category = "persistence", label = "JDBC Persistence Service", description_uri = JdbcPersistenceService.CONFIG_URI)
+@ConfigurableService(category = "persistence", label = "JDBC Persistence Service", description_uri = JdbcPersistenceServiceConstants.CONFIG_URI)
 public class JdbcPersistenceService extends JdbcMapper implements ModifiablePersistenceService {
-
-    private static final String SERVICE_ID = "jdbc";
-    private static final String SERVICE_LABEL = "JDBC";
-    protected static final String CONFIG_URI = "persistence:jdbc";
 
     private final Logger logger = LoggerFactory.getLogger(JdbcPersistenceService.class);
 
@@ -116,12 +118,12 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
     @Override
     public String getId() {
         logger.debug("JDBC::getName: returning name 'jdbc' for queryable persistence service.");
-        return SERVICE_ID;
+        return JdbcPersistenceServiceConstants.SERVICE_ID;
     }
 
     @Override
     public String getLabel(@Nullable Locale locale) {
-        return SERVICE_LABEL;
+        return JdbcPersistenceServiceConstants.SERVICE_LABEL;
     }
 
     @Override
@@ -274,5 +276,44 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
         }
 
         return result;
+    }
+
+    public List<ItemTableCheckEntry> getCheckedEntries() {
+        List<ItemTableCheckEntry> entries = new ArrayList<>();
+        var orphanTables = getItemTables().stream().map(ItemsVO::getTableName).collect(Collectors.toSet());
+        for (Entry<String, String> entry : itemNameToTableNameMap.entrySet()) {
+            String itemName = entry.getKey();
+            String tableName = entry.getValue();
+            Boolean itemExists;
+            try {
+                itemRegistry.getItem(itemName);
+                itemExists = true;
+            } catch (ItemNotFoundException e) {
+                itemExists = false;
+            }
+
+            ItemTableCheckEntryStatus status;
+            long rowCount = 0;
+            if (!orphanTables.contains(tableName)) {
+                if (itemExists) {
+                    status = ItemTableCheckEntryStatus.TABLE_MISSING;
+                } else {
+                    status = ItemTableCheckEntryStatus.ITEM_AND_TABLE_MISSING;
+                }
+            } else if (itemExists) {
+                status = ItemTableCheckEntryStatus.VALID;
+                rowCount = getRowCount(tableName);
+            } else {
+                status = ItemTableCheckEntryStatus.ITEM_MISSING;
+                rowCount = getRowCount(tableName);
+            }
+            orphanTables.remove(tableName);
+            entries.add(new ItemTableCheckEntry(itemName, tableName, rowCount, status));
+        }
+        for (String orphanTable : orphanTables) {
+            entries.add(new ItemTableCheckEntry("", orphanTable, getRowCount(orphanTable),
+                    ItemTableCheckEntryStatus.ORPHAN_TABLE));
+        }
+        return entries;
     }
 }

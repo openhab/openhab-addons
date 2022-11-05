@@ -90,6 +90,7 @@ public class JdbcBaseDAO {
     protected String sqlGetItemTables = "SELECT table_name FROM information_schema.tables WHERE table_type='BASE TABLE' AND table_schema='#jdbcUriDatabaseName#' AND NOT table_name='#itemsManageTable#'";
     protected String sqlCreateItemTable = "CREATE TABLE IF NOT EXISTS #tableName# (time #tablePrimaryKey# NOT NULL, value #dbType#, PRIMARY KEY(time))";
     protected String sqlInsertItemValue = "INSERT INTO #tableName# (TIME, VALUE) VALUES( #tablePrimaryValue#, ? ) ON DUPLICATE KEY UPDATE VALUE= ?";
+    protected String sqlGetRowCount = "SELECT COUNT(*) FROM #tableName#";
 
     /********
      * INIT *
@@ -371,6 +372,14 @@ public class JdbcBaseDAO {
         String sql = histItemFilterDeleteProvider(filter, table, timeZone);
         logger.debug("JDBC::doDeleteItemValues sql={}", sql);
         Yank.execute(sql, null);
+    }
+
+    public long doGetRowCount(String tableName) {
+        final String sql = StringUtilsExt.replaceArrayMerge(sqlGetRowCount, new String[] { "#tableName#" },
+                new String[] { tableName });
+        logger.debug("JDBC::doGetRowCount sql={}", sql);
+        final @Nullable Long result = Yank.queryScalar(sql, Long.class, null);
+        return Objects.requireNonNullElse(result, 0L);
     }
 
     /*************

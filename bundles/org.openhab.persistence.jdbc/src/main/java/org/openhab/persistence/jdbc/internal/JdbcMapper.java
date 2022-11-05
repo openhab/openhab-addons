@@ -189,6 +189,10 @@ public class JdbcMapper {
         return item;
     }
 
+    public long getRowCount(String tableName) {
+        return conf.getDBDAO().doGetRowCount(tableName);
+    }
+
     public List<HistoricItem> getHistItemFilterQuery(FilterCriteria filter, int numberDecimalcount, String table,
             Item item) {
         logger.debug(
@@ -350,7 +354,7 @@ public class JdbcMapper {
         }
 
         List<ItemsVO> itemIdTableNames = ifItemsTableExists() ? getItemIDTableNames() : new ArrayList<ItemsVO>();
-        List<String> itemTables = getItemTables().stream().map(t -> t.getTableName()).collect(Collectors.toList());
+        var itemTables = getItemTables().stream().map(ItemsVO::getTableName).collect(Collectors.toList());
         List<ItemVO> oldNewTableNames;
 
         if (itemIdTableNames.isEmpty()) {
