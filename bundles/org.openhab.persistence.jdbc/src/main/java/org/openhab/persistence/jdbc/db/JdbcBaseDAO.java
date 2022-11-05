@@ -165,7 +165,7 @@ public class JdbcBaseDAO {
      * HSQLDB: org.hsqldb.jdbcDriver
      * Jaybird: org.firebirdsql.jdbc.FBDriver
      * MariaDB: org.mariadb.jdbc.Driver
-     * MySQL: com.mysql.jdbc.Driver
+     * MySQL: com.mysql.cj.jdbc.Driver
      * MaxDB: com.sap.dbtech.jdbc.DriverSapDB
      * PostgreSQL: org.postgresql.Driver
      * SyBase: com.sybase.jdbc3.jdbc.SybDriver
