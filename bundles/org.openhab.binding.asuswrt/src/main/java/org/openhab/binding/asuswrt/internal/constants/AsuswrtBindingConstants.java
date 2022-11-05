@@ -29,12 +29,13 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class AsuswrtBindingConstants {
 
-    private static final String BINDING_ID = "asuswrt";
+    public static final String BINDING_ID = "asuswrt";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_ROUTER = new ThingTypeUID(BINDING_ID, "router");
+    public static final ThingTypeUID THING_TYPE_CLIENT = new ThingTypeUID(BINDING_ID, "client");
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_ROUTER);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_ROUTER, THING_TYPE_CLIENT);
 
     /*** THINGS WITH CHANNEL GROUPS ***/
     public static final Set<ThingTypeUID> CHANNEL_GROUP_THING_SET = Collections
@@ -44,6 +45,20 @@ public class AsuswrtBindingConstants {
      * CHANNEL LISTS
      * item channel names
      ***/
+
+    // general channels
+    public static final String CHANNEL_IP_ADDRESS = "ipAddress";
+    public static final String CHANNEL_MAC_ADDRESS = "macAddress";
+    public static final String CHANNEL_SUBNET = "subnet";
+    public static final String CHANNEL_GATEWAY = "gateway";
+    public static final String CHANNEL_IP_METHOD = "ipMethod";
+    public static final String EVENT_CONNECTION = "connectionEvent";
+
+    // general event constats
+    public static final String EVENT_STATE_CONNECTED = "connected";
+    public static final String EVENT_STATE_GONE = "gone";
+    public static final String EVENT_STATE_DISCONNECTED = "disconnected";
+
     // channel group system info
     public static final String CHANNEL_GROUP_SYSINFO = "sysInfo";
     public static final String CHANNEL_CPU_USAGE = "cpuusage";
@@ -53,25 +68,26 @@ public class AsuswrtBindingConstants {
 
     // channel group lan information
     public static final String CHANNEL_GROUP_LANINFO = "lanInfo";
-    public static final String CHANNEL_LAN_IP = "lanIP";
-    public static final String CHANNEL_LAN_MAC = "lanMAC";
-    public static final String CHANNEL_LAN_SUBNET = "lanSubnet";
-    public static final String CHANNEL_LAN_GW = "lanGateway";
-    public static final String CHANNEL_LAN_PROTO = "lanProto";
 
     // channel group wan information
     public static final String CHANNEL_GROUP_WANINFO = "wanInfo";
-    public static final String CHANNEL_WAN_IP = "wanIP";
-    public static final String CHANNEL_WAN_SUBNET = "wanSubnet";
-    public static final String CHANNEL_WAN_GW = "wanGateway";
-    public static final String CHANNEL_WAN_PROTO = "wanProto";
     public static final String CHANNEL_WAN_DNS_SERVER = "wanDNS";
     public static final String CHANNEL_WAN_STATUS = "wanStatus";
 
-    // channel group client information
-    public static final String CHANNEL_GROUP_CLIENTS = "clients";
+    // channel group clientList information
+    public static final String CHANNEL_GROUP_CLIENTS = "clientList";
     public static final String CHANNEL_CLIENT_ONLINE_NAMES = "onlineNames";
     public static final String CHANNEL_CLIENT_ONLINE_MAC = "onlineMACs";
+
+    // channel group client information
+    public static final String CLIENT_REPRASENTATION_PROPERTY = "macAddress";
+    public static final String PROPERTY_CLIENT_MAC = "macAddress";
+    public static final String PROPERTY_CLIENT_NAME = "clientName";
+    public static final String CHANNEL_GROUP_CLIENT = "client";
+    public static final String CHANNEL_CLIENT_NICKNAME = "clientNick";
+    public static final String CHANNEL_CLIENT_ONLINE = "isOnline";
+    public static final String CHANNEL_CLIENT_INETSTATE = "internetState";
+    public static final String EVENT_CLIENT_ONLINE = "onlineEvent";
 
     /***
      * JSON REQUEST MEMBERNAMES
@@ -110,20 +126,20 @@ public class AsuswrtBindingConstants {
     public static final String JSON_MEMBER_CLIENT_IPFROM = "from";
     public static final String JSON_MEMBER_CLIENT_GROUP = "group";
     public static final String JSON_MEMBER_CLIENT_INETMODE = "internetMode";
-    public static final String JSON_MEMBER_CLIENT_INETSTATE = "internetState;";
+    public static final String JSON_MEMBER_CLIENT_INETSTATE = "internetState";
     public static final String JSON_MEMBER_CLIENT_IP = "ip";
     public static final String JSON_MEMBER_CLIENT_IPMETHOD = "ipMethod";
-    public static final String JSON_MEMBER_CLIENT_IPGATEWAY = "isGateway;";
-    public static final String JSON_MEMBER_CLIENT_GN = "isGN;";
-    public static final String JSON_MEMBER_CLIENT_ITUNES = "isITunes;";
-    public static final String JSON_MEMBER_CLIENT_LOGIN = "isLogin;";
-    public static final String JSON_MEMBER_CLIENT_ONLINE = "isOnline;";
-    public static final String JSON_MEMBER_CLIENT_PRINTER = "isPrinter;";
-    public static final String JSON_MEMBER_CLIENT_WEBSRV = "isWebServer;";
-    public static final String JSON_MEMBER_CLIENT_WIFI = "isWL;";
+    public static final String JSON_MEMBER_CLIENT_IPGATEWAY = "isGateway";
+    public static final String JSON_MEMBER_CLIENT_GN = "isGN";
+    public static final String JSON_MEMBER_CLIENT_ITUNES = "isITunes";
+    public static final String JSON_MEMBER_CLIENT_LOGIN = "isLogin";
+    public static final String JSON_MEMBER_CLIENT_ONLINE = "isOnline";
+    public static final String JSON_MEMBER_CLIENT_PRINTER = "isPrinter";
+    public static final String JSON_MEMBER_CLIENT_WEBSRV = "isWebServer";
+    public static final String JSON_MEMBER_CLIENT_WIFI = "isWL";
     public static final String JSON_MEMBER_CLIENT_KEEPARP = "keeparp";
     public static final String JSON_MEMBER_CLIENT_MAC = "mac";
-    public static final String JSON_MEMBER_CLIENT_MACREPEAT = "macRepeat;";
+    public static final String JSON_MEMBER_CLIENT_MACREPEAT = "macRepeat";
     public static final String JSON_MEMBER_CLIENT_NAME = "name";
     public static final String JSON_MEMBER_CLIENT_NICK = "nickName";
     public static final String JSON_MEMBER_CLIENT_MODE = "opMode";

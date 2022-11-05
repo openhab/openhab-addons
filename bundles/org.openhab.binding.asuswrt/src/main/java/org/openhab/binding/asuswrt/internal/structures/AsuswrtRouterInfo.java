@@ -70,7 +70,7 @@ public class AsuswrtRouterInfo {
             this.fwBuild = jsonObject.get(JSON_MEMBER_BUILD).toString();
             this.lanInfo.setData(jsonObject, CHANNEL_GROUP_SYSINFO);
         } catch (Exception e) {
-            logger.debug("incomplete SysInfo");
+            logger.trace("incomplete SysInfo");
         }
     }
 

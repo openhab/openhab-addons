@@ -29,8 +29,8 @@ import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.client.util.BufferingResponseListener;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
-import org.openhab.binding.asuswrt.internal.AsuswrtRouter;
 import org.openhab.binding.asuswrt.internal.helpers.AsuswrtUtils;
+import org.openhab.binding.asuswrt.internal.things.AsuswrtRouter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,7 +60,7 @@ public class AsuswrtHttpClient {
      */
     public AsuswrtHttpClient(AsuswrtRouter router) {
         this.router = router;
-        this.uid = router.getUID();
+        this.uid = router.getUID().toString();
     }
 
     /***********************************
@@ -71,15 +71,30 @@ public class AsuswrtHttpClient {
 
     /**
      * SEND SYNCHRON HTTP-REQUEST
+     * result will be handled in 'handleHttpSuccessResponse' or 'handleHttpResultError'
+     * If response should be returned use 'getSyncRequest' instead
+     * 
+     * @param url url request is sent to
+     * @param payload payload (String) to send
+     * @param command command to perform
+     */
+    protected void sendSyncRequest(String url, String payload, String command) {
+        ContentResponse response = getSyncRequest(url, payload);
+        if (response != null) {
+            handleHttpSuccessResponse(response.getContentAsString(), command);
+        }
+    }
+
+    /**
+     * SEND SYNCHRON HTTP-REQUEST
      * 
      * @param url url request is sent to
      * @param payload payload (String) to send
      * @return ContentResponse of request
      */
     @Nullable
-    protected ContentResponse sendRequest(String url, String payload) {
+    protected ContentResponse getSyncRequest(String url, String payload) {
         logger.trace("({}) sendRequest '{}' to '{}' with cookie '{}'", uid, payload, url, this.cookie);
-
         Request httpRequest = this.router.getHttpClient().newRequest(url).method(HttpMethod.POST.toString());
 
         /* set header */
@@ -88,9 +103,8 @@ public class AsuswrtHttpClient {
 
         /* add request body */
         httpRequest.content(new StringContentProvider(payload, HTTP_CONTENT_CHARSET), HTTP_CONTENT_TYPE);
-
         try {
-            return (ContentResponse) httpRequest.send();
+            return httpRequest.send();
         } catch (Exception e) {
             handleHttpResultError(e);
         }
@@ -100,6 +114,7 @@ public class AsuswrtHttpClient {
     /**
      * SEND ASYNCHRONOUS HTTP-REQUEST
      * (don't wait for awnser with programm code)
+     * result will be handled in 'handleHttpSuccessResponse' or 'handleHttpResultError'
      * 
      * @param url string url request is sent to
      * @param payload data-payload

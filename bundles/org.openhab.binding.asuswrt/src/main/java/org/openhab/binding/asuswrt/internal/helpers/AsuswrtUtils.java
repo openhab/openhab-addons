@@ -28,6 +28,7 @@ import org.openhab.core.library.types.StringType;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
 /**
  * {@link AsuswrtUtils} TapoUtils -
@@ -82,8 +83,13 @@ public class AsuswrtUtils {
      */
     public static String formatMac(String mac, char newDivisionChar) {
         String unformatedMac = unformatMac(mac);
-        String formatedMac = unformatedMac.replaceAll("(.{2})", "$1" + newDivisionChar).substring(0, 17);
-        return formatedMac;
+        String formatedMac = "";
+        try {
+            formatedMac = unformatedMac.replaceAll("(.{2})", "$1" + newDivisionChar).substring(0, 17);
+            return formatedMac;
+        } catch (Exception e) {
+            return mac;
+        }
     }
 
     /**
@@ -96,6 +102,7 @@ public class AsuswrtUtils {
         mac = mac.replace("-", "");
         mac = mac.replace(":", "");
         mac = mac.replace(".", "");
+        mac = mac.replace(" ", "");
         return mac;
     }
 
@@ -153,10 +160,28 @@ public class AsuswrtUtils {
         }
     }
 
+    /**
+     * 
+     * @param s - string to get value
+     * @param defVal - default if is blank or null
+     * @return
+     */
+    public static String stringOrDefault(@Nullable String s, String defVal) {
+        if (s == null || s.isEmpty() || s.isBlank()) {
+            return defVal;
+        }
+        return s;
+    }
+
     /***********************************
      * JSON-FORMATER
      ************************************/
-
+    /**
+     * Check if string is valid JSON-Format
+     * 
+     * @param json
+     * @return
+     */
     public static boolean isValidJson(String json) {
         try {
             Gson gson = new Gson();
@@ -198,13 +223,13 @@ public class AsuswrtUtils {
      */
     public static Boolean jsonObjectToBool(@Nullable JsonObject jsonObject, String name, Boolean defVal) {
         if (jsonObject != null && jsonObject.has(name)) {
-            Object o = jsonObject.get(name);
-            if (o instanceof Boolean) {
+            JsonPrimitive o = jsonObject.getAsJsonPrimitive(name);
+            if (o.isBoolean()) {
                 return jsonObject.get(name).getAsBoolean();
-            } else if (o instanceof Integer) {
+            } else if (o.isNumber()) {
                 Integer iVal = jsonObject.get(name).getAsInt();
                 return (iVal.equals(1) || iVal.equals(-1));
-            } else if (o instanceof String) {
+            } else if (o.isString()) {
                 String val = jsonObject.get(name).getAsString();
                 return stringToBool(val, defVal);
             }
@@ -229,10 +254,10 @@ public class AsuswrtUtils {
      */
     public static Integer jsonObjectToInt(@Nullable JsonObject jsonObject, String name, Integer defVal) {
         if (jsonObject != null && jsonObject.has(name)) {
-            Object o = jsonObject.get(name);
-            if (o instanceof Integer) {
+            JsonPrimitive o = jsonObject.getAsJsonPrimitive(name);
+            if (o.isNumber()) {
                 return jsonObject.get(name).getAsInt();
-            } else if (o instanceof String) {
+            } else if (o.isString()) {
                 String val = jsonObject.get(name).getAsString();
                 return stringToInteger(val, defVal);
             }

@@ -16,9 +16,9 @@ import static org.openhab.binding.asuswrt.internal.constants.AsuswrtBindingSetti
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.api.ContentResponse;
-import org.openhab.binding.asuswrt.internal.AsuswrtRouter;
 import org.openhab.binding.asuswrt.internal.structures.AsuswrtConfiguration;
 import org.openhab.binding.asuswrt.internal.structures.AsuswrtCredentials;
+import org.openhab.binding.asuswrt.internal.things.AsuswrtRouter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,6 +34,7 @@ public class AsuswrtConnector extends AsuswrtHttpClient {
     private final Logger logger = LoggerFactory.getLogger(AsuswrtConnector.class);
     private AsuswrtCredentials credentials;
     private AsuswrtConfiguration routerConfig;
+    protected Long lastQuery = 0L;
 
     /**
      * INIT CLASS
@@ -67,7 +68,7 @@ public class AsuswrtConnector extends AsuswrtHttpClient {
         logger.trace("({}) perform login to '{}' with '{}'", uid, url, encodedCredentials);
 
         payload = "login_authorization=" + encodedCredentials + "}";
-        ContentResponse response = sendRequest(url, payload);
+        ContentResponse response = getSyncRequest(url, payload);
         if (response != null) {
             setCookieFromResponse(response);
         }
@@ -88,36 +89,38 @@ public class AsuswrtConnector extends AsuswrtHttpClient {
      * Query SysInfo (synchronous)
      * get System Information from device
      */
-    public void querySysInfo() {
-        logger.trace("({}) query SysInfo", uid);
-        String url = routerConfig.url + "/appGet.cgi";
-        String payload = "hook=" + CMD_GET_SYSINFO;
-
-        /* send payload as url parameter */
-        url = url + "?" + payload;
-        url = url.replace(";", "%3B");
-
-        ContentResponse response = sendRequest(url, "");
-        if (response != null) {
-            handleHttpSuccessResponse(response.getContentAsString(), CMD_GET_SYSINFO);
-        }
+    public void querySysInfo(Boolean asyncRequest) {
+        queryDeviceData(CMD_GET_SYSINFO, asyncRequest);
     }
 
     /**
      * Query Data From Device asynchron
      * 
      * @param command command constant to sent
+     * @param asyncRequest Boolean True if request should be sent asynchron, false if synchron
      */
-    public void queryDeviceData(String command) {
+    public void queryDeviceData(String command, Boolean asyncRequest) {
         logger.trace("({}) queryDeviceData", uid);
-        String url = routerConfig.url + "/appGet.cgi";
-        String payload = "hook=" + command;
+        Long now = System.currentTimeMillis();
 
-        /* send payload as url parameter */
-        url = url + "?" + payload;
-        url = url.replace(";", "%3B");
+        if (now > this.lastQuery + HTTP_QUERY_MIN_GAP_MS) {
+            String url = routerConfig.url + "/appGet.cgi";
+            String payload = "hook=" + command;
+            this.lastQuery = now;
 
-        sendAsyncRequest(url, payload, command);
+            /* send payload as url parameter */
+            url = url + "?" + payload;
+            url = url.replace(";", "%3B");
+
+            /* send asynchron or synchron http-request */
+            if (asyncRequest.equals(true)) {
+                sendAsyncRequest(url, payload, command);
+            } else {
+                sendSyncRequest(url, payload, command);
+            }
+        } else {
+            logger.trace("({}) query skipped cause of min_gap: {} <- {}", uid, now, lastQuery);
+        }
     }
 
     /***********************************
@@ -136,16 +139,20 @@ public class AsuswrtConnector extends AsuswrtHttpClient {
     @Override
     protected void handleHttpSuccessResponse(String responseBody, String command) {
         JsonObject jsonObject = getJsonFromString(responseBody);
-        switch (command) {
-            case CMD_GET_SYSINFO:
-                router.deviceInfo.setSysInfo(jsonObject);
-                router.devicePropertiesChanged(router.deviceInfo);
-                break;
-            default:
-                router.deviceInfo.setData(jsonObject);
-                router.updateChannels(router.deviceInfo);
-                break;
+
+        /* set router data */
+        router.deviceInfo.setSysInfo(jsonObject);
+        router.deviceInfo.setData(jsonObject);
+
+        /* update things */
+        router.fireEvents(router.deviceInfo);
+        if (command.contains(CMD_GET_SYSINFO)) {
+            router.devicePropertiesChanged(router.deviceInfo);
         }
+        if (command.contains(CMD_GET_CLIENTLIST)) {
+            router.updateClients(router.getClients());
+        }
+        router.updateChannels(router.deviceInfo);
     }
 
     /***********************************

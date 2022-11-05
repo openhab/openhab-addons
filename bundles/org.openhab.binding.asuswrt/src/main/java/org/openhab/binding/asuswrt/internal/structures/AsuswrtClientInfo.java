@@ -52,7 +52,7 @@ public class AsuswrtClientInfo {
     private String nickName = "";
     private Integer opMode = 0;
     private String qosLevel = "";
-    private Integer ROG = 0;
+    private Integer rog = 0;
     private Integer rssi = 0;
     private String ssid = "";
     private Integer totalRx = 0;
@@ -110,7 +110,7 @@ public class AsuswrtClientInfo {
         this.nickName = jsonObjectToString(jsonObject, JSON_MEMBER_CLIENT_NICK, this.nickName);
         this.opMode = jsonObjectToInt(jsonObject, JSON_MEMBER_CLIENT_MODE, this.opMode);
         this.qosLevel = jsonObjectToString(jsonObject, JSON_MEMBER_CLIENT_QOSLVL, this.qosLevel);
-        this.ROG = jsonObjectToInt(jsonObject, JSON_MEMBER_CLIENT_ROG, this.ROG);
+        this.rog = jsonObjectToInt(jsonObject, JSON_MEMBER_CLIENT_ROG, this.rog);
         this.rssi = jsonObjectToInt(jsonObject, JSON_MEMBER_CLIENT_RSSI, this.rssi);
         this.ssid = jsonObjectToString(jsonObject, JSON_MEMBER_CLIENT_SSID, this.ssid);
         this.totalRx = jsonObjectToInt(jsonObject, JSON_MEMBER_CLIENT_RXTOTAL, this.totalRx);
@@ -235,7 +235,7 @@ public class AsuswrtClientInfo {
     }
 
     public Integer getROG() {
-        return this.ROG;
+        return this.rog;
     }
 
     public Integer getRSSI() {

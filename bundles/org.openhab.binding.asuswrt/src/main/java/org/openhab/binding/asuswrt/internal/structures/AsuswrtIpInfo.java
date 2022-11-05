@@ -116,7 +116,7 @@ public class AsuswrtIpInfo {
         return this.name;
     }
 
-    public Boolean getConnectionState() {
+    public Boolean isConnected() {
         return this.connected;
     }
 }

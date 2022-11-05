@@ -16,6 +16,7 @@ import static org.openhab.binding.asuswrt.internal.constants.AsuswrtBindingConst
 import static org.openhab.binding.asuswrt.internal.constants.AsuswrtErrorConstants.*;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -32,7 +33,7 @@ import com.google.gson.JsonObject;
  * @author Christian Wild - Initial contribution
  */
 @NonNullByDefault
-public class AsuswrtClientList {
+public class AsuswrtClientList implements Iterable<AsuswrtClientInfo> {
     private final Logger logger = LoggerFactory.getLogger(AsuswrtClientList.class);
     private List<AsuswrtClientInfo> clientList = new ArrayList<AsuswrtClientInfo>();
 
@@ -50,6 +51,16 @@ public class AsuswrtClientList {
      */
     public AsuswrtClientList(JsonObject jsonObject) {
         setData(jsonObject);
+    }
+
+    /**
+     * ITERATOR
+     * 
+     * @return clientInfo
+     */
+    @Override
+    public Iterator<AsuswrtClientInfo> iterator() {
+        return clientList.iterator();
     }
 
     /**
@@ -144,7 +155,9 @@ public class AsuswrtClientList {
     public String getOnlineClientNames() {
         StringBuilder clients = new StringBuilder();
         for (AsuswrtClientInfo client : this.clientList) {
-            clients.append(client.getName() + "; ");
+            if (client.isOnline()) {
+                clients.append(client.getName() + "; ");
+            }
         }
         return clients.toString();
     }
@@ -155,7 +168,9 @@ public class AsuswrtClientList {
     public String getOnlineClientMACs() {
         StringBuilder clients = new StringBuilder();
         for (AsuswrtClientInfo client : this.clientList) {
-            clients.append(client.getMac() + "; ");
+            if (client.isOnline()) {
+                clients.append(client.getMac() + "; ");
+            }
         }
         return clients.toString();
     }

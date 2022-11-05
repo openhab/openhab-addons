@@ -5,57 +5,6 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 
-	<!-- ############################### CHANNEL-GROUPS ############################### -->
-	<!-- System Information -->
-	<channel-group-type id="sysInfoGroup">
-		<label>System Info</label>
-		<description>System-Information about the device</description>
-		<channels>
-			<channel id="model" typeId="productid"/>
-			<channel id="cpuusage" typeId="cpuusageType"/>
-			<channel id="memfree" typeId="memoryfreeType"/>
-			<channel id="memtotal" typeId="memorytotalType"/>
-			<channel id="memused" typeId="memoryusedType"/>
-		</channels>
-	</channel-group-type>
-
-	<!-- LAN Information -->
-	<channel-group-type id="lanInfoGroup">
-		<label>LAN-Status</label>
-		<description>LAN connection state</description>
-		<channels>
-			<channel id="lanMAC" typeId="macAddressType"></channel>
-			<channel id="lanIP" typeId="ipAddressType"></channel>
-			<channel id="lanProto" typeId="ipProtoType"></channel>
-			<channel id="lanSubnet" typeId="ipNetmaskType"></channel>
-			<channel id="lanGateway" typeId="ipGatewayType"></channel>
-		</channels>
-	</channel-group-type>
-
-	<!-- WAN Information -->
-	<channel-group-type id="wanInfoGroup">
-		<label>WAN-Status</label>
-		<description>WAN connection state</description>
-		<channels>
-			<channel id="wanDNS" typeId="dnsServerType"></channel>
-			<channel id="wanIP" typeId="ipAddressType"></channel>
-			<channel id="wanProto" typeId="ipProtoType"></channel>
-			<channel id="wanSubnet" typeId="ipNetmaskType"></channel>
-			<channel id="wanGateway" typeId="ipGatewayType"></channel>
-			<channel id="wanStatus" typeId="ipConnectionState"></channel>
-		</channels>
-	</channel-group-type>
-
-	<!--CLIENTS -->
-	<channel-group-type id="clientInfoGroup">
-		<label>Clients</label>
-		<description>Clients connected to router</description>
-		<channels>
-			<channel id="onlineNames" typeId="clientsOnlineNameType"></channel>
-			<channel id="onlineMACs" typeId="clientsOnlineMacType"></channel>
-		</channels>
-	</channel-group-type>
-
 	<!-- ############################### CHANNELS ############################### -->
 
 	<!-- Product Id -->
@@ -143,6 +92,11 @@
 		<description>Connection State of Interface</description>
 		<state readOnly="true"></state>
 	</channel-type>
+	<channel-type id="connectionEventType">
+		<kind>Trigger</kind>
+		<label>ConnectionState Chanced Event</label>
+		<description>Event is fired connection state changes ('connected'/'disconnected')</description>
+	</channel-type>
 
 	<!-- CLIENTS -->
 	<channel-type id="clientsOnlineNameType">
@@ -157,5 +111,27 @@
 		<description>List with mac-addresses of online clients</description>
 		<state readOnly="true"></state>
 	</channel-type>
-
+	<channel-type id="clientNickName">
+		<item-type>String</item-type>
+		<label>Nickname</label>
+		<description>Nickname of Client</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="isOnlineType">
+		<item-type>Switch</item-type>
+		<label>Online</label>
+		<description>Client is online</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="internetStateType">
+		<item-type>Switch</item-type>
+		<label>Internet Connected</label>
+		<description>Client is connected to Internet</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="clientOnlineEventType">
+		<kind>Trigger</kind>
+		<label>Onlinestate Changed Trigger</label>
+		<description>Event is fired if Client leaves ('gone') or enters ('connected') the network</description>
+	</channel-type>
 </thing:thing-descriptions>

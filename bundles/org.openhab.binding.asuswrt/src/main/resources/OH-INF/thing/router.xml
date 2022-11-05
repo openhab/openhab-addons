@@ -5,14 +5,14 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Router Thing Type -->
-	<thing-type id="router">
+	<bridge-type id="router">
 		<label>Asuswrt Router</label>
 		<description>Router with asuswrt or asuswrt-merlin OS</description>
 		<channel-groups>
 			<channel-group id="sysInfo" typeId="sysInfoGroup"></channel-group>
 			<channel-group id="lanInfo" typeId="lanInfoGroup"></channel-group>
 			<channel-group id="wanInfo" typeId="wanInfoGroup"></channel-group>
-			<channel-group id="clients" typeId="clientInfoGroup"></channel-group>
+			<channel-group id="clientList" typeId="clientListGroup"></channel-group>
 		</channel-groups>
 
 		<config-description>
@@ -34,9 +34,61 @@
 			<parameter name="refreshInterval" type="integer" unit="s" min="1">
 				<label>Refresh Interval</label>
 				<description>Interval the device is polled in sec.</description>
-				<default>60</default>
+				<default>20</default>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>
-	</thing-type>
+	</bridge-type>
+
+	<!-- ############################### CHANNEL-GROUPS ############################### -->
+	<!-- System Information -->
+	<channel-group-type id="sysInfoGroup">
+		<label>System Info</label>
+		<description>System-Information about the device</description>
+		<channels>
+			<channel id="model" typeId="productid"/>
+			<channel id="cpuusage" typeId="cpuusageType"/>
+			<channel id="memfree" typeId="memoryfreeType"/>
+			<channel id="memtotal" typeId="memorytotalType"/>
+			<channel id="memused" typeId="memoryusedType"/>
+		</channels>
+	</channel-group-type>
+
+	<!-- LAN Information -->
+	<channel-group-type id="lanInfoGroup">
+		<label>LAN-Status</label>
+		<description>LAN connection state</description>
+		<channels>
+			<channel id="macAddress" typeId="macAddressType"></channel>
+			<channel id="ipAddress" typeId="ipAddressType"></channel>
+			<channel id="ipMethod" typeId="ipProtoType"></channel>
+			<channel id="subnet" typeId="ipNetmaskType"></channel>
+			<channel id="gateway" typeId="ipGatewayType"></channel>
+		</channels>
+	</channel-group-type>
+
+	<!-- WAN Information -->
+	<channel-group-type id="wanInfoGroup">
+		<label>WAN-Status</label>
+		<description>WAN connection state</description>
+		<channels>
+			<channel id="wanDNS" typeId="dnsServerType"></channel>
+			<channel id="ipAddress" typeId="ipAddressType"></channel>
+			<channel id="ipMethod" typeId="ipProtoType"></channel>
+			<channel id="subnet" typeId="ipNetmaskType"></channel>
+			<channel id="gateway" typeId="ipGatewayType"></channel>
+			<channel id="wanStatus" typeId="ipConnectionState"></channel>
+			<channel id="connectionEvent" typeId="connectionEventType"></channel>
+		</channels>
+	</channel-group-type>
+
+	<!--CLIENTS -->
+	<channel-group-type id="clientListGroup">
+		<label>Clients</label>
+		<description>Clients connected to router</description>
+		<channels>
+			<channel id="onlineNames" typeId="clientsOnlineNameType"></channel>
+			<channel id="onlineMACs" typeId="clientsOnlineMacType"></channel>
+		</channels>
+	</channel-group-type>
 </thing:thing-descriptions>

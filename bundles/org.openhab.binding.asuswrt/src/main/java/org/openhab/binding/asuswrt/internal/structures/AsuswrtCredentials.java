@@ -68,7 +68,7 @@ public class AsuswrtCredentials {
     private void setCredentials(String username, String password) {
         this.username = username;
         this.password = password;
-        this.encodedCredentials = B64encode(username + ":" + password);
+        this.encodedCredentials = b64encode(username + ":" + password);
     }
 
     /**
@@ -77,7 +77,7 @@ public class AsuswrtCredentials {
      * @param string
      * @return
      */
-    private String B64encode(String string) {
+    private String b64encode(String string) {
         return Base64.getEncoder().encodeToString((string).getBytes());
     }
 

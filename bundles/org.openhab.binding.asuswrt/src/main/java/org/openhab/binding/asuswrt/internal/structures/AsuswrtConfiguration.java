@@ -41,6 +41,7 @@ public class AsuswrtConfiguration {
     public String password = "";
     public String url = "";
     public int refreshInterval = 60;
+    public boolean autoDiscoveryEnabled = false;
 
     private Thing router;
 
