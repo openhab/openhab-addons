@@ -324,7 +324,6 @@ public class SecondGenerationHandler extends BaseThingHandler {
                 }
             }
         }
-        return;
     }
 
     // Help method of handleCommand to with SecondGenerationConfigurationHandler.executeConfigurationChanges method send
@@ -334,8 +333,10 @@ public class SecondGenerationHandler extends BaseThingHandler {
         try {
             SecondGenerationConfigurationHandler.executeConfigurationChanges(httpClientHandleCommand, url, username,
                     password, dxsEntriesConf, valueConfiguration);
-        } catch (InterruptedException | ExecutionException | TimeoutException | NoSuchAlgorithmException e) {
+        } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
+            logger.debug("Connection to inverter interrupted during configuration");
+        } catch (ExecutionException | TimeoutException | NoSuchAlgorithmException e) {
             logger.debug("Connection to inverter disturbed during configuration");
         }
     }
@@ -345,8 +346,10 @@ public class SecondGenerationHandler extends BaseThingHandler {
         String jsonDxsResponse = "";
         try {
             jsonDxsResponse = httpClient.GET(dxsEntriesCall).getContentAsString().replace("null", "0.000000");
-        } catch (InterruptedException | ExecutionException | TimeoutException e2) {
+        } catch (InterruptedException e2) {
             Thread.currentThread().interrupt();
+            logger.debug("Connection to inverter interrupted during scrape");
+        } catch (ExecutionException | TimeoutException e2) {
             logger.debug("Connection to inverter disturbed during scrape");
         }
         return jsonDxsResponse;
