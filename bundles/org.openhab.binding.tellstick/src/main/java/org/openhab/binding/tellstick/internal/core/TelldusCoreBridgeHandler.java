@@ -16,8 +16,9 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.openhab.binding.tellstick.internal.conf.TellstickBridgeConfiguration;
 import org.openhab.binding.tellstick.internal.handler.DeviceStatusListener;
@@ -66,7 +67,7 @@ public class TelldusCoreBridgeHandler extends BaseBridgeHandler
     private List<TellstickSensor> sensorList = new Vector<>();
     private TellstickEventHandler eventHandler;
     private static boolean initialized = false;
-    private List<DeviceStatusListener> deviceStatusListeners = new CopyOnWriteArrayList<>();
+    private Set<DeviceStatusListener> deviceStatusListeners = ConcurrentHashMap.newKeySet();
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
@@ -160,7 +161,6 @@ public class TelldusCoreBridgeHandler extends BaseBridgeHandler
 
                 }
             }
-
         } catch (SupportedMethodsException e) {
             logger.error("Failed to get devices ", e);
         }

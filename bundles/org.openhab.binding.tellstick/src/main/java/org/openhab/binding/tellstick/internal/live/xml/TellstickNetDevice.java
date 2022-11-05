@@ -151,10 +151,7 @@ public class TellstickNetDevice implements Device {
             return false;
         }
         TellstickNetDevice other = (TellstickNetDevice) obj;
-        if (deviceId != other.deviceId) {
-            return false;
-        }
-        return true;
+        return deviceId == other.deviceId;
     }
 
     public int getMethods() {

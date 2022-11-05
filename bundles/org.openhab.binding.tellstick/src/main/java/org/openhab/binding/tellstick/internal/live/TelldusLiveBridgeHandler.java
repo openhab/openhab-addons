@@ -12,8 +12,11 @@
  */
 package org.openhab.binding.tellstick.internal.live;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
-import java.util.Vector;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -51,14 +54,19 @@ import org.tellstick.device.iface.Device;
  */
 public class TelldusLiveBridgeHandler extends BaseBridgeHandler implements TelldusBridgeHandler {
 
+    private static final int REFRESH_DELAY = 10;
+
     private final Logger logger = LoggerFactory.getLogger(TelldusLiveBridgeHandler.class);
 
     private TellstickNetDevices deviceList = null;
     private TellstickNetSensors sensorList = null;
     private TelldusLiveDeviceController controller = new TelldusLiveDeviceController();
-    private List<DeviceStatusListener> deviceStatusListeners = new Vector<>();
+    private Set<DeviceStatusListener> deviceStatusListeners = ConcurrentHashMap.newKeySet();
 
-    private static final int REFRESH_DELAY = 10;
+    private int nbRefresh;
+    private long sumRefreshDuration;
+    private long minRefreshDuration = 1_000_000;
+    private long maxRefreshDuration;
 
     public TelldusLiveBridgeHandler(Bridge bridge) {
         super(bridge);
@@ -88,9 +96,8 @@ public class TelldusLiveBridgeHandler extends BaseBridgeHandler implements Telld
         this.controller = new TelldusLiveDeviceController();
         this.controller.connectHttpClient(configuration.publicKey, configuration.privateKey, configuration.token,
                 configuration.tokenSecret);
+        updateStatus(ThingStatus.UNKNOWN);
         startAutomaticRefresh(configuration.refreshInterval);
-        refreshDeviceList();
-        updateStatus(ThingStatus.ONLINE);
     }
 
     private synchronized void startAutomaticRefresh(long refreshInterval) {
@@ -112,17 +119,36 @@ public class TelldusLiveBridgeHandler extends BaseBridgeHandler implements Telld
     }
 
     synchronized void refreshDeviceList() {
+        Instant start = Instant.now();
         try {
             updateDevices(deviceList);
             updateSensors(sensorList);
             updateStatus(ThingStatus.ONLINE);
-        } catch (TellstickException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            logger.error("Failed to update", e);
         } catch (Exception e) {
+            logger.warn("Failed to update", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            logger.error("Failed to update", e);
         }
+        monitorAdditionalRefresh(start, Instant.now());
+    }
+
+    private void monitorAdditionalRefresh(Instant start, Instant end) {
+        if (!logger.isDebugEnabled()) {
+            return;
+        }
+        long duration = Duration.between(start, end).toMillis();
+        sumRefreshDuration += duration;
+        nbRefresh++;
+        if (duration < minRefreshDuration) {
+            minRefreshDuration = duration;
+        }
+        if (duration > maxRefreshDuration) {
+            maxRefreshDuration = duration;
+        }
+        logger.debug(
+                "{} refresh avg = {} ms min = {} max = {} (request avg = {} ms min = {} max = {}) ({} timeouts {} errors)",
+                nbRefresh, nbRefresh == 0 ? 0 : sumRefreshDuration / nbRefresh, minRefreshDuration, maxRefreshDuration,
+                controller.getAverageRequestDuration(), controller.getMinRequestDuration(),
+                controller.getMaxRequestDuration(), controller.getNbTimeouts(), controller.getNbErrors());
     }
 
     private synchronized void updateDevices(TellstickNetDevices previouslist) throws TellstickException {
