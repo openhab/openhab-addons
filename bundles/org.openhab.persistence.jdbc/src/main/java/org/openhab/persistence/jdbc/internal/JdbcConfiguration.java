@@ -320,7 +320,7 @@ public class JdbcConfiguration {
                         warn += "\tHSQLDB:    version >= 2.3.3 from              https://mvnrepository.com/artifact/org.hsqldb/hsqldb\n";
                         break;
                     case "mariadb":
-                        warn += "\tMariaDB:   version >= 1.4.6 from              https://mvnrepository.com/artifact/org.mariadb.jdbc/mariadb-java-client\n";
+                        warn += "\tMariaDB:   version >= 3.0.8 from              https://mvnrepository.com/artifact/org.mariadb.jdbc/mariadb-java-client\n";
                         break;
                     case "mysql":
                         warn += "\tMySQL:     version >= 8.0.30 from             https://mvnrepository.com/artifact/mysql/mysql-connector-java\n";
