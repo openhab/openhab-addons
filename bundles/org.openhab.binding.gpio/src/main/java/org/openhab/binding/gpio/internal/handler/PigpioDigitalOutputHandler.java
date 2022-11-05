@@ -48,6 +48,7 @@ public class PigpioDigitalOutputHandler implements ChannelHandler {
     private final ScheduledExecutorService scheduler;
     private final Integer gpioId;
     private Integer pulseTimeout = -1;
+    @Nullable
     private String pulseCommand = "";
     @Nullable
     private GPIO gpio;
@@ -71,11 +72,11 @@ public class PigpioDigitalOutputHandler implements ChannelHandler {
         this.scheduler = scheduler;
         this.updateStatus = updateStatus;
 
-        if (this.gpioId == null || this.gpioId <= 0) {
+        if (this.gpioId <= 0) {
             throw new ChannelConfigurationException("Invalid gpioId value.");
         }
 
-        if (configuration.pulse != null && configuration.pulse.compareTo(BigDecimal.ZERO) > 0) {
+        if (configuration.pulse.compareTo(BigDecimal.ZERO) > 0) {
             try {
                 this.pulseTimeout = configuration.pulse.intValue();
             } catch (Exception e) {
@@ -83,9 +84,8 @@ public class PigpioDigitalOutputHandler implements ChannelHandler {
             }
         }
 
-        if (configuration.pulseCommand != null && configuration.pulseCommand.length() > 0) {
+        if (configuration.pulseCommand.length() > 0) {
             this.pulseCommand = configuration.pulseCommand.toUpperCase();
-            logger.debug("gpio config pulseCommand : {} {}", this.gpioId, this.pulseCommand);
             if (!"ON".equals(pulseCommand) && !"OFF".equals(pulseCommand) && !"BLINK".equals(pulseCommand)) {
                 throw new ChannelConfigurationException("Invalid pulseCommand value.");
             }
@@ -97,6 +97,7 @@ public class PigpioDigitalOutputHandler implements ChannelHandler {
      */
     @Nullable
     private Future<?> pulseJob = null;
+    @Nullable
     private OnOffType lastPulseCommand;
 
     /**
@@ -108,27 +109,27 @@ public class PigpioDigitalOutputHandler implements ChannelHandler {
     @Override
     public void handleCommand(Command command) throws PigpioException {
         synchronized (handleLock) {
-            if (gpio == null) {
-                logger.warn("An attempt to submit a command was made when the gpio was offline: {}",
+            GPIO lgpio = this.gpio;
+            Consumer<State> lupdateStatus = this.updateStatus;
+            Future<?> job = this.pulseJob;
+
+            if (lgpio == null || lupdateStatus == null) {
+                logger.warn("An attempt to submit a command was made when the pigpiod was offline: {}",
                         command.toString());
                 return;
             }
 
             if (command instanceof RefreshType) {
-                if (updateStatus != null) {
-                    updateStatus.accept(OnOffType.from(configuration.invert != gpio.getValue()));
-                }
+                lupdateStatus.accept(OnOffType.from(configuration.invert != lgpio.getValue()));
             } else if (command instanceof OnOffType) {
-                gpio.setValue(configuration.invert != (OnOffType.ON.equals(command)));
-                if (updateStatus != null) {
-                    updateStatus.accept((State) command);
-                }
+                lgpio.setValue(configuration.invert != (OnOffType.ON.equals(command)));
+                lupdateStatus.accept((State) command);
 
-                if (this.pulseTimeout > 0 && this.pulseCommand.length() > 0) {
-                    if (pulseJob != null) {
-                        pulseJob.cancel(false);
+                if (this.pulseTimeout > 0 && this.pulseCommand != null) {
+                    if (job != null) {
+                        job.cancel(false);
                     }
-                    logger.debug("gpio pulse timeout : {} {}", this.gpioId, this.pulseTimeout);
+
                     this.pulseJob = scheduler.schedule(() -> handlePulseCommand(command), this.pulseTimeout,
                             TimeUnit.MILLISECONDS);
                 }
@@ -136,12 +137,16 @@ public class PigpioDigitalOutputHandler implements ChannelHandler {
         }
     }
 
-    public void handlePulseCommand(Command command) {
+    public void handlePulseCommand(@Nullable Command command) {
         OnOffType eCommand = OnOffType.OFF;
 
         try {
             synchronized (handleLock) {
-                if (gpio == null) {
+                GPIO lgpio = this.gpio;
+                Consumer<State> lupdateStatus = this.updateStatus;
+                Future<?> job = this.pulseJob;
+
+                if (lgpio == null) {
                     return;
                 }
 
@@ -168,48 +173,56 @@ public class PigpioDigitalOutputHandler implements ChannelHandler {
 
                     logger.debug("gpio pulse command : {} {}", this.gpioId, eCommand.toString());
 
-                    gpio.setValue(configuration.invert != (OnOffType.ON.equals(eCommand)));
-                    if (updateStatus != null) {
-                        updateStatus.accept((State) eCommand);
+                    lgpio.setValue(configuration.invert != (OnOffType.ON.equals(eCommand)));
+                    if (lupdateStatus != null) {
+                        lupdateStatus.accept((State) eCommand);
                     }
 
                     lastPulseCommand = eCommand;
 
                     if ("BLINK".equals(this.pulseCommand) && this.pulseTimeout > 0) {
                         final OnOffType feCommand = eCommand;
-                        if (pulseJob != null) {
-                            pulseJob.cancel(false);
+                        if (job != null) {
+                            job.cancel(false);
                         }
-                        pulseJob = scheduler.schedule(() -> handlePulseCommand(feCommand), this.pulseTimeout,
+                        this.pulseJob = scheduler.schedule(() -> handlePulseCommand(feCommand), this.pulseTimeout,
                                 TimeUnit.MILLISECONDS);
                     }
                 }
             }
         } catch (Exception e) {
-            logger.error("Pulse command exception :", e);
+            logger.warn("Pulse command exception, {} command may not have been received :", eCommand.toString(), e);
         }
     }
 
     /**
      * Configures the GPIO pin for OUTPUT.
      */
-    public void listen(JPigpio jPigpio) throws PigpioException {
-        this.gpio = new GPIO(jPigpio, gpioId, JPigpio.PI_OUTPUT);
-        this.gpio.setDirection(JPigpio.PI_OUTPUT);
+    public void listen(@Nullable JPigpio jPigpio) throws PigpioException {
+        if (jPigpio == null) {
+            this.gpio = null;
+            return;
+        }
+
+        GPIO lgpio = new GPIO(jPigpio, gpioId, JPigpio.PI_OUTPUT);
+        this.gpio = lgpio;
+        lgpio.setDirection(JPigpio.PI_OUTPUT);
         scheduleBlink();
     }
 
     private void scheduleBlink() {
         synchronized (handleLock) {
+            Future<?> job = this.pulseJob;
+
             if (this.pulseTimeout > 0 && "BLINK".equals(configuration.pulseCommand)) {
-                if (pulseJob != null) {
-                    pulseJob.cancel(false);
+                if (job != null) {
+                    job.cancel(false);
                 }
                 if (this.lastPulseCommand != null) {
                     scheduler.schedule(() -> handlePulseCommand(this.lastPulseCommand), this.pulseTimeout,
                             TimeUnit.MILLISECONDS);
                 } else {
-                    pulseJob = scheduler.schedule(() -> handlePulseCommand(OnOffType.OFF), this.pulseTimeout,
+                    this.pulseJob = scheduler.schedule(() -> handlePulseCommand(OnOffType.OFF), this.pulseTimeout,
                             TimeUnit.MILLISECONDS);
                 }
             }
@@ -219,11 +232,13 @@ public class PigpioDigitalOutputHandler implements ChannelHandler {
     @Override
     public void dispose() {
         synchronized (handleLock) {
-            if (pulseJob != null) {
-                pulseJob.cancel(true);
+            Future<?> job = this.pulseJob;
+
+            if (job != null) {
+                job.cancel(true);
             }
-            updateStatus = null;
-            gpio = null;
+            this.updateStatus = null;
+            this.gpio = null;
         }
     }
 }

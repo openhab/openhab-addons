@@ -13,6 +13,7 @@
 package org.openhab.binding.gpio.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.types.Command;
 
 import eu.xeli.jpigpio.JPigpio;
@@ -36,7 +37,7 @@ public interface ChannelHandler {
     /**
      * (Re)Establishes the JPigpio listeners.
      */
-    void listen(JPigpio jPigpio) throws PigpioException;
+    void listen(@Nullable JPigpio jPigpio) throws PigpioException;
 
     /**
      * Terminates sending Channels status updates and
