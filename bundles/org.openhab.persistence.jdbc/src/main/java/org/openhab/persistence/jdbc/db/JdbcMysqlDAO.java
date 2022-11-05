@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class JdbcMysqlDAO extends JdbcBaseDAO {
-    private static final String DRIVER_CLASS_NAME = com.mysql.jdbc.Driver.class.getName();
+    private static final String DRIVER_CLASS_NAME = com.mysql.cj.jdbc.Driver.class.getName();
     @SuppressWarnings("unused")
     private static final String DATA_SOURCE_CLASS_NAME = com.mysql.cj.jdbc.MysqlDataSource.class.getName();
 
