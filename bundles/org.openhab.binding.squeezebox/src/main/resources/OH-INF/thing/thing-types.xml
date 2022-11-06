@@ -121,7 +121,7 @@
 		<description>Comma-separated list of favorites of form favoriteId=favoriteName</description>
 		<state readOnly="true" pattern="%s"></state>
 		<config-description>
-			<parameter name="quoteList" type="boolean" required="true">
+			<parameter name="quoteList" type="boolean">
 				<label>Quote Favorites</label>
 				<description>Wrap the right hand side of the favorites in quotes</description>
 				<default>false</default>
