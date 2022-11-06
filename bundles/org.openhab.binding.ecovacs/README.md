@@ -127,6 +127,7 @@ vacuumActions.playSound("beep")
 ```
 
 Supported sound types include:
+
 - `beep`
 - `iAmHere`
 - `startup`
