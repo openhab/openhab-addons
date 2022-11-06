@@ -88,6 +88,7 @@ public abstract class NuvoConnector {
     private List<NuvoMessageEventListener> listeners = new ArrayList<>();
 
     private boolean isEssentia = true;
+    private boolean isAnyOhNuvoNet = false;
 
     /**
      * Get whether the connection is established or not
@@ -114,6 +115,15 @@ public abstract class NuvoConnector {
      */
     public void setEssentia(boolean isEssentia) {
         this.isEssentia = isEssentia;
+    }
+
+    /**
+     * Tell the connector to listen for NuvoNet source messages
+     *
+     * @param true if any sources are configured as openHAB NuvoNet sources
+     */
+    public void setAnyOhNuvoNet(boolean isAnyOhNuvoNet) {
+        this.isAnyOhNuvoNet = isAnyOhNuvoNet;
     }
 
     /**
@@ -358,25 +368,29 @@ public abstract class NuvoConnector {
             return;
         }
 
-        // Amp controller sent a NuvoNet album art request
-        Matcher matcher = NN_ALBUM_ART_REQ.matcher(message);
-        if (matcher.find()) {
-            dispatchKeyValue(TYPE_NN_ALBUM_ART_REQ, BLANK, matcher.group(1), matcher.group(2));
-            return;
-        }
+        Matcher matcher;
 
-        // Amp controller sent a NuvoNet album art fragment request
-        matcher = NN_ALBUM_ART_FRAG_REQ.matcher(message);
-        if (matcher.find()) {
-            dispatchKeyValue(TYPE_NN_ALBUM_ART_FRAG_REQ, BLANK, matcher.group(1), matcher.group(2));
-            return;
-        }
+        if (isAnyOhNuvoNet) {
+            // Amp controller sent a NuvoNet album art request
+            matcher = NN_ALBUM_ART_REQ.matcher(message);
+            if (matcher.find()) {
+                dispatchKeyValue(TYPE_NN_ALBUM_ART_REQ, BLANK, matcher.group(1), matcher.group(2));
+                return;
+            }
 
-        // Amp controller sent a request for a NuvoNet source to play a favorite
-        matcher = NN_FAVORITE_PATTERN.matcher(message);
-        if (matcher.find()) {
-            dispatchKeyValue(TYPE_NN_FAVORITE_REQ, BLANK, matcher.group(1), matcher.group(2));
-            return;
+            // Amp controller sent a NuvoNet album art fragment request
+            matcher = NN_ALBUM_ART_FRAG_REQ.matcher(message);
+            if (matcher.find()) {
+                dispatchKeyValue(TYPE_NN_ALBUM_ART_FRAG_REQ, BLANK, matcher.group(1), matcher.group(2));
+                return;
+            }
+
+            // Amp controller sent a request for a NuvoNet source to play a favorite
+            matcher = NN_FAVORITE_PATTERN.matcher(message);
+            if (matcher.find()) {
+                dispatchKeyValue(TYPE_NN_FAVORITE_REQ, BLANK, matcher.group(1), matcher.group(2));
+                return;
+            }
         }
 
         // Amp controller sent a source update ie: #S2DISPINFO,DUR3380,POS3090,STATUS2
@@ -394,38 +408,40 @@ public abstract class NuvoConnector {
             return;
         }
 
-        // Amp controller sent a NuvoNet zone/source BUTTONTWO press event ie: #Z11S3BUTTONTWO4,2,0,0,0
-        matcher = NN_BUTTONTWO_PATTERN.matcher(message);
-        if (matcher.find()) {
-            // redundant - ignore
-            return;
-        }
-
-        // Amp controller sent a NuvoNet zone/source BUTTON press event ie: #Z4S6BUTTON1,1,0xFFFFFFFF,1,3
-        matcher = NN_BUTTON_PATTERN.matcher(message);
-        if (matcher.find()) {
-            // pull out the remainder of the message: button #, action, menuid, itemid, itemidx
-            String[] buttonSplit = matcher.group(3).split(COMMA);
-
-            // second field is button action, only send DOWNUP (0) or DOWN (1), ignore UP (2)
-            if (ZERO.equals(buttonSplit[1]) || ONE.equals(buttonSplit[1])) {
-                // a button in a menu was pressed, send 'menuid,itemidx'
-                if (!ZERO.equals(buttonSplit[2])) {
-                    dispatchKeyValue(TYPE_NN_MENU_ITEM_SELECTED, matcher.group(1), matcher.group(2),
-                            buttonSplit[2] + COMMA + buttonSplit[3]);
-                } else {
-                    // send the button # in the event, don't send extra fields menuid, itemid, etc..
-                    dispatchKeyValue(TYPE_NN_BUTTON, matcher.group(1), matcher.group(2), buttonSplit[0]);
-                }
+        if (isAnyOhNuvoNet) {
+            // Amp controller sent a NuvoNet zone/source BUTTONTWO press event ie: #Z11S3BUTTONTWO4,2,0,0,0
+            matcher = NN_BUTTONTWO_PATTERN.matcher(message);
+            if (matcher.find()) {
+                // redundant - ignore
+                return;
             }
-            return;
-        }
 
-        // Amp controller sent a NuvoNet zone/source menu request event ie: #Z2S6MENUREQ0x0000000B,1,0,0
-        matcher = NN_MENUREQ_PATTERN.matcher(message);
-        if (matcher.find()) {
-            dispatchKeyValue(TYPE_NN_MENUREQ, matcher.group(1), matcher.group(2), matcher.group(3));
-            return;
+            // Amp controller sent a NuvoNet zone/source BUTTON press event ie: #Z4S6BUTTON1,1,0xFFFFFFFF,1,3
+            matcher = NN_BUTTON_PATTERN.matcher(message);
+            if (matcher.find()) {
+                // pull out the remainder of the message: button #, action, menuid, itemid, itemidx
+                String[] buttonSplit = matcher.group(3).split(COMMA);
+
+                // second field is button action, only send DOWNUP (0) or DOWN (1), ignore UP (2)
+                if (ZERO.equals(buttonSplit[1]) || ONE.equals(buttonSplit[1])) {
+                    // a button in a menu was pressed, send 'menuid,itemidx'
+                    if (!ZERO.equals(buttonSplit[2])) {
+                        dispatchKeyValue(TYPE_NN_MENU_ITEM_SELECTED, matcher.group(1), matcher.group(2),
+                                buttonSplit[2] + COMMA + buttonSplit[3]);
+                    } else {
+                        // send the button # in the event, don't send extra fields menuid, itemid, etc..
+                        dispatchKeyValue(TYPE_NN_BUTTON, matcher.group(1), matcher.group(2), buttonSplit[0]);
+                    }
+                }
+                return;
+            }
+
+            // Amp controller sent a NuvoNet zone/source menu request event ie: #Z2S6MENUREQ0x0000000B,1,0,0
+            matcher = NN_MENUREQ_PATTERN.matcher(message);
+            if (matcher.find()) {
+                dispatchKeyValue(TYPE_NN_MENUREQ, matcher.group(1), matcher.group(2), matcher.group(3));
+                return;
+            }
         }
 
         // Amp controller sent a zone/source button press event ie: #Z11S3PLAYPAUSE

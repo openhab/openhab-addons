@@ -215,7 +215,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
 
         if (serialPort != null && !serialPort.isEmpty()) {
             connector = new NuvoSerialConnector(serialPortManager, serialPort, uid);
-        } else if (port != null) {
+        } else if (host != null && port != null) {
             connector = new NuvoIpConnector(host, port, uid);
             this.isMps4 = (port.intValue() == MPS4_PORT);
         } else {
@@ -239,6 +239,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
 
             if (this.isAnyOhNuvoNet) {
                 logger.debug("At least one source is configured as an openHAB NuvoNet source");
+                connector.setAnyOhNuvoNet(true);
                 loadMenuConfiguration(config);
 
                 favoriteMap.put("1",
