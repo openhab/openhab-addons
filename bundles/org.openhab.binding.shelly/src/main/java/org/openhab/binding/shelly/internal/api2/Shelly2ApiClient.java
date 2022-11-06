@@ -412,9 +412,6 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         if (ds.input100 != null) {
             status.extDigitalInput = new ShellyExtDigitalInput(getBool(ds.input100.state));
         }
-        if (ds.analogInput100 != null) {
-            status.extAnalogInput = new ShellyExtAnalogInput(getDouble(ds.analogInput100.percent));
-        }
     }
 
     private @Nullable ShellyShortTemp updateExtTempSensor(@Nullable Shelly2DeviceStatusTempId value) {
@@ -506,19 +503,21 @@ public class Shelly2ApiClient extends ShellyHttpClient {
     protected boolean updateInputStatus(ShellySettingsStatus status, Shelly2DeviceStatusResult ds,
             boolean updateChannels) throws ShellyApiException {
         boolean updated = false;
-        updated |= addInputStatus(ds.input0, updateChannels);
-        updated |= addInputStatus(ds.input1, updateChannels);
-        updated |= addInputStatus(ds.input2, updateChannels);
-        updated |= addInputStatus(ds.input3, updateChannels);
+        updated |= addInputStatus(status, ds.input0, updateChannels);
+        updated |= addInputStatus(status, ds.input1, updateChannels);
+        updated |= addInputStatus(status, ds.input2, updateChannels);
+        updated |= addInputStatus(status, ds.input3, updateChannels);
         status.inputs = relayStatus.inputs;
         return updated;
     }
 
-    private boolean addInputStatus(@Nullable Shelly2InputStatus is, boolean updateChannels) throws ShellyApiException {
+    private boolean addInputStatus(ShellySettingsStatus status, @Nullable Shelly2InputStatus is, boolean updateChannels)
+            throws ShellyApiException {
         if (is == null) {
             return false;
         }
         ShellyDeviceProfile profile = getProfile();
+
         if (is.id == null || is.id > profile.numInputs) {
             logger.debug("{}: Invalid input id: {}", thingName, is.id);
             return false;
@@ -532,6 +531,9 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         if (input.event == null && profile.inButtonMode(is.id)) {
             input.event = "";
             input.eventCount = 0;
+        }
+        if (is.percent != null) { // analogous input
+            status.extAnalogInput = new ShellyExtAnalogInput(getDouble(is.percent));
         }
         relayStatus.inputs.set(is.id, input);
         if (updateChannels) {

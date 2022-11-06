@@ -74,6 +74,7 @@ public class Shelly2ApiJsonDTO {
     // Input types
     public static final String SHELLY2_INPUTT_SWITCH = "switch";
     public static final String SHELLY2_INPUTT_BUTTON = "button";
+    public static final String SHELLY2_INPUTT_ANALOG = "analog"; // Shelly Addon: analogous input
 
     // Switcm modes
     public static final String SHELLY2_API_MODE_DETACHED = "detached";
@@ -253,6 +254,8 @@ public class Shelly2ApiJsonDTO {
             public Boolean invert;
             @SerializedName("factory_reset")
             public Boolean factoryReset;
+            @SerializedName("report_thr")
+            public Double reportTreshold; // only for type analog
         }
 
         public class Shelly2DevConfigSwitch {
@@ -413,6 +416,8 @@ public class Shelly2ApiJsonDTO {
         public class Shelly2InputStatus {
             public Integer id;
             public Boolean state;
+            public Double percent; // analog input only
+            public ArrayList<String> errors;// shown only if at least one error is present.
         }
 
         public static class Shelly2DeviceStatusResult {
@@ -459,11 +464,6 @@ public class Shelly2ApiJsonDTO {
             public class Shelly2DeviceStatusVoltage {
                 public Integer id;
                 public Double voltage;
-            }
-
-            public class Shelly2DeviceStatusAnalogInput {
-                public Integer id;
-                public Double percent;
             }
 
             public class Shelly2DeviceStatusTempId extends Shelly2DeviceStatusTemp {
@@ -535,9 +535,6 @@ public class Shelly2ApiJsonDTO {
 
             @SerializedName("voltmeter:100")
             public Shelly2DeviceStatusVoltage voltmeter100;
-
-            @SerializedName("analoginput:100")
-            public Shelly2DeviceStatusAnalogInput analogInput100;
 
             @SerializedName("devicepower:0")
             public Shelly2DeviceStatusPower devicepower0;
