@@ -14,8 +14,6 @@ package org.openhab.binding.juicenet.internal.discovery;
 
 import static org.openhab.binding.juicenet.internal.JuiceNetBindingConstants.*;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
@@ -71,8 +69,9 @@ public class JuiceNetDiscoveryService extends AbstractDiscoveryService
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
         if (handler instanceof JuiceNetBridgeHandler) {
-            this.bridgeHandler = (JuiceNetBridgeHandler) handler;
-            this.bridgeHandler.setDiscoveryService(this);
+            JuiceNetBridgeHandler bridgeHandler = (JuiceNetBridgeHandler) handler;
+            bridgeHandler.setDiscoveryService(this);
+            this.bridgeHandler = bridgeHandler;
         } else {
             this.bridgeHandler = null;
         }
@@ -83,19 +82,15 @@ public class JuiceNetDiscoveryService extends AbstractDiscoveryService
         return this.bridgeHandler;
     }
 
-    public void notifyDiscoveryDevice(String id, String name, String token) {
+    public void notifyDiscoveryDevice(String id, String name) {
+        JuiceNetBridgeHandler bridgeHandler = this.bridgeHandler;
         Objects.requireNonNull(bridgeHandler, "Discovery with null bridgehandler.");
         ThingUID bridgeUID = bridgeHandler.getThing().getUID();
 
         ThingUID uid = new ThingUID(DEVICE_THING_TYPE, bridgeUID, id);
 
-        Map<String, Object> properties = new HashMap<>();
-        properties.put(DEVICE_PROP_UNIT_ID, id);
-        properties.put(DEVICE_PROP_NAME, name);
-        properties.put(DEVICE_PROP_TOKEN, token);
-
-        DiscoveryResult result = DiscoveryResultBuilder.create(uid).withBridge(bridgeUID).withProperties(properties)
-                .withLabel(name).build();
+        DiscoveryResult result = DiscoveryResultBuilder.create(uid).withBridge(bridgeUID)
+                .withProperty(PARAMETER_UNIT_ID, id).withLabel(name).build();
         thingDiscovered(result);
         logger.debug("Discovered JuiceNetDevice {} - {}", uid, name);
     }

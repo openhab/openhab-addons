@@ -1,7 +1,7 @@
 # JuiceNet Binding
 
 The JuiceNet binding will interface with the cloud portal to get status and manage your JuiceBox EV charger(s).
-In addition to getting the status of various items from the ev-charger, it is also possible to start and stop charging sessions.
+In addition to getting the status of various items from the EV charger, it is also possible to start and stop charging sessions.
 
 ## Supported Things
 
@@ -10,33 +10,45 @@ This binding supports the following things:
 | thing               | type    | description                  |
 |----------           |-------- |------------------------------ | 
 | JuiceNet Account    | Bridge  | This represents the cloud account to interface with the JuiceNet API.  |
-| JuiceBox EV-Charger | Device  | This interfaces to a specific JuiceBox EV-charger associated with the JuiceNet account. |
+| JuiceBox EV Charger | Device  | This interfaces to a specific JuiceBox EV charger associated with the JuiceNet account. |
 
-This binding should work with multiple JuiceBox EV-chargers associated with the account, however it is currently only tested with a single EV-charger.
+This binding should work with multiple JuiceBox EV chargers associated with the account, however it is currently only tested with a single EV charger.
 
 ## Thing Configuration
 
-The only configuration required is to create a JuiceNet account thing and fill in the appropriate API Token.
+The only configuration required is to create a JuiceNet account thing and fill in the appropriate API token.
 The API token can be found on the Account page at https://home.juice.net/Manage.
 
-Once, the JuiceNet Account thing has been created, all JuiceBox EV-chargers associated with that account will be discovered and added to the inbox.
+Once, the JuiceNet Account thing has been created, all JuiceBox EV chargers associated with that account will be discovered and added to the inbox.
+
+## Manual Configuration Example
+
+The bridge and device can be manually configured in a .things file.
+Both the apiToken parameter for the Bridge and the unitID parameter for the EV charger can be found on the account page at https://home.juce.net.
+
+```
+Bridge juicenet:account:myaccount [ apiToken="xxxx-xxxx-xxxx-xxxx-xxxxx" ] {
+    Thing device JamesCharger [ unitID="xxxxxxx" ]
+}
+```
 
 ## Channels
 
 | channel           | type              | read-only | description                  |
-|----------         |--------           |------------------------------|
+|----------         |--------           |---------  | ------- |
 | name              | String            | Y         | Name of device.|
 | chargingState     | String            | N         | Current charging state (Start Charging, Smart Charging, Stop Charging). |
 | state             | String            | Y         | This is the current device state (Available, Plugged-In, Charging, Error, Disconnected).  |
+| message           | String            | Y         | This is a message detailing the state of the EV charger. |
 | override          | Switch            | Y         | Smart charging is overridden. |
 | chargingTimeLeft  | Number:Time       | Y         | Charging time left (seconds). |
 | plugUnplugTime    | DateTime          | Y         | Last time of either plug-in or plug-out. |
 | targetTime        | DateTime          | N         | “Start charging” start time, or time to start when overriding smart charging. |
 | unitTime          | DateTime          | Y         | Current time on the unit. |
 | temperature       | Number:Temperature | Y        | Current temperature at the unit. |
-| currentLimit      | Number:ElectricCurrent | N    | Max charging current allowed. (A) |
-| current           | Number:ElectricCurrent | Y    | Current charging current. (A) |
-| voltage           | Number:ElectricPotential | Y  | Current voltage. (V) |
+| currentLimit      | Number:ElectricCurrent | N    | Max charging current allowed. |
+| current           | Number:ElectricCurrent | Y    | Current charging current. |
+| voltage           | Number:ElectricPotential | Y  | Current voltage. |
 | energy            | Number:Energy     | Y         | Current amount of energy poured to the vehicle. |
 | savings           | Number            | Y         | Current session EV savings. |
 | power             | Number:Power      | Y         | Current charging power. |
@@ -47,7 +59,7 @@ Once, the JuiceNet Account thing has been created, all JuiceBox EV-chargers asso
 | lifetimeSavings   | Number            | Y         | EV driving saving during lifetime. |
 | gasCost           | Number            | Y         | Cost of gasoline used in savings calculations. |
 | fuelConsumption   | Number            | Y         | Miles per gallon used in savings calculations. |
-| ecost             | Number            | Y         | Cost of electricity from utility company. ($/kWh) |
+| ecost             | Number            | Y         | Cost of electricity from utility company. (currency/kWh) |
 | energyPerMile     | Number            | Y         | Energy per mile. |
 | carDescription    | String            | Y         | Car description of vehicle currently or last charged. |
 | carBatterySize    | Number:Energy     | Y         | Car battery pack size. |

@@ -14,6 +14,8 @@ package org.openhab.binding.juicenet.internal.api.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * {@link JuiceNetApiTouDay } implements DTO for TOU settings
  *
@@ -23,5 +25,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class JuiceNetApiTouDay {
     public int start;
     public int end;
-    public int car_ready_by;
+    @SerializedName("car_ready_by")
+    public int carReadyBy;
 }

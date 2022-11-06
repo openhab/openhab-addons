@@ -17,19 +17,19 @@
 			<channel id="chargingState" typeId="chargingState"/>
 
 			<channel id="state" typeId="state"/>
+			<channel id="message" typeId="message"/>
 			<channel id="override" typeId="override"/>
 			<channel id="chargingTimeLeft" typeId="chargingTimeLeft"/>
 			<channel id="plugUnplugTime" typeId="plugUnplugTime"/>
 			<channel id="targetTime" typeId="targetTime"/>
 			<channel id="unitTime" typeId="unitTime"/>
 			<channel id="temperature" typeId="temperature"/>
-
 			<channel id="currentLimit" typeId="currentLimit"/>
 			<channel id="current" typeId="current"/>
 			<channel id="voltage" typeId="voltage"/>
 			<channel id="energy" typeId="energy"/>
 			<channel id="savings" typeId="savings"/>
-			<channel id="chargingPower" typeId="chargingPower"/>
+			<channel id="power" typeId="power"/>
 			<channel id="chargingTime" typeId="chargingTime"/>
 			<channel id="energyAtPlugin" typeId="energyAtPlugin"/>
 			<channel id="energyToAdd" typeId="energyToAdd"/>
@@ -50,10 +50,15 @@
 
 		<properties>
 			<property name="name"></property>
-			<property name="token"></property>
-			<property name="unitID"></property>
 		</properties>
-		<representation-property>unit_id</representation-property>
+		<representation-property>unitID</representation-property>
+
+		<config-description>
+			<parameter name="unitID" type="text" required="true">
+				<label>Unit ID</label>
+				<description>EV charger Unit ID from the JuiceNet webpage. (https://home.juice.net) </description>
+			</parameter>
+		</config-description>
 	</thing-type>
 
 	<channel-type id="name">
@@ -90,6 +95,13 @@
 				<option value="disconnect">Disconnected</option>
 			</options>
 		</state>
+	</channel-type>
+
+	<channel-type id="message">
+		<item-type>String</item-type>
+		<label>State Message</label>
+		<description>This is a message detailing the state of the EV charger.</description>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="override">

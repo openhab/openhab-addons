@@ -14,6 +14,8 @@ package org.openhab.binding.juicenet.internal.api.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * {@link JuiceNetApiDeviceLifetimeStatus } implements DTO for Device Lifetime Status
  *
@@ -21,6 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class JuiceNetApiDeviceLifetimeStatus {
-    public int wh_energy;
+    @SerializedName("wh_energy")
+    public int energy;
     public int savings;
 }

@@ -14,6 +14,8 @@ package org.openhab.binding.juicenet.internal.api.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * {@link JuiceNetApiCar } implements DTO for Car API call
  *
@@ -21,10 +23,15 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class JuiceNetApiCar {
-    public int car_id;
+    @SerializedName("car_id")
+    public int carId;
     public String description = "";
-    public int battery_size_wh;
-    public int battery_range_m;
-    public int charging_rate_w;
-    public String model_id = "";
+    @SerializedName("battery_size_wh")
+    public int batterySize;
+    @SerializedName("battery_range_m")
+    public int batteryRange;
+    @SerializedName("charging_rate_w")
+    public int chargingRate;
+    @SerializedName("model_id")
+    public String modelId = "";
 }

@@ -21,9 +21,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class JuiceNetBridgeConfiguration {
-    /**
-     * Sample configuration parameters. Replace with your own.
-     */
     public String apiToken = "";
-    public int refreshInterval;
+    public int refreshInterval = 60;
 }

@@ -14,6 +14,8 @@ package org.openhab.binding.juicenet.internal.api.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * {@link JuiceNetDeviceChargingStatus } implements DTO for device charging status
  *
@@ -21,14 +23,21 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class JuiceNetApiDeviceChargingStatus {
-    public int amps_limit;
-    public float amps_current;
+    @SerializedName("amps_limit")
+    public int currentLimit;
+    @SerializedName("amps_current")
+    public float current;
     public int voltage;
-    public int wh_energy;
+    @SerializedName("wh_energy")
+    public int energy;
     public int savings;
-    public int watt_power;
-    public int seconds_charging;
-    public int wh_energy_at_plugin;
-    public int wh_energy_to_add;
+    @SerializedName("watt_power")
+    public int power;
+    @SerializedName("seconds_charging")
+    public int timeCharging;
+    @SerializedName("wh_energy_at_plugin")
+    public int energyAtPlugin;
+    @SerializedName("wh_energy_to_add")
+    public int energyToAdd;
     public int flags;
 }

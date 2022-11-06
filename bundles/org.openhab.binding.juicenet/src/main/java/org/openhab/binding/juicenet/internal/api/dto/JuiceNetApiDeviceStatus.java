@@ -14,6 +14,8 @@ package org.openhab.binding.juicenet.internal.api.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * {@link JuiceNetApiDeviceStatus } implements DTO for Device Status
  *
@@ -21,18 +23,29 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class JuiceNetApiDeviceStatus {
-    public String ID = "";
-    public Long info_timestamp = (long) 0;
-    public boolean show_override;
+    @SerializedName("ID")
+    public String id = "";
+    @SerializedName("info_timestamp")
+    public Long timestamp = (long) 0;
+    @SerializedName("show_override")
+    public boolean showOverride;
     public String state = "";
     public JuiceNetApiDeviceChargingStatus charging = new JuiceNetApiDeviceChargingStatus();
     public JuiceNetApiDeviceLifetimeStatus lifetime = new JuiceNetApiDeviceLifetimeStatus();
-    public int charging_time_left;
-    public Long plug_unplug_time = (long) 0;
-    public Long target_time = (long) 0;
-    public Long unit_time = (long) 0;
-    public Long utc_time = (long) 0;
-    public long default_target_time = 0;
-    public int car_id;
+    @SerializedName("charging_time_left")
+    public int chargingTimeLeft;
+    @SerializedName("plug_unplug_time")
+    public Long plugUnplugTime = (long) 0;
+    @SerializedName("target_time")
+    public Long targetTime = (long) 0;
+    @SerializedName("unit_time")
+    public Long unitTime = (long) 0;
+    @SerializedName("utc_time")
+    public Long utcTime = (long) 0;
+    @SerializedName("default_target_time")
+    public long defaultTargetTime = 0;
+    @SerializedName("car_id")
+    public int carId;
     public int temperature;
+    public String message = "";
 }

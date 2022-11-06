@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.juicenet.internal.api;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -25,6 +24,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.juicenet.internal.api.dto.JuiceNetApiDevice;
 import org.openhab.binding.juicenet.internal.api.dto.JuiceNetApiDeviceStatus;
@@ -37,6 +39,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link JuiceNetApi} is responsible for implementing the api interface to the JuiceNet cloud server
@@ -52,179 +55,163 @@ public class JuiceNetApi {
     private static final String API_DEVICE = API_HOST + "box_api_secure";
 
     protected String apiToken = "";
-    protected JuiceNetHttp httpApi;
-    @Nullable
+    protected HttpClient httpClient;
     protected ThingUID bridgeUID;
 
-    public JuiceNetApi(HttpClient httpClient) {
-        this.httpApi = new JuiceNetHttp(httpClient);
+    public enum API_COMMAND {
+        GET_ACCOUNT_UNITS("get_account_units", API_ACCOUNT),
+        GET_STATE("get_state", API_DEVICE),
+        SET_CHARGING_LIMIT("set_limit", API_DEVICE),
+        GET_SCHEDULE("get_schedule", API_DEVICE),
+        SET_SCHEDULE("set_schedule", API_DEVICE),
+        GET_INFO("get_info", API_DEVICE),
+        SET_OVERRIDE("set_override", API_DEVICE);
+
+        final String command;
+        final String uri;
+
+        API_COMMAND(String command, String uri) {
+            this.command = command;
+            this.uri = uri;
+        }
     }
 
-    public void initialize(String apiToken, ThingUID bridgeUID) {
-        this.apiToken = apiToken;
+    public JuiceNetApi(HttpClient httpClient, ThingUID bridgeUID) {
         this.bridgeUID = bridgeUID;
+        this.httpClient = httpClient;
     }
 
-    public List<JuiceNetApiDevice> queryDeviceList()
-            throws JuiceNetApiException, IOException, InterruptedException, TimeoutException, ExecutionException {
-        Map<String, Object> params = new HashMap<>();
-        ContentResponse response;
+    public void initialize(String apiToken) {
+        this.apiToken = apiToken;
+    }
 
-        params.put("cmd", "get_account_units");
-        params.put("device_id", bridgeUID.getAsString());
-        params.put("account_token", apiToken);
+    public List<JuiceNetApiDevice> queryDeviceList() throws JuiceNetApiException, InterruptedException {
+        JuiceNetApiDevice[] listDevices;
+        try {
+            JsonObject jsonResponse = postApiCommand(API_COMMAND.GET_ACCOUNT_UNITS, null);
 
-        response = httpApi.httpPost(API_ACCOUNT, params);
-
-        if (response.getStatus() != HttpStatus.OK_200) {
-            throw new JuiceNetApiException("Unable to retrieve device list, please check configuration (HTTP code: "
-                    + response.getStatus() + ").");
+            listDevices = new Gson().fromJson(jsonResponse.get("units").getAsJsonArray(), JuiceNetApiDevice[].class);
+        } catch (JsonSyntaxException e) {
+            throw new JuiceNetApiException("getDevices from JuiceNet API failed, invalid JSON list.");
+        } catch (IllegalStateException e) {
+            throw new JuiceNetApiException("getDevices from JuiceNet API failed - did not return valid array.");
         }
-
-        logger.trace("{}", response.getContentAsString());
-
-        JsonObject jsonResponse = JsonParser.parseString(response.getContentAsString()).getAsJsonObject();
-        boolean success = jsonResponse.get("success").getAsBoolean();
-
-        if (!success) {
-            throw new JuiceNetApiException("getDevices from JuiceNet failed, please check configuration.");
-        }
-
-        final JuiceNetApiDevice[] listDevices = new Gson().fromJson(jsonResponse.get("units").getAsJsonArray(),
-                JuiceNetApiDevice[].class);
 
         return Arrays.asList(listDevices);
     }
 
-    public JuiceNetApiDeviceStatus queryDeviceStatus(String token)
-            throws JuiceNetApiException, IOException, InterruptedException, TimeoutException, ExecutionException {
-        Map<String, Object> params = new HashMap<>();
-        ContentResponse response;
+    public JuiceNetApiDeviceStatus queryDeviceStatus(String token) throws JuiceNetApiException, InterruptedException {
+        JuiceNetApiDeviceStatus deviceStatus;
+        try {
+            JsonObject jsonResponse = postApiCommand(API_COMMAND.GET_STATE, token);
 
-        params.put("cmd", "get_state");
-        params.put("account_token", apiToken);
-        params.put("device_id", bridgeUID.getAsString());
-        params.put("token", token);
-
-        response = httpApi.httpPost(API_DEVICE, params);
-
-        if (response.getStatus() != HttpStatus.OK_200) {
-            throw new JuiceNetApiException("Unable to retrieve device status, please check configuration (HTTP code: "
-                    + response.getStatus() + ").");
+            deviceStatus = new Gson().fromJson(jsonResponse, JuiceNetApiDeviceStatus.class);
+        } catch (JsonSyntaxException e) {
+            throw new JuiceNetApiException("queryDeviceStatus from JuiceNet API failed, invalid JSON list.");
+        } catch (IllegalStateException e) {
+            throw new JuiceNetApiException("queryDeviceStatus from JuiceNet API failed - did not return valid array.");
         }
-
-        logger.trace("{}", response.getContentAsString());
-
-        JsonObject jsonResponse = JsonParser.parseString(response.getContentAsString()).getAsJsonObject();
-        boolean success = jsonResponse.get("success").getAsBoolean();
-
-        if (!success) {
-            throw new JuiceNetApiException("getDeviceStatus from JuiceNet failed, please check configuration.");
-        }
-
-        final JuiceNetApiDeviceStatus deviceStatus = new Gson().fromJson(jsonResponse, JuiceNetApiDeviceStatus.class);
 
         return Objects.requireNonNull(deviceStatus);
     }
 
-    public JuiceNetApiInfo queryInfo(String token)
-            throws IOException, InterruptedException, JuiceNetApiException, TimeoutException, ExecutionException {
-        Map<String, Object> params = new HashMap<>();
-        ContentResponse response;
+    public JuiceNetApiInfo queryInfo(String token) throws InterruptedException, JuiceNetApiException {
+        JuiceNetApiInfo info;
+        try {
+            JsonObject jsonResponse = postApiCommand(API_COMMAND.GET_INFO, token);
 
-        params.put("cmd", "get_info");
-        params.put("account_token", apiToken);
-        params.put("device_id", bridgeUID.getAsString());
-        params.put("token", token);
-
-        response = httpApi.httpPost(API_DEVICE, params);
-
-        if (response.getStatus() != HttpStatus.OK_200) {
-            throw new JuiceNetApiException("Unable to retrieve device info, please check configuration (HTTP code: "
-                    + response.getStatus() + ").");
+            info = new Gson().fromJson(jsonResponse, JuiceNetApiInfo.class);
+        } catch (JsonSyntaxException e) {
+            throw new JuiceNetApiException("queryInfo from JuiceNet API failed, invalid JSON list.");
+        } catch (IllegalStateException e) {
+            throw new JuiceNetApiException("queryInfo from JuiceNet API failed - did not return valid array.");
         }
-
-        logger.trace("{}", response.getContentAsString());
-
-        final JuiceNetApiInfo info = new Gson().fromJson(response.getContentAsString(), JuiceNetApiInfo.class);
 
         return Objects.requireNonNull(info);
     }
 
-    public JuiceNetApiTouSchedule queryTOUSchedule(String token)
-            throws IOException, InterruptedException, JuiceNetApiException, TimeoutException, ExecutionException {
-        Map<String, Object> params = new HashMap<>();
-        ContentResponse response;
+    public JuiceNetApiTouSchedule queryTOUSchedule(String token) throws InterruptedException, JuiceNetApiException {
+        JuiceNetApiTouSchedule deviceTouSchedule;
+        try {
+            JsonObject jsonResponse = postApiCommand(API_COMMAND.GET_SCHEDULE, token);
 
-        params.put("cmd", "get_schedule");
-        params.put("account_token", apiToken);
-        params.put("device_id", bridgeUID.getAsString());
-        params.put("token", token);
-
-        response = httpApi.httpPost(API_DEVICE, params);
-
-        if (response.getStatus() != HttpStatus.OK_200) {
-            throw new JuiceNetApiException(
-                    "Unable to retrieve device TOU Schedule, please check configuration (HTTP code: "
-                            + response.getStatus() + ").");
+            deviceTouSchedule = new Gson().fromJson(jsonResponse, JuiceNetApiTouSchedule.class);
+        } catch (JsonSyntaxException e) {
+            throw new JuiceNetApiException("queryTOUSchedule from JuiceNet API failed, invalid JSON list.");
+        } catch (IllegalStateException e) {
+            throw new JuiceNetApiException("queryTOUSchedule from JuiceNet API failed - did not return valid array.");
         }
-
-        logger.trace("{}", response.getContentAsString());
-
-        JsonObject jsonResponse = JsonParser.parseString(response.getContentAsString()).getAsJsonObject();
-        boolean success = jsonResponse.get("success").getAsBoolean();
-
-        if (!success) {
-            throw new JuiceNetApiException("get_schedule from JuiceNet failed, please check configuration.");
-        }
-
-        final JuiceNetApiTouSchedule deviceTouSchedule = new Gson().fromJson(jsonResponse,
-                JuiceNetApiTouSchedule.class);
 
         return Objects.requireNonNull(deviceTouSchedule);
     }
 
     public void setOverride(String token, int energy_at_plugin, Long override_time, int energy_to_add)
-            throws IOException, InterruptedException, JuiceNetApiException, TimeoutException, ExecutionException {
+            throws InterruptedException, JuiceNetApiException {
         Map<String, Object> params = new HashMap<>();
-        ContentResponse response;
 
-        params.put("cmd", "set_override");
-        params.put("account_token", apiToken);
-        params.put("device_id", bridgeUID.getAsString());
-        params.put("token", token);
-        params.put("energy_at_plugin", energy_at_plugin);
-        params.put("override_time", override_time);
-        params.put("energy_to_add", energy_to_add);
+        params.put("energy_at_plugin", Integer.toString(energy_at_plugin));
+        params.put("override_time", Long.toString(energy_at_plugin));
+        params.put("energy_to_add", Integer.toString(energy_at_plugin));
 
-        response = httpApi.httpPost(API_DEVICE, params);
-
-        if (response.getStatus() != HttpStatus.OK_200) {
-            throw new JuiceNetApiException(
-                    "Unable to set Override, please check configuration (HTTP code: " + response.getStatus() + ").");
-        }
-
-        logger.trace("{}", response.getContentAsString());
+        postApiCommand(API_COMMAND.SET_OVERRIDE, token, params);
     }
 
-    public void setCurrentLimit(String token, int limit)
-            throws IOException, InterruptedException, JuiceNetApiException, TimeoutException, ExecutionException {
+    public void setCurrentLimit(String token, int limit) throws InterruptedException, JuiceNetApiException {
         Map<String, Object> params = new HashMap<>();
-        ContentResponse response;
 
-        params.put("cmd", "set_limit");
-        params.put("account_token", apiToken);
+        params.put("amperage", Integer.toString(limit));
+
+        postApiCommand(API_COMMAND.SET_OVERRIDE, token, params);
+    }
+
+    public JsonObject postApiCommand(API_COMMAND cmd, @Nullable String token)
+            throws InterruptedException, JuiceNetApiException {
+        Map<String, Object> params = new HashMap<>();
+
+        return postApiCommand(cmd, token, params);
+    }
+
+    public JsonObject postApiCommand(API_COMMAND cmd, @Nullable String token, Map<String, Object> params)
+            throws InterruptedException, JuiceNetApiException {
+        Request request = httpClient.POST(cmd.uri);
+        request.header(HttpHeader.CONTENT_TYPE, "application/json");
+
+        // Add required params
+        params.put("cmd", cmd.command);
         params.put("device_id", bridgeUID.getAsString());
-        params.put("token", token);
-        params.put("amperage", limit);
+        params.put("account_token", apiToken);
 
-        response = httpApi.httpPost(API_DEVICE, params);
-
-        if (response.getStatus() != HttpStatus.OK_200) {
-            throw new JuiceNetApiException("Unable to set current limit, please check configuration (HTTP code: "
-                    + response.getStatus() + ").");
+        if (token != null) {
+            params.put("token", token);
         }
 
-        logger.trace("{}", response.getContentAsString());
+        JsonObject jsonResponse;
+        try {
+            request.content(new StringContentProvider(new Gson().toJson(params)), "application/json");
+            ContentResponse response = request.send();
+            if (response.getStatus() != HttpStatus.OK_200) {
+                throw new JuiceNetApiException(
+                        cmd.command + "from JuiceNet API unsucessful, please check configuation. (HTTP code :"
+                                + response.getStatus() + ").");
+            }
+
+            String responseString = response.getContentAsString();
+            logger.trace("{}", responseString);
+
+            jsonResponse = JsonParser.parseString(responseString).getAsJsonObject();
+            boolean success = jsonResponse.get("success").getAsBoolean();
+
+            if (!success) {
+                throw new JuiceNetApiException(cmd.command + " from JuiceNet API failed, please check configuration.");
+            }
+        } catch (IllegalStateException e) {
+            throw new JuiceNetApiException(cmd.command + " from JuiceNet API failed, invalid JSON.");
+        } catch (TimeoutException e) {
+            throw new JuiceNetApiException(cmd.command + " from JuiceNet API timeout.");
+        } catch (ExecutionException e) {
+            throw new JuiceNetApiException(cmd.command + " from JuiceNet API execution issue.");
+        }
+
+        return jsonResponse;
     }
 }

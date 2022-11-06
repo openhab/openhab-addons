@@ -14,6 +14,8 @@ package org.openhab.binding.juicenet.internal.api.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * {@link JuiceNetApiDevice } implements DTO for Device Info API call
  *
@@ -23,5 +25,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class JuiceNetApiDevice {
     public String name = "";
     public String token = "";
-    public String unit_id = "";
+    @SerializedName("unit_id")
+    public String unitId = "";
 }

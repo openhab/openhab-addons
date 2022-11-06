@@ -14,6 +14,8 @@ package org.openhab.binding.juicenet.internal.api.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * {@link JuiceNetApiInfo } implements DTO for Info
  *
@@ -25,14 +27,19 @@ public class JuiceNetApiInfo {
     public String address = "";
     public String city = "";
     public String zip = "";
-    public String country_code = "";
+    @SerializedName("country_code")
+    public String countryCode = "";
     public String ip = "";
-    public int gascost;
+    @SerializedName("gascost")
+    public int gasCost;
     public int mpg;
     public int ecost;
-    public int whpermile;
+    @SerializedName("whpermile")
+    public int energyPerMile;
     public String timeZoneId = "";
-    public int amps_wire_rating;
-    public int amps_unit_rating;
+    @SerializedName("amps_wire_rating")
+    public int wireRating;
+    @SerializedName("amps_unit_rating")
+    public int unitRating;
     public JuiceNetApiCar[] cars = {};
 }
