@@ -32,12 +32,12 @@
 			<label>Evening Damping Factor</label>
 			<description>Damping factor of evening hours</description>
 			<default>0.25</default>
-            <advanced>true</advanced>
-        </parameter>
-        <parameter name="horizon" type="text">
-            <label>Horizon </label>
-            <description>Horizon definition as comma separated integer values</description>
-            <advanced>true</advanced>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="horizon" type="text">
+			<label>Horizon </label>
+			<description>Horizon definition as comma separated integer values</description>
+			<advanced>true</advanced>
 		</parameter>
 	</config-description>
 </config-description:config-descriptions>

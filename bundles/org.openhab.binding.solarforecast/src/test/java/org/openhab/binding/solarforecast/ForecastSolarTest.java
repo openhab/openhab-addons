@@ -210,6 +210,5 @@ class ForecastSolarTest {
         response = client.send(request, BodyHandlers.ofString());
         System.out.println(url);
         System.out.println(response.body());
-
     }
 }
