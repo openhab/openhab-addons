@@ -104,19 +104,19 @@
 		<config-description-ref uri="thing-type:shelly:relay"/>
 	</thing-type>
 
-<thing-type id="shelly2-roller">
-        <label>Shelly 2 Roller</label>
-        <description>@text/thing-type.shelly.shelly2-roller.description</description>
-        <category>Rollershutter</category>
-        <channel-groups>
-            <channel-group id="roller" typeId="rollerControl"/>
-            <channel-group id="meter" typeId="meter"/>
-            <channel-group id="device" typeId="deviceStatus"/>
-        </channel-groups>
+	<thing-type id="shelly2-roller">
+		<label>Shelly 2 Roller</label>
+		<description>@text/thing-type.shelly.shelly2-roller.description</description>
+		<category>Rollershutter</category>
+		<channel-groups>
+			<channel-group id="roller" typeId="rollerControl"/>
+			<channel-group id="meter" typeId="meter"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
 
-        <representation-property>serviceName</representation-property>
-        <config-description-ref uri="thing-type:shelly:roller"/>
-    </thing-type>
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:roller"/>
+	</thing-type>
 
 	<thing-type id="shelly25-relay">
 		<label>Shelly 2.5 Relay</label>
