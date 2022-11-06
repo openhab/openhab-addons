@@ -5,6 +5,7 @@ package org.openhab.binding.icloud.internal.utilities;
  *
  */
 public class Pair<K, V> {
+
   public K key;
 
   public V value;
@@ -15,6 +16,12 @@ public class Pair<K, V> {
     p.key = key;
     p.value = value;
     return p;
+  }
+
+  @Override
+  public String toString() {
+
+    return "Pair [key=" + this.key + ", value=" + this.value + "]";
   }
 
 }

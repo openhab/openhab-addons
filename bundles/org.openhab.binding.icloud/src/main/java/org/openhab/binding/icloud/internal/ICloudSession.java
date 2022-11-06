@@ -2,6 +2,7 @@ package org.openhab.binding.icloud.internal;
 
 import java.io.IOException;
 import java.net.CookieManager;
+import java.net.CookiePolicy;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpClient.Redirect;
@@ -16,12 +17,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.openhab.binding.icloud.internal.utilities.CustomCookieStore;
 import org.openhab.binding.icloud.internal.utilities.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 /**
  * TODO simon This type ...
@@ -39,13 +38,13 @@ public class ICloudSession {
 
   private final List<Pair<String, String>> headers = new ArrayList();
 
-  private final Gson gson = new GsonBuilder().create();
-
   public ICloudSession(ICloudService iCloudService) {
 
     this.iCloudService = iCloudService;
 
-    this.cookieManager = new CookieManager();
+    CookieManager templateCookieManager = new CookieManager();
+    this.cookieManager = new CookieManager(new CustomCookieStore(templateCookieManager.getCookieStore()),
+        CookiePolicy.ACCEPT_ALL);
     this.client = HttpClient.newBuilder().version(Version.HTTP_1_1).followRedirects(Redirect.NORMAL)
         .connectTimeout(Duration.ofSeconds(20)).cookieHandler(this.cookieManager).build();
   }
@@ -90,11 +89,13 @@ public class ICloudSession {
 
     HttpRequest request = builder.build();
 
-    LOGGER.debug("Calling {}\nHeaders -----\n{}\nBody -----\n{}\n------\n", url, request.headers(), kwargs);
+    LOGGER.debug("Sending {}", kwargs);
+
+    // LOGGER.debug("Calling {}\nHeaders -----\n{}\nBody -----\n{}\n------\n", url, request.headers(), kwargs);
 
     HttpResponse response = this.client.send(request, BodyHandlers.ofString());
-    LOGGER.debug("Result {} {}\nHeaders -----\n{}\nBody -----\n{}\n------\n", url, response.statusCode(),
-        response.headers().toString(), response.body().toString());
+    // LOGGER.debug("Result {} {}\nHeaders -----\n{}\nBody -----\n{}\n------\n", url, response.statusCode(),
+    // response.headers().toString(), response.body().toString());
 
     // TODO Error Handling pyicloud 99-162
     if (response.statusCode() >= 34100) {
@@ -115,6 +116,7 @@ public class ICloudSession {
         response.headers().firstValue("X-Apple-TwoSV-Trust-Token").orElse(this.iCloudService.getTrustToken()));
     this.iCloudService.setScnt(response.headers().firstValue("scnt").orElse(this.iCloudService.getScnt()));
 
+    LOGGER.debug("Cookies {}:", this.cookieManager.getCookieStore().getCookies());
     return response.body().toString();
 
   }

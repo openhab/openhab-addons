@@ -28,7 +28,7 @@ public class ICloudService {
 
   private final static String SETUP_ENDPOINT = "https://setup.icloud.com/setup/ws/1";
 
-  private final Gson gson = new GsonBuilder().create();
+  private final Gson gson = new GsonBuilder().serializeNulls().create();
 
   // private final String oAuthState = "auth-" + UUID.randomUUID().toString();
   // private final String oAuthState = "auth-34792a3-3333-3333-3633-3377333333";
@@ -117,7 +117,7 @@ public class ICloudService {
 
   private boolean verify;
 
-  private boolean withFamily;
+  private boolean withFamily = true;
 
   private ICloudSession session;
 
@@ -189,7 +189,7 @@ public class ICloudService {
       localdata.put("password", this.password);
       localdata.put("rememberMe", true);
       if (hasToken()) {
-        localdata.put("trustTokens", getTrustToken());
+        localdata.put("trustTokens", new String[] { getTrustToken() });
       } else {
         localdata.put("trustTokens", new String[0]);
       }
@@ -224,7 +224,7 @@ public class ICloudService {
    * @throws IOException
    *
    */
-  private void authenticateWithToken() throws IOException, InterruptedException {
+  public void authenticateWithToken() throws IOException, InterruptedException {
 
     // TODO use TO here?
     HashMap localdata = new HashMap();
@@ -243,6 +243,8 @@ public class ICloudService {
     } catch (ICloudAPIResponseException ex) {
       throw new RuntimeException("Invalid authentication");
     }
+
+    this.webservices = (Map<String, Object>) this.data.get("webservices");
 
   }
 
@@ -312,7 +314,7 @@ public class ICloudService {
    */
   public boolean isTrustedSession() {
 
-    return (boolean) this.data.getOrDefault("hsaTrustedBrowser", Boolean.FALSE);
+    return (Boolean) this.data.getOrDefault("hsaTrustedBrowser", Boolean.FALSE);
   }
 
   /**
