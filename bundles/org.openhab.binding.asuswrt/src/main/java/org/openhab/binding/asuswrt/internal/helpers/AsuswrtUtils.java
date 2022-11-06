@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.asuswrt.internal.helpers;
 
+import java.util.regex.Pattern;
+
 import javax.measure.Unit;
 import javax.measure.quantity.Energy;
 import javax.measure.quantity.Power;
@@ -25,6 +27,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.types.State;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -38,6 +41,8 @@ import com.google.gson.JsonPrimitive;
  */
 @NonNullByDefault
 public class AsuswrtUtils {
+    private static Pattern patternMacPairs = Pattern.compile("^([a-fA-F0-9]{2}[:\\.-]?){5}[a-fA-F0-9]{2}$");
+    private static Pattern patternMacTriples = Pattern.compile("^([a-fA-F0-9]{3}[:\\.-]?){3}[a-fA-F0-9]{3}$");
 
     /************************************
      * CALCULATION UTILS
@@ -104,6 +109,19 @@ public class AsuswrtUtils {
         mac = mac.replace(".", "");
         mac = mac.replace(" ", "");
         return mac;
+    }
+
+    /**
+     * check if isvalid MAC-Address
+     * 
+     * @param mac
+     * @return
+     */
+    public static boolean isValidMacAddress(String mac) {
+        // Mac addresses usually are 6 * 2 hex nibbles separated by colons,
+        // but apparently it is legal to have 4 * 3 hex nibbles as well,
+        // and the separators can be any of : or - or . or nothing.
+        return (patternMacPairs.matcher(mac).find() || patternMacTriples.matcher(mac).find());
     }
 
     /**
@@ -410,6 +428,17 @@ public class AsuswrtUtils {
      * @return QuantityType<Energy>
      */
     public static QuantityType<Energy> getEnergyType(@Nullable Number numVal, Unit<Energy> unit) {
+        return new QuantityType<>((numVal != null ? numVal : 0), unit);
+    }
+
+    /**
+     * Return QuantityType with variable Unit
+     * 
+     * @param numVal Number with value
+     * @param unit Unit
+     * @return OH core StateType
+     */
+    public static State getQuantityType(@Nullable Number numVal, Unit<?> unit) {
         return new QuantityType<>((numVal != null ? numVal : 0), unit);
     }
 }

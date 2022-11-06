@@ -103,6 +103,8 @@ public class AsuswrtConnector extends AsuswrtHttpClient {
         logger.trace("({}) queryDeviceData", uid);
         Long now = System.currentTimeMillis();
 
+        checkAuth();
+
         if (now > this.lastQuery + HTTP_QUERY_MIN_GAP_MS) {
             String url = routerConfig.url + "/appGet.cgi";
             String payload = "hook=" + command;
@@ -139,20 +141,7 @@ public class AsuswrtConnector extends AsuswrtHttpClient {
     @Override
     protected void handleHttpSuccessResponse(String responseBody, String command) {
         JsonObject jsonObject = getJsonFromString(responseBody);
-
-        /* set router data */
-        router.deviceInfo.setSysInfo(jsonObject);
-        router.deviceInfo.setData(jsonObject);
-
-        /* update things */
-        router.fireEvents(router.deviceInfo);
-        if (command.contains(CMD_GET_SYSINFO)) {
-            router.devicePropertiesChanged(router.deviceInfo);
-        }
-        if (command.contains(CMD_GET_CLIENTLIST)) {
-            router.updateClients(router.getClients());
-        }
-        router.updateChannels(router.deviceInfo);
+        router.dataReceived(jsonObject, command);
     }
 
     /***********************************
@@ -161,11 +150,28 @@ public class AsuswrtConnector extends AsuswrtHttpClient {
      *
      ************************************/
 
+    /**
+     * check if cookie is set and not expired
+     * 
+     * @return
+     */
     public Boolean isValidLogin() {
         Boolean cookieExpired = System.currentTimeMillis() > this.cookieTimeStamp + (COOKIE_LIFETIME_S * 1000);
         if (cookieExpired.equals(true)) {
             logger.trace("({}) cookie is expired ", uid);
         }
         return cookieExpired.equals(false) && !this.cookie.isBlank();
+    }
+
+    /**
+     * check authentication (login) and relogin if not
+     * 
+     * @return
+     */
+    public Boolean checkAuth() {
+        if (isValidLogin().equals(false)) {
+            return login();
+        }
+        return true;
     }
 }

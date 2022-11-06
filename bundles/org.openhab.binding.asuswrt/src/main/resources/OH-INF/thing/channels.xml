@@ -14,32 +14,16 @@
 		<description>Model/ProductID of your Router</description>
 	</channel-type>
 
-	<!-- CPU Usage -->
-	<channel-type id="cpuusageType">
-		<item-type>Number:Dimensionless</item-type>
-		<label>CPU Usage</label>
-		<description>CPU usage in %</description>
-		<!--<state pattern="%.1f %unit%" readOnly="true"></state> -->
+	<!-- Usage -->
+	<channel-type id="usageDataType">
+		<item-type>Number:DataAmount</item-type>
+		<label>Usage in MB</label>
+		<state pattern="%.0f %unit%" readOnly="true"></state>
 	</channel-type>
-
-	<!-- Memory -->
-	<channel-type id="memoryfrerType">
+	<channel-type id="usageTypePercent">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Free Memory</label>
-		<description>Free memory in MB</description>
-		<!--<state pattern="%.1f %unit%" readOnly="true"></state> -->
-	</channel-type>
-	<channel-type id="memorytotalType">
-		<item-type>Number:Dimensionless</item-type>
-		<label>Total Memory</label>
-		<description>Total memory in MB</description>
-		<!--<state pattern="%.1f %unit%" readOnly="true"></state> -->
-	</channel-type>
-	<channel-type id="memoryusedType">
-		<item-type>Number:Dimensionless</item-type>
-		<label>Used Memory</label>
-		<description>Used memory in MB</description>
-		<!--<state pattern="%.1f %unit%" readOnly="true"></state> -->
+		<label>Percentage</label>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 
 
@@ -99,10 +83,10 @@
 	</channel-type>
 
 	<!-- CLIENTS -->
-	<channel-type id="clientsOnlineNameType">
+	<channel-type id="clientsOnlineType">
 		<item-type>String</item-type>
 		<label>Online Clients</label>
-		<description>List with names of online clients</description>
+		<description>List of online clients</description>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="clientsOnlineMacType">

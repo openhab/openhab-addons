@@ -61,10 +61,12 @@ public class AsuswrtBindingConstants {
 
     // channel group system info
     public static final String CHANNEL_GROUP_SYSINFO = "sysInfo";
-    public static final String CHANNEL_CPU_USAGE = "cpuusage";
-    public static final String CHANNEL_MEM_FREE = "memfree";
-    public static final String CHANNEL_MEM_TOTAL = "memtotal";
-    public static final String CHANNEL_MEM_USED = "memused";
+    public static final String CHANNEL_MEM_FREE = "memFree";
+    public static final String CHANNEL_MEM_FREE_PERCENT = "memFreePercent";
+    public static final String CHANNEL_MEM_TOTAL = "memTotal";
+    public static final String CHANNEL_MEM_USED = "memUsed";
+    public static final String CHANNEL_MEM_USED_PERCENT = "memUsedPercent";
+    public static final String CHANNEL_CPU_USED_PERCENT = "cpuUsedPercent";
 
     // channel group lan information
     public static final String CHANNEL_GROUP_LANINFO = "lanInfo";
@@ -76,8 +78,9 @@ public class AsuswrtBindingConstants {
 
     // channel group clientList information
     public static final String CHANNEL_GROUP_CLIENTS = "clientList";
-    public static final String CHANNEL_CLIENT_ONLINE_NAMES = "onlineNames";
-    public static final String CHANNEL_CLIENT_ONLINE_MAC = "onlineMACs";
+    public static final String CHANNEL_CLIENTS_KNOWN = "knownClients";
+    public static final String CHANNEL_CLIENTS_ONLINE = "onlineClients";
+    public static final String CHANNEL_CLIENTS_ONLINE_MAC = "onlineMACs";
 
     // channel group client information
     public static final String CLIENT_REPRASENTATION_PROPERTY = "macAddress";
@@ -118,6 +121,7 @@ public class AsuswrtBindingConstants {
     // clientInfo
     public static final String JSON_MEMBER_CLIENTS = "get_clientlist";
     public static final String JSON_MEMBER_MACLIST = "maclist";
+    public static final String JSON_MEMBER_API_LEVEL = "ClientAPILevel";
     public static final String JSON_MEMBER_CLIENT_RXCUR = "curRx";
     public static final String JSON_MEMBER_CLIENT_TXCUR = "curTx";
     public static final String JSON_MEMBER_CLIENT_DEFTYPE = "defaultType";
@@ -154,5 +158,12 @@ public class AsuswrtBindingConstants {
     public static final String JSON_MEMBER_CLIENT_WTFAST = "wtfast";
 
     // usage
-    public static final String JSON_MEMBER_CPU_USAGE = "";
+    public static final String JSON_MEMBER_CPU_USAGE = "cpu_usage";
+    public static final String JSON_MEMBER_CPU_TOTAL = "cpu{x}_total";
+    public static final String JSON_MEMBER_CPU_USED = "cpu{x}_usage";
+    public static final String JSON_MEMBER_MEM_USAGE = "memory_usage";
+    public static final String JSON_MEMBER_MEM_TOTAL = "mem_total";
+    public static final String JSON_MEMBER_MEM_USED = "mem_used";
+    public static final String JSON_MEMBER_MEM_FREE = "mem_free";
+    public static final Integer USAGE_CPU_COUNT = 4; // max count of cpu-cores
 }

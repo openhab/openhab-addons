@@ -45,6 +45,7 @@ public class AsuswrtBindingSettings {
     public static final String CMD_GET_CLIENTLIST = "get_clientlist();";
     public static final String CMD_GET_TRAFFIC = "netdev(appobj);";
     public static final String CMD_GET_UPTIME = "uptime();";
-    public static final String CMD_GET_MEMUSAGE = "memory_usage();";
-    public static final String CMD_GET_CPUUSAGE = "cpu_usage();";
+    public static final String CMD_GET_USAGE = "cpu_usage(appobj);memory_usage(appobj);";
+    public static final String CMD_GET_MEMUSAGE = "memory_usage(appobj);";
+    public static final String CMD_GET_CPUUSAGE = "cpu_usage(appobj);";
 }

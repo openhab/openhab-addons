@@ -46,11 +46,30 @@
 		<label>System Info</label>
 		<description>System-Information about the device</description>
 		<channels>
-			<channel id="model" typeId="productid"/>
-			<channel id="cpuusage" typeId="cpuusageType"/>
-			<channel id="memfree" typeId="memoryfreeType"/>
-			<channel id="memtotal" typeId="memorytotalType"/>
-			<channel id="memused" typeId="memoryusedType"/>
+			<channel id="memTotal" typeId="usageDataType">
+				<label>Total Memory</label>
+				<description>Total Memory in MB</description>
+			</channel>
+			<channel id="memUsed" typeId="usageDataType">
+				<label>Used Memory</label>
+				<description>Used Memory in MB</description>
+			</channel>
+			<channel id="memFree" typeId="usageDataType">
+				<label>Free Memory</label>
+				<description>Free Memory in MB</description>
+			</channel>
+			<channel id="memFreePercent" typeId="usageTypePercent">
+				<label>Free Memory</label>
+				<description>Free Memory in %</description>
+			</channel>
+			<channel id="memUsedPercent" typeId="usageTypePercent">
+				<label>Used Memory</label>
+				<description>Used Memory in %</description>
+			</channel>
+			<channel id="cpuUsedPercent" typeId="usageTypePercent">
+				<label>Total CPU Usage</label>
+				<description>Total CPU usage in percent over all cores</description>
+			</channel>
 		</channels>
 	</channel-group-type>
 
@@ -87,7 +106,13 @@
 		<label>Clients</label>
 		<description>Clients connected to router</description>
 		<channels>
-			<channel id="onlineNames" typeId="clientsOnlineNameType"></channel>
+			<channel id="knownClients" typeId="clientsOnlineType">
+				<label>Known Clients</label>
+				<description>Known Clients with Name and MAC-Addresses</description>
+			</channel>
+			<channel id="onlineClients" typeId="clientsOnlineType">
+				<description>Online Clients with Name and MAC-Addresses</description>
+			</channel>
 			<channel id="onlineMACs" typeId="clientsOnlineMacType"></channel>
 		</channels>
 	</channel-group-type>

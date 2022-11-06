@@ -60,7 +60,8 @@ public class AsuswrtIpInfo {
     /**
      * Set Data from jsonObject
      * 
-     * @param jsonObject
+     * @param jsonObject jsonObject data is stored
+     * @param channelGroup channelGroup data belongs to
      */
     public void setData(JsonObject jsonObject, String channelGroup) {
         this.hwAddress = jsonObjectToString(jsonObject, JSON_MEMBER_MAC, this.hwAddress);

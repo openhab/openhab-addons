@@ -34,6 +34,7 @@ import org.openhab.binding.asuswrt.internal.helpers.AsuswrtUtils;
 import org.openhab.binding.asuswrt.internal.structures.AsuswrtClientList;
 import org.openhab.binding.asuswrt.internal.structures.AsuswrtConfiguration;
 import org.openhab.binding.asuswrt.internal.structures.AsuswrtRouterInfo;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -47,6 +48,8 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.JsonObject;
 
 /**
  * The {@link asuswrtRouter} is responsible for handling commands, which are
@@ -136,10 +139,9 @@ public class AsuswrtRouter extends BaseBridgeHandler {
     private void delayedStartUp() {
         connector.login();
         if (connector.isValidLogin()) {
-            connector.querySysInfo(false);
+            queryDeviceData(false);
             devicePropertiesChanged(this.deviceInfo);
             updateStatus(ThingStatus.ONLINE);
-            queryDeviceData();
             startPollingJob();
         } else {
             updateStatus(ThingStatus.OFFLINE);
@@ -209,7 +211,8 @@ public class AsuswrtRouter extends BaseBridgeHandler {
      * @param asyncRequest
      */
     public void queryDeviceData(Boolean asyncRequest) {
-        connector.queryDeviceData(CMD_GET_LANINFO + CMD_GET_WANINFO + CMD_GET_CLIENTLIST, asyncRequest);
+        connector.queryDeviceData(
+                CMD_GET_SYSINFO + CMD_GET_USAGE + CMD_GET_LANINFO + CMD_GET_WANINFO + CMD_GET_CLIENTLIST, asyncRequest);
     }
 
     /**
@@ -217,41 +220,33 @@ public class AsuswrtRouter extends BaseBridgeHandler {
      * do asynchronous request
      */
     public void queryDeviceData() {
-        connector.queryDeviceData(CMD_GET_LANINFO + CMD_GET_WANINFO + CMD_GET_CLIENTLIST, true);
+        queryDeviceData(true);
     }
 
     /**
-     * UPDATE ALL CLIENT THINGS
+     * Set routerInfo-Data and update channels on receiving new data with the associated command
      * 
-     * @param AsuswrtRouterInfo
+     * @param jsonObject
+     * @param command
      */
-    public void updateClients(AsuswrtRouterInfo routerInfo) {
-        updateClients(routerInfo.getClients());
-    }
-
-    /**
-     * UPDATE ALL CLIENT THINGS
-     * 
-     * @param clientList AsuswrtClientList
-     */
-    public void updateClients(AsuswrtClientList clientList) {
-        ThingTypeUID thingTypeUID;
-        List<Thing> things = getThing().getThings();
-        for (Thing thing : things) {
-            thingTypeUID = thing.getThingTypeUID();
-            ThingUID thingUID = thing.getUID();
-            if (THING_TYPE_CLIENT.equals(thingTypeUID)) {
-                ChannelUID cuid = new ChannelUID(thingUID, CHANNEL_GROUP_CLIENT);
-                ThingHandler handler = thing.getHandler();
-                if (handler != null) {
-                    handler.handleCommand(cuid, RefreshType.REFRESH);
-                } else {
-                    logger.debug("({}) unable to send RefreshCommand to client : {} - thingHandler is null", thingUID,
-                            thingTypeUID.getAsString());
-                }
-
-            }
+    public void dataReceived(JsonObject jsonObject, String command) {
+        fireEvents(deviceInfo);
+        if (command.contains(CMD_GET_SYSINFO)) {
+            deviceInfo.setSysInfo(jsonObject);
+            devicePropertiesChanged(deviceInfo);
         }
+        if (command.contains(CMD_GET_CLIENTLIST)) {
+            deviceInfo.setClientData(jsonObject);
+            updateClientThings(deviceInfo.getClients());
+        }
+        if (command.contains(CMD_GET_LANINFO) || command.contains(CMD_GET_WANINFO)) {
+            this.deviceInfo.setNetworkData(jsonObject);
+        }
+        if (command.contains(CMD_GET_USAGE) || command.contains(CMD_GET_MEMUSAGE)
+                || command.contains(CMD_GET_CPUUSAGE)) {
+            this.deviceInfo.setUsageStats(jsonObject);
+        }
+        updateChannels(deviceInfo);
     }
 
     /***********************************
@@ -278,10 +273,6 @@ public class AsuswrtRouter extends BaseBridgeHandler {
 
     public AsuswrtRouterInfo getDeviceInfo() {
         return this.deviceInfo;
-    }
-
-    public AsuswrtClientList getClients() {
-        return this.deviceInfo.getClients();
     }
 
     /***********************************
@@ -321,7 +312,7 @@ public class AsuswrtRouter extends BaseBridgeHandler {
 
     /***********************************
      *
-     * CHANNELS
+     * CHANNELS / CLIENTS
      *
      ************************************/
 
@@ -331,6 +322,37 @@ public class AsuswrtRouter extends BaseBridgeHandler {
      * @param deviceInfo
      */
     public void updateChannels(AsuswrtRouterInfo deviceInfo) {
+        updateNetworkChannels(deviceInfo);
+        updateClientChannels(deviceInfo);
+        updateUsageChannels(deviceInfo);
+    }
+
+    /**
+     * Update Channel Usage
+     * 
+     * @param deviceInfo
+     */
+    public void updateUsageChannels(AsuswrtRouterInfo deviceInfo) {
+        updateState(getChannelID(CHANNEL_GROUP_SYSINFO, CHANNEL_MEM_TOTAL),
+                getQuantityType(deviceInfo.getMemUsage().getTotal(), Units.MEGABYTE));
+        updateState(getChannelID(CHANNEL_GROUP_SYSINFO, CHANNEL_MEM_FREE),
+                getQuantityType(deviceInfo.getMemUsage().getFree(), Units.MEGABYTE));
+        updateState(getChannelID(CHANNEL_GROUP_SYSINFO, CHANNEL_MEM_USED),
+                getQuantityType(deviceInfo.getMemUsage().getUsed(), Units.MEGABYTE));
+        updateState(getChannelID(CHANNEL_GROUP_SYSINFO, CHANNEL_MEM_FREE_PERCENT),
+                getQuantityType(deviceInfo.getMemUsage().getFreePercent(), Units.PERCENT));
+        updateState(getChannelID(CHANNEL_GROUP_SYSINFO, CHANNEL_MEM_USED_PERCENT),
+                getQuantityType(deviceInfo.getMemUsage().getUsedPercent(), Units.PERCENT));
+        updateState(getChannelID(CHANNEL_GROUP_SYSINFO, CHANNEL_CPU_USED_PERCENT),
+                getQuantityType(deviceInfo.getCpuAverage().getUsedPercent(), Units.PERCENT));
+    }
+
+    /**
+     * Update Network Channels
+     * 
+     * @param deviceInfo
+     */
+    public void updateNetworkChannels(AsuswrtRouterInfo deviceInfo) {
         /* lanInfo */
         updateState(getChannelID(CHANNEL_GROUP_LANINFO, CHANNEL_IP_ADDRESS),
                 getStringType(deviceInfo.getLanInfo().getIpAddress()));
@@ -356,12 +378,20 @@ public class AsuswrtRouter extends BaseBridgeHandler {
                 getStringType(deviceInfo.getWanInfo().getDNSNServer()));
         updateState(getChannelID(CHANNEL_GROUP_WANINFO, CHANNEL_WAN_STATUS),
                 getOnOffType(deviceInfo.getWanInfo().isConnected()));
+    }
 
-        /* clients */
-        updateState(getChannelID(CHANNEL_GROUP_CLIENTS, CHANNEL_CLIENT_ONLINE_NAMES),
-                getStringType(deviceInfo.getClients().getOnlineClientNames()));
-        updateState(getChannelID(CHANNEL_GROUP_CLIENTS, CHANNEL_CLIENT_ONLINE_MAC),
-                getStringType(deviceInfo.getClients().getOnlineClientMACs()));
+    /**
+     * Update Client Channel
+     * 
+     * @param deviceInfo
+     */
+    public void updateClientChannels(AsuswrtRouterInfo deviceInfo) {
+        updateState(getChannelID(CHANNEL_GROUP_CLIENTS, CHANNEL_CLIENTS_KNOWN),
+                getStringType(deviceInfo.getClients().getClientList()));
+        updateState(getChannelID(CHANNEL_GROUP_CLIENTS, CHANNEL_CLIENTS_ONLINE),
+                getStringType(deviceInfo.getClients().getOnlineClients().getClientList()));
+        updateState(getChannelID(CHANNEL_GROUP_CLIENTS, CHANNEL_CLIENTS_ONLINE_MAC),
+                getStringType(deviceInfo.getClients().getOnlineClients().getMacAddresses()));
     }
 
     /**
@@ -376,6 +406,40 @@ public class AsuswrtRouter extends BaseBridgeHandler {
                 triggerChannel(getChannelID(CHANNEL_GROUP_WANINFO, EVENT_CONNECTION), EVENT_STATE_CONNECTED);
             } else {
                 triggerChannel(getChannelID(CHANNEL_GROUP_WANINFO, EVENT_CONNECTION), EVENT_STATE_DISCONNECTED);
+            }
+        }
+    }
+
+    /**
+     * UPDATE ALL CLIENT THINGS
+     * 
+     * @param AsuswrtRouterInfo
+     */
+    public void updateClients(AsuswrtRouterInfo routerInfo) {
+        updateClientThings(routerInfo.getClients());
+    }
+
+    /**
+     * UPDATE ALL CLIENT THINGS
+     * 
+     * @param clientList AsuswrtClientList
+     */
+    public void updateClientThings(AsuswrtClientList clientList) {
+        ThingTypeUID thingTypeUID;
+        List<Thing> things = getThing().getThings();
+        for (Thing thing : things) {
+            thingTypeUID = thing.getThingTypeUID();
+            ThingUID thingUID = thing.getUID();
+            if (THING_TYPE_CLIENT.equals(thingTypeUID)) {
+                ChannelUID cuid = new ChannelUID(thingUID, CHANNEL_GROUP_CLIENT);
+                ThingHandler handler = thing.getHandler();
+                if (handler != null) {
+                    handler.handleCommand(cuid, RefreshType.REFRESH);
+                } else {
+                    logger.debug("({}) unable to send RefreshCommand to client : {} - thingHandler is null", thingUID,
+                            thingTypeUID.getAsString());
+                }
+
             }
         }
     }

@@ -128,7 +128,7 @@ public class AsuswrtClient extends BaseThingHandler {
      */
     private void refreshData() {
         String mac = getMac();
-        AsuswrtClientInfo clientInfo = router.getClients().getClientByMAC(mac);
+        AsuswrtClientInfo clientInfo = router.deviceInfo.getClients().getClientByMAC(mac);
         fireEvents(clientInfo);
         clientPropertiesChanged(clientInfo);
     }
