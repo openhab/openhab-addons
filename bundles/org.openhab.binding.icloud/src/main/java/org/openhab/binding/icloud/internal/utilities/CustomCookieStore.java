@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.icloud.internal.utilities;
 
-import java.lang.reflect.Type;
 import java.net.CookieManager;
 import java.net.CookieStore;
 import java.net.HttpCookie;
@@ -25,7 +24,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 
 /**
  *
@@ -36,8 +34,6 @@ import com.google.gson.reflect.TypeToken;
 public class CustomCookieStore implements CookieStore {
 
     private CookieStore cookieStore;
-
-    private final static String COOKIES_KEY = "COOKIES";
 
     private final Gson gson = new GsonBuilder().create();
 
@@ -50,44 +46,9 @@ public class CustomCookieStore implements CookieStore {
      *
      * @param cookieStore
      */
-    public CustomCookieStore(Storage<String> stateStorage) {
+    public CustomCookieStore() {
 
         this.cookieStore = new CookieManager().getCookieStore();
-        this.stateStorage = stateStorage;
-        restoreCookies();
-    }
-
-    /**
-     * @param cookieData
-     *
-     */
-    private void restoreCookies() {
-
-        String cookieData = this.stateStorage.get(COOKIES_KEY);
-        if (cookieData != null) {
-            Type type = new TypeToken<List<HttpCookie>>() {
-            }.getType();
-            try {
-                List<HttpCookie> cookies = this.gson.fromJson(cookieData, type);
-                for (HttpCookie cookie : cookies) {
-                    add(URI.create(cookie.getDomain()), cookie);
-                }
-            } catch (Exception ex) {
-                LOGGER.warn("Cannot restore cookies.", ex);
-            }
-        } else {
-            LOGGER.info("No cookie data found. Start with fresh cookies store.");
-        }
-    }
-
-    public void saveState() {
-
-        try {
-            String cookieData = this.gson.toJson(getCookies());
-            this.stateStorage.put(COOKIES_KEY, cookieData);
-        } catch (Exception ex) {
-            LOGGER.warn("Cannot save cookies.", ex);
-        }
     }
 
     @Override

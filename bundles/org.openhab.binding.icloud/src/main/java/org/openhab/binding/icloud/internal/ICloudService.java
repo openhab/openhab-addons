@@ -89,7 +89,7 @@ public class ICloudService {
         boolean loginSuccessful = false;
         // pyicloud 286
         if (this.session.getSessionToken() != null && !forceRefresh) {
-            // this.data = validateToken();
+            this.data = validateToken();
             LOGGER.info("Token is valid.");
             loginSuccessful = true;
         }

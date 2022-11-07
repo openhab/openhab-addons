@@ -50,8 +50,6 @@ public class ICloudSession {
 
     private final HttpClient client;
 
-    private final CustomCookieStore cookieStore;
-
     private final List<Pair<String, String>> headers = new ArrayList();
 
     private ICloudSessionData data = new ICloudSessionData();
@@ -69,10 +67,9 @@ public class ICloudSession {
             this.data = this.gson.fromJson(storedData, ICloudSessionData.class);
         }
         this.stateStorage = stateStorage;
-        this.cookieStore = new CustomCookieStore(stateStorage);
         this.client = HttpClient.newBuilder().version(Version.HTTP_1_1).followRedirects(Redirect.NORMAL)
                 .connectTimeout(Duration.ofSeconds(20))
-                .cookieHandler(new CookieManager(this.cookieStore, CookiePolicy.ACCEPT_ALL)).build();
+                .cookieHandler(new CookieManager(new CustomCookieStore(), CookiePolicy.ACCEPT_ALL)).build();
     }
 
     public String post(String url, String kwargs, List<Pair<String, String>> overrideHeaders)
@@ -131,7 +128,6 @@ public class ICloudSession {
         this.data.scnt = response.headers().firstValue("scnt").orElse(getScnt());
 
         this.stateStorage.put(SESSION_DATA_KEY, this.gson.toJson(this.data));
-        this.cookieStore.saveState();
 
         return response.body().toString();
     }
