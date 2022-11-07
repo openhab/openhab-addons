@@ -89,9 +89,13 @@ public class ICloudService {
         boolean loginSuccessful = false;
         // pyicloud 286
         if (this.session.getSessionToken() != null && !forceRefresh) {
-            this.data = validateToken();
-            LOGGER.info("Token is valid.");
-            loginSuccessful = true;
+            try {
+                this.data = validateToken();
+                LOGGER.info("Token is valid.");
+                loginSuccessful = true;
+            } catch (Exception ex) {
+                LOGGER.debug("Token is not valid. Attemping new login.");
+            }
         }
 
         if (!loginSuccessful && service != null) {
@@ -200,13 +204,9 @@ public class ICloudService {
     private Map<String, Object> validateToken() throws IOException, InterruptedException {
 
         LOGGER.debug("Checking session token validity");
-        try {
-            String result = this.session.post(SETUP_ENDPOINT + "/validate", null, null);
-            LOGGER.debug("Session token is still valid");
-            return this.gson.fromJson(result, Map.class);
-        } catch (ICloudAPIResponseException ex) {
-            return null;
-        }
+        String result = this.session.post(SETUP_ENDPOINT + "/validate", null, null);
+        LOGGER.debug("Session token is still valid");
+        return this.gson.fromJson(result, Map.class);
     }
 
     public boolean requires2fa() {
