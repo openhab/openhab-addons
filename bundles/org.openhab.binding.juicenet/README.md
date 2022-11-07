@@ -183,7 +183,7 @@ slots:
                 - component: f7-chip
                   config:
                     visible: =(items[props.prefix + "_DeviceState"].state === "charging")
-                    text: '="Power: " + items[props.prefix + "_Power"].state'
+                    text: '="Power: " + items[props.prefix + "_ChargingPower"].state'
                     iconF7: bolt_fill
                     media-bg-color: blue
                     bg-color: gray

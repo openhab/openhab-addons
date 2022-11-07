@@ -17,7 +17,6 @@ import static org.openhab.binding.juicenet.internal.JuiceNetBindingConstants.*;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoField;
-import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -61,15 +60,14 @@ public class JuiceNetDeviceHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(JuiceNetDeviceHandler.class);
 
-    protected final TimeZoneProvider timeZoneProvider;
+    private final TimeZoneProvider timeZoneProvider;
 
     // properties
-    protected String id = "";
-    protected String name = "";
+    private String name = "";
 
-    protected String token = "";
-    protected long targetTimeTou = 0;
-    protected long lastInfoTimestamp = 0;
+    private String token = "";
+    private long targetTimeTou = 0;
+    private long lastInfoTimestamp = 0;
 
     JuiceNetApiDeviceStatus deviceStatus = new JuiceNetApiDeviceStatus();
     JuiceNetApiInfo deviceInfo = new JuiceNetApiInfo();
@@ -87,9 +85,7 @@ public class JuiceNetDeviceHandler extends BaseThingHandler {
         this.token = token;
 
         if (!name.equals(this.name)) {
-            Map<String, String> properties = editProperties();
-            properties.put(PROPERTY_NAME, name);
-            this.updateProperties(properties);
+            updateProperty(PROPERTY_NAME, name);
             this.name = name;
         }
 
@@ -106,11 +102,9 @@ public class JuiceNetDeviceHandler extends BaseThingHandler {
         String stringId = configuration.get(PARAMETER_UNIT_ID).toString();
         if (stringId.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "Must include an id in the configuraiton for the device.");
+                    "@text/offline.configuration-error.id-missing");
             return;
         }
-
-        this.id = stringId;
 
         updateStatus(ThingStatus.UNKNOWN);
 
@@ -136,7 +130,7 @@ public class JuiceNetDeviceHandler extends BaseThingHandler {
 
         if (token.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "Device does not exist as part of this JuiceNet Account");
+                    "@text/offline.configuration-error.non-existent-device");
             return;
         }
 

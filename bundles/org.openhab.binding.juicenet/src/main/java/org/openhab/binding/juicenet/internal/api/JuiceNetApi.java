@@ -58,7 +58,7 @@ public class JuiceNetApi {
     protected HttpClient httpClient;
     protected ThingUID bridgeUID;
 
-    public enum API_COMMAND {
+    public enum ApiCommand {
         GET_ACCOUNT_UNITS("get_account_units", API_ACCOUNT),
         GET_STATE("get_state", API_DEVICE),
         SET_CHARGING_LIMIT("set_limit", API_DEVICE),
@@ -70,7 +70,7 @@ public class JuiceNetApi {
         final String command;
         final String uri;
 
-        API_COMMAND(String command, String uri) {
+        ApiCommand(String command, String uri) {
             this.command = command;
             this.uri = uri;
         }
@@ -88,7 +88,7 @@ public class JuiceNetApi {
     public List<JuiceNetApiDevice> queryDeviceList() throws JuiceNetApiException, InterruptedException {
         JuiceNetApiDevice[] listDevices;
         try {
-            JsonObject jsonResponse = postApiCommand(API_COMMAND.GET_ACCOUNT_UNITS, null);
+            JsonObject jsonResponse = postApiCommand(ApiCommand.GET_ACCOUNT_UNITS, null);
 
             listDevices = new Gson().fromJson(jsonResponse.get("units").getAsJsonArray(), JuiceNetApiDevice[].class);
         } catch (JsonSyntaxException e) {
@@ -103,7 +103,7 @@ public class JuiceNetApi {
     public JuiceNetApiDeviceStatus queryDeviceStatus(String token) throws JuiceNetApiException, InterruptedException {
         JuiceNetApiDeviceStatus deviceStatus;
         try {
-            JsonObject jsonResponse = postApiCommand(API_COMMAND.GET_STATE, token);
+            JsonObject jsonResponse = postApiCommand(ApiCommand.GET_STATE, token);
 
             deviceStatus = new Gson().fromJson(jsonResponse, JuiceNetApiDeviceStatus.class);
         } catch (JsonSyntaxException e) {
@@ -118,7 +118,7 @@ public class JuiceNetApi {
     public JuiceNetApiInfo queryInfo(String token) throws InterruptedException, JuiceNetApiException {
         JuiceNetApiInfo info;
         try {
-            JsonObject jsonResponse = postApiCommand(API_COMMAND.GET_INFO, token);
+            JsonObject jsonResponse = postApiCommand(ApiCommand.GET_INFO, token);
 
             info = new Gson().fromJson(jsonResponse, JuiceNetApiInfo.class);
         } catch (JsonSyntaxException e) {
@@ -133,7 +133,7 @@ public class JuiceNetApi {
     public JuiceNetApiTouSchedule queryTOUSchedule(String token) throws InterruptedException, JuiceNetApiException {
         JuiceNetApiTouSchedule deviceTouSchedule;
         try {
-            JsonObject jsonResponse = postApiCommand(API_COMMAND.GET_SCHEDULE, token);
+            JsonObject jsonResponse = postApiCommand(ApiCommand.GET_SCHEDULE, token);
 
             deviceTouSchedule = new Gson().fromJson(jsonResponse, JuiceNetApiTouSchedule.class);
         } catch (JsonSyntaxException e) {
@@ -153,7 +153,7 @@ public class JuiceNetApi {
         params.put("override_time", Long.toString(energy_at_plugin));
         params.put("energy_to_add", Integer.toString(energy_at_plugin));
 
-        postApiCommand(API_COMMAND.SET_OVERRIDE, token, params);
+        postApiCommand(ApiCommand.SET_OVERRIDE, token, params);
     }
 
     public void setCurrentLimit(String token, int limit) throws InterruptedException, JuiceNetApiException {
@@ -161,17 +161,17 @@ public class JuiceNetApi {
 
         params.put("amperage", Integer.toString(limit));
 
-        postApiCommand(API_COMMAND.SET_OVERRIDE, token, params);
+        postApiCommand(ApiCommand.SET_OVERRIDE, token, params);
     }
 
-    public JsonObject postApiCommand(API_COMMAND cmd, @Nullable String token)
+    public JsonObject postApiCommand(ApiCommand cmd, @Nullable String token)
             throws InterruptedException, JuiceNetApiException {
         Map<String, Object> params = new HashMap<>();
 
         return postApiCommand(cmd, token, params);
     }
 
-    public JsonObject postApiCommand(API_COMMAND cmd, @Nullable String token, Map<String, Object> params)
+    public JsonObject postApiCommand(ApiCommand cmd, @Nullable String token, Map<String, Object> params)
             throws InterruptedException, JuiceNetApiException {
         Request request = httpClient.POST(cmd.uri);
         request.header(HttpHeader.CONTENT_TYPE, "application/json");
