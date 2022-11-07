@@ -61,6 +61,7 @@ public class Utils {
     }
 
     public static String getCallbackIP() throws SocketException {
+        // https://stackoverflow.com/questions/901755/how-to-get-the-ip-of-the-computer-on-linux-through-java
         // https://stackoverflow.com/questions/1062041/ip-address-not-obtained-in-java
         for (Enumeration<NetworkInterface> ifaces = NetworkInterface.getNetworkInterfaces(); ifaces
                 .hasMoreElements();) {
