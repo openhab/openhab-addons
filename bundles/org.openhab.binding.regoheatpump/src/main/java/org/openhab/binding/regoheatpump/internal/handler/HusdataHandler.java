@@ -26,6 +26,8 @@ import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.regoheatpump.internal.protocol.RegoConnection;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
@@ -34,6 +36,7 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
@@ -45,13 +48,14 @@ import org.slf4j.LoggerFactory;
  *
  * @author Boris Krivonog - Initial contribution
  */
+@NonNullByDefault
 abstract class HusdataHandler extends BaseThingHandler {
 
     private static final Map<Integer, String> MAPPINGS;
     private final Logger logger = LoggerFactory.getLogger(HusdataHandler.class);
-    private RegoConnection connection;
-    private ScheduledFuture<?> scheduledRefreshFuture;
-    private BufferedReader bufferedReader;
+    private @Nullable RegoConnection connection;
+    private @Nullable ScheduledFuture<?> scheduledRefreshFuture;
+    private @Nullable BufferedReader bufferedReader;
 
     static {
         MAPPINGS = mappings();
@@ -61,12 +65,18 @@ abstract class HusdataHandler extends BaseThingHandler {
         super(thing);
     }
 
-    protected abstract RegoConnection createConnection();
+    protected abstract RegoConnection createConnection() throws IOException;
 
     @Override
     public void initialize() {
         bufferedReader = null;
-        connection = createConnection();
+
+        try {
+            connection = createConnection();
+        } catch (IOException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            return;
+        }
 
         updateStatus(ThingStatus.UNKNOWN);
 
@@ -78,14 +88,16 @@ abstract class HusdataHandler extends BaseThingHandler {
     public void dispose() {
         super.dispose();
 
+        ScheduledFuture<?> scheduledRefreshFuture = this.scheduledRefreshFuture;
+        this.scheduledRefreshFuture = null;
         if (scheduledRefreshFuture != null) {
             scheduledRefreshFuture.cancel(true);
-            scheduledRefreshFuture = null;
         }
 
+        RegoConnection connection = this.connection;
+        this.connection = null;
         if (connection != null) {
             connection.close();
-            connection = null;
         }
     }
 
@@ -112,8 +124,10 @@ abstract class HusdataHandler extends BaseThingHandler {
                     outputStream.flush();
                 }
 
+                BufferedReader bufferedReader = this.bufferedReader;
                 if (bufferedReader == null) {
                     bufferedReader = new BufferedReader(new InputStreamReader(connection.inputStream()));
+                    this.bufferedReader = bufferedReader;
                 }
 
                 final String line = bufferedReader.readLine();

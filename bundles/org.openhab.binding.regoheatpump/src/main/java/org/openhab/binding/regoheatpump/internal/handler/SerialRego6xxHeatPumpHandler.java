@@ -12,6 +12,10 @@
  */
 package org.openhab.binding.regoheatpump.internal.handler;
 
+import java.io.IOException;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.regoheatpump.internal.RegoHeatPumpBindingConstants;
 import org.openhab.binding.regoheatpump.internal.protocol.RegoConnection;
 import org.openhab.binding.regoheatpump.internal.protocol.SerialRegoConnection;
@@ -27,9 +31,10 @@ import org.openhab.core.thing.ThingStatusDetail;
  *
  * @author Boris Krivonog - Initial contribution
  */
+@NonNullByDefault
 public class SerialRego6xxHeatPumpHandler extends Rego6xxHeatPumpHandler {
     private final SerialPortManager serialPortManager;
-    private SerialPortIdentifier serialPortIdentifier;
+    private @Nullable SerialPortIdentifier serialPortIdentifier;
 
     public SerialRego6xxHeatPumpHandler(Thing thing, SerialPortManager serialPortManager) {
         super(thing);
@@ -49,7 +54,11 @@ public class SerialRego6xxHeatPumpHandler extends Rego6xxHeatPumpHandler {
     }
 
     @Override
-    protected RegoConnection createConnection() {
+    protected RegoConnection createConnection() throws IOException {
+        SerialPortIdentifier serialPortIdentifier = this.serialPortIdentifier;
+        if (serialPortIdentifier == null) {
+            throw new IOException("Serial port does not exist");
+        }
         return new SerialRegoConnection(serialPortIdentifier, 19200);
     }
 }

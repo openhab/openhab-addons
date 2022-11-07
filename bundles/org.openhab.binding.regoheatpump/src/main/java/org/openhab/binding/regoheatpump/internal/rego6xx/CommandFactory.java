@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.regoheatpump.internal.rego6xx;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link CommandFactory} is responsible for creating different commands that can
  * be send to a rego 6xx unit.
  *
  * @author Boris Krivonog - Initial contribution
  */
+@NonNullByDefault
 public class CommandFactory {
     private static final byte DEVICE_ADDRESS = (byte) 0x81;
 

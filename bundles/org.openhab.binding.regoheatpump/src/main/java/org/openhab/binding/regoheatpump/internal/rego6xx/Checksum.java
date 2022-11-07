@@ -14,11 +14,14 @@ package org.openhab.binding.regoheatpump.internal.rego6xx;
 
 import java.util.Arrays;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link Checksum} is responsible for calculating checksum of given data.
  *
  * @author Boris Krivonog - Initial contribution
  */
+@NonNullByDefault
 class Checksum {
     static byte calculate(byte[]... lists) {
         return Arrays.stream(lists).reduce((byte) 0, Checksum::calculate, (a, b) -> b);

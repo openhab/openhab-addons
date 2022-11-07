@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.regoheatpump.internal.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.regoheatpump.internal.RegoHeatPumpBindingConstants;
 import org.openhab.binding.regoheatpump.internal.protocol.IpRegoConnection;
 import org.openhab.binding.regoheatpump.internal.protocol.RegoConnection;
@@ -23,6 +24,7 @@ import org.openhab.core.thing.Thing;
  *
  * @author Boris Krivonog - Initial contribution
  */
+@NonNullByDefault
 public class IpHusdataHandler extends HusdataHandler {
     public IpHusdataHandler(Thing thing) {
         super(thing);

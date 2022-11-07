@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.regoheatpump.internal.rego6xx;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link ShortResponseParser} is responsible for parsing short form data format
  * coming from the rego 6xx unit.
  *
  * @author Boris Krivonog - Initial contribution
  */
+@NonNullByDefault
 class ShortResponseParser extends AbstractResponseParser<Short> {
 
     @Override

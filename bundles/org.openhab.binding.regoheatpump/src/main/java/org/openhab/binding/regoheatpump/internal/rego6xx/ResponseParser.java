@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.regoheatpump.internal.rego6xx;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link ResponseParser} is responsible for parsing arbitrary data coming from a rego 6xx unit.
  *
  * @author Boris Krivonog - Initial contribution
  */
+@NonNullByDefault
 public interface ResponseParser<T> {
     public int responseLength();
 

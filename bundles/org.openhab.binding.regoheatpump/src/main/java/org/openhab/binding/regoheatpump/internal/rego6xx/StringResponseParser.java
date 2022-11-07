@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.regoheatpump.internal.rego6xx;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link StringResponseParser} is responsible for parsing long (text) form data format
  * coming from the rego 6xx unit.
  *
  * @author Boris Krivonog - Initial contribution
  */
+@NonNullByDefault
 class StringResponseParser extends AbstractLongResponseParser<String> {
 
     @Override

@@ -15,14 +15,19 @@ package org.openhab.binding.regoheatpump.internal.rego6xx;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link ErrorLine} is responsible for holding information about a single error line.
  *
  * @author Boris Krivonog - Initial contribution
  */
+@NonNullByDefault
 public class ErrorLine {
     private final byte error;
     private final String timestamp;
+
+    public static final ErrorLine NO_ERROR = new ErrorLine((byte) 0, "");
 
     public ErrorLine(byte error, String timestamp) {
         this.error = error;
