@@ -30,6 +30,7 @@ import org.openhab.binding.icloud.internal.configuration.ICloudAccountThingConfi
 import org.openhab.binding.icloud.internal.json.response.ICloudAccountDataResponse;
 import org.openhab.binding.icloud.internal.json.response.ICloudDeviceInformation;
 import org.openhab.core.cache.ExpiringCache;
+import org.openhab.core.storage.Storage;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -53,152 +54,167 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
 
-  private final Logger logger = LoggerFactory.getLogger(ICloudAccountBridgeHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(ICloudAccountBridgeHandler.class);
 
-  private static final int CACHE_EXPIRY = (int) SECONDS.toMillis(10);
+    private static final int CACHE_EXPIRY = (int) SECONDS.toMillis(10);
 
-  private final ICloudDeviceInformationParser deviceInformationParser = new ICloudDeviceInformationParser();
+    private final ICloudDeviceInformationParser deviceInformationParser = new ICloudDeviceInformationParser();
 
-  private @Nullable ICloudService iCloudService;
+    private @Nullable ICloudService iCloudService;
 
-  private @Nullable ExpiringCache<String> iCloudDeviceInformationCache;
+    private @Nullable ExpiringCache<String> iCloudDeviceInformationCache;
 
-  @Nullable
-  ServiceRegistration<?> service;
+    @Nullable
+    ServiceRegistration<?> service;
 
-  private final Object synchronizeRefresh = new Object();
+    private final Object synchronizeRefresh = new Object();
 
-  private List<ICloudDeviceInformationListener> deviceInformationListeners = Collections
-      .synchronizedList(new ArrayList<>());
+    private List<ICloudDeviceInformationListener> deviceInformationListeners = Collections
+            .synchronizedList(new ArrayList<>());
 
-  @Nullable
-  ScheduledFuture<?> refreshJob;
+    @Nullable
+    ScheduledFuture<?> refreshJob;
 
-  public ICloudAccountBridgeHandler(Bridge bridge) {
+    private Storage<String> storage;
 
-    super(bridge);
-  }
+    public ICloudAccountBridgeHandler(Bridge bridge, Storage<String> storage) {
 
-  @Override
-  public void handleCommand(ChannelUID channelUID, Command command) {
-
-    this.logger.trace("Command '{}' received for channel '{}'", command, channelUID);
-
-    if (command instanceof RefreshType) {
-      refreshData();
+        super(bridge);
+        this.storage = storage;
     }
-  }
 
-  @Override
-  public void initialize() {
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
 
-    this.logger.debug("iCloud bridge handler initializing ...");
-    this.iCloudDeviceInformationCache = new ExpiringCache<>(CACHE_EXPIRY, () -> {
-      try {
-        return this.iCloudService.getDevices().refreshClient();
-      } catch (IOException | InterruptedException e) {
-        this.logger.warn("Unable to refresh device data", e);
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-        return null;
-      }
-    });
+        this.logger.trace("Command '{}' received for channel '{}'", command, channelUID);
 
-    startHandler();
-    this.logger.debug("iCloud bridge initialized.");
-  }
-
-  @Override
-  public void handleRemoval() {
-
-    super.handleRemoval();
-  }
-
-  @Override
-  public void dispose() {
-
-    if (this.refreshJob != null) {
-      this.refreshJob.cancel(true);
-    }
-    super.dispose();
-  }
-
-  public void findMyDevice(String deviceId) throws IOException, InterruptedException {
-
-    if (this.iCloudService == null) {
-      this.logger.debug("Can't send Find My Device request, because connection is null!");
-      return;
-    }
-    this.iCloudService.getDevices().playSound(deviceId);
-  }
-
-  public void registerListener(ICloudDeviceInformationListener listener) {
-
-    this.deviceInformationListeners.add(listener);
-  }
-
-  public void unregisterListener(ICloudDeviceInformationListener listener) {
-
-    this.deviceInformationListeners.remove(listener);
-  }
-
-  private void startHandler() {
-
-    try {
-      this.logger.debug("iCloud bridge starting handler ...");
-      ICloudAccountThingConfiguration config = getConfigAs(ICloudAccountThingConfiguration.class);
-      final String localAppleId = config.appleId;
-      final String localPassword = config.password;
-      if (localAppleId != null && localPassword != null) {
-        this.iCloudService = new ICloudService(localAppleId, localPassword);
-      } else {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Apple ID/Password is not set!");
-        return;
-      }
-      this.refreshJob = this.scheduler.scheduleWithFixedDelay(this::refreshData, 0, config.refreshTimeInMinutes,
-          MINUTES);
-
-      this.logger.debug("iCloud bridge handler started.");
-    } catch (Exception e) {
-      this.logger.debug("Something went wrong while constructing the connection object", e);
-      updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
-    }
-  }
-
-  public void refreshData() {
-
-    synchronized (this.synchronizeRefresh) {
-      this.logger.debug("iCloud bridge refreshing data ...");
-
-      String json = this.iCloudDeviceInformationCache.getValue();
-      this.logger.trace("json: {}", json);
-
-      if (json == null) {
-        return;
-      }
-
-      try {
-        ICloudAccountDataResponse iCloudData = this.deviceInformationParser.parse(json);
-        if (iCloudData == null) {
-          return;
+        if (command instanceof RefreshType) {
+            refreshData();
         }
-        int statusCode = Integer.parseUnsignedInt(iCloudData.getICloudAccountStatusCode());
-        if (statusCode == 200) {
-          updateStatus(ThingStatus.ONLINE);
-          informDeviceInformationListeners(iCloudData.getICloudDeviceInformationList());
-        } else {
-          updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-              "Status = " + statusCode + ", Response = " + json);
-        }
-        this.logger.debug("iCloud bridge data refresh complete.");
-      } catch (NumberFormatException | JsonSyntaxException e) {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-            "iCloud response invalid: " + e.getMessage());
-      }
     }
-  }
 
-  private void informDeviceInformationListeners(List<ICloudDeviceInformation> deviceInformationList) {
+    @Override
+    public void initialize() {
 
-    this.deviceInformationListeners.forEach(discovery -> discovery.deviceInformationUpdate(deviceInformationList));
-  }
+        this.logger.debug("iCloud bridge handler initializing ...");
+        this.iCloudDeviceInformationCache = new ExpiringCache<>(CACHE_EXPIRY, () -> {
+            try {
+                if (!this.iCloudService.isTrustedSession()) {
+                    this.logger.debug("Trying to authenticate token...");
+                    ICloudAccountThingConfiguration config = getConfigAs(ICloudAccountThingConfiguration.class);
+                    if (config.code == null || config.code.isBlank()) {
+                        throw new IOException("Provide code in thing config.");
+                    }
+                    boolean result = this.iCloudService.validate2faCode(config.code);
+                    if (!result)
+                        throw new IOException("Cannot authenticate token");
+
+                }
+                return this.iCloudService.getDevices().refreshClient();
+            } catch (IOException | InterruptedException e) {
+                this.logger.warn("Unable to refresh device data", e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                return null;
+            }
+        });
+
+        startHandler();
+        this.logger.debug("iCloud bridge initialized.");
+    }
+
+    @Override
+    public void handleRemoval() {
+
+        super.handleRemoval();
+    }
+
+    @Override
+    public void dispose() {
+
+        if (this.refreshJob != null) {
+            this.refreshJob.cancel(true);
+        }
+        super.dispose();
+    }
+
+    public void findMyDevice(String deviceId) throws IOException, InterruptedException {
+
+        if (this.iCloudService == null) {
+            this.logger.debug("Can't send Find My Device request, because connection is null!");
+            return;
+        }
+        this.iCloudService.getDevices().playSound(deviceId);
+    }
+
+    public void registerListener(ICloudDeviceInformationListener listener) {
+
+        this.deviceInformationListeners.add(listener);
+    }
+
+    public void unregisterListener(ICloudDeviceInformationListener listener) {
+
+        this.deviceInformationListeners.remove(listener);
+    }
+
+    private void startHandler() {
+
+        try {
+            this.logger.debug("iCloud bridge starting handler ...");
+            ICloudAccountThingConfiguration config = getConfigAs(ICloudAccountThingConfiguration.class);
+            final String localAppleId = config.appleId;
+            final String localPassword = config.password;
+            if (localAppleId != null && localPassword != null) {
+                this.iCloudService = new ICloudService(localAppleId, localPassword, this.storage);
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Apple ID/Password is not set!");
+                return;
+            }
+            this.refreshJob = this.scheduler.scheduleWithFixedDelay(this::refreshData, 0, config.refreshTimeInMinutes,
+                    MINUTES);
+
+            this.logger.debug("iCloud bridge handler started.");
+        } catch (Exception e) {
+            this.logger.debug("Something went wrong while constructing the connection object", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+        }
+    }
+
+    public void refreshData() {
+
+        synchronized (this.synchronizeRefresh) {
+            this.logger.debug("iCloud bridge refreshing data ...");
+
+            String json = this.iCloudDeviceInformationCache.getValue();
+            this.logger.trace("json: {}", json);
+
+            if (json == null) {
+                return;
+            }
+
+            try {
+                ICloudAccountDataResponse iCloudData = this.deviceInformationParser.parse(json);
+                if (iCloudData == null) {
+                    return;
+                }
+                int statusCode = Integer.parseUnsignedInt(iCloudData.getICloudAccountStatusCode());
+                if (statusCode == 200) {
+                    updateStatus(ThingStatus.ONLINE);
+                    informDeviceInformationListeners(iCloudData.getICloudDeviceInformationList());
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "Status = " + statusCode + ", Response = " + json);
+                }
+                this.logger.debug("iCloud bridge data refresh complete.");
+            } catch (NumberFormatException | JsonSyntaxException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "iCloud response invalid: " + e.getMessage());
+            }
+        }
+    }
+
+    private void informDeviceInformationListeners(List<ICloudDeviceInformation> deviceInformationList) {
+
+        this.deviceInformationListeners.forEach(discovery -> discovery.deviceInformationUpdate(deviceInformationList));
+    }
 }

@@ -37,51 +37,51 @@ import com.google.gson.GsonBuilder;
  */
 @NonNullByDefault
 public class ICloudConnection {
-  private static final String ICLOUD_URL = "https://www.icloud.com";
+    private static final String ICLOUD_URL = "https://www.icloud.com";
 
-  private static final String ICLOUD_API_BASE_URL = "https://fmipmobile.icloud.com";
+    private static final String ICLOUD_API_BASE_URL = "https://fmipmobile.icloud.com";
 
-  private static final String ICLOUD_API_URL = ICLOUD_API_BASE_URL + "/fmipservice/device/";
+    private static final String ICLOUD_API_URL = ICLOUD_API_BASE_URL + "/fmipservice/device/";
 
-  private static final String ICLOUD_API_COMMAND_PING_DEVICE = "/playSound";
+    private static final String ICLOUD_API_COMMAND_PING_DEVICE = "/playSound";
 
-  private static final String ICLOUD_API_COMMAND_REQUEST_DATA = "/initClient";
+    private static final String ICLOUD_API_COMMAND_REQUEST_DATA = "/initClient";
 
-  private static final int SOCKET_TIMEOUT = 15;
+    private static final int SOCKET_TIMEOUT = 15;
 
-  private final Gson gson = new GsonBuilder().create();
+    private final Gson gson = new GsonBuilder().create();
 
-  private final String iCloudDataRequest = this.gson.toJson(ICloudAccountDataRequest.defaultInstance());
+    private final String iCloudDataRequest = this.gson.toJson(ICloudAccountDataRequest.defaultInstance());
 
-  private final String authorization;
+    private final String authorization;
 
-  private final String iCloudDataRequestURL;
+    private final String iCloudDataRequestURL;
 
-  private final String iCloudFindMyDeviceURL;
+    private final String iCloudFindMyDeviceURL;
 
-  private ICloudConnection(String appleId, String password) throws URISyntaxException {
+    private ICloudConnection(String appleId, String password) throws URISyntaxException {
 
-    this.authorization = new String(Base64.getEncoder().encode((appleId + ":" + password).getBytes()), UTF_8);
-    this.iCloudDataRequestURL = new URI(ICLOUD_API_URL + appleId + ICLOUD_API_COMMAND_REQUEST_DATA).toASCIIString();
-    this.iCloudFindMyDeviceURL = new URI(ICLOUD_API_URL + appleId + ICLOUD_API_COMMAND_PING_DEVICE).toASCIIString();
-  }
+        this.authorization = new String(Base64.getEncoder().encode((appleId + ":" + password).getBytes()), UTF_8);
+        this.iCloudDataRequestURL = new URI(ICLOUD_API_URL + appleId + ICLOUD_API_COMMAND_REQUEST_DATA).toASCIIString();
+        this.iCloudFindMyDeviceURL = new URI(ICLOUD_API_URL + appleId + ICLOUD_API_COMMAND_PING_DEVICE).toASCIIString();
+    }
 
-  /***
-   * Sends a "find my device" request.
-   *
-   * @throws IOException
-   */
-  private void findMyDevice(String id) throws IOException {
+    /***
+     * Sends a "find my device" request.
+     *
+     * @throws IOException
+     */
+    private void findMyDevice(String id) throws IOException {
 
-    callApi(this.iCloudFindMyDeviceURL, this.gson.toJson(new ICloudFindMyDeviceRequest(id)));
-  }
+        callApi(this.iCloudFindMyDeviceURL, this.gson.toJson(new ICloudFindMyDeviceRequest(id)));
+    }
 
-  private String requestDeviceStatusJSON() throws IOException {
+    private String requestDeviceStatusJSON() throws IOException {
 
-    return callApi(this.iCloudDataRequestURL, this.iCloudDataRequest);
-  }
+        return callApi(this.iCloudDataRequestURL, this.iCloudDataRequest);
+    }
 
-  private String callApi(String url, String payload) throws IOException {
+    private String callApi(String url, String payload) throws IOException {
 
     // @formatter:off
         return HttpRequestBuilder.postTo(url)
@@ -100,5 +100,5 @@ public class ICloudConnection {
             .withContent(payload)
             .getContentAsString();
         // @formatter:on
-  }
+    }
 }

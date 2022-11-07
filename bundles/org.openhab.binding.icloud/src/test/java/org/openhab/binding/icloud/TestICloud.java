@@ -1,3 +1,15 @@
+/**
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.icloud;
 
 import java.io.File;
@@ -11,43 +23,43 @@ import org.openhab.binding.icloud.internal.json.response.ICloudAccountDataRespon
 import org.openhab.core.storage.json.internal.JsonStorage;
 
 /**
- * TODO simon This type ...
  *
+ * TODO
+ *
+ * @author Simon Spielmann
  */
-
 public class TestICloud {
 
-  private final String E_MAIL = System.getProperty("icloud.test.email");
+    private final String E_MAIL = System.getProperty("icloud.test.email");
 
-  private final String PW = System.getProperty("icloud.test.pw");
+    private final String PW = System.getProperty("icloud.test.pw");
 
-  private final String DEVICE_ID = System.getProperty("icloud.test.device");
+    private final String DEVICE_ID = System.getProperty("icloud.test.device");
 
-  @Test
-  public void testAuth() throws IOException, InterruptedException {
+    @Test
+    public void testAuth() throws IOException, InterruptedException {
 
-    File jsonStorageFile = new File(System.getProperty("user.home"), "openhab.json");
-    System.out.println(jsonStorageFile.toString());
+        File jsonStorageFile = new File(System.getProperty("user.home"), "openhab.json");
+        System.out.println(jsonStorageFile.toString());
 
-    JsonStorage<String> stateStorage = new JsonStorage<String>(jsonStorageFile, TestICloud.class.getClassLoader(), 2,
-        1000, 1000);
+        JsonStorage<String> stateStorage = new JsonStorage<String>(jsonStorageFile, TestICloud.class.getClassLoader(),
+                2, 1000, 1000);
 
-    ICloudService service = new ICloudService(this.E_MAIL, this.PW, stateStorage);
-    if (service.requires2fa()) {
-      System.out.print("Code: ");
-      String code = new Scanner(System.in).nextLine();
-      System.out.println(service.validate2faCode(code));
-      if (!service.isTrustedSession()) {
-        service.trustSession();
-      }
-      if (!service.isTrustedSession()) {
-        System.err.println("Trust failed!!!");
-      }
+        ICloudService service = new ICloudService(this.E_MAIL, this.PW, stateStorage);
+        if (service.requires2fa()) {
+            System.out.print("Code: ");
+            String code = new Scanner(System.in).nextLine();
+            System.out.println(service.validate2faCode(code));
+            if (!service.isTrustedSession()) {
+                service.trustSession();
+            }
+            if (!service.isTrustedSession()) {
+                System.err.println("Trust failed!!!");
+            }
 
-      ICloudAccountDataResponse deviceInfo = new ICloudDeviceInformationParser()
-          .parse(service.getDevices().refreshClient());
+        }
+        ICloudAccountDataResponse deviceInfo = new ICloudDeviceInformationParser()
+                .parse(service.getDevices().refreshClient());
+        stateStorage.flush();
     }
-    stateStorage.flush();
-  }
-
 }

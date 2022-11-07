@@ -63,174 +63,174 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDeviceInformationListener {
-  private final Logger logger = LoggerFactory.getLogger(ICloudDeviceHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(ICloudDeviceHandler.class);
 
-  private @Nullable String deviceId;
+    private @Nullable String deviceId;
 
-  private @Nullable ICloudAccountBridgeHandler icloudAccount;
+    private @Nullable ICloudAccountBridgeHandler icloudAccount;
 
-  public ICloudDeviceHandler(Thing thing) {
+    public ICloudDeviceHandler(Thing thing) {
 
-    super(thing);
-  }
-
-  @Override
-  public void deviceInformationUpdate(List<ICloudDeviceInformation> deviceInformationList) {
-
-    ICloudDeviceInformation deviceInformationRecord = getDeviceInformationRecord(deviceInformationList);
-    if (deviceInformationRecord != null) {
-      if (deviceInformationRecord.getDeviceStatus() == 200) {
-        updateStatus(ONLINE);
-      } else {
-        updateStatus(OFFLINE, COMMUNICATION_ERROR, "Reported offline by iCloud webservice");
-      }
-
-      updateState(BATTERY_STATUS, new StringType(deviceInformationRecord.getBatteryStatus()));
-
-      Double batteryLevel = deviceInformationRecord.getBatteryLevel();
-      if (batteryLevel != Double.NaN) {
-        updateState(BATTERY_LEVEL, new DecimalType(deviceInformationRecord.getBatteryLevel() * 100));
-        updateState(LOW_BATTERY, batteryLevel < 0.2 ? OnOffType.ON : OnOffType.OFF);
-      }
-
-      if (deviceInformationRecord.getLocation() != null) {
-        updateLocationRelatedStates(deviceInformationRecord);
-      }
-    } else {
-      updateStatus(OFFLINE, CONFIGURATION_ERROR, "The device is not included in the current account");
-    }
-  }
-
-  @Override
-  public void initialize() {
-
-    Bridge bridge = getBridge();
-    Object bridgeStatus = (bridge == null) ? null : bridge.getStatus();
-    this.logger.debug("initializeThing thing [{}]; bridge status: [{}]", getThing().getUID(), bridgeStatus);
-
-    ICloudDeviceThingConfiguration configuration = getConfigAs(ICloudDeviceThingConfiguration.class);
-    this.deviceId = configuration.deviceId;
-
-    ICloudAccountBridgeHandler handler = getIcloudAccount();
-    if (handler != null) {
-      refreshData();
-    } else {
-      updateStatus(OFFLINE, BRIDGE_UNINITIALIZED, "Bridge not found");
-    }
-  }
-
-  private void refreshData() {
-
-    ICloudAccountBridgeHandler bridge = getIcloudAccount();
-    if (bridge != null) {
-      bridge.refreshData();
-    }
-  }
-
-  @Override
-  public void handleCommand(ChannelUID channelUID, Command command) {
-
-    this.logger.trace("Command '{}' received for channel '{}'", command, channelUID);
-
-    ICloudAccountBridgeHandler bridge = getIcloudAccount();
-    if (bridge == null) {
-      this.logger.debug("No bridge found, ignoring command");
-      return;
+        super(thing);
     }
 
-    String channelId = channelUID.getId();
-    if (channelId.equals(FIND_MY_PHONE)) {
-      if (command == OnOffType.ON) {
-        try {
-          final String deviceId = this.deviceId;
-          if (deviceId == null) {
-            this.logger.debug("Can't send Find My Device request, because deviceId is null!");
-            return;
-          }
-          bridge.findMyDevice(deviceId);
-        } catch (IOException | InterruptedException e) {
-          this.logger.warn("Unable to execute find my device request", e);
+    @Override
+    public void deviceInformationUpdate(List<ICloudDeviceInformation> deviceInformationList) {
+
+        ICloudDeviceInformation deviceInformationRecord = getDeviceInformationRecord(deviceInformationList);
+        if (deviceInformationRecord != null) {
+            if (deviceInformationRecord.getDeviceStatus() == 200) {
+                updateStatus(ONLINE);
+            } else {
+                updateStatus(OFFLINE, COMMUNICATION_ERROR, "Reported offline by iCloud webservice");
+            }
+
+            updateState(BATTERY_STATUS, new StringType(deviceInformationRecord.getBatteryStatus()));
+
+            Double batteryLevel = deviceInformationRecord.getBatteryLevel();
+            if (batteryLevel != Double.NaN) {
+                updateState(BATTERY_LEVEL, new DecimalType(deviceInformationRecord.getBatteryLevel() * 100));
+                updateState(LOW_BATTERY, batteryLevel < 0.2 ? OnOffType.ON : OnOffType.OFF);
+            }
+
+            if (deviceInformationRecord.getLocation() != null) {
+                updateLocationRelatedStates(deviceInformationRecord);
+            }
+        } else {
+            updateStatus(OFFLINE, CONFIGURATION_ERROR, "The device is not included in the current account");
         }
-        updateState(FIND_MY_PHONE, OnOffType.OFF);
-      }
     }
 
-    if (command instanceof RefreshType) {
-      bridge.refreshData();
-    }
-  }
+    @Override
+    public void initialize() {
 
-  @Override
-  public void dispose() {
+        Bridge bridge = getBridge();
+        Object bridgeStatus = (bridge == null) ? null : bridge.getStatus();
+        this.logger.debug("initializeThing thing [{}]; bridge status: [{}]", getThing().getUID(), bridgeStatus);
 
-    ICloudAccountBridgeHandler bridge = getIcloudAccount();
-    if (bridge != null) {
-      bridge.unregisterListener(this);
-    }
-    super.dispose();
-  }
+        ICloudDeviceThingConfiguration configuration = getConfigAs(ICloudDeviceThingConfiguration.class);
+        this.deviceId = configuration.deviceId;
 
-  private void updateLocationRelatedStates(ICloudDeviceInformation deviceInformationRecord) {
-
-    DecimalType latitude = new DecimalType(deviceInformationRecord.getLocation().getLatitude());
-    DecimalType longitude = new DecimalType(deviceInformationRecord.getLocation().getLongitude());
-    DecimalType altitude = new DecimalType(deviceInformationRecord.getLocation().getAltitude());
-    DecimalType accuracy = new DecimalType(deviceInformationRecord.getLocation().getHorizontalAccuracy());
-
-    PointType location = new PointType(latitude, longitude, altitude);
-
-    updateState(LOCATION, location);
-    updateState(LOCATION_ACCURACY, accuracy);
-    updateState(LOCATION_LASTUPDATE, getLastLocationUpdateDateTimeState(deviceInformationRecord));
-  }
-
-  private @Nullable ICloudDeviceInformation getDeviceInformationRecord(
-      List<ICloudDeviceInformation> deviceInformationList) {
-
-    this.logger.debug("Device: [{}]", this.deviceId);
-
-    for (ICloudDeviceInformation deviceInformationRecord : deviceInformationList) {
-      String currentId = deviceInformationRecord.getId();
-
-      this.logger.debug("Current data element: [id = {}]", currentId);
-
-      if (currentId != null && currentId.equals(this.deviceId)) {
-        return deviceInformationRecord;
-      }
+        ICloudAccountBridgeHandler handler = getIcloudAccount();
+        if (handler != null) {
+            refreshData();
+        } else {
+            updateStatus(OFFLINE, BRIDGE_UNINITIALIZED, "Bridge not found");
+        }
     }
 
-    this.logger.debug("Unable to find device data.");
-    return null;
-  }
+    private void refreshData() {
 
-  private State getLastLocationUpdateDateTimeState(ICloudDeviceInformation deviceInformationRecord) {
-
-    State dateTime = UnDefType.UNDEF;
-
-    if (deviceInformationRecord.getLocation().getTimeStamp() > 0) {
-      Date date = new Date(deviceInformationRecord.getLocation().getTimeStamp());
-      ZonedDateTime zonedDateTime = ZonedDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
-      dateTime = new DateTimeType(zonedDateTime);
+        ICloudAccountBridgeHandler bridge = getIcloudAccount();
+        if (bridge != null) {
+            bridge.refreshData();
+        }
     }
 
-    return dateTime;
-  }
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
 
-  private @Nullable ICloudAccountBridgeHandler getIcloudAccount() {
+        this.logger.trace("Command '{}' received for channel '{}'", command, channelUID);
 
-    if (this.icloudAccount == null) {
-      Bridge bridge = getBridge();
-      if (bridge == null) {
+        ICloudAccountBridgeHandler bridge = getIcloudAccount();
+        if (bridge == null) {
+            this.logger.debug("No bridge found, ignoring command");
+            return;
+        }
+
+        String channelId = channelUID.getId();
+        if (channelId.equals(FIND_MY_PHONE)) {
+            if (command == OnOffType.ON) {
+                try {
+                    final String deviceId = this.deviceId;
+                    if (deviceId == null) {
+                        this.logger.debug("Can't send Find My Device request, because deviceId is null!");
+                        return;
+                    }
+                    bridge.findMyDevice(deviceId);
+                } catch (IOException | InterruptedException e) {
+                    this.logger.warn("Unable to execute find my device request", e);
+                }
+                updateState(FIND_MY_PHONE, OnOffType.OFF);
+            }
+        }
+
+        if (command instanceof RefreshType) {
+            bridge.refreshData();
+        }
+    }
+
+    @Override
+    public void dispose() {
+
+        ICloudAccountBridgeHandler bridge = getIcloudAccount();
+        if (bridge != null) {
+            bridge.unregisterListener(this);
+        }
+        super.dispose();
+    }
+
+    private void updateLocationRelatedStates(ICloudDeviceInformation deviceInformationRecord) {
+
+        DecimalType latitude = new DecimalType(deviceInformationRecord.getLocation().getLatitude());
+        DecimalType longitude = new DecimalType(deviceInformationRecord.getLocation().getLongitude());
+        DecimalType altitude = new DecimalType(deviceInformationRecord.getLocation().getAltitude());
+        DecimalType accuracy = new DecimalType(deviceInformationRecord.getLocation().getHorizontalAccuracy());
+
+        PointType location = new PointType(latitude, longitude, altitude);
+
+        updateState(LOCATION, location);
+        updateState(LOCATION_ACCURACY, accuracy);
+        updateState(LOCATION_LASTUPDATE, getLastLocationUpdateDateTimeState(deviceInformationRecord));
+    }
+
+    private @Nullable ICloudDeviceInformation getDeviceInformationRecord(
+            List<ICloudDeviceInformation> deviceInformationList) {
+
+        this.logger.debug("Device: [{}]", this.deviceId);
+
+        for (ICloudDeviceInformation deviceInformationRecord : deviceInformationList) {
+            String currentId = deviceInformationRecord.getId();
+
+            this.logger.debug("Current data element: [id = {}]", currentId);
+
+            if (currentId != null && currentId.equals(this.deviceId)) {
+                return deviceInformationRecord;
+            }
+        }
+
+        this.logger.debug("Unable to find device data.");
         return null;
-      }
-      ThingHandler handler = bridge.getHandler();
-      if (handler instanceof ICloudAccountBridgeHandler) {
-        this.icloudAccount = (ICloudAccountBridgeHandler) handler;
-        this.icloudAccount.registerListener(this);
-      } else {
-        return null;
-      }
     }
-    return this.icloudAccount;
-  }
+
+    private State getLastLocationUpdateDateTimeState(ICloudDeviceInformation deviceInformationRecord) {
+
+        State dateTime = UnDefType.UNDEF;
+
+        if (deviceInformationRecord.getLocation().getTimeStamp() > 0) {
+            Date date = new Date(deviceInformationRecord.getLocation().getTimeStamp());
+            ZonedDateTime zonedDateTime = ZonedDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
+            dateTime = new DateTimeType(zonedDateTime);
+        }
+
+        return dateTime;
+    }
+
+    private @Nullable ICloudAccountBridgeHandler getIcloudAccount() {
+
+        if (this.icloudAccount == null) {
+            Bridge bridge = getBridge();
+            if (bridge == null) {
+                return null;
+            }
+            ThingHandler handler = bridge.getHandler();
+            if (handler instanceof ICloudAccountBridgeHandler) {
+                this.icloudAccount = (ICloudAccountBridgeHandler) handler;
+                this.icloudAccount.registerListener(this);
+            } else {
+                return null;
+            }
+        }
+        return this.icloudAccount;
+    }
 }
