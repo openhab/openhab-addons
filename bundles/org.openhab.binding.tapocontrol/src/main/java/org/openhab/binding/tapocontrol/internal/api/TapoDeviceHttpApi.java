@@ -313,6 +313,8 @@ public class TapoDeviceHttpApi {
      */
     protected void sendAsyncRequest(String url, String payload, String command) {
         logger.trace("({}) sendAsncRequest to '{}' with cookie '{}'", uid, url, this.cookie);
+        logger.trace("({}) command/payload: '{}''{}'", uid, command, payload);
+
         try {
             Request httpRequest = bridge.getHttpClient().newRequest(url).method(HttpMethod.POST.toString());
 
@@ -344,22 +346,27 @@ public class TapoDeviceHttpApi {
                     } else {
                         /* request succesfull */
                         String rBody = getContentAsString();
-                        rBody = decryptResponse(rBody);
-                        logger.trace("({}) requestCompleted '{}'", uid, rBody);
-                        /* handle result */
-                        switch (command) {
-                            case DEVICE_CMD_SETINFO:
-                                handleSuccessResponse(rBody);
-                                break;
-                            case DEVICE_CMD_GETINFO:
-                                handleDeviceResult(rBody);
-                                break;
-                            case DEVICE_CMD_GETENERGY:
-                                handleEnergyResult(rBody);
-                                break;
-                            case DEVICE_CMD_CUSTOM:
-                                handleCustomResponse(rBody);
-                                break;
+                        logger.trace("({}) receivedRespose '{}'", uid, rBody);
+                        if (!hasErrorCode(rBody)) {
+                            rBody = decryptResponse(rBody);
+                            logger.trace("({}) decryptedResponse '{}'", uid, rBody);
+                            /* handle result */
+                            switch (command) {
+                                case DEVICE_CMD_SETINFO:
+                                    handleSuccessResponse(rBody);
+                                    break;
+                                case DEVICE_CMD_GETINFO:
+                                    handleDeviceResult(rBody);
+                                    break;
+                                case DEVICE_CMD_GETENERGY:
+                                    handleEnergyResult(rBody);
+                                    break;
+                                case DEVICE_CMD_CUSTOM:
+                                    handleCustomResponse(rBody);
+                                    break;
+                            }
+                        } else {
+                            getErrorCode(rBody);
                         }
                     }
                 }
@@ -409,6 +416,24 @@ public class TapoDeviceHttpApi {
         } catch (Exception e) {
             return ERR_HTTP_RESPONSE;
         }
+    }
+
+    /**
+     * Check for JsonObject "errorcode" and if this is > 0 (no Error)
+     * 
+     * @param responseBody
+     * @return true if is js errorcode > 0; false if there is no "errorcode"
+     */
+    protected Boolean hasErrorCode(String responseBody) {
+        if (isValidJson(responseBody)) {
+            JsonObject jsonObject = gson.fromJson(responseBody, JsonObject.class);
+            /* get errocode (0=success) */
+            Integer errorCode = jsonObjectToInt(jsonObject, "error_code", ERR_JSON_DECODE_FAIL);
+            if (errorCode > 0) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
