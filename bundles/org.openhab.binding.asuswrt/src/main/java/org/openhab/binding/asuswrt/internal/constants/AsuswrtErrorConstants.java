@@ -31,4 +31,5 @@ public class AsuswrtErrorConstants {
     public static final String ERR_JSON_FOMRAT = "Unexpected or malfomrated JSON-response";
     public static final String ERR_JSON_UNKNOWN_MEMBER = "JSON member not found";
     public static final String ERR_INVALID_MAC_ADDRESS = "Invalid MAC-Address";
+    public static final String ERR_BRIDGE_OFFLINE = "Bridge is offline";
 }

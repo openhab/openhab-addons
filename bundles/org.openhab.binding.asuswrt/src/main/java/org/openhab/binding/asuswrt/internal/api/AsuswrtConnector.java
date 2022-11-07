@@ -13,12 +13,19 @@
 package org.openhab.binding.asuswrt.internal.api;
 
 import static org.openhab.binding.asuswrt.internal.constants.AsuswrtBindingSettings.*;
+import static org.openhab.binding.asuswrt.internal.constants.AsuswrtErrorConstants.*;
+import static org.openhab.binding.asuswrt.internal.helpers.AsuswrtUtils.*;
+
+import java.net.NoRouteToHostException;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.openhab.binding.asuswrt.internal.structures.AsuswrtConfiguration;
 import org.openhab.binding.asuswrt.internal.structures.AsuswrtCredentials;
 import org.openhab.binding.asuswrt.internal.things.AsuswrtRouter;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,6 +71,7 @@ public class AsuswrtConnector extends AsuswrtHttpClient {
         String payload = "";
 
         logout(); // logout (unset cookie) first
+        router.errorHandler.reset();
 
         logger.trace("({}) perform login to '{}' with '{}'", uid, url, encodedCredentials);
 
@@ -72,7 +80,11 @@ public class AsuswrtConnector extends AsuswrtHttpClient {
         if (response != null) {
             setCookieFromResponse(response);
         }
-        return isValidLogin();
+        if (isValidLogin()) {
+            router.setState(ThingStatus.ONLINE);
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -103,6 +115,7 @@ public class AsuswrtConnector extends AsuswrtHttpClient {
         logger.trace("({}) queryDeviceData", uid);
         Long now = System.currentTimeMillis();
 
+        router.errorHandler.reset();
         checkAuth();
 
         if (now > this.lastQuery + HTTP_QUERY_MIN_GAP_MS) {
@@ -142,6 +155,29 @@ public class AsuswrtConnector extends AsuswrtHttpClient {
     protected void handleHttpSuccessResponse(String responseBody, String command) {
         JsonObject jsonObject = getJsonFromString(responseBody);
         router.dataReceived(jsonObject, command);
+    }
+
+    /**
+     * Handle HTTP-Result Failures
+     * 
+     * @param e Throwable exception
+     * @param payload full payload for debugging
+     */
+    @Override
+    protected void handleHttpResultError(Throwable e, String payload) {
+        super.handleHttpResultError(e, payload);
+        String errorMessage = getValueOrDefault(e.getMessage(), "");
+
+        if (e instanceof TimeoutException || e instanceof NoRouteToHostException) {
+            router.errorHandler.raiseError(ERR_CONN_TIMEOUT, errorMessage);
+            router.setState(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
+        } else if (e instanceof InterruptedException) {
+            router.errorHandler.raiseError(new Exception(e), payload);
+            router.setState(ThingStatus.UNKNOWN, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
+        } else {
+            router.errorHandler.raiseError(new Exception(e), errorMessage);
+            router.setState(ThingStatus.UNKNOWN, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
+        }
     }
 
     /***********************************

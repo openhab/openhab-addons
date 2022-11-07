@@ -36,6 +36,7 @@ public class AsuswrtBindingSettings {
     public static final Integer COOKIE_LIFETIME_S = 3600; // lifetime of login-cookie
     public static final Integer POLLING_INTERVAL_S_MIN = 10; // minimum polling interval
     public static final Integer POLLING_INTERVAL_S_DEFAULT = 30; // default polling interval
+    public static final Integer RECONNECT_INTERVAL_S = 30; // interval trying try to reconnect to router
     public static final Integer DISCOVERY_TIMEOUT_S = 10; // discovery service timeout
 
     // List of device commands
