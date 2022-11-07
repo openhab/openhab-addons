@@ -29,8 +29,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 /**
- * Handles communication with the Apple server. Provides methods to
- * get device information and to find a device.
+ * Handles communication with the Apple server. Provides methods to get device information and to find a device.
  *
  * @author Patrik Gfeller - Initial Contribution
  * @author Patrik Gfeller - SOCKET_TIMEOUT changed from 2500 to 10000
@@ -38,44 +37,56 @@ import com.google.gson.GsonBuilder;
  */
 @NonNullByDefault
 public class ICloudConnection {
-    private static final String ICLOUD_URL = "https://www.icloud.com";
-    private static final String ICLOUD_API_BASE_URL = "https://fmipmobile.icloud.com";
-    private static final String ICLOUD_API_URL = ICLOUD_API_BASE_URL + "/fmipservice/device/";
-    private static final String ICLOUD_API_COMMAND_PING_DEVICE = "/playSound";
-    private static final String ICLOUD_API_COMMAND_REQUEST_DATA = "/initClient";
-    private static final int SOCKET_TIMEOUT = 15;
+  private static final String ICLOUD_URL = "https://www.icloud.com";
 
-    private final Gson gson = new GsonBuilder().create();
-    private final String iCloudDataRequest = gson.toJson(ICloudAccountDataRequest.defaultInstance());
+  private static final String ICLOUD_API_BASE_URL = "https://fmipmobile.icloud.com";
 
-    private final String authorization;
-    private final String iCloudDataRequestURL;
-    private final String iCloudFindMyDeviceURL;
+  private static final String ICLOUD_API_URL = ICLOUD_API_BASE_URL + "/fmipservice/device/";
 
-    public ICloudConnection(String appleId, String password) throws URISyntaxException {
-        authorization = new String(Base64.getEncoder().encode((appleId + ":" + password).getBytes()), UTF_8);
-        iCloudDataRequestURL = new URI(ICLOUD_API_URL + appleId + ICLOUD_API_COMMAND_REQUEST_DATA).toASCIIString();
-        iCloudFindMyDeviceURL = new URI(ICLOUD_API_URL + appleId + ICLOUD_API_COMMAND_PING_DEVICE).toASCIIString();
-    }
+  private static final String ICLOUD_API_COMMAND_PING_DEVICE = "/playSound";
 
-    /***
-     * Sends a "find my device" request.
-     *
-     * @throws IOException
-     */
-    public void findMyDevice(String id) throws IOException {
-        callApi(iCloudFindMyDeviceURL, gson.toJson(new ICloudFindMyDeviceRequest(id)));
-    }
+  private static final String ICLOUD_API_COMMAND_REQUEST_DATA = "/initClient";
 
-    public String requestDeviceStatusJSON() throws IOException {
-        return callApi(iCloudDataRequestURL, iCloudDataRequest);
-    }
+  private static final int SOCKET_TIMEOUT = 15;
 
-    private String callApi(String url, String payload) throws IOException {
-        // @formatter:off
+  private final Gson gson = new GsonBuilder().create();
+
+  private final String iCloudDataRequest = this.gson.toJson(ICloudAccountDataRequest.defaultInstance());
+
+  private final String authorization;
+
+  private final String iCloudDataRequestURL;
+
+  private final String iCloudFindMyDeviceURL;
+
+  private ICloudConnection(String appleId, String password) throws URISyntaxException {
+
+    this.authorization = new String(Base64.getEncoder().encode((appleId + ":" + password).getBytes()), UTF_8);
+    this.iCloudDataRequestURL = new URI(ICLOUD_API_URL + appleId + ICLOUD_API_COMMAND_REQUEST_DATA).toASCIIString();
+    this.iCloudFindMyDeviceURL = new URI(ICLOUD_API_URL + appleId + ICLOUD_API_COMMAND_PING_DEVICE).toASCIIString();
+  }
+
+  /***
+   * Sends a "find my device" request.
+   *
+   * @throws IOException
+   */
+  private void findMyDevice(String id) throws IOException {
+
+    callApi(this.iCloudFindMyDeviceURL, this.gson.toJson(new ICloudFindMyDeviceRequest(id)));
+  }
+
+  private String requestDeviceStatusJSON() throws IOException {
+
+    return callApi(this.iCloudDataRequestURL, this.iCloudDataRequest);
+  }
+
+  private String callApi(String url, String payload) throws IOException {
+
+    // @formatter:off
         return HttpRequestBuilder.postTo(url)
             .withTimeout(Duration.ofSeconds(SOCKET_TIMEOUT))
-            .withHeader("Authorization", "Basic " + authorization)
+            .withHeader("Authorization", "Basic " + this.authorization)
             .withHeader("User-Agent", "Find iPhone/1.3 MeKit (iPad: iPhone OS/4.2.1)")
             .withHeader("Origin", ICLOUD_URL)
             .withHeader("charset", "utf-8")
@@ -89,5 +100,5 @@ public class ICloudConnection {
             .withContent(payload)
             .getContentAsString();
         // @formatter:on
-    }
+  }
 }
