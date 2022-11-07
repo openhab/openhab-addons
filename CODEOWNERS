@@ -186,6 +186,7 @@
 /bundles/org.openhab.binding.meater/ @jannegpriv
 /bundles/org.openhab.binding.mecmeter/ @kaikreuzer
 /bundles/org.openhab.binding.melcloud/ @lucacalcaterra @paulianttila @thewiep
+/bundles/org.openhab.binding.mercedesme/ @weymann
 /bundles/org.openhab.binding.meteoalerte/ @clinique
 /bundles/org.openhab.binding.meteoblue/ @9037568
 /bundles/org.openhab.binding.meteostick/ @cdjackson
