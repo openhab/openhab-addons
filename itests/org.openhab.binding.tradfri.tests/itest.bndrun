@@ -76,7 +76,7 @@ Fragment-Host: org.openhab.binding.tradfri
 	org.openhab.core.thing;version='[3.4.0,3.4.1)',\
 	org.openhab.core.thing.xml;version='[3.4.0,3.4.1)',\
 	net.i2p.crypto.eddsa;version='[0.3.0,0.3.1)',\
-	org.eclipse.californium.core;version='[2.7.3,2.7.4)',\
-	org.eclipse.californium.element-connector;version='[2.7.3,2.7.4)',\
-	org.eclipse.californium.scandium;version='[2.7.3,2.7.4)',\
-	org.osgi.service.cm;version='[1.6.0,1.6.1)'
+	org.osgi.service.cm;version='[1.6.0,1.6.1)',\
+	org.eclipse.californium.core;version='[2.7.4,2.7.5)',\
+	org.eclipse.californium.element-connector;version='[2.7.4,2.7.5)',\
+	org.eclipse.californium.scandium;version='[2.7.4,2.7.5)'
