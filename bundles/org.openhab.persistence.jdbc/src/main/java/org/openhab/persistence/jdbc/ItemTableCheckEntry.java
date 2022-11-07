@@ -23,13 +23,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class ItemTableCheckEntry {
     private String itemName;
     private String tableName;
-    private long rowCount;
     private ItemTableCheckEntryStatus status;
 
-    public ItemTableCheckEntry(String itemName, String tableName, long rowCount, ItemTableCheckEntryStatus status) {
+    public ItemTableCheckEntry(String itemName, String tableName, ItemTableCheckEntryStatus status) {
         this.itemName = itemName;
         this.tableName = tableName;
-        this.rowCount = rowCount;
         this.status = status;
     }
 
@@ -39,10 +37,6 @@ public class ItemTableCheckEntry {
 
     public String getTableName() {
         return tableName;
-    }
-
-    public long getRowCount() {
-        return rowCount;
     }
 
     public ItemTableCheckEntryStatus getStatus() {

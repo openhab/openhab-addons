@@ -84,9 +84,14 @@ public class JdbcCommandExtension extends AbstractConsoleCommandExtension implem
         console.println("-".repeat(tableNameMaxLength) + "  " + "---------  " + "-".repeat(itemNameMaxLength) + "  "
                 + "-".repeat(statusMaxLength));
         for (var entry : entries) {
+            String tableName = entry.getTableName();
+            ItemTableCheckEntryStatus status = entry.getStatus();
+            long rowCount = status == ItemTableCheckEntryStatus.VALID
+                    || status == ItemTableCheckEntryStatus.ITEM_MISSING ? jdbcPersistenceService.getRowCount(tableName)
+                            : 0;
             console.println(String.format(
-                    "%1$-" + (tableNameMaxLength + 2) + "s%2$9d  %3$-" + (itemNameMaxLength + 2) + "s%4$s",
-                    entry.getTableName(), entry.getRowCount(), entry.getItemName(), entry.getStatus()));
+                    "%1$-" + (tableNameMaxLength + 2) + "s%2$9d  %3$-" + (itemNameMaxLength + 2) + "s%4$s", tableName,
+                    rowCount, entry.getItemName(), status));
         }
     }
 

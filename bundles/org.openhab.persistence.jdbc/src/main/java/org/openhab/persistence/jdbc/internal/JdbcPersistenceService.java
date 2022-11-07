@@ -293,7 +293,6 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
             }
 
             ItemTableCheckEntryStatus status;
-            long rowCount = 0;
             if (!orphanTables.contains(tableName)) {
                 if (itemExists) {
                     status = ItemTableCheckEntryStatus.TABLE_MISSING;
@@ -302,17 +301,14 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
                 }
             } else if (itemExists) {
                 status = ItemTableCheckEntryStatus.VALID;
-                rowCount = getRowCount(tableName);
             } else {
                 status = ItemTableCheckEntryStatus.ITEM_MISSING;
-                rowCount = getRowCount(tableName);
             }
             orphanTables.remove(tableName);
-            entries.add(new ItemTableCheckEntry(itemName, tableName, rowCount, status));
+            entries.add(new ItemTableCheckEntry(itemName, tableName, status));
         }
         for (String orphanTable : orphanTables) {
-            entries.add(new ItemTableCheckEntry("", orphanTable, getRowCount(orphanTable),
-                    ItemTableCheckEntryStatus.ORPHAN_TABLE));
+            entries.add(new ItemTableCheckEntry("", orphanTable, ItemTableCheckEntryStatus.ORPHAN_TABLE));
         }
         return entries;
     }
