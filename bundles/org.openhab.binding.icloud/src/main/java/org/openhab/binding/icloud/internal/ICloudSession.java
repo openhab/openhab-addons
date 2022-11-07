@@ -112,7 +112,8 @@ public class ICloudSession {
 
         // TODO Error Handling pyicloud 99-162
         if (response.statusCode() >= 300) {
-            throw new ICloudAPIResponseException();
+            throw new ICloudAPIResponseException(
+                    String.format("Request {} failed with {}.", url, response.statusCode()));
             /*
              * 826 if (response.statusCode() == 421 || response.statusCode() == 450 || response.statusCode() == 500) {
              * throw

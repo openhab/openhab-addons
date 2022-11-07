@@ -20,4 +20,12 @@ package org.openhab.binding.icloud.internal;
  */
 public class ICloudAPIResponseException extends RuntimeException {
 
+    /**
+     * The constructor.
+     *
+     * @param format
+     */
+    public ICloudAPIResponseException(String message) {
+        super(message);
+    }
 }

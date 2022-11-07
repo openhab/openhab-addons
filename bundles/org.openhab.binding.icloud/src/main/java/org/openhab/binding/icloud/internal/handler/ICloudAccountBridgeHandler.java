@@ -111,7 +111,7 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
 
                 }
                 return this.iCloudService.getDevices().refreshClient();
-            } catch (IOException | InterruptedException e) {
+            } catch (Exception e) {
                 this.logger.warn("Unable to refresh device data", e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 return null;
