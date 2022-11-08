@@ -25,8 +25,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class ConfigOptions {
     public BigDecimal duvThreshold = BigDecimal.ONE;
     public int whiteThreshold = -1;
-    public int whiteSat = 32;
-    public int whiteHue = 35;
+    public int whiteSat = -1;
+    public int whiteHue = -1;
     public int favouriteWhite = 200;
     public boolean oneTriggersNightMode = false;
     public boolean powerFailsToMinimum = false;

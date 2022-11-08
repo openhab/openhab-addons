@@ -259,17 +259,13 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttConnec
                 .divide(BIG_DECIMAL_217, MathContext.DECIMAL128).multiply(BIG_DECIMAL_100)));
     }
 
-    private static BigDecimal polynomial_fit(BigDecimal x, BigDecimal[] coefficients) {
+    private static BigDecimal polynomialFit(BigDecimal x, BigDecimal[] coefficients) {
         var result = BigDecimal.ZERO;
         var x_accumulator = BigDecimal.ONE;
         // forms K[4]*x^0 + K[3]*x^1 + K[2]*x^2 + K[1]*x^3 + K[0]*x^4
         // (or reverse the order of terms for the usual way of writing it in academic papers)
-        int i = 0;
-        while (true) {
-            result = result.add(coefficients[coefficients.length - i - 1].multiply(x_accumulator));
-            i++;
-            if (i == coefficients.length)
-                break;
+        for (int i = coefficients.length - 1; i >= 0; i--) {
+            result = result.add(coefficients[i].multiply(x_accumulator));
             x_accumulator = x_accumulator.multiply(x);
         }
         return result;
@@ -287,7 +283,7 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttConnec
         } else {
             coefficients = KANG_X_COEFFICIENTS[0];
         }
-        var x = polynomial_fit(BIG_DECIMAL_THOUSAND.divide(cct, MathContext.DECIMAL128), coefficients);
+        var x = polynomialFit(BIG_DECIMAL_THOUSAND.divide(cct, MathContext.DECIMAL128), coefficients);
 
         if (cctInt <= 2222) {
             coefficients = KANG_Y_COEFFICIENTS[2];
@@ -296,25 +292,25 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttConnec
         } else {
             coefficients = KANG_Y_COEFFICIENTS[0];
         }
-        var y = polynomial_fit(x, coefficients);
+        BigDecimal y = polynomialFit(x, coefficients);
         var rawHsb = HSBType.fromXY(x.floatValue() * 100.0f, y.floatValue() * 100.0f);
         return new HSBType(rawHsb.getHue(), rawHsb.getSaturation(), brightness);
     }
 
     // https://www.waveformlighting.com/tech/calculate-color-temperature-cct-from-cie-1931-xy-coordinates/
     private static int calculateColorTempFromHSB(HSBType hsb) {
-        var xy = hsb.toXY();
+        PercentType[] xy = hsb.toXY();
         var x = xy[0].toBigDecimal().divide(BIG_DECIMAL_100);
         var y = xy[1].toBigDecimal().divide(BIG_DECIMAL_100);
         var n = x.subtract(BIG_DECIMAL_03320).divide(BIG_DECIMAL_01858.subtract(y), MathContext.DECIMAL128);
-        var CCT_K = polynomial_fit(n, MCCAMY_COEFFICIENTS);
-        return BIG_DECIMAL_MILLION.divide(CCT_K, MathContext.DECIMAL128).round(new MathContext(0)).intValue();
+        BigDecimal cct_k = polynomialFit(n, MCCAMY_COEFFICIENTS);
+        return BIG_DECIMAL_MILLION.divide(cct_k, MathContext.DECIMAL128).round(new MathContext(0)).intValue();
     }
 
     // https://cormusa.org/wp-content/uploads/2018/04/CORM_2011_Calculation_of_CCT_and_Duv_and_Practical_Conversion_Formulae.pdf
     // page 19
     private static BigDecimal calculateDuvFromHSB(HSBType hsb) {
-        var xy = hsb.toXY();
+        PercentType[] xy = hsb.toXY();
         var x = xy[0].toBigDecimal().divide(BIG_DECIMAL_100);
         var y = xy[1].toBigDecimal().divide(BIG_DECIMAL_100);
         var u = BIG_DECIMAL_4.multiply(x).divide(
@@ -327,7 +323,7 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttConnec
                 .sqrt(MathContext.DECIMAL128);
         var a = new BigDecimal(
                 Math.acos(u.subtract(BIG_DECIMAL_0292).divide(Lfp, MathContext.DECIMAL128).doubleValue()));
-        var Lbb = polynomial_fit(a, CORM_COEFFICIENTS);
+        BigDecimal Lbb = polynomialFit(a, CORM_COEFFICIENTS);
         return Lfp.subtract(Lbb);
     }
 
