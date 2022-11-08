@@ -43,8 +43,13 @@ import org.osgi.service.component.annotations.Reference;
 @Component(service = ConsoleCommandExtension.class)
 public class JdbcCommandExtension extends AbstractConsoleCommandExtension implements ConsoleCommandCompleter {
 
-    private static final String SUBCMD_LIST = "list";
-    private static final StringsCompleter SUBCMD_COMPLETER = new StringsCompleter(List.of(SUBCMD_LIST), false);
+    private static final String CMD_TABLES = "tables";
+    private static final String SUBCMD_TABLES_LIST = "list";
+    private static final String SUBCMD_TABLES_CLEAN = "clean";
+    private static final String PARAMETER_ALL = "all";
+    private static final StringsCompleter CMD_COMPLETER = new StringsCompleter(List.of(CMD_TABLES), false);
+    private static final StringsCompleter SUBCMD_TABLES_COMPLETER = new StringsCompleter(
+            List.of(SUBCMD_TABLES_LIST, SUBCMD_TABLES_CLEAN), false);
 
     private final PersistenceServiceRegistry persistenceServiceRegistry;
 
@@ -56,20 +61,38 @@ public class JdbcCommandExtension extends AbstractConsoleCommandExtension implem
 
     @Override
     public void execute(String[] args, Console console) {
-        if (args.length < 1 || args.length > 2 || !SUBCMD_LIST.equals(args[0])) {
+        if (args.length < 1 || args.length > 3 || !CMD_TABLES.equals(args[0])) {
             printUsage(console);
             return;
         }
-        for (PersistenceService persistenceService : persistenceServiceRegistry.getAll()) {
-            if (persistenceService instanceof JdbcPersistenceService) {
-                JdbcPersistenceService jdbcPersistenceService = (JdbcPersistenceService) persistenceService;
-                listTables(jdbcPersistenceService, console, args.length == 2 && "ALL".equalsIgnoreCase(args[1]));
+        JdbcPersistenceService persistenceService = getPersistenceService();
+        if (persistenceService == null) {
+            return;
+        }
+        if (args.length >= 2) {
+            if (SUBCMD_TABLES_LIST.equalsIgnoreCase(args[1])) {
+                listTables(persistenceService, console, args.length == 3 && PARAMETER_ALL.equalsIgnoreCase(args[2]));
+            } else if (SUBCMD_TABLES_CLEAN.equalsIgnoreCase(args[1])) {
+                if (args.length == 3) {
+                    cleanupItem(persistenceService, console, args[2]);
+                } else {
+                    cleanupTables(persistenceService, console);
+                }
             }
         }
     }
 
-    private void listTables(JdbcPersistenceService jdbcPersistenceService, Console console, Boolean all) {
-        List<ItemTableCheckEntry> entries = jdbcPersistenceService.getCheckedEntries();
+    private @Nullable JdbcPersistenceService getPersistenceService() {
+        for (PersistenceService persistenceService : persistenceServiceRegistry.getAll()) {
+            if (persistenceService instanceof JdbcPersistenceService) {
+                return (JdbcPersistenceService) persistenceService;
+            }
+        }
+        return null;
+    }
+
+    private void listTables(JdbcPersistenceService persistenceService, Console console, Boolean all) {
+        List<ItemTableCheckEntry> entries = persistenceService.getCheckedEntries();
         if (!all) {
             entries.removeIf(t -> t.getStatus() == ItemTableCheckEntryStatus.VALID);
         }
@@ -83,21 +106,47 @@ public class JdbcCommandExtension extends AbstractConsoleCommandExtension implem
                 "Item", "Status"));
         console.println("-".repeat(tableNameMaxLength) + "  " + "---------  " + "-".repeat(itemNameMaxLength) + "  "
                 + "-".repeat(statusMaxLength));
-        for (var entry : entries) {
+        for (ItemTableCheckEntry entry : entries) {
             String tableName = entry.getTableName();
             ItemTableCheckEntryStatus status = entry.getStatus();
             long rowCount = status == ItemTableCheckEntryStatus.VALID
-                    || status == ItemTableCheckEntryStatus.ITEM_MISSING ? jdbcPersistenceService.getRowCount(tableName)
-                            : 0;
+                    || status == ItemTableCheckEntryStatus.ITEM_MISSING ? persistenceService.getRowCount(tableName) : 0;
             console.println(String.format(
                     "%1$-" + (tableNameMaxLength + 2) + "s%2$9d  %3$-" + (itemNameMaxLength + 2) + "s%4$s", tableName,
                     rowCount, entry.getItemName(), status));
         }
     }
 
+    private void cleanupTables(JdbcPersistenceService persistenceService, Console console) {
+        console.println("Cleaning up all inconsistent items...");
+        List<ItemTableCheckEntry> entries = persistenceService.getCheckedEntries();
+        entries.removeIf(t -> t.getStatus() == ItemTableCheckEntryStatus.VALID || t.getItemName().isEmpty());
+        for (ItemTableCheckEntry entry : entries) {
+            console.print(entry.getItemName() + " -> ");
+            if (persistenceService.cleanupItem(entry)) {
+                console.println("done.");
+            } else {
+                console.println("skipped/failed.");
+            }
+        }
+    }
+
+    private void cleanupItem(JdbcPersistenceService persistenceService, Console console, String itemName) {
+        console.print("Cleaning up item " + itemName + "... ");
+        if (persistenceService.cleanupItem(itemName)) {
+            console.println("done.");
+        } else {
+            console.println("skipped/failed.");
+        }
+    }
+
     @Override
     public List<String> getUsages() {
-        return Arrays.asList(buildCommandUsage(SUBCMD_LIST + " [<all>]", "list tables"));
+        return Arrays.asList(
+                buildCommandUsage(CMD_TABLES + " " + SUBCMD_TABLES_LIST + " [" + PARAMETER_ALL + "]",
+                        "list tables (all = include valid)"),
+                buildCommandUsage(CMD_TABLES + " " + SUBCMD_TABLES_CLEAN + " [<itemName>]",
+                        "clean inconsistent items (remove from index and drop tables)"));
     }
 
     @Override
@@ -108,7 +157,21 @@ public class JdbcCommandExtension extends AbstractConsoleCommandExtension implem
     @Override
     public boolean complete(String[] args, int cursorArgumentIndex, int cursorPosition, List<String> candidates) {
         if (cursorArgumentIndex <= 0) {
-            return SUBCMD_COMPLETER.complete(args, cursorArgumentIndex, cursorPosition, candidates);
+            return CMD_COMPLETER.complete(args, cursorArgumentIndex, cursorPosition, candidates);
+        } else if (cursorArgumentIndex == 1) {
+            if (CMD_TABLES.equalsIgnoreCase(args[0])) {
+                return SUBCMD_TABLES_COMPLETER.complete(args, cursorArgumentIndex, cursorPosition, candidates);
+            }
+        } else if (cursorArgumentIndex == 2) {
+            if (CMD_TABLES.equalsIgnoreCase(args[0])) {
+                if (SUBCMD_TABLES_CLEAN.equalsIgnoreCase(args[1])) {
+                    JdbcPersistenceService persistenceService = getPersistenceService();
+                    if (persistenceService != null) {
+                        return new StringsCompleter(persistenceService.getItemNames(), true).complete(args,
+                                cursorArgumentIndex, cursorPosition, candidates);
+                    }
+                }
+            }
         }
         return false;
     }

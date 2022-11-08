@@ -18,30 +18,45 @@ package org.openhab.persistence.jdbc;
  * @author Jacob Laursen - Initial contribution
  */
 public enum ItemTableCheckEntryStatus {
+    /**
+     * Table is consistent.
+     */
     VALID {
         @Override
         public String toString() {
             return "Valid";
         }
     },
+    /**
+     * Table has no corresponding item.
+     */
     ITEM_MISSING {
         @Override
         public String toString() {
             return "Item missing";
         }
     },
+    /**
+     * Referenced table does not exist.
+     */
     TABLE_MISSING {
         @Override
         public String toString() {
             return "Table missing";
         }
     },
+    /**
+     * Referenced table does not exist nor has corresponding item.
+     */
     ITEM_AND_TABLE_MISSING {
         @Override
         public String toString() {
             return "Item and table missing";
         }
     },
+    /**
+     * Mapping for table does not exist in index.
+     */
     ORPHAN_TABLE {
         @Override
         public String toString() {

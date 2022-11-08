@@ -14,6 +14,7 @@ package org.openhab.persistence.jdbc.internal;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -278,38 +279,85 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
         return result;
     }
 
+    /**
+     * Get a list of names of persisted items.
+     */
+    public Collection<String> getItemNames() {
+        return itemNameToTableNameMap.keySet();
+    }
+
     public List<ItemTableCheckEntry> getCheckedEntries() {
         List<ItemTableCheckEntry> entries = new ArrayList<>();
         var orphanTables = getItemTables().stream().map(ItemsVO::getTableName).collect(Collectors.toSet());
         for (Entry<String, String> entry : itemNameToTableNameMap.entrySet()) {
             String itemName = entry.getKey();
             String tableName = entry.getValue();
-            Boolean itemExists;
-            try {
-                itemRegistry.getItem(itemName);
-                itemExists = true;
-            } catch (ItemNotFoundException e) {
-                itemExists = false;
-            }
-
-            ItemTableCheckEntryStatus status;
-            if (!orphanTables.contains(tableName)) {
-                if (itemExists) {
-                    status = ItemTableCheckEntryStatus.TABLE_MISSING;
-                } else {
-                    status = ItemTableCheckEntryStatus.ITEM_AND_TABLE_MISSING;
-                }
-            } else if (itemExists) {
-                status = ItemTableCheckEntryStatus.VALID;
-            } else {
-                status = ItemTableCheckEntryStatus.ITEM_MISSING;
-            }
+            entries.add(getCheckedEntry(itemName, tableName, orphanTables.contains(tableName)));
             orphanTables.remove(tableName);
-            entries.add(new ItemTableCheckEntry(itemName, tableName, status));
         }
         for (String orphanTable : orphanTables) {
             entries.add(new ItemTableCheckEntry("", orphanTable, ItemTableCheckEntryStatus.ORPHAN_TABLE));
         }
         return entries;
+    }
+
+    private ItemTableCheckEntry getCheckedEntry(String itemName, String tableName, boolean tableExists) {
+        boolean itemExists;
+        try {
+            itemRegistry.getItem(itemName);
+            itemExists = true;
+        } catch (ItemNotFoundException e) {
+            itemExists = false;
+        }
+
+        ItemTableCheckEntryStatus status;
+        if (!tableExists) {
+            if (itemExists) {
+                status = ItemTableCheckEntryStatus.TABLE_MISSING;
+            } else {
+                status = ItemTableCheckEntryStatus.ITEM_AND_TABLE_MISSING;
+            }
+        } else if (itemExists) {
+            status = ItemTableCheckEntryStatus.VALID;
+        } else {
+            status = ItemTableCheckEntryStatus.ITEM_MISSING;
+        }
+        return new ItemTableCheckEntry(itemName, tableName, status);
+    }
+
+    public boolean cleanupItem(String itemName) {
+        String tableName = itemNameToTableNameMap.get(itemName);
+        if (tableName == null) {
+            return false;
+        }
+        ItemTableCheckEntry entry = getCheckedEntry(itemName, tableName, ifTableExists(tableName));
+        return cleanupItem(entry);
+    }
+
+    public boolean cleanupItem(ItemTableCheckEntry entry) {
+        ItemTableCheckEntryStatus status = entry.getStatus();
+        String tableName = entry.getTableName();
+        switch (status) {
+            case ITEM_MISSING:
+                if (getRowCount(tableName) > 0) {
+                    return false;
+                }
+                dropTable(tableName);
+                // Fall through to remove from index.
+            case TABLE_MISSING:
+            case ITEM_AND_TABLE_MISSING:
+                if (!conf.getTableUseRealCaseSensitiveItemNames()) {
+                    ItemsVO itemsVo = new ItemsVO();
+                    itemsVo.setItemName(entry.getItemName());
+                    deleteItemsEntry(itemsVo);
+                }
+                itemNameToTableNameMap.remove(entry.getItemName());
+                return true;
+            case ORPHAN_TABLE:
+            case VALID:
+            default:
+                // Nothing to clean.
+                return false;
+        }
     }
 }

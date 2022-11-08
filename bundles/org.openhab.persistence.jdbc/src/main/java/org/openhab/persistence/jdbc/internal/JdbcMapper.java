@@ -106,6 +106,14 @@ public class JdbcMapper {
         return res;
     }
 
+    public boolean ifTableExists(String tableName) {
+        logger.debug("JDBC::ifTableExists");
+        long timerStart = System.currentTimeMillis();
+        boolean res = conf.getDBDAO().doIfTableExists(tableName);
+        logTime("doIfTableExists", timerStart, System.currentTimeMillis());
+        return res;
+    }
+
     public ItemsVO createNewEntryInItemsTable(ItemsVO vo) {
         logger.debug("JDBC::createNewEntryInItemsTable");
         long timerStart = System.currentTimeMillis();
@@ -128,6 +136,14 @@ public class JdbcMapper {
         long timerStart = System.currentTimeMillis();
         conf.getDBDAO().doDropItemsTableIfExists(vo);
         logTime("doDropItemsTableIfExists", timerStart, System.currentTimeMillis());
+        return true;
+    }
+
+    public boolean dropTable(String tableName) {
+        logger.debug("JDBC::dropTable");
+        long timerStart = System.currentTimeMillis();
+        conf.getDBDAO().doDropTable(tableName);
+        logTime("doDropTable", timerStart, System.currentTimeMillis());
         return true;
     }
 

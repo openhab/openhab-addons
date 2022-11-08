@@ -85,7 +85,8 @@ public class JdbcBaseDAO {
     protected String sqlCreateNewEntryInItemsTable = "INSERT INTO #itemsManageTable# (ItemName) VALUES ('#itemname#')";
     protected String sqlCreateItemsTableIfNot = "CREATE TABLE IF NOT EXISTS #itemsManageTable# (ItemId INT NOT NULL AUTO_INCREMENT,#colname# #coltype# NOT NULL,PRIMARY KEY (ItemId))";
     protected String sqlDropItemsTableIfExists = "DROP TABLE IF EXISTS #itemsManageTable#";
-    protected String sqlDeleteItemsEntry = "DELETE FROM items WHERE ItemName=#itemname#";
+    protected String sqlDropTable = "DROP TABLE #tableName#";
+    protected String sqlDeleteItemsEntry = "DELETE FROM #itemsManageTable# WHERE ItemName='#itemname#'";
     protected String sqlGetItemIDTableNames = "SELECT ItemId, ItemName FROM #itemsManageTable#";
     protected String sqlGetItemTables = "SELECT table_name FROM information_schema.tables WHERE table_type='BASE TABLE' AND table_schema='#jdbcUriDatabaseName#' AND NOT table_name='#itemsManageTable#'";
     protected String sqlCreateItemTable = "CREATE TABLE IF NOT EXISTS #tableName# (time #tablePrimaryKey# NOT NULL, value #dbType#, PRIMARY KEY(time))";
@@ -265,6 +266,14 @@ public class JdbcBaseDAO {
         return Objects.nonNull(result);
     }
 
+    public boolean doIfTableExists(String tableName) {
+        String sql = StringUtilsExt.replaceArrayMerge(sqlIfTableExists, new String[] { "#searchTable#" },
+                new String[] { tableName });
+        logger.debug("JDBC::doIfTableExists sql={}", sql);
+        final @Nullable String result = Yank.queryScalar(sql, String.class, null);
+        return Objects.nonNull(result);
+    }
+
     public Long doCreateNewEntryInItemsTable(ItemsVO vo) {
         String sql = StringUtilsExt.replaceArrayMerge(sqlCreateNewEntryInItemsTable,
                 new String[] { "#itemsManageTable#", "#itemname#" },
@@ -290,9 +299,17 @@ public class JdbcBaseDAO {
         return vo;
     }
 
+    public void doDropTable(String tableName) {
+        String sql = StringUtilsExt.replaceArrayMerge(sqlDropTable, new String[] { "#tableName#" },
+                new String[] { tableName });
+        logger.debug("JDBC::doDropTable sql={}", sql);
+        Yank.execute(sql, null);
+    }
+
     public void doDeleteItemsEntry(ItemsVO vo) {
-        String sql = StringUtilsExt.replaceArrayMerge(sqlDeleteItemsEntry, new String[] { "#itemname#" },
-                new String[] { vo.getItemName() });
+        String sql = StringUtilsExt.replaceArrayMerge(sqlDeleteItemsEntry,
+                new String[] { "#itemsManageTable#", "#itemname#" },
+                new String[] { vo.getItemsManageTable(), vo.getItemName() });
         logger.debug("JDBC::doDeleteItemsEntry sql={}", sql);
         Yank.execute(sql, null);
     }
