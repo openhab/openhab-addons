@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.binding.icloud;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Scanner;
 
 import org.junit.jupiter.api.Test;
@@ -43,7 +44,7 @@ public class TestICloud {
         System.out.println(jsonStorageFile.toString());
 
         JsonStorage<String> stateStorage = new JsonStorage<String>(jsonStorageFile, TestICloud.class.getClassLoader(),
-                2, 1000, 1000);
+                2, 1000, 1000, List.of());
 
         ICloudService service = new ICloudService(this.E_MAIL, this.PW, stateStorage);
         if (service.requires2fa()) {
