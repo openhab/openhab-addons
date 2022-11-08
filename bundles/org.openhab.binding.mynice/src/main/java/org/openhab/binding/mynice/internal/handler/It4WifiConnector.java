@@ -15,7 +15,6 @@ package org.openhab.binding.mynice.internal.handler;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.net.Socket;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
@@ -25,7 +24,6 @@ import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
-import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -47,36 +45,32 @@ public class It4WifiConnector extends Thread {
     private static final char STX = '\u0002';
 
     private final Logger logger = LoggerFactory.getLogger(It4WifiConnector.class);
-    private final String hostname;
     private final It4WifiHandler handler;
-    private final SSLSocketFactory sslsocketfactory;
     private final ScheduledExecutorService scheduler;
+    private final SSLSocket sslsocket;
 
-    private @NonNullByDefault({}) Socket client;
     private @NonNullByDefault({}) InputStreamReader in;
     private @NonNullByDefault({}) OutputStreamWriter out;
     private Optional<ScheduledFuture<?>> keepAlive = Optional.empty();
 
     public It4WifiConnector(String hostname, It4WifiHandler handler, ScheduledExecutorService scheduler) {
         super(It4WifiConnector.class.getName());
-        this.hostname = hostname;
         this.handler = handler;
         this.scheduler = scheduler;
         try {
             SSLContext sslContext = SSLContext.getInstance("SSL");
             sslContext.init(null, new TrustManager[] { TrustAllTrustManager.getInstance() }, null);
-            sslsocketfactory = sslContext.getSocketFactory();
+            sslsocket = (SSLSocket) sslContext.getSocketFactory().createSocket(hostname, SERVER_PORT);
             setDaemon(true);
-        } catch (NoSuchAlgorithmException | KeyManagementException e) {
+        } catch (NoSuchAlgorithmException | KeyManagementException | IOException e) {
             throw new IllegalArgumentException(e);
         }
     }
 
     private void connect() throws IOException {
+        logger.debug("Initiating connection to IT4Wifi on port {}...", SERVER_PORT);
         disconnect();
-        logger.debug("Connecting to {}:{}...", hostname, SERVER_PORT);
 
-        SSLSocket sslsocket = (SSLSocket) sslsocketfactory.createSocket(hostname, SERVER_PORT);
         sslsocket.startHandshake();
 
         in = new InputStreamReader(sslsocket.getInputStream());
@@ -101,19 +95,15 @@ public class It4WifiConnector extends Thread {
         try {
             if (in != null) {
                 in.close();
+                in = null;
             }
             if (out != null) {
                 out.close();
-            }
-            if (client != null) {
-                client.close();
+                out = null;
             }
         } catch (IOException ignore) {
         }
 
-        in = null;
-        out = null;
-        client = null;
         logger.debug("Disconnected");
     }
 
