@@ -165,6 +165,7 @@ This cleanup operation will remove items from the index (table `Items`) if the r
 If the item does not exist, the table will be physically deleted, but only if it's empty.
 This precaution is taken because items may have existed previously, and the data might still be valuable.
 For example, an item for a lost or repurposed sensor could have been deleted from the system while preserving persisted data.
+To skip this check for a single item, use `jdbc clean <itemName> force` with care.
 
 Prior to performing a `jdbc clean` operation, it's recommended to review the result of `jdbc tables list`.
 

@@ -47,6 +47,7 @@ public class JdbcCommandExtension extends AbstractConsoleCommandExtension implem
     private static final String SUBCMD_TABLES_LIST = "list";
     private static final String SUBCMD_TABLES_CLEAN = "clean";
     private static final String PARAMETER_ALL = "all";
+    private static final String PARAMETER_FORCE = "force";
     private static final StringsCompleter CMD_COMPLETER = new StringsCompleter(List.of(CMD_TABLES), false);
     private static final StringsCompleter SUBCMD_TABLES_COMPLETER = new StringsCompleter(
             List.of(SUBCMD_TABLES_LIST, SUBCMD_TABLES_CLEAN), false);
@@ -61,7 +62,7 @@ public class JdbcCommandExtension extends AbstractConsoleCommandExtension implem
 
     @Override
     public void execute(String[] args, Console console) {
-        if (args.length < 1 || args.length > 3 || !CMD_TABLES.equals(args[0])) {
+        if (args.length < 2 || args.length > 4 || !CMD_TABLES.equals(args[0])) {
             printUsage(console);
             return;
         }
@@ -69,17 +70,22 @@ public class JdbcCommandExtension extends AbstractConsoleCommandExtension implem
         if (persistenceService == null) {
             return;
         }
-        if (args.length >= 2) {
-            if (SUBCMD_TABLES_LIST.equalsIgnoreCase(args[1])) {
-                listTables(persistenceService, console, args.length == 3 && PARAMETER_ALL.equalsIgnoreCase(args[2]));
-            } else if (SUBCMD_TABLES_CLEAN.equalsIgnoreCase(args[1])) {
-                if (args.length == 3) {
-                    cleanupItem(persistenceService, console, args[2]);
-                } else {
-                    cleanupTables(persistenceService, console);
-                }
+        if (SUBCMD_TABLES_LIST.equalsIgnoreCase(args[1])) {
+            listTables(persistenceService, console, args.length == 3 && PARAMETER_ALL.equalsIgnoreCase(args[2]));
+            return;
+        } else if (SUBCMD_TABLES_CLEAN.equalsIgnoreCase(args[1])) {
+            if (args.length == 3) {
+                cleanupItem(persistenceService, console, args[2], false);
+                return;
+            } else if (args.length == 4 && PARAMETER_FORCE.equalsIgnoreCase(args[3])) {
+                cleanupItem(persistenceService, console, args[2], true);
+                return;
+            } else {
+                cleanupTables(persistenceService, console);
+                return;
             }
         }
+        printUsage(console);
     }
 
     private @Nullable JdbcPersistenceService getPersistenceService() {
@@ -131,9 +137,10 @@ public class JdbcCommandExtension extends AbstractConsoleCommandExtension implem
         }
     }
 
-    private void cleanupItem(JdbcPersistenceService persistenceService, Console console, String itemName) {
+    private void cleanupItem(JdbcPersistenceService persistenceService, Console console, String itemName,
+            boolean force) {
         console.print("Cleaning up item " + itemName + "... ");
-        if (persistenceService.cleanupItem(itemName)) {
+        if (persistenceService.cleanupItem(itemName, force)) {
             console.println("done.");
         } else {
             console.println("skipped/failed.");
@@ -145,7 +152,8 @@ public class JdbcCommandExtension extends AbstractConsoleCommandExtension implem
         return Arrays.asList(
                 buildCommandUsage(CMD_TABLES + " " + SUBCMD_TABLES_LIST + " [" + PARAMETER_ALL + "]",
                         "list tables (all = include valid)"),
-                buildCommandUsage(CMD_TABLES + " " + SUBCMD_TABLES_CLEAN + " [<itemName>]",
+                buildCommandUsage(
+                        CMD_TABLES + " " + SUBCMD_TABLES_CLEAN + " [<itemName>]" + " [" + PARAMETER_FORCE + "]",
                         "clean inconsistent items (remove from index and drop tables)"));
     }
 

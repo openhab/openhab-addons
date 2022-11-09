@@ -333,18 +333,19 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
 
     /**
      * Clean up inconsistent item: Remove from index and drop table.
-     * Tables with any rows are skipped.
+     * Tables with any rows are skipped, unless force is set.
      *
      * @param itemName Name of item to clean
+     * @param force If true, non-empty tables will be dropped too
      * @return true if item was cleaned up
      */
-    public boolean cleanupItem(String itemName) {
+    public boolean cleanupItem(String itemName, boolean force) {
         String tableName = itemNameToTableNameMap.get(itemName);
         if (tableName == null) {
             return false;
         }
         ItemTableCheckEntry entry = getCheckedEntry(itemName, tableName, ifTableExists(tableName));
-        return cleanupItem(entry);
+        return cleanupItem(entry, force);
     }
 
     /**
@@ -355,11 +356,15 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
      * @return true if item was cleaned up
      */
     public boolean cleanupItem(ItemTableCheckEntry entry) {
+        return cleanupItem(entry, false);
+    }
+
+    private boolean cleanupItem(ItemTableCheckEntry entry, boolean force) {
         ItemTableCheckEntryStatus status = entry.getStatus();
         String tableName = entry.getTableName();
         switch (status) {
             case ITEM_MISSING:
-                if (getRowCount(tableName) > 0) {
+                if (!force && getRowCount(tableName) > 0) {
                     return false;
                 }
                 dropTable(tableName);
