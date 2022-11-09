@@ -18,8 +18,12 @@ Or you can connect it for example to a Raspberry Pi and use [ser2net Linux tool]
 
 ## Supported Things
 
-There is exactly one supported thing type, which represents the amplifier controller.
-It has the `amplifier` id.
+Monoprice 10761 & 39261 and Dayton Audio DAX66 Amplifiers use the `amplifier` thing id. Up to 18 zones with 3 linked amps, 6 source inputs.
+Note: Compatible clones (including 4 zone versions) from McLELLAND, Factor, Soundavo, etc. should work as well.
+
+Support for additional amplifier types from Monoprice, Dayton and Xantech is currently available via the
+[OH Marketplace beta version of the binding](https://community.openhab.org/t/monoprice-dayton-audio-xantech-whole-house-audio-binding-beta/128924).
+*Please report any successes or failures using the beta version of the binding so that the issues can be addressed and the beta code merged into the official version.*
 
 ## Discovery
 
@@ -130,7 +134,7 @@ sitemap monoprice label="Audio Control" {
         Setpoint item=all_volume minValue=0 maxValue=100 step=1
         Switch item=all_mute
     }
-    
+
     Frame label="Zone 1" {
         Switch item=z1_power
         Selection item=z1_source visibility=[z1_power==ON]
@@ -144,7 +148,7 @@ sitemap monoprice label="Audio Control" {
         Text item=z1_page label="Page Active: [%s]" visibility=[z1_power==ON]
         Text item=z1_keypad label="Keypad Connected: [%s]" visibility=[z1_power==ON]
     }
-    
+
     // repeat for zones 2-18 (substitute z1)
 }
 ```
