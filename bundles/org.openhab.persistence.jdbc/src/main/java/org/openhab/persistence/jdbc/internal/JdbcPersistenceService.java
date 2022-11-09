@@ -286,6 +286,12 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
         return itemNameToTableNameMap.keySet();
     }
 
+    /**
+     * Get a list of all items with corresponding tables and an {@link ItemTableCheckEntryStatus} indicating
+     * its condition.
+     *
+     * @return list of {@link ItemTableCheckEntry}
+     */
     public List<ItemTableCheckEntry> getCheckedEntries() {
         List<ItemTableCheckEntry> entries = new ArrayList<>();
         var orphanTables = getItemTables().stream().map(ItemsVO::getTableName).collect(Collectors.toSet());
@@ -325,6 +331,13 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
         return new ItemTableCheckEntry(itemName, tableName, status);
     }
 
+    /**
+     * Clean up inconsistent item: Remove from index and drop table.
+     * Tables with any rows are skipped.
+     *
+     * @param itemName Name of item to clean
+     * @return true if item was cleaned up
+     */
     public boolean cleanupItem(String itemName) {
         String tableName = itemNameToTableNameMap.get(itemName);
         if (tableName == null) {
@@ -334,6 +347,13 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
         return cleanupItem(entry);
     }
 
+    /**
+     * Clean up inconsistent item: Remove from index and drop table.
+     * Tables with any rows are skipped.
+     *
+     * @param entry
+     * @return true if item was cleaned up
+     */
     public boolean cleanupItem(ItemTableCheckEntry entry) {
         ItemTableCheckEntryStatus status = entry.getStatus();
         String tableName = entry.getTableName();
