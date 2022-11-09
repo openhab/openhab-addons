@@ -104,7 +104,13 @@ public class JdbcCommandExtension extends AbstractConsoleCommandExtension implem
         }
         entries.sort(Comparator.comparing(ItemTableCheckEntry::getTableName));
         int itemNameMaxLength = entries.stream().map(t -> t.getItemName().length()).max(Integer::compare).get();
+        if (itemNameMaxLength < 4) {
+            itemNameMaxLength = 4;
+        }
         int tableNameMaxLength = entries.stream().map(t -> t.getTableName().length()).max(Integer::compare).get();
+        if (tableNameMaxLength < 5) {
+            tableNameMaxLength = 5;
+        }
         int statusMaxLength = Stream.of(ItemTableCheckEntryStatus.values()).map(t -> t.toString().length())
                 .max(Integer::compare).get();
         console.println(String.format(
