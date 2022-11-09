@@ -40,13 +40,14 @@ public class TestICloud {
     @Test
     public void testAuth() throws IOException, InterruptedException {
 
-        File jsonStorageFile = new File(System.getProperty("user.home"), "openhab.json");
+        File jsonStorageFile = new File(System.getProperty("user.home"), "openhab-3.json");
         System.out.println(jsonStorageFile.toString());
 
         JsonStorage<String> stateStorage = new JsonStorage<String>(jsonStorageFile, TestICloud.class.getClassLoader(),
-                2, 1000, 1000, List.of());
+                0, 1000, 1000, List.of());
 
         ICloudService service = new ICloudService(this.E_MAIL, this.PW, stateStorage);
+        service.authenticate(false);
         if (service.requires2fa()) {
             System.out.print("Code: ");
             String code = new Scanner(System.in).nextLine();

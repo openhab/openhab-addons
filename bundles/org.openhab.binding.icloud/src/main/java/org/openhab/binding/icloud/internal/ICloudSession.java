@@ -26,7 +26,6 @@ import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.openhab.binding.icloud.internal.utilities.CustomCookieStore;
@@ -40,9 +39,11 @@ import com.google.gson.GsonBuilder;
 
 /**
  *
- * TODO
+ * Class to handle iCloud API session information for accessing the API.
  *
- * @author Simon Spielmann
+ * The implementation of this class is inspired by https://github.com/picklepete/pyicloud.
+ *
+ * @author Simon Spielmann Initial contribution
  */
 public class ICloudSession {
 
@@ -50,7 +51,7 @@ public class ICloudSession {
 
     private final HttpClient client;
 
-    private final List<Pair<String, String>> headers = new ArrayList();
+    private List<Pair<String, String>> headers = new ArrayList<Pair<String, String>>();
 
     private ICloudSessionData data = new ICloudSessionData();
 
@@ -60,6 +61,11 @@ public class ICloudSession {
 
     private final static String SESSION_DATA_KEY = "SESSION_DATA";
 
+    /**
+     * The constructor.
+     *
+     * @param stateStorage Storage to persist session state.
+     */
     public ICloudSession(Storage<String> stateStorage) {
 
         String storedData = stateStorage.get(SESSION_DATA_KEY);
@@ -72,16 +78,37 @@ public class ICloudSession {
                 .cookieHandler(new CookieManager(new CustomCookieStore(), CookiePolicy.ACCEPT_ALL)).build();
     }
 
-    public String post(String url, String kwargs, List<Pair<String, String>> overrideHeaders)
+    /**
+     * Create an HTTP POST request to the given url and body.
+     *
+     * @param url URL to call.
+     * @param body Body for the request
+     * @param overrideHeaders  If not null the given headers are used instead of the standard headers set via
+     *            {@link #setDefaultHeaders(Pair...)}
+     * @return Result body as {@link String}.
+     * @throws IOException if I/O error occurred
+     * @throws InterruptedException if this blocking request was interrupted
+     */
+    public String post(String url, String body, List<Pair<String, String>> overrideHeaders)
             throws IOException, InterruptedException {
 
-        return request("POST", url, kwargs, overrideHeaders);
+        return request("POST", url, body, overrideHeaders);
     }
 
-    public String get(String url, String kwargs, List<Pair<String, String>> overrideHeaders)
-            throws IOException, InterruptedException {
+    /**
+     * Create an HTTP GET request to the given url.
+     *
+     * @param url URL to call.
+     * @param body Body for the request
+     * @param overrideHeaders  If not null the given headers are used instead of the standard headers set via
+     *            {@link #setDefaultHeaders(Pair...)}
+     * @return Result body as {@link String}.
+     * @throws IOException if I/O error occurred
+     * @throws InterruptedException if this blocking request was interrupted
+     */
+    public String get(String url, List<Pair<String, String>> overrideHeaders) throws IOException, InterruptedException {
 
-        return request("GET", url, kwargs, overrideHeaders);
+        return request("GET", url, null, overrideHeaders);
     }
 
     private String request(String method, String url, String kwargs, List<Pair<String, String>> overrideHeaders)
@@ -95,7 +122,7 @@ public class ICloudSession {
         }
 
         for (Pair<String, String> header : requestHeaders) {
-            builder.header(header.key, header.value);
+            builder.header(header.getKey(), header.getValue());
         }
 
         if (kwargs != null) {
@@ -106,21 +133,17 @@ public class ICloudSession {
 
         LOGGER.debug("Calling {}\nHeaders -----\n{}\nBody -----\n{}\n------\n", url, request.headers(), kwargs);
 
-        HttpResponse response = this.client.send(request, BodyHandlers.ofString());
+        HttpResponse<?> response = this.client.send(request, BodyHandlers.ofString());
         LOGGER.debug("Result {} {}\nHeaders -----\n{}\nBody -----\n{}\n------\n", url, response.statusCode(),
                 response.headers().toString(), response.body().toString());
 
-        // TODO Error Handling pyicloud 99-162
         if (response.statusCode() >= 300) {
-            throw new ICloudAPIResponseException(
-                    String.format("Request {} failed with {}.", url, response.statusCode()));
-            /*
-             * 826 if (response.statusCode() == 421 || response.statusCode() == 450 || response.statusCode() == 500) {
-             * throw
-             * new ICloudAPIResponseException();
-             */
+            // Error Handling pyicloud 99-162
+            throw new ICloudAPIResponseException(url, response.statusCode());
+
         }
 
+        // Store headers to reuse authentication
         this.data.accountCountry = response.headers().firstValue("X-Apple-ID-Account-Country")
                 .orElse(getAccountCountry());
         this.data.sessionId = response.headers().firstValue("X-Apple-ID-Session-Id").orElse(getSessionId());
@@ -134,13 +157,12 @@ public class ICloudSession {
     }
 
     /**
-     * Update headers, remove existing keys and set given
+     * Sets default HTTP headers, for HTTP requests.
      *
-     * @return headers
+     * @return headers HTTP headers
      */
-    public void updateHeaders(Pair<String, String>... headers) {
-
-        updateList(this.headers, headers);
+    public void setDefaultHeaders(Pair<String, String>... headers) {
+        this.headers = List.of(headers);
     }
 
     /**
@@ -191,55 +213,21 @@ public class ICloudSession {
         return this.data.accountCountry;
     }
 
-    // TODO refactor this
-    public static void updateList(List<Pair<String, String>> originalList, Pair<String, String>... replacements) {
-
-        for (Pair<String, String> newHeader : replacements) {
-            Iterator<Pair<String, String>> it = originalList.iterator();
-            boolean found = false;
-            while (it.hasNext()) {
-                Pair<String, String> existingHeader = it.next();
-                if (existingHeader.key.equals(newHeader.key)) {
-                    if (found) {
-                        it.remove();
-                    } else {
-                        existingHeader.value = newHeader.value;
-                        found = true;
-                    }
-                }
-            }
-            if (!found) {
-                originalList.add(newHeader);
-            }
-        }
-    }
-
     /**
      *
-     * TODO
+     * Internal class to encapsulate data required for iCloud authentication.
      *
-     * @author Simon Spielmann
+     * @author Simon Spielmann Initial Contribution
      */
-    class ICloudSessionData {
-        /**
-         *
-         */
+    private class ICloudSessionData {
         String scnt;
-        /**
-         *
-         */
+
         String sessionId;
-        /**
-         *
-         */
+
         String sessionToken;
-        /**
-         *
-         */
+
         String trustToken;
-        /**
-         *
-         */
+
         String accountCountry;
     }
 }

@@ -14,18 +14,23 @@ package org.openhab.binding.icloud.internal;
 
 /**
  *
- * TODO
+ * Exception for errors during calls of the iCloud API.
  *
  * @author Simon Spielmann
  */
 public class ICloudAPIResponseException extends RuntimeException {
 
-    /**
-     * The constructor.
-     *
-     * @param format
-     */
-    public ICloudAPIResponseException(String message) {
-        super(message);
-    }
+  private int statusCode;
+
+  /**
+   * The constructor.
+   *
+   * @param url URL for which the exception occured
+   * @param statusCode HTTP status code which was reported
+   */
+  public ICloudAPIResponseException(String url, int statusCode) {
+
+    super(String.format("Request {} failed with {}.", url, statusCode));
+    this.statusCode = statusCode;
+  }
 }

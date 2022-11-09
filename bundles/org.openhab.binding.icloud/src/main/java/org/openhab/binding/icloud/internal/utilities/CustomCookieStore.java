@@ -27,84 +27,85 @@ import com.google.gson.GsonBuilder;
 
 /**
  *
- * TODO
+ * This class implements a customized {@link CookieStore}. Its purpose is to add hyphens at the beginning and end of
+ * each cookie value which is required by Apple iCloud API.
  *
- * @author Simon Spielmann
+ *
+ * @author Simon Spielmann Initial contribution
  */
 public class CustomCookieStore implements CookieStore {
 
-    private CookieStore cookieStore;
+  private CookieStore cookieStore;
 
-    private final Gson gson = new GsonBuilder().create();
+  private final Gson gson = new GsonBuilder().create();
 
-    private Storage<String> stateStorage;
+  private Storage<String> stateStorage;
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(CustomCookieStore.class);
+  private final static Logger LOGGER = LoggerFactory.getLogger(CustomCookieStore.class);
 
-    /**
-     * The constructor.
-     *
-     * @param cookieStore
-     */
-    public CustomCookieStore() {
+  /**
+   * The constructor.
+   *
+   */
+  public CustomCookieStore() {
 
-        this.cookieStore = new CookieManager().getCookieStore();
+    this.cookieStore = new CookieManager().getCookieStore();
+  }
+
+  @Override
+  public void add(URI uri, HttpCookie cookie) {
+
+    this.cookieStore.add(uri, cookie);
+  }
+
+  @Override
+  public List<HttpCookie> get(URI uri) {
+
+    List<HttpCookie> result = this.cookieStore.get(uri);
+    filterCookies(result);
+    return result;
+  }
+
+  @Override
+  public List<HttpCookie> getCookies() {
+
+    List<HttpCookie> result = this.cookieStore.getCookies();
+    filterCookies(result);
+    return result;
+  }
+
+  @Override
+  public List<URI> getURIs() {
+
+    return this.cookieStore.getURIs();
+  }
+
+  @Override
+  public boolean remove(URI uri, HttpCookie cookie) {
+
+    return this.cookieStore.remove(uri, cookie);
+  }
+
+  @Override
+  public boolean removeAll() {
+
+    return this.cookieStore.removeAll();
+  }
+
+  /**
+   * Add quotes add beginning and end of all cookie values
+   *
+   * @param cookieList Current cookies. This list is modified in-place.
+   */
+  private void filterCookies(List<HttpCookie> cookieList) {
+
+    for (HttpCookie cookie : cookieList) {
+      if (!cookie.getValue().startsWith("\"")) {
+        cookie.setValue("\"" + cookie.getValue());
+      }
+      if (!cookie.getValue().endsWith("\"")) {
+        cookie.setValue(cookie.getValue() + "\"");
+      }
     }
-
-    @Override
-    public void add(URI uri, HttpCookie cookie) {
-
-        this.cookieStore.add(uri, cookie);
-    }
-
-    @Override
-    public List<HttpCookie> get(URI uri) {
-
-        List<HttpCookie> result = this.cookieStore.get(uri);
-        filterCookies(result);
-        return result;
-    }
-
-    @Override
-    public List<HttpCookie> getCookies() {
-
-        List<HttpCookie> result = this.cookieStore.getCookies();
-        filterCookies(result);
-        return result;
-    }
-
-    @Override
-    public List<URI> getURIs() {
-
-        return this.cookieStore.getURIs();
-    }
-
-    @Override
-    public boolean remove(URI uri, HttpCookie cookie) {
-
-        return this.cookieStore.remove(uri, cookie);
-    }
-
-    @Override
-    public boolean removeAll() {
-
-        return this.cookieStore.removeAll();
-    }
-
-    /**
-     * Add quotes add beginning and end of all cookie values
-     *
-     * @param cookieList
-     */
-    private void filterCookies(List<HttpCookie> cookieList) {
-
-        for (HttpCookie cookie : cookieList) {
-            if (!cookie.getValue().startsWith("\"")) {
-                cookie.setValue("\"" + cookie.getValue());
-            }
-            if (!cookie.getValue().endsWith("\"")) {
-                cookie.setValue(cookie.getValue() + "\"");
-            }
-        }
-    }
+  }
 }

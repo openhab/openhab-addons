@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.icloud.internal.handler;
 
-import static java.util.concurrent.TimeUnit.MINUTES;
-import static java.util.concurrent.TimeUnit.SECONDS;
+import static java.util.concurrent.TimeUnit.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -106,8 +105,9 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
                         throw new IOException("Provide code in thing config.");
                     }
                     boolean result = this.iCloudService.validate2faCode(config.code);
-                    if (!result)
+                    if (!result) {
                         throw new IOException("Cannot authenticate token");
+                    }
 
                 }
                 return this.iCloudService.getDevices().refreshClient();

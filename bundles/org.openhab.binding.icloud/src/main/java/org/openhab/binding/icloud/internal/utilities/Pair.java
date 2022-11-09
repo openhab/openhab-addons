@@ -14,19 +14,28 @@ package org.openhab.binding.icloud.internal.utilities;
 
 /**
  *
- * TODO
+ * Implementation of simple pair. Used mainly for HTTP header handling.
  *
- * @author Simon Spielmann
+ * @author Simon Spielmann Initial contribution.
+ * @param <K> Type of first element
+ * @param <V> Type of second element
  */
 public class Pair<K, V> {
 
-    public K key;
+    private K key;
 
-    public V value;
+    private V value;
 
-    public static Pair of(String key, String value) {
+    /**
+     * Create pair with key and value. Both of type {@link String}.
+     *
+     * @param key Key
+     * @param value Value
+     * @return Pair with given key and value
+     */
+    public static Pair<String, String> of(String key, String value) {
 
-        Pair p = new Pair();
+        Pair<String, String> p = new Pair<>();
         p.key = key;
         p.value = value;
         return p;
@@ -36,5 +45,19 @@ public class Pair<K, V> {
     public String toString() {
 
         return "Pair [key=" + this.key + ", value=" + this.value + "]";
+    }
+
+    /**
+     * @return key
+     */
+    public K getKey() {
+        return this.key;
+    }
+
+    /**
+     * @return value
+     */
+    public V getValue() {
+        return this.value;
     }
 }

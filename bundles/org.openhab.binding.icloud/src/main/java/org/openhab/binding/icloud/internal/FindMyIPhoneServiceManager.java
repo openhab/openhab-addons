@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Map;
 
-import org.openhab.binding.icloud.internal.json.request.ICloudFindMyDeviceRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,42 +30,42 @@ import com.google.gson.GsonBuilder;
  */
 public class FindMyIPhoneServiceManager {
 
-    private ICloudSession session;
+  private ICloudSession session;
 
-    private URI fmipRefreshUrl;
+  private URI fmipRefreshUrl;
 
-    private URI fmipSoundUrl;
+  private URI fmipSoundUrl;
 
-    private final static String FMIP_ENDPOINT = "/fmipservice/client/web";
+  private final static String FMIP_ENDPOINT = "/fmipservice/client/web";
 
-    private final Gson gson = new GsonBuilder().create();
+  private final Gson gson = new GsonBuilder().create();
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(FindMyIPhoneServiceManager.class);
+  private final static Logger LOGGER = LoggerFactory.getLogger(FindMyIPhoneServiceManager.class);
 
-    public FindMyIPhoneServiceManager(ICloudSession session, String serviceRoot, boolean withFamily)
-            throws IOException, InterruptedException {
+  public FindMyIPhoneServiceManager(ICloudSession session, String serviceRoot, boolean withFamily)
+      throws IOException, InterruptedException {
 
-        this.session = session;
-        this.fmipRefreshUrl = URI.create(serviceRoot + FMIP_ENDPOINT + "/refreshClient");
-        this.fmipSoundUrl = URI.create(serviceRoot + FMIP_ENDPOINT + "/playSound");
-    }
+    this.session = session;
+    this.fmipRefreshUrl = URI.create(serviceRoot + FMIP_ENDPOINT + "/refreshClient");
+    this.fmipSoundUrl = URI.create(serviceRoot + FMIP_ENDPOINT + "/playSound");
+  }
 
-    /**
-     * @throws InterruptedException
-     * @throws IOException
-     *
-     */
-    public String refreshClient() throws IOException, InterruptedException {
+  /**
+   * @throws InterruptedException
+   * @throws IOException
+   *
+   */
+  public String refreshClient() throws IOException, InterruptedException {
 
-        Map localdata = Map.of("clientContext",
-                Map.of("fmly", true, "shouldLocate", true, "selectedDevice", "All", "deviceListVersion", 1));
+    Map<String, Object> request = Map.of("clientContext",
+        Map.of("fmly", true, "shouldLocate", true, "selectedDevice", "All", "deviceListVersion", 1));
 
-        return this.session.post(this.fmipRefreshUrl.toString(), this.gson.toJson(localdata), null);
-    }
+    return this.session.post(this.fmipRefreshUrl.toString(), this.gson.toJson(request), null);
+  }
 
-    public void playSound(String deviceId) throws IOException, InterruptedException {
+  public void playSound(String deviceId) throws IOException, InterruptedException {
 
-        this.session.post(this.fmipSoundUrl.toString(), this.gson.toJson(new ICloudFindMyDeviceRequest(deviceId)),
-                null);
-    }
+    Map<String, Object> request = Map.of("device", deviceId, "fmyl", true);
+    this.session.post(this.fmipSoundUrl.toString(), this.gson.toJson(request), null);
+  }
 }
