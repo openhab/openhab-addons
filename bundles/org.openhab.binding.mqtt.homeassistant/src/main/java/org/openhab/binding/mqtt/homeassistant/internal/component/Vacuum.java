@@ -197,16 +197,17 @@ public class Vacuum extends AbstractComponent<Vacuum.ChannelConfiguration> {
 
         final var allowedSupportedFeatures = channelConfiguration.schema == Schema.LEGACY ? LEGACY_SUPPORTED_FEATURES
                 : STATE_SUPPORTED_FEATURES;
-        final var configSupportedFeatures = channelConfiguration.supportedFeatures == null
+        final var supportedFeatures = channelConfiguration.supportedFeatures;
+        final var configSupportedFeatures = supportedFeatures == null
                 ? channelConfiguration.schema == Schema.LEGACY ? LEGACY_DEFAULT_FEATURES : STATE_DEFAULT_FEATURES
-                : channelConfiguration.supportedFeatures;
+                : supportedFeatures;
         List<String> deviceSupportedFeatures = Collections.emptyList();
 
-        if (configSupportedFeatures != null && !configSupportedFeatures.isEmpty()) {
+        if (!configSupportedFeatures.isEmpty()) {
             deviceSupportedFeatures = allowedSupportedFeatures.stream().filter(configSupportedFeatures::contains)
                     .collect(Collectors.toList());
         }
-        if (configSupportedFeatures != null && deviceSupportedFeatures.size() != configSupportedFeatures.size()) {
+        if (deviceSupportedFeatures.size() != configSupportedFeatures.size()) {
             LOGGER.warn("Vacuum discovery config has unsupported or duplicated features. Supported: {}, provided: {}",
                     Arrays.toString(allowedSupportedFeatures.toArray()),
                     Arrays.toString(configSupportedFeatures.toArray()));
