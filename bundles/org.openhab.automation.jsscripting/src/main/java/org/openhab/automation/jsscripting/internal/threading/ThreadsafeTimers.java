@@ -59,22 +59,54 @@ public class ThreadsafeTimers {
         this.identifier = identifier;
     }
 
-    public Timer createTimer(ZonedDateTime instant, Runnable runnable) {
-        return createTimer(identifier, instant, runnable);
+    /**
+     * Schedules a block of code for later execution.
+     *
+     * @param instant the point in time when the code should be executed
+     * @param closure the code block to execute
+     * @return a handle to the created timer, so that it can be canceled or rescheduled
+     */
+    public Timer createTimer(ZonedDateTime instant, Runnable closure) {
+        return createTimer(identifier, instant, closure);
     }
 
-    public Timer createTimer(@Nullable String identifier, ZonedDateTime instant, Runnable runnable) {
+    /**
+     * Schedules a block of code for later execution.
+     *
+     * @param identifier an optional identifier
+     * @param instant the point in time when the code should be executed
+     * @param closure the code block to execute
+     * @return a handle to the created timer, so that it can be canceled or rescheduled
+     */
+    public Timer createTimer(@Nullable String identifier, ZonedDateTime instant, Runnable closure) {
         return scriptExecution.createTimer(identifier, instant, () -> {
             synchronized (lock) {
-                runnable.run();
+                closure.run();
             }
         });
     }
 
+    /**
+     * Schedules a block of code (with argument) for later execution
+     *
+     * @param instant the point in time when the code should be executed
+     * @param arg1 the argument to pass to the code block
+     * @param closure the code block to execute
+     * @return a handle to the created timer, so that it can be canceled or rescheduled
+     */
     public Timer createTimerWithArgument(ZonedDateTime instant, Object arg1, Consumer<Object> closure) {
         return createTimerWithArgument(identifier, instant, arg1, closure);
     }
 
+    /**
+     * Schedules a block of code (with argument) for later execution
+     *
+     * @param identifier an optional identifier
+     * @param instant the point in time when the code should be executed
+     * @param arg1 the argument to pass to the code block
+     * @param closure the code block to execute
+     * @return a handle to the created timer, so that it can be canceled or rescheduled
+     */
     public Timer createTimerWithArgument(@Nullable String identifier, ZonedDateTime instant, Object arg1,
             Consumer<Object> closure) {
         return scriptExecution.createTimerWithArgument(identifier, instant, arg1, var1 -> {
