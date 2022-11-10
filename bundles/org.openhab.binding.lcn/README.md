@@ -140,7 +140,7 @@ If a special command is needed, the [Hit Key](#hit-key) action (German: "Sende T
 | Motor/Shutter on Dimmer Outputs | Motor/Rollladen an Ausgängen     | rollershutteroutput    | 1-4  | Rollershutter                  | Control roller shutters on dimmer outputs                                                                                     |
 | Motor/Shutter on Relays         | Motor/Rollladen an Relais        | rollershutterrelay     | 1-4  | Rollershutter, Dimmer          | Control position of roller shutters on relays (Supports UpDown, StopMove, Percent)                                            |
 | Shutter Slat Angle on Relays    | Rollladenlamellen an Relais      | rollershutterrelayslat | 1-4  | Rollershutter, Dimmer          | Control slat angle of roller shutters on relays (Supports UpDown, StopMove, Percent)                                          |
-| Variables                       | Variable anzeigen                | variable               | 1-12 | Number                         | Sets and visualizes the value of a variable.                                                                                  |
+| Variables                       | Variable anzeigen                | variable               | 1-12 | Number                         | Sets and visualizes the value of a variable. See note.                                                                        |
 | Regulator Set Setpoint          | Regler Sollwert ändern           | rvarsetpoint           | 1-2  | Number                         | Sets and visualizes the setpoint of a regulator.                                                                              |
 | Regulator Set Mode              | Reglerverhalten ändern           | rvarmode               | 1-2  | String                         | Sets the mode of the regulator: `HEATING` or `COOLING`                                                                        |
 | Regulator Lock                  | Regler sperren                   | rvarlock               | 1-2  | Switch                         | Locks a regulator and visualizes its locking state.                                                                           |
@@ -194,13 +194,13 @@ If a special command is needed, the [Hit Key](#hit-key) action (German: "Sende T
 | Set S0 Counters                 | S0-Zähler setzen                 | -                      | -    | -                              | Not implemented                                                                                                               |
 | Status Command                  | Statuskommandos                  | -                      | -    | -                              | Not implemented                                                                                                               |
 
-**For some *Channel*s a unit should be configured for visualization.** By default the native LCN value is used.
+*Notes:*
 
-S0 counter Channels need to be the pulses per kWh configured. If the value is left blank, a default value of 1000 pulses/kWh is set.
-
-The Rollershutter Channels provide the boolean parameter `invertUpDown`, which can be set to 'true' if the Up/Down wires are interchanged.
-
-The binary sensor Channels provide the boolean parameter `invertState`, which can be set to 'true' if the binary sensor connected uses inverted logic for signaling open/closed.
+- **For some *Channel*s (e.g. temperature) a unit should be configured in the channel configuration.** By default the native LCN value is used.
+- S0 counter Channels need to be the pulses per kWh configured. If the value is left blank, a default value of 1000 pulses/kWh is set.
+- When setting a variable via openHAB, the variable must be configured as counter in LCN-PRO. The variable must be set initially by the module after power up.
+- The Rollershutter Channels provide the boolean parameter `invertUpDown`, which can be set to 'true' if the Up/Down wires are interchanged.
+- The binary sensor Channels provide the boolean parameter `invertState`, which can be set to 'true' if the binary sensor connected uses inverted logic for signaling open/closed.
 
 ### Transponder/Fingerprints
 
