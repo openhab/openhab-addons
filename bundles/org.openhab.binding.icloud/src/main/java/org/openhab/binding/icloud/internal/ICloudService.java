@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.openhab.binding.icloud.internal.utilities.ListUtil;
 import org.openhab.binding.icloud.internal.utilities.Pair;
 import org.openhab.core.storage.Storage;
 import org.slf4j.Logger;
@@ -72,8 +73,7 @@ public class ICloudService {
         this.clientId = "auth-" + UUID.randomUUID().toString().toLowerCase();
 
         this.session = new ICloudSession(stateStorage);
-        this.session.setDefaultHeaders(Pair.of("Accept", "*/*"), Pair.of("Origin", HOME_ENDPOINT),
-                Pair.of("Referer", HOME_ENDPOINT + "/"));
+        this.session.setDefaultHeaders(Pair.of("Origin", HOME_ENDPOINT), Pair.of("Referer", HOME_ENDPOINT + "/"));
     }
 
     /**
@@ -221,7 +221,8 @@ public class ICloudService {
 
         Map<String, Object> requestBody = Map.of("securityCode", Map.of("code", code));
 
-        List<Pair<String, String>> headers = getAuthHeaders();
+        List<Pair<String, String>> headers = ListUtil.replaceEntries(getAuthHeaders(),
+                List.of(Pair.of("Accept", "application/json")));
 
         addSessionHeaders(headers);
 

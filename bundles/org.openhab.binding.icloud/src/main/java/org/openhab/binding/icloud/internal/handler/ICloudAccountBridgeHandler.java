@@ -32,7 +32,6 @@ import org.openhab.binding.icloud.internal.json.response.ICloudAccountDataRespon
 import org.openhab.binding.icloud.internal.json.response.ICloudDeviceInformation;
 import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.storage.Storage;
-import org.openhab.core.test.storage.VolatileStorage;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -108,16 +107,12 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
             final String localAppleId = config.appleId;
             final String localPassword = config.password;
 
-            if (this.iCloudService == null) {
-                if (localAppleId != null && localPassword != null) {
-                    // this.iCloudService = new ICloudService(localAppleId, localPassword, this.storage);
-                    this.iCloudService = new ICloudService(localAppleId, localPassword, new VolatileStorage<String>());
-                } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "Apple ID/Password is not set!");
-                    return;
-
-                }
+            if (localAppleId != null && localPassword != null) {
+                this.iCloudService = new ICloudService(localAppleId, localPassword, this.storage);
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Apple ID/Password is not set!");
+                return;
             }
 
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Wait for login");
@@ -244,8 +239,6 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
                     }
                     if (iCloudService.requires2fa()) {
                         // New code was requested. Wait for the user to update config.
-                        String code = "999999";
-                        success = this.iCloudService.validate2faCode(code);
                         logger.warn(
                                 "ICloud authentication requires 2-FA code. Please provide code in in thing configuration.");
                         validate2faCode = true;

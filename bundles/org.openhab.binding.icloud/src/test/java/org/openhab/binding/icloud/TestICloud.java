@@ -25,7 +25,6 @@ import org.openhab.binding.icloud.internal.ICloudDeviceInformationParser;
 import org.openhab.binding.icloud.internal.ICloudService;
 import org.openhab.binding.icloud.internal.json.response.ICloudAccountDataResponse;
 import org.openhab.core.storage.json.internal.JsonStorage;
-import org.openhab.core.test.storage.VolatileStorage;
 
 /**
  *
@@ -49,8 +48,8 @@ public class TestICloud {
         JsonStorage<String> stateStorage = new JsonStorage<String>(jsonStorageFile, TestICloud.class.getClassLoader(),
                 0, 1000, 1000, List.of());
 
-        // ICloudService service = new ICloudService(this.E_MAIL, this.PW, stateStorage);
-        ICloudService service = new ICloudService(this.E_MAIL, this.PW, new VolatileStorage<>());
+        ICloudService service = new ICloudService(this.E_MAIL, this.PW, stateStorage);
+        // ICloudService service = new ICloudService(this.E_MAIL, this.PW, new VolatileStorage<>());
         service.authenticate(false);
         if (service.requires2fa()) {
             System.out.print("Code: ");

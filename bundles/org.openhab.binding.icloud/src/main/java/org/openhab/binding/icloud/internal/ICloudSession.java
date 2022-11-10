@@ -30,6 +30,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.openhab.binding.icloud.internal.utilities.CustomCookieStore;
+import org.openhab.binding.icloud.internal.utilities.ListUtil;
 import org.openhab.binding.icloud.internal.utilities.Pair;
 import org.openhab.core.storage.Storage;
 import org.slf4j.Logger;
@@ -100,7 +101,8 @@ public class ICloudSession {
      * Invoke an HTTP GET request to the given url.
      *
      * @param url URL to call.
-     * @param overrideHeaders  If not null the given headers are used instead of the standard headers set via
+     * @param overrideHeaders  If not null the given headers are used to replace corresponding entries of the standard
+     *            headers set via
      *            {@link #setDefaultHeaders(Pair...)}
      * @return Result body as {@link String}.
      * @throws IOException if I/O error occurred
@@ -117,10 +119,7 @@ public class ICloudSession {
 
         Builder builder = HttpRequest.newBuilder().uri(URI.create(url));
 
-        List<Pair<String, String>> requestHeaders = this.headers;
-        if (overrideHeaders != null) {
-            requestHeaders = overrideHeaders;
-        }
+        List<Pair<String, String>> requestHeaders = ListUtil.replaceEntries(this.headers, overrideHeaders);
 
         for (Pair<String, String> header : requestHeaders) {
             builder.header(header.getKey(), header.getValue());
