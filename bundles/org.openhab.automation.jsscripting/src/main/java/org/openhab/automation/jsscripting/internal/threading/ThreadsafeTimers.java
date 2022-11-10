@@ -54,21 +54,6 @@ public class ThreadsafeTimers {
         this.identifier = identifier;
     }
 
-    /**
-     * Schedules a callback to run at a given time.
-     *
-     * @param id timerId to append to the identifier base for naming the scheduled job
-     * @param zdt time to schedule the job
-     * @param callback function to run at the given time
-     * @return a {@link ScheduledCompletableFuture}
-     */
-    private ScheduledCompletableFuture<Object> createFuture(long id, ZonedDateTime zdt, Runnable callback) {
-        return scheduler.schedule(() -> {
-            synchronized (lock) {
-                callback.run();
-            }
-        }, identifier + ".timeout." + id, zdt.toInstant());
-    }
 
     /**
      * <a href="https://developer.mozilla.org/en-US/docs/Web/API/setTimeout"><code>setTimeout()</code></a> polyfill.
@@ -95,8 +80,11 @@ public class ThreadsafeTimers {
      */
     public long setTimeout(Runnable callback, Long delay, Object... args) {
         long id = lastId.incrementAndGet();
-        ScheduledCompletableFuture<Object> future = createFuture(id, ZonedDateTime.now().plusNanos(delay * 1000000),
-                callback);
+        ScheduledCompletableFuture<Object> future = scheduler.schedule(() -> {
+            synchronized (lock) {
+                callback.run();
+            }
+        }, identifier + ".timeout." + id, ZonedDateTime.now().plusNanos(delay * 1000000).toInstant());
         idSchedulerMapping.put(id, future);
         return id;
     }
@@ -113,22 +101,6 @@ public class ThreadsafeTimers {
         if (scheduled != null) {
             scheduled.cancel(true);
         }
-    }
-
-    /**
-     * Schedules a callback to run in a loop with a given delay between the executions.
-     *
-     * @param id timerId to append to the identifier base for naming the scheduled job
-     * @param delay time in milliseconds that the timer should delay in between executions of the callback
-     * @param callback function to run
-     */
-    private void createLoopingFuture(long id, Long delay, Runnable callback) {
-        ScheduledCompletableFuture<Object> future = scheduler.schedule(() -> {
-            synchronized (lock) {
-                callback.run();
-            }
-        }, identifier + ".interval." + id, new LoopingAdjuster(Duration.ofMillis(delay)));
-        idSchedulerMapping.put(id, future);
     }
 
     /**
@@ -156,7 +128,12 @@ public class ThreadsafeTimers {
      */
     public long setInterval(Runnable callback, Long delay, Object... args) {
         long id = lastId.incrementAndGet();
-        createLoopingFuture(id, delay, callback);
+        ScheduledCompletableFuture<Object> future = scheduler.schedule(() -> {
+            synchronized (lock) {
+                callback.run();
+            }
+        }, identifier + ".interval." + id, new LoopingAdjuster(Duration.ofMillis(delay)));
+        idSchedulerMapping.put(id, future);
         return id;
     }
 
