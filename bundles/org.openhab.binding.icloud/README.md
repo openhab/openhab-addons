@@ -29,6 +29,8 @@ The account Thing, more precisely the account Bridge, represents one Apple iClou
 The account can be connected to multiple Apple devices which are represented as Things below the Bridge, see the example below.
 You may create multiple account Things for multiple accounts.
 
+If your apple account has 2-factor-authentication enabled configuration requires two steps. First start by adding the Apple ID and password to your account thing configuration. You will receive a notification with a code on one of your Apple devices then. Add this code to the code parameter of the thing then and wait. The binding should be reinitialized and perform the authentication.
+
 ### Device Thing
 
 A device is identified by the device ID provided by Apple.
@@ -62,7 +64,7 @@ The following channels are available (if supported by the device):
 ### icloud.things
 
 ```php
-Bridge icloud:account:myaccount [appleId="mail@example.com", password="secure", refreshTimeInMinutes=5]
+Bridge icloud:account:myaccount [appleId="mail@example.com", password="secure", code="123456", refreshTimeInMinutes=5]
 {
     Thing device myiPhone8 "iPhone 8" @ "World" [deviceId="VIRG9FsrvXfE90ewVBA1H5swtwEQePdXVjHq3Si6pdJY2Cjro8QlreHYVGSUzuWV"]
 }
