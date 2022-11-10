@@ -124,13 +124,12 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
                 this.transformationServiceProvider);
     }
 
-    @SuppressWarnings({ "null" })
     @Override
     public void initialize() {
         started = false;
 
         config = getConfigAs(HandlerConfiguration.class);
-        if (config.topics == null || config.topics.isEmpty()) {
+        if (config.topics.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Device topics unknown");
             return;
         }
