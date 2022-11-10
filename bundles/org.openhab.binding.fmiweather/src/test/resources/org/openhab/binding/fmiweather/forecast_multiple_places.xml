@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- when regenerating test results, update date below (otherwise forecast will be nan) -->
-<!-- https://opendata.fmi.fi/wfs?service=WFS&version=2.0.0&request=getFeature&storedquery_id=fmi::forecast::hirlam::surface::point::multipointcoverage&latlon=60.09726,19.93481&latlon=61.09726,19.9&starttime=2021-05-27T10:10:00Z&endtime=2021-05-30T20:10:00Z&timestep=360&parameters=Temperature,Humidity -->
+<!-- https://opendata.fmi.fi/wfs?service=WFS&version=2.0.0&request=getFeature&storedquery_id=fmi::forecast::harmonie::surface::point::multipointcoverage&latlon=60.09726,19.93481&latlon=61.09726,19.9&starttime=2021-05-27T10:10:00Z&endtime=2021-05-30T20:10:00Z&timestep=360&parameters=Temperature,Humidity -->
 <wfs:FeatureCollection
     timeStamp="2021-05-27T17:41:39Z"
     numberMatched="1"
