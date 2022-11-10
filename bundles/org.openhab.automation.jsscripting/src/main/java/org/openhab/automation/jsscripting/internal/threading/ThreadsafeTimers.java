@@ -20,7 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.model.script.ScriptServiceUtil;
+import org.openhab.automation.jsscripting.internal.GraalJSScriptServiceUtil;
 import org.openhab.core.scheduler.ScheduledCompletableFuture;
 import org.openhab.core.scheduler.Scheduler;
 import org.openhab.core.scheduler.SchedulerTemporalAdjuster;
@@ -29,8 +29,7 @@ import org.openhab.core.scheduler.SchedulerTemporalAdjuster;
  * A polyfill implementation of NodeJS timer functionality (<code>setTimeout()</code>, <code>setInterval()</code> and
  * the cancel methods) which controls multithreaded execution access to the single-threaded GraalJS contexts.
  *
- * @author Florian Hotze - Initial contribution
- * @author Florian Hotze - Reimplementation to conform standard JS setTimeout and setInterval
+ * @author Florian Hotze - Initial contribution; Reimplementation to conform standard JS setTimeout and setInterval
  */
 public class ThreadsafeTimers {
     private final Object lock;
@@ -42,7 +41,7 @@ public class ThreadsafeTimers {
 
     public ThreadsafeTimers(Object lock) {
         this.lock = lock;
-        this.scheduler = ScriptServiceUtil.getScheduler();
+        this.scheduler = GraalJSScriptServiceUtil.getScheduler();
     }
 
     /**
