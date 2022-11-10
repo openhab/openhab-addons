@@ -34,7 +34,8 @@ public class GraalJSScriptServiceUtil {
     private static @Nullable ScriptExecution scriptExecution;
 
     @Activate
-    public GraalJSScriptServiceUtil(final @Reference Scheduler scheduler, final @Reference ScriptExecution scriptExecution) {
+    public GraalJSScriptServiceUtil(final @Reference Scheduler scheduler,
+            final @Reference ScriptExecution scriptExecution) {
         GraalJSScriptServiceUtil.scheduler = scheduler;
         GraalJSScriptServiceUtil.scriptExecution = scriptExecution;
     }

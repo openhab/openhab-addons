@@ -18,9 +18,12 @@ import java.time.temporal.Temporal;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.automation.jsscripting.internal.GraalJSScriptServiceUtil;
+import org.openhab.core.automation.module.script.action.ScriptExecution;
+import org.openhab.core.automation.module.script.action.Timer;
 import org.openhab.core.scheduler.ScheduledCompletableFuture;
 import org.openhab.core.scheduler.Scheduler;
 import org.openhab.core.scheduler.SchedulerTemporalAdjuster;
@@ -29,11 +32,13 @@ import org.openhab.core.scheduler.SchedulerTemporalAdjuster;
  * A polyfill implementation of NodeJS timer functionality (<code>setTimeout()</code>, <code>setInterval()</code> and
  * the cancel methods) which controls multithreaded execution access to the single-threaded GraalJS contexts.
  *
- * @author Florian Hotze - Initial contribution; Reimplementation to conform standard JS setTimeout and setInterval
+ * @author Florian Hotze - Initial contribution; Reimplementation to conform standard JS setTimeout and setInterval;
+ *         Threadsafe reimplementation of the timer creation methods of {@link ScriptExecution}
  */
 public class ThreadsafeTimers {
     private final Object lock;
     private final Scheduler scheduler;
+    private final ScriptExecution scriptExecution;
     // Mapping of positive, non-zero integer values (used as timeoutID or intervalID) and the Scheduler
     private final Map<Long, ScheduledCompletableFuture<Object>> idSchedulerMapping = new ConcurrentHashMap<>();
     private AtomicLong lastId = new AtomicLong();
@@ -42,6 +47,7 @@ public class ThreadsafeTimers {
     public ThreadsafeTimers(Object lock) {
         this.lock = lock;
         this.scheduler = GraalJSScriptServiceUtil.getScheduler();
+        this.scriptExecution = GraalJSScriptServiceUtil.getScriptExecution();
     }
 
     /**
@@ -53,6 +59,30 @@ public class ThreadsafeTimers {
         this.identifier = identifier;
     }
 
+    public Timer createTimer(ZonedDateTime instant, Runnable runnable) {
+        return createTimer(identifier, instant, runnable);
+    }
+
+    public Timer createTimer(@Nullable String identifier, ZonedDateTime instant, Runnable runnable) {
+        return scriptExecution.createTimer(identifier, instant, () -> {
+            synchronized (lock) {
+                runnable.run();
+            }
+        });
+    }
+
+    public Timer createTimerWithArgument(ZonedDateTime instant, Object arg1, Consumer<Object> closure) {
+        return createTimerWithArgument(identifier, instant, arg1, closure);
+    }
+
+    public Timer createTimerWithArgument(@Nullable String identifier, ZonedDateTime instant, Object arg1,
+            Consumer<Object> closure) {
+        return scriptExecution.createTimerWithArgument(identifier, instant, arg1, var1 -> {
+            synchronized (lock) {
+                closure.accept(arg1);
+            }
+        });
+    }
 
     /**
      * <a href="https://developer.mozilla.org/en-US/docs/Web/API/setTimeout"><code>setTimeout()</code></a> polyfill.
