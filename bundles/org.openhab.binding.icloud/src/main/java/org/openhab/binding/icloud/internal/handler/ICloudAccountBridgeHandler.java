@@ -19,9 +19,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.icloud.internal.ICloudAPIResponseException;
 import org.openhab.binding.icloud.internal.ICloudDeviceInformationListener;
 import org.openhab.binding.icloud.internal.ICloudDeviceInformationParser;
 import org.openhab.binding.icloud.internal.ICloudService;
@@ -30,6 +32,7 @@ import org.openhab.binding.icloud.internal.json.response.ICloudAccountDataRespon
 import org.openhab.binding.icloud.internal.json.response.ICloudDeviceInformation;
 import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.storage.Storage;
+import org.openhab.core.test.storage.VolatileStorage;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -63,8 +66,12 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
 
     private @Nullable ExpiringCache<String> iCloudDeviceInformationCache;
 
+    private @Nullable ScheduledFuture<?> checkLoginJob;
+
+    private boolean validate2faCode = false;
+
     @Nullable
-    ServiceRegistration<?> service;
+    private ServiceRegistration<?> service;
 
     private final Object synchronizeRefresh = new Object();
 
@@ -85,7 +92,7 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
 
-        this.logger.trace("Command '{}' received for channel '{}'", command, channelUID);
+        logger.trace("Command '{}' received for channel '{}'", command, channelUID);
 
         if (command instanceof RefreshType) {
             refreshData();
@@ -95,31 +102,46 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
 
-        this.logger.debug("iCloud bridge handler initializing ...");
-        this.iCloudDeviceInformationCache = new ExpiringCache<>(CACHE_EXPIRY, () -> {
-            try {
-                if (!this.iCloudService.isTrustedSession()) {
-                    this.logger.debug("Trying to authenticate token...");
-                    ICloudAccountThingConfiguration config = getConfigAs(ICloudAccountThingConfiguration.class);
-                    if (config.code == null || config.code.isBlank()) {
-                        throw new IOException("Provide code in thing config.");
-                    }
-                    boolean result = this.iCloudService.validate2faCode(config.code);
-                    if (!result) {
-                        throw new IOException("Cannot authenticate token");
-                    }
+        logger.debug("iCloud bridge handler initializing ...");
+        synchronized (synchronizeRefresh) {
+            ICloudAccountThingConfiguration config = getConfigAs(ICloudAccountThingConfiguration.class);
+            final String localAppleId = config.appleId;
+            final String localPassword = config.password;
+
+            if (this.iCloudService == null) {
+                if (localAppleId != null && localPassword != null) {
+                    // this.iCloudService = new ICloudService(localAppleId, localPassword, this.storage);
+                    this.iCloudService = new ICloudService(localAppleId, localPassword, new VolatileStorage<String>());
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            "Apple ID/Password is not set!");
+                    return;
 
                 }
-                return this.iCloudService.getDevices().refreshClient();
-            } catch (Exception e) {
-                this.logger.warn("Unable to refresh device data", e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-                return null;
             }
-        });
 
-        startHandler();
-        this.logger.debug("iCloud bridge initialized.");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Wait for login");
+
+            this.checkLoginJob = this.scheduler.scheduleWithFixedDelay(this::checkLogin, 0, 60, TimeUnit.MINUTES);
+
+            this.refreshJob = this.scheduler.scheduleWithFixedDelay(this::refreshData, 0, config.refreshTimeInMinutes,
+                    MINUTES);
+
+            this.iCloudDeviceInformationCache = new ExpiringCache<>(CACHE_EXPIRY, () -> {
+                try {
+
+                    return this.iCloudService.getDevices().refreshClient();
+                } catch (IOException | ICloudAPIResponseException | InterruptedException e) {
+                    logger.warn("Unable to refresh device data", e);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                    return null;
+                } catch (IllegalStateException ex) {
+                    logger.warn("Need to authenticate first.", ex);
+                    return null;
+                }
+            });
+        }
+        logger.debug("iCloud bridge initialized.");
     }
 
     @Override
@@ -130,7 +152,9 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
-
+        if (this.checkLoginJob != null) {
+            this.checkLoginJob.cancel(true);
+        }
         if (this.refreshJob != null) {
             this.refreshJob.cancel(true);
         }
@@ -139,10 +163,6 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
 
     public void findMyDevice(String deviceId) throws IOException, InterruptedException {
 
-        if (this.iCloudService == null) {
-            this.logger.debug("Can't send Find My Device request, because connection is null!");
-            return;
-        }
         this.iCloudService.getDevices().playSound(deviceId);
     }
 
@@ -156,37 +176,116 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
         this.deviceInformationListeners.remove(listener);
     }
 
-    private void startHandler() {
-
-        try {
-            this.logger.debug("iCloud bridge starting handler ...");
-            ICloudAccountThingConfiguration config = getConfigAs(ICloudAccountThingConfiguration.class);
-            final String localAppleId = config.appleId;
-            final String localPassword = config.password;
-            if (localAppleId != null && localPassword != null) {
-                this.iCloudService = new ICloudService(localAppleId, localPassword, this.storage);
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Apple ID/Password is not set!");
-                return;
+    /**
+     * Checks login to iCloud account. The flow is a bit complicated due to 2-FA authentication.
+     * The normal flow would be:
+     *
+     *
+     * <pre>
+        ICloudService service = new ICloudService(...);
+        service.authenticate(false);
+        if (service.requires2fa()) {
+            String code = ... // Request code from user!
+            System.out.println(service.validate2faCode(code));
+            if (!service.isTrustedSession()) {
+                service.trustSession();
             }
-            this.refreshJob = this.scheduler.scheduleWithFixedDelay(this::refreshData, 0, config.refreshTimeInMinutes,
-                    MINUTES);
+            if (!service.isTrustedSession()) {
+                System.err.println("Trust failed!!!");
+            }
+     * </pre>
+     *
+     * The call to {@link ICloudService#authenticate(boolean)} request a token from the user.
+     * This should be done only once. Afterwards the user has to update the configuration.
+     * In openhab this method here is called for several reason (e.g. config change). So we track if we already
+     * requested a code {@link #validate2faCode}.
+     */
+    private void checkLogin() {
 
-            this.logger.debug("iCloud bridge handler started.");
-        } catch (Exception e) {
-            this.logger.debug("Something went wrong while constructing the connection object", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+        logger.debug("Starting iCloud authentication ...");
+        synchronized (synchronizeRefresh) {
+            try {
+                ICloudAccountThingConfiguration config = getConfigAs(ICloudAccountThingConfiguration.class);
+                boolean success = false;
+                if (validate2faCode) {
+                    // 2-FA-Code was requested in previous call of this method.
+                    if (config.code == null || config.code.isBlank()) {
+                        // Still waiting for user to update config.
+                        logger.warn(
+                                "ICloud authentication requires 2-FA code. Please provide code in in thing configuration.");
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                                "Please provide 2-FA code in thing configuration.");
+                        return;
+                    } else {
+                        // User has provided code in config.
+                        validate2faCode = false;
+                        logger.debug("Trying to authenticate token...");
+                        success = this.iCloudService.validate2faCode(config.code);
+                        if (!success) {
+                            logger.warn("ICloud token invalid.");
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid token.");
+                            return;
+                        }
+                        org.openhab.core.config.core.Configuration config2 = editConfiguration();
+                        config2.put("code", "");
+                        updateConfiguration(config2);
+
+                        logger.debug("Token is valid.");
+                    }
+
+                } else {
+                    // No code requested yet or session is trusted (hopefully).
+                    success = this.iCloudService.authenticate(false);
+                    if (!success) {
+                        logger.warn("ICloud authentication failed.");
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                                "Invalid credentials.");
+                        return;
+                    }
+                    if (iCloudService.requires2fa()) {
+                        // New code was requested. Wait for the user to update config.
+                        String code = "999999";
+                        success = this.iCloudService.validate2faCode(code);
+                        logger.warn(
+                                "ICloud authentication requires 2-FA code. Please provide code in in thing configuration.");
+                        validate2faCode = true;
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                                "Please provide 2-FA code in thing configuration.");
+                        return;
+                    }
+                }
+
+                if (!this.iCloudService.isTrustedSession()) {
+                    logger.debug("Trying to establish session trust.");
+                    success = this.iCloudService.trustSession();
+                    if (!success) {
+                        logger.warn("ICloud trust session failed.");
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                                "Session trust failed.");
+                        return;
+                    }
+                }
+
+                updateStatus(ThingStatus.ONLINE);
+                logger.debug("iCloud bridge handler started.");
+
+            } catch (IOException | InterruptedException e) {
+                logger.warn("ICloud authentication caused exception.", e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            } catch (Exception e) {
+                logger.debug("Something went wrong while constructing the icloud session", e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            }
         }
     }
 
     public void refreshData() {
 
+        logger.debug("iCloud bridge refreshing data ...");
         synchronized (this.synchronizeRefresh) {
-            this.logger.debug("iCloud bridge refreshing data ...");
 
             String json = this.iCloudDeviceInformationCache.getValue();
-            this.logger.trace("json: {}", json);
+            logger.trace("json: {}", json);
 
             if (json == null) {
                 return;
@@ -205,7 +304,7 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "Status = " + statusCode + ", Response = " + json);
                 }
-                this.logger.debug("iCloud bridge data refresh complete.");
+                logger.debug("iCloud bridge data refresh complete.");
             } catch (NumberFormatException | JsonSyntaxException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "iCloud response invalid: " + e.getMessage());
@@ -214,7 +313,6 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
     }
 
     private void informDeviceInformationListeners(List<ICloudDeviceInformation> deviceInformationList) {
-
         this.deviceInformationListeners.forEach(discovery -> discovery.deviceInformationUpdate(deviceInformationList));
     }
 }

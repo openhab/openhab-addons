@@ -12,20 +12,24 @@
  */
 package org.openhab.binding.icloud;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Scanner;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.openhab.binding.icloud.internal.ICloudDeviceInformationParser;
 import org.openhab.binding.icloud.internal.ICloudService;
 import org.openhab.binding.icloud.internal.json.response.ICloudAccountDataResponse;
 import org.openhab.core.storage.json.internal.JsonStorage;
+import org.openhab.core.test.storage.VolatileStorage;
 
 /**
  *
- * TODO
+ * Class to test/experiment with iCloud api.
  *
  * @author Simon Spielmann
  */
@@ -35,23 +39,23 @@ public class TestICloud {
 
     private final String PW = System.getProperty("icloud.test.pw");
 
-    private final String DEVICE_ID = System.getProperty("icloud.test.device");
-
     @Test
+    @EnabledIfSystemProperty(named = "icloud.test.email", matches = ".*", disabledReason = "Only for manual execution.")
     public void testAuth() throws IOException, InterruptedException {
 
-        File jsonStorageFile = new File(System.getProperty("user.home"), "openhab-3.json");
+        File jsonStorageFile = new File(System.getProperty("user.home"), "openhab.json");
         System.out.println(jsonStorageFile.toString());
 
         JsonStorage<String> stateStorage = new JsonStorage<String>(jsonStorageFile, TestICloud.class.getClassLoader(),
                 0, 1000, 1000, List.of());
 
-        ICloudService service = new ICloudService(this.E_MAIL, this.PW, stateStorage);
+        // ICloudService service = new ICloudService(this.E_MAIL, this.PW, stateStorage);
+        ICloudService service = new ICloudService(this.E_MAIL, this.PW, new VolatileStorage<>());
         service.authenticate(false);
         if (service.requires2fa()) {
             System.out.print("Code: ");
             String code = new Scanner(System.in).nextLine();
-            System.out.println(service.validate2faCode(code));
+            assertTrue(service.validate2faCode(code));
             if (!service.isTrustedSession()) {
                 service.trustSession();
             }
@@ -62,6 +66,7 @@ public class TestICloud {
         }
         ICloudAccountDataResponse deviceInfo = new ICloudDeviceInformationParser()
                 .parse(service.getDevices().refreshClient());
+        assertNotNull(deviceInfo);
         stateStorage.flush();
     }
 }

@@ -26,6 +26,7 @@ import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.openhab.binding.icloud.internal.utilities.CustomCookieStore;
@@ -47,11 +48,11 @@ import com.google.gson.GsonBuilder;
  */
 public class ICloudSession {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(ICloudSession.class);
+    private final Logger logger = LoggerFactory.getLogger(ICloudSession.class);
 
     private final HttpClient client;
 
-    private List<Pair<String, String>> headers = new ArrayList<Pair<String, String>>();
+    private List<Pair<String, String>> headers = new ArrayList<>();
 
     private ICloudSessionData data = new ICloudSessionData();
 
@@ -79,7 +80,7 @@ public class ICloudSession {
     }
 
     /**
-     * Create an HTTP POST request to the given url and body.
+     * Invoke an HTTP POST request to the given url and body.
      *
      * @param url URL to call.
      * @param body Body for the request
@@ -96,10 +97,9 @@ public class ICloudSession {
     }
 
     /**
-     * Create an HTTP GET request to the given url.
+     * Invoke an HTTP GET request to the given url.
      *
      * @param url URL to call.
-     * @param body Body for the request
      * @param overrideHeaders  If not null the given headers are used instead of the standard headers set via
      *            {@link #setDefaultHeaders(Pair...)}
      * @return Result body as {@link String}.
@@ -111,8 +111,9 @@ public class ICloudSession {
         return request("GET", url, null, overrideHeaders);
     }
 
-    private String request(String method, String url, String kwargs, List<Pair<String, String>> overrideHeaders)
+    private String request(String method, String url, String body, List<Pair<String, String>> overrideHeaders)
             throws IOException, InterruptedException {
+        logger.debug("iCloud request {} {}.", method, url);
 
         Builder builder = HttpRequest.newBuilder().uri(URI.create(url));
 
@@ -125,16 +126,16 @@ public class ICloudSession {
             builder.header(header.getKey(), header.getValue());
         }
 
-        if (kwargs != null) {
-            builder.method(method, BodyPublishers.ofString(kwargs));
+        if (body != null) {
+            builder.method(method, BodyPublishers.ofString(body));
         }
 
         HttpRequest request = builder.build();
 
-        LOGGER.debug("Calling {}\nHeaders -----\n{}\nBody -----\n{}\n------\n", url, request.headers(), kwargs);
+        logger.trace("Calling {}\nHeaders -----\n{}\nBody -----\n{}\n------\n", url, request.headers(), body);
 
         HttpResponse<?> response = this.client.send(request, BodyHandlers.ofString());
-        LOGGER.debug("Result {} {}\nHeaders -----\n{}\nBody -----\n{}\n------\n", url, response.statusCode(),
+        logger.trace("Result {} {}\nHeaders -----\n{}\nBody -----\n{}\n------\n", url, response.statusCode(),
                 response.headers().toString(), response.body().toString());
 
         if (response.statusCode() >= 300) {
@@ -159,10 +160,11 @@ public class ICloudSession {
     /**
      * Sets default HTTP headers, for HTTP requests.
      *
-     * @return headers HTTP headers
+     * @param headers HTTP headers to use for requests
      */
-    public void setDefaultHeaders(Pair<String, String>... headers) {
-        this.headers = List.of(headers);
+    @SafeVarargs
+    public final void setDefaultHeaders(Pair<String, String>... headers) {
+        this.headers = Arrays.asList(headers);
     }
 
     /**
@@ -198,7 +200,7 @@ public class ICloudSession {
     }
 
     /**
-     * @return
+     * @return {@code true} if session token is not empty.
      */
     public boolean hasToken() {
 
