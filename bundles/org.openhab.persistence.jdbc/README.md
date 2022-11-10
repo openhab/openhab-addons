@@ -182,14 +182,14 @@ For example, when migrating to `tableCaseSensitiveItemNames`, an index will no l
 
 **After migration:**
 
-| Table             | Row count | Item   | Status        |
-|-------------------|---------: |--------|---------------|
-| ActualItem        |         0 |        | Valid         |
-| TableNotBelonging |         0 |        | Item missing  |
+| Table             | Row count | Item              | Status        |
+|-------------------|---------: |-------------------|---------------|
+| ActualItem        |         0 | ActualItem        | Valid         |
+| TableNotBelonging |         0 | TableNotBelonging | Item missing  |
 
 This happened:
 
-- `ActualItem` became valid because it was left untouched as is not being a part of the migration. After the migration, it happened to match the name of an existing item, thus it became valid.
+- `ActualItem` was missing in the index and became valid because it was left untouched, not being a part of the migration. After the migration, it happened to match the name of an existing item, thus it became valid.
 - `TableNotBelonging` was also not part of the migration, but since now assumed to match an item, status changed since no item with that name exists.
 - `item0077`, being the only correct table name according to previous naming scheme, disappeared from the list since it didn't have a corresponding table, and is now no longer part of any index.
 
