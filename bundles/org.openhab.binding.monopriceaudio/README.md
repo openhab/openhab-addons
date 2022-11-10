@@ -21,10 +21,6 @@ Or you can connect it for example to a Raspberry Pi and use [ser2net Linux tool]
 Monoprice 10761 & 39261 and Dayton Audio DAX66 Amplifiers use the `amplifier` thing id. Up to 18 zones with 3 linked amps, 6 source inputs.
 Note: Compatible clones (including 4 zone versions) from McLELLAND, Factor, Soundavo, etc. should work as well.
 
-Support for additional amplifier types from Monoprice, Dayton and Xantech is currently available via the
-[OH Marketplace beta version of the binding](https://community.openhab.org/t/monoprice-dayton-audio-xantech-whole-house-audio-binding-beta/128924).
-*Please report any successes or failures using the beta version of the binding so that the issues can be addressed and the beta code merged into the official version.*
-
 ## Discovery
 
 Discovery is not supported.
