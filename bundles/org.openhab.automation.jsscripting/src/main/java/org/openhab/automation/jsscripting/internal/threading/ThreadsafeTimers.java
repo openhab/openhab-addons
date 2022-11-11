@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.automation.jsscripting.internal.GraalJSScriptServiceUtil;
+import org.openhab.automation.jsscripting.internal.JSScriptServiceUtil;
 import org.openhab.core.automation.module.script.action.ScriptExecution;
 import org.openhab.core.automation.module.script.action.Timer;
 import org.openhab.core.scheduler.ScheduledCompletableFuture;
@@ -46,8 +46,8 @@ public class ThreadsafeTimers {
 
     public ThreadsafeTimers(Object lock) {
         this.lock = lock;
-        this.scheduler = GraalJSScriptServiceUtil.getScheduler();
-        this.scriptExecution = GraalJSScriptServiceUtil.getScriptExecution();
+        this.scheduler = JSScriptServiceUtil.getScheduler();
+        this.scriptExecution = JSScriptServiceUtil.getScriptExecution();
     }
 
     /**

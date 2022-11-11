@@ -29,15 +29,15 @@ import org.osgi.service.component.annotations.Reference;
  */
 @Component(immediate = true)
 @NonNullByDefault
-public class GraalJSScriptServiceUtil {
+public class JSScriptServiceUtil {
     private static @Nullable Scheduler scheduler;
     private static @Nullable ScriptExecution scriptExecution;
 
     @Activate
-    public GraalJSScriptServiceUtil(final @Reference Scheduler scheduler,
-            final @Reference ScriptExecution scriptExecution) {
-        GraalJSScriptServiceUtil.scheduler = scheduler;
-        GraalJSScriptServiceUtil.scriptExecution = scriptExecution;
+    public JSScriptServiceUtil(final @Reference Scheduler scheduler,
+                               final @Reference ScriptExecution scriptExecution) {
+        JSScriptServiceUtil.scheduler = scheduler;
+        JSScriptServiceUtil.scriptExecution = scriptExecution;
     }
 
     public static Scheduler getScheduler() {
