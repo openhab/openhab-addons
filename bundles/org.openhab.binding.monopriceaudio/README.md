@@ -20,7 +20,6 @@ Or you can connect it for example to a Raspberry Pi and use [ser2net Linux tool]
 
 ## Supported Things
 
-<<<<<<< HEAD
 Monoprice 10761 & 39261 or Dayton Audio DAX66 Amplifiers use the `amplifier` id. Up to 18 zones with 3 linked amps, 6 source inputs.
 Note: Compatible clones (including 4 zone versions) from McLELLAND, Factor, Soundavo, etc. should work as well.  
 
@@ -30,10 +29,6 @@ Dayton Audio DAX88 Amplifiers use the `dax88` id. Supports 8 zones (2 un-amplifi
 
 Xantech MRC88, MX88, MRAUDIO8X8 or CM8X8 Amplifiers use the `xantech` id. Up to 16 zones with 2 linked amps, 8 source inputs.
 Note: MRC44 amps do not support serial control.  
-=======
-Monoprice 10761 & 39261 and Dayton Audio DAX66 Amplifiers use the `amplifier` thing id. Up to 18 zones with 3 linked amps, 6 source inputs.
-Note: Compatible clones (including 4 zone versions) from McLELLAND, Factor, Soundavo, etc. should work as well.
->>>>>>> main
 
 ## Discovery
 
@@ -75,10 +70,21 @@ Some notes:
 * You can get around this by adding the `openhab` user to the `dialout` group like this: `usermod -a -G dialout openhab`.
 * Also on Linux you may have issues with the USB if using two serial USB devices e.g. MonopriceAudio and RFXcom.
 * See the [general documentation about serial port configuration](/docs/administration/serial.html) for more on symlinking the USB ports.
-* Here is an example of ser2net.conf you can use to share your serial port /dev/ttyUSB0 on IP port 8080 using [ser2net Linux tool](https://sourceforge.net/projects/ser2net/):
+* Here is an example of ser2net.conf (for ser2net version < 4) you can use to share your serial port /dev/ttyUSB0 on IP port 8080 using [ser2net Linux tool](https://sourceforge.net/projects/ser2net/):
 
 ```
 8080:raw:0:/dev/ttyUSB0:9600 8DATABITS NONE 1STOPBIT LOCAL
+```
+* Here is an example of ser2net.yaml (for ser2net version >= 4) you can use to share your serial port /dev/ttyUSB0 on IP port 8080 using [ser2net Linux tool](https://sourceforge.net/projects/ser2net/):
+```
+connection: &conMono
+    accepter: tcp,8080
+    enable: on
+    options:
+      kickolduser: true
+    connector: serialdev,
+              /dev/ttyUSB0,
+              9600n81,local
 ```
 
 ## Channels
@@ -176,10 +182,6 @@ sitemap monoprice label="Audio Control" {
         Text item=z1_keypad label="Keypad Connected: [%s]" visibility=[z1_power==ON]
     }
 
-<<<<<<< HEAD
     // repeat for total number of zones used (substitute z1)
-=======
-    // repeat for zones 2-18 (substitute z1)
->>>>>>> main
 }
 ```
