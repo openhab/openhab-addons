@@ -3,9 +3,9 @@
 This binding can be used to control the following types of whole house multi-zone amplifier systems:
 
 * Monoprice MPR-SG6Z (10761), Monoprice Passive Matrix (39261), Dayton Audio DAX66 or compatible clones
-* Monoprice 31028 or OSD Audio PAM1270 (untested)
-* Dayton Audio DAX88 (untested)
-* Xantech MRC88, MX88, MRAUDIO8X8 or CM8X8 (untested)
+* Monoprice 31028 or OSD Audio PAM1270 **(untested)**
+* Dayton Audio DAX88 **(untested)**
+* Xantech MRC88, MX88, MRAUDIO8X8 or CM8X8 **(untested)**
 
 The binding supports two different kinds of connections:
 
@@ -22,6 +22,8 @@ Or you can connect it for example to a Raspberry Pi and use [ser2net Linux tool]
 
 Monoprice 10761 & 39261 or Dayton Audio DAX66 Amplifiers use the `amplifier` id. Up to 18 zones with 3 linked amps, 6 source inputs.
 Note: Compatible clones (including 4 zone versions) from McLELLAND, Factor, Soundavo, etc. should work as well.  
+
+***The following three thing types were implemented via available documentation only and have not been tested. Please open an issue for any bugs found when using these thing types.***  
 
 Monoprice 31028 or OSD Audio PAM1270 70 Volt Amplifiers use the `monoprice70` id. Supports 6 zones per amp with 2 source inputs, not linkable.  
 
