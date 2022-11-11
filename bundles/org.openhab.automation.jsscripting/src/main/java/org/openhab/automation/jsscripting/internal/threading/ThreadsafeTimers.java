@@ -144,6 +144,7 @@ public class ThreadsafeTimers {
         ScheduledCompletableFuture<Object> future = scheduler.schedule(() -> {
             synchronized (lock) {
                 callback.run();
+                idSchedulerMapping.remove(id);
             }
         }, identifier + ".timeout." + id, ZonedDateTime.now().plusNanos(delay * 1000000).toInstant());
         idSchedulerMapping.put(id, future);
