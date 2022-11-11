@@ -35,6 +35,6 @@ public class LongPollResult {
      * ],"jsonrpc":"2.0"}
      */
 
-    public ArrayList<DeviceStatusUpdate> result;
+    public ArrayList<DeviceServiceData> result;
     public String jsonrpc;
 }
