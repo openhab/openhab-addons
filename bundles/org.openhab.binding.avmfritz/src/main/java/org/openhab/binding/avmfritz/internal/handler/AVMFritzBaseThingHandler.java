@@ -181,9 +181,8 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
     private void updateHANFUNBlindsAlarmSensor(@Nullable AlertModel alertModel) {
         if (alertModel != null) {
             updateThingChannelState(CHANNEL_OBSTRUCTION_ALARM,
-                    alertModel.hasObstructionAlarmOccurred() ? OnOffType.ON : OnOffType.OFF);
-            updateThingChannelState(CHANNEL_TEMPERATURE_ALARM,
-                    alertModel.hasTemperaturAlarmOccurred() ? OnOffType.ON : OnOffType.OFF);
+                    OnOffType.from(alertModel.hasObstructionAlarmOccurred()));
+            updateThingChannelState(CHANNEL_TEMPERATURE_ALARM, OnOffType.from(alertModel.hasTemperaturAlarmOccurred()));
             if (alertModel.hasUnknownAlarmOccurred()) {
                 logger.warn("Unknown blinds alarm {}", alertModel.getState());
             }
