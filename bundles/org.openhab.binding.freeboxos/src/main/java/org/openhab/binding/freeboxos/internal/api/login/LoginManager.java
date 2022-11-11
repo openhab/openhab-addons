@@ -51,10 +51,15 @@ public class LoginManager extends RestManager {
                 Session result = post(SessionResponse.class, payload, SESSION_PATH);
                 if (result != null) {
                     return result;
+                } else {
+                    throw new FreeboxException("result should not be null in openSession");
                 }
+            } else {
+                throw new FreeboxException("Challenge should not be null in openSession");
             }
+        } else {
+            throw new FreeboxException("ChallengeResponse should not be null in openSession");
         }
-        throw new FreeboxException("Challenge value should not be null");
     }
 
     public void closeSession() throws FreeboxException {
@@ -66,7 +71,7 @@ public class LoginManager extends RestManager {
         if (challengeResponse != null) {
             return challengeResponse.getStatus();
         }
-        throw new FreeboxException("Challenge value should not be null");
+        throw new FreeboxException("Challenge value should not be null in trackAuthorize");
     }
 
     public String grant() throws FreeboxException {
