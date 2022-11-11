@@ -12,7 +12,13 @@
  */
 package org.openhab.binding.dsmr.internal.discovery;
 
-import static org.openhab.binding.dsmr.internal.DSMRBindingConstants.*;
+import static org.openhab.binding.dsmr.internal.DSMRBindingConstants.CONFIGURATION_ADDITIONAL_KEY;
+import static org.openhab.binding.dsmr.internal.DSMRBindingConstants.CONFIGURATION_DECRYPTION_KEY;
+import static org.openhab.binding.dsmr.internal.DSMRBindingConstants.CONFIGURATION_DECRYPTION_KEY_EMPTY;
+import static org.openhab.binding.dsmr.internal.DSMRBindingConstants.CONFIGURATION_SERIAL_PORT;
+import static org.openhab.binding.dsmr.internal.DSMRBindingConstants.DSMR_PORT_NAME;
+import static org.openhab.binding.dsmr.internal.DSMRBindingConstants.THING_TYPE_DSMR_BRIDGE;
+import static org.openhab.binding.dsmr.internal.DSMRBindingConstants.THING_TYPE_SMARTY_BRIDGE;
 
 import java.util.HashMap;
 import java.util.List;
@@ -109,7 +115,7 @@ public class DSMRBridgeDiscoveryService extends DSMRDiscoveryService implements 
     protected void startScan() {
         logger.debug("Started DSMR discovery scan");
         scanning = true;
-        Stream<SerialPortIdentifier> portEnum = serialPortManager.getIdentifiers();
+        final Stream<SerialPortIdentifier> portEnum = serialPortManager.getIdentifiers();
 
         // Traverse each available serial port
         portEnum.forEach(portIdentifier -> {
@@ -126,7 +132,8 @@ public class DSMRBridgeDiscoveryService extends DSMRDiscoveryService implements 
                 } else {
                     logger.debug("Start discovery on serial port: {}", currentScannedPortName);
                     //
-                    final DSMRTelegramListener telegramListener = new DSMRTelegramListener("");
+                    final DSMRTelegramListener telegramListener = new DSMRTelegramListener("",
+                            CONFIGURATION_ADDITIONAL_KEY);
                     final DSMRSerialAutoDevice device = new DSMRSerialAutoDevice(serialPortManager,
                             portIdentifier.getName(), this, telegramListener, scheduler,
                             BAUDRATE_SWITCH_TIMEOUT_SECONDS);
@@ -166,8 +173,8 @@ public class DSMRBridgeDiscoveryService extends DSMRDiscoveryService implements 
      * @param telegram the received telegram
      */
     @Override
-    public void handleTelegramReceived(P1Telegram telegram) {
-        List<CosemObject> cosemObjects = telegram.getCosemObjects();
+    public void handleTelegramReceived(final P1Telegram telegram) {
+        final List<CosemObject> cosemObjects = telegram.getCosemObjects();
 
         if (logger.isDebugEnabled()) {
             logger.debug("[{}] Received {} cosemObjects", currentScannedPortName, cosemObjects.size());
@@ -176,7 +183,7 @@ public class DSMRBridgeDiscoveryService extends DSMRDiscoveryService implements 
             bridgeDiscovered(THING_TYPE_SMARTY_BRIDGE);
             stopSerialPortScan();
         } else if (!cosemObjects.isEmpty()) {
-            ThingUID bridgeThingUID = bridgeDiscovered(THING_TYPE_DSMR_BRIDGE);
+            final ThingUID bridgeThingUID = bridgeDiscovered(THING_TYPE_DSMR_BRIDGE);
             meterDetector.detectMeters(telegram).getKey().forEach(m -> meterDiscovered(m, bridgeThingUID));
             stopSerialPortScan();
         }
@@ -187,19 +194,21 @@ public class DSMRBridgeDiscoveryService extends DSMRDiscoveryService implements 
      *
      * @return The {@link ThingUID} of the newly created bridge
      */
-    private ThingUID bridgeDiscovered(ThingTypeUID bridgeThingTypeUID) {
-        ThingUID thingUID = new ThingUID(bridgeThingTypeUID, Integer.toHexString(currentScannedPortName.hashCode()));
+    private ThingUID bridgeDiscovered(final ThingTypeUID bridgeThingTypeUID) {
+        final ThingUID thingUID = new ThingUID(bridgeThingTypeUID,
+                Integer.toHexString(currentScannedPortName.hashCode()));
         final boolean smarty = THING_TYPE_SMARTY_BRIDGE.equals(bridgeThingTypeUID);
         final String label = String.format("@text/thing-type.dsmr.%s.label", smarty ? "smartyBridge" : "dsmrBridge");
 
         // Construct the configuration for this meter
-        Map<String, Object> properties = new HashMap<>();
+        final Map<String, Object> properties = new HashMap<>();
         properties.put(CONFIGURATION_SERIAL_PORT, currentScannedPortName);
         if (smarty) {
             properties.put(CONFIGURATION_DECRYPTION_KEY, CONFIGURATION_DECRYPTION_KEY_EMPTY);
+            properties.put(CONFIGURATION_ADDITIONAL_KEY, CONFIGURATION_ADDITIONAL_KEY);
         }
-        DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withThingType(bridgeThingTypeUID)
-                .withProperties(properties).withLabel(label).build();
+        final DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
+                .withThingType(bridgeThingTypeUID).withProperties(properties).withLabel(label).build();
 
         logger.debug("[{}] discovery result:{}", currentScannedPortName, discoveryResult);
 
@@ -208,7 +217,7 @@ public class DSMRBridgeDiscoveryService extends DSMRDiscoveryService implements 
     }
 
     @Override
-    public void handleErrorEvent(DSMRConnectorErrorEvent portEvent) {
+    public void handleErrorEvent(final DSMRConnectorErrorEvent portEvent) {
         logger.debug("[{}] Error on port during discovery: {}", currentScannedPortName, portEvent);
         stopSerialPortScan();
     }

@@ -382,6 +382,13 @@
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
 	</channel-type>
+	<channel-type id="f1x45-40940" advanced="true">
+		<item-type>Number</item-type>
+		<label>Degree Minutes (32 Bit)</label>
+		<description>Degree minutes, 32bit value. Full resolution.</description>
+		<state min="-30000" max="30000" step="1" pattern="%.1f" readOnly="false">
+		</state>
+	</channel-type>
 	<channel-type id="f1x45-43001" advanced="true">
 		<item-type>Number</item-type>
 		<label>Software Version</label>
@@ -3710,6 +3717,13 @@
 		<label>Alarm Number</label>
 		<description>The value indicates the most severe current alarm</description>
 		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f1x45-45171" advanced="true">
+		<item-type>Number</item-type>
+		<label>Alarm Reset</label>
+		<description>Reset alarm by setting value 1</description>
+		<state min="0" max="255" step="1" pattern="%d" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="f1x45-47291" advanced="true">

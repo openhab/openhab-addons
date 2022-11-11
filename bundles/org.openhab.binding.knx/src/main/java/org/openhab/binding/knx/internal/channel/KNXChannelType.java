@@ -31,6 +31,8 @@ import org.openhab.binding.knx.internal.KNXTypeMapper;
 import org.openhab.binding.knx.internal.client.InboundSpec;
 import org.openhab.binding.knx.internal.client.OutboundSpec;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.types.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -171,9 +173,10 @@ public abstract class KNXChannelType {
                 }
                 Class<? extends Type> expectedTypeClass = typeHelper.toTypeClass(dpt);
                 if (expectedTypeClass != null) {
-                    if (expectedTypeClass.isInstance(command)) {
+                    if (expectedTypeClass.isInstance(command)
+                            || ((expectedTypeClass == DecimalType.class) && (command instanceof QuantityType))) {
                         logger.trace(
-                                "getCommandSpec key '{}' uses expectedTypeClass '{}' witch isInstance for command '{}' and dpt '{}'",
+                                "getCommandSpec key '{}' uses expectedTypeClass '{}' which isInstance for command '{}' and dpt '{}'",
                                 key, expectedTypeClass, command, dpt);
                         return new WriteSpecImpl(config, dpt, command);
                     }

@@ -59,14 +59,15 @@ The Nibe Heat Pump binding will listen to a UDP port and parse register data fro
 ### Arduino
 
 An Arduino-based solution has been tested with Arduino uno + RS485 and Ethernet shields.
-The [ProDiNo](https://www.kmpelectronics.eu/en-us/products/prodinoethernet.aspx) NetBoards are also supported.
-A ProDiNo has an Ethernet and RS-485 port on the board.
+[PRODINo ESP32 Ethernet v1](https://kmpelectronics.eu/products/prodino-esp32-ethernet-v1/) and [ProDiNo Ethernet V2](https://kmpelectronics.eu/products/prodino-ethernet-v2/) boards are also supported.
+PRODINo boards have built-in Ethernet and RS-485 ports.
 
 Arduino code is available [here](https://github.com/openhab/openhab-addons/tree/main/bundles/org.openhab.binding.nibeheatpump/contrib/NibeGW/Arduino/NibeGW).
 
 Arduino code can be build via Arduino IDE.
 For more details see [www.arduino.cc](https://www.arduino.cc/en/Main/Software). 
 NibeGW configuration (such IP addresses, ports, etc) can be adapted directly by editing the code files.
+PRODINo ESP32 Ethernet v1 also supports dynamic configuration and OTA updates via Wi-Fi access point.
 
 ### Raspberry Pi (or other Linux/Unix based boards)
 
@@ -229,6 +230,7 @@ This binding currently supports following channels for F1x45 pump models:
 | 40129           | Number    | -32767      | 32767      | Setting | EP21-BT3 Return temp S2                                  |                                                                                                                                                                    |
 | 40155           | Number    | -32767      | 32767      | Setting | EQ1-BT57 Collector temp.                                 |                                                                                                                                                                    |
 | 40156           | Number    | -32767      | 32767      | Setting | EQ1-BT75 Heatdump temp.                                  |                                                                                                                                                                    |
+| 40940           | Number    | -30000      | 30000      | Setting | Degree Minutes (32 bit)                                  |                                                                                                                                                                    |
 | 43001           | Number    | 0           | 65535      | Setting | Software version                                         |                                                                                                                                                                    |
 | 43005           | Number    | -30000      | 30000      | Setting | Degree Minutes                                           |                                                                                                                                                                    |
 | 43006           | Number    | -32767      | 32767      | Setting | Calculated Supply Temperature S4                         |                                                                                                                                                                    |
@@ -678,6 +680,7 @@ This binding currently supports following channels for F1x45 pump models:
 | 44911           | Number    | -32767      | 32767      | Setting | Brine pump  dT act.                                      |                                                                                                                                                                    |
 | 44912           | Switch    | 0           | 1          | Sensor  | Brine pump auto controlled                               |                                                                                                                                                                    |
 | 45001           | Number    | -32767      | 32767      | Sensor  | Alarm Number                                             |                                                                                                                                                                    |
+| 45171           | Number    | 0           | 255        | Setting | Alarm Reset                                              |                                                                                                                                                                    |
 | 47291           | Number    | 0           | 10000      | Sensor  | Floor drying timer                                       |                                                                                                                                                                    |
 | 47325           | Number    | 0           | 7          | Sensor  | Step controlled add. max. step                           |                                                                                                                                                                    |
 | 47004           | Number    | 0           | 15         | Sensor  | Heat curve S4                                            |                                                                                                                                                                    |

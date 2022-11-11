@@ -58,7 +58,23 @@ public class KonnectedHTTPServlet extends HttpServlet {
     }
 
     @Override
-    protected void service(HttpServletRequest req, HttpServletResponse resp) {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
+        logger.debug("Unhandled get request: {}?{}", req.getRequestURI(), req.getQueryString());
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
+        logger.debug("Got POST: {}", req.getRequestURI());
+        handleDeviceCallback(req, resp);
+    }
+
+    @Override
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) {
+        logger.debug("Got PUT: {}", req.getRequestURI());
+        handleDeviceCallback(req, resp);
+    }
+
+    private void handleDeviceCallback(HttpServletRequest req, HttpServletResponse resp) {
         try {
             String data = inputStreamToString(req);
 
@@ -67,8 +83,6 @@ public class KonnectedHTTPServlet extends HttpServlet {
                 KonnectedModuleGson event = gson.fromJson(data, KonnectedModuleGson.class);
                 String authorizationHeader = req.getHeader("Authorization");
                 String thingHandlerKey = authorizationHeader.substring("Bearer".length()).trim();
-                logger.debug("The path of the response was: {}", req.getContextPath());
-                logger.debug("The json received was: {}", event.toString());
                 logger.debug("The thing handler to send the command to is the handler for thing: {}", thingHandlerKey);
                 try {
                     KonnectedHandler thingHandler = konnectedThingHandlers.get(thingHandlerKey);
@@ -88,7 +102,7 @@ public class KonnectedHTTPServlet extends HttpServlet {
 
     private String inputStreamToString(HttpServletRequest req) throws IOException {
         Scanner scanner = new Scanner(req.getInputStream()).useDelimiter("\\A");
-        return scanner.hasNext() ? scanner.next() : "";
+        return scanner.hasNext() ? scanner.next() : null;
     }
 
     private void setHeaders(HttpServletResponse response) {

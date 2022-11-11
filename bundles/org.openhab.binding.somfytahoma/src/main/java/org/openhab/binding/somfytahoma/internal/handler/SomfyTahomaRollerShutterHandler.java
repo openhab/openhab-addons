@@ -33,6 +33,7 @@ public class SomfyTahomaRollerShutterHandler extends SomfyTahomaBaseThingHandler
     public SomfyTahomaRollerShutterHandler(Thing thing) {
         super(thing);
         stateNames.put(CONTROL, "core:ClosureState");
+        stateNames.put(MOVING, "core:MovingState");
     }
 
     @Override

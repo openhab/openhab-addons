@@ -9,7 +9,7 @@ The openHAB Cloud service (and thus the connector to it) is useful for different
 
 * It allows remote access to local openHAB instances without having to expose ports to the Internet or to require a complex VPN setup.
 * It serves as a connector to Google Cloud Messaging (GCM) and Apple Push Notifications (APN) for pushing notifications to mobile phone apps.
-* It brings integration possibilities with services that require an OAuth2 authentication against a web server, such as IFTTT or Amazon Alexa Skills.
+* It provides integrations with 3rd party services that require OAuth2 authentication, such as Amazon Alexa or Google Home applications 
 
 ## Installation via UI
 
@@ -41,12 +41,17 @@ Location of UUID and Secret:
 
 After installing this add-on, you will find configuration options in the openHAB portal under _Settings -> Other Services -> openHAB Cloud_:
 
-![Configuration](contrib/doc/cfg.png)
+![Configuration](doc/configuration.png)
 
-Please note, that you should not expose all your items in this settings dialog.
-Also note that at present this feature is currently turned off.
-You just need to expose those items, which you want to be accessible by IFTTT.
-This setting has no affect on Alexa or Google Assistant functionality.
+By default both remote access and push notifications are enabled.  
+
+### Advanced Configuration
+
+For private hosted myopenHAB installations, the base URL can be changed to point another cloud instance.
+
+Private hosted myopenHAB installations may enable selected items in openHAB to have their state updates pushed to the cloud service for integrations with services like IFTTT.
+Note that this is not supported on the community hosted myopenHAB service due to high load concerns and will have no effect if enabled with the default URL configured.
+This is also not required for remote access through the cloud service to function.
 
 Alternatively, you can configure the settings in the file `conf/services/openhabcloud.cfg`:
 
@@ -72,6 +77,4 @@ Alternatively, you can configure the settings in the file `conf/services/openhab
 #expose=
 ```
 
-Note: The exposed items will show up after they receive an update to their state.
-
-Note: In order to use an openHAB UI via the Cloud Connector exposing items is not neccessary. Administrative actions are limited to creating things, items and rules, deleting them is inhibited via the Cloud Connector.
+Note: The optionally exposed items will show up after they receive an update to their state.

@@ -62,6 +62,8 @@ public class PWMTriggerHandler extends BaseTriggerModuleHandler implements Event
     private final EventFilter eventFilter;
     private final Optional<Double> minDutyCycle;
     private final Optional<Double> maxDutyCycle;
+    private final boolean isEquateMinToZero;
+    private final boolean isEquateMaxToHundred;
     private final Optional<Double> deadManSwitchTimeoutMs;
     private final Item dutyCycleItem;
     private @Nullable ServiceRegistration<?> eventSubscriberRegistration;
@@ -78,7 +80,9 @@ public class PWMTriggerHandler extends BaseTriggerModuleHandler implements Event
                 "DutyCycle item is not set");
 
         minDutyCycle = getOptionalDoubleFromConfig(config, CONFIG_MIN_DUTYCYCLE);
+        isEquateMinToZero = getBooleanFromConfig(config, CONFIG_EQUATE_MIN_TO_ZERO);
         maxDutyCycle = getOptionalDoubleFromConfig(config, CONFIG_MAX_DUTYCYCLE);
+        isEquateMaxToHundred = getBooleanFromConfig(config, CONFIG_EQUATE_MAX_TO_HUNDRED);
         deadManSwitchTimeoutMs = getOptionalDoubleFromConfig(config, CONFIG_DEAD_MAN_SWITCH);
 
         try {
@@ -114,6 +118,10 @@ public class PWMTriggerHandler extends BaseTriggerModuleHandler implements Event
         return Optional.empty();
     }
 
+    private boolean getBooleanFromConfig(Configuration config, String key) {
+        return ((Boolean) config.get(key)).booleanValue();
+    }
+
     @Override
     public void receive(Event event) {
         if (!(event instanceof ItemStateEvent)) {
@@ -128,24 +136,28 @@ public class PWMTriggerHandler extends BaseTriggerModuleHandler implements Event
 
                 restartDeadManSwitchTimer();
 
+                // set duty cycle to 0% if it is 0% or it is smaller than min duty cycle and equateMinToZero is true
                 // set duty cycle to min duty cycle if it is smaller than min duty cycle
-                // set duty cycle to 0% if it is 0%, regardless of the min duty cycle
                 final double newDutyCycleFinal1 = newDutycycle;
                 newDutycycle = minDutyCycle.map(minDutycycle -> {
-                    if (Math.round(newDutyCycleFinal1) <= 0) {
+                    long dutycycleRounded1 = Math.round(newDutyCycleFinal1);
+                    if (dutycycleRounded1 <= 0 || (dutycycleRounded1 <= minDutycycle && isEquateMinToZero)) {
                         return 0d;
                     } else {
                         return Math.max(minDutycycle, newDutyCycleFinal1);
                     }
                 }).orElse(newDutycycle);
 
-                // set duty cycle to 100% if the current duty cycle is larger than the max duty cycle
+                // set duty cycle to 100% if it is 100% or it is larger then max duty cycle and equateMaxToHundred is
+                // true
+                // set duty cycle to max duty cycle if it is larger then max duty cycle
                 final double newDutyCycleFinal2 = newDutycycle;
                 newDutycycle = maxDutyCycle.map(maxDutycycle -> {
-                    if (Math.round(newDutyCycleFinal2) >= maxDutycycle) {
+                    long dutycycleRounded2 = Math.round(newDutyCycleFinal2);
+                    if (dutycycleRounded2 >= 100 || (dutycycleRounded2 >= maxDutycycle && isEquateMaxToHundred)) {
                         return 100d;
                     } else {
-                        return newDutyCycleFinal2;
+                        return Math.min(maxDutycycle, newDutyCycleFinal2);
                     }
                 }).orElse(newDutycycle);
 

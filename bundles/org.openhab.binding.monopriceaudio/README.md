@@ -20,6 +20,7 @@ Or you can connect it for example to a Raspberry Pi and use [ser2net Linux tool]
 
 ## Supported Things
 
+<<<<<<< HEAD
 Monoprice 10761 & 39261 or Dayton Audio DAX66 Amplifiers use the `amplifier` id. Up to 18 zones with 3 linked amps, 6 source inputs.
 Note: Compatible clones (including 4 zone versions) from McLELLAND, Factor, Soundavo, etc. should work as well.  
 
@@ -29,6 +30,10 @@ Dayton Audio DAX88 Amplifiers use the `dax88` id. Supports 8 zones (2 un-amplifi
 
 Xantech MRC88, MX88, MRAUDIO8X8 or CM8X8 Amplifiers use the `xantech` id. Up to 16 zones with 2 linked amps, 8 source inputs.
 Note: MRC44 amps do not support serial control.  
+=======
+Monoprice 10761 & 39261 and Dayton Audio DAX66 Amplifiers use the `amplifier` thing id. Up to 18 zones with 3 linked amps, 6 source inputs.
+Note: Compatible clones (including 4 zone versions) from McLELLAND, Factor, Soundavo, etc. should work as well.
+>>>>>>> main
 
 ## Discovery
 
@@ -171,6 +176,10 @@ sitemap monoprice label="Audio Control" {
         Text item=z1_keypad label="Keypad Connected: [%s]" visibility=[z1_power==ON]
     }
 
+<<<<<<< HEAD
     // repeat for total number of zones used (substitute z1)
+=======
+    // repeat for zones 2-18 (substitute z1)
+>>>>>>> main
 }
 ```

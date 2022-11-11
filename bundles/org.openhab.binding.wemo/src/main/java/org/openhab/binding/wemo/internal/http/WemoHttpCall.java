@@ -48,4 +48,13 @@ public class WemoHttpCall {
 
         return responseBody;
     }
+
+    public boolean probeURL(String url) {
+        try {
+            HttpUtil.executeUrl("GET", url, 250);
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
+    }
 }

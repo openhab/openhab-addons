@@ -52,7 +52,6 @@ public class DeutscheBahnTrainHandler extends BaseThingHandler {
          * Creates an new ChannelWithConfig.
          * 
          * @param channelUid The UID of the channel
-         * @param configuration Configuration for the given channel.
          * @param attributeSelection The attribute that provides the state that will be displayed.
          */
         public ChannelWithConfig( //
@@ -166,8 +165,7 @@ public class DeutscheBahnTrainHandler extends BaseThingHandler {
         final String channelId = channelUid.getId();
         int hashIndex = channelId.indexOf("#");
         assert hashIndex > 0;
-        final String attributeName = channelId.substring(hashIndex + 1);
-        return attributeName;
+        return channelId.substring(hashIndex + 1);
     }
 
     /**

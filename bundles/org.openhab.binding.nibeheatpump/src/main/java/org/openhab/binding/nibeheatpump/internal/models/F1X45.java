@@ -86,6 +86,7 @@ public class F1X45 {
                     put(40129, new VariableInformation(  10, NibeDataType.S16, Type.SENSOR  , "EP21-BT3 Return temp S2"));
                     put(40155, new VariableInformation(  10, NibeDataType.S16, Type.SENSOR  , "EQ1-BT57 Collector temp."));
                     put(40156, new VariableInformation(  10, NibeDataType.S16, Type.SENSOR  , "EQ1-BT75 Heatdump temp."));
+                    put(40940, new VariableInformation(  10, NibeDataType.S32, Type.SETTING , "Degree Minutes (32 bit)"));
                     put(43001, new VariableInformation(   1, NibeDataType.U16, Type.SENSOR  , "Software version"));
                     put(43005, new VariableInformation(  10, NibeDataType.S16, Type.SETTING , "Degree Minutes"));
                     put(43006, new VariableInformation(  10, NibeDataType.S16, Type.SENSOR  , "Calculated Supply Temperature S4"));
@@ -535,6 +536,7 @@ public class F1X45 {
                     put(44911, new VariableInformation(  10, NibeDataType.S16, Type.SENSOR  , "Brine pump  dT act."));
                     put(44912, new VariableInformation(   1, NibeDataType.S8 , Type.SENSOR  , "Brine pump auto controlled"));
                     put(45001, new VariableInformation(   1, NibeDataType.S16, Type.SENSOR  , "Alarm Number"));
+                    put(45171, new VariableInformation(   1, NibeDataType.U8 , Type.SETTING , "Alarm Reset"));
                     put(47291, new VariableInformation(   1, NibeDataType.U16, Type.SENSOR  , "Floor drying timer"));
                     put(47325, new VariableInformation(   1, NibeDataType.U8 , Type.SENSOR  , "Step controlled add. max. step"));
                     put(47004, new VariableInformation(   1, NibeDataType.S8 , Type.SETTING , "Heat curve S4"));

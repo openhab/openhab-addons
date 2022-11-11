@@ -13,7 +13,10 @@
 package org.openhab.binding.unifi.internal.api.util;
 
 import java.lang.reflect.Type;
-import java.util.Calendar;
+import java.time.Instant;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -25,14 +28,15 @@ import com.google.gson.JsonElement;
  *
  * @author Matthew Bowman - Initial contribution
  */
-public class UniFiTimestampDeserializer implements JsonDeserializer<Calendar> {
+@NonNullByDefault
+public class UniFiTimestampDeserializer implements JsonDeserializer<Instant> {
 
     @Override
-    public Calendar deserialize(JsonElement json, Type type, JsonDeserializationContext context) {
-        String text = json.getAsJsonPrimitive().getAsString();
-        long millis = Long.valueOf(text) * 1000;
-        Calendar cal = Calendar.getInstance();
-        cal.setTimeInMillis(millis);
-        return cal;
+    public @Nullable Instant deserialize(final JsonElement json, final Type type,
+            final JsonDeserializationContext context) {
+        final String text = json.getAsJsonPrimitive().getAsString();
+        final long millis = Long.valueOf(text) * 1000;
+
+        return Instant.ofEpochMilli(millis);
     }
 }

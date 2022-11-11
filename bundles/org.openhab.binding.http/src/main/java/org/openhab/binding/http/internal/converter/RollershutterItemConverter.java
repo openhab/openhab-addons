@@ -91,6 +91,7 @@ public class RollershutterItemConverter extends AbstractTransformingItemConverte
             if (value.compareTo(PercentType.ZERO.toBigDecimal()) < 0) {
                 return PercentType.ZERO;
             }
+            return new PercentType(value);
         } catch (NumberFormatException e) {
             // ignore
         }

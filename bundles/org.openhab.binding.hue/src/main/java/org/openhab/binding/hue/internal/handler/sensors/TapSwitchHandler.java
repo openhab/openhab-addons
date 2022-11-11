@@ -21,13 +21,12 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.hue.internal.FullSensor;
-import org.openhab.binding.hue.internal.SensorConfigUpdate;
+import org.openhab.binding.hue.internal.dto.FullSensor;
+import org.openhab.binding.hue.internal.dto.SensorConfigUpdate;
 import org.openhab.binding.hue.internal.handler.HueSensorHandler;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
@@ -42,7 +41,7 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class TapSwitchHandler extends HueSensorHandler {
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_TAP_SWITCH);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_TAP_SWITCH);
 
     public TapSwitchHandler(Thing thing) {
         super(thing);

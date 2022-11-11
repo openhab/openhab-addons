@@ -56,7 +56,7 @@ public final class LcnDefs {
     public static final String LCNCONNSTATE_CONNECTED = "$io:#LCN:connected";
     /** LCN-PK/PKU is disconnected. */
     public static final String LCNCONNSTATE_DISCONNECTED = "$io:#LCN:disconnected";
-    /** LCN-PCHK/PKE has not enough licenses to handle this connection. */
+    /** LCN-PCHK/VISU has not enough licenses to handle this connection. */
     public static final String INSUFFICIENT_LICENSES = "$err:(license?)";
 
     /**

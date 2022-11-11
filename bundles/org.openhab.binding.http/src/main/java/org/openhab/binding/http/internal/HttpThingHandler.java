@@ -292,8 +292,11 @@ public class HttpThingHandler extends BaseThingHandler {
             // we need a key consisting of stateContent and URL, only if both are equal, we can use the same cache
             String key = channelConfig.stateContent + "$" + stateUrl;
             channelUrls.put(channelUID, key);
-            urlHandlers.computeIfAbsent(key, k -> new RefreshingUrlCache(scheduler, rateLimitedHttpClient, stateUrl,
-                    config, channelConfig.stateContent)).addConsumer(itemValueConverter::process);
+            urlHandlers
+                    .computeIfAbsent(key,
+                            k -> new RefreshingUrlCache(scheduler, rateLimitedHttpClient, stateUrl,
+                                    channelConfig.escapedUrl, config, channelConfig.stateContent))
+                    .addConsumer(itemValueConverter::process);
         }
 
         StateDescription stateDescription = StateDescriptionFragmentBuilder.create()
@@ -304,14 +307,15 @@ public class HttpThingHandler extends BaseThingHandler {
         }
     }
 
-    private void sendHttpValue(String commandUrl, String command) {
-        sendHttpValue(commandUrl, command, false);
+    private void sendHttpValue(String commandUrl, boolean escapedUrl, String command) {
+        sendHttpValue(commandUrl, escapedUrl, command, false);
     }
 
-    private void sendHttpValue(String commandUrl, String command, boolean isRetry) {
+    private void sendHttpValue(String commandUrl, boolean escapedUrl, String command, boolean isRetry) {
         try {
             // format URL
-            URI uri = Util.uriFromString(String.format(commandUrl, new Date(), command));
+            String url = String.format(commandUrl, new Date(), command);
+            URI uri = escapedUrl ? new URI(url) : Util.uriFromString(url);
 
             // build request
             Request request = httpClient.newRequest(uri).timeout(config.timeout, TimeUnit.MILLISECONDS)
@@ -349,7 +353,7 @@ public class HttpThingHandler extends BaseThingHandler {
                         if (authResult != null) {
                             authStore.removeAuthenticationResult(authResult);
                             logger.debug("Cleared authentication result for '{}', retrying immediately", uri);
-                            sendHttpValue(commandUrl, command, true);
+                            sendHttpValue(commandUrl, escapedUrl, command, true);
                         } else {
                             logger.warn("Could not find authentication result for '{}', failing here", uri);
                         }
@@ -379,7 +383,7 @@ public class HttpThingHandler extends BaseThingHandler {
     private ItemValueConverter createItemConverter(AbstractTransformingItemConverter.Factory factory, String commandUrl,
             ChannelUID channelUID, HttpChannelConfig channelConfig) {
         return factory.create(state -> updateState(channelUID, state), command -> postCommand(channelUID, command),
-                command -> sendHttpValue(commandUrl, command),
+                command -> sendHttpValue(commandUrl, channelConfig.escapedUrl, command),
                 valueTransformationProvider.getValueTransformation(channelConfig.stateTransformation),
                 valueTransformationProvider.getValueTransformation(channelConfig.commandTransformation), channelConfig);
     }

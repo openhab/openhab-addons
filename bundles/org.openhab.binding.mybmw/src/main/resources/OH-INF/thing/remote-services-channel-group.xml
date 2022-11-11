@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mybmw"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-group-type id="remote-services">
+		<label>Remote Services</label>
+		<description>Remote control of the vehicle</description>
+		<channels>
+			<channel id="command" typeId="remote-command-channel"/>
+			<channel id="state" typeId="remote-state-channel"/>
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>

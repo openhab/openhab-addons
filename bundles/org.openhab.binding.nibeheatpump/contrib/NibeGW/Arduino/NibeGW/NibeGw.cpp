@@ -19,12 +19,18 @@
 #include "NibeGw.h"
 #include "Arduino.h"
 
-#ifdef HARDWARE_SERIAL
+#if defined(HARDWARE_SERIAL_WITH_PINS)
+NibeGw::NibeGw(HardwareSerial* serial, int RS485DirectionPin, int RS485RxPin, int RS485TxPin)
+#elif defined(HARDWARE_SERIAL)
 NibeGw::NibeGw(HardwareSerial* serial, int RS485DirectionPin)
 #else
 NibeGw::NibeGw(Serial_* serial, int RS485DirectionPin)
 #endif
 {
+  #if defined(HARDWARE_SERIAL_WITH_PINS)
+    this->RS485RxPin = RS485RxPin;
+    this->RS485TxPin = RS485TxPin;
+  #endif  
   verbose = 0;
   ackModbus40 = true;
   ackSms40 = false;
@@ -44,7 +50,13 @@ void NibeGw::connect()
   if (!connectionState)
   {
     state = STATE_WAIT_START;
-    RS485->begin(9600, SERIAL_8N1);
+    
+    #if defined(HARDWARE_SERIAL_WITH_PINS)
+      RS485->begin(9600, SERIAL_8N1, RS485RxPin, RS485TxPin);
+    #else
+      RS485->begin(9600, SERIAL_8N1);
+    #endif
+    
     connectionState = true;
   }
 }
@@ -377,4 +389,3 @@ boolean NibeGw::shouldAckNakSend(byte address)
 
   return false;
 }
-

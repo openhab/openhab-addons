@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.konnected.internal.gson;
 
+import static org.openhab.binding.konnected.internal.KonnectedBindingConstants.*;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -24,14 +26,15 @@ import com.google.gson.annotations.SerializedName;
 public class KonnectedModuleGson {
 
     private Integer pin;
+    private String zone;
     private String temp;
     private String humi;
-    private String state;
+    private Integer state;
     @SerializedName("Auth_Token")
     private String authToken;
-    private String momentary;
-    private String pause;
-    private String times;
+    private Integer momentary;
+    private Integer pause;
+    private Integer times;
     @SerializedName("poll_interval")
     private Integer pollInterval;
     private String addr;
@@ -40,8 +43,16 @@ public class KonnectedModuleGson {
         return pin;
     }
 
-    public void setPin(Integer setPin) {
-        this.pin = setPin;
+    public void setPin(Integer pin) {
+        this.pin = pin;
+    }
+
+    public String getZone() {
+        return zone;
+    }
+
+    public void setZone(String zone) {
+        this.zone = zone;
     }
 
     public Integer getPollInterval() {
@@ -68,11 +79,11 @@ public class KonnectedModuleGson {
         this.humi = setHumi;
     }
 
-    public String getState() {
+    public Integer getState() {
         return state;
     }
 
-    public void setState(String setState) {
+    public void setState(Integer setState) {
         this.state = setState;
     }
 
@@ -80,27 +91,27 @@ public class KonnectedModuleGson {
         return authToken;
     }
 
-    public String getMomentary() {
+    public Integer getMomentary() {
         return momentary;
     }
 
-    public void setMomentary(String setMomentary) {
+    public void setMomentary(Integer setMomentary) {
         this.momentary = setMomentary;
     }
 
-    public String getPause() {
+    public Integer getPause() {
         return pause;
     }
 
-    public void setPause(String setPause) {
+    public void setPause(Integer setPause) {
         this.pause = setPause;
     }
 
-    public String getTimes() {
+    public Integer getTimes() {
         return times;
     }
 
-    public void setTimes(String setTimes) {
+    public void setTimes(Integer setTimes) {
         this.times = setTimes;
     }
 
@@ -110,5 +121,21 @@ public class KonnectedModuleGson {
 
     public void setAddr(String setAddr) {
         this.addr = setAddr;
+    }
+
+    public void setZone(String thingId, String zone) {
+        if (isEsp8266(thingId)) {
+            setPin(ESP8266_ZONE_TO_PIN.get(zone));
+        } else {
+            setZone(zone);
+        }
+    }
+
+    public String getZone(String thingId) {
+        return isEsp8266(thingId) ? ESP8266_PIN_TO_ZONE.get(pin) : getZone();
+    }
+
+    private boolean isEsp8266(String thingId) {
+        return WIFI_MODULE.equals(thingId);
     }
 }

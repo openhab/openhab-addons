@@ -1014,21 +1014,41 @@ public class SonosXMLParser {
     }
 
     /**
-     * The model name provided by upnp is formated like in the example form "Sonos PLAY:1" or "Sonos PLAYBAR"
+     * Build a valid thing type ID from the model name provided by UPnP
      *
-     * @param sonosModelName Sonos model name provided via upnp device
-     * @return the extracted players model name without column (:) character used for ThingType creation
+     * @param sonosModelName Sonos model name provided via UPnP device
+     * @return a valid thing type ID that can then be used for ThingType creation
      */
-    public static String extractModelName(String sonosModelName) {
-        String ret = sonosModelName;
-        Matcher matcher = Pattern.compile("\\s(.*)").matcher(ret);
+    public static String buildThingTypeIdFromModelName(String sonosModelName) {
+        // For Ikea SYMFONISK models, the model name now starts with "SYMFONISK" with recent firmwares
+        if (sonosModelName.toUpperCase().contains("SYMFONISK")) {
+            return "SYMFONISK";
+        }
+        String id = sonosModelName;
+        // Remove until the first space (in practice, it removes the leading "Sonos " from the model name)
+        Matcher matcher = Pattern.compile("\\s(.*)").matcher(id);
         if (matcher.find()) {
-            ret = matcher.group(1);
+            id = matcher.group(1);
+            // Remove a potential ending text surrounded with parenthesis
+            matcher = Pattern.compile("(.*)\\s\\(.*\\)").matcher(id);
+            if (matcher.find()) {
+                id = matcher.group(1);
+            }
         }
-        if (ret.contains(":")) {
-            ret = ret.replace(":", "");
+        // Finally remove unexpected characters in a thing type ID
+        id = id.replaceAll("[^a-zA-Z0-9_]", "");
+        // ZP80 is translated to CONNECT and ZP100 to CONNECTAMP
+        switch (id) {
+            case "ZP80":
+                id = "CONNECT";
+                break;
+            case "ZP100":
+                id = "CONNECTAMP";
+                break;
+            default:
+                break;
         }
-        return ret;
+        return id;
     }
 
     public static String compileMetadataString(SonosEntry entry) {

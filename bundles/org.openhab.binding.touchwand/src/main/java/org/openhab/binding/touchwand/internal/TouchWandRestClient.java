@@ -230,7 +230,7 @@ public class TouchWandRestClient {
             response = request.send();
             return response.getContentAsString();
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logger.warn("Error opening connecton to {} : {} ", touchWandIpAddr, e.getMessage());
+            logger.warn("Error opening connection to {} : {} ", touchWandIpAddr, e.getMessage());
         }
         return "";
     }

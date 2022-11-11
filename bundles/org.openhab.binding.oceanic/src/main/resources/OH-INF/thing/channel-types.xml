@@ -19,13 +19,13 @@
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="flow" advanced="true">
-		<item-type>Decimal</item-type>
+		<item-type>Number</item-type>
 		<label>Flow</label>
 		<description>Flow in l/min</description>
 		<state pattern="%.1f l/min" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="reserve" advanced="true">
-		<item-type>Decimal</item-type>
+		<item-type>Number</item-type>
 		<label>Water Reserve</label>
 		<description>Water reserve in l before regeneration has to start</description>
 		<state pattern="%d l" readOnly="true"></state>

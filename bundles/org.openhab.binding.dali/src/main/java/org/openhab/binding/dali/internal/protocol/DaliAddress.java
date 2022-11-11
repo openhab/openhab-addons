@@ -36,10 +36,27 @@ public abstract class DaliAddress {
             protected <T extends DaliFrame> T addToFrame(T frame) throws DaliException {
                 if (frame.length() == 16) {
                     frame.data &= ~(1 << 15); // unset bit 15
-                    frame.data |= ((address & 0b11111) << 9);
+                    frame.data |= ((address & 0b111111) << 9);
                 } else if (frame.length() == 24) {
                     frame.data &= ~(1 << 23); // unset bit 23
-                    frame.data |= ((address & 0b11111) << 17);
+                    frame.data |= ((address & 0b111111) << 17);
+                } else {
+                    throw new DaliException("Unsupported frame size");
+                }
+                return frame;
+            }
+        };
+    }
+
+    static DaliAddress createRawAddress(int address) {
+        return new DaliAddress() {
+            @Override
+            protected <T extends DaliFrame> T addToFrame(T frame) throws DaliException {
+                // Keep all bits of the raw address
+                if (frame.length() == 16) {
+                    frame.data |= ((address & 0xff) << 8);
+                } else if (frame.length() == 24) {
+                    frame.data |= ((address & 0xff) << 16);
                 } else {
                     throw new DaliException("Unsupported frame size");
                 }
@@ -91,9 +108,9 @@ public abstract class DaliAddress {
                     if (address > 15) {
                         throw new DaliException("Groups 16..31 are not supported in 16-bit forward frames");
                     }
-                    frame.data |= ((0x4 << 3) & (address & 0b111)) << 9;
+                    frame.data |= (0x80 | ((address & 0b1111) << 1)) << 8;
                 } else if (frame.length() == 24) {
-                    frame.data |= ((0x2 << 4) & (address & 0b1111)) << 17;
+                    frame.data |= (0x80 | ((address & 0b11111) << 1)) << 16;
                 } else {
                     throw new DaliException("Unsupported frame size");
                 }

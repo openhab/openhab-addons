@@ -139,13 +139,13 @@ public class AmazonEchoDiscovery extends AbstractDiscoveryService {
                 String deviceFamily = device.deviceFamily;
                 if (deviceFamily != null) {
                     ThingTypeUID thingTypeId;
-                    if (deviceFamily.equals("ECHO")) {
+                    if ("ECHO".equals(deviceFamily)) {
                         thingTypeId = THING_TYPE_ECHO;
-                    } else if (deviceFamily.equals("ROOK")) {
+                    } else if ("ROOK".equals(deviceFamily)) {
                         thingTypeId = THING_TYPE_ECHO_SPOT;
-                    } else if (deviceFamily.equals("KNIGHT")) {
+                    } else if ("KNIGHT".equals(deviceFamily)) {
                         thingTypeId = THING_TYPE_ECHO_SHOW;
-                    } else if (deviceFamily.equals("WHA")) {
+                    } else if ("WHA".equals(deviceFamily)) {
                         thingTypeId = THING_TYPE_ECHO_WHA;
                     } else {
                         logger.debug("Unknown thing type '{}'", deviceFamily);

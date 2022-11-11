@@ -27,9 +27,6 @@ public class GoEStatusResponseBaseDTO {
     @SerializedName("amp")
     public Integer maxCurrent;
 
-    @SerializedName("nrg")
-    public Integer[] energy;
-
     @SerializedName("err")
     public Integer errorCode;
 

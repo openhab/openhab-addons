@@ -15,10 +15,10 @@ package org.openhab.automation.jrubyscripting.internal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 
@@ -27,6 +27,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.automation.module.script.AbstractScriptEngineFactory;
 import org.openhab.core.automation.module.script.ScriptEngineFactory;
 import org.openhab.core.config.core.ConfigurableService;
+import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
@@ -38,31 +39,18 @@ import org.osgi.service.component.annotations.Modified;
  * @author Jimmy Tanagra - Add require injection
  */
 @NonNullByDefault
-@Component(service = ScriptEngineFactory.class, configurationPid = "org.openhab.automation.jrubyscripting")
+@Component(service = ScriptEngineFactory.class, configurationPid = "org.openhab.automation.jrubyscripting", property = Constants.SERVICE_PID
+        + "=org.openhab.automation.jrubyscripting")
 @ConfigurableService(category = "automation", label = "JRuby Scripting", description_uri = "automation:jruby")
 public class JRubyScriptEngineFactory extends AbstractScriptEngineFactory {
 
     private final JRubyScriptEngineConfiguration configuration = new JRubyScriptEngineConfiguration();
-
-    // Filter out the File entry to prevent shadowing the Ruby File class which breaks Ruby in spectacularly
-    // difficult ways to debug.
-    private static final Set<String> FILTERED_PRESETS = Set.of("File", "Files", "Path", "Paths");
-    private static final Set<String> INSTANCE_PRESETS = Set.of();
 
     private final javax.script.ScriptEngineFactory factory = new org.jruby.embed.jsr223.JRubyEngineFactory();
 
     private final List<String> scriptTypes = Stream
             .concat(factory.getExtensions().stream(), factory.getMimeTypes().stream())
             .collect(Collectors.toUnmodifiableList());
-
-    // Adds @ in front of a set of variables so that Ruby recognizes them as instance variables
-    private static Map.Entry<String, Object> mapInstancePresets(Map.Entry<String, Object> entry) {
-        if (INSTANCE_PRESETS.contains(entry.getKey())) {
-            return Map.entry("@" + entry.getKey(), entry.getValue());
-        } else {
-            return entry;
-        }
-    }
 
     // Adds $ in front of a set of variables so that Ruby recognizes them as global variables
     private static Map.Entry<String, Object> mapGlobalPresets(Map.Entry<String, Object> entry) {
@@ -99,8 +87,6 @@ public class JRubyScriptEngineFactory extends AbstractScriptEngineFactory {
                 scopeValues //
                         .entrySet() //
                         .stream() //
-                        .filter(map -> !FILTERED_PRESETS.contains(map.getKey())) //
-                        .map(JRubyScriptEngineFactory::mapInstancePresets) //
                         .map(JRubyScriptEngineFactory::mapGlobalPresets) //
                         .collect(Collectors.toMap(map -> map.getKey(), map -> map.getValue())); //
 
@@ -121,12 +107,12 @@ public class JRubyScriptEngineFactory extends AbstractScriptEngineFactory {
     }
 
     private void importClassesToRuby(ScriptEngine scriptEngine, Map<String, Object> objects) {
-        String import_statements = objects.entrySet() //
-                .stream() //
-                .map(entry -> "java_import " + ((Class<?>) entry.getValue()).getName() + " rescue nil") //
-                .collect(Collectors.joining("\n"));
         try {
-            scriptEngine.eval(import_statements);
+            scriptEngine.put("__classes", objects);
+            final String code = "__classes.each { |(name, klass)| Object.const_set(name, klass.ruby_class) unless Object.const_defined?(name, false) }";
+            scriptEngine.eval(code);
+            // clean up our temporary variable
+            scriptEngine.getBindings(ScriptContext.ENGINE_SCOPE).remove("__classes");
         } catch (ScriptException e) {
             logger.debug("Error importing java classes", e);
         }

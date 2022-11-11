@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mybmw"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-type id="statistic-title-channel">
+		<item-type>String</item-type>
+		<label>Charge Statistic Month</label>
+	</channel-type>
+	<channel-type id="statistic-energy-channel">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Charged</label>
+		<description>Total energy charged in current month</description>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="statistic-sessions-channel">
+		<item-type>Number</item-type>
+		<label>Charge Sessions</label>
+		<description>Number of charging sessions this month</description>
+	</channel-type>
+</thing:thing-descriptions>

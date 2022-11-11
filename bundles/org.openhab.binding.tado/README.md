@@ -66,21 +66,23 @@ Name | Type | Description | Read/Write | Zone type
 -|-|-|-|-
 `currentTemperature` | Number:Temperature | Current inside temperature | R | `HEATING`, `AC`
 `humidity` | Number | Current relative inside humidity in percent | R | `HEATING`, `AC`
-`heatingPower` | Number | Amount of heating power currently present | R | `HEATING`
-`acPower` | Switch | Indicates if the Air-Conditioning is Off or On | R | `AC`
 `hvacMode` | String | Active mode, one of `OFF`, `HEAT`, `COOL`, `DRY`, `FAN`, `AUTO` | RW | `HEATING` and `DHW` support `OFF` and `HEAT`, `AC` can support more
 `targetTemperature` | Number:Temperature | Set point | RW | `HEATING`, `AC`, `DHW`
+`operationMode` | String | Operation mode the zone is currently in. One of `SCHEDULE` (follow smart schedule), `MANUAL` (override until ended manually), `TIMER` (override for a given time), `UNTIL_CHANGE` (active until next smart schedule block or until AWAY mode becomes active) | RW | `HEATING`, `AC`, `DHW`
+`overlayExpiry` | DateTime | End date and time of a timer | R | `HEATING`, `AC`, `DHW`
+`timerDuration` | Number | Timer duration in minutes | RW | `HEATING`, `AC`, `DHW`
+`heatingPower` | Number | Amount of heating power currently present | R | `HEATING`
+`acPower` | Switch | Indicates if the Air-Conditioning is Off or On | R | `AC`
 `fanspeed`<sup>1)</sup> | String | Fan speed, one of `AUTO`, `LOW`, `MIDDLE`, `HIGH` | RW | `AC`
 `fanLevel`<sup>1)</sup> | String | Fan speed, one of <sup>3)</sup> `AUTO`, `SILENT`, `LEVEL1`, `LEVEL2`, `LEVEL3`, `LEVEL4`, `LEVEL5` | RW | `AC`
 `swing`<sup>2)</sup> | Switch | Swing on/off | RW | `AC`
 `verticalSwing`<sup>2)</sup> | String | Vertical swing state, one of <sup>3)</sup> `OFF`, `ON`, `UP`, `MID_UP`, `MID`, `MID_DOWN`, `DOWN`, `AUTO` | RW | `AC`
 `horizontalSwing`<sup>2)</sup> | String | Horizontal swing state, one of <sup>3)</sup> `OFF`, `ON`, `LEFT`, `MID_LEFT`, `MID`, `MID_RIGHT`, `RIGHT`, `AUTO` | RW | `AC`
-`overlayExpiry` | DateTime | End date and time of a timer | R | `HEATING`, `AC`, `DHW`
-`timerDuration` | Number | Timer duration in minutes | RW | `HEATING`, `AC`, `DHW`
-`operationMode` | String | Operation mode the zone is currently in. One of `SCHEDULE` (follow smart schedule), `MANUAL` (override until ended manually), `TIMER` (override for a given time), `UNTIL_CHANGE` (active until next smart schedule block or until AWAY mode becomes active) | RW | `HEATING`, `AC`, `DHW`
-`batteryLowAlarm` | Switch | A control device in the Zone has a low battery (if applicable) | R | Any Zone
+`batteryLowAlarm` | Switch | A control device in the Zone has a low battery | R | Any Zone
 `openWindowDetected` | Switch | An open window has been detected in the Zone | R | Any Zone
-`light` | Switch | State (`ON`, `OFF`) of the control panel light (if applicable) | RW | `AC`
+`light` | Switch | State (`ON`, `OFF`) of the control panel light | RW | `AC`
+
+You will see some of the above mentioned Channels only if your tado° device supports the respective function.
 
 The `RW` items are used to either override the schedule or to return to it (if `hvacMode` is set to `SCHEDULE`).
 

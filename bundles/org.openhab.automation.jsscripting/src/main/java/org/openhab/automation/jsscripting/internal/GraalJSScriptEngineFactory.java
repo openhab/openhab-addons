@@ -65,7 +65,7 @@ public final class GraalJSScriptEngineFactory implements ScriptEngineFactory {
 
     @Override
     public void scopeValues(ScriptEngine scriptEngine, Map<String, Object> scopeValues) {
-        // noop; the are retrieved via modules, not injected
+        // noop; they are retrieved via modules, not injected
     }
 
     @Override

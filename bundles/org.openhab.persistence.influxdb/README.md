@@ -34,7 +34,8 @@ This is very easy and you will find good documentation on it on the
 
 ## Configuration
 
-This service can be configured in the file `services/influxdb.cfg`.
+This service can be configured in the UI under `Settings` → `Other Services` → `InfluxDB Persistence Service` or in the file `services/influxdb.cfg`.
+Attention: The file-based configuration overrides the UI configuration.
 
 | Property        | Default               | Required | Description                                                                                                                                               |
 | --------------- | --------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -50,6 +51,7 @@ This service can be configured in the file `services/influxdb.cfg`.
 that if you use all default values at minimum you must provide a password or a token.
 
 All item- and event-related configuration is defined in the file `persistence/influxdb.persist`.
+Please consider [persistence documentation](https://www.openhab.org/docs/configuration/persistence.html#persistence) for further information.
 
 ### Additional configuration for customized storage options in InfluxDB
 

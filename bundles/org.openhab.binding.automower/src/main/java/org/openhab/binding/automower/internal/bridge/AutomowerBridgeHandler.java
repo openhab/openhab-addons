@@ -93,26 +93,22 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
         AutomowerBridgeConfiguration bridgeConfiguration = getConfigAs(AutomowerBridgeConfiguration.class);
 
         final String appKey = bridgeConfiguration.getAppKey();
-        final String userName = bridgeConfiguration.getUserName();
-        final String password = bridgeConfiguration.getPassword();
+        final String appSecret = bridgeConfiguration.getAppSecret();
         final Integer pollingIntervalS = bridgeConfiguration.getPollingInterval();
 
         if (appKey == null || appKey.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/conf-error-no-app-key");
-        } else if (userName == null || userName.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/conf-error-no-username");
-        } else if (password == null || password.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/conf-error-no-password");
+        } else if (appSecret == null || appSecret.isEmpty()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/conf-error-no-app-secret");
         } else if (pollingIntervalS != null && pollingIntervalS < 1) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/conf-error-invalid-polling-interval");
         } else {
             oAuthService = oAuthFactory.createOAuthClientService(thing.getUID().getAsString(), HUSQVARNA_API_TOKEN_URL,
-                    null, appKey, null, null, null);
+                    null, appKey, appSecret, null, null);
 
             if (bridge == null) {
-                AutomowerBridge currentBridge = new AutomowerBridge(oAuthService, appKey, userName, password,
-                        httpClient, scheduler);
+                AutomowerBridge currentBridge = new AutomowerBridge(oAuthService, appKey, httpClient, scheduler);
                 bridge = currentBridge;
                 startAutomowerBridgePolling(currentBridge, pollingIntervalS);
             }

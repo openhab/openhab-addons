@@ -142,6 +142,7 @@ public class VeluxBindingConstants {
     public static final String CHANNEL_ACTUATOR_SILENTMODE = "silentMode";
     public static final String CHANNEL_ACTUATOR_LIMIT_MINIMUM = "limitMinimum";
     public static final String CHANNEL_ACTUATOR_LIMIT_MAXIMUM = "limitMaximum";
+    public static final String CHANNEL_VANE_POSITION = "vanePosition";
 
     // List of all virtual shutter channel ids
     public static final String CHANNEL_VSHUTTER_POSITION = "vposition";

@@ -29,6 +29,35 @@
 				<default>false</default>
 			</parameter>
 
+			<parameter name="hostnameValidated" type="boolean">
+				<label>Hostname Validated</label>
+				<description>Validate hostname from certificate against server hostname for secure connection.</description>
+				<default>true</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="protocol" type="text">
+				<label>Protocol</label>
+				<description>The protocol used for communicating with the broker.</description>
+				<options>
+					<option value="TCP">TCP</option>
+					<option value="WEBSOCKETS">WebSockets</option>
+				</options>
+				<default>TCP</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="mqttVersion" type="text">
+				<label>MQTT Version</label>
+				<description>The MQTT version used for communicating with the broker.</description>
+				<options>
+					<option value="V3">Version 3</option>
+					<option value="V5">Version 5</option>
+				</options>
+				<default>V3</default>
+				<advanced>true</advanced>
+			</parameter>
+
 			<parameter name="qos" type="integer">
 				<label>Quality of Service</label>
 				<options>

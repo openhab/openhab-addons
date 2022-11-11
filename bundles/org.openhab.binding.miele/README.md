@@ -43,26 +43,24 @@ discovery.miele:removalGracePeriod=30
 
 ## Thing Configuration
 
+### Thing Configuration for Miele XGW3000
+
+| Configuration Parameter | Description   |
+|-------------------------|---------------|
+| ipAddress               | Network address of the Miele@home gateway |
+| interface               | Network address of openHAB host interface where the binding will listen for multicast events coming from the Miele@home gateway. |
+| userName                | Name of a registered Miele@home user. |
+| password                | Password for the registered Miele@home user. |
+| language                | Language for state, program and phase texts. Leave blank for system language. |
+
+### Thing Configuration for appliance
+
+| Configuration Parameter | Description   |
+|-------------------------|---------------|
+| uid                     | Unique identifier for specific appliance on the gateway. |
+
 Each appliance needs the device UID as a configuration parameter.
 The UID is nowhere to be found on the appliances, but since the discovery works quite reliably, a manual configuration is not needed.
-
-Once you got hold of the IDs, a manual configuration looks like this:
-
-```
-Bridge miele:xgw3000:dilbeek [ipAddress="192.168.0.18", interface="192.168.0.5"] {
-Things:
-Thing fridgefreezer freezer [uid="00124b000424be44#2"]
-Thing hood hood [uid="001d63fffe020685#210"]
-Thing fridge fridge [uid="00124b000424bdc0#2"]
-Thing oven oven [uid="001d63fffe020390#210"]
-Thing oven microwave [uid="001d63fffe0206eb#210"]
-Thing hob hob [uid="00124b000424bed7#2"]
-Thing dishwasher dishwasher [uid="001d63fffe020683#210"]
-Thing tumbledryer dryer [uid="001d63fffe0200ba#210"]
-Thing washingmachine washingmachine [uid="001d63fffe020505#210"]
-Thing coffeemachine coffeemachine [uid="001d63fffe020505#190"]
-}
-```
 
 ## Channels
 
@@ -127,6 +125,7 @@ Channels available for each appliance type are listed below.
 | phase               | String               | Read       | Current phase of the program running on the appliance               |
 | rawPhase            | Number               | Read       | Current phase of the program running on the appliance as raw number |
 | start               | DateTime             | Read       | Programmed start time of the program                                |
+| end                 | DateTime             | Read       | End time of the program (programmed or running)                     |
 | duration            | DateTime             | Read       | Duration of the program running on the appliance                    |
 | elapsed             | DateTime             | Read       | Time elapsed in the program running on the appliance                |
 | finish              | DateTime             | Read       | Time to finish the program running on the appliance                 |
@@ -239,6 +238,7 @@ Channels available for each appliance type are listed below.
 | phase               | String               | Read       | Current phase of the program running on the appliance               |
 | rawPhase            | Number               | Read       | Current phase of the program running on the appliance as raw number |
 | start               | DateTime             | Read       | Programmed start time of the program                                |
+| end                 | DateTime             | Read       | End time of the program (programmed or running)                     |
 | duration            | DateTime             | Read       | Duration of the program running on the appliance                    |
 | elapsed             | DateTime             | Read       | Time elapsed in the program running on the appliance                |
 | finish              | DateTime             | Read       | Time to finish the program running on the appliance                 |
@@ -281,6 +281,7 @@ See oven.
 | phase               | String               | Read       | Current phase of the program running on the appliance               |
 | rawPhase            | Number               | Read       | Current phase of the program running on the appliance as raw number |
 | start               | DateTime             | Read       | Programmed start time of the program                                |
+| end                 | DateTime             | Read       | End time of the program (programmed or running)                     |
 | duration            | DateTime             | Read       | Duration of the program running on the appliance                    |
 | elapsed             | DateTime             | Read       | Time elapsed in the program running on the appliance                |
 | finish              | DateTime             | Read       | Time to finish the program running on the appliance                 |
@@ -345,6 +346,7 @@ See oven.
 | phase               | String               | Read       | Current phase of the program running on the appliance               |
 | rawPhase            | Number               | Read       | Current phase of the program running on the appliance as raw number |
 | start               | DateTime             | Read       | Programmed start time of the program                                |
+| end                 | DateTime             | Read       | End time of the program (programmed or running)                     |
 | duration            | DateTime             | Read       | Duration of the program running on the appliance                    |
 | elapsed             | DateTime             | Read       | Time elapsed in the program running on the appliance                |
 | finish              | DateTime             | Read       | Time to finish the program running on the appliance                 |
@@ -448,7 +450,7 @@ DateTime Oven_ElapsedTime "Elapsed time" <time>             {channel="miele:oven
 DateTime Oven_FinishTime "Remaining time" <time>            {channel="miele:oven:home:oven:finish"}
 Number:Temperature Oven_CurrentTemperature <temperature>    {channel="miele:oven:home:oven:measured"}
 Number:Temperature Oven_TargetTemperature <temperature>     {channel="miele:oven:home:oven:target"}
-Switch Oven_Stop                                            {channel="miele:oven:home:oven:stop", autoupdate="false"}
+Switch Oven_Stop                                            {channel="miele:oven:home:oven:stop"}
 
 String WashingMachine_State                                 {channel="miele:washingmachine:home:washingmachine:state"}
 Number WashingMachine_RawState                              {channel="miele:washingmachine:home:washingmachine:rawState"}

@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.atlona.internal;
 
-import org.openhab.binding.atlona.internal.handler.AtlonaHandler;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.State;
@@ -23,6 +24,7 @@ import org.openhab.core.types.State;
  *
  * @author Tim Roberts - Initial contribution
  */
+@NonNullByDefault
 public interface AtlonaHandlerCallback {
     /**
      * Callback to the {@link AtlonaHandler} to update the status of the thing.
@@ -31,7 +33,7 @@ public interface AtlonaHandlerCallback {
      * @param detail a non-null {@link org.openhab.core.thing.ThingStatusDetail}
      * @param msg a possibly null, possibly empty message
      */
-    void statusChanged(ThingStatus status, ThingStatusDetail detail, String msg);
+    void statusChanged(ThingStatus status, ThingStatusDetail detail, @Nullable String msg);
 
     /**
      * Callback to the {@link AtlonaHandler} to update the state of an item

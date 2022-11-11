@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.lcn.internal.subhandler;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -41,30 +42,34 @@ public class LcnModuleThresholdSubHandlerTest extends AbstractTestLcnModuleSubHa
 
     @Test
     public void testThreshold11() {
-        l.tryParse("=M000005.T1112345");
+        tryParseAllHandlers("=M000005.T1112345");
         verify(handler).updateChannel(LcnChannelGroup.THRESHOLDREGISTER1, "1", new DecimalType(12345));
+        verify(handler).updateChannel(any(), any(), any());
     }
 
     @Test
     public void testThreshold14() {
-        l.tryParse("=M000005.T140");
+        tryParseAllHandlers("=M000005.T140");
         verify(handler).updateChannel(LcnChannelGroup.THRESHOLDREGISTER1, "4", new DecimalType(0));
+        verify(handler).updateChannel(any(), any(), any());
     }
 
     @Test
     public void testThreshold41() {
-        l.tryParse("=M000005.T4112345");
+        tryParseAllHandlers("=M000005.T4112345");
         verify(handler).updateChannel(LcnChannelGroup.THRESHOLDREGISTER4, "1", new DecimalType(12345));
+        verify(handler).updateChannel(any(), any(), any());
     }
 
     @Test
     public void testThresholdLegacy() {
-        l.tryParse("=M000005.S1123451123411123000000000112345");
+        tryParseAllHandlers("=M000005.S1123451123411123000000000112345");
         verify(handler).updateChannel(LcnChannelGroup.THRESHOLDREGISTER1, "1", new DecimalType(12345));
         verify(handler).updateChannel(LcnChannelGroup.THRESHOLDREGISTER1, "2", new DecimalType(11234));
         verify(handler).updateChannel(LcnChannelGroup.THRESHOLDREGISTER1, "3", new DecimalType(11123));
         verify(handler).updateChannel(LcnChannelGroup.THRESHOLDREGISTER1, "4", new DecimalType(0));
         verify(handler).updateChannel(LcnChannelGroup.THRESHOLDREGISTER1, "5", new DecimalType(1));
+        verify(handler, times(5)).updateChannel(any(), any(), any());
     }
 
     @Test

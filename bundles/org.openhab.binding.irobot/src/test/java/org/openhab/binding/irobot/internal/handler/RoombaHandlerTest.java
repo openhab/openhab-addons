@@ -15,7 +15,6 @@ package org.openhab.binding.irobot.internal.handler;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -38,9 +37,10 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.internal.ThingImpl;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.spi.LocationAwareLogger;
+
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
 
 /**
  * Test the MQTT protocol with local iRobot (without openhab running).
@@ -60,17 +60,14 @@ public class RoombaHandlerTest {
     @Nullable
     private RoombaHandler handler;
     // We have to initialize it to avoid compile errors
-    private @Mock Thing thing = new ThingImpl(new ThingTypeUID("AA:BB"), "");
+    private @Mock Thing thing = new ThingImpl(new ThingTypeUID("AA:BB"), "test");
     @Nullable
     private ThingHandlerCallback callback;
 
     @BeforeEach
     void setUp() throws Exception {
-        Logger logger = LoggerFactory.getLogger(RoombaHandler.class);
-        Field logLevelField = logger.getClass().getDeclaredField("currentLogLevel");
-        logLevelField.setAccessible(true);
-        logLevelField.set(logger, LocationAwareLogger.TRACE_INT);
-
+        final Logger logger = (Logger) LoggerFactory.getLogger(RoombaHandler.class);
+        logger.setLevel(Level.TRACE);
         Configuration config = new Configuration();
         config.put("ipaddress", RoombaHandlerTest.IP_ADDRESS);
         config.put("password", RoombaHandlerTest.PASSWORD);

@@ -19,7 +19,7 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
@@ -151,7 +151,7 @@ public class EcobeeApi implements AccessTokenRefreshListener {
             AccessTokenResponse localAccessTokenResponse = oAuthClientService.getAccessTokenResponse();
             if (localAccessTokenResponse != null) {
                 logger.trace("API: Got AccessTokenResponse from OAuth service: {}", localAccessTokenResponse);
-                if (localAccessTokenResponse.isExpired(LocalDateTime.now(), TOKEN_EXPIRES_IN_BUFFER_SECONDS)) {
+                if (localAccessTokenResponse.isExpired(Instant.now(), TOKEN_EXPIRES_IN_BUFFER_SECONDS)) {
                     logger.debug("API: Token is expiring soon. Refresh it now");
                     localAccessTokenResponse = oAuthClientService.refreshToken();
                 }

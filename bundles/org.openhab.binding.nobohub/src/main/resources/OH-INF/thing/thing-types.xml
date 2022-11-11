@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="nobohub"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="zone">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="nobohub"/>
+		</supported-bridge-type-refs>
+
+		<label>Zone</label>
+		<description>A zone can contain several Nobo devices</description>
+
+		<channels>
+			<channel id="activeWeekProfileName" typeId="activeWeekProfileName-channel-type"/>
+			<channel id="activeWeekProfile" typeId="activeWeekProfile-channel-type"/>
+			<channel id="comfortTemperature" typeId="comfort-temperature-channel-type"/>
+			<channel id="ecoTemperature" typeId="eco-temperature-channel-type"/>
+			<channel id="currentTemperature" typeId="temperature-channel-type"/>
+			<channel id="calculatedWeekProfileStatus" typeId="activeOverrideName-channel-type"/>
+		</channels>
+
+		<properties>
+			<property name="vendor">Glen Dimplex Nobo</property>
+		</properties>
+		<representation-property>name</representation-property>
+
+		<config-description>
+			<parameter name="id" type="integer" required="true">
+				<label>Id</label>
+				<description>Id of the Zone</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="component">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="nobohub"/>
+		</supported-bridge-type-refs>
+
+		<label>Component</label>
+		<description>A component is an oven, a switch or a floor thermostat</description>
+
+		<channels>
+			<channel id="currentTemperature" typeId="temperature-channel-type"/>
+		</channels>
+
+		<properties>
+			<property name="vendor">Glen Dimplex Nobo</property>
+		</properties>
+		<representation-property>serialNumber</representation-property>
+
+		<config-description>
+			<parameter name="serialNumber" type="text" required="true">
+				<label>Serial Number</label>
+				<description>Serial number of the component (12 digits)</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="activeOverrideName-channel-type">
+		<item-type>String</item-type>
+		<label>Active Override</label>
+		<description>Name of active override, using one of the predefined states supported</description>
+		<category>Heating</category>
+		<state readOnly="false">
+			<options>
+				<option value="NORMAL">Normal</option>
+				<option value="COMFORT">Comfort</option>
+				<option value="ECO">Eco</option>
+				<option value="Away">Away</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="eco-temperature-channel-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Eco Temperature</label>
+		<description>The preferred Eco temperature level set on the heater or in the binding</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state min="7" max="30" step="1" pattern="%d °C" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="comfort-temperature-channel-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Comfort Temperature</label>
+		<description>The preferred Comfort temperature level set on the heater or in the binding</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state min="7" max="30" step="1" pattern="%d °C" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="temperature-channel-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Current Temperature</label>
+		<description>The current temperature from a device that supports reporting temperatures</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state pattern="%.3f °C" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="activeWeekProfileName-channel-type">
+		<item-type>String</item-type>
+		<label>Active Week Profile Name</label>
+		<description>Name of the active week profile, set via the Nobo app</description>
+		<category>Heating</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="activeWeekProfile-channel-type">
+		<item-type>Number</item-type>
+		<label>Active Week Profile Id</label>
+		<description>Id of the active week profile, set via the Nobo app</description>
+		<category>Heating</category>
+		<state min="0" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="weekProfiles-channel-type">
+		<item-type>String</item-type>
+		<label>Week Profiles</label>
+		<description>List of active week profiles, set via the Nobo app</description>
+		<category>Heating</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>

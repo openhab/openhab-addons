@@ -36,6 +36,7 @@ public class ModbusSerialConfiguration {
     private String flowControlOut = "none";
     private int timeBetweenTransactionsMillis = 35;
     private int connectMaxTries = 1;
+    private int afterConnectionDelayMillis;
     private int connectTimeoutMillis = 10_000;
     private boolean enableDiscovery;
 
@@ -141,6 +142,14 @@ public class ModbusSerialConfiguration {
 
     public void setConnectMaxTries(int connectMaxTries) {
         this.connectMaxTries = connectMaxTries;
+    }
+
+    public int getAfterConnectionDelayMillis() {
+        return afterConnectionDelayMillis;
+    }
+
+    public void setAfterConnectionDelayMillis(int afterConnectionDelayMillis) {
+        this.afterConnectionDelayMillis = afterConnectionDelayMillis;
     }
 
     public int getConnectTimeoutMillis() {

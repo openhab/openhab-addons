@@ -11,7 +11,7 @@
 
   <groupId>org.openhab.addons</groupId>
   <artifactId>org.openhab.addons.reactor</artifactId>
-  <version>3.3.0-SNAPSHOT</version>
+  <version>3.4.0-SNAPSHOT</version>
 
   <packaging>pom</packaging>
 
@@ -68,15 +68,15 @@
     <maven.compiler.target>${oh.java.version}</maven.compiler.target>
     <maven.compiler.compilerVersion>${oh.java.version}</maven.compiler.compilerVersion>
 
-    <ohc.version>3.3.0-SNAPSHOT</ohc.version>
-    <bnd.version>6.2.0</bnd.version>
+    <ohc.version>3.4.0-SNAPSHOT</ohc.version>
+    <bnd.version>6.3.0</bnd.version>
     <commons.net.version>3.7.2</commons.net.version>
     <eea.version>2.2.1</eea.version>
     <jackson.version>2.12.5</jackson.version>
-    <karaf.version>4.3.6</karaf.version>
+    <karaf.version>4.3.7</karaf.version>
     <netty.version>4.1.72.Final</netty.version>
     <okhttp.version>3.14.9</okhttp.version>
-    <sat.version>0.12.0</sat.version>
+    <sat.version>0.13.0</sat.version>
     <spotless.version>2.0.3</spotless.version>
 
     <bnd.importpackage/>
@@ -302,6 +302,7 @@ Import-Package: \\
             <compilerArgs>
               <arg>-err:+nullAnnot(org.eclipse.jdt.annotation.Nullable|org.eclipse.jdt.annotation.NonNull|org.eclipse.jdt.annotation.NonNullByDefault),+inheritNullAnnot,+nullAnnotConflict,-nullUncheckedConversion</arg>
               <arg>-warn:+null,+inheritNullAnnot,-nullUncheckedConversion,+nullAnnotRedundant,+nullDereference</arg>
+              <arg>-nowarn:[${project.build.directory}/generated-sources]</arg>
             </compilerArgs>
             <showWarnings>true</showWarnings>
             <showDeprecation>true</showDeprecation>
@@ -442,88 +443,6 @@ Import-Package: \\
           </executions>
         </plugin>
 
-        <!-- This plugin's configuration is used to store Eclipse m2e settings only. -->
-        <!-- It has no influence on the Maven build itself. -->
-        <plugin>
-          <groupId>org.eclipse.m2e</groupId>
-          <artifactId>lifecycle-mapping</artifactId>
-          <version>1.0.0</version>
-          <configuration>
-            <lifecycleMappingMetadata>
-              <pluginExecutions>
-                <pluginExecution>
-                  <pluginExecutionFilter>
-                    <groupId>org.apache.karaf.tooling</groupId>
-                    <artifactId>karaf-maven-plugin</artifactId>
-                    <versionRange>[4.2.1,)</versionRange>
-                    <goals>
-                      <goal>features-generate-descriptor</goal>
-                      <goal>verify</goal>
-                    </goals>
-                  </pluginExecutionFilter>
-                  <action>
-                    <ignore/>
-                  </action>
-                </pluginExecution>
-                <pluginExecution>
-                  <pluginExecutionFilter>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>exec-maven-plugin</artifactId>
-                    <versionRange>[1.4.0,)</versionRange>
-                    <goals>
-                      <goal>java</goal>
-                    </goals>
-                  </pluginExecutionFilter>
-                  <action>
-                    <ignore/>
-                  </action>
-                </pluginExecution>
-                <pluginExecution>
-                  <pluginExecutionFilter>
-                    <groupId>biz.aQute.bnd</groupId>
-                    <artifactId>bnd-indexer-maven-plugin</artifactId>
-                    <versionRange>[3.1.0,)</versionRange>
-                    <goals>
-                      <goal>index</goal>
-                      <goal>local-index</goal>
-                    </goals>
-                  </pluginExecutionFilter>
-                  <action>
-                    <ignore/>
-                  </action>
-                </pluginExecution>
-                <pluginExecution>
-                  <pluginExecutionFilter>
-                    <groupId>org.commonjava.maven.plugins</groupId>
-                    <artifactId>directory-maven-plugin</artifactId>
-                    <versionRange>[0.3.1,)</versionRange>
-                    <goals>
-                      <goal>directory-of</goal>
-                    </goals>
-                  </pluginExecutionFilter>
-                  <action>
-                    <ignore/>
-                  </action>
-                </pluginExecution>
-                <pluginExecution>
-                  <pluginExecutionFilter>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-dependency-plugin</artifactId>
-                    <versionRange>[3.0.0,)</versionRange>
-                    <goals>
-                      <goal>unpack</goal>
-                      <goal>unpack-dependencies</goal>
-                    </goals>
-                  </pluginExecutionFilter>
-                  <action>
-                    <execute/>
-                  </action>
-                </pluginExecution>
-              </pluginExecutions>
-            </lifecycleMappingMetadata>
-          </configuration>
-        </plugin>
-
         <plugin>
           <groupId>org.openhab.core.tools</groupId>
           <artifactId>i18n-maven-plugin</artifactId>
@@ -649,7 +568,7 @@ Import-Package: \\
       <plugin>
         <groupId>org.commonjava.maven.plugins</groupId>
         <artifactId>directory-maven-plugin</artifactId>
-        <version>0.3.1</version>
+        <version>1.0</version>
         <executions>
           <execution>
             <id>directories</id>
@@ -702,6 +621,101 @@ Import-Package: \\
   </build>
 
   <profiles>
+    <profile>
+      <id>eclipse-m2e</id>
+      <activation>
+        <property>
+          <name>m2e.version</name>
+        </property>
+      </activation>
+      <build>
+        <pluginManagement>
+          <plugins>
+            <!-- This plugin's configuration is used to store Eclipse m2e settings only. -->
+            <!-- It has no influence on the Maven build itself. -->
+            <plugin>
+              <groupId>org.eclipse.m2e</groupId>
+              <artifactId>lifecycle-mapping</artifactId>
+              <version>1.0.0</version>
+              <configuration>
+                <lifecycleMappingMetadata>
+                  <pluginExecutions>
+                    <pluginExecution>
+                      <pluginExecutionFilter>
+                        <groupId>org.apache.karaf.tooling</groupId>
+                        <artifactId>karaf-maven-plugin</artifactId>
+                        <versionRange>[4.2.1,)</versionRange>
+                        <goals>
+                          <goal>features-generate-descriptor</goal>
+                          <goal>verify</goal>
+                        </goals>
+                      </pluginExecutionFilter>
+                      <action>
+                        <ignore/>
+                      </action>
+                    </pluginExecution>
+                    <pluginExecution>
+                      <pluginExecutionFilter>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <versionRange>[1.4.0,)</versionRange>
+                        <goals>
+                          <goal>java</goal>
+                        </goals>
+                      </pluginExecutionFilter>
+                      <action>
+                        <ignore/>
+                      </action>
+                    </pluginExecution>
+                    <pluginExecution>
+                      <pluginExecutionFilter>
+                        <groupId>biz.aQute.bnd</groupId>
+                        <artifactId>bnd-indexer-maven-plugin</artifactId>
+                        <versionRange>[3.1.0,)</versionRange>
+                        <goals>
+                          <goal>index</goal>
+                          <goal>local-index</goal>
+                        </goals>
+                      </pluginExecutionFilter>
+                      <action>
+                        <ignore/>
+                      </action>
+                    </pluginExecution>
+                    <pluginExecution>
+                      <pluginExecutionFilter>
+                        <groupId>org.commonjava.maven.plugins</groupId>
+                        <artifactId>directory-maven-plugin</artifactId>
+                        <versionRange>[1.0,)</versionRange>
+                        <goals>
+                          <goal>directory-of</goal>
+                        </goals>
+                      </pluginExecutionFilter>
+                      <action>
+                        <ignore/>
+                      </action>
+                    </pluginExecution>
+                    <pluginExecution>
+                      <pluginExecutionFilter>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <versionRange>[3.0.0,)</versionRange>
+                        <goals>
+                          <goal>unpack</goal>
+                          <goal>unpack-dependencies</goal>
+                        </goals>
+                      </pluginExecutionFilter>
+                      <action>
+                        <execute/>
+                      </action>
+                    </pluginExecution>
+                  </pluginExecutions>
+                </lifecycleMappingMetadata>
+              </configuration>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+      </build>
+    </profile>
     <profile>
       <id>skip-check</id>
       <activation>

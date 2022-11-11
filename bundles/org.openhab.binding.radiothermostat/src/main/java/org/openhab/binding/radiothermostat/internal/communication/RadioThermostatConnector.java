@@ -86,7 +86,7 @@ public class RadioThermostatConnector {
     public void getAsyncThermostatData(String resource) {
         String urlStr = buildRequestURL(resource);
 
-        httpClient.newRequest(urlStr).method(GET).timeout(20, TimeUnit.SECONDS).send(new BufferingResponseListener() {
+        httpClient.newRequest(urlStr).method(GET).timeout(30, TimeUnit.SECONDS).send(new BufferingResponseListener() {
             @Override
             public void onComplete(@Nullable Result result) {
                 if (result != null && !result.isFailed()) {

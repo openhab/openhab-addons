@@ -12,8 +12,16 @@
  */
 package org.openhab.binding.mail.internal;
 
+import java.lang.reflect.Field;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
+
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
+import javax.activation.PatchedMailcapCommandMap;
+import javax.mail.MessagingException;
+import javax.mail.Part;
+import javax.mail.internet.MimeMultipart;
 
 import org.apache.commons.mail.DefaultAuthenticator;
 import org.apache.commons.mail.Email;
@@ -35,10 +43,13 @@ import org.slf4j.LoggerFactory;
  * sent to one of the channels.
  *
  * @author Jan N. Klug - Initial contribution
+ * @author Hans-Jörg Merk - Fixed UnsupportedDataTypeException - Originally by Jan N. Klug
+ *         - Fix sending HTML/Multipart mail - Originally by Jan N. Klug
  */
 @NonNullByDefault
 public class SMTPHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(SMTPHandler.class);
+    private final PatchedMailcapCommandMap commandMap = new PatchedMailcapCommandMap();
 
     private @NonNullByDefault({}) SMTPConfig config;
 
@@ -93,11 +104,34 @@ public class SMTPHandler extends BaseThingHandler {
             if (!config.username.isEmpty() && !config.password.isEmpty()) {
                 mail.setAuthenticator(new DefaultAuthenticator(config.username, config.password));
             }
-            mail.send();
-        } catch (EmailException e) {
-            logger.warn("{}", e.getMessage());
-            if (e.getCause() != null) {
-                logger.warn("{}", e.getCause().toString());
+
+            mail.buildMimeMessage();
+
+            // fix command map not available
+            DataHandler dataHandler = mail.getMimeMessage().getDataHandler();
+            dataHandler.setCommandMap(commandMap);
+            try {
+                DataSource dataSource = dataHandler.getDataSource();
+                Field dataField = dataSource.getClass().getDeclaredField("data");
+                dataField.setAccessible(true);
+                Object data = dataField.get(dataSource);
+                if (data instanceof MimeMultipart) {
+                    MimeMultipart mimeMultipart = (MimeMultipart) data;
+                    for (int i = 0; i < mimeMultipart.getCount(); i++) {
+                        Part mimePart = mimeMultipart.getBodyPart(i);
+                        mimePart.getDataHandler().setCommandMap(commandMap);
+                    }
+                }
+            } catch (NoSuchFieldException | IllegalAccessException ignored) {
+            }
+
+            mail.sendMimeMessage();
+        } catch (MessagingException | EmailException e) {
+            Throwable cause = e.getCause();
+            if (cause != null) {
+                logger.warn("{}", cause.toString());
+            } else {
+                logger.warn("{}", e.getMessage());
             }
             return false;
         }
@@ -106,6 +140,6 @@ public class SMTPHandler extends BaseThingHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singletonList(SendMailActions.class);
+        return List.of(SendMailActions.class);
     }
 }

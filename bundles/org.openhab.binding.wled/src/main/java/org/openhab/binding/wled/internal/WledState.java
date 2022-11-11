@@ -91,6 +91,7 @@ public class WledState {
         public boolean sel = true;
         public boolean rev = false;
         public boolean mi = false;
+        public String n = "Segment X";
     }
 
     public class NightLightState {

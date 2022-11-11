@@ -12,7 +12,13 @@
  */
 package org.openhab.binding.unifi.internal.api.cache;
 
-import org.openhab.binding.unifi.internal.api.model.UniFiSite;
+import static org.openhab.binding.unifi.internal.api.cache.UniFiCache.Prefix.DESC;
+import static org.openhab.binding.unifi.internal.api.cache.UniFiCache.Prefix.ID;
+import static org.openhab.binding.unifi.internal.api.cache.UniFiCache.Prefix.NAME;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.unifi.internal.api.dto.UniFiSite;
 
 /**
  * The {@link UniFiSiteCache} is a specific implementation of {@link UniFiCache} for the purpose of caching
@@ -22,22 +28,24 @@ import org.openhab.binding.unifi.internal.api.model.UniFiSite;
  *
  * @author Matthew Bowman - Initial contribution
  */
-public class UniFiSiteCache extends UniFiCache<UniFiSite> {
+@NonNullByDefault
+class UniFiSiteCache extends UniFiCache<UniFiSite> {
 
     public UniFiSiteCache() {
-        super(PREFIX_ID, PREFIX_NAME, PREFIX_DESC);
+        super(ID, NAME, DESC);
     }
 
     @Override
-    protected String getSuffix(UniFiSite site, String prefix) {
+    protected @Nullable String getSuffix(final UniFiSite site, final Prefix prefix) {
         switch (prefix) {
-            case PREFIX_ID:
+            case ID:
                 return site.getId();
-            case PREFIX_NAME:
+            case NAME:
                 return site.getName();
-            case PREFIX_DESC:
+            case DESC:
                 return site.getDescription();
+            default:
+                return null;
         }
-        return null;
     }
 }

@@ -14,6 +14,19 @@ For details about the features, see the following websites:
 - [Velux](https://www.velux.com)
 - [Velux API](https://www.velux.com/api/klf200)
 
+## Initial Configuration of Devices in the Hub
+
+This guide assumes that you have already configured your devices in the KLF200 hub.
+When the KLF200 hub is started it provides a temporary private Wi-Fi Access Point to facilitate this configuration.
+The Velux leaflet B) explains how to access the configuration web page via this temporary private Wi-Fi Access Point and configure your devices.
+Note: ending the configuration process prematurely might lead to misconfiguration and require factory resetting your hub and/or devices.
+
+If you want to add devices to the hub later, you have to access the configuration web page via the temporary private Wi-Fi Access Point once more.
+See the chapter "FAQ and Troubleshooting" below if you have any problems setting up the connection to openHAB again afterwards.
+
+Note: if any device connects to the temporary private Wi-Fi Access Point, it disables the normal LAN connection, thus preventing the binding from connecting.
+So make sure this Wi-Fi AP is not permanently running (the default setting is that the AP will turn off after some time).
+
 ## Supported Things
 
 The binding supports the following types of Thing.
@@ -90,9 +103,14 @@ In addition there are some optional Configuration Parameters.
 
 Notes:
 
-1. To enable a complete inversion of all parameter values (i.e. for Velux windows), use the property `inverted` or add a trailing star to the eight-byte serial number. For an example, see below at item `Velux DG Window Bathroom`.
+1. To enable a complete inversion of all parameter values (i.e. for Velux windows), use the property `inverted` or add a trailing star to the eight-byte serial number.
+For an example, see the Thing definition for 'Bathroom_Roof_Window' below.
 
-2. Somfy devices do not provide a valid serial number to the Velux KLF200 gateway. In this case you should enter the default `serial` number 00:00:00:00:00:00:00:00, and in addition enter the `name` parameter; this is the name that you gave to the actuator when you first registered it in the KLF200 Bridge. For an example, see below at item `Velux OG Somfy Shutter`.
+2. Somfy devices do not provide a valid serial number to the Velux KLF200 Bridge.
+For such devices you have to enter the special all-zero serial number 00:00:00:00:00:00:00:00 in the `serial` parameter.
+This special serial number complies with the serial number validation checks, but also makes the binding use the `name` parameter value instead of the `serial` parameter value when it communicates with the KLF Bridge.
+The `name` parameter must therefore contain the name that you gave to the actuator when you first registered it in the KLF200 Bridge.
+For an example, see the Thing definition for 'Living_Room_Awning' below.
 
 ### Thing Configuration for "scene"
 
@@ -130,7 +148,7 @@ The supported Channels and their associated channel types are shown below.
 | downtime    | Number    | Time interval (sec) between last successful and most recent device interaction. |
 | doDetection | Switch    | Command to activate bridge detection mode.                                      |
 
-### Channels for "window" / "rollershutter" Things
+### Channels for "window" Things
 
 The supported Channels and their associated channel types are shown below.
 
@@ -148,6 +166,22 @@ The `position` Channel indicates the open/close state of the window (resp. rolle
 - If a window is opened manually, the display is `UNDEF`.
 - In case of errors (e.g. window jammed) the display is `UNDEF`.
 - If a Somfy actuator is commanded to its 'favorite' position via a Somfy remote control, under some circumstances the display is `UNDEF`. See also Rules below.
+
+### Channels for "rollershutter" Things
+
+The supported Channels and their associated channel types are shown below.
+
+| Channel      | Data Type     | Description                                     |
+|--------------|---------------|-------------------------------------------------|
+| position     | Rollershutter | Actual position of the window or device.        |
+| limitMinimum | Rollershutter | Minimum limit position of the window or device. |
+| limitMaximum | Rollershutter | Maximum limit position of the window or device. |
+| vanePosition | Dimmer        | Vane position of a Venetian blind. (optional)   |
+
+The `position`, `limitMinimum`, and `limitMaximum` are the same as described above for "window" Things.
+
+The `vanePosition` Channel only applies to Venetian blinds that have tiltable slats.
+The binding detects whether the device supports a vane position, and if so, it adds the `vanePosition` Channel automatically.
 
 ### Channels for "actuator" Things
 
@@ -222,11 +256,15 @@ The bridge Thing provides the following properties.
 
 ```
 Bridge velux:klf200:g24 "Velux KLF200 Hub" @ "Under Stairs" [ipAddress="192.168.1.xxx", password="secret"] {
-    Thing window w56-36-13-5A-11-2A-05-70 "Bathroom Roof Window" @ "Bathroom" [serial="56:36:13:5A:11:2A:05:70", inverted=true]
+	// Velux (standard) window (with serial number)
+    Thing window Bathroom_Roof_Window "Bathroom Roof Window" @ "Bathroom" [serial="56:36:13:5A:11:2A:05:70", inverted=true]
+
+	// Somfy (non-standard) rollershutter (without serial number)
+    Thing rollershutter Living_Room_Awning "Living Room Awning" @ "Living Room" [serial="00:00:00:00:00:00:00:00", name="Living Room Awning"]
 }
 ```
 
-[=> download sample things file for textual configuration](./doc/conf/things/velux.things)
+See [velux.things](doc/conf/things/velux.things) for more examples.
 
 ### Items
 
@@ -234,7 +272,7 @@ Bridge velux:klf200:g24 "Velux KLF200 Hub" @ "Under Stairs" [ipAddress="192.168.
 Rollershutter Bathroom_Roof_Window_Position "Bathroom Roof Window Position [%.0f %%]" {channel="velux:window:g24:w56-36-13-5A-11-2A-05-70:position"}
 ```
 
-[=> download sample items file for textual configuration](./doc/conf/items/velux.items)
+See [velux.items](doc/conf/items/velux.items) for more examples.
 
 ### Sitemap
 
@@ -244,7 +282,43 @@ Frame label="Velux Windows" {
 }
 ```
 
-[=> download sample sitemaps file for textual configuration](./doc/conf/sitemaps/velux.sitemap)
+See [velux.sitemap](doc/conf/sitemaps/velux.sitemap) for more examples.
+
+### Rule for simultaneously moving the main position and the vane position
+
+This applies to shades or shutters that have both a main position and a vane / tilt position.
+On such shades if one sends a vane position command followed shortly by a main position command (or vice versa) the second command will cause the first command to stop.
+This problem is most problematic when the two commands are issued simultaneously by a single rule.
+In order to solve this problem, there is a rule action to simultaneously set the main position and the vane position.
+
+_Warning: use this command carefully..._
+
+The action is a command method that is called from within a rule.
+The method is called with the following syntax `moveMainAndVane(thingName, mainPercent, vanePercent)`.
+The meaning of the arguments is described in the table below.
+The method returns a `Boolean` whose meaning is also described in the table below.
+
+| Argument    | Type    | Example                             | Description                                                                             |
+|-------------|---------|-------------------------------------|-----------------------------------------------------------------------------------------|
+| thingName   | String  | "velux:rollershutter:hubid:thingid" | The thing name of the shutter. Must be a valid configured thing in the hub.             |
+| mainPercent | Integer | 75                                  | The target main position in percent. Integer between 0 and 100.                         |
+| vanePercent | Integer | 25                                  | The target vane position in percent. Integer between 0 and 100.                         |
+| return      | Boolean | `true`                              | Is `true` if the command was sent sucessfully or `false` if any arguments were invalid. |
+
+Example:
+
+```java
+rule "Simultaneously Move Main and Vane Positions"
+when
+	...
+then
+    // note: "velux:klf200:hubid" shall be the thing name of your KLF 200 hub
+	val veluxActions = getActions("velux", "velux:klf200:hubid")
+	if (veluxActions !== null) {
+		val succeeded = veluxActions.moveMainAndVane("velux:rollershutter:hubid:thingid", 75, 25)
+	}
+end
+```
 
 ### Rule for closing windows after a period of time
 
@@ -282,7 +356,7 @@ then
 end
 ```
 
-[=> download sample rules file for textual configuration](./doc/conf/rules/velux.rules)
+See [velux.rules](doc/conf/rules/velux.rules) for more examples.
 
 ### Rule for rebooting the Bridge
 
@@ -449,13 +523,16 @@ The next-generation firmware version two is not backward compatible, and does no
 Notes:
 
 - Velux bridges cannot be returned to version one of the firmware after being upgraded to version two.
-- Firmware updates are currently provided at [Velux download area](https://updates2.velux.com/).
 
-## Is it possible to run the both communication methods in parallel?
+## FAQ and troubleshooting
 
-For environments with the firmware version 0.1.* on the gateway, the interaction with the bridge is limited to the HTTP/JSON based communication, of course. On the other hand, after upgrading the gateway firmware to version 2, it is possible to run the binding either using HTTP/JSON if there is a permanent connectivity towards the WLAN interface of the KLF200 or using SLIP towards the LAN interface of the gateway. For example the Raspberry PI can directly be connected via WLAN to the Velux gateway and providing the other services via the LAN interface (but not vice versa).
+### Is it possible to run the both communication methods in parallel?
 
-## Known Limitations
+For environments with the firmware version 0.1.* on the gateway, the interaction with the bridge is limited to the HTTP/JSON based communication, of course.
+On the other hand, after upgrading the gateway firmware to version 2, it is possible to run the binding either using HTTP/JSON if there is a permanent connectivity towards the WLAN interface of the KLF200 or using SLIP towards the LAN interface of the gateway.
+For example the Raspberry PI can directly be connected via WLAN to the Velux gateway and providing the other services via the LAN interface (but not vice versa).
+
+### Known Limitations
 
 The communication based on HTTP/JSON is limited to one connection: If the binding is operational, you won't get access to the Web Frontend in parallel.
 
@@ -464,7 +541,15 @@ The SLIP communication is limited to two connections in parallel, i.e. two diffe
 Both interfacing methods, HTTP/JSON and SLIP, can be run in parallel.
 Therefore, on the one hand you can use the Web Frontend for manual control and on the other hand a binding can do all automatic jobs.
 
-## Unknown Velux devices
+### Login sequence fails and Connection Refused
+
+If you get this error first make sure that you entered the right password (the one below SSID on the back of the hub).
+If the error persists, it may be due to the temporary Wi-Fi Access Point blocking the LAN (as described above).
+To recover from this, first disable the bridge in the UI, disconnect the LAN cable, power cycle your KLF200 and wait a few minutes.
+Then reconnect the LAN cable and re-enable the bridge in the UI again.
+DO NOT try to connect anything to the temporary Wi-Fi Access Point during this process!!
+
+### Unknown Velux devices
 
 All known <B>Velux</B> devices can be handled by this binding.
 However, there might be some new ones which will be reported within the logfiles.

@@ -28,6 +28,9 @@ Required configuration parameters are:
 
 Additionally the following parameters can be set:
 
+* __hostnameValidated__: Validate hostname from certificate against server hostname for secure connection. Defaults to true.
+* __protocol__:  The protocol used for communicating with the broker (TCP, WEBSOCKETS). Defaults to TCP.
+* __mqttVersion__: The MQTT version used for communicating with the broker (V3, V5). Defaults to V3.
 * __qos__: Quality of Service. Can be 0, 1 or 2. Please read the MQTT specification for details. Defaults to 0.
 * __clientID__: Use a fixed client ID. Defaults to empty which means a user ID is generated for this connection.
 

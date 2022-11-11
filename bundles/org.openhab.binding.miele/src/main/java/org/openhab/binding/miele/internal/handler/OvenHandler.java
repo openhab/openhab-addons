@@ -15,8 +15,10 @@ package org.openhab.binding.miele.internal.handler;
 import static org.openhab.binding.miele.internal.MieleBindingConstants.MIELE_DEVICE_CLASS_OVEN;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.miele.internal.api.dto.DeviceProperty;
 import org.openhab.binding.miele.internal.exceptions.MieleRpcException;
 import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
@@ -42,8 +44,10 @@ public class OvenHandler extends MieleApplianceHandler<OvenChannelSelector> {
 
     private final Logger logger = LoggerFactory.getLogger(OvenHandler.class);
 
-    public OvenHandler(Thing thing, TranslationProvider i18nProvider, LocaleProvider localeProvider) {
-        super(thing, i18nProvider, localeProvider, OvenChannelSelector.class, MIELE_DEVICE_CLASS_OVEN);
+    public OvenHandler(Thing thing, TranslationProvider i18nProvider, LocaleProvider localeProvider,
+            TimeZoneProvider timeZoneProvider) {
+        super(thing, i18nProvider, localeProvider, timeZoneProvider, OvenChannelSelector.class,
+                MIELE_DEVICE_CLASS_OVEN);
     }
 
     @Override
@@ -105,5 +109,11 @@ public class OvenHandler extends MieleApplianceHandler<OvenChannelSelector> {
                         cause.getMessage());
             }
         }
+    }
+
+    @Override
+    public void onAppliancePropertyChanged(DeviceProperty dp) {
+        super.onAppliancePropertyChanged(dp);
+        updateSwitchOnOffFromState(dp);
     }
 }

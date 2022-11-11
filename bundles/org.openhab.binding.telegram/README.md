@@ -368,7 +368,7 @@ then
 end
 ```
 
-To send a question with two alternatives and a reply from the bot:
+To send a question with two alternatives and have the bot handle the reply:
 
 telegram.items
 

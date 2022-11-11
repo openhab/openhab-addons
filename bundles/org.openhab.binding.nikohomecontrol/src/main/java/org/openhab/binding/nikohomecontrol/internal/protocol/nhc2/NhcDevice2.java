@@ -76,6 +76,18 @@ class NhcDevice2 {
         @Nullable
         String electricalPower;
         @Nullable
+        String electricalPowerToGrid;
+        @Nullable
+        String electricalPowerFromGrid;
+        @Nullable
+        String electricalPowerProduction;
+        @Nullable
+        String electricalPowerSelfConsumption;
+        @Nullable
+        String electricalPowerConsumption;
+        @Nullable
+        String electricalPowerProductionThresholdExceeded;
+        @Nullable
         String reportInstantUsage;
         // fields for access control
         @Nullable

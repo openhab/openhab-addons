@@ -15,6 +15,7 @@ package org.openhab.binding.elroconnects.internal;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
@@ -28,9 +29,12 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class ElroConnectsBindingConstants {
 
-    private static final String BINDING_ID = "elroconnects";
+    static final String BINDING_ID = "elroconnects";
 
     // List of all Thing Type UIDs
+    public static final String TYPE_ACCOUNT = "account";
+    public static final ThingTypeUID THING_TYPE_ACCOUNT = new ThingTypeUID(BINDING_ID, TYPE_ACCOUNT);
+
     public static final String TYPE_CONNECTOR = "connector";
     public static final ThingTypeUID THING_TYPE_CONNECTOR = new ThingTypeUID(BINDING_ID, TYPE_CONNECTOR);
 
@@ -51,14 +55,22 @@ public class ElroConnectsBindingConstants {
     public static final ThingTypeUID THING_TYPE_THSENSOR = new ThingTypeUID(BINDING_ID, TYPE_THSENSOR);
     public static final ThingTypeUID THING_TYPE_POWERSOCKET = new ThingTypeUID(BINDING_ID, TYPE_POWERSOCKET);
 
-    public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_TYPES_UIDS = Set.of(THING_TYPE_CONNECTOR);
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_CONNECTOR,
-            THING_TYPE_SMOKEALARM, THING_TYPE_COALARM, THING_TYPE_HEATALARM, THING_TYPE_WATERALARM,
-            THING_TYPE_ENTRYSENSOR, THING_TYPE_MOTIONSENSOR, THING_TYPE_THSENSOR, THING_TYPE_POWERSOCKET);
+    public static final Set<ThingTypeUID> SUPPORTED_ACCOUNT_TYPE_UIDS = Set.of(THING_TYPE_ACCOUNT);
+    public static final Set<ThingTypeUID> SUPPORTED_CONNECTOR_TYPES_UIDS = Set.of(THING_TYPE_CONNECTOR);
+    public static final Set<ThingTypeUID> SUPPORTED_DEVICE_TYPES_UIDS = Set.of(THING_TYPE_SMOKEALARM,
+            THING_TYPE_COALARM, THING_TYPE_HEATALARM, THING_TYPE_WATERALARM, THING_TYPE_ENTRYSENSOR,
+            THING_TYPE_MOTIONSENSOR, THING_TYPE_THSENSOR, THING_TYPE_POWERSOCKET);
+    public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_TYPES_UIDS = Stream
+            .concat(SUPPORTED_ACCOUNT_TYPE_UIDS.stream(), SUPPORTED_CONNECTOR_TYPES_UIDS.stream())
+            .collect(Collectors.toSet());
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
+            .concat(SUPPORTED_BRIDGE_TYPES_UIDS.stream(), SUPPORTED_DEVICE_TYPES_UIDS.stream())
+            .collect(Collectors.toSet());
 
     // List of all Channel ids
     public static final String SCENE = "scene";
 
+    public static final String SIGNAL_STRENGTH = "signal";
     public static final String BATTERY_LEVEL = "battery";
     public static final String LOW_BATTERY = "lowBattery";
     public static final String MUTE_ALARM = "muteAlarm";
@@ -72,6 +84,7 @@ public class ElroConnectsBindingConstants {
     public static final String TEMPERATURE = "temperature";
     public static final String HUMIDITY = "humidity";
 
+    public static final String ALARM = "alarm";
     public static final String SMOKE_ALARM = "smokeAlarm";
     public static final String CO_ALARM = "coAlarm";
     public static final String HEAT_ALARM = "heatAlarm";
@@ -80,8 +93,12 @@ public class ElroConnectsBindingConstants {
     public static final String MOTION_ALARM = "motionAlarm";
 
     // Config properties
+    public static final String CONFIG_USERNAME = "username";
+    public static final String CONFIG_PASSWORD = "password";
     public static final String CONFIG_CONNECTOR_ID = "connectorId";
+    public static final String CONFIG_IP_ADDRESS = "ipAddress";
     public static final String CONFIG_REFRESH_INTERVAL_S = "refreshInterval";
+    public static final String CONFIG_LEGACY_FIRMWARE = "legacyFirmware";
     public static final String CONFIG_DEVICE_ID = "deviceId";
     public static final String CONFIG_DEVICE_TYPE = "deviceType";
 
@@ -90,19 +107,33 @@ public class ElroConnectsBindingConstants {
     public static final int ELRO_GET_DEVICE_NAME = 14;
     public static final int ELRO_GET_DEVICE_STATUSES = 15;
     public static final int ELRO_REC_DEVICE_NAME = 17;
-    public static final int ELRO_REC_DEVICE_STATUS = 19;
+    public static final int ELRO_REC_DEVICE_STATUS = 119;
     public static final int ELRO_SYNC_DEVICES = 29;
+
+    public static final int ELRO_DEVICE_JOIN = 2;
+    public static final int ELRO_DEVICE_CANCEL_JOIN = 7;
+    public static final int ELRO_DEVICE_REPLACE = 103;
+    public static final int ELRO_DEVICE_REMOVE = 104;
+    public static final int ELRO_DEVICE_RENAME = 105;
 
     public static final int ELRO_SELECT_SCENE = 106;
     public static final int ELRO_GET_SCENE = 18;
-    public static final int ELRO_REC_SCENE = 28;
-    public static final int ELRO_REC_SCENE_NAME = 26;
-    public static final int ELRO_REC_SCENE_TYPE = 27;
+    public static final int ELRO_REC_SCENE = 128;
+    public static final int ELRO_REC_SCENE_NAME = 126;
+    public static final int ELRO_REC_SCENE_TYPE = 127;
     public static final int ELRO_SYNC_SCENES = 131;
 
     public static final int ELRO_REC_ALARM = 25;
 
     public static final int ELRO_IGNORE_YES_NO = 11;
+
+    // Older firmware uses different cmd message codes
+    public static final Map<Integer, Integer> ELRO_LEGACY_MESSAGES = Map.ofEntries(Map.entry(ELRO_DEVICE_CONTROL, 1),
+            Map.entry(ELRO_DEVICE_REPLACE, 3), Map.entry(ELRO_DEVICE_REMOVE, 4), Map.entry(ELRO_DEVICE_RENAME, 5),
+            Map.entry(ELRO_SELECT_SCENE, 6), Map.entry(ELRO_SYNC_SCENES, 31), Map.entry(ELRO_REC_DEVICE_STATUS, 19),
+            Map.entry(ELRO_REC_SCENE, 28), Map.entry(ELRO_REC_SCENE_NAME, 26), Map.entry(ELRO_REC_SCENE_TYPE, 27));
+    public static final Map<Integer, Integer> ELRO_NEW_MESSAGES = ELRO_LEGACY_MESSAGES.entrySet().stream()
+            .collect(Collectors.toUnmodifiableMap(Map.Entry::getValue, Map.Entry::getKey));
 
     // ELRO device types
     public static enum ElroDeviceType {
@@ -128,6 +159,15 @@ public class ElroConnectsBindingConstants {
             Map.entry(ElroDeviceType.WT_ALARM, THING_TYPE_WATERALARM),
             Map.entry(ElroDeviceType.TH_SENSOR, THING_TYPE_THSENSOR),
             Map.entry(ElroDeviceType.POWERSOCKET, THING_TYPE_POWERSOCKET));
+
+    public static final Map<ElroDeviceType, String> TYPE_NAMES = Map.ofEntries(
+            Map.entry(ElroDeviceType.ENTRY_SENSOR, TYPE_ENTRYSENSOR), Map.entry(ElroDeviceType.CO_ALARM, TYPE_COALARM),
+            Map.entry(ElroDeviceType.CXSM_ALARM, TYPE_SMOKEALARM),
+            Map.entry(ElroDeviceType.MOTION_SENSOR, TYPE_MOTIONSENSOR),
+            Map.entry(ElroDeviceType.SM_ALARM, TYPE_SMOKEALARM),
+            Map.entry(ElroDeviceType.THERMAL_ALARM, TYPE_HEATALARM),
+            Map.entry(ElroDeviceType.WT_ALARM, TYPE_WATERALARM), Map.entry(ElroDeviceType.TH_SENSOR, TYPE_THSENSOR),
+            Map.entry(ElroDeviceType.POWERSOCKET, TYPE_POWERSOCKET));
 
     public static final Set<String> T_ENTRY_SENSOR = Set.of("0101", "1101", "2101");
     public static final Set<String> T_POWERSOCKET = Set.of("0200", "1200", "2200");

@@ -26,16 +26,39 @@ import org.eclipse.jdt.annotation.Nullable;
 public class GardenaException extends IOException {
 
     private static final long serialVersionUID = 8568935118878542270L;
+    private int status; // http status
 
     public GardenaException(String message) {
         super(message);
+        this.status = -1;
     }
 
     public GardenaException(Throwable ex) {
         super(ex);
+        this.status = -1;
     }
 
     public GardenaException(@Nullable String message, Throwable cause) {
         super(message, cause);
+        this.status = -1;
+    }
+
+    public GardenaException(String message, int status) {
+        super(message);
+        this.status = status;
+    }
+
+    public GardenaException(Throwable ex, int status) {
+        super(ex);
+        this.status = status;
+    }
+
+    public GardenaException(@Nullable String message, Throwable cause, int status) {
+        super(message, cause);
+        this.status = status;
+    }
+
+    public int getStatus() {
+        return this.status;
     }
 }

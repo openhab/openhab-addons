@@ -1,15 +1,15 @@
 # Philips Hue Binding
 
 This binding integrates the [Philips Hue Lighting system](https://www.meethue.com).
-The integration happens through the Hue bridge, which acts as an IP gateway to the ZigBee devices.
+The integration happens through the Hue Bridge, which acts as an IP gateway to the ZigBee devices.
 
 ![Philips Hue](doc/hue.jpg)
 
 ## Supported Things
 
-The Hue bridge is required as a "bridge" for accessing any other Hue device.
+The Hue Bridge is required as a "bridge" for accessing any other Hue device.
 It supports the ZigBee LightLink protocol as well as the upwards compatible ZigBee 3.0 protocol.
-There are two types of Hue bridges, generally referred to as v1 (the rounded version) and v2 (the squared version).
+There are two types of Hue Bridges, generally referred to as v1 (the rounded version) and v2 (the squared version).
 Only noticeable difference between the two generation of bridges is the added support for Apple HomeKit in v2.
 Both bridges are fully supported by this binding.
 
@@ -17,7 +17,7 @@ Almost all available Hue devices are supported by this binding.
 This includes not only the "Friends of Hue", but also products like the LivingWhites adapter.
 Additionally, it is possible to use OSRAM Lightify devices as well as other ZigBee LightLink compatible products, including the IKEA TRÅDFRI lights (when updated). 
 Beside bulbs and luminaires the Hue binding also supports some ZigBee sensors. Currently only Hue specific sensors are tested successfully (Hue Motion Sensor and Hue Dimmer Switch).
-Please note that the devices need to be registered with the Hue bridge before it is possible for this binding to use them.
+Please note that the devices need to be registered with the Hue Bridge before it is possible for this binding to use them.
 
 The Hue binding supports all seven types of lighting devices defined for ZigBee LightLink ([see page 24, table 2](https://www.nxp.com/docs/en/user-guide/JN-UG-3091.pdf).
 These are:
@@ -65,28 +65,35 @@ They are presented by the following ZigBee Device ID and _Thing type_:
 
 The Hue Dimmer Switch has 4 buttons and registers as a Non-Colour Controller switch, while the Hue Tap (also 4 buttons) registers as a Non-Colour Scene Controller in accordance with the ZLL standard.
 
-Also, Hue bridge support CLIP Generic Status Sensor and CLIP Generic Flag Sensor.
+Also, Hue Bridge support CLIP Generic Status Sensor and CLIP Generic Flag Sensor.
 These sensors save state for rules and calculate what actions to do.
 CLIP Sensor set or get by JSON through IP.
 
-Finally, the Hue binding also supports the groups of lights and rooms set up on the Hue bridge.
+Finally, the Hue binding also supports the groups of lights and rooms set up on the Hue Bridge.
 
 ## Discovery
 
-The Hue bridge is discovered through UPnP in the local network.
+The Hue Bridge is discovered through mDNS in the local network.
+Auto-discovery is enabled by default.
+To disable it, you can add the following line to `<openHAB-conf>/services/runtime.cfg`:
+
+```
+discovery.hue:background=false
+```
+
 Once it is added as a Thing, its authentication button (in the middle) needs to be pressed in order to authorize the binding to access it.
-Once the binding is authorized, it automatically reads all devices and groups that are set up on the Hue bridge and puts them into the Inbox.
+Once the binding is authorized, it automatically reads all devices and groups that are set up on the Hue Bridge and puts them into the Inbox.
 
 ## Thing Configuration
 
-The Hue bridge requires the IP address as a configuration value in order for the binding to know where to access it.
+The Hue Bridge requires the IP address as a configuration value in order for the binding to know where to access it.
 In the thing file, this looks e.g. like
 
 ```
 Bridge hue:bridge:1 [ ipAddress="192.168.0.64" ]
 ```
 
-A user to authenticate against the Hue bridge is automatically generated.
+A user to authenticate against the Hue Bridge is automatically generated.
 Please note that the generated user name cannot be written automatically to the `.thing` file, and has to be set manually.
 The generated user name can be found, after pressing the authentication button on the bridge, with the following console command: `hue <bridgeUID> username`.
 The user name can be set using the `userName` configuration value, e.g.:
@@ -95,17 +102,19 @@ The user name can be set using the `userName` configuration value, e.g.:
 Bridge hue:bridge:1 [ ipAddress="192.168.0.64", userName="qwertzuiopasdfghjklyxcvbnm1234" ]
 ```
 
-| Parameter             | Description                                                                                                                                                                                                                              |
-|-----------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| ipAddress             | Network address of the Hue bridge. **Mandatory**                                                                                                                                                                                         |
-| port                  |  Port of the Hue bridge. Optional, default value is 80 or 443, derived from protocol, otherwise user-defined.                                                                                                                            |
-| userName              | Name of a registered Hue bridge user, that allows to access the API. **Mandatory**                                                                                                                                                       |
-| pollingInterval       | Seconds between fetching light values from the Hue bridge. Optional, the default value is 10 (min="1", step="1").                                                                                                                        |
-| sensorPollingInterval | Milliseconds between fetching sensor-values from the Hue bridge. A higher value means more delay for the sensor values, but a too low value can cause congestion on the bridge. Optional, the default value is 500. Default value will be considered if the value is lower than 50. Use 0 to disable the polling for sensors. |
+| Parameter                | Description                                                                                                                                                                                                                                                                                                                   |
+|--------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ipAddress                | Network address of the Hue Bridge. **Mandatory**.                                                                                                                                                                                                                                                                             |
+| port                     | Port of the Hue Bridge. Optional, default value is 80 or 443, derived from protocol, otherwise user-defined.                                                                                                                                                                                                                  |
+| protocol                 | Protocol to connect to the Hue Bridge ("http" or "https"), default value is "https").                                                                                                                                                                                                                                         |
+| useSelfSignedCertificate | Use self-signed certificate for HTTPS connection to Hue Bridge. **Advanced**, default value is `true`.                                                                                                                                                                                                                        |
+| userName                 | Name of a registered Hue Bridge user, that allows to access the API. **Mandatory**                                                                                                                                                                                                                                            |
+| pollingInterval          | Seconds between fetching light values from the Hue Bridge. Optional, the default value is 10 (min="1", step="1").                                                                                                                                                                                                             |
+| sensorPollingInterval    | Milliseconds between fetching sensor-values from the Hue Bridge. A higher value means more delay for the sensor values, but a too low value can cause congestion on the bridge. Optional, the default value is 500. Default value will be considered if the value is lower than 50. Use 0 to disable the polling for sensors. |
 
 ### Devices
 
-The devices are identified by the number that the Hue bridge assigns to them (also shown in the Hue App as an identifier).
+The devices are identified by the number that the Hue Bridge assigns to them (also shown in the Hue App as an identifier).
 Thus, all it needs for manual configuration is this single value like
 
 ```
@@ -130,13 +139,13 @@ The following device types also have an optional configuration value to specify 
 
 | Parameter | Description                                                                   |
 |-----------|-------------------------------------------------------------------------------|
-| lightId   | Number of the device provided by the Hue bridge. **Mandatory**                |
+| lightId   | Number of the device provided by the Hue Bridge. **Mandatory**                |
 | fadetime  | Fade time in Milliseconds to a new state (min="0", step="100", default="400") |
 
 
 ### Groups
 
-The groups are identified by the number that the Hue bridge assigns to them.
+The groups are identified by the number that the Hue Bridge assigns to them.
 Thus, all it needs for manual configuration is this single value like
 
 ```
@@ -149,7 +158,7 @@ The group type also have an optional configuration value to specify the fade tim
 
 | Parameter | Description                                                                   |
 |-----------|-------------------------------------------------------------------------------|
-| groupId   | Number of the group provided by the Hue bridge. **Mandatory**                 |
+| groupId   | Number of the group provided by the Hue Bridge. **Mandatory**                 |
 | fadetime  | Fade time in Milliseconds to a new state (min="0", step="100", default="400") |
 
 
@@ -179,7 +188,7 @@ The devices support some of the following channels:
 | last_updated          | DateTime           | This channel the date and time when the sensor was last updated.                                                                        | 0820, 0830, 0840, 0850, 0106, 0107, 0302 |
 | battery_level         | Number             | This channel shows the battery level.                                                                                                   | 0820, 0106, 0107, 0302                   |
 | battery_low           | Switch             | This channel indicates whether the battery is low or not.                                                                               | 0820, 0106, 0107, 0302                   |
-| scene                 | String             | This channel activates the scene with the given ID String. The ID String of each scene is assigned by the Hue bridge.                   | bridge, group                            |
+| scene                 | String             | This channel activates the scene with the given ID String. The ID String of each scene is assigned by the Hue Bridge.                   | bridge, group                            |
 
 To load a hue scene inside a rule for example, the ID of the scene will be required.
 You can list all the scene IDs with the following console commands: `hue <bridgeUID> scenes` and `hue <groupThingUID> scenes`.
@@ -366,11 +375,3 @@ if (receivedEvent == "1000.0")) {
     //do stuff
 }       
 ```
-
-### UPnP Discovery: Inbox 'Grace Period'
-
-The Hue Bridge can sometimes be late in sending its UPnP 'ssdp:alive' notifications even though it has not really gone offline.
-This means that the Hue Bridge could be repeatedly removed from, and (re)added to, the InBox.
-Which would lead to confusion in the UI, and repeated logger messages.
-To prevent this, the binding tells the OpenHAB core to wait for a further period of time ('grace period') before actually removing the Bridge from the Inbox.
-The 'grace period' has a default value of 50 seconds, but it can be fine tuned in the main UI via Settings | Bindings | Hue | Configure.

@@ -1,23 +1,15 @@
 # RadioThermostat Binding
 
-![RadioThermostat logo](doc/index.jpg)
-
-This binding connects RadioThermostat/3M Filtrete models CT30, CT50/3M50, CT80, etc. with built-in Wi-Fi module to openHAB.
+This binding connects RadioThermostat/3M Filtrete models CT30, CT50/3M50, CT80, etc. with built-in Wi-Fi module to openHAB. 
+Thermostats using a Z-Wave module are not supported but can be used via the openHAB ZWave binding.
 
 The binding retrieves and periodically updates all basic system information from the thermostat.
 The main thermostat functions such as thermostat mode, fan mode, temperature set point and hold mode can be controlled.
 System run-time information and humidity readings are polled less frequently and can be disabled completely if not desired.
-Humidity information is available only when using a CT80 thermostat and I have noticed that the humidity reported is very inaccurate.
-
-The main caveat for using this binding is to keep in mind that the web server in the thermostat is very slow.
-Do not over load it with excessive amounts of simultaneous commands.
-When changing the thermostat mode, the current temperature set point is cleared and a refresh of the thermostat data is done to get the new mode's set point.
-Since retrieving the thermostat's data is the slowest operation, it will take several seconds after changing the mode before the new set point is displayed.
-The 'Program Mode' command is untested and according to the published API is only available on a CT80 Rev B.
 
 ## Supported Things
 
-There is exactly one supported thing type, which represents the thermostat.
+There is exactly one supported thing type, which represents any of the supported thermostat models.
 It has the `rtherm` id.
 Multiple Things can be added if more than one thermostat is to be controlled.
 
@@ -34,15 +26,23 @@ The binding has no configuration options, all configuration is done at Thing lev
 
 The thing has a few configuration parameters:
 
-|    Parameter    | Description                                                                                                                                                                                                                                                     |
-|-----------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| hostName        | The host name or IP address of the thermostat. Mandatory.                                                                                                                                                                                                       |
-| refresh         | Overrides the refresh interval of the thermostat data. Optional, the default is 2 minutes.                                                                                                                                                                      |
-| logRefresh      | Overrides the refresh interval of the run-time logs & humidity data. Optional, the default is 10 minutes.                                                                                                                                                       |
-| isCT80          | Flag to enable additional features only available on the CT80 thermostat. Optional, the default is false.                                                                                                                                                       |
-| disableLogs     | Disable retrieval of run-time logs from the thermostat. Optional, the default is false.                                                                                                                                                                         |
-| setpointMode    | Controls temporary or absolute setpoint mode. In "temporary" mode the thermostat will temporarily maintain the given setpoint, returning to its program after a time. In "absolute" mode the thermostat will ignore its program maintaining the given setpoint. |
-| clockSync       | Flag to enable the binding to sync the internal clock on the thermostat to match the openHAB host's system clock. Use if the thermostat is not setup to connect to the manufacturer's cloud server. Sync occurs at binding startup and every hour thereafter.   |
+|    Parameter    | Description                                                                                                                                                                                                                                                                                                                |
+|-----------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| hostName        | The host name or IP address of the thermostat. Mandatory.                                                                                                                                                                                                                                                                  |
+| refresh         | Overrides the refresh interval of the thermostat data. Optional, the default is 2 minutes.                                                                                                                                                                                                                                 |
+| logRefresh      | Overrides the refresh interval of the run-time logs & humidity data. Optional, the default is 10 minutes.                                                                                                                                                                                                                  |
+| isCT80          | Flag to enable additional features only available on the CT80 thermostat. Optional, the default is false.                                                                                                                                                                                                                  |
+| disableLogs     | Disable retrieval of run-time logs from the thermostat. Optional, the default is false.                                                                                                                                                                                                                                    |
+| setpointMode    | Controls temporary or absolute setpoint mode. In "temporary" mode the thermostat will temporarily maintain the given setpoint until the next scheduled setpoint time period. In "absolute" mode the thermostat will ignore its program and maintain the given setpoint indefinitely. Optional, the default is "temporary". |
+| clockSync       | Flag to enable the binding to sync the internal clock on the thermostat to match the openHAB host's system clock. Use if the thermostat is not setup to connect to the manufacturer's cloud server. Sync occurs at binding startup and every hour thereafter. Optional, the default is false.                              |
+
+Some notes:
+
+* The main caveat for using this binding is to keep in mind that the web server in the thermostat is very slow. Do not over load it with excessive amounts of simultaneous commands.
+* When changing the thermostat mode, the current temperature set point is cleared and a refresh of the thermostat data is done to get the new mode's set point.
+* Since retrieving the thermostat's data is the slowest operation, it will take several seconds after changing the mode before the new set point is displayed.
+* The 'Program Mode' command is untested and according to the published API is only available on a CT80 Rev B.
+* Humidity information is available only when using a CT80 thermostat.
 
 ## Channels
 
@@ -62,7 +62,7 @@ The thermostat information that is retrieved is available as these channels:
 | hold                   | Switch               | Indicates if the current set point temperature is to be held indefinitely                                                          |
 | remote_temp            | Number:Temperature   | Override the internal temperature as read by the thermostat's temperature sensor; Set to -1 to return to internal temperature mode |
 | day                    | Number               | The current day of the week reported by the thermostat (0 = Monday)                                                                |
-| hour                   | Number               | The current hour of the day reported by the thermostat  (24 hr)                                                                    |
+| hour                   | Number               | The current hour of the day reported by the thermostat (24 hr)                                                                     |
 | minute                 | Number               | The current minute past the hour reported by the thermostat                                                                        |
 | dt_stamp               | String               | The current day of the week and time reported by the thermostat (E HH:mm)                                                          |
 | today_heat_runtime     | Number:Time          | The total number of minutes of heating run-time today                                                                              |
@@ -127,7 +127,7 @@ radiotherm.items:
 ```
 Number:Temperature  Therm_Temp  "Current Temperature [%.1f °F] " <temperature>  { channel="radiothermostat:rtherm:mytherm1:temperature" }
 // Humidity only supported on CT80
-Number Therm_Hum                "Current Humidity [%d %%]" <temperature>        { channel="radiothermostat:rtherm:mytherm1:humidity" }
+Number Therm_Hum                "Current Humidity [%d %%]" <humidity>           { channel="radiothermostat:rtherm:mytherm1:humidity" }
 Number Therm_Mode               "Thermostat Mode [MAP(radiotherm.map):%s_mode]" { channel="radiothermostat:rtherm:mytherm1:mode" }
 // The Auto/Circulate option will only appear for CT80
 Number Therm_Fmode              "Fan Mode [MAP(radiotherm.map):%s_fan]"         { channel="radiothermostat:rtherm:mytherm1:fan_mode" }

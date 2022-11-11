@@ -14,6 +14,8 @@ package org.openhab.binding.tado.internal.builder;
 
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tado.internal.api.ApiException;
 import org.openhab.binding.tado.internal.api.model.ZoneState;
 import org.openhab.binding.tado.internal.handler.TadoZoneHandler;
@@ -23,21 +25,20 @@ import org.openhab.binding.tado.internal.handler.TadoZoneHandler;
  *
  * @author Dennis Frommknecht - Initial contribution
  */
+@NonNullByDefault
 public class ZoneStateProvider {
-    private TadoZoneHandler zoneHandler;
-    private ZoneState zoneState;
+    private final TadoZoneHandler zoneHandler;
+    private @Nullable ZoneState zoneState;
 
     public ZoneStateProvider(TadoZoneHandler zoneHandler) {
         this.zoneHandler = zoneHandler;
     }
 
-    ZoneState getZoneState() throws IOException, ApiException {
-        if (this.zoneState == null) {
-            ZoneState retrievedZoneState = zoneHandler.getZoneState();
-            // empty zone state behaves like a NULL object
-            this.zoneState = retrievedZoneState != null ? retrievedZoneState : new ZoneState();
+    public synchronized ZoneState getZoneState() throws IOException, ApiException {
+        ZoneState zoneState = this.zoneState;
+        if (zoneState == null) {
+            zoneState = this.zoneState = zoneHandler.getZoneState();
         }
-
-        return this.zoneState;
+        return zoneState;
     }
 }

@@ -18,6 +18,7 @@ import static org.mockito.Mockito.*;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
@@ -128,9 +129,11 @@ public class ActionsStateTest {
 
         // when:
         boolean canBeStarted = actionState.canBeStarted();
+        boolean canBeStopped = actionState.canBeStopped();
 
         // then:
         assertTrue(canBeStarted);
+        assertFalse(canBeStopped);
     }
 
     @Test
@@ -141,9 +144,27 @@ public class ActionsStateTest {
         when(actions.getProcessAction()).thenReturn(Collections.singletonList(ProcessAction.STOP));
 
         // when:
+        boolean canBeStarted = actionState.canBeStarted();
         boolean canBeStopped = actionState.canBeStopped();
 
         // then:
+        assertFalse(canBeStarted);
+        assertTrue(canBeStopped);
+    }
+
+    @Test
+    public void testReturnValueWhenProcessActionStartAndStopAreAvailable() {
+        // given:
+        Actions actions = mock(Actions.class);
+        ActionsState actionState = new ActionsState(DEVICE_IDENTIFIER, actions);
+        when(actions.getProcessAction()).thenReturn(List.of(ProcessAction.START, ProcessAction.STOP));
+
+        // when:
+        boolean canBeStarted = actionState.canBeStarted();
+        boolean canBeStopped = actionState.canBeStopped();
+
+        // then:
+        assertTrue(canBeStarted);
         assertTrue(canBeStopped);
     }
 

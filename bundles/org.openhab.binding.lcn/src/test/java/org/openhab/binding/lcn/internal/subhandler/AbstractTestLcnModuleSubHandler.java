@@ -14,6 +14,9 @@ package org.openhab.binding.lcn.internal.subhandler;
 
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -35,8 +38,35 @@ public class AbstractTestLcnModuleSubHandler {
 
     protected @Mock @NonNullByDefault({}) LcnModuleHandler handler;
     protected @Mock @NonNullByDefault({}) ModInfo info;
+    private @NonNullByDefault({}) Collection<AbstractLcnModuleSubHandler> allHandlers;
 
     public void setUp() {
         when(handler.isMyAddress("000", "005")).thenReturn(true);
+
+        allHandlers = new ArrayList<>();
+        allHandlers.add(new LcnModuleBinarySensorSubHandler(handler, info));
+        allHandlers.add(new LcnModuleCodeSubHandler(handler, info));
+        allHandlers.add(new LcnModuleHostCommandSubHandler(handler, info));
+        allHandlers.add(new LcnModuleKeyLockTableSubHandler(handler, info));
+        allHandlers.add(new LcnModuleLedSubHandler(handler, info));
+        allHandlers.add(new LcnModuleLogicSubHandler(handler, info));
+        allHandlers.add(new LcnModuleMetaAckSubHandler(handler, info));
+        allHandlers.add(new LcnModuleMetaFirmwareSubHandler(handler, info));
+        allHandlers.add(new LcnModuleOperatingHoursCounterSubHandler(handler, info));
+        allHandlers.add(new LcnModuleOutputSubHandler(handler, info));
+        allHandlers.add(new LcnModuleRelaySubHandler(handler, info));
+        allHandlers.add(new LcnModuleRollershutterOutputSubHandler(handler, info));
+        allHandlers.add(new AbstractLcnModuleRollershutterRelaySubHandler(handler, info) {
+        });
+        allHandlers.add(new LcnModuleRvarLockSubHandler(handler, info));
+        allHandlers.add(new LcnModuleRvarModeSubHandler(handler, info));
+        allHandlers.add(new LcnModuleRvarSetpointSubHandler(handler, info));
+        allHandlers.add(new LcnModuleS0CounterSubHandler(handler, info));
+        allHandlers.add(new LcnModuleThresholdSubHandler(handler, info));
+        allHandlers.add(new LcnModuleVariableSubHandler(handler, info));
+    }
+
+    protected void tryParseAllHandlers(String pck) {
+        allHandlers.forEach(h -> h.tryParse(pck));
     }
 }

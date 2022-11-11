@@ -47,4 +47,5 @@ public class NikoHomeControlConstants {
 
     // NhcII thermostat modes
     public static final String[] THERMOSTATMODES = { "Day", "Night", "Eco", "Off", "Cool", "Prog1", "Prog2", "Prog3" };
+    public static final String[] THERMOSTATDEMAND = { "Cooling", "None", "Heating" };
 }

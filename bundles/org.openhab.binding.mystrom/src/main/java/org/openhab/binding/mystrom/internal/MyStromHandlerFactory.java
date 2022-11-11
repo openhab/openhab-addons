@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.mystrom.internal;
 
-import static org.openhab.binding.mystrom.internal.MyStromBindingConstants.THING_TYPE_BULB;
-import static org.openhab.binding.mystrom.internal.MyStromBindingConstants.THING_TYPE_PLUG;
+import static org.openhab.binding.mystrom.internal.MyStromBindingConstants.*;
 
 import java.util.Set;
 
@@ -40,7 +39,8 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.mystrom", service = ThingHandlerFactory.class)
 public class MyStromHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_PLUG, THING_TYPE_BULB);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_PLUG, THING_TYPE_BULB,
+            THING_TYPE_PIR);
 
     private final HttpClientFactory httpClientFactory;
 
@@ -62,6 +62,8 @@ public class MyStromHandlerFactory extends BaseThingHandlerFactory {
             return new MyStromPlugHandler(thing, httpClientFactory.getCommonHttpClient());
         } else if (THING_TYPE_BULB.equals(thingTypeUID)) {
             return new MyStromBulbHandler(thing, httpClientFactory.getCommonHttpClient());
+        } else if (THING_TYPE_PIR.equals(thingTypeUID)) {
+            return new MyStromPIRHandler(thing, httpClientFactory.getCommonHttpClient());
         }
 
         return null;

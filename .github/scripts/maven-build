@@ -66,7 +66,7 @@ function addon_projects() {
     local addon="$1"
 
     # include add-on projects
-    local projects=":$(find . -mindepth 2 -maxdepth 2 -type d -regextype egrep -regex "./(bundles|itests)/$addon(\..*)?$" | grep -Ev 'org.openhab.binding.mqtt.homeassistant.tests|org.openhab.binding.mqtt.homie.tests' | sort | sed -E 's#./(bundles|itests)/##g' | xargs | sed 's# #,:#g')"
+    local projects=":$(find . -mindepth 2 -maxdepth 2 -type d -regextype egrep -regex "./(bundles|itests)/$addon(\..*)?$" | sort | sed -E 's#./(bundles|itests)/##g' | xargs | sed 's# #,:#g')"
 
     # include BOMs
     projects="$projects,:org.openhab.addons.bom.openhab-core-index,:org.openhab.addons.bom.runtime-index,:org.openhab.addons.bom.test-index"

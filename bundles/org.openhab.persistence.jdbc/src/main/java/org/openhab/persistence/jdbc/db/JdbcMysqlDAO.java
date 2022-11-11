@@ -12,7 +12,10 @@
  */
 package org.openhab.persistence.jdbc.db;
 
+import java.util.Objects;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.knowm.yank.Yank;
 import org.openhab.persistence.jdbc.utils.DbMetaData;
 import org.slf4j.Logger;
@@ -31,13 +34,16 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class JdbcMysqlDAO extends JdbcBaseDAO {
+    private static final String DRIVER_CLASS_NAME = com.mysql.cj.jdbc.Driver.class.getName();
+    @SuppressWarnings("unused")
+    private static final String DATA_SOURCE_CLASS_NAME = com.mysql.cj.jdbc.MysqlDataSource.class.getName();
+
     private final Logger logger = LoggerFactory.getLogger(JdbcMysqlDAO.class);
 
     /********
      * INIT *
      ********/
     public JdbcMysqlDAO() {
-        super();
         initSqlTypes();
         initDbProps();
         initSqlQueries();
@@ -68,9 +74,9 @@ public class JdbcMysqlDAO extends JdbcBaseDAO {
 
         // Properties for HikariCP
         // Use driverClassName
-        databaseProps.setProperty("driverClassName", "com.mysql.jdbc.Driver");
+        databaseProps.setProperty("driverClassName", DRIVER_CLASS_NAME);
         // OR dataSourceClassName
-        // databaseProps.setProperty("dataSourceClassName", "com.mysql.jdbc.jdbc2.optional.MysqlDataSource");
+        // databaseProps.setProperty("dataSourceClassName", DATA_SOURCE_CLASS_NAME);
         databaseProps.setProperty("maximumPoolSize", "3");
         databaseProps.setProperty("minimumIdle", "2");
     }
@@ -78,7 +84,8 @@ public class JdbcMysqlDAO extends JdbcBaseDAO {
     @Override
     public void initAfterFirstDbConnection() {
         logger.debug("JDBC::initAfterFirstDbConnection: Initializing step, after db is connected.");
-        dbMeta = new DbMetaData();
+        DbMetaData dbMeta = new DbMetaData();
+        this.dbMeta = dbMeta;
         // Initialize sqlTypes, depending on DB version for example
         if (dbMeta.isDbVersionGreater(5, 5)) {
             sqlTypes.put("DATETIMEITEM", "TIMESTAMP(3)");
@@ -91,8 +98,9 @@ public class JdbcMysqlDAO extends JdbcBaseDAO {
      * ITEMS DAOs *
      **************/
     @Override
-    public Integer doPingDB() {
-        return Yank.queryScalar(sqlPingDB, Long.class, null).intValue();
+    public @Nullable Integer doPingDB() {
+        final @Nullable Long result = Yank.queryScalar(sqlPingDB, Long.class, null);
+        return Objects.nonNull(result) ? result.intValue() : null;
     }
 
     /*************

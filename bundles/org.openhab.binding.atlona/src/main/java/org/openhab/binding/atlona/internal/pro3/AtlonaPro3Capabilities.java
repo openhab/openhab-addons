@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.atlona.internal.handler.AtlonaCapabilities;
 
 /**
@@ -25,6 +26,7 @@ import org.openhab.binding.atlona.internal.handler.AtlonaCapabilities;
  * @author Tim Roberts - Initial contribution
  * @author Michael Lobstein - Add support for AT-PRO3HD66M
  */
+@NonNullByDefault
 public class AtlonaPro3Capabilities extends AtlonaCapabilities {
 
     /**
@@ -56,10 +58,6 @@ public class AtlonaPro3Capabilities extends AtlonaCapabilities {
      */
     public AtlonaPro3Capabilities(int nbrPowerPorts, int nbrAudioPorts, Set<Integer> hdmiPorts, boolean isUHDModel) {
         super();
-
-        if (hdmiPorts == null) {
-            throw new IllegalArgumentException("hdmiPorts cannot be null");
-        }
 
         if (hdmiPorts.isEmpty()) {
             throw new IllegalArgumentException("hdmiPorts cannot be empty");

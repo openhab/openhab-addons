@@ -49,9 +49,9 @@ public class ICloudAccountDataRequest {
         @SuppressWarnings("unused")
         private int inactiveTime = 1;
         @SuppressWarnings("unused")
-        private String osVersion = "7.0.3";
+        private String osVersion = "14.0";
         @SuppressWarnings("unused")
-        private String productType = "iPhone6,1";
+        private String productType = "iPhone14,2";
 
         private ClientContext() {
             // empty to hide constructor

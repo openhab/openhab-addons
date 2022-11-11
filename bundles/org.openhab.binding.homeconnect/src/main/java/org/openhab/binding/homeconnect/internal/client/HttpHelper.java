@@ -17,7 +17,9 @@ import static io.github.bucket4j.Refill.intervally;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
@@ -96,8 +98,7 @@ public class HttpHelper {
             try {
                 AccessTokenResponse accessTokenResponse = oAuthClientService.getAccessTokenResponse();
                 // refresh the token if it's about to expire
-                if (accessTokenResponse != null
-                        && accessTokenResponse.isExpired(LocalDateTime.now(), OAUTH_EXPIRE_BUFFER)) {
+                if (accessTokenResponse != null && accessTokenResponse.isExpired(Instant.now(), OAUTH_EXPIRE_BUFFER)) {
                     LoggerFactory.getLogger(HttpHelper.class).debug("Requesting a refresh of the access token.");
                     accessTokenResponse = oAuthClientService.refreshToken();
                 }
@@ -106,11 +107,14 @@ public class HttpHelper {
                     String lastToken = lastAccessToken;
                     if (lastToken == null) {
                         LoggerFactory.getLogger(HttpHelper.class).debug("The used access token was created at {}",
-                                accessTokenResponse.getCreatedOn().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+                                LocalDateTime.ofInstant(accessTokenResponse.getCreatedOn(), ZoneId.systemDefault())
+                                        .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
                     } else if (!lastToken.equals(accessTokenResponse.getAccessToken())) {
-                        LoggerFactory.getLogger(HttpHelper.class).debug(
-                                "The access token changed. New one created at {}",
-                                accessTokenResponse.getCreatedOn().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+                        LoggerFactory.getLogger(HttpHelper.class)
+                                .debug("The access token changed. New one created at {}",
+                                        LocalDateTime
+                                                .ofInstant(accessTokenResponse.getCreatedOn(), ZoneId.systemDefault())
+                                                .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
                     }
                     lastAccessToken = accessTokenResponse.getAccessToken();
 

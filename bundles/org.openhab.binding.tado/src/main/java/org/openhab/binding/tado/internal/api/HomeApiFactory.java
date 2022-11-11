@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.tado.internal.api;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.tado.internal.api.auth.Authorizer;
 import org.openhab.binding.tado.internal.api.auth.OAuthAuthorizer;
 import org.openhab.binding.tado.internal.api.client.HomeApi;
@@ -23,6 +24,7 @@ import com.google.gson.Gson;
  *
  * @author Dennis Frommknecht - Initial contribution
  */
+@NonNullByDefault
 public class HomeApiFactory {
     private static final String OAUTH_SCOPE = "home.user";
     private static final String OAUTH_CLIENT_ID = "public-api-preview";

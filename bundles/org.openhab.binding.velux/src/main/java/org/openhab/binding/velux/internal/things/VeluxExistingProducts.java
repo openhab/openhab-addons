@@ -12,12 +12,17 @@
  */
 package org.openhab.binding.velux.internal.things;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.velux.internal.VeluxBindingConstants;
+import org.openhab.binding.velux.internal.bridge.slip.FunctionalParameters;
+import org.openhab.binding.velux.internal.things.VeluxKLFAPI.Command;
 import org.openhab.binding.velux.internal.things.VeluxProduct.ProductBridgeIndex;
+import org.openhab.binding.velux.internal.things.VeluxProduct.ProductState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,6 +60,12 @@ public class VeluxExistingProducts {
      * Value to flag any changes towards the getter.
      */
     private boolean dirty;
+
+    /*
+     * Permitted list of product states whose position values shall be accepted.
+     */
+    private static final List<ProductState> PERMITTED_VALUE_STATES = Arrays.asList(ProductState.EXECUTING,
+            ProductState.DONE);
 
     // Constructor methods
 
@@ -110,32 +121,87 @@ public class VeluxExistingProducts {
         return true;
     }
 
-    public boolean update(ProductBridgeIndex bridgeProductIndex, int productState, int productPosition,
-            int productTarget) {
-        logger.debug("update(bridgeProductIndex={},productState={},productPosition={},productTarget={}) called.",
-                bridgeProductIndex.toInt(), productState, productPosition, productTarget);
-        if (!isRegistered(bridgeProductIndex)) {
-            logger.warn("update() failed as actuator (with index {}) is not registered.", bridgeProductIndex.toInt());
+    /**
+     * Update the product in the existing products database by applying the data from the new product argument. This
+     * method may ignore the new product if it was created by certain originating commands, or if the new product has
+     * certain actuator states.
+     *
+     * @param requestingCommand the command that requested the data from the hub and so triggered calling this method.
+     * @param newProduct the product containing new data.
+     *
+     * @return true if the product exists in the database.
+     */
+    public boolean update(VeluxProduct newProduct) {
+        ProductBridgeIndex productBridgeIndex = newProduct.getBridgeProductIndex();
+        if (!isRegistered(productBridgeIndex)) {
+            logger.warn("update() failed as actuator (with index {}) is not registered.", productBridgeIndex.toInt());
             return false;
         }
-        VeluxProduct thisProduct = this.get(bridgeProductIndex);
-        dirty |= thisProduct.setState(productState);
-        dirty |= thisProduct.setCurrentPosition(productPosition);
-        dirty |= thisProduct.setTarget(productTarget);
-        if (dirty) {
-            String uniqueIndex = thisProduct.getProductUniqueIndex();
-            logger.trace("update(): updating by UniqueIndex {}.", uniqueIndex);
-            existingProductsByUniqueIndex.replace(uniqueIndex, thisProduct);
-            modifiedProductsByUniqueIndex.put(uniqueIndex, thisProduct);
-        }
-        logger.trace("update() successfully finished (dirty={}).", dirty);
-        return true;
-    }
 
-    public boolean update(VeluxProduct currentProduct) {
-        logger.trace("update(currentProduct={}) called.", currentProduct);
-        return update(currentProduct.getBridgeProductIndex(), currentProduct.getState(),
-                currentProduct.getCurrentPosition(), currentProduct.getTarget());
+        VeluxProduct theProduct = this.get(productBridgeIndex);
+
+        String oldProduct = "";
+        if (logger.isDebugEnabled()) {
+            oldProduct = theProduct.toString();
+        }
+
+        boolean dirty = false;
+
+        // ignore commands with state 'not used'
+        boolean ignoreNotUsed = (ProductState.NOT_USED == ProductState.of(newProduct.getState()));
+
+        // specially ignore commands from buggy devices (e.g. Somfy) which have bad data
+        boolean ignoreSpecial = theProduct.isSomfyProduct()
+                && (Command.GW_OPENHAB_RECEIVEONLY == newProduct.getCreatorCommand())
+                && !VeluxProductPosition.isValid(newProduct.getCurrentPosition())
+                && !VeluxProductPosition.isValid(newProduct.getTarget());
+
+        if ((!ignoreNotUsed) && (!ignoreSpecial)) {
+            int newState = newProduct.getState();
+            int theState = theProduct.getState();
+
+            // always update the actuator state, but only set dirty flag if they are not operationally equivalent
+            if (theProduct.setState(newState)) {
+                dirty |= !ProductState.equivalent(theState, newState);
+            }
+
+            // only update the actual position values if the state is permitted
+            if (PERMITTED_VALUE_STATES.contains(ProductState.of(newState))) {
+                int newValue = newProduct.getCurrentPosition();
+                if (VeluxProductPosition.isUnknownOrValid(newValue)) {
+                    dirty |= theProduct.setCurrentPosition(newValue);
+                }
+                newValue = newProduct.getTarget();
+                if (VeluxProductPosition.isUnknownOrValid(newValue)) {
+                    dirty |= theProduct.setTarget(newValue);
+                }
+                if (theProduct.supportsVanePosition()) {
+                    FunctionalParameters newFunctionalParameters = newProduct.getFunctionalParameters();
+                    if (newFunctionalParameters != null) {
+                        dirty |= theProduct.setFunctionalParameters(newFunctionalParameters);
+                    }
+                }
+            }
+        }
+
+        // update modified product database
+        if (dirty) {
+            this.dirty = true;
+            String uniqueIndex = theProduct.getProductUniqueIndex();
+            logger.trace("update(): updating by UniqueIndex {}.", uniqueIndex);
+            existingProductsByUniqueIndex.replace(uniqueIndex, theProduct);
+            modifiedProductsByUniqueIndex.put(uniqueIndex, theProduct);
+        }
+
+        if (logger.isDebugEnabled()) {
+            if (dirty) {
+                logger.debug("update() theProduct:{} (previous)", oldProduct);
+            }
+            logger.debug("update() newProduct:{} ({})", newProduct, dirty ? "modifier" : "identical");
+            logger.debug("update() theProduct:{} ({})", theProduct, dirty ? "modified" : "unchanged");
+        }
+
+        return true;
     }
 
     public VeluxProduct get(String productUniqueIndex) {

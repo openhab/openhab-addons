@@ -39,6 +39,7 @@ import org.openhab.core.io.transport.mqtt.MqttConnectionObserver;
 import org.openhab.core.io.transport.mqtt.MqttConnectionState;
 import org.openhab.core.io.transport.mqtt.MqttException;
 import org.openhab.core.io.transport.mqtt.MqttMessageSubscriber;
+import org.openhab.core.io.transport.mqtt.reconnect.AbstractReconnectStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -162,6 +163,13 @@ public class NhcMqttConnection2 implements MqttActionCallback {
         connection.setTrustManagers(trustManagers);
         connection.setCredentials(profile, token);
         connection.setQos(1);
+
+        // Don't use the transport periodic reconnect strategy. It doesn't restart the initialization when the
+        // connection is lost and creates extra threads that do not get cleaned up. Just stop it.
+        AbstractReconnectStrategy reconnectStrategy = connection.getReconnectStrategy();
+        if (reconnectStrategy != null) {
+            reconnectStrategy.stop();
+        }
         return connection;
     }
 

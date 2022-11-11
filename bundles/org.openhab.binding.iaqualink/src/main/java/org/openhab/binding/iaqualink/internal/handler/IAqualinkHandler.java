@@ -296,7 +296,7 @@ public class IAqualinkHandler extends BaseThingHandler {
             }
 
             if (confSerialId != null && !confSerialId.isBlank()) {
-                serialNumber = confSerialId.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
+                serialNumber = confSerialId.replaceAll("[^a-zA-Z0-9]", "").toUpperCase();
                 if (!Arrays.stream(devices).anyMatch(device -> device.getSerialNumber().equals(serialNumber))) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "No Device for given serialId found");
@@ -305,6 +305,8 @@ public class IAqualinkHandler extends BaseThingHandler {
             } else {
                 serialNumber = devices[0].getSerialNumber();
             }
+
+            logger.debug("Using serial number {}", serialNumber);
 
             initPolling(COMMAND_REFRESH_SECONDS);
         } catch (IOException e) {

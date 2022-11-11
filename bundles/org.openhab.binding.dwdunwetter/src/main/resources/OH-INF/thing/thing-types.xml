@@ -13,9 +13,14 @@
 		<config-description>
 			<parameter name="cellId" type="text" required="true">
 				<label>Cell-ID</label>
-				<description><![CDATA[ID of the area to retrieve weather warnings.
-For a list of valid IDs look at https://www.dwd.de/DE/leistungen/opendata/help/warnungen/cap_warncellids_csv.csv.
-With the % sign at the end it is possible to query multiple cells at once. For example with 8111% are cells retrieved that starts with 8111.]]></description>
+				<description>ID of the area to retrieve weather warnings.
+					For a list of valid IDs look at
+					https://www.dwd.de/DE/leistungen/opendata/help/warnungen/cap_warncellids_csv.csv, only
+					IDs starting with an 8
+					(exception for Berlin: 7) are supported.
+					With the % sign at the end it is possible to query multiple cells at once.
+					For example with 8111% are cells retrieved
+					that starts with 8111.</description>
 			</parameter>
 			<parameter name="refresh" type="integer" unit="min" min="15">
 				<default>30</default>
@@ -25,9 +30,11 @@ With the % sign at the end it is possible to query multiple cells at once. For e
 			<parameter name="warningCount" type="integer" min="1" max="15">
 				<default>1</default>
 				<label>Number of Provided Warnings</label>
-				<description><![CDATA[Number of warnings to provide.
-For each warning there will multiple channels.
-The warnings are sorted by severity first and begin second so the first warning is always the one with the highest severity.]]></description>
+				<description>Number of warnings to provide.
+					For each warning there will multiple channels.
+					The warnings are sorted by
+					severity first and begin second so the first warning is always the one with the highest
+					severity.</description>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -42,9 +49,10 @@ The warnings are sorted by severity first and begin second so the first warning 
 	<channel-type id="warning">
 		<item-type>Switch</item-type>
 		<label>Warning</label>
-		<description><![CDATA[ON if a warning is present, OFF else.
-While be switched to ON only after all other channels - except the trigger channel - are updated.
-Will be switched to OFF before all other channels are updated to UNDEF.]]></description>
+		<description>ON if a warning is present, OFF else.
+			While be switched to ON only after all other channels - except the
+			trigger channel - are updated.
+			Will be switched to OFF before all other channels are updated to UNDEF.</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="updated">

@@ -20,10 +20,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@link NhcEnergyMeter} class represents the energyMeters metering Niko Home Control communication object. It
- * contains all
- * fields representing a Niko Home Control energyMeters meter and has methods to receive energyMeters usage information.
- * A specific
- * implementation is {@link NhcEnergyMeter2}.
+ * contains all fields representing a Niko Home Control energyMeters meter and has methods to receive energyMeters usage
+ * information. A specific implementation is {@link NhcEnergyMeter2}.
  *
  * @author Mark Herwege - Initial Contribution
  */
@@ -36,14 +34,16 @@ public abstract class NhcEnergyMeter {
 
     protected String id;
     protected String name;
+    protected @Nullable String location;
     // This can be null as long as we do not receive power readings
     protected volatile @Nullable Integer power = null;
 
     private @Nullable NhcEnergyMeterEvent eventHandler;
 
-    protected NhcEnergyMeter(String id, String name, NikoHomeControlCommunication nhcComm) {
+    protected NhcEnergyMeter(String id, String name, @Nullable String location, NikoHomeControlCommunication nhcComm) {
         this.id = id;
         this.name = name;
+        this.location = location;
         this.nhcComm = nhcComm;
     }
 
@@ -69,6 +69,7 @@ public abstract class NhcEnergyMeter {
         NhcEnergyMeterEvent eventHandler = this.eventHandler;
         if (eventHandler != null) {
             eventHandler.energyMeterRemoved();
+            unsetEventHandler();
         }
     }
 
@@ -84,21 +85,57 @@ public abstract class NhcEnergyMeter {
     }
 
     /**
-     * Get the id of the energyMeters meter.
+     * This method should be called when an object implementing the {@NhcEnergyMeterEvent} interface is disposed.
+     * It resets the reference, so no updates go to the handler anymore.
      *
-     * @return the id
+     */
+    public void unsetEventHandler() {
+        this.eventHandler = null;
+    }
+
+    /**
+     * Get id of meter.
+     *
+     * @return id
      */
     public String getId() {
         return id;
     }
 
     /**
-     * Get name of the energyMeters meter.
+     * Get name of meter.
      *
-     * @return energyMeters meter name
+     * @return energyMeter name
      */
     public String getName() {
         return name;
+    }
+
+    /**
+     * Set name of meter.
+     *
+     * @param name meter name
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
+     * Get location name of meter.
+     *
+     * @return location energyMeter location
+     */
+    public @Nullable String getLocation() {
+        return location;
+    }
+
+    /**
+     * Set location name of meter.
+     *
+     * @param location meter location name
+     */
+    public void setLocation(@Nullable String location) {
+        this.location = location;
     }
 
     /**

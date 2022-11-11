@@ -200,4 +200,44 @@ public class ModuleActionsTest {
 
         verify(handler).sendPck("TS---L00100000");
     }
+
+    @Test
+    public void testBeepNull() throws LcnException {
+        a.beep(null, null, null);
+
+        verify(handler).sendPck("PIN1");
+        verify(handler, times(1)).sendPck(anyString());
+    }
+
+    @Test
+    public void testBeepSpecial() throws LcnException {
+        a.beep(null, "S", 5);
+
+        verify(handler).sendPck("PIS5");
+        verify(handler, times(1)).sendPck(anyString());
+    }
+
+    @Test
+    public void testBeepVolume() throws LcnException {
+        a.beep(50d, "3", 5);
+
+        verify(handler).sendPck("PIV050");
+        verify(handler).sendPck("PI35");
+        verify(handler, times(2)).sendPck(anyString());
+    }
+
+    @Test
+    public void testBeepInvalidVolume() throws LcnException {
+        a.beep(-1d, "3", 5);
+
+        verify(handler, times(0)).sendPck(anyString());
+    }
+
+    @Test
+    public void testBeepInvalidTonality() throws LcnException {
+        a.beep(null, "X", 5);
+
+        verify(handler).sendPck("PIN5");
+        verify(handler, times(1)).sendPck(anyString());
+    }
 }

@@ -40,6 +40,19 @@ public class JsonSmartHomeGroups {
         }
 
         @Override
+        public @Nullable String findEntityId() {
+            SmartHomeGroupIdentifier applianceGroupIdentifier = this.applianceGroupIdentifier;
+            if (applianceGroupIdentifier == null) {
+                return null;
+            }
+            String value = applianceGroupIdentifier.value;
+            if (value == null) {
+                return null;
+            }
+            return value;
+        }
+
+        @Override
         public boolean isGroup() {
             return true;
         }

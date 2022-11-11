@@ -96,10 +96,24 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
                     return getQuantityOrZero(inverterData.getIac(), Units.AMPERE);
                 case FroniusBindingConstants.INVERTER_DATA_CHANNEL_IDC:
                     return getQuantityOrZero(inverterData.getIdc(), Units.AMPERE);
+                case FroniusBindingConstants.INVERTER_DATA_CHANNEL_IDC2:
+                    return getQuantityOrZero(inverterData.getIdc2(), Units.AMPERE);
+                case FroniusBindingConstants.INVERTER_DATA_CHANNEL_IDC3:
+                    return getQuantityOrZero(inverterData.getIdc3(), Units.AMPERE);
                 case FroniusBindingConstants.INVERTER_DATA_CHANNEL_UAC:
                     return getQuantityOrZero(inverterData.getUac(), Units.VOLT);
                 case FroniusBindingConstants.INVERTER_DATA_CHANNEL_UDC:
                     return getQuantityOrZero(inverterData.getUdc(), Units.VOLT);
+                case FroniusBindingConstants.INVERTER_DATA_CHANNEL_UDC2:
+                    return getQuantityOrZero(inverterData.getUdc2(), Units.VOLT);
+                case FroniusBindingConstants.INVERTER_DATA_CHANNEL_UDC3:
+                    return getQuantityOrZero(inverterData.getUdc3(), Units.VOLT);
+                case FroniusBindingConstants.INVERTER_DATA_CHANNEL_PDC:
+                    return calculatePower(inverterData.getUdc(), inverterData.getIdc());
+                case FroniusBindingConstants.INVERTER_DATA_CHANNEL_PDC2:
+                    return calculatePower(inverterData.getUdc2(), inverterData.getIdc2());
+                case FroniusBindingConstants.INVERTER_DATA_CHANNEL_PDC3:
+                    return calculatePower(inverterData.getUdc3(), inverterData.getIdc3());
                 case FroniusBindingConstants.INVERTER_DATA_CHANNEL_DAY_ENERGY:
                     // Convert the unit to kWh for backwards compatibility with non-quantity type
                     return getQuantityOrZero(inverterData.getDayEnergy(), Units.KILOWATT_HOUR).toUnit("kWh");
@@ -198,5 +212,18 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
     private InverterRealtimeResponse getRealtimeData(String ip, int deviceId) throws FroniusCommunicationException {
         String location = FroniusBindingConstants.getInverterDataUrl(ip, deviceId);
         return collectDataFromUrl(InverterRealtimeResponse.class, location);
+    }
+
+    /**
+     * Calculate the power value from the given voltage and current channels
+     * 
+     * @param voltage the voltage ValueUnit
+     * @param current the current ValueUnit
+     * @return {QuantityType<>} the power value calculated by multiplying voltage and current
+     */
+    private QuantityType<?> calculatePower(ValueUnit voltage, ValueUnit current) {
+        QuantityType<?> qtyVoltage = getQuantityOrZero(voltage, Units.VOLT);
+        QuantityType<?> qtyCurrent = getQuantityOrZero(current, Units.AMPERE);
+        return qtyVoltage.multiply(qtyCurrent).toUnit(Units.WATT);
     }
 }

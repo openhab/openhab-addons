@@ -12,6 +12,8 @@
  */
 package org.openhab.persistence.jdbc.db;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.knowm.yank.Yank;
 import org.openhab.core.items.Item;
 import org.openhab.core.types.State;
@@ -28,14 +30,18 @@ import org.slf4j.LoggerFactory;
  *
  * @author Helmut Lehmeyer - Initial contribution
  */
+@NonNullByDefault
 public class JdbcHsqldbDAO extends JdbcBaseDAO {
+    private static final String DRIVER_CLASS_NAME = org.hsqldb.jdbcDriver.class.getName();
+    @SuppressWarnings("unused")
+    private static final String DATA_SOURCE_CLASS_NAME = org.hsqldb.jdbc.JDBCDataSource.class.getName();
+
     private final Logger logger = LoggerFactory.getLogger(JdbcHsqldbDAO.class);
 
     /********
      * INIT *
      ********/
     public JdbcHsqldbDAO() {
-        super();
         initSqlQueries();
         initSqlTypes();
         initDbProps();
@@ -68,14 +74,16 @@ public class JdbcHsqldbDAO extends JdbcBaseDAO {
      */
     private void initDbProps() {
         // Properties for HikariCP
-        databaseProps.setProperty("driverClassName", "org.hsqldb.jdbcDriver");
+        databaseProps.setProperty("driverClassName", DRIVER_CLASS_NAME);
+        // driverClassName OR BETTER USE dataSourceClassName
+        // databaseProps.setProperty("dataSourceClassName", DATA_SOURCE_CLASS_NAME);
     }
 
     /**************
      * ITEMS DAOs *
      **************/
     @Override
-    public Integer doPingDB() {
+    public @Nullable Integer doPingDB() {
         return Yank.queryScalar(sqlPingDB, Integer.class, null);
     }
 
@@ -93,7 +101,7 @@ public class JdbcHsqldbDAO extends JdbcBaseDAO {
     public Long doCreateNewEntryInItemsTable(ItemsVO vo) {
         String sql = StringUtilsExt.replaceArrayMerge(sqlCreateNewEntryInItemsTable,
                 new String[] { "#itemsManageTable#", "#itemname#" },
-                new String[] { vo.getItemsManageTable(), vo.getItemname() });
+                new String[] { vo.getItemsManageTable(), vo.getItemName() });
         logger.debug("JDBC::doCreateNewEntryInItemsTable sql={}", sql);
         return Yank.insert(sql, null);
     }
@@ -108,7 +116,7 @@ public class JdbcHsqldbDAO extends JdbcBaseDAO {
                 new String[] { "#tableName#", "#dbType#", "#tableName#", "#tablePrimaryValue#" },
                 new String[] { storedVO.getTableName(), storedVO.getDbType(), storedVO.getTableName(),
                         sqlTypes.get("tablePrimaryValue") });
-        Object[] params = new Object[] { storedVO.getValue() };
+        Object[] params = { storedVO.getValue() };
         logger.debug("JDBC::doStoreItemValue sql={} value='{}'", sql, storedVO.getValue());
         Yank.execute(sql, params);
     }

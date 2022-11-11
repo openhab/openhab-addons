@@ -9,6 +9,7 @@
 		<description>Represents a single IntesisHome WiFi adapter on the network, connected to an A/C unit.</description>
 		<channels>
 			<channel id="power" typeId="system.power"/>
+			<channel id="wifiSignal" typeId="system.signal-strength"/>
 		</channels>
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">

@@ -12,7 +12,10 @@
  */
 package org.openhab.binding.wled.internal;
 
+import static org.openhab.binding.wled.internal.WLedBindingConstants.BIG_DECIMAL_2_55;
+
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.List;
 
@@ -44,7 +47,7 @@ public class WLedHelper {
         // example message rgb in array brackets [255.0, 255.0, 255.0, 255.0]
         List<String> colors = Arrays.asList(message.replaceAll("\\[|\\]", "").split("\\s*,\\s*"));
         try {
-            return new PercentType(new BigDecimal(colors.get(2)));
+            return new PercentType(new BigDecimal(colors.get(3)).divide(BIG_DECIMAL_2_55, RoundingMode.HALF_UP));
         } catch (IllegalArgumentException e) {
             return new PercentType();
         }

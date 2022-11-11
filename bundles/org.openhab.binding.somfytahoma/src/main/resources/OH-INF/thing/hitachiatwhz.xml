@@ -17,6 +17,9 @@
 			<channel id="yutaki_mode" typeId="yutaki_mode"></channel>
 			<channel id="holiday_mode" typeId="holiday_mode"></channel>
 			<channel id="alarm_number" typeId="alarm_number"></channel>
+			<channel id="thermostat_setting_zone1" typeId="thermostat_setting_zone1"></channel>
+			<channel id="wh_setting_temp_zone1" typeId="wh_setting_temp_zone1"></channel>
+			<channel id="room_ambient_temp_zone1" typeId="room_ambient_temp_zone1"></channel>
 		</channels>
 		<representation-property>url</representation-property>
 		<config-description-ref uri="thing-type:somfytahoma:device"/>

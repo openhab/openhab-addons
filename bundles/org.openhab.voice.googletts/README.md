@@ -26,8 +26,9 @@ Before you can integrate this service with your Google Cloud Text-to-Speech, you
 * Enable the Cloud Text-to-Speech API. [link](https://console.cloud.google.com/apis/dashboard)
 * Set up authentication:
   * Go to the "APIs & Services" -> "Credentials" page in the GCP Console and your project. [link](https://console.cloud.google.com/apis/credentials)
-  * From the "Create credentials" drop-down list, select "OAuth client ID.
-  * Select application type "TV and Limited Input" and enter a name into the "Name" field.
+  * From the "Create credentials" drop-down list, select "OAuth client ID".
+  * Select application type "Web application" and enter a name into the "Name" field.
+  * Add "https://www.google.com" to the "Authorized redirect URIs".
   * Click Create. A pop-up appears, showing your "client ID" and "client secret".
 
 ## Configuration
@@ -36,10 +37,11 @@ Using your favorite configuration UI to edit **Settings / Other Services - Googl
 
 * **Client Id** - Google Cloud Platform OAuth 2.0-Client Id.
 * **Client Secret** - Google Cloud Platform OAuth 2.0-Client Secret.
-* **Authorization Code** - The auth-code is a one-time code needed to retrieve the necessary access-codes from Google Cloud Platform.
+* **Authorization Code** - This code is used once for retrieving the Google Cloud Platform access and refresh tokens.
 **Please go to your browser ...**
-[https://accounts.google.com/o/oauth2/auth?client_id=<clientId>&redirect_uri=urn:ietf:wg:oauth:2.0:oob&scope=https://www.googleapis.com/auth/cloud-platform&response_type=code](https://accounts.google.com/o/oauth2/auth?client_id=<clientId>&redirect_uri=urn:ietf:wg:oauth:2.0:oob&scope=https://www.googleapis.com/auth/cloud-platform&response_type=code) (replace `<clientId>` by your Client Id)
-**... to generate an auth-code and paste it here**.
+[https://accounts.google.com/o/oauth2/v2/auth?scope=https://www.googleapis.com/auth/cloud-platform&access_type=offline&prompt=consent&include_granted_scopes=true&response_type=code&redirect_uri=https://www.google.com&client_id=<clientId>](https://accounts.google.com/o/oauth2/v2/auth?scope=https://www.googleapis.com/auth/cloud-platform&access_type=offline&prompt=consent&include_granted_scopes=true&response_type=code&redirect_uri=https://www.google.com&client_id=<clientId>) (replace `<clientId>` by your Client Id)
+**... to generate an authorization code and paste it here**.
+After your browser has been redirected to https://www.google.com, the authorization code will be set in the browser URL as value of the "code" URL query parameter.
 After initial authorization, this code is not needed anymore.
 It is recommended to clear this configuration parameter afterwards.
 * **Pitch** - The pitch of selected voice, up to 20 semitones.

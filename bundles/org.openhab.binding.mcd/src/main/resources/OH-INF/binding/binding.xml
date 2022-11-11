@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<binding:binding id="mcd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:binding="https://openhab.org/schemas/binding/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
+
+	<name>MCD Binding</name>
+	<description>This binding allows you to send sensor events from your openHAB environment to the cloud application
+		Managing Care Digital (MCD) by C&amp;S Computer und Software GmbH (https://www.managingcare.de/). MCD is the platform
+		for inpatient and outpatient nursing services. Our REST API allows you to send a variety of sensor events to the
+		system and thus being able to connect your Ambient Assisted Living (AAL) or smart home environment to the
+		documentation software of your nursing service. Please note that a valid account is needed to access MCD and the
+		Sensor API.</description>
+
+</binding:binding>

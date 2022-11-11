@@ -20,9 +20,11 @@ Please update this document if you tested it with other android versions to refl
 
 ## Discovery
 
-As I can not find a way to identify android devices in the network the discovery will try to connect through adb to all the reachable ip in the defined range.
+Android TV and Fire TV devices should be discovered automatically (using mDNS).
 
-You could customize the discovery process through the binding options. 
+Since other Android devices cannot be discovered automatically on the network, the manual discovery scan will try to connect via adb to all reachable IP addresses in the defined range.
+
+You could customize the discovery process through the binding options.
 
 **Your device will prompt a message requesting you to authorize the connection, you should check the option "Always allow connections from this device" (or something similar) and accept**.
 
@@ -90,6 +92,7 @@ Please note that events could fail if the input method is removed, for example i
 | url                  | String | Open url in browser                                                                                                           |
 | media-volume         | Dimmer | Set or get media volume level on android device                                                                               |
 | media-control        | Player | Control media on android device                                                                                               |
+| start-intent         | String | Start application intent. Read bellow section                                                                                 |
 | start-package        | String | Run application by package name. The commands for this Channel are populated dynamically based on the `mediaStateJSONConfig`. |
 | stop-package         | String | Stop application by package name                                                                                              |
 | stop-current-package | String | Stop current application                                                                                                      |
@@ -100,6 +103,16 @@ Please note that events could fail if the input method is removed, for example i
 | awake-state          | OnOff  | Awake state value.                                                                                                            |
 | wake-lock            | Number | Power wake lock value                                                                                                         |
 | screen-state         | Switch | Screen power state                                                                                                            |
+
+#### Start Intent
+
+This channel allows to invoke the 'am start' command, the syntax for it is:
+<package/activity>||<<arg name>> <arg value>||...
+
+This is a sample:
+com.netflix.ninja/.MainActivity||<a>android.intent.action.VIEW||<d>netflix://title/80025384||<f>0x10000020||<es>amzn_deeplink_data 80025384
+
+Not all the (arguments)[https://developer.android.com/studio/command-line/adb#IntentSpec] are supported. Please open an issue or pull request if you need more.
 
 #### Available key-event values:
 
@@ -398,7 +411,7 @@ Please note that events could fail if the input method is removed, for example i
 ### Sample Thing
 
 ```
-Thing androiddebugbridge:android:xxxxxxxxxxxx [ ip="192.168.1.10" port=5555 refreshTime=30 ]
+Thing androiddebugbridge:android:xxxxxxxxxxxx "xxxxxxxxxxxx" [ ip="192.168.1.10", port=5555, refreshTime=30 ]
 ```
 
 ### Sample Items

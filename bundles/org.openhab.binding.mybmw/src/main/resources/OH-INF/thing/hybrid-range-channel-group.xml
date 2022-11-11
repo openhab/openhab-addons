@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mybmw"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-group-type id="hybrid-range-values">
+		<label>Range, Charge / Fuel Data</label>
+		<description>Provides mileage, remaining fuel and range data for hybrid vehicles</description>
+		<channels>
+			<channel id="mileage" typeId="mileage-channel"/>
+			<channel id="electric" typeId="range-electric-channel"/>
+			<channel id="fuel" typeId="range-fuel-channel"/>
+			<channel id="hybrid" typeId="range-hybrid-channel"/>
+			<channel id="radius-electric" typeId="range-radius-electric-channel"/>
+			<channel id="radius-fuel" typeId="range-radius-fuel-channel"/>
+			<channel id="radius-hybrid" typeId="range-radius-hybrid-channel"/>
+			<channel id="soc" typeId="soc-channel"/>
+			<channel id="remaining-fuel" typeId="remaining-fuel-channel"/>
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>

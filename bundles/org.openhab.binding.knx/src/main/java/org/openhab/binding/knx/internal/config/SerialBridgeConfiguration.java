@@ -24,8 +24,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class SerialBridgeConfiguration extends BridgeConfiguration {
 
     private String serialPort = "";
+    private boolean useCemi = false;
 
     public String getSerialPort() {
         return serialPort;
+    }
+
+    public boolean useCemi() {
+        return useCemi;
     }
 }

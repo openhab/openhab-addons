@@ -245,13 +245,13 @@ public class HomeConnectBridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Get children of bridge
+     * Get children of bridge (disabled things are ignored)
      *
      * @return list of child handlers
      */
     public List<AbstractHomeConnectThingHandler> getThingHandler() {
         return getThing().getThings().stream()
-                .filter(thing -> thing.getHandler() instanceof AbstractHomeConnectThingHandler)
+                .filter(thing -> thing.isEnabled() && thing.getHandler() instanceof AbstractHomeConnectThingHandler)
                 .map(thing -> (AbstractHomeConnectThingHandler) thing.getHandler()).collect(Collectors.toList());
     }
 

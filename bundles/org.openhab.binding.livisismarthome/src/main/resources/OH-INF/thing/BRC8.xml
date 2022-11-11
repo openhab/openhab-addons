@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="livisismarthome"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="BRC8">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Basic Remote Controller (BRC8)</label>
+		<description>A battery powered remote controller with eight push buttons.</description>
+
+		<channels>
+			<channel id="button1" typeId="system.button"/>
+			<channel id="button2" typeId="system.button"/>
+			<channel id="button3" typeId="system.button"/>
+			<channel id="button4" typeId="system.button"/>
+			<channel id="button5" typeId="system.button"/>
+			<channel id="button6" typeId="system.button"/>
+			<channel id="button7" typeId="system.button"/>
+			<channel id="button8" typeId="system.button"/>
+			<channel id="button1Count" typeId="pushButtonCounter"/>
+			<channel id="button2Count" typeId="pushButtonCounter"/>
+			<channel id="button3Count" typeId="pushButtonCounter"/>
+			<channel id="button4Count" typeId="pushButtonCounter"/>
+			<channel id="button5Count" typeId="pushButtonCounter"/>
+			<channel id="button6Count" typeId="pushButtonCounter"/>
+			<channel id="button7Count" typeId="pushButtonCounter"/>
+			<channel id="button8Count" typeId="pushButtonCounter"/>
+			<channel id="batteryLow" typeId="system.low-battery"/>
+		</channels>
+
+		<representation-property>id</representation-property>
+
+		<config-description-ref uri="thing-type:livisismarthome:config"/>
+	</thing-type>
+</thing:thing-descriptions>

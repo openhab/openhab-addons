@@ -1378,7 +1378,7 @@
 	</channel-type>
 
 	<channel-type id="buttonpress">
-		<item-type>Text</item-type>
+		<item-type>String</item-type>
 		<label>Last Button Press</label>
 		<description>Last button pressed</description>
 		<state readOnly="true"/>

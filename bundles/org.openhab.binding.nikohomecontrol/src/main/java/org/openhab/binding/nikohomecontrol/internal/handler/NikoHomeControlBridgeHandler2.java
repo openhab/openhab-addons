@@ -24,6 +24,7 @@ import java.util.NoSuchElementException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.nikohomecontrol.internal.protocol.nhc2.NikoHomeControlCommunication2;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingStatus;
@@ -50,16 +51,15 @@ public class NikoHomeControlBridgeHandler2 extends NikoHomeControlBridgeHandler 
 
     NetworkAddressService networkAddressService;
 
-    public NikoHomeControlBridgeHandler2(Bridge nikoHomeControlBridge, NetworkAddressService networkAddressService) {
-        super(nikoHomeControlBridge);
+    public NikoHomeControlBridgeHandler2(Bridge nikoHomeControlBridge, NetworkAddressService networkAddressService,
+            TimeZoneProvider timeZoneProvider) {
+        super(nikoHomeControlBridge, timeZoneProvider);
         this.networkAddressService = networkAddressService;
     }
 
     @Override
     public void initialize() {
         logger.debug("initializing NHC II bridge handler");
-
-        setConfig();
 
         Date expiryDate = getTokenExpiryDate();
         if (expiryDate == null) {
@@ -161,12 +161,12 @@ public class NikoHomeControlBridgeHandler2 extends NikoHomeControlBridgeHandler 
 
     @Override
     public String getProfile() {
-        return ((NikoHomeControlBridgeConfig2) config).profile;
+        return getConfig().as(NikoHomeControlBridgeConfig2.class).profile;
     }
 
     @Override
     public String getToken() {
-        String token = ((NikoHomeControlBridgeConfig2) config).password;
+        String token = getConfig().as(NikoHomeControlBridgeConfig2.class).password;
         if (token.isEmpty()) {
             logger.debug("no JWT token set.");
         }
@@ -226,10 +226,5 @@ public class NikoHomeControlBridgeHandler2 extends NikoHomeControlBridgeHandler 
         }
 
         return null;
-    }
-
-    @Override
-    protected synchronized void setConfig() {
-        config = getConfig().as(NikoHomeControlBridgeConfig2.class);
     }
 }

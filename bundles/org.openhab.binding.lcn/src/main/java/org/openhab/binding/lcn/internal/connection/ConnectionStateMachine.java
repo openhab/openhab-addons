@@ -84,7 +84,7 @@ public class ConnectionStateMachine extends AbstractStateMachine<ConnectionState
      *
      * @param data the PCK message
      */
-    public void onInputReceived(String data) {
+    public synchronized void onInputReceived(String data) {
         AbstractConnectionState localState = state;
         if (localState != null) {
             localState.onPckMessageReceived(data);

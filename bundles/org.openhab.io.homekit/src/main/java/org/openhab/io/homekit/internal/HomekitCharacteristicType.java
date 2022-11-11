@@ -62,6 +62,8 @@ public enum HomekitCharacteristicType {
     CURRENT_VERTICAL_TILT_ANGLE("CurrentVerticalTiltAngle"),
     TARGET_HORIZONTAL_TILT_ANGLE("TargetHorizontalTiltAngle"),
     TARGET_VERTICAL_TILT_ANGLE("TargetVerticalTiltAngle"),
+    CURRENT_TILT_ANGLE("CurrentTiltAngle"),
+    TARGET_TILT_ANGLE("TargetTiltAngle"),
 
     HUE("Hue"),
     BRIGHTNESS("Brightness"),
@@ -107,7 +109,22 @@ public enum HomekitCharacteristicType {
     SULPHUR_DIOXIDE_DENSITY("SulphurDioxideDensity"),
     PM25_DENSITY("PM25Density"),
     PM10_DENSITY("PM10Density"),
-    VOC_DENSITY("VOCDensity");
+    VOC_DENSITY("VOCDensity"),
+
+    BATTERY_LEVEL("BatteryLevel"),
+    BATTERY_CHARGING_STATE("BatteryChargingState"),
+
+    CURRENT_SLAT_STATE("CurrentSlatState"),
+
+    CURRENT_MEDIA_STATE("CurrentMediaState"),
+    TARGET_MEDIA_STATE("TargetMediaState"),
+    CONFIGURED_NAME("ConfiguredName"),
+
+    ACTIVE("Active"),
+
+    FILTER_CHANGE_INDICATION("FilterChangeIndication"),
+    FILTER_LIFE_LEVEL("FilterLifeLevel"),
+    FILTER_RESET_INDICATION("FilterResetIndication");
 
     private static final Map<String, HomekitCharacteristicType> TAG_MAP = new HashMap<>();
 
@@ -135,5 +152,10 @@ public enum HomekitCharacteristicType {
      */
     public static Optional<HomekitCharacteristicType> valueOfTag(String tag) {
         return Optional.ofNullable(TAG_MAP.get(tag));
+    }
+
+    @Override
+    public String toString() {
+        return tag;
     }
 }

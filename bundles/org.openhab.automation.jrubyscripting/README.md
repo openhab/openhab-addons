@@ -16,6 +16,7 @@ Alternatively, JRuby configuration parameters may be set by creating a `jruby.cf
 | org.openhab.automation.jrubyscripting:local_variables | transient                               | Defines how variables are shared between Ruby and Java. See [this](https://github.com/jruby/jruby/wiki/RedBridge#local-variable-behavior-options) for options and details                                   |
 | org.openhab.automation.jrubyscripting:gems            |                                         | A comma separated list of [Ruby Gems](https://rubygems.org/) to install.                                                                                                                                    |
 | org.openhab.automation.jrubyscripting:require         |                                         | A comma separated list of script names to be required by the JRuby Scripting Engine at the beginning of user scripts.                                                                                       |
+| org.openhab.automation.jrubyscripting:check_update    | true                                    | Check RubyGems for updates to the above gems when OpenHAB starts or JRuby settings are changed. Otherwise it will try to fulfil the requirements with locally installed gems, and you can manage them yourself with an external Ruby by setting the same GEM_HOME. |
 
 ## Ruby Gems
 
@@ -74,3 +75,37 @@ JRuby can [import Java classes](https://github.com/jruby/jruby/wiki/CallingJavaF
 Depending on the openHAB logging configuration, you may need to prefix logger names with `org.openhab.automation` for them to show up in the log file (or you modify the logging configuration).
 
 **Note**: Installing the [JRuby Scripting Library](https://boc-tothefuture.github.io/openhab-jruby/installation/) will provide enhanced capabilities with simpler rule syntax.
+
+## Transformations
+
+This add-on also provides the necessary infrastructure to use Ruby for writing [transformations](https://www.openhab.org/docs/configuration/transformations.html).
+Once the addon is installed, you can create a Ruby file in the `$OPENHAB_CONF/transform` directory, with the extension `.script`.
+It's important that the extension is `.script` so that the core `SCRIPT` transform service will recognize it.
+When referencing the file, you need to specify the `SCRIPT` transform, with `rb` as the script type: `SCRIPT(rb:mytransform.script):%s`.
+You can also specify additional variables to be set in the script using a URI-like query syntax: `SCRIPT(rb:mytransform.script?a=1b=c):%s` in order to share a single script with slightly different parameters for different items.
+
+**Note**: Due to an [issue](https://github.com/jruby/jruby/issues/5876) in the current version of JRuby, you will need to begin your script with `input ||= nil` (and `a ||= nil` etc. for additional query variables) so that JRuby will recognize the variables as variables--rather than method calls--when it's parsing the script.
+Otherwise you will get errors like `(NameError) undefined local variable or method 'input' for main:Object`.
+
+### Example Transformation
+
+#### compass.script
+
+```ruby
+input ||= nil
+DIRECTIONS = %w[N NE E SE S SW W NW N].freeze
+
+if input.nil? || input == "NULL" || input == "UNDEF"
+  "-"
+else
+  cardinal = DIRECTIONS[(input.to_f / 45).round]
+  "#{cardinal} (#{input.to_i}°)"
+end
+```
+
+#### weather.items
+```Xtend
+Number:Angle Exterior_WindDirection "Wind Direction [SCRIPT(rb:compass.script):%s]" <wind>
+```
+
+Given a state of `82 °`, this will produce a formatted state of `E (82°)`.

@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.amazonechocontrol.internal;
 
+import static org.openhab.binding.amazonechocontrol.internal.smarthome.Constants.*;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InterruptedIOException;
@@ -32,10 +34,12 @@ import java.util.Base64;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Random;
 import java.util.Scanner;
@@ -109,6 +113,7 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.JsonWebSiteCookie;
 import org.openhab.binding.amazonechocontrol.internal.jsons.SmartHomeBaseDevice;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.util.HexUtils;
 import org.slf4j.Logger;
@@ -118,6 +123,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
@@ -644,7 +650,7 @@ public class Connection {
                 for (Map.Entry<@Nullable String, List<String>> header : headerFields.entrySet()) {
                     String key = header.getKey();
                     if (key != null && !key.isEmpty()) {
-                        if (key.equalsIgnoreCase("Set-Cookie")) {
+                        if ("Set-Cookie".equalsIgnoreCase(key)) {
                             // store cookie
                             for (String cookieHeader : header.getValue()) {
                                 if (!cookieHeader.isEmpty()) {
@@ -655,7 +661,7 @@ public class Connection {
                                 }
                             }
                         }
-                        if (key.equalsIgnoreCase("Location")) {
+                        if ("Location".equalsIgnoreCase(key)) {
                             // get redirect location
                             location = header.getValue().get(0);
                             if (!location.isEmpty()) {
@@ -1074,7 +1080,7 @@ public class Connection {
         requestObject.add("stateRequests", stateRequests);
         String requestBody = requestObject.toString();
         String json = makeRequestAndReturnString("POST", alexaServer + "/api/phoenix/state", requestBody, true, null);
-        logger.trace("Requested {} and received {}", requestBody, json);
+        logger.debug("Requested {} and received {}", requestBody, json);
 
         JsonObject responseObject = Objects.requireNonNull(gson.fromJson(json, JsonObject.class));
         JsonArray deviceStates = (JsonArray) responseObject.get("deviceStates");
@@ -1164,6 +1170,8 @@ public class Connection {
     public void smartHomeCommand(String entityId, String action, @Nullable String property, @Nullable Object value)
             throws IOException, InterruptedException {
         String url = alexaServer + "/api/phoenix/state";
+        Float lowerSetpoint = null;
+        Float upperSetpoint = null;
 
         JsonObject json = new JsonObject();
         JsonArray controlRequests = new JsonArray();
@@ -1173,20 +1181,95 @@ public class Connection {
         JsonObject parameters = new JsonObject();
         parameters.addProperty("action", action);
         if (property != null) {
-            if (value instanceof QuantityType<?>) {
-                parameters.addProperty(property + ".value", ((QuantityType<?>) value).floatValue());
-                parameters.addProperty(property + ".scale",
-                        ((QuantityType<?>) value).getUnit().equals(SIUnits.CELSIUS) ? "celsius" : "fahrenheit");
-            } else if (value instanceof Boolean) {
-                parameters.addProperty(property, (boolean) value);
-            } else if (value instanceof String) {
-                parameters.addProperty(property, (String) value);
-            } else if (value instanceof Number) {
-                parameters.addProperty(property, (Number) value);
-            } else if (value instanceof Character) {
-                parameters.addProperty(property, (Character) value);
-            } else if (value instanceof JsonElement) {
-                parameters.add(property, (JsonElement) value);
+            if ("setThermostatMode".equals(action)) {
+                if (value instanceof StringType) {
+                    parameters.addProperty(property + ".value", value.toString());
+                }
+            } else if ("setTargetTemperature".equals(action)) {
+                if ("targetTemperature".equals(property)) {
+                    if (value instanceof QuantityType<?>) {
+                        parameters.addProperty(property + ".value", ((QuantityType<?>) value).floatValue());
+                        parameters.addProperty(property + ".scale",
+                                ((QuantityType<?>) value).getUnit().equals(SIUnits.CELSIUS) ? "celsius" : "fahrenheit");
+                    }
+                } else {
+                    // Get current upper and lower setpoints to build command syntax
+                    Map<String, JsonArray> devices = null;
+                    try {
+                        List<SmartHomeBaseDevice> deviceList = getSmarthomeDeviceList().stream()
+                                .filter(device -> entityId.equals(device.findEntityId())).collect(Collectors.toList());
+                        devices = getSmartHomeDeviceStatesJson(new HashSet<>(deviceList));
+                    } catch (URISyntaxException e) {
+                        logger.debug("{}", e.toString());
+                    }
+                    Entry<String, JsonArray> entry = devices.entrySet().iterator().next();
+                    JsonArray states = entry.getValue();
+                    for (JsonElement stateElement : states) {
+                        JsonObject stateValue = new JsonObject();
+                        String stateJson = stateElement.getAsString();
+                        if (stateJson.startsWith("{") && stateJson.endsWith("}")) {
+                            JsonObject state = Objects.requireNonNull(gson.fromJson(stateJson, JsonObject.class));
+                            String interfaceName = Objects.requireNonNullElse(state.get("namespace"), JsonNull.INSTANCE)
+                                    .getAsString();
+                            String name = Objects.requireNonNullElse(state.get("name"), JsonNull.INSTANCE)
+                                    .getAsString();
+                            if ("Alexa.ThermostatController".equals(interfaceName)) {
+                                if ("upperSetpoint".equals(name)) {
+                                    stateValue = Objects.requireNonNullElse(state.get("value"), JsonNull.INSTANCE)
+                                            .getAsJsonObject();
+                                    upperSetpoint = Objects
+                                            .requireNonNullElse(stateValue.get("value"), JsonNull.INSTANCE)
+                                            .getAsFloat();
+                                } else if ("lowerSetpoint".equals(name)) {
+                                    stateValue = Objects.requireNonNullElse(state.get("value"), JsonNull.INSTANCE)
+                                            .getAsJsonObject();
+                                    lowerSetpoint = Objects
+                                            .requireNonNullElse(stateValue.get("value"), JsonNull.INSTANCE)
+                                            .getAsFloat();
+                                }
+                            }
+                        }
+                    }
+                    if ("lowerSetTemperature".equals(property)) {
+                        if (value instanceof QuantityType<?>) {
+                            parameters.addProperty("upperSetTemperature.value", upperSetpoint);
+                            parameters.addProperty("upperSetTemperature.scale",
+                                    ((QuantityType<?>) value).getUnit().equals(SIUnits.CELSIUS) ? "celsius"
+                                            : "fahrenheit");
+                            parameters.addProperty(property + ".value", ((QuantityType<?>) value).floatValue());
+                            parameters.addProperty(property + ".scale",
+                                    ((QuantityType<?>) value).getUnit().equals(SIUnits.CELSIUS) ? "celsius"
+                                            : "fahrenheit");
+                        }
+                    } else if ("upperSetTemperature".equals(property)) {
+                        if (value instanceof QuantityType<?>) {
+                            parameters.addProperty(property + ".value", ((QuantityType<?>) value).floatValue());
+                            parameters.addProperty(property + ".scale",
+                                    ((QuantityType<?>) value).getUnit().equals(SIUnits.CELSIUS) ? "celsius"
+                                            : "fahrenheit");
+                            parameters.addProperty("lowerSetTemperature.value", lowerSetpoint);
+                            parameters.addProperty("lowerSetTemperature.scale",
+                                    ((QuantityType<?>) value).getUnit().equals(SIUnits.CELSIUS) ? "celsius"
+                                            : "fahrenheit");
+                        }
+                    }
+                }
+            } else {
+                if (value instanceof QuantityType<?>) {
+                    parameters.addProperty(property + ".value", ((QuantityType<?>) value).floatValue());
+                    parameters.addProperty(property + ".scale",
+                            ((QuantityType<?>) value).getUnit().equals(SIUnits.CELSIUS) ? "celsius" : "fahrenheit");
+                } else if (value instanceof Boolean) {
+                    parameters.addProperty(property, (boolean) value);
+                } else if (value instanceof String) {
+                    parameters.addProperty(property, (String) value);
+                } else if (value instanceof Number) {
+                    parameters.addProperty(property, (Number) value);
+                } else if (value instanceof Character) {
+                    parameters.addProperty(property, (Character) value);
+                } else if (value instanceof JsonElement) {
+                    parameters.add(property, (JsonElement) value);
+                }
             }
         }
         controlRequest.add("parameters", parameters);

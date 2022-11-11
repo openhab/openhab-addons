@@ -1,0 +1,54 @@
+<?xml version="1.0" ?>
+<thing:thing-descriptions bindingId="wundergroundupdatereceiver"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="metadata-group">
+		<label>Metadata</label>
+		<description>Metadata regarding the last submission</description>
+		<category>Text</category>
+	</channel-group-type>
+
+	<channel-group-type id="wind-group">
+		<label>Wind</label>
+		<description>Wind measurements</description>
+		<category>Wind</category>
+	</channel-group-type>
+
+	<channel-group-type id="temperature-group">
+		<label>Temperature</label>
+		<description>Temperature measurements</description>
+		<category>Temperature</category>
+	</channel-group-type>
+
+	<channel-group-type id="humidity-group">
+		<label>Moisture</label>
+		<description>Moisture measurements</description>
+		<category>Humidity</category>
+	</channel-group-type>
+
+	<channel-group-type id="rain-group">
+		<label>Rain</label>
+		<description>Rain measurements</description>
+		<category>Rain</category>
+	</channel-group-type>
+
+	<channel-group-type id="sunlight-group">
+		<label>Sunlight</label>
+		<description>Sunlight measurements</description>
+		<category>Sun_Clouds</category>
+	</channel-group-type>
+
+	<channel-group-type id="pressure-group">
+		<label>Pressure</label>
+		<description>Barometric measurements</description>
+		<category>Pressure</category>
+	</channel-group-type>
+
+	<channel-group-type id="pollution-group">
+		<label>Pollution</label>
+		<description>Pollutant measurements</description>
+		<category>Pollution</category>
+	</channel-group-type>
+</thing:thing-descriptions>

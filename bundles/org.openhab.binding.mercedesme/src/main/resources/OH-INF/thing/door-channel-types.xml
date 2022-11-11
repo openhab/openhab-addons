@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mercedesme"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-type id="driver-front-channel">
+		<item-type>Contact</item-type>
+		<label>Driver Door</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="driver-rear-channel">
+		<item-type>Contact</item-type>
+		<label>Driver Door Rear</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="passenger-front-channel">
+		<item-type>Contact</item-type>
+		<label>Passenger Door</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="passenger-rear-channel">
+		<item-type>Contact</item-type>
+		<label>Passenger Door Rear</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="deck-lid-channel">
+		<item-type>Contact</item-type>
+		<label>Deck Lid</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="rooftop-channel">
+		<item-type>Number</item-type>
+		<label>Roof top</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">Unlocked</option>
+				<option value="1">Open and locked</option>
+				<option value="2">Closed and locked</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="sunroof-channel">
+		<item-type>Number</item-type>
+		<label>Sun Roof</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">Closed</option>
+				<option value="1">Open</option>
+				<option value="2">Open Lifting</option>
+				<option value="3">Running</option>
+				<option value="4">Closing</option>
+				<option value="5">Opening</option>
+				<option value="6">Closing</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="last-doors-update-channel">
+		<item-type>DateTime</item-type>
+		<label>Last Doors Update</label>
+		<state pattern="%1$tA, %1$td.%1$tm. %1$tH:%1$tM" readOnly="true"/>
+	</channel-type>
+</thing:thing-descriptions>

@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tado.internal.TadoBindingConstants;
 import org.openhab.binding.tado.internal.api.ApiException;
 import org.openhab.binding.tado.internal.api.model.MobileDevice;
@@ -37,15 +39,17 @@ import org.slf4j.LoggerFactory;
  *
  * @author Dennis Frommknecht - Initial contribution
  */
+@NonNullByDefault
 public class TadoMobileDeviceHandler extends BaseHomeThingHandler {
 
     private Logger logger = LoggerFactory.getLogger(TadoMobileDeviceHandler.class);
 
     private TadoMobileDeviceConfig configuration;
-    private ScheduledFuture<?> refreshTimer;
+    private @Nullable ScheduledFuture<?> refreshTimer;
 
     public TadoMobileDeviceHandler(Thing thing) {
         super(thing);
+        configuration = getConfigAs(TadoMobileDeviceConfig.class);
     }
 
     @Override
@@ -61,7 +65,6 @@ public class TadoMobileDeviceHandler extends BaseHomeThingHandler {
     @Override
     public void initialize() {
         configuration = getConfigAs(TadoMobileDeviceConfig.class);
-
         if (configuration.refreshInterval <= 0) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Refresh interval of zone "
                     + configuration.id + " of home " + getHomeId() + " must be greater than zero");
@@ -135,13 +138,15 @@ public class TadoMobileDeviceHandler extends BaseHomeThingHandler {
     }
 
     private void scheduleZoneStateUpdate() {
+        ScheduledFuture<?> refreshTimer = this.refreshTimer;
         if (refreshTimer == null || refreshTimer.isCancelled()) {
-            refreshTimer = scheduler.scheduleWithFixedDelay(this::updateState, 5, configuration.refreshInterval,
+            this.refreshTimer = scheduler.scheduleWithFixedDelay(this::updateState, 5, configuration.refreshInterval,
                     TimeUnit.SECONDS);
         }
     }
 
     private void cancelScheduledStateUpdate() {
+        ScheduledFuture<?> refreshTimer = this.refreshTimer;
         if (refreshTimer != null) {
             refreshTimer.cancel(false);
         }

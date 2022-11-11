@@ -15,6 +15,7 @@ package org.openhab.automation.jsscripting.internal.fs.watch;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.WatchEvent;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.Nullable;
@@ -31,7 +32,6 @@ import org.openhab.core.service.ReadyService;
  */
 public class JSScriptFileWatcher extends ScriptFileWatcher {
     private static final String FILE_DIRECTORY = "automation" + File.separator + "js";
-    private static final String IGNORE_DIR_NAME = "node_modules";
 
     private final String ignorePath;
 
@@ -45,8 +45,10 @@ public class JSScriptFileWatcher extends ScriptFileWatcher {
     @Override
     protected void processWatchEvent(@Nullable WatchEvent<?> event, WatchEvent.@Nullable Kind<?> kind,
             @Nullable Path path) {
-        if (!path.startsWith(ignorePath)) {
-            super.processWatchEvent(event, kind, path);
+        if (Objects.nonNull(path)) {
+            if (!path.startsWith(ignorePath)) {
+                super.processWatchEvent(event, kind, path);
+            }
         }
     }
 

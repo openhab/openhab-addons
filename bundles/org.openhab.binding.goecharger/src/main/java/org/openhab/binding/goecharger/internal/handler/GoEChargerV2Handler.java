@@ -136,6 +136,11 @@ public class GoEChargerV2Handler extends GoEChargerBaseHandler {
                     default:
                 }
                 return new StringType(error);
+            case TRANSACTION:
+                if (goeResponse.transaction == null) {
+                    return UnDefType.UNDEF;
+                }
+                return new DecimalType(goeResponse.transaction);
             case ALLOW_CHARGING:
                 return goeResponse.allowCharging == true ? OnOffType.ON : OnOffType.OFF;
             case TEMPERATURE_TYPE2_PORT:
@@ -152,53 +157,67 @@ public class GoEChargerV2Handler extends GoEChargerBaseHandler {
                 if (goeResponse.sessionChargeConsumption == null) {
                     return UnDefType.UNDEF;
                 }
-                return new QuantityType<>((Double) (goeResponse.sessionChargeConsumption / 1000d), Units.KILOWATT_HOUR);
+                return new QuantityType<>(goeResponse.sessionChargeConsumption / 1000d, Units.KILOWATT_HOUR);
             case SESSION_CHARGE_CONSUMPTION_LIMIT:
                 if (goeResponse.sessionChargeConsumptionLimit == null) {
                     return UnDefType.UNDEF;
                 }
-                return new QuantityType<>((Double) (goeResponse.sessionChargeConsumptionLimit / 1000d),
-                        Units.KILOWATT_HOUR);
+                return new QuantityType<>(goeResponse.sessionChargeConsumptionLimit / 1000d, Units.KILOWATT_HOUR);
             case TOTAL_CONSUMPTION:
                 if (goeResponse.totalChargeConsumption == null) {
                     return UnDefType.UNDEF;
                 }
                 return new QuantityType<>((Double) (goeResponse.totalChargeConsumption / 1000d), Units.KILOWATT_HOUR);
+            case VOLTAGE_L1:
+                if (goeResponse.energy == null) {
+                    return UnDefType.UNDEF;
+                }
+                return new QuantityType<>(goeResponse.energy[0], Units.VOLT);
+            case VOLTAGE_L2:
+                if (goeResponse.energy == null) {
+                    return UnDefType.UNDEF;
+                }
+                return new QuantityType<>(goeResponse.energy[1], Units.VOLT);
+            case VOLTAGE_L3:
+                if (goeResponse.energy == null) {
+                    return UnDefType.UNDEF;
+                }
+                return new QuantityType<>(goeResponse.energy[2], Units.VOLT);
             case CURRENT_L1:
                 if (goeResponse.energy == null) {
                     return UnDefType.UNDEF;
                 }
-                return new QuantityType<>((Double) (goeResponse.energy[4] / 1000d), Units.AMPERE);
+                return new QuantityType<>(goeResponse.energy[4], Units.AMPERE);
             case CURRENT_L2:
                 if (goeResponse.energy == null) {
                     return UnDefType.UNDEF;
                 }
-                return new QuantityType<>((Double) (goeResponse.energy[5] / 1000d), Units.AMPERE);
+                return new QuantityType<>(goeResponse.energy[5], Units.AMPERE);
             case CURRENT_L3:
                 if (goeResponse.energy == null) {
                     return UnDefType.UNDEF;
                 }
-                return new QuantityType<>((Double) (goeResponse.energy[6] / 1000d), Units.AMPERE);
+                return new QuantityType<>(goeResponse.energy[6], Units.AMPERE);
             case POWER_L1:
                 if (goeResponse.energy == null) {
                     return UnDefType.UNDEF;
                 }
-                return new QuantityType<>(goeResponse.energy[7] * 1000, Units.WATT);
+                return new QuantityType<>(goeResponse.energy[7], Units.WATT);
             case POWER_L2:
                 if (goeResponse.energy == null) {
                     return UnDefType.UNDEF;
                 }
-                return new QuantityType<>(goeResponse.energy[8] * 1000, Units.WATT);
+                return new QuantityType<>(goeResponse.energy[8], Units.WATT);
             case POWER_L3:
                 if (goeResponse.energy == null) {
                     return UnDefType.UNDEF;
                 }
-                return new QuantityType<>(goeResponse.energy[9] * 1000, Units.WATT);
+                return new QuantityType<>(goeResponse.energy[9], Units.WATT);
             case POWER_ALL:
                 if (goeResponse.energy == null) {
                     return UnDefType.UNDEF;
                 }
-                return new QuantityType<>(goeResponse.energy[11] * 1000, Units.WATT);
+                return new QuantityType<>(goeResponse.energy[11], Units.WATT);
             case FORCE_STATE:
                 if (goeResponse.forceState == null) {
                     return UnDefType.UNDEF;
@@ -252,6 +271,11 @@ public class GoEChargerV2Handler extends GoEChargerBaseHandler {
                 break;
             case FORCE_STATE:
                 key = "frc";
+                if (command instanceof DecimalType) {
+                    value = String.valueOf(((DecimalType) command).intValue());
+                }
+            case TRANSACTION:
+                key = "trx";
                 if (command instanceof DecimalType) {
                     value = String.valueOf(((DecimalType) command).intValue());
                 }

@@ -30,6 +30,7 @@ You require your MyRenault credential, locale and VIN for your MyRenault registe
 | vin               | Vehicle Identification Number.                                             | yes      |
 | refreshInterval   | Interval the car is polled in minutes.                                     | no       |
 | updateDelay       | How long to wait for commands to reach car and update to server in seconds.| no       |
+| kamereonApiKey    | Kamereon API Key.                                                          | no       | 
 
 
 ## Channels
@@ -61,6 +62,10 @@ The "externaltemperature" only works on a few cars.
 The "hvactargettemperature" is used by the hvacstatus ON command for pre-conditioning the car. 
 This seams to only allow values 19, 20 and 21 or else the pre-conditioning command will not work.
 
+The Kamereon API Key changes periodically, which causes a communication error.
+To fix this error update the API Key in the bindings configuration.
+The new key value can hopefully be found in the renault-api project: [KAMEREON_APIKEY value](https://github.com/hacf-fr/renault-api/blob/main/src/renault_api/const.py) or in the openHAB forums.
+
 
 ## Example
 
@@ -88,9 +93,16 @@ sitemap renaultcar label="Renault Car" {
 
 ![Sitemap](doc/sitemap.png)
 
-If you do not have a smart charger and want to limit the charge of the battery you can set up an  active 15 minute charge schedule in the MyRenault App.
-Then create a Dimmer item "RenaultCar_ChargeLimit" and set it to 80% for example. This rule will change the RenaultCar_ChargingMode to schedule_mode when the limit is reached.
-This stops charging after the battery level reaches the charge limit.
+If you want to limit the charge of the car battery to less than 100%, this can be done as follows. 
+ 
+ * Set up an active dummy charge schedule in the MyRenault App.
+
+ * Create a Dimmer item "RenaultCar_ChargeLimit" and set it to 80% for example. 
+
+ * Add the ChargeRenaultCarLimit rule using the code below.
+
+The rule will change the RenaultCar_ChargingMode to schedule_mode when the limit is reached. 
+This stops charging after the battery level goes over the charge limit.
 
 ChargeRenaultCarLimit Code
 
@@ -101,30 +113,34 @@ triggers:
     configuration:
       itemName: RenaultCar_BatteryLevel
     type: core.ItemStateUpdateTrigger
-  - id: "3"
+  - id: "2"
     configuration:
       itemName: RenaultCar_ChargeLimit
     type: core.ItemStateUpdateTrigger
-  - id: "4"
+  - id: "3"
     configuration:
       itemName: RenaultCar_PlugStatus
     type: core.ItemStateUpdateTrigger
 conditions: []
 actions:
   - inputs: {}
-    id: "2"
+    id: "4"
     configuration:
       type: application/vnd.openhab.dsl.rule
-      script: >-
+      script: >
         if ( RenaultCar_PlugStatus.state.toString == 'PLUGGED' ) {
           if ( RenaultCar_BatteryLevel.state as Number >= RenaultCar_ChargeLimit.state as Number ) {
-            if (RenaultCar_ChargingMode.state.toString == 'ALWAYS_CHARGING' ) {
+            if (RenaultCar_ChargingMode.state.toString != 'SCHEDULE_MODE' ) {
               RenaultCar_ChargingMode.sendCommand("SCHEDULE_MODE")
             }
           } else {
-            if (RenaultCar_ChargingMode.state.toString == 'SCHEDULE_MODE' ) {
+            if (RenaultCar_ChargingMode.state.toString != 'ALWAYS_CHARGING' ) {
               RenaultCar_ChargingMode.sendCommand("ALWAYS_CHARGING")
             }
+          }
+        } else {
+          if (RenaultCar_ChargingMode.state.toString != 'ALWAYS_CHARGING' ) {
+            RenaultCar_ChargingMode.sendCommand("ALWAYS_CHARGING")
           }
         }
     type: script.ScriptAction

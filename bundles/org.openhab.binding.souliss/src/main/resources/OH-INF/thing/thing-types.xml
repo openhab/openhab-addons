@@ -1097,7 +1097,7 @@
 	</channel-type>
 
 	<channel-type id="rollerShutter">
-		<item-type>RollerShutter</item-type>
+		<item-type>Rollershutter</item-type>
 		<label>Rollershutter</label>
 		<description>Rollershutter Up/Down</description>
 		<category>Blinds</category>
@@ -1274,7 +1274,7 @@
 	</channel-type>
 
 	<channel-type id="rollerBrightness">
-		<item-type>RollerShutter</item-type>
+		<item-type>Rollershutter</item-type>
 		<label>Roller Brightness</label>
 		<description>Brightness Up/Down</description>
 		<category>Light</category>

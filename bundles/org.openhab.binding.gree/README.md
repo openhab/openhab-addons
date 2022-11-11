@@ -1,8 +1,8 @@
 # GREE Binding
 
-This binding integrates GREE Air Conditioners.
+This binding integrates Air Conditioners that use the GREE protocol (GREE, Sinclair and others).
 
-Note: The GREE Air Conditioner must already be setup on the WiFi network and must have a fixed IP Address.
+Note: The Air Conditioner must already be set-up on the WiFi network and must have a fixed IP Address.     
 
 ## Supported Things
 
@@ -10,7 +10,7 @@ This binding supports one Thing type `airconditioner`.
 
 ## Discovery
 
-Once the GREE is on the network (WiFi active) it could be discovery automatically.
+Once the Air Conditioner is on the network (WiFi active) it could be discovered automatically.
 An IP broadcast message is sent and every responding unit gets added to the Inbox. 
 
 ## Binding Configuration

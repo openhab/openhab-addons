@@ -8,6 +8,7 @@
 	<config-description uri="thing-type:sncf:api">
 		<parameter name="apiID" type="text" required="true">
 			<label>API ID</label>
+			<description>Your SNCF API ID</description>
 			<context>password</context>
 		</parameter>
 	</config-description>

@@ -36,9 +36,6 @@ The discovery service implementation tries to resolve the computer name.
 If the resolving process fails, the computer name is set to "Unknown".
 In both cases it creates a Discovery Result with thing type  **computer**.
 
-It will be possible to implement creation of dynamic channels (e.g. the binding will scan how many storage devices are present and create channel groups for them).
-At the moment this is not supported.
-
 ## Thing configuration
 
 The configuration of the Thing gives the user the possibility to update channels at different intervals.
@@ -65,7 +62,7 @@ In the list below, you can find, how are channel group and channels id`s related
 **thing** `computer`
 
 *   **group** `memory`
-  * **channel** `available, total, used, availablePercent, usedPercent`
+  * **channel** `available, total, used, availablePercent, usedPercent, usedHeapPercent, availableHeap`
 *   **group** `swap`
   * **channel** `available, total, used, availablePercent, usedPercent`
 *   **group** `storage` (deviceIndex)
@@ -77,39 +74,52 @@ In the list below, you can find, how are channel group and channels id`s related
 *   **group** `battery` (deviceIndex)
   * **channel** `name, remainingCapacity, remainingTime`
 *   **group** `cpu`
-  * **channel** `name, description, load1, load5, load15, uptime`
+  * **channel** `name, description, load, load1, load5, load15, uptime, threads`
 *   **group** `sensors`
   * **channel** `cpuTemp, cpuVoltage, fanSpeed`
 *   **group** `network` (deviceIndex)
   * **channel** `ip, mac, networkDisplayName, networkName, packetsSent, packetsReceived, dataSent, dataReceived`
+*   **group** `currentProcess`
+  * **channel** `load, used, name, threads, path`
 *   **group** `process` (pid)
   * **channel** `load, used, name, threads, path`
 
 The groups marked with "(deviceIndex)" may have device index attached to the Channel Group.
 
 -   channel ::= channel_group & (deviceIndex) & # channel_id
--   deviceIndex ::= number > 0
+-   deviceIndex ::= number >= 0
 -   (e.g. *storage1#available*)
+
+The `fanSpeed` channel in the `sensors` group may have a device index attached to the Channel.
+
+-   channel ::= channel_group & # channel_id & (deviceIndex)
+-   deviceIndex ::= number >= 0
+
+Channels or channel groups without a trailing index will show the data for the first device (index 0) if multiple exist.
+If only one device for a group exists, no channels or channel groups with indexes will be created.
 
 The group `process` is using a configuration parameter "pid" instead of "deviceIndex".
 This makes it possible to change the tracked process at runtime.
 
+The group `currentProcess` has the same channels as the `process` group without the "pid" configuration parameter.
+The PID is dynamically set to the PID of the process running openHAB.
+
 The binding uses this index to get information about a specific device from a list of devices (e.g on a single computer several local disks could be installed with names C:\, D:\, E:\ - the first will have deviceIndex=0, the second deviceIndex=1 etc).
 If device with this index is not existing, the binding will display an error message on the console.
-
-Unfortunately this feature can't be used at the moment without manually adding these new channel groups to the thing description (located in OH-INF/thing/computer.xml).
 
 The table shows more detailed information about each Channel type.
 The binding introduces the following channels:
 
 | Channel ID         | Channel Description                                              | Supported item type | Default priority | Advanced |
 |--------------------|------------------------------------------------------------------|---------------------|------------------|----------|
+| load               | CPU Load (total or by process) in %                              | Number:Dimensionless| High             | False    |
 | load1              | Load for the last 1 minute                                       | Number              | Medium           | True     |
 | load5              | Load for the last 5 minutes                                      | Number              | Medium           | True     |
 | load15             | Load for the last 15 minutes                                     | Number              | Medium           | True     |
-| threads            | Number of threads currently running                              | Number              | Medium           | True     |
+| threads            | Number of threads currently running or for the process           | Number              | Medium           | True     |
+| path               | The full path of the process                                     | String              | Low              | False    |
 | uptime             | System uptime (time after start) in minutes                      | Number              | Medium           | True     |
-| name               | Name of the device                                               | String              | Low              | False    |
+| name               | Name of the device or process                                    | String              | Low              | False    |
 | available          | Available size in MB                                             | Number              | High             | False    |
 | used               | Used size in MB                                                  | Number              | High             | False    |
 | total              | Total size in MB                                                 | Number              | Low              | False    |
@@ -147,6 +157,9 @@ It has the following options:
 -   **High**
 -   **Medium**
 -   **Low**
+
+The ''load'' channel will update total or by process CPU load at the frequency defined by the priority update interval, by default high priority, every second.
+The value corresponds to the average CPU load over the interval.
 
 Channels from group ''process'' have additional configuration parameter - PID (Process identifier).
 This parameter is used as 'deviceIndex' and defines which process is tracked from the channel.
@@ -190,6 +203,7 @@ Number Network_PacketsReceived    "Packets received"    <returnpipe>     { chann
 /* CPU information*/
 String CPU_Name                   "Name"                <none>           { channel="systeminfo:computer:work:cpu#name" }
 String CPU_Description            "Description"         <none>           { channel="systeminfo:computer:work:cpu#description" }
+Number CPU_Load                   "CPU Load"            <none>           { channel="systeminfo:computer:work:cpu#load" }
 Number CPU_Load1                  "Load (1 min)"        <none>           { channel="systeminfo:computer:work:cpu#load1" }
 Number CPU_Load5                  "Load (5 min)"        <none>           { channel="systeminfo:computer:work:cpu#load5" }
 Number CPU_Load15                 "Load (15 min)"       <none>           { channel="systeminfo:computer:work:cpu#load15" }
@@ -237,6 +251,13 @@ String Display_Description        "Display description" <screen>         { chann
 Number Sensor_CPUTemp             "CPU Temperature"     <temperature>    { channel="systeminfo:computer:work:sensors#cpuTemp" }
 Number Sensor_CPUVoltage          "CPU Voltage"         <energy>         { channel="systeminfo:computer:work:sensors#cpuVoltage" }
 Number Sensor_FanSpeed            "Fan speed"           <fan>            { channel="systeminfo:computer:work:sensors#fanSpeed" }
+
+/* Current process information*/
+Number Current_process_load       "Load"                <none>           { channel="systeminfo:computer:work:currentProcess#load" }
+Number Current_process_used       "Used"                <none>           { channel="systeminfo:computer:work:currentProcess#used" }
+String Current_process_name       "Name"                <none>           { channel="systeminfo:computer:work:currentProcess#name" }
+Number Current_process_threads    "Threads"             <none>           { channel="systeminfo:computer:work:currentProcess#threads" }
+String Current_process_path       "Path"                <none>           { channel="systeminfo:computer:work:currentProcess#path" }
 
 /* Process information*/
 Number Process_load               "Load"                <none>           { channel="systeminfo:computer:work:process#load" }
@@ -306,6 +327,13 @@ sitemap systeminfo label="Systeminfo" {
         Default item=Sensor_CPUTemp
         Default item=Sensor_CPUVoltage
         Default item=Sensor_FanSpeed
+    }
+    Frame label="Current Process Information" {
+        Default item=Current_process_load
+        Default item=Current_process_used
+        Default item=Current_process_name
+        Default item=Current_process_threads
+        Default item=Current_process_path
     }
     Frame label="Process Information" {
         Default item=Process_load

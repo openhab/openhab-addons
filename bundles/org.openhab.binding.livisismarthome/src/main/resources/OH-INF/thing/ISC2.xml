@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="livisismarthome"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="ISC2">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>In Wall Smart Controller (ISC2)</label>
+		<description>A smart controller with two push buttons.</description>
+
+		<channels>
+			<channel id="button1" typeId="system.button"/>
+			<channel id="button2" typeId="system.button"/>
+			<channel id="button1Count" typeId="pushButtonCounter"/>
+			<channel id="button2Count" typeId="pushButtonCounter"/>
+			<channel id="batteryLow" typeId="system.low-battery"/>
+		</channels>
+
+		<representation-property>id</representation-property>
+
+		<config-description-ref uri="thing-type:livisismarthome:config"/>
+	</thing-type>
+</thing:thing-descriptions>

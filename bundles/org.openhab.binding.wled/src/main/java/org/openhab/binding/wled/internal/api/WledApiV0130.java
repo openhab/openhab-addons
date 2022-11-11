@@ -15,10 +15,12 @@ package org.openhab.binding.wled.internal.api;
 import static org.openhab.binding.wled.internal.WLedBindingConstants.*;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.wled.internal.WLedHandler;
+import org.openhab.binding.wled.internal.WledState.SegmentState;
+import org.openhab.binding.wled.internal.handlers.WLedBridgeHandler;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Channel;
 
@@ -31,7 +33,7 @@ import org.openhab.core.thing.Channel;
 @NonNullByDefault
 public class WledApiV0130 extends WledApiV0110 {
 
-    public WledApiV0130(WLedHandler handler, HttpClient httpClient) {
+    public WledApiV0130(WLedBridgeHandler handler, HttpClient httpClient) {
         super(handler, httpClient);
     }
 
@@ -48,12 +50,24 @@ public class WledApiV0130 extends WledApiV0110 {
         if (channel != null) {
             removeChannels.add(channel);
         }
-        handler.removeChannels(removeChannels);
+        if (!removeChannels.isEmpty()) {
+            handler.removeBridgeChannels(removeChannels);
+        }
     }
 
     @Override
-    protected void processState() throws ApiException {
-        super.processState();
+    protected void processState(int segmentIndex) throws ApiException {
+        super.processState(segmentIndex);
         handler.update(CHANNEL_PLAYLISTS, new StringType(Integer.toString(state.stateResponse.pl)));
+    }
+
+    @Override
+    public List<String> getSegmentNames() {
+        // segment names was only first added in 0.13.0 firmware
+        List<String> segmentNames = new ArrayList<>(state.stateResponse.seg.length);
+        for (SegmentState state : state.stateResponse.seg) {
+            segmentNames.add(state.n);
+        }
+        return segmentNames;
     }
 }

@@ -130,11 +130,6 @@ public class GlobalCacheHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command == null) {
-            logger.warn("Command passed to handler for thing {} is null", thingID());
-            return;
-        }
-
         // Don't try to send command if the device is not online
         if (!isOnline()) {
             logger.debug("Can't handle command {} because handler for thing {} is not ONLINE", command, thingID());
@@ -538,12 +533,10 @@ public class GlobalCacheHandler extends BaseThingHandler {
          */
         private void writeCommandToDevice(RequestMessage requestMessage) throws IOException {
             logger.trace("Processor for thing {} writing command to device", thingID());
-
             if (connectionManager.getCommandOut() == null) {
                 logger.debug("Error writing to device because output stream object is null");
                 return;
             }
-
             byte[] deviceCommand = (requestMessage.getDeviceCommand() + '\r').getBytes();
             connectionManager.getCommandOut().write(deviceCommand);
             connectionManager.getCommandOut().flush();
@@ -554,14 +547,16 @@ public class GlobalCacheHandler extends BaseThingHandler {
          */
         private String readReplyFromDevice(RequestMessage requestMessage) throws IOException {
             logger.trace("Processor for thing {} reading reply from device", thingID());
-
             if (connectionManager.getCommandIn() == null) {
                 logger.debug("Error reading from device because input stream object is null");
                 return "ERROR: BufferedReader is null!";
             }
-
-            logger.trace("Processor for thing {} reading response from device", thingID());
-            return connectionManager.getCommandIn().readLine().trim();
+            String reply = connectionManager.getCommandIn().readLine();
+            if (reply == null) {
+                logger.debug("Read of reply from device returned null!");
+                return "ERROR: reply is null!";
+            }
+            return reply.trim();
         }
 
         /*
@@ -573,11 +568,9 @@ public class GlobalCacheHandler extends BaseThingHandler {
                 logger.warn("Can't send serial command; output stream is null!");
                 return;
             }
-
             byte[] deviceCommand;
             deviceCommand = URLDecoder.decode(requestMessage.getDeviceCommand(), StandardCharsets.ISO_8859_1)
                     .getBytes(StandardCharsets.ISO_8859_1);
-
             logger.debug("Writing decoded deviceCommand byte array: {}", getAsHexString(deviceCommand));
             out.write(deviceCommand);
         }

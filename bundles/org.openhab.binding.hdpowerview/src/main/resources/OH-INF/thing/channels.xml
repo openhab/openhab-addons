@@ -8,6 +8,7 @@
 		<item-type>Rollershutter</item-type>
 		<label>Position</label>
 		<description>The vertical position of the shade</description>
+		<category>blinds</category>
 	</channel-type>
 
 	<channel-type id="shade-vane">
@@ -49,6 +50,14 @@
 		<label>Battery Voltage</label>
 		<description>Battery voltage reported by the shade</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="rssi" advanced="true">
+		<item-type>Number:Power</item-type>
+		<label>RSSI</label>
+		<description>Received Signal Strength Indicator</description>
+		<category>QualityOfService</category>
+		<state readOnly="true" pattern="%d %unit%"></state>
 	</channel-type>
 
 	<channel-type id="repeater-identify">

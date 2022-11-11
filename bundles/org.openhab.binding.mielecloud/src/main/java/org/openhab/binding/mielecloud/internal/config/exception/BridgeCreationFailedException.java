@@ -22,4 +22,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public final class BridgeCreationFailedException extends RuntimeException {
     private static final long serialVersionUID = -6150154333256723312L;
+
+    public BridgeCreationFailedException(String message) {
+        super(message);
+    }
+
+    public BridgeCreationFailedException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

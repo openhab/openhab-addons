@@ -35,15 +35,18 @@ public class DaliBindingConstants {
     public static final ThingTypeUID THING_TYPE_DEVICE = new ThingTypeUID(BINDING_ID, "device");
     public static final ThingTypeUID THING_TYPE_GROUP = new ThingTypeUID(BINDING_ID, "group");
     public static final ThingTypeUID THING_TYPE_RGB = new ThingTypeUID(BINDING_ID, "rgb");
-
-    public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = new HashSet<>(
-            Arrays.asList(THING_TYPE_DEVICE, THING_TYPE_GROUP, THING_TYPE_RGB));
+    public static final ThingTypeUID THING_TYPE_DEVICE_DT8 = new ThingTypeUID(BINDING_ID, "device-dt8");
+    public static final ThingTypeUID THING_TYPE_GROUP_DT8 = new ThingTypeUID(BINDING_ID, "group-dt8");
+    public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = new HashSet<>(Arrays
+            .asList(THING_TYPE_DEVICE, THING_TYPE_GROUP, THING_TYPE_RGB, THING_TYPE_DEVICE_DT8, THING_TYPE_GROUP_DT8));
 
     public static final String CHANNEL_DIM_AT_FADE_RATE = "dimAtFadeRate";
     public static final String CHANNEL_DIM_IMMEDIATELY = "dimImmediately";
     public static final String CHANNEL_COLOR = "color";
+    public static final String CHANNEL_COLOR_TEMPERATURE = "color-temperature-abs";
 
     public static final String TARGET_ID = "targetId";
+    public static final String READ_DEVICE_TARGET_ID = "readDeviceTargetId";
     public static final String TARGET_ID_R = "targetIdR";
     public static final String TARGET_ID_G = "targetIdG";
     public static final String TARGET_ID_B = "targetIdB";

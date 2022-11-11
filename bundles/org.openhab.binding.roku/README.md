@@ -83,6 +83,7 @@ InputHDMI3
 InputHDMI4  
 InputAV1  
 PowerOff  
+PowerOn  
 
 ## Full Example
 

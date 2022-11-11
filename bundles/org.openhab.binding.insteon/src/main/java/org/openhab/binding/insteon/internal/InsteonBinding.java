@@ -117,6 +117,7 @@ public class InsteonBinding {
     private PortListener portListener = new PortListener();
     private int devicePollIntervalMilliseconds = 300000;
     private int deadDeviceTimeout = -1;
+    private boolean driverInitialized = false;
     private int messagesReceived = 0;
     private boolean isActive = false; // state of binding
     private int x10HouseUnit = -1;
@@ -165,6 +166,10 @@ public class InsteonBinding {
 
     public Driver getDriver() {
         return driver;
+    }
+
+    public boolean isDriverInitialized() {
+        return driverInitialized;
     }
 
     public boolean startPolling() {
@@ -320,6 +325,7 @@ public class InsteonBinding {
             } else {
                 if (driver.isModemDBComplete() && !addr.isX10()) {
                     logger.warn("device {} not found in the modem database. Did you forget to link?", addr);
+                    handler.deviceNotLinked(addr);
                 }
             }
             return dbes.size();
@@ -488,6 +494,7 @@ public class InsteonBinding {
                     if (!dbes.containsKey(a)) {
                         if (!a.isX10()) {
                             logger.warn("device {} not found in the modem database. Did you forget to link?", a);
+                            handler.deviceNotLinked(a);
                         }
                     } else {
                         if (!dev.hasModemDBEntry()) {
@@ -517,6 +524,8 @@ public class InsteonBinding {
             if (!missing.isEmpty()) {
                 handler.addMissingDevices(missing);
             }
+
+            driverInitialized = true;
         }
 
         @Override

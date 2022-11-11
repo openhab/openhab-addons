@@ -10,14 +10,10 @@
 		<description>The Gardena smart system account</description>
 
 		<config-description>
-			<parameter name="email" type="text" required="true">
-				<label>Email</label>
-				<description>Email address for logging in to Gardena smart system</description>
-			</parameter>
-			<parameter name="password" type="text" required="true">
-				<label>Password</label>
+			<parameter name="apiSecret" type="text" required="true">
+				<label>API Secret</label>
 				<context>password</context>
-				<description>Password for logging in to Gardena smart system</description>
+				<description>The Gardena smart system integration API secret</description>
 			</parameter>
 			<parameter name="apiKey" type="text" required="true">
 				<label>API Key</label>

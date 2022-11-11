@@ -13,8 +13,10 @@
 				"channelType": "system:battery-level",
 				"type": "Number",
 				"refresh": true,
+				"customRefreshCommand": "get_value[\"battery\"]",
 				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"readmeComment": "The device with firmware \"4.1.8_9999\" stops recognizing parameter \"battery\" in \"get_value\" command. The \"battery\" value request was extracted to separate command in order to keep backward compatibility to the devices with older firmware."
 			},
 			{
 				"property": "pm25",

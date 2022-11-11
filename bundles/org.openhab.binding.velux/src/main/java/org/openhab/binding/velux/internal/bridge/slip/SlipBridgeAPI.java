@@ -104,6 +104,7 @@ class SlipBridgeAPI implements BridgeAPI {
     private final SetProductLimitation slipSetProductLimitation = new SCsetLimitation();
     private final SetSceneVelocity slipSetSceneVelocity = new SCsetSceneVelocity();
     private final RunReboot slipRunReboot = new SCrunReboot();
+    private final GetProduct slipGetProductStatus = new SCgetProductStatus();
 
     /**
      * Constructor.
@@ -216,5 +217,10 @@ class SlipBridgeAPI implements BridgeAPI {
     @Override
     public @Nullable RunReboot runReboot() {
         return slipRunReboot;
+    }
+
+    @Override
+    public @Nullable GetProduct getProductStatus() {
+        return slipGetProductStatus;
     }
 }

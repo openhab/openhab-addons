@@ -680,88 +680,93 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
             String artworkUrl = null;
 
             for (KeyValue entry : decodeKeyValueResponse(messageParts)) {
-                // Parameter Power
-                if ("power".equals(entry.key)) {
-                    final boolean power = "1".equals(entry.value);
-                    updatePlayer(listener -> listener.powerChangeEvent(mac, power));
-                }
-                // Parameter Volume
-                else if ("mixer volume".equals(entry.key)) {
-                    final int volume = (int) Double.parseDouble(entry.value);
-                    updatePlayer(listener -> listener.absoluteVolumeChangeEvent(mac, volume));
-                }
-                // Parameter Mode
-                else if ("mode".equals(entry.key)) {
-                    updatePlayer(listener -> listener.modeChangeEvent(mac, entry.value));
-                }
-                // Parameter Playing Time
-                else if ("time".equals(entry.key)) {
-                    final int time = (int) Double.parseDouble(entry.value);
-                    updatePlayer(listener -> listener.currentPlayingTimeEvent(mac, time));
-                }
-                // Parameter duration
-                else if ("duration".equals(entry.key)) {
-                    final int duration = (int) Double.parseDouble(entry.value);
-                    updatePlayer(listener -> listener.durationEvent(mac, duration));
-                }
-                // Parameter Playing Playlist Index
-                else if ("playlist_cur_index".equals(entry.key)) {
-                    final int index = (int) Double.parseDouble(entry.value);
-                    updatePlayer(listener -> listener.currentPlaylistIndexEvent(mac, index));
-                }
-                // Parameter Playlist Number Tracks
-                else if ("playlist_tracks".equals(entry.key)) {
-                    final int track = (int) Double.parseDouble(entry.value);
-                    updatePlayer(listener -> listener.numberPlaylistTracksEvent(mac, track));
-                }
-                // Parameter Playlist Repeat Mode
-                else if ("playlist repeat".equals(entry.key)) {
-                    final int repeat = (int) Double.parseDouble(entry.value);
-                    updatePlayer(listener -> listener.currentPlaylistRepeatEvent(mac, repeat));
-                }
-                // Parameter Playlist Shuffle Mode
-                else if ("playlist shuffle".equals(entry.key)) {
-                    final int shuffle = (int) Double.parseDouble(entry.value);
-                    updatePlayer(listener -> listener.currentPlaylistShuffleEvent(mac, shuffle));
-                }
-                // Parameter Title
-                else if ("title".equals(entry.key)) {
-                    updatePlayer(listener -> listener.titleChangeEvent(mac, entry.value));
-                }
-                // Parameter Remote Title (radio)
-                else if ("remote_title".equals(entry.key)) {
-                    remoteTitle = entry.value;
-                }
-                // Parameter Artist
-                else if ("artist".equals(entry.key)) {
-                    artist = entry.value;
-                }
-                // Parameter Album
-                else if ("album".equals(entry.key)) {
-                    album = entry.value;
-                }
-                // Parameter Genre
-                else if ("genre".equals(entry.key)) {
-                    genre = entry.value;
-                }
-                // Parameter Year
-                else if ("year".equals(entry.key)) {
-                    year = entry.value;
-                }
-                // Parameter artwork_url contains url to cover art
-                else if ("artwork_url".equals(entry.key)) {
-                    artworkUrl = entry.value;
-                }
-                // When coverart is "1" coverid will contain a unique coverart id
-                else if ("coverart".equals(entry.key)) {
-                    coverart = "1".equals(entry.value);
-                }
-                // Id for covert art (only valid when coverart is "1")
-                else if ("coverid".equals(entry.key)) {
-                    coverid = entry.value;
-                } else {
-                    // Added to be able to see additional status message types
-                    logger.trace("Unhandled status message type '{}' (value '{}')", entry.key, entry.value);
+                try {
+                    // Parameter Power
+                    if ("power".equals(entry.key)) {
+                        final boolean power = "1".equals(entry.value);
+                        updatePlayer(listener -> listener.powerChangeEvent(mac, power));
+                    }
+                    // Parameter Volume
+                    else if ("mixer volume".equals(entry.key)) {
+                        final int volume = (int) Double.parseDouble(entry.value);
+                        updatePlayer(listener -> listener.absoluteVolumeChangeEvent(mac, volume));
+                    }
+                    // Parameter Mode
+                    else if ("mode".equals(entry.key)) {
+                        updatePlayer(listener -> listener.modeChangeEvent(mac, entry.value));
+                    }
+                    // Parameter Playing Time
+                    else if ("time".equals(entry.key) && !"N/A".equals(entry.value)) {
+                        final int time = (int) Double.parseDouble(entry.value);
+                        updatePlayer(listener -> listener.currentPlayingTimeEvent(mac, time));
+                    }
+                    // Parameter duration
+                    else if ("duration".equals(entry.key)) {
+                        final int duration = (int) Double.parseDouble(entry.value);
+                        updatePlayer(listener -> listener.durationEvent(mac, duration));
+                    }
+                    // Parameter Playing Playlist Index
+                    else if ("playlist_cur_index".equals(entry.key)) {
+                        final int index = (int) Double.parseDouble(entry.value);
+                        updatePlayer(listener -> listener.currentPlaylistIndexEvent(mac, index));
+                    }
+                    // Parameter Playlist Number Tracks
+                    else if ("playlist_tracks".equals(entry.key)) {
+                        final int track = (int) Double.parseDouble(entry.value);
+                        updatePlayer(listener -> listener.numberPlaylistTracksEvent(mac, track));
+                    }
+                    // Parameter Playlist Repeat Mode
+                    else if ("playlist repeat".equals(entry.key)) {
+                        final int repeat = (int) Double.parseDouble(entry.value);
+                        updatePlayer(listener -> listener.currentPlaylistRepeatEvent(mac, repeat));
+                    }
+                    // Parameter Playlist Shuffle Mode
+                    else if ("playlist shuffle".equals(entry.key)) {
+                        final int shuffle = (int) Double.parseDouble(entry.value);
+                        updatePlayer(listener -> listener.currentPlaylistShuffleEvent(mac, shuffle));
+                    }
+                    // Parameter Title
+                    else if ("title".equals(entry.key)) {
+                        updatePlayer(listener -> listener.titleChangeEvent(mac, entry.value));
+                    }
+                    // Parameter Remote Title (radio)
+                    else if ("remote_title".equals(entry.key)) {
+                        remoteTitle = entry.value;
+                    }
+                    // Parameter Artist
+                    else if ("artist".equals(entry.key)) {
+                        artist = entry.value;
+                    }
+                    // Parameter Album
+                    else if ("album".equals(entry.key)) {
+                        album = entry.value;
+                    }
+                    // Parameter Genre
+                    else if ("genre".equals(entry.key)) {
+                        genre = entry.value;
+                    }
+                    // Parameter Year
+                    else if ("year".equals(entry.key)) {
+                        year = entry.value;
+                    }
+                    // Parameter artwork_url contains url to cover art
+                    else if ("artwork_url".equals(entry.key)) {
+                        artworkUrl = entry.value;
+                    }
+                    // When coverart is "1" coverid will contain a unique coverart id
+                    else if ("coverart".equals(entry.key)) {
+                        coverart = "1".equals(entry.value);
+                    }
+                    // Id for covert art (only valid when coverart is "1")
+                    else if ("coverid".equals(entry.key)) {
+                        coverid = entry.value;
+                    } else {
+                        // Added to be able to see additional status message types
+                        logger.trace("Unhandled status message type '{}' (value '{}')", entry.key, entry.value);
+                    }
+                } catch (NumberFormatException e) {
+                    // Skip this key/value
+                    logger.debug("Cannot parse number in status message: key '{}', value '{}'", entry.key, entry.value);
                 }
             }
 

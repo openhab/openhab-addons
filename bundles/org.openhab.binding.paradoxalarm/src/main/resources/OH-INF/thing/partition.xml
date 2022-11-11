@@ -66,91 +66,91 @@
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="readyToArm">
-		<item-type>switch</item-type>
+		<item-type>Switch</item-type>
 		<label>Partition Ready To Arm</label>
 		<description>Partition ready to arm</description>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="inExitDelay">
-		<item-type>switch</item-type>
+		<item-type>Switch</item-type>
 		<label>Partition In Exit Delay</label>
 		<description>Partition in Exit Delay</description>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="inEntryDelay">
-		<item-type>switch</item-type>
+		<item-type>Switch</item-type>
 		<label>Partition In Entry Delay</label>
 		<description>Partition in Entry Delay</description>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="inTrouble">
-		<item-type>switch</item-type>
+		<item-type>Switch</item-type>
 		<label>Partition In Trouble</label>
 		<description>Partition in Trouble</description>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="alarmInMemory">
-		<item-type>switch</item-type>
+		<item-type>Switch</item-type>
 		<label>Partition Has Alarm In Memory</label>
 		<description>Partition has Alarm in Memory</description>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="zoneBypass">
-		<item-type>switch</item-type>
+		<item-type>Switch</item-type>
 		<label>Partition Has Zone Bypass</label>
 		<description>Partition has Zone Bypass</description>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="zoneInTamperTrouble">
-		<item-type>switch</item-type>
+		<item-type>Switch</item-type>
 		<label>Partition Has Zone In Tamper Trouble</label>
 		<description>Partition has in Tamper Trouble</description>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="zoneInLowBatteryTrouble">
-		<item-type>switch</item-type>
+		<item-type>Switch</item-type>
 		<label>Partition Has Zone In Low Battery Trouble</label>
 		<description>Partition has in Low Battery Trouble</description>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="zoneInFireLoopTrouble">
-		<item-type>switch</item-type>
+		<item-type>Switch</item-type>
 		<label>Partition Has Zone In Fire Loop Trouble</label>
 		<description>Partition has in Fire Loop Trouble</description>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="zoneInSupervisionTrouble">
-		<item-type>switch</item-type>
+		<item-type>Switch</item-type>
 		<label>Partition Has Zone In Supervision Trouble</label>
 		<description>Partition has in Supervision Trouble</description>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="stayInstantReady">
-		<item-type>switch</item-type>
+		<item-type>Switch</item-type>
 		<label>Partition Is Stay Instant Ready</label>
 		<description>Partition is Stay Instant Ready</description>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="forceReady">
-		<item-type>switch</item-type>
+		<item-type>Switch</item-type>
 		<label>Partition Is Force Ready</label>
 		<description>Partition is Force Ready</description>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="bypassReady">
-		<item-type>switch</item-type>
+		<item-type>Switch</item-type>
 		<label>Partition Is Bypass Ready</label>
 		<description>Partition is Bypass Ready</description>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="inhibitReady">
-		<item-type>switch</item-type>
+		<item-type>Switch</item-type>
 		<label>Partition Is Inhibit Ready</label>
 		<description>Partition is Inhibit Ready</description>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="allZonesClosed">
-		<item-type>contact</item-type>
+		<item-type>Contact</item-type>
 		<label>Partition Has All Zones Closed</label>
 		<description>Partition has All Zones closed</description>
 		<state readOnly="true" pattern="%s"/>

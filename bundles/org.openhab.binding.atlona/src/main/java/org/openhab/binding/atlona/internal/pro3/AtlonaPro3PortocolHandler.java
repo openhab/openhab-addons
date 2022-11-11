@@ -199,7 +199,7 @@ class AtlonaPro3PortocolHandler {
         String response;
         try {
             response = callback.getResponse();
-            if (!response.equals("")) {
+            if (!"".equals(response)) {
                 logger.debug("Atlona protocol violation - didn't start with an inital empty response: '{}'", response);
             }
         } catch (Exception e) {
@@ -223,13 +223,13 @@ class AtlonaPro3PortocolHandler {
 
         // We should have been presented with a new "\r\nLogin: "
         response = callback.getResponse();
-        if (!response.equals("")) {
+        if (!"".equals(response)) {
             logger.debug("Atlona protocol violation - didn't start with an inital empty response: '{}'", response);
         }
 
         // Get the new "Login: " prompt response
         response = callback.getResponse();
-        if (response.equals(RSP_LOGIN)) {
+        if (RSP_LOGIN.equals(response)) {
             if (config.getUserName() == null || config.getUserName().trim().length() == 0) {
                 return "Atlona PRO3 has enabled Telnet/IP Login but no username was provided in the configuration.";
             }
@@ -244,12 +244,12 @@ class AtlonaPro3PortocolHandler {
         response = callback.getResponse();
 
         // Burn the empty response if we got one (
-        if (response.equals("")) {
+        if ("".equals(response)) {
             response = callback.getResponse();
         }
-        if (!response.equals(RSP_PASSWORD)) {
+        if (!RSP_PASSWORD.equals(response)) {
             // If we got another login response, username wasn't valid
-            if (response.equals(RSP_LOGIN)) {
+            if (RSP_LOGIN.equals(response)) {
                 return "Username " + config.getUserName() + " is not a valid user on the atlona";
             }
             return "Atlona protocol violation - invalid response to a login: " + response;
@@ -270,7 +270,7 @@ class AtlonaPro3PortocolHandler {
         // Send an invalid command to see if we get the failed command response
 
         // First make sure we had an empty response (the "\r\n" part)
-        if (!response.equals("")) {
+        if (!"".equals(response)) {
             logger.debug("Atlona protocol violation - not an empty response after password: '{}'", response);
         }
 
@@ -307,7 +307,7 @@ class AtlonaPro3PortocolHandler {
         String response;
         try {
             response = callback.getResponse();
-            if (!response.equals("")) {
+            if (!"".equals(response)) {
                 logger.debug("Atlona protocol violation - didn't start with an inital empty response: '{}'", response);
             }
         } catch (Exception e) {
@@ -335,7 +335,7 @@ class AtlonaPro3PortocolHandler {
 
             // Check for an empty response after the login prompt (the "\r\n" part)
             response = callback.getResponse();
-            if (!response.equals("")) {
+            if (!"".equals(response)) {
                 logger.debug("Atlona protocol violation - not an empty response after password: '{}'", response);
             }
 
@@ -907,7 +907,7 @@ class AtlonaPro3PortocolHandler {
                 // could be "off" (if mirror off), "on"/"Out" (with 3rd group representing out)
                 String oper = (m.group(2) == null ? "" : m.group(2).trim()).toLowerCase();
 
-                if (oper.equals("off")) {
+                if ("off".equals(oper)) {
                     callback.stateChanged(AtlonaPro3Utilities.createChannelID(AtlonaPro3Constants.GROUP_MIRROR,
                             hdmiPortNbr, AtlonaPro3Constants.CHANNEL_PORTMIRRORENABLED), OnOffType.OFF);
                 } else {
@@ -1088,7 +1088,7 @@ class AtlonaPro3PortocolHandler {
 
         @Override
         public void responseReceived(String response) {
-            if (response == null || response.isEmpty()) {
+            if (response.isEmpty()) {
                 return;
             }
 

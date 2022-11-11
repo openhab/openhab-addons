@@ -35,14 +35,16 @@ public class NhcAction2 extends NhcAction {
     private final Logger logger = LoggerFactory.getLogger(NhcAction2.class);
 
     private volatile boolean booleanState;
-    private String model;
-    private String technology;
+    private String deviceType;
+    private String deviceTechnology;
+    private String deviceModel;
 
-    NhcAction2(String id, String name, String model, String technology, ActionType type, @Nullable String location,
-            NikoHomeControlCommunication nhcComm) {
+    NhcAction2(String id, String name, String deviceType, String deviceTechnology, String deviceModel,
+            @Nullable String location, ActionType type, NikoHomeControlCommunication nhcComm) {
         super(id, name, type, location, nhcComm);
-        this.model = model;
-        this.technology = technology;
+        this.deviceType = deviceType;
+        this.deviceTechnology = deviceTechnology;
+        this.deviceModel = deviceModel;
     }
 
     /**
@@ -120,7 +122,7 @@ public class NhcAction2 extends NhcAction {
         logger.debug("execute action {} of type {} for {}", command, type, id);
 
         String cmd;
-        if ("flag".equals(model)) {
+        if ("flag".equals(deviceModel)) {
             cmd = NHCON.equals(command) ? NHCTRUE : NHCFALSE;
         } else {
             cmd = command;
@@ -130,16 +132,23 @@ public class NhcAction2 extends NhcAction {
     }
 
     /**
-     * @return model as returned from Niko Home Control
+     * @return type as returned from Niko Home Control
      */
-    public String getModel() {
-        return model;
+    public String getDeviceType() {
+        return deviceType;
     }
 
     /**
      * @return technology as returned from Niko Home Control
      */
-    public String getTechnology() {
-        return technology;
+    public String getDeviceTechnology() {
+        return deviceTechnology;
+    }
+
+    /**
+     * @return model as returned from Niko Home Control
+     */
+    public String getDeviceModel() {
+        return deviceModel;
     }
 }

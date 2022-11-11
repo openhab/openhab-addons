@@ -12,15 +12,11 @@
  */
 package org.openhab.binding.helios.internal;
 
-import static org.openhab.binding.helios.internal.HeliosBindingConstants.*;
+import static org.openhab.binding.helios.internal.HeliosBindingConstants.HELIOS_VARIO_IP_2_21_TYPE;
 
-import java.util.Collections;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.openhab.binding.helios.internal.handler.HeliosHandler221;
-import org.openhab.binding.helios.internal.handler.HeliosHandler27;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -37,8 +33,7 @@ import org.osgi.service.component.annotations.Component;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.helios")
 public class HeliosHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(
-            Stream.of(HELIOS_VARIO_IP_2_7_TYPE, HELIOS_VARIO_IP_2_21_TYPE).collect(Collectors.toSet()));
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(HELIOS_VARIO_IP_2_21_TYPE);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -48,10 +43,6 @@ public class HeliosHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-
-        if (thingTypeUID.equals(HELIOS_VARIO_IP_2_7_TYPE)) {
-            return new HeliosHandler27(thing);
-        }
 
         if (thingTypeUID.equals(HELIOS_VARIO_IP_2_21_TYPE)) {
             return new HeliosHandler221(thing);

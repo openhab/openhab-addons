@@ -17,6 +17,7 @@ import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.time.Duration;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -32,6 +33,9 @@ import tuwien.auto.calimero.knxnetip.KNXnetIPConnection;
 import tuwien.auto.calimero.knxnetip.KNXnetIPRouting;
 import tuwien.auto.calimero.knxnetip.KNXnetIPTunnel;
 import tuwien.auto.calimero.knxnetip.KNXnetIPTunnel.TunnelingLayer;
+import tuwien.auto.calimero.knxnetip.SecureConnection;
+import tuwien.auto.calimero.knxnetip.TcpConnection;
+import tuwien.auto.calimero.knxnetip.TcpConnection.SecureSession;
 import tuwien.auto.calimero.link.KNXNetworkLink;
 import tuwien.auto.calimero.link.KNXNetworkLinkIP;
 import tuwien.auto.calimero.link.medium.KNXMediumSettings;
@@ -46,23 +50,43 @@ import tuwien.auto.calimero.link.medium.TPSettings;
 @NonNullByDefault
 public class IPClient extends AbstractKNXClient {
 
+    public enum IpConnectionType {
+        TUNNEL,
+        ROUTER,
+        SECURE_TUNNEL,
+        SECURE_ROUTER
+    };
+
     private final Logger logger = LoggerFactory.getLogger(IPClient.class);
 
     private static final String MODE_ROUTER = "ROUTER";
     private static final String MODE_TUNNEL = "TUNNEL";
+    private static final String MODE_SECURE_ROUTER = "SECURE ROUTER";
+    private static final String MODE_SECURE_TUNNEL = "SECURE TUNNEL";
+    private static final long PAUSE_ON_TCP_SESSION_CLOSE_MS = 1000;
 
-    private final int ipConnectionType;
+    private final IpConnectionType ipConnectionType;
     private final String ip;
     private final String localSource;
     private final int port;
     @Nullable
     private final InetSocketAddress localEndPoint;
     private final boolean useNAT;
+    private final byte[] secureRoutingBackboneGroupKey;
+    private final long secureRoutingLatencyToleranceMs;
+    private final byte[] secureTunnelDevKey;
+    private final int secureTunnelUser;
+    private final byte[] secureTunnelUserKey;
+    private final ThingUID thingUID;
 
-    public IPClient(int ipConnectionType, String ip, String localSource, int port,
-            @Nullable InetSocketAddress localEndPoint, boolean useNAT, int autoReconnectPeriod, ThingUID thingUID,
-            int responseTimeout, int readingPause, int readRetriesLimit, ScheduledExecutorService knxScheduler,
-            StatusUpdateCallback statusUpdateCallback) {
+    @Nullable
+    SecureSession tcpSession;
+
+    public IPClient(IpConnectionType ipConnectionType, String ip, String localSource, int port,
+            @Nullable InetSocketAddress localEndPoint, boolean useNAT, int autoReconnectPeriod,
+            byte[] secureRoutingBackboneGroupKey, long secureRoutingLatencyToleranceMs, byte[] secureTunnelDevKey,
+            int secureTunnelUser, byte[] secureTunnelUserKey, ThingUID thingUID, int responseTimeout, int readingPause,
+            int readRetriesLimit, ScheduledExecutorService knxScheduler, StatusUpdateCallback statusUpdateCallback) {
         super(autoReconnectPeriod, thingUID, responseTimeout, readingPause, readRetriesLimit, knxScheduler,
                 statusUpdateCallback);
         this.ipConnectionType = ipConnectionType;
@@ -71,6 +95,13 @@ public class IPClient extends AbstractKNXClient {
         this.port = port;
         this.localEndPoint = localEndPoint;
         this.useNAT = useNAT;
+        this.secureRoutingBackboneGroupKey = secureRoutingBackboneGroupKey;
+        this.secureRoutingLatencyToleranceMs = secureRoutingLatencyToleranceMs;
+        this.secureTunnelDevKey = secureTunnelDevKey;
+        this.secureTunnelUser = secureTunnelUser;
+        this.secureTunnelUserKey = secureTunnelUserKey;
+        this.thingUID = thingUID;
+        tcpSession = null;
     }
 
     @Override
@@ -82,23 +113,44 @@ public class IPClient extends AbstractKNXClient {
     }
 
     private String connectionTypeToString() {
-        return ipConnectionType == CustomKNXNetworkLinkIP.ROUTING ? MODE_ROUTER : MODE_TUNNEL;
+        if (ipConnectionType == IpConnectionType.ROUTER) {
+            return MODE_ROUTER;
+        }
+        if (ipConnectionType == IpConnectionType.TUNNEL) {
+            return MODE_TUNNEL;
+        }
+        if (ipConnectionType == IpConnectionType.SECURE_ROUTER) {
+            return MODE_SECURE_ROUTER;
+        }
+        if (ipConnectionType == IpConnectionType.SECURE_TUNNEL) {
+            return MODE_SECURE_TUNNEL;
+        }
+        return "unknown connection type";
     }
 
-    private KNXNetworkLinkIP createKNXNetworkLinkIP(int serviceMode, @Nullable InetSocketAddress localEP,
-            @Nullable InetSocketAddress remoteEP, boolean useNAT, KNXMediumSettings settings)
-            throws KNXException, InterruptedException {
+    private KNXNetworkLinkIP createKNXNetworkLinkIP(IpConnectionType ipConnectionType,
+            @Nullable InetSocketAddress localEP, @Nullable InetSocketAddress remoteEP, boolean useNAT,
+            KNXMediumSettings settings) throws KNXException, InterruptedException {
+        // Calimero service mode, ROUTING for both classic and secure routing
+        int serviceMode = CustomKNXNetworkLinkIP.ROUTING;
+        if (ipConnectionType == IpConnectionType.TUNNEL) {
+            serviceMode = CustomKNXNetworkLinkIP.TUNNELING;
+        } else if (ipConnectionType == IpConnectionType.SECURE_TUNNEL) {
+            serviceMode = CustomKNXNetworkLinkIP.TUNNELINGV2;
+        }
+
         // creating the connection here as a workaround for
         // https://github.com/calimero-project/calimero-core/issues/57
-        KNXnetIPConnection conn = getConnection(serviceMode, localEP, remoteEP, useNAT);
+        KNXnetIPConnection conn = getConnection(ipConnectionType, localEP, remoteEP, useNAT);
         return new CustomKNXNetworkLinkIP(serviceMode, conn, settings);
     }
 
-    private KNXnetIPConnection getConnection(int serviceMode, @Nullable InetSocketAddress localEP,
+    private KNXnetIPConnection getConnection(IpConnectionType ipConnectionType, @Nullable InetSocketAddress localEP,
             @Nullable InetSocketAddress remoteEP, boolean useNAT) throws KNXException, InterruptedException {
         KNXnetIPConnection conn;
-        switch (serviceMode) {
-            case CustomKNXNetworkLinkIP.TUNNELING:
+        switch (ipConnectionType) {
+            case TUNNEL:
+            case SECURE_TUNNEL:
                 InetSocketAddress local = localEP;
                 if (local == null) {
                     try {
@@ -107,9 +159,23 @@ public class IPClient extends AbstractKNXClient {
                         throw new KNXException("no local host available");
                     }
                 }
-                conn = new KNXnetIPTunnel(TunnelingLayer.LinkLayer, local, remoteEP, useNAT);
+                if (ipConnectionType == IpConnectionType.SECURE_TUNNEL) {
+                    logger.trace("creating new TCP connection");
+                    if (tcpSession != null) {
+                        logger.debug("tcpSession might still be open");
+                    }
+                    // using .clone for the keys is essential - otherwise Calimero clears the array and a reconnect will
+                    // fail
+                    tcpSession = TcpConnection.newTcpConnection(localEP, remoteEP).newSecureSession(secureTunnelUser,
+                            secureTunnelUserKey.clone(), secureTunnelDevKey.clone());
+                    conn = SecureConnection.newTunneling(TunnelingLayer.LinkLayer, tcpSession,
+                            new IndividualAddress(localSource));
+                } else {
+                    conn = new KNXnetIPTunnel(TunnelingLayer.LinkLayer, local, remoteEP, useNAT);
+                }
                 break;
-            case CustomKNXNetworkLinkIP.ROUTING:
+            case ROUTER:
+            case SECURE_ROUTER:
                 NetworkInterface netIf = null;
                 if (localEP != null && !localEP.isUnresolved()) {
                     try {
@@ -119,11 +185,39 @@ public class IPClient extends AbstractKNXClient {
                     }
                 }
                 final InetAddress mcast = remoteEP != null ? remoteEP.getAddress() : null;
-                conn = new KNXnetIPRouting(netIf, mcast);
+                if (ipConnectionType == IpConnectionType.SECURE_ROUTER) {
+                    conn = SecureConnection.newRouting(netIf, mcast, secureRoutingBackboneGroupKey,
+                            Duration.ofMillis(secureRoutingLatencyToleranceMs));
+                } else {
+                    conn = new KNXnetIPRouting(netIf, mcast);
+                }
                 break;
             default:
                 throw new KNXIllegalArgumentException("unknown service mode");
         }
         return conn;
+    }
+
+    private void closeTcpConnection() {
+        final SecureSession toBeClosed = tcpSession;
+        if (toBeClosed != null) {
+            tcpSession = null;
+            logger.debug("Bridge {} closing TCP connection", thingUID);
+            try {
+                toBeClosed.close();
+                try {
+                    Thread.sleep(PAUSE_ON_TCP_SESSION_CLOSE_MS);
+                } catch (InterruptedException e) {
+                }
+            } catch (Exception e) {
+                logger.debug("closing TCP connection failed: {}", e.getMessage());
+            }
+        }
+    }
+
+    @Override
+    protected void releaseConnection() {
+        closeTcpConnection();
+        super.releaseConnection();
     }
 }

@@ -76,7 +76,7 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
         FilterCriteria criteria = createBaseCriteria();
 
         String queryV1 = instanceV1.createQuery(criteria, RETENTION_POLICY);
-        assertThat(queryV1, equalTo("SELECT \"value\"::field,\"item\"::tag FROM origin.sampleItem;"));
+        assertThat(queryV1, equalTo("SELECT \"value\"::field,\"item\"::tag FROM \"origin\".\"sampleItem\";"));
 
         String queryV2 = instanceV2.createQuery(criteria, RETENTION_POLICY);
         assertThat(queryV2,
@@ -91,7 +91,7 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
         criteria.setOrdering(null);
 
         String queryV1 = instanceV1.createQuery(criteria, RETENTION_POLICY);
-        assertThat(queryV1, equalTo("SELECT \"value\"::field,\"item\"::tag FROM origin./.*/;"));
+        assertThat(queryV1, equalTo("SELECT \"value\"::field,\"item\"::tag FROM \"origin\"./.*/;"));
 
         String queryV2 = instanceV2.createQuery(criteria, RETENTION_POLICY);
         assertThat(queryV2, equalTo("from(bucket:\"origin\")\n\t" + "|> range(start:-100y)"));
@@ -107,7 +107,7 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
 
         String queryV1 = instanceV1.createQuery(criteria, RETENTION_POLICY);
         String expectedQueryV1 = String.format(
-                "SELECT \"value\"::field,\"item\"::tag FROM origin.sampleItem WHERE time >= '%s' AND time <= '%s';",
+                "SELECT \"value\"::field,\"item\"::tag FROM \"origin\".\"sampleItem\" WHERE time >= '%s' AND time <= '%s';",
                 now.toInstant(), tomorrow.toInstant());
         assertThat(queryV1, equalTo(expectedQueryV1));
 
@@ -127,7 +127,8 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
         criteria.setState(new PercentType(90));
 
         String query = instanceV1.createQuery(criteria, RETENTION_POLICY);
-        assertThat(query, equalTo("SELECT \"value\"::field,\"item\"::tag FROM origin.sampleItem WHERE value <= 90;"));
+        assertThat(query,
+                equalTo("SELECT \"value\"::field,\"item\"::tag FROM \"origin\".\"sampleItem\" WHERE value <= 90;"));
 
         String queryV2 = instanceV2.createQuery(criteria, RETENTION_POLICY);
         assertThat(queryV2,
@@ -144,7 +145,8 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
         criteria.setPageSize(10);
 
         String query = instanceV1.createQuery(criteria, RETENTION_POLICY);
-        assertThat(query, equalTo("SELECT \"value\"::field,\"item\"::tag FROM origin.sampleItem LIMIT 10 OFFSET 20;"));
+        assertThat(query,
+                equalTo("SELECT \"value\"::field,\"item\"::tag FROM \"origin\".\"sampleItem\" LIMIT 10 OFFSET 20;"));
 
         String queryV2 = instanceV2.createQuery(criteria, RETENTION_POLICY);
         assertThat(queryV2, equalTo("from(bucket:\"origin\")\n\t" + "|> range(start:-100y)\n\t"
@@ -158,7 +160,8 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
         criteria.setOrdering(FilterCriteria.Ordering.ASCENDING);
 
         String query = instanceV1.createQuery(criteria, RETENTION_POLICY);
-        assertThat(query, equalTo("SELECT \"value\"::field,\"item\"::tag FROM origin.sampleItem ORDER BY time ASC;"));
+        assertThat(query,
+                equalTo("SELECT \"value\"::field,\"item\"::tag FROM \"origin\".\"sampleItem\" ORDER BY time ASC;"));
 
         String queryV2 = instanceV2.createQuery(criteria, RETENTION_POLICY);
         assertThat(queryV2,
@@ -201,7 +204,7 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
 
         String queryV1 = instanceV1.createQuery(criteria, RETENTION_POLICY);
         assertThat(queryV1, equalTo(
-                "SELECT \"value\"::field,\"item\"::tag FROM origin.measurementName WHERE item = 'sampleItem';"));
+                "SELECT \"value\"::field,\"item\"::tag FROM \"origin\".\"measurementName\" WHERE item = 'sampleItem';"));
 
         String queryV2 = instanceV2.createQuery(criteria, RETENTION_POLICY);
         assertThat(queryV2,
@@ -214,7 +217,7 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
                 .thenReturn(new Metadata(metadataKey, "", Map.of("key1", "val1", "key2", "val2")));
 
         queryV1 = instanceV1.createQuery(criteria, RETENTION_POLICY);
-        assertThat(queryV1, equalTo("SELECT \"value\"::field,\"item\"::tag FROM origin.sampleItem;"));
+        assertThat(queryV1, equalTo("SELECT \"value\"::field,\"item\"::tag FROM \"origin\".\"sampleItem\";"));
 
         queryV2 = instanceV2.createQuery(criteria, RETENTION_POLICY);
         assertThat(queryV2,

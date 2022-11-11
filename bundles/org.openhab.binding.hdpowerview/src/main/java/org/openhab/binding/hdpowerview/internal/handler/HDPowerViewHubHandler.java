@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.hdpowerview.internal.handler;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -22,29 +24,28 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import javax.ws.rs.ProcessingException;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewTranslationProvider;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewWebTargets;
-import org.openhab.binding.hdpowerview.internal.api.Firmware;
-import org.openhab.binding.hdpowerview.internal.api.responses.FirmwareVersions;
-import org.openhab.binding.hdpowerview.internal.api.responses.SceneCollections;
-import org.openhab.binding.hdpowerview.internal.api.responses.SceneCollections.SceneCollection;
-import org.openhab.binding.hdpowerview.internal.api.responses.Scenes;
-import org.openhab.binding.hdpowerview.internal.api.responses.Scenes.Scene;
-import org.openhab.binding.hdpowerview.internal.api.responses.ScheduledEvents;
-import org.openhab.binding.hdpowerview.internal.api.responses.ScheduledEvents.ScheduledEvent;
-import org.openhab.binding.hdpowerview.internal.api.responses.Shades;
-import org.openhab.binding.hdpowerview.internal.api.responses.Shades.ShadeData;
 import org.openhab.binding.hdpowerview.internal.builders.AutomationChannelBuilder;
 import org.openhab.binding.hdpowerview.internal.builders.SceneChannelBuilder;
 import org.openhab.binding.hdpowerview.internal.builders.SceneGroupChannelBuilder;
 import org.openhab.binding.hdpowerview.internal.config.HDPowerViewHubConfiguration;
 import org.openhab.binding.hdpowerview.internal.config.HDPowerViewShadeConfiguration;
+import org.openhab.binding.hdpowerview.internal.dto.Firmware;
+import org.openhab.binding.hdpowerview.internal.dto.HubFirmware;
+import org.openhab.binding.hdpowerview.internal.dto.Scene;
+import org.openhab.binding.hdpowerview.internal.dto.SceneCollection;
+import org.openhab.binding.hdpowerview.internal.dto.ScheduledEvent;
+import org.openhab.binding.hdpowerview.internal.dto.ShadeData;
+import org.openhab.binding.hdpowerview.internal.dto.UserData;
+import org.openhab.binding.hdpowerview.internal.dto.responses.SceneCollections;
+import org.openhab.binding.hdpowerview.internal.dto.responses.Scenes;
+import org.openhab.binding.hdpowerview.internal.dto.responses.ScheduledEvents;
+import org.openhab.binding.hdpowerview.internal.dto.responses.Shades;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubException;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubInvalidResponseException;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubMaintenanceException;
@@ -84,12 +85,13 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
     private final HttpClient httpClient;
     private final HDPowerViewTranslationProvider translationProvider;
     private final ConcurrentHashMap<ThingUID, ShadeData> pendingShadeInitializations = new ConcurrentHashMap<>();
+    private final Duration firmwareVersionValidityPeriod = Duration.ofDays(1);
 
     private long refreshInterval;
     private long hardRefreshPositionInterval;
     private long hardRefreshBatteryLevelInterval;
 
-    private @Nullable HDPowerViewWebTargets webTargets;
+    private @NonNullByDefault({}) HDPowerViewWebTargets webTargets;
     private @Nullable ScheduledFuture<?> pollFuture;
     private @Nullable ScheduledFuture<?> hardRefreshPositionFuture;
     private @Nullable ScheduledFuture<?> hardRefreshBatteryLevelFuture;
@@ -97,7 +99,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
     private List<Scene> sceneCache = new CopyOnWriteArrayList<>();
     private List<SceneCollection> sceneCollectionCache = new CopyOnWriteArrayList<>();
     private List<ScheduledEvent> scheduledEventCache = new CopyOnWriteArrayList<>();
-    private @Nullable FirmwareVersions firmwareVersions;
+    private Instant userDataUpdated = Instant.MIN;
     private Boolean deprecatedChannelsCreated = false;
 
     private final ChannelTypeUID sceneChannelTypeUID = new ChannelTypeUID(HDPowerViewBindingConstants.BINDING_ID,
@@ -129,10 +131,6 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         }
 
         try {
-            HDPowerViewWebTargets webTargets = this.webTargets;
-            if (webTargets == null) {
-                throw new ProcessingException("Web targets not initialized");
-            }
             int id = Integer.parseInt(channelUID.getIdWithoutGroup());
             if (sceneChannelTypeUID.equals(channel.getChannelTypeUID()) && OnOffType.ON == command) {
                 webTargets.activateScene(id);
@@ -147,6 +145,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             }
         } catch (HubMaintenanceException e) {
             // exceptions are logged in HDPowerViewWebTargets
+            userDataUpdated = Instant.MIN;
         } catch (NumberFormatException | HubException e) {
             logger.debug("Unexpected error {}", e.getMessage());
         }
@@ -164,14 +163,15 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             return;
         }
 
-        updateStatus(ThingStatus.UNKNOWN);
         pendingShadeInitializations.clear();
         webTargets = new HDPowerViewWebTargets(httpClient, host);
         refreshInterval = config.refresh;
         hardRefreshPositionInterval = config.hardRefresh;
         hardRefreshBatteryLevelInterval = config.hardRefreshBatteryLevel;
         initializeChannels();
-        firmwareVersions = null;
+        userDataUpdated = Instant.MIN;
+
+        updateStatus(ThingStatus.UNKNOWN);
         schedulePoll();
     }
 
@@ -184,7 +184,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         deprecatedChannelsCreated = false;
     }
 
-    public @Nullable HDPowerViewWebTargets getWebTargets() {
+    public HDPowerViewWebTargets getWebTargets() {
         return webTargets;
     }
 
@@ -284,7 +284,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
 
     private synchronized void poll() {
         try {
-            updateFirmwareProperties();
+            updateUserDataProperties();
         } catch (HubException e) {
             logger.warn("Failed to update firmware properties: {}", e.getMessage());
         }
@@ -309,29 +309,49 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             }
         } catch (HubMaintenanceException e) {
             // exceptions are logged in HDPowerViewWebTargets
+            userDataUpdated = Instant.MIN;
         } catch (HubException e) {
             logger.warn("Error connecting to bridge: {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            userDataUpdated = Instant.MIN;
         }
     }
 
-    private void updateFirmwareProperties()
+    private void updateUserDataProperties()
             throws HubInvalidResponseException, HubProcessingException, HubMaintenanceException {
-        if (firmwareVersions != null) {
+        if (userDataUpdated.isAfter(Instant.now().minus(firmwareVersionValidityPeriod))) {
             return;
         }
-        HDPowerViewWebTargets webTargets = this.webTargets;
-        if (webTargets == null) {
-            throw new ProcessingException("Web targets not initialized");
+
+        UserData userData = webTargets.getUserData();
+        Map<String, String> properties = editProperties();
+        HubFirmware firmwareVersions = userData.firmware;
+        if (firmwareVersions != null) {
+            updateFirmwareProperties(properties, firmwareVersions);
         }
-        FirmwareVersions firmwareVersions = webTargets.getFirmwareVersions();
+        String serialNumber = userData.serialNumber;
+        if (serialNumber != null) {
+            properties.put(Thing.PROPERTY_SERIAL_NUMBER, serialNumber);
+        }
+        String macAddress = userData.macAddress;
+        if (macAddress != null) {
+            properties.put(Thing.PROPERTY_MAC_ADDRESS, macAddress);
+        }
+        String hubName = userData.getHubName();
+        if (!hubName.isEmpty()) {
+            properties.put(HDPowerViewBindingConstants.PROPERTY_HUB_NAME, hubName);
+        }
+        updateProperties(properties);
+        userDataUpdated = Instant.now();
+    }
+
+    private void updateFirmwareProperties(Map<String, String> properties, HubFirmware firmwareVersions) {
         Firmware mainProcessor = firmwareVersions.mainProcessor;
         if (mainProcessor == null) {
             logger.warn("Main processor firmware version missing in response.");
             return;
         }
         logger.debug("Main processor firmware version received: {}, {}", mainProcessor.name, mainProcessor.toString());
-        Map<String, String> properties = editProperties();
         String mainProcessorName = mainProcessor.name;
         if (mainProcessorName != null) {
             properties.put(HDPowerViewBindingConstants.PROPERTY_FIRMWARE_NAME, mainProcessorName);
@@ -342,15 +362,9 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             logger.debug("Radio firmware version received: {}", radio.toString());
             properties.put(HDPowerViewBindingConstants.PROPERTY_RADIO_FIRMWARE_VERSION, radio.toString());
         }
-        updateProperties(properties);
     }
 
     private void pollShades() throws HubInvalidResponseException, HubProcessingException, HubMaintenanceException {
-        HDPowerViewWebTargets webTargets = this.webTargets;
-        if (webTargets == null) {
-            throw new ProcessingException("Web targets not initialized");
-        }
-
         Shades shades = webTargets.getShades();
         List<ShadeData> shadesData = shades.shadeData;
         if (shadesData == null) {
@@ -434,11 +448,6 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
 
     private List<Scene> fetchScenes()
             throws HubInvalidResponseException, HubProcessingException, HubMaintenanceException {
-        HDPowerViewWebTargets webTargets = this.webTargets;
-        if (webTargets == null) {
-            throw new ProcessingException("Web targets not initialized");
-        }
-
         Scenes scenes = webTargets.getScenes();
         List<Scene> sceneData = scenes.sceneData;
         if (sceneData == null) {
@@ -520,11 +529,6 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
 
     private List<SceneCollection> fetchSceneCollections()
             throws HubInvalidResponseException, HubProcessingException, HubMaintenanceException {
-        HDPowerViewWebTargets webTargets = this.webTargets;
-        if (webTargets == null) {
-            throw new ProcessingException("Web targets not initialized");
-        }
-
         SceneCollections sceneCollections = webTargets.getSceneCollections();
         List<SceneCollection> sceneCollectionData = sceneCollections.sceneCollectionData;
         if (sceneCollectionData == null) {
@@ -565,11 +569,6 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
 
     private List<ScheduledEvent> fetchScheduledEvents()
             throws HubInvalidResponseException, HubProcessingException, HubMaintenanceException {
-        HDPowerViewWebTargets webTargets = this.webTargets;
-        if (webTargets == null) {
-            throw new ProcessingException("Web targets not initialized");
-        }
-
         ScheduledEvents scheduledEvents = webTargets.getScheduledEvents();
         List<ScheduledEvent> scheduledEventData = scheduledEvents.scheduledEventData;
         if (scheduledEventData == null) {

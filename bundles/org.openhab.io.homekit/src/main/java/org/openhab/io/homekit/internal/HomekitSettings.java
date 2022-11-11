@@ -26,6 +26,7 @@ public class HomekitSettings {
 
     public String name = "openHAB";
     public int port = 9123;
+    public int instances = 1;
     public String pin = "031-45-154";
     public String setupId;
     public String qrCode;
@@ -90,6 +91,9 @@ public class HomekitSettings {
             return false;
         }
         if (port != other.port) {
+            return false;
+        }
+        if (instances != other.instances) {
             return false;
         }
         if (thermostatTargetModeAuto == null) {

@@ -14,28 +14,30 @@ package org.openhab.binding.unifi.internal.api.util;
 
 import java.lang.reflect.Type;
 
-import org.openhab.binding.unifi.internal.api.model.UniFiController;
-import org.openhab.binding.unifi.internal.api.model.UniFiDevice;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.unifi.internal.api.cache.UniFiControllerCache;
+import org.openhab.binding.unifi.internal.api.dto.UniFiDevice;
 
 import com.google.gson.InstanceCreator;
 
 /**
- *
  * The {@link UniFiDeviceInstanceCreator} creates instances of {@link UniFiDevice}s during the JSON unmarshalling of
  * controller responses.
  *
  * @author Matthew Bowman - Initial contribution
  */
+@NonNullByDefault
 public class UniFiDeviceInstanceCreator implements InstanceCreator<UniFiDevice> {
 
-    private final UniFiController controller;
+    private final UniFiControllerCache cache;
 
-    public UniFiDeviceInstanceCreator(UniFiController controller) {
-        this.controller = controller;
+    public UniFiDeviceInstanceCreator(final UniFiControllerCache cache) {
+        this.cache = cache;
     }
 
     @Override
-    public UniFiDevice createInstance(Type type) {
-        return new UniFiDevice(controller);
+    public UniFiDevice createInstance(final @Nullable Type type) {
+        return new UniFiDevice(cache);
     }
 }

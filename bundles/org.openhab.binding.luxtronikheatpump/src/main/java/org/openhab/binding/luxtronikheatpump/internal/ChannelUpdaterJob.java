@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.time.DateTimeException;
 import java.time.Instant;
 import java.time.ZoneId;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.measure.Unit;
 
@@ -179,7 +181,7 @@ public class ChannelUpdaterJob implements SchedulerRunnable, Runnable {
         return rawValue;
     }
 
-    private String getSoftwareVersion(Integer[] heatpumpValues) {
+    private static String getSoftwareVersion(Integer[] heatpumpValues) {
         StringBuffer softwareVersion = new StringBuffer("");
 
         for (int i = 81; i <= 90; i++) {
@@ -191,7 +193,7 @@ public class ChannelUpdaterJob implements SchedulerRunnable, Runnable {
         return softwareVersion.toString();
     }
 
-    private String transformIpAddress(int ip) {
+    private static String transformIpAddress(int ip) {
         return String.format("%d.%d.%d.%d", (ip >> 24) & 0xFF, (ip >> 16) & 0xFF, (ip >> 8) & 0xFF, ip & 0xFF);
     }
 
@@ -212,8 +214,8 @@ public class ChannelUpdaterJob implements SchedulerRunnable, Runnable {
                 heatpumpParams, heatpumpVisibilities);
         String state = "";
 
-        if (row1 != null && row1 == 3) {
-            // 3 means error state
+        if (row1 != null && row1 == 4) {
+            // 4 means error state
             state = getStateTranslation("errorCodeX", error);
         } else {
             state = getStateTranslation("menuStateLine1", row1);
@@ -225,20 +227,32 @@ public class ChannelUpdaterJob implements SchedulerRunnable, Runnable {
         handleEventType(new StringType(longState), HeatpumpChannel.CHANNEL_HEATPUMP_STATUS);
     }
 
-    private void updateProperties(Integer[] heatpumpValues) {
+    public static Map<String, Object> getProperties(Integer[] heatpumpValues) {
+        Map<String, Object> properties = new HashMap<String, Object>();
+
         String heatpumpType = HeatpumpType.fromCode(heatpumpValues[78]).getName();
 
-        setProperty("heatpumpType", heatpumpType);
+        properties.put("heatpumpType", heatpumpType);
 
         // Not sure when Typ 2 should be used
         // String heatpumpType2 = HeatpumpType.fromCode(heatpumpValues[230]).getName();
-        // setProperty("heatpumpType2", heatpumpType2);
+        // properties.put("heatpumpType2", heatpumpType2);
 
-        setProperty("softwareVersion", getSoftwareVersion(heatpumpValues));
-        setProperty("ipAddress", transformIpAddress(heatpumpValues[91]));
-        setProperty("subnetMask", transformIpAddress(heatpumpValues[92]));
-        setProperty("broadcastAddress", transformIpAddress(heatpumpValues[93]));
-        setProperty("gateway", transformIpAddress(heatpumpValues[94]));
+        properties.put("softwareVersion", getSoftwareVersion(heatpumpValues));
+        properties.put("ipAddress", transformIpAddress(heatpumpValues[91]));
+        properties.put("subnetMask", transformIpAddress(heatpumpValues[92]));
+        properties.put("broadcastAddress", transformIpAddress(heatpumpValues[93]));
+        properties.put("gateway", transformIpAddress(heatpumpValues[94]));
+
+        return properties;
+    }
+
+    private void updateProperties(Integer[] heatpumpValues) {
+        Map<String, Object> properties = getProperties(heatpumpValues);
+
+        for (Map.Entry<String, Object> property : properties.entrySet()) {
+            handler.updateProperty(property.getKey(), property.getValue().toString());
+        }
     }
 
     private String getStateTranslation(String name, @Nullable Integer option) {
@@ -249,10 +263,6 @@ public class ChannelUpdaterJob implements SchedulerRunnable, Runnable {
         String translation = translationProvider
                 .getText("channel-type.luxtronikheatpump." + name + ".state.option." + option);
         return translation == null ? "" : translation;
-    }
-
-    private void setProperty(String name, String value) {
-        handler.updateProperty(name, value);
     }
 
     private String formatHours(@Nullable Integer value) {

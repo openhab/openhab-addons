@@ -89,11 +89,11 @@ This binding includes rule actions for sending email.
 Six different actions available:
 
 * `boolean success = sendMail(String recipient, String subject, String text)`
-* `boolean success = sendMail(String recipient, String subject, String text, String URL)`
-* `boolean success = sendMail(String recipient, String subject, String text, List<String> URL)`
+* `boolean success = sendMailWithAttachment(String recipient, String subject, String text, String URL)`
+* `boolean success = sendMailWithAttachments(String recipient, String subject, String text, List<String> URL)`
 * `boolean success = sendHtmlMail(String recipient, String subject, String htmlContent)`
-* `boolean success = sendHtmlMail(String recipient, String subject, String htmlContent, String URL)`
-* `boolean success = sendHtmlMail(String recipient, String subject, String htmlContent, List<String> URL)`
+* `boolean success = sendHtmlMailWithAttachment(String recipient, String subject, String htmlContent, String URL)`
+* `boolean success = sendHtmlMailWithAttachments(String recipient, String subject, String htmlContent, List<String> URL)`
 
 The `sendMail(...)` send a plain text mail (with attachments if supplied).
 The `sendHtmlMail(...)` send a HTML mail (with attachments if supplied).
@@ -125,7 +125,7 @@ val List<String> attachmentUrlList = newArrayList(
   "http://some.web/site/snap.jpg&param=value",
   "file:///tmp/201601011031.jpg")
 val mailActions = getActions("mail","mail:smtp:sampleserver")
-mailActions.sendHtmlMail("mail@example.com", "Test subject", "<h1>Header</h1>This is the mail content.", attachmentUrlList)
+mailActions.sendHtmlMailWithAttachments("mail@example.com", "Test subject", "<h1>Header</h1>This is the mail content.", attachmentUrlList)
 ```
 
 ## Mail Headers

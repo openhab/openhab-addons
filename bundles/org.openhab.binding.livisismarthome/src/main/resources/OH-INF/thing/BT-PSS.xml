@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="livisismarthome"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="BT-PSS">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Bluetooth Pluggable Smart Switch (BT-PSS)</label>
+		<description>A pluggable switch that can be switched on and off and which can measure the current energy consumption.</description>
+
+		<channels>
+			<channel id="switch" typeId="switchActuator"/>
+		</channels>
+
+		<representation-property>id</representation-property>
+
+		<config-description-ref uri="thing-type:livisismarthome:config"/>
+	</thing-type>
+</thing:thing-descriptions>

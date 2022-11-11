@@ -12,24 +12,31 @@
  */
 package org.openhab.binding.pulseaudio.internal.items;
 
+import java.util.Map;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * A SinkInput is an audio stream which can be routed to a {@link Sink}
  *
  * @author Tobias Bräutigam - Initial contribution
  */
+@NonNullByDefault
 public class SinkInput extends AbstractAudioDeviceConfig {
 
+    @Nullable
     private Sink sink;
 
-    public SinkInput(int id, String name, Module module) {
-        super(id, name, module);
+    public SinkInput(int id, String name, String description, Map<String, String> properties, @Nullable Module module) {
+        super(id, name, description, properties, module);
     }
 
-    public Sink getSink() {
+    public @Nullable Sink getSink() {
         return sink;
     }
 
-    public void setSink(Sink sink) {
+    public void setSink(@Nullable Sink sink) {
         this.sink = sink;
     }
 }

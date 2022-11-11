@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.lcn.internal.subhandler;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -42,21 +43,24 @@ public class LcnModuleVariableSubHandlerTest extends AbstractTestLcnModuleSubHan
 
     @Test
     public void testStatusVariable1() {
-        l.tryParse("=M000005.A00112345");
+        tryParseAllHandlers("=M000005.A00112345");
         verify(handler).updateChannel(LcnChannelGroup.VARIABLE, "1", new DecimalType(12345));
+        verify(handler).updateChannel(any(), any(), any());
     }
 
     @Test
     public void testStatusVariable12() {
-        l.tryParse("=M000005.A01212345");
+        tryParseAllHandlers("=M000005.A01212345");
         verify(handler).updateChannel(LcnChannelGroup.VARIABLE, "12", new DecimalType(12345));
+        verify(handler).updateChannel(any(), any(), any());
     }
 
     @Test
     public void testStatusLegacyVariable3() {
         when(info.getLastRequestedVarWithoutTypeInResponse()).thenReturn(Variable.VARIABLE3);
-        l.tryParse("=M000005.12345");
+        tryParseAllHandlers("=M000005.12345");
         verify(handler).updateChannel(LcnChannelGroup.VARIABLE, "3", new DecimalType(12345));
+        verify(handler).updateChannel(any(), any(), any());
     }
 
     @Test
@@ -77,13 +81,16 @@ public class LcnModuleVariableSubHandlerTest extends AbstractTestLcnModuleSubHan
 
     @Test
     public void testStatusVariable10SensorDefective() {
-        l.tryParse("=M000005.A01032512");
-        verify(handler).updateChannel(LcnChannelGroup.VARIABLE, "10", new StringType("DEFECTIVE"));
+        tryParseAllHandlers("=M000005.A01032512");
+        verify(handler).updateChannel(LcnChannelGroup.VARIABLE, "10", new StringType("Sensor defective: VARIABLE10"));
+        verify(handler).updateChannel(any(), any(), any());
     }
 
     @Test
     public void testStatusVariable8NotConfigured() {
-        l.tryParse("=M000005.A00865535");
-        verify(handler).updateChannel(LcnChannelGroup.VARIABLE, "8", new StringType("Not configured in LCN-PRO"));
+        tryParseAllHandlers("=M000005.A00865535");
+        verify(handler).updateChannel(LcnChannelGroup.VARIABLE, "8",
+                new StringType("Not configured in LCN-PRO: VARIABLE8"));
+        verify(handler).updateChannel(any(), any(), any());
     }
 }

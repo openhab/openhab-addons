@@ -374,12 +374,18 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
                     if (dp.isNumberType()) {
                         Number defaultValue = (Number) dp.getDefaultValue();
                         Number maxValue = dp.getMaxValue();
-                        // some datapoints can have a default value that is greater than the maximum value
-                        if (defaultValue != null && maxValue != null
-                                && defaultValue.doubleValue() > maxValue.doubleValue()) {
-                            maxValue = defaultValue;
+                        Number minValue = dp.getMinValue();
+                        if (defaultValue != null) {
+                            // some datapoints can have a default value that is greater than the maximum value
+                            if (maxValue != null && defaultValue.doubleValue() > maxValue.doubleValue()) {
+                                maxValue = defaultValue;
+                            }
+                            // ... and there are also default values less than the minimum value
+                            if (minValue != null && defaultValue.doubleValue() < minValue.doubleValue()) {
+                                minValue = defaultValue;
+                            }
                         }
-                        builder.withMinimum(MetadataUtils.createBigDecimal(dp.getMinValue()));
+                        builder.withMinimum(MetadataUtils.createBigDecimal(minValue));
                         builder.withMaximum(MetadataUtils.createBigDecimal(maxValue));
                         builder.withUnitLabel(MetadataUtils.getUnit(dp));
                     }

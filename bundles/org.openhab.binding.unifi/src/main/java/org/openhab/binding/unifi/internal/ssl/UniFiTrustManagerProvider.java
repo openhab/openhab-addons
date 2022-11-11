@@ -14,6 +14,7 @@ package org.openhab.binding.unifi.internal.ssl;
 
 import javax.net.ssl.X509ExtendedTrustManager;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.io.net.http.TlsTrustManagerProvider;
 
 /**
@@ -25,6 +26,7 @@ import org.openhab.core.io.net.http.TlsTrustManagerProvider;
  * @author Matthew Bowman - Initial contribution
  */
 // @Component // [wip] mgb: disabled due to issues with service order loading
+@NonNullByDefault
 public class UniFiTrustManagerProvider implements TlsTrustManagerProvider {
 
     @Override

@@ -67,7 +67,7 @@ public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDevic
     public void deviceInformationUpdate(List<ICloudDeviceInformation> deviceInformationList) {
         ICloudDeviceInformation deviceInformationRecord = getDeviceInformationRecord(deviceInformationList);
         if (deviceInformationRecord != null) {
-            if (deviceInformationRecord.getDeviceStatus() == 200) {
+            if (deviceInformationRecord.getDeviceStatus() == 200 || deviceInformationRecord.getDeviceStatus() == 203) {
                 updateStatus(ONLINE);
             } else {
                 updateStatus(OFFLINE, COMMUNICATION_ERROR, "Reported offline by iCloud webservice");

@@ -61,6 +61,11 @@ public class DeviceInfoClientImpl implements DeviceInfoClient {
                 return result;
             } catch (KNXException e) {
                 logger.debug("Could not {} of {}: {}", task, address, e.getMessage());
+                try {
+                    // avoid trashing the log on connection loss
+                    Thread.sleep(1000);
+                } catch (InterruptedException ignored) {
+                }
             } catch (InterruptedException e) {
                 logger.trace("Interrupted to {}", task);
                 return null;

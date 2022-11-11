@@ -68,13 +68,13 @@
 		<channels>
 			<channel id="name" typeId="name"/>
 			<channel id="summary" typeId="summary"/>
-			<channel id="lastcontacttime" typeId="lastcontacttime"/>
+			<channel id="lastcontact" typeId="lastcontact"/>
 		</channels>
 	</channel-group-type>
 
 	<!-- Controller -->
 
-	<channel-type id="lastcontacttime" advanced="true">
+	<channel-type id="lastcontact" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Last Contact Time</label>
 		<description>Last contact time of a controller</description>

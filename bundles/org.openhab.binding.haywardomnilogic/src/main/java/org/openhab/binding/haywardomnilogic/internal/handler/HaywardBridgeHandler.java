@@ -199,6 +199,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
         xmlResponse = httpXmlResponse(urlParameters);
 
         if (xmlResponse.isEmpty()) {
+            logger.debug("Hayward Connection thing: Login XML response was null");
             return false;
         }
 
@@ -227,7 +228,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
         xmlResponse = httpXmlResponse(urlParameters);
 
         if (xmlResponse.isEmpty()) {
-            logger.debug("Hayward Connection thing: Login XML response was null");
+            logger.debug("Hayward Connection thing: getApiDef XML response was null");
             return false;
         }
         return true;
@@ -277,12 +278,12 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
         String xmlResponse = httpXmlResponse(urlParameters);
 
         if (xmlResponse.isEmpty()) {
-            logger.debug("Hayward Connection thing: requestConfig XML response was null");
+            logger.debug("Hayward Connection thing: getMSPConfig XML response was null");
             return "Fail";
         }
 
         if (evaluateXPath("//Backyard/Name/text()", xmlResponse).isEmpty()) {
-            logger.debug("Hayward Connection thing: requestConfiguration XML response: {}", xmlResponse);
+            logger.debug("Hayward Connection thing: getMSPConfig XML response: {}", xmlResponse);
             return "Fail";
         }
         return xmlResponse;
@@ -293,6 +294,10 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
         List<String> property2 = new ArrayList<>();
 
         String xmlResponse = getMspConfig();
+
+        if (xmlResponse.contentEquals("Fail")) {
+            return false;
+        }
 
         // Get Units (Standard, Metric)
         property1 = evaluateXPath("//System/Units/text()", xmlResponse);
@@ -432,48 +437,59 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
         String urlParameterslength = Integer.toString(urlParameters.length());
         String statusMessage;
 
-        try {
-            ContentResponse httpResponse = sendRequestBuilder(config.endpointUrl, HttpMethod.POST)
-                    .content(new StringContentProvider(urlParameters), "text/xml; charset=utf-8")
-                    .header(HttpHeader.CONTENT_LENGTH, urlParameterslength).send();
-
-            int status = httpResponse.getStatus();
-            String xmlResponse = httpResponse.getContentAsString();
-
-            if (status == 200) {
-                List<String> statusMessages = evaluateXPath(
-                        "/Response/Parameters//Parameter[@name='StatusMessage']/text()", xmlResponse);
-                if (!(statusMessages.isEmpty())) {
-                    statusMessage = statusMessages.get(0);
-                } else {
-                    statusMessage = httpResponse.getReason();
-                }
-
-                if (logger.isTraceEnabled()) {
-                    logger.trace("Hayward Connection thing:  {} Hayward http command: {}", getCallingMethod(),
-                            urlParameters);
-                    logger.trace("Hayward Connection thing:  {} Hayward http response: {} {}", getCallingMethod(),
-                            statusMessage, xmlResponse);
-                }
-                return xmlResponse;
-            } else {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Hayward Connection thing:  {} Hayward http command: {}", getCallingMethod(),
-                            urlParameters);
-                    logger.debug("Hayward Connection thing:  {} Hayward http response: {} {}", getCallingMethod(),
-                            status, xmlResponse);
-                }
-                return "";
-            }
-        } catch (ExecutionException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Unable to resolve host.  Check Hayward hostname and your internet connection. " + e);
-            return "";
-        } catch (TimeoutException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Connection Timeout.  Check Hayward hostname and your internet connection. " + e);
-            return "";
+        if (logger.isTraceEnabled()) {
+            logger.trace("Hayward Connection thing:  {} Hayward http command: {}", getCallingMethod(), urlParameters);
+        } else if (logger.isDebugEnabled()) {
+            logger.debug("Hayward Connection thing:  {}", getCallingMethod());
         }
+
+        for (int retry = 0; retry <= 2; retry++) {
+            try {
+                ContentResponse httpResponse = sendRequestBuilder(config.endpointUrl, HttpMethod.POST)
+                        .content(new StringContentProvider(urlParameters), "text/xml; charset=utf-8")
+                        .header(HttpHeader.CONTENT_LENGTH, urlParameterslength).send();
+
+                int status = httpResponse.getStatus();
+                String xmlResponse = httpResponse.getContentAsString();
+
+                if (status == 200) {
+                    List<String> statusMessages = evaluateXPath(
+                            "/Response/Parameters//Parameter[@name='StatusMessage']/text()", xmlResponse);
+                    if (!(statusMessages.isEmpty())) {
+                        statusMessage = statusMessages.get(0);
+                    } else {
+                        statusMessage = httpResponse.getReason();
+                    }
+
+                    if (logger.isTraceEnabled()) {
+                        logger.trace("Hayward Connection thing:  {} Hayward http response: {} {}", getCallingMethod(),
+                                statusMessage, xmlResponse);
+                    }
+                    return xmlResponse;
+                } else {
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Hayward Connection thing:  {} Hayward http response: {} {}", getCallingMethod(),
+                                status, xmlResponse);
+                    }
+                    return "";
+                }
+            } catch (ExecutionException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Unable to resolve host.  Check Hayward hostname and your internet connection. "
+                                + e.getMessage());
+                return "";
+            } catch (TimeoutException e) {
+                if (retry >= 2) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "Connection Timeout.  Check Hayward hostname and your internet connection. "
+                                    + e.getMessage());
+                    return "";
+                } else {
+                    logger.warn("Hayward Connection thing Timeout:  {} Try:  {} ", getCallingMethod(), retry + 1);
+                }
+            }
+        }
+        return "";
     }
 
     private String getCallingMethod() {

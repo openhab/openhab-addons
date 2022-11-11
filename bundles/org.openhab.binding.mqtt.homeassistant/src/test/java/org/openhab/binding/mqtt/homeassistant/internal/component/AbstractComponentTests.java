@@ -15,9 +15,11 @@ package org.openhab.binding.mqtt.homeassistant.internal.component;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -47,7 +49,9 @@ import org.openhab.binding.mqtt.homeassistant.internal.HandlerConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.handler.HomeAssistantThingHandler;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
+import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 
 /**
@@ -70,6 +74,12 @@ public abstract class AbstractComponentTests extends AbstractHomeAssistantTests 
 
         config.put(HandlerConfiguration.PROPERTY_BASETOPIC, HandlerConfiguration.DEFAULT_BASETOPIC);
         config.put(HandlerConfiguration.PROPERTY_TOPICS, getConfigTopics());
+
+        // Plumb thing status updates through
+        doAnswer(invocation -> {
+            ((Thing) invocation.getArgument(0)).setStatusInfo((ThingStatusInfo) invocation.getArgument(1));
+            return null;
+        }).when(callbackMock).statusUpdated(any(Thing.class), any(ThingStatusInfo.class));
 
         when(callbackMock.getBridge(eq(BRIDGE_UID))).thenReturn(bridgeThing);
 
@@ -233,6 +243,19 @@ public abstract class AbstractComponentTests extends AbstractHomeAssistantTests 
             return true;
         }
         return false;
+    }
+
+    /**
+     * Send command to a thing's channel
+     * 
+     * @param component component
+     * @param channelId channel
+     * @param command command to send
+     */
+    protected void sendCommand(AbstractComponent<@NonNull ? extends AbstractChannelConfiguration> component,
+            String channelId, Command command) {
+        var channel = Objects.requireNonNull(component.getChannel(channelId));
+        thingHandler.handleCommand(channel.getChannelUID(), command);
     }
 
     protected static class LatchThingHandler extends HomeAssistantThingHandler {

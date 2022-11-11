@@ -31,6 +31,11 @@ public class WatsonSTTConfiguration {
      */
     public String instanceUrl = "";
     /**
+     * Prefer multimedia to telephony models. Multimedia models are intended for audio that has a minimum sampling rate
+     * of 16 kHz, while telephony models are intended for audio that has a minimum sampling rate of 8 kHz.
+     */
+    public boolean preferMultimediaModel = true;
+    /**
      * Use the parameter to suppress side conversations or background noise.
      */
     public float backgroundAudioSuppression = 0f;

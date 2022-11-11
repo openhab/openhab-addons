@@ -240,7 +240,7 @@ public class MyRenaultHttpSession {
                         + "/kamereon/kca/car-adapter/v1/cars/" + config.vin + "/actions/hvac-start?country="
                         + getCountry(config))
                 .method(HttpMethod.POST).header("Content-type", "application/vnd.api+json")
-                .header("apikey", this.constants.getKamereonApiKey())
+                .header("apikey", this.config.kamereonApiKey)
                 .header("x-kamereon-authorization", "Bearer " + kamereonToken).header("x-gigya-id_token", jwt);
         request.content(new StringContentProvider(
                 "{\"data\":{\"type\":\"HvacStart\",\"attributes\":{\"action\":\"start\",\"targetTemperature\":\""
@@ -274,7 +274,7 @@ public class MyRenaultHttpSession {
                         + "/kamereon/kca/car-adapter/v1/cars/" + config.vin + "/actions/charge-mode?country="
                         + getCountry(config))
                 .method(HttpMethod.POST).header("Content-type", "application/vnd.api+json")
-                .header("apikey", this.constants.getKamereonApiKey())
+                .header("apikey", this.config.kamereonApiKey)
                 .header("x-kamereon-authorization", "Bearer " + kamereonToken).header("x-gigya-id_token", jwt);
 
         final String apiMode = ChargingMode.SCHEDULE_MODE.equals(mode) ? CHARGING_MODE_SCHEDULE : CHARGING_MODE_ALWAYS;
@@ -305,7 +305,7 @@ public class MyRenaultHttpSession {
     private @Nullable JsonObject getKamereonResponse(String path)
             throws RenaultForbiddenException, RenaultUpdateException, RenaultNotImplementedException {
         Request request = httpClient.newRequest(this.constants.getKamereonRootUrl() + path).method(HttpMethod.GET)
-                .header("Content-type", "application/vnd.api+json").header("apikey", this.constants.getKamereonApiKey())
+                .header("Content-type", "application/vnd.api+json").header("apikey", this.config.kamereonApiKey)
                 .header("x-kamereon-authorization", "Bearer " + kamereonToken).header("x-gigya-id_token", jwt);
         try {
             ContentResponse response = request.send();

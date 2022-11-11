@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="easee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-group-type id="circuit-settings">
+		<label>Circuit Settings</label>
+		<channels>
+			<channel id="maxCircuitCurrentP1" typeId="type-current">
+				<label>Max Current P1</label>
+				<description>Max circuit current for phase 1.</description>
+			</channel>
+			<channel id="maxCircuitCurrentP2" typeId="type-current">
+				<label>Max Current P2</label>
+				<description>Max circuit current for phase 2.</description>
+			</channel>
+			<channel id="maxCircuitCurrentP3" typeId="type-current">
+				<label>Max Current P3</label>
+				<description>Max circuit current for phase 3.</description>
+			</channel>
+			<channel id="maxCurrents" typeId="rwtype-currents">
+				<label>Max Currents</label>
+				<description>Max circuit currents for phases 1,2,3.</description>
+				<properties>
+					<property name="writeCommand">SetMaxCircuitCurrents</property>
+					<property name="validationExpression">(0|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23|24|25|26|27|28|29|30|31|32);(0|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23|24|25|26|27|28|29|30|31|32);(0|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23|24|25|26|27|28|29|30|31|32)</property>
+				</properties>
+			</channel>
+			<channel id="offlineMaxCircuitCurrentP1" typeId="type-current">
+				<label>Offline Max Current P1</label>
+				<description>Max circuit current for phase 1 in offline mode.</description>
+			</channel>
+			<channel id="offlineMaxCircuitCurrentP2" typeId="type-current">
+				<label>Offline Max Current P2</label>
+				<description>Max circuit current for phase 2 in offline mode.</description>
+			</channel>
+			<channel id="offlineMaxCircuitCurrentP3" typeId="type-current">
+				<label>Offline Max Current P3</label>
+				<description>Max circuit current for phase 3 in offline mode.</description>
+			</channel>
+			<channel id="offlineMaxCurrents" typeId="rwtype-currents">
+				<label>Offline Max Currents</label>
+				<description>Offline Max circuit currents for phases 1,2,3.</description>
+				<properties>
+					<property name="writeCommand">SetOfflineMaxCircuitCurrents</property>
+					<property name="validationExpression">(0|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23|24|25|26|27|28|29|30|31|32);(0|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23|24|25|26|27|28|29|30|31|32);(0|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23|24|25|26|27|28|29|30|31|32)</property>
+				</properties>
+			</channel>
+			<channel id="enableIdleCurrent" typeId="rwtype-switch">
+				<label>Enable Idle Current</label>
+				<description>This will block 6A Idle current for each charger in the current.</description>
+				<properties>
+					<property name="writeCommand">SetCircuitSettings</property>
+					<property name="validationExpression">.*</property>
+				</properties>
+			</channel>
+			<channel id="allowOfflineMaxCircuitCurrent" typeId="type-switch">
+				<label>Allow Offline Max Circuit Current</label>
+				<description>Allow Offline Max Circuit Current.</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="circuit-dynamicCurrent">
+		<label>Circuit Dynamic Current</label>
+		<channels>
+			<channel id="phase1" typeId="type-current">
+				<label>Dynamic Current P1</label>
+				<description>Dynamic set circuit current for phase 1.</description>
+			</channel>
+			<channel id="phase2" typeId="type-current">
+				<label>Dynamic Current P2</label>
+				<description>Dynamic set circuit current for phase 2.</description>
+			</channel>
+			<channel id="phase3" typeId="type-current">
+				<label>Dynamic Current P3</label>
+				<description>Dynamic set circuit current for phase 3.</description>
+			</channel>
+			<channel id="dynamicCurrents" typeId="rwtype-currents">
+				<label>Dynamic Currents</label>
+				<description>Dynamic circuit currents for phases 1,2,3.</description>
+				<properties>
+					<property name="writeCommand">SetDynamicCircuitCurrents</property>
+					<property name="validationExpression">(0|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23|24|25|26|27|28|29|30|31|32);(0|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23|24|25|26|27|28|29|30|31|32);(0|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23|24|25|26|27|28|29|30|31|32)</property>
+				</properties>
+			</channel>
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>

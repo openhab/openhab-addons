@@ -26,8 +26,10 @@
 				<advanced>true</advanced>
 				<label>Baud Rate</label>
 				<description>Set the baud rate</description>
+				<limitToOptions>false</limitToOptions>
 				<default>9600</default>
 				<options>
+					<option value="2400">2400</option>
 					<option value="4800">4800</option>
 					<option value="9600">9600</option>
 					<option value="19200">19200</option>

@@ -50,7 +50,7 @@ You can also use *RADIO / TUNER* (as *tuner*).
 | mute           | Switch               | Mute ON/OFF                                                         |
 | volume         | Dimmer               | Volume as % (recalculated based on Max Volume Model)                |
 | volumeAbs      | Number               | Volume as absolute value                                            |
-| volumeDB       | Number:Dimensionless | Volume in decibel (dB) (returns -90 dB if not available on device)  |
+| volumeDB       | Number:Dimensionless | Volume in decibel (dB) (availability depends on device)             |
 | input          | String               | See below for list                                                  |
 | soundProgram   | String               | See below for list                                                  |
 | selectPreset   | String               | Select Netradio/USB preset (fetched from Model)                     |

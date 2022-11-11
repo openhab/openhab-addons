@@ -35,9 +35,10 @@ public class OpenThermGatewayBindingConstants {
     public static final ThingTypeUID BOILER_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, "boiler");
     public static final ThingTypeUID VENTILATION_HEATRECOVERY_THING_TYPE_UID = new ThingTypeUID(BINDING_ID,
             "ventilationheatrecovery");
+    public static final ThingTypeUID LEGACY_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, "otgw");
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPE_UIDS = Set.of(OPENTHERM_GATEWAY_THING_TYPE_UID,
-            BOILER_THING_TYPE_UID, VENTILATION_HEATRECOVERY_THING_TYPE_UID);
+            BOILER_THING_TYPE_UID, VENTILATION_HEATRECOVERY_THING_TYPE_UID, LEGACY_THING_TYPE_UID);
 
     // List of id's for writeable channels
     public static final String CHANNEL_SEND_COMMAND = "sendcommand";

@@ -30,6 +30,13 @@
 		<state readOnly="true"/>
 	</channel-type>
 
+	<channel-type id="moving">
+		<item-type>Switch</item-type>
+		<label>Moving</label>
+		<description>Indicates if the device is currently operating a command.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
 	<channel-type id="luminance">
 		<item-type>Number:Illuminance</item-type>
 		<label>Luminance</label>
@@ -808,6 +815,27 @@
 		<label>Water Temperature Setting</label>
 		<description>Water temperature setting state</description>
 		<state pattern="%d %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="thermostat_setting_zone1">
+		<item-type>Number:Temperature</item-type>
+		<label>Zone 1 Thermostat Setting</label>
+		<description>Thermostat setting control for the zone 1</description>
+		<state pattern="%d %unit%"></state>
+	</channel-type>
+
+	<channel-type id="wh_setting_temp_zone1">
+		<item-type>Number:Temperature</item-type>
+		<label>Zone 1 Water Heating Setting Temperature</label>
+		<description>Water heating setting temperature control for the zone 1</description>
+		<state pattern="%d %unit%"></state>
+	</channel-type>
+
+	<channel-type id="room_ambient_temp_zone1">
+		<item-type>Number:Temperature</item-type>
+		<label>Zone 1 Room Ambient Temperature</label>
+		<description>Room ambient temperature control for the zone 1</description>
+		<state pattern="%d %unit%"></state>
 	</channel-type>
 
 	<channel-type id="yutaki_operating_mode">

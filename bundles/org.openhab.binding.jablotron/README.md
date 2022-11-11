@@ -56,11 +56,11 @@ Binding itself doesn't require specific configuration.
 | JA-100               | thermostat_%nr%  | Number:Temperature | the thermostat %nr% value                                 |
 | JA-100F              | sec-%nr%         | String             | the section %nr% status/control                           |
 | JA-100F              | pg-%nr%          | Switch             | the PG switch %nr% status/control                         |
+| JA-100F              | thm-%nr%         | Number:Temperature | the thermometer %nr% value                                |
 
 The state, pgm, thermometer, thermostat, sec and pg channels for the JA-100/JA-100F alarms are dynamically created according to your configuration.
 
-* The sections are represented by String channels (with possible values "set", "unset", "partialSet" for JA-100 and 
-possible values "ARM", "PARTIAL_ARM" and "DISARM" for JA100-F)
+* The sections are represented by String channels (with possible values "set", "unset", "partialSet" for JA-100 and possible values "ARM", "PARTIAL_ARM" and "DISARM" for JA100-F)
 
 ## Full Example
 

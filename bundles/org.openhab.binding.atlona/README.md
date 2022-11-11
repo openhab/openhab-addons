@@ -211,19 +211,19 @@ As of firmware 1.6.8 (rev 14),
 
 Here is an example with minimal configuration parameters (using default values with no telnet login):
 
-```java
+```
 atlona:pro3-88m:home [ ipAddress="192.168.1.30" ]
 ```
 
 Here is another example with minimal configuration parameters (using default values with telnet login):
 
-```java
+```
 atlona:pro3-88m:home [ ipAddress="192.168.1.30", userName="me", password="12345" ]
 ```
 
 Here is a full configuration example:
 
-```java
+```
 atlona:pro3-88m:home [ ipAddress="192.168.1.30", userName="me", password="12345", polling=600, ping=30, retryPolling=10 ]
 ```
 
@@ -231,7 +231,7 @@ atlona:pro3-88m:home [ ipAddress="192.168.1.30", userName="me", password="12345"
 
 Here is an example of items for the AT-UHD-PRO33-88M:
 
-```java
+```
 Switch Atlona_Power "Power" { channel = "atlona:pro3-88m:home:primary#power" }
 Switch Atlona_PanelLock "Panel Lock" { channel = "atlona:pro3-88m:home:primary#panellock" }
 Switch Atlona_Presets "Preset Command" { channel = "atlona:pro3-88m:home:primary#presetcmd" }
@@ -274,7 +274,7 @@ Switch Atlona_VolumeMute6 "Mute 6" { channel = "atlona:pro3-88m:home:volume1#vol
 
 ### SiteMap
 
-```perl
+```
 sitemap demo label="Main Menu" {
     Frame label="Atlona" {
         Text label="Device" {
@@ -332,7 +332,7 @@ Be sure they are in sync with the mappings above.
 
 ### atlonainputports.map
 
-```text
+```
 1=CableBox
 2=BluRay Player
 3=Roku
@@ -347,7 +347,7 @@ NULL=-
 
 ### atlonaoutputports.map
 
-```text
+```
 1=Living Room
 2=Master Bed
 3=Kitchen

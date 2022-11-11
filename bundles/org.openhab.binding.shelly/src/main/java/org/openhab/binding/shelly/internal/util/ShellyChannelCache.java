@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.openhab.binding.shelly.internal.util;
 
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.mkChannelId;
@@ -19,7 +18,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.shelly.internal.handler.ShellyBaseHandler;
+import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
@@ -34,14 +33,14 @@ import org.slf4j.LoggerFactory;
 public class ShellyChannelCache {
     private final Logger logger = LoggerFactory.getLogger(ShellyChannelCache.class);
 
-    private final ShellyBaseHandler thingHandler;
+    private final ShellyThingInterface thingHandler;
     private final Map<String, State> channelData = new ConcurrentHashMap<>();
     private String thingName = "";
     private boolean enabled = false;
 
-    public ShellyChannelCache(ShellyBaseHandler thingHandler) {
+    public ShellyChannelCache(ShellyThingInterface thingHandler) {
         this.thingHandler = thingHandler;
-        setThingName(thingHandler.thingName);
+        setThingName(thingHandler.getThingName());
     }
 
     public void setThingName(String thingName) {
@@ -88,8 +87,6 @@ public class ShellyChannelCache {
                 } else {
                     channelData.replace(channelId, newValue);
                 }
-                logger.debug("{}: Channel {} updated with {} (type {}).", thingName, channelId, newValue,
-                        newValue.getClass());
                 return true;
             }
         } catch (IllegalArgumentException e) {

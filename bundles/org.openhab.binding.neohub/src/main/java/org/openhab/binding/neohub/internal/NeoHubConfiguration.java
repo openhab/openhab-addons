@@ -30,4 +30,6 @@ public class NeoHubConfiguration {
     public int pollingInterval;
     public int socketTimeout;
     public boolean preferLegacyApi;
+    public String apiToken = "";
+    public boolean useWebSocket;
 }

@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.hue.internal.handler;
 
-import org.openhab.binding.hue.internal.State.ColorMode;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.hue.internal.dto.State.ColorMode;
 
 /**
  * Builder for the current state of a hue light.
@@ -22,6 +23,7 @@ import org.openhab.binding.hue.internal.State.ColorMode;
  * @author Markus Rathgeb - migrated to plain Java test
  * @author Christoph Weitkamp - Added support for bulbs using CIE XY colormode only
  */
+@NonNullByDefault
 public class HueLightState {
 
     int brightness = 200;

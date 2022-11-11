@@ -38,7 +38,9 @@
 
 #include <Arduino.h>
 
-#define HARDWARE_SERIAL
+#define HARDWARE_SERIAL_WITH_PINS
+//#define HARDWARE_SERIAL
+
 //#define ENABLE_NIBE_DEBUG
 
 // state machine states
@@ -78,10 +80,14 @@ class NibeGw
     byte directionPin;
     byte buffer[MAX_DATA_LEN];
     byte index;
-    #ifdef HARDWARE_SERIAL
-    HardwareSerial* RS485;
+    #if defined(HARDWARE_SERIAL_WITH_PINS)
+      HardwareSerial* RS485;
+      int RS485RxPin;
+      int RS485TxPin;
+    #elif defined(HARDWARE_SERIAL)
+      HardwareSerial* RS485;
     #else
-    Serial_* RS485;
+      Serial_* RS485;
     #endif
     NIBE_CALLBACK_MSG_RECEIVED;
     NIBE_CALLBACK_MSG_RECEIVED_TOKEN;
@@ -103,10 +109,12 @@ class NibeGw
     #endif
 
   public:
-    #ifdef HARDWARE_SERIAL
-    NibeGw(HardwareSerial* serial, int RS485DirectionPin);
+    #if defined(HARDWARE_SERIAL_WITH_PINS)
+      NibeGw(HardwareSerial* serial, int RS485DirectionPin, int RS485RxPin, int RS485TxPin);
+    #elif defined(HARDWARE_SERIAL)
+      NibeGw(HardwareSerial* serial, int RS485DirectionPin);
     #else
-    NibeGw(Serial_* serial, int RS485DirectionPin);
+      NibeGw(Serial_* serial, int RS485DirectionPin);
     #endif
     NibeGw& setCallback(NIBE_CALLBACK_MSG_RECEIVED, NIBE_CALLBACK_MSG_RECEIVED_TOKEN);
 

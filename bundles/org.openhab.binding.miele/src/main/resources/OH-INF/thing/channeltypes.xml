@@ -53,15 +53,23 @@
 		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="start" advanced="true">
+	<channel-type id="start">
 		<item-type>DateTime</item-type>
 		<label>Start Time</label>
 		<description>Programmed start time of the program</description>
 		<category>Time</category>
-		<state readOnly="true" pattern="%1$tH:%1$tM"></state>
+		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="duration" advanced="true">
+	<channel-type id="end">
+		<item-type>DateTime</item-type>
+		<label>End Time</label>
+		<description>End time of the program (programmed or running)</description>
+		<category>Time</category>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="duration">
 		<item-type>DateTime</item-type>
 		<label>Duration</label>
 		<description>Duration of the program running on the appliance</description>
@@ -102,6 +110,7 @@
 		<item-type>Switch</item-type>
 		<label>Stop</label>
 		<description>Stop the appliance</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="step" advanced="true">

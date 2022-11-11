@@ -22,6 +22,7 @@
 			<channel id="balance" typeId="balance"/>
 			<channel id="speakera" typeId="speakera"/>
 			<channel id="speakerb" typeId="speakerb"/>
+			<channel id="otherCommand" typeId="otherCommand"/>
 		</channels>
 
 		<config-description-ref uri="thing-type:rotel:serialandipandprotocol"/>

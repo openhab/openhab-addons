@@ -12,25 +12,32 @@
  */
 package org.openhab.binding.pulseaudio.internal.items;
 
+import java.util.Map;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * A Source is a device which is the source of an audio stream (recording
  * device) For example microphones or line-in jacks.
  *
  * @author Tobias Bräutigam - Initial contribution
  */
+@NonNullByDefault
 public class Source extends AbstractAudioDeviceConfig {
 
+    @Nullable
     protected Sink monitorOf;
 
-    public Source(int id, String name, Module module) {
-        super(id, name, module);
+    public Source(int id, String name, String description, Map<String, String> properties, @Nullable Module module) {
+        super(id, name, description, properties, module);
     }
 
-    public Sink getMonitorOf() {
+    public @Nullable Sink getMonitorOf() {
         return monitorOf;
     }
 
-    public void setMonitorOf(Sink sink) {
+    public void setMonitorOf(@Nullable Sink sink) {
         this.monitorOf = sink;
     }
 }

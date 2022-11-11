@@ -74,6 +74,10 @@ Start and end day are formatted yyyy-mm-dd.
 
 Here is an example of command you can run: `openhab:linky linky:linky:local report 2020-11-15 2020-12-15`.
 
+## Docker specificities
+
+In case you are running openHAB inside Docker, the binding will work only if you set the environment variable `CRYPTO_POLICY` to the value "unlimited" as documented [here](https://github.com/openhab/openhab-docker#java-cryptographic-strength-policy).
+
 ## Full Example
 
 ### Thing

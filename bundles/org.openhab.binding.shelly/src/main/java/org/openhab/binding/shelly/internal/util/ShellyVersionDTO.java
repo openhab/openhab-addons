@@ -163,6 +163,6 @@ public class ShellyVersionDTO {
             return false;
         }
         return version.isEmpty() || version.contains("???") || version.toLowerCase().contains("master")
-                || (version.toLowerCase().contains("-rc"));
+                || (version.toLowerCase().contains("-rc") || version.toLowerCase().contains("beta"));
     }
 }

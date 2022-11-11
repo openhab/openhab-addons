@@ -18,7 +18,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -26,7 +25,6 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.touchwand.internal.TouchWandBridgeHandler;
-import org.openhab.binding.touchwand.internal.TouchWandUnitStatusUpdateListener;
 import org.openhab.binding.touchwand.internal.dto.TouchWandUnitData;
 import org.openhab.binding.touchwand.internal.dto.TouchWandUnitFromJson;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
@@ -61,7 +59,6 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService impl
     private final Logger logger = LoggerFactory.getLogger(TouchWandUnitDiscoveryService.class);
 
     private @Nullable ScheduledFuture<?> scanningJob;
-    private CopyOnWriteArraySet<TouchWandUnitStatusUpdateListener> listeners = new CopyOnWriteArraySet<>();
 
     public TouchWandUnitDiscoveryService() {
         super(SUPPORTED_THING_TYPES_UIDS, SEARCH_TIME_SEC, true);
@@ -123,7 +120,6 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService impl
                             default:
                                 continue;
                         }
-                        notifyListeners(touchWandUnit);
                     }
                 } catch (JsonSyntaxException e) {
                     logger.warn("Could not parse unit {}", e.getMessage());
@@ -131,12 +127,6 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService impl
             }
         } catch (JsonSyntaxException msg) {
             logger.warn("Could not parse list units response error:{} ", msg.getMessage());
-        }
-    }
-
-    private void notifyListeners(TouchWandUnitData touchWandUnit) {
-        for (TouchWandUnitStatusUpdateListener listener : listeners) {
-            listener.onDataReceived(touchWandUnit);
         }
     }
 
@@ -176,18 +166,6 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService impl
         }
     }
 
-    public void registerListener(TouchWandUnitStatusUpdateListener listener) {
-        if (!listeners.contains(listener)) {
-            logger.debug("Adding TouchWandWebSocket listener {}", listener);
-            listeners.add(listener);
-        }
-    }
-
-    public void unregisterListener(TouchWandUnitStatusUpdateListener listener) {
-        logger.debug("Removing TouchWandWebSocket listener {}", listener);
-        listeners.remove(listener);
-    }
-
     @Override
     public int getScanTimeout() {
         return SEARCH_TIME_SEC;
@@ -215,7 +193,6 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService impl
     public void setThingHandler(@NonNullByDefault({}) ThingHandler handler) {
         if (handler instanceof TouchWandBridgeHandler) {
             touchWandBridgeHandler = (TouchWandBridgeHandler) handler;
-            registerListener(touchWandBridgeHandler);
         }
     }
 

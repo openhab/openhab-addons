@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="nobohub"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="nobohub">
+		<label>Nobo Hub</label>
+		<description>Nobo Hub Bridge Binding</description>
+
+		<channels>
+			<channel id="activeOverrideName" typeId="activeOverrideName-channel-type"/>
+			<channel id="weekProfiles" typeId="weekProfiles-channel-type"/>
+		</channels>
+
+		<properties>
+			<property name="vendor">Glen Dimplex Nobo</property>
+		</properties>
+		<representation-property>serialNumber</representation-property>
+
+		<config-description>
+			<parameter name="serialNumber" type="text" required="true">
+				<label>Serial Number</label>
+				<description>Serial number of the Nobo hub (12 numbers, no spaces)</description>
+			</parameter>
+			<parameter name="hostName" type="text" required="true">
+				<label>Host Name</label>
+				<description>Host Name/IP address of the Nobo Hub</description>
+			</parameter>
+			<parameter name="keepaliveInterval" type="integer" required="false" min="5">
+				<label>Polling interval</label>
+				<description>Polling interval (seconds). Default: 14</description>
+				<default>14</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+</thing:thing-descriptions>

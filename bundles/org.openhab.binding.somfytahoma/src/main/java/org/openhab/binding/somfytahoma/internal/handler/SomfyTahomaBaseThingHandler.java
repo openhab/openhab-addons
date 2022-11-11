@@ -182,6 +182,16 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
         }
     }
 
+    protected void sendTempCommand(String cmd, Command command) {
+        if (command instanceof DecimalType || command instanceof QuantityType) {
+            BigDecimal temperature = toTemperature(command);
+            if (temperature != null) {
+                String param = "[" + temperature.toPlainString() + "]";
+                sendCommand(cmd, param);
+            }
+        }
+    }
+
     protected void sendCommandToSameDevicesInPlace(String cmd) {
         sendCommandToSameDevicesInPlace(cmd, "[]");
     }

@@ -65,7 +65,7 @@ public class PckGatewayHandler extends BaseBridgeHandler {
     public synchronized void initialize() {
         PckGatewayConfiguration localConfig = config = getConfigAs(PckGatewayConfiguration.class);
 
-        String errorMessage = "Could not connect to LCN-PCHK/PKE: " + localConfig.getHostname() + ": ";
+        String errorMessage = "Could not connect to LCN-PCHK/VISU: " + localConfig.getHostname() + ": ";
 
         try {
             OutputPortDimMode dimMode;

@@ -347,7 +347,6 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
             if (shd.getCapabilities().stream().map(capability -> capability.interfaceName)
                     .anyMatch(SUPPORTED_INTERFACES::contains)) {
                 result.add(shd);
-
             }
         } else {
             SmartHomeGroup shg = (SmartHomeGroup) baseDevice;

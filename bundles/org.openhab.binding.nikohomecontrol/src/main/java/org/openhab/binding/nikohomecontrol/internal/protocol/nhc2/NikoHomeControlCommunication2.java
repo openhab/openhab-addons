@@ -39,6 +39,7 @@ import org.openhab.binding.nikohomecontrol.internal.protocol.NhcEnergyMeter;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NhcThermostat;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NikoHomeControlCommunication;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NikoHomeControlConstants.ActionType;
+import org.openhab.binding.nikohomecontrol.internal.protocol.nhc2.NhcDevice2.NhcParameter;
 import org.openhab.binding.nikohomecontrol.internal.protocol.nhc2.NhcDevice2.NhcProperty;
 import org.openhab.binding.nikohomecontrol.internal.protocol.nhc2.NhcMessage2.NhcMessageParam;
 import org.openhab.core.io.transport.mqtt.MqttConnectionObserver;
@@ -81,9 +82,8 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
     private volatile @Nullable NhcSystemInfo2 nhcSystemInfo;
     private volatile @Nullable NhcTimeInfo2 nhcTimeInfo;
 
+    private volatile boolean initStarted = false;
     private volatile @Nullable CompletableFuture<Boolean> communicationStarted;
-
-    private ScheduledExecutorService scheduler;
 
     private final Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE).create();
 
@@ -97,13 +97,13 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
      */
     public NikoHomeControlCommunication2(NhcControllerEvent handler, String clientId,
             ScheduledExecutorService scheduler) throws CertificateException {
-        super(handler);
+        super(handler, scheduler);
         mqttConnection = new NhcMqttConnection2(clientId, this, this);
-        this.scheduler = scheduler;
     }
 
     @Override
     public synchronized void startCommunication() {
+        initStarted = false;
         communicationStarted = new CompletableFuture<>();
 
         InetAddress addr = handler.getAddr();
@@ -127,20 +127,22 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
 
         try {
             mqttConnection.startConnection(addrString, port, profile, token);
-            initialize();
         } catch (MqttException e) {
             logger.debug("error in mqtt communication");
-            stopCommunication();
+            handler.controllerOffline("@text/offline.communication-error");
+            scheduleRestartCommunication();
         }
     }
 
     @Override
-    public synchronized void stopCommunication() {
+    public synchronized void resetCommunication() {
         CompletableFuture<Boolean> started = communicationStarted;
         if (started != null) {
             started.complete(false);
         }
         communicationStarted = null;
+        initStarted = false;
+
         mqttConnection.stopConnection();
     }
 
@@ -164,25 +166,33 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
      * messages.
      *
      */
-    private void initialize() throws MqttException {
+    private synchronized void initialize() {
+        initStarted = true;
+
         NhcMessage2 message = new NhcMessage2();
 
-        message.method = "systeminfo.publish";
-        mqttConnection.connectionPublish(profile + "/system/cmd", gson.toJson(message));
+        try {
+            message.method = "systeminfo.publish";
+            mqttConnection.connectionPublish(profile + "/system/cmd", gson.toJson(message));
 
-        message.method = "services.list";
-        mqttConnection.connectionPublish(profile + "/authentication/cmd", gson.toJson(message));
+            message.method = "services.list";
+            mqttConnection.connectionPublish(profile + "/authentication/cmd", gson.toJson(message));
 
-        message.method = "devices.list";
-        mqttConnection.connectionPublish(profile + "/control/devices/cmd", gson.toJson(message));
+            message.method = "devices.list";
+            mqttConnection.connectionPublish(profile + "/control/devices/cmd", gson.toJson(message));
 
-        message.method = "notifications.list";
-        mqttConnection.connectionPublish(profile + "/notification/cmd", gson.toJson(message));
+            message.method = "notifications.list";
+            mqttConnection.connectionPublish(profile + "/notification/cmd", gson.toJson(message));
+        } catch (MqttException e) {
+            initStarted = false;
+            logger.debug("error in mqtt communication during initialization");
+            resetCommunication();
+        }
     }
 
     private void connectionLost(String message) {
         logger.debug("connection lost");
-        stopCommunication();
+        resetCommunication();
         handler.controllerOffline(message);
     }
 
@@ -357,69 +367,83 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
 
     private void addDevice(NhcDevice2 device) {
         String location = null;
-        if (device.parameters != null) {
-            location = device.parameters.stream().map(p -> p.locationName).filter(Objects::nonNull).findFirst()
-                    .orElse(null);
+        List<NhcParameter> parameters = device.parameters;
+        if (parameters != null) {
+            location = parameters.stream().map(p -> p.locationName).filter(Objects::nonNull).findFirst().orElse(null);
         }
 
         if ("action".equals(device.type) || "virtual".equals(device.type)) {
-            if (!actions.containsKey(device.uuid)) {
-                logger.debug("adding action device {}, {}", device.uuid, device.name);
-
-                ActionType actionType;
-                switch (device.model) {
-                    case "generic":
-                    case "pir":
-                    case "simulation":
-                    case "comfort":
-                    case "alarms":
-                    case "alloff":
-                    case "overallcomfort":
-                    case "garagedoor":
-                        actionType = ActionType.TRIGGER;
-                        break;
-                    case "light":
-                    case "socket":
-                    case "switched-generic":
-                    case "switched-fan":
-                    case "flag":
-                        actionType = ActionType.RELAY;
-                        break;
-                    case "dimmer":
-                        actionType = ActionType.DIMMER;
-                        break;
-                    case "rolldownshutter":
-                    case "sunblind":
-                    case "venetianblind":
-                    case "gate":
-                        actionType = ActionType.ROLLERSHUTTER;
-                        break;
-                    default:
-                        actionType = ActionType.GENERIC;
-                        logger.debug("device model {} not recognised, default to GENERIC action", device.model);
-                }
-
-                NhcAction2 nhcAction = new NhcAction2(device.uuid, device.name, device.model, device.technology,
-                        actionType, location, this);
-                actions.put(device.uuid, nhcAction);
+            ActionType actionType;
+            switch (device.model) {
+                case "generic":
+                case "pir":
+                case "simulation":
+                case "comfort":
+                case "alarms":
+                case "alloff":
+                case "overallcomfort":
+                case "garagedoor":
+                    actionType = ActionType.TRIGGER;
+                    break;
+                case "light":
+                case "socket":
+                case "switched-generic":
+                case "switched-fan":
+                case "flag":
+                    actionType = ActionType.RELAY;
+                    break;
+                case "dimmer":
+                    actionType = ActionType.DIMMER;
+                    break;
+                case "rolldownshutter":
+                case "sunblind":
+                case "venetianblind":
+                case "gate":
+                    actionType = ActionType.ROLLERSHUTTER;
+                    break;
+                default:
+                    actionType = ActionType.GENERIC;
+                    logger.debug("device type {} and model {} not recognised for {}, {}, ignoring", device.type,
+                            device.model, device.uuid, device.name);
+                    return;
             }
+
+            NhcAction nhcAction = actions.get(device.uuid);
+            if (nhcAction != null) {
+                // update name and location so discovery will see updated name and location
+                nhcAction.setName(device.name);
+                nhcAction.setLocation(location);
+            } else {
+                logger.debug("adding action device {} model {}, {}", device.uuid, device.model, device.name);
+                nhcAction = new NhcAction2(device.uuid, device.name, device.type, device.technology, device.model,
+                        location, actionType, this);
+            }
+            actions.put(device.uuid, nhcAction);
         } else if ("thermostat".equals(device.type)) {
-            if (!thermostats.containsKey(device.uuid)) {
-                logger.debug("adding thermostat device {}, {}", device.uuid, device.name);
-
-                NhcThermostat2 nhcThermostat = new NhcThermostat2(device.uuid, device.name, device.model,
-                        device.technology, location, this);
-                thermostats.put(device.uuid, nhcThermostat);
+            NhcThermostat nhcThermostat = thermostats.get(device.uuid);
+            if (nhcThermostat != null) {
+                nhcThermostat.setName(device.name);
+                nhcThermostat.setLocation(location);
+            } else {
+                logger.debug("adding thermostat device {} model {}, {}", device.uuid, device.model, device.name);
+                nhcThermostat = new NhcThermostat2(device.uuid, device.name, device.type, device.technology,
+                        device.model, location, this);
             }
-        } else if ("centralmeter".equals(device.type)) {
-            if (!energyMeters.containsKey(device.uuid)) {
-                logger.debug("adding centralmeter device {}, {}", device.uuid, device.name);
-                NhcEnergyMeter2 nhcEnergyMeter = new NhcEnergyMeter2(device.uuid, device.name, device.model,
-                        device.technology, this, scheduler);
-                energyMeters.put(device.uuid, nhcEnergyMeter);
+            thermostats.put(device.uuid, nhcThermostat);
+        } else if ("centralmeter".equals(device.type) || "energyhome".equals(device.type)) {
+            NhcEnergyMeter nhcEnergyMeter = energyMeters.get(device.uuid);
+            if (nhcEnergyMeter != null) {
+                nhcEnergyMeter.setName(device.name);
+                nhcEnergyMeter.setLocation(location);
+            } else {
+                logger.debug("adding energy meter device {} model {}, {}", device.uuid, device.model, device.name);
+                nhcEnergyMeter = new NhcEnergyMeter2(device.uuid, device.name, device.type, device.technology,
+                        device.model, location, this, scheduler);
             }
+            energyMeters.put(device.uuid, nhcEnergyMeter);
         } else {
-            logger.debug("device type {} not supported for {}, {}", device.type, device.uuid, device.name);
+            logger.debug("device type {} and model {} not supported for {}, {}", device.type, device.model, device.uuid,
+                    device.name);
         }
     }
 
@@ -545,11 +569,11 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         int measured = ambientTemperatureProperty.orElse(thermostat.getMeasured());
         int setpoint = setpointTemperatureProperty.orElse(thermostat.getSetpoint());
 
-        int overrule = thermostat.getOverrule();
-        int overruletime = thermostat.getRemainingOverruletime();
-        if (overruleActiveProperty.orElse(false)) {
-            overrule = overruleSetpointProperty.orElse(0);
-            overruletime = overruleTimeProperty.orElse(0);
+        int overrule = 0;
+        int overruletime = 0;
+        if (overruleActiveProperty.orElse(true)) {
+            overrule = overruleSetpointProperty.orElse(thermostat.getOverrule());
+            overruletime = overruleTimeProperty.orElse(thermostat.getRemainingOverruletime());
         }
 
         int ecosave = thermostat.getEcosave();
@@ -579,18 +603,23 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
     }
 
     private void updateEnergyMeterState(NhcEnergyMeter2 energyMeter, List<NhcProperty> deviceProperties) {
-        deviceProperties.stream().map(p -> p.electricalPower).filter(Objects::nonNull).findFirst()
-                .ifPresent(electricalPower -> {
-                    try {
-                        // Sometimes API sends a fractional part, although API should only send whole units in W,
-                        // therefore drop fractional part
-                        energyMeter.setPower((int) Double.parseDouble(electricalPower));
-                        logger.trace("setting energy meter {} power to {}", energyMeter.getId(), electricalPower);
-                    } catch (NumberFormatException e) {
-                        energyMeter.setPower(null);
-                        logger.trace("received empty energy meter {} power reading", energyMeter.getId());
-                    }
-                });
+        try {
+            Optional<Integer> electricalPower = deviceProperties.stream().map(p -> p.electricalPower)
+                    .map(s -> (!((s == null) || s.isEmpty())) ? Math.round(Float.parseFloat(s)) : null)
+                    .filter(Objects::nonNull).findFirst();
+            Optional<Integer> powerFromGrid = deviceProperties.stream().map(p -> p.electricalPowerFromGrid)
+                    .map(s -> (!((s == null) || s.isEmpty())) ? Math.round(Float.parseFloat(s)) : null)
+                    .filter(Objects::nonNull).findFirst();
+            Optional<Integer> powerToGrid = deviceProperties.stream().map(p -> p.electricalPowerToGrid)
+                    .map(s -> (!((s == null) || s.isEmpty())) ? Math.round(Float.parseFloat(s)) : null)
+                    .filter(Objects::nonNull).findFirst();
+            int power = electricalPower.orElse(powerFromGrid.orElse(0) - powerToGrid.orElse(0));
+            logger.trace("setting energy meter {} power to {}", energyMeter.getId(), electricalPower);
+            energyMeter.setPower(power);
+        } catch (NumberFormatException e) {
+            energyMeter.setPower(null);
+            logger.trace("wrong format in energy meter {} power reading", energyMeter.getId());
+        }
     }
 
     @Override
@@ -620,10 +649,6 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         switch (action.getType()) {
             case GENERIC:
             case TRIGGER:
-                if (!NHCON.equals(value)) {
-                    // Only trigger for ON
-                    return;
-                }
                 property.basicState = NHCTRIGGERED;
                 break;
             case RELAY:
@@ -816,6 +841,8 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
             if (!communicationActive()) {
                 message = (message != null) ? message : "@text/offline.communication-error";
                 connectionLost(message);
+                // Keep on trying to restart, but don't send message anymore
+                scheduleRestartCommunication();
             }
         }
     }
@@ -878,19 +905,19 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
 
     @Override
     public void connectionStateChanged(MqttConnectionState state, @Nullable Throwable error) {
-        if (error != null) {
-            logger.debug("Connection state: {}", state, error);
-            String message = error.getLocalizedMessage();
-            message = (message != null) ? message : "@text/offline.communication-error";
-            if (!MqttConnectionState.CONNECTING.equals(state)) {
-                // This is a connection loss, try to restart
-                restartCommunication();
-            }
-            if (!communicationActive()) {
+        // do in separate thread as this method needs to return early
+        scheduler.submit(() -> {
+            if (error != null) {
+                logger.debug("Connection state: {}, error", state, error);
+                String localizedMessage = error.getLocalizedMessage();
+                String message = (localizedMessage != null) ? localizedMessage : "@text/offline.communication-error";
                 connectionLost(message);
+                scheduleRestartCommunication();
+            } else if ((state == MqttConnectionState.CONNECTED) && !initStarted) {
+                initialize();
+            } else {
+                logger.trace("Connection state: {}", state);
             }
-        } else {
-            logger.trace("Connection state: {}", state);
-        }
+        });
     }
 }

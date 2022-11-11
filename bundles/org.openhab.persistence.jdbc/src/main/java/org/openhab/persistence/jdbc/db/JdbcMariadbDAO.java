@@ -12,7 +12,10 @@
  */
 package org.openhab.persistence.jdbc.db;
 
+import java.util.Objects;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.knowm.yank.Yank;
 import org.openhab.persistence.jdbc.utils.DbMetaData;
 import org.slf4j.Logger;
@@ -27,13 +30,16 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class JdbcMariadbDAO extends JdbcBaseDAO {
+    private static final String DRIVER_CLASS_NAME = org.mariadb.jdbc.Driver.class.getName();
+    @SuppressWarnings("unused")
+    private static final String DATA_SOURCE_CLASS_NAME = org.mariadb.jdbc.MariaDbDataSource.class.getName();
+
     private final Logger logger = LoggerFactory.getLogger(JdbcMariadbDAO.class);
 
     /********
      * INIT *
      ********/
     public JdbcMariadbDAO() {
-        super();
         initSqlTypes();
         initDbProps();
         initSqlQueries();
@@ -65,9 +71,9 @@ public class JdbcMariadbDAO extends JdbcBaseDAO {
 
         // Properties for HikariCP
         // Use driverClassName
-        databaseProps.setProperty("driverClassName", "org.mariadb.jdbc.Driver");
+        databaseProps.setProperty("driverClassName", DRIVER_CLASS_NAME);
         // driverClassName OR BETTER USE dataSourceClassName
-        // databaseProps.setProperty("dataSourceClassName", "org.mariadb.jdbc.MySQLDataSource");
+        // databaseProps.setProperty("dataSourceClassName", DATA_SOURCE_CLASS_NAME);
         databaseProps.setProperty("maximumPoolSize", "3");
         databaseProps.setProperty("minimumIdle", "2");
     }
@@ -75,7 +81,8 @@ public class JdbcMariadbDAO extends JdbcBaseDAO {
     @Override
     public void initAfterFirstDbConnection() {
         logger.debug("JDBC::initAfterFirstDbConnection: Initializing step, after db is connected.");
-        dbMeta = new DbMetaData();
+        DbMetaData dbMeta = new DbMetaData();
+        this.dbMeta = dbMeta;
         // Initialize sqlTypes, depending on DB version for example
         if (dbMeta.isDbVersionGreater(5, 1)) {
             sqlTypes.put("DATETIMEITEM", "TIMESTAMP(3)");
@@ -88,8 +95,9 @@ public class JdbcMariadbDAO extends JdbcBaseDAO {
      * ITEMS DAOs *
      **************/
     @Override
-    public Integer doPingDB() {
-        return Yank.queryScalar(sqlPingDB, Long.class, null).intValue();
+    public @Nullable Integer doPingDB() {
+        final @Nullable Long result = Yank.queryScalar(sqlPingDB, Long.class, null);
+        return Objects.nonNull(result) ? result.intValue() : null;
     }
 
     /*************

@@ -451,7 +451,7 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
         boolean needsUpdate = reconciliation;
 
         for (Thing th : getThing().getThings()) {
-            if (ThingStatus.ONLINE != th.getStatus()) {
+            if (th.isEnabled() && ThingStatus.ONLINE != th.getStatus()) {
                 needsUpdate = true;
             }
         }
@@ -519,7 +519,7 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
     private void processGatewayEvent(SomfyTahomaEvent event) {
         // update gateway status
         for (Thing th : getThing().getThings()) {
-            if (THING_TYPE_GATEWAY.equals(th.getThingTypeUID())) {
+            if (th.isEnabled() && THING_TYPE_GATEWAY.equals(th.getThingTypeUID())) {
                 SomfyTahomaGatewayHandler gatewayHandler = (SomfyTahomaGatewayHandler) th.getHandler();
                 if (gatewayHandler != null && gatewayHandler.getGateWayId().equals(event.getGatewayId())) {
                     gatewayHandler.refresh(STATUS);
@@ -567,7 +567,7 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
                 handler.updateThingChannels(states);
             }
         } else {
-            logger.debug("Thing handler is null, probably not bound thing.");
+            logger.debug("Thing is disabled or handler is null, probably not bound thing.");
         }
     }
 
@@ -588,6 +588,9 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
 
     private @Nullable Thing getThingByDeviceUrl(String deviceUrl) {
         for (Thing th : getThing().getThings()) {
+            if (!th.isEnabled()) {
+                continue;
+            }
             String url = (String) th.getConfiguration().get("url");
             if (deviceUrl.equals(url)) {
                 return th;

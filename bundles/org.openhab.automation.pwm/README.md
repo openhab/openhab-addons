@@ -26,13 +26,15 @@ Select the Item you like to control in the "Item Action" and leave the command e
 
 ### Trigger
 
-| Name            | Type    | Description                                                                                  | Required |
-|-----------------|---------|----------------------------------------------------------------------------------------------|----------|
-| `dutycycleItem` | Item    | The Item (PercentType) to read the duty cycle from                                           | Yes      |
-| `interval`      | Decimal | The constant interval in which the output is switch ON and OFF again in sec.                 | Yes      |
-| `minDutyCycle`  | Decimal | Any duty cycle below this value will be increased to this value                              | No       |
-| `maxDutycycle`  | Decimal | Any duty cycle above this value will be decreased to this value                              | No       |
-| `deadManSwitch` | Decimal | The output will be switched off, when the duty cycle is not updated within this time (in ms) | No       |
+| Name                 | Type    | Description                                                                                  | Required |
+|----------------------|---------|----------------------------------------------------------------------------------------------|----------|
+| `dutycycleItem`      | Item    | The Item (PercentType) to read the duty cycle from                                           | Yes      |
+| `interval`           | Decimal | The constant interval in which the output is switch ON and OFF again in sec.                 | Yes      |
+| `minDutyCycle`       | Decimal | Any duty cycle below this value will be increased to this value                              | No       |
+| `equateMinToZero`    | Boolean | True if the duty cycle below `minDutycycle` should be set to 0 (defaults to false)           | No       |
+| `maxDutycycle`       | Decimal | Any duty cycle above this value will be increased to 100                                     | No       |
+| `equateMaxToHundred` | Boolean | True if the duty cycle above `maxDutyCycle` should be set to 100 (defaults to true)          | No       |
+| `deadManSwitch`      | Decimal | The output will be switched off, when the duty cycle is not updated within this time (in ms) | No       |
 
 The duty cycle can be limited via the parameters `minDutycycle` and `maxDutyCycle`.
 This is helpful if you need to maintain a minimum time between the switching of the output.

@@ -41,6 +41,12 @@
 			<description>Defines the port the HomeKit integration listens on.</description>
 			<default>9123</default>
 		</parameter>
+		<parameter name="instances" type="integer" required="true" groupName="core">
+			<label>Instances</label>
+			<description>Defines how many bridges to expose. Necessary if you have more than 149 accessories. Accessories must be
+				assigned to additional instances via metadata. Additional bridges will use incrementing port numbers.</description>
+			<default>1</default>
+		</parameter>
 		<parameter name="pin" type="text" pattern="\d{3}-\d{2}-\d{3}" required="true" groupName="core">
 			<label>Pin</label>
 			<description>Defines the pin, used for pairing, in the form ###-##-###.</description>

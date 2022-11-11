@@ -14,11 +14,14 @@ package org.openhab.persistence.jdbc.db;
 
 import java.time.ZoneId;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.knowm.yank.Yank;
 import org.openhab.core.items.Item;
 import org.openhab.core.library.items.NumberItem;
@@ -40,14 +43,18 @@ import org.slf4j.LoggerFactory;
  *
  * @author Helmut Lehmeyer - Initial contribution
  */
+@NonNullByDefault
 public class JdbcDerbyDAO extends JdbcBaseDAO {
+    private static final String DRIVER_CLASS_NAME = org.apache.derby.jdbc.EmbeddedDriver.class.getName();
+    @SuppressWarnings("unused")
+    private static final String DATA_SOURCE_CLASS_NAME = org.apache.derby.jdbc.EmbeddedDataSource.class.getName();
+
     private final Logger logger = LoggerFactory.getLogger(JdbcDerbyDAO.class);
 
     /********
      * INIT *
      ********/
     public JdbcDerbyDAO() {
-        super();
         initSqlTypes();
         initDbProps();
         initSqlQueries();
@@ -81,9 +88,9 @@ public class JdbcDerbyDAO extends JdbcBaseDAO {
     private void initDbProps() {
         // Properties for HikariCP
         // Use driverClassName
-        databaseProps.setProperty("driverClassName", "org.apache.derby.jdbc.EmbeddedDriver");
+        databaseProps.setProperty("driverClassName", DRIVER_CLASS_NAME);
         // OR dataSourceClassName
-        // databaseProps.setProperty("dataSourceClassName", "org.apache.derby.jdbc.EmbeddedDataSource");
+        // databaseProps.setProperty("dataSourceClassName", DATA_SOURCE_CLASS_NAME);
         databaseProps.setProperty("maximumPoolSize", "1");
         databaseProps.setProperty("minimumIdle", "1");
     }
@@ -99,7 +106,7 @@ public class JdbcDerbyDAO extends JdbcBaseDAO {
      * ITEMS DAOs *
      **************/
     @Override
-    public Integer doPingDB() {
+    public @Nullable Integer doPingDB() {
         return Yank.queryScalar(sqlPingDB, Integer.class, null);
     }
 
@@ -108,14 +115,15 @@ public class JdbcDerbyDAO extends JdbcBaseDAO {
         String sql = StringUtilsExt.replaceArrayMerge(sqlIfTableExists, new String[] { "#searchTable#" },
                 new String[] { vo.getItemsManageTable().toUpperCase() });
         logger.debug("JDBC::doIfTableExists sql={}", sql);
-        return Yank.queryScalar(sql, String.class, null) != null;
+        final @Nullable String result = Yank.queryScalar(sql, String.class, null);
+        return Objects.nonNull(result);
     }
 
     @Override
     public Long doCreateNewEntryInItemsTable(ItemsVO vo) {
         String sql = StringUtilsExt.replaceArrayMerge(sqlCreateNewEntryInItemsTable,
                 new String[] { "#itemsManageTable#", "#itemname#" },
-                new String[] { vo.getItemsManageTable().toUpperCase(), vo.getItemname() });
+                new String[] { vo.getItemsManageTable().toUpperCase(), vo.getItemName() });
         logger.debug("JDBC::doCreateNewEntryInItemsTable sql={}", sql);
         return Yank.insert(sql, null);
     }
@@ -155,7 +163,7 @@ public class JdbcDerbyDAO extends JdbcBaseDAO {
                 new String[] { "#tableName#", "#dbType#", "#tablePrimaryValue#" },
                 new String[] { storedVO.getTableName().toUpperCase(), storedVO.getDbType(),
                         sqlTypes.get("tablePrimaryValue") });
-        Object[] params = new Object[] { storedVO.getValue() };
+        Object[] params = { storedVO.getValue() };
         logger.debug("JDBC::doStoreItemValue sql={} value='{}'", sql, storedVO.getValue());
         Yank.execute(sql, params);
     }
@@ -171,7 +179,7 @@ public class JdbcDerbyDAO extends JdbcBaseDAO {
         Unit<? extends Quantity<?>> unit = item instanceof NumberItem ? ((NumberItem) item).getUnit() : null;
         return m.stream().map(o -> {
             logger.debug("JDBC::doGetHistItemFilterQuery 0='{}' 1='{}'", o[0], o[1]);
-            return new JdbcHistoricItem(itemName, objectAsState(item, unit, o[1]), objectAsDate(o[0]));
+            return new JdbcHistoricItem(itemName, objectAsState(item, unit, o[1]), objectAsZonedDateTime(o[0]));
         }).collect(Collectors.<HistoricItem> toList());
     }
 

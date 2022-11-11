@@ -80,8 +80,13 @@
 			</parameter>
 			<parameter name="updateDelay" type="integer" unit="s" min="5" max="120">
 				<label>Update Delay</label>
-				<description>How long to wait for commands to reach car and update to server in seconds.</description>
+				<description>How long to wait for commands to reach the car and update to server in seconds.</description>
 				<default>30</default>
+			</parameter>
+			<parameter name="kamereonApiKey" type="text">
+				<label>Kamereon API Key</label>
+				<description>Access code for MyRenault Services.</description>
+				<default>VAX7XYKGfa92yMvXculCkEFyfZbuM7Ss</default>
 			</parameter>
 		</config-description>
 	</thing-type>

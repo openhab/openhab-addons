@@ -12,24 +12,27 @@
  */
 package org.openhab.binding.unifi.internal.api;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link UniFiSSLException} signals a failure establishing an SSL connection with the controller.
  *
  * @author Matthew Bowman - Initial contribution
  */
+@NonNullByDefault
 public class UniFiSSLException extends UniFiException {
 
     private static final long serialVersionUID = 4688857482270932413L;
 
-    public UniFiSSLException(String message) {
+    public UniFiSSLException(final String message) {
         super(message);
     }
 
-    public UniFiSSLException(String message, Throwable cause) {
+    public UniFiSSLException(final String message, final Throwable cause) {
         super(message, cause);
     }
 
-    public UniFiSSLException(Throwable cause) {
+    public UniFiSSLException(final Throwable cause) {
         super(cause);
     }
 }

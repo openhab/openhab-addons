@@ -35,8 +35,8 @@ import org.openhab.core.types.Command;
 @NonNullByDefault
 public class NukiSmartLockHandler extends AbstractNukiDeviceHandler<NukiSmartLockConfiguration> {
 
-    public NukiSmartLockHandler(Thing thing) {
-        super(thing);
+    public NukiSmartLockHandler(Thing thing, boolean readOnly) {
+        super(thing, readOnly);
     }
 
     @Override

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mybmw"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-type id="service-name-channel">
+		<item-type>String</item-type>
+		<label>Service Name</label>
+	</channel-type>
+	<channel-type id="service-details-channel">
+		<item-type>String</item-type>
+		<label>Service Details</label>
+	</channel-type>
+	<channel-type id="service-date-channel">
+		<item-type>DateTime</item-type>
+		<label>Service Date</label>
+		<state pattern="%1$tb %1$tY"/>
+	</channel-type>
+	<channel-type id="service-mileage-channel">
+		<item-type>Number:Length</item-type>
+		<label>Mileage till Service</label>
+		<state pattern="%d %unit%"/>
+	</channel-type>
+</thing:thing-descriptions>

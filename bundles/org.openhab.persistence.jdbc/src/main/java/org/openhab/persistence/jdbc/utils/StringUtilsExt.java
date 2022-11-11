@@ -101,7 +101,7 @@ public class StringUtilsExt {
             props = new Properties(def);
         }
 
-        if (url == null || url.length() < 9) {
+        if (url.length() < 9) {
             return props;
         }
 

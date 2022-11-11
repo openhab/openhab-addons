@@ -12,6 +12,8 @@
  */
 package org.openhab.persistence.jdbc.db;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.knowm.yank.Yank;
 import org.openhab.core.items.Item;
 import org.openhab.core.types.State;
@@ -28,14 +30,18 @@ import org.slf4j.LoggerFactory;
  *
  * @author Helmut Lehmeyer - Initial contribution
  */
+@NonNullByDefault
 public class JdbcSqliteDAO extends JdbcBaseDAO {
+    private static final String DRIVER_CLASS_NAME = org.sqlite.JDBC.class.getName();
+    @SuppressWarnings("unused")
+    private static final String DATA_SOURCE_CLASS_NAME = org.sqlite.SQLiteDataSource.class.getName();
+
     private final Logger logger = LoggerFactory.getLogger(JdbcSqliteDAO.class);
 
     /********
      * INIT *
      ********/
     public JdbcSqliteDAO() {
-        super();
         initSqlQueries();
         initSqlTypes();
         initDbProps();
@@ -63,9 +69,9 @@ public class JdbcSqliteDAO extends JdbcBaseDAO {
      */
     private void initDbProps() {
         // Properties for HikariCP
-        databaseProps.setProperty("driverClassName", "org.sqlite.JDBC");
+        databaseProps.setProperty("driverClassName", DRIVER_CLASS_NAME);
         // driverClassName OR BETTER USE dataSourceClassName
-        // databaseProps.setProperty("dataSourceClassName", "org.sqlite.SQLiteDataSource");
+        // databaseProps.setProperty("dataSourceClassName", DATA_SOURCE_CLASS_NAME);
     }
 
     /**************
@@ -73,7 +79,7 @@ public class JdbcSqliteDAO extends JdbcBaseDAO {
      **************/
 
     @Override
-    public String doGetDB() {
+    public @Nullable String doGetDB() {
         return Yank.queryColumn(sqlGetDB, "file", String.class, null).get(0);
     }
 
@@ -96,7 +102,7 @@ public class JdbcSqliteDAO extends JdbcBaseDAO {
         String sql = StringUtilsExt.replaceArrayMerge(sqlInsertItemValue,
                 new String[] { "#tableName#", "#dbType#", "#tablePrimaryValue#" },
                 new String[] { storedVO.getTableName(), storedVO.getDbType(), sqlTypes.get("tablePrimaryValue") });
-        Object[] params = new Object[] { storedVO.getValue() };
+        Object[] params = { storedVO.getValue() };
         logger.debug("JDBC::doStoreItemValue sql={} value='{}'", sql, storedVO.getValue());
         Yank.execute(sql, params);
     }

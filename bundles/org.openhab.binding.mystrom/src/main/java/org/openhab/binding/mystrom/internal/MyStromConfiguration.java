@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.mystrom.internal;
 
-import static org.openhab.binding.mystrom.internal.MyStromBindingConstants.DEFAULT_REFRESH_RATE_SECONDS;
+import static org.openhab.binding.mystrom.internal.MyStromBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -20,16 +20,69 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * The {@link MyStromConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Paul Frank - Initial contribution
+ * @author Stefan Navratil - Added configuration for myStrom PIR
  */
 @NonNullByDefault
 public class MyStromConfiguration {
 
+    private final String urlPrefix = "http://";
+
+    private String hostname = "localhost";
+
+    private String apiToken = "";
+
+    private int refresh = DEFAULT_REFRESH_RATE_SECONDS;
+
+    private int backoffTime = DEFAULT_BACKOFF_TIME_SECONDS;
+
+    private boolean ledEnable = true;
+
     /**
-     * Hostname of the myStrom device.
+     * Returns the hostname with http prefix if missing.
+     *
+     * @return hostname
      */
-    public String hostname = "localhost";
+    public String getHostname() {
+        String prefix = "";
+        if (!this.hostname.contains(urlPrefix)) {
+            prefix = urlPrefix;
+        }
+        return prefix + this.hostname;
+    }
+
     /**
-     * Number of seconds in between refreshes from the myStrom device.
+     * returns API Token
+     *
+     * @return apiToken
      */
-    public int refresh = DEFAULT_REFRESH_RATE_SECONDS;
+    public String getApiToken() {
+        return apiToken;
+    }
+
+    /**
+     * Returns the refreshrate in SECONDS.
+     *
+     * @return refresh
+     */
+    public int getRefresh() {
+        return refresh;
+    }
+
+    /**
+     * Returns the Backoff time of the MotionSensor in SECONDS.
+     *
+     * @return backoff_time
+     */
+    public int getBackoffTime() {
+        return backoffTime;
+    }
+
+    /**
+     * Returns the Status LED Configuration.
+     *
+     * @return led_enable
+     */
+    public boolean getLedEnable() {
+        return ledEnable;
+    }
 }

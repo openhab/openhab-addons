@@ -6,22 +6,22 @@
 
 	<bridge-type id="bridge">
 		<label>Luxom Bridge</label>
-		<description>This bridge represents a Luxom IP-interface (for example a DS-65L)</description>
+		<description>This bridge represents a Luxom IP-interface (for example a DS-65L).</description>
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
 				<context>network-address</context>
 				<label>IP or Host Name</label>
-				<description>The IP or host name of the Luxom IP-interface</description>
+				<description>The IP or host name of the Luxom IP-interface.</description>
 			</parameter>
 			<parameter name="port" type="integer" required="true">
 				<label>Bridge Port</label>
-				<description>Port to communicate with Luxom IP-interface, default 2300</description>
+				<description>Port to communicate with Luxom IP-interface, default 2300.</description>
 				<default>2300</default>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="reconnectInterval" type="integer" min="1" max="60" unit="min">
 				<label>Reconnect Interval</label>
-				<description>The period in minutes that the handler will wait between connection attempts after disconnect</description>
+				<description>The period in minutes that the handler will wait between connection attempts after disconnect.</description>
 				<unitLabel>minutes</unitLabel>
 				<default>1</default>
 				<advanced>true</advanced>
@@ -33,8 +33,8 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
-		<label>switch</label>
-		<description>Luxom Switch</description>
+		<label>Switch</label>
+		<description>Switch type action in Luxom</description>
 		<channels>
 			<channel id="switch" typeId="switchState"/>
 		</channels>
@@ -47,12 +47,13 @@
 			</parameter>
 		</config-description>
 	</thing-type>
+
 	<thing-type id="dimmer">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 		<label>Dimmer</label>
-		<description>Luxom Dimmer</description>
+		<description>Dimmer type action in Luxom</description>
 		<channels>
 			<channel id="brightness" typeId="system.brightness"/>
 		</channels>
@@ -89,7 +90,7 @@
 	<channel-type id="switchState">
 		<item-type>Switch</item-type>
 		<label>Switch</label>
-		<description>Switch control for action in Luxom</description>
+		<description>Switch control for action in Luxom.</description>
 		<category>Switch</category>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>

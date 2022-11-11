@@ -57,10 +57,29 @@ public class ProwlActions implements ThingActions {
         handler.pushNotification(event, message);
     }
 
+    @RuleAction(label = "@text/pushNotificationActionLabel", description = "@text/pushNotificationActionDescription")
+    public void pushNotification(
+            @ActionInput(name = "event", label = "@text/pushNotificationActionEventLabel", description = "@text/pushNotificationActionEventDescription") @Nullable String event,
+            @ActionInput(name = "message", label = "@text/pushNotificationActionMessageLabel", description = "@text/pushNotificationActionMessageDescription") @Nullable String message,
+            @ActionInput(name = "priority", label = "@text/pushNotificationActionPriorityLabel", description = "@text/pushNotificationActionPriorityDescription") int priority) {
+        ProwlHandler clientHandler = handler;
+        if (clientHandler == null) {
+            logger.warn("Prowl ThingHandler is null");
+            return;
+        }
+
+        handler.pushNotification(event, message, priority);
+    }
+
     public static void pushNotification(@Nullable ThingActions actions, @Nullable String event,
             @Nullable String description) {
+        pushNotification(actions, event, description, 0);
+    }
+
+    public static void pushNotification(@Nullable ThingActions actions, @Nullable String event,
+            @Nullable String description, int priority) {
         if (actions instanceof ProwlActions) {
-            ((ProwlActions) actions).pushNotification(event, description);
+            ((ProwlActions) actions).pushNotification(event, description, priority);
         } else {
             throw new IllegalArgumentException("Instance is not a ProwlActions class.");
         }

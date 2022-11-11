@@ -43,6 +43,7 @@ import org.openhab.binding.mielecloud.internal.webservice.retry.AuthorizationFai
 import org.openhab.binding.mielecloud.internal.webservice.retry.NTimesRetryStrategy;
 import org.openhab.binding.mielecloud.internal.webservice.retry.RetryStrategy;
 import org.openhab.binding.mielecloud.internal.webservice.retry.RetryStrategyCombiner;
+import org.openhab.binding.mielecloud.internal.webservice.sse.ServerSentEvent;
 import org.openhab.core.io.net.http.HttpClientFactory;
 
 /**
@@ -58,7 +59,8 @@ public class DefaultMieleWebserviceTest {
 
     private static final String SERVER_ADDRESS = "https://api.mcs3.miele.com";
     private static final String ENDPOINT_DEVICES = SERVER_ADDRESS + "/v1/devices/";
-    private static final String ENDPOINT_ACTIONS = ENDPOINT_DEVICES + DEVICE_IDENTIFIER + "/actions";
+    private static final String ENDPOINT_EXTENSION_ACTIONS = "/actions";
+    private static final String ENDPOINT_ACTIONS = ENDPOINT_DEVICES + DEVICE_IDENTIFIER + ENDPOINT_EXTENSION_ACTIONS;
     private static final String ENDPOINT_LOGOUT = SERVER_ADDRESS + "/thirdparty/logout";
 
     private static final String ACCESS_TOKEN = "DE_0123456789abcdef0123456789abcdef";
@@ -718,6 +720,214 @@ public class DefaultMieleWebserviceTest {
             // then:
             verify(dispatcher).dispatchDeviceState(DEVICE_IDENTIFIER);
             verifyNoMoreInteractions(dispatcher);
+        }
+    }
+
+    @Test
+    public void receivingSseActionsEventNotifiesConnectionAlive() throws Exception {
+        // given:
+        var requestFactory = mock(RequestFactory.class);
+        var dispatcher = mock(DeviceStateDispatcher.class);
+        var scheduler = mock(ScheduledExecutorService.class);
+
+        var connectionStatusListener = mock(ConnectionStatusListener.class);
+
+        try (var webservice = new DefaultMieleWebservice(requestFactory, new NTimesRetryStrategy(0), dispatcher,
+                scheduler)) {
+            webservice.addConnectionStatusListener(connectionStatusListener);
+
+            var actionsEvent = new ServerSentEvent(DefaultMieleWebservice.SSE_EVENT_TYPE_ACTIONS, "{}");
+
+            // when:
+            webservice.onServerSentEvent(actionsEvent);
+
+            // then:
+            verify(connectionStatusListener).onConnectionAlive();
+        }
+    }
+
+    @Test
+    public void receivingSseActionsEventWithNonJsonPayloadDoesNothing() throws Exception {
+        // given:
+        var requestFactory = mock(RequestFactory.class);
+        var dispatcher = mock(DeviceStateDispatcher.class);
+        var scheduler = mock(ScheduledExecutorService.class);
+
+        try (var webservice = new DefaultMieleWebservice(requestFactory, new NTimesRetryStrategy(0), dispatcher,
+                scheduler)) {
+            webservice.setAccessToken(ACCESS_TOKEN);
+
+            var actionsEvent = new ServerSentEvent(DefaultMieleWebservice.SSE_EVENT_TYPE_ACTIONS,
+                    "{\"" + DEVICE_IDENTIFIER + "\": {}");
+
+            // when:
+            webservice.onServerSentEvent(actionsEvent);
+
+            // then:
+            verifyNoMoreInteractions(dispatcher);
+        }
+    }
+
+    @Test
+    public void receivingSseActionsEventFetchesActionsForADevice() throws Exception {
+        // given:
+        var requestFactory = mock(RequestFactory.class);
+        when(requestFactory.createGetRequest(ENDPOINT_ACTIONS, ACCESS_TOKEN)).thenReturn(request);
+
+        var response = createContentResponseMock(200, "{}");
+        when(request.send()).thenReturn(response);
+
+        var dispatcher = mock(DeviceStateDispatcher.class);
+        var scheduler = mock(ScheduledExecutorService.class);
+
+        try (var webservice = new DefaultMieleWebservice(requestFactory, new NTimesRetryStrategy(0), dispatcher,
+                scheduler)) {
+            webservice.setAccessToken(ACCESS_TOKEN);
+
+            var actionsEvent = new ServerSentEvent(DefaultMieleWebservice.SSE_EVENT_TYPE_ACTIONS,
+                    "{\"" + DEVICE_IDENTIFIER + "\": {}}");
+
+            // when:
+            webservice.onServerSentEvent(actionsEvent);
+
+            // then:
+            verify(dispatcher).dispatchActionStateUpdates(eq(DEVICE_IDENTIFIER), any());
+            verifyNoMoreInteractions(dispatcher);
+        }
+    }
+
+    @Test
+    public void receivingSseActionsEventFetchesActionsForMultipleDevices() throws Exception {
+        // given:
+        var otherRequest = mock(Request.class);
+        var otherDeviceIdentifier = "000124430017";
+
+        var requestFactory = mock(RequestFactory.class);
+        when(requestFactory.createGetRequest(ENDPOINT_ACTIONS, ACCESS_TOKEN)).thenReturn(request);
+        when(requestFactory.createGetRequest(ENDPOINT_DEVICES + otherDeviceIdentifier + ENDPOINT_EXTENSION_ACTIONS,
+                ACCESS_TOKEN)).thenReturn(otherRequest);
+
+        var response = createContentResponseMock(200, "{}");
+        when(request.send()).thenReturn(response);
+        when(otherRequest.send()).thenReturn(response);
+
+        var dispatcher = mock(DeviceStateDispatcher.class);
+        var scheduler = mock(ScheduledExecutorService.class);
+
+        try (var webservice = new DefaultMieleWebservice(requestFactory, new NTimesRetryStrategy(0), dispatcher,
+                scheduler)) {
+            webservice.setAccessToken(ACCESS_TOKEN);
+
+            var actionsEvent = new ServerSentEvent(DefaultMieleWebservice.SSE_EVENT_TYPE_ACTIONS,
+                    "{\"" + DEVICE_IDENTIFIER + "\": {}, \"" + otherDeviceIdentifier + "\": {}}");
+
+            // when:
+            webservice.onServerSentEvent(actionsEvent);
+
+            // then:
+            verify(dispatcher).dispatchActionStateUpdates(eq(DEVICE_IDENTIFIER), any());
+            verify(dispatcher).dispatchActionStateUpdates(eq(otherDeviceIdentifier), any());
+            verifyNoMoreInteractions(dispatcher);
+        }
+    }
+
+    @Test
+    public void whenFetchingActionsAfterReceivingSseActionsEventFailsForADeviceThenNothingHappensForThisDevice()
+            throws Exception {
+        // given:
+        var otherRequest = mock(Request.class);
+        var otherDeviceIdentifier = "000124430017";
+
+        var requestFactory = mock(RequestFactory.class);
+        when(requestFactory.createGetRequest(ENDPOINT_ACTIONS, ACCESS_TOKEN)).thenReturn(request);
+        when(requestFactory.createGetRequest(ENDPOINT_DEVICES + otherDeviceIdentifier + ENDPOINT_EXTENSION_ACTIONS,
+                ACCESS_TOKEN)).thenReturn(otherRequest);
+
+        var response = createContentResponseMock(200, "{}");
+        when(request.send()).thenReturn(response);
+        var otherResponse = createContentResponseMock(405, "{\"message\": \"HTTP 405 Method Not Allowed\"}");
+        when(otherRequest.send()).thenReturn(otherResponse);
+
+        var dispatcher = mock(DeviceStateDispatcher.class);
+        var scheduler = mock(ScheduledExecutorService.class);
+
+        try (var webservice = new DefaultMieleWebservice(requestFactory, new NTimesRetryStrategy(0), dispatcher,
+                scheduler)) {
+            webservice.setAccessToken(ACCESS_TOKEN);
+
+            var actionsEvent = new ServerSentEvent(DefaultMieleWebservice.SSE_EVENT_TYPE_ACTIONS,
+                    "{\"" + DEVICE_IDENTIFIER + "\": {}, \"" + otherDeviceIdentifier + "\": {}}");
+
+            // when:
+            webservice.onServerSentEvent(actionsEvent);
+
+            // then:
+            verify(dispatcher).dispatchActionStateUpdates(eq(DEVICE_IDENTIFIER), any());
+            verifyNoMoreInteractions(dispatcher);
+        }
+    }
+
+    @Test
+    public void whenFetchingActionsAfterReceivingSseActionsEventFailsBecauseOfTooManyRequestsThenNothingHappens()
+            throws Exception {
+        // given:
+        var requestFactory = mock(RequestFactory.class);
+        when(requestFactory.createGetRequest(ENDPOINT_ACTIONS, ACCESS_TOKEN)).thenReturn(request);
+
+        var response = createContentResponseMock(429, "{\"message\": \"Too Many Requests\"}");
+        when(request.send()).thenReturn(response);
+
+        var headerFields = mock(HttpFields.class);
+        when(headerFields.containsKey(anyString())).thenReturn(false);
+        when(response.getHeaders()).thenReturn(headerFields);
+
+        var dispatcher = mock(DeviceStateDispatcher.class);
+        var scheduler = mock(ScheduledExecutorService.class);
+
+        try (var webservice = new DefaultMieleWebservice(requestFactory, new NTimesRetryStrategy(0), dispatcher,
+                scheduler)) {
+            webservice.setAccessToken(ACCESS_TOKEN);
+
+            var actionsEvent = new ServerSentEvent(DefaultMieleWebservice.SSE_EVENT_TYPE_ACTIONS,
+                    "{\"" + DEVICE_IDENTIFIER + "\": {}}");
+
+            // when:
+            webservice.onServerSentEvent(actionsEvent);
+
+            // then:
+            verifyNoMoreInteractions(dispatcher);
+        }
+    }
+
+    @Test
+    public void whenFetchingActionsAfterReceivingSseActionsEventFailsBecauseOfAuthorizationFailedThenThisIsNotifiedToListeners()
+            throws Exception {
+        // given:
+        var requestFactory = mock(RequestFactory.class);
+        when(requestFactory.createGetRequest(ENDPOINT_ACTIONS, ACCESS_TOKEN)).thenReturn(request);
+
+        var response = createContentResponseMock(401, "{\"message\": \"Unauthorized\"}");
+        when(request.send()).thenReturn(response);
+
+        var dispatcher = mock(DeviceStateDispatcher.class);
+        var scheduler = mock(ScheduledExecutorService.class);
+
+        var connectionStatusListener = mock(ConnectionStatusListener.class);
+
+        try (var webservice = new DefaultMieleWebservice(requestFactory, new NTimesRetryStrategy(0), dispatcher,
+                scheduler)) {
+            webservice.addConnectionStatusListener(connectionStatusListener);
+            webservice.setAccessToken(ACCESS_TOKEN);
+
+            var actionsEvent = new ServerSentEvent(DefaultMieleWebservice.SSE_EVENT_TYPE_ACTIONS,
+                    "{\"" + DEVICE_IDENTIFIER + "\": {}}");
+
+            // when:
+            webservice.onServerSentEvent(actionsEvent);
+
+            // then:
+            verifyNoMoreInteractions(dispatcher);
+            verify(connectionStatusListener).onConnectionError(ConnectionError.AUTHORIZATION_FAILED, 0);
         }
     }
 

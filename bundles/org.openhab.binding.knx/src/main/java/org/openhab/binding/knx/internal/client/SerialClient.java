@@ -36,23 +36,33 @@ import tuwien.auto.calimero.link.medium.TPSettings;
 @NonNullByDefault
 public class SerialClient extends AbstractKNXClient {
 
+    private static final String CALIMERO_ERROR_CANNOT_OPEN_PORT = "failed to open serial port";
+
     private final Logger logger = LoggerFactory.getLogger(SerialClient.class);
 
     private final String serialPort;
+    private final boolean useCemi;
 
     public SerialClient(int autoReconnectPeriod, ThingUID thingUID, int responseTimeout, int readingPause,
-            int readRetriesLimit, ScheduledExecutorService knxScheduler, String serialPort,
+            int readRetriesLimit, ScheduledExecutorService knxScheduler, String serialPort, boolean useCemi,
             StatusUpdateCallback statusUpdateCallback) {
         super(autoReconnectPeriod, thingUID, responseTimeout, readingPause, readRetriesLimit, knxScheduler,
                 statusUpdateCallback);
         this.serialPort = serialPort;
+        this.useCemi = useCemi;
     }
 
     @Override
     protected KNXNetworkLink establishConnection() throws KNXException, InterruptedException {
         try {
             RXTXVersion.getVersion();
-            logger.debug("Establishing connection to KNX bus through FT1.2 on serial port {}.", serialPort);
+            logger.debug("Establishing connection to KNX bus through FT1.2 on serial port {}{}.", serialPort,
+                    (useCemi ? " using CEMI" : ""));
+            // CEMI support by Calimero library, userful for newer serial devices like KNX RF sticks, kBerry,
+            // etc.; default is still old EMI frame format
+            if (useCemi) {
+                return KNXNetworkLinkFT12.newCemiLink(serialPort, new TPSettings());
+            }
             return new KNXNetworkLinkFT12(serialPort, new TPSettings());
 
         } catch (NoClassDefFoundError e) {
@@ -61,7 +71,8 @@ public class SerialClient extends AbstractKNXClient {
                     e);
         } catch (KNXException e) {
             final String msg = e.getMessage();
-            if ((msg != null) && (msg.startsWith("can not open serial port"))) {
+            // TODO add a test for this string match; error message might change in later version of Calimero library
+            if ((msg != null) && (msg.startsWith(CALIMERO_ERROR_CANNOT_OPEN_PORT))) {
                 StringBuilder sb = new StringBuilder("Available ports are:\n");
                 Enumeration<?> portList = CommPortIdentifier.getPortIdentifiers();
                 while (portList.hasMoreElements()) {

@@ -231,6 +231,7 @@ Currently the miio binding supports more than 330 different models.
 | Dreame Robot Vacuum D9             | miio:basic       | [dreame.vacuum.p2009](#dreame-vacuum-p2009) | Yes          |            |
 | Dreame Bot W10                     | miio:basic       | [dreame.vacuum.p2027](#dreame-vacuum-p2027) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Dreame Bot Z10 Pro                 | miio:basic       | [dreame.vacuum.p2028](#dreame-vacuum-p2028) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Dreame Bot L10 Pro                 | miio:basic       | [dreame.vacuum.p2029](#dreame-vacuum-p2029) | Yes          |            |
 | Trouver Robot LDS Vacuum-Mop Finder | miio:basic       | [dreame.vacuum.p2036](#dreame-vacuum-p2036) | Yes          |            |
 | Mi Robot Vacuum-Mop 2 Pro+         | miio:basic       | [dreame.vacuum.p2041o](#dreame-vacuum-p2041o) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | MOVA Z500 Robot Vacuum and Mop Cleaner | miio:basic       | [dreame.vacuum.p2156o](#dreame-vacuum-p2156o) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
@@ -258,6 +259,7 @@ Currently the miio binding supports more than 330 different models.
 | HUIZUO ZIWEI Ceiling Lamp          | miio:basic       | [huayi.light.zw131](#huayi-light-zw131) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | MiJia Rice Cooker                  | miio:unsupported | hunmi.cooker.normal3   | No           |            |
 | Jinxing Smart Air Conditioner      | miio:unsupported | idelan.aircondition.v1 | No           |            |
+| Xiaomi Robot Vacuum-Mop 2S         | miio:basic       | [ijai.vacuum.v19](#ijai-vacuum-v19) | Yes          |            |
 | IKEA E27 white spectrum opal       | miio:lumi        | [ikea.light.led1545g12](#ikea-light-led1545g12) | Experimental | Needs to have the Xiaomi gateway configured in the binding as bridge.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | IKEA E27 white spectrum clear      | miio:lumi        | [ikea.light.led1546g12](#ikea-light-led1546g12) | Experimental | Needs to have the Xiaomi gateway configured in the binding as bridge.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | IKEA E14 white spectrum            | miio:lumi        | [ikea.light.led1536g5](#ikea-light-led1536g5) | Experimental | Needs to have the Xiaomi gateway configured in the binding as bridge.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
@@ -707,7 +709,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
-| battery              | Number               | Battery                                  |            |
+| battery              | Number               | Battery                                  | The device with firmware "4.1.8_9999" stops recognizing parameter "battery" in "get_value" command. The "battery" value request was extracted to separate command in order to keep backward compatibility to the devices with older firmware. |
 | pm25                 | Number               | PM2.5                                    |            |
 | co2                  | Number               | CO2                                      |            |
 | tvoc                 | Number               | tVOC                                     |            |
@@ -1252,6 +1254,54 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | clean_times          | Number               | Collect Dust - Clean Times               |            |
 | dust_enable          | Number               | Collect Dust - Dust Enable               | Value mapping `["0"="Disable","1"="Enable"]` |
 
+### Dreame Bot L10 Pro (<a name="dreame-vacuum-p2029">dreame.vacuum.p2029</a>) Channels
+
+| Channel              | Type                 | Description                              | Comment    |
+|----------------------|----------------------|------------------------------------------|------------|
+| actions              | String               | Actions                                  |            |
+| status               | Number               | Robot Cleaner - Status                   | Value mapping `["1"="Sweeping","2"="Idle","3"="Paused","4"="Error","5"="Go Charging","6"="Charging","7"="Mopping"]` |
+| fault                | Number               | Robot Cleaner - Device Fault             |            |
+| battery_level        | Number:Dimensionless | Battery - Battery Level                  |            |
+| charging_state       | Number               | Battery - Charging State                 | Value mapping `["1"="Charging","2"="Not Charging","5"="Go Charging"]` |
+| brush_left_time      | Number:Time          | Main Cleaning Brush - Brush Left Time    |            |
+| brush_life_level     | Number:Dimensionless | Main Cleaning Brush - Brush Life Level   |            |
+| brush_left_time1     | Number:Time          | Side Cleaning Brush - Brush Left Time    |            |
+| brush_life_level1    | Number:Dimensionless | Side Cleaning Brush - Brush Life Level   |            |
+| filter_life_level    | Number:Dimensionless | Filter - Filter Life Level               |            |
+| filter_left_time     | Number:Time          | Filter - Filter Left Time                |            |
+| work_mode            | Number               | Vacuum Extend - Work Mode                |            |
+| cleaning_time        | Number:Time          | Vacuum Extend - Cleaning Time            |            |
+| cleaning_area        | Number               | Vacuum Extend - Cleaning Area            |            |
+| cleaning_mode        | Number               | Vacuum Extend - Cleaning Mode            | Value mapping `["0"="Silent","1"="Standard","2"="Strong","3"="Turbo"]` |
+| mop_mode             | Number               | Vacuum Extend - Mop Mode                 | Value mapping `["1"="Low","2"="Medium","3"="High"]` |
+| waterbox_status      | Number               | Vacuum Extend - Waterbox Status          | Value mapping `["0"="Removed","1"="Installed"]` |
+| task_status          | Number               | Vacuum Extend - Task Status              |            |
+| clean_extend_data    | String               | Vacuum Extend - Clean Extend Data        |            |
+| break_point_restart  | Number               | Vacuum Extend - Break Point Restart      | Value mapping `["0"="Off","1"="On"]` |
+| carpet_press         | Number               | Vacuum Extend - Carpet Press             | Value mapping `["0"="On","1"="Off"]` |
+| serial_number        | String               | Vacuum Extend - Serial Number            |            |
+| remote_state         | String               | Vacuum Extend - Remote State             |            |
+| clean_rags_tip       | Number:Time          | Vacuum Extend - Clean Rags Tip           |            |
+| keep_sweeper_time    | Number:Time          | Vacuum Extend - Keep Sweeper Time        |            |
+| faults               | String               | Vacuum Extend - Faults                   |            |
+| enable               | Switch               | Do Not Disturb - Enable                  |            |
+| start_time           | String               | Do Not Disturb - Start Time              |            |
+| end_time             | String               | Do Not Disturb - End Time                |            |
+| frame_info           | String               | Map - Frame Info                         |            |
+| map_extend_data      | String               | Map - Map Extend Data                    |            |
+| mult_map_state       | Number               | Map - Mult Map State                     | Value mapping `["0"="Close","1"="Open"]` |
+| mult_map_info        | String               | Map - Mult Map Info                      |            |
+| volume               | Number               | Audio - Volume                           |            |
+| voice_packet_id      | String               | Audio - Voice Packet Id                  |            |
+| voice_change_state   | String               | Audio - Voice Change State               |            |
+| set_voice            | String               | Audio - Set Voice                        |            |
+| time_zone            | String               | Time - Time Zone                         |            |
+| timer_clean          | String               | Time - Timer Clean                       |            |
+| first_clean_time     | Number               | Clean Logs - First Clean Time            |            |
+| total_clean_time     | Number:Time          | Clean Logs - Total Clean Time            |            |
+| total_clean_times    | Number               | Clean Logs - Total Clean Times           |            |
+| total_clean_area     | Number               | Clean Logs - Total Clean Area            |            |
+
 ### Trouver Robot LDS Vacuum-Mop Finder (<a name="dreame-vacuum-p2036">dreame.vacuum.p2036</a>) Channels
 
 | Channel              | Type                 | Description                              | Comment    |
@@ -1645,6 +1695,79 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | on                   | Switch               | Light - Power                            |            |
 | brightness           | Dimmer               | Light - Brightness                       |            |
 | color-temperature    | Number:Temperature   | Light - Color Temperature                |            |
+
+### Xiaomi Robot Vacuum-Mop 2S (<a name="ijai-vacuum-v19">ijai.vacuum.v19</a>) Channels
+
+| Channel              | Type                 | Description                              | Comment    |
+|----------------------|----------------------|------------------------------------------|------------|
+| actions              | String               | Robot Cleaner - Actions                  |            |
+| advanced_actions     | String               | Robot Cleaner - Advanced Actions         |            |
+| status               | Number               | Robot Cleaner - Status                   | Value mapping `["0"="Sleep","1"="Idle","2"="Paused","3"="Go Charging","4"="Charging","5"="Sweeping","6"="Sweeping and Mopping","7"="Mopping","8"="Upgrading"]` |
+| fault                | Number               | Robot Cleaner - Device Fault             |            |
+| mode                 | Number               | Robot Cleaner - Mode                     | Value mapping `["0"="Sweep","1"="Sweep And Mop","2"="Mop"]` |
+| sweep_type           | Number               | Robot Cleaner - Sweep Type               | Value mapping `["0"="Global","1"="Mop","2"="Edge","3"="Area","4"="Point","5"="Remote","6"="Explore","7"="Room","8"="Floor"]` |
+| on                   | String               | Robot Cleaner - Switch Status            |            |
+| battery_level        | Number:Dimensionless | Robot Cleaner - Battery Level            |            |
+| alarm                | Switch               | Robot Cleaner - Locate                   |            |
+| volume               | Number:Dimensionless | Robot Cleaner - Locate Volume            |            |
+| repeat_state         | Switch               | Sweep - Repeat State                     |            |
+| door_state           | Number               | Sweep - Door State                       | Value mapping `["0"="None","1"="DustBox","2"="WaterBox","3"="TwoInOne"]` |
+| cloth_state          | Contact              | Sweep - Cloth State                      |            |
+| suction_state        | Number               | Robot Cleaner - Power                    | Value mapping `["0"="Slient","1"="Standard","2"="Medium","3"="Turbo"]` |
+| water_state          | Number               | Sweep - Water State                      | Value mapping `["0"="Low","1"="Mid","2"="High"]` |
+| mop_route            | Number               | Sweep - Mop Route                        | Value mapping `["0"="S","1"="Y"]` |
+| side_brush_life      | Number:Dimensionless | Sweep - Side Brush Life                  |            |
+| side_brush_hours     | Number:Time          | Sweep - Side Brush Hours                 |            |
+| main_brush_life      | Number:Dimensionless | Sweep - Main Brush Life                  |            |
+| main_brush_hours     | Number:Time          | Sweep - Main Brush Hours                 |            |
+| hypa_life            | Number:Dimensionless | Sweep - Hypa Life                        |            |
+| hypa_hours           | Number:Time          | Sweep - Hypa Hours                       |            |
+| mop_life             | Number:Dimensionless | Sweep - Mop Life                         |            |
+| mop_hours            | Number:Time          | Sweep - Mop Hours                        |            |
+| direction            | Number               | Sweep - Direction                        | Value mapping `["1"="Forward","2"="Left","3"="Right","4"="Back","5"="Stop","10"="Exit"]` |
+| time_zone            | Number               | Sweep - Time Zone                        |            |
+| cur_lang             | String               | Sweep - Cur Lang                         |            |
+| cleaning_time        | Number:Time          | Sweep - Cleaning Time                    |            |
+| cleaning_area        | Number               | Sweep - Cleaning Area                    |            |
+| dirt_recognize       | Switch               | Sweep - Dirt Recognize                   |            |
+| pet_recognize        | Switch               | Sweep - Pet Recognize                    |            |
+| ai_recognize         | Switch               | Sweep - Ai Recognize                     |            |
+| carpet_booster       | Switch               | Sweep - Carpet Booster                   |            |
+| multi_prop_vacuum    | String               | Sweep - Multi Prop Vacuum                |            |
+| carpet_avoid         | Switch               | Sweep - Carpet Avoid                     |            |
+| tank_shake           | Switch               | Sweep - Tank Shake                       |            |
+| shake_shift          | Number               | Sweep - Shake Shift                      | Value mapping `["1"="Low","2"="Mid","3"="High"]` |
+| map_encrypt          | Contact              | Sweep - Map Encrypt                      |            |
+| order_id             | Number               | Order - Order Id                         |            |
+| enable               | Switch               | Order - Enable                           |            |
+| day                  | Number:Time          | Order - Day                              |            |
+| hour                 | Number:Time          | Order - Hour                             |            |
+| minute               | Number:Time          | Order - Minute                           |            |
+| repeat               | Switch               | Order - Repeat                           |            |
+| clean_way            | Number               | Order - Clean Way                        | Value mapping `["0"="Sweep","1"="Sweep Mop","2"="Mop"]` |
+| suction              | Number               | Order - Suction                          | Value mapping `["0"="Slient","1"="Normal","2"="Medium","3"="Turbo"]` |
+| water                | Number               | Order - Water                            | Value mapping `["0"="Low","1"="Mid","2"="High"]` |
+| twice_clean          | Switch               | Order - Twice Clean                      |            |
+| mapid                | Number               | Order - Mapid                            |            |
+| room_count           | Number               | Order - Room Count                       |            |
+| room_data            | String               | Order - Room Data                        |            |
+| time_zone1           | Number               | Order - Time Zone                        |            |
+| all_enable_count     | String               | Order - All Enable Count                 |            |
+| zone_points          | String               | Point Zone - Zone Points                 |            |
+| restrict_points      | String               | Point Zone - Restrict Points             |            |
+| target_point         | String               | Point Zone - Target Point                |            |
+| remember_state       | Switch               | Map - Remember State                     |            |
+| cur_map_id           | Number               | Map - Cur Map Id                         |            |
+| map_num              | Number               | Map - Map Num                            |            |
+| cur_cleaning_path    | String               | Map - Cur Cleaning Path                  |            |
+| build_map            | Number               | Map - Build Map                          | Value mapping `["0"="None","1"="Build","2"="Clean"]` |
+| has_new_map          | Contact              | Map - Has New Map                        |            |
+| dnd_enable           | Contact              | Disturb - Dnd Enable                     |            |
+| dnd_start_hour       | Number:Time          | Disturb - Dnd Start Hour                 |            |
+| dnd_start_minute     | Number:Time          | Disturb - Dnd Start Minute               |            |
+| dnd_end_hour         | Number:Time          | Disturb - Dnd End Hour                   |            |
+| dnd_end_minute       | Number:Time          | Disturb - Dnd End Minute                 |            |
+| multi_prop_dnd       | String               | Disturb - Multi Prop Dnd                 |            |
 
 ### IKEA E27 white spectrum opal (<a name="ikea-light-led1545g12">ikea.light.led1545g12</a>) Channels
 
@@ -2530,15 +2653,14 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
 | power                | Switch               | Power                                    |            |
-| mode                 | String               | Mode                                     | Value mapping `["normal"="Normal","green"="Green"]` |
-| powerUsage           | Number:Power         | Power Consumption                        |            |
-| voltage              | Number:ElectricPotential | Voltage                                  |            |
+| powerUsage           | Number               | Power Consumption                        |            |
 | led                  | Switch               | wifi LED                                 |            |
-| power_price          | Number               | Power Price                              |            |
-| power_factor         | Number               | Power Factor                             |            |
-| current              | Number:ElectricCurrent | Current                                  |            |
-| elec_leakage         | Number:ElectricCurrent | Electic Leakage                          |            |
+| power_price          | Number               | power_price                              |            |
+| current              | Number               | Current                                  |            |
 | temperature          | Number:Temperature   | Temperature                              |            |
+| lp_autooff           | Number               | Low Power Auto Off                       |            |
+| lp_autooff_delay     | Number               | Low Power Limit Time                     |            |
+| lp_threshold         | Number               | Low Power Threshold                      |            |
 
 ### ROIDMI EVE vacuum (<a name="roidmi-vacuum-v60">roidmi.vacuum.v60</a>) Channels
 
@@ -4049,7 +4171,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | colorTemperature     | Number:Temperature   | Color Temperature                        |            |
 | colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | rgbColor             | Color                | RGB Color                                |            |
-| ambientBrightness    | Number               | Ambient Brightness                       |            |
+| ambientBrightness    | Dimmer               | Ambient Brightness                       |            |
 | ambientPower         | Switch               | Ambient Power                            |            |
 | ambientColor         | Color                | Ambient Color                            |            |
 | ambientColorTemperature | Number               | Ambient Color Temperature                |            |
@@ -4142,8 +4264,6 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | colorTemperature     | Number               | Color Temperature                        |            |
 | colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
-| customScene          | String               | Set Scene                                |            |
-| nightlightBrightness | Number               | Nightlight Brightness                    |            |
 
 ### Yeelight Lightstrip (<a name="yeelink-light-strip1">yeelink.light.strip1</a>) Channels
 
@@ -5120,21 +5240,15 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
 | power                | Switch               | Power                                    |            |
-| mode                 | String               | Mode                                     | Value mapping `["auto"="Auto","favorite"="Favorite","silent"="Silent","high"="High","medium"="Medium","idle"="Idle","strong"="Strong"]` |
+| mode                 | String               | Mode                                     |            |
 | humidity             | Number:Dimensionless | Humidity                                 |            |
 | aqi                  | Number               | Air Quality Index                        |            |
-| averageaqi           | Number               | Average Air Quality Index                |            |
+| brightness           | Dimmer               | Brightness                               |            |
 | led                  | Switch               | LED Status                               |            |
+| act_det              | Switch               | Air AutoDetect                           |            |
 | buzzer               | Switch               | Buzzer Status                            |            |
 | filtermaxlife        | Number               | Filter Max Life                          |            |
-| filterhours          | Number:Time          | Filter Hours used                        |            |
-| usedhours            | Number:Time          | Run Time                                 |            |
-| motorspeed           | Number               | Motor Speed                              |            |
-| filterlife           | Number               | Filter Life                              |            |
-| favoritelevel        | Number               | Favorite Level                           | Value mapping `["0"="Favorite 0","1"="Favorite 1","2"="Favorite 2","3"="Favorite 3","4"="Favorite 4","5"="Favorite 5","6"="Favorite 6","7"="Favorite 7","8"="Favorite 8","9"="Favorite 9","10"="Favorite 10","11"="Favorite 11","12"="Favorite 13","13"="Favorite 13","14"="Favorite 14","15"="Favorite 15"]` |
-| temperature          | Number:Temperature   | Temperature                              |            |
-| purifyvolume         | Number:Volume        | Purified Volume                          |            |
-| childlock            | Switch               | Child Lock                               |            |
+| filterlive           | Number               | Filter Life                              |            |
 
 ### Mi Air Purifier v2 (<a name="zhimi-airpurifier-v2">zhimi.airpurifier.v2</a>) Channels
 
@@ -6519,6 +6633,57 @@ Number clean_times "Collect Dust - Clean Times" (G_vacuum) {channel="miio:basic:
 Number dust_enable "Collect Dust - Dust Enable" (G_vacuum) {channel="miio:basic:vacuum:dust_enable"}
 ```
 
+### Dreame Bot L10 Pro (dreame.vacuum.p2029) item file lines
+
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_vacuum "Dreame Bot L10 Pro" <status>
+String actions "Actions" (G_vacuum) {channel="miio:basic:vacuum:actions"}
+Number status "Robot Cleaner - Status" (G_vacuum) {channel="miio:basic:vacuum:status"}
+Number fault "Robot Cleaner - Device Fault" (G_vacuum) {channel="miio:basic:vacuum:fault"}
+Number:Dimensionless battery_level "Battery - Battery Level" (G_vacuum) {channel="miio:basic:vacuum:battery_level"}
+Number charging_state "Battery - Charging State" (G_vacuum) {channel="miio:basic:vacuum:charging_state"}
+Number:Time brush_left_time "Main Cleaning Brush - Brush Left Time" (G_vacuum) {channel="miio:basic:vacuum:brush_left_time"}
+Number:Dimensionless brush_life_level "Main Cleaning Brush - Brush Life Level" (G_vacuum) {channel="miio:basic:vacuum:brush_life_level"}
+Number:Time brush_left_time1 "Side Cleaning Brush - Brush Left Time" (G_vacuum) {channel="miio:basic:vacuum:brush_left_time1"}
+Number:Dimensionless brush_life_level1 "Side Cleaning Brush - Brush Life Level" (G_vacuum) {channel="miio:basic:vacuum:brush_life_level1"}
+Number:Dimensionless filter_life_level "Filter - Filter Life Level" (G_vacuum) {channel="miio:basic:vacuum:filter_life_level"}
+Number:Time filter_left_time "Filter - Filter Left Time" (G_vacuum) {channel="miio:basic:vacuum:filter_left_time"}
+Number work_mode "Vacuum Extend - Work Mode" (G_vacuum) {channel="miio:basic:vacuum:work_mode"}
+Number:Time cleaning_time "Vacuum Extend - Cleaning Time" (G_vacuum) {channel="miio:basic:vacuum:cleaning_time"}
+Number cleaning_area "Vacuum Extend - Cleaning Area" (G_vacuum) {channel="miio:basic:vacuum:cleaning_area"}
+Number cleaning_mode "Vacuum Extend - Cleaning Mode" (G_vacuum) {channel="miio:basic:vacuum:cleaning_mode"}
+Number mop_mode "Vacuum Extend - Mop Mode" (G_vacuum) {channel="miio:basic:vacuum:mop_mode"}
+Number waterbox_status "Vacuum Extend - Waterbox Status" (G_vacuum) {channel="miio:basic:vacuum:waterbox_status"}
+Number task_status "Vacuum Extend - Task Status" (G_vacuum) {channel="miio:basic:vacuum:task_status"}
+String clean_extend_data "Vacuum Extend - Clean Extend Data" (G_vacuum) {channel="miio:basic:vacuum:clean_extend_data"}
+Number break_point_restart "Vacuum Extend - Break Point Restart" (G_vacuum) {channel="miio:basic:vacuum:break_point_restart"}
+Number carpet_press "Vacuum Extend - Carpet Press" (G_vacuum) {channel="miio:basic:vacuum:carpet_press"}
+String serial_number "Vacuum Extend - Serial Number" (G_vacuum) {channel="miio:basic:vacuum:serial_number"}
+String remote_state "Vacuum Extend - Remote State" (G_vacuum) {channel="miio:basic:vacuum:remote_state"}
+Number:Time clean_rags_tip "Vacuum Extend - Clean Rags Tip" (G_vacuum) {channel="miio:basic:vacuum:clean_rags_tip"}
+Number:Time keep_sweeper_time "Vacuum Extend - Keep Sweeper Time" (G_vacuum) {channel="miio:basic:vacuum:keep_sweeper_time"}
+String faults "Vacuum Extend - Faults" (G_vacuum) {channel="miio:basic:vacuum:faults"}
+Switch enable "Do Not Disturb - Enable" (G_vacuum) {channel="miio:basic:vacuum:enable"}
+String start_time "Do Not Disturb - Start Time" (G_vacuum) {channel="miio:basic:vacuum:start_time"}
+String end_time "Do Not Disturb - End Time" (G_vacuum) {channel="miio:basic:vacuum:end_time"}
+String frame_info "Map - Frame Info" (G_vacuum) {channel="miio:basic:vacuum:frame_info"}
+String map_extend_data "Map - Map Extend Data" (G_vacuum) {channel="miio:basic:vacuum:map_extend_data"}
+Number mult_map_state "Map - Mult Map State" (G_vacuum) {channel="miio:basic:vacuum:mult_map_state"}
+String mult_map_info "Map - Mult Map Info" (G_vacuum) {channel="miio:basic:vacuum:mult_map_info"}
+Number volume "Audio - Volume" (G_vacuum) {channel="miio:basic:vacuum:volume"}
+String voice_packet_id "Audio - Voice Packet Id" (G_vacuum) {channel="miio:basic:vacuum:voice_packet_id"}
+String voice_change_state "Audio - Voice Change State" (G_vacuum) {channel="miio:basic:vacuum:voice_change_state"}
+String set_voice "Audio - Set Voice" (G_vacuum) {channel="miio:basic:vacuum:set_voice"}
+String time_zone "Time - Time Zone" (G_vacuum) {channel="miio:basic:vacuum:time_zone"}
+String timer_clean "Time - Timer Clean" (G_vacuum) {channel="miio:basic:vacuum:timer_clean"}
+Number first_clean_time "Clean Logs - First Clean Time" (G_vacuum) {channel="miio:basic:vacuum:first_clean_time"}
+Number:Time total_clean_time "Clean Logs - Total Clean Time" (G_vacuum) {channel="miio:basic:vacuum:total_clean_time"}
+Number total_clean_times "Clean Logs - Total Clean Times" (G_vacuum) {channel="miio:basic:vacuum:total_clean_times"}
+Number total_clean_area "Clean Logs - Total Clean Area" (G_vacuum) {channel="miio:basic:vacuum:total_clean_area"}
+```
+
 ### Trouver Robot LDS Vacuum-Mop Finder (dreame.vacuum.p2036) item file lines
 
 note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
@@ -6986,6 +7151,82 @@ Group G_light "HUIZUO ZIWEI Ceiling Lamp" <status>
 Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
 Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+```
+
+### Xiaomi Robot Vacuum-Mop 2S (ijai.vacuum.v19) item file lines
+
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_vacuum "Xiaomi Robot Vacuum-Mop 2S" <status>
+String actions "Robot Cleaner - Actions" (G_vacuum) {channel="miio:basic:vacuum:actions"}
+String advanced_actions "Robot Cleaner - Advanced Actions" (G_vacuum) {channel="miio:basic:vacuum:advanced_actions"}
+Number status "Robot Cleaner - Status" (G_vacuum) {channel="miio:basic:vacuum:status"}
+Number fault "Robot Cleaner - Device Fault" (G_vacuum) {channel="miio:basic:vacuum:fault"}
+Number mode "Robot Cleaner - Mode" (G_vacuum) {channel="miio:basic:vacuum:mode"}
+Number sweep_type "Robot Cleaner - Sweep Type" (G_vacuum) {channel="miio:basic:vacuum:sweep_type"}
+String on "Robot Cleaner - Switch Status" (G_vacuum) {channel="miio:basic:vacuum:on"}
+Number:Dimensionless battery_level "Robot Cleaner - Battery Level" (G_vacuum) {channel="miio:basic:vacuum:battery_level"}
+Switch alarm "Robot Cleaner - Locate" (G_vacuum) {channel="miio:basic:vacuum:alarm"}
+Number:Dimensionless volume "Robot Cleaner - Locate Volume" (G_vacuum) {channel="miio:basic:vacuum:volume"}
+Switch repeat_state "Sweep - Repeat State" (G_vacuum) {channel="miio:basic:vacuum:repeat_state"}
+Number door_state "Sweep - Door State" (G_vacuum) {channel="miio:basic:vacuum:door_state"}
+Contact cloth_state "Sweep - Cloth State" (G_vacuum) {channel="miio:basic:vacuum:cloth_state"}
+Number suction_state "Robot Cleaner - Power" (G_vacuum) {channel="miio:basic:vacuum:suction_state"}
+Number water_state "Sweep - Water State" (G_vacuum) {channel="miio:basic:vacuum:water_state"}
+Number mop_route "Sweep - Mop Route" (G_vacuum) {channel="miio:basic:vacuum:mop_route"}
+Number:Dimensionless side_brush_life "Sweep - Side Brush Life" (G_vacuum) {channel="miio:basic:vacuum:side_brush_life"}
+Number:Time side_brush_hours "Sweep - Side Brush Hours" (G_vacuum) {channel="miio:basic:vacuum:side_brush_hours"}
+Number:Dimensionless main_brush_life "Sweep - Main Brush Life" (G_vacuum) {channel="miio:basic:vacuum:main_brush_life"}
+Number:Time main_brush_hours "Sweep - Main Brush Hours" (G_vacuum) {channel="miio:basic:vacuum:main_brush_hours"}
+Number:Dimensionless hypa_life "Sweep - Hypa Life" (G_vacuum) {channel="miio:basic:vacuum:hypa_life"}
+Number:Time hypa_hours "Sweep - Hypa Hours" (G_vacuum) {channel="miio:basic:vacuum:hypa_hours"}
+Number:Dimensionless mop_life "Sweep - Mop Life" (G_vacuum) {channel="miio:basic:vacuum:mop_life"}
+Number:Time mop_hours "Sweep - Mop Hours" (G_vacuum) {channel="miio:basic:vacuum:mop_hours"}
+Number direction "Sweep - Direction" (G_vacuum) {channel="miio:basic:vacuum:direction"}
+Number time_zone "Sweep - Time Zone" (G_vacuum) {channel="miio:basic:vacuum:time_zone"}
+String cur_lang "Sweep - Cur Lang" (G_vacuum) {channel="miio:basic:vacuum:cur_lang"}
+Number:Time cleaning_time "Sweep - Cleaning Time" (G_vacuum) {channel="miio:basic:vacuum:cleaning_time"}
+Number cleaning_area "Sweep - Cleaning Area" (G_vacuum) {channel="miio:basic:vacuum:cleaning_area"}
+Switch dirt_recognize "Sweep - Dirt Recognize" (G_vacuum) {channel="miio:basic:vacuum:dirt_recognize"}
+Switch pet_recognize "Sweep - Pet Recognize" (G_vacuum) {channel="miio:basic:vacuum:pet_recognize"}
+Switch ai_recognize "Sweep - Ai Recognize" (G_vacuum) {channel="miio:basic:vacuum:ai_recognize"}
+Switch carpet_booster "Sweep - Carpet Booster" (G_vacuum) {channel="miio:basic:vacuum:carpet_booster"}
+String multi_prop_vacuum "Sweep - Multi Prop Vacuum" (G_vacuum) {channel="miio:basic:vacuum:multi_prop_vacuum"}
+Switch carpet_avoid "Sweep - Carpet Avoid" (G_vacuum) {channel="miio:basic:vacuum:carpet_avoid"}
+Switch tank_shake "Sweep - Tank Shake" (G_vacuum) {channel="miio:basic:vacuum:tank_shake"}
+Number shake_shift "Sweep - Shake Shift" (G_vacuum) {channel="miio:basic:vacuum:shake_shift"}
+Contact map_encrypt "Sweep - Map Encrypt" (G_vacuum) {channel="miio:basic:vacuum:map_encrypt"}
+Number order_id "Order - Order Id" (G_vacuum) {channel="miio:basic:vacuum:order_id"}
+Switch enable "Order - Enable" (G_vacuum) {channel="miio:basic:vacuum:enable"}
+Number:Time day "Order - Day" (G_vacuum) {channel="miio:basic:vacuum:day"}
+Number:Time hour "Order - Hour" (G_vacuum) {channel="miio:basic:vacuum:hour"}
+Number:Time minute "Order - Minute" (G_vacuum) {channel="miio:basic:vacuum:minute"}
+Switch repeat "Order - Repeat" (G_vacuum) {channel="miio:basic:vacuum:repeat"}
+Number clean_way "Order - Clean Way" (G_vacuum) {channel="miio:basic:vacuum:clean_way"}
+Number suction "Order - Suction" (G_vacuum) {channel="miio:basic:vacuum:suction"}
+Number water "Order - Water" (G_vacuum) {channel="miio:basic:vacuum:water"}
+Switch twice_clean "Order - Twice Clean" (G_vacuum) {channel="miio:basic:vacuum:twice_clean"}
+Number mapid "Order - Mapid" (G_vacuum) {channel="miio:basic:vacuum:mapid"}
+Number room_count "Order - Room Count" (G_vacuum) {channel="miio:basic:vacuum:room_count"}
+String room_data "Order - Room Data" (G_vacuum) {channel="miio:basic:vacuum:room_data"}
+Number time_zone1 "Order - Time Zone" (G_vacuum) {channel="miio:basic:vacuum:time_zone1"}
+String all_enable_count "Order - All Enable Count" (G_vacuum) {channel="miio:basic:vacuum:all_enable_count"}
+String zone_points "Point Zone - Zone Points" (G_vacuum) {channel="miio:basic:vacuum:zone_points"}
+String restrict_points "Point Zone - Restrict Points" (G_vacuum) {channel="miio:basic:vacuum:restrict_points"}
+String target_point "Point Zone - Target Point" (G_vacuum) {channel="miio:basic:vacuum:target_point"}
+Switch remember_state "Map - Remember State" (G_vacuum) {channel="miio:basic:vacuum:remember_state"}
+Number cur_map_id "Map - Cur Map Id" (G_vacuum) {channel="miio:basic:vacuum:cur_map_id"}
+Number map_num "Map - Map Num" (G_vacuum) {channel="miio:basic:vacuum:map_num"}
+String cur_cleaning_path "Map - Cur Cleaning Path" (G_vacuum) {channel="miio:basic:vacuum:cur_cleaning_path"}
+Number build_map "Map - Build Map" (G_vacuum) {channel="miio:basic:vacuum:build_map"}
+Contact has_new_map "Map - Has New Map" (G_vacuum) {channel="miio:basic:vacuum:has_new_map"}
+Contact dnd_enable "Disturb - Dnd Enable" (G_vacuum) {channel="miio:basic:vacuum:dnd_enable"}
+Number:Time dnd_start_hour "Disturb - Dnd Start Hour" (G_vacuum) {channel="miio:basic:vacuum:dnd_start_hour"}
+Number:Time dnd_start_minute "Disturb - Dnd Start Minute" (G_vacuum) {channel="miio:basic:vacuum:dnd_start_minute"}
+Number:Time dnd_end_hour "Disturb - Dnd End Hour" (G_vacuum) {channel="miio:basic:vacuum:dnd_end_hour"}
+Number:Time dnd_end_minute "Disturb - Dnd End Minute" (G_vacuum) {channel="miio:basic:vacuum:dnd_end_minute"}
+String multi_prop_dnd "Disturb - Multi Prop Dnd" (G_vacuum) {channel="miio:basic:vacuum:multi_prop_dnd"}
 ```
 
 ### IKEA E27 white spectrum opal (ikea.light.led1545g12) item file lines
@@ -8087,15 +8328,14 @@ note: Autogenerated example. Replace the id (powerstrip) in the channel with you
 ```
 Group G_powerstrip "CHINGMI Smart Power Strip v1" <status>
 Switch power "Power" (G_powerstrip) {channel="miio:basic:powerstrip:power"}
-String mode "Mode" (G_powerstrip) {channel="miio:basic:powerstrip:mode"}
-Number:Power powerUsage "Power Consumption" (G_powerstrip) {channel="miio:basic:powerstrip:powerUsage"}
-Number:ElectricPotential voltage "Voltage" (G_powerstrip) {channel="miio:basic:powerstrip:voltage"}
+Number powerUsage "Power Consumption" (G_powerstrip) {channel="miio:basic:powerstrip:powerUsage"}
 Switch led "wifi LED" (G_powerstrip) {channel="miio:basic:powerstrip:led"}
-Number power_price "Power Price" (G_powerstrip) {channel="miio:basic:powerstrip:power_price"}
-Number power_factor "Power Factor" (G_powerstrip) {channel="miio:basic:powerstrip:power_factor"}
-Number:ElectricCurrent current "Current" (G_powerstrip) {channel="miio:basic:powerstrip:current"}
-Number:ElectricCurrent elec_leakage "Electic Leakage" (G_powerstrip) {channel="miio:basic:powerstrip:elec_leakage"}
+Number power_price "power_price" (G_powerstrip) {channel="miio:basic:powerstrip:power_price"}
+Number current "Current" (G_powerstrip) {channel="miio:basic:powerstrip:current"}
 Number:Temperature temperature "Temperature" (G_powerstrip) {channel="miio:basic:powerstrip:temperature"}
+Number lp_autooff "Low Power Auto Off" (G_powerstrip) {channel="miio:basic:powerstrip:lp_autooff"}
+Number lp_autooff_delay "Low Power Limit Time" (G_powerstrip) {channel="miio:basic:powerstrip:lp_autooff_delay"}
+Number lp_threshold "Low Power Threshold" (G_powerstrip) {channel="miio:basic:powerstrip:lp_threshold"}
 ```
 
 ### ROIDMI EVE vacuum (roidmi.vacuum.v60) item file lines
@@ -9882,7 +10122,7 @@ Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delay
 Number:Temperature colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 Color rgbColor "RGB Color" (G_light) {channel="miio:basic:light:rgbColor"}
-Number ambientBrightness "Ambient Brightness" (G_light) {channel="miio:basic:light:ambientBrightness"}
+Dimmer ambientBrightness "Ambient Brightness" (G_light) {channel="miio:basic:light:ambientBrightness"}
 Switch ambientPower "Ambient Power" (G_light) {channel="miio:basic:light:ambientPower"}
 Color ambientColor "Ambient Color" (G_light) {channel="miio:basic:light:ambientColor"}
 Number ambientColorTemperature "Ambient Color Temperature" (G_light) {channel="miio:basic:light:ambientColorTemperature"}
@@ -9999,8 +10239,6 @@ Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delay
 Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
-String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
-Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
 ```
 
 ### Yeelight Lightstrip (yeelink.light.strip1) item file lines
@@ -11103,18 +11341,12 @@ Switch power "Power" (G_airpurifier) {channel="miio:basic:airpurifier:power"}
 String mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
 Number:Dimensionless humidity "Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:humidity"}
 Number aqi "Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:aqi"}
-Number averageaqi "Average Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:averageaqi"}
+Dimmer brightness "Brightness" (G_airpurifier) {channel="miio:basic:airpurifier:brightness"}
 Switch led "LED Status" (G_airpurifier) {channel="miio:basic:airpurifier:led"}
+Switch act_det "Air AutoDetect" (G_airpurifier) {channel="miio:basic:airpurifier:act_det"}
 Switch buzzer "Buzzer Status" (G_airpurifier) {channel="miio:basic:airpurifier:buzzer"}
 Number filtermaxlife "Filter Max Life" (G_airpurifier) {channel="miio:basic:airpurifier:filtermaxlife"}
-Number:Time filterhours "Filter Hours used" (G_airpurifier) {channel="miio:basic:airpurifier:filterhours"}
-Number:Time usedhours "Run Time" (G_airpurifier) {channel="miio:basic:airpurifier:usedhours"}
-Number motorspeed "Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motorspeed"}
-Number filterlife "Filter Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
-Number favoritelevel "Favorite Level" (G_airpurifier) {channel="miio:basic:airpurifier:favoritelevel"}
-Number:Temperature temperature "Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
-Number:Volume purifyvolume "Purified Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purifyvolume"}
-Switch childlock "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:childlock"}
+Number filterlive "Filter Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlive"}
 ```
 
 ### Mi Air Purifier v2 (zhimi.airpurifier.v2) item file lines

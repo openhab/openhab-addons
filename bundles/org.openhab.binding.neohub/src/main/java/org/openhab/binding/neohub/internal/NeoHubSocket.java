@@ -25,54 +25,30 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * NeoHubConnector handles the ASCII based communication via TCP between openHAB
- * and NeoHub
+ * Handles the ASCII based communication via TCP socket between openHAB and NeoHub
  *
  * @author Sebastian Prehn - Initial contribution
  * @author Andrew Fiddian-Green - Refactoring for openHAB v2.x
  *
  */
 @NonNullByDefault
-public class NeoHubSocket {
+public class NeoHubSocket extends NeoHubSocketBase {
 
     private final Logger logger = LoggerFactory.getLogger(NeoHubSocket.class);
 
-    /**
-     * Name of host or IP to connect to.
-     */
-    private final String hostname;
-
-    /**
-     * The port to connect to
-     */
-    private final int port;
-
-    /**
-     * The socket connect resp. read timeout value
-     */
-    private final int timeout;
-
-    public NeoHubSocket(final String hostname, final int portNumber, final int timeoutSeconds) {
-        this.hostname = hostname;
-        this.port = portNumber;
-        this.timeout = timeoutSeconds * 1000;
+    public NeoHubSocket(NeoHubConfiguration config) {
+        super(config);
     }
 
-    /**
-     * sends the message over the network to the NeoHub and returns its response
-     *
-     * @param requestJson the message to be sent to the NeoHub
-     * @return responseJson received from NeoHub
-     * @throws NeoHubException, IOException
-     *
-     */
-    public String sendMessage(final String requestJson) throws IOException, NeoHubException {
+    @Override
+    public synchronized String sendMessage(final String requestJson) throws IOException, NeoHubException {
         IOException caughtException = null;
         StringBuilder builder = new StringBuilder();
 
         try (Socket socket = new Socket()) {
-            socket.connect(new InetSocketAddress(hostname, port), timeout);
-            socket.setSoTimeout(timeout);
+            int port = config.portNumber > 0 ? config.portNumber : NeoHubBindingConstants.PORT_TCP;
+            socket.connect(new InetSocketAddress(config.hostName, port), config.socketTimeout * 1000);
+            socket.setSoTimeout(config.socketTimeout * 1000);
 
             try (InputStreamReader reader = new InputStreamReader(socket.getInputStream(), US_ASCII);
                     OutputStreamWriter writer = new OutputStreamWriter(socket.getOutputStream(), US_ASCII)) {
@@ -127,5 +103,10 @@ public class NeoHubSocket {
         }
 
         return responseJson;
+    }
+
+    @Override
+    public void close() {
+        // nothing to do
     }
 }

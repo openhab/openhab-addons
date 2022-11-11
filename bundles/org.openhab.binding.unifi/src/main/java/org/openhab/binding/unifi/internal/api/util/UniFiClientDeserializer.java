@@ -14,10 +14,12 @@ package org.openhab.binding.unifi.internal.api.util;
 
 import java.lang.reflect.Type;
 
-import org.openhab.binding.unifi.internal.api.model.UniFiClient;
-import org.openhab.binding.unifi.internal.api.model.UniFiUnknownClient;
-import org.openhab.binding.unifi.internal.api.model.UniFiWiredClient;
-import org.openhab.binding.unifi.internal.api.model.UniFiWirelessClient;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.unifi.internal.api.dto.UniFiClient;
+import org.openhab.binding.unifi.internal.api.dto.UniFiUnknownClient;
+import org.openhab.binding.unifi.internal.api.dto.UniFiWiredClient;
+import org.openhab.binding.unifi.internal.api.dto.UniFiWirelessClient;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -33,21 +35,21 @@ import com.google.gson.JsonParseException;
  *
  * @author Matthew Bowman - Initial contribution
  */
+@NonNullByDefault
 public class UniFiClientDeserializer implements JsonDeserializer<UniFiClient> {
 
     private static final String PROPERTY_IS_WIRED = "is_wired";
 
     @Override
-    public UniFiClient deserialize(JsonElement json, Type type, JsonDeserializationContext context)
-            throws JsonParseException {
-        JsonObject jsonObject = json.getAsJsonObject();
-        JsonElement isWiredElement = jsonObject.get(PROPERTY_IS_WIRED);
+    public @Nullable UniFiClient deserialize(final JsonElement json, final Type type,
+            final JsonDeserializationContext context) throws JsonParseException {
+        final JsonObject jsonObject = json.getAsJsonObject();
+        final JsonElement wiredElement = jsonObject.get(PROPERTY_IS_WIRED);
         // mgb: if the "is_wired "property is missing, the client is unknown
-        if (isWiredElement == null) {
+        if (wiredElement == null) {
             return context.deserialize(json, UniFiUnknownClient.class);
         }
-        boolean isWired = isWiredElement.getAsBoolean();
-        if (isWired) {
+        if (wiredElement.getAsBoolean()) {
             return context.deserialize(json, UniFiWiredClient.class);
         }
         return context.deserialize(json, UniFiWirelessClient.class);

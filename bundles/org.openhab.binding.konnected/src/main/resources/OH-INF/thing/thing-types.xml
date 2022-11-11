@@ -3,23 +3,21 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
-	<!-- This is the Konnected Thing-Type -->
-	<thing-type id="module" extensible="switch,actuator,temperature,humidity">
+	<!-- This is the Konnected Wifi Thing-Type -->
+	<thing-type id="wifi-module" extensible="switch-wifi,actuator-wifi,temperature-wifi,humidity-wifi">
 		<label>The Konnected Alarm Panel</label>
-		<description>The Konnected Module</description>
-		<channels>
-			<channel id="Zone_6" typeId="switch">
-				<label>Zone 6</label>
-				<description>Zone 6 Sensor</description>
-			</channel>
-			<channel id="Out" typeId="actuator">
-				<label>The out Pin</label>
-			</channel>
-		</channels>
+		<description>The Konnected Wi-Fi Alarm Panel</description>
 		<config-description-ref uri="thing-type:konnected:module"/>
 	</thing-type>
+	<!-- This is the Konnected Alarm Panel Pro Thing-Type -->
+	<thing-type id="pro-module" extensible="switch-pro,actuator-pro,temperature-pro,humidity-pro">
+		<label>The Konnected Alarm Panel Pro</label>
+		<description>The Konnected Alarm Panel Pro</description>
+		<config-description-ref uri="thing-type:konnected:module"/>
+	</thing-type>
+
 	<!-- Zone Channel Type -->
-	<channel-type id="switch">
+	<channel-type id="switch-wifi">
 		<item-type>Switch</item-type>
 		<label>Switch</label>
 		<description>This zone is a read only switch type zone</description>
@@ -28,7 +26,6 @@
 			<parameter name="zone" type="text" required="true">
 				<label>Zone Number</label>
 				<description>The Zone Number of the channel.</description>
-				<default>6</default>
 				<options>
 					<option value="1">1</option>
 					<option value="2">2</option>
@@ -36,10 +33,10 @@
 					<option value="4">4</option>
 					<option value="5">5</option>
 					<option value="6">6</option>
-					<option value="7">Out</option>
+					<option value="alarm_out">Alarm/Out</option>
 				</options>
 			</parameter>
-			<parameter name="onvalue" type="text">
+			<parameter name="onValue" type="integer">
 				<label>On Value</label>
 				<description>The value that will be treated by the binding as the on value. For sensors that activate with a high
 					value leave at the default of 1 and sensors that activate with a low value set to 0.</description>
@@ -51,7 +48,7 @@
 			</parameter>
 		</config-description>
 	</channel-type>
-	<channel-type id="temperature">
+	<channel-type id="temperature-wifi">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>This zone measures temperature</description>
@@ -67,24 +64,26 @@
 					<option value="4">4</option>
 					<option value="5">5</option>
 					<option value="6">6</option>
-					<option value="7">Out</option>
+					<option value="alarm_out">Alarm/Out</option>
 				</options>
 			</parameter>
-			<parameter name="tempsensorType" type="boolean">
+			<parameter name="dht22" type="boolean">
 				<label>DHT22</label>
 				<description>Is the sensor a dht22 or a ds18b20? Set to true for dht22 sensor</description>
+				<default>true</default>
 			</parameter>
-			<parameter name="pollinterval" type="integer">
+			<parameter name="pollInterval" type="integer">
 				<label>Poll Interval</label>
 				<description>The interval in minutes to poll the sensor.</description>
+				<default>3</default>
 			</parameter>
-			<parameter name="ds18b20_address" type="text">
+			<parameter name="ds18b20Address" type="text">
 				<label>DS18b20 Address</label>
 				<description>This is the unique address of the sensor on the one wire bus.</description>
 			</parameter>
 		</config-description>
 	</channel-type>
-	<channel-type id="humidity">
+	<channel-type id="humidity-wifi">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<description>This zone measures humidity</description>
@@ -100,12 +99,12 @@
 					<option value="4">4</option>
 					<option value="5">5</option>
 					<option value="6">6</option>
-					<option value="7">Out</option>
+					<option value="alarm_out">Alarm/Out</option>
 				</options>
 			</parameter>
 		</config-description>
 	</channel-type>
-	<channel-type id="actuator">
+	<channel-type id="actuator-wifi">
 		<item-type>Switch</item-type>
 		<label>Actuator</label>
 		<description>This zone is an actuator</description>
@@ -113,7 +112,6 @@
 			<parameter name="zone" type="text" required="true">
 				<label>Zone Number</label>
 				<description>The Zone Number of the channel.</description>
-				<default>7</default>
 				<options>
 					<option value="1">1</option>
 					<option value="2">2</option>
@@ -121,10 +119,10 @@
 					<option value="4">4</option>
 					<option value="5">5</option>
 					<option value="6">6</option>
-					<option value="7">Out</option>
+					<option value="alarm_out">Alarm/Out</option>
 				</options>
 			</parameter>
-			<parameter name="onvalue" type="text">
+			<parameter name="onValue" type="integer">
 				<label>On Value</label>
 				<description>The value that will be treated by the binding as an on command. For actuators that activate with a high
 					command set to 1 and actuators that activate with a low value set to 0.</description>
@@ -145,6 +143,146 @@
 			<parameter name="times" type="integer">
 				<label>Times</label>
 				<description>is the number of times to repeat or `-1` for an infinitely repeating pulse</description>
+			</parameter>
+		</config-description>
+	</channel-type>
+	<channel-type id="switch-pro">
+		<item-type>Switch</item-type>
+		<label>Switch</label>
+		<description>This zone is a read only switch type zone</description>
+		<state readOnly="true"/>
+		<config-description>
+			<parameter name="zone" type="text" required="true">
+				<label>Zone Number</label>
+				<description>The zone number of the channel.</description>
+				<options>
+					<option value="1">1</option>
+					<option value="2">2</option>
+					<option value="3">3</option>
+					<option value="4">4</option>
+					<option value="5">5</option>
+					<option value="6">6</option>
+					<option value="7">7</option>
+					<option value="8">8</option>
+					<option value="9">9</option>
+					<option value="10">10</option>
+					<option value="11">11</option>
+					<option value="12">12</option>
+				</options>
+			</parameter>
+			<parameter name="onValue" type="integer">
+				<label>On Value</label>
+				<description>The value that will be treated by the binding as the on value. For sensors that activate with a high
+					value, leave at the default of 1 and sensors that activate with a low value set to 0.</description>
+				<default>1</default>
+				<options>
+					<option value="0">0</option>
+					<option value="1">1</option>
+				</options>
+			</parameter>
+		</config-description>
+	</channel-type>
+	<channel-type id="actuator-pro">
+		<item-type>Switch</item-type>
+		<label>Actuator</label>
+		<description>This zone is an actuator</description>
+		<config-description>
+			<parameter name="zone" type="text" required="true">
+				<label>Zone Number</label>
+				<description>The zone number of the channel.</description>
+				<options>
+					<option value="1">1</option>
+					<option value="2">2</option>
+					<option value="3">3</option>
+					<option value="4">4</option>
+					<option value="5">5</option>
+					<option value="6">6</option>
+					<option value="7">7</option>
+					<option value="8">8</option>
+					<option value="alarm1">Alarm1</option>
+					<option value="out1">Output1</option>
+					<option value="alarm2_out2">Alarm2/Out2</option>
+				</options>
+			</parameter>
+			<parameter name="onValue" type="integer">
+				<label>On Value</label>
+				<description>The value that will be treated by the binding as an on command. For actuators that activate with a high
+					command set to 1 and actuators that activate with a low value set to 0.</description>
+				<default>1</default>
+				<options>
+					<option value="0">0</option>
+					<option value="1">1</option>
+				</options>
+			</parameter>
+			<parameter name="momentary" type="integer">
+				<label>Momentary</label>
+				<description>The duration of the pulse in milliseconds</description>
+			</parameter>
+			<parameter name="pause" type="integer">
+				<label>Pause</label>
+				<description>The time between pulses in milliseconds</description>
+			</parameter>
+			<parameter name="times" type="integer">
+				<label>Times</label>
+				<description>The number of times to repeat or `-1` for an infinitely repeating pulse</description>
+			</parameter>
+		</config-description>
+	</channel-type>
+	<channel-type id="temperature-pro">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>This zone measures temperature</description>
+		<state readOnly="true"/>
+		<config-description>
+			<parameter name="zone" type="text">
+				<label>Zone Number</label>
+				<description>The Zone Number of the channel.</description>
+				<options>
+					<option value="1">1</option>
+					<option value="2">2</option>
+					<option value="3">3</option>
+					<option value="4">4</option>
+					<option value="5">5</option>
+					<option value="6">6</option>
+					<option value="7">7</option>
+					<option value="8">8</option>
+				</options>
+			</parameter>
+			<parameter name="dht22" type="boolean">
+				<label>DHT22</label>
+				<description>Is the sensor a dht22 or a ds18b20? Set to true for dht22 sensor</description>
+				<default>true</default>
+			</parameter>
+			<parameter name="pollInterval" type="integer">
+				<label>Poll Interval</label>
+				<description>The interval in minutes to poll the sensor.</description>
+				<default>3</default>
+			</parameter>
+			<parameter name="ds18b20Address" type="text">
+				<label>DS18b20 Address</label>
+				<description>This is the unique address of the sensor on the one wire bus.</description>
+			</parameter>
+		</config-description>
+	</channel-type>
+	<channel-type id="humidity-pro">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Humidity</label>
+		<description>This zone measures humidity</description>
+		<state readOnly="true"/>
+		<config-description>
+			<parameter name="zone" type="text" required="true">
+				<label>Zone Number</label>
+				<description>The zone number of the channel.</description>
+				<options>
+					<option value="1">1</option>
+					<option value="2">2</option>
+					<option value="3">3</option>
+					<option value="4">4</option>
+					<option value="5">5</option>
+					<option value="6">6</option>
+					<option value="7">7</option>
+					<option value="8">8</option>
+				</options>
 			</parameter>
 		</config-description>
 	</channel-type>

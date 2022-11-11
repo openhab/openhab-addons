@@ -66,6 +66,7 @@ public class PulseAudioAudioSink extends PulseaudioSimpleProtocolStream implemen
         if (audioStream == null) {
             return;
         }
+        addClientCount();
         try (ConvertedInputStream normalizedPCMStream = new ConvertedInputStream(audioStream)) {
             for (int countAttempt = 1; countAttempt <= 2; countAttempt++) { // two attempts allowed
                 try {
@@ -73,7 +74,6 @@ public class PulseAudioAudioSink extends PulseaudioSimpleProtocolStream implemen
                     final Socket clientSocketLocal = clientSocket;
                     if (clientSocketLocal != null) {
                         // send raw audio to the socket and to pulse audio
-                        setIdle(false);
                         Instant start = Instant.now();
                         normalizedPCMStream.transferTo(clientSocketLocal.getOutputStream());
                         if (normalizedPCMStream.getDuration() != -1) { // ensure, if the sound has a duration
@@ -91,7 +91,9 @@ public class PulseAudioAudioSink extends PulseaudioSimpleProtocolStream implemen
                 } catch (IOException e) {
                     disconnect(); // disconnect force to clear connection in case of socket not cleanly shutdown
                     if (countAttempt == 2) { // we won't retry : log and quit
-                        String port = clientSocket != null ? Integer.toString(clientSocket.getPort()) : "unknown";
+                        final Socket clientSocketLocal = clientSocket;
+                        String port = clientSocketLocal != null ? Integer.toString(clientSocketLocal.getPort())
+                                : "unknown";
                         logger.warn(
                                 "Error while trying to send audio to pulseaudio audio sink. Cannot connect to {}:{}, error: {}",
                                 pulseaudioHandler.getHost(), port, e.getMessage());
@@ -106,9 +108,8 @@ public class PulseAudioAudioSink extends PulseaudioSimpleProtocolStream implemen
             throw new UnsupportedAudioFormatException("Cannot send sound to the pulseaudio sink",
                     audioStream.getFormat(), e);
         } finally {
-            scheduleDisconnect();
+            minusClientCount();
         }
-        setIdle(true);
     }
 
     @Override

@@ -39,7 +39,7 @@
 	</channel-type>
 
 	<channel-type id="enable">
-		<item-type>system.power</item-type>
+		<item-type>Switch</item-type>
 		<label>Heater Enable</label>
 		<description>Heater Enable</description>
 		<state readOnly="true"/>

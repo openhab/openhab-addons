@@ -19,6 +19,9 @@ import java.security.cert.X509Certificate;
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.X509ExtendedTrustManager;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  *
  * The {@link UniFiTrustManager} is a "trust all" implementation of {@link X509ExtendedTrustManager}.
@@ -27,6 +30,7 @@ import javax.net.ssl.X509ExtendedTrustManager;
  *
  * @author Matthew Bowman - Initial contribution
  */
+@NonNullByDefault
 public class UniFiTrustManager extends X509ExtendedTrustManager {
 
     private static UniFiTrustManager instance = new UniFiTrustManager();
@@ -42,35 +46,37 @@ public class UniFiTrustManager extends X509ExtendedTrustManager {
     }
 
     @Override
-    public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+    public void checkClientTrusted(final X509Certificate @Nullable [] chain, final @Nullable String authType)
+            throws CertificateException {
     }
 
     @Override
-    public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+    public void checkServerTrusted(final X509Certificate @Nullable [] chain, final @Nullable String authType)
+            throws CertificateException {
     }
 
     @Override
-    public X509Certificate[] getAcceptedIssuers() {
+    public X509Certificate @Nullable [] getAcceptedIssuers() {
         return null;
     }
 
     @Override
-    public void checkClientTrusted(X509Certificate[] chain, String authType, Socket socket)
-            throws CertificateException {
+    public void checkClientTrusted(final X509Certificate @Nullable [] chain, final @Nullable String authType,
+            final @Nullable Socket socket) throws CertificateException {
     }
 
     @Override
-    public void checkClientTrusted(X509Certificate[] chain, String authType, SSLEngine engine)
-            throws CertificateException {
+    public void checkClientTrusted(final X509Certificate @Nullable [] chain, final @Nullable String authType,
+            final @Nullable SSLEngine engine) throws CertificateException {
     }
 
     @Override
-    public void checkServerTrusted(X509Certificate[] chain, String authType, Socket socket)
-            throws CertificateException {
+    public void checkServerTrusted(final X509Certificate @Nullable [] chain, final @Nullable String authType,
+            final @Nullable Socket socket) throws CertificateException {
     }
 
     @Override
-    public void checkServerTrusted(X509Certificate[] chain, String authType, SSLEngine engine)
-            throws CertificateException {
+    public void checkServerTrusted(final X509Certificate @Nullable [] chain, final @Nullable String authType,
+            final @Nullable SSLEngine engine) throws CertificateException {
     }
 }

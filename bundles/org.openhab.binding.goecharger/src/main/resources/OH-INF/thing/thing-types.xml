@@ -22,6 +22,8 @@
 			<channel id="powerL1" typeId="pl1"/>
 			<channel id="powerL2" typeId="pl2"/>
 			<channel id="powerL3" typeId="pl3"/>
+			<channel id="powerAll" typeId="pAll"/>
+			<channel id="transaction" typeId="trx"/>
 			<channel id="allowCharging" typeId="alw"/>
 			<channel id="cableCurrent" typeId="cbl"/>
 			<channel id="firmware" typeId="fmw"/>
@@ -158,6 +160,12 @@
 		<description>Power on L3</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
+	<channel-type id="pAll">
+		<item-type>Number:Power</item-type>
+		<label>Power All</label>
+		<description>Power All</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
 	<channel-type id="pha">
 		<item-type>Number</item-type>
 		<label>Phases</label>
@@ -188,6 +196,12 @@
 		<description>Amount of energy that has been charged since installation</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
+	<channel-type id="trx">
+		<item-type>Number</item-type>
+		<label>Transaction</label>
+		<description>0 for no card, otherwise card ID</description>
+		<state readOnly="false"/>
+	</channel-type>
 	<channel-type id="alw">
 		<item-type>Switch</item-type>
 		<label>Allow Charging</label>
@@ -204,15 +218,15 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature type 2 port</label>
 		<description>Temperature of the Go-eCharger on the type 2 port</description>
-		<state pattern="%d %unit%" readOnly="true"/>
 		<category>Temperature</category>
+		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="tmp">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature circuit board</label>
 		<description>Temperature of the Go-eCharger on circuit board</description>
-		<state pattern="%d %unit%" readOnly="true"/>
 		<category>Temperature</category>
+		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="fmw">
 		<item-type>String</item-type>

@@ -13,6 +13,7 @@
 package org.openhab.binding.nikohomecontrol.internal.protocol.nhc1;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Class {@link NhcMessageBase1} used as base class for output from gson for cmd or event feedback from Niko Home
@@ -26,11 +27,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 abstract class NhcMessageBase1 {
 
-    private String cmd = "";
-    private String event = "";
+    private @Nullable String cmd;
+    private @Nullable String event;
 
     String getCmd() {
-        return cmd;
+        String cmd = this.cmd;
+        return ((cmd != null) ? cmd : "");
     }
 
     void setCmd(String cmd) {
@@ -38,7 +40,8 @@ abstract class NhcMessageBase1 {
     }
 
     String getEvent() {
-        return event;
+        String event = this.event;
+        return ((event != null) ? event : "");
     }
 
     void setEvent(String event) {

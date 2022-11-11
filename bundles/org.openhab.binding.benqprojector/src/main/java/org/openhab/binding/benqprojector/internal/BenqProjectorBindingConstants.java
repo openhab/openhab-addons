@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.benqprojector.internal;
 
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
@@ -25,11 +27,19 @@ import org.openhab.core.thing.ThingTypeUID;
 public class BenqProjectorBindingConstants {
 
     private static final String BINDING_ID = "benqprojector";
+    public static final int DEFAULT_PORT = 8000;
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_PROJECTOR_SERIAL = new ThingTypeUID(BINDING_ID, "projector-serial");
     public static final ThingTypeUID THING_TYPE_PROJECTOR_TCP = new ThingTypeUID(BINDING_ID, "projector-tcp");
 
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_PROJECTOR_SERIAL,
+            THING_TYPE_PROJECTOR_TCP);
+
     // Some Channel types
     public static final String CHANNEL_TYPE_POWER = "power";
+
+    // Config properties
+    public static final String THING_PROPERTY_HOST = "host";
+    public static final String THING_PROPERTY_PORT = "port";
 }

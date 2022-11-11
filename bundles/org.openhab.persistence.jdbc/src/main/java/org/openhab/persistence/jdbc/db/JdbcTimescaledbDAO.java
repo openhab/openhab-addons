@@ -14,6 +14,7 @@ package org.openhab.persistence.jdbc.db;
 
 import java.util.Properties;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.knowm.yank.Yank;
 import org.openhab.persistence.jdbc.dto.ItemVO;
 import org.openhab.persistence.jdbc.utils.StringUtilsExt;
@@ -27,6 +28,7 @@ import org.slf4j.LoggerFactory;
  * @author Riccardo Nimser-Joseph - Initial contribution
  * @author Dan Cunningham - Fixes and refactoring
  */
+@NonNullByDefault
 public class JdbcTimescaledbDAO extends JdbcPostgresqlDAO {
     private final Logger logger = LoggerFactory.getLogger(JdbcTimescaledbDAO.class);
 

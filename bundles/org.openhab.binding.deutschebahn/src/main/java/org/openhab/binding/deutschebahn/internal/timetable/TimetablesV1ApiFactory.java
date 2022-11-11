@@ -12,13 +12,10 @@
  */
 package org.openhab.binding.deutschebahn.internal.timetable;
 
-import java.net.URISyntaxException;
-
 import javax.xml.bind.JAXBException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.deutschebahn.internal.timetable.TimetablesV1Impl.HttpCallable;
-import org.xml.sax.SAXException;
 
 /**
  * Factory for {@link TimetablesV1Api}.
@@ -31,6 +28,6 @@ public interface TimetablesV1ApiFactory {
     /**
      * Creates an new instance of the {@link TimetablesV1Api}.
      */
-    public abstract TimetablesV1Api create(final String authToken, final HttpCallable httpCallable)
-            throws JAXBException, SAXException, URISyntaxException;
+    public abstract TimetablesV1Api create(final String clientId, final String clientSecret,
+            final HttpCallable httpCallable) throws JAXBException;
 }

@@ -20,10 +20,10 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewWebTargets;
-import org.openhab.binding.hdpowerview.internal.api.Color;
-import org.openhab.binding.hdpowerview.internal.api.Firmware;
-import org.openhab.binding.hdpowerview.internal.api.responses.RepeaterData;
 import org.openhab.binding.hdpowerview.internal.config.HDPowerViewRepeaterConfiguration;
+import org.openhab.binding.hdpowerview.internal.dto.Color;
+import org.openhab.binding.hdpowerview.internal.dto.Firmware;
+import org.openhab.binding.hdpowerview.internal.dto.responses.RepeaterData;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubException;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubInvalidResponseException;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubMaintenanceException;
@@ -94,11 +94,6 @@ public class HDPowerViewRepeaterHandler extends AbstractHubbedThingHandler {
             return;
         }
         HDPowerViewWebTargets webTargets = bridge.getWebTargets();
-        if (webTargets == null) {
-            logger.warn("Web targets not initialized");
-            return;
-        }
-
         try {
             RepeaterData repeaterData;
 
@@ -200,10 +195,6 @@ public class HDPowerViewRepeaterHandler extends AbstractHubbedThingHandler {
             return;
         }
         HDPowerViewWebTargets webTargets = bridge.getWebTargets();
-        if (webTargets == null) {
-            logger.warn("Web targets not initialized");
-            return;
-        }
         try {
             logger.debug("Polling for status information");
 

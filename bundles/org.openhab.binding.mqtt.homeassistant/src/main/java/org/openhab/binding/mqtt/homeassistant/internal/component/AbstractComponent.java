@@ -48,6 +48,8 @@ import org.openhab.core.thing.type.ChannelGroupTypeUID;
  */
 @NonNullByDefault
 public abstract class AbstractComponent<C extends AbstractChannelConfiguration> {
+    private static final String JINJA_PREFIX = "JINJA:";
+
     // Component location fields
     private final ComponentConfiguration componentConfiguration;
     protected final ChannelGroupTypeUID channelGroupTypeUID;
@@ -88,9 +90,13 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
 
         String availabilityTopic = this.channelConfiguration.getAvailabilityTopic();
         if (availabilityTopic != null) {
+            String availabilityTemplate = this.channelConfiguration.getAvailabilityTemplate();
+            if (availabilityTemplate != null) {
+                availabilityTemplate = JINJA_PREFIX + availabilityTemplate;
+            }
             componentConfiguration.getTracker().addAvailabilityTopic(availabilityTopic,
-                    this.channelConfiguration.getPayloadAvailable(),
-                    this.channelConfiguration.getPayloadNotAvailable());
+                    this.channelConfiguration.getPayloadAvailable(), this.channelConfiguration.getPayloadNotAvailable(),
+                    availabilityTemplate, componentConfiguration.getTransformationServiceProvider());
         }
     }
 

@@ -18,6 +18,7 @@
 			<channel id="treble" typeId="treble"/>
 			<channel id="line1" typeId="frontPanelLine"/>
 			<channel id="line2" typeId="frontPanelLine"/>
+			<channel id="otherCommand" typeId="otherCommand"/>
 		</channels>
 	</channel-group-type>
 
@@ -33,6 +34,7 @@
 			<channel id="mute" typeId="system.mute"/>
 			<channel id="line1" typeId="frontPanelLine"/>
 			<channel id="line2" typeId="frontPanelLine"/>
+			<channel id="otherCommand" typeId="otherCommand"/>
 		</channels>
 	</channel-group-type>
 
@@ -49,6 +51,7 @@
 			<channel id="bass" typeId="bass"/>
 			<channel id="treble" typeId="treble"/>
 			<channel id="line1" typeId="frontPanelLine"/>
+			<channel id="otherCommand" typeId="otherCommand"/>
 		</channels>
 	</channel-group-type>
 
@@ -66,6 +69,7 @@
 			<channel id="treble" typeId="treble"/>
 			<channel id="line1" typeId="frontPanelLine"/>
 			<channel id="line2" typeId="frontPanelLine"/>
+			<channel id="otherCommand" typeId="otherCommand"/>
 		</channels>
 	</channel-group-type>
 
@@ -82,6 +86,7 @@
 			<channel id="bass" typeId="bass"/>
 			<channel id="treble" typeId="treble"/>
 			<channel id="line1" typeId="frontPanelLine"/>
+			<channel id="otherCommand" typeId="otherCommand"/>
 		</channels>
 	</channel-group-type>
 
@@ -125,6 +130,29 @@
 			<channel id="source" typeId="source"/>
 			<channel id="volume" typeId="system.volume"/>
 			<channel id="mute" typeId="system.mute"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="allZones">
+		<label>@text/channel-group.allZones.label</label>
+		<description>@text/channel-group.allZones.description</description>
+		<channels>
+			<channel id="power" typeId="system.power"/>
+			<channel id="brightness" typeId="brightness"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="zone">
+		<label>@text/channel-group.zone.label</label>
+		<description>@text/channel-group.zone.description</description>
+		<channels>
+			<channel id="source" typeId="source"/>
+			<channel id="volume" typeId="system.volume"/>
+			<channel id="mute" typeId="system.mute"/>
+			<channel id="bass" typeId="bass"/>
+			<channel id="treble" typeId="treble"/>
+			<channel id="balance" typeId="balance"/>
+			<channel id="frequency" typeId="frequency"/>
 		</channels>
 	</channel-group-type>
 
@@ -182,6 +210,26 @@
 		<state pattern="%d" readOnly="true"/>
 	</channel-type>
 
+	<channel-type id="random" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Random Mode</label>
+		<description>The current random mode</description>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="repeat" advanced="true">
+		<item-type>String</item-type>
+		<label>Repeat Mode</label>
+		<description>The current repeat mode</description>
+		<state readOnly="false" pattern="%s">
+			<options>
+				<option value="TRACK">Track</option>
+				<option value="DISC">Disc</option>
+				<option value="OFF">Off</option>
+			</options>
+		</state>
+	</channel-type>
+
 	<channel-type id="frequency" advanced="true">
 		<item-type>Number</item-type>
 		<label>Current Frequency</label>
@@ -223,5 +271,19 @@
 		<item-type>Switch</item-type>
 		<label>Speaker-B Adjustment</label>
 		<description>Turn on/off the speaker group B</description>
+	</channel-type>
+
+	<channel-type id="otherCommand" advanced="true">
+		<item-type>String</item-type>
+		<label>Other Command</label>
+		<description>Choose the command to send to the device</description>
+	</channel-type>
+
+	<channel-type id="radioPreset">
+		<item-type>Number</item-type>
+		<label>Radio Preset</label>
+		<description>Select a radio preset</description>
+		<state pattern="%d" readOnly="false" min="1" max="30"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 </thing:thing-descriptions>

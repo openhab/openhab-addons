@@ -14,13 +14,15 @@ package org.openhab.binding.tado.internal.builder;
 
 import java.io.IOException;
 
-import org.openhab.binding.tado.internal.TadoBindingConstants;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tado.internal.TadoBindingConstants.FanLevel;
 import org.openhab.binding.tado.internal.TadoBindingConstants.FanSpeed;
 import org.openhab.binding.tado.internal.TadoBindingConstants.HorizontalSwing;
 import org.openhab.binding.tado.internal.TadoBindingConstants.HvacMode;
 import org.openhab.binding.tado.internal.TadoBindingConstants.TemperatureUnit;
 import org.openhab.binding.tado.internal.TadoBindingConstants.VerticalSwing;
+import org.openhab.binding.tado.internal.TadoBindingConstants.ZoneType;
 import org.openhab.binding.tado.internal.api.ApiException;
 import org.openhab.binding.tado.internal.api.model.GenericZoneCapabilities;
 import org.openhab.binding.tado.internal.api.model.GenericZoneSetting;
@@ -32,12 +34,12 @@ import org.openhab.binding.tado.internal.handler.TadoZoneHandler;
  *
  * @author Dennis Frommknecht - Initial contribution
  */
+@NonNullByDefault
 public abstract class ZoneSettingsBuilder {
+
     public static ZoneSettingsBuilder of(TadoZoneHandler zoneHandler) {
-        TadoBindingConstants.ZoneType zoneType = zoneHandler.getZoneType();
-        if (zoneType == null) {
-            throw new IllegalArgumentException("Zone type is null");
-        }
+        ZoneType zoneType = zoneHandler.getZoneType();
+
         switch (zoneType) {
             case HEATING:
                 return new HeatingZoneSettingsBuilder();
@@ -46,19 +48,19 @@ public abstract class ZoneSettingsBuilder {
             case HOT_WATER:
                 return new HotWaterZoneSettingsBuilder();
             default:
-                throw new IllegalArgumentException("Zone type " + zoneHandler.getZoneType() + " unknown");
+                throw new IllegalArgumentException("Zone type " + zoneType + " unknown");
         }
     }
 
-    protected HvacMode mode = null;
-    protected Float temperature = null;
     protected TemperatureUnit temperatureUnit = TemperatureUnit.CELSIUS;
-    protected Boolean swing = null;
-    protected Boolean light = null;
-    protected FanSpeed fanSpeed = null;
-    protected FanLevel fanLevel = null;
-    protected HorizontalSwing horizontalSwing = null;
-    protected VerticalSwing verticalSwing = null;
+    protected @Nullable Float temperature;
+    protected @Nullable HvacMode mode;
+    protected @Nullable Boolean swing;
+    protected @Nullable Boolean light;
+    protected @Nullable FanSpeed fanSpeed;
+    protected @Nullable FanLevel fanLevel;
+    protected @Nullable HorizontalSwing horizontalSwing;
+    protected @Nullable VerticalSwing verticalSwing;
 
     public ZoneSettingsBuilder withMode(HvacMode mode) {
         this.mode = mode;
@@ -100,10 +102,6 @@ public abstract class ZoneSettingsBuilder {
             throws IOException, ApiException;
 
     protected TemperatureObject truncateTemperature(TemperatureObject temperature) {
-        if (temperature == null) {
-            return null;
-        }
-
         TemperatureObject temperatureObject = new TemperatureObject();
         if (temperatureUnit == TemperatureUnit.FAHRENHEIT) {
             temperatureObject.setFahrenheit(temperature.getFahrenheit());

@@ -218,11 +218,26 @@ public class GoEChargerHandler extends GoEChargerBaseHandler {
                     return UnDefType.UNDEF;
                 }
                 return new QuantityType<>(goeResponse.energy[9] * 100, Units.WATT);
-            case POWER_ALL:
-                if (goeResponseBase.energy == null) {
+            case VOLTAGE_L1:
+                if (goeResponse.energy == null) {
                     return UnDefType.UNDEF;
                 }
-                return new QuantityType<>(goeResponseBase.energy[11] * 10, Units.WATT);
+                return new QuantityType<>(goeResponse.energy[0], Units.VOLT);
+            case VOLTAGE_L2:
+                if (goeResponse.energy == null) {
+                    return UnDefType.UNDEF;
+                }
+                return new QuantityType<>(goeResponse.energy[1], Units.VOLT);
+            case VOLTAGE_L3:
+                if (goeResponse.energy == null) {
+                    return UnDefType.UNDEF;
+                }
+                return new QuantityType<>(goeResponse.energy[2], Units.VOLT);
+            case POWER_ALL:
+                if (goeResponse.energy == null) {
+                    return UnDefType.UNDEF;
+                }
+                return new QuantityType<>(goeResponse.energy[11] * 10, Units.WATT);
         }
         return UnDefType.UNDEF;
     }

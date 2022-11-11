@@ -69,18 +69,20 @@ import io.github.hapjava.server.impl.crypto.HAPSetupCodeUtils;
 public class HomekitImpl implements Homekit, NetworkAddressChangeListener {
     private final Logger logger = LoggerFactory.getLogger(HomekitImpl.class);
 
+    private final StorageService storageService;
     private final NetworkAddressService networkAddressService;
     private final ConfigurationAdmin configAdmin;
-    private final Storage<String> storage;
+    private final ItemRegistry itemRegistry;
+    private final MetadataRegistry metadataRegistry;
 
-    private HomekitAuthInfoImpl authInfo;
+    private final List<HomekitAuthInfoImpl> authInfos = new ArrayList<>();
     private HomekitSettings settings;
     private @Nullable InetAddress networkInterface;
-    private @Nullable HomekitServer homekitServer;
-    private @Nullable HomekitRoot bridge;
+    private final List<HomekitServer> homekitServers = new ArrayList<>();
+    private final List<HomekitRoot> bridges = new ArrayList<>();
     private MDNSClient mdnsClient;
 
-    private final HomekitChangeListener changeListener;
+    private final List<HomekitChangeListener> changeListeners = new ArrayList<>();
 
     private final ScheduledExecutorService scheduler = ThreadPoolManager
             .getScheduledPool(ThreadPoolManager.THREAD_POOL_NAME_COMMON);
@@ -90,15 +92,15 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener {
             @Reference NetworkAddressService networkAddressService, @Reference MetadataRegistry metadataRegistry,
             @Reference ConfigurationAdmin configAdmin, @Reference MDNSClient mdnsClient, Map<String, Object> properties)
             throws IOException, InvalidAlgorithmParameterException {
+        this.storageService = storageService;
         this.networkAddressService = networkAddressService;
         this.configAdmin = configAdmin;
         this.settings = processConfig(properties);
         this.mdnsClient = mdnsClient;
-        this.storage = storageService.getStorage(HomekitAuthInfoImpl.STORAGE_KEY);
+        this.itemRegistry = itemRegistry;
+        this.metadataRegistry = metadataRegistry;
         networkAddressService.addNetworkAddressChangeListener(this);
-        this.changeListener = new HomekitChangeListener(itemRegistry, settings, metadataRegistry, storage);
         try {
-            authInfo = new HomekitAuthInfoImpl(storage, settings.pin, settings.setupId, settings.blockUserDeletion);
             startHomekitServer();
         } catch (IOException | InvalidAlgorithmParameterException e) {
             logger.warn("cannot activate HomeKit binding. {}", e.getMessage());
@@ -148,81 +150,89 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener {
         try {
             HomekitSettings oldSettings = settings;
             settings = processConfig(config);
-            changeListener.updateSettings(settings);
-            if (!oldSettings.networkInterface.equals(settings.networkInterface) || oldSettings.port != settings.port
-                    || oldSettings.useOHmDNS != settings.useOHmDNS) {
+            if ((oldSettings == null) || (settings == null))
+                return;
+            if (!oldSettings.name.equals(settings.name) || !oldSettings.pin.equals(settings.pin)
+                    || !oldSettings.setupId.equals(settings.setupId)
+                    || !oldSettings.networkInterface.equals(settings.networkInterface)
+                    || oldSettings.port != settings.port || oldSettings.useOHmDNS != settings.useOHmDNS
+                    || oldSettings.instances != settings.instances) {
                 // the HomeKit server settings changed. we do a complete re-init
                 stopHomekitServer();
                 startHomekitServer();
-            } else if (!oldSettings.name.equals(settings.name) || !oldSettings.pin.equals(settings.pin)
-                    || !oldSettings.setupId.equals(settings.setupId)) {
-                stopHomekitServer();
-                authInfo.setPin(settings.pin);
-                authInfo.setSetupId(settings.setupId);
-                startHomekitServer();
+            } else {
+                for (HomekitChangeListener changeListener : changeListeners) {
+                    changeListener.updateSettings(settings);
+                }
             }
-        } catch (IOException e) {
+        } catch (IOException | InvalidAlgorithmParameterException e) {
             logger.warn("could not initialize HomeKit bridge: {}", e.getMessage());
         }
     }
 
-    private void stopBridge() {
-        final @Nullable HomekitRoot bridge = this.bridge;
-        if (bridge != null) {
-            changeListener.unsetBridge();
-            bridge.stop();
-            this.bridge = null;
+    private HomekitRoot startBridge(HomekitServer homekitServer, HomekitAuthInfoImpl authInfo,
+            HomekitChangeListener changeListener, int instance) throws IOException {
+        String name = settings.name;
+        if (instance != 1) {
+            name += " (" + instance + ")";
         }
-    }
-
-    private void startBridge() throws IOException {
-        final @Nullable HomekitServer homekitServer = this.homekitServer;
-        if (homekitServer != null && bridge == null) {
-            final HomekitRoot bridge = homekitServer.createBridge(authInfo, settings.name,
-                    HomekitAccessoryCategories.BRIDGES, HomekitSettings.MANUFACTURER, HomekitSettings.MODEL,
-                    HomekitSettings.SERIAL_NUMBER, FrameworkUtil.getBundle(getClass()).getVersion().toString(),
-                    HomekitSettings.HARDWARE_REVISION);
-            changeListener.setBridge(bridge);
-            this.bridge = bridge;
-            bridge.setConfigurationIndex(changeListener.getConfigurationRevision());
-            bridge.refreshAuthInfo();
-            final int lastAccessoryCount = changeListener.getLastAccessoryCount();
-            int currentAccessoryCount = changeListener.getAccessories().size();
-            if (currentAccessoryCount < lastAccessoryCount) {
-                logger.debug(
-                        "it looks like not all items were initialized yet. Old configuration had {} accessories, the current one has only {} accessories. Delay HomeKit bridge start for {} seconds.",
-                        lastAccessoryCount, currentAccessoryCount, settings.startDelay);
-                scheduler.schedule(() -> {
-                    if (currentAccessoryCount < lastAccessoryCount) {
-                        // the number of items is still different, maybe it is desired.
-                        // make new configuration revision.
-                        changeListener.makeNewConfigurationRevision();
-                    }
-                    bridge.start();
-                }, settings.startDelay, TimeUnit.SECONDS);
-            } else { // start bridge immediately.
+        final HomekitRoot bridge = homekitServer.createBridge(authInfo, name, HomekitAccessoryCategories.BRIDGES,
+                HomekitSettings.MANUFACTURER, HomekitSettings.MODEL, HomekitSettings.SERIAL_NUMBER,
+                FrameworkUtil.getBundle(getClass()).getVersion().toString(), HomekitSettings.HARDWARE_REVISION);
+        changeListener.setBridge(bridge);
+        bridges.add(bridge);
+        bridge.setConfigurationIndex(changeListener.getConfigurationRevision());
+        bridge.refreshAuthInfo();
+        final int lastAccessoryCount = changeListener.getLastAccessoryCount();
+        int currentAccessoryCount = changeListener.getAccessories().size();
+        if (currentAccessoryCount < lastAccessoryCount) {
+            logger.debug(
+                    "it looks like not all items were initialized yet. Old configuration had {} accessories, the current one has only {} accessories. Delay HomeKit bridge start for {} seconds.",
+                    lastAccessoryCount, currentAccessoryCount, settings.startDelay);
+            scheduler.schedule(() -> {
+                if (currentAccessoryCount < lastAccessoryCount) {
+                    // the number of items is still different, maybe it is desired.
+                    // make new configuration revision.
+                    changeListener.makeNewConfigurationRevision();
+                }
                 bridge.start();
-            }
-        } else {
-            logger.warn(
-                    "trying to start bridge but HomeKit server is not initialized or bridge is already initialized");
+            }, settings.startDelay, TimeUnit.SECONDS);
+        } else { // start bridge immediately.
+            bridge.start();
         }
+        return bridge;
     }
 
-    private void startHomekitServer() throws IOException {
+    private void startHomekitServer() throws IOException, InvalidAlgorithmParameterException {
         logger.trace("start HomeKit bridge");
-        if (homekitServer == null) {
+        if (homekitServers.isEmpty()) {
             try {
                 networkInterface = InetAddress
                         .getByName(((settings.networkInterface != null) && (!settings.networkInterface.isEmpty()))
                                 ? settings.networkInterface
                                 : networkAddressService.getPrimaryIpv4HostAddress());
+            } catch (UnknownHostException e) {
+                logger.warn("cannot resolve the Pv4 address / hostname {}.",
+                        networkAddressService.getPrimaryIpv4HostAddress());
+            }
+
+            for (int i = 0; i < settings.instances; ++i) {
+                String storage_key = HomekitAuthInfoImpl.STORAGE_KEY;
+                if (i != 0) {
+                    storage_key += i;
+                }
+                Storage<String> storage = storageService.getStorage(storage_key);
+                HomekitAuthInfoImpl authInfo = new HomekitAuthInfoImpl(storage, settings.pin, settings.setupId,
+                        settings.blockUserDeletion);
+
+                @Nullable
+                HomekitServer homekitServer = null;
                 if (settings.useOHmDNS) {
                     for (JmDNS mdns : mdnsClient.getClientInstances()) {
                         if (mdns.getInetAddress().equals(networkInterface)) {
                             logger.trace("suitable mDNS client for IP {} found and will be used for HomeKit",
                                     networkInterface);
-                            homekitServer = new HomekitServer(mdns, settings.port);
+                            homekitServer = new HomekitServer(mdns, settings.port + i);
                         }
                     }
                 }
@@ -231,12 +241,14 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener {
                         logger.trace("no suitable mDNS server for IP {} found", networkInterface);
                     }
                     logger.trace("create HomeKit server with dedicated mDNS server");
-                    homekitServer = new HomekitServer(networkInterface, settings.port);
+                    homekitServer = new HomekitServer(networkInterface, settings.port + i);
                 }
-                startBridge();
-            } catch (UnknownHostException e) {
-                logger.warn("cannot resolve the Pv4 address / hostname {}.",
-                        networkAddressService.getPrimaryIpv4HostAddress());
+                homekitServers.add(homekitServer);
+                HomekitChangeListener changeListener = new HomekitChangeListener(itemRegistry, settings,
+                        metadataRegistry, storage, i + 1);
+                changeListeners.add(changeListener);
+                bridges.add(startBridge(homekitServer, authInfo, changeListener, i + 1));
+                authInfos.add(authInfo);
             }
         } else {
             logger.warn("trying to start HomeKit server but it is already initialized");
@@ -245,49 +257,53 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener {
 
     private void stopHomekitServer() {
         logger.trace("stop HomeKit bridge");
-        final @Nullable HomekitServer homekit = this.homekitServer;
-        if (homekit != null) {
-            if (bridge != null) {
-                stopBridge();
-            }
-            homekit.stop();
-            this.homekitServer = null;
-        }
+        changeListeners.parallelStream().forEach(HomekitChangeListener::stop);
+        bridges.parallelStream().forEach(HomekitRoot::stop);
+        homekitServers.parallelStream().forEach(HomekitServer::stop);
+        homekitServers.clear();
+        bridges.clear();
+        changeListeners.clear();
+        authInfos.clear();
     }
 
     @Deactivate
     protected void deactivate() {
         networkAddressService.removeNetworkAddressChangeListener(this);
-        changeListener.clearAccessories();
+        for (HomekitChangeListener changeListener : changeListeners) {
+            changeListener.clearAccessories();
+        }
         stopHomekitServer();
-        changeListener.stop();
     }
 
     @Override
     public void refreshAuthInfo() throws IOException {
-        final @Nullable HomekitRoot bridge = this.bridge;
-        if (bridge != null) {
+        for (HomekitRoot bridge : bridges) {
             bridge.refreshAuthInfo();
         }
     }
 
     @Override
     public void allowUnauthenticatedRequests(boolean allow) {
-        final @Nullable HomekitRoot bridge = this.bridge;
-        if (bridge != null) {
+        for (HomekitRoot bridge : bridges) {
             bridge.allowUnauthenticatedRequests(allow);
         }
     }
 
     @Override
     public List<HomekitAccessory> getAccessories() {
-        return new ArrayList<>(this.changeListener.getAccessories().values());
+        List<HomekitAccessory> accessories = new ArrayList<>();
+        for (HomekitChangeListener changeListener : changeListeners) {
+            accessories.addAll(changeListener.getAccessories().values());
+        }
+        return accessories;
     }
 
     @Override
     public void clearHomekitPairings() {
         try {
-            authInfo.clear();
+            for (HomekitAuthInfoImpl authInfo : authInfos) {
+                authInfo.clear();
+            }
             refreshAuthInfo();
         } catch (Exception e) {
             logger.warn("could not clear HomeKit pairings", e);
@@ -300,23 +316,13 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener {
         removed.forEach(i -> {
             logger.trace("removed interface {}", i.getAddress().toString());
             if (i.getAddress().equals(networkInterface)) {
-                final @Nullable HomekitRoot bridge = this.bridge;
-                if (bridge != null) {
-                    bridge.stop();
-                    this.bridge = null;
-                }
-                final @Nullable HomekitServer homekitServer = this.homekitServer;
-                if (homekitServer != null) {
-                    homekitServer.stop();
-                    this.homekitServer = null;
-                }
-                logger.trace("bridge stopped");
+                stopHomekitServer();
             }
         });
-        if ((this.bridge == null) && (!added.isEmpty())) {
+        if (bridges.isEmpty() && !added.isEmpty()) {
             try {
                 startHomekitServer();
-            } catch (IOException e) {
+            } catch (IOException | InvalidAlgorithmParameterException e) {
                 logger.warn("could not initialize HomeKit bridge: {}", e.getMessage());
             }
         }

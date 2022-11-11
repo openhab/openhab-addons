@@ -14,8 +14,10 @@ package org.openhab.binding.nikohomecontrol.internal.discovery;
 
 import static org.openhab.binding.nikohomecontrol.internal.NikoHomeControlBindingConstants.*;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.Map;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -27,6 +29,8 @@ import org.openhab.binding.nikohomecontrol.internal.protocol.NikoHomeControlComm
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,43 +41,52 @@ import org.slf4j.LoggerFactory;
  * @author Mark Herwege - Initial Contribution
  */
 @NonNullByDefault
-public class NikoHomeControlDiscoveryService extends AbstractDiscoveryService {
+public class NikoHomeControlDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
 
     private final Logger logger = LoggerFactory.getLogger(NikoHomeControlDiscoveryService.class);
 
-    private static final int TIMEOUT = 5;
+    private volatile @Nullable ScheduledFuture<?> nhcDiscoveryJob;
 
-    private ThingUID bridgeUID;
-    private NikoHomeControlBridgeHandler handler;
+    private static final int TIMEOUT_S = 5;
+    private static final int INITIAL_DELAY_S = 5; // initial delay for polling to allow time for initial request to NHC
+                                                  // controller to complete
+    private static final int REFRESH_INTERVAL_S = 60;
 
-    public NikoHomeControlDiscoveryService(NikoHomeControlBridgeHandler handler) {
-        super(SUPPORTED_THING_TYPES_UIDS, TIMEOUT, false);
-        logger.debug("discovery service {}", handler);
-        bridgeUID = handler.getThing().getUID();
-        this.handler = handler;
+    private @Nullable ThingUID bridgeUID;
+    private @Nullable NikoHomeControlBridgeHandler handler;
+
+    public NikoHomeControlDiscoveryService() {
+        super(SUPPORTED_THING_TYPES_UIDS, TIMEOUT_S, true);
+        logger.debug("device discovery service started");
     }
 
+    @Override
     public void activate() {
-        handler.setNhcDiscovery(this);
+        startBackgroundDiscovery();
     }
 
     @Override
     public void deactivate() {
-        removeOlderResults(new Date().getTime());
-        handler.setNhcDiscovery(null);
+        removeOlderResults(Instant.now().toEpochMilli());
+        super.deactivate();
     }
 
     /**
      * Discovers devices connected to a Niko Home Control controller
      */
     public void discoverDevices() {
-        NikoHomeControlCommunication nhcComm = handler.getCommunication();
+        NikoHomeControlBridgeHandler bridgeHandler = handler;
+        if (bridgeHandler == null) {
+            return;
+        }
+
+        NikoHomeControlCommunication nhcComm = bridgeHandler.getCommunication();
 
         if ((nhcComm == null) || !nhcComm.communicationActive()) {
             logger.warn("not connected");
             return;
         }
-        logger.debug("getting devices on {}", handler.getThing().getUID().getId());
+        logger.debug("getting devices on {}", bridgeHandler.getThing().getUID().getId());
 
         Map<String, NhcAction> actions = nhcComm.getActions();
 
@@ -83,20 +96,21 @@ public class NikoHomeControlDiscoveryService extends AbstractDiscoveryService {
 
             switch (nhcAction.getType()) {
                 case TRIGGER:
-                    addActionDevice(new ThingUID(THING_TYPE_PUSHBUTTON, handler.getThing().getUID(), actionId),
+                    addActionDevice(new ThingUID(THING_TYPE_PUSHBUTTON, bridgeHandler.getThing().getUID(), actionId),
                             actionId, thingName, thingLocation);
                     break;
                 case RELAY:
-                    addActionDevice(new ThingUID(THING_TYPE_ON_OFF_LIGHT, handler.getThing().getUID(), actionId),
+                    addActionDevice(new ThingUID(THING_TYPE_ON_OFF_LIGHT, bridgeHandler.getThing().getUID(), actionId),
                             actionId, thingName, thingLocation);
                     break;
                 case DIMMER:
-                    addActionDevice(new ThingUID(THING_TYPE_DIMMABLE_LIGHT, handler.getThing().getUID(), actionId),
+                    addActionDevice(
+                            new ThingUID(THING_TYPE_DIMMABLE_LIGHT, bridgeHandler.getThing().getUID(), actionId),
                             actionId, thingName, thingLocation);
                     break;
                 case ROLLERSHUTTER:
-                    addActionDevice(new ThingUID(THING_TYPE_BLIND, handler.getThing().getUID(), actionId), actionId,
-                            thingName, thingLocation);
+                    addActionDevice(new ThingUID(THING_TYPE_BLIND, bridgeHandler.getThing().getUID(), actionId),
+                            actionId, thingName, thingLocation);
                     break;
                 default:
                     logger.debug("unrecognized action type {} for {} {}", nhcAction.getType(), actionId, thingName);
@@ -108,7 +122,7 @@ public class NikoHomeControlDiscoveryService extends AbstractDiscoveryService {
         thermostats.forEach((thermostatId, nhcThermostat) -> {
             String thingName = nhcThermostat.getName();
             String thingLocation = nhcThermostat.getLocation();
-            addThermostatDevice(new ThingUID(THING_TYPE_THERMOSTAT, handler.getThing().getUID(), thermostatId),
+            addThermostatDevice(new ThingUID(THING_TYPE_THERMOSTAT, bridgeHandler.getThing().getUID(), thermostatId),
                     thermostatId, thingName, thingLocation);
         });
 
@@ -116,14 +130,16 @@ public class NikoHomeControlDiscoveryService extends AbstractDiscoveryService {
 
         energyMeters.forEach((energyMeterId, nhcEnergyMeter) -> {
             String thingName = nhcEnergyMeter.getName();
-            addEnergyMeterDevice(new ThingUID(THING_TYPE_ENERGYMETER, handler.getThing().getUID(), energyMeterId),
-                    energyMeterId, thingName);
+            String thingLocation = nhcEnergyMeter.getLocation();
+            addEnergyMeterDevice(new ThingUID(THING_TYPE_ENERGYMETER, bridgeHandler.getThing().getUID(), energyMeterId),
+                    energyMeterId, thingName, thingLocation);
         });
     }
 
     private void addActionDevice(ThingUID uid, String actionId, String thingName, @Nullable String thingLocation) {
         DiscoveryResultBuilder discoveryResultBuilder = DiscoveryResultBuilder.create(uid).withBridge(bridgeUID)
-                .withLabel(thingName).withProperty(CONFIG_ACTION_ID, actionId);
+                .withLabel(thingName).withProperty(CONFIG_ACTION_ID, actionId)
+                .withRepresentationProperty(CONFIG_ACTION_ID);
         if (thingLocation != null) {
             discoveryResultBuilder.withProperty("Location", thingLocation);
         }
@@ -133,16 +149,22 @@ public class NikoHomeControlDiscoveryService extends AbstractDiscoveryService {
     private void addThermostatDevice(ThingUID uid, String thermostatId, String thingName,
             @Nullable String thingLocation) {
         DiscoveryResultBuilder discoveryResultBuilder = DiscoveryResultBuilder.create(uid).withBridge(bridgeUID)
-                .withLabel(thingName).withProperty(CONFIG_THERMOSTAT_ID, thermostatId);
+                .withLabel(thingName).withProperty(CONFIG_THERMOSTAT_ID, thermostatId)
+                .withRepresentationProperty(CONFIG_THERMOSTAT_ID);
         if (thingLocation != null) {
             discoveryResultBuilder.withProperty("Location", thingLocation);
         }
         thingDiscovered(discoveryResultBuilder.build());
     }
 
-    private void addEnergyMeterDevice(ThingUID uid, String energyMeterId, String thingName) {
+    private void addEnergyMeterDevice(ThingUID uid, String energyMeterId, String thingName,
+            @Nullable String thingLocation) {
         DiscoveryResultBuilder discoveryResultBuilder = DiscoveryResultBuilder.create(uid).withBridge(bridgeUID)
-                .withLabel(thingName).withProperty(CONFIG_ENERGYMETER_ID, energyMeterId);
+                .withLabel(thingName).withProperty(CONFIG_ENERGYMETER_ID, energyMeterId)
+                .withRepresentationProperty(CONFIG_ENERGYMETER_ID);
+        if (thingLocation != null) {
+            discoveryResultBuilder.withProperty("Location", thingLocation);
+        }
         thingDiscovered(discoveryResultBuilder.build());
     }
 
@@ -155,5 +177,38 @@ public class NikoHomeControlDiscoveryService extends AbstractDiscoveryService {
     protected synchronized void stopScan() {
         super.stopScan();
         removeOlderResults(getTimestampOfLastScan());
+    }
+
+    @Override
+    protected void startBackgroundDiscovery() {
+        logger.debug("Start device background discovery");
+        ScheduledFuture<?> job = nhcDiscoveryJob;
+        if (job == null || job.isCancelled()) {
+            nhcDiscoveryJob = scheduler.scheduleWithFixedDelay(this::discoverDevices, INITIAL_DELAY_S,
+                    REFRESH_INTERVAL_S, TimeUnit.SECONDS);
+        }
+    }
+
+    @Override
+    protected void stopBackgroundDiscovery() {
+        logger.debug("Stop device background discovery");
+        ScheduledFuture<?> job = nhcDiscoveryJob;
+        if (job != null && !job.isCancelled()) {
+            job.cancel(true);
+            nhcDiscoveryJob = null;
+        }
+    }
+
+    @Override
+    public void setThingHandler(@Nullable ThingHandler handler) {
+        if (handler instanceof NikoHomeControlBridgeHandler) {
+            this.handler = (NikoHomeControlBridgeHandler) handler;
+            bridgeUID = handler.getThing().getUID();
+        }
+    }
+
+    @Override
+    public @Nullable ThingHandler getThingHandler() {
+        return handler;
     }
 }

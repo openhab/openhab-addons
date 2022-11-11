@@ -15,7 +15,6 @@ package org.openhab.binding.deutschebahn.internal.timetable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
-import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Properties;
@@ -50,7 +49,7 @@ public final class TimetablesV1Impl implements TimetablesV1Api {
 
         /**
          * Executes the given <code>url</code> with the given <code>httpMethod</code>.
-         * Furthermore the <code>http.proxyXXX</code> System variables are read and
+         * Furthermore, the <code>http.proxyXXX</code> System variables are read and
          * set into the {@link org.eclipse.jetty.client.HttpClient}.
          *
          * @param httpMethod the HTTP method to use
@@ -61,35 +60,43 @@ public final class TimetablesV1Impl implements TimetablesV1Api {
          * @param contentType the content type of the given <code>content</code>
          * @param timeout the socket timeout in milliseconds to wait for data
          * @return the response body or <code>NULL</code> when the request went wrong
-         * @throws IOException when the request execution failed, timed out or it was interrupted
+         * @throws IOException when the request execution failed, timed out, or it was interrupted
          */
         public abstract String executeUrl(String httpMethod, String url, Properties httpHeaders,
                 @Nullable InputStream content, @Nullable String contentType, int timeout) throws IOException;
     }
 
-    private static final String PLAN_URL = "https://api.deutschebahn.com/timetables/v1/plan/%evaNo%/%date%/%hour%";
-    private static final String FCHG_URL = "https://api.deutschebahn.com/timetables/v1/fchg/%evaNo%";
-    private static final String RCHG_URL = "https://api.deutschebahn.com/timetables/v1/rchg/%evaNo%";
+    private static final String BASE_URL = "https://apis.deutschebahn.com/db-api-marketplace/apis/timetables/v1";
+    private static final String PLAN_URL = BASE_URL + "/plan/%evaNo%/%date%/%hour%";
+    private static final String FCHG_URL = BASE_URL + "/fchg/%evaNo%";
+    private static final String RCHG_URL = BASE_URL + "/rchg/%evaNo%";
+
+    private static final String DB_CLIENT_ID_HEADER_NAME = "DB-Client-Id";
+    private static final String DB_CLIENT_SECRET_HEADER_NAME = "DB-Api-Key";
 
     private static final int REQUEST_TIMEOUT_MS = (int) TimeUnit.SECONDS.toMillis(30);
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyMMdd");
     private static final SimpleDateFormat HOUR_FORMAT = new SimpleDateFormat("HH");
 
-    private final String authToken;
+    private final String clientId;
+    private final String clientSecret;
     private final HttpCallable httpCallable;
 
     private final Logger logger = LoggerFactory.getLogger(TimetablesV1Impl.class);
-    private JAXBContext jaxbContext;
+    private final JAXBContext jaxbContext;
     // private Schema schema;
 
     /**
-     * Creates an new {@link TimetablesV1Impl}.
+     * Creates a new {@link TimetablesV1Impl}.
      * 
-     * @param authToken The authentication token for timetable api on developer.deutschebahn.com.
+     * @param clientSecret The client secret for application with linked timetable api on developers.deutschebahn.com.
      */
-    public TimetablesV1Impl(final String authToken, final HttpCallable httpCallable)
-            throws JAXBException, SAXException, URISyntaxException {
-        this.authToken = authToken;
+    public TimetablesV1Impl( //
+            final String clientId, //
+            final String clientSecret, //
+            final HttpCallable httpCallable) throws JAXBException {
+        this.clientId = clientId;
+        this.clientSecret = clientSecret;
         this.httpCallable = httpCallable;
 
         // The results from webservice does not conform to the schema provided. The triplabel-Element (tl) is expected
@@ -149,7 +156,7 @@ public final class TimetablesV1Impl implements TimetablesV1Api {
         }
 
         try {
-            return unmarshal(response, Timetable.class);
+            return unmarshal(response);
         } catch (JAXBException | SAXException e) {
             this.logger.error("Error parsing response from timetable api.", e);
             throw new IOException(e);
@@ -162,22 +169,21 @@ public final class TimetablesV1Impl implements TimetablesV1Api {
     private Properties createHeaders() {
         final Properties headers = new Properties();
         headers.put(HttpHeader.ACCEPT.asString(), "application/xml");
-        headers.put(HttpHeader.AUTHORIZATION.asString(), "Bearer " + this.authToken);
+        headers.put(DB_CLIENT_ID_HEADER_NAME, this.clientId);
+        headers.put(DB_CLIENT_SECRET_HEADER_NAME, this.clientSecret);
         return headers;
     }
 
-    private <T> T unmarshal(final String xmlContent, final Class<T> clazz) throws JAXBException, SAXException {
+    private <T> T unmarshal(final String xmlContent) throws JAXBException, SAXException {
         return unmarshal( //
                 jaxbContext, //
                 null, // Provide no schema, due webservice results are not schema-valid.
-                xmlContent, //
-                clazz //
-        );
+                xmlContent);
     }
 
     @SuppressWarnings("unchecked")
     private static <T> T unmarshal(final JAXBContext jaxbContext, @Nullable final Schema schema,
-            final String xmlContent, final Class<T> clss) throws JAXBException {
+            final String xmlContent) throws JAXBException {
         final Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
         unmarshaller.setSchema(schema);
         final JAXBElement<T> resultObject = (JAXBElement<T>) unmarshaller.unmarshal(new StringReader(xmlContent));

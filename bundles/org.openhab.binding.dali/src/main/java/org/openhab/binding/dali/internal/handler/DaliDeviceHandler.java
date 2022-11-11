@@ -22,6 +22,7 @@ import org.openhab.binding.dali.internal.protocol.DaliAddress;
 import org.openhab.binding.dali.internal.protocol.DaliDAPCCommand;
 import org.openhab.binding.dali.internal.protocol.DaliResponse;
 import org.openhab.binding.dali.internal.protocol.DaliStandardCommand;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
@@ -45,7 +46,8 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class DaliDeviceHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(DaliDeviceHandler.class);
-    private @Nullable Integer targetId;
+    protected @Nullable Integer targetId;
+    protected @Nullable Integer readDeviceTargetId;
 
     public DaliDeviceHandler(Thing thing) {
         super(thing);
@@ -61,7 +63,16 @@ public class DaliDeviceHandler extends BaseThingHandler {
             updateStatus(ThingStatus.ONLINE);
         }
 
-        targetId = ((BigDecimal) this.thing.getConfiguration().get(TARGET_ID)).intValueExact();
+        final Configuration conf = this.thing.getConfiguration();
+        targetId = ((BigDecimal) conf.get(TARGET_ID)).intValueExact();
+        // Reading from group addresses does not work generally, so if a fallback device id is
+        // defined, use that instead when reading the current state
+        if (conf.get(READ_DEVICE_TARGET_ID) != null) {
+            readDeviceTargetId = ((BigDecimal) this.thing.getConfiguration().get(READ_DEVICE_TARGET_ID))
+                    .intValueExact();
+        } else {
+            readDeviceTargetId = null;
+        }
     }
 
     @Override
@@ -70,9 +81,11 @@ public class DaliDeviceHandler extends BaseThingHandler {
             if (CHANNEL_DIM_AT_FADE_RATE.equals(channelUID.getId())
                     || CHANNEL_DIM_IMMEDIATELY.equals(channelUID.getId())) {
                 DaliAddress address;
-                if (THING_TYPE_DEVICE.equals(this.thing.getThingTypeUID())) {
+                if (THING_TYPE_DEVICE.equals(this.thing.getThingTypeUID())
+                        || THING_TYPE_DEVICE_DT8.equals(this.thing.getThingTypeUID())) {
                     address = DaliAddress.createShortAddress(targetId);
-                } else if (THING_TYPE_GROUP.equals(this.thing.getThingTypeUID())) {
+                } else if (THING_TYPE_GROUP.equals(this.thing.getThingTypeUID())
+                        || THING_TYPE_GROUP_DT8.equals(this.thing.getThingTypeUID())) {
                     address = DaliAddress.createGroupAddress(targetId);
                 } else {
                     throw new DaliException("unknown device type");
@@ -110,8 +123,12 @@ public class DaliDeviceHandler extends BaseThingHandler {
                 }
 
                 if (queryDeviceState) {
+                    DaliAddress readAddress = address;
+                    if (readDeviceTargetId != null) {
+                        readAddress = DaliAddress.createShortAddress(readDeviceTargetId);
+                    }
                     getBridgeHandler()
-                            .sendCommandWithResponse(DaliStandardCommand.createQueryActualLevelCommand(address),
+                            .sendCommandWithResponse(DaliStandardCommand.createQueryActualLevelCommand(readAddress),
                                     DaliResponse.NumericMask.class)
                             .thenAccept(response -> {
                                 if (response != null && !response.mask) {

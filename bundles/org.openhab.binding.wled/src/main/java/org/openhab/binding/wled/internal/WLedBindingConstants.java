@@ -28,12 +28,14 @@ import org.openhab.core.thing.ThingTypeUID;
 public class WLedBindingConstants {
 
     public static final String BINDING_ID = "wled";
+    public static final String BRIDGE_TYPE_ID = "json";
     public static final BigDecimal BIG_DECIMAL_2_55 = new BigDecimal(2.55);
     public static final BigDecimal BIG_DECIMAL_182_04 = new BigDecimal(182.04);
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_WLED = new ThingTypeUID(BINDING_ID, "wled");
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_WLED);
+    public static final ThingTypeUID THING_TYPE_SEGMENT = new ThingTypeUID(BINDING_ID, "segment");
+    public static final ThingTypeUID THING_TYPE_JSON = new ThingTypeUID(BINDING_ID, BRIDGE_TYPE_ID);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_SEGMENT, THING_TYPE_JSON);
 
     // Configs
     public static final String CONFIG_ADDRESS = "address";
@@ -42,6 +44,7 @@ public class WLedBindingConstants {
     public static final String CONFIG_SAT_THRESHOLD = "saturationThreshold";
 
     // Channels
+    public static final String CHANNEL_GLOBAL_BRIGHTNESS = "globalBrightness";
     public static final String CHANNEL_MASTER_CONTROLS = "masterControls";
     public static final String CHANNEL_SEGMENT_BRIGHTNESS = "segmentBrightness";
     public static final String CHANNEL_PRIMARY_COLOR = "primaryColor";
@@ -65,6 +68,9 @@ public class WLedBindingConstants {
     public static final String CHANNEL_SPACING = "spacing";
     public static final String CHANNEL_LIVE_OVERRIDE = "liveOverride";
     public static final String CHANNEL_SLEEP = "sleep";
+    public static final String CHANNEL_SLEEP_MODE = "sleepMode";
+    public static final String CHANNEL_SLEEP_DURATION = "sleepDuration";
+    public static final String CHANNEL_SLEEP_BRIGHTNESS = "sleepTargetBrightness";
     public static final String CHANNEL_SYNC_SEND = "syncSend";
     public static final String CHANNEL_SYNC_RECEIVE = "syncReceive";
 }

@@ -45,6 +45,7 @@ public class GoEChargerBindingConstants {
     public static final String POWER_L2 = "powerL2";
     public static final String POWER_L3 = "powerL3";
     public static final String POWER_ALL = "powerAll";
+    public static final String TRANSACTION = "transaction";
     public static final String ALLOW_CHARGING = "allowCharging";
     public static final String CABLE_ENCODING = "cableCurrent";
     public static final String PHASES = "phases";

@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.wled.internal;
 
-import static org.openhab.binding.wled.internal.WLedBindingConstants.SUPPORTED_THING_TYPES;
+import static org.openhab.binding.wled.internal.WLedBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.wled.internal.api.WledApiFactory;
+import org.openhab.binding.wled.internal.handlers.WLedBridgeHandler;
+import org.openhab.binding.wled.internal.handlers.WLedSegmentHandler;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -53,8 +56,10 @@ public class WLedHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-        if (SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
-            return new WLedHandler(thing, apiFactory, stateDescriptionProvider);
+        if (THING_TYPE_SEGMENT.equals(thingTypeUID)) {
+            return new WLedSegmentHandler(thing);
+        } else if (THING_TYPE_JSON.equals(thingTypeUID)) {
+            return new WLedBridgeHandler((Bridge) thing, apiFactory, stateDescriptionProvider);
         }
         return null;
     }

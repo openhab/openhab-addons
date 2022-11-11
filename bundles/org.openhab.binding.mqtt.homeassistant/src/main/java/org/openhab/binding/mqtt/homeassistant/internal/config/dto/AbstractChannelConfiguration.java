@@ -52,6 +52,8 @@ public abstract class AbstractChannelConfiguration {
     protected String payloadAvailable = "online";
     @SerializedName("payload_not_available")
     protected String payloadNotAvailable = "offline";
+    @SerializedName("availability_template")
+    protected @Nullable String availabilityTemplate;
 
     /**
      * A list of MQTT topics subscribed to receive availability (online/offline) updates. Must not be used together with
@@ -159,6 +161,11 @@ public abstract class AbstractChannelConfiguration {
 
     public String getPayloadNotAvailable() {
         return payloadNotAvailable;
+    }
+
+    @Nullable
+    public String getAvailabilityTemplate() {
+        return availabilityTemplate;
     }
 
     @Nullable

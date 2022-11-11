@@ -32,6 +32,8 @@ import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * KVVStopHandler represents a stop and holds information about the trains
@@ -41,6 +43,8 @@ import org.openhab.core.types.RefreshType;
  */
 @NonNullByDefault
 public class KVVStopHandler extends BaseThingHandler {
+
+    private final Logger logger = LoggerFactory.getLogger(KVVStopHandler.class);
 
     @Nullable
     private ScheduledFuture<?> pollingJob;
@@ -91,18 +95,25 @@ public class KVVStopHandler extends BaseThingHandler {
             final ChannelTypeUID destType = new ChannelTypeUID(this.thing.getBridgeUID().getBindingId(), "destination");
             final ChannelTypeUID etaType = new ChannelTypeUID(this.thing.getBridgeUID().getBindingId(), "eta");
 
+            if (bridgeHandler.getBridgeConfig().maxTrains == 0) {
+                logger.warn("maxTrains is '0', not creating any channels");
+            }
+
             final List<Channel> channels = new ArrayList<Channel>();
             for (int i = 0; i < bridgeHandler.getBridgeConfig().maxTrains; i++) {
-                channels.add(ChannelBuilder.create(new ChannelUID(this.thing.getUID(), "train" + i + "-name"), "String")
-                        .withType(nameType).build());
-                channels.add(ChannelBuilder
-                        .create(new ChannelUID(this.thing.getUID(), "train" + i + "-destination"), "String")
-                        .withType(destType).build());
-                channels.add(ChannelBuilder.create(new ChannelUID(this.thing.getUID(), "train" + i + "-eta"), "String")
-                        .withType(etaType).build());
+                ChannelUID c = new ChannelUID(this.thing.getUID(), "train" + i + "-name");
+                channels.add(ChannelBuilder.create(c, "String").withType(nameType).build());
+                logger.debug("Created channel {}", c);
+
+                c = new ChannelUID(this.thing.getUID(), "train" + i + "-destination");
+                channels.add(ChannelBuilder.create(c, "String").withType(destType).build());
+                logger.debug("Created channel {}", c);
+
+                c = new ChannelUID(this.thing.getUID(), "train" + i + "-eta");
+                channels.add(ChannelBuilder.create(c, "String").withType(etaType).build());
+                logger.debug("Created channel {}", c);
             }
             this.updateThing(this.editThing().withChannels(channels).build());
-
         }
 
         this.pollingJob = this.scheduler.scheduleWithFixedDelay(new UpdateTask(bridgeHandler, this.config), 0,
@@ -126,16 +137,19 @@ public class KVVStopHandler extends BaseThingHandler {
     private synchronized void setDepartures(final DepartureResult departures, final int maxTrains) {
         int i = 0;
         for (; i < departures.departures.size(); i++) {
+            final DepartureResult.Departure departure = departures.departures.get(i);
+
             this.updateState(new ChannelUID(this.thing.getUID(), "train" + i + "-name"),
-                    new StringType(departures.departures.get(i).route));
+                    new StringType(departure.route.name));
             this.updateState(new ChannelUID(this.thing.getUID(), "train" + i + "-destination"),
-                    new StringType(departures.departures.get(i).destination));
-            String eta = departures.departures.get(i).time;
-            if (eta.equals("0")) {
+                    new StringType(departure.route.direction));
+            String eta = departure.eta;
+            if ("0".equals(eta)) {
                 eta += " min";
             }
             this.updateState(new ChannelUID(this.thing.getUID(), "train" + i + "-eta"), new StringType(eta));
         }
+
         for (; i < maxTrains; i++) {
             this.updateState(new ChannelUID(this.thing.getUID(), "train" + i + "-name"), StringType.EMPTY);
             this.updateState(new ChannelUID(this.thing.getUID(), "train" + i + "-destination"), StringType.EMPTY);

@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.lcn.internal.subhandler;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -27,31 +28,30 @@ import org.openhab.core.library.types.DecimalType;
  */
 @NonNullByDefault
 public class LcnModuleS0CounterSubHandlerTest extends AbstractTestLcnModuleSubHandler {
-    private @NonNullByDefault({}) LcnModuleS0CounterSubHandler l;
-
     @Override
     @BeforeEach
     public void setUp() {
         super.setUp();
-
-        l = new LcnModuleS0CounterSubHandler(handler, info);
     }
 
     @Test
     public void testZero() {
-        l.tryParse("=M000005.C10");
+        tryParseAllHandlers("=M000005.C10");
         verify(handler).updateChannel(LcnChannelGroup.S0INPUT, "1", new DecimalType(0));
+        verify(handler).updateChannel(any(), any(), any());
     }
 
     @Test
     public void testMaxValue() {
-        l.tryParse("=M000005.C14294967295");
+        tryParseAllHandlers("=M000005.C14294967295");
         verify(handler).updateChannel(LcnChannelGroup.S0INPUT, "1", new DecimalType(4294967295L));
+        verify(handler).updateChannel(any(), any(), any());
     }
 
     @Test
     public void test4() {
-        l.tryParse("=M000005.C412345");
+        tryParseAllHandlers("=M000005.C412345");
         verify(handler).updateChannel(LcnChannelGroup.S0INPUT, "4", new DecimalType(12345));
+        verify(handler).updateChannel(any(), any(), any());
     }
 }

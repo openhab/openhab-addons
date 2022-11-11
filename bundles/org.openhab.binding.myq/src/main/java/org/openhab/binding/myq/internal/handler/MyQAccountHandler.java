@@ -342,12 +342,16 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
             ContentResponse tokenResponse = getLoginToken(location, codeVerifier);
             String loginToken = tokenResponse.getContentAsString();
 
-            AccessTokenResponse accessTokenResponse = gsonLowerCase.fromJson(loginToken, AccessTokenResponse.class);
-            if (accessTokenResponse == null) {
-                throw new MyQAuthenticationException("Could not parse token response");
+            try {
+                AccessTokenResponse accessTokenResponse = gsonLowerCase.fromJson(loginToken, AccessTokenResponse.class);
+                if (accessTokenResponse == null) {
+                    throw new MyQAuthenticationException("Could not parse token response");
+                }
+                getOAuthService().importAccessTokenResponse(accessTokenResponse);
+                return accessTokenResponse;
+            } catch (JsonSyntaxException e) {
+                throw new MyQCommunicationException("Invalid Token Response " + loginToken);
             }
-            getOAuthService().importAccessTokenResponse(accessTokenResponse);
-            return accessTokenResponse;
         } catch (IOException | ExecutionException | TimeoutException | OAuthException | URISyntaxException e) {
             throw new MyQCommunicationException(e.getMessage());
         }

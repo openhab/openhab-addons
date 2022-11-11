@@ -19,8 +19,10 @@ import static org.openhab.binding.miele.internal.MieleBindingConstants.WATER_CON
 import java.math.BigDecimal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.miele.internal.api.dto.DeviceProperty;
 import org.openhab.binding.miele.internal.exceptions.MieleRpcException;
 import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -53,8 +55,9 @@ public class WashingMachineHandler extends MieleApplianceHandler<WashingMachineC
 
     private final Logger logger = LoggerFactory.getLogger(WashingMachineHandler.class);
 
-    public WashingMachineHandler(Thing thing, TranslationProvider i18nProvider, LocaleProvider localeProvider) {
-        super(thing, i18nProvider, localeProvider, WashingMachineChannelSelector.class,
+    public WashingMachineHandler(Thing thing, TranslationProvider i18nProvider, LocaleProvider localeProvider,
+            TimeZoneProvider timeZoneProvider) {
+        super(thing, i18nProvider, localeProvider, timeZoneProvider, WashingMachineChannelSelector.class,
                 MIELE_DEVICE_CLASS_WASHING_MACHINE);
     }
 
@@ -114,9 +117,15 @@ public class WashingMachineHandler extends MieleApplianceHandler<WashingMachineC
         }
     }
 
+    @Override
+    public void onAppliancePropertyChanged(DeviceProperty dp) {
+        super.onAppliancePropertyChanged(dp);
+        updateSwitchStartStopFromState(dp);
+    }
+
     public void onApplianceExtendedStateChanged(byte[] extendedDeviceState) {
         if (extendedDeviceState.length < EXTENDED_STATE_MIN_SIZE_BYTES) {
-            logger.warn("Unexpected size of extended state: {}", extendedDeviceState);
+            logger.debug("Insufficient extended state data to extract consumption values: {}", extendedDeviceState);
             return;
         }
 

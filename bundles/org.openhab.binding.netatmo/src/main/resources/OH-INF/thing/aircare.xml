@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="netatmo"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="airquality-extended">
+		<label>Air Quality</label>
+		<channels>
+			<channel id="co2" typeId="co2"/>
+			<channel id="health-index" typeId="health-index"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="temperature">
+		<label>Temperature</label>
+		<channels>
+			<channel id="value" typeId="system.indoor-temperature"/>
+			<channel id="min-today" typeId="min-temp"/>
+			<channel id="max-today" typeId="max-temp"/>
+			<channel id="min-time" typeId="timestamp-advanced">
+				<label>Today Min Timestamp</label>
+				<description>Moment when temperature was measured at its minimum today.</description>
+			</channel>
+			<channel id="max-time" typeId="timestamp-advanced">
+				<label>Today Max Timestamp</label>
+				<description>Moment when temperature was measured at its maximum today.</description>
+			</channel>
+			<channel id="heat-index" typeId="heat-index"/>
+			<channel id="dewpoint" typeId="dewpoint"/>
+			<channel id="dewpoint-depression" typeId="dewpoint-depression"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="pressure">
+		<label>Pressure</label>
+		<channels>
+			<channel id="value" typeId="system.barometric-pressure"/>
+			<channel id="absolute" typeId="absolute-pressure"/>
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>

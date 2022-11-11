@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 
@@ -7,12 +7,16 @@
   <parent>
     <groupId>org.openhab.addons.itests</groupId>
     <artifactId>org.openhab.addons.reactor.itests</artifactId>
-    <version>3.1.0-SNAPSHOT</version>
+    <version>3.4.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.binding.mqtt.homie.tests</artifactId>
 
   <name>openHAB Add-ons :: Integration Tests :: MQTT Homie Tests</name>
+
+  <properties>
+    <mqttbroker.port>1883</mqttbroker.port>
+  </properties>
 
   <dependencies>
     <dependency>
@@ -31,28 +35,14 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.github.j-n-k</groupId>
-      <artifactId>moquette-broker</artifactId>
-      <version>0.13.0.OH2</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-api</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-log4j12</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.mockito</groupId>
-          <artifactId>mockito-core</artifactId>
-        </exclusion>
-      </exclusions>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2-mvstore</artifactId>
+      <version>1.4.199</version>
     </dependency>
     <dependency>
-      <groupId>io.netty</groupId>
-      <artifactId>netty-common</artifactId>
-      <version>${netty.version}</version>
+      <groupId>io.moquette</groupId>
+      <artifactId>moquette-broker</artifactId>
+      <version>0.15</version>
     </dependency>
     <dependency>
       <groupId>io.netty</groupId>
@@ -61,22 +51,27 @@
     </dependency>
     <dependency>
       <groupId>io.netty</groupId>
-      <artifactId>netty-transport</artifactId>
-      <version>${netty.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>io.netty</groupId>
       <artifactId>netty-codec</artifactId>
       <version>${netty.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.h2database</groupId>
-      <artifactId>h2-mvstore</artifactId>
-      <version>1.4.199</version>
+      <groupId>io.netty</groupId>
+      <artifactId>netty-codec-mqtt</artifactId>
+      <version>${netty.version}</version>
     </dependency>
     <dependency>
       <groupId>io.netty</groupId>
-      <artifactId>netty-codec-mqtt</artifactId>
+      <artifactId>netty-common</artifactId>
+      <version>${netty.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty-handler</artifactId>
+      <version>${netty.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty-handler-proxy</artifactId>
       <version>${netty.version}</version>
     </dependency>
     <dependency>
@@ -86,7 +81,7 @@
     </dependency>
     <dependency>
       <groupId>io.netty</groupId>
-      <artifactId>netty-handler</artifactId>
+      <artifactId>netty-transport</artifactId>
       <version>${netty.version}</version>
     </dependency>
   </dependencies>
@@ -98,14 +93,14 @@
         <artifactId>build-helper-maven-plugin</artifactId>
         <executions>
           <execution>
-            <id>reserve-network-port</id>
+            <id>reserve-mqtt-broker-port</id>
             <goals>
               <goal>reserve-network-port</goal>
             </goals>
             <phase>process-resources</phase>
             <configuration>
               <portNames>
-                <portName>mqttembeddedbroker.port</portName>
+                <portName>mqttbroker.port</portName>
               </portNames>
             </configuration>
           </execution>

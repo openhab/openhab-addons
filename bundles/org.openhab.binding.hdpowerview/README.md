@@ -53,8 +53,8 @@ If in the future, you add additional shades, repeaters, scenes, scene groups or 
 ### Thing Configuration for PowerView Shades and Accessories
 
 PowerView shades and repeaters should preferably be configured via the automatic discovery process.
-It is quite difficult to configure manually as the `id` of the shade or repeater is not exposed in the
-PowerView app. However, the configuration parameters are described below.
+However, for manual configuration of shades and repeaters, the console command `openhab:hdpowerview showIds` can be used to identify the IDs of all connected equipment.
+This can be used for the `id` parameters described below.
 
 #### Thing Configuration for PowerView Shades
 
@@ -63,7 +63,6 @@ PowerView app. However, the configuration parameters are described below.
 | id                      | The ID of the PowerView shade in the app. Must be an integer. |
 
 #### Thing Configuration for PowerView Repeaters
-
 
 | Configuration Parameter | Description |
 |-------------------------|-------------|
@@ -92,14 +91,23 @@ All of these channels appear in the binding, but only those which have a physica
 
 | Channel        | Item Type                | Description |
 |----------------|--------------------------|-------------|
-| position       | Rollershutter            | The vertical position of the shade's rail -- see [next chapter](#Roller-Shutter-Up/Down-Position-vs.-Open/Close-State). Up/Down commands will move the rail completely up or completely down. Percentage commands will move the rail to an intermediate position. Stop commands will halt any current movement of the rail. |
-| secondary      | Rollershutter            | The vertical position of the secondary rail (if any). Its function is similar to the `position` channel above -- but see [next chapter](#Roller-Shutter-Up/Down-Position-vs.-Open/Close-State). |
-| vane           | Dimmer                   | The degree of opening of the slats or vanes. Setting this to a non-zero value will first move the shade `position` fully down, since the slats or vanes can only have a defined state if the shade is in its down position -- see [Interdependency between Channel positions](#Interdependency-between-Channel-positions). |
+| position       | Rollershutter            | The vertical position of the shade's rail (if any). -- See [next chapter](#Roller-Shutter-Up/Down-Position-vs.-Open/Close-State). Up/Down commands will move the rail completely up or completely down. Percentage commands will move the rail to an intermediate position. Stop commands will halt any current movement of the rail. |
+| secondary      | Rollershutter            | The vertical position of the secondary rail (if any). Its function is similar to the `position` channel above. -- But see [next chapter](#Roller-Shutter-Up/Down-Position-vs.-Open/Close-State). |
+| vane           | Dimmer                   | The degree of opening of the slats or vanes (if any). On some shade types, setting this to a non-zero value might first move the shade `position` fully down, since the slats or vanes can only have a defined state if the shade is in its down position. See [Interdependency between Channel positions](#Interdependency-between-Channel-positions). |
 | command        | String                   | Send a command to the shade. Valid values are: `CALIBRATE`, `IDENTIFY` |
 | lowBattery     | Switch                   | Indicates ON when the battery level of the shade is low, as determined by the hub's internal rules. |
-| batteryLevel   | Number                   | Battery level (10% = low, 50% = medium, 100% = high)
-| batteryVoltage | Number:ElectricPotential | Battery voltage reported by the shade. |
+| batteryLevel   | Number                   | Battery level (10% = low, 50% = medium, 100% = high) |
+| batteryVoltage | Number:ElectricPotential | Battery (resp. mains power supply) voltage reported by the shade. |
 | signalStrength | Number                   | Signal strength (0 for no or unknown signal, 1 for weak, 2 for average, 3 for good or 4 for excellent) |
+| hubRssi        | Number:Power             | Received Signal Strength Indicator for Hub |
+| repeaterRssi   | Number:Power             | Received Signal Strength Indicator for Repeater |
+
+Notes:
+
+- The channels `position`, `secondary` and `vane` exist if the shade physically supports such channels.
+- The shade's Power Option is set via the PowerView app with possible values 'Battery Wand', 'Rechargeable Battery Wand' or 'Hardwired Power Supply'.
+The channels `lowBattery` and `batteryLevel` exist if you have _not_ selected 'Hardwired Power Supply' in the app.
+- The RSSI values will only be updated upon manual request by a `REFRESH` command (e.g. in a rule).
 
 ### Channels for Repeaters (Thing type `repeater`)
 
@@ -210,6 +218,8 @@ For single shades the refresh takes the item's channel into consideration:
 | batteryLevel   | Battery           |
 | batteryVoltage | Battery           |
 | signalStrength | Survey            |
+| hubRssi        | Survey            |
+| repeaterRssi   | Survey            |
 
 ## Full Example
 

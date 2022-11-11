@@ -58,6 +58,13 @@
 				<default>1</default>
 				<advanced>true</advanced>
 			</parameter>
+			<parameter name="afterConnectionDelayMillis" type="integer" min="0" unit="ms">
+				<label>Connection warm-up time</label>
+				<description>Connection warm-up time. Additional time which is spent on preparing connection which should be spent
+					waiting while end device is getting ready to answer first modbus call. In milliseconds.</description>
+				<default>0</default>
+				<advanced>true</advanced>
+			</parameter>
 			<parameter name="reconnectAfterMillis" type="integer" min="0" unit="ms">
 				<label>Reconnect Again After</label>
 				<description>The connection is kept open at least the time specified here. Value of zero means that connection is

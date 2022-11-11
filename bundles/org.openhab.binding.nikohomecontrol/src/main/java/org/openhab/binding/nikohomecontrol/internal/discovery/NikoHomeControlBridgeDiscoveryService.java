@@ -40,8 +40,8 @@ import org.slf4j.LoggerFactory;
  *
  * @author Mark Herwege - Initial Contribution
  */
-@Component(service = DiscoveryService.class, configurationPid = "discovery.nikohomecontrol")
 @NonNullByDefault
+@Component(service = DiscoveryService.class, configurationPid = "discovery.nikohomecontrol")
 public class NikoHomeControlBridgeDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(NikoHomeControlBridgeDiscoveryService.class);
@@ -50,11 +50,11 @@ public class NikoHomeControlBridgeDiscoveryService extends AbstractDiscoveryServ
 
     private @NonNullByDefault({}) NetworkAddressService networkAddressService;
 
-    private static final int TIMEOUT = 5;
-    private static final int REFRESH_INTERVAL = 60;
+    private static final int TIMOUT_S = 5;
+    private static final int REFRESH_INTERVAL_S = 60;
 
     public NikoHomeControlBridgeDiscoveryService() {
-        super(NikoHomeControlBindingConstants.BRIDGE_THING_TYPES_UIDS, TIMEOUT);
+        super(NikoHomeControlBindingConstants.BRIDGE_THING_TYPES_UIDS, TIMOUT_S);
         logger.debug("bridge discovery service started");
     }
 
@@ -70,13 +70,18 @@ public class NikoHomeControlBridgeDiscoveryService extends AbstractDiscoveryServ
             }
             logger.debug("discovery broadcast on {}", broadcastAddr);
             NikoHomeControlDiscover nhcDiscover = new NikoHomeControlDiscover(broadcastAddr);
-            if (nhcDiscover.isNhcII()) {
-                addNhcIIBridge(nhcDiscover.getAddr(), nhcDiscover.getNhcBridgeId());
-            } else {
-                addNhcIBridge(nhcDiscover.getAddr(), nhcDiscover.getNhcBridgeId());
+            for (String nhcController : nhcDiscover.getNhcBridgeIds()) {
+                InetAddress addr = nhcDiscover.getAddr(nhcController);
+                if (addr != null) {
+                    if (nhcDiscover.isNhcII(nhcController)) {
+                        addNhcIIBridge(addr, nhcController);
+                    } else {
+                        addNhcIBridge(addr, nhcController);
+                    }
+                }
             }
         } catch (IOException e) {
-            logger.debug("no bridge found.");
+            logger.debug("bridge discovery IO exception");
         }
     }
 
@@ -87,7 +92,8 @@ public class NikoHomeControlBridgeDiscoveryService extends AbstractDiscoveryServ
         ThingUID uid = new ThingUID(BINDING_ID, "bridge", bridgeId);
 
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid).withLabel(bridgeName)
-                .withProperty(CONFIG_HOST_NAME, addr.getHostAddress()).build();
+                .withProperty(CONFIG_HOST_NAME, addr.getHostAddress()).withRepresentationProperty(CONFIG_HOST_NAME)
+                .build();
         thingDiscovered(discoveryResult);
     }
 
@@ -98,7 +104,8 @@ public class NikoHomeControlBridgeDiscoveryService extends AbstractDiscoveryServ
         ThingUID uid = new ThingUID(BINDING_ID, "bridge2", bridgeId);
 
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid).withLabel(bridgeName)
-                .withProperty(CONFIG_HOST_NAME, addr.getHostAddress()).build();
+                .withProperty(CONFIG_HOST_NAME, addr.getHostAddress()).withRepresentationProperty(CONFIG_HOST_NAME)
+                .build();
         thingDiscovered(discoveryResult);
     }
 
@@ -115,10 +122,10 @@ public class NikoHomeControlBridgeDiscoveryService extends AbstractDiscoveryServ
 
     @Override
     protected void startBackgroundDiscovery() {
-        logger.debug("Start background bridge discovery");
+        logger.debug("Start bridge background discovery");
         ScheduledFuture<?> job = nhcDiscoveryJob;
         if (job == null || job.isCancelled()) {
-            nhcDiscoveryJob = scheduler.scheduleWithFixedDelay(this::discoverBridge, 0, REFRESH_INTERVAL,
+            nhcDiscoveryJob = scheduler.scheduleWithFixedDelay(this::discoverBridge, 0, REFRESH_INTERVAL_S,
                     TimeUnit.SECONDS);
         }
     }

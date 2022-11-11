@@ -19,9 +19,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.openhab.binding.gardena.internal.exception.GardenaException;
+import org.openhab.binding.gardena.internal.model.dto.api.CommonService;
 import org.openhab.binding.gardena.internal.model.dto.api.CommonServiceDataItem;
 import org.openhab.binding.gardena.internal.model.dto.api.DataItem;
 import org.openhab.binding.gardena.internal.model.dto.api.DeviceDataItem;
+import org.openhab.binding.gardena.internal.model.dto.api.Location;
 import org.openhab.binding.gardena.internal.model.dto.api.LocationDataItem;
 import org.openhab.binding.gardena.internal.model.dto.api.MowerServiceDataItem;
 import org.openhab.binding.gardena.internal.model.dto.api.PowerSocketServiceDataItem;
@@ -82,8 +84,10 @@ public class Device {
      */
     public void evaluateDeviceType() {
         if (deviceType == null) {
-            if (common.attributes.modelType.value.toLowerCase().startsWith(DEVICE_TYPE_PREFIX)) {
-                String modelType = common.attributes.modelType.value.toLowerCase();
+            CommonService commonServiceAttributes = common.attributes;
+            if (commonServiceAttributes != null
+                    && commonServiceAttributes.modelType.value.toLowerCase().startsWith(DEVICE_TYPE_PREFIX)) {
+                String modelType = commonServiceAttributes.modelType.value.toLowerCase();
                 modelType = modelType.substring(14);
                 deviceType = modelType.replace(" ", "_");
             } else {
@@ -111,8 +115,9 @@ public class Device {
             // ignore
         } else if (dataItem instanceof LocationDataItem) {
             LocationDataItem locationDataItem = (LocationDataItem) dataItem;
-            if (locationDataItem.attributes != null) {
-                location = locationDataItem.attributes.name;
+            Location locationAttributes = locationDataItem.attributes;
+            if (locationAttributes != null) {
+                location = locationAttributes.name;
             }
         } else if (dataItem instanceof CommonServiceDataItem) {
             common = (CommonServiceDataItem) dataItem;
@@ -126,8 +131,7 @@ public class Device {
             valveSet = (ValveSetServiceDataItem) dataItem;
         } else if (dataItem instanceof ValveServiceDataItem) {
             String valveNumber = StringUtils.substringAfterLast(dataItem.id, ":");
-            if (valveNumber != null
-                    && (valveNumber.equals("") || valveNumber.equals("wc") || valveNumber.equals("0"))) {
+            if ("".equals(valveNumber) || "wc".equals(valveNumber) || "0".equals(valveNumber)) {
                 valve = (ValveServiceDataItem) dataItem;
             } else if ("1".equals(valveNumber)) {
                 valveOne = (ValveServiceDataItem) dataItem;
@@ -148,8 +152,12 @@ public class Device {
             throw new GardenaException("Unknown dataItem with id: " + dataItem.id);
         }
 
-        if (common != null && common.attributes != null) {
-            common.attributes.lastUpdate.timestamp = new Date();
+        if (common != null) {
+            CommonService attributes = common.attributes;
+            if (attributes != null) {
+                attributes.lastUpdate.timestamp = new Date();
+            }
+            common.attributes = attributes;
         }
     }
 

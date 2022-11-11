@@ -49,6 +49,10 @@ public interface BlueZEventListener {
         onDBusBlueZEvent(event);
     }
 
+    public default void onServiceDataUpdate(ServiceDataEvent event) {
+        onDBusBlueZEvent(event);
+    }
+
     public default void onConnectedStatusUpdate(ConnectedEvent event) {
         onDBusBlueZEvent(event);
     }

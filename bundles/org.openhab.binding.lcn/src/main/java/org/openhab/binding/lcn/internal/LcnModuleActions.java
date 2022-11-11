@@ -40,6 +40,8 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class LcnModuleActions implements ThingActions {
     private final Logger logger = LoggerFactory.getLogger(LcnModuleActions.class);
+    private static final int MAX_BEEP_VOLUME = 100;
+    private static final int MAX_BEEP_COUNT = 50;
     private static final int DYN_TEXT_CHUNK_COUNT = 5;
     private static final int DYN_TEXT_HEADER_LENGTH = 6;
     private static final int DYN_TEXT_CHUNK_LENGTH = 12;
@@ -173,6 +175,42 @@ public class LcnModuleActions implements ThingActions {
         }
     }
 
+    /**
+     * Let the beeper connected to the LCN module beep.
+     *
+     * @param volume sound volume in percent. Can be null. Then, the last volume is used.
+     * @param tonality N=normal, S=special, 1-7 tonalities 1-7. Can be null. Then, normal tonality is used.
+     * @param count number of beeps. Can be null. Then, number of beeps is one.
+     */
+    @RuleAction(label = "let the module's beeper beep", description = "Lets the beeper connected to the LCN module beep")
+    public void beep(
+            @ActionInput(name = "volume", required = false, type = "java.lang.Double", label = "Sound Volume", description = "The sound volume in percent.") @Nullable Double soundVolume,
+            @ActionInput(name = "tonality", required = false, type = "java.lang.String", label = "Tonality", description = "Tonality (N, S, 1-7)") @Nullable String tonality,
+            @ActionInput(name = "count", required = false, type = "java.lang.Integer", label = "Count", description = "Number of beeps") @Nullable Integer count) {
+        try {
+            if (soundVolume != null) {
+                if (soundVolume < 0) {
+                    throw new LcnException("Volume cannot be negative: " + soundVolume);
+                }
+                getHandler().sendPck(PckGenerator.setBeepVolume(Math.min(soundVolume, MAX_BEEP_VOLUME)));
+            }
+
+            Integer localCount = count;
+            if (localCount == null) {
+                localCount = 1;
+            }
+
+            String filteredTonality = LcnBindingConstants.ALLOWED_BEEP_TONALITIES.stream() //
+                    .filter(t -> t.equals(tonality)) //
+                    .findAny() //
+                    .orElse("N");
+
+            getHandler().sendPck(PckGenerator.beep(filteredTonality, Math.min(localCount, MAX_BEEP_COUNT)));
+        } catch (LcnException e) {
+            logger.warn("Could not send beep command: {}", e.getMessage());
+        }
+    }
+
     /** Static alias to support the old DSL rules engine and make the action available there. */
     public static void hitKey(ThingActions actions, @Nullable String table, int key, @Nullable String action) {
         ((LcnModuleActions) actions).hitKey(table, key, action);
@@ -191,6 +229,11 @@ public class LcnModuleActions implements ThingActions {
     /** Static alias to support the old DSL rules engine and make the action available there. */
     public static void startRelayTimer(ThingActions actions, int relaynumber, double duration) {
         ((LcnModuleActions) actions).startRelayTimer(relaynumber, duration);
+    }
+
+    /** Static alias to support the old DSL rules engine and make the action available there. */
+    public static void beep(ThingActions actions, Double soundVolume, String tonality, Integer count) {
+        ((LcnModuleActions) actions).beep(soundVolume, tonality, count);
     }
 
     private LcnModuleHandler getHandler() throws LcnException {

@@ -17,6 +17,8 @@ import static org.openhab.binding.atlona.internal.AtlonaBindingConstants.*;
 import java.util.Collections;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.atlona.internal.pro3.AtlonaPro3Capabilities;
 import org.openhab.binding.atlona.internal.pro3.AtlonaPro3Handler;
 import org.openhab.core.thing.Thing;
@@ -35,6 +37,7 @@ import org.slf4j.LoggerFactory;
  * @author Tim Roberts - Initial contribution
  * @author Michael Lobstein - Add support for AT-PRO3HD66M
  */
+@NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.atlona")
 public class AtlonaHandlerFactory extends BaseThingHandlerFactory {
 
@@ -62,7 +65,7 @@ public class AtlonaHandlerFactory extends BaseThingHandlerFactory {
      * Creates the handler for the given thing given its thingTypeUID
      */
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_PRO3_44M)) {

@@ -279,13 +279,14 @@ public class BenqProjectorHandler extends BaseThingHandler {
     }
 
     private void closeConnection() {
-        BenqProjectorDevice remoteController = device.get();
-        try {
-            logger.debug("Closing connection to device '{}'", this.thing.getUID());
-            remoteController.disconnect();
-            updateStatus(ThingStatus.OFFLINE);
-        } catch (BenqProjectorException e) {
-            logger.debug("Error occurred when closing connection to device '{}'", this.thing.getUID(), e);
+        if (device.isPresent()) {
+            try {
+                logger.debug("Closing connection to device '{}'", this.thing.getUID());
+                device.get().disconnect();
+                updateStatus(ThingStatus.OFFLINE);
+            } catch (BenqProjectorException e) {
+                logger.debug("Error occurred when closing connection to device '{}'", this.thing.getUID(), e);
+            }
         }
     }
 }

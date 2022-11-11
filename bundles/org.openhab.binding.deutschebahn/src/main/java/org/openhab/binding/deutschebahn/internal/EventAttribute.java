@@ -41,7 +41,7 @@ import org.openhab.core.types.State;
  *
  * chapter "1.2.11 Event" in Technical Interface Description for external Developers
  *
- * @see https://developer.deutschebahn.com/store/apis/info?name=Timetables&version=v1&provider=DBOpenData&#tab1
+ * @see <a href="https://developers.deutschebahn.com/db-api-marketplace/apis/product/timetables">DB API Marketplace</a>
  *
  * @author Sönke Küper - initial contribution
  *
@@ -370,7 +370,9 @@ public final class EventAttribute<VALUE_TYPE, STATE_TYPE extends State>
         if (value == null) {
             return Collections.emptyList();
         } else {
-            return Collections.singletonList(DATETIME_FORMAT.format(value));
+            synchronized (DATETIME_FORMAT) {
+                return Collections.singletonList(DATETIME_FORMAT.format(value));
+            }
         }
     }
 

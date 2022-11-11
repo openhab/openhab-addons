@@ -11,7 +11,7 @@ The Go-eCharger HOMEfix with 11kW and 22kW is supported too.
 
 ## Thing Configuration
 
-The thing has two configuration parameters:
+The thing has three configuration parameters:
 
 | Parameter       | Description                                   | Required |
 |-----------------|-----------------------------------------------|----------|
@@ -44,6 +44,7 @@ Currently available channels are
 | sessionChargeEnergyLimit | Number:Energy            | Wallbox stops charging after defined value, disable with 0    | 1 (r/w), 2 (r/w)  |
 | sessionChargedEnergy     | Number:Energy            | Amount of energy that has been charged in this session        | 1 (r), 2 (r)      |
 | totalChargedEnergy       | Number:Energy            | Amount of energy that has been charged since installation     | 1 (r), 2 (r)      |
+| transaction              | Number                   | 0 if no card, otherwise card ID                               | 2 (r/w)           |
 | allowCharging            | Switch                   | If `ON` charging is allowed                                   | 1 (r/w), 2 (r)    |
 | cableCurrent             | Number:ElectricCurrent   | Specifies the max current that can be charged with that cable | 1 (r), 2 (r)      |
 | temperature              | Number:Temperature       | Temperature of the curciuit board of the Go-eCharger          | 1 (r), 2 (r)      |
@@ -106,60 +107,72 @@ end
 ```
 
 Advanced example:
+
 ```
 rule "Set charging limit for go-eCharger"
 when
     Time cron "*/10 * * ? * *" // Trigger every 10 seconds
 then
+    var actualMaxChargingCurrentInt = (GoEChargerMaxCurrent.state as Number).intValue
+
     if (GoEChargerExcessCharge.state == ON) {
-        var totalPowerOutputInWatt = Total_power_fast.state as DecimalType * 1000
-        if (totalPowerOutputInWatt > 0) {
-            totalPowerOutputInWatt = 0
+        var currentChargingPower = GoEChargerPowerAll.state as Number
+        var totalPowerOutputInWatt = (Total_power_fast.state as DecimalType) * 1000
+        var availableChargingPowerInWatt = 0
+
+        if (totalPowerOutputInWatt > 0 && currentChargingPower > 0) {
+            // take care if already charging
+            availableChargingPowerInWatt = currentChargingPower.intValue - totalPowerOutputInWatt.intValue
+        } else {
+            if (totalPowerOutputInWatt > 0) {
+                totalPowerOutputInWatt = 0
+            }
+            availableChargingPowerInWatt = (totalPowerOutputInWatt.intValue * -1) + currentChargingPower.intValue
         }
 
-        totalPowerOutputInWatt = totalPowerOutputInWatt * -1
-
-        var maxAmp3Phases = (totalPowerOutputInWatt / 3) / 230
+        var maxAmp3Phases = (availableChargingPowerInWatt / 3) / 230
         if (maxAmp3Phases > 16.0) {
             maxAmp3Phases = 16.0
         }
-        var maxAmp1Phase = totalPowerOutputInWatt / 230;
 
-        if (maxAmp3Phases.intValue >= 6) {
+        var maxAmp1Phase = availableChargingPowerInWatt / 230
+
+        if (maxAmp3Phases >= 6) {
             // set force state to neutral (Neutral=0, Off=1, On=2)
             if (GoEChargerForceState.state != 0) {
-                GoEChargerForceState.sendCommand(0);
+                GoEChargerForceState.sendCommand(0)
             }
 
             // 3 phases
-            if ((GoEChargerPhases.state as Number) != 3) {
-                GoEChargerPhases.sendCommand(3);
+            if (GoEChargerPhases.state != 3) {
+                GoEChargerPhases.sendCommand(3)
             }
 
-            if ((GoEChargerMaxCurrent.state as Number).intValue != maxAmp3Phases.intValue) {
+            if (actualMaxChargingCurrentInt != maxAmp3Phases.intValue) {
                 GoEChargerMaxCurrent.sendCommand(maxAmp3Phases.intValue)
                 // logInfo("eCharger", "Set charging limit 3 Phases: " + maxAmp3Phases.intValue + " A")
             }
-        } else {
+        } else {         
             if (maxAmp1Phase.intValue >= 6 ) {
                 // set force state to neutral (Neutral=0, Off=1, On=2)
                 if (GoEChargerForceState.state != 0) {
-                    GoEChargerForceState.sendCommand(0);
+                    GoEChargerForceState.sendCommand(0)
                 }
 
                 // switch to 1 phase -> check if this is useful
-                if ((GoEChargerPhases.state as Number) != 1) {
+                if (GoEChargerPhases.state != 1) {
                     GoEChargerPhases.sendCommand(1)
                 }
 
-                if ((GoEChargerMaxCurrent.state as Number).intValue != maxAmp1Phase.intValue) {
+                if (actualMaxChargingCurrentInt != maxAmp1Phase.intValue) {
                     GoEChargerMaxCurrent.sendCommand(maxAmp1Phase.intValue)
                     // logInfo("eCharger", "Set charging limit 1 Phase: " + maxAmp1Phase.intValue + " A")
                 }
             } else {
                 // switch off
                 if (GoEChargerForceState.state != 1) {
-                    GoEChargerForceState.sendCommand(1);
+                    GoEChargerMaxCurrent.sendCommand(6)
+                    GoEChargerForceState.sendCommand(1)
                     // logInfo("eCharger", "Switch charging off")
                 }
             }
@@ -167,14 +180,14 @@ then
     } else {
         // set force state to neutral (Neutral=0, Off=1, On=2)
         if (GoEChargerForceState.state != 0) {
-            GoEChargerForceState.sendCommand(0);
+            GoEChargerForceState.sendCommand(0)
         }
 
-        if ((GoEChargerPhases.state as Number) != 3) {
-            GoEChargerPhases.sendCommand(3);
+        if (GoEChargerPhases.state != 3) {
+            GoEChargerPhases.sendCommand(3)
         }
 
-        if ((GoEChargerMaxCurrent.state as Number).intValue != 16) {
+        if (actualMaxChargingCurrentInt != 16) {
             GoEChargerMaxCurrent.sendCommand(16)
         }
     }

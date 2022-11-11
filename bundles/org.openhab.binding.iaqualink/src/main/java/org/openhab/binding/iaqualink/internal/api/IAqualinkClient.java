@@ -394,8 +394,11 @@ public class IAqualinkClient {
             if (homeScreen != null) {
                 homeScreen.forEach(element -> {
                     element.getAsJsonObject().entrySet().forEach(entry -> {
-                        home.add(entry.getKey(), entry.getValue());
-                        serializedMap.add(entry.getKey(), entry.getValue());
+                        JsonElement value = entry.getValue();
+                        home.add(entry.getKey(), value);
+                        if (value.isJsonPrimitive() && value.getAsJsonPrimitive().isString()) {
+                            serializedMap.add(entry.getKey(), value);
+                        }
                     });
                 });
                 home.add("serialized_map", serializedMap);

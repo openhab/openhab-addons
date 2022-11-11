@@ -237,19 +237,25 @@ OnOff, IncreaseDecrease and Percent command types are supported.
 Note that sending an ON command will switch the dimmer to the value stored when last turning the dimmer off, or 100% depending on the configuration in the Niko Home Control Controller.
 This can be changed with the Niko Home Control programming software.
 
-For thing type `blind` the supported channel is `rollershutter`. UpDown, StopMove and Percent command types are supported.
+For thing type `blind` the supported channel is `rollershutter`.
+UpDown, StopMove and Percent command types are supported.
 
-For thing type `thermostat` the supported channels are `measured`, `mode`, `setpoint`, `overruletime` and `demand`.
+For thing type `thermostat` the supported channels are `measured`, `heatingmode`, `mode`, `setpoint`, `overruletime`, `heatingdemand` and `demand`.
 `measured` gives the current temperature in QuantityType<Temperature>, allowing for different temperature units.
 This channel is read only.
-`mode` can be set and shows the current thermostat mode.
-Allowed values are 0 (day), 1 (night), 2 (eco), 3 (off), 4 (cool), 5 (prog 1), 6 (prog 2), 7 (prog 3).
-If mode is set, the `setpoint` temperature will return to its standard value from the mode.
-`setpoint` can be set and shows the current thermostat setpoint value in QuantityType<Temperature>.
+`heatingmode` can be set and shows the current thermostat mode.
+Allowed values are Day, Night, Eco, Off, Cool, Prog1, Prog2, Prog3.
+As an alternative to `heatingmode` and for backward compatibility, the advanced channel `mode` is provided.
+This channel has the same meaning, but with numeric values (0=Day, 1=Night, 2=Eco, 3=Off, 4=Cool, 5=Prog1, 6=Prog2, 7=Prog3) instead of string values.
+If `heatingmode` or `mode` is set, the `setpoint` temperature will return to the standard value for the mode as defined in Niko Home Control.
+`setpoint` shows the current thermostat setpoint value in QuantityType<Temperature>.
 When updating `setpoint`, it will overrule the temperature setpoint defined by the thermostat mode for `overruletime` duration.
-`overruletime` is used to set the total duration to apply the setpoint temperature set in the setpoint channel before the thermostat returns to the setting in its mode.
-`demand` is a number indicating of the system is actively heating/cooling.
+`overruletime` is used to set the total duration to apply the setpoint temperature set in the setpoint channel before the thermostat returns to the setting from its mode.
+`heatingdemand` is a string indicating if the system is actively heating/cooling.
+This channel will have value Heating, Cooling or None.
+As an alternative to `heatingdemand`, the advanced channel `demand` is provided.
 The value will be 1 for heating, -1 for cooling and 0 if not heating or cooling.
+`heatingdemand` and `demand` are read only channels.
 Note that cooling in NHC I is set by the binding, and will incorrectly show cooling demand when the system does not have cooling capabilities.
 In NHC II, `measured` and `setpoint` temperatures will always report in 0.5°C increments due to a Niko Home Control II API restriction.
 
@@ -310,12 +316,12 @@ Switch AllOff           {channel="nikohomecontrol:onOff:nhc1:1:button"}         
 Switch LivingRoom       {channel="nikohomecontrol:onOff:nhc1:2:switch"}           # Switch for onOff type action
 Dimmer TVRoom           {channel="nikohomecontrol:dimmer:nhc1:3:brightness"}      # Changing brightness dimmer type action
 Rollershutter Kitchen   {channel="nikohomecontrol:blind:nhc1:4:rollershutter"}    # Controlling rollershutter or blind type action
-Number:Temperature CurTemperature   "[%.1f °F]"  {channel="nikohomecontrol:thermostat:nhc1:5:measured"}   # Getting measured temperature from thermostat in °F, read only
-Number ThermostatMode   {channel="nikohomecontrol:thermostat:nhc1:5:mode"}        # Get and set thermostat mode
-Number:Temperature SetTemperature   "[%.1f °C]"  {channel="nikohomecontrol:thermostat:nhc1:5:setpoint"}   # Get and set target temperature in °C
-Number OverruleDuration {channel="nikohomecontrol:thermostat:nhc1:5:overruletime"} # Get and set the overrule time
-Number ThermostatDemand {channel="nikohomecontrol:thermostat:nhc1:5:demand"}       # Get the current heating/cooling demand
-Number:Power CurPower   "[%.0f W]"  {channel="nikohomecontrol:energyMeter:nhc2:6:power"}   # Get current power consumption
+Number:Temperature CurTemperature   "[%.1f °F]"  {channel="nikohomecontrol:thermostat:nhc1:5:measured"} # Getting measured temperature from thermostat in °F, read only
+String ThermostatMode   {channel="nikohomecontrol:thermostat:nhc1:5:heatingmode"}        # Get and set thermostat mode
+Number:Temperature SetTemperature   "[%.1f °C]"  {channel="nikohomecontrol:thermostat:nhc1:5:setpoint"} # Get and set target temperature in °C
+Number OverruleDuration {channel="nikohomecontrol:thermostat:nhc1:5:overruletime"}       # Get and set the overrule time
+String ThermostatDemand   {channel="nikohomecontrol:thermostat:nhc1:5:heatingdemand"}      # Get the current heating/cooling demand
+Number:Power CurPower   "[%.0f W]"  {channel="nikohomecontrol:energyMeter:nhc2:6:power"} # Get current power consumption
 ```
 
 .sitemap:
@@ -327,7 +333,7 @@ Slider item=TVRoom
 Switch item=TVRoom          # allows switching dimmer item off or on (with controller defined behavior)
 Rollershutter item=Kitchen
 Text item=CurTemperature
-Selection item=ThermostatMode mappings=[0="day", 1="night", 2="eco", 3="off", 4="cool", 5="prog 1", 6="prog 2", 7="prog 3"]
+Selection item=ThermostatMode mappings=[Day="day", Night="night", Eco="eco", Off="off", Prog1="Away"]
 Setpoint item=SetTemperature minValue=0 maxValue=30
 Slider item=OverruleDuration minValue=0 maxValue=120
 Text item=Power

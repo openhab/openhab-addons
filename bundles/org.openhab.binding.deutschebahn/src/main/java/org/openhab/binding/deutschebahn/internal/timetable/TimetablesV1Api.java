@@ -21,7 +21,7 @@ import org.openhab.binding.deutschebahn.internal.timetable.dto.Timetable;
 /**
  * Interface for timetables API in V1.
  * 
- * @see https://developer.deutschebahn.com/store/apis/info?name=Timetables&version=v1&provider=DBOpenData
+ * @see <a href="https://developers.deutschebahn.com/db-api-marketplace/apis/product/timetables">DB API Marketplace</a>
  *
  * @author Sönke Küper - initial contribution
  */
@@ -33,7 +33,7 @@ public interface TimetablesV1Api {
      * Calls the "/plan" endpoint of the rest-service.
      *
      * REST-endpoint documentation: (from
-     * {@see https://developer.deutschebahn.com/store/apis/info?name=Timetables&version=v1&provider=DBOpenData}).
+     * {@see https://developers.deutschebahn.com/db-api-marketplace/apis/product/timetables}).
      * Returns a Timetable object (see Timetable) that contains planned data for the specified station (evaNo)
      * within the hourly time slice given by date (format YYMMDD) and hour (format HH). The data includes stops
      * for all trips that arrive or depart within that slice. There is a small overlap between slices since some
@@ -58,7 +58,7 @@ public interface TimetablesV1Api {
      * Calls the "/fchg" endpoint of the rest-service.
      *
      * REST-endpoint documentation: (from
-     * {@see https://developer.deutschebahn.com/store/apis/info?name=Timetables&version=v1&provider=DBOpenData}).
+     * {@see https://developers.deutschebahn.com/db-api-marketplace/apis/product/timetables}).
      * Returns a Timetable object (see Timetable) that contains all known changes for the station given by evaNo.
      *
      * The data includes all known changes from now on until undefinitely into the future. Once changes become obsolete
@@ -82,7 +82,7 @@ public interface TimetablesV1Api {
      * Calls the "/plan" endpoint of the rest-service.
      *
      * REST-endpoint documentation: (from
-     * {@see https://developer.deutschebahn.com/store/apis/info?name=Timetables&version=v1&provider=DBOpenData}).
+     * {@see https://developers.deutschebahn.com/db-api-marketplace/apis/product/timetables}).
      * Returns a Timetable object (see Timetable) that contains all recent changes for the station given by evaNo.
      * Recent changes are always a subset of the full changes. They may equal full changes but are typically much
      * smaller.

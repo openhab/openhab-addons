@@ -25,6 +25,7 @@ import org.openhab.binding.knx.internal.client.DeviceInspector;
 import org.openhab.binding.knx.internal.client.DeviceInspector.Result;
 import org.openhab.binding.knx.internal.client.KNXClient;
 import org.openhab.binding.knx.internal.config.DeviceConfig;
+import org.openhab.binding.knx.internal.i18n.KNXTranslationProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -162,8 +163,10 @@ public abstract class AbstractKNXThingHandler extends BaseThingHandler implement
                 }
             }
         } catch (KNXException e) {
-            logger.debug("An error occurred while testing the reachability of a thing '{}'", getThing().getUID(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
+            logger.debug("An error occurred while testing the reachability of a thing '{}': {}", getThing().getUID(),
+                    e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    KNXTranslationProvider.I18N.getLocalizedException(e));
         }
     }
 
@@ -191,8 +194,10 @@ public abstract class AbstractKNXThingHandler extends BaseThingHandler implement
                 updateStatus(ThingStatus.ONLINE);
             }
         } catch (KNXFormatException e) {
-            logger.debug("An exception occurred while setting the individual address '{}'", config.getAddress(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getLocalizedMessage());
+            logger.debug("An exception occurred while setting the individual address '{}': {}", config.getAddress(),
+                    e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    KNXTranslationProvider.I18N.getLocalizedException(e));
         }
         getClient().registerGroupAddressListener(this);
         scheduleReadJobs();

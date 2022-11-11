@@ -15,12 +15,11 @@ package org.openhab.binding.rotel.internal.communication;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.rotel.internal.RotelException;
-import org.openhab.binding.rotel.internal.RotelModel;
+import org.openhab.binding.rotel.internal.protocol.RotelAbstractProtocolHandler;
 import org.openhab.core.io.transport.serial.PortInUseException;
 import org.openhab.core.io.transport.serial.SerialPort;
 import org.openhab.core.io.transport.serial.SerialPortIdentifier;
@@ -42,6 +41,8 @@ public class RotelSerialConnector extends RotelConnector {
     private String serialPortName;
     private SerialPortManager serialPortManager;
 
+    private int baudRate;
+
     private @Nullable SerialPort serialPort;
 
     /**
@@ -49,14 +50,15 @@ public class RotelSerialConnector extends RotelConnector {
      *
      * @param serialPortManager the serial port manager
      * @param serialPortName the serial port name to be used
-     * @param model the projector model in use
-     * @param protocol the protocol to be used
+     * @param baudRate the baud rate to be used
+     * @param protocolHandler the protocol handler
      * @param readerThreadName the name of thread to be created
      */
-    public RotelSerialConnector(SerialPortManager serialPortManager, String serialPortName, RotelModel model,
-            RotelProtocol protocol, Map<RotelSource, String> sourcesLabels, String readerThreadName) {
-        super(model, protocol, sourcesLabels, false, readerThreadName);
+    public RotelSerialConnector(SerialPortManager serialPortManager, String serialPortName, int baudRate,
+            RotelAbstractProtocolHandler protocolHandler, String readerThreadName) {
+        super(protocolHandler, false, readerThreadName);
 
+        this.baudRate = baudRate;
         this.serialPortManager = serialPortManager;
         this.serialPortName = serialPortName;
     }
@@ -73,7 +75,7 @@ public class RotelSerialConnector extends RotelConnector {
 
             SerialPort commPort = portIdentifier.open(this.getClass().getName(), 2000);
 
-            commPort.setSerialPortParams(getModel().getBaudRate(), SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
+            commPort.setSerialPortParams(baudRate, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
                     SerialPort.PARITY_NONE);
             commPort.enableReceiveThreshold(1);
             commPort.enableReceiveTimeout(100);
@@ -92,9 +94,7 @@ public class RotelSerialConnector extends RotelConnector {
                 }
             }
 
-            Thread thread = new RotelReaderThread(this, readerThreadName);
-            setReaderThread(thread);
-            thread.start();
+            readerThread.start();
 
             this.serialPort = commPort;
             this.dataIn = dataIn;

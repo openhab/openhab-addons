@@ -30,6 +30,10 @@ public class InverterRealtimeBodyData {
     private ValueUnit iac;
     @SerializedName("IDC")
     private ValueUnit idc;
+    @SerializedName("IDC_2")
+    private ValueUnit idc2;
+    @SerializedName("IDC_3")
+    private ValueUnit idc3;
     @SerializedName("PAC")
     private ValueUnit pac;
     @SerializedName("TOTAL_ENERGY")
@@ -38,6 +42,10 @@ public class InverterRealtimeBodyData {
     private ValueUnit uac;
     @SerializedName("UDC")
     private ValueUnit udc;
+    @SerializedName("UDC_2")
+    private ValueUnit udc2;
+    @SerializedName("UDC_3")
+    private ValueUnit udc3;
     @SerializedName("YEAR_ENERGY")
     private ValueUnit yearEnergy;
     @SerializedName("DeviceStatus")
@@ -110,6 +118,14 @@ public class InverterRealtimeBodyData {
         this.idc = idc;
     }
 
+    public ValueUnit getIdc2() {
+        return idc2;
+    }
+
+    public ValueUnit getIdc3() {
+        return idc3;
+    }
+
     public ValueUnit getUac() {
         return uac;
     }
@@ -124,5 +140,13 @@ public class InverterRealtimeBodyData {
 
     public void setUdc(ValueUnit udc) {
         this.udc = udc;
+    }
+
+    public ValueUnit getUdc2() {
+        return udc2;
+    }
+
+    public ValueUnit getUdc3() {
+        return udc3;
     }
 }

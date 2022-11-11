@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.elroconnects.internal;
 
+import static org.openhab.binding.elroconnects.internal.ElroConnectsBindingConstants.*;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.elroconnects.internal.util.ElroConnectsUtil;
@@ -20,13 +22,17 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link ElroConnectsMessage} represents the JSON messages exchanged with the ELRO Connects K1 Connector. This
- * class is used to serialize/deserialize the messages.
+ * class is used to serialize/deserialize the messages. The class also maps cmdId's from older firmware to the newer
+ * codes and will encode/decode fields that are encoded in the messages with newer firmware versions.
  *
  * @author Mark Herwege - Initial contribution
  */
 @SuppressWarnings("unused") // Suppress warning on serialized fields
 @NonNullByDefault
 public class ElroConnectsMessage {
+
+    private transient boolean legacyFirmware = false; // legacy firmware uses different cmd id's and will not encode
+                                                      // device id when sending messages
 
     private static class Data {
         private int cmdId;
@@ -64,15 +70,16 @@ public class ElroConnectsMessage {
     private Params params = new Params();
 
     public ElroConnectsMessage(int msgId, String devTid, String ctrlKey, int cmdId) {
+        this(msgId, devTid, ctrlKey, cmdId, false);
+    }
+
+    public ElroConnectsMessage(int msgId, String devTid, String ctrlKey, int cmdId, boolean legacyFirmware) {
         this.msgId = msgId;
         params.devTid = devTid;
         params.ctrlKey = ctrlKey;
-        params.data.cmdId = cmdId;
-    }
+        params.data.cmdId = legacyFirmware ? ELRO_LEGACY_MESSAGES.getOrDefault(cmdId, cmdId) : cmdId;
 
-    public ElroConnectsMessage(int msgId) {
-        this.msgId = msgId;
-        action = "heartbeat";
+        this.legacyFirmware = legacyFirmware;
     }
 
     public ElroConnectsMessage withDeviceStatus(String deviceStatus) {
@@ -81,17 +88,22 @@ public class ElroConnectsMessage {
     }
 
     public ElroConnectsMessage withDeviceId(int deviceId) {
-        params.data.deviceId = deviceId;
+        params.data.deviceId = isLegacy() ? deviceId : ElroConnectsUtil.encode(deviceId);
         return this;
     }
 
     public ElroConnectsMessage withSceneType(int sceneType) {
-        params.data.sceneType = sceneType;
+        params.data.sceneType = isLegacy() ? sceneType : ElroConnectsUtil.encode(sceneType);
+        return this;
+    }
+
+    public ElroConnectsMessage withDeviceName(String deviceName) {
+        params.data.deviceName = deviceName;
         return this;
     }
 
     public ElroConnectsMessage withSceneGroup(int sceneGroup) {
-        params.data.sceneGroup = sceneGroup;
+        params.data.sceneGroup = isLegacy() ? sceneGroup : ElroConnectsUtil.encode(sceneGroup);
         return this;
     }
 
@@ -105,6 +117,10 @@ public class ElroConnectsMessage {
         return this;
     }
 
+    private boolean isLegacy() {
+        return ELRO_NEW_MESSAGES.containsKey(params.data.cmdId) || legacyFirmware;
+    }
+
     public int getMsgId() {
         return msgId;
     }
@@ -114,7 +130,7 @@ public class ElroConnectsMessage {
     }
 
     public int getCmdId() {
-        return params.data.cmdId;
+        return ELRO_NEW_MESSAGES.getOrDefault(params.data.cmdId, params.data.cmdId);
     }
 
     public String getDeviceStatus() {
@@ -122,11 +138,13 @@ public class ElroConnectsMessage {
     }
 
     public int getSceneGroup() {
-        return ElroConnectsUtil.intOrZero(params.data.sceneGroup);
+        int sceneGroup = ElroConnectsUtil.intOrZero(params.data.sceneGroup);
+        return isLegacy() ? sceneGroup : ElroConnectsUtil.decode(sceneGroup, msgId);
     }
 
     public int getSceneType() {
-        return ElroConnectsUtil.intOrZero(params.data.sceneType);
+        int sceneType = ElroConnectsUtil.intOrZero(params.data.sceneType);
+        return isLegacy() ? sceneType : ElroConnectsUtil.decode(sceneType, msgId);
     }
 
     public String getSceneContent() {
@@ -138,7 +156,8 @@ public class ElroConnectsMessage {
     }
 
     public int getDeviceId() {
-        return ElroConnectsUtil.intOrZero(params.data.deviceId);
+        int deviceId = ElroConnectsUtil.intOrZero(params.data.deviceId);
+        return isLegacy() ? deviceId : ElroConnectsUtil.decode(deviceId, msgId);
     }
 
     public String getDeviceName() {

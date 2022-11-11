@@ -13,6 +13,9 @@
 package org.openhab.binding.velux.internal.bridge.common;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.velux.internal.bridge.slip.FunctionalParameters;
+import org.openhab.binding.velux.internal.things.VeluxProductPosition;
 
 /**
  * <B>Common bridge communication message scheme supported by the </B><I>Velux</I><B> bridge.</B>
@@ -22,7 +25,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * In addition to the common methods defined by {@link BridgeCommunicationProtocol}
  * each protocol-specific implementation has to provide the following methods:
  * <UL>
- * <LI>{@link #setNodeAndMainParameter} for defining the intended node and the main parameter value.
+ * <LI>{@link #setNodeIdAndParameters} for defining the intended node and the main parameter value.
  * </UL>
  *
  * @see BridgeCommunicationProtocol
@@ -35,9 +38,11 @@ public abstract class RunProductCommand implements BridgeCommunicationProtocol {
     /**
      * Modifies the state of an actuator
      *
-     * @param actuatorId Gateway internal actuator identifier (zero to 199).
-     * @param parameterValue target device state.
-     * @return reference to the class instance.
+     * @param nodeId Gateway internal actuator identifier (zero to 199).
+     * @param mainParameter target device state.
+     * @param functionalParameters the target Functional Parameters.
+     * @return true if the method succeeds
      */
-    public abstract RunProductCommand setNodeAndMainParameter(int actuatorId, int parameterValue);
+    public abstract boolean setNodeIdAndParameters(int nodeId, @Nullable VeluxProductPosition mainParameter,
+            @Nullable FunctionalParameters functionalParameters);
 }

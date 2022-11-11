@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mybmw"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="conv">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+
+		<label>Conventional Vehicle</label>
+		<description>Conventional Fuel Vehicle (CONV)</description>
+
+		<channel-groups>
+			<channel-group id="status" typeId="vehicle-status"/>
+			<channel-group id="doors" typeId="door-values"/>
+			<channel-group id="range" typeId="conv-range-values"/>
+			<channel-group id="check" typeId="check-control-values"/>
+			<channel-group id="service" typeId="service-values"/>
+			<channel-group id="location" typeId="location-values"/>
+			<channel-group id="remote" typeId="remote-services"/>
+			<channel-group id="tires" typeId="tire-pressures"/>
+			<channel-group id="image" typeId="image-values"/>
+		</channel-groups>
+
+		<representation-property>vin</representation-property>
+
+		<config-description-ref uri="thing-type:mybmw:vehicle"/>
+	</thing-type>
+</thing:thing-descriptions>

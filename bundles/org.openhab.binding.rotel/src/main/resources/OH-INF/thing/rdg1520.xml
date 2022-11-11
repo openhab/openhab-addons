@@ -13,6 +13,7 @@
 			<channel id="power" typeId="system.power"/>
 			<channel id="source" typeId="source"/>
 			<channel id="playControl" typeId="system.media-control"/>
+			<channel id="radioPreset" typeId="radioPreset"/>
 		</channels>
 
 		<properties>

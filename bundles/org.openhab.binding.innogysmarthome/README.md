@@ -3,7 +3,13 @@
 The binding integrates the [innogy SmartHome](https://innogy.com/smarthome) system into openHAB.
 It uses the official API 1.1 as provided by innogy as cloud service.
 As all status updates and commands have to go through the API, a permanent internet connection is required.
-Currently there is no API for a direct communication with the innogy SmartHome Controller (SHC).
+
+*Notice!*
+
+*This binding is deprecated!*
+
+*LIVISI (formally innogy) has implemented a local API on their SHC from Software Version 1.2.XX.XXX.
+Please migrate to the "LIVISI SmartHome Binding" which is using the new local API and requires neither the LIVISI-cloud-servers nor an internet connection.* 
 
 ## Supported things
 

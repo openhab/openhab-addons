@@ -78,8 +78,7 @@ public class HomekitValveImpl extends AbstractHomekitAccessoryImpl implements Va
         activeReader = createBooleanReader(ACTIVE_STATUS);
         ValveService service = new ValveService(this);
         getServices().add(service);
-        final String timerConfig = getAccessoryConfiguration(CONFIG_TIMER, "");
-        homekitTimer = timerConfig.equalsIgnoreCase("yes") || timerConfig.equalsIgnoreCase("true");
+        homekitTimer = getAccessoryConfigurationAsBoolean(CONFIG_TIMER, false);
         if (homekitTimer) {
             addRemainingDurationCharacteristic(taggedItem, updater, service);
         }

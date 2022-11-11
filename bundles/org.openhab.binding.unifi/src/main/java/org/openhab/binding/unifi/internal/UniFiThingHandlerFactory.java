@@ -12,12 +12,23 @@
  */
 package org.openhab.binding.unifi.internal;
 
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.ALL_THING_TYPE_SUPPORTED;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.THING_TYPE_CONTROLLER;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.THING_TYPE_POE_PORT;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.THING_TYPE_SITE;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.THING_TYPE_WIRED_CLIENT;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.THING_TYPE_WIRELESS_CLIENT;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.THING_TYPE_WLAN;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.unifi.internal.handler.UniFiClientThingHandler;
 import org.openhab.binding.unifi.internal.handler.UniFiControllerThingHandler;
+import org.openhab.binding.unifi.internal.handler.UniFiPoePortThingHandler;
+import org.openhab.binding.unifi.internal.handler.UniFiSiteThingHandler;
+import org.openhab.binding.unifi.internal.handler.UniFiWlanThingHandler;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.io.net.http.HttpClientInitializationException;
 import org.openhab.core.thing.Bridge;
@@ -26,6 +37,7 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -49,24 +61,40 @@ public class UniFiThingHandlerFactory extends BaseThingHandlerFactory {
         httpClient = new HttpClient(new SslContextFactory.Client(true));
         try {
             httpClient.start();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new HttpClientInitializationException("Could not start HttpClient", e);
         }
     }
 
     @Override
-    public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return UniFiControllerThingHandler.supportsThingType(thingTypeUID)
-                || UniFiClientThingHandler.supportsThingType(thingTypeUID);
+    protected void deactivate(final ComponentContext componentContext) {
+        try {
+            httpClient.stop();
+        } catch (final Exception e) {
+            // Eat http client stop exception.
+        } finally {
+            super.deactivate(componentContext);
+        }
     }
 
     @Override
-    protected @Nullable ThingHandler createHandler(Thing thing) {
-        ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-        if (UniFiControllerThingHandler.supportsThingType(thingTypeUID)) {
+    public boolean supportsThingType(final ThingTypeUID thingTypeUID) {
+        return ALL_THING_TYPE_SUPPORTED.contains(thingTypeUID);
+    }
+
+    @Override
+    protected @Nullable ThingHandler createHandler(final Thing thing) {
+        final ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+        if (THING_TYPE_CONTROLLER.equals(thingTypeUID)) {
             return new UniFiControllerThingHandler((Bridge) thing, httpClient);
-        } else if (UniFiClientThingHandler.supportsThingType(thingTypeUID)) {
+        } else if (THING_TYPE_SITE.equals(thingTypeUID)) {
+            return new UniFiSiteThingHandler(thing);
+        } else if (THING_TYPE_WLAN.equals(thingTypeUID)) {
+            return new UniFiWlanThingHandler(thing);
+        } else if (THING_TYPE_WIRELESS_CLIENT.equals(thingTypeUID) || THING_TYPE_WIRED_CLIENT.equals(thingTypeUID)) {
             return new UniFiClientThingHandler(thing);
+        } else if (THING_TYPE_POE_PORT.equals(thingTypeUID)) {
+            return new UniFiPoePortThingHandler(thing);
         }
         return null;
     }

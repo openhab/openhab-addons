@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.pulseaudio.internal;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
@@ -55,14 +56,13 @@ public class ConvertedInputStream extends InputStream {
 
     public ConvertedInputStream(AudioStream innerInputStream)
             throws UnsupportedAudioFormatException, UnsupportedAudioFileException, IOException {
-
         this.audioFormat = innerInputStream.getFormat();
 
         if (innerInputStream instanceof FixedLengthAudioStream) {
             length = ((FixedLengthAudioStream) innerInputStream).length();
         }
 
-        pcmNormalizedInputStream = getPCMStreamNormalized(getPCMStream(new ResetableInputStream(innerInputStream)));
+        pcmNormalizedInputStream = getPCMStreamNormalized(getPCMStream(new BufferedInputStream(innerInputStream)));
     }
 
     @Override
@@ -108,7 +108,6 @@ public class ConvertedInputStream extends InputStream {
      * @return A PCM normalized stream (2 channel, 44100hz, 16 bit signed)
      */
     private AudioInputStream getPCMStreamNormalized(AudioInputStream pcmInputStream) {
-
         javax.sound.sampled.AudioFormat format = pcmInputStream.getFormat();
         if (format.getChannels() != 2
                 || !format.getEncoding().equals(javax.sound.sampled.AudioFormat.Encoding.PCM_SIGNED)
@@ -138,7 +137,6 @@ public class ConvertedInputStream extends InputStream {
      */
     private AudioInputStream getPCMStream(InputStream resetableInnerInputStream)
             throws UnsupportedAudioFileException, IOException, UnsupportedAudioFormatException {
-
         if (AudioFormat.MP3.isCompatible(audioFormat)) {
             MpegAudioFileReader mpegAudioFileReader = new MpegAudioFileReader();
 
@@ -170,7 +168,6 @@ public class ConvertedInputStream extends InputStream {
                     sourceFormat.getChannels(), sourceFormat.getChannels() * 2, sourceFormat.getSampleRate(), false);
 
             return mpegconverter.getAudioInputStream(convertFormat, sourceAIS);
-
         } else if (AudioFormat.WAV.isCompatible(audioFormat)) {
             // return the same input stream, but try to compute the duration first
             AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(resetableInnerInputStream);
@@ -185,73 +182,6 @@ public class ConvertedInputStream extends InputStream {
         } else {
             throw new UnsupportedAudioFormatException("Pulseaudio audio sink can only play pcm or mp3 stream",
                     audioFormat);
-        }
-    }
-
-    /**
-     * This class add reset capability (on the first bytes only)
-     * to an AudioStream. This is necessary for the parsing / format detection.
-     *
-     */
-    public static class ResetableInputStream extends InputStream {
-
-        private static final int BUFFER_LENGTH = 10000;
-
-        private final InputStream originalInputStream;
-
-        private int position = -1;
-        private int markPosition = -1;
-        private int maxPreviousPosition = -2;
-
-        private byte[] startingBuffer = new byte[BUFFER_LENGTH + 1];
-
-        public ResetableInputStream(InputStream originalInputStream) {
-            this.originalInputStream = originalInputStream;
-        }
-
-        @Override
-        public void close() throws IOException {
-            originalInputStream.close();
-        }
-
-        @Override
-        public int read() throws IOException {
-            if (position >= BUFFER_LENGTH || originalInputStream.markSupported()) {
-                return originalInputStream.read();
-            } else {
-                position++;
-                if (position <= maxPreviousPosition) {
-                    return Byte.toUnsignedInt(startingBuffer[position]);
-                } else {
-                    int currentByte = originalInputStream.read();
-                    startingBuffer[position] = (byte) currentByte;
-                    maxPreviousPosition = position;
-                    return currentByte;
-                }
-            }
-        }
-
-        @Override
-        public synchronized void mark(int readlimit) {
-            if (originalInputStream.markSupported()) {
-                originalInputStream.mark(readlimit);
-            }
-            markPosition = position;
-        }
-
-        @Override
-        public boolean markSupported() {
-            return true;
-        }
-
-        @Override
-        public synchronized void reset() throws IOException {
-            if (originalInputStream.markSupported()) {
-                originalInputStream.reset();
-            } else if (position >= BUFFER_LENGTH) {
-                throw new IOException("mark/reset not supported above " + BUFFER_LENGTH + " bytes");
-            }
-            position = markPosition;
         }
     }
 }

@@ -13,6 +13,7 @@
 package org.openhab.binding.nikohomecontrol.internal.protocol.nhc1;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Class {@link NhcMessageCmd1} used as input to gson to send commands to Niko Home Control. Extends
@@ -26,13 +27,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 class NhcMessageCmd1 extends NhcMessageBase1 {
 
-    private int id;
-    private int value1;
-    private int value2;
-    private int value3;
-    private int mode;
-    private int overrule;
-    private String overruletime = "";
+    private @Nullable Integer id;
+    private @Nullable Integer value1;
+    private @Nullable Integer value2;
+    private @Nullable Integer value3;
+    private @Nullable Integer mode;
+    private @Nullable Integer overrule;
+    private @Nullable String overruletime;
 
     NhcMessageCmd1(String cmd) {
         super.setCmd(cmd);

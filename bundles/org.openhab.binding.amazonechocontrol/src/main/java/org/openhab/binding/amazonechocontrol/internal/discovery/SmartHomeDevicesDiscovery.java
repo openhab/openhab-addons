@@ -49,7 +49,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService {
     private AccountHandler accountHandler;
-    private final Logger logger = LoggerFactory.getLogger(SmartHomeDevicesDiscovery.class);
+    private Logger logger = LoggerFactory.getLogger(SmartHomeDevicesDiscovery.class);
 
     private @Nullable ScheduledFuture<?> startScanStateJob;
     private @Nullable Long activateTimeStamp;
@@ -189,6 +189,8 @@ public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService {
                         deviceName = "Alexa Color Controller on " + shd.friendlyName;
                     } else if (interfaces.contains("Alexa.PowerController")) {
                         deviceName = "Alexa Plug on " + shd.friendlyName;
+                    } else if (interfaces.contains("Alexa.ThermostatController")) {
+                        deviceName = "Alexa Smart " + shd.friendlyName;
                     } else {
                         deviceName = "Unknown Device on " + shd.friendlyName;
                     }

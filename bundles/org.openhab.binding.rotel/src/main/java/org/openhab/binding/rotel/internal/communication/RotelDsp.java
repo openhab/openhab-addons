@@ -56,7 +56,6 @@ public enum RotelDsp {
     CAT2_NEO6_CINEMA(2, "NEO6CINEMA", RotelCommand.NEO6_CINEMA, "dts_neo:6_cinema"),
     CAT2_NEO6_MUSIC(2, "NEO6MUSIC", RotelCommand.NEO6_MUSIC, "dts_neo:6_music"),
 
-    CAT3_BYPASS(3, "BYPASS", RotelCommand.BYPASS, "analog_bypass"),
     CAT3_NONE(3, "NONE", RotelCommand.STEREO, "stereo"),
     CAT3_STEREO3(3, "STEREO3", RotelCommand.STEREO3, "dolby_3_stereo"),
     CAT3_STEREO5(3, "STEREO5", RotelCommand.STEREO5, "5_channel_stereo"),
@@ -72,7 +71,6 @@ public enum RotelDsp {
     CAT3_NEO6_CINEMA(3, "NEO6CINEMA", RotelCommand.NEO6_CINEMA, "dts_neo:6_cinema"),
     CAT3_NEO6_MUSIC(3, "NEO6MUSIC", RotelCommand.NEO6_MUSIC, "dts_neo:6_music"),
 
-    CAT4_BYPASS(4, "BYPASS", RotelCommand.BYPASS, "analog_bypass"),
     CAT4_NONE(4, "NONE", RotelCommand.STEREO, "stereo"),
     CAT4_STEREO3(4, "STEREO3", RotelCommand.STEREO3, "dolby_3_stereo"),
     CAT4_STEREO5(4, "STEREO5", RotelCommand.STEREO5, "5_channel_stereo"),
@@ -238,6 +236,6 @@ public enum RotelDsp {
                 return value;
             }
         }
-        throw new RotelException("Invalid command for a DSP mode: " + command.getName());
+        throw new RotelException("Invalid command for a DSP mode: " + command.getLabel());
     }
 }

@@ -1177,6 +1177,8 @@
 			<channel id="ffmpegMotionAlarm" typeId="ffmpegMotionAlarm"/>
 			<channel id="externalMotion" typeId="externalMotion"/>
 			<channel id="motionAlarm" typeId="motionAlarm"/>
+			<channel id="thresholdAudioAlarm" typeId="thresholdAudioAlarm"/>
+			<channel id="audioAlarm" typeId="audioAlarm"/>
 			<channel id="activateAlarmOutput" typeId="activateAlarmOutput"/>
 			<channel id="activateAlarmOutput2" typeId="activateAlarmOutput2"/>
 			<channel id="doorBell" typeId="doorBell"/>
@@ -1727,6 +1729,7 @@
 			<channel id="enableFieldDetectionAlarm" typeId="enableFieldDetectionAlarm"/>
 			<channel id="fieldDetectionAlarm" typeId="fieldDetectionAlarm"/>
 			<channel id="enableAudioAlarm" typeId="enableAudioAlarm"/>
+			<channel id="thresholdAudioAlarm" typeId="thresholdAudioAlarm"/>
 			<channel id="audioAlarm" typeId="audioAlarm"/>
 			<channel id="activateAlarmOutput" typeId="activateAlarmOutput"/>
 			<channel id="enableExternalAlarmInput" typeId="enableExternalAlarmInput"/>
@@ -1913,7 +1916,7 @@
 				<advanced>true</advanced>
 			</parameter>
 
-			<parameter name="nvrChannel" type="integer" required="true" min="1" max="9" groupName="Settings">
+			<parameter name="nvrChannel" type="integer" required="true" min="1" max="99" groupName="Settings">
 				<label>NVR Input Channel</label>
 				<description>Set this to 1 if it is a stand alone camera, or to the input channel number if you use a compatible
 					NVR.

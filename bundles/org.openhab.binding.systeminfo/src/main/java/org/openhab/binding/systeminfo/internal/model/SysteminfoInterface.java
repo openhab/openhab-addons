@@ -15,6 +15,7 @@ package org.openhab.binding.systeminfo.internal.model;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StringType;
 
 /**
@@ -22,6 +23,7 @@ import org.openhab.core.library.types.StringType;
  *
  * @author Svilen Valkanov - Initial contribution
  * @author Wouter Born - Add null annotations
+ * @author Mark Herwege - Add dynamic creation of extra channels
  */
 @NonNullByDefault
 public interface SysteminfoInterface {
@@ -70,6 +72,13 @@ public interface SysteminfoInterface {
      * Get the number of physical CPUs/cores available for processing.
      */
     public DecimalType getCpuPhysicalCores();
+
+    /**
+     * Returns the system cpu load.
+     *
+     * @return the system cpu load between 0 and 1 or null, if no information is available
+     */
+    public @Nullable PercentType getSystemCpuLoad();
 
     /**
      * Returns the system load average for the last minute.
@@ -397,6 +406,13 @@ public interface SysteminfoInterface {
     public StringType getBatteryName(int deviceIndex) throws DeviceNotFoundException;
 
     /**
+     * Get PID of process executing this code
+     *
+     * @return current process ID
+     */
+    int getCurrentProcessID();
+
+    /**
      * Returns the name of the process
      *
      * @param pid - the PID of the process
@@ -408,7 +424,7 @@ public interface SysteminfoInterface {
      * Returns the CPU usage of the process
      *
      * @param pid - the PID of the process
-     * @return - percentage value /0-100/
+     * @return - percentage value, can be above 100% if process uses multiple cores
      * @throws DeviceNotFoundException - thrown if process with this PID can not be found
      */
     public @Nullable DecimalType getProcessCpuUsage(int pid) throws DeviceNotFoundException;
@@ -437,4 +453,46 @@ public interface SysteminfoInterface {
      * @throws DeviceNotFoundException - thrown if process with this PID can not be found
      */
     public @Nullable DecimalType getProcessThreads(int pid) throws DeviceNotFoundException;
+
+    /**
+     * Returns the number of network interfaces.
+     *
+     * @return network interface count
+     */
+    public int getNetworkIFCount();
+
+    /**
+     * Returns the number of displays.
+     *
+     * @return display count
+     */
+    public int getDisplayCount();
+
+    /**
+     * Returns the number of storages.
+     *
+     * @return storage count
+     */
+    public int getFileOSStoreCount();
+
+    /**
+     * Returns the number of power sources/batteries.
+     *
+     * @return power source count
+     */
+    public int getPowerSourceCount();
+
+    /**
+     * Returns the number of drives.
+     *
+     * @return drive count
+     */
+    public int getDriveCount();
+
+    /**
+     * Returns the number of fans.
+     *
+     * @return fan count
+     */
+    int getFanCount();
 }

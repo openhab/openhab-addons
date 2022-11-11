@@ -554,10 +554,12 @@ public class AtlonaPro3Handler extends AtlonaHandler<AtlonaPro3Capabilities> {
             ping = null;
         }
 
-        try {
-            session.disconnect();
-        } catch (IOException e) {
-            // ignore - we don't care
+        if (session != null) {
+            try {
+                session.disconnect();
+            } catch (IOException e) {
+                // ignore - we don't care
+            }
         }
 
         if (retryConnection) {
@@ -588,16 +590,10 @@ public class AtlonaPro3Handler extends AtlonaHandler<AtlonaPro3Capabilities> {
     /**
      * Simple gets the {@link AtlonaPro3Config} from the {@link Thing} and will set the status to offline if not found.
      *
-     * @return a possible null {@link AtlonaPro3Config}
+     * @return {@link AtlonaPro3Config}
      */
     private AtlonaPro3Config getAtlonaConfig() {
-        final AtlonaPro3Config config = getThing().getConfiguration().as(AtlonaPro3Config.class);
-
-        if (config == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
-        }
-
-        return config;
+        return getThing().getConfiguration().as(AtlonaPro3Config.class);
     }
 
     /**

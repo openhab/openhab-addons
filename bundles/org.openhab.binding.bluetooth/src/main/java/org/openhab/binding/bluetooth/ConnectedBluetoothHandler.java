@@ -85,11 +85,21 @@ public class ConnectedBluetoothHandler extends BeaconBluetoothHandler {
             idleDisconnectDelay = ((Number) idleDisconnectDelayRaw).intValue();
         }
 
-        if (alwaysConnected) {
+        // Start the recurrent job if the device is always connected
+        // or if the Services where not yet discovered.
+        // If the device is not always connected, the job will be terminated
+        // after successful connection and the device disconnected after Service
+        // discovery in `onServicesDiscovered()`.
+        if (alwaysConnected || !device.isServicesDiscovered()) {
             reconnectJob = connectionTaskExecutor.scheduleWithFixedDelay(() -> {
                 try {
                     if (device.getConnectionState() != ConnectionState.CONNECTED) {
-                        if (!device.connect()) {
+                        if (device.connect()) {
+                            if (!alwaysConnected) {
+                                cancel(reconnectJob, false);
+                                reconnectJob = null;
+                            }
+                        } else {
                             logger.debug("Failed to connect to {}", address);
                         }
                         // we do not set the Thing status here, because we will anyhow receive a call to
@@ -324,6 +334,16 @@ public class ConnectedBluetoothHandler extends BeaconBluetoothHandler {
         if (logger.isDebugEnabled()) {
             logger.debug("Received update {} to descriptor {} of device {}", HexUtils.bytesToHex(value),
                     descriptor.getUuid(), address);
+        }
+    }
+
+    @Override
+    public void onServicesDiscovered() {
+        super.onServicesDiscovered();
+
+        if (!alwaysConnected && device.getConnectionState() == ConnectionState.CONNECTED) {
+            // disconnect when the device was only connected to discover the Services.
+            disconnect();
         }
     }
 }

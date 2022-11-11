@@ -211,4 +211,9 @@ class JsonBridgeAPI implements BridgeAPI {
     public @Nullable RunReboot runReboot() {
         return null;
     }
+
+    @Override
+    public @Nullable GetProduct getProductStatus() {
+        return null;
+    }
 }

@@ -53,7 +53,7 @@ public class ParadoxDiscoveryService extends AbstractDiscoveryService {
     protected void startScan() {
         IParadoxCommunicator communicator = ip150BridgeHandler.getCommunicator();
         if (communicator != null && communicator.isOnline()) {
-            ParadoxPanel panel = ParadoxPanel.getInstance();
+            ParadoxPanel panel = ip150BridgeHandler.getPanel();
             discoverPanel(panel.getPanelInformation());
             discoverPartitions(panel.getPartitions());
             discoverZones(panel.getZones());

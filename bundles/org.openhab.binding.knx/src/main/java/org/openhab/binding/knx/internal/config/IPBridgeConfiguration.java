@@ -31,6 +31,10 @@ public class IPBridgeConfiguration extends BridgeConfiguration {
     private BigDecimal portNumber = BigDecimal.valueOf(0);
     private String localIp = "";
     private String localSourceAddr = "";
+    private String routerBackboneKey = "";
+    private String tunnelUserId = "";
+    private String tunnelUserPassword = "";
+    private String tunnelDeviceAuthentication = "";
 
     public Boolean getUseNAT() {
         return useNAT;
@@ -54,5 +58,21 @@ public class IPBridgeConfiguration extends BridgeConfiguration {
 
     public String getLocalSourceAddr() {
         return localSourceAddr;
+    }
+
+    public String getRouterBackboneKey() {
+        return routerBackboneKey;
+    }
+
+    public String getTunnelUserId() {
+        return tunnelUserId;
+    }
+
+    public String getTunnelUserPassword() {
+        return tunnelUserPassword;
+    }
+
+    public String getTunnelDeviceAuthentication() {
+        return tunnelDeviceAuthentication;
     }
 }

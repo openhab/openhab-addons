@@ -12,11 +12,13 @@
  */
 package org.openhab.binding.gardena.internal.model.dto.api;
 
+import org.eclipse.jdt.annotation.NonNull;
+
 /**
  * Represents a Gardena object that is sent via the Gardena API.
  *
  * @author Gerhard Riegler - Initial contribution
  */
 
-public class DeviceDataItem extends DataItem<Void> {
+public class DeviceDataItem extends DataItem<@NonNull Void> {
 }

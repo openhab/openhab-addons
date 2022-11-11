@@ -20,6 +20,8 @@ import java.util.Set;
 
 import javax.jmdns.ServiceInfo;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.pulseaudio.internal.PulseaudioBindingConstants;
 import org.openhab.binding.pulseaudio.internal.handler.PulseaudioBridgeHandler;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -38,6 +40,7 @@ import org.slf4j.LoggerFactory;
  * @author Tobias Bräutigam - Initial contribution
  */
 @Component
+@NonNullByDefault
 public class PulseaudioDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     private final Logger logger = LoggerFactory.getLogger(PulseaudioDiscoveryParticipant.class);
@@ -48,7 +51,7 @@ public class PulseaudioDiscoveryParticipant implements MDNSDiscoveryParticipant 
     }
 
     @Override
-    public DiscoveryResult createResult(ServiceInfo info) {
+    public @Nullable DiscoveryResult createResult(ServiceInfo info) {
         DiscoveryResult result = null;
         ThingUID uid = getThingUID(info);
         if (uid != null) {
@@ -79,15 +82,12 @@ public class PulseaudioDiscoveryParticipant implements MDNSDiscoveryParticipant 
     }
 
     @Override
-    public ThingUID getThingUID(ServiceInfo info) {
-        if (info != null) {
-            logger.debug("ServiceInfo: {}", info);
-            if (info.getType() != null) {
-                if (info.getType().equals(getServiceType())) {
-                    logger.trace("Discovered a pulseaudio server thing with name '{}'", info.getName());
-                    return new ThingUID(PulseaudioBindingConstants.BRIDGE_THING_TYPE,
-                            info.getName().replace("@", "_AT_"));
-                }
+    public @Nullable ThingUID getThingUID(ServiceInfo info) {
+        logger.debug("ServiceInfo: {}", info);
+        if (info.getType() != null) {
+            if (info.getType().equals(getServiceType())) {
+                logger.trace("Discovered a pulseaudio server thing with name '{}'", info.getName());
+                return new ThingUID(PulseaudioBindingConstants.BRIDGE_THING_TYPE, info.getName().replace("@", "_AT_"));
             }
         }
         return null;

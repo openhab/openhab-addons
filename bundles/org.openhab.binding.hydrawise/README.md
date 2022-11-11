@@ -172,7 +172,7 @@ Group SprinklerSensors      "Sensors"       (Sprinkler)
 Group SprinkerForecast      "Forecast"      (Sprinkler)
 
 String SprinkerControllerStatus "Status [%s]" (SprinklerController) {channel="hydrawise:controller:myaccount:123456:controller#status"}
-Number SprinkerControllerLastContact "Last Contact [%d]" (SprinklerController) {channel="hydrawise:controller:myaccount:123456:controller#lastContact"}
+Number SprinkerControllerLastContact "Last Contact [%d]" (SprinklerController) {channel="hydrawise:controller:myaccount:123456:controller#lastcontact"}
 
 Switch SprinklerSensor1 "Sprinler Sensor" (SprinklerSensors) {channel="hydrawise:controller:myaccount:123456:sensor1#active"}
 

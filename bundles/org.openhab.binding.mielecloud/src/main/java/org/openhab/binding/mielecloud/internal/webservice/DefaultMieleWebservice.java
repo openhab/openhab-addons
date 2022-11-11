@@ -25,6 +25,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.openhab.binding.mielecloud.internal.webservice.api.json.Actions;
+import org.openhab.binding.mielecloud.internal.webservice.api.json.ActionsCollection;
 import org.openhab.binding.mielecloud.internal.webservice.api.json.DeviceCollection;
 import org.openhab.binding.mielecloud.internal.webservice.api.json.Light;
 import org.openhab.binding.mielecloud.internal.webservice.api.json.MieleSyntaxException;
@@ -64,6 +65,7 @@ public final class DefaultMieleWebservice implements MieleWebservice, SseListene
     private static final String ENDPOINT_ALL_SSE_EVENTS = ENDPOINT_DEVICES + "all/events";
 
     private static final String SSE_EVENT_TYPE_DEVICES = "devices";
+    public static final String SSE_EVENT_TYPE_ACTIONS = "actions";
 
     private static final Gson GSON = new Gson();
 
@@ -142,12 +144,37 @@ public final class DefaultMieleWebservice implements MieleWebservice, SseListene
     public void onServerSentEvent(ServerSentEvent event) {
         fireConnectionAlive();
 
-        if (!SSE_EVENT_TYPE_DEVICES.equals(event.getEvent())) {
-            return;
-        }
-
         try {
-            deviceStateDispatcher.dispatchDeviceStateUpdates(DeviceCollection.fromJson(event.getData()));
+            switch (event.getEvent()) {
+                case SSE_EVENT_TYPE_ACTIONS:
+                    // We could use the actions payload here directly BUT as of March 2022 there is a bug in the cloud
+                    // that makes the payload differ from the actual values. The /actions endpoint delivers the correct
+                    // data. Thus, receiving an actions update via SSE is used as a trigger to fetch the actions state
+                    // from the /actions endpoint as a workaround. See
+                    // https://github.com/openhab/openhab-addons/issues/12500
+                    for (String deviceIdentifier : ActionsCollection.fromJson(event.getData()).getDeviceIdentifiers()) {
+                        try {
+                            fetchActions(deviceIdentifier);
+                        } catch (MieleWebserviceException e) {
+                            logger.warn("Failed to fetch action state for device {}: {} - {}", deviceIdentifier,
+                                    e.getConnectionError(), e.getMessage());
+                        } catch (AuthorizationFailedException e) {
+                            logger.warn("Failed to fetch action state for device {}: {}", deviceIdentifier,
+                                    e.getMessage());
+                            onConnectionError(ConnectionError.AUTHORIZATION_FAILED, 0);
+                            break;
+                        } catch (TooManyRequestsException e) {
+                            logger.warn("Failed to fetch action state for device {}: {}", deviceIdentifier,
+                                    e.getMessage());
+                            break;
+                        }
+                    }
+                    break;
+
+                case SSE_EVENT_TYPE_DEVICES:
+                    deviceStateDispatcher.dispatchDeviceStateUpdates(DeviceCollection.fromJson(event.getData()));
+                    break;
+            }
         } catch (MieleSyntaxException e) {
             logger.warn("SSE payload is not valid Json: {}", event.getData());
         }

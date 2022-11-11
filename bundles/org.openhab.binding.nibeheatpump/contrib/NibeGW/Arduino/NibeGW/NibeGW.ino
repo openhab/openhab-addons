@@ -20,337 +20,465 @@
  *  27.6.2014   v1.02   Fixed compile error and added Ethernet initialization delay.
  *  29.6.2015   v2.00   Bidirectional support.
  *  18.2.2017   v3.00   Redesigned.
- *  14.3.2021   v3.01   Fix Prodino build + fixed UDP issue + debug improvements.
+ *  14.3.2021   v3.01   Fix Prodino build + fixed UDP issue + debug improvements
+ *  3.7.2022    v4.00   Send messages to IP address received from the UDP messages
+ *  13.7.2022   v4.01   Fixed target IP address issue
+ *  29.7.2022   v5.00   New configuration model and PRODINo ESP32 Ethernet v1 support with OTA update
  */
 
-// ######### CONFIGURATION #######################
-
-#define VERSION                 "3.01"
-
-// Enable if you use ProDiNo board
-// Have been tested with KMPDinoEthernet v1.6.1 (https://github.com/kmpelectronics/Arduino/tree/master/KMPDinoEthernet/Releases)
-//#define PRODINO_BOARD
-
-// Enable if ENC28J60 LAN module is used
-//#define TRANSPORT_ETH_ENC28J60
-
-// Enable if you use STM32 NUCLEO-F429ZI
-//#define STM32_F429ZI_BOARD
-
-
-// Enable debug printouts
-//#define ENABLE_DEBUG
-
-// Enable UDP debug printouts, listen printouts e.g. via netcat (nc -l -u 50000)
-//#define ENABLE_UDP_DEBUG
-
-#define VERBOSE_LEVEL           1
-
-#define BOARD_NAME              "Arduino NibeGW"
-#define BOARD_MAC               { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED }
-#define BOARD_IP                { 192, 168, 1, 50 }
-#define GATEWAY_IP              { 192, 168, 1, 1 }
-#define NETWORK_MASK            { 255, 255, 255, 0 }
-#define INCOMING_PORT_READCMDS  9999
-#define INCOMING_PORT_WRITECMDS 10000
-
-#define TARGET_IP               192, 168, 1, 19
-#define TARGET_PORT             9999
-#define TARGET_DEBUG_PORT       50000
-
-// Delay before initialize ethernet on startup in seconds
-#define ETH_INIT_DELAY          5
-
-// Used serial port and direction change pin for RS-485 port
-// Note! Select if Serial is SW or HW serial port in NibeGw.h
-#ifdef PRODINO_BOARD
- #define RS485_PORT              Serial1
- #define RS485_DIRECTION_PIN     3
-#elif defined STM32_F429ZI_BOARD
- #include <HardwareSerial.h>
- HardwareSerial Serial1(PG9,PG14);
- #define RS485_PORT              Serial1
- #define RS485_DIRECTION_PIN     PF15
-#else
- #define RS485_PORT              Serial
- #define RS485_DIRECTION_PIN     2
-#endif
-
-#define ACK_MODBUS40            true
-#define ACK_SMS40               false
-#define ACK_RMU40               false
-#define SEND_ACK                true
-
-#define DEBUG_BUFFER_SIZE       80
+#define VERSION   "5.00"
 
 // ######### INCLUDES #######################
 
-#ifdef TRANSPORT_ETH_ENC28J60
+#include "Config.h"
+
+#if defined(PRODINO_BOARD)
+  #include "KmpDinoEthernet.h"
+  #include "KMPCommon.h"
+  #include "Ethernet/utility/w5100.h"
+#elif defined(PRODINO_BOARD_ESP32)
+  #include <esp_task_wdt.h>
+  #include "KMPProDinoESP32.h"
+  #include "KMPCommon.h"
+#elif defined(TRANSPORT_ETH_ENC28J60)
  #include <UIPEthernet.h>
-#elif defined STM32_F429ZI_BOARD
- #include <LwIP.h>
- #include <STM32Ethernet.h>
- #include <EthernetUdp.h>
-#elif defined PRODINO_BOARD
- #include <SPI.h>
- #include "KmpDinoEthernet.h"
- #include "KMPCommon.h"
- #include "Ethernet/utility/w5100.h"
 #else
  #include <SPI.h>
  #include <Ethernet.h>
  #include <EthernetUdp.h>
 #endif
-
-#ifdef STM32_F429ZI_BOARD
- #include <IWatchdog.h>
-#else
- #include <avr/wdt.h>
+ 
+#if !defined(PRODINO_BOARD_ESP32)
+  #include <avr/wdt.h>
 #endif
 
 #include "NibeGw.h"
+#include "Debug.h"
 
 // ######### VARIABLES #######################
 
-// The media access control (ethernet hardware) address for the shield
-byte mac[] = BOARD_MAC;
+boolean ethInitialized = false;
 
-//The IP address for the shield
-byte ip[] = BOARD_IP;
-
-//The IP address of the gateway
-byte gw[] = GATEWAY_IP;
-
-//The network mask
-byte mask[] = NETWORK_MASK;
-
-boolean ethernetInitialized = false;
-
-// Target IP address and port where Nibe UDP packets are send
-IPAddress targetIp(TARGET_IP);
+IPAddress targetIp;
 EthernetUDP udp;
 EthernetUDP udp4writeCmnds;
 
-NibeGw nibegw(&RS485_PORT, RS485_DIRECTION_PIN);
-
-// ######### DEBUG #######################
-
-#define DEBUG_BUFFER_SIZE       80
-
-#ifdef ENABLE_DEBUG
- #define DEBUG_PRINT(level, message) if (verbose >= level) { debugPrint(message); }
- #define DEBUG_PRINTDATA(level, message, data) if (verbose >= level) { sprintf(debugBuf, message, data); debugPrint(debugBuf); }
- #define DEBUG_PRINTARRAY(level, data, len) if (verbose >= level) { for (int i = 0; i < len; i++) { sprintf(debugBuf, "%02X", data[i]); debugPrint(debugBuf); }}
+#if defined(PRODINO_BOARD_ESP32)
+  HardwareSerial RS485_PORT(1);
+  NibeGw nibegw(&RS485_PORT, RS485_DIRECTION_PIN, RS485_RX_PIN, RS485_TX_PIN);
 #else
- #define DEBUG_PRINT(level, message)
- #define DEBUG_PRINTDATA(level, message, data)
- #define DEBUG_PRINTARRAY(level, data, len)
+  NibeGw nibegw(&RS485_PORT, RS485_DIRECTION_PIN);
 #endif
 
-#ifdef ENABLE_DEBUG
-char verbose = VERBOSE_LEVEL;
-char debugBuf[DEBUG_BUFFER_SIZE];
+#if defined(PRODINO_BOARD_ESP32) && defined(ENABLE_DYNAMIC_CONFIG)
+  boolean dynamicConfigStarted = false;
 
-void debugPrint(char* data)
-{
-#ifdef ENABLE_UDP_DEBUG
-  if (ethernetInitialized)
-  {
-    udp.beginPacket(targetIp, TARGET_DEBUG_PORT);
-    udp.write(data);
-    udp.endPacket();
-  }
+  class ConfigObserver: public ConfigurationObserver {
+  public:
+    void onConfigurationChanged(const ConfigurationPropertyChange value) {
+      DEBUG_PRINT_VARS(0, "Configuration parameter '%s' changed from '%s' to '%s'\n", 
+        String(value.key).c_str(), 
+        String(value.oldValue).c_str(),
+        String(value.newValue).c_str());
+    }
+  };
+
 #endif
-
-#ifdef PRODINO_BOARD
-  Serial.print(data);
-#endif
-}
-#endif
-
-// ######### FUNCTION DEFINITION ######################
-
-void nibeCallbackMsgReceived(const byte* const data, int len);
-int nibeCallbackTokenReceived(eTokenType token, byte* data);
-void sendUdpPacket(const byte * const data, int len);
-void initializeEthernet();
-
 
 // ######### SETUP #######################
 
-void setup()
-{
+void setup() {
+  #if defined(PRODINO_BOARD_ESP32)
+    KMPProDinoESP32.begin(ProDino_ESP32_Ethernet);
+    KMPProDinoESP32.setStatusLed(red);
+  #endif
+  
+  #if defined(PRODINO_BOARD_ESP32) && defined(ENABLE_DYNAMIC_CONFIG)
+    if (isDynamicConfigModeActivated()) {
+      setupDynamicConfigMode();
+    } else {
+      setupStaticConfigMode();
+    }
+  #else
+    setupStaticConfigMode();
+  #endif
+    
+}
+
+void setupStaticConfigMode() {
+  #if defined(PRODINO_BOARD_ESP32) && defined(ENABLE_DYNAMIC_CONFIG)
+    // Use temporarily longer wathdog time as possible flash formating might take a while
+    esp_task_wdt_init(60, true);
+    esp_task_wdt_add(NULL);
+    KMPProDinoESP32.setStatusLed(white);
+    Bleeper
+      .configuration
+        .set(&config)
+        .done()
+      .storage
+        .set(new SPIFFSStorage())
+        .done()
+      .init();
+    esp_task_wdt_reset();
+    KMPProDinoESP32.setStatusLed(red);
+  #endif
+
+  #if defined(PRODINO_BOARD_ESP32)
+    Serial.begin(115200, SERIAL_8N1);
+  #elif defined(PRODINO_BOARD)
+    Serial.begin(115200, SERIAL_8N1);
+    DinoInit();
+  #endif
+   
   // Start watchdog
-#ifdef STM32_F429ZI_BOARD
-  IWatchdog.begin(2000000); // 2 sec
-#else
-  wdt_enable (WDTO_2S);
-#endif
+  #if defined(PRODINO_BOARD_ESP32)
+    esp_task_wdt_init(WDT_TIMEOUT, true);
+    esp_task_wdt_add(NULL);
+  #else
+    wdt_enable(WDTO_2S);
+  #endif
 
   nibegw.setCallback(nibeCallbackMsgReceived, nibeCallbackTokenReceived);
-  nibegw.setAckModbus40Address(ACK_MODBUS40);
-  nibegw.setAckSms40Address(ACK_SMS40);
-  nibegw.setAckRmu40Address(ACK_RMU40);
-  nibegw.setSendAcknowledge(SEND_ACK);
+  nibegw.setSendAcknowledge(config.nibe.ack.sendAck);
+  nibegw.setAckModbus40Address(config.nibe.ack.modbus40);
+  nibegw.setAckSms40Address(config.nibe.ack.sms40);
+  nibegw.setAckRmu40Address(config.nibe.ack.rmu40);
 
-#ifdef ENABLE_NIBE_DEBUG
-  nibegw.setDebugCallback(nibeDebugCallback);
-  nibegw.setVerboseLevel(VERBOSE_LEVEL);
-#endif
+  #ifdef ENABLE_NIBE_DEBUG
+    nibegw.setDebugCallback(nibeDebugCallback);
+    nibegw.setVerboseLevel(config.debug.level);
+  #endif
 
-#ifdef PRODINO_BOARD
-  DinoInit();
-  Serial.begin(115200, SERIAL_8N1);
-#endif
+  targetIp.fromString(config.nibe.targetIp);
 
-  DEBUG_PRINTDATA(0, "%s ", BOARD_NAME);
-  DEBUG_PRINTDATA(0, "version %s\n", VERSION);
-  DEBUG_PRINT(0, "Started\n");
+  DEBUG_PRINT_VARS(0, "%s version %s Started\n", config.boardName.c_str(), VERSION);
 }
+
+#if defined(PRODINO_BOARD_ESP32) && defined(ENABLE_DYNAMIC_CONFIG)
+
+boolean isDynamicConfigModeActivated() {
+  if (KMPProDinoESP32.getOptoInState(0)) {
+      delay(50);
+      if (KMPProDinoESP32.getOptoInState(0)) {
+        return true;
+      }
+  }
+  return false; 
+}
+
+void setupDynamicConfigMode() {
+  KMPProDinoESP32.setStatusLed(white);
+  Bleeper
+    .verbose(115200)
+    .configuration
+      .set(&config)
+      .addObserver(new ConfigObserver(), {})
+      .done()
+    .configurationInterface
+      .addDefaultWebServer()
+      .done()
+    .connection
+      .setSingleConnectionFromPriorityList({
+          new AP()
+      })
+      .done()
+    .storage
+      .set(new SPIFFSStorage())
+      .done()
+    .init(); 
+
+    ElegantOTA.begin(&otaServer);
+    otaServer.begin();
+
+    dynamicConfigStarted = true;
+    KMPProDinoESP32.setStatusLed(blue);
+}
+#endif
 
 // ######### MAIN LOOP #######################
 
-void loop()
-{
-#ifdef STM32_F429ZI_BOARD
-  IWatchdog.reload();
-#else
-  wdt_reset();
-#endif
+void loop() {
+  #if defined(PRODINO_BOARD_ESP32) && defined(ENABLE_DYNAMIC_CONFIG)
+    if (dynamicConfigStarted) {
+      loopDynamicConfigMode();
+    } else {
+      loopNormalMode();
+    }
+  #else
+    loopNormalMode();
+  #endif
+}
 
+void loopNormalMode() {
+  #if defined(PRODINO_BOARD_ESP32)
+    esp_task_wdt_reset();
+  #else
+    wdt_reset();
+  #endif
+  
   long now = millis() / 1000;
 
-  if (!nibegw.connected())
-  {
+  if (!nibegw.connected()) {
     nibegw.connect();
-  }
-  else
-  {
-    do
-    {
+  } else {
+    do {
       nibegw.loop();
-#ifdef TRANSPORT_ETH_ENC28J60
-      Ethernet.maintain();
-#endif
+      #ifdef TRANSPORT_ETH_ENC28J60
+        Ethernet.maintain();
+      #endif
     } while (nibegw.messageStillOnProgress());
   }
 
-  if (!ethernetInitialized && now >= ETH_INIT_DELAY)
-  {
+  if (!ethInitialized && now >= config.eth.initDelay) {
     initializeEthernet();
+    #ifdef ENABLE_DEBUG
+      telnet.begin();
+    #endif
   }
+
+  #if defined(ENABLE_DEBUG) && defined(ENABLE_REMOTE_DEBUG)
+    if (ethInitialized) {
+        handleTelnet();
+    }
+  #endif
 }
+
+#if defined(PRODINO_BOARD_ESP32) && defined(ENABLE_DYNAMIC_CONFIG)
+void loopDynamicConfigMode() {
+  Bleeper.handle();
+  otaServer.handleClient();
+}
+#endif
 
 // ######### FUNCTIONS #######################
 
-void initializeEthernet()
-{
-  DEBUG_PRINT(1, "Initializing Ethernet\n");
-  Ethernet.begin(mac, ip, gw, mask);
+void initializeEthernet() {
+  DEBUG_PRINT_MSG(1, "Initializing Ethernet\n");
 
-#ifdef PRODINO_BOARD
-  W5100.setRetransmissionCount(1);
-#endif
+  uint8_t   mac[6];
+  sscanf(config.eth.mac.c_str(), "%x:%x:%x:%x:%x:%x", mac, mac+1, mac+2, mac+3, mac+4, mac+5);
+  
+  IPAddress ip;
+  IPAddress dns;
+  IPAddress gw;
+  IPAddress mask;
+  
+  ip.fromString(config.eth.ip);
+  dns.fromString(config.eth.dns);
+  gw.fromString(config.eth.gateway);
+  mask.fromString(config.eth.mask);
+  
+  Ethernet.begin(mac, ip, dns, gw, mask);
 
-  ethernetInitialized = true;
-  udp.begin(INCOMING_PORT_READCMDS); 
-  udp4writeCmnds.begin(INCOMING_PORT_WRITECMDS);
+  #if defined(PRODINO_BOARD_ESP32)
+    Ethernet.setRetransmissionCount(1);
+    Ethernet.setRetransmissionTimeout(50);
+  #elif defined(PRODINO_BOARD)
+    W5100.setRetransmissionCount(1);
+    W5100.setRetransmissionTime(50);
+  #endif
+  
+  ethInitialized = true;
+  udp.begin(config.nibe.readCmdsPort); 
+  udp4writeCmnds.begin(config.nibe.writeCmdsPort);
 
-#ifdef ENABLE_DEBUG
-  DEBUG_PRINTDATA(0, "%s ", BOARD_NAME);
-  DEBUG_PRINTDATA(0, "version %s\n", VERSION);
-  sprintf(debugBuf, "MAC=%02X:%02X:%02X:%02X:%02X:%02X\n", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
-  DEBUG_PRINT(0, debugBuf);
-  sprintf(debugBuf, "IP=%d.%d.%d.%d\n", ip[0], ip[1], ip[2], ip[3]);
-  DEBUG_PRINT(0, debugBuf);
-  sprintf(debugBuf, "GW=%d.%d.%d.%d\n", gw[0], gw[1], gw[2], gw[3]);
-  DEBUG_PRINT(0, debugBuf);
-  sprintf(debugBuf, "TARGET IP=%d.%d.%d.%d\n", TARGET_IP);
-  DEBUG_PRINT(0, debugBuf);
-  DEBUG_PRINTDATA(0, "TARGET PORT=%d\n", TARGET_PORT);
-  DEBUG_PRINTDATA(0, "INCOMING_PORT_READCMDS=%d\n", INCOMING_PORT_READCMDS);
-  DEBUG_PRINTDATA(0, "INCOMING_PORT_WRITECMDS=%d\n", INCOMING_PORT_WRITECMDS);
-  DEBUG_PRINTDATA(0, "TARGET PORT=%d\n", TARGET_PORT);
-  DEBUG_PRINTDATA(0, "ACK_MODBUS40=%s\n", ACK_MODBUS40 ? "true" : "false");
-  DEBUG_PRINTDATA(0, "ACK_SMS40=%s\n", ACK_SMS40 ? "true" : "false");
-  DEBUG_PRINTDATA(0, "ACK_RMU40=%s\n", ACK_RMU40 ? "true" : "false");
-  DEBUG_PRINTDATA(0, "SEND_ACK=%s\n", SEND_ACK ? "true" : "false");
-  DEBUG_PRINTDATA(0, "ETH_INIT_DELAY=%d\n", ETH_INIT_DELAY);
-  DEBUG_PRINTDATA(0, "RS485_DIRECTION_PIN=%d\n", RS485_DIRECTION_PIN);
-#endif
+  printInfo();
+  
+  #if defined(PRODINO_BOARD_ESP32)
+    KMPProDinoESP32.offStatusLed();
+  #endif
 }
 
-void nibeCallbackMsgReceived(const byte* const data, int len)
-{
-  if (ethernetInitialized)
-  {
+void nibeCallbackMsgReceived(const byte* const data, int len) {
+  #if defined(PRODINO_BOARD_ESP32)
+    KMPProDinoESP32.setStatusLed(green);
+  #endif
+    
+  if (ethInitialized) {
     sendUdpPacket(data, len);
   }
+
+  #if defined(PRODINO_BOARD_ESP32)
+    KMPProDinoESP32.offStatusLed();
+  #endif
 }
 
-
-int nibeCallbackTokenReceived(eTokenType token, byte* data)
-{
+int nibeCallbackTokenReceived(eTokenType token, byte* data) {
   int len = 0;
-  if (ethernetInitialized)
-  {
-    if (token == READ_TOKEN)
-    {
-      DEBUG_PRINT(3, "Read token received from nibe\n");
+  if (ethInitialized) {
+    if (token == READ_TOKEN) {
+      DEBUG_PRINT_MSG(3, "Read token received from nibe\n");
       int packetSize = udp.parsePacket();
       if (packetSize) {
+        #if defined(PRODINO_BOARD_ESP32)
+          KMPProDinoESP32.setStatusLed(white);
+        #endif
+        targetIp = udp.remoteIP();
         len = udp.read(data, packetSize);
-        DEBUG_PRINTDATA(2, "Send read command to nibe, len=%d, ", len);
-        DEBUG_PRINT(1, " data in: ");
-        DEBUG_PRINTARRAY(1, data, len)
-        DEBUG_PRINT(1, "\n");
-#ifdef TRANSPORT_ETH_ENC28J60
-        udp.flush();
-        udp.stop();
-        udp.begin(INCOMING_PORT_READCMDS);
-#endif
+        DEBUG_PRINT_VARS(2, "Send read command to nibe, len=%d, ", len);
+        DEBUG_PRINT_MSG(1, " data in: ");
+        DEBUG_PRINT_ARRAY(1, data, len)
+        DEBUG_PRINT_MSG(1, "\n");
+        
+        #if defined(TRANSPORT_ETH_ENC28J60)
+          udp4readCmnds.flush();
+          udp4readCmnds.stop();
+          udp4readCmnds.begin(config.nibe.readCmdsPort);
+        #endif
       }
-    }
-    else if (token == WRITE_TOKEN)
-    {
-      DEBUG_PRINT(3, "Write token received from nibe\n");
+    } else if (token == WRITE_TOKEN) {
+      DEBUG_PRINT_MSG(3, "Write token received from nibe\n");
       int packetSize = udp4writeCmnds.parsePacket();
       if (packetSize) {
+        #if defined(PRODINO_BOARD_ESP32)
+          KMPProDinoESP32.setStatusLed(orange);
+        #endif
+        targetIp = udp.remoteIP();
         len = udp4writeCmnds.read(data, packetSize);
-        DEBUG_PRINTDATA(2, "Send write command to nibe, len=%d, ", len);
-        DEBUG_PRINT(1, " data in: ");
-        DEBUG_PRINTARRAY(1, data, len)
-        DEBUG_PRINT(1, "\n");
-#ifdef TRANSPORT_ETH_ENC28J60
-        udp4writeCmnds.flush();
-        udp4writeCmnds.stop();
-        udp4writeCmnds.begin(INCOMING_PORT_WRITECMDS);
-#endif
+        DEBUG_PRINT_VARS(2, "Send write command to nibe, len=%d, ", len);
+        DEBUG_PRINT_MSG(1, " data in: ");
+        DEBUG_PRINT_ARRAY(1, data, len)
+        DEBUG_PRINT_MSG(1, "\n");
+        
+        #if defined(TRANSPORT_ETH_ENC28J60)
+          udp4writeCmnds.flush();
+          udp4writeCmnds.stop();
+          udp4writeCmnds.begin(config.nibe.writeCmdsPort);
+        #endif
       }
     }
+
+    #if defined(PRODINO_BOARD_ESP32)
+      KMPProDinoESP32.offStatusLed();
+    #endif
   }
   return len;
 }
 
-void nibeDebugCallback(byte verbose, char* data)
-{
-  DEBUG_PRINT(verbose, data);
+void nibeDebugCallback(byte level, char* data) {
+  DEBUG_PRINT_MSG(level, data);
 }
 
-void sendUdpPacket(const byte * const data, int len)
-{
-#ifdef ENABLE_DEBUG
-  sprintf(debugBuf, "Sending UDP packet to %d.%d.%d.%d:", TARGET_IP);
-  DEBUG_PRINT(2, debugBuf);
-  DEBUG_PRINTDATA(2, "%d", TARGET_PORT);
-  DEBUG_PRINTDATA(2, ", len=%d, ", len);
-  DEBUG_PRINT(1, "data out: ");
-  DEBUG_PRINTARRAY(1, data, len)
-  DEBUG_PRINT(1, "\n");
-#endif
+void sendUdpPacket(const byte* const data, int len) {
+  #ifdef ENABLE_DEBUG
+    DEBUG_PRINT_VARS(2, "Sending UDP packet to %s:%d, len=%d", IPtoString(targetIp).c_str(), config.nibe.targetPort, len);
+    DEBUG_PRINT_MSG(1, " data out: ");
+    DEBUG_PRINT_ARRAY(1, data, len)
+    DEBUG_PRINT_MSG(1, "\n");
+  #endif
 
-  udp.beginPacket(targetIp, TARGET_PORT);
+  #if defined(PRODINO_BOARD_ESP32)
+    EthernetLinkStatus linkStatus = Ethernet.linkStatus();
+    if (linkStatus != LinkON) {
+      DEBUG_PRINT_VARS(0, "Ethernet link is down, link status = %d\n", linkStatus);
+      return;
+    }
+  #endif
+    
+  udp.beginPacket(targetIp, config.nibe.targetPort);
+  
   udp.write(data, len);
   int retval = udp.endPacket();
-  DEBUG_PRINTDATA(3, "UDP packet sent %s\n", retval == 0 ? "failed" : "succeed");
+  if (retval) {
+    DEBUG_PRINT_MSG(3, "UDP packet sent succeed\n");
+  } else {
+    DEBUG_PRINT_MSG(1, "UDP packet sent failed\n");
+  }
 }
+
+String IPtoString(const IPAddress& address) {
+  return String() + address[0] + "." + address[1] + "." + address[2] + "." + address[3];
+}
+
+void printInfo() {
+  #ifdef ENABLE_DEBUG
+  DEBUG_PRINT_VARS(0, "%s version %s\nUsing configuration:\n", config.boardName.c_str(), VERSION);
+  DEBUG_PRINT_VARS(0, "MAC=%s\n", config.eth.mac.c_str());
+  DEBUG_PRINT_VARS(0, "IP=%s\n", config.eth.ip.c_str());
+  DEBUG_PRINT_VARS(0, "DNS=%s\n", config.eth.dns.c_str());
+  DEBUG_PRINT_VARS(0, "MASK=%s\n", config.eth.mask.c_str());
+  DEBUG_PRINT_VARS(0, "GATEWAY=%s\n", config.eth.gateway.c_str());
+  DEBUG_PRINT_VARS(0, "ETH_INIT_DELAY=%d\n", config.eth.initDelay);
+  DEBUG_PRINT_VARS(0, "TARGET_IP=%s\n", IPtoString(targetIp).c_str());
+  DEBUG_PRINT_VARS(0, "TARGET_PORT=%d\n", config.nibe.targetPort);
+  DEBUG_PRINT_VARS(0, "INCOMING_PORT_READCMDS=%d\n", config.nibe.readCmdsPort);
+  DEBUG_PRINT_VARS(0, "INCOMING_PORT_WRITECMDS=%d\n", config.nibe.writeCmdsPort);
+  DEBUG_PRINT_VARS(0, "SEND_ACK=%s\n", config.nibe.ack.sendAck ? "true" : "false");
+  if (config.nibe.ack.sendAck) {
+    DEBUG_PRINT_VARS(0, "ACK_MODBUS40=%s\n", config.nibe.ack.modbus40 ? "true" : "false");
+    DEBUG_PRINT_VARS(0, "ACK_SMS40=%s\n", config.nibe.ack.sms40 ? "true" : "false");
+    DEBUG_PRINT_VARS(0, "ACK_RMU40=%s\n", config.nibe.ack.rmu40 ? "true" : "false");
+  }
+  #endif
+  DEBUG_PRINT_VARS(0, "VERBOSE_LEVEL=%d\n", config.debug.verboseLevel);
+  
+  #if defined(ENABLE_DEBUG) && defined(ENABLE_REMOTE_DEBUG)
+    DEBUG_PRINT_MSG(0, "REMOTE_DEBUG_ENABLED=true\n");
+  #else
+    DEBUG_PRINT_MSG(0, "REMOTE_DEBUG_ENABLED=false\n");
+  #endif
+  
+  #if defined(PRODINO_BOARD_ESP32) && defined(ENABLE_DYNAMIC_CONFIG)
+    DEBUG_PRINT_MSG(0, "DYNAMIC_CONFIG_ENABLED=true\n");
+  #else
+    DEBUG_PRINT_MSG(0, "DYNAMIC_CONFIG_ENABLED=false\n");
+  #endif
+}
+
+#if defined(ENABLE_DEBUG) && defined(ENABLE_REMOTE_DEBUG)
+void handleTelnet() {
+  EthernetClient client = telnet.available();
+  
+  if (client) {
+    char c = client.read();
+
+    switch (c) {
+
+      case '?':
+      case 'h':
+        client.println(config.boardName.c_str());
+        client.println("Commands:");
+        client.println(" E -> exit");
+        client.println(" i -> info");
+        #ifdef ENABLE_DEBUG
+        client.println(" 1 -> set verbose level to 1");
+        client.println(" 2 -> set verbose level to 2");
+        client.println(" 3 -> set verbose level to 3");
+        client.println(" 4 -> set verbose level to 4");
+        client.println(" 5 -> set verbose level to 5");
+        #endif
+        break;
+        
+      case 'i':
+        printInfo();
+        break;
+
+      case 'E':
+        client.println("Connection closed");
+        client.flush();
+        client.stop();
+        break;
+
+      #ifdef ENABLE_DEBUG
+      case '1':
+      case '2':
+      case '3':
+      case '4':
+      case '5': 
+        client.print("Setting verbose level to ");
+        client.println(c);
+        config.debug.verboseLevel = c - 0x30;
+        break;
+      #endif
+
+      case '\n':
+      case '\r':
+        break;
+
+      default:
+        client.print("Unknown command ");
+        client.println(c);
+    }
+  }
+}
+#endif
