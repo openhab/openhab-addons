@@ -169,7 +169,7 @@ Parameter PID has a default value 0 - this is the PID of the System Idle process
 
 ## Known issues and workarounds
 
-- Temperature readings are not well supported on standard Windows systems, run OpenHardwareMonitor.exe for the binding to get more reliable readings.
+- Temperature readings are not well supported on standard Windows systems, run [OpenHardwareMonitor.exe](https://openhardwaremonitor.org) for the binding to get more reliable readings.
 
 ## Reporting issues
 
