@@ -167,6 +167,10 @@ This makes the channels from this groups very flexible - they can change its PID
 
 Parameter PID has a default value 0 - this is the PID of the System Idle process in Windows OS.
 
+## Known issues and workarounds
+
+- Temperature readings are not well supported on standard Windows systems, run [OpenHardwareMonitor.exe](https://openhardwaremonitor.org) for the binding to get more reliable readings.
+
 ## Reporting issues
 
 As already mentioned this binding depends heavily on the [OSHI](https://github.com/oshi/oshi) API to provide the operating system and hardware information.
