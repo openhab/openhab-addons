@@ -294,7 +294,7 @@ public class JuiceNetDeviceHandler extends BaseThingHandler {
         logger.trace("queryStatusAndInfo");
         ThingStatus status = getThing().getStatus();
 
-        if (status == ThingStatus.OFFLINE || status == ThingStatus.UNKNOWN) {
+        if (status != ThingStatus.ONLINE) {
             goOnline();
             return;
         }

@@ -165,10 +165,10 @@ public class JuiceNetBridgeHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.ONLINE);
         }
 
+        JuiceNetDiscoveryService discoveryService = this.discoveryService;
         for (JuiceNetApiDevice dev : listDevices) {
             Thing childThing = getThingById(dev.unitId);
             if (childThing == null) {
-                JuiceNetDiscoveryService discoveryService = this.discoveryService;
                 if (discoveryService != null) {
                     discoveryService.notifyDiscoveryDevice(dev.unitId, dev.name);
                 }

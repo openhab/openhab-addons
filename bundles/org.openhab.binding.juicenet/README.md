@@ -26,14 +26,6 @@ The API token can be found on the Account page at https://home.juice.net/Manage.
 
 A JuiceBox EV Charger requires a a unitID which can also be found in the device settings at the JuiceNet web page.
 
-If configuring the binding with manual configuration an example thing file looks like this:
-
-```
-Bridge juicenet:account:myaccount [ apiToken="xxxx-xxxx-xxxx-xxxx-xxxxx" ] {
-    Thing device JamesCharger [ unitID="xxxxxxx" ]
-}
-```
-
 ## Channels
 
 | channel           | type                      | read-only | description                  |
@@ -68,7 +60,19 @@ Bridge juicenet:account:myaccount [ apiToken="xxxx-xxxx-xxxx-xxxx-xxxxx" ] {
 | carBatteryRange   | Number:Length             | Y         | Car range. |
 | carChargingRate   | Number:Power              | Y         | Car charging rate. |
 
-### Example Item File
+## Full Example
+
+### Things File
+
+If configuring the binding with manual configuration an example thing file looks like this:
+
+```
+Bridge juicenet:account:myaccount [ apiToken="xxxx-xxxx-xxxx-xxxx-xxxxx" ] {
+    Thing device JamesCharger [ unitID="xxxxxxx" ]
+}
+```
+
+### Items File
 
 An example of an items file is here.
 
