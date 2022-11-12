@@ -13,11 +13,15 @@
 package org.openhab.persistence.jdbc.internal;
 
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -36,6 +40,9 @@ import org.openhab.core.persistence.QueryablePersistenceService;
 import org.openhab.core.persistence.strategy.PersistenceStrategy;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
+import org.openhab.persistence.jdbc.ItemTableCheckEntry;
+import org.openhab.persistence.jdbc.ItemTableCheckEntryStatus;
+import org.openhab.persistence.jdbc.dto.ItemsVO;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
@@ -55,12 +62,8 @@ import org.slf4j.LoggerFactory;
 @Component(service = { PersistenceService.class,
         QueryablePersistenceService.class }, configurationPid = "org.openhab.jdbc", //
         property = Constants.SERVICE_PID + "=org.openhab.jdbc")
-@ConfigurableService(category = "persistence", label = "JDBC Persistence Service", description_uri = JdbcPersistenceService.CONFIG_URI)
+@ConfigurableService(category = "persistence", label = "JDBC Persistence Service", description_uri = JdbcPersistenceServiceConstants.CONFIG_URI)
 public class JdbcPersistenceService extends JdbcMapper implements ModifiablePersistenceService {
-
-    private static final String SERVICE_ID = "jdbc";
-    private static final String SERVICE_LABEL = "JDBC";
-    protected static final String CONFIG_URI = "persistence:jdbc";
 
     private final Logger logger = LoggerFactory.getLogger(JdbcPersistenceService.class);
 
@@ -116,12 +119,12 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
     @Override
     public String getId() {
         logger.debug("JDBC::getName: returning name 'jdbc' for queryable persistence service.");
-        return SERVICE_ID;
+        return JdbcPersistenceServiceConstants.SERVICE_ID;
     }
 
     @Override
     public String getLabel(@Nullable Locale locale) {
-        return SERVICE_LABEL;
+        return JdbcPersistenceServiceConstants.SERVICE_LABEL;
     }
 
     @Override
@@ -274,5 +277,123 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
         }
 
         return result;
+    }
+
+    /**
+     * Get a list of names of persisted items.
+     */
+    public Collection<String> getItemNames() {
+        return itemNameToTableNameMap.keySet();
+    }
+
+    /**
+     * Get a list of all items with corresponding tables and an {@link ItemTableCheckEntryStatus} indicating
+     * its condition.
+     *
+     * @return list of {@link ItemTableCheckEntry}
+     */
+    public List<ItemTableCheckEntry> getCheckedEntries() {
+        List<ItemTableCheckEntry> entries = new ArrayList<>();
+
+        if (!checkDBAccessability()) {
+            logger.warn("JDBC::getCheckedEntries: database not connected");
+            return entries;
+        }
+
+        var orphanTables = getItemTables().stream().map(ItemsVO::getTableName).collect(Collectors.toSet());
+        for (Entry<String, String> entry : itemNameToTableNameMap.entrySet()) {
+            String itemName = entry.getKey();
+            String tableName = entry.getValue();
+            entries.add(getCheckedEntry(itemName, tableName, orphanTables.contains(tableName)));
+            orphanTables.remove(tableName);
+        }
+        for (String orphanTable : orphanTables) {
+            entries.add(new ItemTableCheckEntry("", orphanTable, ItemTableCheckEntryStatus.ORPHAN_TABLE));
+        }
+        return entries;
+    }
+
+    private ItemTableCheckEntry getCheckedEntry(String itemName, String tableName, boolean tableExists) {
+        boolean itemExists;
+        try {
+            itemRegistry.getItem(itemName);
+            itemExists = true;
+        } catch (ItemNotFoundException e) {
+            itemExists = false;
+        }
+
+        ItemTableCheckEntryStatus status;
+        if (!tableExists) {
+            if (itemExists) {
+                status = ItemTableCheckEntryStatus.TABLE_MISSING;
+            } else {
+                status = ItemTableCheckEntryStatus.ITEM_AND_TABLE_MISSING;
+            }
+        } else if (itemExists) {
+            status = ItemTableCheckEntryStatus.VALID;
+        } else {
+            status = ItemTableCheckEntryStatus.ITEM_MISSING;
+        }
+        return new ItemTableCheckEntry(itemName, tableName, status);
+    }
+
+    /**
+     * Clean up inconsistent item: Remove from index and drop table.
+     * Tables with any rows are skipped, unless force is set.
+     *
+     * @param itemName Name of item to clean
+     * @param force If true, non-empty tables will be dropped too
+     * @return true if item was cleaned up
+     */
+    public boolean cleanupItem(String itemName, boolean force) {
+        String tableName = itemNameToTableNameMap.get(itemName);
+        if (tableName == null) {
+            return false;
+        }
+        ItemTableCheckEntry entry = getCheckedEntry(itemName, tableName, ifTableExists(tableName));
+        return cleanupItem(entry, force);
+    }
+
+    /**
+     * Clean up inconsistent item: Remove from index and drop table.
+     * Tables with any rows are skipped.
+     *
+     * @param entry
+     * @return true if item was cleaned up
+     */
+    public boolean cleanupItem(ItemTableCheckEntry entry) {
+        return cleanupItem(entry, false);
+    }
+
+    private boolean cleanupItem(ItemTableCheckEntry entry, boolean force) {
+        if (!checkDBAccessability()) {
+            logger.warn("JDBC::cleanupItem: database not connected");
+            return false;
+        }
+
+        ItemTableCheckEntryStatus status = entry.getStatus();
+        String tableName = entry.getTableName();
+        switch (status) {
+            case ITEM_MISSING:
+                if (!force && getRowCount(tableName) > 0) {
+                    return false;
+                }
+                dropTable(tableName);
+                // Fall through to remove from index.
+            case TABLE_MISSING:
+            case ITEM_AND_TABLE_MISSING:
+                if (!conf.getTableUseRealCaseSensitiveItemNames()) {
+                    ItemsVO itemsVo = new ItemsVO();
+                    itemsVo.setItemName(entry.getItemName());
+                    deleteItemsEntry(itemsVo);
+                }
+                itemNameToTableNameMap.remove(entry.getItemName());
+                return true;
+            case ORPHAN_TABLE:
+            case VALID:
+            default:
+                // Nothing to clean.
+                return false;
+        }
     }
 }

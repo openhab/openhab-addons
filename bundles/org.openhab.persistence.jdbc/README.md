@@ -29,6 +29,7 @@ The following databases are currently supported and tested:
 	- [Database Table Schema](#database-table-schema)
 	- [Number Precision](#number-precision)
 	- [Rounding results](#rounding-results)
+	- [Maintenance](#maintenance)
 	- [For Developers](#for-developers)
 	- [Performance Tests](#performance-tests)
 
@@ -137,6 +138,62 @@ The SQL types `DECIMAL` or  `NUMERIC` are precise, but to work with `DOUBLE` is 
 The results of database queries of number items are rounded to three decimal places by default.
 With `numberDecimalcount` decimals can be changed.
 Especially if sql types `DECIMAL` or  `NUMERIC` are used for `sqltype.NUMBER`, rounding can be disabled by setting `numberDecimalcount=-1`.
+
+### Maintenance
+
+Some maintenance tools are provided as console commands.
+
+#### List Tables
+
+Tables and corresponding items can be listed with the command `jdbc tables list`.
+Per default only tables with some kind of problem are listed.
+To list all tables, use the command `jdbc tables list all`.
+
+The list contains table name, item name, row count and status, which can be one of:
+
+- **Valid:** Table is consistent.
+- **Item missing:** Table has no corresponding item.
+- **Table missing:** Referenced table does not exist.
+- **Item and table missing:** Referenced table does not exist nor has corresponding item.
+- **Orphan table:** Mapping for table does not exist in index.
+
+#### Clean Inconsistent Items
+
+Some issues can be fixed automatically using the command `jdbc clean` (all items having issues) or `jdbc clean <itemName>` (single item).
+This cleanup operation will remove items from the index (table `Items`) if the referenced table does not exist.
+
+If the item does not exist, the table will be physically deleted, but only if it's empty.
+This precaution is taken because items may have existed previously, and the data might still be valuable.
+For example, an item for a lost or repurposed sensor could have been deleted from the system while preserving persisted data.
+To skip this check for a single item, use `jdbc clean <itemName> force` with care.
+
+Prior to performing a `jdbc clean` operation, it's recommended to review the result of `jdbc tables list`.
+
+Fixing integrity issues can be useful before performing a migration to another naming scheme.
+For example, when migrating to `tableCaseSensitiveItemNames`, an index will no longer exist after the migration:
+
+**Before migration:**
+
+| Table             | Row count | Item   | Status        |
+|-------------------|---------: |--------|---------------|
+| ActualItem        |         0 |        | Orphan table  |
+| TableNotBelonging |         0 |        | Orphan table  |
+| item0077          |         0 | MyItem | Table missing |
+
+**After migration:**
+
+| Table             | Row count | Item              | Status        |
+|-------------------|---------: |-------------------|---------------|
+| ActualItem        |         0 | ActualItem        | Valid         |
+| TableNotBelonging |         0 | TableNotBelonging | Item missing  |
+
+This happened:
+
+- `ActualItem` was missing in the index and became valid because it was left untouched, not being a part of the migration. After the migration, it happened to match the name of an existing item, thus it became valid.
+- `TableNotBelonging` was also not part of the migration, but since now assumed to match an item, status changed since no item with that name exists.
+- `item0077`, being the only correct table name according to previous naming scheme, disappeared from the list since it didn't have a corresponding table, and is now no longer part of any index.
+
+In other words, extracting this information from the index before removing it, can be beneficial in order to understand the issues and possible causes.
 
 ### For Developers
 

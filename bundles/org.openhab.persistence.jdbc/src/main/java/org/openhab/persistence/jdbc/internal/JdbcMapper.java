@@ -106,6 +106,14 @@ public class JdbcMapper {
         return res;
     }
 
+    public boolean ifTableExists(String tableName) {
+        logger.debug("JDBC::ifTableExists");
+        long timerStart = System.currentTimeMillis();
+        boolean res = conf.getDBDAO().doIfTableExists(tableName);
+        logTime("doIfTableExists", timerStart, System.currentTimeMillis());
+        return res;
+    }
+
     public ItemsVO createNewEntryInItemsTable(ItemsVO vo) {
         logger.debug("JDBC::createNewEntryInItemsTable");
         long timerStart = System.currentTimeMillis();
@@ -129,6 +137,13 @@ public class JdbcMapper {
         conf.getDBDAO().doDropItemsTableIfExists(vo);
         logTime("doDropItemsTableIfExists", timerStart, System.currentTimeMillis());
         return true;
+    }
+
+    public void dropTable(String tableName) {
+        logger.debug("JDBC::dropTable");
+        long timerStart = System.currentTimeMillis();
+        conf.getDBDAO().doDropTable(tableName);
+        logTime("doDropTable", timerStart, System.currentTimeMillis());
     }
 
     public ItemsVO deleteItemsEntry(ItemsVO vo) {
@@ -187,6 +202,10 @@ public class JdbcMapper {
         logTime("storeItemValue", timerStart, System.currentTimeMillis());
         errCnt = 0;
         return item;
+    }
+
+    public long getRowCount(String tableName) {
+        return conf.getDBDAO().doGetRowCount(tableName);
     }
 
     public List<HistoricItem> getHistItemFilterQuery(FilterCriteria filter, int numberDecimalcount, String table,
@@ -350,7 +369,7 @@ public class JdbcMapper {
         }
 
         List<ItemsVO> itemIdTableNames = ifItemsTableExists() ? getItemIDTableNames() : new ArrayList<ItemsVO>();
-        List<String> itemTables = getItemTables().stream().map(t -> t.getTableName()).collect(Collectors.toList());
+        var itemTables = getItemTables().stream().map(ItemsVO::getTableName).collect(Collectors.toList());
         List<ItemVO> oldNewTableNames;
 
         if (itemIdTableNames.isEmpty()) {
