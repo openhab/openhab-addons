@@ -215,7 +215,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
 
         if (serialPort != null && !serialPort.isEmpty()) {
             connector = new NuvoSerialConnector(serialPortManager, serialPort, uid);
-        } else if (port != null) {
+        } else if (host != null && port != null) {
             connector = new NuvoIpConnector(host, port, uid);
             this.isMps4 = (port.intValue() == MPS4_PORT);
         } else {
@@ -239,6 +239,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
 
             if (this.isAnyOhNuvoNet) {
                 logger.debug("At least one source is configured as an openHAB NuvoNet source");
+                connector.setAnyOhNuvoNet(true);
                 loadMenuConfiguration(config);
 
                 favoriteMap.put("1",
@@ -640,11 +641,12 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
      */
     @Override
     public void onNewMessageEvent(NuvoMessageEvent evt) {
-        logger.debug("onNewMessageEvent: key {} = {}", evt.getKey(), evt.getValue());
+        logger.debug("onNewMessageEvent: zone {}, source {}, value {}", evt.getZone(), evt.getSrc(), evt.getValue());
         lastEventReceived = System.currentTimeMillis();
 
         String type = evt.getType();
-        String key = evt.getKey();
+        String zoneId = evt.getZone();
+        String srcId = evt.getSrc();
         String updateData = evt.getValue().trim();
         if (this.getThing().getStatus() != ThingStatus.ONLINE) {
             updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, this.versionString);
@@ -687,8 +689,8 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                 updateChannelState(NuvoEnum.SYSTEM, CHANNEL_TYPE_PAGE, ONE.equals(updateData) ? ON : OFF);
                 break;
             case TYPE_SOURCE_UPDATE:
-                logger.debug("Source update: Source: {} - Value: {}", key, updateData);
-                NuvoEnum targetSource = NuvoEnum.valueOf(SOURCE + key);
+                logger.debug("Source update: Source: {} - Value: {}", srcId, updateData);
+                NuvoEnum targetSource = NuvoEnum.valueOf(SOURCE + srcId);
 
                 if (updateData.contains(DISPLINE)) {
                     // example: DISPLINE2,"Play My Song (Featuring Dee Ajayi)"
@@ -712,16 +714,16 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                 } else if (updateData.contains(NAME_QUOTE)) {
                     // example: NAME"Ipod"
                     String name = updateData.split("\"")[1];
-                    sourceLabels.put(key, name);
+                    sourceLabels.put(srcId, name);
                 }
                 break;
             case TYPE_ZONE_UPDATE:
-                logger.debug("Zone update: Zone: {} - Value: {}", key, updateData);
+                logger.debug("Zone update: Zone: {} - Value: {}", zoneId, updateData);
                 // example : OFF
                 // or: ON,SRC3,VOL63,DND0,LOCK0
                 // or: ON,SRC3,MUTE,DND0,LOCK0
 
-                NuvoEnum targetZone = NuvoEnum.valueOf(ZONE + key);
+                NuvoEnum targetZone = NuvoEnum.valueOf(ZONE + zoneId);
 
                 if (OFF.equals(updateData)) {
                     updateChannelState(targetZone, CHANNEL_TYPE_POWER, OFF);
@@ -746,35 +748,43 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                     }
                 }
                 break;
-            case TYPE_ZONE_BUTTON:
-                logger.debug("Zone Button pressed: Source: {} - Button: {}", key, updateData);
-                updateChannelState(NuvoEnum.valueOf(SOURCE + key), CHANNEL_BUTTON_PRESS, updateData);
+            case TYPE_ZONE_SOURCE_BUTTON:
+                logger.debug("Source Button pressed: Source: {} - Button: {}", srcId, updateData);
+                updateChannelState(NuvoEnum.valueOf(SOURCE + srcId), CHANNEL_BUTTON_PRESS, updateData);
+                updateChannelState(NuvoEnum.SYSTEM, CHANNEL_TYPE_BUTTONPRESS, zoneId + COMMA + updateData);
                 break;
-            case TYPE_ZONE_BUTTON2:
+            case TYPE_NN_BUTTON:
                 String buttonAction = NuvoStatusCodes.BUTTON_CODE.get(updateData);
 
                 if (buttonAction != null) {
-                    logger.debug("Zone NuvoNet Button pressed: Source: {} - Button: {}", key, buttonAction);
-                    updateChannelState(NuvoEnum.valueOf(SOURCE + key), CHANNEL_BUTTON_PRESS, buttonAction);
+                    logger.debug("NuvoNet Source Button pressed: Source: {} - Button: {}", srcId, buttonAction);
+                    updateChannelState(NuvoEnum.valueOf(SOURCE + srcId), CHANNEL_BUTTON_PRESS, buttonAction);
+                    updateChannelState(NuvoEnum.SYSTEM, CHANNEL_TYPE_BUTTONPRESS, zoneId + COMMA + buttonAction);
                 } else {
-                    logger.debug("Zone NuvoNet Button pressed: Source: {} - Unknown button code: {}", key, updateData);
-                    updateChannelState(NuvoEnum.valueOf(SOURCE + key), CHANNEL_BUTTON_PRESS, updateData);
+                    logger.debug("NuvoNet Source Button pressed: Source: {} - Unknown button code: {}", srcId,
+                            updateData);
+                    updateChannelState(NuvoEnum.valueOf(SOURCE + srcId), CHANNEL_BUTTON_PRESS, updateData);
+                    updateChannelState(NuvoEnum.SYSTEM, CHANNEL_TYPE_BUTTONPRESS, zoneId + COMMA + updateData);
                 }
                 break;
-            case TYPE_MENU_ITEM_SELECTED:
+            case TYPE_NN_MENU_ITEM_SELECTED:
                 // ignore this update unless openHAB is handling this source
-                if (nuvoNetSrcMap.get(key).equals(2)) {
+                if (nuvoNetSrcMap.get(srcId).equals(2)) {
+                    String sourceZone = SRC_KEY + srcId + ZONE_KEY + zoneId;
                     String[] updateDataSplit = updateData.split(COMMA);
-                    String zoneSource = updateDataSplit[0];
-                    String menuId = updateDataSplit[1];
-                    int menuItemIdx = Integer.parseInt(updateDataSplit[2]) - 1;
+                    String menuId = updateDataSplit[0];
+                    int menuItemIdx = Integer.parseInt(updateDataSplit[1]) - 1;
 
                     boolean exitMenu = false;
                     if ("0xFFFFFFFF".equals(menuId)) {
-                        TopMenu topMenuItem = nuvoMenus.getSource().get(Integer.parseInt(key) - 1).getTopMenu()
+                        TopMenu topMenuItem = nuvoMenus.getSource().get(Integer.parseInt(srcId) - 1).getTopMenu()
                                 .get(menuItemIdx);
-                        logger.debug("Top Menu item selected: Source: {} - Menu Item: {}", key, topMenuItem.getText());
-                        updateChannelState(NuvoEnum.valueOf(SOURCE + key), CHANNEL_BUTTON_PRESS, topMenuItem.getText());
+                        logger.debug("Top Menu item selected: Source: {} - Menu Item: {}", srcId,
+                                topMenuItem.getText());
+                        updateChannelState(NuvoEnum.valueOf(SOURCE + srcId), CHANNEL_BUTTON_PRESS,
+                                topMenuItem.getText());
+                        updateChannelState(NuvoEnum.SYSTEM, CHANNEL_TYPE_BUTTONPRESS,
+                                zoneId + COMMA + topMenuItem.getText());
 
                         List<String> subMenuItems = topMenuItem.getItems();
 
@@ -784,135 +794,139 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                             // send submenu (maximum of 20 items)
                             int subMenuSize = subMenuItems.size() < 20 ? subMenuItems.size() : 20;
                             try {
-                                connector.sendCommand(zoneSource + "MENU" + (menuItemIdx + 11) + ",0,0," + subMenuSize
+                                connector.sendCommand(sourceZone + "MENU" + (menuItemIdx + 11) + ",0,0," + subMenuSize
                                         + ",0,0," + subMenuSize + ",\"" + topMenuItem.getText() + "\"");
                                 Thread.sleep(SLEEP_BETWEEN_CMD_MS);
 
                                 for (int i = 0; i < subMenuSize; i++) {
                                     connector.sendCommand(
-                                            zoneSource + "MENUITEM" + (i + 1) + ",0,0,\"" + subMenuItems.get(i) + "\"");
+                                            sourceZone + "MENUITEM" + (i + 1) + ",0,0,\"" + subMenuItems.get(i) + "\"");
                                 }
                             } catch (NuvoException | InterruptedException e) {
-                                logger.debug("Error sending sub menu for {}", zoneSource);
+                                logger.debug("Error sending sub menu to {}", sourceZone);
                             }
                         }
                     } else {
                         // a sub menu item was selected
-                        TopMenu topMenuItem = nuvoMenus.getSource().get(Integer.parseInt(key) - 1).getTopMenu()
+                        TopMenu topMenuItem = nuvoMenus.getSource().get(Integer.parseInt(srcId) - 1).getTopMenu()
                                 .get(Integer.decode(menuId) - 11);
                         String subMenuItem = topMenuItem.getItems().get(menuItemIdx);
 
-                        logger.debug("Sub Menu item selected: Source: {} - Menu Item: {}", key,
+                        logger.debug("Sub Menu item selected: Source: {} - Menu Item: {}", srcId,
                                 topMenuItem.getText() + "|" + subMenuItem);
-                        updateChannelState(NuvoEnum.valueOf(SOURCE + key), CHANNEL_BUTTON_PRESS,
+                        updateChannelState(NuvoEnum.valueOf(SOURCE + srcId), CHANNEL_BUTTON_PRESS,
                                 topMenuItem.getText() + "|" + subMenuItem);
+                        updateChannelState(NuvoEnum.SYSTEM, CHANNEL_TYPE_BUTTONPRESS,
+                                zoneId + COMMA + topMenuItem.getText() + "|" + subMenuItem);
                         exitMenu = true;
                     }
 
                     if (exitMenu) {
                         try {
                             // tell the zone to exit the menu
-                            connector.sendCommand(zoneSource + "MENU0,0,0,0,0,0,0,\"\"");
+                            connector.sendCommand(sourceZone + "MENU0,0,0,0,0,0,0,\"\"");
                         } catch (NuvoException e) {
-                            logger.debug("Error sending exit menu command for {}", zoneSource);
+                            logger.debug("Error sending exit menu command to {}", sourceZone);
                         }
                     }
                 }
                 break;
-            case TYPE_ZONE_MENUREQ:
+            case TYPE_NN_MENUREQ:
                 // ignore this update unless openHAB is handling this source
-                if (nuvoNetSrcMap.get(key).equals(2)) {
-                    logger.debug("Menu Request: Source: {} - Value: {}", key, updateData);
-                    // For now we only support one level deep menus. If third field is '1', indicates go back to main
+                if (nuvoNetSrcMap.get(srcId).equals(2)) {
+                    logger.debug("Menu Request: Source: {} - Value: {}", srcId, updateData);
+                    String sourceZone = SRC_KEY + srcId + ZONE_KEY + zoneId;
+                    // For now we only support one level deep menus. If second field is '1', indicates go back to main
                     // menu.
-                    String[] menuDataSplit = updateData.split(",");
-                    if (menuDataSplit.length > 3 && ONE.equals(menuDataSplit[2])) {
+                    String[] menuDataSplit = updateData.split(COMMA);
+                    if (menuDataSplit.length > 2 && ONE.equals(menuDataSplit[1])) {
                         try {
-                            connector.sendCommand(menuDataSplit[0] + "MENU0xFFFFFFFF,0,0,0,0,0,0,\"\"");
+                            connector.sendCommand(sourceZone + "MENU0xFFFFFFFF,0,0,0,0,0,0,\"\"");
                         } catch (NuvoException e) {
-                            logger.debug("Error sending main menu command for {}", menuDataSplit[0]);
+                            logger.debug("Error sending main menu command to {}", sourceZone);
                         }
                     }
                 }
                 break;
             case TYPE_ZONE_CONFIG:
-                logger.debug("Zone Configuration: Zone: {} - Value: {}", key, updateData);
+                logger.debug("Zone Configuration: Zone: {} - Value: {}", zoneId, updateData);
                 // example: BASS1,TREB-2,BALR2,LOUDCMP1
                 Matcher matcher = ZONE_CFG_PATTERN.matcher(updateData);
                 if (matcher.find()) {
-                    updateChannelState(NuvoEnum.valueOf(ZONE + key), CHANNEL_TYPE_BASS, matcher.group(1));
-                    updateChannelState(NuvoEnum.valueOf(ZONE + key), CHANNEL_TYPE_TREBLE, matcher.group(2));
-                    updateChannelState(NuvoEnum.valueOf(ZONE + key), CHANNEL_TYPE_BALANCE,
+                    updateChannelState(NuvoEnum.valueOf(ZONE + zoneId), CHANNEL_TYPE_BASS, matcher.group(1));
+                    updateChannelState(NuvoEnum.valueOf(ZONE + zoneId), CHANNEL_TYPE_TREBLE, matcher.group(2));
+                    updateChannelState(NuvoEnum.valueOf(ZONE + zoneId), CHANNEL_TYPE_BALANCE,
                             NuvoStatusCodes.getBalanceFromStr(matcher.group(3)));
-                    updateChannelState(NuvoEnum.valueOf(ZONE + key), CHANNEL_TYPE_LOUDNESS,
+                    updateChannelState(NuvoEnum.valueOf(ZONE + zoneId), CHANNEL_TYPE_LOUDNESS,
                             ONE.equals(matcher.group(4)) ? ON : OFF);
                 } else {
                     logger.debug("no match on message: {}", updateData);
                 }
                 break;
-            case TYPE_ALBUM_ART_REQ:
+            case TYPE_NN_ALBUM_ART_REQ:
                 // ignore this update unless openHAB is handling this source
-                if (nuvoNetSrcMap.get(key).equals(2)) {
-                    logger.debug("Album Art Request for Source: {} - Data: {}", key, updateData);
+                if (nuvoNetSrcMap.get(srcId).equals(2)) {
+                    logger.debug("Album Art Request for Source: {} - Data: {}", srcId, updateData);
                     // 0x620FD879,80,80,2,0x00C0C0C0,0,0,0,0,1
                     String[] albumArtReq = updateData.split(COMMA);
-                    albumArtIds.put(SRC_KEY + key, Integer.decode(albumArtReq[0]));
+                    albumArtIds.put(SRC_KEY + srcId, Integer.decode(albumArtReq[0]));
 
                     try {
-                        if (albumArtMap.get(SRC_KEY + key).length > 1) {
-                            connector.sendCommand(SRC_KEY + key + ALBUM_ART_AVAILABLE + albumArtIds.get(SRC_KEY + key)
-                                    + COMMA + albumArtMap.get(SRC_KEY + key).length);
+                        if (albumArtMap.get(SRC_KEY + srcId).length > 1) {
+                            connector.sendCommand(
+                                    SRC_KEY + srcId + ALBUM_ART_AVAILABLE + albumArtIds.get(SRC_KEY + srcId) + COMMA
+                                            + albumArtMap.get(SRC_KEY + srcId).length);
                         } else {
-                            connector.sendCommand(SRC_KEY + key + ALBUM_ART_AVAILABLE + ZERO_COMMA);
+                            connector.sendCommand(SRC_KEY + srcId + ALBUM_ART_AVAILABLE + ZERO_COMMA);
                         }
                     } catch (NuvoException e) {
-                        logger.debug("Error sending ALBUMARTAVAILABLE command for source: {}", key);
+                        logger.debug("Error sending ALBUMARTAVAILABLE command for source: {}", srcId);
                     }
                 }
                 break;
-            case TYPE_ALBUM_ART_FRAG_REQ:
+            case TYPE_NN_ALBUM_ART_FRAG_REQ:
                 // ignore this update unless openHAB is handling this source
-                if (nuvoNetSrcMap.get(key).equals(2)) {
-                    logger.debug("Album Art Fragment Request for Source: {} - Data: {}", key, updateData);
+                if (nuvoNetSrcMap.get(srcId).equals(2)) {
+                    logger.debug("Album Art Fragment Request for Source: {} - Data: {}", srcId, updateData);
                     // 0x620FD879,0,750 (id, requested offset from start of image, byte length requested)
                     String[] albumArtFragReq = updateData.split(COMMA);
                     int requestedId = Integer.decode(albumArtFragReq[0]);
                     int offset = Integer.parseInt(albumArtFragReq[1]);
                     int length = Integer.parseInt(albumArtFragReq[2]);
 
-                    if (requestedId == albumArtIds.get(SRC_KEY + key)) {
+                    if (requestedId == albumArtIds.get(SRC_KEY + srcId)) {
                         byte[] chunk = new byte[length];
-                        byte[] albumArtBytes = albumArtMap.get(SRC_KEY + key);
+                        byte[] albumArtBytes = albumArtMap.get(SRC_KEY + srcId);
 
                         if (albumArtBytes != null) {
                             System.arraycopy(albumArtBytes, offset, chunk, 0, length);
                             final String frag = Base64.getEncoder().encodeToString(chunk);
                             try {
-                                connector.sendCommand(SRC_KEY + key + ALBUM_ART_FRAG + requestedId + COMMA + offset
+                                connector.sendCommand(SRC_KEY + srcId + ALBUM_ART_FRAG + requestedId + COMMA + offset
                                         + COMMA + frag.length() + COMMA + frag);
                             } catch (NuvoException e) {
-                                logger.debug("Error sending ALBUMARTFRAG command for source: {}, artId: {}", key,
+                                logger.debug("Error sending ALBUMARTFRAG command for source: {}, artId: {}", srcId,
                                         requestedId);
                             }
                         }
                     }
                 }
                 break;
-            case TYPE_FAVORITE_REQ:
+            case TYPE_NN_FAVORITE_REQ:
                 // ignore this update unless openHAB is handling this source
-                if (nuvoNetSrcMap.get(key).equals(2)) {
-                    logger.debug("Favorite request for source: {} - favoriteId: {}", key, updateData);
+                if (nuvoNetSrcMap.get(srcId).equals(2)) {
+                    logger.debug("Favorite request for source: {} - favoriteId: {}", srcId, updateData);
                     try {
                         int playlistIdx = Integer.parseInt(updateData, 16) - 1000;
-                        updateChannelState(NuvoEnum.valueOf(SOURCE + key), CHANNEL_BUTTON_PRESS,
-                                "PLAY_MUSIC_PRESET:" + favoriteMap.get(key)[playlistIdx]);
+                        updateChannelState(NuvoEnum.valueOf(SOURCE + srcId), CHANNEL_BUTTON_PRESS,
+                                "PLAY_MUSIC_PRESET:" + favoriteMap.get(srcId)[playlistIdx]);
                     } catch (NumberFormatException nfe) {
                         logger.debug("Unable to parse favoriteId: {}", updateData);
                     }
                 }
                 break;
             default:
-                logger.debug("onNewMessageEvent: unhandled key {}", key);
+                logger.debug("onNewMessageEvent: unhandled event type {}", type);
                 // Return here because receiving an unknown message does not indicate that one can poll
                 return;
         }
