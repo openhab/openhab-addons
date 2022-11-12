@@ -294,6 +294,12 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
      */
     public List<ItemTableCheckEntry> getCheckedEntries() {
         List<ItemTableCheckEntry> entries = new ArrayList<>();
+
+        if (!checkDBAccessability()) {
+            logger.warn("JDBC::getCheckedEntries: database not connected");
+            return entries;
+        }
+
         var orphanTables = getItemTables().stream().map(ItemsVO::getTableName).collect(Collectors.toSet());
         for (Entry<String, String> entry : itemNameToTableNameMap.entrySet()) {
             String itemName = entry.getKey();
@@ -360,6 +366,11 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
     }
 
     private boolean cleanupItem(ItemTableCheckEntry entry, boolean force) {
+        if (!checkDBAccessability()) {
+            logger.warn("JDBC::cleanupItem: database not connected");
+            return false;
+        }
+
         ItemTableCheckEntryStatus status = entry.getStatus();
         String tableName = entry.getTableName();
         switch (status) {
