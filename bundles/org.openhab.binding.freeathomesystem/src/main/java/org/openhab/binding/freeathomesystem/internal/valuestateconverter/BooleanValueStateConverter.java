@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,39 +11,42 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.openhab.binding.freeathomesystem.internal.valuestateconverters;
+package org.openhab.binding.freeathomesystem.internal.valuestateconverter;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.types.State;
 
 /**
- * The {@link DecimalValueStateConverter} is a value converter for integer values with a specific mask
+ * The {@link DecimalValueStateConverter} is a value converter for boolean values
  *
  * @author Andras Uhrin - Initial contribution
  *
  */
 @NonNullByDefault
-public class BinaryValueStateConverter implements ValueStateConverter {
-
-    private int maskValue;
-
-    public BinaryValueStateConverter(int mask) {
-        maskValue = mask;
-    }
+public class BooleanValueStateConverter implements ValueStateConverter {
 
     @Override
     public State convertToState(String value) {
 
-        int intValue = Integer.decode(value);
-        int result;
-
-        result = intValue & maskValue;
-
-        if (maskValue == result) {
+        if (value.equals("1")) {
             return OnOffType.ON;
         } else {
             return OnOffType.OFF;
         }
+    }
+
+    @Override
+    public String convertToValueString(State state) {
+
+        if (state.equals(OnOffType.ON)) {
+            return "1";
+        }
+
+        if (state.equals(OnOffType.OFF)) {
+            return "0";
+        }
+
+        return "";
     }
 }

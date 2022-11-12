@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,30 +13,31 @@
 package org.openhab.binding.freeathomesystem.internal;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.freeathomesystem.internal.datamodel.FreeAtHomeDeviceDescription;
 import org.openhab.binding.freeathomesystem.internal.handler.FreeAtHomeBridgeHandler;
-import org.openhab.binding.freeathomesystem.internal.handler.FreeAtHomeDeviceDescription;
-import org.openhab.binding.freeathomesystem.internal.handler.FreeAtHomeDeviceList;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * The {@link FreeAtHomeSystemDiscoveryService} is responsible for performing discoverz of things
+ * The {@link FreeAtHomeSystemDiscoveryService} is responsible for performing discovery of things
  *
- * @author Andras Uhrin - Initial contribution
+ * @author Andras Uhrin
  */
 @Component(service = DiscoveryService.class)
 @NonNullByDefault
 public class FreeAtHomeSystemDiscoveryService extends AbstractDiscoveryService {
 
-    // public AbstractDiscoveryService(@Nullable Set<ThingTypeUID> supportedThingTypes, int timeout,
-    // boolean backgroundDiscoveryEnabledByDefault) throws IllegalArgumentException {
+    private final Logger logger = LoggerFactory.getLogger(FreeAtHomeSystemDiscoveryService.class);
 
     Runnable runnable = new Runnable() {
         @Override
@@ -44,273 +45,37 @@ public class FreeAtHomeSystemDiscoveryService extends AbstractDiscoveryService {
 
             FreeAtHomeBridgeHandler bridge = FreeAtHomeBridgeHandler.freeAtHomeSystemHandler;
 
-            if (null != bridge) {
+            if (bridge != null) {
                 ThingUID bridgeUID = bridge.getThing().getUID();
 
-                FreeAtHomeDeviceList deviceList = bridge.getDeviceDeviceList();
+                List<String> deviceList = bridge.getDeviceDeviceList();
 
-                for (int i = 0; i < deviceList.getNumberOfDevices(); i++) {
-                    String deviceLabel;
+                if (deviceList == null) {
+                    return;
+                }
 
-                    FreeAtHomeDeviceDescription device = deviceList
-                            .getDeviceDescription(deviceList.getDeviceIdByIndex(i));
+                for (int i = 0; i < deviceList.size(); i++) {
 
-                    for (int ch = 0; ch < device.numberOfThings(); ch++) {
+                    FreeAtHomeDeviceDescription device = bridge.getFreeatHomeDeviceDescription(deviceList.get(i));
 
-                        String deviceID = device.deviceId + "_" + String.format("%1d", ch);
-                        String deviceChannelCounter;
+                    boolean useGenericDevice = true;
 
-                        if (device.numberOfThings() > 1) {
-                            deviceChannelCounter = "-Ch" + (ch + 1) + "/" + device.numberOfThings();
-                        } else {
-                            deviceChannelCounter = "";
-                        }
+                    if (useGenericDevice) {
+                        ThingUID uid = new ThingUID(FreeAtHomeSystemBindingConstants.FREEATHOMEDEVICE_TYPE_UID,
+                                bridgeUID, device.deviceId);
+                        Map<String, Object> properties = new HashMap<>(1);
+                        properties.put("deviceId", device.deviceId);
+                        properties.put("interface", device.interfaceType);
 
-                        if (device.deviceLabel.contentEquals(device.listOfThings.get(ch).channelLabel)) {
+                        String deviceLabel = device.deviceLabel;
 
-                            deviceLabel = device.listOfThings.get(ch).channelTypeString + "-" + device.deviceId + "-"
-                                    + device.deviceLabel + deviceChannelCounter;
+                        DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid).withLabel(deviceLabel)
+                                .withBridge(bridgeUID).withProperties(properties).build();
 
-                        } else {
+                        thingDiscovered(discoveryResult);
 
-                            deviceLabel = device.listOfThings.get(ch).channelTypeString + "-" + device.deviceId + "-"
-                                    + device.deviceLabel + deviceChannelCounter + "-"
-                                    + device.listOfThings.get(ch).channelLabel;
-                        }
-
-                        switch (device.listOfThings.get(ch).thingTypeOfChannel) {
-
-                            case FreeAtHomeSystemBindingConstants.ACTUATOR_TYPE_ID: {
-                                ThingUID uid = new ThingUID(FreeAtHomeSystemBindingConstants.ACTUATOR_TYPE_UID,
-                                        bridgeUID, deviceID);
-                                Map<String, Object> properties = new HashMap<>(1);
-                                properties.put("deviceId", device.deviceId);
-                                properties.put("interface", device.interfaceType);
-                                properties.put("channelId", device.listOfThings.get(ch).channelId);
-
-                                for (int idxOfDatapoints = 0; idxOfDatapoints < device.listOfThings.get(ch)
-                                        .numberOfDatapoints(); idxOfDatapoints++) {
-                                    String key = device.listOfThings.get(ch).channels.get(idxOfDatapoints);
-
-                                    properties.put(key, device.listOfThings.get(ch).datapoints.get(idxOfDatapoints));
-                                }
-
-                                DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid)
-                                        .withLabel(deviceLabel).withBridge(bridgeUID).withProperties(properties)
-                                        .build();
-
-                                thingDiscovered(discoveryResult);
-                                break;
-                            }
-
-                            case FreeAtHomeSystemBindingConstants.DOOROPENER_TYPE_ID: {
-                                ThingUID uid = new ThingUID(FreeAtHomeSystemBindingConstants.DOOROPENER_TYPE_UID,
-                                        bridgeUID, deviceID);
-                                Map<String, Object> properties = new HashMap<>(1);
-                                properties.put("deviceId", device.deviceId);
-                                properties.put("interface", device.interfaceType);
-                                properties.put("channelId", device.listOfThings.get(ch).channelId);
-
-                                for (int idxOfDatapoints = 0; idxOfDatapoints < device.listOfThings.get(ch)
-                                        .numberOfDatapoints(); idxOfDatapoints++) {
-                                    String key = device.listOfThings.get(ch).channels.get(idxOfDatapoints);
-
-                                    properties.put(key, device.listOfThings.get(ch).datapoints.get(idxOfDatapoints));
-                                }
-
-                                DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid)
-                                        .withLabel(deviceLabel).withBridge(bridgeUID).withProperties(properties)
-                                        .build();
-
-                                thingDiscovered(discoveryResult);
-                                break;
-                            }
-
-                            case FreeAtHomeSystemBindingConstants.CORRIDORLIGHTSWITCH_TYPE_ID: {
-                                ThingUID uid = new ThingUID(
-                                        FreeAtHomeSystemBindingConstants.CORRIDORLIGHTSWITCH_TYPE_UID, bridgeUID,
-                                        deviceID);
-                                Map<String, Object> properties = new HashMap<>(1);
-                                properties.put("deviceId", device.deviceId);
-                                properties.put("interface", device.interfaceType);
-                                properties.put("channelId", device.listOfThings.get(ch).channelId);
-
-                                for (int idxOfDatapoints = 0; idxOfDatapoints < device.listOfThings.get(ch)
-                                        .numberOfDatapoints(); idxOfDatapoints++) {
-                                    String key = device.listOfThings.get(ch).channels.get(idxOfDatapoints);
-
-                                    properties.put(key, device.listOfThings.get(ch).datapoints.get(idxOfDatapoints));
-                                }
-
-                                DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid)
-                                        .withLabel(deviceLabel).withBridge(bridgeUID).withProperties(properties)
-                                        .build();
-
-                                thingDiscovered(discoveryResult);
-                                break;
-                            }
-
-                            case FreeAtHomeSystemBindingConstants.DIMMINGACTUATOR_TYPE_ID: {
-                                ThingUID uid = new ThingUID(FreeAtHomeSystemBindingConstants.DIMMINGACTUATOR_TYPE_UID,
-                                        bridgeUID, deviceID);
-                                Map<String, Object> properties = new HashMap<>(1);
-                                properties.put("deviceId", device.deviceId);
-                                properties.put("interface", device.interfaceType);
-                                properties.put("channelId", device.listOfThings.get(ch).channelId);
-
-                                for (int idxOfDatapoints = 0; idxOfDatapoints < device.listOfThings.get(ch)
-                                        .numberOfDatapoints(); idxOfDatapoints++) {
-                                    String key = device.listOfThings.get(ch).channels.get(idxOfDatapoints);
-
-                                    properties.put(key, device.listOfThings.get(ch).datapoints.get(idxOfDatapoints));
-                                }
-
-                                DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid)
-                                        .withLabel(deviceLabel).withBridge(bridgeUID).withProperties(properties)
-                                        .build();
-
-                                thingDiscovered(discoveryResult);
-                                break;
-                            }
-
-                            case FreeAtHomeSystemBindingConstants.SHUTTERACTUATOR_TYPE_ID: {
-                                ThingUID uid = new ThingUID(FreeAtHomeSystemBindingConstants.SHUTTERACTUATOR_TYPE_UID,
-                                        bridgeUID, deviceID);
-                                Map<String, Object> properties = new HashMap<>(1);
-                                properties.put("deviceId", device.deviceId);
-                                properties.put("interface", device.interfaceType);
-                                properties.put("channelId", device.listOfThings.get(ch).channelId);
-
-                                for (int idxOfDatapoints = 0; idxOfDatapoints < device.listOfThings.get(ch)
-                                        .numberOfDatapoints(); idxOfDatapoints++) {
-                                    String key = device.listOfThings.get(ch).channels.get(idxOfDatapoints);
-
-                                    properties.put(key, device.listOfThings.get(ch).datapoints.get(idxOfDatapoints));
-                                }
-
-                                DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid)
-                                        .withLabel(deviceLabel).withBridge(bridgeUID).withProperties(properties)
-                                        .build();
-
-                                thingDiscovered(discoveryResult);
-                                break;
-                            }
-
-                            case FreeAtHomeSystemBindingConstants.THERMOSTAT_TYPE_ID: {
-                                ThingUID uid = new ThingUID(FreeAtHomeSystemBindingConstants.THERMOSTAT_TYPE_UID,
-                                        bridgeUID, deviceID);
-                                Map<String, Object> properties = new HashMap<>(1);
-                                properties.put("deviceId", device.deviceId);
-                                properties.put("interface", device.interfaceType);
-                                properties.put("channelId", device.listOfThings.get(ch).channelId);
-
-                                for (int idxOfDatapoints = 0; idxOfDatapoints < device.listOfThings.get(ch)
-                                        .numberOfDatapoints(); idxOfDatapoints++) {
-                                    String key = device.listOfThings.get(ch).channels.get(idxOfDatapoints);
-
-                                    properties.put(key, device.listOfThings.get(ch).datapoints.get(idxOfDatapoints));
-                                }
-
-                                DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid)
-                                        .withLabel(deviceLabel).withBridge(bridgeUID).withProperties(properties)
-                                        .build();
-
-                                thingDiscovered(discoveryResult);
-                                break;
-                            }
-
-                            case FreeAtHomeSystemBindingConstants.WINDOWSENSOR_TYPE_ID: {
-                                ThingUID uid = new ThingUID(FreeAtHomeSystemBindingConstants.WINDOWSENSOR_TYPE_UID,
-                                        bridgeUID, deviceID);
-                                Map<String, Object> properties = new HashMap<>(1);
-                                properties.put("deviceId", device.deviceId);
-                                properties.put("interface", device.interfaceType);
-                                properties.put("channelId", device.listOfThings.get(ch).channelId);
-
-                                for (int idxOfDatapoints = 0; idxOfDatapoints < device.listOfThings.get(ch)
-                                        .numberOfDatapoints(); idxOfDatapoints++) {
-                                    String key = device.listOfThings.get(ch).channels.get(idxOfDatapoints);
-
-                                    properties.put(key, device.listOfThings.get(ch).datapoints.get(idxOfDatapoints));
-                                }
-
-                                DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid)
-                                        .withLabel(deviceLabel).withBridge(bridgeUID).withProperties(properties)
-                                        .build();
-
-                                thingDiscovered(discoveryResult);
-                                break;
-                            }
-
-                            case FreeAtHomeSystemBindingConstants.SCENE_TYPE_ID: {
-                                ThingUID uid = new ThingUID(FreeAtHomeSystemBindingConstants.SCENE_TYPE_UID, bridgeUID,
-                                        deviceID);
-                                Map<String, Object> properties = new HashMap<>(1);
-                                properties.put("deviceId", device.deviceId);
-                                properties.put("interface", device.interfaceType);
-                                properties.put("channelId", device.listOfThings.get(ch).channelId);
-
-                                for (int idxOfDatapoints = 0; idxOfDatapoints < device.listOfThings.get(ch)
-                                        .numberOfDatapoints(); idxOfDatapoints++) {
-                                    String key = device.listOfThings.get(ch).channels.get(idxOfDatapoints);
-
-                                    properties.put(key, device.listOfThings.get(ch).datapoints.get(idxOfDatapoints));
-                                }
-
-                                DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid)
-                                        .withLabel(deviceLabel).withBridge(bridgeUID).withProperties(properties)
-                                        .build();
-
-                                thingDiscovered(discoveryResult);
-                                break;
-                            }
-
-                            case FreeAtHomeSystemBindingConstants.RULE_TYPE_ID: {
-                                ThingUID uid = new ThingUID(FreeAtHomeSystemBindingConstants.RULE_TYPE_UID, bridgeUID,
-                                        deviceID);
-                                Map<String, Object> properties = new HashMap<>(1);
-                                properties.put("deviceId", device.deviceId);
-                                properties.put("interface", device.interfaceType);
-                                properties.put("channelId", device.listOfThings.get(ch).channelId);
-
-                                for (int idxOfDatapoints = 0; idxOfDatapoints < device.listOfThings.get(ch)
-                                        .numberOfDatapoints(); idxOfDatapoints++) {
-                                    String key = device.listOfThings.get(ch).channels.get(idxOfDatapoints);
-
-                                    properties.put(key, device.listOfThings.get(ch).datapoints.get(idxOfDatapoints));
-                                }
-
-                                DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid)
-                                        .withLabel(deviceLabel).withBridge(bridgeUID).withProperties(properties)
-                                        .build();
-
-                                thingDiscovered(discoveryResult);
-                                break;
-                            }
-
-                            case FreeAtHomeSystemBindingConstants.DOORRINGSENSOR_TYPE_ID: {
-                                ThingUID uid = new ThingUID(FreeAtHomeSystemBindingConstants.DOORRINGSENSOR_TYPE_UID,
-                                        bridgeUID, deviceID);
-                                Map<String, Object> properties = new HashMap<>(1);
-                                properties.put("deviceId", device.deviceId);
-                                properties.put("interface", device.interfaceType);
-                                properties.put("channelId", device.listOfThings.get(ch).channelId);
-
-                                for (int idxOfDatapoints = 0; idxOfDatapoints < device.listOfThings.get(ch)
-                                        .numberOfDatapoints(); idxOfDatapoints++) {
-                                    String key = device.listOfThings.get(ch).channels.get(idxOfDatapoints);
-
-                                    properties.put(key, device.listOfThings.get(ch).datapoints.get(idxOfDatapoints));
-                                }
-
-                                DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid)
-                                        .withLabel(deviceLabel).withBridge(bridgeUID).withProperties(properties)
-                                        .build();
-
-                                thingDiscovered(discoveryResult);
-                                break;
-                            }
-                        }
+                        logger.debug("Thing discovered - DeviceId: {} - Device label: {}", device.getDeviceId(),
+                                device.getDeviceLabel());
                     }
                 }
 
