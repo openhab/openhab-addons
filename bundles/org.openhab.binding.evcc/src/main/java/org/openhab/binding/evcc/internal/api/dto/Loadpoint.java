@@ -28,22 +28,22 @@ public class Loadpoint {
     private int activePhases;
 
     @SerializedName("chargeCurrent")
-    private double chargeCurrent;
+    private float chargeCurrent;
 
     @SerializedName("chargeDuration")
     private long chargeDuration;
 
     @SerializedName("chargePower")
-    private double chargePower;
+    private float chargePower;
 
     @SerializedName("chargeRemainingDuration")
     private long chargeRemainingDuration;
 
     @SerializedName("chargeRemainingEnergy")
-    private double chargeRemainingEnergy;
+    private float chargeRemainingEnergy;
 
     @SerializedName("chargedEnergy")
-    private double chargedEnergy;
+    private float chargedEnergy;
 
     @SerializedName("charging")
     private boolean charging;
@@ -64,10 +64,10 @@ public class Loadpoint {
     private int loadpoint;
 
     @SerializedName("maxCurrent")
-    private double maxCurrent;
+    private float maxCurrent;
 
     @SerializedName("minCurrent")
-    private double minCurrent;
+    private float minCurrent;
 
     @SerializedName("minSoC")
     private int minSoC;
@@ -97,7 +97,7 @@ public class Loadpoint {
     private long vehicleCapacity;
 
     @SerializedName("vehicleOdometer")
-    private double vehicleOdometer;
+    private float vehicleOdometer;
 
     @SerializedName("vehiclePresent")
     private boolean vehiclePresent;
@@ -121,7 +121,7 @@ public class Loadpoint {
     /**
      * @return charge current
      */
-    public double getChargeCurrent() {
+    public float getChargeCurrent() {
         return chargeCurrent;
     }
 
@@ -135,7 +135,7 @@ public class Loadpoint {
     /**
      * @return charge power
      */
-    public double getChargePower() {
+    public float getChargePower() {
         return chargePower;
     }
 
@@ -149,14 +149,14 @@ public class Loadpoint {
     /**
      * @return charge remaining energy until the target SoC is reached
      */
-    public double getChargeRemainingEnergy() {
+    public float getChargeRemainingEnergy() {
         return chargeRemainingEnergy;
     }
 
     /**
      * @return charged energy
      */
-    public double getChargedEnergy() {
+    public float getChargedEnergy() {
         return chargedEnergy;
     }
 
@@ -205,14 +205,14 @@ public class Loadpoint {
     /**
      * @return maximum current
      */
-    public double getMaxCurrent() {
+    public float getMaxCurrent() {
         return maxCurrent;
     }
 
     /**
      * @return minimum current
      */
-    public double getMinCurrent() {
+    public float getMinCurrent() {
         return minCurrent;
     }
 
@@ -275,14 +275,14 @@ public class Loadpoint {
     /**
      * @return vehicle's capacity
      */
-    public double getVehicleCapacity() {
+    public float getVehicleCapacity() {
         return vehicleCapacity;
     }
 
     /**
      * @return vehicle's odometer
      */
-    public double getVehicleOdometer() {
+    public float getVehicleOdometer() {
         return vehicleOdometer;
     }
 

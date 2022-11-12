@@ -32,7 +32,7 @@ public class Result {
     private boolean batteryConfigured;
 
     @SerializedName("batteryPower")
-    private double batteryPower;
+    private float batteryPower;
 
     @SerializedName("batterySoC")
     private int batterySoC;
@@ -41,22 +41,22 @@ public class Result {
     private boolean gridConfigured;
 
     @SerializedName("gridPower")
-    private double gridPower;
+    private float gridPower;
 
     @SerializedName("homePower")
-    private double homePower;
+    private float homePower;
 
     @SerializedName("loadpoints")
     private Loadpoint[] loadpoints;
 
     @SerializedName("prioritySoC")
-    private double batteryPrioritySoC;
+    private float batteryPrioritySoC;
 
     @SerializedName("pvConfigured")
     private boolean pvConfigured;
 
     @SerializedName("pvPower")
-    private double pvPower;
+    private float pvPower;
 
     @SerializedName("siteTitle")
     private String siteTitle;
@@ -71,14 +71,14 @@ public class Result {
     /**
      * @return battery's power
      */
-    public double getBatteryPower() {
+    public float getBatteryPower() {
         return batteryPower;
     }
 
     /**
      * @return battery's priority state of charge
      */
-    public double getBatteryPrioritySoC() {
+    public float getBatteryPrioritySoC() {
         return batteryPrioritySoC;
     }
 
@@ -99,14 +99,14 @@ public class Result {
     /**
      * @return grid's power
      */
-    public double getGridPower() {
+    public float getGridPower() {
         return gridPower;
     }
 
     /**
      * @return home's power
      */
-    public double getHomePower() {
+    public float getHomePower() {
         return homePower;
     }
 
@@ -127,7 +127,7 @@ public class Result {
     /**
      * @return pv's power
      */
-    public double getPvPower() {
+    public float getPvPower() {
         return pvPower;
     }
 
