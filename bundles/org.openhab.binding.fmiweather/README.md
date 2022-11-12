@@ -2,8 +2,8 @@
 
 This binding integrates to [the Finnish Meteorological Institute (FMI) Open Data API](https://en.ilmatieteenlaitos.fi/open-data).
 
-Binding provides access to weather observations from FMI weather stations and [HIRLAM weather forecast model](https://en.ilmatieteenlaitos.fi/weather-forecast-models) forecasts.
-Forecast covers all of Europe, see previous link for more information.
+Binding provides access to weather observations from FMI weather stations and [HARMONIE weather forecast model](https://en.ilmatieteenlaitos.fi/weather-forecast-models) forecasts.
+Forecast covers "northern Europe" (Finland, Baltics, Scandinavia, some parts of surrounding countries), see previous link for more information.
 
 ![example of things](doc/images/fmi-example-things.png)
 
