@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.mercedesme.internal.server;
 
+import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -60,6 +61,7 @@ public class Utils {
     }
 
     public static String getCallbackIP() throws SocketException {
+        // https://stackoverflow.com/questions/901755/how-to-get-the-ip-of-the-computer-on-linux-through-java
         // https://stackoverflow.com/questions/1062041/ip-address-not-obtained-in-java
         for (Enumeration<NetworkInterface> ifaces = NetworkInterface.getNetworkInterfaces(); ifaces
                 .hasMoreElements();) {
@@ -70,7 +72,9 @@ public class Utils {
                         for (Enumeration<InetAddress> addresses = iface.getInetAddresses(); addresses
                                 .hasMoreElements();) {
                             InetAddress address = addresses.nextElement();
-                            return address.getHostAddress();
+                            if (address instanceof Inet4Address) {
+                                return address.getHostAddress();
+                            }
                         }
                     }
                 }

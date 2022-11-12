@@ -14,7 +14,7 @@ package org.openhab.binding.hdpowerview.internal.dto.responses;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.hdpowerview.internal.dto.responses.Shades.ShadeData;
+import org.openhab.binding.hdpowerview.internal.dto.ShadeData;
 
 /**
  * State of a single Shade, as returned by an HD PowerView hub
@@ -23,6 +23,5 @@ import org.openhab.binding.hdpowerview.internal.dto.responses.Shades.ShadeData;
  */
 @NonNullByDefault
 public class Shade {
-
     public @Nullable ShadeData shade;
 }

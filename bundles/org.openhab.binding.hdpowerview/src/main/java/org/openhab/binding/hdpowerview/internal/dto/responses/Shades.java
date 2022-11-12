@@ -12,14 +12,11 @@
  */
 package org.openhab.binding.hdpowerview.internal.dto.responses;
 
-import java.util.Base64;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.hdpowerview.internal.dto.BatteryKind;
-import org.openhab.binding.hdpowerview.internal.dto.Firmware;
-import org.openhab.binding.hdpowerview.internal.dto.ShadePosition;
+import org.openhab.binding.hdpowerview.internal.dto.ShadeData;
 
 /**
  * State of all Shades, as returned by an HD PowerView hub
@@ -28,43 +25,6 @@ import org.openhab.binding.hdpowerview.internal.dto.ShadePosition;
  */
 @NonNullByDefault
 public class Shades {
-
     public @Nullable List<ShadeData> shadeData;
     public @Nullable List<Integer> shadeIds;
-
-    /*
-     * the following SuppressWarnings annotation is because the Eclipse compiler
-     * does NOT expect a NonNullByDefault annotation on the inner class, since it is
-     * implicitly inherited from the outer class, whereas the Maven compiler always
-     * requires an explicit NonNullByDefault annotation on all classes
-     */
-    @SuppressWarnings("null")
-    @NonNullByDefault
-    public static class ShadeData {
-        public int id;
-        public @Nullable String name;
-        public int roomId;
-        public int groupId;
-        public int order;
-        public int type;
-        public double batteryStrength;
-        public int batteryStatus;
-        public boolean batteryIsLow;
-        public @Nullable ShadePosition positions;
-        public @Nullable Boolean timedOut;
-        public int signalStrength;
-        public @Nullable Integer capabilities;
-        public @Nullable Firmware firmware;
-        public @Nullable Firmware motor;
-        // note: in old JSON batteryKind was a string but now it's a number; fortunately GSON string accepts either
-        public @Nullable String batteryKind;
-
-        public String getName() {
-            return new String(Base64.getDecoder().decode(name));
-        }
-
-        public BatteryKind getBatteryKind() {
-            return BatteryKind.fromString(batteryKind);
-        }
-    }
 }

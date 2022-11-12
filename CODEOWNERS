@@ -77,6 +77,7 @@
 /bundles/org.openhab.binding.dsmr/ @Hilbrand
 /bundles/org.openhab.binding.dwdpollenflug/ @DerOetzi
 /bundles/org.openhab.binding.dwdunwetter/ @limdul79
+/bundles/org.openhab.binding.easee/ @alexf2015
 /bundles/org.openhab.binding.echonetlite/ @mikeb01
 /bundles/org.openhab.binding.ecobee/ @mhilbush
 /bundles/org.openhab.binding.ecotouch/ @sibbi77
@@ -185,6 +186,7 @@
 /bundles/org.openhab.binding.meater/ @jannegpriv
 /bundles/org.openhab.binding.mecmeter/ @kaikreuzer
 /bundles/org.openhab.binding.melcloud/ @lucacalcaterra @paulianttila @thewiep
+/bundles/org.openhab.binding.mercedesme/ @weymann
 /bundles/org.openhab.binding.meteoalerte/ @clinique
 /bundles/org.openhab.binding.meteoblue/ @9037568
 /bundles/org.openhab.binding.meteostick/ @cdjackson
@@ -348,6 +350,7 @@
 /bundles/org.openhab.binding.venstarthermostat/ @hww3 @digitaldan
 /bundles/org.openhab.binding.ventaair/ @t2000
 /bundles/org.openhab.binding.verisure/ @jannegpriv
+/bundles/org.openhab.binding.vesync/ @dag81
 /bundles/org.openhab.binding.vigicrues/ @clinique
 /bundles/org.openhab.binding.vitotronic/ @steand
 /bundles/org.openhab.binding.volvooncall/ @clinique @Jamstah

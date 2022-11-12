@@ -23,10 +23,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.hdpowerview.internal.builders.AutomationChannelBuilder;
-import org.openhab.binding.hdpowerview.internal.dto.responses.SceneCollections.SceneCollection;
-import org.openhab.binding.hdpowerview.internal.dto.responses.Scenes.Scene;
-import org.openhab.binding.hdpowerview.internal.dto.responses.ScheduledEvents;
-import org.openhab.binding.hdpowerview.internal.dto.responses.ScheduledEvents.ScheduledEvent;
+import org.openhab.binding.hdpowerview.internal.dto.Scene;
+import org.openhab.binding.hdpowerview.internal.dto.SceneCollection;
+import org.openhab.binding.hdpowerview.internal.dto.ScheduledEvent;
 import org.openhab.binding.hdpowerview.internal.providers.MockedLocaleProvider;
 import org.openhab.binding.hdpowerview.internal.providers.MockedTranslationProvider;
 import org.openhab.core.thing.Channel;
@@ -76,7 +75,7 @@ public class AutomationChannelBuilderTest {
 
     @Test
     public void sceneSunriseWeekends() {
-        ScheduledEvent scheduledEvent = createScheduledEventWithScene(ScheduledEvents.SCHEDULED_EVENT_TYPE_SUNRISE);
+        ScheduledEvent scheduledEvent = createScheduledEventWithScene(ScheduledEvent.SCHEDULED_EVENT_TYPE_SUNRISE);
         scheduledEvent.daySaturday = true;
         scheduledEvent.daySunday = true;
 
@@ -89,7 +88,7 @@ public class AutomationChannelBuilderTest {
 
     @Test
     public void sceneSunsetWeekdays() {
-        ScheduledEvent scheduledEvent = createScheduledEventWithScene(ScheduledEvents.SCHEDULED_EVENT_TYPE_SUNSET);
+        ScheduledEvent scheduledEvent = createScheduledEventWithScene(ScheduledEvent.SCHEDULED_EVENT_TYPE_SUNSET);
         scheduledEvent.dayMonday = true;
         scheduledEvent.dayTuesday = true;
         scheduledEvent.dayWednesday = true;
@@ -105,7 +104,7 @@ public class AutomationChannelBuilderTest {
 
     @Test
     public void sceneTimeAllDays() {
-        ScheduledEvent scheduledEvent = createScheduledEventWithScene(ScheduledEvents.SCHEDULED_EVENT_TYPE_TIME);
+        ScheduledEvent scheduledEvent = createScheduledEventWithScene(ScheduledEvent.SCHEDULED_EVENT_TYPE_TIME);
         scheduledEvent.dayMonday = true;
         scheduledEvent.dayTuesday = true;
         scheduledEvent.dayWednesday = true;
@@ -125,7 +124,7 @@ public class AutomationChannelBuilderTest {
 
     @Test
     public void sceneMinutesBeforeSunriseMondayTuesday() {
-        ScheduledEvent scheduledEvent = createScheduledEventWithScene(ScheduledEvents.SCHEDULED_EVENT_TYPE_SUNRISE);
+        ScheduledEvent scheduledEvent = createScheduledEventWithScene(ScheduledEvent.SCHEDULED_EVENT_TYPE_SUNRISE);
         scheduledEvent.dayMonday = true;
         scheduledEvent.dayTuesday = true;
         scheduledEvent.minute = -15;
@@ -139,7 +138,7 @@ public class AutomationChannelBuilderTest {
 
     @Test
     public void sceneHoursMinutesAfterSunriseMonday() {
-        ScheduledEvent scheduledEvent = createScheduledEventWithScene(ScheduledEvents.SCHEDULED_EVENT_TYPE_SUNRISE);
+        ScheduledEvent scheduledEvent = createScheduledEventWithScene(ScheduledEvent.SCHEDULED_EVENT_TYPE_SUNRISE);
         scheduledEvent.dayMonday = true;
         scheduledEvent.minute = 61;
 
@@ -152,7 +151,7 @@ public class AutomationChannelBuilderTest {
 
     @Test
     public void sceneMinutesBeforeSunsetWednesdayThursdayFriday() {
-        ScheduledEvent scheduledEvent = createScheduledEventWithScene(ScheduledEvents.SCHEDULED_EVENT_TYPE_SUNSET);
+        ScheduledEvent scheduledEvent = createScheduledEventWithScene(ScheduledEvent.SCHEDULED_EVENT_TYPE_SUNSET);
         scheduledEvent.dayWednesday = true;
         scheduledEvent.dayThursday = true;
         scheduledEvent.dayFriday = true;
@@ -167,7 +166,7 @@ public class AutomationChannelBuilderTest {
 
     @Test
     public void sceneHourAfterSunsetFridaySaturdaySunday() {
-        ScheduledEvent scheduledEvent = createScheduledEventWithScene(ScheduledEvents.SCHEDULED_EVENT_TYPE_SUNSET);
+        ScheduledEvent scheduledEvent = createScheduledEventWithScene(ScheduledEvent.SCHEDULED_EVENT_TYPE_SUNSET);
         scheduledEvent.dayFriday = true;
         scheduledEvent.daySaturday = true;
         scheduledEvent.daySunday = true;
@@ -183,7 +182,7 @@ public class AutomationChannelBuilderTest {
     @Test
     public void sceneCollection() {
         ScheduledEvent scheduledEvent = createScheduledEventWithSceneCollection(
-                ScheduledEvents.SCHEDULED_EVENT_TYPE_SUNRISE);
+                ScheduledEvent.SCHEDULED_EVENT_TYPE_SUNRISE);
 
         List<ScheduledEvent> scheduledEvents = new ArrayList<>(List.of(scheduledEvent));
         List<Channel> channels = builder.withSceneCollections(sceneCollections).withScheduledEvents(scheduledEvents)
@@ -195,7 +194,7 @@ public class AutomationChannelBuilderTest {
 
     @Test
     public void suppliedListIsUsed() {
-        ScheduledEvent scheduledEvent = createScheduledEventWithScene(ScheduledEvents.SCHEDULED_EVENT_TYPE_SUNRISE);
+        ScheduledEvent scheduledEvent = createScheduledEventWithScene(ScheduledEvent.SCHEDULED_EVENT_TYPE_SUNRISE);
         List<ScheduledEvent> scheduledEvents = new ArrayList<>(List.of(scheduledEvent));
         List<Channel> existingChannels = new ArrayList<>(0);
         List<Channel> channels = builder.withScenes(scenes).withScheduledEvents(scheduledEvents)
@@ -213,7 +212,7 @@ public class AutomationChannelBuilderTest {
 
     @Test
     public void emptyListWhenNoScenesOrSceneCollections() {
-        ScheduledEvent scheduledEvent = createScheduledEventWithScene(ScheduledEvents.SCHEDULED_EVENT_TYPE_SUNRISE);
+        ScheduledEvent scheduledEvent = createScheduledEventWithScene(ScheduledEvent.SCHEDULED_EVENT_TYPE_SUNRISE);
         List<ScheduledEvent> scheduledEvents = new ArrayList<>(List.of(scheduledEvent));
         List<Channel> channels = builder.withScheduledEvents(scheduledEvents).build();
 
@@ -223,7 +222,7 @@ public class AutomationChannelBuilderTest {
     @Test
     public void emptyListWhenNoSceneForScheduledEvent() {
         ScheduledEvent scheduledEvent = createScheduledEventWithSceneCollection(
-                ScheduledEvents.SCHEDULED_EVENT_TYPE_SUNRISE);
+                ScheduledEvent.SCHEDULED_EVENT_TYPE_SUNRISE);
         List<ScheduledEvent> scheduledEvents = new ArrayList<>(List.of(scheduledEvent));
         List<Channel> channels = builder.withScenes(scenes).withScheduledEvents(scheduledEvents).build();
 
@@ -232,7 +231,7 @@ public class AutomationChannelBuilderTest {
 
     @Test
     public void emptyListWhenNoSceneCollectionForScheduledEvent() {
-        ScheduledEvent scheduledEvent = createScheduledEventWithScene(ScheduledEvents.SCHEDULED_EVENT_TYPE_SUNRISE);
+        ScheduledEvent scheduledEvent = createScheduledEventWithScene(ScheduledEvent.SCHEDULED_EVENT_TYPE_SUNRISE);
         List<ScheduledEvent> scheduledEvents = new ArrayList<>(List.of(scheduledEvent));
 
         List<Channel> channels = builder.withSceneCollections(sceneCollections).withScheduledEvents(scheduledEvents)
@@ -243,7 +242,7 @@ public class AutomationChannelBuilderTest {
 
     @Test
     public void groupAndIdAreCorrect() {
-        ScheduledEvent scheduledEvent = createScheduledEventWithScene(ScheduledEvents.SCHEDULED_EVENT_TYPE_SUNRISE);
+        ScheduledEvent scheduledEvent = createScheduledEventWithScene(ScheduledEvent.SCHEDULED_EVENT_TYPE_SUNRISE);
         scheduledEvent.id = 42;
         List<ScheduledEvent> scheduledEvents = new ArrayList<>(List.of(scheduledEvent));
         List<Channel> channels = builder.withScenes(scenes).withScheduledEvents(scheduledEvents).build();

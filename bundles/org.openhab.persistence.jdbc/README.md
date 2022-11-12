@@ -12,7 +12,7 @@ The following databases are currently supported and tested:
 | [Apache Derby](https://db.apache.org/derby/) | [derby-10.14.2.0.jar](https://mvnrepository.com/artifact/org.apache.derby/derby) |
 | [H2](https://www.h2database.com/)            | [h2-1.4.191.jar](https://mvnrepository.com/artifact/com.h2database/h2) |
 | [HSQLDB](http://hsqldb.org/)                 | [hsqldb-2.3.3.jar](https://mvnrepository.com/artifact/org.hsqldb/hsqldb) |
-| [MariaDB](https://mariadb.org/)              | [mariadb-java-client-1.4.6.jar](https://mvnrepository.com/artifact/org.mariadb.jdbc/mariadb-java-client) |
+| [MariaDB](https://mariadb.org/)              | [mariadb-java-client-3.0.8.jar](https://mvnrepository.com/artifact/org.mariadb.jdbc/mariadb-java-client) |
 | [MySQL](https://www.mysql.com/)              | [mysql-connector-java-8.0.30.jar](https://mvnrepository.com/artifact/mysql/mysql-connector-java) |
 | [PostgreSQL](https://www.postgresql.org/)    | [postgresql-42.4.1.jar](https://mvnrepository.com/artifact/org.postgresql/postgresql) |
 | [SQLite](https://www.sqlite.org/)            | [sqlite-jdbc-3.16.1.jar](https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc) |
@@ -38,38 +38,39 @@ The following databases are currently supported and tested:
 
 This service can be configured in the file `services/jdbc.cfg`.
 
-| Property                  | Default                                                      | Required  | Description                                                  |
-| ------------------------- | ------------------------------------------------------------ | :-------: | ------------------------------------------------------------ |
-| url                       |                                                              |    Yes    | JDBC URL to establish a connection to your database.  Examples:<br/><br/>`jdbc:derby:./testDerby;create=true`<br/>`jdbc:h2:./testH2`<br/>`jdbc:hsqldb:./testHsqlDb`<br/>`jdbc:mariadb://192.168.0.1:3306/testMariadb`<br/>`jdbc:mysql://192.168.0.1:3306/testMysql?serverTimezone=UTC`<br/>`jdbc:postgresql://192.168.0.1:5432/testPostgresql`<br/>`jdbc:timescaledb://192.168.0.1:5432/testPostgresql`<br/>`jdbc:sqlite:./testSqlite.db`.<br/><br/>If no database is available it will be created; for example the url `jdbc:h2:./testH2` creates a new H2 database in openHAB folder. Example to create your own MySQL database directly:<br/><br/>`CREATE DATABASE 'yourDB' CHARACTER SET utf8 COLLATE utf8_general_ci;` |
-| user                      |                                                              | if needed | database user name                                           |
-| password                  |                                                              | if needed | database user password                                       |
-| errReconnectThreshold     | 0                                                            |    No     | when the service is deactivated (0 means ignore)             |
-| sqltype.CALL              | `VARCHAR(200)`                                               |    No     | All `sqlType` options allow you to change the SQL data type used to store values for different openHAB item states.  See the following links for further information: [mybatis](https://mybatis.github.io/mybatis-3/apidocs/reference/org/apache/ibatis/type/JdbcType.html) [H2](https://www.h2database.com/html/datatypes.html) [PostgresSQL](https://www.postgresql.org/docs/9.3/static/datatype.html) |
-| sqltype.COLOR             | `VARCHAR(70)`                                                |    No     | see above                                                    |
-| sqltype.CONTACT           | `VARCHAR(6)`                                                 |    No     | see above                                                    |
-| sqltype.DATETIME          | `DATETIME`                                                   |    No     | see above                                                    |
-| sqltype.DIMMER            | `TINYINT`                                                    |    No     | see above                                                    |
-| sqltype.IMAGE             | `VARCHAR(65500)`                                             |    No     | see above                                                    |
-| sqltype.LOCATION          | `VARCHAR(50)`                                                |    No     | see above                                                    |
-| sqltype.NUMBER            | `DOUBLE`                                                     |    No     | see above                                                    |
-| sqltype.PLAYER            | `VARCHAR(20)`                                                |    No     | see above                                                    |
-| sqltype.ROLLERSHUTTER     | `TINYINT`                                                    |    No     | see above                                                    |
-| sqltype.STRING            | `VARCHAR(65500)`                                             |    No     | see above                                                    |
-| sqltype.SWITCH            | `VARCHAR(6)`                                                 |    No     | see above                                                    |
-| sqltype.tablePrimaryKey   | `TIMESTAMP`                                                  |    No     | type of `time` column for newly created item tables          |
-| sqltype.tablePrimaryValue | `NOW()`                                                      |    No     | value of `time` column for newly inserted rows               |
-| numberDecimalcount        | 3                                                            |    No     | for Itemtype "Number" default decimal digit count            |
-| tableNamePrefix           | `item`                                                       |    No     | table name prefix. For Migration from MySQL Persistence, set to `Item`. |
-| tableUseRealItemNames     | `false`                                                      |    No     | table name prefix generation.  When set to `true`, real item names are used for table names and `tableNamePrefix` is ignored.  When set to `false`, the `tableNamePrefix` is used to generate table names with sequential numbers. |
-| tableIdDigitCount         | 4                                                            |    No     | when `tableUseRealItemNames` is `false` and thus table names are generated sequentially, this controls how many zero-padded digits are used in the table name.  With the default of 4, the first table name will end with `0001`. For migration from the MySQL persistence service, set this to 0. |
-| rebuildTableNames         | false                                                        |    No     | rename existing tables using `tableUseRealItemNames` and `tableIdDigitCount`. USE WITH CARE! Deactivate after Renaming is done! |
-| jdbc.maximumPoolSize      | configured per database in package `org.openhab.persistence.jdbc.db.*` |    No     | Some embedded databases can handle only one connection. See [this link](https://github.com/brettwooldridge/HikariCP/issues/256) for more information |
-| jdbc.minimumIdle          | see above                                                    |    No     | see above                                                    |
-| enableLogTime             | `false`                                                      |    No     | timekeeping                                                  |
+| Property                    | Default                                                      | Required  | Description                                                  |
+| --------------------------- | ------------------------------------------------------------ | :-------: | ------------------------------------------------------------ |
+| url                         |                                                              |    Yes    | JDBC URL to establish a connection to your database.  Examples:<br/><br/>`jdbc:derby:./testDerby;create=true`<br/>`jdbc:h2:./testH2`<br/>`jdbc:hsqldb:./testHsqlDb`<br/>`jdbc:mariadb://192.168.0.1:3306/testMariadb`<br/>`jdbc:mysql://192.168.0.1:3306/testMysql?serverTimezone=UTC`<br/>`jdbc:postgresql://192.168.0.1:5432/testPostgresql`<br/>`jdbc:timescaledb://192.168.0.1:5432/testPostgresql`<br/>`jdbc:sqlite:./testSqlite.db`.<br/><br/>If no database is available it will be created; for example the url `jdbc:h2:./testH2` creates a new H2 database in openHAB folder. Example to create your own MySQL database directly:<br/><br/>`CREATE DATABASE 'yourDB' CHARACTER SET utf8 COLLATE utf8_general_ci;` |
+| user                        |                                                              | if needed | database user name                                           |
+| password                    |                                                              | if needed | database user password                                       |
+| errReconnectThreshold       | 0                                                            |    No     | when the service is deactivated (0 means ignore)             |
+| sqltype.CALL                | `VARCHAR(200)`                                               |    No     | All `sqlType` options allow you to change the SQL data type used to store values for different openHAB item states.  See the following links for further information: [mybatis](https://mybatis.github.io/mybatis-3/apidocs/reference/org/apache/ibatis/type/JdbcType.html) [H2](https://www.h2database.com/html/datatypes.html) [PostgresSQL](https://www.postgresql.org/docs/9.3/static/datatype.html) |
+| sqltype.COLOR               | `VARCHAR(70)`                                                |    No     | see above                                                    |
+| sqltype.CONTACT             | `VARCHAR(6)`                                                 |    No     | see above                                                    |
+| sqltype.DATETIME            | `DATETIME`                                                   |    No     | see above                                                    |
+| sqltype.DIMMER              | `TINYINT`                                                    |    No     | see above                                                    |
+| sqltype.IMAGE               | `VARCHAR(65500)`                                             |    No     | see above                                                    |
+| sqltype.LOCATION            | `VARCHAR(50)`                                                |    No     | see above                                                    |
+| sqltype.NUMBER              | `DOUBLE`                                                     |    No     | see above                                                    |
+| sqltype.PLAYER              | `VARCHAR(20)`                                                |    No     | see above                                                    |
+| sqltype.ROLLERSHUTTER       | `TINYINT`                                                    |    No     | see above                                                    |
+| sqltype.STRING              | `VARCHAR(65500)`                                             |    No     | see above                                                    |
+| sqltype.SWITCH              | `VARCHAR(6)`                                                 |    No     | see above                                                    |
+| sqltype.tablePrimaryKey     | `TIMESTAMP`                                                  |    No     | type of `time` column for newly created item tables          |
+| sqltype.tablePrimaryValue   | `NOW()`                                                      |    No     | value of `time` column for newly inserted rows               |
+| numberDecimalcount          | 3                                                            |    No     | for Itemtype "Number" default decimal digit count            |
+| tableNamePrefix             | `item`                                                       |    No     | table name prefix. For Migration from MySQL Persistence, set to `Item`. |
+| tableUseRealItemNames       | `false`                                                      |    No     | table name prefix generation.  When set to `true`, real item names are used for table names and `tableNamePrefix` is ignored.  When set to `false`, the `tableNamePrefix` is used to generate table names with sequential numbers. |
+| tableCaseSensitiveItemNames | `false`                                                      |    No     | table name case when `tableUseRealItemNames` is `true`. When set to `true`, item name case is preserved in table names and no suffix is used. When set to `false`, table names are lower cased and a numeric suffix is added. Please read [this](#case-sensitive-item-names) before enabling. |
+| tableIdDigitCount           | 4                                                            |    No     | when `tableUseRealItemNames` is `false` and thus table names are generated sequentially, this controls how many zero-padded digits are used in the table name.  With the default of 4, the first table name will end with `0001`. For migration from the MySQL persistence service, set this to 0. |
+| rebuildTableNames           | false                                                        |    No     | rename existing tables using `tableUseRealItemNames` and `tableIdDigitCount`. USE WITH CARE! Deactivate after Renaming is done! |
+| jdbc.maximumPoolSize        | configured per database in package `org.openhab.persistence.jdbc.db.*` |    No     | Some embedded databases can handle only one connection. See [this link](https://github.com/brettwooldridge/HikariCP/issues/256) for more information |
+| jdbc.minimumIdle            | see above                                                    |    No     | see above                                                    |
+| enableLogTime               | `false`                                                      |    No     | timekeeping                                                  |
 
 All item- and event-related configuration is done in the file `persistence/jdbc.persist`.
 
-To configure this service as the default persistence service for openHAB 2, add or change the line
+To configure this service as the default persistence service for openHAB, add or change the line
 
 ```
 org.openhab.core.persistence:default=jdbc
@@ -84,6 +85,13 @@ services/jdbc.cfg
 ```
 url=jdbc:postgresql://192.168.0.1:5432/testPostgresql
 ```
+
+### Case Sensitive Item Names
+
+To avoid numbered suffixes entirely, `tableUseRealItemNames` and `tableCaseSensitiveItemNames` must both be enabled.
+With this configuration, tables are named exactly like their corresponding items.
+In order for this to work correctly, the underlying operating system, database server and configuration must support case sensitive table names.
+For MySQL, see [MySQL: Identifier Case Sensitivity](https://dev.mysql.com/doc/refman/8.0/en/identifier-case-sensitivity.html) for more information.
 
 ### Migration from MySQL to JDBC Persistence Services
 

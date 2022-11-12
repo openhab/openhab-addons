@@ -56,9 +56,18 @@ public class HomeAssistantChannelState extends ChannelState {
 
     @Override
     public CompletableFuture<Boolean> publishValue(Command command) {
-        if (commandFilter != null && !commandFilter.test(command)) {
-            logger.trace("Channel {} updates are disabled by command filter, ignoring command {}", channelUID, command);
-            return CompletableFuture.completedFuture(false);
+        if (commandFilter != null) {
+            try {
+                if (!commandFilter.test(command)) {
+                    logger.trace("Channel {} updates are disabled by command filter, ignoring command {}", channelUID,
+                            command);
+                    return CompletableFuture.completedFuture(false);
+                }
+            } catch (IllegalArgumentException e) {
+                CompletableFuture<Boolean> f = new CompletableFuture<>();
+                f.completeExceptionally(e);
+                return f;
+            }
         }
         return super.publishValue(command);
     }

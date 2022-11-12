@@ -25,9 +25,9 @@ import org.openhab.binding.hdpowerview.internal.config.HDPowerViewRepeaterConfig
 import org.openhab.binding.hdpowerview.internal.config.HDPowerViewShadeConfiguration;
 import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDatabase;
 import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDatabase.Capabilities;
+import org.openhab.binding.hdpowerview.internal.dto.ShadeData;
 import org.openhab.binding.hdpowerview.internal.dto.responses.RepeaterData;
 import org.openhab.binding.hdpowerview.internal.dto.responses.Shades;
-import org.openhab.binding.hdpowerview.internal.dto.responses.Shades.ShadeData;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubException;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubInvalidResponseException;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubMaintenanceException;

@@ -206,7 +206,7 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
             }
         }
 
-        String table = sqlTables.get(itemName);
+        String table = itemNameToTableNameMap.get(itemName);
         if (table == null) {
             logger.debug("JDBC::query: unable to find table for item with name: '{}', no data in database.", itemName);
             return List.of();
@@ -229,6 +229,7 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
 
         conf = new JdbcConfiguration(configuration);
         if (conf.valid && checkDBAccessability()) {
+            namingStrategy = new NamingStrategy(conf);
             checkDBSchema();
             // connection has been established ... initialization completed!
             initialized = true;
@@ -259,7 +260,7 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
             throw new IllegalArgumentException("Item name must not be null");
         }
 
-        String table = sqlTables.get(itemName);
+        String table = itemNameToTableNameMap.get(itemName);
         if (table == null) {
             logger.debug("JDBC::remove: unable to find table for item with name: '{}', no data in database.", itemName);
             return false;

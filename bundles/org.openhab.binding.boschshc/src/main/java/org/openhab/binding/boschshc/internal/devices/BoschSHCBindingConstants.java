@@ -74,6 +74,8 @@ public class BoschSHCBindingConstants {
     public static final String CHANNEL_ARM_ACTION = "arm-action";
     public static final String CHANNEL_DISARM_ACTION = "disarm-action";
     public static final String CHANNEL_MUTE_ACTION = "mute-action";
+    public static final String CHANNEL_BATTERY_LEVEL = "battery-level";
+    public static final String CHANNEL_LOW_BATTERY = "low-battery";
 
     // static device/service names
     public static final String SERVICE_INTRUSION_DETECTION = "intrusionDetectionSystem";

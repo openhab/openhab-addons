@@ -161,7 +161,7 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
      * @param serviceName Name of service the update came from.
      * @param stateData Current state of device service. Serialized as JSON.
      */
-    public void processUpdate(String serviceName, JsonElement stateData) {
+    public void processUpdate(String serviceName, @Nullable JsonElement stateData) {
         // Check services of device to correctly
         for (DeviceService<? extends BoschSHCServiceState> deviceService : this.services) {
             BoschSHCService<? extends BoschSHCServiceState> service = deviceService.service;

@@ -27,6 +27,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
+import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 
@@ -57,6 +58,7 @@ public abstract class AbstractSHCHandlerTest<T extends BoschSHCHandler> {
     @BeforeEach
     public void beforeEach() {
         fixture = createFixture();
+        lenient().when(thing.getUID()).thenReturn(getThingUID());
         when(thing.getBridgeUID()).thenReturn(new ThingUID("boschshc", "shc", "myBridgeUID"));
         when(callback.getBridge(any())).thenReturn(bridge);
         fixture.setCallback(callback);
@@ -71,6 +73,12 @@ public abstract class AbstractSHCHandlerTest<T extends BoschSHCHandler> {
     protected T getFixture() {
         return fixture;
     }
+
+    protected ThingUID getThingUID() {
+        return new ThingUID(getThingTypeUID(), "abcdef");
+    }
+
+    protected abstract ThingTypeUID getThingTypeUID();
 
     protected Configuration getConfiguration() {
         return new Configuration();

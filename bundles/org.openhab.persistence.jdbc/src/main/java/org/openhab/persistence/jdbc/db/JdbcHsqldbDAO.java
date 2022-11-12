@@ -101,7 +101,7 @@ public class JdbcHsqldbDAO extends JdbcBaseDAO {
     public Long doCreateNewEntryInItemsTable(ItemsVO vo) {
         String sql = StringUtilsExt.replaceArrayMerge(sqlCreateNewEntryInItemsTable,
                 new String[] { "#itemsManageTable#", "#itemname#" },
-                new String[] { vo.getItemsManageTable(), vo.getItemname() });
+                new String[] { vo.getItemsManageTable(), vo.getItemName() });
         logger.debug("JDBC::doCreateNewEntryInItemsTable sql={}", sql);
         return Yank.insert(sql, null);
     }

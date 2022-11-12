@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.hdpowerview.internal.builders.SceneGroupChannelBuilder;
-import org.openhab.binding.hdpowerview.internal.dto.responses.SceneCollections.SceneCollection;
+import org.openhab.binding.hdpowerview.internal.dto.SceneCollection;
 import org.openhab.binding.hdpowerview.internal.providers.MockedLocaleProvider;
 import org.openhab.binding.hdpowerview.internal.providers.MockedTranslationProvider;
 import org.openhab.core.thing.Channel;

@@ -35,9 +35,9 @@ import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDataba
 import org.openhab.binding.hdpowerview.internal.dto.BatteryKind;
 import org.openhab.binding.hdpowerview.internal.dto.CoordinateSystem;
 import org.openhab.binding.hdpowerview.internal.dto.Firmware;
+import org.openhab.binding.hdpowerview.internal.dto.ShadeData;
 import org.openhab.binding.hdpowerview.internal.dto.ShadePosition;
 import org.openhab.binding.hdpowerview.internal.dto.SurveyData;
-import org.openhab.binding.hdpowerview.internal.dto.responses.Shades.ShadeData;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubException;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubInvalidResponseException;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubMaintenanceException;

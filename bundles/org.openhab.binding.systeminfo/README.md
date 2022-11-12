@@ -36,9 +36,6 @@ The discovery service implementation tries to resolve the computer name.
 If the resolving process fails, the computer name is set to "Unknown".
 In both cases it creates a Discovery Result with thing type  **computer**.
 
-It will be possible to implement creation of dynamic channels (e.g. the binding will scan how many storage devices are present and create channel groups for them).
-At the moment this is not supported.
-
 ## Thing configuration
 
 The configuration of the Thing gives the user the possibility to update channels at different intervals.
@@ -82,22 +79,33 @@ In the list below, you can find, how are channel group and channels id`s related
   * **channel** `cpuTemp, cpuVoltage, fanSpeed`
 *   **group** `network` (deviceIndex)
   * **channel** `ip, mac, networkDisplayName, networkName, packetsSent, packetsReceived, dataSent, dataReceived`
+*   **group** `currentProcess`
+  * **channel** `load, used, name, threads, path`
 *   **group** `process` (pid)
   * **channel** `load, used, name, threads, path`
 
 The groups marked with "(deviceIndex)" may have device index attached to the Channel Group.
 
 -   channel ::= channel_group & (deviceIndex) & # channel_id
--   deviceIndex ::= number > 0
+-   deviceIndex ::= number >= 0
 -   (e.g. *storage1#available*)
+
+The `fanSpeed` channel in the `sensors` group may have a device index attached to the Channel.
+
+-   channel ::= channel_group & # channel_id & (deviceIndex)
+-   deviceIndex ::= number >= 0
+
+Channels or channel groups without a trailing index will show the data for the first device (index 0) if multiple exist.
+If only one device for a group exists, no channels or channel groups with indexes will be created.
 
 The group `process` is using a configuration parameter "pid" instead of "deviceIndex".
 This makes it possible to change the tracked process at runtime.
 
+The group `currentProcess` has the same channels as the `process` group without the "pid" configuration parameter.
+The PID is dynamically set to the PID of the process running openHAB.
+
 The binding uses this index to get information about a specific device from a list of devices (e.g on a single computer several local disks could be installed with names C:\, D:\, E:\ - the first will have deviceIndex=0, the second deviceIndex=1 etc).
 If device with this index is not existing, the binding will display an error message on the console.
-
-Unfortunately this feature can't be used at the moment without manually adding these new channel groups to the thing description (located in OH-INF/thing/computer.xml).
 
 The table shows more detailed information about each Channel type.
 The binding introduces the following channels:
@@ -158,6 +166,10 @@ This parameter is used as 'deviceIndex' and defines which process is tracked fro
 This makes the channels from this groups very flexible - they can change its PID dynamically.
 
 Parameter PID has a default value 0 - this is the PID of the System Idle process in Windows OS.
+
+## Known issues and workarounds
+
+- Temperature readings are not well supported on standard Windows systems, run [OpenHardwareMonitor.exe](https://openhardwaremonitor.org) for the binding to get more reliable readings.
 
 ## Reporting issues
 
@@ -244,6 +256,13 @@ Number Sensor_CPUTemp             "CPU Temperature"     <temperature>    { chann
 Number Sensor_CPUVoltage          "CPU Voltage"         <energy>         { channel="systeminfo:computer:work:sensors#cpuVoltage" }
 Number Sensor_FanSpeed            "Fan speed"           <fan>            { channel="systeminfo:computer:work:sensors#fanSpeed" }
 
+/* Current process information*/
+Number Current_process_load       "Load"                <none>           { channel="systeminfo:computer:work:currentProcess#load" }
+Number Current_process_used       "Used"                <none>           { channel="systeminfo:computer:work:currentProcess#used" }
+String Current_process_name       "Name"                <none>           { channel="systeminfo:computer:work:currentProcess#name" }
+Number Current_process_threads    "Threads"             <none>           { channel="systeminfo:computer:work:currentProcess#threads" }
+String Current_process_path       "Path"                <none>           { channel="systeminfo:computer:work:currentProcess#path" }
+
 /* Process information*/
 Number Process_load               "Load"                <none>           { channel="systeminfo:computer:work:process#load" }
 Number Process_used               "Used"                <none>           { channel="systeminfo:computer:work:process#used" }
@@ -312,6 +331,13 @@ sitemap systeminfo label="Systeminfo" {
         Default item=Sensor_CPUTemp
         Default item=Sensor_CPUVoltage
         Default item=Sensor_FanSpeed
+    }
+    Frame label="Current Process Information" {
+        Default item=Current_process_load
+        Default item=Current_process_used
+        Default item=Current_process_name
+        Default item=Current_process_threads
+        Default item=Current_process_path
     }
     Frame label="Process Information" {
         Default item=Process_load

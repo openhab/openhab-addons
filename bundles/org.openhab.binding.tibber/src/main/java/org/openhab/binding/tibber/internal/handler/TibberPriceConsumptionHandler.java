@@ -42,4 +42,9 @@ public class TibberPriceConsumptionHandler {
                 + "\\\") {features {realTimeConsumptionEnabled }}}}\"}";
         return new ByteArrayInputStream(realtimeenabledquery.getBytes(StandardCharsets.UTF_8));
     }
+
+    public InputStream getWebsocketUrl() {
+        String websocketquery = "{\"query\": \"{viewer {websocketSubscriptionUrl }}\"}";
+        return new ByteArrayInputStream(websocketquery.getBytes(StandardCharsets.UTF_8));
+    }
 }

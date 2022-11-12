@@ -52,6 +52,7 @@ import oshi.util.EdidUtil;
  * @author Christoph Weitkamp - Update to OSHI 3.13.0 - Replaced deprecated method
  *         CentralProcessor#getSystemSerialNumber()
  * @author Wouter Born - Update to OSHI 4.0.0 and add null annotations
+ * @author Mark Herwege - Add dynamic creation of extra channels
  *
  * @see <a href="https://github.com/oshi/oshi">OSHI GitHub repository</a>
  */
@@ -350,6 +351,8 @@ public class OSHISysteminfo implements SysteminfoInterface {
         int speed = 0; // 0 means unable to measure speed
         if (index < fanSpeeds.length) {
             speed = fanSpeeds[index];
+        } else {
+            throw new DeviceNotFoundException();
         }
         return speed > 0 ? new DecimalType(speed) : null;
     }
@@ -609,6 +612,11 @@ public class OSHISysteminfo implements SysteminfoInterface {
     }
 
     @Override
+    public int getCurrentProcessID() {
+        return operatingSystem.getProcessId();
+    }
+
+    @Override
     public @Nullable StringType getProcessName(int pid) throws DeviceNotFoundException {
         if (pid > 0) {
             OSProcess process = getProcess(pid);
@@ -620,11 +628,11 @@ public class OSHISysteminfo implements SysteminfoInterface {
     }
 
     @Override
-    public @Nullable PercentType getProcessCpuUsage(int pid) throws DeviceNotFoundException {
+    public @Nullable DecimalType getProcessCpuUsage(int pid) throws DeviceNotFoundException {
         if (pid > 0) {
             OSProcess process = getProcess(pid);
-            PercentType load = (processTicks.containsKey(pid))
-                    ? new PercentType(getPercentsValue(process.getProcessCpuLoadBetweenTicks(processTicks.get(pid))))
+            DecimalType load = (processTicks.containsKey(pid))
+                    ? new DecimalType(getPercentsValue(process.getProcessCpuLoadBetweenTicks(processTicks.get(pid))))
                     : null;
             processTicks.put(pid, process);
             return load;
@@ -665,5 +673,35 @@ public class OSHISysteminfo implements SysteminfoInterface {
         } else {
             return null;
         }
+    }
+
+    @Override
+    public int getNetworkIFCount() {
+        return networks.size();
+    }
+
+    @Override
+    public int getDisplayCount() {
+        return displays.size();
+    }
+
+    @Override
+    public int getFileOSStoreCount() {
+        return fileStores.size();
+    }
+
+    @Override
+    public int getPowerSourceCount() {
+        return powerSources.size();
+    }
+
+    @Override
+    public int getDriveCount() {
+        return drives.size();
+    }
+
+    @Override
+    public int getFanCount() {
+        return sensors.getFanSpeeds().length;
     }
 }

@@ -12,14 +12,7 @@
  */
 package org.openhab.binding.boschshc.internal.devices.twinguard;
 
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_AIR_DESCRIPTION;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_COMBINED_RATING;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_HUMIDITY;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_HUMIDITY_RATING;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_PURITY;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_PURITY_RATING;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_TEMPERATURE;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_TEMPERATURE_RATING;
+import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.*;
 
 import java.util.List;
 
@@ -27,7 +20,7 @@ import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.boschshc.internal.devices.BoschSHCDeviceHandler;
+import org.openhab.binding.boschshc.internal.devices.AbstractBatteryPoweredDeviceHandler;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.services.airqualitylevel.AirQualityLevelService;
 import org.openhab.binding.boschshc.internal.services.airqualitylevel.dto.AirQualityLevelServiceState;
@@ -44,7 +37,7 @@ import org.openhab.core.thing.Thing;
  * @author Christian Oeing - Use service instead of custom logic
  */
 @NonNullByDefault
-public class TwinguardHandler extends BoschSHCDeviceHandler {
+public class TwinguardHandler extends AbstractBatteryPoweredDeviceHandler {
 
     public TwinguardHandler(Thing thing) {
         super(thing);
