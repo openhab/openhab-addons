@@ -16,7 +16,7 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * This class represents a loadpoint object of the status response (/api/state).
- * This DTO was written for evcc version 0.91.
+ * This DTO was written for evcc version 0.106.3
  *
  * @author Florian Hotze - Initial contribution
  */
@@ -70,7 +70,7 @@ public class Loadpoint {
     private float minCurrent;
 
     @SerializedName("minSoC")
-    private int minSoC;
+    private float minSoC;
 
     @SerializedName("mode")
     private String mode;
@@ -85,7 +85,7 @@ public class Loadpoint {
     private long pvRemaining;
 
     @SerializedName("targetSoC")
-    private int targetSoC;
+    private float targetSoC;
 
     @SerializedName("targetTime")
     private String targetTime;
@@ -94,7 +94,7 @@ public class Loadpoint {
     private String title;
 
     @SerializedName("vehicleCapacity")
-    private long vehicleCapacity;
+    private float vehicleCapacity;
 
     @SerializedName("vehicleOdometer")
     private float vehicleOdometer;
@@ -103,10 +103,10 @@ public class Loadpoint {
     private boolean vehiclePresent;
 
     @SerializedName("vehicleRange")
-    private long vehicleRange;
+    private float vehicleRange;
 
     @SerializedName("vehicleSoC")
-    private int vehicleSoC;
+    private float vehicleSoC;
 
     @SerializedName("vehicleTitle")
     private String vehicleTitle;
@@ -219,7 +219,7 @@ public class Loadpoint {
     /**
      * @return minimum state of charge
      */
-    public int getMinSoC() {
+    public float getMinSoC() {
         return minSoC;
     }
 
@@ -254,7 +254,7 @@ public class Loadpoint {
     /**
      * @return target state of charge (SoC)
      */
-    public int getTargetSoC() {
+    public float getTargetSoC() {
         return targetSoC;
     }
 
@@ -296,14 +296,14 @@ public class Loadpoint {
     /**
      * @return vehicle's range
      */
-    public long getVehicleRange() {
+    public float getVehicleRange() {
         return vehicleRange;
     }
 
     /**
      * @return vehicle's state of charge (SoC)
      */
-    public int getVehicleSoC() {
+    public float getVehicleSoC() {
         return vehicleSoC;
     }
 

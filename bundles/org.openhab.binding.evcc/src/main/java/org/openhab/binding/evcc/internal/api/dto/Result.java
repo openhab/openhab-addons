@@ -16,7 +16,7 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * This class represents the result object of the status response (/api/state).
- * This DTO was written for evcc version 0.91.
+ * This DTO was written for evcc version 0.106.3
  *
  * @author Florian Hotze - Initial contribution
  */
@@ -35,7 +35,7 @@ public class Result {
     private float batteryPower;
 
     @SerializedName("batterySoC")
-    private int batterySoC;
+    private float batterySoC;
 
     @SerializedName("gridConfigured")
     private boolean gridConfigured;
@@ -85,7 +85,7 @@ public class Result {
     /**
      * @return battery's state of charge
      */
-    public int getBatterySoC() {
+    public float getBatterySoC() {
         return batterySoC;
     }
 

@@ -110,7 +110,7 @@ public class EvccAPI {
         return httpRequest(this.host + EVCC_REST_API + "loadpoints/" + loadpoint + "/maxcurrent/" + maxCurrent, "POST");
     }
 
-    public String setTargetCharge(int loadpoint, int targetSoC, ZonedDateTime targetTime) throws EvccApiException {
+    public String setTargetCharge(int loadpoint, float targetSoC, ZonedDateTime targetTime) throws EvccApiException {
         DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
         return httpRequest(this.host + EVCC_REST_API + "loadpoints/" + loadpoint + "/targetcharge/" + targetSoC + "/"
                 + targetTime.toLocalDateTime().format(formatter), "POST");
