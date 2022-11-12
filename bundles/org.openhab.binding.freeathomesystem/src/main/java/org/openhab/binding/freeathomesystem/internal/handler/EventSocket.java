@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,7 +41,7 @@ public class EventSocket extends WebSocketAdapter {
     @Override
     public void onWebSocketConnect(Session session) {
         super.onWebSocketConnect(session);
-        logger.debug("Socket Connected: {}", session);
+        logger.trace("Socket Connected: {}", session);
     }
 
     @Override
@@ -51,10 +51,10 @@ public class EventSocket extends WebSocketAdapter {
 
         if (message.toLowerCase(Locale.US).contains("bye")) {
             getSession().close(StatusCode.NORMAL, "Thanks");
-            logger.debug("Websocket connection closed: {} ", message);
+            logger.trace("Websocket connection closed: {} ", message);
         } else {
-            if (null != freeAtHomeBridge) {
-                // logger.debug("Handle websocket text: {} ", message);
+            if (freeAtHomeBridge != null) {
+                logger.trace("Handle websocket text: {} ", message);
                 freeAtHomeBridge.processSocketEvent(message);
             } else {
                 logger.debug("No brigde available to handle the event");
@@ -65,19 +65,19 @@ public class EventSocket extends WebSocketAdapter {
     @Override
     public void onWebSocketClose(int statusCode, String reason) {
         super.onWebSocketClose(statusCode, reason);
-        logger.debug("Socket Closed: [ {} ] {}", statusCode, reason);
+        logger.trace("Socket Closed: [ {} ] {}", statusCode, reason);
         closureLatch.countDown();
     }
 
     @Override
     public void onWebSocketError(Throwable cause) {
         super.onWebSocketError(cause);
-        logger.debug("Socket Error: {}", cause.getLocalizedMessage());
+        logger.trace("Socket Error: {}", cause.getLocalizedMessage());
         closureLatch.countDown();
     }
 
     public void awaitEndCommunication() throws InterruptedException {
-        logger.debug("Awaiting ending the communication from remote or error");
+        logger.trace("Awaiting ending the communication from remote or error");
         closureLatch.await();
     }
 
@@ -88,7 +88,7 @@ public class EventSocket extends WebSocketAdapter {
     public void setBridge(FreeAtHomeBridgeHandler bridge) {
         freeAtHomeBridge = bridge;
 
-        if (null != freeAtHomeBridge) {
+        if (freeAtHomeBridge != null) {
             logger.debug("No brigde available to handle the event");
         }
     }

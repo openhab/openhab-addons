@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,8 +16,10 @@ package org.openhab.binding.freeathomesystem.internal.handler;
 import java.io.StringReader;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -38,7 +40,8 @@ import org.eclipse.jetty.util.component.AbstractLifeCycle;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
-import org.openhab.binding.freeathomesystem.internal.Configuration.FreeAtHomeBridgeHandlerConfiguration;
+import org.openhab.binding.freeathomesystem.internal.configuration.FreeAtHomeBridgeHandlerConfiguration;
+import org.openhab.binding.freeathomesystem.internal.datamodel.FreeAtHomeDeviceDescription;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -63,7 +66,6 @@ import com.google.gson.stream.JsonReader;
  * @param <FreeAtHomeSystemHttpQueueResponse>
  *
  */
-
 @NonNullByDefault
 public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
 
@@ -97,6 +99,8 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
 
     private final int BRIDGE_WEBSOCKET_RECONNECT_DELAY = 30;
 
+    private List<String> listOfComponentId = new ArrayList<String>();
+
     public FreeAtHomeBridgeHandler(Bridge thing, HttpClient client) {
         super(thing);
 
@@ -116,7 +120,134 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Method to get datapoint for things
+     * Method to get the device list
+     *
+     * @author Andras Uhrin
+     *
+     */
+    public @Nullable List<String> getDeviceDeviceList() {
+        boolean ret = false;
+
+        listOfComponentId.clear();
+
+        String url = baseUrl + "/rest/devicelist";
+
+        // Perform a simple GET and wait for the response.
+        try {
+            HttpClient client = httpClient;
+
+            if (client != null) {
+                Request req = client.newRequest(url);
+                ContentResponse response = req.send();
+
+                // Get component List
+                String componentListString = new String(response.getContent());
+
+                JsonParser parser = new JsonParser();
+
+                JsonElement jsonTree = parser.parse(componentListString);
+
+                // check the output
+                if (jsonTree.isJsonObject()) {
+                    JsonObject jsonObject = jsonTree.getAsJsonObject();
+
+                    // Get the main object
+                    JsonElement listOfComponents = jsonObject.get(sysApUID);
+
+                    if (listOfComponents != null) {
+                        JsonArray array = listOfComponents.getAsJsonArray();
+
+                        this.numberOfComponents = array.size();
+
+                        for (int i = 0; i < array.size(); i++) {
+                            JsonElement basicElement = array.get(i);
+
+                            listOfComponentId.add(basicElement.getAsString());
+                        }
+
+                        ret = true;
+                    }
+                }
+            } else {
+                ret = false;
+            }
+
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            logger.error("Error to build up the Component list [ {} ]", e.getMessage());
+
+            ret = false;
+        }
+
+        // Scan finished
+        if (ret) {
+            return listOfComponentId;
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Method to send http request to get the device description
+     *
+     * @author Andras Uhrin
+     *
+     */
+    @SuppressWarnings("deprecation")
+    public FreeAtHomeDeviceDescription getFreeatHomeDeviceDescription(String id) {
+        FreeAtHomeDeviceDescription device = new FreeAtHomeDeviceDescription();
+
+        String url = baseUrl + "/rest/device/" + sysApUID + "/" + id;
+        try {
+            HttpClient client = httpClient;
+
+            if (client != null) {
+                Request req = client.newRequest(url);
+                ContentResponse response;
+                response = req.send();
+
+                // Get component List
+                String deviceString = new String(response.getContent());
+
+                JsonParser parser = new JsonParser();
+
+                JsonElement jsonTree = parser.parse(deviceString);
+
+                // check the output
+                if (jsonTree != null) {
+                    if (jsonTree.isJsonObject()) {
+
+                        JsonObject jsonObject = jsonTree.getAsJsonObject();
+
+                        jsonObject = jsonObject.getAsJsonObject(sysApUID);
+
+                        if (jsonObject != null) {
+
+                            jsonObject = jsonObject.getAsJsonObject("devices");
+
+                            if (jsonObject != null) {
+
+                                device = new FreeAtHomeDeviceDescription(jsonObject, id);
+
+                            }
+                        }
+                    }
+                }
+            }
+
+        } catch (InterruptedException e) {
+            logger.error("No communication possible to get device list - Communication interrupt [ {} ]",
+                    e.getMessage());
+        } catch (TimeoutException e) {
+            logger.error("No communication possible to get device list - Communication timeout [ {} ]", e.getMessage());
+        } catch (ExecutionException e) {
+            logger.error("No communication possible to get device list - exception [ {} ]", e.getMessage());
+        }
+
+        return device;
+    }
+
+    /**
+     * Method to get datapoint values for devices
      *
      * @author Andras Uhrin
      *
@@ -124,7 +255,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
     @SuppressWarnings("deprecation")
     public String getDatapoint(@Nullable String deviceId, @Nullable String channel, @Nullable String datapoint) {
 
-        if ((null == deviceId) || (null == channel) || (null == datapoint)) {
+        if ((deviceId == null) || (channel == null) || (datapoint == null)) {
             return new String("0");
         }
 
@@ -137,7 +268,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
 
             requestCounter++;
 
-            if (null != req) {
+            if (req != null) {
                 ContentResponse response = req.send();
 
                 String deviceString = new String(response.getContent());
@@ -157,7 +288,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
                 }
 
                 // check the output
-                if (null != jsonTree) {
+                if (jsonTree != null) {
                     if (jsonTree.isJsonObject()) {
                         JsonObject jsonObject = jsonTree.getAsJsonObject();
 
@@ -167,7 +298,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
                         JsonElement element = jsonValueArray.get(0);
                         String value = element.getAsString();
 
-                        if (0 == value.length()) {
+                        if (value.isEmpty()) {
                             value = "0";
                         }
 
@@ -188,7 +319,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Method to set datapoint from things
+     * Method to set datapoint values in channels
      *
      * @author Andras Uhrin
      *
@@ -196,7 +327,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
     public boolean setDatapoint(@Nullable String deviceId, @Nullable String channel, @Nullable String datapoint,
             String valueString) {
 
-        if ((null == deviceId) || (null == channel) || (null == datapoint)) {
+        if ((deviceId == null) || (channel == null) || (datapoint == null)) {
             return false;
         }
 
@@ -316,7 +447,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
             ret = false;
         }
 
-        if (true == ret) {
+        if (ret == true) {
             // Add authentication credentials and make a check.
             try {
                 // Add authentication credentials.
@@ -331,7 +462,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
                 ContentResponse res = req.send();
 
                 // check status
-                if (200 == res.getStatus()) {
+                if (res.getStatus() == 200) {
 
                     // response OK
                     httpConnectionOK.set(true);
@@ -346,7 +477,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
 
                     ret = false;
 
-                    logger.warn("Wrong credentials for SysAP");
+                    logger.info("Wrong credentials for SysAP");
                 }
 
             } catch (URISyntaxException | InterruptedException | ExecutionException | TimeoutException ex) {
@@ -386,14 +517,14 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
                 }
             }
 
-            logger.info("Stop http client");
+            logger.debug("Stop http client");
 
             ret = true;
 
         } catch (Exception ex) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Cannot stop http client");
 
-            logger.error("Cannot stop http client - {}", ex.getMessage());
+            logger.debug("Cannot stop http client - {}", ex.getMessage());
 
             ret = false;
         }
@@ -412,7 +543,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
 
         ret = closeHttpConnection();
 
-        if (true == ret) {
+        if (ret == true) {
             ret = openHttpConnection();
         }
 
@@ -433,7 +564,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
 
         try {
             // Start socket client
-            if ((null != websocketClient) && (null != socket)) {
+            if ((websocketClient != null) && (socket != null)) {
                 websocketClient.start();
                 ClientUpgradeRequest request = new ClientUpgradeRequest();
                 request.setHeader("Authorization", authField);
@@ -448,13 +579,13 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
         } catch (Exception e) {
             logger.error("Error by opening Websocket connection [{}]", e.getMessage());
 
-            if (null != websocketClient) {
+            if (websocketClient != null) {
                 try {
                     websocketClient.stop();
 
                     ret = false;
                 } catch (Exception e1) {
-                    logger.error("Error by opening Websocket connection [{}]", e1.getMessage());
+                    logger.debug("Error by opening Websocket connection [{}]", e1.getMessage());
 
                     ret = false;
                 }
@@ -475,23 +606,23 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
     @SuppressWarnings({ "deprecation", "null" })
     public void closeWebSocketConnection() {
 
-        if (null != socketMonitor) {
+        if (socketMonitor != null) {
             socketMonitor.stop();
         }
 
-        if (null != jettyThreadPool) {
+        if (jettyThreadPool != null) {
             try {
                 jettyThreadPool.stop();
             } catch (Exception e1) {
-                logger.error("Error by closing Websocket connection [{}]", e1.getMessage());
+                logger.debug("Error by closing Websocket connection [{}]", e1.getMessage());
             }
         }
 
-        if (null != websocketClient) {
+        if (websocketClient != null) {
             try {
                 websocketClient.stop();
             } catch (Exception e2) {
-                logger.error("Error by closing Websocket connection [{}]", e2.getMessage());
+                logger.debug("Error by closing Websocket connection [{}]", e2.getMessage());
             }
         }
     }
@@ -516,29 +647,29 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
 
         authField = "Basic " + authStringEnc;
 
-        if (null == jettyThreadPool) {
+        if (jettyThreadPool == null) {
             jettyThreadPool = new QueuedThreadPool();
             jettyThreadPool.setName(FreeAtHomeBridgeHandler.class.getSimpleName());
             jettyThreadPool.setDaemon(true);
             jettyThreadPool.setStopTimeout(0);
         }
 
-        if (null == websocketClient) {
+        if (websocketClient == null) {
             websocketClient = new WebSocketClient();
 
-            if (null != websocketClient) {
+            if (websocketClient != null) {
                 websocketClient.setExecutor(jettyThreadPool);
             }
         }
 
-        if (null == socket) {
+        if (socket == null) {
             socket = new EventSocket();
 
-            if (null != socket) {
+            if (socket != null) {
                 // set bridge for the socket event handler
                 socket.setBridge(this);
 
-                if (null == socketMonitor) {
+                if (socketMonitor == null) {
                     socketMonitor = new FreeAtHomeWebsocketMonitorThread();
                     socketMonitor.start();
 
@@ -549,7 +680,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
                     jettyThreadPool = null;
                     ret = false;
 
-                    logger.error("Cannot open http connection - socketmonitor");
+                    logger.debug("Cannot open http connection - socketmonitor");
                 }
             }
         }
@@ -593,28 +724,29 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
         baseUrl = "http://" + ipAddress + "/fhapi/v1/api";
 
         // Open Http connection
-        if (false == openHttpConnection()) {
+        if (openHttpConnection() == false) {
 
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Cannot open http connection, wrong password or IP address");
 
-            logger.error("Cannot open http connection");
+            logger.debug("Cannot open http connection");
 
             return;
         }
 
         // Open the websocket connection for immediate status updates
-        if (false == openWebSocketConnection()) {
+        if (openWebSocketConnection() == false) {
 
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Cannot open websocket connection");
 
-            logger.error("Cannot open websocket connection");
+            logger.debug("Cannot open websocket connection");
 
             return;
         }
 
         updateStatus(ThingStatus.ONLINE);
+        FreeAtHomeBridgeHandler.freeAtHomeSystemHandler = this;
     }
 
     /**
@@ -625,19 +757,6 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
      */
     @Override
     public void dispose() {
-    }
-
-    /**
-     * Method to get the device list
-     *
-     * @author Andras Uhrin
-     *
-     */
-    public FreeAtHomeDeviceList getDeviceDeviceList() {
-        FreeAtHomeSysApDeviceList deviceList = new FreeAtHomeSysApDeviceList(httpClient, ipAddress, sysApUID);
-        deviceList.buildComponentList();
-
-        return deviceList;
     }
 
     /**
@@ -662,7 +781,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
 
             try {
                 // while (!isInterrupted()) {
-                if (true == httpConnectionOK.get()) {
+                if (httpConnectionOK.get() == true) {
                     if (connectSession()) {
                         socket.awaitEndCommunication();
                     }

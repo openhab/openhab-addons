@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,38 +10,32 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
+package org.openhab.binding.freeathomesystem.internal.datamodel;
 
-package org.openhab.binding.freeathomesystem.internal.handler;
-
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonObject;
 
 /**
- * The {@link FreeAtHomeDeviceChannel} holding the information of device channels
- *
- * @author Andras Uhrin - Initial contribution
+ * @author andras
  *
  */
-@NonNullByDefault
-public class FreeAtHomeDeviceChannel {
+public class FreeAtHomeDatapoint {
+
+    private final Logger logger = LoggerFactory.getLogger(FreeAtHomeDatapoint.class);
+
     public static final int DATAPOINT_DIRECTION_INPUT = 1;
     public static final int DATAPOINT_DIRECTION_OUTPUT = 2;
+    public static final int DATAPOINT_DIRECTION_INPUTOUTPUT = 3;
 
-    public String thingTypeOfChannel = "";
-    public String channelTypeString = "";
     public String channelId = "";
-    public String channelLabel = "";
+    private String datapointId = "";
 
-    public List<String> datapoints = new ArrayList<>();
-    public List<String> channels = new ArrayList<>();
-
-    boolean searchForDatapoint(int direction, int neededPairingIDFunction, String channelID,
+    boolean searchForDatapoint(int direction, int neededPairingIDFunction, String channelId,
             JsonObject jsonObjectOfChannel) {
         boolean foundedId = false;
         JsonObject localDataponits = null;
@@ -67,32 +61,40 @@ public class FreeAtHomeDeviceChannel {
         Iterator<String> iter = keys.iterator();
 
         // Scan datapoints for pairingID IDs
-        while (iter.hasNext() && (foundedId == false)) {
-            String nextPairingID = iter.next();
+        while (iter.hasNext() && (foundedId) == false) {
+            String datapointId = iter.next();
 
-            JsonObject pairingIDObject = localDataponits.getAsJsonObject(nextPairingID);
+            JsonObject datapointJsonObject = localDataponits.getAsJsonObject(datapointId);
 
-            int pairingIDFunction = pairingIDObject.get("pairingID").getAsInt();
+            int pairingIDFunction = datapointJsonObject.get("pairingID").getAsInt();
 
             if (pairingIDFunction == neededPairingIDFunction) {
 
-                channels.add(channelID);
-                datapoints.add(nextPairingID);
+                this.channelId = channelId;
+                this.datapointId = datapointId;
+
+                logger.debug("Datapoint is found - channel {} - datapoint {}", this.channelId, this.datapointId);
 
                 foundedId = true;
             }
         }
 
         // not founded id add dummy
-        if (false == foundedId) {
-            channels.add(channelID);
-            datapoints.add("----");
+        if (foundedId == false) {
+            this.channelId = "";
+            this.datapointId = "";
+
+            logger.debug("Needed datapoint is not found - channel {} - datapoint {}", this.channelId, this.datapointId);
         }
 
         return foundedId;
     }
 
-    public int numberOfDatapoints() {
-        return datapoints.size();
+    public String getChannelIdforDatapoint() {
+        return channelId;
+    }
+
+    public String getDatapointId() {
+        return datapointId;
     }
 }

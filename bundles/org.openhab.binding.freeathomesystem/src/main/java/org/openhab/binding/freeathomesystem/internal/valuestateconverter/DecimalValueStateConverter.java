@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.freeathomesystem.internal.valuestateconverters;
+package org.openhab.binding.freeathomesystem.internal.valuestateconverter;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.DecimalType;
@@ -30,5 +30,13 @@ public class DecimalValueStateConverter implements ValueStateConverter {
         DecimalType dec = new DecimalType(value);
 
         return dec;
+    }
+
+    @Override
+    public String convertToValueString(State state) {
+
+        String valueString = ((DecimalType) state).toString();
+
+        return valueString;
     }
 }
