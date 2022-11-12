@@ -12,12 +12,15 @@
  */
 package org.openhab.persistence.jdbc.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link JdbcPersistenceServiceConstants} class defines common constants, which are
  * used across the whole persistence service.
  *
  * @author Jacob Laursen - Initial contribution
  */
+@NonNullByDefault
 public class JdbcPersistenceServiceConstants {
 
     public static final String SERVICE_ID = "jdbc";

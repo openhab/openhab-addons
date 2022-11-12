@@ -12,11 +12,14 @@
  */
 package org.openhab.persistence.jdbc;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * This class represents status for an {@link ItemTableCheckEntry}.
  *
  * @author Jacob Laursen - Initial contribution
  */
+@NonNullByDefault
 public enum ItemTableCheckEntryStatus {
     /**
      * Table is consistent.
