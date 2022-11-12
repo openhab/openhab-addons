@@ -32,13 +32,13 @@ import com.google.gson.JsonSyntaxException;
 /**
  * The {@link EvccAPI} is responsible for API calls to evcc.
  * 
- * @author Florian Hotze - Initial contribution
+ * @author Florian Hotze - Initial contribution; Avoid data type issues by using float instead of int
  */
 @NonNullByDefault
 public class EvccAPI {
     private final Logger logger = LoggerFactory.getLogger(EvccAPI.class);
     private final Gson gson = new Gson();
-    private String host = "";
+    private String host;
 
     public EvccAPI(String host) {
         this.host = host;
@@ -48,9 +48,9 @@ public class EvccAPI {
      * Make a HTTP request.
      * 
      * @param url full request URL
-     * @param method reguest method, e.g. GET, POST
+     * @param method request method, e.g. GET, POST
      * @return the response body
-     * @throws {@link EvccApiException} if HTTP request failed
+     * @throws EvccApiException if HTTP request failed
      */
     private String httpRequest(String url, String method) throws EvccApiException {
         try {
@@ -67,10 +67,9 @@ public class EvccAPI {
     // API calls to evcc
     /**
      * Get the status from evcc.
-     * 
-     * @param host hostname of IP address of the evcc instance
+     *
      * @return {@link Result} result object from API
-     * @throws {@link EvccApiException} if status request failed
+     * @throws EvccApiException if status request failed
      */
     public Result getResult() throws EvccApiException {
         final String response = httpRequest(this.host + EVCC_REST_API + "state", "GET");

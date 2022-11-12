@@ -52,7 +52,7 @@ import org.slf4j.LoggerFactory;
  * The {@link EvccHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
- * @author Florian Hotze - Initial contribution
+ * @author Florian Hotze - Initial contribution; Avoid data type issues by using float instead of int
  */
 @NonNullByDefault
 public class EvccHandler extends BaseThingHandler {
@@ -85,7 +85,7 @@ public class EvccHandler extends BaseThingHandler {
                 return;
             }
             String channelIdWithoutGroup = channelUID.getIdWithoutGroup();
-            int loadpoint = Integer.parseInt(groupId.toString().substring(9));
+            int loadpoint = Integer.parseInt(groupId.substring(9));
             EvccAPI evccAPI = this.evccAPI;
             if (evccAPI == null) {
                 return;
@@ -186,7 +186,7 @@ public class EvccHandler extends BaseThingHandler {
      */
     private void refresh() {
         logger.debug("Running refresh job ...");
-        EvccAPI evccAPI = null;
+        EvccAPI evccAPI;
         evccAPI = this.evccAPI;
         if (evccAPI == null) {
             return;
