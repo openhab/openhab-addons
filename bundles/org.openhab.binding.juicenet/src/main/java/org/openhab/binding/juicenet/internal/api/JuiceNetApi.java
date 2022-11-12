@@ -37,6 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
@@ -90,7 +91,12 @@ public class JuiceNetApi {
         try {
             JsonObject jsonResponse = postApiCommand(ApiCommand.GET_ACCOUNT_UNITS, null);
 
-            listDevices = new Gson().fromJson(jsonResponse.get("units").getAsJsonArray(), JuiceNetApiDevice[].class);
+            JsonElement unitsElement = jsonResponse.get("units");
+            if (unitsElement == null) {
+                throw new JuiceNetApiException("getDevices from Juicenet API failed, no 'units' element in response.");
+            }
+
+            listDevices = new Gson().fromJson(unitsElement.getAsJsonArray(), JuiceNetApiDevice[].class);
         } catch (JsonSyntaxException e) {
             throw new JuiceNetApiException("getDevices from JuiceNet API failed, invalid JSON list.");
         } catch (IllegalStateException e) {
@@ -199,7 +205,12 @@ public class JuiceNetApi {
             logger.trace("{}", responseString);
 
             jsonResponse = JsonParser.parseString(responseString).getAsJsonObject();
-            boolean success = jsonResponse.get("success").getAsBoolean();
+            JsonElement successElement = jsonResponse.get("success");
+            if (successElement == null) {
+                throw new JuiceNetApiException(
+                        cmd.command + " from JuiceNet API failed, 'success' element missing from response.");
+            }
+            boolean success = successElement.getAsBoolean();
 
             if (!success) {
                 throw new JuiceNetApiException(cmd.command + " from JuiceNet API failed, please check configuration.");
