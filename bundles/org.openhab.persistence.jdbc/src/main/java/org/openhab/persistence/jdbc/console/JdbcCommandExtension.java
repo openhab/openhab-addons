@@ -180,6 +180,9 @@ public class JdbcCommandExtension extends AbstractConsoleCommandExtension implem
                         return new StringsCompleter(persistenceService.getItemNames(), true).complete(args,
                                 cursorArgumentIndex, cursorPosition, candidates);
                     }
+                } else if (SUBCMD_TABLES_LIST.equalsIgnoreCase(args[1])) {
+                    new StringsCompleter(List.of(PARAMETER_ALL), false).complete(args, cursorArgumentIndex,
+                            cursorPosition, candidates);
                 }
             }
         }
