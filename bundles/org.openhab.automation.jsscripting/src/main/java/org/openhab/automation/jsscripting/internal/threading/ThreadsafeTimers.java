@@ -20,7 +20,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.automation.jsscripting.internal.JSScriptServiceUtil;
 import org.openhab.core.automation.module.script.action.ScriptExecution;
 import org.openhab.core.automation.module.script.action.Timer;
 import org.openhab.core.scheduler.ScheduledCompletableFuture;
@@ -35,7 +34,7 @@ import org.openhab.core.scheduler.SchedulerTemporalAdjuster;
  *         Threadsafe reimplementation of the timer creation methods of {@link ScriptExecution}
  */
 public class ThreadsafeTimers {
-    private final Object lock = new Object();
+    private final Object lock;
     private final Scheduler scheduler;
     private final ScriptExecution scriptExecution;
     // Mapping of positive, non-zero integer values (used as timeoutID or intervalID) and the Scheduler
@@ -43,7 +42,8 @@ public class ThreadsafeTimers {
     private AtomicLong lastId = new AtomicLong();
     private String identifier = "noIdentifier";
 
-    public ThreadsafeTimers(ScriptExecution scriptExecution, Scheduler scheduler) {
+    public ThreadsafeTimers(Object lock, ScriptExecution scriptExecution, Scheduler scheduler) {
+        this.lock = lock;
         this.scheduler = scheduler;
         this.scriptExecution = scriptExecution;
     }
