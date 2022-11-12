@@ -35,7 +35,7 @@ import org.openhab.core.scheduler.SchedulerTemporalAdjuster;
  *         Threadsafe reimplementation of the timer creation methods of {@link ScriptExecution}
  */
 public class ThreadsafeTimers {
-    private final Object lock;
+    private final Object lock = new Object();
     private final Scheduler scheduler;
     private final ScriptExecution scriptExecution;
     // Mapping of positive, non-zero integer values (used as timeoutID or intervalID) and the Scheduler
@@ -43,10 +43,18 @@ public class ThreadsafeTimers {
     private AtomicLong lastId = new AtomicLong();
     private String identifier = "noIdentifier";
 
-    public ThreadsafeTimers(Object lock, JSScriptServiceUtil jsScriptServiceUtil) {
-        this.lock = lock;
-        this.scheduler = jsScriptServiceUtil.getScheduler();
-        this.scriptExecution = jsScriptServiceUtil.getScriptExecution();
+    public ThreadsafeTimers(ScriptExecution scriptExecution, Scheduler scheduler) {
+        this.scheduler = scheduler;
+        this.scriptExecution = scriptExecution;
+    }
+
+    /**
+     * get the lock object of this instance
+     *
+     * @return the lock object
+     */
+    public Object getLock() {
+        return lock;
     }
 
     /**
