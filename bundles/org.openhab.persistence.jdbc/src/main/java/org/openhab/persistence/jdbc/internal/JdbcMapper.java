@@ -139,12 +139,11 @@ public class JdbcMapper {
         return true;
     }
 
-    public boolean dropTable(String tableName) {
+    public void dropTable(String tableName) {
         logger.debug("JDBC::dropTable");
         long timerStart = System.currentTimeMillis();
         conf.getDBDAO().doDropTable(tableName);
         logTime("doDropTable", timerStart, System.currentTimeMillis());
-        return true;
     }
 
     public ItemsVO deleteItemsEntry(ItemsVO vo) {
