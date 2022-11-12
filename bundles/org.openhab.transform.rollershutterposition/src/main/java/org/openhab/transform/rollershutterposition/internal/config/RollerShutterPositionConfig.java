@@ -12,6 +12,8 @@
  */
 package org.openhab.transform.rollershutterposition.internal.config;
 
+import static org.openhab.transform.rollershutterposition.internal.RollerShutterPositionConstants.DEFAULT_PRECISION;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -24,5 +26,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class RollerShutterPositionConfig {
     public float uptime; // uptime in seconds (set by param)
     public float downtime; // downtime in seconds (set by param)
-    public int precision; // minimum movement
+    public int precision = DEFAULT_PRECISION; // minimum movement
 }

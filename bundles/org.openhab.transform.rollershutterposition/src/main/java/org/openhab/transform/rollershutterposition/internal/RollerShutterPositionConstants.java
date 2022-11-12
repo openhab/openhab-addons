@@ -27,10 +27,11 @@ public class RollerShutterPositionConstants {
     // Profile Type UID
     public static final ProfileTypeUID PROFILE_TYPE_UID = new ProfileTypeUID("rollershutter", "position");
 
-    // Paramaters
+    // Parameters
     public static final String UPTIME_PARAM = "uptime";
     public static final String DOWNTIME_PARAM = "downtime";
     public static final String PRECISION_PARAM = "precision";
 
     public static final int POSITION_UPDATE_PERIOD = 800; // fixed delay in milliseconds
+    public static final int DEFAULT_PRECISION = 5;
 }

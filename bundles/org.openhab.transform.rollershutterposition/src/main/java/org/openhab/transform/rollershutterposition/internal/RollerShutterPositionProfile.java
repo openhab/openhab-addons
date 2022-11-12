@@ -38,7 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Profile to offer the RollerShutterPosition ItemChannelLink
+ * Profile to implement the RollerShutterPosition ItemChannelLink
  *
  * @author Jeff James - Initial contribution
  *
@@ -74,6 +74,10 @@ public class RollerShutterPositionProfile implements StateProfile {
 
         if (configuration.downtime == 0) {
             configuration.downtime = configuration.uptime;
+        }
+
+        if (configuration.precision == 0) {
+            configuration.precision = DEFAULT_PRECISION;
         }
 
         this.isValidConfiguration = true;
@@ -147,7 +151,7 @@ public class RollerShutterPositionProfile implements StateProfile {
             newCmd = posOffset > 0 ? UpDownType.DOWN : UpDownType.UP;
         }
 
-        logger.info("moveTo() targetPosition: {} from currentPosition: {}", targetPos, curPos);
+        logger.debug("moveTo() targetPosition: {} from currentPosition: {}", targetPos, curPos);
 
         long time = (long) ((Math.abs(posOffset) / 100d)
                 * (posOffset > 0 ? (double) configuration.downtime * 1000 : (double) configuration.uptime * 1000));
@@ -187,7 +191,6 @@ public class RollerShutterPositionProfile implements StateProfile {
 
     private void stop() {
         callback.handleCommand(StopMoveType.STOP);
-        logger.trace("stop()");
 
         this.position = currentPosition();
         this.movingSince = Instant.MIN;
@@ -230,10 +233,10 @@ public class RollerShutterPositionProfile implements StateProfile {
         public void run() {
             if (targetPosition == 0 || targetPosition == 100) {
                 // Don't send stop command to re-sync position using the motor end stop
-                logger.info("arrived at end position, not stopping for calibration");
+                logger.debug("arrived at end position, not stopping for calibration");
             } else {
                 callback.handleCommand(StopMoveType.STOP);
-                logger.info("arrived at position, sending STOP command");
+                logger.debug("arrived at position, sending STOP command");
             }
 
             logger.trace("stopTimeoutTask() position: {}", targetPosition);
