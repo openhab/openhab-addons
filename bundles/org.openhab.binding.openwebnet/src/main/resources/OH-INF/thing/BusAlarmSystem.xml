@@ -11,7 +11,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Alarm System</label>
-		<description>A OpenWebNet BUS/SCS alarm system</description>
+		<description>A OpenWebNet BUS/SCS alarm system.</description>
 
 		<channels>
 			<!-- read only -->
@@ -32,7 +32,7 @@
 		<config-description>
 			<parameter name="where" type="text" readOnly="true">
 				<label>OpenWebNet Address (where)</label>
-				<description>The Alarm system has no where address (set where to 0 as default)</description>
+				<description>The Alarm system has no where address (set where to 0 as default).</description>
 				<default>0</default>
 			</parameter>
 		</config-description>
