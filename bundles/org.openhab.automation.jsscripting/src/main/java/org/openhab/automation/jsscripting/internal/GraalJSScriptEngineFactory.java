@@ -26,6 +26,7 @@ import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * An implementation of {@link ScriptEngineFactory} with customizations for GraalJS ScriptEngines.
@@ -42,6 +43,7 @@ public final class GraalJSScriptEngineFactory implements ScriptEngineFactory {
     private boolean injectionEnabled = true;
 
     public static final String MIME_TYPE = "application/javascript;version=ECMAScript-2021";
+    private @Reference JSScriptServiceUtil jsScriptServiceUtil;
 
     @Override
     public List<String> getScriptTypes() {
@@ -71,7 +73,7 @@ public final class GraalJSScriptEngineFactory implements ScriptEngineFactory {
     @Override
     public ScriptEngine createScriptEngine(String scriptType) {
         return new DebuggingGraalScriptEngine<>(
-                new OpenhabGraalJSScriptEngine(injectionEnabled ? INJECTION_CODE : null));
+                new OpenhabGraalJSScriptEngine(injectionEnabled ? INJECTION_CODE : null, jsScriptServiceUtil));
     }
 
     @Activate

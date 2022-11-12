@@ -71,7 +71,7 @@ public class OpenhabGraalJSScriptEngine
 
     // shared lock object for synchronization of multi-thread access
     private final Object lock = new Object();
-    private final JSRuntimeFeatures jsRuntimeFeatures = new JSRuntimeFeatures(lock);
+    private JSRuntimeFeatures jsRuntimeFeatures;
 
     // these fields start as null because they are populated on first use
     private String engineIdentifier;
@@ -84,9 +84,10 @@ public class OpenhabGraalJSScriptEngine
      * Creates an implementation of ScriptEngine (& Invocable), wrapping the contained engine, that tracks the script
      * lifecycle and provides hooks for scripts to do so too.
      */
-    public OpenhabGraalJSScriptEngine(@Nullable String injectionCode) {
+    public OpenhabGraalJSScriptEngine(@Nullable String injectionCode, JSScriptServiceUtil jsScriptServiceUtil) {
         super(null); // delegate depends on fields not yet initialised, so we cannot set it immediately
         this.globalScript = GLOBAL_REQUIRE + (injectionCode != null ? injectionCode : "");
+        this.jsRuntimeFeatures = new JSRuntimeFeatures(lock, jsScriptServiceUtil);
 
         LOGGER.debug("Initializing GraalJS script engine...");
 

@@ -12,10 +12,7 @@
  */
 package org.openhab.automation.jsscripting.internal;
 
-import java.util.Objects;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.automation.module.script.action.ScriptExecution;
 import org.openhab.core.scheduler.Scheduler;
 import org.osgi.service.component.annotations.Activate;
@@ -23,27 +20,27 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * Utility class for providing easy access to script services.
+ * OSGi utility service for providing easy access to script services.
  *
  * @author Florian Hotze - Initial contribution
  */
-@Component(immediate = true)
+@Component(immediate = true, service = JSScriptServiceUtil.class)
 @NonNullByDefault
 public class JSScriptServiceUtil {
-    private static @Nullable Scheduler scheduler;
-    private static @Nullable ScriptExecution scriptExecution;
+    private final Scheduler scheduler;
+    private final ScriptExecution scriptExecution;
 
     @Activate
     public JSScriptServiceUtil(final @Reference Scheduler scheduler, final @Reference ScriptExecution scriptExecution) {
-        JSScriptServiceUtil.scheduler = scheduler;
-        JSScriptServiceUtil.scriptExecution = scriptExecution;
+        this.scheduler = scheduler;
+        this.scriptExecution = scriptExecution;
     }
 
-    public static Scheduler getScheduler() {
-        return Objects.requireNonNull(scheduler);
+    public Scheduler getScheduler() {
+        return scheduler;
     }
 
-    public static ScriptExecution getScriptExecution() {
-        return Objects.requireNonNull(scriptExecution);
+    public ScriptExecution getScriptExecution() {
+        return scriptExecution;
     }
 }
