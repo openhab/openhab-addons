@@ -74,8 +74,8 @@ In this case:
 
 ### Panel Layout
 
-If you want to program individual panels, it can be hard to figure out which panel has which ID. To make this easier, there is Layout channel on the Nanoleaf controller thing in OpenHAB. 
-The easiest way to visualize the layout of the individual panels is to open the controller thing in the OpenHAB UI, go to Channels and add a new item to the Layout channel. 
+If you want to program individual panels, it can be hard to figure out which panel has which ID. To make this easier, there is Layout channel on the Nanoleaf controller thing in openHAB. 
+The easiest way to visualize the layout of the individual panels is to open the controller thing in the openHAB UI, go to Channels and add a new item to the Layout channel. 
 Clicking on that image or adding it to a dashboard will show a picture of your canvas with the individual thing ID in the picture.
 
 If your canvas has elements we dont know how to draw a layout for yet, please reach out, and we will ask for some information and will try to add support for your elements.
