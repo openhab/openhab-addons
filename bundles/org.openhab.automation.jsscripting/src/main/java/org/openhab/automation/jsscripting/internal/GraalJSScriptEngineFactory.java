@@ -21,7 +21,6 @@ import javax.script.ScriptEngine;
 
 import org.openhab.core.automation.module.script.ScriptEngineFactory;
 import org.openhab.core.config.core.ConfigurableService;
-import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -43,7 +42,14 @@ public final class GraalJSScriptEngineFactory implements ScriptEngineFactory {
     private boolean injectionEnabled = true;
 
     public static final String MIME_TYPE = "application/javascript;version=ECMAScript-2021";
-    private @Reference JSScriptServiceUtil jsScriptServiceUtil;
+    private final JSScriptServiceUtil jsScriptServiceUtil;
+
+    @Activate
+    public GraalJSScriptEngineFactory(final @Reference JSScriptServiceUtil jsScriptServiceUtil,
+            Map<String, Object> config) {
+        this.jsScriptServiceUtil = jsScriptServiceUtil;
+        modified(config);
+    }
 
     @Override
     public List<String> getScriptTypes() {
@@ -74,11 +80,6 @@ public final class GraalJSScriptEngineFactory implements ScriptEngineFactory {
     public ScriptEngine createScriptEngine(String scriptType) {
         return new DebuggingGraalScriptEngine<>(
                 new OpenhabGraalJSScriptEngine(injectionEnabled ? INJECTION_CODE : null, jsScriptServiceUtil));
-    }
-
-    @Activate
-    protected void activate(BundleContext context, Map<String, ?> config) {
-        modified(config);
     }
 
     @Modified
