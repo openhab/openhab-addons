@@ -12,19 +12,11 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal.component;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -38,6 +30,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.openhab.binding.mqtt.generic.MqttChannelTypeProvider;
 import org.openhab.binding.mqtt.generic.TransformationServiceProvider;
@@ -59,7 +52,6 @@ import org.openhab.core.types.State;
  *
  * @author Anton Kharuzhy - Initial contribution
  */
-@SuppressWarnings({ "ConstantConditions" })
 @NonNullByDefault
 public abstract class AbstractComponentTests extends AbstractHomeAssistantTests {
     private static final int SUBSCRIBE_TIMEOUT = 10000;
@@ -178,6 +170,7 @@ public abstract class AbstractComponentTests extends AbstractHomeAssistantTests 
      * @param channelId channel
      * @param state expected state
      */
+    @SuppressWarnings("null")
     protected static void assertState(AbstractComponent<@NonNull ? extends AbstractChannelConfiguration> component,
             String channelId, State state) {
         assertThat(component.getChannel(channelId).getState().getCache().getChannelState(), is(state));
@@ -190,8 +183,8 @@ public abstract class AbstractComponentTests extends AbstractHomeAssistantTests 
      * @param payload payload
      */
     protected void assertPublished(String mqttTopic, String payload) {
-        verify(bridgeConnection).publish(eq(mqttTopic), eq(payload.getBytes(StandardCharsets.UTF_8)), anyInt(),
-                anyBoolean());
+        verify(bridgeConnection).publish(eq(mqttTopic), ArgumentMatchers.eq(payload.getBytes(StandardCharsets.UTF_8)),
+                anyInt(), anyBoolean());
     }
 
     /**
@@ -202,8 +195,8 @@ public abstract class AbstractComponentTests extends AbstractHomeAssistantTests 
      * @param t payload must be published N times on given topic
      */
     protected void assertPublished(String mqttTopic, String payload, int t) {
-        verify(bridgeConnection, times(t)).publish(eq(mqttTopic), eq(payload.getBytes(StandardCharsets.UTF_8)),
-                anyInt(), anyBoolean());
+        verify(bridgeConnection, times(t)).publish(eq(mqttTopic),
+                ArgumentMatchers.eq(payload.getBytes(StandardCharsets.UTF_8)), anyInt(), anyBoolean());
     }
 
     /**
@@ -213,8 +206,8 @@ public abstract class AbstractComponentTests extends AbstractHomeAssistantTests 
      * @param payload payload
      */
     protected void assertNotPublished(String mqttTopic, String payload) {
-        verify(bridgeConnection, never()).publish(eq(mqttTopic), eq(payload.getBytes(StandardCharsets.UTF_8)), anyInt(),
-                anyBoolean());
+        verify(bridgeConnection, never()).publish(eq(mqttTopic),
+                ArgumentMatchers.eq(payload.getBytes(StandardCharsets.UTF_8)), anyInt(), anyBoolean());
     }
 
     /**
