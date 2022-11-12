@@ -14,17 +14,19 @@ This binding supports the following things:
 
 This binding should work with multiple JuiceBox EV chargers associated with the account, however it is currently only tested with a single EV charger.
 
-## Thing Configuration
+### Discovery
 
-The only configuration required is to create a JuiceNet account thing and fill in the appropriate API token.
+Once a JuiceNet Account bridge has been created, any JuiceBox EV Chargers associated with this account will be discovered.
+
+
+### Thing Configuration
+
+The configuration required is to create a JuiceNet account thing and fill in the appropriate API token.
 The API token can be found on the Account page at https://home.juice.net/Manage.
 
-Once, the JuiceNet Account thing has been created, all JuiceBox EV chargers associated with that account will be discovered and added to the inbox.
+A JuiceBox EV Charger requires a a unitID which can also be found in the device settings at the JuiceNet web page.
 
-## Manual Configuration Example
-
-The bridge and device can be manually configured in a .things file.
-Both the apiToken parameter for the Bridge and the unitID parameter for the EV charger can be found on the account page at https://home.juce.net.
+If configuring the binding with manual configuration an example thing file looks like this:
 
 ```
 Bridge juicenet:account:myaccount [ apiToken="xxxx-xxxx-xxxx-xxxx-xxxxx" ] {
@@ -34,37 +36,74 @@ Bridge juicenet:account:myaccount [ apiToken="xxxx-xxxx-xxxx-xxxx-xxxxx" ] {
 
 ## Channels
 
-| channel           | type              | read-only | description                  |
-|----------         |--------           |---------  | ------- |
-| name              | String            | Y         | Name of device.|
-| chargingState     | String            | N         | Current charging state (Start Charging, Smart Charging, Stop Charging). |
-| state             | String            | Y         | This is the current device state (Available, Plugged-In, Charging, Error, Disconnected).  |
-| message           | String            | Y         | This is a message detailing the state of the EV charger. |
-| override          | Switch            | Y         | Smart charging is overridden. |
-| chargingTimeLeft  | Number:Time       | Y         | Charging time left (seconds). |
-| plugUnplugTime    | DateTime          | Y         | Last time of either plug-in or plug-out. |
-| targetTime        | DateTime          | N         | “Start charging” start time, or time to start when overriding smart charging. |
-| unitTime          | DateTime          | Y         | Current time on the unit. |
-| temperature       | Number:Temperature | Y        | Current temperature at the unit. |
-| currentLimit      | Number:ElectricCurrent | N    | Max charging current allowed. |
-| current           | Number:ElectricCurrent | Y    | Current charging current. |
-| voltage           | Number:ElectricPotential | Y  | Current voltage. |
-| energy            | Number:Energy     | Y         | Current amount of energy poured to the vehicle. |
-| savings           | Number            | Y         | Current session EV savings. |
-| power             | Number:Power      | Y         | Current charging power. |
-| secondsCharging   | Number:Time       | Y         | Charging time since plug-in time. |
-| energyAtPlugin    | Number:Energy     | Y         | Energy value at the plugging time. |
-| energyToAdd       | Number:Energy     | N         | Amount of energy to be added in current session. |
-| lifetimeEnergy    | Number:Energy     | Y         | Total energy delivered to vehicles during lifetime. |
-| lifetimeSavings   | Number            | Y         | EV driving saving during lifetime. |
-| gasCost           | Number            | Y         | Cost of gasoline used in savings calculations. |
-| fuelConsumption   | Number            | Y         | Miles per gallon used in savings calculations. |
-| ecost             | Number            | Y         | Cost of electricity from utility company. (currency/kWh) |
-| energyPerMile     | Number            | Y         | Energy per mile. |
-| carDescription    | String            | Y         | Car description of vehicle currently or last charged. |
-| carBatterySize    | Number:Energy     | Y         | Car battery pack size. |
-| carBatteryRange   | Number:Length     | Y         | Car range. |
-| carChargingRate   | Number:Power      | Y         | Car charging rate. |
+| channel           | type                      | read-only | description                  |
+|----------         |--------                   |---------  | ------- |
+| name              | String                    | Y         | Name of device.|
+| chargingState     | String                    | N         | Current charging state (Start Charging, Smart Charging, Stop Charging). |
+| state             | String                    | Y         | This is the current device state (Available, Plugged-In, Charging, Error, Disconnected).  |
+| message           | String                    | Y         | This is a message detailing the state of the EV charger. |
+| override          | Switch                    | Y         | Smart charging is overridden. |
+| chargingTimeLeft  | Number:Time               | Y         | Charging time left (seconds). |
+| plugUnplugTime    | DateTime                  | Y         | Last time of either plug-in or plug-out. |
+| targetTime        | DateTime                  | N         | “Start charging” start time, or time to start when overriding smart charging. |
+| unitTime          | DateTime                  | Y         | Current time on the unit. |
+| temperature       | Number:Temperature        | Y         | Current temperature at the unit. |
+| currentLimit      | Number:ElectricCurrent    | N         | Max charging current allowed. |
+| current           | Number:ElectricCurrent    | Y         | Current charging current. |
+| voltage           | Number:ElectricPotential  | Y         | Current voltage. |
+| energy            | Number:Energy             | Y         | Current amount of energy poured to the vehicle. |
+| savings           | Number                    | Y         | Current session EV savings. |
+| power             | Number:Power              | Y         | Current charging power. |
+| secondsCharging   | Number:Time               | Y         | Charging time since plug-in time. |
+| energyAtPlugin    | Number:Energy             | Y         | Energy value at the plugging time. |
+| energyToAdd       | Number:Energy             | N         | Amount of energy to be added in current session. |
+| lifetimeEnergy    | Number:Energy             | Y         | Total energy delivered to vehicles during lifetime. |
+| lifetimeSavings   | Number                    | Y         | EV driving saving during lifetime. |
+| gasCost           | Number                    | Y         | Cost of gasoline used in savings calculations. |
+| fuelConsumption   | Number                    | Y         | Miles per gallon used in savings calculations. |
+| ecost             | Number                    | Y         | Cost of electricity from utility company. (currency/kWh) |
+| energyPerMile     | Number                    | Y         | Energy per mile. |
+| carDescription    | String                    | Y         | Car description of vehicle currently or last charged. |
+| carBatterySize    | Number:Energy             | Y         | Car battery pack size. |
+| carBatteryRange   | Number:Length             | Y         | Car range. |
+| carChargingRate   | Number:Power              | Y         | Car charging rate. |
+
+### Example Item File
+
+An example of an items file is here.
+
+```
+String                  JuiceNet_Name               "Name"                                                      { channel="juicenet:device:myaccount:JamesCharger:name" }
+String                  JuiceNet_State              "Device State"                                              { channel="juicenet:device:myaccount:JamesCharger:state" }
+String                  JuiceNet_ChargingState      "Charging State"                                            { channel="juicenet:device:myaccount:JamesCharger:chargingState" }
+String                  JuiceNet_Message            "State Message"                                             { channel="juicenet:device:myaccount:JamesCharger:message" }
+Switch                  JuiceNet_Override           "Override State"                                            { channel="juicenet:device:myaccount:JamesCharger:override" }
+DateTime                JuiceNet_PlutUnplugTime     "Plug/Unplug Time [%1$tB %1$te, %1$tY %1$tl:%1$tM %1$tp]"   { channel="juicenet:device:myaccount:JamesCharger:plugUnplugTime" }
+DateTime                JuiceNet_TargetTime         "Target Time [%1$tB %1$te, %1$tY %1$tl:%1$tM %1$tp]"        { channel="juicenet:device:myaccount:JamesCharger:targetTime" }
+Number:Time             JuiceNet_ChargingTimeLeft   "Charging Time Left [%.0f %unit%]"                          { channel="juicenet:device:myaccount:JamesCharger:chargingTimeLeft" }
+DateTime                JuiceNet_UnitTime           "Unit Time [%1$tB %1$te, %1$tY %1$tl:%1$tM %1$tp]"          { channel="juicenet:device:myaccount:JamesCharger:unitTime" }
+Number:Temperature      JuiceNet_Temperature        "Temperature [%.0f %unit%]"                                 { channel="juicenet:device:myaccount:JamesCharger:temperature" }
+Number:ElectricCurrent  JuiceNet_CurrentLimit       "Current Limit [%d %unit%]"                                 { channel="juicenet:device:myaccount:JamesCharger:currentLimit" }
+Number:ElectricCurrent  JuiceNet_Current            "Current [%.1f %unit%]"                                     { channel="juicenet:device:myaccount:JamesCharger:current" }
+Number:ElectricPotential JuiceNet_Voltage           "Voltage [%d %unit%]"                                       { channel="juicenet:device:myaccount:JamesCharger:voltage" }
+Number:Energy           JuiceNet_Energy             "Current Energy [%.1f %unit%]"                              { channel="juicenet:device:myaccount:JamesCharger:energy" }
+Number:Power            JuiceNet_Power              "Charging Power [%.2f %unit%]"                              { channel="juicenet:device:myaccount:JamesCharger:power" }
+Number                  JuiceNet_Savings            "Savings [$%.2f]"                                           { channel="juicenet:device:myaccount:JamesCharger:savings" }
+Number:Time             JuiceNet_ChargingTime       "Charging Time [%.0f %unit%]"                               { channel="jjuicenet:device:myaccount:JamesCharger:chargingTime" }
+Number:Energy           JuiceNet_EnergyToAdd        "Energy to Add [%.2f %unit%]"                               { channel="juicenet:device:myaccount:JamesCharger:energyToAdd" }
+Number:Energy           JuiceNet_EnergyAtPlugin     "Energy at Plugin [%.2f %unit%]"                            { channel="juicenet:device:myaccount:JamesCharger:energyAtPlugin" }
+Number:Energy           JuiceNet_LifetimeEnergy     "Lifetime Energy [%.2f %unit%]"                             { channel="juicenet:device:myaccount:JamesCharger:lifetimeEnergy" }
+Number                  JuiceNet_GasCost            "Gas Cost [$%.2f]"                                          { channel="juicenet:device:myaccount:JamesCharger:gasCost" }
+Number                  JuiceNet_FuelConsumption    "Fuel consumption [%.1f %unit%]"                            { channel="juicenet:device:myaccount:JamesCharger:fuelConsumption" }
+Number                  JuiceNet_Ecost              "Utility Energy Cost [$%.2f]"                               { channel="juicenet:device:myaccount:JamesCharger:ecost" }
+Number                  JuiceNet_LifetimeSavings    "Lifetime Savings [$%.2f]"                                  { channel="juicenet:device:myaccount:JamesCharger:lifetimeSavings" }
+Number:Power            JuiceNet_EnergyPerMile      "Energy Hours Per Mile [%.2f %unit%]"                       { channel="juicenet:device:myaccount:JamesCharger:energyPerMile" }
+String                  JuiceNet_CarDescription     "Car Description"                                           { channel="juicenet:device:myaccount:JamesCharger:carDescription" }
+Number:Length           JuiceNet_CarBatteryRange    "Mileage Range [%d %unit%]"                                 { channel="juicenet:device:myaccount:JamesCharger:carBatteryRange" }
+Number:Energy           JuiceNet_CarBatterySize     "Car Battery Pack Size [%.2f %unit%]"                       { channel="juicenet:device:myaccount:JamesCharger:carBatterySize" }
+Number:Power            JuiceNet_CarChargineRage    "Car Charging Rate [%.2f %unit%]"                           { channel="juicenet:device:myaccount:JamesCharger:carChargingRate" }
+
+```
 
 ## Widget
 

@@ -26,7 +26,7 @@ public class JuiceNetApiDeviceStatus {
     @SerializedName("ID")
     public String id = "";
     @SerializedName("info_timestamp")
-    public Long timestamp = (long) 0;
+    public Long infoTimestamp = (long) 0;
     @SerializedName("show_override")
     public boolean showOverride;
     public String state = "";

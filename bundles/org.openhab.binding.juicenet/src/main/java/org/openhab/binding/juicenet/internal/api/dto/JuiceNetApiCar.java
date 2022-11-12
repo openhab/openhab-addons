@@ -27,11 +27,11 @@ public class JuiceNetApiCar {
     public int carId;
     public String description = "";
     @SerializedName("battery_size_wh")
-    public int batterySize;
+    public int batterySizeWH;
     @SerializedName("battery_range_m")
-    public int batteryRange;
+    public int batteryRangeM;
     @SerializedName("charging_rate_w")
-    public int chargingRate;
+    public int chargingRateW;
     @SerializedName("model_id")
     public String modelId = "";
 }

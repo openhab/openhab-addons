@@ -63,7 +63,7 @@ public class JuiceNetDiscoveryService extends AbstractDiscoveryService
 
     @Override
     protected synchronized void startScan() {
-        // ignore startScan requests
+        Objects.requireNonNull(bridgeHandler).iterateApiDevices();
     }
 
     @Override

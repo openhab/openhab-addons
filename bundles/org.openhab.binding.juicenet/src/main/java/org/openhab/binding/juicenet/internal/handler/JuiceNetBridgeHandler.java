@@ -17,6 +17,7 @@ import static org.openhab.binding.juicenet.internal.JuiceNetBindingConstants.*;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -76,9 +77,9 @@ public class JuiceNetBridgeHandler extends BaseBridgeHandler {
     public void initialize() {
         config = getConfigAs(JuiceNetBridgeConfiguration.class);
 
-        logger.trace("JuiceNetBridgeHandler:initialize");
+        logger.trace("Bridge initialized: {}", Objects.requireNonNull(getThing()).getUID());
 
-        api.initialize(config.apiToken);
+        api.setApiToken(config.apiToken);
 
         updateStatus(ThingStatus.UNKNOWN);
         // Bridge will go online after the first successful API call in iterateApiDevices. iterateApiDevices will be
@@ -152,11 +153,6 @@ public class JuiceNetBridgeHandler extends BaseBridgeHandler {
     // to ONLINE.
     public void iterateApiDevices() {
         List<JuiceNetApiDevice> listDevices;
-        JuiceNetDiscoveryService discoveryService = this.discoveryService;
-
-        if (discoveryService == null) {
-            return;
-        }
 
         try {
             listDevices = api.queryDeviceList();
@@ -172,7 +168,10 @@ public class JuiceNetBridgeHandler extends BaseBridgeHandler {
         for (JuiceNetApiDevice dev : listDevices) {
             Thing childThing = getThingById(dev.unitId);
             if (childThing == null) {
-                discoveryService.notifyDiscoveryDevice(dev.unitId, dev.name);
+                JuiceNetDiscoveryService discoveryService = this.discoveryService;
+                if (discoveryService != null) {
+                    discoveryService.notifyDiscoveryDevice(dev.unitId, dev.name);
+                }
             } else {
                 JuiceNetDeviceHandler childHandler = (JuiceNetDeviceHandler) childThing.getHandler();
                 if (childHandler != null) {
@@ -183,8 +182,6 @@ public class JuiceNetBridgeHandler extends BaseBridgeHandler {
     }
 
     private void pollDevices() {
-        logger.debug("pollDevices");
-
         List<Thing> things = getThing().getThings();
 
         for (Thing t : things) {
@@ -194,8 +191,8 @@ public class JuiceNetBridgeHandler extends BaseBridgeHandler {
 
             JuiceNetDeviceHandler handler = (JuiceNetDeviceHandler) t.getHandler();
             if (handler == null) {
-                logger.trace("no handler");
-                return;
+                logger.trace("no handler for thing: {}", t.getUID());
+                continue;
             }
 
             handler.queryDeviceStatusAndInfo();

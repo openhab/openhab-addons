@@ -54,9 +54,9 @@ public class JuiceNetApi {
     private static final String API_ACCOUNT = API_HOST + "box_pin";
     private static final String API_DEVICE = API_HOST + "box_api_secure";
 
-    protected String apiToken = "";
-    protected HttpClient httpClient;
-    protected ThingUID bridgeUID;
+    private String apiToken = "";
+    private HttpClient httpClient;
+    private ThingUID bridgeUID;
 
     public enum ApiCommand {
         GET_ACCOUNT_UNITS("get_account_units", API_ACCOUNT),
@@ -81,7 +81,7 @@ public class JuiceNetApi {
         this.httpClient = httpClient;
     }
 
-    public void initialize(String apiToken) {
+    public void setApiToken(String apiToken) {
         this.apiToken = apiToken;
     }
 

@@ -24,20 +24,20 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class JuiceNetApiDeviceChargingStatus {
     @SerializedName("amps_limit")
-    public int currentLimit;
+    public int ampsLimit;
     @SerializedName("amps_current")
-    public float current;
+    public float ampsCurrent;
     public int voltage;
     @SerializedName("wh_energy")
-    public int energy;
+    public int whEnergy;
     public int savings;
     @SerializedName("watt_power")
-    public int power;
+    public int wattPower;
     @SerializedName("seconds_charging")
-    public int timeCharging;
+    public int secondsCharging;
     @SerializedName("wh_energy_at_plugin")
-    public int energyAtPlugin;
+    public int whEnergyAtPlugin;
     @SerializedName("wh_energy_to_add")
-    public int energyToAdd;
+    public int whEnergyToAdd;
     public int flags;
 }

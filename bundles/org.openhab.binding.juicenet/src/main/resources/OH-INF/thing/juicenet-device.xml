@@ -10,7 +10,7 @@
 		</supported-bridge-type-refs>
 
 		<label>JuiceBox Charger</label>
-		<description>JuiceBox EV-Charger</description>
+		<description>JuiceBox EV Charger</description>
 
 		<channels>
 			<channel id="name" typeId="name"/>

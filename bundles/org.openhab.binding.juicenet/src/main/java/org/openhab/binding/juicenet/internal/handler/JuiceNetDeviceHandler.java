@@ -21,6 +21,7 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.juicenet.internal.api.JuiceNetApi;
 import org.openhab.binding.juicenet.internal.api.JuiceNetApiException;
 import org.openhab.binding.juicenet.internal.api.dto.JuiceNetApiCar;
@@ -96,7 +97,7 @@ public class JuiceNetDeviceHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        logger.trace("JuiceNetDeviceHandler:initialize");
+        logger.trace("Device initialized: {}", Objects.requireNonNull(getThing().getUID()));
         Configuration configuration = getThing().getConfiguration();
 
         String stringId = configuration.get(PARAMETER_UNIT_ID).toString();
@@ -111,7 +112,7 @@ public class JuiceNetDeviceHandler extends BaseThingHandler {
         // This device will go ONLINE on the first successful API call in queryDeviceStatusAndInfo
     }
 
-    public void handleApiException(Exception e) {
+    private void handleApiException(Exception e) {
         if (e instanceof JuiceNetApiException) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.toString());
         } else if (e instanceof InterruptedException) {
@@ -122,7 +123,7 @@ public class JuiceNetDeviceHandler extends BaseThingHandler {
         }
     }
 
-    public void goOnline() {
+    private void goOnline() {
         logger.trace("goOnline");
         if (this.getThing().getStatus() == ThingStatus.ONLINE) {
             return;
@@ -144,8 +145,14 @@ public class JuiceNetDeviceHandler extends BaseThingHandler {
         updateStatus(ThingStatus.ONLINE);
     }
 
-    protected JuiceNetApi getApi() {
-        Bridge bridge = Objects.requireNonNull(getBridge());
+    @Nullable
+    private JuiceNetApi getApi() {
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                    "@text/offline.configuration-error.bridge-missing");
+            return null;
+        }
         BridgeHandler handler = Objects.requireNonNull(bridge.getHandler());
 
         return ((JuiceNetBridgeHandler) handler).getApi();
@@ -153,6 +160,11 @@ public class JuiceNetDeviceHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        JuiceNetApi api = getApi();
+        if (api == null) {
+            return;
+        }
+
         if (command instanceof RefreshType) {
             switch (channelUID.getId()) {
                 case CHANNEL_NAME:
@@ -196,12 +208,11 @@ public class JuiceNetDeviceHandler extends BaseThingHandler {
             switch (channelUID.getId()) {
                 case CHANNEL_CURRENT_LIMIT:
                     int limit = ((QuantityType<?>) command).intValue();
-
-                    getApi().setCurrentLimit(Objects.requireNonNull(token), limit);
+                    api.setCurrentLimit(Objects.requireNonNull(token), limit);
                     break;
                 case CHANNEL_TARGET_TIME: {
                     int energyAtPlugin = 0;
-                    int energyToAdd = deviceCar.batterySize;
+                    int energyToAdd = deviceCar.batterySizeWH;
 
                     if (!(command instanceof DateTimeType)) {
                         logger.info("Target Time is not an instance of DateTimeType");
@@ -212,7 +223,7 @@ public class JuiceNetDeviceHandler extends BaseThingHandler {
                     Long targetTime = datetime.toEpochSecond() + datetime.get(ChronoField.OFFSET_SECONDS);
                     logger.debug("DateTime: {} - {}", datetime.toString(), targetTime);
 
-                    getApi().setOverride(Objects.requireNonNull(token), energyAtPlugin, targetTime, energyToAdd);
+                    api.setOverride(Objects.requireNonNull(token), energyAtPlugin, targetTime, energyToAdd);
 
                     break;
                 }
@@ -220,7 +231,7 @@ public class JuiceNetDeviceHandler extends BaseThingHandler {
                     String state = ((StringType) command).toString();
                     Long overrideTime = deviceStatus.unitTime;
                     int energyAtPlugin = 0;
-                    int energyToAdd = deviceCar.batterySize;
+                    int energyToAdd = deviceCar.batterySizeWH;
 
                     switch (state) {
                         case "stop":
@@ -240,7 +251,7 @@ public class JuiceNetDeviceHandler extends BaseThingHandler {
                             break;
                     }
 
-                    getApi().setOverride(Objects.requireNonNull(token), energyAtPlugin, overrideTime, energyToAdd);
+                    api.setOverride(Objects.requireNonNull(token), energyAtPlugin, overrideTime, energyToAdd);
 
                     break;
                 }
@@ -251,16 +262,20 @@ public class JuiceNetDeviceHandler extends BaseThingHandler {
         }
     }
 
-    public void tryQueryDeviceStatusAndInfo() throws JuiceNetApiException, InterruptedException {
+    private void tryQueryDeviceStatusAndInfo() throws JuiceNetApiException, InterruptedException {
         String apiToken = Objects.requireNonNull(this.token);
+        JuiceNetApi api = getApi();
+        if (api == null) {
+            return;
+        }
 
-        deviceStatus = getApi().queryDeviceStatus(apiToken);
+        deviceStatus = api.queryDeviceStatus(apiToken);
 
-        if (deviceStatus.timestamp > lastInfoTimestamp) {
-            lastInfoTimestamp = deviceStatus.timestamp;
+        if (deviceStatus.infoTimestamp > lastInfoTimestamp) {
+            lastInfoTimestamp = deviceStatus.infoTimestamp;
 
-            deviceInfo = getApi().queryInfo(apiToken);
-            deviceTouSchedule = getApi().queryTOUSchedule(apiToken);
+            deviceInfo = api.queryInfo(apiToken);
+            deviceTouSchedule = api.queryTOUSchedule(apiToken);
             refreshInfoChannels();
         }
 
@@ -284,10 +299,6 @@ public class JuiceNetDeviceHandler extends BaseThingHandler {
             return;
         }
 
-        if (this.getThing().getStatus() != ThingStatus.ONLINE) {
-            return;
-        }
-
         try {
             tryQueryDeviceStatusAndInfo();
         } catch (JuiceNetApiException | InterruptedException e) {
@@ -296,11 +307,11 @@ public class JuiceNetDeviceHandler extends BaseThingHandler {
         }
     }
 
-    protected ZonedDateTime toZonedDateTime(long localEpochSeconds) {
+    private ZonedDateTime toZonedDateTime(long localEpochSeconds) {
         return Instant.ofEpochSecond(localEpochSeconds).atZone(timeZoneProvider.getTimeZone());
     }
 
-    protected void refreshStatusChannels() {
+    private void refreshStatusChannels() {
         updateState(CHANNEL_STATE, new StringType(deviceStatus.state));
 
         if (deviceStatus.targetTime <= deviceStatus.unitTime) {
@@ -318,32 +329,32 @@ public class JuiceNetDeviceHandler extends BaseThingHandler {
         updateState(CHANNEL_TARGET_TIME, new DateTimeType(toZonedDateTime(deviceStatus.targetTime)));
         updateState(CHANNEL_UNIT_TIME, new DateTimeType(toZonedDateTime(deviceStatus.utcTime)));
         updateState(CHANNEL_TEMPERATURE, new QuantityType<>(deviceStatus.temperature, SIUnits.CELSIUS));
-        updateState(CHANNEL_CURRENT_LIMIT, new QuantityType<>(deviceStatus.charging.currentLimit, Units.AMPERE));
-        updateState(CHANNEL_CURRENT, new QuantityType<>(deviceStatus.charging.current, Units.AMPERE));
+        updateState(CHANNEL_CURRENT_LIMIT, new QuantityType<>(deviceStatus.charging.ampsLimit, Units.AMPERE));
+        updateState(CHANNEL_CURRENT, new QuantityType<>(deviceStatus.charging.ampsCurrent, Units.AMPERE));
         updateState(CHANNEL_VOLTAGE, new QuantityType<>(deviceStatus.charging.voltage, Units.VOLT));
-        updateState(CHANNEL_ENERGY, new QuantityType<>(deviceStatus.charging.energy, Units.WATT_HOUR));
+        updateState(CHANNEL_ENERGY, new QuantityType<>(deviceStatus.charging.whEnergy, Units.WATT_HOUR));
         updateState(CHANNEL_SAVINGS, new DecimalType(deviceStatus.charging.savings / 100.0));
-        updateState(CHANNEL_POWER, new QuantityType<>(deviceStatus.charging.power, Units.WATT));
-        updateState(CHANNEL_CHARGING_TIME, new QuantityType<>(deviceStatus.charging.timeCharging, Units.SECOND));
+        updateState(CHANNEL_POWER, new QuantityType<>(deviceStatus.charging.wattPower, Units.WATT));
+        updateState(CHANNEL_CHARGING_TIME, new QuantityType<>(deviceStatus.charging.secondsCharging, Units.SECOND));
         updateState(CHANNEL_ENERGY_AT_PLUGIN,
-                new QuantityType<>(deviceStatus.charging.energyAtPlugin, Units.WATT_HOUR));
-        updateState(CHANNEL_ENERGY_TO_ADD, new QuantityType<>(deviceStatus.charging.energyToAdd, Units.WATT_HOUR));
-        updateState(CHANNEL_LIFETIME_ENERGY, new QuantityType<>(deviceStatus.lifetime.energy, Units.WATT_HOUR));
+                new QuantityType<>(deviceStatus.charging.whEnergyAtPlugin, Units.WATT_HOUR));
+        updateState(CHANNEL_ENERGY_TO_ADD, new QuantityType<>(deviceStatus.charging.whEnergyToAdd, Units.WATT_HOUR));
+        updateState(CHANNEL_LIFETIME_ENERGY, new QuantityType<>(deviceStatus.lifetime.whEnergy, Units.WATT_HOUR));
         updateState(CHANNEL_LIFETIME_SAVINGS, new DecimalType(deviceStatus.lifetime.savings / 100.0));
 
         // update Car items
         updateState(CHANNEL_CAR_DESCRIPTION, new StringType(deviceCar.description));
-        updateState(CHANNEL_CAR_BATTERY_SIZE, new QuantityType<>(deviceCar.batterySize, Units.WATT_HOUR));
-        updateState(CHANNEL_CAR_BATTERY_RANGE, new QuantityType<>(deviceCar.batteryRange, ImperialUnits.MILE));
-        updateState(CHANNEL_CAR_CHARGING_RATE, new QuantityType<>(deviceCar.chargingRate, Units.WATT));
+        updateState(CHANNEL_CAR_BATTERY_SIZE, new QuantityType<>(deviceCar.batterySizeWH, Units.WATT_HOUR));
+        updateState(CHANNEL_CAR_BATTERY_RANGE, new QuantityType<>(deviceCar.batteryRangeM, ImperialUnits.MILE));
+        updateState(CHANNEL_CAR_CHARGING_RATE, new QuantityType<>(deviceCar.chargingRateW, Units.WATT));
     }
 
-    protected void refreshInfoChannels() {
+    private void refreshInfoChannels() {
         updateState(CHANNEL_NAME, new StringType(name));
         updateState(CHANNEL_GAS_COST, new DecimalType(deviceInfo.gasCost / 100.0));
         // currently there is no unit defined for fuel consumption
         updateState(CHANNEL_FUEL_CONSUMPTION, new DecimalType(deviceInfo.mpg));
         updateState(CHANNEL_ECOST, new DecimalType(deviceInfo.ecost / 100.0));
-        updateState(CHANNEL_ENERGY_PER_MILE, new DecimalType(deviceInfo.energyPerMile));
+        updateState(CHANNEL_ENERGY_PER_MILE, new DecimalType(deviceInfo.whPerMile));
     }
 }

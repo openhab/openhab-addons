@@ -35,11 +35,11 @@ public class JuiceNetApiInfo {
     public int mpg;
     public int ecost;
     @SerializedName("whpermile")
-    public int energyPerMile;
+    public int whPerMile;
     public String timeZoneId = "";
     @SerializedName("amps_wire_rating")
-    public int wireRating;
+    public int ampsWireRating;
     @SerializedName("amps_unit_rating")
-    public int unitRating;
+    public int ampsUnitRating;
     public JuiceNetApiCar[] cars = {};
 }

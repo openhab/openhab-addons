@@ -24,6 +24,6 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class JuiceNetApiDeviceLifetimeStatus {
     @SerializedName("wh_energy")
-    public int energy;
+    public int whEnergy;
     public int savings;
 }
