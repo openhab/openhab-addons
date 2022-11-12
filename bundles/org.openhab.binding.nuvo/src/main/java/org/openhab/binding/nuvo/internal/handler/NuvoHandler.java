@@ -751,7 +751,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
             case TYPE_ZONE_SOURCE_BUTTON:
                 logger.debug("Source Button pressed: Source: {} - Button: {}", srcId, updateData);
                 updateChannelState(NuvoEnum.valueOf(SOURCE + srcId), CHANNEL_BUTTON_PRESS, updateData);
-                updateChannelState(NuvoEnum.SYSTEM, CHANNEL_BUTTON_PRESS, zoneId + COMMA + updateData);
+                updateChannelState(NuvoEnum.SYSTEM, CHANNEL_TYPE_BUTTONPRESS, zoneId + COMMA + updateData);
                 break;
             case TYPE_NN_BUTTON:
                 String buttonAction = NuvoStatusCodes.BUTTON_CODE.get(updateData);
@@ -759,12 +759,12 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                 if (buttonAction != null) {
                     logger.debug("NuvoNet Source Button pressed: Source: {} - Button: {}", srcId, buttonAction);
                     updateChannelState(NuvoEnum.valueOf(SOURCE + srcId), CHANNEL_BUTTON_PRESS, buttonAction);
-                    updateChannelState(NuvoEnum.SYSTEM, CHANNEL_BUTTON_PRESS, zoneId + COMMA + buttonAction);
+                    updateChannelState(NuvoEnum.SYSTEM, CHANNEL_TYPE_BUTTONPRESS, zoneId + COMMA + buttonAction);
                 } else {
                     logger.debug("NuvoNet Source Button pressed: Source: {} - Unknown button code: {}", srcId,
                             updateData);
                     updateChannelState(NuvoEnum.valueOf(SOURCE + srcId), CHANNEL_BUTTON_PRESS, updateData);
-                    updateChannelState(NuvoEnum.SYSTEM, CHANNEL_BUTTON_PRESS, zoneId + COMMA + updateData);
+                    updateChannelState(NuvoEnum.SYSTEM, CHANNEL_TYPE_BUTTONPRESS, zoneId + COMMA + updateData);
                 }
                 break;
             case TYPE_NN_MENU_ITEM_SELECTED:
@@ -783,7 +783,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                                 topMenuItem.getText());
                         updateChannelState(NuvoEnum.valueOf(SOURCE + srcId), CHANNEL_BUTTON_PRESS,
                                 topMenuItem.getText());
-                        updateChannelState(NuvoEnum.SYSTEM, CHANNEL_BUTTON_PRESS,
+                        updateChannelState(NuvoEnum.SYSTEM, CHANNEL_TYPE_BUTTONPRESS,
                                 zoneId + COMMA + topMenuItem.getText());
 
                         List<String> subMenuItems = topMenuItem.getItems();
@@ -816,7 +816,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                                 topMenuItem.getText() + "|" + subMenuItem);
                         updateChannelState(NuvoEnum.valueOf(SOURCE + srcId), CHANNEL_BUTTON_PRESS,
                                 topMenuItem.getText() + "|" + subMenuItem);
-                        updateChannelState(NuvoEnum.SYSTEM, CHANNEL_BUTTON_PRESS,
+                        updateChannelState(NuvoEnum.SYSTEM, CHANNEL_TYPE_BUTTONPRESS,
                                 zoneId + COMMA + topMenuItem.getText() + "|" + subMenuItem);
                         exitMenu = true;
                     }

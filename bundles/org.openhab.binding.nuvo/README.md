@@ -91,7 +91,7 @@ The following channels are available:
 | system#allmute                       | Switch      | Mute or unmute all zones simultaneously                                                                                        |
 | system#page                          | Switch      | Turn on or off the Page All Zones feature (while on the amplifier switches to source 6)                                        |
 | system#sendcmd                       | String      | Send a command to the amplifier                                                                                                |
-| system#button_press                  | String      | Indicates the zone number followed by a comma and the last button pressed or NuvoNet menu item selected on a keypad (ReadOnly) |
+| system#buttonpress                   | String      | Indicates the zone number followed by a comma and the last button pressed or NuvoNet menu item selected on a keypad (ReadOnly) |
 | zoneN#power (where N= 1-20)          | Switch      | Turn the power for a zone on or off                                                                                            |
 | zoneN#source (where N= 1-20)         | Number      | Select the source input for a zone (1-6)                                                                                       |
 | zoneN#volume (where N= 1-20)         | Dimmer      | Control the volume for a zone (0-100%) [translates to 0-79]                                                                    |
@@ -140,7 +140,7 @@ Switch nuvo_system_alloff "All Zones Off" { channel="nuvo:amplifier:myamp:system
 Switch nuvo_system_allmute "All Zones Mute" { channel="nuvo:amplifier:myamp:system#allmute" }
 Switch nuvo_system_page "Page All Zones" { channel="nuvo:amplifier:myamp:system#page" }
 String nuvo_system_sendcmd "Send Command" { channel="nuvo:amplifier:myamp:system#sendcmd" }
-String nuvo_system_button_press "Zone Button: [%s]" { channel="nuvo:amplifier:myamp:system#button_press" }
+String nuvo_system_buttonpress "Zone Button: [%s]" { channel="nuvo:amplifier:myamp:system#buttonpress" }
 
 // zones
 Switch nuvo_z1_power "Power" { channel="nuvo:amplifier:myamp:zone1#power" }
@@ -482,7 +482,7 @@ When a menu item is selected, the text of the topmenu item and sub menu item (if
 For example, when item `menu1 b` is selected, the text `Top menu 1|menu1 b` will be sent to the button channel.
 When the item `Top menu 2` is selected the text sent to the button channel will simply be `Top menu 2` since this menu item does not have any sub menu items.
 
-### Rule to trigger an action based which keypad zone where a button was pressed or menu item selected
+### Rule to trigger an action based on which keypad zone where a button was pressed or menu item selected
 
 By using the `system#button_press` channel it is possible to trigger an action based on which keypad zone was used to send the action.
 This channel appends the zone number and a comma before the button action or menu item selection.  
@@ -490,17 +490,17 @@ This channel appends the zone number and a comma before the button action or men
 For example if the Play/Pause button is pressed on Zone 7, the channel will display: `7,PLAYPAUSE`  
 Also if a menu item from a custom menu was selected, ie: `Top menu 1` on Zone 5, the channel will display: `5,Top menu 1`  
 
-The functionality can be utilized to create very powerful rules as demontrated below. The following rule triggered from a menu item turns off all zones except for the zone that triggered the rule.
+The functionality can be used to create very powerful rules as demontrated below. The following rule triggered from a menu item turns off all zones except for the zone that triggered the rule.
 
 nuvo-turn-off-all-but-caller.rules:
 
 ```
 rule "Turn off all zones except caller zone"
 when
-    Item nuvo_system_button_press received update
+    Item nuvo_system_buttonpress received update
 then
-    var callerZone = nuvo_system_button_press.state.toString().split(",").get(0)
-    var button = nuvo_system_button_press.state.toString().split(",").get(1)
+    var callerZone = newState.toString().split(",").get(0)
+    var button = newState.toString().split(",").get(1)
 
     if (button == "Turn off other zones") {
         if (callerZone != "1") {

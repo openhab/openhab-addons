@@ -35,6 +35,7 @@ public class NuvoBindingConstants {
     public static final String CHANNEL_TYPE_ALLMUTE = "allmute";
     public static final String CHANNEL_TYPE_PAGE = "page";
     public static final String CHANNEL_TYPE_SENDCMD = "sendcmd";
+    public static final String CHANNEL_TYPE_BUTTONPRESS = "buttonpress";
 
     // zone
     public static final String CHANNEL_TYPE_POWER = "power";
