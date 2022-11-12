@@ -493,8 +493,8 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                                 });
                             } else if (amp == AmplifierModel.XANTECH) {
                                 // for xantech send the commands to enable unsolicited updates
-                                connector.sendCommand("", "ZA1", null);
-                                connector.sendCommand("", "ZP10", null); // Zone Periodic Auto Update set to 10 secs
+                                connector.sendCommand(EMPTY, "ZA1", null);
+                                connector.sendCommand(EMPTY, "ZP10", null); // Zone Periodic Auto Update set to 10 secs
                             } else {
                                 // for 10761, just query zone 1 to see if the amp responds
                                 connector.queryZone(amp.getZoneIds().get(0));

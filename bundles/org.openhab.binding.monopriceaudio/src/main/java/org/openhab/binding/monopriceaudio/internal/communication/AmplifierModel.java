@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.monopriceaudio.internal.communication;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,8 +33,8 @@ public enum AmplifierModel {
 
     // to avoid breaking existing installations, the 10761/DAX66 will still be known as 'amplifier'
     AMPLIFIER("<", "\r", "?", "", "#>", "PR", "CH", "VO", "MU", "TR", "BS", "BL", "DT", 38, -7, 7, 7, -10, 10, 10, 18,
-            6, true, Arrays.asList("11", "12", "13", "14", "15", "16", "21", "22", "23", "24", "25", "26", "31", "32",
-                    "33", "34", "35", "36")) {
+            6, true, List.of("11", "12", "13", "14", "15", "16", "21", "22", "23", "24", "25", "26", "31", "32", "33",
+                    "34", "35", "36")) {
         @Override
         public MonopriceAudioZoneDTO getZoneData(String newZoneData) {
             return getMonopriceZoneData(newZoneData);
@@ -44,19 +42,14 @@ public enum AmplifierModel {
 
         @Override
         public List<StateOption> getSourceLabels(MonopriceAudioThingConfiguration config) {
-            List<StateOption> sourceLabels = new ArrayList<>();
-            sourceLabels.add(new StateOption("1", config.inputLabel1));
-            sourceLabels.add(new StateOption("2", config.inputLabel2));
-            sourceLabels.add(new StateOption("3", config.inputLabel3));
-            sourceLabels.add(new StateOption("4", config.inputLabel4));
-            sourceLabels.add(new StateOption("5", config.inputLabel5));
-            sourceLabels.add(new StateOption("6", config.inputLabel6));
-            return sourceLabels;
+            return List.of(new StateOption("1", config.inputLabel1), new StateOption("2", config.inputLabel2),
+                    new StateOption("3", config.inputLabel3), new StateOption("4", config.inputLabel4),
+                    new StateOption("5", config.inputLabel5), new StateOption("6", config.inputLabel6));
         }
     },
     // Dayton Audio DAX88
     DAX88("<", "\r", "?", "", ">", "PR", "CH", "VO", "MU", "TR", "BS", "BL", "DT", 38, -12, 12, 12, -10, 10, 10, 8, 8,
-            true, Arrays.asList("01", "02", "03", "04", "05", "06", "07", "08")) {
+            true, List.of("01", "02", "03", "04", "05", "06", "07", "08")) {
         @Override
         public MonopriceAudioZoneDTO getZoneData(String newZoneData) {
             return getMonopriceZoneData(newZoneData);
@@ -64,20 +57,14 @@ public enum AmplifierModel {
 
         @Override
         public List<StateOption> getSourceLabels(MonopriceAudioThingConfiguration config) {
-            List<StateOption> sourceLabels = new ArrayList<>();
-            sourceLabels.add(new StateOption("1", config.inputLabel1));
-            sourceLabels.add(new StateOption("2", config.inputLabel2));
-            sourceLabels.add(new StateOption("3", config.inputLabel3));
-            sourceLabels.add(new StateOption("4", config.inputLabel4));
-            sourceLabels.add(new StateOption("5", config.inputLabel5));
-            sourceLabels.add(new StateOption("6", config.inputLabel6));
-            sourceLabels.add(new StateOption("7", config.inputLabel7));
-            sourceLabels.add(new StateOption("8", config.inputLabel8));
-            return sourceLabels;
+            return List.of(new StateOption("1", config.inputLabel1), new StateOption("2", config.inputLabel2),
+                    new StateOption("3", config.inputLabel3), new StateOption("4", config.inputLabel4),
+                    new StateOption("5", config.inputLabel5), new StateOption("6", config.inputLabel6),
+                    new StateOption("7", config.inputLabel7), new StateOption("8", config.inputLabel8));
         }
     },
     MONOPRICE70("!", "+\r", "?", "ZS", "?", "PR", "IS", "VO", "MU", "TR", "BS", "BA", "", 38, -7, 7, 7, -32, 31, 32, 6,
-            2, false, Arrays.asList("1", "2", "3", "4", "5", "6")) {
+            2, false, List.of("1", "2", "3", "4", "5", "6")) {
         @Override
         public MonopriceAudioZoneDTO getZoneData(String newZoneData) {
             MonopriceAudioZoneDTO zoneData = new MonopriceAudioZoneDTO();
@@ -118,15 +105,11 @@ public enum AmplifierModel {
 
         @Override
         public List<StateOption> getSourceLabels(MonopriceAudioThingConfiguration config) {
-            List<StateOption> sourceLabels = new ArrayList<>();
-            sourceLabels.add(new StateOption("0", config.inputLabel1));
-            sourceLabels.add(new StateOption("1", config.inputLabel2));
-            return sourceLabels;
+            return List.of(new StateOption("0", config.inputLabel1), new StateOption("1", config.inputLabel2));
         }
     },
     XANTECH("!", "+\r", "?", "ZD", "#", "PR", "SS", "VO", "MU", "TR", "BS", "BL", "", 38, -7, 7, 7, -32, 31, 32, 16, 8,
-            false,
-            Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16")) {
+            false, List.of("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16")) {
         @Override
         public MonopriceAudioZoneDTO getZoneData(String newZoneData) {
             MonopriceAudioZoneDTO zoneData = new MonopriceAudioZoneDTO();
@@ -149,16 +132,10 @@ public enum AmplifierModel {
 
         @Override
         public List<StateOption> getSourceLabels(MonopriceAudioThingConfiguration config) {
-            List<StateOption> sourceLabels = new ArrayList<>();
-            sourceLabels.add(new StateOption("1", config.inputLabel1));
-            sourceLabels.add(new StateOption("2", config.inputLabel2));
-            sourceLabels.add(new StateOption("3", config.inputLabel3));
-            sourceLabels.add(new StateOption("4", config.inputLabel4));
-            sourceLabels.add(new StateOption("5", config.inputLabel5));
-            sourceLabels.add(new StateOption("6", config.inputLabel6));
-            sourceLabels.add(new StateOption("7", config.inputLabel7));
-            sourceLabels.add(new StateOption("8", config.inputLabel8));
-            return sourceLabels;
+            return List.of(new StateOption("1", config.inputLabel1), new StateOption("2", config.inputLabel2),
+                    new StateOption("3", config.inputLabel3), new StateOption("4", config.inputLabel4),
+                    new StateOption("5", config.inputLabel5), new StateOption("6", config.inputLabel6),
+                    new StateOption("7", config.inputLabel7), new StateOption("8", config.inputLabel8));
         }
     };
 

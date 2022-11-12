@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.monopriceaudio.internal.communication;
 
+import static org.openhab.binding.monopriceaudio.internal.MonopriceAudioBindingConstants.*;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -172,9 +174,9 @@ public abstract class MonopriceAudioConnector {
     }
 
     public void queryBalanceTone(String zoneId) throws MonopriceAudioException {
-        sendCommand("", amp.getQueryPrefix() + zoneId + amp.getTrebleCmd(), null);
-        sendCommand("", amp.getQueryPrefix() + zoneId + amp.getBassCmd(), null);
-        sendCommand("", amp.getQueryPrefix() + zoneId + amp.getBalanceCmd(), null);
+        sendCommand(EMPTY, amp.getQueryPrefix() + zoneId + amp.getTrebleCmd(), null);
+        sendCommand(EMPTY, amp.getQueryPrefix() + zoneId + amp.getBassCmd(), null);
+        sendCommand(EMPTY, amp.getQueryPrefix() + zoneId + amp.getBalanceCmd(), null);
     }
 
     /**
@@ -187,7 +189,7 @@ public abstract class MonopriceAudioConnector {
      * @throws MonopriceAudioException - In case of any problem
      */
     public void sendCommand(String zoneId, String cmd, @Nullable Integer value) throws MonopriceAudioException {
-        String messageStr = "";
+        String messageStr;
 
         if (cmd.startsWith(amp.getQueryPrefix())) {
             // query special case (ie: ? + zoneId)
