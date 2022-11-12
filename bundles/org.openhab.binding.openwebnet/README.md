@@ -43,9 +43,9 @@ The following Things and OpenWebNet `WHOs` are supported:
 | Gateway Management            |    `13`     |                       `bus_gateway`                        | Any IP gateway supporting OpenWebNet protocol should work        | Successfully tested: F452, F453, F453AV,F454, F455, MyHOMEServer1, MyHOME_Screen10, MyHOME_Screen3,5, MH201, MH202, MH200N. Some connection stability issues/gateway resets reported with MH202            |
 | Lighting                      |     `1`     |             `bus_on_off_switch`, `bus_dimmer`              | BUS switches and dimmers                                         | Successfully tested: F411/2, F411/4, F411U2, F422, F429. Some discovery issues reported with F429 (DALI Dimmers)                                                                                           |
 | Automation                    |     `2`     |                      `bus_automation`                      | BUS roller shutters, with position feedback and auto-calibration | Successfully tested: LN4672M2                                                                                                                                                                              |
-| Temperature Control           |     `4`     |  `bus_thermo_zone`, `bus_thermo_sensor`, `bus_thermo_cu`   | Thermo zones management and temperature sensors (probes).        | Successfully tested: H/LN4691, HS4692, KG4691; thermo sensors: L/N/NT4577 + 3455; Central Units (4 or 99 zones) are not fully supported yet. See [Channels - Thermo](#configuring-thermo) for more details |
-| Alarm                         |     `5`     |  `bus_alarm_zone`, `bus_alarm_cu`                          | BUS alarm system                                                 | *testing*  |
-| Auxiliary (AUX)               |     `9`     |                         `bus_aux`                          | AUX commands                                                     | Successfully tested: AUX configured for bulgrar-alarm unit 3486. **Only sending AUX commands is supported**    |
+| Temperature Control           |     `4`     |  `bus_thermo_zone`, `bus_thermo_sensor`, `bus_thermo_cu`   | Thermo zones management and temperature sensors (probes)         | Successfully tested: H/LN4691, HS4692, KG4691; thermo sensors: L/N/NT4577 + 3455; Central Units (4 or 99 zones) are not fully supported yet. See [Channels - Thermo](#configuring-thermo) for more details |
+| Alarm                         |     `5`     |  `bus_alarm_system`, `bus_alarm_zone`                      | BUS alarm system and zones                                       | Successfully tested: Alarm system 3486  |
+| Auxiliary (AUX)               |     `9`     |  `bus_aux`                                                 | AUX commands                                                     | Successfully tested: AUX configured for bulgrar-alarm unit 3486. **Only sending AUX commands is supported**    |
 | Basic, CEN & CEN+ Scenarios   | `0`, `15`, `25` | `bus_scenario_control`, `bus_cen_scenario_control`, `bus_cenplus_scenario_control` | Basic and CEN/CEN+ Scenarios events and virtual activation                 | Successfully tested: CEN/CEN+ scenario control: HC/HD/HS/L/N/NT4680 and basic scenario modules F420/IR3456 + L4680 (WHO=0)      |
 | Dry Contact and IR Interfaces |    `25`     |                    `bus_dry_contact_ir`                    | Dry Contacts and IR Interfaces                                   | Successfully tested: contact interfaces F428 and 3477; IR sensors: HC/HD/HS/L/N/NT4610      |
 | Energy Management             |    `18`     |                     `bus_energy_meter`                     | Energy Management                                                | Successfully tested: F520, F521. Partially tested: F522, F523                               |
@@ -137,7 +137,7 @@ For any manually added device, you must configure:
         - CEN+ scenario `5`: add `2` before --> `where="25"`
         - dry Contact or IR Interface `99`: add `3` before --> `where="399"`
         - energy meter F520/F521 numbered `1`: add `5` before  --> `where="51"`
-        - energy meter F522/F523 numbered `4` add `7` before and `#0` after --> `where="74#0"`
+        - energy meter F522/F523 numbered `4`: add `7` before and `#0` after --> `where="74#0"`
         - alarm zone `2` --> `where="#2"`
     - example for ZigBee devices: `where=765432101#9`. The ID of the device (ADDR part) is usually written in hexadecimal on the device itself, for example `ID 0074CBB1`: convert to decimal (`7654321`) and add `01#9` at the end to obtain `where=765432101#9`. For 2-unit switch devices (`zb_on_off_switch2u`), last part should be `00#9`.
  
@@ -166,9 +166,11 @@ The (optional) Central Unit can be configured defining a `bus_themo_cu` Thing wi
 - Holiday activation command (all zones)
 - Discovery 
 
-#### Configuring Auxiliary (AUX)
+#### Configuring Alarm and Auxiliary (AUX)
 
-**NOTE** Receiving AUX messages originating from the BUS is not supported yet, only sending messages to the BUS is supported.
+**NOTE 1** Receiving AUX messages originating from the BUS is not supported yet, only sending messages to the BUS is supported
+
+**NOTE 2** Alarm messages on BUS are not sent by MyHOMEServer1, therfore this gateway cannot be used to integrate the BTicino Alarm system
 
 BUS Auxiliary commands (WHO=9) can be used to send on the BUS commands to control, for example, external devices or a BTicino Alarm system. 
 
@@ -179,54 +181,51 @@ To configure Alarm Control Automations go to the menu:
 
     Antitheft -> Automations
 
-##### Example configuration Automation 1: when AUX-1 goes OFF, then DISARM all Zones
+##### Example configuration Automation 1: when AUX-4 goes ON, then ARM all Zones
 
-With this configuration when AUX `where=1` goes OFF, the Alarm will execute the automation and send command `*5*9##` to DISARM all zones.
+With this configuration when AUX `where=4` goes ON, the Alarm will execute the automation and send command `*5*8##` to ARM all zones:
 
-    Name: Disarm all zones
-    Event: command OPEN = *9*0*1##
-    OPEN command to execute: *5*9##
-
-##### Example configuration Automation 2: when AUX-2 goes ON, then ARM active Zones
-
-    Name: Arm active zones
-    Event: command OPEN = *9*1*2##
+    Name: Arm all zones
+    Event: command OPEN = *9*1*4##
     OPEN command to execute: *5*8##
 
-##### Example configuration Automation 3: when AUX-4 goes ON, then ARM Zones 1, 2, 3, 4
+##### Example configuration Automation 2: when AUX-5 goes ON, then DISARM active Zones
+
+    Name: Disarm active zones
+    Event: command OPEN = *9*1*5##
+    OPEN command to execute: *5*9##
+
+##### Example configuration Automation 3: when AUX-6 goes ON, then ARM Zones 1, 2, 3, 4
 
     Name: Arm zones 1-4
-    Event: command OPEN = *9*1*4##
+    Event: command OPEN = *9*1*6##
     OPEN command to execute: *5*8#1234##
 
 ## Channels 
 
-### Lighting, Automation, Power meter, Basic/CEN/CEN+ Scenario Events and Dry Contact / IR Interfaces channels
+### Lighting, Automation, Basic/CEN/CEN+ Scenario Events, Dry Contact / IR Interfaces, Power and Aux channels
 
 | Channel Type ID (channel ID)            | Applies to Thing Type IDs                                     | Item Type     | Description                                                                                                           | Read/Write  |
 |-----------------------------------------|---------------------------------------------------------------|---------------|-----------------------------------------------------------------------------------------------------------------------|:-----------:|
 | `switch` or `switch_01`/`02` for ZigBee | `bus_on_off_switch`, `zb_on_off_switch`, `zb_on_off_switch2u` | Switch        | To switch the device `ON` and `OFF`                                                                                   |     R/W     |
 | `brightness`                            | `bus_dimmer`, `zb_dimmer`                                     | Dimmer        | To adjust the brightness value (Percent, `ON`, `OFF`)                                                                 |     R/W     |
 | `shutter`                               | `bus_automation`                                              | Rollershutter | To activate roller shutters (`UP`, `DOWN`, `STOP`, Percent - [see Shutter position](#shutter-position))               |     R/W     |
-| `button#X`                             | `bus_cen_scenario_control`, `bus_cenplus_scenario_control`    | String        | Trigger channel for CEN/CEN+ scenario events [see possible values](#scenario-channels)                                | R (TRIGGER) |
+| `scenario`                              | `bus_scenario_control`                                        | String        | Trigger channel for Basic scenario events [see possible values](#scenario-channels)                                   | R (TRIGGER) |
+| `button#X`                              | `bus_cen_scenario_control`, `bus_cenplus_scenario_control`    | String        | Trigger channel for CEN/CEN+ scenario events [see possible values](#scenario-channels)                                | R (TRIGGER) |
 | `sensor`                                | `bus_dry_contact_ir`                                          | Switch        | Indicates if a Dry Contact Interface is `ON`/`OFF`, or if a IR Sensor is detecting movement (`ON`), or not  (`OFF`)   |      R      |
 | `power`                                 | `bus_energy_meter`                                            | Number:Power  | The current active power usage from Energy Meter                                                                      |      R      |
 | `aux`                                   | `bus_aux`                                                     | String        | Possible commands: `ON`, `OFF`, `TOGGLE`, `STOP`, `UP`, `DOWN`, `ENABLED`, `DISABLED`, `RESET_GEN`, `RESET_BI`, `RESET_TRI`. Only `ON` and `OFF` are supported for now |     R/W     |
-| `scenario`                              | `bus_scenario_control`                                        | String        | Trigger channel for Basic scenario events [see possible values](#scenario-channels)                                   | R (TRIGGER) |
 
 
 ### Alarm channels
 
-| Channel Type ID (channel ID) | Applies to Thing Type IDs              | Item Type     | Description                                                           | Read/Write  | Comment   |
-|------------------------------|----------------------------------------|---------------|-----------------------------------------------------------------------|:-----------:|-----------|
-| `state`                      | `bus_alarm_system`                     | Switch        | Alarm system is active (`ON`) or inactive (`OFF`)                     |      R      | *Better: String (`ACTIVE`, `INACTIVE`, `MAINTENANCE`) ???*  |
-| `armed`                      | `bus_alarm_system`                     | Switch        | Alarm system is armed (`ON`) or disarmed (`OFF`)                      |      R      | *Better: String (`ARMED`, `DISARMED`, `ALARM`) ???*         |
-| `network`                    | `bus_alarm_system`                     | Switch        | Alarm network state (`ON` = network ok, `OFF` = no network)           |      R      |  |
-| `battery`                    | `bus_alarm_system`                     | String        | Alarm battery state (`OK`, `FAULT`, `UNLOADED`)                       |      R      |  |
-| `armed`                      | `bus_alarm_zone`                       | Switch        | Alarm zone is armed (`ON`) or disarmed (`OFF`)                        |      R      |  *Better: String (`ARMED`, `DISARMED`, `ALARM`) ???* |
-| `alarm`                      | `bus_alarm_zone`                       | String        | Current alarm for the zone  (`NO_ALARM`, `INTRUSION`, `TAMPERING`, `ANTI_PANIC`) |      R      |  |
-*alternative or optional:*
-| `alarmTrigger`               | `bus_alarm_zone`                       | trigger       | Trigger channel to receive alarm events (`INTRUSION`, `TAMPERING`, `ANTI_PANIC`) |      R      | *To be used in scripts/rules, not in UI*  |
+| Channel Type ID (channel ID) | Applies to Thing Type IDs              | Item Type   | Description                                                           | Read/Write  |
+|------------------------------|----------------------------------------|-------------|-----------------------------------------------------------------------|:-----------:|
+| `state`                      | `bus_alarm_system`                     | Switch      | Alarm system is active (`ON`) or inactive (`OFF`)                     |      R      |
+| `network`                    | `bus_alarm_system`                     | Switch      | Alarm system network state (`ON` = network ok, `OFF` = no network)    |      R      |
+| `battery`                    | `bus_alarm_system`                     | String      | Alarm system battery state (`OK`, `FAULT`, `UNLOADED`)                |      R      |
+| `armed`                      | `bus_alarm_system`, `bus_alarm_zone`   | Switch      | Alarm system or zone is armed (`ON`) or disarmed (`OFF`)              |      R      |
+| `alarm`                      | `bus_alarm_zone`                       | String      | Current alarm for the zone  (`NO_ALARM`, `INTRUSION`, `TAMPERING`, `ANTI_PANIC`) |      R      |
 
 
 ### Thermo channels
@@ -327,7 +326,8 @@ Bridge openwebnet:bus_gateway:mybridge "MyHOMEServer1" [ host="192.168.1.35", pa
       bus_cenplus_scenario_control  LR_CENplus_scenario  "Living Room CEN+"         [ where="212", buttons="1,5,18" ]
       bus_dry_contact_ir            LR_IR_sensor         "Living Room IR Sensor"    [ where="399" ]
       
-      bus_aux		                 Alarm_activation	    "Alarm activation"         [ where="4"   ]
+      bus_aux		                 Alarm_activation	 "Alarm activation"         [ where="4" ]
+      bus_aux		                 Alarm_deactivation	 "Alarm deactivation"       [ where="5" ]
 
       bus_alarm_system              AlarmSys             "Alarm System"             [ where="0"   ]
       bus_alarm_zone                AlarmZone3           "Alarm Zone 3"             [ where="#3"  ]
@@ -349,32 +349,32 @@ Bridge openwebnet:zb_gateway:myZBgateway  [ serialPort="COM3" ] {
 
 Example items linked to BUS devices:
 
-NOTE: lights, blinds and zones (thermostat) can be handled  from personal assistants (Google Home, Alexa). In the following example `Google Assistant` (`ga="..."`) and `HomeKit` (`homekit="..."`)  were configured according to the [Google official documentation](https://www.openhab.org/docs/ecosystem/google-assistant) and [HomeKit official documentation](https://www.openhab.org/addons/integrations/homekit/) 
+NOTE: lights, blinds and zones (thermostat) can be handled from personal assistants (Google Home, Alexa). In the following example `Google Assistant` (`ga="..."`) and `HomeKit` (`homekit="..."`)  were configured according to the [Google official documentation](https://www.openhab.org/docs/ecosystem/google-assistant) and [HomeKit official documentation](https://www.openhab.org/addons/integrations/homekit/) 
 
 ```
-Switch              iLR_switch            "Light"               (gLivingRoom) { channel="openwebnet:bus_on_off_switch:mybridge:LR_switch:switch", ga="Light", homekit="Lighting" }
-Dimmer              iLR_dimmer            "Dimmer [%.0f %%]"    (gLivingRoom) { channel="openwebnet:bus_dimmer:mybridge:LR_dimmer:brightness", ga="Light", homekit="Lighting" }
+Switch              iLR_switch                  "Light"                       (gLivingRoom)     { channel="openwebnet:bus_on_off_switch:mybridge:LR_switch:switch", ga="Light", homekit="Lighting" }
+Dimmer              iLR_dimmer                  "Dimmer [%.0f %%]"            (gLivingRoom)     { channel="openwebnet:bus_dimmer:mybridge:LR_dimmer:brightness", ga="Light", homekit="Lighting" }
 
-Rollershutter       iLR_shutter           "Shutter [%.0f %%]"   (gShutters, gLivingRoom) { channel="openwebnet:bus_automation:mybridge:LR_shutter:shutter", ga="Blinds", homekit = "Window" }
+Rollershutter       iLR_shutter                 "Shutter [%.0f %%]"           (gShutters, gLivingRoom) { channel="openwebnet:bus_automation:mybridge:LR_shutter:shutter", ga="Blinds", homekit = "Window" }
 
-Number:Power        iCENTRAL_Ta           "Power [%.0f %unit%]" { channel="openwebnet:bus_energy_meter:mybridge:CENTRAL_Ta:power" }
-Number:Power        iCENTRAL_Tb           "Power [%.0f %unit%]" { channel="openwebnet:bus_energy_meter:mybridge:CENTRAL_Tb:power" }
+Number:Power        iCENTRAL_Ta                 "Power [%.0f %unit%]"                           { channel="openwebnet:bus_energy_meter:mybridge:CENTRAL_Ta:power" }
+Number:Power        iCENTRAL_Tb                 "Power [%.0f %unit%]"                           { channel="openwebnet:bus_energy_meter:mybridge:CENTRAL_Tb:power" }
 
-// 99 zones central unit 
-Group   gCentralUnit                "Central Unit"                
-Number:Temperature iCU_3550_manualset "Temperature"       (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:setpointTemperature", ga="thermostatTemperatureSetpoint" }
-String iCU_3550_remote    "Remote Control"                    (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:remoteControl" }
-String iCU_3550_battery   "Battery Status"                    (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:batteryStatus" }
-String iCU_3550_mode      "Mode"                              (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:mode" }
-Number iCU_3550_wpn       "Weekly Program"                    (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:weeklyProgram" } 
-Number iCU_3550_spn       "Scenario Program"                  (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:scenarioProgram" } 
-String iCU_3550_func      "Function"                          (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:function" }
-Switch iCU_3550_at1off    "At least one probe in OFF"         (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:atLeastOneProbeOff" } 
-Switch iCU_3550_at1pro    "At least one probe in PROTECTION"  (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:atLeastOneProbeProtection" } 
-Switch iCU_3550_at1man    "At least one probe in MANUAL"      (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:atLeastOneProbeManual" } 
-Switch iCU_3550_failure   "Failure discovered"                (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:failureDiscovered" } 
+// 99 zones thermo central unit
+Group               gCentralUnit                "Thermo Central Unit"
+Number:Temperature  iCU_3550_manualset          "Temperature"                          (gCentralUnit)    { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:setpointTemperature", ga="thermostatTemperatureSetpoint" }
+String              iCU_3550_remote             "Remote Control"                       (gCentralUnit)    { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:remoteControl" }
+String              iCU_3550_battery            "Battery Status"                       (gCentralUnit)    { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:batteryStatus" }
+String              iCU_3550_mode               "Mode"                                 (gCentralUnit)    { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:mode" }
+Number              iCU_3550_wpn                "Weekly Program"                       (gCentralUnit)    { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:weeklyProgram" }
+Number              iCU_3550_spn                "Scenario Program"                     (gCentralUnit)    { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:scenarioProgram" }
+String              iCU_3550_func               "Function"                             (gCentralUnit)    { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:function" }
+Switch              iCU_3550_at1off             "At least one probe in OFF"            (gCentralUnit)    { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:atLeastOneProbeOff" }
+Switch              iCU_3550_at1pro             "At least one probe in PROTECTION"     (gCentralUnit)    { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:atLeastOneProbeProtection" }
+Switch              iCU_3550_at1man             "At least one probe in MANUAL"         (gCentralUnit)    { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:atLeastOneProbeManual" }
+Switch              iCU_3550_failure            "Failure discovered"                   (gCentralUnit)    { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:failureDiscovered" }
 
-Group   gLivingRoomZone                         "Living Room Zone"   { ga="Thermostat" [ modes="auto=GENERIC,heat=HEATING,cool=COOLING", thermostatTemperatureRange="7,35", useFahrenheit=false ] }
+Group               gLivingRoomZone             "Living Room Zone"                              { ga="Thermostat" [ modes="auto=GENERIC,heat=HEATING,cool=COOLING", thermostatTemperatureRange="7,35", useFahrenheit=false ] }
 Number:Temperature  iLR_zone_temp               "Temperature [%.1f %unit%]"   (gLivingRoomZone) { channel="openwebnet:bus_thermo_zone:mybridge:LR_zone:temperature", ga="thermostatTemperatureAmbient" }
 Number:Temperature  iLR_zone_setTemp            "SetPoint Temperature"        (gLivingRoomZone) { channel="openwebnet:bus_thermo_zone:mybridge:LR_zone:setpointTemperature", ga="thermostatTemperatureSetpoint" }
 String              iLR_zone_fanSpeed           "FanSpeed"                    (gLivingRoomZone) { channel="openwebnet:bus_thermo_zone:mybridge:LR_zone:speedFanCoil" }
@@ -384,22 +384,24 @@ String              iLR_zone_actuators          "Actuators"                   (g
 String              iLR_zone_hv                 "Heating valves"              (gLivingRoomZone) { channel="openwebnet:bus_thermo_zone:mybridge:LR_zone:heatingValves" }
 String              iLR_zone_cv                 "Conditioning valves"         (gLivingRoomZone) { channel="openwebnet:bus_thermo_zone:mybridge:LR_zone:conditioningValves" }
 
-Number:Temperature  iEXT_temp                   "Temperature [%.1f %unit%]"   (gExternal) { channel="openwebnet:bus_thermo_sensor:mybridge:EXT_tempsensor:temperature" }
+Number:Temperature  iEXT_temp                   "Temperature [%.1f %unit%]"   (gExternal)       { channel="openwebnet:bus_thermo_sensor:mybridge:EXT_tempsensor:temperature" }
 
 String	            iCENPlusProxyItem	        "CEN+ Proxy Item"
 
-String              iAlarm_activation            "Alarm Activation"		                 { channel="openwebnet:bus_aux:mybridge:Alarm_activation:aux"}
 
-Switch              iLR_IR_sensor               "Sensor"                            { channel="openwebnet:bus_dry_contact_ir:mybridge:LR_IR_sensor:sensor" }
+Switch              iLR_IR_sensor               "Sensor"                                        { channel="openwebnet:bus_dry_contact_ir:mybridge:LR_IR_sensor:sensor" }
 
-Switch              iAlarmSystemState          "Alarm state"                (gAlarm)         { channel="openwebnet:bus_alarm_system:mybridge:AlarmSys:state" }
-Switch              iAlarmSystemArmed          "Alarm armed"                (gAlarm)         { channel="openwebnet:bus_alarm_system:mybridge:AlarmSys:armed" }
-Switch              iAlarmSystemNet            "Alarm network"              (gAlarm)         { channel="openwebnet:bus_alarm_system:mybridge:AlarmSys:network" }
-String              iAlarmSystemBattery        "Alarm battery"              (gAlarm)         { channel="openwebnet:bus_alarm_system:mybridge:AlarmSys:battery" }
-Switch              iAlarmZone3Armed           "Zone 3"                     (gAlarm)         { channel="openwebnet:bus_alarm_zone:mybridge:AlarmZone3:armed" }
-String              iAlarmZone3Alarm           "Zone 3 Alarm"               (gAlarm)         { channel="openwebnet:bus_alarm_zone:mybridge:AlarmZone3:alarm" }
-
-
+// alarm aux, central unit and a zone
+String              iAlarm_activation           "Alarm Activation"		                        { channel="openwebnet:bus_aux:mybridge:Alarm_activation:aux"}
+String              iAlarm_deactivation         "Alarm Deactivation"		                    { channel="openwebnet:bus_aux:mybridge:Alarm_deactivation:aux"}
+Switch              iAlarmSystemState           "Alarm state"                  (gAlarm)         { channel="openwebnet:bus_alarm_system:mybridge:AlarmSys:state" }
+Switch              iAlarmSystemArmed           "Alarm armed"                  (gAlarm)         { channel="openwebnet:bus_alarm_system:mybridge:AlarmSys:armed" }
+//this is a proxy item to be used by rules to send on/off commands to aux items that control alarm:
+Switch              iAlarmSystemArmedControl    "Alarm armed control"          (gAlarm)         ["Arm/Disarm"]
+Switch              iAlarmSystemNetwork         "Alarm network"                (gAlarm)         { channel="openwebnet:bus_alarm_system:mybridge:AlarmSys:network" }
+String              iAlarmSystemBattery         "Alarm battery"                (gAlarm)         { channel="openwebnet:bus_alarm_system:mybridge:AlarmSys:battery" }
+Switch              iAlarmZone3Armed            "Zone 3"                       (gAlarm)         { channel="openwebnet:bus_alarm_zone:mybridge:AlarmZone3:armed" }
+String              iAlarmZone3Alarm            "Zone 3 Alarm"                 (gAlarm)         { channel="openwebnet:bus_alarm_zone:mybridge:AlarmZone3:alarm" }
 ```
 
 Example items linked to OpenWebNet ZigBee devices:
@@ -449,13 +451,13 @@ sitemap openwebnet label="OpenWebNet Binding Example Sitemap"
     
     Frame label="Alarm"
     {
-         Switch  item=iAlarmSystemState      label="Alarm state"
-         Switch  item=iAlarm_activation      label="Arm alarm"          icon="shield"
-         Switch  item=iAlarmSystemArmed      label="Armed"              icon="shield"
-         Switch  item=iAlarmSystemNet        label="Net"                icon="network"
-         Default item=iAlarmSystemBattery    label="Battery"            icon="battery"
-         Switch  item=iAlarmZone3Armed       label="Zone 3 armed"       icon="shield"
-         Default item=iAlarmZone3Alarm       label="Zone 3 alarm"       icon="siren"
+         Switch  item=iAlarmSystemState         label="Alarm state"
+         Switch  item=iAlarmSystemArmedControl  label="Arm alarm"          icon="shield"
+         Switch  item=iAlarmSystemArmed         label="Armed"              icon="shield"
+         Switch  item=iAlarmSystemNetwork       label="Network"            icon="network"
+         Default item=iAlarmSystemBattery       label="Battery"            icon="battery"
+         Switch  item=iAlarmZone3Armed          label="Zone 3 armed"       icon="shield"
+         Default item=iAlarmZone3Alarm          label="Zone 3 alarm"       icon="siren"
     }
 }
 ```
@@ -500,6 +502,34 @@ when
 then
     sendCommand(iLR_dimmer, DECREASE)  
 end
+
+
+rule "alarm proxy item: send command to aux items"
+when
+    Item iAlarmSystemArmedControl received command
+then
+    if(receivedCommand == ON){
+        iAlarm_activation.sendCommand("ON")
+    }
+    else if(receivedCommand == OFF){
+        iAlarm_deactivation.sendCommand("ON")
+    }
+end
+
+
+rule "alarm proxy item: update based on iAlarmSystemArmed"
+when
+    Item iAlarmSystemArmed received update
+then
+    if(iAlarmSystemArmed.state == ON){
+        iAlarmSystemArmedControl.postUpdate(ON)
+    }
+    else if(iAlarmSystemArmed.state == OFF){
+        iAlarmSystemArmedControl.postUpdate(OFF)
+    }
+end
+
+
 ```
 
 ## Notes
@@ -519,5 +549,6 @@ Special thanks for helping on testing this binding go to:
 [@gabriele.daltoe](https://community.openhab.org/u/gabriele.daltoe),
 [@feodor](https://community.openhab.org/u/feodor),
 [@aconte80](https://community.openhab.org/u/aconte80),
-[@rubenfuser](https://community.openhab.org/u/rubenfuser)
+[@rubenfuser](https://community.openhab.org/u/rubenfuser),
+[@stamate_viorel](https://community.openhab.org/u/stamate_viorel)
 and many others at the fantastic openHAB community!
