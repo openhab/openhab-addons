@@ -484,7 +484,7 @@ When the item `Top menu 2` is selected the text sent to the button channel will 
 
 ### Rule to trigger an action based on which keypad zone where a button was pressed or menu item selected
 
-By using the `system#button_press` channel it is possible to trigger an action based on which keypad zone was used to send the action.
+By using the `system#buttonpress` channel it is possible to trigger an action based on which keypad zone was used to send the action.
 This channel appends the zone number and a comma before the button action or menu item selection.  
 
 For example if the Play/Pause button is pressed on Zone 7, the channel will display: `7,PLAYPAUSE`  
