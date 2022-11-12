@@ -34,8 +34,7 @@ public class JSScriptServiceUtil {
     private static @Nullable ScriptExecution scriptExecution;
 
     @Activate
-    public JSScriptServiceUtil(final @Reference Scheduler scheduler,
-                               final @Reference ScriptExecution scriptExecution) {
+    public JSScriptServiceUtil(final @Reference Scheduler scheduler, final @Reference ScriptExecution scriptExecution) {
         JSScriptServiceUtil.scheduler = scheduler;
         JSScriptServiceUtil.scriptExecution = scriptExecution;
     }

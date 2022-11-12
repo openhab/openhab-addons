@@ -18,7 +18,6 @@ import java.time.temporal.Temporal;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.automation.jsscripting.internal.JSScriptServiceUtil;
@@ -82,36 +81,6 @@ public class ThreadsafeTimers {
         return scriptExecution.createTimer(identifier, instant, () -> {
             synchronized (lock) {
                 closure.run();
-            }
-        });
-    }
-
-    /**
-     * Schedules a block of code (with argument) for later execution
-     *
-     * @param instant the point in time when the code should be executed
-     * @param arg1 the argument to pass to the code block
-     * @param closure the code block to execute
-     * @return a handle to the created timer, so that it can be canceled or rescheduled
-     */
-    public Timer createTimerWithArgument(ZonedDateTime instant, Object arg1, Consumer<Object> closure) {
-        return createTimerWithArgument(identifier, instant, arg1, closure);
-    }
-
-    /**
-     * Schedules a block of code (with argument) for later execution
-     *
-     * @param identifier an optional identifier
-     * @param instant the point in time when the code should be executed
-     * @param arg1 the argument to pass to the code block
-     * @param closure the code block to execute
-     * @return a handle to the created timer, so that it can be canceled or rescheduled
-     */
-    public Timer createTimerWithArgument(@Nullable String identifier, ZonedDateTime instant, Object arg1,
-            Consumer<Object> closure) {
-        return scriptExecution.createTimerWithArgument(identifier, instant, arg1, var1 -> {
-            synchronized (lock) {
-                closure.accept(arg1);
             }
         });
     }
