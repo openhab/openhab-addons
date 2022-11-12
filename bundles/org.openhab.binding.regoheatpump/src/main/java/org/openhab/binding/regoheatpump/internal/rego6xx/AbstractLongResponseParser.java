@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.regoheatpump.internal.rego6xx;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link AbstractLongResponseParser} is responsible for parsing long form responses.
  *
  * @author Boris Krivonog - Initial contribution
  */
+@NonNullByDefault
 abstract class AbstractLongResponseParser<T> extends AbstractResponseParser<T> {
     @Override
     public int responseLength() {
