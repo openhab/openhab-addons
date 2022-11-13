@@ -115,8 +115,13 @@ The binding has the following configuration options:
 
 `defaultUserId` and `defaultPassword:` will be used by the binding if device protection is enabled. However, the Plus/Pro devices have a fixed user id àdmin`. Nevertheless the binding provide that option to allow a mixed operation of Gen 1 and 2 devices in the same installation having same defaults.
 
-`Generation 1`: The binding defaults to CoIoT events when firmware 1.6 or newer is detected. CoIoT provides near-realtime updates on device status changes.
-This mode also overrules event settings in the Thing configuration. Disabling this feature allows granular control, which event types will be used. This is also required when the Shelly devices are not located on the same IP subnet (e.g. using a VPN). In this case autoCoIoT should be disabled, CoIoT events will not work, because the underlying CoAP protocol is based on Multicast IP, which usually doesn't passes a VPN or routed network.
+`Generation 1`: The binding defaults to CoIoT events when firmware 1.6 or newer is detected.
+CoIoT provides near-realtime updates on device status changes.
+
+This mode also overrules event settings in the Thing configuration.
+Disabling this feature allows granular control, which event types will be used.
+This is also required when the Shelly devices are not located on the same IP subnet (e.g. using a VPN).
+In this case autoCoIoT should be disabled, CoIoT events will not work, because the underlying CoAP protocol is based on Multicast IP, which usually doesn't passes a VPN or routed network.
 
 'Generation 2:' 
 
@@ -433,8 +438,8 @@ In this case the is no real measurement based on power consumption, but the Shel
 |          |input        |Switch   |yes      |ON: Input/Button is powered, see General Notes on Channels                       |
 |          |button       |Trigger  |yes      |Event trigger, see section Button Events                                         |
 |meter     |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
-|          |lastPower1   |Number   |yes      |Energy consumption for a round minute, 1 minute  ago                   |
-|          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (resets on restart)|
+|          |lastPower1   |Number   |yes      |Energy consumption for a round minute, 1 minute  ago                             |
+|          |totalKWH     |Number   |yes      |Total energy consumption in kw/h since the device powered up (resets on restart) |
 |          |lastUpdate   |DateTime |yes      |Timestamp of the last measurement                                                |
 |sensors   |temperature1 |Number   |yes      |Temperature value of external sensor #1 (if connected to temp/hum addon)         |
 |          |temperature2 |Number   |yes      |Temperature value of external sensor #2 (if connected to temp/hum addon)         |
@@ -455,14 +460,14 @@ In this case the is no real measurement based on power consumption, but the Shel
 |          |autoOff      |Number   |r/w      |Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds|
 |          |timerActive  |Switch   |yes      |Relay #1: ON: An auto-on/off timer is active                                     |
 |meter1    |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
-|          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (resets on restart)|
-|          |returnedKWH  |Number   |yes      |Total returned energy, kwh                                                       |
+|          |totalKWH     |Number   |yes      |Total energy consumption in kw/h since the device powered up (resets on restart) |
+|          |returnedKWH  |Number   |yes      |Total returned energy, kw/h                                                      |
 |          |reactiveWatts|Number   |yes      |Instantaneous reactive power, Watts                                              |
 |          |voltage      |Number   |yes      |RMS voltage, Volts                                                               |
 |          |powerFactor  |Number   |yes      |Power Factor in percent                                                          |
 |          |lastUpdate   |DateTime |yes      |Timestamp of the last measurement                                                |
 |meter2    |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
-|          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (resets on restart)|
+|          |totalKWH     |Number   |yes      |Total energy consumption in kw/h since the device powered up (resets on restart) |
 |          |returnedKWH  |Number   |yes      |Total returned energy, kwh                                                       |
 |          |reactiveWatts|Number   |yes      |Instantaneous reactive power, Watts                                              |
 |          |voltage      |Number   |yes      |RMS voltage, Volts                                                               |
@@ -486,7 +491,7 @@ The Thing id is derived from the service name, so that's the reason why the Thin
 |          |autoOff      |Number   |r/w      |Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds|
 |          |timerActive  |Switch   |yes      |Relay #1: ON: An auto-on/off timer is active                                     |
 |meter1    |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
-|          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (resets on restart)|
+|          |totalKWH     |Number   |yes      |Total energy consumption in kw/h since the device powered up (resets on restart) |
 |          |returnedKWH  |Number   |yes      |Total returned energy, kwh                                                       |
 |          |reactiveWatts|Number   |yes      |Instantaneous reactive power, Watts                                              |
 |          |voltage      |Number   |yes      |RMS voltage, Volts                                                               |
@@ -494,7 +499,7 @@ The Thing id is derived from the service name, so that's the reason why the Thin
 |          |powerFactor  |Number   |yes      |Power Factor in percent                                                          |
 |          |lastUpdate   |DateTime |yes      |Timestamp of the last measurement                                                |
 |meter2    |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
-|          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (resets on restart)|
+|          |totalKWH     |Number   |yes      |Total energy consumption in kw/h since the device powered up (resets on restart)|
 |          |returnedKWH  |Number   |yes      |Total returned energy, kwh                                                       |
 |          |reactiveWatts|Number   |yes      |Instantaneous reactive power, Watts                                              |
 |          |voltage      |Number   |yes      |RMS voltage, Volts                                                               |
@@ -502,7 +507,7 @@ The Thing id is derived from the service name, so that's the reason why the Thin
 |          |powerFactor  |Number   |yes      |Power Factor in percent                                                          |
 |          |lastUpdate   |DateTime |yes      |Timestamp of the last measurement                                                |
 |meter3    |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
-|          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (resets on restart)|
+|          |totalKWH     |Number   |yes      |Total energy consumption in kw/h since the device powered up (resets on restart)|
 |          |returnedKWH  |Number   |yes      |Total returned energy, kwh                                                       |
 |          |reactiveWatts|Number   |yes      |Instantaneous reactive power, Watts                                              |
 |          |voltage      |Number   |yes      |RMS voltage, Volts                                                               |
@@ -531,7 +536,7 @@ The Thing id is derived from the service name, so that's the reason why the Thin
 |          |button       |Trigger  |yes      |Event trigger, see section Button Events                                         |
 |meter     |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
 |          |lastPower1   |Number   |yes      |Energy consumption for a round minute, 1 minute  ago                             |
-|          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (resets on restart)|
+|          |totalKWH     |Number   |yes      |Total energy consumption in kw/h since the device powered up (resets on restart)|
 |          |lastUpdate   |DateTime |yes      |Timestamp of the last measurement                                                |
 
 ### Shelly 2 - roller mode thing-type: shelly2-roller)
@@ -548,10 +553,10 @@ The Thing id is derived from the service name, so that's the reason why the Thin
 |          |safety       |Switch   |yes      |Indicates status of the Safety Switch, ON=problem detected, powered off               |
 |meter     |currentWatts |Number   |yes      |Current power consumption in Watts                                                    |
 |          |lastPower1   |Number   |yes      |Accumulated energy consumption in Watts for the full last minute                      |
-|          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (reset on restart)      |
+|          |totalKWH     |Number   |yes      |Total energy consumption in kw/h since the device powered up (reset on restart)      |
 |          |lastUpdate   |DateTime |yes      |Timestamp of the last measurement                                                     |
 
-`Note: The Roller should be calibrated using the device Web UI or Shelly App, otherwise the position can .`
+`Note: The Roller should be calibrated using the device Web UI or Shelly App, otherwise the position can't be set.`
 
 The roller positioning calibration has to be performed using the Shelly Web UI or App before the position can be set in percent.
 Refer to [Smartify Roller Shutters with openHAB and Shelly](doc/UseCaseSmartRoller.md) for more information on roller integration. 
@@ -631,7 +636,7 @@ The Shelly 4Pro provides 4 relays and 4 power meters.
 |          |timerActive  |Switch   |yes      |Relay #1: ON: An auto-on/off timer is active                                     |
 |meter     |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
 |          |lastPower1   |Number   |yes      |Energy consumption for a round minute, 1 minute  ago                             |
-|          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (resets on restart)|
+|          |totalKWH     |Number   |yes      |Total energy consumption in kw/h since the device powered up (resets on restart)|
 |          |lastUpdate   |DateTime |yes      |Timestamp of the last measurement                                                |
 
 
@@ -715,7 +720,7 @@ This information applies to the Shelly Duo-1 as well as the Duo White for the G1
 |          |brightness   |Dimmer   |         |Brightness: 0..100% or 0..100                                          |
 |meter     |currentWatts |Number   |yes      |Current power consumption in Watts                                     |
 |          |lastPower1   |Number   |yes      |Energy consumption in Watts for a round minute, 1 minute  ago          |
-|          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (resets on restart)|
+|          |totalKWH     |Number   |yes      |Total energy consumption in kw/h since the device powered up (resets on restart)|
 |          |lastUpdate   |DateTime |yes      |Timestamp of the last measurement                                      |
  
 ### Shelly Vintage (thing-type: shellyvintage)
@@ -1047,7 +1052,7 @@ If the Shelly Add-On is installed:
 |          |button       |Trigger  |yes      |Event trigger, see section Button Events                                         |
 |meter     |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
 |          |lastPower1   |Number   |yes      |Energy consumption for a round minute, 1 minute  ago                             |
-|          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (resets on restart)|
+|          |totalKWH     |Number   |yes      |Total energy consumption in kw/h since the device powered up (resets on restart)|
 |          |lastUpdate   |DateTime |yes      |Timestamp of the last measurement                                                |
 
 If the Shelly Add-On is installed:
@@ -1077,7 +1082,7 @@ If the Shelly Add-On is installed:
 |          |button       |Trigger  |yes      |Event trigger, see section Button Events                                         |
 |meter1    |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
 |          |lastPower1   |Number   |yes      |Energy consumption for a round minute, 1 minute  ago                             |
-|          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (resets on restart)|
+|          |totalKWH     |Number   |yes      |Total energy consumption in kw/h since the device powered up (resets on restart)|
 |          |lastUpdate   |DateTime |yes      |Timestamp of the last measurement                                                |
 |relay2    |output       |Switch   |r/w      |Relay #2: Controls the relay's output channel (on/off)                           |
 |          |outputName   |String   |yes      |Logical name of this relay output as configured in the Shelly App                |
@@ -1088,7 +1093,7 @@ If the Shelly Add-On is installed:
 |          |button       |Trigger  |yes      |Event trigger, see section Button Events                                         |
 |meter2    |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
 |          |lastPower1   |Number   |yes      |Energy consumption for a round minute, 1 minute  ago                             |
-|          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (resets on restart)|
+|          |totalKWH     |Number   |yes      |Total energy consumption in kw/h since the device powered up (resets on restart)|
 |          |lastUpdate   |DateTime |yes      |Timestamp of the last measurement                                                |
 
 ### Shelly Plus 2PM - roller mode (thing-type: shellyplus2pm-roller)
@@ -1171,7 +1176,7 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 |          |timerActive  |Switch   |yes      |Relay #1: ON: An auto-on/off timer is active                                     |
 |meter     |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
 |          |lastPower1   |Number   |yes      |Energy consumption for a round minute, 1 minute  ago                             |
-|          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (resets on restart)|
+|          |totalKWH     |Number   |yes      |Total energy consumption in kw/h since the device powered up (resets on restart)|
 |          |lastUpdate   |DateTime |yes      |Timestamp of the last measurement                                                |
 
 
@@ -1215,7 +1220,7 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 |          |button       |Trigger  |yes      |Event trigger, see section Button Events                                         |
 |meter     |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
 |          |lastPower1   |Number   |yes      |Energy consumption for a round minute, 1 minute  ago                             |
-|          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (resets on restart)|
+|          |totalKWH     |Number   |yes      |Total energy consumption in kw/h since the device powered up (resets on restart)|
 |          |lastUpdate   |DateTime |yes      |Timestamp of the last measurement                                                |
 
 ### Shelly Pro 2 PM - roller mode (thing-type: shellypro2pm-roller)
@@ -1231,7 +1236,7 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 |          |event        |Trigger  |yes      |Roller event/trigger with payload ROLLER_OPEN / ROLLER_CLOSE / ROLLER_STOP           |
 |meter     |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
 |          |lastPower1   |Number   |yes      |Energy consumption for a round minute, 1 minute  ago                             |
-|          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (resets on restart)|
+|          |totalKWH     |Number   |yes      |Total energy consumption in kw/h since the device powered up (resets on restart)|
 |          |lastUpdate   |DateTime |yes      |Timestamp of the last measurement                                                |
 
 

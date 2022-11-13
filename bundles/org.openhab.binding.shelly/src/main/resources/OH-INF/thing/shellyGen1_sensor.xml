@@ -318,7 +318,7 @@
 			<tag>Measurement</tag>
 			<tag>Humidity</tag>
 		</tags>
-		<state readOnly="true" pattern="%.1f %unit%"/>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="sensorFlood">
@@ -504,7 +504,7 @@
 		<label>@text/channel-type.shelly.sensorExtDigitalInput.label</label>
 		<description>@text/channel-type.shelly.sensorExtDigitalInput.description</description>
 		<category>Status</category>
-		<state readOnly="true" pattern="%.1f %unit%">
+		<state readOnly="true">
 		</state>
 	</channel-type>
 
@@ -516,7 +516,7 @@
 		<tags>
 			<tag>Measurement</tag>
 		</tags>
-		<state readOnly="true" pattern="%.1f %unit%">
+		<state readOnly="true" pattern="%.0f %unit%">
 		</state>
 	</channel-type>
 
