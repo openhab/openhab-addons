@@ -187,6 +187,7 @@
     <module>org.openhab.binding.jablotron</module>
     <module>org.openhab.binding.jeelink</module>
     <module>org.openhab.binding.jellyfin</module>
+    <module>org.openhab.binding.juicenet</module>
     <module>org.openhab.binding.kaleidescape</module>
     <module>org.openhab.binding.keba</module>
     <module>org.openhab.binding.km200</module>
