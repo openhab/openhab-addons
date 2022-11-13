@@ -111,7 +111,7 @@
 			<channel id="soc" typeId="soc"/>
 			<channel id="speed" typeId="speed"/>
 			<channel id="state" typeId="state"/>
-            <channel id="steeringwheelheater" typeId="steeringwheelheater"/>
+			<channel id="steeringwheelheater" typeId="steeringwheelheater"/>
 			<channel id="combinedtemp" typeId="combinedtemp"/>
 			<channel id="timetofullcharge" typeId="timetofullcharge"/>
 			<channel id="tripcharging" typeId="tripcharging"/>
