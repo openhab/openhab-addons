@@ -27,6 +27,7 @@ import javax.net.ssl.SSLSocket;
 import javax.net.ssl.TrustManager;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mynice.internal.xml.dto.CommandType;
 import org.openhab.core.io.net.http.TrustAllTrustManager;
 import org.slf4j.Logger;
@@ -49,8 +50,8 @@ public class It4WifiConnector extends Thread {
     private final ScheduledExecutorService scheduler;
     private final SSLSocket sslsocket;
 
-    private @NonNullByDefault({}) InputStreamReader in;
-    private @NonNullByDefault({}) OutputStreamWriter out;
+    private @Nullable InputStreamReader in;
+    private @Nullable OutputStreamWriter out;
     private Optional<ScheduledFuture<?>> keepAlive = Optional.empty();
 
     public It4WifiConnector(String hostname, It4WifiHandler handler, ScheduledExecutorService scheduler) {
@@ -92,17 +93,21 @@ public class It4WifiConnector extends Thread {
 
         cancelKeepAlive();
 
-        try {
-            if (in != null) {
+        if (in != null) {
+            try {
                 in.close();
-                in = null;
+            } catch (IOException ignore) {
             }
-            if (out != null) {
-                out.close();
-                out = null;
-            }
-        } catch (IOException ignore) {
         }
+        if (out != null) {
+            try {
+                out.close();
+            } catch (IOException ignore) {
+            }
+        }
+
+        in = null;
+        out = null;
 
         logger.debug("Disconnected");
     }
@@ -115,12 +120,23 @@ public class It4WifiConnector extends Thread {
     @Override
     public void run() {
         String buffer = "";
+<<<<<<< Upstream, based on main
         try {
             connect();
             handler.handShaked();
             while (!interrupted()) {
                 int data;
                 while ((data = in.read()) != -1) {
+=======
+        tryConnect();
+        while (!interrupted()) {
+            int data;
+            try {
+                if (pendingMessages > MAX_PENDING_MESSAGES) {
+                    throw new IOException("Max keep alive attempts has been reached");
+                }
+                while (in != null && (data = in.read()) != -1) {
+>>>>>>> be8ed80 Removing @NonNullByDefault({}) to better handle NPE
                     cancelKeepAlive();
                     if (data == STX) {
                         buffer = "";
@@ -138,5 +154,28 @@ public class It4WifiConnector extends Thread {
             interrupt();
         }
         disconnect();
+<<<<<<< Upstream, based on main
+=======
+        handler.connectorInterrupted(message);
+    }
+
+    private void tryConnect() {
+        String message;
+        disconnect();
+        connectionAttempts++;
+        if (connectionAttempts <= MAX_CONNECTION_ATTEMPTS) {
+            try {
+                connect();
+                handler.handShaked();
+                connectionAttempts = 0;
+                return;
+            } catch (IOException e) {
+                message = String.format("Communication error : '%s'.", e.getMessage());
+            }
+        } else {
+            message = "Maximum connection attempts reached.";
+        }
+        destroyAndExit(message);
+>>>>>>> be8ed80 Removing @NonNullByDefault({}) to better handle NPE
     }
 }
