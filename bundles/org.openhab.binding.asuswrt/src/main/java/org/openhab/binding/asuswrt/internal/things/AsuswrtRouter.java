@@ -87,7 +87,7 @@ public class AsuswrtRouter extends BaseBridgeHandler {
         Thing thing = getThing();
         this.uid = thing.getUID().toString();
         this.errorHandler = new AsuswrtErrorHandler();
-        this.config = new AsuswrtConfiguration(thing);
+        this.config = new AsuswrtConfiguration();
         this.httpClient = httpClient;
         this.connector = new AsuswrtConnector(this);
         this.deviceInfo = new AsuswrtRouterInfo();
@@ -100,7 +100,7 @@ public class AsuswrtRouter extends BaseBridgeHandler {
      ************************************/
     @Override
     public void initialize() {
-        this.config.loadSettings();
+        this.config = getConfigAs(AsuswrtConfiguration.class);
 
         // Initialize the handler.
         setState(ThingStatus.UNKNOWN);
@@ -151,7 +151,7 @@ public class AsuswrtRouter extends BaseBridgeHandler {
      * Start Polling Job Scheduler
      */
     public void startPollingJob() {
-        Integer pollingInterval = AsuswrtUtils.getValueOrDefault(config.refreshInterval, POLLING_INTERVAL_S_DEFAULT);
+        int pollingInterval = AsuswrtUtils.getValueOrDefault(config.pollingInterval, POLLING_INTERVAL_S_DEFAULT);
         if (pollingInterval > 0) {
             if (pollingInterval < POLLING_INTERVAL_S_MIN) {
                 pollingInterval = POLLING_INTERVAL_S_MIN;
@@ -177,7 +177,7 @@ public class AsuswrtRouter extends BaseBridgeHandler {
      * Start Reconnect Scheduler
      */
     protected void startReconnectScheduler() {
-        Integer pollingInterval = config.refreshInterval;
+        int pollingInterval = config.reconnectInterval;
         if (pollingInterval < RECONNECT_INTERVAL_S) {
             pollingInterval = RECONNECT_INTERVAL_S;
         }
@@ -197,7 +197,7 @@ public class AsuswrtRouter extends BaseBridgeHandler {
      * Start DeviceDiscovery Scheduler
      */
     protected void startDiscoveryScheduler() {
-        Integer pollingInterval = config.refreshInterval;
+        int pollingInterval = config.discoveryInterval;
         if (config.autoDiscoveryEnabled && pollingInterval > 0) {
             logger.trace("{} starting bridge discovery sheduler", this.uid);
 

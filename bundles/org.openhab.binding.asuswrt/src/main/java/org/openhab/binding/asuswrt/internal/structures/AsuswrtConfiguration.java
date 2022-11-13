@@ -40,35 +40,10 @@ public class AsuswrtConfiguration {
     public String username = "";
     public String password = "";
     public String url = "";
-    public int refreshInterval = 60;
+    public int pollingInterval = 20;
+    public int reconnectInterval = 60;
+    public int discoveryInterval = 3600;
     public boolean autoDiscoveryEnabled = false;
 
     private Thing router;
-
-    /**
-     * INIT CLASS
-     * 
-     * @param thing
-     */
-    public AsuswrtConfiguration(Thing thing) {
-        router = thing;
-        loadSettings();
-    }
-
-    /**
-     * LOAD SETTINGS
-     */
-    public void loadSettings() {
-        logger.trace("loading settings");
-        try {
-            Configuration config = this.router.getConfiguration();
-            this.hostname = config.get(CONFIG_HOSTNAME).toString();
-            this.username = config.get(CONFIG_USER).toString();
-            this.password = config.get(CONFIG_PASS).toString();
-            this.url = HTTP_PROTOCOL + hostname;
-            this.refreshInterval = Integer.valueOf(config.get(CONFIG_UPDATE_INTERVAL).toString());
-        } catch (Exception e) {
-            logger.warn("{} error reading device-configuration: '{}'", router.getUID(), e.getMessage());
-        }
-    }
 }
