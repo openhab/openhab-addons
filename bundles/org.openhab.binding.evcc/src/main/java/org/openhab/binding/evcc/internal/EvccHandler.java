@@ -117,7 +117,7 @@ public class EvccHandler extends BaseThingHandler {
                                 try {
                                     evccAPI.setTargetCharge(loadpoint, targetSoC, targetTimeZDT);
                                 } catch (DateTimeParseException e) {
-                                    logger.debug("Failed to set target charge", e);
+                                    logger.debug("Failed to set target charge: ", e);
                                 }
                             }
                         }
@@ -194,7 +194,7 @@ public class EvccHandler extends BaseThingHandler {
         try {
             this.result = evccAPI.getResult();
         } catch (EvccApiException e) {
-            logger.debug("Failed to get state");
+            logger.debug("Failed to get state: ", e);
         }
         Result result = this.result;
         if (result == null) {
