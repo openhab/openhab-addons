@@ -32,7 +32,7 @@ import com.google.gson.JsonSyntaxException;
 /**
  * The {@link EvccAPI} is responsible for API calls to evcc.
  * 
- * @author Florian Hotze - Initial contribution; Avoid data type issues by using float instead of int
+ * @author Florian Hotze - Initial contribution
  */
 @NonNullByDefault
 public class EvccAPI {
