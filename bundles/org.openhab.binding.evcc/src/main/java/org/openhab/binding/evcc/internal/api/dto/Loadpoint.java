@@ -18,7 +18,7 @@ import com.google.gson.annotations.SerializedName;
  * This class represents a loadpoint object of the status response (/api/state).
  * This DTO was written for evcc version 0.106.3
  *
- * @author Florian Hotze - Initial contribution; Avoid data type issues by using float instead of int
+ * @author Florian Hotze - Initial contribution
  */
 public class Loadpoint {
     // Data types from https://github.com/evcc-io/evcc/blob/master/api/api.go

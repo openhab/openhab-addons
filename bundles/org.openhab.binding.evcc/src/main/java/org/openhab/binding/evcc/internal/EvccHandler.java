@@ -52,7 +52,7 @@ import org.slf4j.LoggerFactory;
  * The {@link EvccHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
- * @author Florian Hotze - Initial contribution; Avoid data type issues by using float instead of int
+ * @author Florian Hotze - Initial contribution
  */
 @NonNullByDefault
 public class EvccHandler extends BaseThingHandler {
