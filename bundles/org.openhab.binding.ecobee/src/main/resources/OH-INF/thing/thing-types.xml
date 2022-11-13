@@ -320,12 +320,12 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="actualAQAccuracy" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type>Number</item-type>
 		<label>Actual Air Quality Accuracy</label>
 		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="actualAQScore" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type>Number</item-type>
 		<label>Actual Air Quality Score</label>
 		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
