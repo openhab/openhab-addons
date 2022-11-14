@@ -69,7 +69,7 @@ public class TapoDiscoveryService extends AbstractDiscoveryService implements Th
     @Override
     public void activate() {
         TapoBridgeConfiguration config = bridge.getBridgeConfig();
-        if (config.cloudDiscovery) {
+        if (config.cloudDiscovery || config.udpDiscovery) {
             startBackgroundDiscovery();
         }
     }

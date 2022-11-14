@@ -74,7 +74,9 @@ public class PayloadBuilder {
         long timeMils = System.currentTimeMillis();// * 1000;
 
         payload.addProperty("method", this.method);
-        payload.add("params", this.parameters);
+        if (this.parameters.size() > 0) {
+            payload.add("params", this.parameters);
+        }
         payload.addProperty("requestTimeMils", timeMils);
 
         return payload;
