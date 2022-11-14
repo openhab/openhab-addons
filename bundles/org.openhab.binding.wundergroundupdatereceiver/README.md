@@ -44,7 +44,7 @@ Each measurement type the wunderground.com update service accepts has a channel.
 The channels must be named exactly as the request parameter they receive.
 I.e. the wind speed channel must be named `windspeedmph` as that is the request parameter name defined by Wunderground in their API.
 Illegal channel id characters are converted to -.
-Fx. AqPM2.5 has a channel named `AqPM2-5`.
+For example AqPM2.5 has a channel named `AqPM2-5`.
 The channel name set up in the binding should be considered an id with no semantic content other than pointing to the wunderground API.
 Additionally there is a receipt timestamp and a trigger channel.
 

@@ -127,14 +127,6 @@
     </dependencies>
   </dependencyManagement>
 
-  <pluginRepositories>
-    <pluginRepository>
-      <id>openhab-libs-snapshot</id>
-      <name>Openhab Snapshot Repository</name>
-      <url>https://openhab.jfrog.io/artifactory/libs-snapshot</url>
-    </pluginRepository>
-  </pluginRepositories>
-
   <build>
     <pluginManagement>
       <plugins>
