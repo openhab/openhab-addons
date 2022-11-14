@@ -12,18 +12,13 @@
  */
 package org.openhab.binding.liquidcheck.internal.discovery;
 
-import static org.openhab.binding.liquidcheck.internal.LiquidCheckBindingConstants.CONFIG_ID_FIRMWARE;
-import static org.openhab.binding.liquidcheck.internal.LiquidCheckBindingConstants.CONFIG_ID_HARDWARE;
-import static org.openhab.binding.liquidcheck.internal.LiquidCheckBindingConstants.CONFIG_ID_HOSTNAME;
-import static org.openhab.binding.liquidcheck.internal.LiquidCheckBindingConstants.CONFIG_ID_IP;
-import static org.openhab.binding.liquidcheck.internal.LiquidCheckBindingConstants.CONFIG_ID_MAC;
-import static org.openhab.binding.liquidcheck.internal.LiquidCheckBindingConstants.CONFIG_ID_MANUFACTURER;
-import static org.openhab.binding.liquidcheck.internal.LiquidCheckBindingConstants.CONFIG_ID_NAME;
-import static org.openhab.binding.liquidcheck.internal.LiquidCheckBindingConstants.CONFIG_ID_SECURITY_CODE;
-import static org.openhab.binding.liquidcheck.internal.LiquidCheckBindingConstants.CONFIG_ID_SSID;
-import static org.openhab.binding.liquidcheck.internal.LiquidCheckBindingConstants.CONFIG_ID_UUID;
+import static org.openhab.binding.liquidcheck.internal.LiquidCheckBindingConstants.PROPERTY_HOSTNAME;
+import static org.openhab.binding.liquidcheck.internal.LiquidCheckBindingConstants.PROPERTY_IP;
+import static org.openhab.binding.liquidcheck.internal.LiquidCheckBindingConstants.PROPERTY_NAME;
+import static org.openhab.binding.liquidcheck.internal.LiquidCheckBindingConstants.PROPERTY_SECURITY_CODE;
+import static org.openhab.binding.liquidcheck.internal.LiquidCheckBindingConstants.PROPERTY_SSID;
 import static org.openhab.binding.liquidcheck.internal.LiquidCheckBindingConstants.SUPPORTED_THING_TYPES_UIDS;
-import static org.openhab.binding.liquidcheck.internal.LiquidCheckBindingConstants.THING_TYPE_LIQUID_CHEK;
+import static org.openhab.binding.liquidcheck.internal.LiquidCheckBindingConstants.THING_TYPE_LIQUID_CHECK;
 
 import java.io.IOException;
 import java.net.Inet4Address;
@@ -36,11 +31,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
@@ -49,6 +41,7 @@ import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
@@ -67,15 +60,12 @@ import com.google.gson.Gson;
 public class LiquidCheckDiscoveryService extends AbstractDiscoveryService {
 
     private static final int DISCOVER_TIMEOUT_SECONDS = 60;
-    private static final int BACKGROUND_DISCOVERY_AFTER_MINUTES = 60;
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private boolean isHostname = false;
 
-    private @Nullable ScheduledFuture<?> liquidCheckBackgroundDiscoveryJob;
-
     public LiquidCheckDiscoveryService() {
-        super(SUPPORTED_THING_TYPES_UIDS, DISCOVER_TIMEOUT_SECONDS);
+        super(SUPPORTED_THING_TYPES_UIDS, DISCOVER_TIMEOUT_SECONDS, false);
     }
 
     @Override
@@ -119,30 +109,6 @@ public class LiquidCheckDiscoveryService extends AbstractDiscoveryService {
     protected synchronized void stopScan() {
         super.stopScan();
         removeOlderResults(getTimestampOfLastScan());
-    }
-
-    /**
-     * Method for starting the background discovery
-     */
-    @Override
-    protected void startBackgroundDiscovery() {
-        ScheduledFuture<?> avoidNullException = this.liquidCheckBackgroundDiscoveryJob;
-        if (null == avoidNullException || avoidNullException.isCancelled()) {
-            this.liquidCheckBackgroundDiscoveryJob = scheduler.scheduleWithFixedDelay(liquidCheckDiscoveryRunnable(), 0,
-                    BACKGROUND_DISCOVERY_AFTER_MINUTES, TimeUnit.MINUTES);
-        }
-    }
-
-    /**
-     * Method for stopping the background discovery
-     */
-    @Override
-    protected void stopBackgroundDiscovery() {
-        ScheduledFuture<?> avoidNullException = this.liquidCheckBackgroundDiscoveryJob;
-        if (null != avoidNullException && !avoidNullException.isCancelled()) {
-            avoidNullException.cancel(true);
-            this.liquidCheckBackgroundDiscoveryJob = null;
-        }
     }
 
     /**
@@ -205,7 +171,7 @@ public class LiquidCheckDiscoveryService extends AbstractDiscoveryService {
      * @param response
      */
     private void buildDiscoveryResult(CommData response) {
-        ThingUID thingUID = new ThingUID(THING_TYPE_LIQUID_CHEK, response.payload.device.uuid);
+        ThingUID thingUID = new ThingUID(THING_TYPE_LIQUID_CHECK, response.payload.device.uuid);
         DiscoveryResult dResult = DiscoveryResultBuilder.create(thingUID).withProperties(createPropertyMap(response))
                 .withLabel(response.payload.device.name).build();
         thingDiscovered(dResult);
@@ -219,19 +185,19 @@ public class LiquidCheckDiscoveryService extends AbstractDiscoveryService {
      */
     private Map<String, Object> createPropertyMap(CommData response) {
         Map<String, Object> properties = new HashMap<>();
-        properties.put(CONFIG_ID_FIRMWARE, response.payload.device.firmware);
-        properties.put(CONFIG_ID_HARDWARE, response.payload.device.hardware);
-        properties.put(CONFIG_ID_NAME, response.payload.device.name);
-        properties.put(CONFIG_ID_MANUFACTURER, response.payload.device.manufacturer);
-        properties.put(CONFIG_ID_UUID, response.payload.device.uuid);
-        properties.put(CONFIG_ID_SECURITY_CODE, response.payload.device.security.code);
-        properties.put(CONFIG_ID_IP, response.payload.wifi.station.ip);
-        properties.put(CONFIG_ID_MAC, response.payload.wifi.station.mac);
-        properties.put(CONFIG_ID_SSID, response.payload.wifi.accessPoint.ssid);
+        properties.put(Thing.PROPERTY_FIRMWARE_VERSION, response.payload.device.firmware);
+        properties.put(Thing.PROPERTY_HARDWARE_VERSION, response.payload.device.hardware);
+        properties.put(PROPERTY_NAME, response.payload.device.name);
+        properties.put(Thing.PROPERTY_VENDOR, response.payload.device.manufacturer);
+        properties.put(Thing.PROPERTY_SERIAL_NUMBER, response.payload.device.uuid);
+        properties.put(PROPERTY_SECURITY_CODE, response.payload.device.security.code);
+        properties.put(PROPERTY_IP, response.payload.wifi.station.ip);
+        properties.put(Thing.PROPERTY_MAC_ADDRESS, response.payload.wifi.station.mac);
+        properties.put(PROPERTY_SSID, response.payload.wifi.accessPoint.ssid);
         if (isHostname) {
-            properties.put(CONFIG_ID_HOSTNAME, response.payload.wifi.station.hostname);
+            properties.put(PROPERTY_HOSTNAME, response.payload.wifi.station.hostname);
         } else {
-            properties.put(CONFIG_ID_HOSTNAME, response.payload.wifi.station.ip);
+            properties.put(PROPERTY_HOSTNAME, response.payload.wifi.station.ip);
         }
         return properties;
     }

@@ -35,7 +35,7 @@ import org.osgi.service.component.annotations.Component;
 @Component(configurationPid = "binding.liquidcheck", service = ThingHandlerFactory.class)
 public class LiquidCheckHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_LIQUID_CHEK);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_LIQUID_CHECK);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -46,7 +46,7 @@ public class LiquidCheckHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (THING_TYPE_LIQUID_CHEK.equals(thingTypeUID)) {
+        if (THING_TYPE_LIQUID_CHECK.equals(thingTypeUID)) {
             return new LiquidCheckHandler(thing);
         }
 

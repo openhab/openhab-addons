@@ -30,7 +30,7 @@ public class LiquidCheckBindingConstants {
     private static final String BINDING_ID = "liquidcheck";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_LIQUID_CHEK = new ThingTypeUID(BINDING_ID, "liquidCheckDevice");
+    public static final ThingTypeUID THING_TYPE_LIQUID_CHECK = new ThingTypeUID(BINDING_ID, "liquidCheckDevice");
 
     // List of all Channel ids
     public static final String CONTENT_CHANNEL = "content";
@@ -43,16 +43,11 @@ public class LiquidCheckBindingConstants {
     public static final String MEASURE_CHANNEL = "measure";
 
     // List of all Property ids
-    public static final String CONFIG_ID_FIRMWARE = "firmware";
-    public static final String CONFIG_ID_HARDWARE = "hardware";
-    public static final String CONFIG_ID_NAME = "name";
-    public static final String CONFIG_ID_MANUFACTURER = "manufacturer";
-    public static final String CONFIG_ID_UUID = "uuid";
-    public static final String CONFIG_ID_SECURITY_CODE = "securityCode";
-    public static final String CONFIG_ID_IP = "ip";
-    public static final String CONFIG_ID_HOSTNAME = "hostname";
-    public static final String CONFIG_ID_MAC = "mac";
-    public static final String CONFIG_ID_SSID = "ssid";
+    public static final String PROPERTY_NAME = "name";
+    public static final String PROPERTY_SECURITY_CODE = "securityCode";
+    public static final String PROPERTY_IP = "ip";
+    public static final String PROPERTY_HOSTNAME = "hostname";
+    public static final String PROPERTY_SSID = "ssid";
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>();
 }
