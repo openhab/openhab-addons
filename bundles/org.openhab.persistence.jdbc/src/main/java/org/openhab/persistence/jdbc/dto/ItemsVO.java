@@ -13,6 +13,7 @@
 package org.openhab.persistence.jdbc.dto;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * Represents the table naming data.
@@ -96,11 +97,7 @@ public class ItemsVO implements Serializable {
      */
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((itemName == null) ? 0 : itemName.hashCode());
-        result = prime * result + (itemId ^ (itemId >>> 32));
-        return result;
+        return Objects.hash(itemName, itemId);
     }
 
     /*
