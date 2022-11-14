@@ -40,6 +40,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.types.Command;
@@ -118,6 +119,7 @@ public class WundergroundUpdateReceiverHandler extends BaseThingHandler {
             requestParameters.forEach((String parameter, String query) -> buildChannel(thingBuilder, parameter, query));
             updateThing(thingBuilder.build());
         }
+        migrateChannels();
         discoveryService.removeUnhandledStationId(config.stationId);
         if (wundergroundUpdateReceiverServlet.isActive()) {
             updateStatus(ThingStatus.ONLINE);
@@ -126,6 +128,17 @@ public class WundergroundUpdateReceiverHandler extends BaseThingHandler {
         }
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
                 wundergroundUpdateReceiverServlet.getErrorDetail());
+    }
+
+    private void migrateChannels() {
+        Optional.ofNullable(getThing().getChannel(queryTriggerChannel)).ifPresent(c -> {
+            if (c.getKind() != ChannelKind.TRIGGER) {
+                ThingBuilder builder = editThing();
+                builder.withoutChannel(c.getUID());
+                buildChannel(builder, LAST_QUERY_TRIGGER, "");
+                updateThing(builder.build());
+            }
+        });
     }
 
     @Override
