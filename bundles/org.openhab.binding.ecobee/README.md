@@ -169,6 +169,10 @@ The following channels are available on the Ecobee Thermostat.
 | runtime | desiredHeatRangeHigh | Number:Temperature |     | Desired Heat Range High |
 | runtime | desiredCoolRangeLow | Number:Temperature |     | Desired Cool Range Low |
 | runtime | desiredCoolRangeHigh | Number:Temperature |     | Desired Cool Range High |
+| runtime | actualAQAccuracy | Number |     | Actual Air Quality Accuracy |
+| runtime | actualAQScore | Number |     | Actual Air Quality Score |
+| runtime | actualCO2 | Number:Dimensionless |     | Actual CO2 |
+| runtime | actualVOC | Number:Dimensionless |     | Actual VOC |
 ||||||
 | settings | hvacMode | String | yes | HVAC Mode |
 | settings | lastServiceDate | String | yes | Last Service Date |
@@ -853,6 +857,10 @@ Number:Temperature Runtime_DesiredHeatRangeLow "Desired Heat Range Low [%.1f %un
 Number:Temperature Runtime_DesiredHeatRangeHigh "Desired Heat Range High [%.1f %unit%]" <temperature> (gRuntime) { channel="ecobee:thermostat:account:729318833078:runtime#desiredHeatRangeHigh" }
 Number:Temperature Runtime_DesiredCoolRangeLow "Desired Cool Range Low [%.1f %unit%]" <temperature> (gRuntime) { channel="ecobee:thermostat:account:729318833078:runtime#desiredCoolRangeLow" }
 Number:Temperature Runtime_DesiredCoolRangeHigh "Desired Cool Range High [%.1f %unit%]" <temperature> (gRuntime) { channel="ecobee:thermostat:account:729318833078:runtime#desiredCoolRangeHigh" }
+Number Runtime_ActualAQAccuracy "Actual Air Quality Accuracy [%d]" <none> (gRuntime) { channel="ecobee:thermostat:account:729318833078:runtime#actualAQAccuracy" }
+Number Runtime_ActualAQScore "Actual Air Quality Score [%d]" <none> (gRuntime) { channel="ecobee:thermostat:account:729318833078:runtime#actualAQScore" }
+Number:Dimensionless Runtime_ActualCO2 "Actual CO2 [%d %unit%]" <carbondioxide> (gRuntime) { channel="ecobee:thermostat:account:729318833078:runtime#actualCO2" }
+Number:Dimensionless Runtime_ActualVOC "Actual VOC [%d %unit%]" <none> (gRuntime) { channel="ecobee:thermostat:account:729318833078:runtime#actualVOC" }
 
 // Settings group
 String Settings_HvacMode "HVAC Mode [%s]" <text> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#hvacMode" }
