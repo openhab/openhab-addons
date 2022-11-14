@@ -73,7 +73,7 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Fill Indicator</label>
 		<description>Indicates the fill level based on max content and measured content</description>
-		<state readOnly="true" pattern="%d %%"></state>
+		<state readOnly="true" pattern="%.1f %%"></state>
 	</channel-type>
 	<channel-type id="measure-channel">
 		<item-type>Switch</item-type>
