@@ -322,22 +322,22 @@
 	<channel-type id="actualAQAccuracy" advanced="true">
 		<item-type>Number</item-type>
 		<label>Actual Air Quality Accuracy</label>
-		<state readOnly="true" pattern="%.0f"/>
+		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 	<channel-type id="actualAQScore" advanced="true">
 		<item-type>Number</item-type>
 		<label>Actual Air Quality Score</label>
-		<state readOnly="true" pattern="%.0f"/>
+		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 	<channel-type id="actualCO2" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Actual CO2</label>
-		<state readOnly="true" pattern="%.0f %unit%"/>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="actualVOC" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Actual VOC</label>
-		<state readOnly="true" pattern="%.0f %unit%"/>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-group-type id="settings">
