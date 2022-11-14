@@ -135,11 +135,7 @@
       <artifactId>js</artifactId>
       <version>${graal.version}</version>
     </dependency>
-    <dependency>
-      <groupId>com.ibm.icu</groupId>
-      <artifactId>icu4j</artifactId>
-      <version>69.1</version>
-    </dependency>
+    <!-- com.ibm.icu.icu4j/69.1 is not required on GraalJS >= 22.0.0 as it moved to org.graalvm.truffle -->
 
     <!-- include as version required is older than OH provides -->
     <dependency>
