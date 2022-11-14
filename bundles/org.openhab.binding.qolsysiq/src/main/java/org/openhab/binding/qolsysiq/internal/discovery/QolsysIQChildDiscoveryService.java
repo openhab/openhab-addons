@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Simple discovery service that can be used by Partition and Zone Handlers
  *
  * @author Dan Cunningham - Initial contribution
  *
@@ -45,7 +46,7 @@ public class QolsysIQChildDiscoveryService extends AbstractDiscoveryService
     private @Nullable ThingHandler thingHandler;
 
     public QolsysIQChildDiscoveryService() throws IllegalArgumentException {
-        super(SUPPORTED_DISCOVERY_THING_TYPES_UIDS, 0, false);
+        super(SUPPORTED_DISCOVERY_THING_TYPES_UIDS, 5, false);
     }
 
     @Override

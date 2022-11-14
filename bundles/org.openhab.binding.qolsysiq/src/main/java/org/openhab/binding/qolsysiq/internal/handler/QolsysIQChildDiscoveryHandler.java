@@ -16,13 +16,22 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.qolsysiq.internal.discovery.QolsysIQChildDiscoveryService;
 
 /**
+ * Callback for our custom discovery service
  *
  * @author Dan Cunningham - Initial contribution
  *
  */
 @NonNullByDefault
 public interface QolsysIQChildDiscoveryHandler {
+    /**
+     * Sets a {@link QolsysIQChildDiscoveryService} to call when device information is received
+     *
+     * @param service
+     */
     public void setDiscoveryService(QolsysIQChildDiscoveryService service);
 
+    /**
+     * Initiates the discovery process
+     */
     public void startDiscovery();
 }

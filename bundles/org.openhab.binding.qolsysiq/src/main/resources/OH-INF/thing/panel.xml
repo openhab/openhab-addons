@@ -12,7 +12,7 @@
 				<label>Hostname</label>
 				<description>Hostname or IP address of the panel</description>
 			</parameter>
-			<parameter name="port" type="integer" required="true">
+			<parameter name="port" type="integer">
 				<label>Port</label>
 				<description>The port to connect to on the panel.</description>
 				<default>12345</default>

@@ -18,7 +18,7 @@
 			<property name="type"></property>
 			<property name="name"></property>
 			<property name="group"></property>
-			<property name="id"></property>
+			<property name="zoneId"></property>
 			<property name="zonePhysicalType"></property>
 			<property name="zoneAlarmType"></property>
 			<property name="zoneType"></property>

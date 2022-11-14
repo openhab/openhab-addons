@@ -50,7 +50,7 @@ Once a partition is added, zones will be automatically discovered and appear in 
 | Name              | Type    | Description                                         | Default | Required | Advanced |
 |-------------------|---------|-----------------------------------------------------|---------|----------|----------|
 | hostname          | text    | Hostname or IP address of the device                | N/A     | yes      | no       |
-| port              | integer | Port the device is listening on                     | 12345   | yes      | no       |
+| port              | integer | Port the device is listening on                     | 12345   | no       | no       |
 | key               | text    | Access token / key found in the panel settings menu | N/A     | yes      | no       |
 
 ### `partition` Thing Configuration
@@ -97,8 +97,8 @@ None.
 ```
 Bridge qolsysiq:panel:home "Home Security Panel" [ hostname="192.168.3.123", port=12345, key="AAABBB00" ] {
     Bridge partition 0 "Partition Main" [ id=0, armCode="123456" ] {
-        Thing zone 0 "Window" [ id=1 ]
-        Thing zone 1 "Motion" [ id=2 ]
+        Thing zone 1 "Window" [ id=1 ]
+        Thing zone 2 "Motion" [ id=2 ]
     }
 }
 ```
