@@ -258,6 +258,25 @@
 
 	</thing-type>
 
+	<thing-type id="smoke-detector">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="shc"/>
+		</supported-bridge-type-refs>
+
+		<label>Smoke Detector</label>
+		<description>The smoke detector warns you in case of fire.</description>
+
+		<channels>
+			<channel id="smoke-check" typeId="smoke-check"/>
+			<channel id="battery-level" typeId="system.battery-level"/>
+			<channel id="low-battery" typeId="system.low-battery"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:boschshc:device"/>
+	</thing-type>
+
+	<!-- Channels -->
+
 	<channel-type id="system-availability">
 		<item-type>Switch</item-type>
 		<label>System Availability</label>
@@ -344,23 +363,6 @@
 			</options>
 		</state>
 	</channel-type>
-
-	<thing-type id="smoke-detector">
-		<supported-bridge-type-refs>
-			<bridge-type-ref id="shc"/>
-		</supported-bridge-type-refs>
-
-		<label>Smoke Detector</label>
-		<description>The smoke detector warns you in case of fire.</description>
-
-		<channels>
-			<channel id="smoke-check" typeId="smoke-check"/>
-		</channels>
-
-		<config-description-ref uri="thing-type:boschshc:device"/>
-	</thing-type>
-
-	<!-- Channels -->
 
 	<channel-type id="temperature">
 		<item-type>Number:Temperature</item-type>

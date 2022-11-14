@@ -51,6 +51,7 @@ import org.osgi.service.component.annotations.Component;
  * @author Christian Oeing - Added Shutter Control and ThermostatHandler; refactored handler mapping
  * @author Christian Oeing - Added WallThermostatHandler
  * @author David Pace - Added cameras, intrusion detection system and smart plugs
+ * @author Christian Oeing - Added smoke detector
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.boschshc", service = ThingHandlerFactory.class)

@@ -24,6 +24,8 @@ import org.openhab.binding.boschshc.internal.devices.AbstractBatteryPoweredDevic
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.services.airqualitylevel.AirQualityLevelService;
 import org.openhab.binding.boschshc.internal.services.airqualitylevel.dto.AirQualityLevelServiceState;
+import org.openhab.binding.boschshc.internal.services.smokedetectorcheck.SmokeDetectorCheckService;
+import org.openhab.binding.boschshc.internal.services.smokedetectorcheck.dto.SmokeDetectorCheckServiceState;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
@@ -40,11 +42,8 @@ import org.openhab.core.thing.Thing;
 @NonNullByDefault
 public class TwinguardHandler extends AbstractBatteryPoweredDeviceHandler {
 
-    private SmokeDetectorService smokeDetectorService;
-
     public TwinguardHandler(Thing thing) {
         super(thing);
-        this.smokeDetectorService = new SmokeDetectorService();
     }
 
     @Override
@@ -54,18 +53,7 @@ public class TwinguardHandler extends AbstractBatteryPoweredDeviceHandler {
         this.createService(AirQualityLevelService::new, this::updateChannels,
                 List.of(CHANNEL_TEMPERATURE, CHANNEL_TEMPERATURE_RATING, CHANNEL_HUMIDITY, CHANNEL_HUMIDITY_RATING,
                         CHANNEL_PURITY, CHANNEL_PURITY_RATING, CHANNEL_AIR_DESCRIPTION, CHANNEL_COMBINED_RATING));
-        this.registerService(this.smokeDetectorService, this::updateChannels, List.of(CHANNEL_SMOKE_CHECK));
-    }
-
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        super.handleCommand(channelUID, command);
-
-        switch (channelUID.getId()) {
-            case CHANNEL_SMOKE_CHECK:
-                this.handleServiceCommand(this.smokeDetectorService, command);
-                break;
-        }
+        this.createService(SmokeDetectorCheckService::new, this::updateChannels, List.of(CHANNEL_SMOKE_CHECK));
     }
 
     private void updateChannels(AirQualityLevelServiceState state) {
@@ -79,7 +67,7 @@ public class TwinguardHandler extends AbstractBatteryPoweredDeviceHandler {
         updateState(CHANNEL_COMBINED_RATING, new StringType(state.combinedRating));
     }
 
-    private void updateChannels(SmokeDetectorServiceState state) {
+    private void updateChannels(SmokeDetectorCheckServiceState state) {
         updateState(CHANNEL_SMOKE_CHECK, new StringType(state.value.toString()));
     }
 }

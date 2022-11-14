@@ -23,6 +23,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * @author Christian Oeing - added Shutter Control, ThermostatHandler
  * @author Christian Oeing - Added WallThermostatHandler
  * @author David Pace - Added cameras, intrusion detection system, smart plugs, battery state support and smart bulbs
+ * @author Christian Oeing - Added smoke detector
  */
 @NonNullByDefault
 public class BoschSHCBindingConstants {

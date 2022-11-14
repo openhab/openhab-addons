@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,19 +10,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.boschshc.internal.services.smokedetector.dto;
+package org.openhab.binding.boschshc.internal.services.smokedetectorcheck.dto;
 
 import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
-import org.openhab.binding.boschshc.internal.services.smokedetector.SmokeDetectorCheckState;
+import org.openhab.binding.boschshc.internal.services.smokedetectorcheck.SmokeDetectorCheckService;
+import org.openhab.binding.boschshc.internal.services.smokedetectorcheck.SmokeDetectorCheckState;
 
 /**
- * State for {@link SmokeDetectorService} to get the current smoke test state and request a new smoke test.
+ * State for {@link SmokeDetectorCheckService} to get the current smoke test state and request a new smoke test.
  *
  * @author Christian Oeing - Initial contribution
  */
-public class SmokeDetectorServiceState extends BoschSHCServiceState {
+public class SmokeDetectorCheckServiceState extends BoschSHCServiceState {
 
-    public SmokeDetectorServiceState() {
+    public SmokeDetectorCheckServiceState() {
         super("smokeDetectorCheckState");
     }
 

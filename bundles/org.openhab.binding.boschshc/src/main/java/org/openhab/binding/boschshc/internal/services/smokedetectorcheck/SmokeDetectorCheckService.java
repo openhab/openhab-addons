@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,12 +10,12 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.boschshc.internal.services.smokedetector;
+package org.openhab.binding.boschshc.internal.services.smokedetectorcheck;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.services.BoschSHCService;
-import org.openhab.binding.boschshc.internal.services.smokedetector.dto.SmokeDetectorServiceState;
+import org.openhab.binding.boschshc.internal.services.smokedetectorcheck.dto.SmokeDetectorCheckServiceState;
 import org.openhab.core.library.types.PlayPauseType;
 import org.openhab.core.types.Command;
 
@@ -25,18 +25,18 @@ import org.openhab.core.types.Command;
  * @author Christian Oeing - Initial contribution
  */
 @NonNullByDefault
-public class SmokeDetectorService extends BoschSHCService<SmokeDetectorServiceState> {
+public class SmokeDetectorCheckService extends BoschSHCService<SmokeDetectorCheckServiceState> {
 
-    public SmokeDetectorService() {
-        super("SmokeDetectorCheck", SmokeDetectorServiceState.class);
+    public SmokeDetectorCheckService() {
+        super("SmokeDetectorCheck", SmokeDetectorCheckServiceState.class);
     }
 
     @Override
-    public SmokeDetectorServiceState handleCommand(Command command) throws BoschSHCException {
+    public SmokeDetectorCheckServiceState handleCommand(Command command) throws BoschSHCException {
         if (command instanceof PlayPauseType) {
             var playPauseCommand = (PlayPauseType) command;
             if (playPauseCommand.equals(PlayPauseType.PLAY)) {
-                var state = new SmokeDetectorServiceState();
+                var state = new SmokeDetectorCheckServiceState();
                 state.value = SmokeDetectorCheckState.SMOKE_TEST_REQUESTED;
                 return state;
             }
