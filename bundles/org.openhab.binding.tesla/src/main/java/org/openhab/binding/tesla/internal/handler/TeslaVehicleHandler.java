@@ -448,6 +448,13 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                             }
                             break;
                         }
+                        case STEERINGWHEEL_HEATER: {
+                            if (command instanceof OnOffType) {
+                                boolean commandBooleanValue = ((OnOffType) command) == OnOffType.ON ? true : false;
+                                setSteeringWheelHeater(commandBooleanValue);
+                            }
+                            break;
+                        }
                         default:
                             break;
                     }
@@ -797,6 +804,12 @@ public class TeslaVehicleHandler extends BaseThingHandler {
 
     public void wakeUp() {
         sendCommand(COMMAND_WAKE_UP, account.wakeUpTarget);
+    }
+
+    public void setSteeringWheelHeater(boolean isOn) {
+        JsonObject payloadObject = new JsonObject();
+        payloadObject.addProperty("on", isOn);
+        sendCommand(COMMAND_STEERING_WHEEL_HEATER, gson.toJson(payloadObject), account.commandTarget);
     }
 
     protected Vehicle queryVehicle() {
