@@ -210,7 +210,10 @@ public class OpenhabGraalJSScriptEngine
         delegate.getBindings(ScriptContext.ENGINE_SCOPE).put(REQUIRE_WRAPPER_NAME, wrapRequireFn);
         // Injections into the JS runtime
         delegate.put("require", wrapRequireFn.apply((Function<Object[], Object>) delegate.get("require")));
-        jsRuntimeFeatures.getFeatures().forEach((key, obj) -> delegate.put(key, obj));
+        jsRuntimeFeatures.getFeatures().forEach((key, obj) -> {
+            LOGGER.debug("Injecting {} into the JS runtime...", key);
+            delegate.put(key, obj);
+        });
 
         initialized = true;
 
