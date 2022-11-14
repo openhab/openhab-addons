@@ -12,16 +12,12 @@ You can access the measured data, raw data, the settings as properties and comma
 ## Discovery
 
 This binding discovers the devices via a ping and request method.
-It uses every ethernet/wlan interface that is connected to the openHAB server.
+It uses every Ethernet/WLAN interface that is connected to the openHAB server.
 Therefore the discovery has to be manually triggered.
 
 ## Binding Configuration
 
 There is no configuration needed.
-
-## Thing Configuration
-
-You only need to set the IP address of the device or use the discovery method.
 
 ### `liquidCheckDevice` Thing Configuration
 
