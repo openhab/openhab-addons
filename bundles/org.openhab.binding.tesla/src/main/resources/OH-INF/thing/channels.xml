@@ -606,7 +606,7 @@
 	<channel-type id="steeringwheelheater" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Steering Wheel Heater</label>
-		<description>Indicates if the steering wheel heater is switched on</description>
+		<description>Turns On/Off the steering wheel heater</description>
 		<state readOnly="false"></state>
 	</channel-type>
 	<channel-type id="sunroofstate" advanced="true">
