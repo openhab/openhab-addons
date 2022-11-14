@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.knowm.yank.exceptions.YankSQLException;
 import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.items.GroupItem;
@@ -155,11 +156,15 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
                     state, item, errCnt, conf.getErrReconnectThreshold());
             return;
         }
-        long timerStart = System.currentTimeMillis();
-        storeItemValue(item, state, date);
-        if (logger.isDebugEnabled()) {
-            logger.debug("JDBC: Stored item '{}' as '{}' in SQL database at {} in {} ms.", item.getName(), state,
-                    new Date(), System.currentTimeMillis() - timerStart);
+        try {
+            long timerStart = System.currentTimeMillis();
+            storeItemValue(item, state, date);
+            if (logger.isDebugEnabled()) {
+                logger.debug("JDBC: Stored item '{}' as '{}' in SQL database at {} in {} ms.", item.getName(), state,
+                        new Date(), System.currentTimeMillis() - timerStart);
+            }
+        } catch (YankSQLException e) {
+            logger.warn("JDBC::store: Unable to store item", e);
         }
     }
 
@@ -215,16 +220,20 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
             return List.of();
         }
 
-        long timerStart = System.currentTimeMillis();
-        List<HistoricItem> items = getHistItemFilterQuery(filter, conf.getNumberDecimalcount(), table, item);
-        if (logger.isDebugEnabled()) {
-            logger.debug("JDBC: Query for item '{}' returned {} rows in {} ms", itemName, items.size(),
-                    System.currentTimeMillis() - timerStart);
+        try {
+            long timerStart = System.currentTimeMillis();
+            List<HistoricItem> items = getHistItemFilterQuery(filter, conf.getNumberDecimalcount(), table, item);
+            if (logger.isDebugEnabled()) {
+                logger.debug("JDBC: Query for item '{}' returned {} rows in {} ms", itemName, items.size(),
+                        System.currentTimeMillis() - timerStart);
+            }
+            // Success
+            errCnt = 0;
+            return items;
+        } catch (YankSQLException e) {
+            logger.warn("JDBC::query: Unable to query item", e);
+            return List.of();
         }
-
-        // Success
-        errCnt = 0;
-        return items;
     }
 
     public void updateConfig(Map<Object, Object> configuration) {
@@ -233,9 +242,14 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
         conf = new JdbcConfiguration(configuration);
         if (conf.valid && checkDBAccessability()) {
             namingStrategy = new NamingStrategy(conf);
-            checkDBSchema();
-            // connection has been established ... initialization completed!
-            initialized = true;
+            try {
+                checkDBSchema();
+                // connection has been established ... initialization completed!
+                initialized = true;
+            } catch (YankSQLException e) {
+                logger.error("Failed to check database schema", e);
+                initialized = false;
+            }
         } else {
             initialized = false;
         }
@@ -269,14 +283,18 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
             return false;
         }
 
-        long timerStart = System.currentTimeMillis();
-        boolean result = deleteItemValues(filter, table);
-        if (logger.isDebugEnabled()) {
-            logger.debug("JDBC: Deleted values for item '{}' in SQL database at {} in {} ms.", itemName, new Date(),
-                    System.currentTimeMillis() - timerStart);
+        try {
+            long timerStart = System.currentTimeMillis();
+            deleteItemValues(filter, table);
+            if (logger.isDebugEnabled()) {
+                logger.debug("JDBC: Deleted values for item '{}' in SQL database at {} in {} ms.", itemName, new Date(),
+                        System.currentTimeMillis() - timerStart);
+            }
+            return true;
+        } catch (YankSQLException e) {
+            logger.debug("JDBC::remove: Unable to remove values for item", e);
+            return false;
         }
-
-        return result;
     }
 
     /**

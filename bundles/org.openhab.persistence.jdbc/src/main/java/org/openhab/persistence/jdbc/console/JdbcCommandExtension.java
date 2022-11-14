@@ -19,6 +19,7 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.knowm.yank.exceptions.YankSQLException;
 import org.openhab.core.io.console.Console;
 import org.openhab.core.io.console.ConsoleCommandCompleter;
 import org.openhab.core.io.console.StringsCompleter;
@@ -70,22 +71,14 @@ public class JdbcCommandExtension extends AbstractConsoleCommandExtension implem
         if (persistenceService == null) {
             return;
         }
-        if (SUBCMD_TABLES_LIST.equalsIgnoreCase(args[1])) {
-            listTables(persistenceService, console, args.length == 3 && PARAMETER_ALL.equalsIgnoreCase(args[2]));
-            return;
-        } else if (SUBCMD_TABLES_CLEAN.equalsIgnoreCase(args[1])) {
-            if (args.length == 3) {
-                cleanupItem(persistenceService, console, args[2], false);
-                return;
-            } else if (args.length == 4 && PARAMETER_FORCE.equalsIgnoreCase(args[3])) {
-                cleanupItem(persistenceService, console, args[2], true);
-                return;
-            } else {
-                cleanupTables(persistenceService, console);
+        try {
+            if (!execute(persistenceService, args, console)) {
+                printUsage(console);
                 return;
             }
+        } catch (YankSQLException e) {
+            console.println(e.toString());
         }
-        printUsage(console);
     }
 
     private @Nullable JdbcPersistenceService getPersistenceService() {
@@ -97,12 +90,32 @@ public class JdbcCommandExtension extends AbstractConsoleCommandExtension implem
         return null;
     }
 
+    private boolean execute(JdbcPersistenceService persistenceService, String[] args, Console console) {
+        if (SUBCMD_TABLES_LIST.equalsIgnoreCase(args[1])) {
+            listTables(persistenceService, console, args.length == 3 && PARAMETER_ALL.equalsIgnoreCase(args[2]));
+            return true;
+        } else if (SUBCMD_TABLES_CLEAN.equalsIgnoreCase(args[1])) {
+            if (args.length == 3) {
+                cleanupItem(persistenceService, console, args[2], false);
+                return true;
+            } else if (args.length == 4 && PARAMETER_FORCE.equalsIgnoreCase(args[3])) {
+                cleanupItem(persistenceService, console, args[2], true);
+                return true;
+            } else {
+                cleanupTables(persistenceService, console);
+                return true;
+            }
+        }
+        return false;
+    }
+
     private void listTables(JdbcPersistenceService persistenceService, Console console, Boolean all) {
         List<ItemTableCheckEntry> entries = persistenceService.getCheckedEntries();
         if (!all) {
             entries.removeIf(t -> t.getStatus() == ItemTableCheckEntryStatus.VALID);
         }
         entries.sort(Comparator.comparing(ItemTableCheckEntry::getTableName));
+        // FIXME: NoSuchElement when empty table - because of get()
         int itemNameMaxLength = Math
                 .max(entries.stream().map(t -> t.getItemName().length()).max(Integer::compare).get(), 4);
         int tableNameMaxLength = Math
