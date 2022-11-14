@@ -120,7 +120,6 @@
 			<channel id="valetmode" typeId="valetmode"/>
 			<channel id="valetpin" typeId="valetpin"/>
 			<channel id="wakeup" typeId="wakeup"/>
-			<channel id="wiperbladeheater" typeId="wiperbladeheater"/>
 		</channels>
 
 		<config-description>
