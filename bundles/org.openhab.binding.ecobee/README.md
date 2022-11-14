@@ -857,10 +857,10 @@ Number:Temperature Runtime_DesiredHeatRangeLow "Desired Heat Range Low [%.1f %un
 Number:Temperature Runtime_DesiredHeatRangeHigh "Desired Heat Range High [%.1f %unit%]" <temperature> (gRuntime) { channel="ecobee:thermostat:account:729318833078:runtime#desiredHeatRangeHigh" }
 Number:Temperature Runtime_DesiredCoolRangeLow "Desired Cool Range Low [%.1f %unit%]" <temperature> (gRuntime) { channel="ecobee:thermostat:account:729318833078:runtime#desiredCoolRangeLow" }
 Number:Temperature Runtime_DesiredCoolRangeHigh "Desired Cool Range High [%.1f %unit%]" <temperature> (gRuntime) { channel="ecobee:thermostat:account:729318833078:runtime#desiredCoolRangeHigh" }
-Number Runtime_ActualAQAccuracy "Actual Air Quality Accuracy [%.0f]" <none> (gRuntime) { channel="ecobee:thermostat:account:729318833078:runtime#actualAQAccuracy" }
-Number Runtime_ActualAQScore "Actual Air Quality Score [%.0f]" <none> (gRuntime) { channel="ecobee:thermostat:account:729318833078:runtime#actualAQScore" }
-Number:Dimensionless Runtime_ActualCO2 "Actual CO2 [%.0f %unit%]" <carbondioxide> (gRuntime) { channel="ecobee:thermostat:account:729318833078:runtime#actualCO2" }
-Number:Dimensionless Runtime_ActualVOC "Actual VOC [%.0f %unit%]" <none> (gRuntime) { channel="ecobee:thermostat:account:729318833078:runtime#actualVOC" }
+Number Runtime_ActualAQAccuracy "Actual Air Quality Accuracy [%d]" <none> (gRuntime) { channel="ecobee:thermostat:account:729318833078:runtime#actualAQAccuracy" }
+Number Runtime_ActualAQScore "Actual Air Quality Score [%d]" <none> (gRuntime) { channel="ecobee:thermostat:account:729318833078:runtime#actualAQScore" }
+Number:Dimensionless Runtime_ActualCO2 "Actual CO2 [%d %unit%]" <carbondioxide> (gRuntime) { channel="ecobee:thermostat:account:729318833078:runtime#actualCO2" }
+Number:Dimensionless Runtime_ActualVOC "Actual VOC [%d %unit%]" <none> (gRuntime) { channel="ecobee:thermostat:account:729318833078:runtime#actualVOC" }
 
 // Settings group
 String Settings_HvacMode "HVAC Mode [%s]" <text> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#hvacMode" }
