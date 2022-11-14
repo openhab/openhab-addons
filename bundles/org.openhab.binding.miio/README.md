@@ -172,7 +172,13 @@ Firmware of the device don't accept commands coming from other subnets.
 Set the communication in the thing configuration to 'cloud'.
 
 _Cloud connectivity is not working_
-The most common problem is a wrong userId/password. Try to fix your userId/password.
+The most common problem is a wrong userId/password. Try to fix your userId/password. The login userId & password are entered in the binding config page.
+If the problem persists you can try the following:
+
+* Your ip might need to be validated/confirmed. Logon to https://account.xiaomi.com/ **from the ip of your openHAB server** with a browser.
+* In the logging you find a location url. Try to login (just after it fails) with your browser.
+* Several users also reported success by resetting their Xiaomi password.
+
 If it still fails, you're bit out of luck. You may try to restart openHAB (not just the binding) to clean the cookies. 
 As the cloud logon process is still little understood, your only luck might be to enable trace logging and see if you can translate the Chinese error code that it returns.
 
@@ -184,7 +190,7 @@ This will change the communication method and the Mi IO binding can communicate 
 
 # Mi IO Devices
 
-Currently the miio binding supports more than 330 different models.
+Currently the miio binding supports more than 340 different models.
 
 | Device                             | ThingType        | Device Model           | Supported    | Remark     |
 |------------------------------------|------------------|------------------------|--------------|------------|
@@ -347,6 +353,17 @@ Currently the miio binding supports more than 330 different models.
 | Roborock S7                        | miio:vacuum      | [roborock.vacuum.a15](#roborock-vacuum-a15) | Yes          |            |
 | Roborock S4 Max                    | miio:vacuum      | [roborock.vacuum.a19](#roborock-vacuum-a19) | Yes          |            |
 | Roborock T7S Plus                  | miio:vacuum      | [roborock.vacuum.a23](#roborock-vacuum-a23) | Yes          |            |
+| Roborock G10S Pro                  | miio:vacuum      | [roborock.vacuum.a26](#roborock-vacuum-a26) | Yes          |            |
+| Roborock S7 MaxV                   | miio:vacuum      | [roborock.vacuum.a27](#roborock-vacuum-a27) | Yes          |            |
+| Roborock G10                       | miio:vacuum      | [roborock.vacuum.a29](#roborock-vacuum-a29) | Yes          |            |
+| Roborock G10                       | miio:vacuum      | [roborock.vacuum.a30](#roborock-vacuum-a30) | Yes          |            |
+| Roborock Q5                        | miio:vacuum      | [roborock.vacuum.a34](#roborock-vacuum-a34) | Yes          |            |
+| Roborock T8                        | miio:vacuum      | [roborock.vacuum.a37](#roborock-vacuum-a37) | Yes          |            |
+| Roborock Q7 Max                    | miio:vacuum      | [roborock.vacuum.a38](#roborock-vacuum-a38) | Yes          |            |
+| Roborock Q7                        | miio:vacuum      | [roborock.vacuum.a40](#roborock-vacuum-a40) | Yes          |            |
+| Roborock G10S                      | miio:vacuum      | [roborock.vacuum.a46](#roborock-vacuum-a46) | Yes          |            |
+| Roborock T8 Plus                   | miio:vacuum      | [roborock.vacuum.a52](#roborock-vacuum-a52) | Yes          |            |
+| Roborock S7 Pro Ultra              | miio:vacuum      | [roborock.vacuum.a62](#roborock-vacuum-a62) | Yes          |            |
 | Xiaowa C1                          | miio:vacuum      | [roborock.vacuum.c1](#roborock-vacuum-c1) | Yes          |            |
 | Roborock Xiaowa E Series Vacuum v2 | miio:unsupported | roborock.vacuum.e2     | No           |            |
 | Mi Robot Vacuum 1S                 | miio:vacuum      | [roborock.vacuum.m1s](#roborock-vacuum-m1s) | Yes          |            |
@@ -2653,14 +2670,15 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
 | power                | Switch               | Power                                    |            |
-| powerUsage           | Number               | Power Consumption                        |            |
+| mode                 | String               | Mode                                     | Value mapping `["normal"="Normal","green"="Green"]` |
+| powerUsage           | Number:Power         | Power Consumption                        |            |
+| voltage              | Number:ElectricPotential | Voltage                                  |            |
 | led                  | Switch               | wifi LED                                 |            |
-| power_price          | Number               | power_price                              |            |
-| current              | Number               | Current                                  |            |
+| power_price          | Number               | Power Price                              |            |
+| power_factor         | Number               | Power Factor                             |            |
+| current              | Number:ElectricCurrent | Current                                  |            |
+| elec_leakage         | Number:ElectricCurrent | Electic Leakage                          |            |
 | temperature          | Number:Temperature   | Temperature                              |            |
-| lp_autooff           | Number               | Low Power Auto Off                       |            |
-| lp_autooff_delay     | Number               | Low Power Limit Time                     |            |
-| lp_threshold         | Number               | Low Power Threshold                      |            |
 
 ### ROIDMI EVE vacuum (<a name="roidmi-vacuum-v60">roidmi.vacuum.v60</a>) Channels
 
@@ -4264,6 +4282,8 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | colorTemperature     | Number               | Color Temperature                        |            |
 | colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
+| customScene          | String               | Set Scene                                |            |
+| nightlightBrightness | Number               | Nightlight Brightness                    |            |
 
 ### Yeelight Lightstrip (<a name="yeelink-light-strip1">yeelink.light.strip1</a>) Channels
 
@@ -5240,15 +5260,21 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
 | power                | Switch               | Power                                    |            |
-| mode                 | String               | Mode                                     |            |
+| mode                 | String               | Mode                                     | Value mapping `["auto"="Auto","favorite"="Favorite","silent"="Silent","high"="High","medium"="Medium","idle"="Idle","strong"="Strong"]` |
 | humidity             | Number:Dimensionless | Humidity                                 |            |
 | aqi                  | Number               | Air Quality Index                        |            |
-| brightness           | Dimmer               | Brightness                               |            |
+| averageaqi           | Number               | Average Air Quality Index                |            |
 | led                  | Switch               | LED Status                               |            |
-| act_det              | Switch               | Air AutoDetect                           |            |
 | buzzer               | Switch               | Buzzer Status                            |            |
 | filtermaxlife        | Number               | Filter Max Life                          |            |
-| filterlive           | Number               | Filter Life                              |            |
+| filterhours          | Number:Time          | Filter Hours used                        |            |
+| usedhours            | Number:Time          | Run Time                                 |            |
+| motorspeed           | Number               | Motor Speed                              |            |
+| filterlife           | Number               | Filter Life                              |            |
+| favoritelevel        | Number               | Favorite Level                           | Value mapping `["0"="Favorite 0","1"="Favorite 1","2"="Favorite 2","3"="Favorite 3","4"="Favorite 4","5"="Favorite 5","6"="Favorite 6","7"="Favorite 7","8"="Favorite 8","9"="Favorite 9","10"="Favorite 10","11"="Favorite 11","12"="Favorite 13","13"="Favorite 13","14"="Favorite 14","15"="Favorite 15"]` |
+| temperature          | Number:Temperature   | Temperature                              |            |
+| purifyvolume         | Number:Volume        | Purified Volume                          |            |
+| childlock            | Switch               | Child Lock                               |            |
 
 ### Mi Air Purifier v2 (<a name="zhimi-airpurifier-v2">zhimi.airpurifier.v2</a>) Channels
 
@@ -8328,14 +8354,15 @@ note: Autogenerated example. Replace the id (powerstrip) in the channel with you
 ```
 Group G_powerstrip "CHINGMI Smart Power Strip v1" <status>
 Switch power "Power" (G_powerstrip) {channel="miio:basic:powerstrip:power"}
-Number powerUsage "Power Consumption" (G_powerstrip) {channel="miio:basic:powerstrip:powerUsage"}
+String mode "Mode" (G_powerstrip) {channel="miio:basic:powerstrip:mode"}
+Number:Power powerUsage "Power Consumption" (G_powerstrip) {channel="miio:basic:powerstrip:powerUsage"}
+Number:ElectricPotential voltage "Voltage" (G_powerstrip) {channel="miio:basic:powerstrip:voltage"}
 Switch led "wifi LED" (G_powerstrip) {channel="miio:basic:powerstrip:led"}
-Number power_price "power_price" (G_powerstrip) {channel="miio:basic:powerstrip:power_price"}
-Number current "Current" (G_powerstrip) {channel="miio:basic:powerstrip:current"}
+Number power_price "Power Price" (G_powerstrip) {channel="miio:basic:powerstrip:power_price"}
+Number power_factor "Power Factor" (G_powerstrip) {channel="miio:basic:powerstrip:power_factor"}
+Number:ElectricCurrent current "Current" (G_powerstrip) {channel="miio:basic:powerstrip:current"}
+Number:ElectricCurrent elec_leakage "Electic Leakage" (G_powerstrip) {channel="miio:basic:powerstrip:elec_leakage"}
 Number:Temperature temperature "Temperature" (G_powerstrip) {channel="miio:basic:powerstrip:temperature"}
-Number lp_autooff "Low Power Auto Off" (G_powerstrip) {channel="miio:basic:powerstrip:lp_autooff"}
-Number lp_autooff_delay "Low Power Limit Time" (G_powerstrip) {channel="miio:basic:powerstrip:lp_autooff_delay"}
-Number lp_threshold "Low Power Threshold" (G_powerstrip) {channel="miio:basic:powerstrip:lp_threshold"}
 ```
 
 ### ROIDMI EVE vacuum (roidmi.vacuum.v60) item file lines
@@ -10239,6 +10266,8 @@ Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delay
 Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
+String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
+Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
 ```
 
 ### Yeelight Lightstrip (yeelink.light.strip1) item file lines
@@ -11341,12 +11370,18 @@ Switch power "Power" (G_airpurifier) {channel="miio:basic:airpurifier:power"}
 String mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
 Number:Dimensionless humidity "Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:humidity"}
 Number aqi "Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:aqi"}
-Dimmer brightness "Brightness" (G_airpurifier) {channel="miio:basic:airpurifier:brightness"}
+Number averageaqi "Average Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:averageaqi"}
 Switch led "LED Status" (G_airpurifier) {channel="miio:basic:airpurifier:led"}
-Switch act_det "Air AutoDetect" (G_airpurifier) {channel="miio:basic:airpurifier:act_det"}
 Switch buzzer "Buzzer Status" (G_airpurifier) {channel="miio:basic:airpurifier:buzzer"}
 Number filtermaxlife "Filter Max Life" (G_airpurifier) {channel="miio:basic:airpurifier:filtermaxlife"}
-Number filterlive "Filter Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlive"}
+Number:Time filterhours "Filter Hours used" (G_airpurifier) {channel="miio:basic:airpurifier:filterhours"}
+Number:Time usedhours "Run Time" (G_airpurifier) {channel="miio:basic:airpurifier:usedhours"}
+Number motorspeed "Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motorspeed"}
+Number filterlife "Filter Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
+Number favoritelevel "Favorite Level" (G_airpurifier) {channel="miio:basic:airpurifier:favoritelevel"}
+Number:Temperature temperature "Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
+Number:Volume purifyvolume "Purified Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purifyvolume"}
+Switch childlock "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:childlock"}
 ```
 
 ### Mi Air Purifier v2 (zhimi.airpurifier.v2) item file lines
