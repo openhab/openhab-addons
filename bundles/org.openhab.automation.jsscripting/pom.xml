@@ -22,7 +22,7 @@
       !jdk.internal.reflect.*,
       !jdk.vm.ci.services
     </bnd.importpackage>
-    <graal.version>22.3.0</graal.version>
+    <graal.version>22.0.0.2</graal.version> <!-- 22.0.0.2 is the highest version that runs on armv7l with OpenJDK 11.0.16 -->
     <asm.version>6.2.1</asm.version>
     <oh.version>${project.version}</oh.version>
     <ohjs.version>openhab@2.1.0</ohjs.version>
