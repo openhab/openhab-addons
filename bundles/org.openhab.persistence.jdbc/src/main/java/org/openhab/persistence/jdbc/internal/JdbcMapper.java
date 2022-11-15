@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.knowm.yank.Yank;
+import org.knowm.yank.exceptions.YankSQLException;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.items.Item;
 import org.openhab.core.persistence.FilterCriteria;
@@ -66,7 +67,7 @@ public class JdbcMapper {
     /*****************
      * MAPPER ITEMS *
      *****************/
-    public boolean pingDB() {
+    private boolean pingDB() {
         logger.debug("JDBC::pingDB");
         boolean ret = false;
         long timerStart = System.currentTimeMillis();
@@ -90,15 +91,7 @@ public class JdbcMapper {
         return ret;
     }
 
-    public String getDB() {
-        logger.debug("JDBC::getDB");
-        long timerStart = System.currentTimeMillis();
-        String res = conf.getDBDAO().doGetDB();
-        logTime("getDB", timerStart, System.currentTimeMillis());
-        return res != null ? res : "";
-    }
-
-    public boolean ifItemsTableExists() {
+    private boolean ifItemsTableExists() {
         logger.debug("JDBC::ifItemsTableExists");
         long timerStart = System.currentTimeMillis();
         boolean res = conf.getDBDAO().doIfTableExists(new ItemsVO());
@@ -106,7 +99,7 @@ public class JdbcMapper {
         return res;
     }
 
-    public boolean ifTableExists(String tableName) {
+    protected boolean ifTableExists(String tableName) {
         logger.debug("JDBC::ifTableExists");
         long timerStart = System.currentTimeMillis();
         boolean res = conf.getDBDAO().doIfTableExists(tableName);
@@ -114,7 +107,7 @@ public class JdbcMapper {
         return res;
     }
 
-    public ItemsVO createNewEntryInItemsTable(ItemsVO vo) {
+    private ItemsVO createNewEntryInItemsTable(ItemsVO vo) {
         logger.debug("JDBC::createNewEntryInItemsTable");
         long timerStart = System.currentTimeMillis();
         Long i = conf.getDBDAO().doCreateNewEntryInItemsTable(vo);
@@ -123,7 +116,7 @@ public class JdbcMapper {
         return vo;
     }
 
-    public boolean createItemsTableIfNot(ItemsVO vo) {
+    private boolean createItemsTableIfNot(ItemsVO vo) {
         logger.debug("JDBC::createItemsTableIfNot");
         long timerStart = System.currentTimeMillis();
         conf.getDBDAO().doCreateItemsTableIfNot(vo);
@@ -131,7 +124,7 @@ public class JdbcMapper {
         return true;
     }
 
-    public boolean dropItemsTableIfExists(ItemsVO vo) {
+    private boolean dropItemsTableIfExists(ItemsVO vo) {
         logger.debug("JDBC::dropItemsTableIfExists");
         long timerStart = System.currentTimeMillis();
         conf.getDBDAO().doDropItemsTableIfExists(vo);
@@ -139,14 +132,14 @@ public class JdbcMapper {
         return true;
     }
 
-    public void dropTable(String tableName) {
+    protected void dropTable(String tableName) {
         logger.debug("JDBC::dropTable");
         long timerStart = System.currentTimeMillis();
         conf.getDBDAO().doDropTable(tableName);
         logTime("doDropTable", timerStart, System.currentTimeMillis());
     }
 
-    public ItemsVO deleteItemsEntry(ItemsVO vo) {
+    protected ItemsVO deleteItemsEntry(ItemsVO vo) {
         logger.debug("JDBC::deleteItemsEntry");
         long timerStart = System.currentTimeMillis();
         conf.getDBDAO().doDeleteItemsEntry(vo);
@@ -154,7 +147,7 @@ public class JdbcMapper {
         return vo;
     }
 
-    public List<ItemsVO> getItemIDTableNames() {
+    private List<ItemsVO> getItemIDTableNames() {
         logger.debug("JDBC::getItemIDTableNames");
         long timerStart = System.currentTimeMillis();
         List<ItemsVO> vo = conf.getDBDAO().doGetItemIDTableNames(new ItemsVO());
@@ -162,7 +155,7 @@ public class JdbcMapper {
         return vo;
     }
 
-    public List<ItemsVO> getItemTables() {
+    protected List<ItemsVO> getItemTables() {
         logger.debug("JDBC::getItemTables");
         long timerStart = System.currentTimeMillis();
         ItemsVO vo = new ItemsVO();
@@ -175,14 +168,14 @@ public class JdbcMapper {
     /****************
      * MAPPERS ITEM *
      ****************/
-    public void updateItemTableNames(List<ItemVO> vol) {
+    private void updateItemTableNames(List<ItemVO> vol) {
         logger.debug("JDBC::updateItemTableNames");
         long timerStart = System.currentTimeMillis();
         conf.getDBDAO().doUpdateItemTableNames(vol);
         logTime("updateItemTableNames", timerStart, System.currentTimeMillis());
     }
 
-    public ItemVO createItemTable(ItemVO vo) {
+    private ItemVO createItemTable(ItemVO vo) {
         logger.debug("JDBC::createItemTable");
         long timerStart = System.currentTimeMillis();
         conf.getDBDAO().doCreateItemTable(vo);
@@ -190,7 +183,7 @@ public class JdbcMapper {
         return vo;
     }
 
-    public Item storeItemValue(Item item, State itemState, @Nullable ZonedDateTime date) {
+    protected Item storeItemValue(Item item, State itemState, @Nullable ZonedDateTime date) {
         logger.debug("JDBC::storeItemValue: item={} state={} date={}", item, itemState, date);
         String tableName = getTable(item);
         long timerStart = System.currentTimeMillis();
@@ -208,7 +201,7 @@ public class JdbcMapper {
         return conf.getDBDAO().doGetRowCount(tableName);
     }
 
-    public List<HistoricItem> getHistItemFilterQuery(FilterCriteria filter, int numberDecimalcount, String table,
+    protected List<HistoricItem> getHistItemFilterQuery(FilterCriteria filter, int numberDecimalcount, String table,
             Item item) {
         logger.debug(
                 "JDBC::getHistItemFilterQuery filter='{}' numberDecimalcount='{}' table='{}' item='{}' itemName='{}'",
@@ -221,13 +214,12 @@ public class JdbcMapper {
         return result;
     }
 
-    public boolean deleteItemValues(FilterCriteria filter, String table) {
+    protected void deleteItemValues(FilterCriteria filter, String table) {
         logger.debug("JDBC::deleteItemValues filter='{}' table='{}' itemName='{}'", true, table, filter.getItemName());
         long timerStart = System.currentTimeMillis();
         conf.getDBDAO().doDeleteItemValues(filter, table, timeZoneProvider.getTimeZone());
         logTime("deleteItemValues", timerStart, System.currentTimeMillis());
         errCnt = 0;
-        return true;
     }
 
     /***********************
@@ -239,6 +231,7 @@ public class JdbcMapper {
             logger.info("JDBC::openConnection: Driver is available::Yank setupDataSource");
             try {
                 Yank.setupDefaultConnectionPool(conf.getHikariConfiguration());
+                Yank.setThrowWrappedExceptions(true);
                 conf.setDbConnected(true);
                 return true;
             } catch (PoolInitializationException e) {
@@ -271,16 +264,21 @@ public class JdbcMapper {
         if (initialized) {
             return true;
         }
-        // first
-        boolean p = pingDB();
-        if (p) {
-            logger.debug("JDBC::checkDBAcessability, first try connection: {}", p);
-            return (p && !(conf.getErrReconnectThreshold() > 0 && errCnt <= conf.getErrReconnectThreshold()));
-        } else {
-            // second
-            p = pingDB();
-            logger.debug("JDBC::checkDBAcessability, second try connection: {}", p);
-            return (p && !(conf.getErrReconnectThreshold() > 0 && errCnt <= conf.getErrReconnectThreshold()));
+        try {
+            // first
+            boolean p = pingDB();
+            if (p) {
+                logger.debug("JDBC::checkDBAcessability, first try connection: {}", p);
+                return (p && !(conf.getErrReconnectThreshold() > 0 && errCnt <= conf.getErrReconnectThreshold()));
+            } else {
+                // second
+                p = pingDB();
+                logger.debug("JDBC::checkDBAcessability, second try connection: {}", p);
+                return (p && !(conf.getErrReconnectThreshold() > 0 && errCnt <= conf.getErrReconnectThreshold()));
+            }
+        } catch (YankSQLException e) {
+            logger.warn("Unable to ping database", e);
+            return false;
         }
     }
 
@@ -412,7 +410,7 @@ public class JdbcMapper {
         initialized = tmpinit;
     }
 
-    public Set<PersistenceItemInfo> getItems() {
+    protected Set<PersistenceItemInfo> getItems() {
         // TODO: in general it would be possible to query the count, earliest and latest values for each item too but it
         // would be a very costly operation
         return itemNameToTableNameMap.keySet().stream().map(itemName -> new JdbcPersistenceItemInfo(itemName))
