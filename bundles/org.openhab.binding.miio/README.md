@@ -2029,7 +2029,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | total-clean-area     | Number:Area          | Clean Record - Total Clean Area          |            |
 | total-clean-time     | Number               | Clean Record - Total Clean Time          |            |
 | total-clean-count    | Number               | Clean Record - Total Clean Count         |            |
-| language             | Number               | Language - Language                      | Value mapping `["0"="English","1"="简体中文","2"="Español","3"="Ру�?�?кий","4"="Italiano","5"="Français","6"="Deutsch","7"="한국어","8"="Polski"]` |
+| language             | Number               | Language - Language                      | Value mapping `["0"="English","1"="Chinese","2"="Spanish","3"="Russian","4"="Italian","5"="French","6"="German","7"="Korean","8"="Polish"]` |
 | not-disturb-switch   | Switch               | Language - Not Disturb Switch            |            |
 | mop-status           | Number               | Other Status - Mop Status                | Value mapping `["0"="Mop Uninstall","1"="Mop Install"]` |
 
