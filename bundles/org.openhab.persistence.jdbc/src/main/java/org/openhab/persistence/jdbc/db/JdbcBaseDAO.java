@@ -32,6 +32,7 @@ import javax.measure.Unit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.knowm.yank.Yank;
+import org.knowm.yank.exceptions.YankSQLException;
 import org.openhab.core.items.GroupItem;
 import org.openhab.core.items.Item;
 import org.openhab.core.library.items.ColorItem;
@@ -58,6 +59,7 @@ import org.openhab.core.types.TypeParser;
 import org.openhab.persistence.jdbc.dto.ItemVO;
 import org.openhab.persistence.jdbc.dto.ItemsVO;
 import org.openhab.persistence.jdbc.dto.JdbcHistoricItem;
+import org.openhab.persistence.jdbc.exceptions.JdbcSQLException;
 import org.openhab.persistence.jdbc.utils.DbMetaData;
 import org.openhab.persistence.jdbc.utils.StringUtilsExt;
 import org.slf4j.Logger;
@@ -248,131 +250,196 @@ public class JdbcBaseDAO {
     /**************
      * ITEMS DAOs *
      **************/
-    public @Nullable Integer doPingDB() {
-        final @Nullable Integer result = Yank.queryScalar(sqlPingDB, Integer.class, null);
-        return result;
+    public @Nullable Integer doPingDB() throws JdbcSQLException {
+        try {
+            final @Nullable Integer result = Yank.queryScalar(sqlPingDB, Integer.class, null);
+            return result;
+        } catch (YankSQLException e) {
+            throw new JdbcSQLException(e);
+        }
     }
 
-    public @Nullable String doGetDB() {
-        final @Nullable String result = Yank.queryScalar(sqlGetDB, String.class, null);
-        return result;
+    public @Nullable String doGetDB() throws JdbcSQLException {
+        try {
+            final @Nullable String result = Yank.queryScalar(sqlGetDB, String.class, null);
+            return result;
+        } catch (YankSQLException e) {
+            throw new JdbcSQLException(e);
+        }
     }
 
-    public boolean doIfTableExists(ItemsVO vo) {
+    public boolean doIfTableExists(ItemsVO vo) throws JdbcSQLException {
         String sql = StringUtilsExt.replaceArrayMerge(sqlIfTableExists, new String[] { "#searchTable#" },
                 new String[] { vo.getItemsManageTable() });
         logger.debug("JDBC::doIfTableExists sql={}", sql);
-        final @Nullable String result = Yank.queryScalar(sql, String.class, null);
-        return Objects.nonNull(result);
+        try {
+            final @Nullable String result = Yank.queryScalar(sql, String.class, null);
+            return Objects.nonNull(result);
+        } catch (YankSQLException e) {
+            throw new JdbcSQLException(e);
+        }
     }
 
-    public boolean doIfTableExists(String tableName) {
+    public boolean doIfTableExists(String tableName) throws JdbcSQLException {
         String sql = StringUtilsExt.replaceArrayMerge(sqlIfTableExists, new String[] { "#searchTable#" },
                 new String[] { tableName });
         logger.debug("JDBC::doIfTableExists sql={}", sql);
-        final @Nullable String result = Yank.queryScalar(sql, String.class, null);
-        return Objects.nonNull(result);
+        try {
+            final @Nullable String result = Yank.queryScalar(sql, String.class, null);
+            return Objects.nonNull(result);
+        } catch (YankSQLException e) {
+            throw new JdbcSQLException(e);
+        }
     }
 
-    public Long doCreateNewEntryInItemsTable(ItemsVO vo) {
+    public Long doCreateNewEntryInItemsTable(ItemsVO vo) throws JdbcSQLException {
         String sql = StringUtilsExt.replaceArrayMerge(sqlCreateNewEntryInItemsTable,
                 new String[] { "#itemsManageTable#", "#itemname#" },
                 new String[] { vo.getItemsManageTable(), vo.getItemName() });
         logger.debug("JDBC::doCreateNewEntryInItemsTable sql={}", sql);
-        return Yank.insert(sql, null);
+        try {
+            return Yank.insert(sql, null);
+        } catch (YankSQLException e) {
+            throw new JdbcSQLException(e);
+        }
     }
 
-    public ItemsVO doCreateItemsTableIfNot(ItemsVO vo) {
+    public ItemsVO doCreateItemsTableIfNot(ItemsVO vo) throws JdbcSQLException {
         String sql = StringUtilsExt.replaceArrayMerge(sqlCreateItemsTableIfNot,
                 new String[] { "#itemsManageTable#", "#colname#", "#coltype#" },
                 new String[] { vo.getItemsManageTable(), vo.getColname(), vo.getColtype() });
         logger.debug("JDBC::doCreateItemsTableIfNot sql={}", sql);
-        Yank.execute(sql, null);
+        try {
+            Yank.execute(sql, null);
+        } catch (YankSQLException e) {
+            throw new JdbcSQLException(e);
+        }
         return vo;
     }
 
-    public ItemsVO doDropItemsTableIfExists(ItemsVO vo) {
+    public ItemsVO doDropItemsTableIfExists(ItemsVO vo) throws JdbcSQLException {
         String sql = StringUtilsExt.replaceArrayMerge(sqlDropItemsTableIfExists, new String[] { "#itemsManageTable#" },
                 new String[] { vo.getItemsManageTable() });
         logger.debug("JDBC::doDropItemsTableIfExists sql={}", sql);
-        Yank.execute(sql, null);
+        try {
+            Yank.execute(sql, null);
+        } catch (YankSQLException e) {
+            throw new JdbcSQLException(e);
+        }
         return vo;
     }
 
-    public void doDropTable(String tableName) {
+    public void doDropTable(String tableName) throws JdbcSQLException {
         String sql = StringUtilsExt.replaceArrayMerge(sqlDropTable, new String[] { "#tableName#" },
                 new String[] { tableName });
         logger.debug("JDBC::doDropTable sql={}", sql);
-        Yank.execute(sql, null);
+        try {
+            Yank.execute(sql, null);
+        } catch (YankSQLException e) {
+            throw new JdbcSQLException(e);
+        }
     }
 
-    public void doDeleteItemsEntry(ItemsVO vo) {
+    public void doDeleteItemsEntry(ItemsVO vo) throws JdbcSQLException {
         String sql = StringUtilsExt.replaceArrayMerge(sqlDeleteItemsEntry,
                 new String[] { "#itemsManageTable#", "#itemname#" },
                 new String[] { vo.getItemsManageTable(), vo.getItemName() });
         logger.debug("JDBC::doDeleteItemsEntry sql={}", sql);
-        Yank.execute(sql, null);
+        try {
+            Yank.execute(sql, null);
+        } catch (YankSQLException e) {
+            throw new JdbcSQLException(e);
+        }
     }
 
-    public List<ItemsVO> doGetItemIDTableNames(ItemsVO vo) {
+    public List<ItemsVO> doGetItemIDTableNames(ItemsVO vo) throws JdbcSQLException {
         String sql = StringUtilsExt.replaceArrayMerge(sqlGetItemIDTableNames, new String[] { "#itemsManageTable#" },
                 new String[] { vo.getItemsManageTable() });
         logger.debug("JDBC::doGetItemIDTableNames sql={}", sql);
-        return Yank.queryBeanList(sql, ItemsVO.class, null);
+        try {
+            return Yank.queryBeanList(sql, ItemsVO.class, null);
+        } catch (YankSQLException e) {
+            throw new JdbcSQLException(e);
+        }
     }
 
-    public List<ItemsVO> doGetItemTables(ItemsVO vo) {
+    public List<ItemsVO> doGetItemTables(ItemsVO vo) throws JdbcSQLException {
         String sql = StringUtilsExt.replaceArrayMerge(sqlGetItemTables,
                 new String[] { "#jdbcUriDatabaseName#", "#itemsManageTable#" },
                 new String[] { vo.getJdbcUriDatabaseName(), vo.getItemsManageTable() });
         logger.debug("JDBC::doGetItemTables sql={}", sql);
-        return Yank.queryBeanList(sql, ItemsVO.class, null);
+        try {
+            return Yank.queryBeanList(sql, ItemsVO.class, null);
+        } catch (YankSQLException e) {
+            throw new JdbcSQLException(e);
+        }
     }
 
     /*************
      * ITEM DAOs *
      *************/
-    public void doUpdateItemTableNames(List<ItemVO> vol) {
+    public void doUpdateItemTableNames(List<ItemVO> vol) throws JdbcSQLException {
         logger.debug("JDBC::doUpdateItemTableNames vol.size = {}", vol.size());
         for (ItemVO itemTable : vol) {
             String sql = updateItemTableNamesProvider(itemTable);
-            Yank.execute(sql, null);
+            try {
+                Yank.execute(sql, null);
+            } catch (YankSQLException e) {
+                throw new JdbcSQLException(e);
+            }
         }
     }
 
-    public void doCreateItemTable(ItemVO vo) {
+    public void doCreateItemTable(ItemVO vo) throws JdbcSQLException {
         String sql = StringUtilsExt.replaceArrayMerge(sqlCreateItemTable,
                 new String[] { "#tableName#", "#dbType#", "#tablePrimaryKey#" },
                 new String[] { vo.getTableName(), vo.getDbType(), sqlTypes.get("tablePrimaryKey") });
         logger.debug("JDBC::doCreateItemTable sql={}", sql);
-        Yank.execute(sql, null);
+        try {
+            Yank.execute(sql, null);
+        } catch (YankSQLException e) {
+            throw new JdbcSQLException(e);
+        }
     }
 
-    public void doStoreItemValue(Item item, State itemState, ItemVO vo) {
+    public void doStoreItemValue(Item item, State itemState, ItemVO vo) throws JdbcSQLException {
         ItemVO storedVO = storeItemValueProvider(item, itemState, vo);
         String sql = StringUtilsExt.replaceArrayMerge(sqlInsertItemValue,
                 new String[] { "#tableName#", "#tablePrimaryValue#" },
                 new String[] { storedVO.getTableName(), sqlTypes.get("tablePrimaryValue") });
         Object[] params = { storedVO.getValue(), storedVO.getValue() };
         logger.debug("JDBC::doStoreItemValue sql={} value='{}'", sql, storedVO.getValue());
-        Yank.execute(sql, params);
+        try {
+            Yank.execute(sql, params);
+        } catch (YankSQLException e) {
+            throw new JdbcSQLException(e);
+        }
     }
 
-    public void doStoreItemValue(Item item, State itemState, ItemVO vo, ZonedDateTime date) {
+    public void doStoreItemValue(Item item, State itemState, ItemVO vo, ZonedDateTime date) throws JdbcSQLException {
         ItemVO storedVO = storeItemValueProvider(item, itemState, vo);
         String sql = StringUtilsExt.replaceArrayMerge(sqlInsertItemValue,
                 new String[] { "#tableName#", "#tablePrimaryValue#" }, new String[] { storedVO.getTableName(), "?" });
         java.sql.Timestamp timestamp = new java.sql.Timestamp(date.toInstant().toEpochMilli());
         Object[] params = { timestamp, storedVO.getValue(), storedVO.getValue() };
         logger.debug("JDBC::doStoreItemValue sql={} timestamp={} value='{}'", sql, timestamp, storedVO.getValue());
-        Yank.execute(sql, params);
+        try {
+            Yank.execute(sql, params);
+        } catch (YankSQLException e) {
+            throw new JdbcSQLException(e);
+        }
     }
 
     public List<HistoricItem> doGetHistItemFilterQuery(Item item, FilterCriteria filter, int numberDecimalcount,
-            String table, String name, ZoneId timeZone) {
+            String table, String name, ZoneId timeZone) throws JdbcSQLException {
         String sql = histItemFilterQueryProvider(filter, numberDecimalcount, table, name, timeZone);
         logger.debug("JDBC::doGetHistItemFilterQuery sql={}", sql);
-        List<Object[]> m = Yank.queryObjectArrays(sql, null);
+        List<Object[]> m;
+        try {
+            m = Yank.queryObjectArrays(sql, null);
+        } catch (YankSQLException e) {
+            throw new JdbcSQLException(e);
+        }
         if (m == null) {
             logger.debug("JDBC::doGetHistItemFilterQuery Query failed. Returning an empty list.");
             return List.of();
@@ -385,18 +452,26 @@ public class JdbcBaseDAO {
                 .collect(Collectors.<HistoricItem> toList());
     }
 
-    public void doDeleteItemValues(FilterCriteria filter, String table, ZoneId timeZone) {
+    public void doDeleteItemValues(FilterCriteria filter, String table, ZoneId timeZone) throws JdbcSQLException {
         String sql = histItemFilterDeleteProvider(filter, table, timeZone);
         logger.debug("JDBC::doDeleteItemValues sql={}", sql);
-        Yank.execute(sql, null);
+        try {
+            Yank.execute(sql, null);
+        } catch (YankSQLException e) {
+            throw new JdbcSQLException(e);
+        }
     }
 
-    public long doGetRowCount(String tableName) {
+    public long doGetRowCount(String tableName) throws JdbcSQLException {
         final String sql = StringUtilsExt.replaceArrayMerge(sqlGetRowCount, new String[] { "#tableName#" },
                 new String[] { tableName });
         logger.debug("JDBC::doGetRowCount sql={}", sql);
-        final @Nullable Long result = Yank.queryScalar(sql, Long.class, null);
-        return Objects.requireNonNullElse(result, 0L);
+        try {
+            final @Nullable Long result = Yank.queryScalar(sql, Long.class, null);
+            return Objects.requireNonNullElse(result, 0L);
+        } catch (YankSQLException e) {
+            throw new JdbcSQLException(e);
+        }
     }
 
     /*************

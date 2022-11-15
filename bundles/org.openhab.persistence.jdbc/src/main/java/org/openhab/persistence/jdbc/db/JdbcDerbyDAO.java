@@ -23,6 +23,7 @@ import javax.measure.Unit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.knowm.yank.Yank;
+import org.knowm.yank.exceptions.YankSQLException;
 import org.openhab.core.items.Item;
 import org.openhab.core.library.items.NumberItem;
 import org.openhab.core.persistence.FilterCriteria;
@@ -32,6 +33,7 @@ import org.openhab.core.types.State;
 import org.openhab.persistence.jdbc.dto.ItemVO;
 import org.openhab.persistence.jdbc.dto.ItemsVO;
 import org.openhab.persistence.jdbc.dto.JdbcHistoricItem;
+import org.openhab.persistence.jdbc.exceptions.JdbcSQLException;
 import org.openhab.persistence.jdbc.utils.StringUtilsExt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -106,39 +108,53 @@ public class JdbcDerbyDAO extends JdbcBaseDAO {
      * ITEMS DAOs *
      **************/
     @Override
-    public @Nullable Integer doPingDB() {
-        return Yank.queryScalar(sqlPingDB, Integer.class, null);
+    public @Nullable Integer doPingDB() throws JdbcSQLException {
+        try {
+            return Yank.queryScalar(sqlPingDB, Integer.class, null);
+        } catch (YankSQLException e) {
+            throw new JdbcSQLException(e);
+        }
     }
 
     @Override
-    public boolean doIfTableExists(ItemsVO vo) {
+    public boolean doIfTableExists(ItemsVO vo) throws JdbcSQLException {
         String sql = StringUtilsExt.replaceArrayMerge(sqlIfTableExists, new String[] { "#searchTable#" },
                 new String[] { vo.getItemsManageTable().toUpperCase() });
         logger.debug("JDBC::doIfTableExists sql={}", sql);
-        final @Nullable String result = Yank.queryScalar(sql, String.class, null);
-        return Objects.nonNull(result);
+        try {
+            final @Nullable String result = Yank.queryScalar(sql, String.class, null);
+            return Objects.nonNull(result);
+        } catch (YankSQLException e) {
+            throw new JdbcSQLException(e);
+        }
     }
 
     @Override
-    public Long doCreateNewEntryInItemsTable(ItemsVO vo) {
+    public Long doCreateNewEntryInItemsTable(ItemsVO vo) throws JdbcSQLException {
         String sql = StringUtilsExt.replaceArrayMerge(sqlCreateNewEntryInItemsTable,
                 new String[] { "#itemsManageTable#", "#itemname#" },
                 new String[] { vo.getItemsManageTable().toUpperCase(), vo.getItemName() });
         logger.debug("JDBC::doCreateNewEntryInItemsTable sql={}", sql);
-        return Yank.insert(sql, null);
+        try {
+            return Yank.insert(sql, null);
+        } catch (YankSQLException e) {
+            throw new JdbcSQLException(e);
+        }
     }
 
     @Override
-    public ItemsVO doCreateItemsTableIfNot(ItemsVO vo) {
-        // boolean tableExists = Yank.queryScalar(SQL_IF_TABLE_EXISTS.replace("#searchTable#",
-        // vo.getItemsManageTable().toUpperCase()), String.class, null) == null;
+    public ItemsVO doCreateItemsTableIfNot(ItemsVO vo) throws JdbcSQLException {
         boolean tableExists = doIfTableExists(vo);
         if (!tableExists) {
             String sql = StringUtilsExt.replaceArrayMerge(sqlCreateItemsTableIfNot,
                     new String[] { "#itemsManageTable#", "#colname#", "#coltype#" },
                     new String[] { vo.getItemsManageTable().toUpperCase(), vo.getColname(), vo.getColtype() });
             logger.debug("JDBC::doCreateItemsTableIfNot tableExists={} therefore sql={}", tableExists, sql);
-            Yank.execute(sql, null);
+            try {
+                Yank.execute(sql, null);
+            } catch (YankSQLException e) {
+                throw new JdbcSQLException(e);
+            }
         } else {
             logger.debug("JDBC::doCreateItemsTableIfNot tableExists={}, did not CREATE TABLE", tableExists);
         }
@@ -149,15 +165,19 @@ public class JdbcDerbyDAO extends JdbcBaseDAO {
      * ITEM DAOs *
      *************/
     @Override
-    public void doCreateItemTable(ItemVO vo) {
+    public void doCreateItemTable(ItemVO vo) throws JdbcSQLException {
         String sql = StringUtilsExt.replaceArrayMerge(sqlCreateItemTable,
                 new String[] { "#tableName#", "#dbType#", "#tablePrimaryKey#" },
                 new String[] { vo.getTableName(), vo.getDbType(), sqlTypes.get("tablePrimaryKey") });
-        Yank.execute(sql, null);
+        try {
+            Yank.execute(sql, null);
+        } catch (YankSQLException e) {
+            throw new JdbcSQLException(e);
+        }
     }
 
     @Override
-    public void doStoreItemValue(Item item, State itemState, ItemVO vo) {
+    public void doStoreItemValue(Item item, State itemState, ItemVO vo) throws JdbcSQLException {
         ItemVO storedVO = storeItemValueProvider(item, itemState, vo);
         String sql = StringUtilsExt.replaceArrayMerge(sqlInsertItemValue,
                 new String[] { "#tableName#", "#dbType#", "#tablePrimaryValue#" },
@@ -165,14 +185,23 @@ public class JdbcDerbyDAO extends JdbcBaseDAO {
                         sqlTypes.get("tablePrimaryValue") });
         Object[] params = { storedVO.getValue() };
         logger.debug("JDBC::doStoreItemValue sql={} value='{}'", sql, storedVO.getValue());
-        Yank.execute(sql, params);
+        try {
+            Yank.execute(sql, params);
+        } catch (YankSQLException e) {
+            throw new JdbcSQLException(e);
+        }
     }
 
     @Override
     public List<HistoricItem> doGetHistItemFilterQuery(Item item, FilterCriteria filter, int numberDecimalcount,
-            String table, String name, ZoneId timeZone) {
+            String table, String name, ZoneId timeZone) throws JdbcSQLException {
         String sql = histItemFilterQueryProvider(filter, numberDecimalcount, table, name, timeZone);
-        List<Object[]> m = Yank.queryObjectArrays(sql, null);
+        List<Object[]> m;
+        try {
+            m = Yank.queryObjectArrays(sql, null);
+        } catch (YankSQLException e) {
+            throw new JdbcSQLException(e);
+        }
         logger.debug("JDBC::doGetHistItemFilterQuery got Array length={}", m.size());
         // we already retrieve the unit here once as it is a very costly operation
         String itemName = item.getName();

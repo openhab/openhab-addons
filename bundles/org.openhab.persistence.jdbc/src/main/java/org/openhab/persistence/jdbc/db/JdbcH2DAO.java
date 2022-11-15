@@ -14,9 +14,11 @@ package org.openhab.persistence.jdbc.db;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.knowm.yank.Yank;
+import org.knowm.yank.exceptions.YankSQLException;
 import org.openhab.core.items.Item;
 import org.openhab.core.types.State;
 import org.openhab.persistence.jdbc.dto.ItemVO;
+import org.openhab.persistence.jdbc.exceptions.JdbcSQLException;
 import org.openhab.persistence.jdbc.utils.StringUtilsExt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,14 +79,18 @@ public class JdbcH2DAO extends JdbcBaseDAO {
      * ITEM DAOs *
      *************/
     @Override
-    public void doStoreItemValue(Item item, State itemState, ItemVO vo) {
+    public void doStoreItemValue(Item item, State itemState, ItemVO vo) throws JdbcSQLException {
         ItemVO storedVO = storeItemValueProvider(item, itemState, vo);
         String sql = StringUtilsExt.replaceArrayMerge(sqlInsertItemValue,
                 new String[] { "#tableName#", "#dbType#", "#tablePrimaryValue#" },
                 new String[] { storedVO.getTableName(), storedVO.getDbType(), sqlTypes.get("tablePrimaryValue") });
         Object[] params = { storedVO.getValue() };
         logger.debug("JDBC::doStoreItemValue sql={} value='{}'", sql, storedVO.getValue());
-        Yank.execute(sql, params);
+        try {
+            Yank.execute(sql, params);
+        } catch (YankSQLException e) {
+            throw new JdbcSQLException(e);
+        }
     }
 
     /****************************

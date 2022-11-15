@@ -42,7 +42,6 @@ public class DbMetaData {
 
     public DbMetaData() {
         HikariDataSource h = Yank.getDefaultConnectionPool();
-        // HikariDataSource h = Yank.getDataSource();
 
         DatabaseMetaData meta;
         try {

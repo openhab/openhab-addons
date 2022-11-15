@@ -17,12 +17,14 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.knowm.yank.Yank;
+import org.knowm.yank.exceptions.YankSQLException;
 import org.openhab.core.items.Item;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.core.persistence.FilterCriteria.Ordering;
 import org.openhab.core.types.State;
 import org.openhab.persistence.jdbc.dto.ItemVO;
 import org.openhab.persistence.jdbc.dto.ItemsVO;
+import org.openhab.persistence.jdbc.exceptions.JdbcSQLException;
 import org.openhab.persistence.jdbc.utils.StringUtilsExt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -108,45 +110,61 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
      * ITEMS DAOs *
      **************/
     @Override
-    public ItemsVO doCreateItemsTableIfNot(ItemsVO vo) {
+    public ItemsVO doCreateItemsTableIfNot(ItemsVO vo) throws JdbcSQLException {
         String sql = StringUtilsExt.replaceArrayMerge(sqlCreateItemsTableIfNot,
                 new String[] { "#itemsManageTable#", "#colname#", "#coltype#", "#itemsManageTable#" },
                 new String[] { vo.getItemsManageTable(), vo.getColname(), vo.getColtype(), vo.getItemsManageTable() });
         logger.debug("JDBC::doCreateItemsTableIfNot sql={}", sql);
-        Yank.execute(sql, null);
+        try {
+            Yank.execute(sql, null);
+        } catch (YankSQLException e) {
+            throw new JdbcSQLException(e);
+        }
         return vo;
     }
 
     @Override
-    public Long doCreateNewEntryInItemsTable(ItemsVO vo) {
+    public Long doCreateNewEntryInItemsTable(ItemsVO vo) throws JdbcSQLException {
         String sql = StringUtilsExt.replaceArrayMerge(sqlCreateNewEntryInItemsTable,
                 new String[] { "#itemsManageTable#", "#itemname#" },
                 new String[] { vo.getItemsManageTable(), vo.getItemName() });
         logger.debug("JDBC::doCreateNewEntryInItemsTable sql={}", sql);
-        return Yank.insert(sql, null);
+        try {
+            return Yank.insert(sql, null);
+        } catch (YankSQLException e) {
+            throw new JdbcSQLException(e);
+        }
     }
 
     @Override
-    public List<ItemsVO> doGetItemTables(ItemsVO vo) {
+    public List<ItemsVO> doGetItemTables(ItemsVO vo) throws JdbcSQLException {
         String sql = StringUtilsExt.replaceArrayMerge(this.sqlGetItemTables,
                 new String[] { "#itemsManageTable#", "#itemsManageTable#" },
                 new String[] { vo.getItemsManageTable(), vo.getItemsManageTable() });
         this.logger.debug("JDBC::doGetItemTables sql={}", sql);
-        return Yank.queryBeanList(sql, ItemsVO.class, null);
+        try {
+            return Yank.queryBeanList(sql, ItemsVO.class, null);
+        } catch (YankSQLException e) {
+            throw new JdbcSQLException(e);
+        }
     }
 
     /*************
      * ITEM DAOs *
      *************/
     @Override
-    public void doStoreItemValue(Item item, State itemState, ItemVO vo) {
+    public void doStoreItemValue(Item item, State itemState, ItemVO vo) throws JdbcSQLException {
         ItemVO storedVO = storeItemValueProvider(item, itemState, vo);
         String sql = StringUtilsExt.replaceArrayMerge(sqlInsertItemValue,
                 new String[] { "#tableName#", "#dbType#", "#tablePrimaryValue#" },
                 new String[] { storedVO.getTableName(), storedVO.getDbType(), sqlTypes.get("tablePrimaryValue") });
         Object[] params = { storedVO.getValue() };
         logger.debug("JDBC::doStoreItemValue sql={} value='{}'", sql, storedVO.getValue());
-        Yank.execute(sql, params);
+        try {
+            Yank.execute(sql, params);
+        } catch (YankSQLException e) {
+            throw new JdbcSQLException(e);
+        }
     }
 
     /****************************

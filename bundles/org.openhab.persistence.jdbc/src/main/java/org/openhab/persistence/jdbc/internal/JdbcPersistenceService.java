@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.knowm.yank.exceptions.YankSQLException;
 import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.items.GroupItem;
@@ -44,6 +43,7 @@ import org.openhab.core.types.UnDefType;
 import org.openhab.persistence.jdbc.ItemTableCheckEntry;
 import org.openhab.persistence.jdbc.ItemTableCheckEntryStatus;
 import org.openhab.persistence.jdbc.dto.ItemsVO;
+import org.openhab.persistence.jdbc.exceptions.JdbcSQLException;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
@@ -163,7 +163,7 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
                 logger.debug("JDBC: Stored item '{}' as '{}' in SQL database at {} in {} ms.", item.getName(), state,
                         new Date(), System.currentTimeMillis() - timerStart);
             }
-        } catch (YankSQLException e) {
+        } catch (JdbcSQLException e) {
             logger.warn("JDBC::store: Unable to store item", e);
         }
     }
@@ -230,7 +230,7 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
             // Success
             errCnt = 0;
             return items;
-        } catch (YankSQLException e) {
+        } catch (JdbcSQLException e) {
             logger.warn("JDBC::query: Unable to query item", e);
             return List.of();
         }
@@ -246,7 +246,7 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
                 checkDBSchema();
                 // connection has been established ... initialization completed!
                 initialized = true;
-            } catch (YankSQLException e) {
+            } catch (JdbcSQLException e) {
                 logger.error("Failed to check database schema", e);
                 initialized = false;
             }
@@ -291,7 +291,7 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
                         System.currentTimeMillis() - timerStart);
             }
             return true;
-        } catch (YankSQLException e) {
+        } catch (JdbcSQLException e) {
             logger.debug("JDBC::remove: Unable to remove values for item", e);
             return false;
         }
@@ -310,7 +310,7 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
      *
      * @return list of {@link ItemTableCheckEntry}
      */
-    public List<ItemTableCheckEntry> getCheckedEntries() {
+    public List<ItemTableCheckEntry> getCheckedEntries() throws JdbcSQLException {
         List<ItemTableCheckEntry> entries = new ArrayList<>();
 
         if (!checkDBAccessability()) {
@@ -362,8 +362,9 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
      * @param itemName Name of item to clean
      * @param force If true, non-empty tables will be dropped too
      * @return true if item was cleaned up
+     * @throws JdbcSQLException
      */
-    public boolean cleanupItem(String itemName, boolean force) {
+    public boolean cleanupItem(String itemName, boolean force) throws JdbcSQLException {
         String tableName = itemNameToTableNameMap.get(itemName);
         if (tableName == null) {
             return false;
@@ -378,12 +379,13 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
      *
      * @param entry
      * @return true if item was cleaned up
+     * @throws JdbcSQLException
      */
-    public boolean cleanupItem(ItemTableCheckEntry entry) {
+    public boolean cleanupItem(ItemTableCheckEntry entry) throws JdbcSQLException {
         return cleanupItem(entry, false);
     }
 
-    private boolean cleanupItem(ItemTableCheckEntry entry, boolean force) {
+    private boolean cleanupItem(ItemTableCheckEntry entry, boolean force) throws JdbcSQLException {
         if (!checkDBAccessability()) {
             logger.warn("JDBC::cleanupItem: database not connected");
             return false;

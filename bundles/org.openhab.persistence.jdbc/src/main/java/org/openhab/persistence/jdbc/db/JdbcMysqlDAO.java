@@ -17,6 +17,8 @@ import java.util.Objects;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.knowm.yank.Yank;
+import org.knowm.yank.exceptions.YankSQLException;
+import org.openhab.persistence.jdbc.exceptions.JdbcSQLException;
 import org.openhab.persistence.jdbc.utils.DbMetaData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -98,9 +100,13 @@ public class JdbcMysqlDAO extends JdbcBaseDAO {
      * ITEMS DAOs *
      **************/
     @Override
-    public @Nullable Integer doPingDB() {
-        final @Nullable Long result = Yank.queryScalar(sqlPingDB, Long.class, null);
-        return Objects.nonNull(result) ? result.intValue() : null;
+    public @Nullable Integer doPingDB() throws JdbcSQLException {
+        try {
+            final @Nullable Long result = Yank.queryScalar(sqlPingDB, Long.class, null);
+            return Objects.nonNull(result) ? result.intValue() : null;
+        } catch (YankSQLException e) {
+            throw new JdbcSQLException(e);
+        }
     }
 
     /*************
