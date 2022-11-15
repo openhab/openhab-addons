@@ -16,6 +16,7 @@ Binding for the Bosch Smart Home.
     - [Security Camera 360](#security-camera-360)
     - [Security Camera Eyes](#security-camera-eyes)
     - [Intrusion Detection System](#intrusion-detection-system)
+    - [Smart Bulb](#smart-bulb)
   - [Limitations](#limitations)
   - [Discovery](#discovery)
   - [Bridge Configuration](#bridge-configuration)
@@ -177,6 +178,18 @@ Allows to retrieve notifications in case of intrusions. The system can be armed 
 | arm-action                   | String               | &#9745;  | Arms the intrusion detection system using the given profile ID (default is "0"). |
 | disarm-action                | Switch               | &#9745;  | Disarms the intrusion detection system when an ON command is received. |
 | mute-action                  | Switch               | &#9745;  | Mutes the alarm when an ON command is received. |
+
+### Smart Bulb
+
+A smart bulb connected to the bridge via Zigbee such as a Ledvance Smart+ bulb.
+
+**Thing Type ID**: `smart-bulb`
+
+| Channel Type ID | Item Type | Writable | Description                                                    |
+| ----------------| --------- | :------: | -------------------------------------------------------------- |
+| power-switch    | Switch    | &#9745;  | Switches the light on or off.                                  |
+| brightness      | Dimmer    | &#9745;  | Regulates the brightness on a percentage scale from 0 to 100%. |
+| color           | Color     | &#9745;  | The color of the emitted light.                                |
 
 ## Limitations
 
