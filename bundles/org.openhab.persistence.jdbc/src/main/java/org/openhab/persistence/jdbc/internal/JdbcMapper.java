@@ -34,6 +34,7 @@ import org.openhab.core.types.State;
 import org.openhab.persistence.jdbc.internal.dto.ItemVO;
 import org.openhab.persistence.jdbc.internal.dto.ItemsVO;
 import org.openhab.persistence.jdbc.internal.dto.JdbcPersistenceItemInfo;
+import org.openhab.persistence.jdbc.internal.exceptions.JdbcException;
 import org.openhab.persistence.jdbc.internal.exceptions.JdbcSQLException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -183,7 +184,7 @@ public class JdbcMapper {
         return vo;
     }
 
-    protected void storeItemValue(Item item, State itemState, @Nullable ZonedDateTime date) throws JdbcSQLException {
+    protected void storeItemValue(Item item, State itemState, @Nullable ZonedDateTime date) throws JdbcException {
         logger.debug("JDBC::storeItemValue: item={} state={} date={}", item, itemState, date);
         String tableName = getTable(item);
         long timerStart = System.currentTimeMillis();
@@ -316,20 +317,23 @@ public class JdbcMapper {
         }
     }
 
-    protected String getTable(Item item) throws JdbcSQLException {
-        int itemId = 0;
-        ItemsVO isvo;
-        ItemVO ivo;
-
+    protected String getTable(Item item) throws JdbcException {
         String itemName = item.getName();
-        String tableName = itemNameToTableNameMap.get(itemName);
+        if (!initialized) {
+            throw new JdbcException("Not initialized, unable to find table for item " + itemName);
+        }
 
         // Table already exists - return the name
+        String tableName = itemNameToTableNameMap.get(itemName);
         if (!Objects.isNull(tableName)) {
             return tableName;
         }
 
-        logger.debug("JDBC::getTable: no table found for item '{}' in sqlTables", itemName);
+        logger.debug("JDBC::getTable: no table found for item '{}' in itemNameToTableNameMap", itemName);
+
+        int itemId = 0;
+        ItemsVO isvo;
+        ItemVO ivo;
 
         if (!conf.getTableUseRealCaseSensitiveItemNames()) {
             // Create a new entry in items table
