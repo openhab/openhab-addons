@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.persistence.jdbc.db;
+package org.openhab.persistence.jdbc.internal.db;
 
 import java.util.Objects;
 
@@ -18,8 +18,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.knowm.yank.Yank;
 import org.knowm.yank.exceptions.YankSQLException;
-import org.openhab.persistence.jdbc.exceptions.JdbcSQLException;
-import org.openhab.persistence.jdbc.utils.DbMetaData;
+import org.openhab.persistence.jdbc.internal.exceptions.JdbcSQLException;
+import org.openhab.persistence.jdbc.internal.utils.DbMetaData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

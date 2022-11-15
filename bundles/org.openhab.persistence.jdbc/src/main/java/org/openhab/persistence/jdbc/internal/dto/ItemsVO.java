@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.persistence.jdbc.dto;
+package org.openhab.persistence.jdbc.internal.dto;
 
 import java.io.Serializable;
 import java.util.Objects;

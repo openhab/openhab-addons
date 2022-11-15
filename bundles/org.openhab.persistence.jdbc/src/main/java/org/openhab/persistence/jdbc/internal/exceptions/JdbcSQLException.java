@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.persistence.jdbc.exceptions;
+package org.openhab.persistence.jdbc.internal.exceptions;
 
 import java.util.Objects;
 

@@ -31,10 +31,10 @@ import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.core.persistence.HistoricItem;
 import org.openhab.core.persistence.PersistenceItemInfo;
 import org.openhab.core.types.State;
-import org.openhab.persistence.jdbc.dto.ItemVO;
-import org.openhab.persistence.jdbc.dto.ItemsVO;
-import org.openhab.persistence.jdbc.dto.JdbcPersistenceItemInfo;
-import org.openhab.persistence.jdbc.exceptions.JdbcSQLException;
+import org.openhab.persistence.jdbc.internal.dto.ItemVO;
+import org.openhab.persistence.jdbc.internal.dto.ItemsVO;
+import org.openhab.persistence.jdbc.internal.dto.JdbcPersistenceItemInfo;
+import org.openhab.persistence.jdbc.internal.exceptions.JdbcSQLException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

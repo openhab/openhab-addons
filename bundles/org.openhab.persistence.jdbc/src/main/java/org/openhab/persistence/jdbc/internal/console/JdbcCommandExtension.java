@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.persistence.jdbc.console;
+package org.openhab.persistence.jdbc.internal.console;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -26,11 +26,11 @@ import org.openhab.core.io.console.extensions.AbstractConsoleCommandExtension;
 import org.openhab.core.io.console.extensions.ConsoleCommandExtension;
 import org.openhab.core.persistence.PersistenceService;
 import org.openhab.core.persistence.PersistenceServiceRegistry;
-import org.openhab.persistence.jdbc.ItemTableCheckEntry;
-import org.openhab.persistence.jdbc.ItemTableCheckEntryStatus;
-import org.openhab.persistence.jdbc.exceptions.JdbcSQLException;
+import org.openhab.persistence.jdbc.internal.ItemTableCheckEntry;
+import org.openhab.persistence.jdbc.internal.ItemTableCheckEntryStatus;
 import org.openhab.persistence.jdbc.internal.JdbcPersistenceService;
 import org.openhab.persistence.jdbc.internal.JdbcPersistenceServiceConstants;
+import org.openhab.persistence.jdbc.internal.exceptions.JdbcSQLException;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
