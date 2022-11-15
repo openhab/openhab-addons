@@ -172,11 +172,11 @@ Firmware of the device don't accept commands coming from other subnets.
 Set the communication in the thing configuration to 'cloud'.
 
 _Cloud connectivity is not working_
-The most common problem is a wrong userId/password. Try to fix your userId/password. The login userId & password are entered in the binding config page.
+The most common problem is a wrong or missing userId/password. Update your Xiaomi cloud userId & password in the [miio binding configuration screen](#binding-configuration).
 If the problem persists you can try the following:
 
 * Your ip might need to be validated/confirmed. Logon to https://account.xiaomi.com/ **from the ip of your openHAB server** with a browser.
-* In the logging you find a location url. Try to login (just after it fails) with your browser.
+* In the logging you find a location url. Try to login using this url (just after it fails) with your browser.
 * Several users also reported success by resetting their Xiaomi password.
 
 If it still fails, you're bit out of luck. You may try to restart openHAB (not just the binding) to clean the cookies. 
@@ -1275,7 +1275,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
-| actions              | String               | Actions                                  |            |
+| actions              | String               | Actions                                  | Value mapping `["vacuum-start-sweep"="Vacuum Start Sweep","vacuum-stop-sweeping"="Vacuum Stop Sweeping","battery-start-charge"="Battery Start Charge","brush-cleaner-reset-brush-life"="Brush Cleaner Reset Brush Life","brush-cleaner-reset-brush-life"="Brush Cleaner Reset Brush Life","filter-reset-filter-life"="Filter Reset Filter Life","vacuum-extend-start-clean"="Vacuum Extend Start Clean","vacuum-extend-stop-clean"="Vacuum Extend Stop Clean","map-map-req"="Map Map Req","map-update-map"="Map Update Map","audio-position"="Audio Position","audio-play-sound"="Audio Play Sound","time-delete-timer"="Time Delete Timer"]` |
 | status               | Number               | Robot Cleaner - Status                   | Value mapping `["1"="Sweeping","2"="Idle","3"="Paused","4"="Error","5"="Go Charging","6"="Charging","7"="Mopping"]` |
 | fault                | Number               | Robot Cleaner - Device Fault             |            |
 | battery_level        | Number:Dimensionless | Battery - Battery Level                  |            |
@@ -1717,8 +1717,8 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
-| actions              | String               | Robot Cleaner - Actions                  |            |
-| advanced_actions     | String               | Robot Cleaner - Advanced Actions         |            |
+| actions              | String               | Robot Cleaner - Actions                  | Value mapping `["vacuum-start-sweep"="Start","vacuum-start-sweep-mop"="Start Sweep+Mop","vacuum-start-only-sweep"="Start Sweep","vacuum-start-only-mop"="Start Mop","vacuum-dock"="Dock","vacuum-stop-sweeping"="Pause","vacuum-start-room-sweep"="Start Room Sweep"]` |
+| advanced_actions     | String               | Robot Cleaner - Advanced Actions         | Value mapping `["sweep-reset-consumable"="Sweep Reset Consumable","sweep-set-calibration"="Sweep Set Calibration","sweep-set-room-clean"="Sweep Set Room Clean","sweep-set-preference-clean"="Sweep Set Preference Clean","sweep-get-preference-clean"="Sweep Get Preference Clean","sweep-set-preference-type"="Sweep Set Preference Type","sweep-set-go-charging"="Sweep Set Go Charging","sweep-erase-preference"="Sweep Erase Preference","sweep-set-preference-ii"="Sweep Set Preference Ii","sweep-get-preference-ii"="Sweep Get Preference Ii","order-add"="Order Add","order-del"="Order Del","order-get"="Order Get","order-add-ii"="Order Add Ii","order-get-map-order-count"="Order Get Map Order Count","order-add-iii"="Order Add Iii","point-zone-start-point-clean"="Point Zone Start Point Clean","point-zone-pause-point-clean"="Point Zone Pause Point Clean","point-zone-start-zone-clean"="Point Zone Start Zone Clean","point-zone-pause-zone-clean"="Point Zone Pause Zone Clean","point-zone-set-beauty-wall"="Point Zone Set Beauty Wall","point-zone-set-virtual-wall"="Point Zone Set Virtual Wall","point-zone-set-zone-point"="Point Zone Set Zone Point","point-zone-start-point-clean-ii"="Point Zone Start Point Clean Ii","map-get-map-list"="Map Get Map List","map-upload-by-mapid"="Map Upload By Mapid","map-set-cur-map"="Map Set Cur Map","map-del-map"="Map Del Map","map-rename-map"="Map Rename Map","map-upload-by-maptype"="Map Upload By Maptype","map-rename-room"="Map Rename Room","map-arrange-room"="Map Arrange Room","map-split-room"="Map Split Room","map-reset-map"="Map Reset Map","map-build-new-map"="Map Build New Map","map-get-cur-path"="Map Get Cur Path","map-get-map-room-list"="Map Get Map Room List","map-upload-by-mapid-ii"="Map Upload By Mapid Ii","map-upload-by-maptype-ii"="Map Upload By Maptype Ii","map-reset-map-ii"="Map Reset Map Ii","map-build-map-ii"="Map Build Map Ii","map-set-mijia-room-list"="Map Set Mijia Room List","disturb-set-notdisturb"="Disturb Set Notdisturb","language-download-voice"="Language Download Voice","language-get-download-status"="Language Get Download Status"]` |
 | status               | Number               | Robot Cleaner - Status                   | Value mapping `["0"="Sleep","1"="Idle","2"="Paused","3"="Go Charging","4"="Charging","5"="Sweeping","6"="Sweeping and Mopping","7"="Mopping","8"="Upgrading"]` |
 | fault                | Number               | Robot Cleaner - Device Fault             |            |
 | mode                 | Number               | Robot Cleaner - Mode                     | Value mapping `["0"="Sweep","1"="Sweep And Mop","2"="Mop"]` |
@@ -2029,7 +2029,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | total-clean-area     | Number:Area          | Clean Record - Total Clean Area          |            |
 | total-clean-time     | Number               | Clean Record - Total Clean Time          |            |
 | total-clean-count    | Number               | Clean Record - Total Clean Count         |            |
-| language             | Number               | Language - Language                      | Value mapping `["0"="English","1"="简体中文","2"="Español","3"="Русский","4"="Italiano","5"="Français","6"="Deutsch","7"="한국어","8"="Polski"]` |
+| language             | Number               | Language - Language                      | Value mapping `["0"="English","1"="简体中文","2"="Español","3"="Ру�?�?кий","4"="Italiano","5"="Français","6"="Deutsch","7"="한국어","8"="Polski"]` |
 | not-disturb-switch   | Switch               | Language - Not Disturb Switch            |            |
 | mop-status           | Number               | Other Status - Mop Status                | Value mapping `["0"="Mop Uninstall","1"="Mop Install"]` |
 

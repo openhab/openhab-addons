@@ -96,7 +96,7 @@ public class CloudLogin1DTO {
         return result;
     }
 
-    public Object getCaptchaUrl() {
+    public String getCaptchaUrl() {
         return captchaUrl;
     }
 
