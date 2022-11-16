@@ -93,7 +93,7 @@ public class ICloudService {
                 this.data = validateToken();
                 logger.debug("Token is valid.");
                 loginSuccessful = true;
-            } catch (ICloudAPIResponseException ex) {
+            } catch (ICloudApiResponseException ex) {
                 logger.debug("Token is not valid. Attemping new login.", ex);
             }
         }
@@ -116,7 +116,7 @@ public class ICloudService {
             try {
                 this.session.post(AUTH_ENDPOINT + "/signin?isRememberMeEnabled=true", this.gson.toJson(requestBody),
                         headers);
-            } catch (ICloudAPIResponseException ex) {
+            } catch (ICloudApiResponseException ex) {
                 return false;
             }
 
@@ -149,7 +149,7 @@ public class ICloudService {
             this.data = this.gson.fromJson(
                     this.session.post(SETUP_ENDPOINT + "/accountLogin", this.gson.toJson(requestBody), null),
                     Map.class);
-        } catch (ICloudAPIResponseException ex) {
+        } catch (ICloudApiResponseException ex) {
             logger.debug("Invalid authentication.");
             return false;
         }
@@ -229,7 +229,7 @@ public class ICloudService {
         try {
             this.session.post(AUTH_ENDPOINT + "/verify/trusteddevice/securitycode", this.gson.toJson(requestBody),
                     headers);
-        } catch (ICloudAPIResponseException ex) {
+        } catch (ICloudApiResponseException ex) {
             logger.debug("Code verification failed.", ex);
             return false;
         }

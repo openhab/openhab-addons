@@ -18,7 +18,7 @@ package org.openhab.binding.icloud.internal;
  *
  * @author Simon Spielmann Initial contribution
  */
-public class ICloudAPIResponseException extends RuntimeException {
+public class ICloudApiResponseException extends RuntimeException {
 
     private int statusCode;
 
@@ -28,7 +28,7 @@ public class ICloudAPIResponseException extends RuntimeException {
      * @param url URL for which the exception occurred
      * @param statusCode HTTP status code which was reported
      */
-    public ICloudAPIResponseException(String url, int statusCode) {
+    public ICloudApiResponseException(String url, int statusCode) {
 
         super(String.format("Request %s failed with %s.", url, statusCode));
         this.statusCode = statusCode;

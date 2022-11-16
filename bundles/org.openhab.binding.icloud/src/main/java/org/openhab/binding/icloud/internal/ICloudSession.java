@@ -139,7 +139,7 @@ public class ICloudSession {
 
         if (response.statusCode() >= 300) {
             // Error Handling pyicloud 99-162
-            throw new ICloudAPIResponseException(url, response.statusCode());
+            throw new ICloudApiResponseException(url, response.statusCode());
 
         }
 

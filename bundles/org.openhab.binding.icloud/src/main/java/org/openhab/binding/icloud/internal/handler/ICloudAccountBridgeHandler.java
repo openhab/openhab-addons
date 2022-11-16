@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.icloud.internal.ICloudAPIResponseException;
+import org.openhab.binding.icloud.internal.ICloudApiResponseException;
 import org.openhab.binding.icloud.internal.ICloudDeviceInformationListener;
 import org.openhab.binding.icloud.internal.ICloudDeviceInformationParser;
 import org.openhab.binding.icloud.internal.ICloudService;
@@ -125,13 +125,17 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
             this.iCloudDeviceInformationCache = new ExpiringCache<>(CACHE_EXPIRY, () -> {
                 try {
 
-                    return this.iCloudService.getDevices().refreshClient();
-                } catch (IOException | ICloudAPIResponseException | InterruptedException e) {
+                    String result = this.iCloudService.getDevices().refreshClient();
+                    updateStatus(ThingStatus.ONLINE);
+                    return result;
+
+                } catch (IOException | ICloudApiResponseException | InterruptedException e) {
                     logger.warn("Unable to refresh device data", e);
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                     return null;
                 } catch (IllegalStateException ex) {
-                    logger.warn("Need to authenticate first.", ex);
+                    logger.debug("Need to authenticate first.", ex);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Wait for login");
                     return null;
                 }
             });
