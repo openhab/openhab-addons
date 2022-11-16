@@ -4283,11 +4283,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
-<<<<<<< HEAD
-| nightlightBrightness | Number               | Nightlight Brightness                    |            |
-=======
 | nightlightBrightness | Dimmer               | Nightlight Brightness                    |            |
->>>>>>> refs/remotes/origin/main
 
 ### Yeelight Lightstrip (<a name="yeelink-light-strip1">yeelink.light.strip1</a>) Channels
 
@@ -10271,11 +10267,7 @@ Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
-<<<<<<< HEAD
-Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
-=======
 Dimmer nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
->>>>>>> refs/remotes/origin/main
 ```
 
 ### Yeelight Lightstrip (yeelink.light.strip1) item file lines
