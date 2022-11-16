@@ -68,6 +68,9 @@ public class LiquidCheckDiscoveryService extends AbstractDiscoveryService {
         super(SUPPORTED_THING_TYPES_UIDS, DISCOVER_TIMEOUT_SECONDS, false);
     }
 
+    /**
+     * Method for starting the scan
+     */
     @Override
     protected void startScan() {
         try {
@@ -112,7 +115,9 @@ public class LiquidCheckDiscoveryService extends AbstractDiscoveryService {
     }
 
     /**
-     * Method for starting the scan
+     * Method for creating a Runnable to start a scan
+     * 
+     * @return the Runnable
      */
     protected Runnable liquidCheckDiscoveryRunnable() {
         Runnable runnable = new Runnable() {
@@ -149,6 +154,14 @@ public class LiquidCheckDiscoveryService extends AbstractDiscoveryService {
         return addresses;
     }
 
+    /**
+     * This method will find any active host in the network and return a list of them
+     * 
+     * @param addresses
+     * @return List of hosts
+     * @throws UnknownHostException
+     * @throws IOException
+     */
     private List<InetAddress> findActiveHosts(List<InetAddress> addresses) throws UnknownHostException, IOException {
         List<InetAddress> hosts = new ArrayList<>();
         for (InetAddress inetAddress : addresses) {
@@ -181,7 +194,7 @@ public class LiquidCheckDiscoveryService extends AbstractDiscoveryService {
      * This method creates the property map for the discovery result
      * 
      * @param response
-     * @return
+     * @return A map with the properties
      */
     private Map<String, Object> createPropertyMap(CommData response) {
         Map<String, Object> properties = new HashMap<>();

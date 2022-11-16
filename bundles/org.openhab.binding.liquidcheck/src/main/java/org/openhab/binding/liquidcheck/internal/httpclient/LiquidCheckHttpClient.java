@@ -41,6 +41,7 @@ public class LiquidCheckHttpClient {
     public boolean isClosed = false;
 
     /**
+     * The Constructor of the LiquidCheckHttpClient class will set up a jetty client
      * 
      * @param config
      */
@@ -60,8 +61,9 @@ public class LiquidCheckHttpClient {
     }
 
     /**
+     * The pollData method will poll the data from device
      * 
-     * @return
+     * @return String with the response of the request
      * @throws InterruptedException
      * @throws TimeoutException
      * @throws ExecutionException
@@ -74,6 +76,14 @@ public class LiquidCheckHttpClient {
         return response.getContentAsString();
     }
 
+    /**
+     * The measureCommand method will start a measurement
+     * 
+     * @return String with response of the request
+     * @throws InterruptedException
+     * @throws TimeoutException
+     * @throws ExecutionException
+     */
     public String measureCommand() throws InterruptedException, TimeoutException, ExecutionException {
         String uri = "http://" + config.hostname + "/command";
         Request request = client.newRequest(uri);
@@ -86,6 +96,7 @@ public class LiquidCheckHttpClient {
     }
 
     /**
+     * The isConnected method will return the state of the http client
      * 
      * @return
      */
@@ -95,7 +106,7 @@ public class LiquidCheckHttpClient {
     }
 
     /**
-     * 
+     * The close method will close the http client
      */
     public void close() {
         this.isClosed = true;

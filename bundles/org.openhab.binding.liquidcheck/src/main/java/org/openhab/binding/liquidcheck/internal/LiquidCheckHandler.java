@@ -44,6 +44,7 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
@@ -120,6 +121,11 @@ public class LiquidCheckHandler extends BaseThingHandler {
         });
     }
 
+    /**
+     * 
+     * @param response
+     * @return
+     */
     private Map<String, String> createPropertyMap(CommData response) {
         Map<String, String> properties = new HashMap<>();
         properties.put(Thing.PROPERTY_FIRMWARE_VERSION, response.payload.device.firmware);
@@ -142,6 +148,9 @@ public class LiquidCheckHandler extends BaseThingHandler {
         }
     }
 
+    /**
+     * 
+     */
     private class PollingForData implements Runnable {
 
         private final LiquidCheckHttpClient client;
@@ -179,6 +188,7 @@ public class LiquidCheckHandler extends BaseThingHandler {
                     logger.debug("Json is null");
                 }
             } catch (InterruptedException | TimeoutException | ExecutionException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 logger.error("This went wrong: {}", e.toString());
             }
         }
