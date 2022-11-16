@@ -45,11 +45,12 @@ import org.osgi.service.component.annotations.Reference;
 public class JdbcCommandExtension extends AbstractConsoleCommandExtension implements ConsoleCommandCompleter {
 
     private static final String CMD_TABLES = "tables";
+    private static final String CMD_RELOAD = "reload";
     private static final String SUBCMD_TABLES_LIST = "list";
     private static final String SUBCMD_TABLES_CLEAN = "clean";
     private static final String PARAMETER_ALL = "all";
     private static final String PARAMETER_FORCE = "force";
-    private static final StringsCompleter CMD_COMPLETER = new StringsCompleter(List.of(CMD_TABLES), false);
+    private static final StringsCompleter CMD_COMPLETER = new StringsCompleter(List.of(CMD_TABLES, CMD_RELOAD), false);
     private static final StringsCompleter SUBCMD_TABLES_COMPLETER = new StringsCompleter(
             List.of(SUBCMD_TABLES_LIST, SUBCMD_TABLES_CLEAN), false);
 
@@ -63,7 +64,7 @@ public class JdbcCommandExtension extends AbstractConsoleCommandExtension implem
 
     @Override
     public void execute(String[] args, Console console) {
-        if (args.length < 2 || args.length > 4 || !CMD_TABLES.equals(args[0])) {
+        if (args.length < 1 || args.length > 4) {
             printUsage(console);
             return;
         }
@@ -92,20 +93,25 @@ public class JdbcCommandExtension extends AbstractConsoleCommandExtension implem
 
     private boolean execute(JdbcPersistenceService persistenceService, String[] args, Console console)
             throws JdbcSQLException {
-        if (SUBCMD_TABLES_LIST.equalsIgnoreCase(args[1])) {
-            listTables(persistenceService, console, args.length == 3 && PARAMETER_ALL.equalsIgnoreCase(args[2]));
-            return true;
-        } else if (SUBCMD_TABLES_CLEAN.equalsIgnoreCase(args[1])) {
-            if (args.length == 3) {
-                cleanupItem(persistenceService, console, args[2], false);
+        if (args.length > 1 && CMD_TABLES.equalsIgnoreCase(args[0])) {
+            if (SUBCMD_TABLES_LIST.equalsIgnoreCase(args[1])) {
+                listTables(persistenceService, console, args.length == 3 && PARAMETER_ALL.equalsIgnoreCase(args[2]));
                 return true;
-            } else if (args.length == 4 && PARAMETER_FORCE.equalsIgnoreCase(args[3])) {
-                cleanupItem(persistenceService, console, args[2], true);
-                return true;
-            } else {
-                cleanupTables(persistenceService, console);
-                return true;
+            } else if (SUBCMD_TABLES_CLEAN.equalsIgnoreCase(args[1])) {
+                if (args.length == 3) {
+                    cleanupItem(persistenceService, console, args[2], false);
+                    return true;
+                } else if (args.length == 4 && PARAMETER_FORCE.equalsIgnoreCase(args[3])) {
+                    cleanupItem(persistenceService, console, args[2], true);
+                    return true;
+                } else {
+                    cleanupTables(persistenceService, console);
+                    return true;
+                }
             }
+        } else if (args.length == 1 && CMD_RELOAD.equalsIgnoreCase(args[0])) {
+            reload(persistenceService, console);
+            return true;
         }
         return false;
     }
@@ -164,6 +170,11 @@ public class JdbcCommandExtension extends AbstractConsoleCommandExtension implem
         }
     }
 
+    private void reload(JdbcPersistenceService persistenceService, Console console) throws JdbcSQLException {
+        persistenceService.populateItemNameToTableNameMap();
+        console.println("Item index reloaded.");
+    }
+
     @Override
     public List<String> getUsages() {
         return Arrays.asList(
@@ -171,7 +182,8 @@ public class JdbcCommandExtension extends AbstractConsoleCommandExtension implem
                         "list tables (all = include valid)"),
                 buildCommandUsage(
                         CMD_TABLES + " " + SUBCMD_TABLES_CLEAN + " [<itemName>]" + " [" + PARAMETER_FORCE + "]",
-                        "clean inconsistent items (remove from index and drop tables)"));
+                        "clean inconsistent items (remove from index and drop tables)"),
+                buildCommandUsage(CMD_RELOAD, "reload item index/schema"));
     }
 
     @Override
