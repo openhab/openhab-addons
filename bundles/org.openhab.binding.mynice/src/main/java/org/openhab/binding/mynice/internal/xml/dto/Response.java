@@ -13,15 +13,12 @@
 package org.openhab.binding.mynice.internal.xml.dto;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 
 /**
  *
  * @author Gaël L'hopital - Initial contribution
  */
 public class Response extends Event {
-    @XStreamAsAttribute
-    private String gw;
     @XStreamAlias("Authentication")
     public Authentication authentication;
     @XStreamAlias("Interface")

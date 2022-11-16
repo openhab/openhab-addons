@@ -45,7 +45,7 @@ public class RequestBuilder {
     private final String it4WifiMac;
     private final String username;
 
-    private int sessionID = 1;
+    private int sessionId = 0;
     private int commandSequence = 0;
     private byte[] sessionPassword = {};
 
@@ -90,14 +90,14 @@ public class RequestBuilder {
     }
 
     public int getCommandId() {
-        return (commandSequence++ << 8) | sessionID;
+        return (commandSequence++ << 8) | sessionId;
     }
 
     public void setChallenges(String serverChallenge, int sessionId, String password) {
         byte[] serverChallengeArr = invertArray(DatatypeConverter.parseHexBinary(serverChallenge));
         byte[] pairingPassword = Base64.getDecoder().decode(password);
         this.sessionPassword = sha256(pairingPassword, serverChallengeArr, clientChallengeArr);
-        this.sessionID = sessionId & 255;
+        this.sessionId = sessionId & 255;
     }
 
     private byte[] sha256(byte[]... values) {

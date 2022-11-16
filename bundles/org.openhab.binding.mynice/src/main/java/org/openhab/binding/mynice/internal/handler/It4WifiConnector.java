@@ -17,18 +17,12 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Optional;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.TrustManager;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.mynice.internal.xml.dto.CommandType;
 import org.openhab.core.io.net.http.TrustAllTrustManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,24 +34,20 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class It4WifiConnector extends Thread {
-    private static final int KEEP_ALIVE_DELAY_MIN = 2;
     private static final int SERVER_PORT = 443;
     private static final char ETX = '\u0003';
     private static final char STX = '\u0002';
 
     private final Logger logger = LoggerFactory.getLogger(It4WifiConnector.class);
     private final It4WifiHandler handler;
-    private final ScheduledExecutorService scheduler;
     private final SSLSocket sslsocket;
 
-    private @Nullable InputStreamReader in;
-    private @Nullable OutputStreamWriter out;
-    private Optional<ScheduledFuture<?>> keepAlive = Optional.empty();
+    private @NonNullByDefault({}) InputStreamReader in;
+    private @NonNullByDefault({}) OutputStreamWriter out;
 
-    public It4WifiConnector(String hostname, It4WifiHandler handler, ScheduledExecutorService scheduler) {
+    public It4WifiConnector(String hostname, It4WifiHandler handler) {
         super(It4WifiConnector.class.getName());
         this.handler = handler;
-        this.scheduler = scheduler;
         try {
             SSLContext sslContext = SSLContext.getInstance("SSL");
             sslContext.init(null, new TrustManager[] { TrustAllTrustManager.getInstance() }, null);
@@ -68,30 +58,42 @@ public class It4WifiConnector extends Thread {
         }
     }
 
-    private void connect() throws IOException {
-        logger.debug("Initiating connection to IT4Wifi on port {}...", SERVER_PORT);
-        disconnect();
-
-        sslsocket.startHandshake();
-
-        in = new InputStreamReader(sslsocket.getInputStream());
-        out = new OutputStreamWriter(sslsocket.getOutputStream());
+    @Override
+    public void run() {
+        String buffer = "";
+        try {
+            connect();
+            while (!interrupted()) {
+                int data;
+                while ((data = in.read()) != -1) {
+                    if (data == STX) {
+                        buffer = "";
+                    } else if (data == ETX) {
+                        handler.received(buffer);
+                    } else {
+                        buffer += (char) data;
+                    }
+                }
+            }
+            handler.connectorInterrupted("IT4WifiConnector interrupted");
+            dispose();
+        } catch (IOException e) {
+            handler.connectorInterrupted(e.getMessage());
+        }
     }
 
-    public void sendCommand(String command) {
+    public synchronized void sendCommand(String command) {
         logger.debug("Sending ItT4Wifi :{}", command);
         try {
             out.write(STX + command + ETX);
             out.flush();
         } catch (IOException e) {
-            logger.warn("Exception sending message : {}", e.getMessage());
+            handler.connectorInterrupted(e.getMessage());
         }
     }
 
     private void disconnect() {
         logger.debug("Disconnecting");
-
-        cancelKeepAlive();
 
         if (in != null) {
             try {
@@ -112,70 +114,21 @@ public class It4WifiConnector extends Thread {
         logger.debug("Disconnected");
     }
 
-    private void cancelKeepAlive() {
-        keepAlive.ifPresent(t -> t.cancel(false));
-        keepAlive = Optional.empty();
+    /**
+     * Stop the device thread
+     */
+    public void dispose() {
+        interrupt();
+        disconnect();
     }
 
-    @Override
-    public void run() {
-        String buffer = "";
-<<<<<<< Upstream, based on main
-        try {
-            connect();
-            handler.handShaked();
-            while (!interrupted()) {
-                int data;
-                while ((data = in.read()) != -1) {
-=======
-        tryConnect();
-        while (!interrupted()) {
-            int data;
-            try {
-                if (pendingMessages > MAX_PENDING_MESSAGES) {
-                    throw new IOException("Max keep alive attempts has been reached");
-                }
-                while (in != null && (data = in.read()) != -1) {
->>>>>>> be8ed80 Removing @NonNullByDefault({}) to better handle NPE
-                    cancelKeepAlive();
-                    if (data == STX) {
-                        buffer = "";
-                    } else if (data == ETX) {
-                        handler.received(buffer);
-                        keepAlive = Optional.of(scheduler.schedule(() -> handler.sendCommand(CommandType.VERIFY),
-                                KEEP_ALIVE_DELAY_MIN, TimeUnit.MINUTES));
-                    } else {
-                        buffer += (char) data;
-                    }
-                }
-            }
-        } catch (IOException e) {
-            logger.warn("Communication error : '{}'.", e.getMessage());
-            interrupt();
-        }
+    private void connect() throws IOException {
         disconnect();
-<<<<<<< Upstream, based on main
-=======
-        handler.connectorInterrupted(message);
-    }
+        logger.debug("Initiating connection to IT4Wifi on port {}...", SERVER_PORT);
 
-    private void tryConnect() {
-        String message;
-        disconnect();
-        connectionAttempts++;
-        if (connectionAttempts <= MAX_CONNECTION_ATTEMPTS) {
-            try {
-                connect();
-                handler.handShaked();
-                connectionAttempts = 0;
-                return;
-            } catch (IOException e) {
-                message = String.format("Communication error : '%s'.", e.getMessage());
-            }
-        } else {
-            message = "Maximum connection attempts reached.";
-        }
-        destroyAndExit(message);
->>>>>>> be8ed80 Removing @NonNullByDefault({}) to better handle NPE
+        sslsocket.startHandshake();
+        in = new InputStreamReader(sslsocket.getInputStream());
+        out = new OutputStreamWriter(sslsocket.getOutputStream());
+        handler.handShaked();
     }
 }
