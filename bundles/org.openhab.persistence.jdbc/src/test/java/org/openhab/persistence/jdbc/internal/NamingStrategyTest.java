@@ -30,7 +30,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import org.openhab.persistence.jdbc.dto.ItemVO;
+import org.openhab.persistence.jdbc.internal.dto.ItemVO;
 import org.slf4j.LoggerFactory;
 
 import ch.qos.logback.classic.Level;

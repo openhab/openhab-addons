@@ -10,14 +10,16 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.persistence.jdbc.db;
+package org.openhab.persistence.jdbc.internal.db;
 
 import java.util.Properties;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.knowm.yank.Yank;
-import org.openhab.persistence.jdbc.dto.ItemVO;
-import org.openhab.persistence.jdbc.utils.StringUtilsExt;
+import org.knowm.yank.exceptions.YankSQLException;
+import org.openhab.persistence.jdbc.internal.dto.ItemVO;
+import org.openhab.persistence.jdbc.internal.exceptions.JdbcSQLException;
+import org.openhab.persistence.jdbc.internal.utils.StringUtilsExt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,11 +47,15 @@ public class JdbcTimescaledbDAO extends JdbcPostgresqlDAO {
     }
 
     @Override
-    public void doCreateItemTable(ItemVO vo) {
+    public void doCreateItemTable(ItemVO vo) throws JdbcSQLException {
         super.doCreateItemTable(vo);
         String sql = StringUtilsExt.replaceArrayMerge(this.sqlCreateHypertable, new String[] { "#tableName#" },
                 new String[] { vo.getTableName() });
         this.logger.debug("JDBC::doCreateItemTable sql={}", sql);
-        Yank.queryScalar(sql, Boolean.class, null);
+        try {
+            Yank.queryScalar(sql, Boolean.class, null);
+        } catch (YankSQLException e) {
+            throw new JdbcSQLException(e);
+        }
     }
 }

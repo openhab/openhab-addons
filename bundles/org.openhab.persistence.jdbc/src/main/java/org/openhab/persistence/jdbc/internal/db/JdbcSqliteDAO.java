@@ -10,16 +10,18 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.persistence.jdbc.db;
+package org.openhab.persistence.jdbc.internal.db;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.knowm.yank.Yank;
+import org.knowm.yank.exceptions.YankSQLException;
 import org.openhab.core.items.Item;
 import org.openhab.core.types.State;
-import org.openhab.persistence.jdbc.dto.ItemVO;
-import org.openhab.persistence.jdbc.dto.ItemsVO;
-import org.openhab.persistence.jdbc.utils.StringUtilsExt;
+import org.openhab.persistence.jdbc.internal.dto.ItemVO;
+import org.openhab.persistence.jdbc.internal.dto.ItemsVO;
+import org.openhab.persistence.jdbc.internal.exceptions.JdbcSQLException;
+import org.openhab.persistence.jdbc.internal.utils.StringUtilsExt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,17 +81,25 @@ public class JdbcSqliteDAO extends JdbcBaseDAO {
      **************/
 
     @Override
-    public @Nullable String doGetDB() {
-        return Yank.queryColumn(sqlGetDB, "file", String.class, null).get(0);
+    public @Nullable String doGetDB() throws JdbcSQLException {
+        try {
+            return Yank.queryColumn(sqlGetDB, "file", String.class, null).get(0);
+        } catch (YankSQLException e) {
+            throw new JdbcSQLException(e);
+        }
     }
 
     @Override
-    public ItemsVO doCreateItemsTableIfNot(ItemsVO vo) {
+    public ItemsVO doCreateItemsTableIfNot(ItemsVO vo) throws JdbcSQLException {
         String sql = StringUtilsExt.replaceArrayMerge(sqlCreateItemsTableIfNot,
                 new String[] { "#itemsManageTable#", "#colname#", "#coltype#" },
                 new String[] { vo.getItemsManageTable(), vo.getColname(), vo.getColtype() });
         logger.debug("JDBC::doCreateItemsTableIfNot sql={}", sql);
-        Yank.execute(sql, null);
+        try {
+            Yank.execute(sql, null);
+        } catch (YankSQLException e) {
+            throw new JdbcSQLException(e);
+        }
         return vo;
     }
 
@@ -97,14 +107,18 @@ public class JdbcSqliteDAO extends JdbcBaseDAO {
      * ITEM DAOs *
      *************/
     @Override
-    public void doStoreItemValue(Item item, State itemState, ItemVO vo) {
+    public void doStoreItemValue(Item item, State itemState, ItemVO vo) throws JdbcSQLException {
         ItemVO storedVO = storeItemValueProvider(item, itemState, vo);
         String sql = StringUtilsExt.replaceArrayMerge(sqlInsertItemValue,
                 new String[] { "#tableName#", "#dbType#", "#tablePrimaryValue#" },
                 new String[] { storedVO.getTableName(), storedVO.getDbType(), sqlTypes.get("tablePrimaryValue") });
         Object[] params = { storedVO.getValue() };
         logger.debug("JDBC::doStoreItemValue sql={} value='{}'", sql, storedVO.getValue());
-        Yank.execute(sql, params);
+        try {
+            Yank.execute(sql, params);
+        } catch (YankSQLException e) {
+            throw new JdbcSQLException(e);
+        }
     }
 
     /****************************
