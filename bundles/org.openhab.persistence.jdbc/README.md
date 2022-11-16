@@ -161,15 +161,15 @@ The list contains table name, item name, row count and status, which can be one 
 
 #### Clean Inconsistent Items
 
-Some issues can be fixed automatically using the command `jdbc clean` (all items having issues) or `jdbc clean <itemName>` (single item).
+Some issues can be fixed automatically using the command `jdbc tables clean` (all items having issues) or `jdbc tables clean <itemName>` (single item).
 This cleanup operation will remove items from the index (table `Items`) if the referenced table does not exist.
 
 If the item does not exist, the table will be physically deleted, but only if it's empty.
 This precaution is taken because items may have existed previously, and the data might still be valuable.
 For example, an item for a lost or repurposed sensor could have been deleted from the system while preserving persisted data.
-To skip this check for a single item, use `jdbc clean <itemName> force` with care.
+To skip this check for a single item, use `jdbc tables clean <itemName> force` with care.
 
-Prior to performing a `jdbc clean` operation, it's recommended to review the result of `jdbc tables list`.
+Prior to performing a `jdbc tables clean` operation, it's recommended to review the result of `jdbc tables list`.
 
 Fixing integrity issues can be useful before performing a migration to another naming scheme.
 For example, when migrating to `tableCaseSensitiveItemNames`, an index will no longer exist after the migration:
