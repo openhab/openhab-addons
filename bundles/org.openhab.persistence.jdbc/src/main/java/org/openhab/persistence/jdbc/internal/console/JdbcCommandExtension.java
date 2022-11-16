@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.persistence.jdbc.console;
+package org.openhab.persistence.jdbc.internal.console;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -19,7 +19,6 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.knowm.yank.exceptions.YankSQLException;
 import org.openhab.core.io.console.Console;
 import org.openhab.core.io.console.ConsoleCommandCompleter;
 import org.openhab.core.io.console.StringsCompleter;
@@ -27,10 +26,11 @@ import org.openhab.core.io.console.extensions.AbstractConsoleCommandExtension;
 import org.openhab.core.io.console.extensions.ConsoleCommandExtension;
 import org.openhab.core.persistence.PersistenceService;
 import org.openhab.core.persistence.PersistenceServiceRegistry;
-import org.openhab.persistence.jdbc.ItemTableCheckEntry;
-import org.openhab.persistence.jdbc.ItemTableCheckEntryStatus;
+import org.openhab.persistence.jdbc.internal.ItemTableCheckEntry;
+import org.openhab.persistence.jdbc.internal.ItemTableCheckEntryStatus;
 import org.openhab.persistence.jdbc.internal.JdbcPersistenceService;
 import org.openhab.persistence.jdbc.internal.JdbcPersistenceServiceConstants;
+import org.openhab.persistence.jdbc.internal.exceptions.JdbcSQLException;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -76,7 +76,7 @@ public class JdbcCommandExtension extends AbstractConsoleCommandExtension implem
                 printUsage(console);
                 return;
             }
-        } catch (YankSQLException e) {
+        } catch (JdbcSQLException e) {
             console.println(e.toString());
         }
     }
@@ -90,7 +90,8 @@ public class JdbcCommandExtension extends AbstractConsoleCommandExtension implem
         return null;
     }
 
-    private boolean execute(JdbcPersistenceService persistenceService, String[] args, Console console) {
+    private boolean execute(JdbcPersistenceService persistenceService, String[] args, Console console)
+            throws JdbcSQLException {
         if (SUBCMD_TABLES_LIST.equalsIgnoreCase(args[1])) {
             listTables(persistenceService, console, args.length == 3 && PARAMETER_ALL.equalsIgnoreCase(args[2]));
             return true;
@@ -109,7 +110,8 @@ public class JdbcCommandExtension extends AbstractConsoleCommandExtension implem
         return false;
     }
 
-    private void listTables(JdbcPersistenceService persistenceService, Console console, Boolean all) {
+    private void listTables(JdbcPersistenceService persistenceService, Console console, Boolean all)
+            throws JdbcSQLException {
         List<ItemTableCheckEntry> entries = persistenceService.getCheckedEntries();
         if (!all) {
             entries.removeIf(t -> t.getStatus() == ItemTableCheckEntryStatus.VALID);
@@ -138,7 +140,7 @@ public class JdbcCommandExtension extends AbstractConsoleCommandExtension implem
         }
     }
 
-    private void cleanupTables(JdbcPersistenceService persistenceService, Console console) {
+    private void cleanupTables(JdbcPersistenceService persistenceService, Console console) throws JdbcSQLException {
         console.println("Cleaning up all inconsistent items...");
         List<ItemTableCheckEntry> entries = persistenceService.getCheckedEntries();
         entries.removeIf(t -> t.getStatus() == ItemTableCheckEntryStatus.VALID || t.getItemName().isEmpty());
@@ -152,8 +154,8 @@ public class JdbcCommandExtension extends AbstractConsoleCommandExtension implem
         }
     }
 
-    private void cleanupItem(JdbcPersistenceService persistenceService, Console console, String itemName,
-            boolean force) {
+    private void cleanupItem(JdbcPersistenceService persistenceService, Console console, String itemName, boolean force)
+            throws JdbcSQLException {
         console.print("Cleaning up item " + itemName + "... ");
         if (persistenceService.cleanupItem(itemName, force)) {
             console.println("done.");

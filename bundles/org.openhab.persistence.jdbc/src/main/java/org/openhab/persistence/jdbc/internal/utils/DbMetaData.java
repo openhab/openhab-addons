@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.persistence.jdbc.utils;
+package org.openhab.persistence.jdbc.internal.utils;
 
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
@@ -42,7 +42,6 @@ public class DbMetaData {
 
     public DbMetaData() {
         HikariDataSource h = Yank.getDefaultConnectionPool();
-        // HikariDataSource h = Yank.getDataSource();
 
         DatabaseMetaData meta;
         try {

@@ -23,9 +23,9 @@ import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.persistence.jdbc.db.JdbcBaseDAO;
-import org.openhab.persistence.jdbc.utils.MovingAverage;
-import org.openhab.persistence.jdbc.utils.StringUtilsExt;
+import org.openhab.persistence.jdbc.internal.db.JdbcBaseDAO;
+import org.openhab.persistence.jdbc.internal.utils.MovingAverage;
+import org.openhab.persistence.jdbc.internal.utils.StringUtilsExt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +39,7 @@ public class JdbcConfiguration {
     private final Logger logger = LoggerFactory.getLogger(JdbcConfiguration.class);
 
     private static final Pattern EXTRACT_CONFIG_PATTERN = Pattern.compile("^(.*?)\\.([0-9.a-zA-Z]+)$");
-    private static final String DB_DAO_PACKAGE = "org.openhab.persistence.jdbc.db.Jdbc";
+    private static final String DB_DAO_PACKAGE = "org.openhab.persistence.jdbc.internal.db.Jdbc";
 
     private Map<Object, Object> configuration;
 

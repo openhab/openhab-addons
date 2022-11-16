@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.persistence.jdbc.utils;
+package org.openhab.persistence.jdbc.internal.utils;
 
 import java.net.URI;
 import java.net.URISyntaxException;
