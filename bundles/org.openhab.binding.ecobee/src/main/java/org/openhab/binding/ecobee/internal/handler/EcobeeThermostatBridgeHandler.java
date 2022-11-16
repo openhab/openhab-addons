@@ -417,6 +417,10 @@ public class EcobeeThermostatBridgeHandler extends BaseBridgeHandler {
             updateChannel(grp + CH_DESIRED_COOL_RANGE_HIGH,
                     EcobeeUtils.undefOrTemperature(runtime.desiredCoolRange.get(1)));
         }
+        updateChannel(grp + CH_ACTUAL_AQ_ACCURACY, EcobeeUtils.undefOrLong(runtime.actualAQAccuracy));
+        updateChannel(grp + CH_ACTUAL_AQ_SCORE, EcobeeUtils.undefOrLong(runtime.actualAQScore));
+        updateChannel(grp + CH_ACTUAL_CO2, EcobeeUtils.undefOrQuantity(runtime.actualCO2, Units.PARTS_PER_MILLION));
+        updateChannel(grp + CH_ACTUAL_VOC, EcobeeUtils.undefOrQuantity(runtime.actualVOC, Units.PARTS_PER_BILLION));
     }
 
     private void updateSettings(@Nullable SettingsDTO settings) {

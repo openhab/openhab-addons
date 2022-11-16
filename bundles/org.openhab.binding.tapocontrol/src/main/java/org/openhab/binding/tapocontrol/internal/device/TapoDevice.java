@@ -53,7 +53,7 @@ public abstract class TapoDevice extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(TapoDevice.class);
     protected final TapoErrorHandler deviceError = new TapoErrorHandler();
     protected final String uid;
-    protected TapoDeviceConfiguration config;
+    protected TapoDeviceConfiguration config = new TapoDeviceConfiguration();
     protected TapoDeviceInfo deviceInfo;
     protected @Nullable ScheduledFuture<?> startupJob;
     protected @Nullable ScheduledFuture<?> pollingJob;
@@ -67,7 +67,6 @@ public abstract class TapoDevice extends BaseThingHandler {
      */
     protected TapoDevice(Thing thing) {
         super(thing);
-        this.config = new TapoDeviceConfiguration(thing);
         this.deviceInfo = new TapoDeviceInfo();
         this.uid = getThing().getUID().getAsString();
     }
@@ -84,7 +83,7 @@ public abstract class TapoDevice extends BaseThingHandler {
     @Override
     public void initialize() {
         try {
-            this.config.loadSettings();
+            this.config = getConfigAs(TapoDeviceConfiguration.class);
             Bridge bridgeThing = getBridge();
             if (bridgeThing != null) {
                 BridgeHandler bridgeHandler = bridgeThing.getHandler();
@@ -128,7 +127,6 @@ public abstract class TapoDevice extends BaseThingHandler {
 
         // background initialization (delay it a little bit):
         this.startupJob = scheduler.schedule(this::delayedStartUp, 2000, TimeUnit.MILLISECONDS);
-        startScheduler();
     }
 
     /**
@@ -180,22 +178,25 @@ public abstract class TapoDevice extends BaseThingHandler {
      */
     private void delayedStartUp() {
         connect();
+        startPollingScheduler();
     }
 
     /**
      * Start scheduler
      */
-    protected void startScheduler() {
-        Integer pollingInterval = this.config.pollingInterval;
+    protected void startPollingScheduler() {
+        int pollingInterval = this.config.pollingInterval;
+        TimeUnit timeUnit = TimeUnit.SECONDS;
 
         if (pollingInterval > 0) {
             if (pollingInterval < POLLING_MIN_INTERVAL_S) {
                 pollingInterval = POLLING_MIN_INTERVAL_S;
             }
-            logger.trace("({}) starScheduler: create job with interval : {}", uid, pollingInterval);
-            this.pollingJob = scheduler.scheduleWithFixedDelay(this::schedulerAction, pollingInterval, pollingInterval,
-                    TimeUnit.SECONDS);
+            logger.debug("({}) startScheduler: create job with interval : {} {}", uid, pollingInterval, timeUnit);
+            this.pollingJob = scheduler.scheduleWithFixedDelay(this::pollingSchedulerAction, pollingInterval,
+                    pollingInterval, timeUnit);
         } else {
+            logger.debug("({}) scheduler disabled with config '0'", uid);
             stopScheduler(this.pollingJob);
         }
     }
@@ -215,7 +216,7 @@ public abstract class TapoDevice extends BaseThingHandler {
     /**
      * Scheduler Action
      */
-    protected void schedulerAction() {
+    protected void pollingSchedulerAction() {
         logger.trace("({}) schedulerAction", uid);
         queryDeviceInfo();
     }
@@ -276,7 +277,7 @@ public abstract class TapoDevice extends BaseThingHandler {
      */
     protected Boolean isExpectedThing(TapoDeviceInfo deviceInfo) {
         try {
-            String expectedThingUID = getThing().getProperties().get(DEVICE_REPRASENTATION_PROPERTY);
+            String expectedThingUID = getThing().getProperties().get(DEVICE_REPRESENTATION_PROPERTY);
             String foundThingUID = deviceInfo.getRepresentationProperty();
             String foundModel = deviceInfo.getModel();
             if (expectedThingUID == null || expectedThingUID.isBlank()) {

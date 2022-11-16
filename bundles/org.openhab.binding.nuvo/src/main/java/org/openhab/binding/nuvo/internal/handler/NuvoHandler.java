@@ -1322,6 +1322,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                         .round((double) (MAX_VOLUME - volume) / (double) (MAX_VOLUME - MIN_VOLUME) * 100.0);
                 state = new PercentType(BigDecimal.valueOf(volumePct));
                 break;
+            case CHANNEL_TYPE_BUTTONPRESS:
             case CHANNEL_DISPLAY_LINE1:
             case CHANNEL_DISPLAY_LINE2:
             case CHANNEL_DISPLAY_LINE3:

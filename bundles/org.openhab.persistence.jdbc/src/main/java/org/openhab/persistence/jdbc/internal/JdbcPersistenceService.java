@@ -40,9 +40,8 @@ import org.openhab.core.persistence.QueryablePersistenceService;
 import org.openhab.core.persistence.strategy.PersistenceStrategy;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
-import org.openhab.persistence.jdbc.ItemTableCheckEntry;
-import org.openhab.persistence.jdbc.ItemTableCheckEntryStatus;
-import org.openhab.persistence.jdbc.dto.ItemsVO;
+import org.openhab.persistence.jdbc.internal.dto.ItemsVO;
+import org.openhab.persistence.jdbc.internal.exceptions.JdbcSQLException;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
@@ -155,11 +154,15 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
                     state, item, errCnt, conf.getErrReconnectThreshold());
             return;
         }
-        long timerStart = System.currentTimeMillis();
-        storeItemValue(item, state, date);
-        if (logger.isDebugEnabled()) {
-            logger.debug("JDBC: Stored item '{}' as '{}' in SQL database at {} in {} ms.", item.getName(), state,
-                    new Date(), System.currentTimeMillis() - timerStart);
+        try {
+            long timerStart = System.currentTimeMillis();
+            storeItemValue(item, state, date);
+            if (logger.isDebugEnabled()) {
+                logger.debug("JDBC: Stored item '{}' as '{}' in SQL database at {} in {} ms.", item.getName(), state,
+                        new Date(), System.currentTimeMillis() - timerStart);
+            }
+        } catch (JdbcSQLException e) {
+            logger.warn("JDBC::store: Unable to store item", e);
         }
     }
 
@@ -215,16 +218,20 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
             return List.of();
         }
 
-        long timerStart = System.currentTimeMillis();
-        List<HistoricItem> items = getHistItemFilterQuery(filter, conf.getNumberDecimalcount(), table, item);
-        if (logger.isDebugEnabled()) {
-            logger.debug("JDBC: Query for item '{}' returned {} rows in {} ms", itemName, items.size(),
-                    System.currentTimeMillis() - timerStart);
+        try {
+            long timerStart = System.currentTimeMillis();
+            List<HistoricItem> items = getHistItemFilterQuery(filter, conf.getNumberDecimalcount(), table, item);
+            if (logger.isDebugEnabled()) {
+                logger.debug("JDBC: Query for item '{}' returned {} rows in {} ms", itemName, items.size(),
+                        System.currentTimeMillis() - timerStart);
+            }
+            // Success
+            errCnt = 0;
+            return items;
+        } catch (JdbcSQLException e) {
+            logger.warn("JDBC::query: Unable to query item", e);
+            return List.of();
         }
-
-        // Success
-        errCnt = 0;
-        return items;
     }
 
     public void updateConfig(Map<Object, Object> configuration) {
@@ -233,9 +240,14 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
         conf = new JdbcConfiguration(configuration);
         if (conf.valid && checkDBAccessability()) {
             namingStrategy = new NamingStrategy(conf);
-            checkDBSchema();
-            // connection has been established ... initialization completed!
-            initialized = true;
+            try {
+                checkDBSchema();
+                // connection has been established ... initialization completed!
+                initialized = true;
+            } catch (JdbcSQLException e) {
+                logger.error("Failed to check database schema", e);
+                initialized = false;
+            }
         } else {
             initialized = false;
         }
@@ -269,14 +281,18 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
             return false;
         }
 
-        long timerStart = System.currentTimeMillis();
-        boolean result = deleteItemValues(filter, table);
-        if (logger.isDebugEnabled()) {
-            logger.debug("JDBC: Deleted values for item '{}' in SQL database at {} in {} ms.", itemName, new Date(),
-                    System.currentTimeMillis() - timerStart);
+        try {
+            long timerStart = System.currentTimeMillis();
+            deleteItemValues(filter, table);
+            if (logger.isDebugEnabled()) {
+                logger.debug("JDBC: Deleted values for item '{}' in SQL database at {} in {} ms.", itemName, new Date(),
+                        System.currentTimeMillis() - timerStart);
+            }
+            return true;
+        } catch (JdbcSQLException e) {
+            logger.debug("JDBC::remove: Unable to remove values for item", e);
+            return false;
         }
-
-        return result;
     }
 
     /**
@@ -292,7 +308,7 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
      *
      * @return list of {@link ItemTableCheckEntry}
      */
-    public List<ItemTableCheckEntry> getCheckedEntries() {
+    public List<ItemTableCheckEntry> getCheckedEntries() throws JdbcSQLException {
         List<ItemTableCheckEntry> entries = new ArrayList<>();
 
         if (!checkDBAccessability()) {
@@ -344,8 +360,9 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
      * @param itemName Name of item to clean
      * @param force If true, non-empty tables will be dropped too
      * @return true if item was cleaned up
+     * @throws JdbcSQLException
      */
-    public boolean cleanupItem(String itemName, boolean force) {
+    public boolean cleanupItem(String itemName, boolean force) throws JdbcSQLException {
         String tableName = itemNameToTableNameMap.get(itemName);
         if (tableName == null) {
             return false;
@@ -360,12 +377,13 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
      *
      * @param entry
      * @return true if item was cleaned up
+     * @throws JdbcSQLException
      */
-    public boolean cleanupItem(ItemTableCheckEntry entry) {
+    public boolean cleanupItem(ItemTableCheckEntry entry) throws JdbcSQLException {
         return cleanupItem(entry, false);
     }
 
-    private boolean cleanupItem(ItemTableCheckEntry entry, boolean force) {
+    private boolean cleanupItem(ItemTableCheckEntry entry, boolean force) throws JdbcSQLException {
         if (!checkDBAccessability()) {
             logger.warn("JDBC::cleanupItem: database not connected");
             return false;
