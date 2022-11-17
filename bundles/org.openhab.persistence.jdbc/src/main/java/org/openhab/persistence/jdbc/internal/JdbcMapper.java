@@ -302,7 +302,7 @@ public class JdbcMapper {
         populateItemNameToTableNameMap();
     }
 
-    private void populateItemNameToTableNameMap() throws JdbcSQLException {
+    public void populateItemNameToTableNameMap() throws JdbcSQLException {
         itemNameToTableNameMap.clear();
         if (conf.getTableUseRealCaseSensitiveItemNames()) {
             for (String itemName : getItemTables().stream().map(t -> t.getTableName()).collect(Collectors.toList())) {
