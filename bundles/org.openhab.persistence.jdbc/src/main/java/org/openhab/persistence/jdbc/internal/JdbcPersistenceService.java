@@ -41,6 +41,7 @@ import org.openhab.core.persistence.strategy.PersistenceStrategy;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.openhab.persistence.jdbc.internal.dto.ItemsVO;
+import org.openhab.persistence.jdbc.internal.exceptions.JdbcException;
 import org.openhab.persistence.jdbc.internal.exceptions.JdbcSQLException;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
@@ -161,7 +162,7 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
                 logger.debug("JDBC: Stored item '{}' as '{}' in SQL database at {} in {} ms.", item.getName(), state,
                         new Date(), System.currentTimeMillis() - timerStart);
             }
-        } catch (JdbcSQLException e) {
+        } catch (JdbcException e) {
             logger.warn("JDBC::store: Unable to store item", e);
         }
     }
