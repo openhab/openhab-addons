@@ -23,6 +23,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mynice.internal.config.It4WifiConfiguration;
 import org.openhab.binding.mynice.internal.discovery.MyNiceDiscoveryService;
 import org.openhab.binding.mynice.internal.xml.MyNiceXStream;
@@ -53,9 +54,8 @@ public class It4WifiHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(It4WifiHandler.class);
     private final List<MyNiceDataListener> dataListeners = new CopyOnWriteArrayList<>();
 
-    private @NonNullByDefault({}) It4WifiConfiguration config;
-    private @NonNullByDefault({}) It4WifiConnector connector;
     private @NonNullByDefault({}) RequestBuilder reqBuilder;
+    private @Nullable It4WifiConnector connector;
     private final MyNiceXStream xstream = new MyNiceXStream();
     private List<Device> devices = new ArrayList<>();
     private boolean connected;
@@ -86,15 +86,16 @@ public class It4WifiHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
-        config = getConfigAs(It4WifiConfiguration.class);
-        connector = new It4WifiConnector(config.hostname, this, scheduler);
         connected = false;
+        It4WifiConfiguration config = getConfigAs(It4WifiConfiguration.class);
         if (config.username.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                     "Please define a username for this thing");
         } else {
+            It4WifiConnector localConnector = new It4WifiConnector(config.hostname, this, scheduler);
             reqBuilder = new RequestBuilder(config.macAddress, config.username);
-            connector.start();
+            localConnector.start();
+            connector = localConnector;
         }
     }
 
@@ -140,6 +141,7 @@ public class It4WifiHandler extends BaseBridgeHandler {
                 }
             case CONNECT:
                 String sc = response.authentication.sc;
+                It4WifiConfiguration config = getConfigAs(It4WifiConfiguration.class);
                 if (sc != null) {
                     reqBuilder.setChallenges(sc, response.authentication.id, config.password);
                     connected = true;
@@ -169,7 +171,7 @@ public class It4WifiHandler extends BaseBridgeHandler {
     }
 
     public void handShaked() {
-        config = getConfigAs(It4WifiConfiguration.class);
+        It4WifiConfiguration config = getConfigAs(It4WifiConfiguration.class);
         sendCommand(config.password.isBlank() ? CommandType.PAIR : CommandType.VERIFY);
     }
 
@@ -178,11 +180,20 @@ public class It4WifiHandler extends BaseBridgeHandler {
         dataListeners.forEach(listener -> listener.onDataFetched(devices));
     }
 
+    private void sendCommand(String command) {
+        It4WifiConnector localConnector = connector;
+        if (localConnector != null) {
+            localConnector.sendCommand(command);
+        } else {
+            logger.warn("Tried to send a command when IT4WifiConnector is not initialized.");
+        }
+    }
+
     public void sendCommand(CommandType command) {
-        connector.sendCommand(reqBuilder.buildMessage(command));
+        sendCommand(reqBuilder.buildMessage(command));
     }
 
     public void sendCommand(String id, String command) {
-        connector.sendCommand(reqBuilder.buildMessage(id, command.toLowerCase()));
+        sendCommand(reqBuilder.buildMessage(id, command.toLowerCase()));
     }
 }
