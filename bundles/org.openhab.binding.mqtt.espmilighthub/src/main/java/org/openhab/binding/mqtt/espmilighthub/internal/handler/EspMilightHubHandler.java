@@ -283,7 +283,7 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttConnec
         } else {
             coefficients = KANG_X_COEFFICIENTS[0];
         }
-        var x = polynomialFit(BIG_DECIMAL_THOUSAND.divide(cct, MathContext.DECIMAL128), coefficients);
+        BigDecimal x = polynomialFit(BIG_DECIMAL_THOUSAND.divide(cct, MathContext.DECIMAL128), coefficients);
 
         if (cctInt <= 2222) {
             coefficients = KANG_Y_COEFFICIENTS[2];
@@ -303,8 +303,8 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttConnec
         var x = xy[0].toBigDecimal().divide(BIG_DECIMAL_100);
         var y = xy[1].toBigDecimal().divide(BIG_DECIMAL_100);
         var n = x.subtract(BIG_DECIMAL_03320).divide(BIG_DECIMAL_01858.subtract(y), MathContext.DECIMAL128);
-        BigDecimal cct_k = polynomialFit(n, MCCAMY_COEFFICIENTS);
-        return BIG_DECIMAL_MILLION.divide(cct_k, MathContext.DECIMAL128).round(new MathContext(0)).intValue();
+        BigDecimal cctK = polynomialFit(n, MCCAMY_COEFFICIENTS);
+        return BIG_DECIMAL_MILLION.divide(cctK, MathContext.DECIMAL128).round(new MathContext(0)).intValue();
     }
 
     // https://cormusa.org/wp-content/uploads/2018/04/CORM_2011_Calculation_of_CCT_and_Duv_and_Practical_Conversion_Formulae.pdf
