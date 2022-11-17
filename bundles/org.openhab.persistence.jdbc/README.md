@@ -62,7 +62,7 @@ This service can be configured in the file `services/jdbc.cfg`.
 | numberDecimalcount          | 3                                                            |    No     | for Itemtype "Number" default decimal digit count            |
 | tableNamePrefix             | `item`                                                       |    No     | table name prefix. For Migration from MySQL Persistence, set to `Item`. |
 | tableUseRealItemNames       | `false`                                                      |    No     | table name prefix generation.  When set to `true`, real item names are used for table names and `tableNamePrefix` is ignored.  When set to `false`, the `tableNamePrefix` is used to generate table names with sequential numbers. |
-| tableCaseSensitiveItemNames | `false`                                                      |    No     | table name case when `tableUseRealItemNames` is `true`. When set to `true`, item name case is preserved in table names and no suffix is used. When set to `false`, table names are lower cased and a numeric suffix is added. Please read [this](#case-sensitive-item-names) before enabling. |
+| tableCaseSensitiveItemNames | `false`                                                      |    No     | table name case. This setting is only applicable when `tableUseRealItemNames` is `true`. When set to `true`, item name case is preserved in table names and no prefix or suffix is added. When set to `false`, table names are lower cased and a numeric suffix is added. Please read [this](#case-sensitive-item-names) before enabling. |
 | tableIdDigitCount           | 4                                                            |    No     | when `tableUseRealItemNames` is `false` and thus table names are generated sequentially, this controls how many zero-padded digits are used in the table name.  With the default of 4, the first table name will end with `0001`. For migration from the MySQL persistence service, set this to 0. |
 | rebuildTableNames           | false                                                        |    No     | rename existing tables using `tableUseRealItemNames` and `tableIdDigitCount`. USE WITH CARE! Deactivate after Renaming is done! |
 | jdbc.maximumPoolSize        | configured per database in package `org.openhab.persistence.jdbc.db.*` |    No     | Some embedded databases can handle only one connection. See [this link](https://github.com/brettwooldridge/HikariCP/issues/256) for more information |
@@ -93,6 +93,8 @@ To avoid numbered suffixes entirely, `tableUseRealItemNames` and `tableCaseSensi
 With this configuration, tables are named exactly like their corresponding items.
 In order for this to work correctly, the underlying operating system, database server and configuration must support case sensitive table names.
 For MySQL, see [MySQL: Identifier Case Sensitivity](https://dev.mysql.com/doc/refman/8.0/en/identifier-case-sensitivity.html) for more information.
+
+Please make sure to have a dedicated schema when using this option, since otherwise table name collisions are more likely to happen.
 
 ### Migration from MySQL to JDBC Persistence Services
 
@@ -159,15 +161,15 @@ The list contains table name, item name, row count and status, which can be one 
 
 #### Clean Inconsistent Items
 
-Some issues can be fixed automatically using the command `jdbc clean` (all items having issues) or `jdbc clean <itemName>` (single item).
+Some issues can be fixed automatically using the command `jdbc tables clean` (all items having issues) or `jdbc tables clean <itemName>` (single item).
 This cleanup operation will remove items from the index (table `Items`) if the referenced table does not exist.
 
 If the item does not exist, the table will be physically deleted, but only if it's empty.
 This precaution is taken because items may have existed previously, and the data might still be valuable.
 For example, an item for a lost or repurposed sensor could have been deleted from the system while preserving persisted data.
-To skip this check for a single item, use `jdbc clean <itemName> force` with care.
+To skip this check for a single item, use `jdbc tables clean <itemName> force` with care.
 
-Prior to performing a `jdbc clean` operation, it's recommended to review the result of `jdbc tables list`.
+Prior to performing a `jdbc tables clean` operation, it's recommended to review the result of `jdbc tables list`.
 
 Fixing integrity issues can be useful before performing a migration to another naming scheme.
 For example, when migrating to `tableCaseSensitiveItemNames`, an index will no longer exist after the migration:
