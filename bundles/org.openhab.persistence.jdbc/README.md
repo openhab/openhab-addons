@@ -195,6 +195,12 @@ This happened:
 
 In other words, extracting this information from the index before removing it, can be beneficial in order to understand the issues and possible causes.
 
+#### Reload Index/Schema
+
+Manual changes in the index table, `Items`, will not be picked up automatically for performance reasons.
+The same is true when manually adding new item tables or deleting existing ones.
+After making such changes, the command `jdbc reload` can be used to reload the index.
+
 ### For Developers
 
 * Clearly separated source files for the database-specific part of openHAB logic.
