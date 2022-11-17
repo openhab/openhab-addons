@@ -71,7 +71,7 @@ public class EmbyClientDiscoveryService extends AbstractDiscoveryService {
             ThingUID bridgeUID = embyBridgeHandler.getThing().getUID();
             Map<String, Object> properties = new HashMap<>(1);
             properties.put(DEVICE_ID, modelId);
-            logger.info("Disovered device {} with id {}", playstate.getDeviceName(), modelId);
+            logger.debug("Disovered device {} with id {}", playstate.getDeviceName(), modelId);
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID)
                     .withProperties(properties).withBridge(bridgeUID).withRepresentationProperty(DEVICE_ID)
                     .withLabel(playstate.getDeviceName()).build();

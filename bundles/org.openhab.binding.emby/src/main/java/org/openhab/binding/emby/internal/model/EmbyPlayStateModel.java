@@ -154,12 +154,11 @@ public class EmbyPlayStateModel {
         return supportsRemoteControl;
     }
 
-    public URI getPrimaryImageURL(String embyHost, int embyPort, String embyType, String maxWidth, String maxHeight,
-            Boolean percentPlayed) throws URISyntaxException {
+    public URI getPrimaryImageURL(String embyHost, int embyPort, String embyType, String maxWidth, String maxHeight) throws URISyntaxException {
         String imagePath = "";
         logger.debug(
                 "Received an image URL request for: {} , embyPort: {}, embyType: {}, maxWidth: {}, maxHeight: {}, percentPlayed: {}",
-                embyHost, embyPort, embyType, maxWidth, maxHeight, percentPlayed);
+                embyHost, embyPort, embyType, maxWidth, maxHeight);
         if (this.nowPlayingItem == null) {
             // If there is no nowPlayingItem this means the device has stopped so we will return
             // a URI that will let us check for that, if any of this returns null
@@ -175,14 +174,6 @@ public class EmbyPlayStateModel {
             }
 
             String query = "";
-
-            if (percentPlayed) {
-                logger.debug("The percent Played equals:{}", getPercentPlayed());
-                BigDecimal percentPlayedRounded = getPercentPlayed();
-                double percent = percentPlayedRounded.doubleValue();
-                percent = percent * 100;
-                query = query + "PercentPlayed=" + percent;
-            }
 
             if (!(maxWidth == null)) {
                 query = "MaxWidth=" + maxWidth + "&" + query;

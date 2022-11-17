@@ -99,7 +99,6 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
     }
 
     private void establishConnection() {
-        updateStatus(ThingStatus.UNKNOWN);
         scheduler.execute(() -> {
             try {
                 String host = getConfig().get(HOST_PARAMETER).toString();
@@ -127,6 +126,7 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
 
     @Override
     public void initialize() {
+        updateStatus(ThingStatus.UNKNOWN);
         establishConnection();
     }
 
@@ -154,6 +154,7 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "The connection to the emby server was closed, binding will attempt to restablish connection.");
+                    establishConnection();
         }
     }
 

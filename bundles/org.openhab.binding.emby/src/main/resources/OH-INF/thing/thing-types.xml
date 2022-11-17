@@ -188,11 +188,6 @@
 				<label>Image Max Width</label>
 				<description>The maximum width of the image that will be retrieved.</description>
 			</parameter>
-			<parameter name="imageurl_PercentPlayed" type="boolean">
-				<label>Percent Played</label>
-				<description>When set to true (default) the image url will have the percent played indicator on the image. Set to
-					false to not display the percent played indicator</description>
-			</parameter>
 		</config-description>
 	</channel-type>
 </thing:thing-descriptions>

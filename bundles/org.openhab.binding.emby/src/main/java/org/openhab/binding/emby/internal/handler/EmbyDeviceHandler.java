@@ -327,7 +327,7 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
                     playstate.getDeviceName());
             try {
                 URI imageURI = playstate.getPrimaryImageURL(hostname, embyport, config.imageImageType,
-                        config.imageMaxWidth, config.imageMaxHeight, config.imagePercentPlayed);
+                        config.imageMaxWidth, config.imageMaxHeight);
                 if (imageURI.getHost().equals("NotPlaying")) {
                     updateState(EmbyState.END);
                     updateState(EmbyState.STOP);
