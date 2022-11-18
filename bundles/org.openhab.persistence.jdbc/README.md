@@ -60,6 +60,7 @@ This service can be configured in the file `services/jdbc.cfg`.
 | sqltype.tablePrimaryKey     | `TIMESTAMP`                                                  |    No     | type of `time` column for newly created item tables          |
 | sqltype.tablePrimaryValue   | `NOW()`                                                      |    No     | value of `time` column for newly inserted rows               |
 | numberDecimalcount          | 3                                                            |    No     | for Itemtype "Number" default decimal digit count            |
+| itemsManageTable            | `items`                                                      |    No     | items manage table. For Migration from MySQL Persistence, set to `Items`. |
 | tableNamePrefix             | `item`                                                       |    No     | table name prefix. For Migration from MySQL Persistence, set to `Item`. |
 | tableUseRealItemNames       | `false`                                                      |    No     | table name prefix generation.  When set to `true`, real item names are used for table names and `tableNamePrefix` is ignored.  When set to `false`, the `tableNamePrefix` is used to generate table names with sequential numbers. |
 | tableCaseSensitiveItemNames | `false`                                                      |    No     | table name case. This setting is only applicable when `tableUseRealItemNames` is `true`. When set to `true`, item name case is preserved in table names and no prefix or suffix is added. When set to `false`, table names are lower cased and a numeric suffix is added. Please read [this](#case-sensitive-item-names) before enabling. |
@@ -107,6 +108,7 @@ services/jdbc.cfg
 url=jdbc:mysql://192.168.0.1:3306/testMysql
 user=test
 password=test
+itemsManageTable=Items
 tableNamePrefix=Item
 tableUseRealItemNames=false
 tableIdDigitCount=0
@@ -125,7 +127,10 @@ The item data tables include time and data values.
 The SQL data type used depends on the openHAB item type, and allows the item state to be recovered back into openHAB in the same way it was stored.
 
 With this *per-item* layout, the scalability and easy maintenance of the database is ensured, even if large amounts of data must be managed.
-To rename existing tables, use the parameters `tableUseRealItemNames` and `tableIdDigitCount` in the configuration.
+To rename existing tables, use the parameters `tableNamePrefix`, `tableUseRealItemNames`, `tableIdDigitCount` and `tableCaseSensitiveItemNames` in the configuration.
+
+Please be aware that changing the name of `itemsManageTable` is not supported by the migration.
+If this is changed, the table must be renamed manually according to new configured name.
 
 ### Number Precision
 

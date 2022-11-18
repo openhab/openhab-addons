@@ -134,6 +134,10 @@
 
 		<!--
 			# T A B L E O P E R A T I O N S
+			# Items Manage Table (optional, default: "items")
+			# for Migration from MYSQL-Bundle set to 'Items'.
+			#itemsManageTable=Items
+
 			# Tablename Prefix String (optional, default: "item")
 			# for Migration from MYSQL-Bundle set to 'Item'.
 			#tableNamePrefix=Item
@@ -156,6 +160,11 @@
 			# USE WITH CARE! Deactivate after Renaming is done!
 			#rebuildTableNames=true
 		-->
+		<parameter name="itemsManageTable" type="text">
+			<label>Items Manage Table</label>
+			<description><![CDATA[Items Manage Table <br>(optional, default: "items"). <br>
+			For migration from MYSQL-Bundle set to 'Items'.]]></description>
+		</parameter>
 		<parameter name="tableNamePrefix" type="text">
 			<label>Tablename Prefix String</label>
 			<description><![CDATA[Tablename prefix string <br>(optional, default: "item"). <br>
