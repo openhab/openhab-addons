@@ -30,14 +30,28 @@ public class Event implements Comparable<Event> {
     public final List<CommandTag> commandTags = new ArrayList<>();
     public final Instant end;
     public final Instant start;
+    @Nullable
     public final String title;
+    @Nullable
+    public final String description;
+    @Nullable
+    public final String location;
+    @Nullable
+    public final String comment;
+    @Nullable
+    public final String contact;
 
-    public Event(String title, Instant start, Instant end, String description) {
-        this.title = title;
-        this.start = start;
+    public Event(@Nullable String summary, Instant begin, Instant end, @Nullable String description,
+            @Nullable String location, @Nullable String comment, @Nullable String contact) {
+        this.title = summary;
+        this.start = begin;
         this.end = end;
+        this.description = description;
+        this.location = location;
+        this.comment = comment;
+        this.contact = contact;
 
-        if (description.isEmpty()) {
+        if (description == null || description.isEmpty()) {
             return;
         }
 
@@ -48,6 +62,10 @@ public class Event implements Comparable<Event> {
                 commandTags.add(tag);
             }
         }
+    }
+
+    public Event(String title, Instant start, Instant end, String description) {
+        this(title, start, end, description, null, null, null);
     }
 
     @Override

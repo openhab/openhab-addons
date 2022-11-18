@@ -101,6 +101,85 @@
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 
+	<channel-type id="event_current_presence">
+		<item-type>Switch</item-type>
+		<label>Current Event Presence</label>
+		<description>Current presence of an event</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="event_current_summary">
+		<item-type>String</item-type>
+		<label>Current Event Summary</label>
+		<description>Summary of the currently present event, often also title</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="event_current_begin">
+		<item-type>DateTime</item-type>
+		<label>Current Event Begin</label>
+		<description>Begin of the currently present event</description>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
+	</channel-type>
+	<channel-type id="event_current_description">
+		<item-type>String</item-type>
+		<label>Current Event Description</label>
+		<description>Description of the currently present event, often also content</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="event_current_comment">
+		<item-type>String</item-type>
+		<label>Current Event Comment</label>
+		<description>Comment of the currently present event</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="event_current_contact">
+		<item-type>String</item-type>
+		<label>Current Event Contact</label>
+		<description>Contact of the currently present event</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="event_current_location">
+		<item-type>String</item-type>
+		<label>Current Event Location</label>
+		<description>Location of the currently present event</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="event_next_summary">
+		<item-type>String</item-type>
+		<label>Next Event Summary</label>
+		<description>Summary of the next event, often also title</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="event_next_begin">
+		<item-type>DateTime</item-type>
+		<label>Next Event Begin</label>
+		<description>Begin of the next event</description>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
+	</channel-type>
+	<channel-type id="event_next_description">
+		<item-type>String</item-type>
+		<label>Next Event Description</label>
+		<description>Description of the next event, often also content</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="event_next_comment">
+		<item-type>String</item-type>
+		<label>Next Event Comment</label>
+		<description>Comment of the next event</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="event_next_contact">
+		<item-type>String</item-type>
+		<label>Next Event Contact</label>
+		<description>Contact of the next event</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="event_next_location">
+		<item-type>String</item-type>
+		<label>Next Event Location</label>
+		<description>Location of the next event</description>
+		<state readOnly="true"/>
+	</channel-type>
+
 	<channel-type id="result_start">
 		<item-type>DateTime</item-type>
 		<label>Start of Result</label>
@@ -204,6 +283,74 @@
 				<label>Event Value</label>
 			</parameter>
 			<parameter name="textValueType" type="text" groupName="text_based">
+				<limitToOptions>true</limitToOptions>
+				<options>
+					<option value="REGEX">Regular Expression</option>
+					<option value="TEXT">Text</option>
+				</options>
+				<default>TEXT</default>
+				<label>Value Type</label>
+				<description>"text" checks the value for containment, "regular expression" matches whole value</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="liveevent">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="calendar"/>
+		</supported-bridge-type-refs>
+		<label>Live event display</label>
+		<description>Show events from a calendar live</description>
+
+		<channels>
+			<channel id="current_presence" typeId="event_current_presence"/>
+			<channel id="current_summary" typeId="event_current_summary"/>
+			<channel id="current_begin" typeId="event_current_begin"/>
+			<channel id="current_end" typeId="event_current_end"/>
+			<channel id="current_description" typeId="event_current_description"/>
+			<channel id="current_comment" typeId="event_current_description"/>
+			<channel id="current_contact" typeId="event_current_contact"/>
+			<channel id="current_location" typeId="event_current_location"/>
+			<channel id="next_summary" typeId="event_next_summary"/>
+			<channel id="next_begin" typeId="event_next_begin"/>
+			<channel id="next_end" typeId="event_next_end"/>
+			<channel id="next_description" typeId="event_next_description"/>
+			<channel id="next_comment" typeId="event_next_description"/>
+			<channel id="next_contact" typeId="event_next_contact"/>
+			<channel id="next_contact" typeId="event_next_location"/>
+		</channels>
+
+		<config-description>
+			<parameter-group name="general">
+				<label>General settings</label>
+			</parameter-group>
+			<parameter-group name="text_based_filter">
+				<label>Filter settings for events</label>
+			</parameter-group>
+
+			<parameter name="offset" type="integer" groupName="general" unit="s">
+				<label>The offset of this thing related to now</label>
+				<advanced>true</advanced>
+				<default>0</default>
+			</parameter>
+
+			<parameter name="textEventField" type="text" groupName="text_based_filter" required="false">
+				<label>Event Field</label>
+				<description>iCal field to match</description>
+				<limitToOptions>true</limitToOptions>
+				<options>
+					<option value="SUMMARY">summary/subject</option>
+					<option value="DESCRIPTION">description/content</option>
+					<option value="COMMENT">comment</option>
+					<option value="CONTACT">contact</option>
+					<option value="LOCATION">location</option>
+				</options>
+			</parameter>
+			<parameter name="textEventValue" type="text" groupName="text_based_filter" required="false">
+				<label>Event Value</label>
+
+			</parameter>
+			<parameter name="textValueType" type="text" groupName="text_based_filter" required="false">
 				<limitToOptions>true</limitToOptions>
 				<options>
 					<option value="REGEX">Regular Expression</option>
