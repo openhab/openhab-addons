@@ -18,12 +18,16 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import javax.net.ssl.SSLContext;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLSession;
+import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.sse.InboundSseEvent;
 import javax.ws.rs.sse.SseEventSource;
 
@@ -61,9 +65,10 @@ import com.google.gson.reflect.TypeToken;
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class GatewayWebTargets implements Closeable {
+public class GatewayWebTargets implements Closeable, HostnameVerifier {
 
     private static final String IDS = "ids";
+    private static final int SLEEP_SECONDS = 360;
 
     // @formatter:off
     public static final Type LIST_SHADES = new TypeToken<ArrayList<Shade>>() {}.getType();
@@ -78,31 +83,23 @@ public class GatewayWebTargets implements Closeable {
     private final String shadeStop;
     private final String shadePositions;
     private final String info;
-
     private final String register;
     private final String shadeEvents;
     private final String sceneEvents;
-    private final Gson gson = new Gson();
+    private final Gson jsonParser = new Gson();
     private final HttpClient httpClient;
-
     private final ClientBuilder clientBuilder;
     private final SseEventSourceFactory eventSourceFactory;
     private final GatewayBridgeHandler hubHandler;
 
+    private final String hostName;
     private boolean isRegistered;
 
+    private boolean closing;
     private @Nullable SseEventSource shadeEventSource;
     private @Nullable SseEventSource sceneEventSource;
 
-    /**
-     * Simple DTO for registering the binding with the hub.
-     *
-     * @author Andrew Fiddian-Green - Initial contribution
-     */
-    @SuppressWarnings("unused")
-    private static class GatewayRegistration {
-        public String todo = "org.openhab.binding.hdpowerview"; // TODO
-    }
+    private @Nullable ScheduledFuture<?> sseQuietCheck;
 
     /**
      * Initialize the web targets
@@ -115,6 +112,8 @@ public class GatewayWebTargets implements Closeable {
         String base = "http://" + ipAddress + "/";
         String home = base + "home/";
 
+        hostName = ipAddress;
+
         shades = home + "shades";
         scenes = home + "scenes";
         sceneActivate = home + "scenes/%d/activate";
@@ -125,7 +124,8 @@ public class GatewayWebTargets implements Closeable {
         sceneEvents = home + "scenes/events";
 
         info = base + "gateway/info";
-        register = "TBD"; // TODO
+
+        register = "TODO"; // TODO waiting for Hunter Douglas to provide the end point URL
 
         this.httpClient = httpClient;
         this.clientBuilder = clientBuilder;
@@ -150,23 +150,14 @@ public class GatewayWebTargets implements Closeable {
      * @throws HubProcessingException if any error occurs.
      */
     public void calibrateShade(int shadeId) throws HubProcessingException {
-        String json = gson.toJson(new ShadeMotion(ShadeMotion.Type.CALIBRATE));
+        String json = jsonParser.toJson(new ShadeMotion(ShadeMotion.Type.CALIBRATE));
         invoke(HttpMethod.PUT, String.format(shadeMotion, shadeId), null, json);
     }
 
     @Override
     public void close() throws IOException {
-        SseEventSource source;
-        source = this.shadeEventSource;
-        if (source != null) {
-            source.close();
-            this.shadeEventSource = null;
-        }
-        source = this.sceneEventSource;
-        if (source != null) {
-            source.close();
-            this.sceneEventSource = null;
-        }
+        closing = true;
+        sseClose();
     }
 
     /**
@@ -174,9 +165,14 @@ public class GatewayWebTargets implements Closeable {
      *
      * @throws HubProcessingException if any error occurs.
      */
-    private void gatewayRegister() throws HubProcessingException {
+    public void gatewayRegister() throws HubProcessingException {
+        // TODO waiting for Hunter Douglas to provide registration details
         if (!isRegistered) {
-            String json = gson.toJson(new GatewayRegistration());
+            final class GatewayRegistration {
+                @SuppressWarnings("unused")
+                public String todo = "org.openhab.binding.hdpowerview";
+            }
+            String json = jsonParser.toJson(new GatewayRegistration());
             invoke(HttpMethod.PUT, register, null, json);
             isRegistered = true;
         }
@@ -191,7 +187,7 @@ public class GatewayWebTargets implements Closeable {
     public Map<String, String> getInformation() throws HubProcessingException {
         String json = invoke(HttpMethod.GET, info, null, null);
         try {
-            Info result = gson.fromJson(json, Info.class);
+            Info result = jsonParser.fromJson(json, Info.class);
             if (result == null) {
                 throw new HubProcessingException("getInformation(): missing response");
             }
@@ -212,7 +208,7 @@ public class GatewayWebTargets implements Closeable {
     public List<Scene> getScenes() throws HubProcessingException {
         String json = invoke(HttpMethod.GET, scenes, null, null);
         try {
-            List<Scene> result = gson.fromJson(json, LIST_SCENES);
+            List<Scene> result = jsonParser.fromJson(json, LIST_SCENES);
             if (result == null) {
                 throw new HubProcessingException("getScenes() missing response");
             }
@@ -232,7 +228,7 @@ public class GatewayWebTargets implements Closeable {
     public Shade getShade(int shadeId) throws HubProcessingException {
         String json = invoke(HttpMethod.GET, shades + Integer.toString(shadeId), null, null);
         try {
-            Shade result = gson.fromJson(json, Shade.class);
+            Shade result = jsonParser.fromJson(json, Shade.class);
             if (result == null) {
                 throw new HubProcessingException("getShade() missing response");
             }
@@ -251,7 +247,7 @@ public class GatewayWebTargets implements Closeable {
     public List<Shade> getShades() throws HubProcessingException {
         String json = invoke(HttpMethod.GET, shades, null, null);
         try {
-            List<Shade> result = gson.fromJson(json, LIST_SHADES);
+            List<Shade> result = jsonParser.fromJson(json, LIST_SHADES);
             if (result == null) {
                 throw new HubProcessingException("getShades() missing response");
             }
@@ -322,7 +318,7 @@ public class GatewayWebTargets implements Closeable {
      * @throws HubProcessingException if any error occurs.
      */
     public void jogShade(int shadeId) throws HubProcessingException {
-        String json = gson.toJson(new ShadeMotion(ShadeMotion.Type.JOG));
+        String json = jsonParser.toJson(new ShadeMotion(ShadeMotion.Type.JOG));
         invoke(HttpMethod.PUT, String.format(shadeMotion, shadeId), null, json);
     }
 
@@ -335,7 +331,19 @@ public class GatewayWebTargets implements Closeable {
      */
     public void moveShade(int shadeId, ShadePosition position) throws HubProcessingException {
         invoke(HttpMethod.PUT, shadePositions, Query.of(IDS, Integer.valueOf(shadeId).toString()),
-                gson.toJson(position));
+                jsonParser.toJson(position));
+    }
+
+    /**
+     * Handle SSE errors.
+     * For the time being just log them, because the framework should automatically recover itself.
+     *
+     * @param e the error that was thrown.
+     */
+    private void onSseSceneError(Throwable e) {
+        if (!closing) {
+            logger.debug("onSseSceneError() {}", e.getMessage(), e);
+        }
     }
 
     /**
@@ -343,13 +351,39 @@ public class GatewayWebTargets implements Closeable {
      *
      * @param sseEvent the inbound event.
      */
-    private void onSceneEvent(InboundSseEvent sseEvent) {
+    private void onSseSceneEvent(InboundSseEvent sseEvent) {
+        if (closing) {
+            return;
+        }
+        ScheduledFuture<?> task = sseQuietCheck;
+        if (task != null && !task.isCancelled()) {
+            task.cancel(true);
+        }
+        sseQuietCheck = hubHandler.getScheduler().schedule(this::onSseQuiet, SLEEP_SECONDS, TimeUnit.SECONDS);
+        if (sseEvent.isEmpty()) {
+            return;
+        }
         String json = sseEvent.readData();
-        logger.trace("onSceneEvent() json:{}", json);
-        SceneEvent sceneEvent = gson.fromJson(json, SceneEvent.class);
+        if (json == null) {
+            return;
+        }
+        logger.trace("onSseSceneEvent() json:{}", json);
+        SceneEvent sceneEvent = jsonParser.fromJson(json, SceneEvent.class);
         if (sceneEvent != null) {
             Scene scene = sceneEvent.getScene();
             hubHandler.onSceneEvent(scene);
+        }
+    }
+
+    /**
+     * Handle SSE errors.
+     * For the time being just log them, because the framework should automatically recover itself.
+     *
+     * @param e the error that was thrown.
+     */
+    private void onSseShadeError(Throwable e) {
+        if (!closing) {
+            logger.debug("onSseShadeError() {}", e.getMessage(), e);
         }
     }
 
@@ -358,10 +392,24 @@ public class GatewayWebTargets implements Closeable {
      *
      * @param sseEvent the inbound event.
      */
-    private void onShadeEvent(InboundSseEvent sseEvent) {
+    private void onSSeShadeEvent(InboundSseEvent sseEvent) {
+        if (closing) {
+            return;
+        }
+        ScheduledFuture<?> task = sseQuietCheck;
+        if (task != null && !task.isCancelled()) {
+            task.cancel(true);
+        }
+        sseQuietCheck = hubHandler.getScheduler().schedule(this::onSseQuiet, SLEEP_SECONDS, TimeUnit.SECONDS);
+        if (sseEvent.isEmpty()) {
+            return;
+        }
         String json = sseEvent.readData();
-        logger.trace("onShadeEvent() json:{}", json);
-        ShadeEvent shadeEvent = gson.fromJson(json, ShadeEvent.class);
+        if (json == null) {
+            return;
+        }
+        logger.trace("onSseShadeEvent() json:{}", json);
+        ShadeEvent shadeEvent = jsonParser.fromJson(json, ShadeEvent.class);
         if (shadeEvent != null) {
             ShadePosition positions = shadeEvent.getCurrentPositions();
             hubHandler
@@ -370,43 +418,93 @@ public class GatewayWebTargets implements Closeable {
     }
 
     /**
-     * Open the SSE subscriptions.
-     *
-     * @return true if registered for SSE events.
-     * @throws HubProcessingException if any error occurs.
+     * Called when the SSE event channel has not received any events for a long time. This could mean that the event
+     * source socket has dropped. So restart the SSE connection.
      */
-    public void openSSE() throws HubProcessingException {
+    public void onSseQuiet() {
+        if (!closing) {
+            sseReOpen();
+        }
+    }
+
+    /**
+     * Close the SSE links.
+     */
+    private synchronized void sseClose() {
+        logger.debug("sseClose() called");
+        ScheduledFuture<?> task = sseQuietCheck;
+        if (task != null && !task.isCancelled()) {
+            task.cancel(true);
+            sseQuietCheck = null;
+        }
+        SseEventSource source;
+        source = this.shadeEventSource;
+        if (source != null) {
+            source.close();
+            this.shadeEventSource = null;
+        }
+        source = this.sceneEventSource;
+        if (source != null) {
+            source.close();
+            this.sceneEventSource = null;
+        }
+    }
+
+    /**
+     * Open the SSE links.
+     */
+    public synchronized void sseOpen() {
+        sseClose();
+
+        logger.debug("sseOpen() called");
+        Client client = clientBuilder.sslContext(httpClient.getSslContextFactory().getSslContext())
+                .hostnameVerifier(null).hostnameVerifier(this).readTimeout(0, TimeUnit.SECONDS).build();
+
+        // open SSE channel for shades
+        SseEventSource shadeEventSource = eventSourceFactory.newSource(client.target(shadeEvents));
+        shadeEventSource.register(this::onSSeShadeEvent, this::onSseShadeError);
+        shadeEventSource.open();
+        this.shadeEventSource = shadeEventSource;
+
+        // open SSE channel for scenes
+        SseEventSource sceneEventSource = eventSourceFactory.newSource(client.target(sceneEvents));
+        sceneEventSource.register(this::onSseSceneEvent, this::onSseSceneError);
+        sceneEventSource.open();
+        this.sceneEventSource = sceneEventSource;
+    }
+
+    /**
+     * Reopen the SSE links. If the eventSources already exist, try first to simply close and reopen them, but if that
+     * fails, then completely destroy and re-create the eventSources.
+     */
+    private synchronized void sseReOpen() {
+        logger.debug("sseReOpen() called");
+
         SseEventSource shadeEventSource = this.shadeEventSource;
         SseEventSource sceneEventSource = this.sceneEventSource;
-
-        if (shadeEventSource == null || !shadeEventSource.isOpen() || sceneEventSource == null
-                || !sceneEventSource.isOpen()) {
-
-            try {
-                close();
-            } catch (IOException e) {
+        if (shadeEventSource != null && sceneEventSource != null) {
+            boolean exception = false;
+            for (SseEventSource eventSource : Set.of(shadeEventSource, sceneEventSource)) {
+                if (eventSource != null) {
+                    try {
+                        if (eventSource.isOpen()) {
+                            eventSource.close();
+                        }
+                        if (!eventSource.isOpen()) {
+                            eventSource.open();
+                        }
+                    } catch (Exception e) {
+                        // SSE documentation does not say what exceptions may be thrown, so catch anything
+                        logger.warn("sseReOpen() {}", e.getMessage(), e);
+                        exception = true;
+                    }
+                }
             }
-
-            // register ourself with the gateway (if necessary)
-            gatewayRegister();
-
-            SSLContext context = httpClient.getSslContextFactory().getSslContext();
-            WebTarget target;
-
-            // open SSE channel for shades
-            target = clientBuilder.sslContext(context).build().target(shadeEvents);
-            shadeEventSource = eventSourceFactory.newSource(target);
-            shadeEventSource.register((event) -> onShadeEvent(event));
-            shadeEventSource.open();
-            this.shadeEventSource = shadeEventSource;
-
-            // open SSE channel for scenes
-            target = clientBuilder.sslContext(context).build().target(sceneEvents);
-            sceneEventSource = eventSourceFactory.newSource(target);
-            sceneEventSource.register((event) -> onSceneEvent(event));
-            sceneEventSource.open();
-            this.sceneEventSource = sceneEventSource;
+            if (!exception) {
+                return;
+            }
         }
+        sseOpen();
     }
 
     /**
@@ -417,5 +515,17 @@ public class GatewayWebTargets implements Closeable {
      */
     public void stopShade(int shadeId) throws HubProcessingException {
         invoke(HttpMethod.PUT, shadeStop, Query.of(IDS, Integer.valueOf(shadeId).toString()), null);
+    }
+
+    /**
+     * HostnameVerifier method implementation that validates the host name when opening SSE connections.
+     *
+     * @param hostName the host name to be verified.
+     * @param sslSession (not used).
+     * @return true if the host name matches our own.
+     */
+    @Override
+    public boolean verify(@Nullable String hostName, @Nullable SSLSession sslSession) {
+        return this.hostName.equals(hostName);
     }
 }

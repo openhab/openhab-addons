@@ -15,6 +15,7 @@ package org.openhab.binding.hdpowerview.internal.handler;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -109,7 +110,8 @@ public class GatewayBridgeHandler extends BaseBridgeHandler {
      */
     private void doRefresh() {
         try {
-            getWebTargets().openSSE();
+            getWebTargets().gatewayRegister();
+            getWebTargets().sseOpen();
             refreshProperties();
             refreshShades();
             refreshScenes();
@@ -280,5 +282,9 @@ public class GatewayBridgeHandler extends BaseBridgeHandler {
                 }
             }
         }
+    }
+
+    public ScheduledExecutorService getScheduler() {
+        return scheduler;
     }
 }
