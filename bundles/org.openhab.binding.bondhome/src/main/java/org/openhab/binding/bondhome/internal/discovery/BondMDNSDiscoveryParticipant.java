@@ -21,19 +21,24 @@ import javax.jmdns.ServiceInfo;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.bondhome.internal.BondHomeTranslationProvider;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.mdns.MDNSDiscoveryParticipant;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * This class identifies Bond Bridges by their mDNS service information.
  *
- * @author Kai Kreuzer - Initial contribution
+ * @author Sara Geleskie Damiano - Initial contribution
  */
 @Component(service = MDNSDiscoveryParticipant.class, configurationPid = "discovery.mdns.bondhome")
 @NonNullByDefault
@@ -42,6 +47,14 @@ public class BondMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant {
     private final Logger logger = LoggerFactory.getLogger(BondMDNSDiscoveryParticipant.class);
 
     private static final String SERVICE_TYPE = "_bond._tcp.local.";
+
+    private final BondHomeTranslationProvider translationProvider;
+
+    @Activate
+    public BondMDNSDiscoveryParticipant(final @Reference TranslationProvider i18nProvider,
+            final @Reference LocaleProvider localeProvider) {
+        this.translationProvider = new BondHomeTranslationProvider(i18nProvider, localeProvider);
+    }
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
@@ -67,7 +80,8 @@ public class BondMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant {
         if (thingUID != null) {
             logger.debug("Discovered Bond Bridge: {}", service);
             return DiscoveryResultBuilder.create(thingUID).withProperty(PROPERTY_SERIAL_NUMBER, service.getName())
-                    .withLabel("Bond Bridge").withRepresentationProperty(PROPERTY_SERIAL_NUMBER).build();
+                    .withLabel(translationProvider.getText("thing-name.bond-bridge", "Bond Bridge"))
+                    .withRepresentationProperty(PROPERTY_SERIAL_NUMBER).build();
         }
         return null;
     }

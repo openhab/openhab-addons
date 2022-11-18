@@ -16,7 +16,6 @@ import static org.openhab.binding.bondhome.internal.BondHomeBindingConstants.*;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -28,7 +27,6 @@ import org.openhab.binding.bondhome.internal.handler.BondBridgeHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
@@ -38,19 +36,18 @@ import org.slf4j.LoggerFactory;
 /**
  * This class does discovery of discoverable things
  *
- * @author Arne Seime - Initial contribution
+ * @author Sara Geleskie Damiano - Initial contribution
  */
 @NonNullByDefault
 public class BondDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
     private static final long REFRESH_INTERVAL_MINUTES = 60;
-    public static final Set<ThingTypeUID> DISCOVERABLE_THING_TYPES_UIDS = SUPPORTED_DEVICE_TYPES;
     private final Logger logger = LoggerFactory.getLogger(BondDiscoveryService.class);
     private @Nullable ScheduledFuture<?> discoveryJob;
     private @Nullable BondBridgeHandler bridgeHandler;
     private @Nullable BondHttpApi api;
 
     public BondDiscoveryService() {
-        super(DISCOVERABLE_THING_TYPES_UIDS, 10);
+        super(SUPPORTED_THING_TYPES, 10);
         this.discoveryJob = null;
     }
 
@@ -118,7 +115,7 @@ public class BondDiscoveryService extends AbstractDiscoveryService implements Th
     protected void stopBackgroundDiscovery() {
         stopScan();
         ScheduledFuture<?> discoveryJob = this.discoveryJob;
-        if (discoveryJob != null && !discoveryJob.isCancelled()) {
+        if (discoveryJob != null) {
             discoveryJob.cancel(true);
             this.discoveryJob = null;
         }

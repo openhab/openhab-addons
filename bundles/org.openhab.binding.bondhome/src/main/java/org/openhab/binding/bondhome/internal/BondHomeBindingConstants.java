@@ -12,10 +12,7 @@
  */
 package org.openhab.binding.bondhome.internal;
 
-import java.util.Collections;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
@@ -43,11 +40,10 @@ public class BondHomeBindingConstants {
     /**
      * The supported thing types.
      */
-    public static final Set<ThingTypeUID> SUPPORTED_DEVICE_TYPES = Stream
-            .of(THING_TYPE_BOND_FAN, THING_TYPE_BOND_SHADES, THING_TYPE_BOND_FIREPLACE, THING_TYPE_BOND_GENERIC)
-            .collect(Collectors.toSet());
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BOND_FAN, THING_TYPE_BOND_SHADES,
+            THING_TYPE_BOND_FIREPLACE, THING_TYPE_BOND_GENERIC);
 
-    public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_TYPES = Collections.singleton(THING_TYPE_BOND_BRIDGE);
+    public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_TYPES = Set.of(THING_TYPE_BOND_BRIDGE);
 
     /**
      * List of all Channel ids - these match the id fields in the OH-INF xml files
@@ -55,41 +51,41 @@ public class BondHomeBindingConstants {
 
     // Universal channels
     public static final String CHANNEL_GROUP_COMMON = "common";
-    public static final String CHANNEL_POWER = "common#power";
-    public static final String CHANNEL_COMMAND = "common#command";
+    public static final String CHANNEL_POWER = CHANNEL_GROUP_COMMON + "#power";
+    public static final String CHANNEL_COMMAND = CHANNEL_GROUP_COMMON + "command";
 
     // Ceiling fan channels
     public static final String CHANNEL_GROUP_FAN = "fan";
-    public static final String CHANNEL_FAN_POWER = "fan#power";
-    public static final String CHANNEL_FAN_SPEED = "fan#speed";
-    public static final String CHANNEL_FAN_BREEZE_STATE = "fan#breezeState";
-    public static final String CHANNEL_FAN_BREEZE_MEAN = "fan#breezeMean";
-    public static final String CHANNEL_FAN_BREEZE_VAR = "fan#breezeVariability";
-    public static final String CHANNEL_FAN_DIRECTION = "fan#direction";
-    public static final String CHANNEL_FAN_TIMER = "fan#timer";
+    public static final String CHANNEL_FAN_POWER = CHANNEL_GROUP_FAN + "#power";
+    public static final String CHANNEL_FAN_SPEED = CHANNEL_GROUP_FAN + "#speed";
+    public static final String CHANNEL_FAN_BREEZE_STATE = CHANNEL_GROUP_FAN + "#breezeState";
+    public static final String CHANNEL_FAN_BREEZE_MEAN = CHANNEL_GROUP_FAN + "#breezeMean";
+    public static final String CHANNEL_FAN_BREEZE_VAR = CHANNEL_GROUP_FAN + "#breezeVariability";
+    public static final String CHANNEL_FAN_DIRECTION = CHANNEL_GROUP_FAN + "#direction";
+    public static final String CHANNEL_FAN_TIMER = CHANNEL_GROUP_FAN + "#timer";
 
     // Fan light channels
     public static final String CHANNEL_GROUP_LIGHT = "light";
-    public static final String CHANNEL_LIGHT_POWER = "light#power";
-    public static final String CHANNEL_LIGHT_BRIGHTNESS = "light#brightness";
+    public static final String CHANNEL_LIGHT_POWER = CHANNEL_GROUP_LIGHT + "#power";
+    public static final String CHANNEL_LIGHT_BRIGHTNESS = CHANNEL_GROUP_LIGHT + "#brightness";
 
     public static final String CHANNEL_GROUP_UP_LIGHT = "upLight";
-    public static final String CHANNEL_UP_LIGHT_POWER = "upLight#power";
-    public static final String CHANNEL_UP_LIGHT_ENABLE = "upLight#enable";
-    public static final String CHANNEL_UP_LIGHT_BRIGHTNESS = "upLight#brightness";
+    public static final String CHANNEL_UP_LIGHT_POWER = CHANNEL_GROUP_UP_LIGHT + "#power";
+    public static final String CHANNEL_UP_LIGHT_ENABLE = CHANNEL_GROUP_UP_LIGHT + "#enable";
+    public static final String CHANNEL_UP_LIGHT_BRIGHTNESS = CHANNEL_GROUP_UP_LIGHT + "#brightness";
 
     public static final String CHANNEL_GROUP_DOWN_LIGHT = "downLight";
-    public static final String CHANNEL_DOWN_LIGHT_POWER = "downLight#power";
-    public static final String CHANNEL_DOWN_LIGHT_ENABLE = "downLight#enable";
-    public static final String CHANNEL_DOWN_LIGHT_BRIGHTNESS = "downLight#brightness";
+    public static final String CHANNEL_DOWN_LIGHT_POWER = CHANNEL_GROUP_DOWN_LIGHT + "#power";
+    public static final String CHANNEL_DOWN_LIGHT_ENABLE = CHANNEL_GROUP_DOWN_LIGHT + "#enable";
+    public static final String CHANNEL_DOWN_LIGHT_BRIGHTNESS = CHANNEL_GROUP_DOWN_LIGHT + "#brightness";
 
     // Fireplace channels
     public static final String CHANNEL_GROUP_FIREPLACE = "fireplace";
-    public static final String CHANNEL_FLAME = "fireplace#flame";
+    public static final String CHANNEL_FLAME = CHANNEL_GROUP_FIREPLACE + "#flame";
 
     // Motorize shade channels
     public static final String CHANNEL_GROUP_SHADES = "shade";
-    public static final String CHANNEL_ROLLERSHUTTER = "shade#rollershutter";
+    public static final String CHANNEL_ROLLERSHUTTER = CHANNEL_GROUP_SHADES + "#rollershutter";
 
     /**
      * Configuration arguments
@@ -115,9 +111,6 @@ public class BondHomeBindingConstants {
      */
     public static final int BOND_BPUP_PORT = 30007;
     public static final int BOND_API_TIMEOUT_MS = 3000;
-    public static final String API_ERR_HTTP_401_UNAUTHORIZED = "You need authentication credentials to continue";
-    public static final String API_ERR_HTTP_404_NOTFOUND = "Resource not found";
-    public static final String API_ERR_HTTP_500_SERVERERR = "Something unexpected happened";
     public static final String API_HASH = "hash";
     public static final String API_MISSING_DEVICE_NAME = "deviceName";
     public static final String API_MISSING_TEMPLATE = "template";

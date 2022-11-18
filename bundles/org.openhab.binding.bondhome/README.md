@@ -1,6 +1,6 @@
 # Bond Home Binding
 
-This binding connects the [Bond Home](https://bondhome.io/) Bridge to OpenHAB using the [BOND V2 Local HTTP API](http://docs-local.appbond.com).
+This binding connects the [Bond Home](https://bondhome.io/) Bridge to openHAB using the [BOND V2 Local HTTP API](http://docs-local.appbond.com).
 You'll need to acquire your [Local Token](http://docs-local.appbond.com/#section/Getting-Started/Getting-the-Bond-Token).
 The easiest way is to open the Bond Home app on your mobile device, tap on your bridge device, open the Advanced Settings, and copy it from the Local Token entry.
 
@@ -35,13 +35,13 @@ They are dependent on how the device is configured in the Bond Home app.
 
 ### `common` Group
 
-| channel    | type     | description                                                     |
+| Channel    | Type     | Description                                                     |
 |------------|----------|-----------------------------------------------------------------|
 | power      | Switch   | Device Power                                                    |
 | command    | String   | Send a command to the device                                    |
 
 Available commands:
-| command                   | description                                       |
+| Command                   | Description                                       |
 |---------------------------|---------------------------------------------------|
 | STOP                      | Stop any in-progress dimming operation            |
 | PRESET                    | Move a shade to a preset                          |
@@ -57,7 +57,7 @@ Available commands:
 
 ### `fan` Group
 
-| channel           | type     | description                                       |
+| Channel           | Type     | Description                                       |
 |-------------------|----------|---------------------------------------------------|
 | power             | Switch   | Fan power (only applicable to fireplace fans)     |
 | speed             | Dimmer   | Sets the fan speed. The 0-100% value will be scaled to however many speeds the fan actually has. Note that you cannot set the fan to speed 0 - you must turn `OFF` the power channel instead. |
@@ -69,30 +69,37 @@ Available commands:
 
 ### `light`, `upLight`, `downLight` Groups
 
-| channel         | type   | description                                            |
+| Channel         | Type   | Description                                            |
 |-----------------|--------|--------------------------------------------------------|
 | power           | Switch | Turns the light on or off                              |
 | brightness      | Dimmer | Adjusts the brightness of the light                    |
 
 ### `fireplace` Group
 
-| channel  | type   | description                            |
+| Channel  | Type   | Description                            |
 |----------|--------|----------------------------------------|
 | flame    | Dimmer | Adjust the flame level                 |
 
 ### `shade` Group
 
-| channel       | type          | description                                      |
+| Channel       | Type          | Description                                      |
 |---------------|---------------|--------------------------------------------------|
 | rollershutter | Rollershutter | Only UP, DOWN, STOP, 0%, and 100% are supported. |
 
 ## Full Example
 
+### `bond.things` File
+
+```
+bondhome:bondBridge:BD123456 "Bond Bridge" [ ipAddress="192.168.0.10", localToken="abc123", serialNumber="BD123456" ]
+bondhome:bondFan:BD123456:0d11f00 "Living Room Fan" (bondhome:bondBridge:BD123456) [ deviceId="0d11f00" ]
+```
+
 ### `bond.items` File
 
 ```
-Switch GreatFan_Switch "Great Room Fan" { channel="bondhome:bondFan:BD30179:0d55fb70:common#power" }
-Dimmer GreatFan_Dimmer "Great Room Fan" { channel="bondhome:bondFan:BD30179:0d55fb70:fan#speed" }
-String GreatFan_Rotation "Great Room Fan Rotation" { channel="bondhome:bondFan:BD30179:0d55fb70:fan#direction" }
-Switch GreatFanLight_Switch "Great Room Fan Light" { channel="bondhome:bondFan:BD30179:0d55fb70:light#power" }
+Switch GreatFan_Switch "Great Room Fan" { channel="bondhome:bondFan:BD123456:0d11f00:common#power" }
+Dimmer GreatFan_Dimmer "Great Room Fan" { channel="bondhome:bondFan:BD123456:0d11f00:fan#speed" }
+String GreatFan_Rotation "Great Room Fan Rotation" { channel="bondhome:bondFan:BD123456:0d11f00:fan#direction" }
+Switch GreatFanLight_Switch "Great Room Fan Light" { channel="bondhome:bondFan:BD123456:0d11f00:light#power" }
 ```

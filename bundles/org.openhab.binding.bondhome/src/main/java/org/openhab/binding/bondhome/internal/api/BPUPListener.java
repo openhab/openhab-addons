@@ -25,6 +25,7 @@ import java.util.concurrent.Executor;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.bondhome.internal.BondHomeTranslationProvider;
 import org.openhab.binding.bondhome.internal.handler.BondBridgeHandler;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.slf4j.Logger;
@@ -54,6 +55,8 @@ public class BPUPListener implements Runnable {
     // Used for callbacks to handler
     private final BondBridgeHandler bridgeHandler;
 
+    private final BondHomeTranslationProvider translationProvider;
+
     // UDP socket used to receive status events
     private @Nullable DatagramSocket socket;
 
@@ -69,10 +72,11 @@ public class BPUPListener implements Runnable {
      * @param address The address of the Bond Bridge
      * @throws SocketException is some problem occurs opening the socket.
      */
-    public BPUPListener(BondBridgeHandler bridgeHandler) {
+    public BPUPListener(BondBridgeHandler bridgeHandler, final BondHomeTranslationProvider translationProvider) {
         logger.debug("Starting BPUP Listener...");
 
         this.bridgeHandler = bridgeHandler;
+        this.translationProvider = translationProvider;
         this.timeOfLastKeepAlivePacket = -1;
         this.numberOfKeepAliveTimeouts = 0;
 
@@ -131,7 +135,7 @@ public class BPUPListener implements Runnable {
                 BPUPUpdate response = transformUpdatePacket(inPacket);
                 if (response != null) {
                     if (!response.bondId.equalsIgnoreCase(bridgeHandler.getBridgeId())) {
-                        logger.warn("Reponse isn't from expected Bridge!  Expected: {}  Got: {}",
+                        logger.warn("Response isn't from expected Bridge!  Expected: {}  Got: {}",
                                 bridgeHandler.getBridgeId(), response.bondId);
                     } else {
                         bridgeHandler.setBridgeOnline(inPacket.getAddress().getHostAddress());
@@ -142,11 +146,11 @@ public class BPUPListener implements Runnable {
                 numberOfKeepAliveTimeouts++;
                 logger.trace("BPUP Socket timeout, number of timeouts: {}", numberOfKeepAliveTimeouts);
                 if (numberOfKeepAliveTimeouts > 10) {
-                    bridgeHandler.setBridgeOffline(ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Repeated timeouts attempting to reach bridge.");
+                    bridgeHandler.setBridgeOffline(ThingStatusDetail.COMMUNICATION_ERROR, translationProvider
+                            .getText("offline.timeout", "Repeated timeouts attempting to reach bridge."));
                 }
             } catch (IOException e) {
-                logger.debug("One exception has occurred: {} ", e.getMessage());
+                logger.debug("One exception has occurred", e);
             }
         }
     }
@@ -160,7 +164,7 @@ public class BPUPListener implements Runnable {
             logger.debug("Listener created UDP socket on port {} with timeout {}", s.getPort(),
                     SOCKET_TIMEOUT_MILLISECONDS);
         } catch (SocketException e) {
-            logger.debug("Listener got SocketException: {}", e.getMessage(), e);
+            logger.debug("Listener got SocketException", e);
             datagramSocketHealthRoutine();
         }
 
@@ -183,6 +187,8 @@ public class BPUPListener implements Runnable {
                 sock.receive(inPacket);
                 processPacket(inPacket);
             } catch (SocketTimeoutException e) {
+                // Ignore. Means there was no updates while we waited.
+                // We'll just loop around and try again after sending a keep alive.
             } catch (IOException e) {
                 logger.debug("Listener got IOException waiting for datagram: {}", e.getMessage());
                 datagramSocketHealthRoutine();
@@ -265,6 +271,7 @@ public class BPUPListener implements Runnable {
                 try {
                     Thread.sleep(SOCKET_RETRY_TIMEOUT_MILLISECONDS);
                 } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
                 }
                 DatagramSocket s = new DatagramSocket(null);
                 s.setSoTimeout(SOCKET_TIMEOUT_MILLISECONDS);

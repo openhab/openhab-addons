@@ -17,20 +17,26 @@ import static org.openhab.binding.bondhome.internal.BondHomeBindingConstants.*;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-
-import javax.ws.rs.HttpMethod;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.util.InputStreamContentProvider;
+import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpStatus;
+import org.openhab.binding.bondhome.internal.BondHomeTranslationProvider;
 import org.openhab.binding.bondhome.internal.handler.BondBridgeHandler;
-import org.openhab.core.io.net.http.HttpUtil;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +44,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 
 /**
@@ -50,10 +57,15 @@ import com.google.gson.JsonParser;
 public class BondHttpApi {
     private final Logger logger = LoggerFactory.getLogger(BondHttpApi.class);
     private final BondBridgeHandler bridgeHandler;
+    private final HttpClientFactory httpClientFactory;
+    private final BondHomeTranslationProvider translationProvider;
     private Gson gson = new Gson();
 
-    public BondHttpApi(BondBridgeHandler bridgeHandler) {
+    public BondHttpApi(BondBridgeHandler bridgeHandler, final HttpClientFactory httpClientFactory,
+            final BondHomeTranslationProvider translationProvider) {
         this.bridgeHandler = bridgeHandler;
+        this.httpClientFactory = httpClientFactory;
+        this.translationProvider = translationProvider;
     }
 
     /**
@@ -66,7 +78,12 @@ public class BondHttpApi {
     public BondSysVersion getBridgeVersion() throws IOException {
         String json = request("/v2/sys/version");
         logger.trace("BondHome device info : {}", json);
-        return gson.fromJson(json, BondSysVersion.class);
+        try {
+            return gson.fromJson(json, BondSysVersion.class);
+        } catch (JsonParseException e) {
+            logger.debug("Could not parse sys/version JSON '{}'", json, e);
+            return null;
+        }
     }
 
     /**
@@ -77,19 +94,25 @@ public class BondHttpApi {
      */
     @Nullable
     public List<String> getDevices() throws IOException {
+
         List<String> list = new ArrayList<>();
         String json = request("/v2/devices/");
-        JsonParser parser = new JsonParser();
-        JsonElement element = parser.parse(json);
-        JsonObject obj = element.getAsJsonObject();
-        Set<Map.Entry<String, JsonElement>> entries = obj.entrySet();
-        for (Map.Entry<String, JsonElement> entry : entries) {
-            String key = entry.getKey();
-            if (!key.startsWith("_")) {
-                list.add(key);
+        try {
+            JsonParser parser = new JsonParser();
+            JsonElement element = parser.parse(json);
+            JsonObject obj = element.getAsJsonObject();
+            Set<Map.Entry<String, JsonElement>> entries = obj.entrySet();
+            for (Map.Entry<String, JsonElement> entry : entries) {
+                String key = entry.getKey();
+                if (!key.startsWith("_")) {
+                    list.add(key);
+                }
             }
+            return list;
+        } catch (JsonParseException e) {
+            logger.debug("Could not parse devices JSON '{}'", json, e);
+            return null;
         }
-        return list;
     }
 
     /**
@@ -103,7 +126,12 @@ public class BondHttpApi {
     public BondDevice getDevice(String deviceId) throws IOException {
         String json = request("/v2/devices/" + deviceId);
         logger.trace("BondHome device info : {}", json);
-        return gson.fromJson(json, BondDevice.class);
+        try {
+            return gson.fromJson(json, BondDevice.class);
+        } catch (JsonParseException e) {
+            logger.debug("Could not parse device {}'s JSON '{}'", deviceId, json, e);
+            return null;
+        }
     }
 
     /**
@@ -117,7 +145,12 @@ public class BondHttpApi {
     public BondDeviceState getDeviceState(String deviceId) throws IOException {
         String json = request("/v2/devices/" + deviceId + "/state");
         logger.trace("BondHome device state : {}", json);
-        return gson.fromJson(json, BondDeviceState.class);
+        try {
+            return gson.fromJson(json, BondDeviceState.class);
+        } catch (JsonParseException e) {
+            logger.debug("Could not parse device {}'s state JSON '{}'", deviceId, json, e);
+            return null;
+        }
     }
 
     /**
@@ -131,7 +164,12 @@ public class BondHttpApi {
     public BondDeviceProperties getDeviceProperties(String deviceId) throws IOException {
         String json = request("/v2/devices/" + deviceId + "/properties");
         logger.trace("BondHome device properties : {}", json);
-        return gson.fromJson(json, BondDeviceProperties.class);
+        try {
+            return gson.fromJson(json, BondDeviceProperties.class);
+        } catch (JsonParseException e) {
+            logger.debug("Could not parse device {}'s property JSON '{}'", deviceId, json, e);
+            return null;
+        }
     }
 
     /**
@@ -152,14 +190,25 @@ public class BondHttpApi {
         try {
             logger.debug("HTTP PUT to {} with content {}", url, payload);
 
-            Properties headers = new Properties();
-            headers.put("BOND-Token", bridgeHandler.getBridgeToken());
+            final HttpClient httpClient = httpClientFactory.getCommonHttpClient();
+            final Request request = httpClient.newRequest(url).method(HttpMethod.PUT)
+                    .header("BOND-Token", bridgeHandler.getBridgeToken())
+                    .timeout(BOND_API_TIMEOUT_MS, TimeUnit.MILLISECONDS);
 
-            String httpResponse = HttpUtil.executeUrl(HttpMethod.PUT, url, headers, content, "application/json",
-                    BOND_API_TIMEOUT_MS);
-            logger.debug("HTTP response from {}: {}", deviceId, httpResponse);
+            try (final InputStreamContentProvider inputStreamContentProvider = new InputStreamContentProvider(
+                    content)) {
+                request.content(inputStreamContentProvider, "application/json");
+            }
+            ContentResponse response;
+            try {
+                response = request.send();
+            } catch (Exception e) {
+                throw new IOException(e);
+            }
+
+            logger.debug("HTTP response from {}: {}", deviceId, response.getStatus());
         } catch (IOException ignored) {
-            logger.warn("Unable to execute device action!");
+            logger.warn("Unable to execute device action!", ignored);
         }
     }
 
@@ -176,30 +225,40 @@ public class BondHttpApi {
             try {
                 logger.debug("HTTP GET to {}", url);
 
-                final Properties headers = new Properties();
-                headers.put("BOND-Token", bridgeHandler.getBridgeToken());
-
-                httpResponse = HttpUtil.executeUrl(HttpMethod.GET, url, headers, null, "", BOND_API_TIMEOUT_MS);
-                if (httpResponse == null) {
-                    throw new IOException("No response received!");
+                final HttpClient httpClient = httpClientFactory.getCommonHttpClient();
+                final Request request = httpClient.newRequest(url).method(HttpMethod.GET).header("BOND-Token",
+                        bridgeHandler.getBridgeToken());
+                ContentResponse response;
+                try {
+                    response = request.send();
+                } catch (Exception e) {
+                    throw new IOException(e);
+                }
+                String encoding = response.getEncoding() != null ? response.getEncoding().replaceAll("\"", "").trim()
+                        : StandardCharsets.UTF_8.name();
+                try {
+                    httpResponse = new String(response.getContent(), encoding);
+                } catch (UnsupportedEncodingException e) {
+                    throw new IOException(translationProvider.getText("offline.no-response", "No response received!"));
                 }
                 // handle known errors
-                if (httpResponse.contains(API_ERR_HTTP_401_UNAUTHORIZED)) {
+                if (response.getStatus() == HttpStatus.UNAUTHORIZED_401) {
                     // Don't retry or throw an exception if we get unauthorized, just set the bridge offline
                     numRetriesRemaining = 0;
-                    bridgeHandler.setBridgeOffline(ThingStatusDetail.CONFIGURATION_ERROR,
-                            "Incorrect local token for Bond Bridge.");
+                    bridgeHandler.setBridgeOffline(ThingStatusDetail.CONFIGURATION_ERROR, translationProvider
+                            .getText("offline.incorrect-token", "Incorrect local token for Bond Bridge."));
                 }
-                if (httpResponse.contains(API_ERR_HTTP_404_NOTFOUND)) {
+                if (response.getStatus() == HttpStatus.NOT_FOUND_404) {
                     // Don't retry if the device wasn't found by the bridge.
                     numRetriesRemaining = 0;
-                    throw new IOException(
-                            API_ERR_HTTP_404_NOTFOUND + ", set/correct device ID in the thing/binding config");
+                    throw new IOException(translationProvider.getText("offline.device-not-found",
+                            "No Bond device found with the given device id."));
                 }
                 // all api responses return Json. If we get something else it must
                 // be an error message, e.g. http result code
                 if (!httpResponse.startsWith("{") && !httpResponse.startsWith("[")) {
-                    throw new IOException("Unexpected http response: " + httpResponse);
+                    throw new IOException(translationProvider.getText("offline.unexpected-response",
+                            "Unexpected HTTP response: {}", httpResponse));
                 }
 
                 logger.debug("HTTP response from request to {}: {}", uri, httpResponse);
@@ -229,14 +288,11 @@ public class BondHttpApi {
                 if (numRetriesRemaining == 0) {
                     if (e.getCause() instanceof TimeoutException) {
                         logger.debug("Repeated Bond API calls to {} timed out.", uri);
-                        bridgeHandler.setBridgeOffline(ThingStatusDetail.COMMUNICATION_ERROR,
-                                "Repeated timeouts attempting to reach bridge.");
-                    } else if (e.getCause() instanceof InterruptedException) {
-                        throw new IOException("Bond API call to " + uri + " failed: " + e.getMessage());
-                    } else if (e.getCause() instanceof ExecutionException) {
-                        throw new IOException("Bond API call to " + uri + " failed: " + e.getMessage());
+                        bridgeHandler.setBridgeOffline(ThingStatusDetail.COMMUNICATION_ERROR, translationProvider
+                                .getText("offline.timeout", "Repeated timeouts attempting to reach bridge."));
                     } else {
-                        throw new IOException("Bond API call to " + uri + " failed: " + e.getMessage());
+                        throw new IOException(translationProvider.getText("offline.api-call-failed",
+                                "Bond API call to {} failed: {}", uri, e.getMessage()));
                     }
                 }
             }
