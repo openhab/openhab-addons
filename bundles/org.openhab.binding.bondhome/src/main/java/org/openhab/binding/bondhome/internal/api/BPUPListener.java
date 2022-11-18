@@ -171,7 +171,7 @@ public class BPUPListener implements Runnable {
         DatagramSocket sock = this.socket;
         while (sock != null && !this.shutdown) {
             // Check if we're due to send something to keep the connection
-            long now = System.currentTimeMillis();
+            long now = System.nanoTime() / 1000000L;
             long timePassedFromLastKeepAlive = now - timeOfLastKeepAlivePacket;
 
             if (timeOfLastKeepAlivePacket == -1 || timePassedFromLastKeepAlive >= 60000L) {
