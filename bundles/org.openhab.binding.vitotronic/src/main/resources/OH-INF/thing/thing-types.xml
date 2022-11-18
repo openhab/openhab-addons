@@ -114,6 +114,7 @@
 			<channel id="flowtemperature" typeId="flow_temp"/>
 			<channel id="pump" typeId="pump"/>
 			<channel id="operationmode" typeId="operationmode"/>
+			<channel id="currentmode" typeId="currentmode"/>
 			<channel id="savemode" typeId="savemode"/>
 			<channel id="partymode" typeId="partymode"/>
 			<channel id="party_temp_setpoint" typeId="party_temp_setpoint"/>
@@ -526,6 +527,13 @@
 		<label>Operationmode</label>
 		<description>Operationmode</description>
 		<state pattern="%d" readOnly="false" max="4" min="0" step="1"/>
+	</channel-type>
+
+	<channel-type id="currentmode">
+		<item-type>Number</item-type>
+		<label>Currentmode</label>
+		<description>Currentmode</description>
+		<state pattern="%d" readOnly="true" max="3" min="0" step="1"/>
 	</channel-type>
 
 	<channel-type id="partymode">
