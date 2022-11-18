@@ -34,7 +34,6 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.InputStreamContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
-import org.openhab.binding.bondhome.internal.BondHomeTranslationProvider;
 import org.openhab.binding.bondhome.internal.handler.BondBridgeHandler;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -58,14 +57,11 @@ public class BondHttpApi {
     private final Logger logger = LoggerFactory.getLogger(BondHttpApi.class);
     private final BondBridgeHandler bridgeHandler;
     private final HttpClientFactory httpClientFactory;
-    private final BondHomeTranslationProvider translationProvider;
     private Gson gson = new Gson();
 
-    public BondHttpApi(BondBridgeHandler bridgeHandler, final HttpClientFactory httpClientFactory,
-            final BondHomeTranslationProvider translationProvider) {
+    public BondHttpApi(BondBridgeHandler bridgeHandler, final HttpClientFactory httpClientFactory) {
         this.bridgeHandler = bridgeHandler;
         this.httpClientFactory = httpClientFactory;
-        this.translationProvider = translationProvider;
     }
 
     /**
@@ -239,26 +235,24 @@ public class BondHttpApi {
                 try {
                     httpResponse = new String(response.getContent(), encoding);
                 } catch (UnsupportedEncodingException e) {
-                    throw new IOException(translationProvider.getText("offline.no-response", "No response received!"));
+                    throw new IOException("@text/offline.comm-error.no-response");
                 }
                 // handle known errors
                 if (response.getStatus() == HttpStatus.UNAUTHORIZED_401) {
                     // Don't retry or throw an exception if we get unauthorized, just set the bridge offline
                     numRetriesRemaining = 0;
-                    bridgeHandler.setBridgeOffline(ThingStatusDetail.CONFIGURATION_ERROR, translationProvider
-                            .getText("offline.incorrect-token", "Incorrect local token for Bond Bridge."));
+                    bridgeHandler.setBridgeOffline(ThingStatusDetail.CONFIGURATION_ERROR,
+                            "@text/offline.conf-error.incorrect-local-token");
                 }
                 if (response.getStatus() == HttpStatus.NOT_FOUND_404) {
                     // Don't retry if the device wasn't found by the bridge.
                     numRetriesRemaining = 0;
-                    throw new IOException(translationProvider.getText("offline.device-not-found",
-                            "No Bond device found with the given device id."));
+                    throw new IOException("@text/offline.comm-error.device-not-found");
                 }
                 // all api responses return Json. If we get something else it must
                 // be an error message, e.g. http result code
                 if (!httpResponse.startsWith("{") && !httpResponse.startsWith("[")) {
-                    throw new IOException(translationProvider.getText("offline.unexpected-response",
-                            "Unexpected HTTP response: {}", httpResponse));
+                    throw new IOException("@text/offline.comm-error.unexpected-response");
                 }
 
                 logger.debug("HTTP response from request to {}: {}", uri, httpResponse);
@@ -288,11 +282,10 @@ public class BondHttpApi {
                 if (numRetriesRemaining == 0) {
                     if (e.getCause() instanceof TimeoutException) {
                         logger.debug("Repeated Bond API calls to {} timed out.", uri);
-                        bridgeHandler.setBridgeOffline(ThingStatusDetail.COMMUNICATION_ERROR, translationProvider
-                                .getText("offline.timeout", "Repeated timeouts attempting to reach bridge."));
+                        bridgeHandler.setBridgeOffline(ThingStatusDetail.COMMUNICATION_ERROR,
+                                "@text/offline.comm-error.timeout");
                     } else {
-                        throw new IOException(translationProvider.getText("offline.api-call-failed",
-                                "Bond API call to {} failed: {}", uri, e.getMessage()));
+                        throw new IOException("@text/offline.conf-error.api-call-failed");
                     }
                 }
             }

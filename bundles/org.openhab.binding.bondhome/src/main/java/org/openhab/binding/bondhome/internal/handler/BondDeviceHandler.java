@@ -26,7 +26,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.bondhome.internal.BondHomeTranslationProvider;
 import org.openhab.binding.bondhome.internal.api.BondDevice;
 import org.openhab.binding.bondhome.internal.api.BondDeviceAction;
 import org.openhab.binding.bondhome.internal.api.BondDeviceProperties;
@@ -67,8 +66,6 @@ import org.slf4j.LoggerFactory;
 public class BondDeviceHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(BondDeviceHandler.class);
 
-    private final BondHomeTranslationProvider translationProvider;
-
     private @NonNullByDefault({}) BondDeviceConfiguration config;
     private @Nullable BondHttpApi api;
 
@@ -81,9 +78,8 @@ public class BondDeviceHandler extends BaseThingHandler {
     private volatile boolean disposed;
     private volatile boolean fullyInitialized;
 
-    public BondDeviceHandler(Thing thing, final BondHomeTranslationProvider translationProvider) {
+    public BondDeviceHandler(Thing thing) {
         super(thing);
-        this.translationProvider = translationProvider;
         disposed = true;
         fullyInitialized = false;
     }
@@ -101,8 +97,7 @@ public class BondDeviceHandler extends BaseThingHandler {
                 channelUID);
         final BondHttpApi api = this.api;
         if (api == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    translationProvider.getText("offline.no-api", "Bond Bridge API not available."));
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.comm-error.no-api");
             // Re-attempt initialization
             scheduler.schedule(() -> {
                 logger.trace("Re-attempting initialization");
@@ -447,8 +442,7 @@ public class BondDeviceHandler extends BaseThingHandler {
         }
         BondHttpApi api = this.api;
         if (api == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    translationProvider.getText("offline.no-api", "Bond Bridge API not available."));
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.comm-error.no-api");
             return;
         }
 
@@ -464,8 +458,8 @@ public class BondDeviceHandler extends BaseThingHandler {
         final BondDevice devInfo = this.deviceInfo;
         final BondDeviceProperties devProperties = this.deviceProperties;
         if (devInfo == null || devProperties == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, translationProvider
-                    .getText("offline.no-device-properties", "Unable to get device properties from Bond"));
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.conf-error.no-device-properties");
             return;
         }
 
@@ -666,8 +660,8 @@ public class BondDeviceHandler extends BaseThingHandler {
     private boolean getBridgeAndAPI() {
         Bridge myBridge = this.getBridge();
         if (myBridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, translationProvider
-                    .getText("offline.no-bridge", "No Bond Bridge is associated with this Bond device."));
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offlien.conf-error.no-bridge");
 
             return false;
         } else {
@@ -676,8 +670,8 @@ public class BondDeviceHandler extends BaseThingHandler {
                 this.api = myBridgeHandler.getBridgeAPI();
                 return true;
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, translationProvider
-                        .getText("offline.no-bridge", "No Bond Bridge is associated with this Bond device."));
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "@text/offlien.conf-error.no-bridge");
                 return false;
             }
         }
@@ -691,7 +685,7 @@ public class BondDeviceHandler extends BaseThingHandler {
                 BondHttpApi api = this.api;
                 if (api == null) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            translationProvider.getText("offline.no-api", "Bond Bridge API not available"));
+                            "@text/offline.comm-error.no-api");
                     return;
                 }
                 logger.trace("Polling for current state for {} ({})", config.deviceId, this.getThing().getLabel());

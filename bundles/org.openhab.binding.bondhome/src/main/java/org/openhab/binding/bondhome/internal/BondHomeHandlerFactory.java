@@ -21,8 +21,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bondhome.internal.handler.BondBridgeHandler;
 import org.openhab.binding.bondhome.internal.handler.BondDeviceHandler;
-import org.openhab.core.i18n.LocaleProvider;
-import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -47,15 +45,12 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.bondhome", service = ThingHandlerFactory.class)
 public class BondHomeHandlerFactory extends BaseThingHandlerFactory {
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
-    private final BondHomeTranslationProvider translationProvider;
     private final HttpClientFactory httpClientFactory;
 
     @Activate
-    public BondHomeHandlerFactory(final @Reference TranslationProvider i18nProvider,
-            final @Reference LocaleProvider localeProvider, final @Reference HttpClientFactory httpClientFactory,
+    public BondHomeHandlerFactory(final @Reference HttpClientFactory httpClientFactory,
             ComponentContext componentContext) {
         super.activate(componentContext);
-        this.translationProvider = new BondHomeTranslationProvider(i18nProvider, localeProvider);
         this.httpClientFactory = httpClientFactory;
     }
 
@@ -69,11 +64,10 @@ public class BondHomeHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_BOND_BRIDGE.equals(thingTypeUID)) {
-            final BondBridgeHandler handler = new BondBridgeHandler((Bridge) thing, httpClientFactory,
-                    translationProvider);
+            final BondBridgeHandler handler = new BondBridgeHandler((Bridge) thing, httpClientFactory);
             return handler;
         } else if (SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
-            return new BondDeviceHandler(thing, translationProvider);
+            return new BondDeviceHandler(thing);
         }
 
         return null;

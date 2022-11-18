@@ -25,7 +25,6 @@ import java.util.concurrent.Executor;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.bondhome.internal.BondHomeTranslationProvider;
 import org.openhab.binding.bondhome.internal.handler.BondBridgeHandler;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.slf4j.Logger;
@@ -55,8 +54,6 @@ public class BPUPListener implements Runnable {
     // Used for callbacks to handler
     private final BondBridgeHandler bridgeHandler;
 
-    private final BondHomeTranslationProvider translationProvider;
-
     // UDP socket used to receive status events
     private @Nullable DatagramSocket socket;
 
@@ -72,11 +69,10 @@ public class BPUPListener implements Runnable {
      * @param address The address of the Bond Bridge
      * @throws SocketException is some problem occurs opening the socket.
      */
-    public BPUPListener(BondBridgeHandler bridgeHandler, final BondHomeTranslationProvider translationProvider) {
+    public BPUPListener(BondBridgeHandler bridgeHandler) {
         logger.debug("Starting BPUP Listener...");
 
         this.bridgeHandler = bridgeHandler;
-        this.translationProvider = translationProvider;
         this.timeOfLastKeepAlivePacket = -1;
         this.numberOfKeepAliveTimeouts = 0;
 
@@ -146,8 +142,8 @@ public class BPUPListener implements Runnable {
                 numberOfKeepAliveTimeouts++;
                 logger.trace("BPUP Socket timeout, number of timeouts: {}", numberOfKeepAliveTimeouts);
                 if (numberOfKeepAliveTimeouts > 10) {
-                    bridgeHandler.setBridgeOffline(ThingStatusDetail.COMMUNICATION_ERROR, translationProvider
-                            .getText("offline.timeout", "Repeated timeouts attempting to reach bridge."));
+                    bridgeHandler.setBridgeOffline(ThingStatusDetail.COMMUNICATION_ERROR,
+                            "@text/offline.comm-error.timeout");
                 }
             } catch (IOException e) {
                 logger.debug("One exception has occurred", e);

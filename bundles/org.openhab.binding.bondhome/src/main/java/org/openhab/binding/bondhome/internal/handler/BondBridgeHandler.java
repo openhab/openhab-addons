@@ -29,7 +29,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.bondhome.internal.BondHomeTranslationProvider;
 import org.openhab.binding.bondhome.internal.api.BPUPListener;
 import org.openhab.binding.bondhome.internal.api.BPUPUpdate;
 import org.openhab.binding.bondhome.internal.api.BondDeviceState;
@@ -63,7 +62,6 @@ public class BondBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(BondBridgeHandler.class);
 
-    private final BondHomeTranslationProvider translationProvider;
     // Get a dedicated threadpool for the long-running listener thread.
     // Intent is to not permanently tie up the common scheduler pool.
     private final ScheduledExecutorService bondScheduler = ThreadPoolManager.getScheduledPool("bondBridgeHandler");
@@ -78,12 +76,10 @@ public class BondBridgeHandler extends BaseBridgeHandler {
 
     private @Nullable ScheduledFuture<?> initializer;
 
-    public BondBridgeHandler(Bridge bridge, final HttpClientFactory httpClientFactory,
-            final BondHomeTranslationProvider translationProvider) {
+    public BondBridgeHandler(Bridge bridge, final HttpClientFactory httpClientFactory) {
         super(bridge);
-        this.translationProvider = translationProvider;
-        udpListener = new BPUPListener(this, translationProvider);
-        api = new BondHttpApi(this, httpClientFactory, translationProvider);
+        udpListener = new BPUPListener(this);
+        api = new BondHttpApi(this, httpClientFactory);
         logger.debug("Created a BondBridgeHandler for thing '{}'", getThing().getUID());
     }
 
@@ -115,8 +111,8 @@ public class BondBridgeHandler extends BaseBridgeHandler {
                 updateConfiguration(c);
                 config = getConfigAs(BondBridgeConfiguration.class);
             } catch (UnknownHostException ignored) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, translationProvider
-                        .getText("offline.unknown-host", "Unable to get an IP Address for Bond Bridge."));
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "@text/offline.conf-error.unknown-host");
                 this.initializer = null;
                 return;
             }
@@ -124,8 +120,8 @@ public class BondBridgeHandler extends BaseBridgeHandler {
             try {
                 InetAddress.getByName(localConfig.ipAddress);
             } catch (UnknownHostException ignored) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, translationProvider
-                        .getText("offline.invalid-host", "IP Address or host name for Bond Bridge is not valid."));
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "@text/offline.conf-error.invalid-host");
                 this.initializer = null;
                 return;
             }
@@ -315,7 +311,7 @@ public class BondBridgeHandler extends BaseBridgeHandler {
             }
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    translationProvider.getText("offline.no-version", "Unable to get Bond Bridge version via API."));
+                    "@text/offline.comm-error.no-version");
         }
     }
 
