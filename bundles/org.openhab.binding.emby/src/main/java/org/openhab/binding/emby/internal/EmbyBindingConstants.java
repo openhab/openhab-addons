@@ -66,7 +66,7 @@ public class EmbyBindingConstants {
     public static final String REFRESH_PARAMETER = "refreshInterval";
     public static final String API_KEY = "api";
     public static final String DEVICE_ID = "deviceID";
-
+    public static final String DISCOVERY_ENABLE = "discovery";
     // control constant commands
     public static final String CONTROL_SESSION = "/Sessions/";
     public static final String CONTROL_GENERALCOMMAND = "/Command/";

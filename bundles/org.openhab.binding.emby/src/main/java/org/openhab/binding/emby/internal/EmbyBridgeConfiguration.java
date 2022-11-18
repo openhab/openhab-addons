@@ -13,68 +13,27 @@
 package org.openhab.binding.emby.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.config.core.Configuration;
 
 /**
  * The {@link EmbyBridgeConfiguration} class contains fields mapping thing configuration parameters.
- *
+ * 
+ * @param api - This is the API key generated from EMBY used for Authorization.
+ * @param buffersize - Here you can define a custom size for the websocket buffer size. Default is 10,0000
+ * @param ipAddress - This is the ip address of the EMBY Server.
+ * @param port - This is the port of the EMBY server.
+ * @param refreshInterval - This is the refresh interval in milliseconds that will be sent to the websocket. Default is
+ *            10,000
+ * @param discovery - If set to false the controller will not add new things from devices to the inbox.
  * @author Zachary Christiansen - Initial contribution
  */
 @NonNullByDefault
-public class EmbyBridgeConfiguration {
+public class EmbyBridgeConfiguration extends Configuration {
 
     public String api = "";
-    private String ipAddress = "";
-    private int port = 0;
-    private int httpPort = 0;
-    private int refreshInterval = 0;
-    private int notificationTimeout = 0;
-    private int notificationVolume = 0;
-
-    public String getIpAddress() {
-        return ipAddress;
-    }
-
-    public void setIpAddress(String ipAddress) {
-        this.ipAddress = ipAddress;
-    }
-
-    public int getPort() {
-        return port;
-    }
-
-    public void setPort(Integer port) {
-        this.port = port;
-    }
-
-    public int getHttpPort() {
-        return httpPort;
-    }
-
-    public void setHttpPort(Integer httpPort) {
-        this.httpPort = httpPort;
-    }
-
-    public int getRefreshInterval() {
-        return refreshInterval;
-    }
-
-    public void setRefreshInterval(Integer refreshInterval) {
-        this.refreshInterval = refreshInterval;
-    }
-
-    public int getNotificationTimeout() {
-        return notificationTimeout;
-    }
-
-    public void setNotificationTimeout(Integer notificationTimeout) {
-        this.notificationTimeout = notificationTimeout;
-    }
-
-    public int getNotificationVolume() {
-        return notificationVolume;
-    }
-
-    public void setNotificationVolume(Integer notificationVolume) {
-        this.notificationVolume = notificationVolume;
-    }
+    public int bufferSize;
+    public String ipAddress = "";
+    public int port;
+    public int refreshInterval;
+    public boolean discovery;
 }

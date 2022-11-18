@@ -154,7 +154,8 @@ public class EmbyPlayStateModel {
         return supportsRemoteControl;
     }
 
-    public URI getPrimaryImageURL(String embyHost, int embyPort, String embyType, String maxWidth, String maxHeight) throws URISyntaxException {
+    public URI getPrimaryImageURL(String embyHost, int embyPort, String embyType, String maxWidth, String maxHeight)
+            throws URISyntaxException {
         String imagePath = "";
         logger.debug(
                 "Received an image URL request for: {} , embyPort: {}, embyType: {}, maxWidth: {}, maxHeight: {}, percentPlayed: {}",

@@ -12,7 +12,7 @@
 				<label>API Key</label>
 				<description>This is the API key generated from EMBY used for Authorization.</description>
 			</parameter>
-			<parameter name="bufferSize" type="integer">
+			<parameter name="bufferSize" type="text">
 				<label>Web Socket Buffer Size</label>
 				<description>Here you can define a custom size for the websocket buffer size. Default is 10,0000</description>
 				<advanced>true</advanced>
@@ -21,13 +21,19 @@
 				<label>ipAddress</label>
 				<description>This is the ip address of the EMBY Server.</description>
 			</parameter>
-			<parameter name="port" type="text" required="true">
+			<parameter name="port" type="text">
 				<label>Port</label>
 				<description>This is the port of the EMBY server.</description>
 			</parameter>
-			<parameter name="refreshInterval" type="integer">
+			<parameter name="refreshInterval" type="text">
 				<label>Refresh Parameter</label>
 				<description>This is the refresh interval in milliseconds that will be sent to the websocket. Default is 10,000</description>
+			</parameter>
+			<parameter name="discovery" type="boolean">
+				<label>Discovery</label>
+				<description>If set to false the controller will not add new things from devices to the inbox.</description>
+				<default>true</default>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</bridge-type>
