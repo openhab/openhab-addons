@@ -661,7 +661,7 @@ public class BondDeviceHandler extends BaseThingHandler {
         Bridge myBridge = this.getBridge();
         if (myBridge == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offlien.conf-error.no-bridge");
+                    "@text/offline.conf-error.no-bridge");
 
             return false;
         } else {
@@ -671,7 +671,7 @@ public class BondDeviceHandler extends BaseThingHandler {
                 return true;
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/offlien.conf-error.no-bridge");
+                        "@text/offline.conf-error.no-bridge");
                 return false;
             }
         }
