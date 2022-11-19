@@ -16,6 +16,9 @@ import java.awt.Graphics2D;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.nanoleaf.internal.layout.DrawingSettings;
+import org.openhab.binding.nanoleaf.internal.layout.ImagePoint2D;
+import org.openhab.binding.nanoleaf.internal.layout.PanelState;
 import org.openhab.binding.nanoleaf.internal.layout.Point2D;
 import org.openhab.binding.nanoleaf.internal.layout.ShapeType;
 
@@ -27,43 +30,28 @@ import org.openhab.binding.nanoleaf.internal.layout.ShapeType;
 @NonNullByDefault
 public abstract class Shape {
     private final ShapeType shapeType;
-    private final int panelId;
-    private final Point2D position;
-    private final int orientation;
 
-    public Shape(ShapeType shapeType, int panelId, Point2D position, int orientation) {
+    public Shape(ShapeType shapeType) {
         this.shapeType = shapeType;
-        this.panelId = panelId;
-        this.position = position;
-        this.orientation = orientation;
     }
-
-    public int getPanelId() {
-        return panelId;
-    };
-
-    public Point2D getPosition() {
-        return position;
-    }
-
-    public int getOrientation() {
-        return orientation;
-    };
 
     public ShapeType getShapeType() {
         return shapeType;
     }
 
     /**
+     * Calculates the minimal bounding rectangle around an outline.
+     *
+     * @param outline The outline to find the minimal bounding rectangle around
      * @return The opposite points of the minimum bounding rectangle around this shape.
      */
-    public Point2D[] findBounds(List<Point2D> outline) {
+    public Point2D[] findBounds(List<ImagePoint2D> outline) {
         int minX = Integer.MAX_VALUE;
         int minY = Integer.MAX_VALUE;
         int maxX = Integer.MIN_VALUE;
         int maxY = Integer.MIN_VALUE;
 
-        for (Point2D point : outline) {
+        for (ImagePoint2D point : outline) {
             maxX = Math.max(point.getX(), maxX);
             maxY = Math.max(point.getY(), maxY);
             minX = Math.min(point.getX(), minX);
@@ -74,12 +62,18 @@ public abstract class Shape {
     }
 
     /**
+     * Generate the outline of the shape.
+     *
      * @return The points that make up this shape.
      */
     public abstract List<Point2D> generateOutline();
 
     /**
-     * @return The position where the label of the shape should be placed
+     * Draws the shape on the the supplied graphics.
+     *
+     * @param graphics The picture to draw on
+     * @param settings Information on how to draw
+     * @param state The state of the panels to draw
      */
-    public abstract Point2D labelPosition(Graphics2D graphics, List<Point2D> outline);
+    public abstract void draw(Graphics2D graphics, DrawingSettings settings, PanelState state);
 }

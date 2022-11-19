@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.nanoleaf.internal.layout.ImagePoint2D;
 import org.openhab.binding.nanoleaf.internal.layout.Point2D;
 import org.openhab.binding.nanoleaf.internal.layout.ShapeType;
 
@@ -27,7 +28,8 @@ import org.openhab.binding.nanoleaf.internal.layout.ShapeType;
  * @author Jørgen Austvik - Initial contribution
  */
 @NonNullByDefault
-public class Triangle extends Shape {
+public class Triangle extends SingleLightShape {
+
     public Triangle(ShapeType shapeType, int panelId, Point2D position, int orientation) {
         super(shapeType, panelId, position, orientation);
     }
@@ -48,13 +50,13 @@ public class Triangle extends Shape {
     }
 
     @Override
-    public Point2D labelPosition(Graphics2D graphics, List<Point2D> outline) {
-        Point2D[] bounds = findBounds(outline);
-        int midX = bounds[0].getX() + (bounds[1].getX() - bounds[0].getX()) / 2;
-        int midY = bounds[0].getY() + (bounds[1].getY() - bounds[0].getY()) / 2;
+    protected ImagePoint2D labelPosition(Graphics2D graphics, List<ImagePoint2D> outline) {
+        Point2D centroid = new Point2D((outline.get(0).getX() + outline.get(1).getX() + outline.get(2).getX()) / 3,
+                (outline.get(0).getY() + outline.get(1).getY() + outline.get(2).getY()) / 3);
 
         Rectangle2D rect = graphics.getFontMetrics().getStringBounds(Integer.toString(getPanelId()), graphics);
-        return new Point2D(midX - (int) (rect.getWidth() / 2), midY - (int) (rect.getHeight() / 2));
+        return new ImagePoint2D(centroid.getX() - (int) (rect.getWidth() / 2),
+                centroid.getY() + (int) (rect.getHeight() / 2));
     }
 
     private boolean pointsUp() {

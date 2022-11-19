@@ -14,7 +14,7 @@ package org.openhab.binding.nanoleaf.internal.layout.shape;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.util.Arrays;
+import java.awt.Polygon;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -26,47 +26,71 @@ import org.openhab.binding.nanoleaf.internal.layout.ShapeType;
 import org.openhab.core.library.types.HSBType;
 
 /**
- * A shape without any area.
+ * Draws shapes which has a single light.
  *
  * @author Jørgen Austvik - Initial contribution
  */
 @NonNullByDefault
-public class Point extends Shape {
-
-    private static final int POINT_DIAMETER = 4;
+public abstract class SingleLightShape extends Shape {
 
     private final Point2D position;
+    private final int orientation;
     private final int panelId;
 
-    public Point(ShapeType shapeType, int panelId, Point2D position) {
+    public SingleLightShape(ShapeType shapeType, int panelId, Point2D position, int orientation) {
         super(shapeType);
         this.position = position;
+        this.orientation = orientation;
         this.panelId = panelId;
     }
 
-    @Override
-    public List<Point2D> generateOutline() {
-        return Arrays.asList(position);
+    public Point2D getPosition() {
+        return position;
+    }
+
+    public int getOrientation() {
+        return orientation;
+    };
+
+    protected int getPanelId() {
+        return panelId;
     }
 
     @Override
-    public void draw(Graphics2D graphics, DrawingSettings settings, PanelState state) {
-        ImagePoint2D pos = settings.generateImagePoint(position);
+    public abstract List<Point2D> generateOutline();
 
+    /**
+     * @param graphics The picture to draw on
+     * @param outline Outline of the shape to draw inside
+     * @return The position where the label of the shape should be placed
+     */
+    protected abstract ImagePoint2D labelPosition(Graphics2D graphics, List<ImagePoint2D> outline);
+
+    @Override
+    public void draw(Graphics2D graphics, DrawingSettings settings, PanelState state) {
+        List<ImagePoint2D> outline = settings.generateImagePoints(generateOutline());
+
+        Polygon p = new Polygon();
+        for (int i = 0; i < outline.size(); i++) {
+            ImagePoint2D pos = outline.get(i);
+            p.addPoint(pos.getX(), pos.getY());
+        }
+
+        HSBType color = state.getHSBForPanel(getPanelId());
+        graphics.setColor(new Color(color.getRGB()));
         if (settings.shouldFillWithColor()) {
-            HSBType color = state.getHSBForPanel(panelId);
-            graphics.setColor(new Color(color.getRGB()));
-            graphics.fillOval(pos.getX(), pos.getY(), POINT_DIAMETER, POINT_DIAMETER);
+            graphics.fillPolygon(p);
         }
 
         if (settings.shouldDrawOutline()) {
             graphics.setColor(settings.getOutlineColor());
-            graphics.drawOval(pos.getX(), pos.getY(), POINT_DIAMETER, POINT_DIAMETER);
+            graphics.drawPolygon(p);
         }
 
         if (settings.shouldDrawLabels()) {
             graphics.setColor(settings.getLabelColor());
-            graphics.drawString(Integer.toString(panelId), pos.getX(), pos.getY());
+            ImagePoint2D textPos = labelPosition(graphics, outline);
+            graphics.drawString(Integer.toString(getPanelId()), textPos.getX(), textPos.getY());
         }
     }
 }

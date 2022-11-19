@@ -137,10 +137,12 @@ The controller bridge has the following channels:
 | colorTemperatureAbs | Number    | Color temperature (in Kelvin, 1200 to 6500) of all light panels                                           | No        |
 | colorMode           | String    | Color mode of the light panels                                                                            | Yes       |
 | effect              | String    | Selected effect of the light panels                                                                       | No        |
+| layout              | Image     | Shows the layout of your panels with IDs.                                                                 | Yes       |
 | rhythmState         | Switch    | Connection state of the rhythm module                                                                     | Yes       |
 | rhythmActive        | Switch    | Activity state of the rhythm module                                                                       | Yes       |
 | rhythmMode          | Number    | Sound source for the rhythm module. 0=Microphone, 1=Aux cable                                             | No        |
-| swipe               | Trigger   | [Canvas / Shapes Only] Detects Swipes over the panel.LEFT, RIGHT, UP, DOWN events are supported.          | YES        |
+| state               | Image     | Shows the current state of your panels with colors.                                                       | Yes       |
+| swipe               | Trigger   | [Canvas / Shapes Only] Detects Swipes over the panel.LEFT, RIGHT, UP, DOWN events are supported.          | Yes       |
 
 
 

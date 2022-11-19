@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.nanoleaf.internal.layout.ImagePoint2D;
 import org.openhab.binding.nanoleaf.internal.layout.Point2D;
 import org.openhab.binding.nanoleaf.internal.layout.ShapeType;
 
@@ -27,7 +28,8 @@ import org.openhab.binding.nanoleaf.internal.layout.ShapeType;
  * @author Jørgen Austvik - Initial contribution
  */
 @NonNullByDefault
-public class Hexagon extends Shape {
+public class Hexagon extends SingleLightShape {
+
     public Hexagon(ShapeType shapeType, int panelId, Point2D position, int orientation) {
         super(shapeType, panelId, position, orientation);
     }
@@ -45,12 +47,12 @@ public class Hexagon extends Shape {
     }
 
     @Override
-    public Point2D labelPosition(Graphics2D graphics, List<Point2D> outline) {
+    protected ImagePoint2D labelPosition(Graphics2D graphics, List<ImagePoint2D> outline) {
         Point2D[] bounds = findBounds(outline);
         int midX = bounds[0].getX() + (bounds[1].getX() - bounds[0].getX()) / 2;
         int midY = bounds[0].getY() + (bounds[1].getY() - bounds[0].getY()) / 2;
 
         Rectangle2D rect = graphics.getFontMetrics().getStringBounds(Integer.toString(getPanelId()), graphics);
-        return new Point2D(midX - (int) (rect.getWidth() / 2), midY - (int) (rect.getHeight() / 2));
+        return new ImagePoint2D(midX - (int) (rect.getWidth() / 2), midY + (int) (rect.getHeight() / 2));
     }
 }

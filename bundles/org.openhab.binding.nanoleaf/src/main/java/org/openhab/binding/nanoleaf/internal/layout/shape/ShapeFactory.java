@@ -12,6 +12,13 @@
  */
 package org.openhab.binding.nanoleaf.internal.layout.shape;
 
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.List;
+import java.util.Queue;
+
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.nanoleaf.internal.layout.Point2D;
 import org.openhab.binding.nanoleaf.internal.layout.ShapeType;
@@ -25,20 +32,62 @@ import org.openhab.binding.nanoleaf.internal.model.PositionDatum;
 @NonNullByDefault
 public class ShapeFactory {
 
-    public static Shape CreateShape(ShapeType shapeType, PositionDatum positionDatum) {
-        Point2D pos = new Point2D(positionDatum.getPosX(), positionDatum.getPosY());
+    public static List<Shape> createShapes(List<PositionDatum> panels) {
+        List<Shape> result = new ArrayList<>(panels.size());
+        Deque<PositionDatum> panelStack = new ArrayDeque<>(panels);
+        while (!panelStack.isEmpty()) {
+            PositionDatum panel = panelStack.peek();
+            final ShapeType shapeType = ShapeType.valueOf(panel.getShapeType());
+            Shape shape = createShape(shapeType, takeFirst(shapeType.getNumLightsPerShape(), panelStack));
+            result.add(shape);
+        }
+
+        return result;
+    }
+
+    /**
+     * Return the first n elements from the stack.
+     * 
+     * @param n The number of elements to return
+     * @param stack The stack top get elements from
+     * @return The first n elements of the stack.
+     */
+    private static <@NonNull T> List<@NonNull T> takeFirst(int n, Queue<T> queue) {
+        List<T> result = new ArrayList<>(n);
+        for (int i = 0; i < n; i++) {
+            var res = queue.poll();
+            if (res != null) {
+                result.add(res);
+            }
+        }
+
+        return result;
+    }
+
+    public static Shape createShape(ShapeType shapeType, List<PositionDatum> positionDatum) {
         switch (shapeType.getDrawingAlgorithm()) {
             case SQUARE:
-                return new Square(shapeType, positionDatum.getPanelId(), pos, positionDatum.getOrientation());
+                PositionDatum squareShape = positionDatum.get(0);
+                Point2D pos1 = new Point2D(squareShape.getPosX(), squareShape.getPosY());
+                return new Square(shapeType, squareShape.getPanelId(), pos1, squareShape.getOrientation());
 
             case TRIANGLE:
-                return new Triangle(shapeType, positionDatum.getPanelId(), pos, positionDatum.getOrientation());
+                PositionDatum triangleShape = positionDatum.get(0);
+                Point2D pos2 = new Point2D(triangleShape.getPosX(), triangleShape.getPosY());
+                return new Triangle(shapeType, triangleShape.getPanelId(), pos2, triangleShape.getOrientation());
 
             case HEXAGON:
-                return new Hexagon(shapeType, positionDatum.getPanelId(), pos, positionDatum.getOrientation());
+                PositionDatum hexShape = positionDatum.get(0);
+                Point2D pos3 = new Point2D(hexShape.getPosX(), hexShape.getPosY());
+                return new Hexagon(shapeType, hexShape.getPanelId(), pos3, hexShape.getOrientation());
+
+            case CORNER:
+                return new HexagonCorners(shapeType, positionDatum);
 
             default:
-                return new Point(shapeType, positionDatum.getPanelId(), pos, positionDatum.getOrientation());
+                PositionDatum shape = positionDatum.get(0);
+                Point2D pos4 = new Point2D(shape.getPosX(), shape.getPosY());
+                return new Point(shapeType, shape.getPanelId(), pos4);
         }
     }
 }
