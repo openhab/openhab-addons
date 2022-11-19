@@ -49,15 +49,6 @@ public class ThreadsafeTimers {
     }
 
     /**
-     * get the lock object of this instance
-     *
-     * @return the lock object
-     */
-    public Object getLock() {
-        return lock;
-    }
-
-    /**
      * Set the identifier base string used for naming scheduled jobs.
      *
      * @param identifier identifier to use
