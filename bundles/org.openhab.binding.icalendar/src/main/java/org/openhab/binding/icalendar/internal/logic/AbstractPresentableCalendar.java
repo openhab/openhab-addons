@@ -92,6 +92,17 @@ public abstract class AbstractPresentableCalendar {
     public abstract @Nullable Event getNextEvent(Instant instant);
 
     /**
+     * The next event after given instant.
+     *
+     * @param instant The Instant after which the next event should be
+     *            searched.
+     * @param filter An EventTextFilter to filter events by.
+     * @return The next event after the given Instant or null if there is any
+     *         further in the calendar.
+     */
+    public abstract @Nullable Event getNextEvent(Instant instant, @Nullable EventTextFilter filter);
+
+    /**
      * Checks whether an event is present at given Instant.
      *
      * @param instant The Instant, that should be checked.

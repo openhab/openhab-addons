@@ -107,9 +107,20 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
 
     @Override
     public @Nullable Event getNextEvent(Instant instant) {
+<<<<<<< HEAD
         final Collection<VEventWPeriod> candidates = new ArrayList<>();
         final Collection<VEvent> negativeEvents = new ArrayList<>();
         final Collection<VEvent> positiveEvents = new ArrayList<>();
+=======
+        return getNextEvent(instant, null);
+    }
+
+    @Override
+    public @Nullable Event getNextEvent(Instant instant, @Nullable EventTextFilter filter) {
+        final Collection<VEventWPeriod> candidates = new ArrayList<VEventWPeriod>();
+        final Collection<VEvent> negativeEvents = new ArrayList<VEvent>();
+        final Collection<VEvent> positiveEvents = new ArrayList<VEvent>();
+>>>>>>> 7115ebe82c ([icalendar] Extended getNextEvent-Signature for filter and implemented tests)
         classifyEvents(positiveEvents, negativeEvents);
         for (final VEvent currentEvent : positiveEvents) {
             final DateIterator startDates = this.getRecurredEventDateIterator(currentEvent);

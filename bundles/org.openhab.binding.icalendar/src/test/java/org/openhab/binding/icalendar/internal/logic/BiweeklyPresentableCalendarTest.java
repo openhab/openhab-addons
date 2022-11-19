@@ -23,6 +23,8 @@ import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.icalendar.internal.logic.EventTextFilter.Field;
+import org.openhab.binding.icalendar.internal.logic.EventTextFilter.Type;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
@@ -50,6 +52,7 @@ public class BiweeklyPresentableCalendarTest {
     private AbstractPresentableCalendar calendar_issue9647;
     private AbstractPresentableCalendar calendar_issue10808;
     private AbstractPresentableCalendar calendar_issue11084;
+    private AbstractPresentableCalendar calendar_issue13649;
 
     @BeforeEach
     public void setUp() throws IOException, CalendarException {
@@ -62,6 +65,8 @@ public class BiweeklyPresentableCalendarTest {
                 new FileInputStream("src/test/resources/test-issue10808.ics"));
         calendar_issue11084 = new BiweeklyPresentableCalendar(
                 new FileInputStream("src/test/resources/test-issue11084.ics"));
+        calendar_issue13649 = new BiweeklyPresentableCalendar(
+                new FileInputStream("src/test/resources/test-issue13649.ics"));
     }
 
     /**
@@ -107,6 +112,11 @@ public class BiweeklyPresentableCalendarTest {
         assertFalse(calendar2.isEventPresent(Instant.parse("2019-11-24T09:55:00Z")));
         assertFalse(calendar2.isEventPresent(Instant.parse("2019-11-24T10:01:00Z")));
         assertFalse(calendar2.isEventPresent(Instant.parse("2019-11-24T13:00:00Z")));
+
+        // Test with filter
+        EventTextFilter filter = new EventTextFilter(Field.SUMMARY, "UTC+2", Type.TEXT);
+        assertTrue(calendar.isEventPresent(Instant.parse("2019-09-14T08:30:00Z"), filter));
+        assertFalse(calendar.isEventPresent(Instant.parse("2019-09-08T09:06:00Z"), filter));
     }
 
     /**
@@ -120,6 +130,10 @@ public class BiweeklyPresentableCalendarTest {
         assertTrue("Test Series in UTC".contentEquals(currentEvent.title));
         assertEquals(0, Instant.parse("2019-09-10T09:05:00Z").compareTo(currentEvent.start));
         assertEquals(0, Instant.parse("2019-09-10T09:10:00Z").compareTo(currentEvent.end));
+        assertNull(currentEvent.comment);
+        assertNull(currentEvent.contact);
+        assertNull(currentEvent.description);
+        assertNull(currentEvent.location);
 
         Event nonExistingEvent = calendar.getCurrentEvent(Instant.parse("2019-09-09T09:07:00Z"));
         assertNull(nonExistingEvent);
@@ -142,6 +156,22 @@ public class BiweeklyPresentableCalendarTest {
         Event currentEvent6 = calendar_issue11084.getCurrentEvent(Instant.parse("2021-08-16T16:45:05Z"));
         assertNotNull(currentEvent6);
         assertTrue("TEST_REPEATING_EVENT_3".contentEquals(currentEvent6.title));
+
+        Event currentEvent7 = calendar_issue13649.getCurrentEvent(Instant.parse("2022-11-19T04:31:00Z"));
+        assertNotNull(currentEvent7);
+        assertEquals("Event with additional data", currentEvent7.title);
+        assertEquals("A description", currentEvent7.description);
+        assertEquals("A location", currentEvent7.location);
+        assertNull(currentEvent7.comment);
+        assertNull(currentEvent7.contact);
+
+        EventTextFilter filterOut = new EventTextFilter(Field.LOCATION, "not contained in location", Type.TEXT);
+        Event currentEvent8 = calendar_issue13649.getCurrentEvent(Instant.parse("2022-11-19T04:31:00Z"), filterOut);
+        assertNull(currentEvent8);
+
+        EventTextFilter filter = new EventTextFilter(Field.LOCATION, "location", Type.TEXT);
+        Event currentEvent9 = calendar_issue13649.getCurrentEvent(Instant.parse("2022-11-19T04:31:00Z"), filter);
+        assertNotNull(currentEvent9);
     }
 
     /**
@@ -176,6 +206,13 @@ public class BiweeklyPresentableCalendarTest {
         Event nextEventAfterCancelled = calendar2.getNextEvent(Instant.parse("2019-11-24T09:55:00Z"));
         assertNotNull(nextEventAfterCancelled);
         assertEquals(0, Instant.parse("2019-12-01T10:00:00Z").compareTo(nextEventAfterCancelled.start));
+
+        // mixed case: filtered next event (this also tests whether unmatched events are filtered out correctly)
+        EventTextFilter filter = new EventTextFilter(Field.SUMMARY, "UTC+2", Type.TEXT);
+        Event nextFilteredEvent = calendar.getNextEvent(Instant.parse("2019-09-10T09:07:00Z"), filter);
+        assertNotNull(nextFilteredEvent);
+        assertEquals("Test Event in UTC+2", nextFilteredEvent.title);
+        assertEquals(0, Instant.parse("2019-09-14T08:00:00Z").compareTo(nextFilteredEvent.start));
     }
 
     /**
