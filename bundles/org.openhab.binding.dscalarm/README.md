@@ -87,7 +87,7 @@ DSC Alarm things support a variety of channels as seen below in the following ta
 <table>
     <tr><td><b>Channel</b></td><td><b>Item Type</b></td><td><b>Description</b></td></tr>
     <tr><td>bridge_reset</td><td>Switch</td><td>(Writable) Reset the bridge connection.</td></tr>
-    <tr><td>send_command</td><td>Switch</td><td>(Writable) Send a DSC Alarm command. See <a href="http://forum.eyez-on.com/download/file.php?id=223&sid=e146abb17dbccca14f19d6b50cbe8379">here</a> for a list of commands.</td></tr>
+    <tr><td>send_command</td><td>Switch</td><td>(Writable) Send a DSC Alarm command. See <a href="https://forum.eyezon.com/download/file.php?id=223&sid=e146abb17dbccca14f19d6b50cbe8379">here</a> for a list of commands.</td></tr>
     <tr><td>panel_message</td><td>String</td><td>Event messages received from the DSC Alarm system.</td></tr>
     <tr><td>panel_system_error</td><td>String</td><td>DSC Alarm system error.</td></tr>
     <tr><td>panel_trouble_message</td><td>String</td><td>Displays any trouble messages the panel might send.</td></tr>
