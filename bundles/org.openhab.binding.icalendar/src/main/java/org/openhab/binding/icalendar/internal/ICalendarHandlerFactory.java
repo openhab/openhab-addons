@@ -23,6 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.icalendar.internal.handler.EventFilterHandler;
 import org.openhab.binding.icalendar.internal.handler.ICalendarHandler;
+import org.openhab.binding.icalendar.internal.handler.LiveEventHandler;
 import org.openhab.core.events.EventPublisher;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -45,6 +46,7 @@ import org.slf4j.LoggerFactory;
  * @author Michael Wodniok - Initial contribution
  * @author Andrew Fiddian-Green - EventPublisher code
  * @author Michael Wodniok - Added FilteredEvent item type/handler
+ * @author Michael Wodniok - Added LiveEvent item type/handler
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.icalendar", service = ThingHandlerFactory.class)
@@ -88,6 +90,8 @@ public class ICalendarHandlerFactory extends BaseThingHandlerFactory {
             }
         } else if (thingTypeUID.equals(THING_TYPE_FILTERED_EVENTS)) {
             return new EventFilterHandler(thing, tzProvider);
+        } else if (thingTypeUID.equals(THING_TYPE_LIVE_EVENT)) {
+            return new LiveEventHandler(thing, tzProvider);
         }
         return null;
     }

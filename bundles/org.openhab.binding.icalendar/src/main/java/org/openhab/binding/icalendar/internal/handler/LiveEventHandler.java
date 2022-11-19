@@ -17,6 +17,7 @@ import static org.openhab.binding.icalendar.internal.ICalendarBindingConstants.*
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -58,6 +59,7 @@ public class LiveEventHandler extends BaseThingHandler implements CalendarUpdate
     private final TimeZoneProvider tzProvider;
     private @Nullable ScheduledFuture<?> updateFuture;
     private @Nullable AbstractPresentableCalendar calendar;
+    private @Nullable Instant lastUpdate;
 
     public LiveEventHandler(Thing thing, TimeZoneProvider tzProvider) {
         super(thing);
@@ -112,14 +114,36 @@ public class LiveEventHandler extends BaseThingHandler implements CalendarUpdate
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
             return;
         }
-
+        lastUpdate = null;
         updateStatus(ThingStatus.UNKNOWN);
+        retrieveCalendar();
+        updateStates();
+        rescheduleCalendarStateUpdate();
     }
 
     @Override
     public void onCalendarUpdated() {
+        retrieveCalendar();
         updateStates();
         rescheduleCalendarStateUpdate();
+    }
+
+    private void retrieveCalendar() {
+        if (!ThingHandlerHelper.isHandlerInitialized(this)) {
+            logger.debug("Ignoring call for updating states as this instance is not initialized yet.");
+            return;
+        }
+        final Bridge iCalendarBridge = getBridge();
+        if (iCalendarBridge == null) {
+            logger.debug("Bridge not instantiated!");
+            return;
+        }
+        final ICalendarHandler iCalendarHandler = (ICalendarHandler) iCalendarBridge.getHandler();
+        if (iCalendarHandler == null) {
+            logger.debug("ICalendarHandler not instantiated!");
+            return;
+        }
+        this.calendar = iCalendarHandler.getRuntimeCalendar();
     }
 
     /**
@@ -151,15 +175,12 @@ public class LiveEventHandler extends BaseThingHandler implements CalendarUpdate
             return;
         }
         final long offset = offsetPre.longValue();
-        final AbstractPresentableCalendar cal = iCalendarHandler.getRuntimeCalendar();
-        this.calendar = cal;
+        AbstractPresentableCalendar cal = this.calendar;
         if (cal != null) {
             updateStatus(ThingStatus.ONLINE);
 
             Instant reference = Instant.now().plus(offset, ChronoUnit.SECONDS);
             EventTextFilter filter = null;
-            Instant begin = Instant.EPOCH;
-            Instant end = Instant.ofEpochMilli(Long.MAX_VALUE);
 
             try {
                 String textFilterValue = config.textEventValue;
@@ -183,37 +204,61 @@ public class LiveEventHandler extends BaseThingHandler implements CalendarUpdate
                 return;
             }
 
-            // TODO Not implemented yet
-            if (calendar.isEventPresent(reference)) {
+            final Event currentEvent = cal.getCurrentEvent(reference, filter);
+            if (currentEvent != null) {
                 updateState(CHANNEL_CURRENT_EVENT_PRESENT, OnOffType.ON);
-                final Event currentEvent = calendar.getCurrentEvent(reference);
-                if (currentEvent == null) {
-                    logger.warn("Unexpected inconsistency of internal API. Not Updating event details.");
-                } else {
-                    updateState(CHANNEL_CURRENT_EVENT_TITLE, new StringType(currentEvent.title));
-                    updateState(CHANNEL_CURRENT_EVENT_START,
-                            new DateTimeType(currentEvent.start.atZone(tzProvider.getTimeZone())));
-                    updateState(CHANNEL_CURRENT_EVENT_END,
-                            new DateTimeType(currentEvent.end.atZone(tzProvider.getTimeZone())));
-                }
+                updateState(CHANNEL_CURRENT_EVENT_SUMMARY, new StringType(currentEvent.title));
+                updateState(CHANNEL_CURRENT_EVENT_START,
+                        new DateTimeType(currentEvent.start.atZone(tzProvider.getTimeZone())));
+                updateState(CHANNEL_CURRENT_EVENT_END,
+                        new DateTimeType(currentEvent.end.atZone(tzProvider.getTimeZone())));
+                updateState(CHANNEL_CURRENT_EVENT_DESCRIPTION, new StringType(currentEvent.description));
+                updateState(CHANNEL_CURRENT_EVENT_LOCATION, new StringType(currentEvent.location));
+                updateState(CHANNEL_CURRENT_EVENT_COMMENT, new StringType(currentEvent.comment));
+                updateState(CHANNEL_CURRENT_EVENT_CONTACT, new StringType(currentEvent.contact));
             } else {
                 updateState(CHANNEL_CURRENT_EVENT_PRESENT, OnOffType.OFF);
-                updateState(CHANNEL_CURRENT_EVENT_TITLE, UnDefType.UNDEF);
+                updateState(CHANNEL_CURRENT_EVENT_SUMMARY, UnDefType.UNDEF);
                 updateState(CHANNEL_CURRENT_EVENT_START, UnDefType.UNDEF);
                 updateState(CHANNEL_CURRENT_EVENT_END, UnDefType.UNDEF);
+                updateState(CHANNEL_CURRENT_EVENT_DESCRIPTION, UnDefType.UNDEF);
+                updateState(CHANNEL_CURRENT_EVENT_LOCATION, UnDefType.UNDEF);
+                updateState(CHANNEL_CURRENT_EVENT_COMMENT, UnDefType.UNDEF);
+                updateState(CHANNEL_CURRENT_EVENT_CONTACT, UnDefType.UNDEF);
             }
 
-            final Event nextEvent = calendar.getNextEvent(reference);
+            final Event nextEvent = cal.getNextEvent(reference, filter);
             if (nextEvent != null) {
-                updateState(CHANNEL_NEXT_EVENT_TITLE, new StringType(nextEvent.title));
+                updateState(CHANNEL_NEXT_EVENT_SUMMARY, new StringType(nextEvent.title));
                 updateState(CHANNEL_NEXT_EVENT_START,
                         new DateTimeType(nextEvent.start.atZone(tzProvider.getTimeZone())));
                 updateState(CHANNEL_NEXT_EVENT_END, new DateTimeType(nextEvent.end.atZone(tzProvider.getTimeZone())));
+                updateState(CHANNEL_NEXT_EVENT_DESCRIPTION, new StringType(nextEvent.description));
+                updateState(CHANNEL_NEXT_EVENT_LOCATION, new StringType(nextEvent.location));
+                updateState(CHANNEL_NEXT_EVENT_COMMENT, new StringType(nextEvent.comment));
+                updateState(CHANNEL_NEXT_EVENT_CONTACT, new StringType(nextEvent.contact));
             } else {
-                updateState(CHANNEL_NEXT_EVENT_TITLE, UnDefType.UNDEF);
+                updateState(CHANNEL_NEXT_EVENT_SUMMARY, UnDefType.UNDEF);
                 updateState(CHANNEL_NEXT_EVENT_START, UnDefType.UNDEF);
                 updateState(CHANNEL_NEXT_EVENT_END, UnDefType.UNDEF);
+                updateState(CHANNEL_NEXT_EVENT_DESCRIPTION, UnDefType.UNDEF);
+                updateState(CHANNEL_NEXT_EVENT_LOCATION, UnDefType.UNDEF);
+                updateState(CHANNEL_NEXT_EVENT_COMMENT, UnDefType.UNDEF);
+                updateState(CHANNEL_NEXT_EVENT_CONTACT, UnDefType.UNDEF);
             }
+
+            Instant lastUpdateForTrigger = this.lastUpdate;
+            if (lastUpdateForTrigger != null) {
+                List<Event> starts = cal.getJustBegunEvents(lastUpdateForTrigger, reference);
+                List<Event> ends = cal.getJustEndedEvents(lastUpdateForTrigger, reference);
+                if (starts.size() > 0) {
+                    triggerChannel(CHANNEL_CURRENT_EVENT, TRIGGER_CURRENT_EVENT_START);
+                }
+                if (ends.size() > 0) {
+                    triggerChannel(CHANNEL_CURRENT_EVENT, TRIGGER_CURRENT_EVENT_END);
+                }
+            }
+            this.lastUpdate = reference;
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Calendar has not been retrieved yet.");

@@ -23,6 +23,7 @@ import org.openhab.core.thing.type.ChannelTypeUID;
  *
  * @author Michael Wodniok - Initial contribution
  * @author Michael Wodniok - Added last_update related constants
+ * @author Michael Wodniok - Added everything or thing type liveevent
  */
 @NonNullByDefault
 public class ICalendarBindingConstants {
@@ -32,17 +33,33 @@ public class ICalendarBindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_CALENDAR = new ThingTypeUID(BINDING_ID, "calendar");
     public static final ThingTypeUID THING_TYPE_FILTERED_EVENTS = new ThingTypeUID(BINDING_ID, "eventfilter");
+    public static final ThingTypeUID THING_TYPE_LIVE_EVENT = new ThingTypeUID(BINDING_ID, "liveevent");
 
     // List of all Channel ids
+    public static final String CHANNEL_CURRENT_EVENT = "current_event";
     public static final String CHANNEL_CURRENT_EVENT_TITLE = "current_title";
     public static final String CHANNEL_CURRENT_EVENT_START = "current_start";
     public static final String CHANNEL_CURRENT_EVENT_END = "current_end";
     public static final String CHANNEL_CURRENT_EVENT_PRESENT = "current_presence";
+    public static final String CHANNEL_CURRENT_EVENT_DESCRIPTION = "current_description";
+    public static final String CHANNEL_CURRENT_EVENT_SUMMARY = "current_summary";
+    public static final String CHANNEL_CURRENT_EVENT_LOCATION = "current_location";
+    public static final String CHANNEL_CURRENT_EVENT_COMMENT = "current_comment";
+    public static final String CHANNEL_CURRENT_EVENT_CONTACT = "current_contact";
     public static final String CHANNEL_NEXT_EVENT_TITLE = "next_title";
     public static final String CHANNEL_NEXT_EVENT_START = "next_start";
     public static final String CHANNEL_NEXT_EVENT_END = "next_end";
+    public static final String CHANNEL_NEXT_EVENT_DESCRIPTION = "next_description";
+    public static final String CHANNEL_NEXT_EVENT_SUMMARY = "next_summary";
+    public static final String CHANNEL_NEXT_EVENT_LOCATION = "next_location";
+    public static final String CHANNEL_NEXT_EVENT_COMMENT = "next_comment";
+    public static final String CHANNEL_NEXT_EVENT_CONTACT = "next_contact";
     public static final String CHANNEL_LAST_UPDATE = "last_update";
     public static final ChannelTypeUID LAST_UPDATE_TYPE_UID = new ChannelTypeUID(BINDING_ID, "last_update");
+
+    // triggers
+    public static final String TRIGGER_CURRENT_EVENT_START = "START";
+    public static final String TRIGGER_CURRENT_EVENT_END = "END";
 
     // additional constants
     public static final int HTTP_TIMEOUT_SECS = 60;
