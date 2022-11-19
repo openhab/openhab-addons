@@ -257,12 +257,9 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener {
 
     private void stopHomekitServer() {
         logger.trace("stop HomeKit bridge");
-        for (int i = 0; i < homekitServers.size(); ++i) {
-            changeListeners.get(i).unsetBridge();
-            bridges.get(i).stop();
-            homekitServers.get(i).stop();
-            changeListeners.get(i).stop();
-        }
+        changeListeners.parallelStream().forEach(HomekitChangeListener::stop);
+        bridges.parallelStream().forEach(HomekitRoot::stop);
+        homekitServers.parallelStream().forEach(HomekitServer::stop);
         homekitServers.clear();
         bridges.clear();
         changeListeners.clear();

@@ -68,7 +68,7 @@ The Account bridge has the following configuration elements:
 1. The bridge thing will go _OFFLINE_ / _CONFIGURATION_ERROR_ - this is fine. You have to authorize this bridge with Netatmo Connect.
 1. Go to the authorization page of your server. `http://<your openHAB address>:8080/netatmo/connect/<_CLIENT_ID_>`. Your newly added bridge should be listed there (no need for you to expose your openHAB server outside your local network for this).
 1. Press the _"Authorize Thing"_ button. This will take you either to the login page of Netatmo Connect or directly to the authorization screen. Login and/or authorize the application. You will be returned and the entry should go green. 
-1. The binding will be updated with a refresh token and go _ONLINE_. The refresh token is used to re-authorize the bridge with Netatmo Connect Web API whenever required.
+1. The bridge configuration will be updated with a refresh token and go _ONLINE_. The refresh token is used to re-authorize the bridge with Netatmo Connect Web API whenever required. So you can consult this token by opening the Thing page in MainUI, this is the value of the advanced parameter named “Refresh Token”.
 1. If you're using file based .things config file, copy the provided refresh token in the **refreshToken** parameter of your thing definition (example below).
 
 Now that you have got your bridge _ONLINE_ you can now start a scan with the binding to auto discover your things.
@@ -122,6 +122,12 @@ NB: Allowed ports for webhooks are 80, 88, 443 and 9443.
 
 
 ### Configure Things
+
+The easiest way to retrieve the IDs for all the devices and modules is to use the console command `openhab:netatmo showIds`.
+It shows the hierarchy of all the devices and modules including their IDs.
+This can help to define all your things in a configuration file.
+
+**Another way to get the IDs is to use the developer documentation on the netatmo site:**
 
 The IDs for the modules can be extracted from the developer documentation on the netatmo site.
 First login with your user.
@@ -690,6 +696,13 @@ Bridge netatmo:account:myaccount "Netatmo Account" [clientId="xxxxx", clientSecr
                 Type live-stream-url : live#local-stream-url [ quality="high" ]
                 Type live-stream-url : live#vpn-stream-url [ quality="low" ]
         }
+    }
+    Bridge home myhomeheating "Home heating" [ id="..." ] {
+        Bridge plug relay "Boiler relay" [ id="..." ] {
+            thermostat thermostat "Thermostat" [ id="..." ]
+            valve valveoffice "Valve in office" [ id="..." ]
+        }
+        room office "Office" [ id="..." ]
     }
 }
 ```

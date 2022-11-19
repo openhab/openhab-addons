@@ -207,6 +207,11 @@ public enum ModuleType {
                                         : ModuleType.UNKNOWN.equals(getBridge()) ? "configurable" : "device")));
     }
 
+    public int getDepth() {
+        ModuleType parent = bridgeType;
+        return parent == null ? 1 : 1 + parent.getDepth();
+    }
+
     public static ModuleType from(ThingTypeUID thingTypeUID) {
         return ModuleType.AS_SET.stream().filter(mt -> mt.thingTypeUID.equals(thingTypeUID)).findFirst()
                 .orElseThrow(() -> new IllegalArgumentException());

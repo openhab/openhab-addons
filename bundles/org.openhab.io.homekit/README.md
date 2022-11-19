@@ -243,6 +243,38 @@ Examples:
  Dimmer dimmer_light_3   "Dimmer Light 3"     {homekit="Lighting, Lighting.Brightness" [dimmerMode="filterOnExceptBrightness100"]}
  ```
 
+### Color Temperature
+
+Color temperature can be represented various ways in OpenHAB. Given the base bulb configured like this:
+
+```xtend
+Group gLight "CCT Light" { homekit="Lighting" }
+Switch light_switch (gLight) { homekit="Lighting.OnState" }
+```
+
+The color temperature might be configured in any of these ways:
+
+```xtend
+// Number item presumed in mireds
+Number light_temp (gLight) { homekit="Lighting.ColorTemperature" }
+
+// Number item explicitly in mireds
+Number:Temperature light_temp "Temp [%.0f mired]" { homekit="Lighting.ColorTemperature" }
+
+// Number item explicitly in Kelvin
+Number:Temperature light_temp "Temp [%.0f K]" { homekit="Lighting.ColorTemperature" }
+
+// Dimmer item, with allowed range given in mireds
+Dimmer light_temp { homekit="Lighting.ColorTemperature"[ minValue=50, maxValue=400 ]}
+
+// Dimmer item, with allowed range given in Kelvin
+Dimmer light_temp { homekit="Lighting.ColorTemperature"[ minValue="2700 K", maxValue="5000 K" ]}
+
+// Dimmer item, where 0% represents "warm" instead of "cool" (i.e. if it's backed by a channel
+// that's ultimately interpreting the value in Kelvin instead of mireds)
+Dimmer light_temp { homekit="Lighting.ColorTemperature"[ minValue="2700 K", maxValue="5000 K", inverted=true ]}
+```
+
 ### Windows Covering (Blinds) / Window / Door
 
 HomeKit Windows Covering, Window and Door accessory types have following mandatory characteristics:
@@ -674,7 +706,7 @@ Support for this is planned for the future release of openHAB HomeKit binding.
 |                      |                             | Hue                          | Dimmer, Color                 | Hue                                                                                                                                                                                                                                                                                                                                                 |
 |                      |                             | Saturation                   | Dimmer, Color                 | Saturation in % (1-100)                                                                                                                                                                                                                                                                                                                             |
 |                      |                             | Brightness                   | Dimmer, Color                 | Brightness in % (1-100). See "Usage of dimmer modes" for configuration details.                                                                                                                                                                                                                                                                     |
-|                      |                             | ColorTemperature             | Number                        | Color temperature represented in reciprocal megaKelvin. The default value range is from 50 to 400. Color temperature should not be used in combination with hue, saturation and brightness. It supports following configuration parameters: minValue, maxValue                                                                                      |
+|                      |                             | ColorTemperature             | Number, Dimmer                | Color temperature. If the item is a Number with no units, it is represented in mireds. The default value range is from 50 to 400 (2500 K to 20,000 K). If the item is a Dimmer, it will be transformed linearly to mireds. Color temperature should not be used in combination with hue, saturation and brightness. It supports following configuration parameters: minValue, maxValue, inverted |
 | Fan                  |                             |                              |                               | Fan                                                                                                                                                                                                                                                                                                                                                 |
 |                      | ActiveStatus                |                              | Switch, Dimmer                | Accessory current working status. A value of "ON"/"OPEN" indicates that the accessory is active and is functioning without any errors.                                                                                                                                                                                                              |
 |                      |                             | CurrentFanState              | Number                        | Current fan state.  values: 0=INACTIVE, 1=IDLE, 2=BLOWING AIR                                                                                                                                                                                                                                                                                       |

@@ -25,11 +25,11 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.hue.internal.FullGroup;
-import org.openhab.binding.hue.internal.Scene;
-import org.openhab.binding.hue.internal.State;
-import org.openhab.binding.hue.internal.StateUpdate;
 import org.openhab.binding.hue.internal.dto.ColorTemperature;
+import org.openhab.binding.hue.internal.dto.FullGroup;
+import org.openhab.binding.hue.internal.dto.Scene;
+import org.openhab.binding.hue.internal.dto.State;
+import org.openhab.binding.hue.internal.dto.StateUpdate;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
@@ -87,7 +87,7 @@ public class HueGroupHandler extends BaseThingHandler implements HueLightActions
 
     @Override
     public void initialize() {
-        logger.debug("Initializing hue group handler.");
+        logger.debug("Initializing Hue group handler.");
         Bridge bridge = getBridge();
         initializeThing((bridge == null) ? null : bridge.getStatus());
     }
@@ -173,13 +173,13 @@ public class HueGroupHandler extends BaseThingHandler implements HueLightActions
     public void handleCommand(String channel, Command command, long fadeTime) {
         HueClient bridgeHandler = getHueClient();
         if (bridgeHandler == null) {
-            logger.debug("hue bridge handler not found. Cannot handle command without bridge.");
+            logger.debug("Hue Bridge handler not found. Cannot handle command without bridge.");
             return;
         }
 
         FullGroup group = bridgeHandler.getGroupById(groupId);
         if (group == null) {
-            logger.debug("hue group not known on bridge. Cannot handle command.");
+            logger.debug("Hue group not known on bridge. Cannot handle command.");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-wrong-group-id");
             return;

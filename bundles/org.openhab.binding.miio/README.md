@@ -184,7 +184,7 @@ This will change the communication method and the Mi IO binding can communicate 
 
 # Mi IO Devices
 
-Currently the miio binding supports more than 330 different models.
+Currently the miio binding supports more than 340 different models.
 
 | Device                             | ThingType        | Device Model           | Supported    | Remark     |
 |------------------------------------|------------------|------------------------|--------------|------------|
@@ -231,6 +231,7 @@ Currently the miio binding supports more than 330 different models.
 | Dreame Robot Vacuum D9             | miio:basic       | [dreame.vacuum.p2009](#dreame-vacuum-p2009) | Yes          |            |
 | Dreame Bot W10                     | miio:basic       | [dreame.vacuum.p2027](#dreame-vacuum-p2027) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Dreame Bot Z10 Pro                 | miio:basic       | [dreame.vacuum.p2028](#dreame-vacuum-p2028) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Dreame Bot L10 Pro                 | miio:basic       | [dreame.vacuum.p2029](#dreame-vacuum-p2029) | Yes          |            |
 | Trouver Robot LDS Vacuum-Mop Finder | miio:basic       | [dreame.vacuum.p2036](#dreame-vacuum-p2036) | Yes          |            |
 | Mi Robot Vacuum-Mop 2 Pro+         | miio:basic       | [dreame.vacuum.p2041o](#dreame-vacuum-p2041o) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | MOVA Z500 Robot Vacuum and Mop Cleaner | miio:basic       | [dreame.vacuum.p2156o](#dreame-vacuum-p2156o) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
@@ -258,7 +259,7 @@ Currently the miio binding supports more than 330 different models.
 | HUIZUO ZIWEI Ceiling Lamp          | miio:basic       | [huayi.light.zw131](#huayi-light-zw131) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | MiJia Rice Cooker                  | miio:unsupported | hunmi.cooker.normal3   | No           |            |
 | Jinxing Smart Air Conditioner      | miio:unsupported | idelan.aircondition.v1 | No           |            |
-| Xiaomi Robot Vacuum-Mop 2S         | miio:basic       | [ijai.vacuum.v19](#ijai-vacuum-v19) | Yes       |            |
+| Xiaomi Robot Vacuum-Mop 2S         | miio:basic       | [ijai.vacuum.v19](#ijai-vacuum-v19) | Yes          |            |
 | IKEA E27 white spectrum opal       | miio:lumi        | [ikea.light.led1545g12](#ikea-light-led1545g12) | Experimental | Needs to have the Xiaomi gateway configured in the binding as bridge.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | IKEA E27 white spectrum clear      | miio:lumi        | [ikea.light.led1546g12](#ikea-light-led1546g12) | Experimental | Needs to have the Xiaomi gateway configured in the binding as bridge.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | IKEA E14 white spectrum            | miio:lumi        | [ikea.light.led1536g5](#ikea-light-led1536g5) | Experimental | Needs to have the Xiaomi gateway configured in the binding as bridge.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
@@ -708,7 +709,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
-| battery              | Number               | Battery                                  |            |
+| battery              | Number               | Battery                                  | The device with firmware "4.1.8_9999" stops recognizing parameter "battery" in "get_value" command. The "battery" value request was extracted to separate command in order to keep backward compatibility to the devices with older firmware. |
 | pm25                 | Number               | PM2.5                                    |            |
 | co2                  | Number               | CO2                                      |            |
 | tvoc                 | Number               | tVOC                                     |            |
@@ -1252,6 +1253,54 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | auto_collect         | Number               | Collect Dust - Auto Collect              | Value mapping `["0"="Close-auto-collect","1"="Open-auto-collect"]` |
 | clean_times          | Number               | Collect Dust - Clean Times               |            |
 | dust_enable          | Number               | Collect Dust - Dust Enable               | Value mapping `["0"="Disable","1"="Enable"]` |
+
+### Dreame Bot L10 Pro (<a name="dreame-vacuum-p2029">dreame.vacuum.p2029</a>) Channels
+
+| Channel              | Type                 | Description                              | Comment    |
+|----------------------|----------------------|------------------------------------------|------------|
+| actions              | String               | Actions                                  |            |
+| status               | Number               | Robot Cleaner - Status                   | Value mapping `["1"="Sweeping","2"="Idle","3"="Paused","4"="Error","5"="Go Charging","6"="Charging","7"="Mopping"]` |
+| fault                | Number               | Robot Cleaner - Device Fault             |            |
+| battery_level        | Number:Dimensionless | Battery - Battery Level                  |            |
+| charging_state       | Number               | Battery - Charging State                 | Value mapping `["1"="Charging","2"="Not Charging","5"="Go Charging"]` |
+| brush_left_time      | Number:Time          | Main Cleaning Brush - Brush Left Time    |            |
+| brush_life_level     | Number:Dimensionless | Main Cleaning Brush - Brush Life Level   |            |
+| brush_left_time1     | Number:Time          | Side Cleaning Brush - Brush Left Time    |            |
+| brush_life_level1    | Number:Dimensionless | Side Cleaning Brush - Brush Life Level   |            |
+| filter_life_level    | Number:Dimensionless | Filter - Filter Life Level               |            |
+| filter_left_time     | Number:Time          | Filter - Filter Left Time                |            |
+| work_mode            | Number               | Vacuum Extend - Work Mode                |            |
+| cleaning_time        | Number:Time          | Vacuum Extend - Cleaning Time            |            |
+| cleaning_area        | Number               | Vacuum Extend - Cleaning Area            |            |
+| cleaning_mode        | Number               | Vacuum Extend - Cleaning Mode            | Value mapping `["0"="Silent","1"="Standard","2"="Strong","3"="Turbo"]` |
+| mop_mode             | Number               | Vacuum Extend - Mop Mode                 | Value mapping `["1"="Low","2"="Medium","3"="High"]` |
+| waterbox_status      | Number               | Vacuum Extend - Waterbox Status          | Value mapping `["0"="Removed","1"="Installed"]` |
+| task_status          | Number               | Vacuum Extend - Task Status              |            |
+| clean_extend_data    | String               | Vacuum Extend - Clean Extend Data        |            |
+| break_point_restart  | Number               | Vacuum Extend - Break Point Restart      | Value mapping `["0"="Off","1"="On"]` |
+| carpet_press         | Number               | Vacuum Extend - Carpet Press             | Value mapping `["0"="On","1"="Off"]` |
+| serial_number        | String               | Vacuum Extend - Serial Number            |            |
+| remote_state         | String               | Vacuum Extend - Remote State             |            |
+| clean_rags_tip       | Number:Time          | Vacuum Extend - Clean Rags Tip           |            |
+| keep_sweeper_time    | Number:Time          | Vacuum Extend - Keep Sweeper Time        |            |
+| faults               | String               | Vacuum Extend - Faults                   |            |
+| enable               | Switch               | Do Not Disturb - Enable                  |            |
+| start_time           | String               | Do Not Disturb - Start Time              |            |
+| end_time             | String               | Do Not Disturb - End Time                |            |
+| frame_info           | String               | Map - Frame Info                         |            |
+| map_extend_data      | String               | Map - Map Extend Data                    |            |
+| mult_map_state       | Number               | Map - Mult Map State                     | Value mapping `["0"="Close","1"="Open"]` |
+| mult_map_info        | String               | Map - Mult Map Info                      |            |
+| volume               | Number               | Audio - Volume                           |            |
+| voice_packet_id      | String               | Audio - Voice Packet Id                  |            |
+| voice_change_state   | String               | Audio - Voice Change State               |            |
+| set_voice            | String               | Audio - Set Voice                        |            |
+| time_zone            | String               | Time - Time Zone                         |            |
+| timer_clean          | String               | Time - Timer Clean                       |            |
+| first_clean_time     | Number               | Clean Logs - First Clean Time            |            |
+| total_clean_time     | Number:Time          | Clean Logs - Total Clean Time            |            |
+| total_clean_times    | Number               | Clean Logs - Total Clean Times           |            |
+| total_clean_area     | Number               | Clean Logs - Total Clean Area            |            |
 
 ### Trouver Robot LDS Vacuum-Mop Finder (<a name="dreame-vacuum-p2036">dreame.vacuum.p2036</a>) Channels
 
@@ -2604,15 +2653,14 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
 | power                | Switch               | Power                                    |            |
-| mode                 | String               | Mode                                     | Value mapping `["normal"="Normal","green"="Green"]` |
-| powerUsage           | Number:Power         | Power Consumption                        |            |
-| voltage              | Number:ElectricPotential | Voltage                                  |            |
+| powerUsage           | Number               | Power Consumption                        |            |
 | led                  | Switch               | wifi LED                                 |            |
-| power_price          | Number               | Power Price                              |            |
-| power_factor         | Number               | Power Factor                             |            |
-| current              | Number:ElectricCurrent | Current                                  |            |
-| elec_leakage         | Number:ElectricCurrent | Electic Leakage                          |            |
+| power_price          | Number               | power_price                              |            |
+| current              | Number               | Current                                  |            |
 | temperature          | Number:Temperature   | Temperature                              |            |
+| lp_autooff           | Number               | Low Power Auto Off                       |            |
+| lp_autooff_delay     | Number               | Low Power Limit Time                     |            |
+| lp_threshold         | Number               | Low Power Threshold                      |            |
 
 ### ROIDMI EVE vacuum (<a name="roidmi-vacuum-v60">roidmi.vacuum.v60</a>) Channels
 
@@ -3551,7 +3599,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
-| nightlightBrightness | Number               | Nightlight Brightness                    |            |
+| nightlightBrightness | Dimmer               | Nightlight Brightness                    |            |
 
 ### Yeelight Ceiling Light SE (<a name="yeelink-light-ceiling2">yeelink.light.ceiling2</a>) Channels
 
@@ -3564,7 +3612,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
-| nightlightBrightness | Number               | Nightlight Brightness                    |            |
+| nightlightBrightness | Dimmer               | Nightlight Brightness                    |            |
 
 ### Yeelight LED Ceiling Light (<a name="yeelink-light-ceiling3">yeelink.light.ceiling3</a>) Channels
 
@@ -3577,7 +3625,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
-| nightlightBrightness | Number               | Nightlight Brightness                    |            |
+| nightlightBrightness | Dimmer               | Nightlight Brightness                    |            |
 
 ### Yeelight LED Ceiling Light (<a name="yeelink-light-ceiling4">yeelink.light.ceiling4</a>) Channels
 
@@ -3595,7 +3643,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | ambientColorTemperature | Number               | Ambient Color Temperature                |            |
 | customScene          | String               | Set Scene                                |            |
 | ambientColorMode     | Number               | Ambient Color Mode                       |            |
-| nightlightBrightness | Number               | Nightlight Brightness                    |            |
+| nightlightBrightness | Dimmer               | Nightlight Brightness                    |            |
 
 ### Yeelight LED Ceiling Ambi Lamp (<a name="yeelink-light-ceiling4-ambi">yeelink.light.ceiling4.ambi</a>) Channels
 
@@ -3608,7 +3656,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
-| nightlightBrightness | Number               | Nightlight Brightness                    |            |
+| nightlightBrightness | Dimmer               | Nightlight Brightness                    |            |
 
 ### Mi LED Ceiling Light (<a name="yeelink-light-ceiling5">yeelink.light.ceiling5</a>) Channels
 
@@ -3621,7 +3669,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
-| nightlightBrightness | Number               | Nightlight Brightness                    |            |
+| nightlightBrightness | Dimmer               | Nightlight Brightness                    |            |
 
 ### Yeelight HaoShi LED Ceiling Lamp Pro (<a name="yeelink-light-ceiling6">yeelink.light.ceiling6</a>) Channels
 
@@ -3634,7 +3682,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
-| nightlightBrightness | Number               | Nightlight Brightness                    |            |
+| nightlightBrightness | Dimmer               | Nightlight Brightness                    |            |
 
 ### Yeelight Haoshi Ceiling Lamp (<a name="yeelink-light-ceiling7">yeelink.light.ceiling7</a>) Channels
 
@@ -3647,7 +3695,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
-| nightlightBrightness | Number               | Nightlight Brightness                    |            |
+| nightlightBrightness | Dimmer               | Nightlight Brightness                    |            |
 
 ### LED Ceiling Light Crystal Plus (<a name="yeelink-light-ceiling8">yeelink.light.ceiling8</a>) Channels
 
@@ -3660,7 +3708,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
-| nightlightBrightness | Number               | Nightlight Brightness                    |            |
+| nightlightBrightness | Dimmer               | Nightlight Brightness                    |            |
 
 ### Yeelight HaoShi LED Ceiling Lamp Pro (<a name="yeelink-light-ceiling9">yeelink.light.ceiling9</a>) Channels
 
@@ -3673,7 +3721,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
-| nightlightBrightness | Number               | Nightlight Brightness                    |            |
+| nightlightBrightness | Dimmer               | Nightlight Brightness                    |            |
 
 ### Yeelight Crystal Pendant Lamp (<a name="yeelink-light-ceiling10">yeelink.light.ceiling10</a>) Channels
 
@@ -3691,7 +3739,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | ambientColorTemperature | Number               | Ambient Color Temperature                |            |
 | customScene          | String               | Set Scene                                |            |
 | ambientColorMode     | Number               | Ambient Color Mode                       |            |
-| nightlightBrightness | Number               | Nightlight Brightness                    |            |
+| nightlightBrightness | Dimmer               | Nightlight Brightness                    |            |
 
 ### Yeelight LED Ceiling Ambi Lamp (<a name="yeelink-light-ceiling10-ambi">yeelink.light.ceiling10.ambi</a>) Channels
 
@@ -3704,7 +3752,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
-| nightlightBrightness | Number               | Nightlight Brightness                    |            |
+| nightlightBrightness | Dimmer               | Nightlight Brightness                    |            |
 
 ### Yeelight Ceiling Light 320 1S (<a name="yeelink-light-ceiling11">yeelink.light.ceiling11</a>) Channels
 
@@ -3717,7 +3765,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
-| nightlightBrightness | Number               | Nightlight Brightness                    |            |
+| nightlightBrightness | Dimmer               | Nightlight Brightness                    |            |
 
 ### Yeelight Stylized Ceiling Light  Pro (<a name="yeelink-light-ceiling12">yeelink.light.ceiling12</a>) Channels
 
@@ -3730,7 +3778,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
-| nightlightBrightness | Number               | Nightlight Brightness                    |            |
+| nightlightBrightness | Dimmer               | Nightlight Brightness                    |            |
 
 ### Yeelight Ceiling Light (<a name="yeelink-light-ceiling13">yeelink.light.ceiling13</a>) Channels
 
@@ -3743,7 +3791,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
-| nightlightBrightness | Number               | Nightlight Brightness                    |            |
+| nightlightBrightness | Dimmer               | Nightlight Brightness                    |            |
 
 ### Yeelight Ceiling Light Mini (<a name="yeelink-light-ceiling14">yeelink.light.ceiling14</a>) Channels
 
@@ -3756,7 +3804,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
-| nightlightBrightness | Number               | Nightlight Brightness                    |            |
+| nightlightBrightness | Dimmer               | Nightlight Brightness                    |            |
 
 ### Yeelight Ceiling Light 480 1S (<a name="yeelink-light-ceiling15">yeelink.light.ceiling15</a>) Channels
 
@@ -3769,7 +3817,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
-| nightlightBrightness | Number               | Nightlight Brightness                    |            |
+| nightlightBrightness | Dimmer               | Nightlight Brightness                    |            |
 
 ### Yeelight Xingyu Ceiling Light (<a name="yeelink-light-ceiling16">yeelink.light.ceiling16</a>) Channels
 
@@ -3782,7 +3830,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
-| nightlightBrightness | Number               | Nightlight Brightness                    |            |
+| nightlightBrightness | Dimmer               | Nightlight Brightness                    |            |
 
 ### Yeelight ShaoHua Celing Light (<a name="yeelink-light-ceiling17">yeelink.light.ceiling17</a>) Channels
 
@@ -3795,7 +3843,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
-| nightlightBrightness | Number               | Nightlight Brightness                    |            |
+| nightlightBrightness | Dimmer               | Nightlight Brightness                    |            |
 
 ### Yeelight Ceiling Light Pro (<a name="yeelink-light-ceiling18">yeelink.light.ceiling18</a>) Channels
 
@@ -3808,7 +3856,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
-| nightlightBrightness | Number               | Nightlight Brightness                    |            |
+| nightlightBrightness | Dimmer               | Nightlight Brightness                    |            |
 
 ### Yeelight Ceiling Light Pro (<a name="yeelink-light-ceiling19">yeelink.light.ceiling19</a>) Channels
 
@@ -3821,7 +3869,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
-| nightlightBrightness | Number               | Nightlight Brightness                    |            |
+| nightlightBrightness | Dimmer               | Nightlight Brightness                    |            |
 
 ### Yeelight LED Ceiling Ambi Lamp (<a name="yeelink-light-ceiling19-ambi">yeelink.light.ceiling19.ambi</a>) Channels
 
@@ -3834,7 +3882,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
-| nightlightBrightness | Number               | Nightlight Brightness                    |            |
+| nightlightBrightness | Dimmer               | Nightlight Brightness                    |            |
 
 ### Yeelight Ceiling Light (<a name="yeelink-light-ceiling20">yeelink.light.ceiling20</a>) Channels
 
@@ -3847,7 +3895,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
-| nightlightBrightness | Number               | Nightlight Brightness                    |            |
+| nightlightBrightness | Dimmer               | Nightlight Brightness                    |            |
 
 ### Yeelight LED Ceiling Ambi Lamp (<a name="yeelink-light-ceiling20-ambi">yeelink.light.ceiling20.ambi</a>) Channels
 
@@ -3860,7 +3908,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
-| nightlightBrightness | Number               | Nightlight Brightness                    |            |
+| nightlightBrightness | Dimmer               | Nightlight Brightness                    |            |
 
 ### Mi Smart LED Living Room Ceiling Light (<a name="yeelink-light-ceiling21">yeelink.light.ceiling21</a>) Channels
 
@@ -3873,7 +3921,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
-| nightlightBrightness | Number               | Nightlight Brightness                    |            |
+| nightlightBrightness | Dimmer               | Nightlight Brightness                    |            |
 
 ### Mi Smart LED Ceiling Light (<a name="yeelink-light-ceiling22">yeelink.light.ceiling22</a>) Channels
 
@@ -3886,7 +3934,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
-| nightlightBrightness | Number               | Nightlight Brightness                    |            |
+| nightlightBrightness | Dimmer               | Nightlight Brightness                    |            |
 
 ### Mi Smart LED Ceiling Light (350mm) (<a name="yeelink-light-ceiling23">yeelink.light.ceiling23</a>) Channels
 
@@ -3899,7 +3947,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
-| nightlightBrightness | Number               | Nightlight Brightness                    |            |
+| nightlightBrightness | Dimmer               | Nightlight Brightness                    |            |
 
 ### Yeelight Jade Smart LED Ceiling Light C2001 (<a name="yeelink-light-ceil26">yeelink.light.ceil26</a>) Channels
 
@@ -3912,7 +3960,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
-| nightlightBrightness | Number               | Nightlight Brightness                    |            |
+| nightlightBrightness | Dimmer               | Nightlight Brightness                    |            |
 
 ### Yeelight Color Bulb (<a name="yeelink-light-color1">yeelink.light.color1</a>) Channels
 
@@ -4123,7 +4171,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | colorTemperature     | Number:Temperature   | Color Temperature                        |            |
 | colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | rgbColor             | Color                | RGB Color                                |            |
-| ambientBrightness    | Number               | Ambient Brightness                       |            |
+| ambientBrightness    | Dimmer               | Ambient Brightness                       |            |
 | ambientPower         | Switch               | Ambient Power                            |            |
 | ambientColor         | Color                | Ambient Color                            |            |
 | ambientColorTemperature | Number               | Ambient Color Temperature                |            |
@@ -4217,7 +4265,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
-| nightlightBrightness | Number               | Nightlight Brightness                    |            |
+| nightlightBrightness | Dimmer               | Nightlight Brightness                    |            |
 
 ### Yeelight Lightstrip (<a name="yeelink-light-strip1">yeelink.light.strip1</a>) Channels
 
@@ -4292,7 +4340,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
-| nightlightBrightness | Number               | Nightlight Brightness                    |            |
+| nightlightBrightness | Dimmer               | Nightlight Brightness                    |            |
 
 ### Yilai Ceiling Lamp Hefeng 430 (<a name="yilai-light-ceiling2">yilai.light.ceiling2</a>) Channels
 
@@ -4305,7 +4353,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
-| nightlightBrightness | Number               | Nightlight Brightness                    |            |
+| nightlightBrightness | Dimmer               | Nightlight Brightness                    |            |
 
 ### Yilai Ceiling Lamp Hefeng Pro (<a name="yilai-light-ceiling3">yilai.light.ceiling3</a>) Channels
 
@@ -4318,7 +4366,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
-| nightlightBrightness | Number               | Nightlight Brightness                    |            |
+| nightlightBrightness | Dimmer               | Nightlight Brightness                    |            |
 
 ### Mi Water Purifier lx2 (<a name="yunmi-waterpuri-lx2">yunmi.waterpuri.lx2</a>) Channels
 
@@ -5194,21 +5242,15 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
 | power                | Switch               | Power                                    |            |
-| mode                 | String               | Mode                                     | Value mapping `["auto"="Auto","favorite"="Favorite","silent"="Silent","high"="High","medium"="Medium","idle"="Idle","strong"="Strong"]` |
+| mode                 | String               | Mode                                     |            |
 | humidity             | Number:Dimensionless | Humidity                                 |            |
 | aqi                  | Number               | Air Quality Index                        |            |
-| averageaqi           | Number               | Average Air Quality Index                |            |
+| brightness           | Dimmer               | Brightness                               |            |
 | led                  | Switch               | LED Status                               |            |
+| act_det              | Switch               | Air AutoDetect                           |            |
 | buzzer               | Switch               | Buzzer Status                            |            |
 | filtermaxlife        | Number               | Filter Max Life                          |            |
-| filterhours          | Number:Time          | Filter Hours used                        |            |
-| usedhours            | Number:Time          | Run Time                                 |            |
-| motorspeed           | Number               | Motor Speed                              |            |
-| filterlife           | Number               | Filter Life                              |            |
-| favoritelevel        | Number               | Favorite Level                           | Value mapping `["0"="Favorite 0","1"="Favorite 1","2"="Favorite 2","3"="Favorite 3","4"="Favorite 4","5"="Favorite 5","6"="Favorite 6","7"="Favorite 7","8"="Favorite 8","9"="Favorite 9","10"="Favorite 10","11"="Favorite 11","12"="Favorite 13","13"="Favorite 13","14"="Favorite 14","15"="Favorite 15"]` |
-| temperature          | Number:Temperature   | Temperature                              |            |
-| purifyvolume         | Number:Volume        | Purified Volume                          |            |
-| childlock            | Switch               | Child Lock                               |            |
+| filterlive           | Number               | Filter Life                              |            |
 
 ### Mi Air Purifier v2 (<a name="zhimi-airpurifier-v2">zhimi.airpurifier.v2</a>) Channels
 
@@ -6591,6 +6633,57 @@ Number total_clean_area "Clean Logs - Total Clean Area" (G_vacuum) {channel="mii
 Number auto_collect "Collect Dust - Auto Collect" (G_vacuum) {channel="miio:basic:vacuum:auto_collect"}
 Number clean_times "Collect Dust - Clean Times" (G_vacuum) {channel="miio:basic:vacuum:clean_times"}
 Number dust_enable "Collect Dust - Dust Enable" (G_vacuum) {channel="miio:basic:vacuum:dust_enable"}
+```
+
+### Dreame Bot L10 Pro (dreame.vacuum.p2029) item file lines
+
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_vacuum "Dreame Bot L10 Pro" <status>
+String actions "Actions" (G_vacuum) {channel="miio:basic:vacuum:actions"}
+Number status "Robot Cleaner - Status" (G_vacuum) {channel="miio:basic:vacuum:status"}
+Number fault "Robot Cleaner - Device Fault" (G_vacuum) {channel="miio:basic:vacuum:fault"}
+Number:Dimensionless battery_level "Battery - Battery Level" (G_vacuum) {channel="miio:basic:vacuum:battery_level"}
+Number charging_state "Battery - Charging State" (G_vacuum) {channel="miio:basic:vacuum:charging_state"}
+Number:Time brush_left_time "Main Cleaning Brush - Brush Left Time" (G_vacuum) {channel="miio:basic:vacuum:brush_left_time"}
+Number:Dimensionless brush_life_level "Main Cleaning Brush - Brush Life Level" (G_vacuum) {channel="miio:basic:vacuum:brush_life_level"}
+Number:Time brush_left_time1 "Side Cleaning Brush - Brush Left Time" (G_vacuum) {channel="miio:basic:vacuum:brush_left_time1"}
+Number:Dimensionless brush_life_level1 "Side Cleaning Brush - Brush Life Level" (G_vacuum) {channel="miio:basic:vacuum:brush_life_level1"}
+Number:Dimensionless filter_life_level "Filter - Filter Life Level" (G_vacuum) {channel="miio:basic:vacuum:filter_life_level"}
+Number:Time filter_left_time "Filter - Filter Left Time" (G_vacuum) {channel="miio:basic:vacuum:filter_left_time"}
+Number work_mode "Vacuum Extend - Work Mode" (G_vacuum) {channel="miio:basic:vacuum:work_mode"}
+Number:Time cleaning_time "Vacuum Extend - Cleaning Time" (G_vacuum) {channel="miio:basic:vacuum:cleaning_time"}
+Number cleaning_area "Vacuum Extend - Cleaning Area" (G_vacuum) {channel="miio:basic:vacuum:cleaning_area"}
+Number cleaning_mode "Vacuum Extend - Cleaning Mode" (G_vacuum) {channel="miio:basic:vacuum:cleaning_mode"}
+Number mop_mode "Vacuum Extend - Mop Mode" (G_vacuum) {channel="miio:basic:vacuum:mop_mode"}
+Number waterbox_status "Vacuum Extend - Waterbox Status" (G_vacuum) {channel="miio:basic:vacuum:waterbox_status"}
+Number task_status "Vacuum Extend - Task Status" (G_vacuum) {channel="miio:basic:vacuum:task_status"}
+String clean_extend_data "Vacuum Extend - Clean Extend Data" (G_vacuum) {channel="miio:basic:vacuum:clean_extend_data"}
+Number break_point_restart "Vacuum Extend - Break Point Restart" (G_vacuum) {channel="miio:basic:vacuum:break_point_restart"}
+Number carpet_press "Vacuum Extend - Carpet Press" (G_vacuum) {channel="miio:basic:vacuum:carpet_press"}
+String serial_number "Vacuum Extend - Serial Number" (G_vacuum) {channel="miio:basic:vacuum:serial_number"}
+String remote_state "Vacuum Extend - Remote State" (G_vacuum) {channel="miio:basic:vacuum:remote_state"}
+Number:Time clean_rags_tip "Vacuum Extend - Clean Rags Tip" (G_vacuum) {channel="miio:basic:vacuum:clean_rags_tip"}
+Number:Time keep_sweeper_time "Vacuum Extend - Keep Sweeper Time" (G_vacuum) {channel="miio:basic:vacuum:keep_sweeper_time"}
+String faults "Vacuum Extend - Faults" (G_vacuum) {channel="miio:basic:vacuum:faults"}
+Switch enable "Do Not Disturb - Enable" (G_vacuum) {channel="miio:basic:vacuum:enable"}
+String start_time "Do Not Disturb - Start Time" (G_vacuum) {channel="miio:basic:vacuum:start_time"}
+String end_time "Do Not Disturb - End Time" (G_vacuum) {channel="miio:basic:vacuum:end_time"}
+String frame_info "Map - Frame Info" (G_vacuum) {channel="miio:basic:vacuum:frame_info"}
+String map_extend_data "Map - Map Extend Data" (G_vacuum) {channel="miio:basic:vacuum:map_extend_data"}
+Number mult_map_state "Map - Mult Map State" (G_vacuum) {channel="miio:basic:vacuum:mult_map_state"}
+String mult_map_info "Map - Mult Map Info" (G_vacuum) {channel="miio:basic:vacuum:mult_map_info"}
+Number volume "Audio - Volume" (G_vacuum) {channel="miio:basic:vacuum:volume"}
+String voice_packet_id "Audio - Voice Packet Id" (G_vacuum) {channel="miio:basic:vacuum:voice_packet_id"}
+String voice_change_state "Audio - Voice Change State" (G_vacuum) {channel="miio:basic:vacuum:voice_change_state"}
+String set_voice "Audio - Set Voice" (G_vacuum) {channel="miio:basic:vacuum:set_voice"}
+String time_zone "Time - Time Zone" (G_vacuum) {channel="miio:basic:vacuum:time_zone"}
+String timer_clean "Time - Timer Clean" (G_vacuum) {channel="miio:basic:vacuum:timer_clean"}
+Number first_clean_time "Clean Logs - First Clean Time" (G_vacuum) {channel="miio:basic:vacuum:first_clean_time"}
+Number:Time total_clean_time "Clean Logs - Total Clean Time" (G_vacuum) {channel="miio:basic:vacuum:total_clean_time"}
+Number total_clean_times "Clean Logs - Total Clean Times" (G_vacuum) {channel="miio:basic:vacuum:total_clean_times"}
+Number total_clean_area "Clean Logs - Total Clean Area" (G_vacuum) {channel="miio:basic:vacuum:total_clean_area"}
 ```
 
 ### Trouver Robot LDS Vacuum-Mop Finder (dreame.vacuum.p2036) item file lines
@@ -8237,15 +8330,14 @@ note: Autogenerated example. Replace the id (powerstrip) in the channel with you
 ```
 Group G_powerstrip "CHINGMI Smart Power Strip v1" <status>
 Switch power "Power" (G_powerstrip) {channel="miio:basic:powerstrip:power"}
-String mode "Mode" (G_powerstrip) {channel="miio:basic:powerstrip:mode"}
-Number:Power powerUsage "Power Consumption" (G_powerstrip) {channel="miio:basic:powerstrip:powerUsage"}
-Number:ElectricPotential voltage "Voltage" (G_powerstrip) {channel="miio:basic:powerstrip:voltage"}
+Number powerUsage "Power Consumption" (G_powerstrip) {channel="miio:basic:powerstrip:powerUsage"}
 Switch led "wifi LED" (G_powerstrip) {channel="miio:basic:powerstrip:led"}
-Number power_price "Power Price" (G_powerstrip) {channel="miio:basic:powerstrip:power_price"}
-Number power_factor "Power Factor" (G_powerstrip) {channel="miio:basic:powerstrip:power_factor"}
-Number:ElectricCurrent current "Current" (G_powerstrip) {channel="miio:basic:powerstrip:current"}
-Number:ElectricCurrent elec_leakage "Electic Leakage" (G_powerstrip) {channel="miio:basic:powerstrip:elec_leakage"}
+Number power_price "power_price" (G_powerstrip) {channel="miio:basic:powerstrip:power_price"}
+Number current "Current" (G_powerstrip) {channel="miio:basic:powerstrip:current"}
 Number:Temperature temperature "Temperature" (G_powerstrip) {channel="miio:basic:powerstrip:temperature"}
+Number lp_autooff "Low Power Auto Off" (G_powerstrip) {channel="miio:basic:powerstrip:lp_autooff"}
+Number lp_autooff_delay "Low Power Limit Time" (G_powerstrip) {channel="miio:basic:powerstrip:lp_autooff_delay"}
+Number lp_threshold "Low Power Threshold" (G_powerstrip) {channel="miio:basic:powerstrip:lp_threshold"}
 ```
 
 ### ROIDMI EVE vacuum (roidmi.vacuum.v60) item file lines
@@ -9325,7 +9417,7 @@ Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
-Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+Dimmer nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
 ```
 
 ### Yeelight Ceiling Light SE (yeelink.light.ceiling2) item file lines
@@ -9341,7 +9433,7 @@ Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
-Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+Dimmer nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
 ```
 
 ### Yeelight LED Ceiling Light (yeelink.light.ceiling3) item file lines
@@ -9357,7 +9449,7 @@ Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
-Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+Dimmer nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
 ```
 
 ### Yeelight LED Ceiling Light (yeelink.light.ceiling4) item file lines
@@ -9378,7 +9470,7 @@ Color ambientColor "Ambient Color" (G_light) {channel="miio:basic:light:ambientC
 Number ambientColorTemperature "Ambient Color Temperature" (G_light) {channel="miio:basic:light:ambientColorTemperature"}
 String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
 Number ambientColorMode "Ambient Color Mode" (G_light) {channel="miio:basic:light:ambientColorMode"}
-Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+Dimmer nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
 ```
 
 ### Yeelight LED Ceiling Ambi Lamp (yeelink.light.ceiling4.ambi) item file lines
@@ -9394,7 +9486,7 @@ Number colorTemperature "Color Temperature" (G_ceiling4) {channel="miio:basic:ce
 Number colorMode "Color Mode" (G_ceiling4) {channel="miio:basic:ceiling4:colorMode"}
 String name "Name" (G_ceiling4) {channel="miio:basic:ceiling4:name"}
 String customScene "Set Scene" (G_ceiling4) {channel="miio:basic:ceiling4:customScene"}
-Number nightlightBrightness "Nightlight Brightness" (G_ceiling4) {channel="miio:basic:ceiling4:nightlightBrightness"}
+Dimmer nightlightBrightness "Nightlight Brightness" (G_ceiling4) {channel="miio:basic:ceiling4:nightlightBrightness"}
 ```
 
 ### Mi LED Ceiling Light (yeelink.light.ceiling5) item file lines
@@ -9410,7 +9502,7 @@ Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
-Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+Dimmer nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
 ```
 
 ### Yeelight HaoShi LED Ceiling Lamp Pro (yeelink.light.ceiling6) item file lines
@@ -9426,7 +9518,7 @@ Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
-Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+Dimmer nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
 ```
 
 ### Yeelight Haoshi Ceiling Lamp (yeelink.light.ceiling7) item file lines
@@ -9442,7 +9534,7 @@ Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
-Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+Dimmer nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
 ```
 
 ### LED Ceiling Light Crystal Plus (yeelink.light.ceiling8) item file lines
@@ -9458,7 +9550,7 @@ Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
-Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+Dimmer nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
 ```
 
 ### Yeelight HaoShi LED Ceiling Lamp Pro (yeelink.light.ceiling9) item file lines
@@ -9474,7 +9566,7 @@ Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
-Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+Dimmer nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
 ```
 
 ### Yeelight Crystal Pendant Lamp (yeelink.light.ceiling10) item file lines
@@ -9495,7 +9587,7 @@ Color ambientColor "Ambient Color" (G_light) {channel="miio:basic:light:ambientC
 Number ambientColorTemperature "Ambient Color Temperature" (G_light) {channel="miio:basic:light:ambientColorTemperature"}
 String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
 Number ambientColorMode "Ambient Color Mode" (G_light) {channel="miio:basic:light:ambientColorMode"}
-Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+Dimmer nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
 ```
 
 ### Yeelight LED Ceiling Ambi Lamp (yeelink.light.ceiling10.ambi) item file lines
@@ -9511,7 +9603,7 @@ Number colorTemperature "Color Temperature" (G_ceiling10) {channel="miio:basic:c
 Number colorMode "Color Mode" (G_ceiling10) {channel="miio:basic:ceiling10:colorMode"}
 String name "Name" (G_ceiling10) {channel="miio:basic:ceiling10:name"}
 String customScene "Set Scene" (G_ceiling10) {channel="miio:basic:ceiling10:customScene"}
-Number nightlightBrightness "Nightlight Brightness" (G_ceiling10) {channel="miio:basic:ceiling10:nightlightBrightness"}
+Dimmer nightlightBrightness "Nightlight Brightness" (G_ceiling10) {channel="miio:basic:ceiling10:nightlightBrightness"}
 ```
 
 ### Yeelight Ceiling Light 320 1S (yeelink.light.ceiling11) item file lines
@@ -9527,7 +9619,7 @@ Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
-Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+Dimmer nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
 ```
 
 ### Yeelight Stylized Ceiling Light  Pro (yeelink.light.ceiling12) item file lines
@@ -9543,7 +9635,7 @@ Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
-Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+Dimmer nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
 ```
 
 ### Yeelight Ceiling Light (yeelink.light.ceiling13) item file lines
@@ -9559,7 +9651,7 @@ Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
-Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+Dimmer nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
 ```
 
 ### Yeelight Ceiling Light Mini (yeelink.light.ceiling14) item file lines
@@ -9575,7 +9667,7 @@ Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
-Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+Dimmer nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
 ```
 
 ### Yeelight Ceiling Light 480 1S (yeelink.light.ceiling15) item file lines
@@ -9591,7 +9683,7 @@ Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
-Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+Dimmer nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
 ```
 
 ### Yeelight Xingyu Ceiling Light (yeelink.light.ceiling16) item file lines
@@ -9607,7 +9699,7 @@ Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
-Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+Dimmer nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
 ```
 
 ### Yeelight ShaoHua Celing Light (yeelink.light.ceiling17) item file lines
@@ -9623,7 +9715,7 @@ Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
-Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+Dimmer nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
 ```
 
 ### Yeelight Ceiling Light Pro (yeelink.light.ceiling18) item file lines
@@ -9639,7 +9731,7 @@ Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
-Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+Dimmer nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
 ```
 
 ### Yeelight Ceiling Light Pro (yeelink.light.ceiling19) item file lines
@@ -9655,7 +9747,7 @@ Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
-Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+Dimmer nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
 ```
 
 ### Yeelight LED Ceiling Ambi Lamp (yeelink.light.ceiling19.ambi) item file lines
@@ -9671,7 +9763,7 @@ Number colorTemperature "Color Temperature" (G_ceiling19) {channel="miio:basic:c
 Number colorMode "Color Mode" (G_ceiling19) {channel="miio:basic:ceiling19:colorMode"}
 String name "Name" (G_ceiling19) {channel="miio:basic:ceiling19:name"}
 String customScene "Set Scene" (G_ceiling19) {channel="miio:basic:ceiling19:customScene"}
-Number nightlightBrightness "Nightlight Brightness" (G_ceiling19) {channel="miio:basic:ceiling19:nightlightBrightness"}
+Dimmer nightlightBrightness "Nightlight Brightness" (G_ceiling19) {channel="miio:basic:ceiling19:nightlightBrightness"}
 ```
 
 ### Yeelight Ceiling Light (yeelink.light.ceiling20) item file lines
@@ -9687,7 +9779,7 @@ Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
-Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+Dimmer nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
 ```
 
 ### Yeelight LED Ceiling Ambi Lamp (yeelink.light.ceiling20.ambi) item file lines
@@ -9703,7 +9795,7 @@ Number colorTemperature "Color Temperature" (G_ceiling20) {channel="miio:basic:c
 Number colorMode "Color Mode" (G_ceiling20) {channel="miio:basic:ceiling20:colorMode"}
 String name "Name" (G_ceiling20) {channel="miio:basic:ceiling20:name"}
 String customScene "Set Scene" (G_ceiling20) {channel="miio:basic:ceiling20:customScene"}
-Number nightlightBrightness "Nightlight Brightness" (G_ceiling20) {channel="miio:basic:ceiling20:nightlightBrightness"}
+Dimmer nightlightBrightness "Nightlight Brightness" (G_ceiling20) {channel="miio:basic:ceiling20:nightlightBrightness"}
 ```
 
 ### Mi Smart LED Living Room Ceiling Light (yeelink.light.ceiling21) item file lines
@@ -9719,7 +9811,7 @@ Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
-Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+Dimmer nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
 ```
 
 ### Mi Smart LED Ceiling Light (yeelink.light.ceiling22) item file lines
@@ -9735,7 +9827,7 @@ Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
-Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+Dimmer nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
 ```
 
 ### Mi Smart LED Ceiling Light (350mm) (yeelink.light.ceiling23) item file lines
@@ -9751,7 +9843,7 @@ Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
-Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+Dimmer nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
 ```
 
 ### Yeelight Jade Smart LED Ceiling Light C2001 (yeelink.light.ceil26) item file lines
@@ -9767,7 +9859,7 @@ Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
-Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+Dimmer nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
 ```
 
 ### Yeelight Color Bulb (yeelink.light.color1) item file lines
@@ -10032,7 +10124,7 @@ Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delay
 Number:Temperature colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 Color rgbColor "RGB Color" (G_light) {channel="miio:basic:light:rgbColor"}
-Number ambientBrightness "Ambient Brightness" (G_light) {channel="miio:basic:light:ambientBrightness"}
+Dimmer ambientBrightness "Ambient Brightness" (G_light) {channel="miio:basic:light:ambientBrightness"}
 Switch ambientPower "Ambient Power" (G_light) {channel="miio:basic:light:ambientPower"}
 Color ambientColor "Ambient Color" (G_light) {channel="miio:basic:light:ambientColor"}
 Number ambientColorTemperature "Ambient Color Temperature" (G_light) {channel="miio:basic:light:ambientColorTemperature"}
@@ -10150,7 +10242,7 @@ Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
-Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+Dimmer nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
 ```
 
 ### Yeelight Lightstrip (yeelink.light.strip1) item file lines
@@ -10243,7 +10335,7 @@ Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
-Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+Dimmer nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
 ```
 
 ### Yilai Ceiling Lamp Hefeng 430 (yilai.light.ceiling2) item file lines
@@ -10259,7 +10351,7 @@ Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
-Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+Dimmer nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
 ```
 
 ### Yilai Ceiling Lamp Hefeng Pro (yilai.light.ceiling3) item file lines
@@ -10275,7 +10367,7 @@ Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
-Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+Dimmer nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
 ```
 
 ### Mi Water Purifier lx2 (yunmi.waterpuri.lx2) item file lines
@@ -11253,18 +11345,12 @@ Switch power "Power" (G_airpurifier) {channel="miio:basic:airpurifier:power"}
 String mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
 Number:Dimensionless humidity "Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:humidity"}
 Number aqi "Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:aqi"}
-Number averageaqi "Average Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:averageaqi"}
+Dimmer brightness "Brightness" (G_airpurifier) {channel="miio:basic:airpurifier:brightness"}
 Switch led "LED Status" (G_airpurifier) {channel="miio:basic:airpurifier:led"}
+Switch act_det "Air AutoDetect" (G_airpurifier) {channel="miio:basic:airpurifier:act_det"}
 Switch buzzer "Buzzer Status" (G_airpurifier) {channel="miio:basic:airpurifier:buzzer"}
 Number filtermaxlife "Filter Max Life" (G_airpurifier) {channel="miio:basic:airpurifier:filtermaxlife"}
-Number:Time filterhours "Filter Hours used" (G_airpurifier) {channel="miio:basic:airpurifier:filterhours"}
-Number:Time usedhours "Run Time" (G_airpurifier) {channel="miio:basic:airpurifier:usedhours"}
-Number motorspeed "Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motorspeed"}
-Number filterlife "Filter Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
-Number favoritelevel "Favorite Level" (G_airpurifier) {channel="miio:basic:airpurifier:favoritelevel"}
-Number:Temperature temperature "Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
-Number:Volume purifyvolume "Purified Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purifyvolume"}
-Switch childlock "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:childlock"}
+Number filterlive "Filter Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlive"}
 ```
 
 ### Mi Air Purifier v2 (zhimi.airpurifier.v2) item file lines

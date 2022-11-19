@@ -186,6 +186,7 @@
     <module>org.openhab.binding.jablotron</module>
     <module>org.openhab.binding.jeelink</module>
     <module>org.openhab.binding.jellyfin</module>
+    <module>org.openhab.binding.juicenet</module>
     <module>org.openhab.binding.kaleidescape</module>
     <module>org.openhab.binding.keba</module>
     <module>org.openhab.binding.km200</module>
@@ -216,6 +217,7 @@
     <module>org.openhab.binding.max</module>
     <module>org.openhab.binding.mcd</module>
     <module>org.openhab.binding.mcp23017</module>
+    <module>org.openhab.binding.meater</module>
     <module>org.openhab.binding.mecmeter</module>
     <module>org.openhab.binding.melcloud</module>
     <module>org.openhab.binding.mercedesme</module>
@@ -364,6 +366,7 @@
     <module>org.openhab.binding.tibber</module>
     <module>org.openhab.binding.tivo</module>
     <module>org.openhab.binding.touchwand</module>
+    <module>org.openhab.binding.tplinkrouter</module>
     <module>org.openhab.binding.tplinksmarthome</module>
     <module>org.openhab.binding.tr064</module>
     <module>org.openhab.binding.tradfri</module>

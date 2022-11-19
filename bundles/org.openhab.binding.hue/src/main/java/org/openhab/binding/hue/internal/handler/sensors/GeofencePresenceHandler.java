@@ -12,16 +12,15 @@
  */
 package org.openhab.binding.hue.internal.handler.sensors;
 
-import static org.openhab.binding.hue.internal.FullSensor.STATE_PRESENCE;
 import static org.openhab.binding.hue.internal.HueBindingConstants.*;
+import static org.openhab.binding.hue.internal.dto.FullSensor.STATE_PRESENCE;
 
-import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.hue.internal.FullSensor;
-import org.openhab.binding.hue.internal.SensorConfigUpdate;
+import org.openhab.binding.hue.internal.dto.FullSensor;
+import org.openhab.binding.hue.internal.dto.SensorConfigUpdate;
 import org.openhab.binding.hue.internal.handler.HueSensorHandler;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.OnOffType;
@@ -35,7 +34,8 @@ import org.openhab.core.thing.ThingTypeUID;
  */
 @NonNullByDefault
 public class GeofencePresenceHandler extends HueSensorHandler {
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_GEOFENCE_SENSOR);
+
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_GEOFENCE_SENSOR);
 
     public GeofencePresenceHandler(Thing thing) {
         super(thing);

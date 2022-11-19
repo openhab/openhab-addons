@@ -44,6 +44,7 @@ public class BoschSHCBindingConstants {
     public static final ThingTypeUID THING_TYPE_CAMERA_EYES = new ThingTypeUID(BINDING_ID, "security-camera-eyes");
     public static final ThingTypeUID THING_TYPE_INTRUSION_DETECTION_SYSTEM = new ThingTypeUID(BINDING_ID,
             "intrusion-detection-system");
+    public static final ThingTypeUID THING_TYPE_SMART_PLUG_COMPACT = new ThingTypeUID(BINDING_ID, "smart-plug-compact");
 
     // List of all Channel IDs
     // Auto-generated from thing-types.xml via script, don't modify
@@ -73,6 +74,8 @@ public class BoschSHCBindingConstants {
     public static final String CHANNEL_ARM_ACTION = "arm-action";
     public static final String CHANNEL_DISARM_ACTION = "disarm-action";
     public static final String CHANNEL_MUTE_ACTION = "mute-action";
+    public static final String CHANNEL_BATTERY_LEVEL = "battery-level";
+    public static final String CHANNEL_LOW_BATTERY = "low-battery";
 
     // static device/service names
     public static final String SERVICE_INTRUSION_DETECTION = "intrusionDetectionSystem";

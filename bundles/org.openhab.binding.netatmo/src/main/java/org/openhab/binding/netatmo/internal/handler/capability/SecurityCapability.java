@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
 class SecurityCapability extends RestCapability<SecurityApi> {
     private final Logger logger = LoggerFactory.getLogger(SecurityCapability.class);
 
-    private static final Map<String, HomeEvent> eventBuffer = new HashMap<>();
+    private final Map<String, HomeEvent> eventBuffer = new HashMap<>();
     private @Nullable ZonedDateTime freshestEventTime;
 
     SecurityCapability(CommonInterface handler) {

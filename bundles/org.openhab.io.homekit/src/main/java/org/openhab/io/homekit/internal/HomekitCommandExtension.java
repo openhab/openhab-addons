@@ -26,6 +26,8 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.github.hapjava.services.Service;
+
 /**
  * Console commands for interacting with the HomeKit integration
  *
@@ -119,6 +121,24 @@ public class HomekitCommandExtension extends AbstractConsoleCommandExtension {
         });
     }
 
+    private void printService(Console console, Service service, int indent) {
+        console.println(" ".repeat(indent) + "Service Type: " + service.getClass().getSimpleName() + " ("
+                + service.getType() + ")");
+        console.println(" ".repeat(indent + 2) + "Characteristics:");
+        service.getCharacteristics().forEach((c) -> {
+            try {
+                console.println(
+                        " ".repeat(indent + 4) + c.getClass().getSimpleName() + ": " + c.toJson(0).get().toString());
+            } catch (InterruptedException | ExecutionException e) {
+            }
+        });
+        if (service.getLinkedServices().isEmpty()) {
+            return;
+        }
+        console.println(" ".repeat(indent + 2) + "Linked Services:");
+        service.getLinkedServices().forEach((s) -> printService(console, s, indent + 2));
+    }
+
     private void printAccessory(String id, Console console) {
         homekit.getAccessories().forEach(v -> {
             try {
@@ -126,11 +146,7 @@ public class HomekitCommandExtension extends AbstractConsoleCommandExtension {
                         && (v.getName().get().toUpperCase().contains(id.toUpperCase())))) {
                     console.println(v.getId() + " " + v.getName().get());
                     console.println("Services:");
-                    v.getServices().forEach(s -> {
-                        console.println("    Service Type: " + s.getType());
-                        console.println("    Characteristics: ");
-                        s.getCharacteristics().forEach(c -> console.println("      : " + c.getClass()));
-                    });
+                    v.getServices().forEach(s -> printService(console, s, 2));
                     console.println("");
                 }
             } catch (InterruptedException | ExecutionException e) {

@@ -235,6 +235,7 @@ public class TapoDeviceConnector extends TapoDeviceHttpApi {
      */
     protected void sendSecurePasstrhroug(String payload, String command) {
         /* encrypt payload */
+        logger.trace("({}) encrypting payload '{}'", uid, payload);
         String encryptedPayload = encryptPayload(payload);
 
         /* create secured payload */
