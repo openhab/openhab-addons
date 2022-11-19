@@ -44,6 +44,7 @@ import org.openhab.core.types.Command;
  * @author Andrew Fiddian-Green - Tests for Command Tag code
  * @author Michael Wodniok - Extended Tests for filtered Events
  * @author Michael Wodniok - Extended Test for parallel current events
+ * @author Michael Wodniok - Extended Tests for filtered current events
  */
 public class BiweeklyPresentableCalendarTest {
     private AbstractPresentableCalendar calendar;

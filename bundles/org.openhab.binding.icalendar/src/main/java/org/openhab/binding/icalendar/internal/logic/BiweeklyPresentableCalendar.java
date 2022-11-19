@@ -62,6 +62,8 @@ import biweekly.util.com.google.ical.compat.javautil.DateIterator;
  * @author Michael Wodniok - Added logic for events moved with "RECURRENCE-ID" (issue 9647)
  * @author Michael Wodniok - Extended logic for defined behavior with parallel current events
  *         (issue 10808)
+ * @author Michael Wodniok - Extracted filter logc into a Predicate and extended logic in current
+ *         event getters to use that predicate. (issue 13649)
  */
 @NonNullByDefault
 class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
