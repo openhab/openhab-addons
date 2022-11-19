@@ -128,7 +128,7 @@ public class BiweeklyPresentableCalendarTest {
     public void testGetCurrentEvent() {
         Event currentEvent = calendar.getCurrentEvent(Instant.parse("2019-09-10T09:07:00Z"));
         assertNotNull(currentEvent);
-        assertTrue("Test Series in UTC".contentEquals(currentEvent.title));
+        assertEquals("Test Series in UTC", currentEvent.title);
         assertEquals(0, Instant.parse("2019-09-10T09:05:00Z").compareTo(currentEvent.start));
         assertEquals(0, Instant.parse("2019-09-10T09:10:00Z").compareTo(currentEvent.end));
         assertNull(currentEvent.comment);
@@ -141,22 +141,22 @@ public class BiweeklyPresentableCalendarTest {
 
         Event currentEvent2 = calendar_issue10808.getCurrentEvent(Instant.parse("2021-06-05T17:10:05Z"));
         assertNotNull(currentEvent2);
-        assertTrue("Test event 1".contentEquals(currentEvent2.title));
+        assertEquals("Test event 1", currentEvent2.title);
 
         Event currentEvent3 = calendar_issue10808.getCurrentEvent(Instant.parse("2021-06-05T17:13:05Z"));
         assertNotNull(currentEvent3);
-        assertTrue("Test event 2".contentEquals(currentEvent3.title));
+        assertEquals("Test event 2", currentEvent3.title);
 
         Event currentEvent4 = calendar_issue10808.getCurrentEvent(Instant.parse("2021-06-05T17:18:05Z"));
         assertNotNull(currentEvent4);
-        assertTrue("Test event 1".contentEquals(currentEvent4.title));
+        assertEquals("Test event 1", currentEvent4.title);
 
         Event currentEvent5 = calendar_issue11084.getCurrentEvent(Instant.parse("2021-08-16T16:30:05Z"));
         assertNull(currentEvent5);
 
         Event currentEvent6 = calendar_issue11084.getCurrentEvent(Instant.parse("2021-08-16T16:45:05Z"));
         assertNotNull(currentEvent6);
-        assertTrue("TEST_REPEATING_EVENT_3".contentEquals(currentEvent6.title));
+        assertEquals("TEST_REPEATING_EVENT_3", currentEvent6.title);
 
         Event currentEvent7 = calendar_issue13649.getCurrentEvent(Instant.parse("2022-11-19T04:31:00Z"));
         assertNotNull(currentEvent7);
@@ -184,14 +184,14 @@ public class BiweeklyPresentableCalendarTest {
         // positive case: next event of series
         Event nextEventOfSeries = calendar.getNextEvent(Instant.parse("2019-09-10T09:07:00Z"));
         assertNotNull(nextEventOfSeries);
-        assertTrue("Test Series in UTC".contentEquals(nextEventOfSeries.title));
+        assertEquals("Test Series in UTC", nextEventOfSeries.title);
         assertEquals(0, Instant.parse("2019-09-11T09:05:00Z").compareTo(nextEventOfSeries.start));
         assertEquals(0, Instant.parse("2019-09-11T09:10:00Z").compareTo(nextEventOfSeries.end));
 
         // positive case: next event after series
         Event nextEventOutsideSeries = calendar.getNextEvent(Instant.parse("2019-09-12T09:07:00Z"));
         assertNotNull(nextEventOutsideSeries);
-        assertTrue("Test Event in UTC+2".contentEquals(nextEventOutsideSeries.title));
+        assertEquals("Test Event in UTC+2", nextEventOutsideSeries.title);
         assertEquals(0, Instant.parse("2019-09-14T08:00:00Z").compareTo(nextEventOutsideSeries.start));
         assertEquals(0, Instant.parse("2019-09-14T09:00:00Z").compareTo(nextEventOutsideSeries.end));
 
