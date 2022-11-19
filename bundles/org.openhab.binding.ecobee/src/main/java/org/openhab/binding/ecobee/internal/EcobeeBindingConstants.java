@@ -224,6 +224,10 @@ public class EcobeeBindingConstants {
     public static final String CH_DESIRED_HEAT_RANGE_HIGH = "desiredHeatRangeHigh";
     public static final String CH_DESIRED_COOL_RANGE_LOW = "desiredCoolRangeLow";
     public static final String CH_DESIRED_COOL_RANGE_HIGH = "desiredCoolRangeHigh";
+    public static final String CH_ACTUAL_AQ_ACCURACY = "actualAQAccuracy";
+    public static final String CH_ACTUAL_AQ_SCORE = "actualAQScore";
+    public static final String CH_ACTUAL_CO2 = "actualCO2";
+    public static final String CH_ACTUAL_VOC = "actualVOC";
 
     // Thermostat bridge SETTINGS channels
     public static final String CH_HVAC_MODE = "hvacMode";

@@ -44,7 +44,7 @@ import org.openhab.core.thing.ThingUID;
  *
  * @author Anton Kharuzhy - Initial contribution
  */
-@SuppressWarnings({ "ConstantConditions", "unchecked" })
+@SuppressWarnings({ "unchecked" })
 @ExtendWith(MockitoExtension.class)
 @NonNullByDefault
 public class HomeAssistantDiscoveryTests extends AbstractHomeAssistantTests {

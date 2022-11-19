@@ -29,6 +29,7 @@ The following databases are currently supported and tested:
 	- [Database Table Schema](#database-table-schema)
 	- [Number Precision](#number-precision)
 	- [Rounding results](#rounding-results)
+	- [Maintenance](#maintenance)
 	- [For Developers](#for-developers)
 	- [Performance Tests](#performance-tests)
 
@@ -59,9 +60,10 @@ This service can be configured in the file `services/jdbc.cfg`.
 | sqltype.tablePrimaryKey     | `TIMESTAMP`                                                  |    No     | type of `time` column for newly created item tables          |
 | sqltype.tablePrimaryValue   | `NOW()`                                                      |    No     | value of `time` column for newly inserted rows               |
 | numberDecimalcount          | 3                                                            |    No     | for Itemtype "Number" default decimal digit count            |
+| itemsManageTable            | `items`                                                      |    No     | items manage table. For Migration from MySQL Persistence, set to `Items`. |
 | tableNamePrefix             | `item`                                                       |    No     | table name prefix. For Migration from MySQL Persistence, set to `Item`. |
 | tableUseRealItemNames       | `false`                                                      |    No     | table name prefix generation.  When set to `true`, real item names are used for table names and `tableNamePrefix` is ignored.  When set to `false`, the `tableNamePrefix` is used to generate table names with sequential numbers. |
-| tableCaseSensitiveItemNames | `false`                                                      |    No     | table name case when `tableUseRealItemNames` is `true`. When set to `true`, item name case is preserved in table names and no suffix is used. When set to `false`, table names are lower cased and a numeric suffix is added. Please read [this](#case-sensitive-item-names) before enabling. |
+| tableCaseSensitiveItemNames | `false`                                                      |    No     | table name case. This setting is only applicable when `tableUseRealItemNames` is `true`. When set to `true`, item name case is preserved in table names and no prefix or suffix is added. When set to `false`, table names are lower cased and a numeric suffix is added. Please read [this](#case-sensitive-item-names) before enabling. |
 | tableIdDigitCount           | 4                                                            |    No     | when `tableUseRealItemNames` is `false` and thus table names are generated sequentially, this controls how many zero-padded digits are used in the table name.  With the default of 4, the first table name will end with `0001`. For migration from the MySQL persistence service, set this to 0. |
 | rebuildTableNames           | false                                                        |    No     | rename existing tables using `tableUseRealItemNames` and `tableIdDigitCount`. USE WITH CARE! Deactivate after Renaming is done! |
 | jdbc.maximumPoolSize        | configured per database in package `org.openhab.persistence.jdbc.db.*` |    No     | Some embedded databases can handle only one connection. See [this link](https://github.com/brettwooldridge/HikariCP/issues/256) for more information |
@@ -93,6 +95,8 @@ With this configuration, tables are named exactly like their corresponding items
 In order for this to work correctly, the underlying operating system, database server and configuration must support case sensitive table names.
 For MySQL, see [MySQL: Identifier Case Sensitivity](https://dev.mysql.com/doc/refman/8.0/en/identifier-case-sensitivity.html) for more information.
 
+Please make sure to have a dedicated schema when using this option, since otherwise table name collisions are more likely to happen.
+
 ### Migration from MySQL to JDBC Persistence Services
 
 The JDBC Persistence service can act as a replacement for the MySQL Persistence service.
@@ -104,6 +108,7 @@ services/jdbc.cfg
 url=jdbc:mysql://192.168.0.1:3306/testMysql
 user=test
 password=test
+itemsManageTable=Items
 tableNamePrefix=Item
 tableUseRealItemNames=false
 tableIdDigitCount=0
@@ -122,7 +127,10 @@ The item data tables include time and data values.
 The SQL data type used depends on the openHAB item type, and allows the item state to be recovered back into openHAB in the same way it was stored.
 
 With this *per-item* layout, the scalability and easy maintenance of the database is ensured, even if large amounts of data must be managed.
-To rename existing tables, use the parameters `tableUseRealItemNames` and `tableIdDigitCount` in the configuration.
+To rename existing tables, use the parameters `tableNamePrefix`, `tableUseRealItemNames`, `tableIdDigitCount` and `tableCaseSensitiveItemNames` in the configuration.
+
+Please be aware that changing the name of `itemsManageTable` is not supported by the migration.
+If this is changed, the table must be renamed manually according to new configured name.
 
 ### Number Precision
 
@@ -137,6 +145,68 @@ The SQL types `DECIMAL` or  `NUMERIC` are precise, but to work with `DOUBLE` is 
 The results of database queries of number items are rounded to three decimal places by default.
 With `numberDecimalcount` decimals can be changed.
 Especially if sql types `DECIMAL` or  `NUMERIC` are used for `sqltype.NUMBER`, rounding can be disabled by setting `numberDecimalcount=-1`.
+
+### Maintenance
+
+Some maintenance tools are provided as console commands.
+
+#### List Tables
+
+Tables and corresponding items can be listed with the command `jdbc tables list`.
+Per default only tables with some kind of problem are listed.
+To list all tables, use the command `jdbc tables list all`.
+
+The list contains table name, item name, row count and status, which can be one of:
+
+- **Valid:** Table is consistent.
+- **Item missing:** Table has no corresponding item.
+- **Table missing:** Referenced table does not exist.
+- **Item and table missing:** Referenced table does not exist nor has corresponding item.
+- **Orphan table:** Mapping for table does not exist in index.
+
+#### Clean Inconsistent Items
+
+Some issues can be fixed automatically using the command `jdbc tables clean` (all items having issues) or `jdbc tables clean <itemName>` (single item).
+This cleanup operation will remove items from the index (table `Items`) if the referenced table does not exist.
+
+If the item does not exist, the table will be physically deleted, but only if it's empty.
+This precaution is taken because items may have existed previously, and the data might still be valuable.
+For example, an item for a lost or repurposed sensor could have been deleted from the system while preserving persisted data.
+To skip this check for a single item, use `jdbc tables clean <itemName> force` with care.
+
+Prior to performing a `jdbc tables clean` operation, it's recommended to review the result of `jdbc tables list`.
+
+Fixing integrity issues can be useful before performing a migration to another naming scheme.
+For example, when migrating to `tableCaseSensitiveItemNames`, an index will no longer exist after the migration:
+
+**Before migration:**
+
+| Table             | Row count | Item   | Status        |
+|-------------------|---------: |--------|---------------|
+| ActualItem        |         0 |        | Orphan table  |
+| TableNotBelonging |         0 |        | Orphan table  |
+| item0077          |         0 | MyItem | Table missing |
+
+**After migration:**
+
+| Table             | Row count | Item              | Status        |
+|-------------------|---------: |-------------------|---------------|
+| ActualItem        |         0 | ActualItem        | Valid         |
+| TableNotBelonging |         0 | TableNotBelonging | Item missing  |
+
+This happened:
+
+- `ActualItem` was missing in the index and became valid because it was left untouched, not being a part of the migration. After the migration, it happened to match the name of an existing item, thus it became valid.
+- `TableNotBelonging` was also not part of the migration, but since now assumed to match an item, status changed since no item with that name exists.
+- `item0077`, being the only correct table name according to previous naming scheme, disappeared from the list since it didn't have a corresponding table, and is now no longer part of any index.
+
+In other words, extracting this information from the index before removing it, can be beneficial in order to understand the issues and possible causes.
+
+#### Reload Index/Schema
+
+Manual changes in the index table, `Items`, will not be picked up automatically for performance reasons.
+The same is true when manually adding new item tables or deleting existing ones.
+After making such changes, the command `jdbc reload` can be used to reload the index.
 
 ### For Developers
 

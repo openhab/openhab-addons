@@ -33,8 +33,9 @@ import com.google.gson.JsonParseException;
  */
 @NonNullByDefault
 public class ConnectionDeserializer implements JsonDeserializer<Connection> {
-    public @Nullable Connection deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
-            throws JsonParseException {
+    @Override
+    public @Nullable Connection deserialize(@Nullable JsonElement json, Type typeOfT,
+            JsonDeserializationContext context) throws JsonParseException {
         JsonArray list;
         if (json == null) {
             throw new JsonParseException("JSON element is null, but must be connection definition.");

@@ -23,9 +23,9 @@ import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.persistence.jdbc.db.JdbcBaseDAO;
-import org.openhab.persistence.jdbc.utils.MovingAverage;
-import org.openhab.persistence.jdbc.utils.StringUtilsExt;
+import org.openhab.persistence.jdbc.internal.db.JdbcBaseDAO;
+import org.openhab.persistence.jdbc.internal.utils.MovingAverage;
+import org.openhab.persistence.jdbc.internal.utils.StringUtilsExt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +39,7 @@ public class JdbcConfiguration {
     private final Logger logger = LoggerFactory.getLogger(JdbcConfiguration.class);
 
     private static final Pattern EXTRACT_CONFIG_PATTERN = Pattern.compile("^(.*?)\\.([0-9.a-zA-Z]+)$");
-    private static final String DB_DAO_PACKAGE = "org.openhab.persistence.jdbc.db.Jdbc";
+    private static final String DB_DAO_PACKAGE = "org.openhab.persistence.jdbc.internal.db.Jdbc";
 
     private Map<Object, Object> configuration;
 
@@ -58,6 +58,7 @@ public class JdbcConfiguration {
     private int numberDecimalcount = 3;
     private boolean tableUseRealItemNames = false;
     private boolean tableCaseSensitiveItemNames = false;
+    private String itemsManageTable = "items";
     private String tableNamePrefix = "item";
     private int tableIdDigitCount = 4;
     private boolean rebuildTableNames = false;
@@ -144,6 +145,12 @@ public class JdbcConfiguration {
         if (et != null && !et.isBlank() && isNumericPattern.matcher(et).matches()) {
             errReconnectThreshold = Integer.parseInt(et);
             logger.debug("JDBC::updateConfig: errReconnectThreshold={}", errReconnectThreshold);
+        }
+
+        String mt = (String) configuration.get("itemsManageTable");
+        if (mt != null && !mt.isBlank()) {
+            itemsManageTable = mt;
+            logger.debug("JDBC::updateConfig: itemsManageTable={}", itemsManageTable);
         }
 
         String np = (String) configuration.get("tableNamePrefix");
@@ -348,6 +355,10 @@ public class JdbcConfiguration {
 
     public @Nullable String getServiceName() {
         return serviceName;
+    }
+
+    public String getItemsManageTable() {
+        return itemsManageTable;
     }
 
     public String getTableNamePrefix() {

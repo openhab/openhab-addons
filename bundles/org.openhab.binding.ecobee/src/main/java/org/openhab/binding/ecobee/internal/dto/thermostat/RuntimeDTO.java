@@ -152,4 +152,24 @@ public class RuntimeDTO {
      * minimum and maximim, e.g. [650,920].
      */
     public List<Integer> desiredCoolRange;
+
+    /*
+     * The current air quality accuracy
+     */
+    public Integer actualAQAccuracy;
+
+    /*
+     * The current air quality score
+     */
+    public Integer actualAQScore;
+
+    /*
+     * The current CO2 in ppm
+     */
+    public Integer actualCO2;
+
+    /*
+     * The current VOC in ppb
+     */
+    public Integer actualVOC;
 }

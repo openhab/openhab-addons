@@ -32,11 +32,11 @@ import org.openhab.core.types.UnDefType;
  *
  * @author Anton Kharuzhy - Initial contribution
  */
-@SuppressWarnings("ConstantConditions")
 @NonNullByDefault
 public class VacuumTests extends AbstractComponentTests {
     public static final String CONFIG_TOPIC = "vacuum/rockrobo_vacuum";
 
+    @SuppressWarnings("null")
     @Test
     public void testRoborockValetudo() {
         // @formatter:off
@@ -157,6 +157,7 @@ public class VacuumTests extends AbstractComponentTests {
         assertState(component, Vacuum.JSON_ATTRIBUTES_CH_ID, new StringType(jsonValue));
     }
 
+    @SuppressWarnings("null")
     @Test
     public void testLegacySchema() {
         // @formatter:off
