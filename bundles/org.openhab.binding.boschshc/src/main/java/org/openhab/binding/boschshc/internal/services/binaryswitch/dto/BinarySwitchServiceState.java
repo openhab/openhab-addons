@@ -31,6 +31,6 @@ public class BinarySwitchServiceState extends BoschSHCServiceState {
     public boolean on;
 
     public @NonNull OnOffType toOnOffType() {
-        return on ? OnOffType.ON : OnOffType.OFF;
+        return OnOffType.from(on);
     }
 }
