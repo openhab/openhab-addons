@@ -15,6 +15,7 @@ package org.openhab.binding.qolsysiq.internal.client.dto.model;
 import com.google.gson.annotations.SerializedName;
 
 /**
+ * The type of alarm
  *
  * @author Dan Cunningham - Initial contribution
  */

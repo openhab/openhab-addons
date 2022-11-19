@@ -13,6 +13,7 @@
 package org.openhab.binding.qolsysiq.internal.client.dto.event;
 
 /**
+ * The type of {@link ZoneEvent} sent by the panel
  *
  * @author Dan Cunningham - Initial contribution
  */

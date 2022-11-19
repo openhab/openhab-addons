@@ -34,6 +34,7 @@ import org.openhab.binding.qolsysiq.internal.client.dto.event.ErrorEvent;
 import org.openhab.binding.qolsysiq.internal.client.dto.event.SecureArmInfoEvent;
 import org.openhab.binding.qolsysiq.internal.client.dto.event.SummaryInfoEvent;
 import org.openhab.binding.qolsysiq.internal.client.dto.event.ZoneActiveEvent;
+import org.openhab.binding.qolsysiq.internal.client.dto.event.ZoneAddEvent;
 import org.openhab.binding.qolsysiq.internal.client.dto.event.ZoneUpdateEvent;
 import org.openhab.binding.qolsysiq.internal.client.dto.model.Partition;
 import org.openhab.binding.qolsysiq.internal.config.QolsysIQPanelConfiguration;
@@ -191,6 +192,19 @@ public class QolsysIQPanelHandler extends BaseBridgeHandler
         });
     }
 
+    @Override
+    public void zoneAddEvent(ZoneAddEvent event) {
+        logger.debug("ZoneAddEvent {}", event.zone.name);
+        partitions.forEach(p -> {
+            if (p.zoneList.stream().filter(z -> z.zoneId.equals(event.zone.zoneId)).findAny().isPresent()) {
+                QolsysIQPartitionHandler handler = partitionHandler(p.partitionId);
+                if (handler != null) {
+                    handler.zoneAddEvent(event);
+                }
+            }
+        });
+    }
+
     /**
      * Sends the action to the panel. This will replace the token of the action passed in with the one configured here
      *
@@ -223,7 +237,8 @@ public class QolsysIQPanelHandler extends BaseBridgeHandler
         }
         QolsysIQPanelConfiguration config = getConfigAs(QolsysIQPanelConfiguration.class);
         key = config.key;
-        QolsysiqClient apiClient = new QolsysiqClient(config.hostname, config.port, HB_SECONDS, scheduler);
+        QolsysiqClient apiClient = new QolsysiqClient(config.hostname, config.port, HB_SECONDS, scheduler,
+                "OH-binding-" + getThing().getUID().getAsString());
         try {
             apiClient.connect();
             apiClient.addListener(this);

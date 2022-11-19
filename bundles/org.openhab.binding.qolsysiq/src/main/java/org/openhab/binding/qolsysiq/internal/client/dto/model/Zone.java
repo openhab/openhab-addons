@@ -13,6 +13,7 @@
 package org.openhab.binding.qolsysiq.internal.client.dto.model;
 
 /**
+ * A zone sensor
  *
  * @author Dan Cunningham - Initial contribution
  */

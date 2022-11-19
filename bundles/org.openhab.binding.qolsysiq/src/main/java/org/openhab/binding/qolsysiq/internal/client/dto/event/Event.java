@@ -15,6 +15,7 @@ package org.openhab.binding.qolsysiq.internal.client.dto.event;
 import com.google.gson.annotations.SerializedName;
 
 /**
+ * The base type for various event messages sent by the panel
  *
  * @author Dan Cunningham - Initial contribution
  */

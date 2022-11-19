@@ -33,6 +33,7 @@ import org.openhab.binding.qolsysiq.internal.client.dto.event.ArmingEvent;
 import org.openhab.binding.qolsysiq.internal.client.dto.event.ErrorEvent;
 import org.openhab.binding.qolsysiq.internal.client.dto.event.SecureArmInfoEvent;
 import org.openhab.binding.qolsysiq.internal.client.dto.event.ZoneActiveEvent;
+import org.openhab.binding.qolsysiq.internal.client.dto.event.ZoneAddEvent;
 import org.openhab.binding.qolsysiq.internal.client.dto.event.ZoneUpdateEvent;
 import org.openhab.binding.qolsysiq.internal.client.dto.model.AlarmType;
 import org.openhab.binding.qolsysiq.internal.client.dto.model.Partition;
@@ -216,6 +217,10 @@ public class QolsysIQPartitionHandler extends BaseBridgeHandler implements Qolsy
         setSecureArm(event.value);
     }
 
+    public void zoneAddEvent(ZoneAddEvent event) {
+        discoverZone(event.zone);
+    }
+
     protected void updatePartition(Partition partition) {
         if (getThing().getStatus() != ThingStatus.ONLINE) {
             updateStatus(ThingStatus.ONLINE);
@@ -313,16 +318,17 @@ public class QolsysIQPartitionHandler extends BaseBridgeHandler implements Qolsy
 
     private void discoverChildDevices() {
         synchronized (zones) {
-            zones.forEach(z -> {
-                QolsysIQChildDiscoveryService discoveryService = this.discoveryService;
-                if (discoveryService != null) {
-                    ThingUID bridgeUID = getThing().getUID();
-                    ThingUID thingUID = new ThingUID(QolsysIQBindingConstants.THING_TYPE_ZONE, bridgeUID,
-                            String.valueOf(z.zoneId));
-                    discoveryService.discoverQolsysIQChildThing(thingUID, bridgeUID, z.zoneId,
-                            "Qolsys IQ Zone: " + z.name);
-                }
-            });
+            zones.forEach(z -> discoverZone(z));
+        }
+    }
+
+    private void discoverZone(Zone z) {
+        QolsysIQChildDiscoveryService discoveryService = this.discoveryService;
+        if (discoveryService != null) {
+            ThingUID bridgeUID = getThing().getUID();
+            ThingUID thingUID = new ThingUID(QolsysIQBindingConstants.THING_TYPE_ZONE, bridgeUID,
+                    String.valueOf(z.zoneId));
+            discoveryService.discoverQolsysIQChildThing(thingUID, bridgeUID, z.zoneId, "Qolsys IQ Zone: " + z.name);
         }
     }
 

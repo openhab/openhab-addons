@@ -15,6 +15,7 @@ package org.openhab.binding.qolsysiq.internal.client.dto.model;
 import java.util.List;
 
 /**
+ * A logical alarm partition that can be armed, report state and contain zones
  *
  * @author Dan Cunningham - Initial contribution
  */

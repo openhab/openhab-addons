@@ -15,10 +15,10 @@ package org.openhab.binding.qolsysiq.internal.client.dto.model;
 import com.google.gson.annotations.SerializedName;
 
 /**
+ * Represents the status of a zone
  *
  * @author Dan Cunningham - Initial contribution
  */
-// Open, Close, Active, Idle, Tamper, Failure
 public enum ZoneStatus {
     @SerializedName("Active")
     ACTIVE,

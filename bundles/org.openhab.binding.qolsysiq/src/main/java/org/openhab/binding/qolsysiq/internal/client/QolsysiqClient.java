@@ -46,6 +46,7 @@ import org.openhab.binding.qolsysiq.internal.client.dto.event.InfoEventType;
 import org.openhab.binding.qolsysiq.internal.client.dto.event.SecureArmInfoEvent;
 import org.openhab.binding.qolsysiq.internal.client.dto.event.SummaryInfoEvent;
 import org.openhab.binding.qolsysiq.internal.client.dto.event.ZoneActiveEvent;
+import org.openhab.binding.qolsysiq.internal.client.dto.event.ZoneAddEvent;
 import org.openhab.binding.qolsysiq.internal.client.dto.event.ZoneEventType;
 import org.openhab.binding.qolsysiq.internal.client.dto.event.ZoneUpdateEvent;
 import org.slf4j.Logger;
@@ -86,6 +87,8 @@ public class QolsysiqClient {
     private String host;
     private int port;
     private int heartbeatSeconds;
+    private String threadName;
+    private SSLSocketFactory sslsocketfactory;
 
     /**
      * Creates a new QolsysiqClient
@@ -94,12 +97,23 @@ public class QolsysiqClient {
      * @param port
      * @param heartbeatSeconds
      * @param scheduler for the heart beat task
+     * @param threadName
      */
-    public QolsysiqClient(String host, int port, int heartbeatSeconds, ScheduledExecutorService scheduler) {
+    public QolsysiqClient(String host, int port, int heartbeatSeconds, ScheduledExecutorService scheduler,
+            String threadName) {
         this.host = host;
         this.port = port;
         this.heartbeatSeconds = heartbeatSeconds;
         this.scheduler = scheduler;
+        this.threadName = threadName;
+
+        try {
+            SSLContext sslContext = SSLContext.getInstance("TLS");
+            sslContext.init(null, acceptAlltrustManagers(), null);
+            sslsocketfactory = sslContext.getSocketFactory();
+        } catch (KeyManagementException | NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -113,14 +127,6 @@ public class QolsysiqClient {
             logger.debug("connect: already connected, ignoring");
             return;
         }
-        SSLSocketFactory sslsocketfactory;
-        try {
-            SSLContext sslContext = SSLContext.getInstance("TLS");
-            sslContext.init(null, acceptAlltrustManagers(), null);
-            sslsocketfactory = sslContext.getSocketFactory();
-        } catch (KeyManagementException | NoSuchAlgorithmException e) {
-            throw new IOException(e);
-        }
 
         SSLSocket socket = (SSLSocket) sslsocketfactory.createSocket(host, port);
         socket.startHandshake();
@@ -128,7 +134,7 @@ public class QolsysiqClient {
         reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         this.socket = socket;
 
-        Thread readerThread = new Thread(this::readEvents, "QolsysiqClient reader thread");
+        Thread readerThread = new Thread(this::readEvents, threadName);
         readerThread.setDaemon(true);
         readerThread.start();
         this.readerThread = readerThread;
@@ -197,6 +203,7 @@ public class QolsysiqClient {
             } catch (IOException e) {
                 logger.debug("Error closing writer: {}", e.getMessage());
             }
+            this.writer = null;
         }
     }
 
@@ -294,6 +301,8 @@ public class QolsysiqClient {
                             listeners.forEach(listener -> listener.zoneActiveEvent((ZoneActiveEvent) event));
                         } else if (event instanceof ZoneUpdateEvent) {
                             listeners.forEach(listener -> listener.zoneUpdateEvent((ZoneUpdateEvent) event));
+                        } else if (event instanceof ZoneAddEvent) {
+                            listeners.forEach(listener -> listener.zoneAddEvent((ZoneAddEvent) event));
                         }
                     }
                 } catch (JsonSyntaxException e) {
@@ -367,6 +376,8 @@ public class QolsysiqClient {
                                     return context.deserialize(jsonObject, ZoneActiveEvent.class);
                                 case ZONE_UPDATE:
                                     return context.deserialize(jsonObject, ZoneUpdateEvent.class);
+                                case ZONE_ADD:
+                                    return context.deserialize(jsonObject, ZoneAddEvent.class);
                                 default:
                                     break;
                             }

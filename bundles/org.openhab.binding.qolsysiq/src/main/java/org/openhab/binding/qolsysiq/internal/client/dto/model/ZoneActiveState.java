@@ -13,6 +13,7 @@
 package org.openhab.binding.qolsysiq.internal.client.dto.model;
 
 /**
+ * The the active state of a zone
  *
  * @author Dan Cunningham - Initial contribution
  */

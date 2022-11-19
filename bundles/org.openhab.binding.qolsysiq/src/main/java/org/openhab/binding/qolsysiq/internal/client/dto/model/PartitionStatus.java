@@ -13,6 +13,7 @@
 package org.openhab.binding.qolsysiq.internal.client.dto.model;
 
 /**
+ * The current status of an alarm panel
  *
  * @author Dan Cunningham - Initial contribution
  */

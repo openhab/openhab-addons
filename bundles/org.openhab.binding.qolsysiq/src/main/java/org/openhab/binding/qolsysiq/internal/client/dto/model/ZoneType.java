@@ -15,6 +15,8 @@ package org.openhab.binding.qolsysiq.internal.client.dto.model;
 import com.google.gson.annotations.SerializedName;
 
 /**
+ * The zone physical type
+ *
  * Big thanks to the folks at https://community.home-assistant.io/t/qolsys-iq-panel-2-and-3rd-party-integration/231405
  *
  * @author Dan Cunningham - Initial contribution

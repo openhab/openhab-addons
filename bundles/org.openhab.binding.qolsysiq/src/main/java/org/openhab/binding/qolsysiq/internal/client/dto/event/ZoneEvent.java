@@ -15,6 +15,7 @@ package org.openhab.binding.qolsysiq.internal.client.dto.event;
 import com.google.gson.annotations.SerializedName;
 
 /**
+ * A Zone {@link Event} message sent by the panel
  *
  * @author Dan Cunningham - Initial contribution
  */

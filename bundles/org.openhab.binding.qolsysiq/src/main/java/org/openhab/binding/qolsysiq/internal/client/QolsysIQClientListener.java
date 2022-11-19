@@ -19,6 +19,7 @@ import org.openhab.binding.qolsysiq.internal.client.dto.event.ErrorEvent;
 import org.openhab.binding.qolsysiq.internal.client.dto.event.SecureArmInfoEvent;
 import org.openhab.binding.qolsysiq.internal.client.dto.event.SummaryInfoEvent;
 import org.openhab.binding.qolsysiq.internal.client.dto.event.ZoneActiveEvent;
+import org.openhab.binding.qolsysiq.internal.client.dto.event.ZoneAddEvent;
 import org.openhab.binding.qolsysiq.internal.client.dto.event.ZoneUpdateEvent;
 
 /**
@@ -28,58 +29,65 @@ import org.openhab.binding.qolsysiq.internal.client.dto.event.ZoneUpdateEvent;
 @NonNullByDefault
 public interface QolsysIQClientListener {
     /**
-     * Call when connection has been disconnected
+     * Callback when the connection has been disconnected
      *
      * @param reason
      */
     void disconnected(Exception reason);
 
     /**
-     * AlarmEvent message callback
+     * {@link AlarmEvent} message callback
      *
      * @param event
      */
     void alarmEvent(AlarmEvent event);
 
     /**
-     * ArmingEvent message callback
+     * {@link ArmingEvent} message callback
      *
      * @param event
      */
     void armingEvent(ArmingEvent event);
 
     /**
-     * ErrorEvent message callback
+     * {@link ErrorEvent} message callback
      *
      * @param event
      */
     void errorEvent(ErrorEvent event);
 
     /**
-     * SummaryInfoEvent message callback
+     * {@link SummaryInfoEvent} message callback
      *
      * @param event
      */
     void summaryInfoEvent(SummaryInfoEvent event);
 
     /**
-     * SecureArmInfoEvent message callback
+     * {@link SecureArmInfoEvent} message callback
      *
      * @param event
      */
     void secureArmInfoEvent(SecureArmInfoEvent event);
 
     /**
-     * ZoneActiveEvent message callback
+     * {@link ZoneActiveEvent} message callback
      *
      * @param event
      */
     void zoneActiveEvent(ZoneActiveEvent event);
 
     /**
-     * ZoneUpdateEvent message callback
+     * {@link ZoneUpdateEvent} message callback
      *
      * @param event
      */
     void zoneUpdateEvent(ZoneUpdateEvent event);
+
+    /**
+     * {@link ZoneAddEvent} message callback
+     *
+     * @param event
+     */
+    void zoneAddEvent(ZoneAddEvent event);
 }
