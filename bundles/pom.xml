@@ -20,7 +20,7 @@
     <!-- automation -->
     <module>org.openhab.automation.groovyscripting</module>
     <module>org.openhab.automation.jrubyscripting</module>
-    <module>org.openhab.automation.jsscripting</module>
+    <!--module>org.openhab.automation.jsscripting</module -->
     <module>org.openhab.automation.jythonscripting</module>
     <module>org.openhab.automation.pidcontroller</module>
     <module>org.openhab.automation.pwm</module>
@@ -221,7 +221,7 @@
     <module>org.openhab.binding.meater</module>
     <module>org.openhab.binding.mecmeter</module>
     <module>org.openhab.binding.melcloud</module>
-    <module>org.openhab.binding.mercedesme</module>
+    <!--module>org.openhab.binding.mercedesme</module -->
     <module>org.openhab.binding.meteoalerte</module>
     <module>org.openhab.binding.meteoblue</module>
     <module>org.openhab.binding.meteostick</module>
