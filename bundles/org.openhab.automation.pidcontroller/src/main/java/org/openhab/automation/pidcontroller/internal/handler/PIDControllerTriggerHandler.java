@@ -22,7 +22,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.automation.pidcontroller.internal.PIDException;
 import org.openhab.core.automation.ModuleHandlerCallback;
 import org.openhab.core.automation.Trigger;
 import org.openhab.core.automation.handler.BaseTriggerModuleHandler;
@@ -39,9 +38,7 @@ import org.openhab.core.items.events.ItemEventFactory;
 import org.openhab.core.items.events.ItemStateChangedEvent;
 import org.openhab.core.items.events.ItemStateEvent;
 import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.RefreshType;
-import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
@@ -165,17 +162,19 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
         double input;
         double setpoint;
 
-        try {
-            input = getItemValueAsNumber(inputItem);
-        } catch (PIDException e) {
-            logger.warn("Input item: {}: {}", inputItem.getName(), e.getMessage());
+        DecimalType inputState = inputItem.getStateAs(DecimalType.class);
+        if (inputState != null) {
+            input = inputState.toBigDecimal().doubleValue();
+        } else {
+            logger.warn("Input item {} is NULL", inputItem.getName());
             return;
         }
 
-        try {
-            setpoint = getItemValueAsNumber(setpointItem);
-        } catch (PIDException e) {
-            logger.warn("Setpoint item: {}: {}", setpointItem.getName(), e.getMessage());
+        DecimalType setpointState = setpointItem.getStateAs(DecimalType.class);
+        if (setpointState != null) {
+            setpoint = setpointState.toBigDecimal().doubleValue();
+        } else {
+            logger.warn("Setpoint item {} IS NULL", setpointItem.getName());
             return;
         }
 
@@ -222,34 +221,17 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
         }
 
         try {
-            value = getItemValueAsNumber(itemRegistry.getItem(itemName));
-            logger.debug("Item '{}' value {} recovered by PID controller", itemName, value);
+            Item item = itemRegistry.getItem(itemName);
+            DecimalType state = item.getStateAs(DecimalType.class);
+            if (state != null) {
+                value = state.toBigDecimal().doubleValue();
+                logger.debug("Item '{}' value {} recovered by PID controller", itemName, value);
+            }
         } catch (ItemNotFoundException e) {
             throw new IllegalArgumentException("Configured item not found: " + itemName, e);
-        } catch (PIDException e) {
-            logger.warn("Item '{}' value recovery errored: {}", itemName, e.getMessage());
         }
 
         return value;
-    }
-
-    private double getItemValueAsNumber(Item item) throws PIDException {
-        State setpointState = item.getState();
-
-        if (setpointState instanceof Number) {
-            double doubleValue = ((Number) setpointState).doubleValue();
-
-            if (Double.isFinite(doubleValue) && !Double.isNaN(doubleValue)) {
-                return doubleValue;
-            }
-        } else if (setpointState instanceof StringType) {
-            try {
-                return Double.parseDouble(setpointState.toString());
-            } catch (NumberFormatException e) {
-                // nothing
-            }
-        }
-        throw new PIDException("Not a number: " + setpointState.getClass().getSimpleName() + ": " + setpointState);
     }
 
     @Override
