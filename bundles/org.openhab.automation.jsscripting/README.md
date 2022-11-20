@@ -172,7 +172,7 @@ When a script is unloaded, all created timers and intervals are automatically ca
 
 #### SetTimeout
 
-The global [`setTimeout()`](https://developer.mozilla.org/en-US/docs/Web/API/setTimeout) method sets a timer which executes a function or specified piece of code once the timer expires.
+The global [`setTimeout()`](https://developer.mozilla.org/en-US/docs/Web/API/setTimeout) method sets a timer which executes a function once the timer expires.
 `setTimeout()` returns a `timeoutId` (a positive integer value) which identifies the timer created.
 
 ```javascript
@@ -185,7 +185,7 @@ The global [`clearTimeout(timeoutId)`](https://developer.mozilla.org/en-US/docs/
 
 #### SetInterval
 
-The global [`setInterval()`](https://developer.mozilla.org/en-US/docs/Web/API/setInterval) method repeatedly calls a function or executes a code snippet, with a fixed time delay between each call.
+The global [`setInterval()`](https://developer.mozilla.org/en-US/docs/Web/API/setInterval) method repeatedly calls a function, with a fixed time delay between each call.
 `setInterval()` returns an `intervalId` (a positive integer value) which identifies the interval created.
 
 ```javascript
@@ -510,13 +510,57 @@ Replace `<url>` with the request url.
 
 #### ScriptExecution Actions
 
-The `ScriptExecution` actions provide the `callScript(string scriptName)` method, which calls a script located at the `$OH_CONF/scripts` folder.
+The `ScriptExecution` actions provide the `callScript(string scriptName)` method, which calls a script located at the `$OH_CONF/scripts` folder, as well as the `createTimer` method.
 
-Please note that `actions.ScriptExecution` also provides access to methods for creating timers, but it is NOT recommended to create timers using that raw Java API!
-Usage of those timer creation methods can lead to failing timers.
-Instead of those, use the [native JS methods for timer creation](#timers).
+You can also create timers using the [native JS methods for timer creation](#timers), your choice depends on the versatility you need.
+Sometimes, using `setTimer` is much faster and easier, but other times, you need the versatility that `createTimer` provides.
 
-See [openhab-js : actions.ScriptExecution](https://openhab.github.io/openhab-js/actions.html#.ScriptExecution) for complete documentation.
+##### `createTimer`
+
+```javascript
+actions.ScriptExecution.createTimer(time.ZonedDateTime instant, function callback);
+
+actions.ScriptExecution.createTimer(string identifier, time.ZonedDateTime instant, function callback);
+```
+
+`createTimer` accepts the following arguments:
+
+- `string` identifier (optional): Identifies the timer by a string, used e.g. for logging errors that occur during the callback execution.
+- [`time.ZonedDateTime`](#timetozdt) instant: Point in time when the callback should be executed.
+- `function` callback: Callback function to execute when the timer expires.
+
+`createTimer` returns an openHAB Timer, that provides the following methods:
+
+- `cancel()`: Cancels the timer. ⇒ `boolean`: true, if cancellation was successful
+- `getExecutionTime()`: The scheduled execution time or null if timer was cancelled. ⇒ `time.ZonedDateTime` or `null`
+- `isActive()`: Whether the scheduled execution is yet to happen. ⇒ `boolean`
+- `isCancelled()`: Whether the timer has been cancelled. ⇒ `boolean`
+- `hasTerminated()`: Whether the scheduled execution has already terminated. ⇒ `boolean`
+- `reschedule(time.ZonedDateTime)`: Reschedules a timer to a new starting time. This can also be called after a timer has terminated, which will result in another execution of the same code. ⇒ `boolean`: true, if rescheduling was successful
+
+
+```javascript
+var now = time.ZonedDateTime.now();
+
+// Function to run when the timer goes off.
+function timerOver () {
+  console.info('The timer expired.');
+}
+
+// Create the Timer.
+var myTimer = actions.ScriptExecution.createTimer('My Timer', now.plusSeconds(10), timerOver);
+
+// Cancel the timer.
+myTimer.cancel();
+
+// Check whether the timer is active. Returns true if the timer is active and will be executed as scheduled.
+var active = myTimer.isActive();
+
+// Reschedule the timer.
+myTimer.reschedule(now.plusSeconds(5));
+```
+
+See [openhab-js : actions.ScriptExecution](https://openhab.github.io/openhab-js/actions.ScriptExecution.html) for complete documentation.
 
 #### Semantics Actions
 
@@ -575,8 +619,8 @@ console.log("Count",counter.times++);
 ```js
 let counter = cache.get("counter");
 if(counter == null){
-     counter = {times: 0};
-     cache.put("counter", counter);
+  counter = {times: 0};
+  cache.put("counter", counter);
 }
 console.log("Count",counter.times++);
 ```
@@ -798,7 +842,7 @@ Operations and conditions can also optionally take functions:
 
 ```javascript
 rules.when().item("F1_light").changed().then(event => {
-    console.log(event);
+  console.log(event);
 }).build("Test Rule", "My Test Rule");
 ```
 
@@ -873,7 +917,7 @@ Additionally all the above triggers have the following functions:
 ```javascript
 // Basic rule, when the BedroomLight1 is changed, run a custom function
 rules.when().item('BedroomLight1').changed().then(e => {
-    console.log("BedroomLight1 state", e.newState)
+  console.log("BedroomLight1 state", e.newState)
 }).build();
 
 // Turn on the kitchen light at SUNSET
