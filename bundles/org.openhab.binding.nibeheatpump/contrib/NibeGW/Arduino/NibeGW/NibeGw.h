@@ -23,7 +23,7 @@
  *    0x0016 = SMS40
  *    0x0019 = RMU40
  *    0x0020 = MODBUS40
-* 
+ * 
  *  Checksum: XOR
  *
  * When valid data is received (checksum ok),
