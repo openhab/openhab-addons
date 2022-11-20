@@ -64,7 +64,7 @@ public class QolsysIQPanelHandler extends BaseBridgeHandler
     private final Logger logger = LoggerFactory.getLogger(QolsysIQPanelHandler.class);
     private static final int QUICK_RETRY_SECONDS = 1;
     private static final int LONG_RETRY_SECONDS = 30;
-    private static final int HB_SECONDS = 30;
+    private static final int HEARTBEAT_SECONDS = 30;
     private @Nullable QolsysiqClient apiClient;
     private @Nullable ScheduledFuture<?> retryFuture;
     private @Nullable QolsysIQChildDiscoveryService discoveryService;
@@ -237,9 +237,10 @@ public class QolsysIQPanelHandler extends BaseBridgeHandler
         }
         QolsysIQPanelConfiguration config = getConfigAs(QolsysIQPanelConfiguration.class);
         key = config.key;
-        QolsysiqClient apiClient = new QolsysiqClient(config.hostname, config.port, HB_SECONDS, scheduler,
-                "OH-binding-" + getThing().getUID().getAsString());
+
         try {
+            QolsysiqClient apiClient = new QolsysiqClient(config.hostname, config.port, HEARTBEAT_SECONDS, scheduler,
+                    "OH-binding-" + getThing().getUID().getAsString());
             apiClient.connect();
             apiClient.addListener(this);
             this.apiClient = apiClient;
@@ -260,6 +261,7 @@ public class QolsysIQPanelHandler extends BaseBridgeHandler
         if (apiClient != null) {
             apiClient.removeListener(this);
             apiClient.disconnect();
+            this.apiClient = null;
         }
     }
 
@@ -273,7 +275,8 @@ public class QolsysIQPanelHandler extends BaseBridgeHandler
         logger.debug("stopRetryFuture");
         ScheduledFuture<?> retryFuture = this.retryFuture;
         if (retryFuture != null) {
-            retryFuture.cancel(false);
+            retryFuture.cancel(true);
+            this.retryFuture = null;
         }
     }
 
@@ -313,7 +316,7 @@ public class QolsysIQPanelHandler extends BaseBridgeHandler
     private @Nullable QolsysIQPartitionHandler partitionHandler(int partitionId) {
         for (Thing thing : getThing().getThings()) {
             ThingHandler handler = thing.getHandler();
-            if (handler != null && handler instanceof QolsysIQPartitionHandler) {
+            if (handler instanceof QolsysIQPartitionHandler) {
                 if (((QolsysIQPartitionHandler) handler).partitionId() == partitionId) {
                     return (QolsysIQPartitionHandler) handler;
                 }

@@ -100,7 +100,7 @@ public class QolsysiqClient {
      * @param threadName
      */
     public QolsysiqClient(String host, int port, int heartbeatSeconds, ScheduledExecutorService scheduler,
-            String threadName) {
+            String threadName) throws IOException {
         this.host = host;
         this.port = port;
         this.heartbeatSeconds = heartbeatSeconds;
@@ -112,7 +112,7 @@ public class QolsysiqClient {
             sslContext.init(null, acceptAlltrustManagers(), null);
             sslsocketfactory = sslContext.getSocketFactory();
         } catch (KeyManagementException | NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
+            throw new IOException(e);
         }
     }
 

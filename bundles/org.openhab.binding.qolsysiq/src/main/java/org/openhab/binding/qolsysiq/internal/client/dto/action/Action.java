@@ -15,6 +15,7 @@ package org.openhab.binding.qolsysiq.internal.client.dto.action;
 import com.google.gson.annotations.SerializedName;
 
 /**
+ * The base type for various action messages sent to a panel
  *
  * @author Dan Cunningham - Initial contribution
  */

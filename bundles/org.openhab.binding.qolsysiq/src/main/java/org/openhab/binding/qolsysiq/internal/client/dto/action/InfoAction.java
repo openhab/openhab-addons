@@ -13,6 +13,7 @@
 package org.openhab.binding.qolsysiq.internal.client.dto.action;
 
 /**
+ * An {@link ActionType.INFO} type of {@link InfoAction} message sent to the panel
  *
  * @author Dan Cunningham - Initial contribution
  */
