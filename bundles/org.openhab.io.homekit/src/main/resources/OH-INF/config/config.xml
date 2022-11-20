@@ -22,12 +22,12 @@
 		</parameter-group>
 		<parameter-group name="thermostatTargetHeatingCooling">
 			<label>Thermostat Target Heating/Cooling Mapping</label>
-			<description>String values used by your thermostat to set different targetHeatingCooling modes.</description>
+			<description>String values used by your thermostat to set different target heating/cooling modes.</description>
 			<advanced>true</advanced>
 		</parameter-group>
 		<parameter-group name="thermostatCurrentHeatingCooling">
 			<label>Thermostat Current Heating/Cooling Mapping</label>
-			<description>String values used by your thermostat to set different targetHeatingCooling modes.</description>
+			<description>String values used by your thermostat to set different current heating/cooling modes.</description>
 			<advanced>true</advanced>
 		</parameter-group>
 		<parameter name="name" type="text" required="false" groupName="core">
@@ -67,7 +67,6 @@
 			<label>Network Interface</label>
 			<description>Defines the IP address of the network interface to expose the HomeKit integration on.</description>
 			<advanced>true</advanced>
-
 		</parameter>
 		<parameter name="startDelay" type="integer" required="true" groupName="core" unit="s">
 			<label>Start Delay</label>
@@ -80,7 +79,6 @@
 			<description>Defines whether or not to direct HomeKit clients to use fahrenheit temperatures instead of celsius.</description>
 			<default>false</default>
 		</parameter>
-
 		<parameter name="thermostatTargetModeCool" type="text" required="true"
 			groupName="thermostatTargetHeatingCooling">
 			<label>Cool Value</label>
@@ -109,7 +107,6 @@
 			<default>Off</default>
 			<advanced>true</advanced>
 		</parameter>
-
 		<parameter name="thermostatCurrentModeHeating" type="text" required="true"
 			groupName="thermostatCurrentHeatingCooling">
 			<label>Heating Value</label>
@@ -142,7 +139,7 @@
 		</parameter>
 		<parameter name="blockUserDeletion" type="boolean" required="false" groupName="core">
 			<label>Block deletion of the HomeKit user</label>
-			<description>Block deletion of the HomeKit user information from openHAB and the unpairing of devices</description>
+			<description>Block deletion of the HomeKit user information from openHAB and the unpairing of devices.</description>
 			<default>false</default>
 			<advanced>true</advanced>
 		</parameter>
