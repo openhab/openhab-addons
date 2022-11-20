@@ -21,18 +21,18 @@
  *	MODBUS module support should be turned ON from the heat pump.
  *
  *	Frame format:
- *  +----+------+------+-----+-----+----+----+-----+
- *  | 5C | ADDR | ADDR | CMD | LEN |  DATA   | CHK |
- *  +----+------+------+-----+-----+----+----+-----+
+ *	+----+------+------+-----+-----+----+----+-----+
+ *	| 5C | ADDR | ADDR | CMD | LEN |  DATA   | CHK |
+ *	+----+------+------+-----+-----+----+----+-----+
  *
- *       |------------ CHK ------------------|
+ *	     |------------ CHK ------------------|
  *
- *   Address: 
- *     0x0016 = SMS40
- *     0x0019 = RMU40
- *     0x0020 = MODBUS40
+ *	Address: 
+ *		0x0016 = SMS40
+ *		0x0019 = RMU40
+ *		0x0020 = MODBUS40
  *
- *   Checksum: XOR
+ *	Checksum: XOR
  *
  *	When valid data is received (checksum ok),
  *	 ACK (0x06) should be sent to the heat pump.
