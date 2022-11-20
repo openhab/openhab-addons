@@ -13,6 +13,7 @@
 package org.openhab.automation.jsscripting.internal.threading;
 
 import java.time.Duration;
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.time.temporal.Temporal;
 import java.util.Map;
@@ -114,7 +115,7 @@ public class ThreadsafeTimers {
                 callback.run();
                 idSchedulerMapping.remove(id);
             }
-        }, identifier + ".timeout." + id, ZonedDateTime.now().plusNanos(delay * 1000000).toInstant());
+        }, identifier + ".timeout." + id, Instant.now().plusMillis(delay));
         idSchedulerMapping.put(id, future);
         return id;
     }
