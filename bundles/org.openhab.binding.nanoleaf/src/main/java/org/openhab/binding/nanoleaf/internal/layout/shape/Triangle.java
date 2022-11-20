@@ -28,7 +28,7 @@ import org.openhab.binding.nanoleaf.internal.layout.ShapeType;
  * @author Jørgen Austvik - Initial contribution
  */
 @NonNullByDefault
-public class Triangle extends SingleLightShape {
+public class Triangle extends Shape {
 
     public Triangle(ShapeType shapeType, int panelId, Point2D position, int orientation) {
         super(shapeType, panelId, position, orientation);

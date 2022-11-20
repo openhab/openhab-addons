@@ -25,8 +25,8 @@ import javax.imageio.ImageIO;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.nanoleaf.internal.NanoleafBindingConstants;
-import org.openhab.binding.nanoleaf.internal.layout.shape.Shape;
-import org.openhab.binding.nanoleaf.internal.layout.shape.ShapeFactory;
+import org.openhab.binding.nanoleaf.internal.layout.shape.Panel;
+import org.openhab.binding.nanoleaf.internal.layout.shape.PanelFactory;
 import org.openhab.binding.nanoleaf.internal.model.GlobalOrientation;
 import org.openhab.binding.nanoleaf.internal.model.Layout;
 import org.openhab.binding.nanoleaf.internal.model.PanelLayout;
@@ -54,12 +54,12 @@ public class NanoleafLayout {
             return new byte[] {};
         }
 
-        List<PositionDatum> panels = layout.getPositionData();
-        if (panels == null) {
+        List<PositionDatum> positionDatums = layout.getPositionData();
+        if (positionDatums == null) {
             return new byte[] {};
         }
 
-        ImagePoint2D size[] = findSize(panels, rotationRadians);
+        ImagePoint2D size[] = findSize(positionDatums, rotationRadians);
         final ImagePoint2D min = size[0];
         final ImagePoint2D max = size[1];
 
@@ -76,9 +76,9 @@ public class NanoleafLayout {
         g2.clearRect(0, 0, image.getWidth(), image.getHeight());
 
         DrawingSettings dc = new DrawingSettings(settings, image.getHeight(), min, rotationRadians);
-        var shapes = ShapeFactory.createShapes(panels);
-        for (Shape shape : shapes) {
-            shape.draw(g2, dc, state);
+        List<Panel> panels = PanelFactory.createPanels(positionDatums);
+        for (Panel panel : panels) {
+            panel.draw(g2, dc, state);
         }
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -93,14 +93,14 @@ public class NanoleafLayout {
         return ((double) (maxValue - value)) * (Math.PI / 180);
     }
 
-    private static ImagePoint2D[] findSize(List<PositionDatum> panels, double rotationRadians) {
+    private static ImagePoint2D[] findSize(List<PositionDatum> positionDatums, double rotationRadians) {
         int maxX = 0;
         int maxY = 0;
         int minX = 0;
         int minY = 0;
 
-        var shapes = ShapeFactory.createShapes(panels);
-        for (Shape shape : shapes) {
+        List<Panel> panels = PanelFactory.createPanels(positionDatums);
+        for (Panel shape : panels) {
             for (Point2D point : shape.generateOutline()) {
                 var rotated = point.rotate(rotationRadians);
                 maxX = Math.max(rotated.getX(), maxX);

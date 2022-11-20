@@ -30,15 +30,15 @@ import org.openhab.binding.nanoleaf.internal.model.PositionDatum;
  * @author Jørgen Austvik - Initial contribution
  */
 @NonNullByDefault
-public class ShapeFactory {
+public class PanelFactory {
 
-    public static List<Shape> createShapes(List<PositionDatum> panels) {
-        List<Shape> result = new ArrayList<>(panels.size());
+    public static List<Panel> createPanels(List<PositionDatum> panels) {
+        List<Panel> result = new ArrayList<>(panels.size());
         Deque<PositionDatum> panelStack = new ArrayDeque<>(panels);
         while (!panelStack.isEmpty()) {
             PositionDatum panel = panelStack.peek();
             final ShapeType shapeType = ShapeType.valueOf(panel.getShapeType());
-            Shape shape = createShape(shapeType, takeFirst(shapeType.getNumLightsPerShape(), panelStack));
+            Panel shape = createPanel(shapeType, takeFirst(shapeType.getNumLightsPerShape(), panelStack));
             result.add(shape);
         }
 
@@ -64,7 +64,7 @@ public class ShapeFactory {
         return result;
     }
 
-    public static Shape createShape(ShapeType shapeType, List<PositionDatum> positionDatum) {
+    private static Panel createPanel(ShapeType shapeType, List<PositionDatum> positionDatum) {
         switch (shapeType.getDrawingAlgorithm()) {
             case SQUARE:
                 PositionDatum squareShape = positionDatum.get(0);

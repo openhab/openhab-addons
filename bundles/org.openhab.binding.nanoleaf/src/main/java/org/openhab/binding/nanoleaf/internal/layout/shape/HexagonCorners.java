@@ -34,7 +34,7 @@ import org.openhab.core.library.types.HSBType;
  * @author Jørgen Austvik - Initial contribution
  */
 @NonNullByDefault
-public class HexagonCorners extends Shape {
+public class HexagonCorners extends Panel {
 
     private static final int CORNER_DIAMETER = 4;
 

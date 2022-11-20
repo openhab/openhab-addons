@@ -28,7 +28,7 @@ import org.openhab.binding.nanoleaf.internal.layout.ShapeType;
  * @author Jørgen Austvik - Initial contribution
  */
 @NonNullByDefault
-public class Square extends SingleLightShape {
+public class Square extends Shape {
     public Square(ShapeType shapeType, int panelId, Point2D position, int orientation) {
         super(shapeType, panelId, position, orientation);
     }

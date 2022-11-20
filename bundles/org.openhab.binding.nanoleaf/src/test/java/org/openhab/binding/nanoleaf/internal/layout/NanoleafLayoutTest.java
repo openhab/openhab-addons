@@ -60,7 +60,7 @@ public class NanoleafLayoutTest {
         PanelLayout panelLayout = controllerInfo.getPanelLayout();
         assertNotNull(panelLayout, "The controller info should contain panel layout");
 
-        LayoutSettings settings = new LayoutSettings(true, true, true, false);
+        LayoutSettings settings = new LayoutSettings(true, true, true, true);
         byte[] result = NanoleafLayout.render(panelLayout, new TestPanelState(), settings);
         assertNotNull(result, "Should be able to render the layout: " + fileName);
         assertTrue(result.length > 0, "Should get content back, but got " + result.length + "bytes");

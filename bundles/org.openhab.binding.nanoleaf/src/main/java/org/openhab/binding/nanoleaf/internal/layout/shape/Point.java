@@ -31,7 +31,7 @@ import org.openhab.core.library.types.HSBType;
  * @author Jørgen Austvik - Initial contribution
  */
 @NonNullByDefault
-public class Point extends Shape {
+public class Point extends Panel {
 
     private static final int POINT_DIAMETER = 4;
 
