@@ -57,6 +57,7 @@ public class HomekitTaggedItem {
     public final static String PRIMARY_SERVICE = "primary";
     public final static String STEP = "step";
     public final static String UNIT = "unit";
+    public final static String EMULATE_STATE = "emulateState";
 
     private static final Map<Integer, String> CREATED_ACCESSORY_IDS = new ConcurrentHashMap<>();
 
