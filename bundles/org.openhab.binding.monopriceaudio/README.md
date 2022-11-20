@@ -15,21 +15,21 @@ The binding supports two different kinds of connections:
 For users without a serial port on the server side, you can use a USB to serial adapter.
 
 You don't need to have your whole house amplifier device directly connected to your openHAB server.
-Some newer versions of the amplifier have a built-in ethernet port that supports serial over IP.
+Some newer versions of the amplifier have a built-in Ethernet port that supports serial over IP.
 Or you can connect it for example to a Raspberry Pi and use [ser2net Linux tool](https://sourceforge.net/projects/ser2net/) to make the serial connection available on the LAN (serial over IP).
 
 ## Supported Things
 
-Monoprice 10761 & 39261 or Dayton Audio DAX66 Amplifiers use the `amplifier` id. Up to 18 zones with 3 linked amps, 6 source inputs.
+Monoprice 10761 & 39261 or Dayton Audio DAX66 Amplifiers use the `amplifier` thing id. Up to 18 zones with 3 linked amps and 6 source inputs are supported.
 Note: Compatible clones (including 4 zone versions) from McLELLAND, Factor, Soundavo, etc. should work as well.  
 
 ***The following three thing types were implemented via available documentation only and have not been tested. Please open an issue for any bugs found when using these thing types.***  
 
-Monoprice 31028 or OSD Audio PAM1270 70 Volt Amplifiers use the `monoprice70` id. Supports 6 zones per amp with 2 source inputs, not linkable.  
+Monoprice 31028 or OSD Audio PAM1270 70 Volt Amplifiers use the `monoprice70` id. 6 zones per amp (not linkable) and 2 source inputs are supported.  
 
-Dayton Audio DAX88 Amplifiers use the `dax88` id. Supports 8 zones (2 un-amplified) per amp with 8 source inputs, not linkable.  
+Dayton Audio DAX88 Amplifiers use the `dax88` id. 8 zones (2 un-amplified) per amp (not linkable) and 8 source inputs are supported.  
 
-Xantech MRC88, MX88, MRAUDIO8X8 or CM8X8 Amplifiers use the `xantech` id. Up to 16 zones with 2 linked amps, 8 source inputs.
+Xantech MRC88, MX88, MRAUDIO8X8 or CM8X8 Amplifiers use the `xantech` id. Up to 16 zones with 2 linked amps and 8 source inputs are supported.
 Note: MRC44 amps do not support serial control.  
 
 ## Discovery
@@ -133,6 +133,7 @@ monopriceaudio:dax88:myamp "Dayton WHA" [ serialPort="COM5", pollingInterval=15,
 // Xantech 8x8
 monopriceaudio:xantech:myamp "Xantech WHA" [ serialPort="COM5", pollingInterval=30, numZones=8, inputLabel1="Chromecast", inputLabel2="Radio", inputLabel3="CD Player", inputLabel4="Bluetooth Audio", inputLabel5="HTPC", inputLabel6="Phono", inputLabel7="Ipod", inputLabel8="Sirius" ]
 
+// Note that host and port can be used with any of the thing types to connect as serial over IP
 ```
 
 monoprice.items:

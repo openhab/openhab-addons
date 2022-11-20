@@ -196,12 +196,7 @@ public abstract class MonopriceAudioConnector {
             messageStr = cmd + zoneId + amp.getQuerySuffix();
         } else if (value != null) {
             // if the command passed a value, append it to the messageStr
-            messageStr = amp.getCmdPrefix() + zoneId + cmd;
-            if (amp.isPadNumbers()) {
-                messageStr += String.format("%02d", value);
-            } else {
-                messageStr += value;
-            }
+            messageStr = amp.getCmdPrefix() + zoneId + cmd + amp.getFormattedValue(value);
         } else {
             messageStr = amp.getCmdPrefix() + cmd;
         }
@@ -246,7 +241,9 @@ public abstract class MonopriceAudioConnector {
     public void handleIncomingMessage(byte[] incomingMessage) {
         String message = new String(incomingMessage, StandardCharsets.US_ASCII).trim();
 
-        logger.debug("handleIncomingMessage: {}", message);
+        if (EMPTY.equals(message)) {
+            return;
+        }
 
         if (READ_ERROR.equals(message)) {
             dispatchKeyValue(KEY_ERROR, MSG_VALUE_ON);
@@ -254,7 +251,8 @@ public abstract class MonopriceAudioConnector {
         }
 
         if (message.startsWith(amp.getRespPrefix())) {
-            dispatchKeyValue(KEY_ZONE_UPDATE, message.trim());
+            logger.debug("handleIncomingMessage: {}", message);
+            dispatchKeyValue(KEY_ZONE_UPDATE, message);
         } else {
             logger.debug("no match on message: {}", message);
         }

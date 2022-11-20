@@ -358,12 +358,16 @@ public enum AmplifierModel {
         return cmdSuffix;
     }
 
-    public boolean isPadNumbers() {
-        return padNumbers;
-    }
-
     public List<String> getZoneIds() {
         return zoneIds;
+    }
+
+    public String getFormattedValue(Integer value) {
+        if (padNumbers) {
+            return String.format("%02d", value);
+        } else {
+            return value.toString();
+        }
     }
 
     public String getOnStr() {
