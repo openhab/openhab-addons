@@ -4,9 +4,10 @@
         <!-- Basic Page Needs
         –––––––––––––––––––––––––––––––––––––––––––––––––– -->
         <meta charset="utf-8">
-        <title>Openhab-Webex Teams Auth Code</title>
+        <title>Authorize openHAB binding for Webex</title>
         <meta name="description" content="">
         <meta name="author" content="tom@ducbase.com">
+        ${pageRefresh}
 
         <!-- Mobile Specific Metas
         –––––––––––––––––––––––––––––––––––––––––––––––––– -->
@@ -18,53 +19,39 @@
 
         <!-- CSS
         –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-        <link rel="stylesheet" href="css/normalize.css">
-        <link rel="stylesheet" href="css/skeleton.css">
-        <link rel="stylesheet" href="css/custom.css">
+        <link rel="stylesheet" href="res/css/normalize.css">
+        <link rel="stylesheet" href="res/css/skeleton.css">
+        <link rel="stylesheet" href="res/css/custom.css">
 
         <!-- Favicon
         –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-        <link rel="shortcut icon" href="images/favicon.ico">
+        <link rel="shortcut icon" href="res/images/favicon.ico">
     </head>
     <body>
         <div class="container">
             <div class="row bottom-one">
-                <h2>OAuth authorization code</h2>
-                <div>
-                    This page provides a convienient way to get the authorization code for the Webex Teams integration.
-                </div>
+                <h3>Authorize openHAB binding for Webex</h3>
+                <p>On this page you can authorize your openHAB Webex Teams Account configured with the clientId and clientSecret of the Webex API on your Developer account.</p>
+                <p>To use this binding the following requirements apply:</p>
+                <ul>
+                    <li>A Cisco Webex account.</li>
+                    <li>Create an integration (a bot account doesn't require oAuth authorization)</li>
+                </ul>
+                <p>
+                    The redirect URI to use with Spotify for this openHAB installation is
+                    <a href="${redirectUri}">${redirectUri}</a>
+                </p>
         
             </div>
-    
+                
+            ${authorizedUser}
+            ${accounts}
+            
             <div class="row">
-                <label for="code">Auth code:</label>
-                <input type="text" value="" id="code" class="u-full-width">
-                <button onclick="copy()">Copy code to clipboard</button>
-
+                ${error}
             </div>
     
         </div>
-        <script>
-            const queryString = window.location.search;
-            const urlParams = new URLSearchParams(queryString);
-            document.getElementById("code").value = urlParams.get('code');
-
-           function copy() {
-               // Get the text field
-               var copyText = document.getElementById("code");
-
-               // Select the text field
-               copyText.select();
-               copyText.setSelectionRange(0, 99999); // For mobile devices
-
-               // Copy the text inside the text field
-               navigator.clipboard.writeText(copyText.value);
-
-               // Alert the copied text
-               alert("Copied the text: " + copyText.value);
-            }
-            console.log(urlParams.get('code'));
-        </script>
 
     </body>
 </html>

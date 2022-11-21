@@ -16,8 +16,8 @@
 		</channels>
 
 		<properties>
-			<property name="personType">Unknown type</property>
-			<property name="name">Unknown name</property>
+			<property name="type"></property>
+			<property name="name"></property>
 		</properties>
 
 		<config-description>
@@ -35,27 +35,16 @@
 				<label>Client Secret</label>
 				<description>OAuth client secret (Integration)</description>
 			</parameter>
-			<parameter name="authCode" type="text" required="false">
-				<label>Auth Code (Integration)</label>
-				<description>Get the auth code from https://developer.webex.com/my-apps
-					by navigating to OAuth Authorization URL</description>
-			</parameter>
-			<parameter name="refreshToken" type="text" required="false">
-				<label>RefreshToken</label>
-				<context>password</context>
-				<advanced>true</advanced>
-				<description>Used internally. No need to manually set.</description>
+			<parameter name="refreshPeriod" type="integer" required="false">
+				<label>Refresh Period (seconds)</label>
+				<default>300</default>
+				<description>Refresh period for channels. Low numbers increase accuracy, but could hit API rate limits. Defaults to
+					300 secs.</description>
 			</parameter>
 			<parameter name="roomId" type="text" required="false">
 				<label>Default room Id</label>
 				<description>Id of the default room to send messages</description>
 			</parameter>
-			<!--> <parameter name="refreshInterval" type="integer" unit="s" min="1">
-				<label>Refresh Interval</label>
-				<description>Interval the device is polled in sec.</description>
-				<default>600</default>
-				<advanced>true</advanced>
-				</parameter> -->
 		</config-description>
 	</thing-type>
 

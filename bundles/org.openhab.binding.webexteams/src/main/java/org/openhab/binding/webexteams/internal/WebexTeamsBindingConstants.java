@@ -34,12 +34,18 @@ public class WebexTeamsBindingConstants {
     public static final String CHANNEL_STATUS = "status";
     public static final String CHANNEL_LASTACTIVITY = "lastactivity";
 
+    // List of properties
+    public static final String PROPERTY_WEBEX_NAME = "name";
+    public static final String PROPERTY_WEBEX_TYPE = "type";
+
     // OAuth constants
     public static final String OAUTH_REDIRECT_URL = "https://files.ducbase.com/authcode/index.html";
     public static final String OAUTH_TOKEN_URL = "https://webexapis.com/v1/access_token";
     public static final String OAUTH_AUTH_URL = "https://webexapis.com/v1/authorize";
     public static final String OAUTH_AUTHORIZATION_URL = "https://webexapis.com/v1/authorize";
     public static final String OAUTH_SCOPE = "spark:all";
+    public static final String WEBEX_ALIAS = "/connectwebex";
+    public static final String WEBEX_RES_ALIAS = "/res";
 
     public static final String WEBEX_API_ENDPOINT = "https://webexapis.com/v1";
 

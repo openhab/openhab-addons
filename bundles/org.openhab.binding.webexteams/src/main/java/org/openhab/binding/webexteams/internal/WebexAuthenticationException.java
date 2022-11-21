@@ -10,25 +10,24 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.webexteams.internal.api;
+package org.openhab.binding.webexteams.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.webexteams.internal.WebexTeamsException;
 
 /**
  * @author Tom Deckers - Initial contribution
  */
 @NonNullByDefault
-public class WebexTeamsApiException extends WebexTeamsException {
-    public WebexTeamsApiException() {
+public class WebexAuthenticationException extends WebexTeamsException {
+    public WebexAuthenticationException() {
         super();
     }
 
-    public WebexTeamsApiException(String message) {
-        super(message);
+    public WebexAuthenticationException(String msg) {
+        super(msg);
     }
 
-    public WebexTeamsApiException(String message, Throwable cause) {
-        super(message, cause);
+    public WebexAuthenticationException(String msg, Throwable t) {
+        super(msg, t);
     }
 }

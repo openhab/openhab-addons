@@ -14,11 +14,12 @@ package org.openhab.binding.webexteams.internal;
 
 import static org.openhab.binding.webexteams.internal.WebexTeamsBindingConstants.*;
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -26,11 +27,15 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.webexteams.WebexTeamsActions;
 import org.openhab.binding.webexteams.internal.api.Message;
-import org.openhab.binding.webexteams.internal.api.NotAuthenticatedException;
 import org.openhab.binding.webexteams.internal.api.Person;
 import org.openhab.binding.webexteams.internal.api.WebexTeamsApi;
 import org.openhab.binding.webexteams.internal.api.WebexTeamsApiException;
+import org.openhab.core.auth.client.oauth2.AccessTokenRefreshListener;
+import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
+import org.openhab.core.auth.client.oauth2.OAuthClientService;
+import org.openhab.core.auth.client.oauth2.OAuthException;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
+import org.openhab.core.auth.client.oauth2.OAuthResponseException;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.StringType;
@@ -38,6 +43,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
@@ -51,19 +57,28 @@ import org.slf4j.LoggerFactory;
  * @author Tom Deckers - Initial contribution
  */
 @NonNullByDefault
-public class WebexTeamsHandler extends BaseThingHandler {
+public class WebexTeamsHandler extends BaseThingHandler implements AccessTokenRefreshListener {
 
     private final Logger logger = LoggerFactory.getLogger(WebexTeamsHandler.class);
 
-    private @Nullable WebexTeamsConfiguration config;
+    // Object to synchronize refresh on
+    private final Object refreshSynchronization = new Object();
+
+    private @NonNullByDefault({}) WebexTeamsConfiguration config;
 
     private final OAuthFactory oAuthFactory;
     private final HttpClient httpClient;
     private @Nullable WebexTeamsApi client;
 
+    private @NonNullByDefault({}) OAuthClientService authService;
+
     private ThingStatus status = ThingStatus.UNKNOWN;
 
-    private @Nullable ScheduledFuture<?> refreshService = null;
+    private boolean configured = false; // is the handler instance properly configured?
+    private volatile boolean active; // is the handler instance active?
+    String accountType = ""; // bot or person?
+
+    private @NonNullByDefault({}) Future<?> refreshFuture;
 
     public WebexTeamsHandler(Thing thing, OAuthFactory oAuthFactory, HttpClient httpClient) {
         super(thing);
@@ -90,6 +105,7 @@ public class WebexTeamsHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         logger.debug("Initializing...");
+        active = true;
         config = getConfigAs(WebexTeamsConfiguration.class);
 
         updateStatus(this.status);
@@ -98,65 +114,150 @@ public class WebexTeamsHandler extends BaseThingHandler {
         final String clientId = config.clientId;
         final String clientSecret = config.clientSecret;
 
-        if (!token.isBlank() && clientId.isBlank()) { // For bots
-            logger.debug("I'm a bot");
+        if (!token.isBlank()) { // For bots
+            logger.debug("I think I'm a bot.");
+            createBotOAuthClientService(config);
+
         } else if (!clientId.isBlank()) { // For integrations
-            logger.debug("I'm a person.");
-            if (clientSecret.isEmpty()) {
+            logger.debug("I think I'm a person.");
+            if (clientSecret.isBlank()) {
                 this.status = ThingStatus.OFFLINE;
                 updateStatus(this.status, ThingStatusDetail.CONFIGURATION_ERROR, "@text/confErrorNoSecret");
                 return;
             }
-        } else {
+            createIntegrationOAuthClientService(config);
+
+        } else { // If no bot or integration credentials, go offline
             this.status = ThingStatus.OFFLINE;
             updateStatus(this.status, ThingStatusDetail.CONFIGURATION_ERROR, "@text/confErrorTokenOrId");
             return;
         }
 
-        // background initialization:
+        this.client = new WebexTeamsApi(authService, httpClient);
+
+        // Start with update status by calling Webex. If no credentials available no polling should be started.
         scheduler.execute(() -> {
-            try {
-                this.client = new WebexTeamsApi(this, oAuthFactory, httpClient);
-                logger.debug("Trying to fetch account details");
-                Person p = this.client.getPerson();
-                logger.debug("Success: {}", p.getDisplayName());
-
-                this.status = ThingStatus.ONLINE;
-                updateStatus(this.status);
-
-                refresh();
-
-            } catch (NotAuthenticatedException e) {
-                logger.error("Failed to initialize client", e);
-                this.status = ThingStatus.OFFLINE;
-                updateStatus(this.status, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            if (refresh()) {
+                startRefresh();
             }
         });
-
-        // TODO: make interval configurable.
-        refreshService = scheduler.scheduleWithFixedDelay(this::refresh, 0, 300, TimeUnit.SECONDS);
     }
 
     @Override
     public void dispose() {
         logger.debug("Disposing...");
-        final ScheduledFuture<?> job = refreshService;
-        if (job != null) {
-            job.cancel(true);
-            refreshService = null;
+        active = false;
+        if (authService != null) {
+            authService.removeAccessTokenRefreshListener(this);
         }
-        this.client.dispose();
+        oAuthFactory.ungetOAuthService(thing.getUID().getAsString());
+        cancelSchedulers();
+    }
+
+    public void createIntegrationOAuthClientService(WebexTeamsConfiguration config) {
+        String thingUID = this.getThing().getUID().getAsString();
+        logger.debug("Creating OAuth Client Service for {}", thingUID);
+        OAuthClientService service = oAuthFactory.createOAuthClientService(thingUID, OAUTH_TOKEN_URL, OAUTH_AUTH_URL,
+                config.clientId, config.clientSecret, OAUTH_SCOPE, false);
+        service.addAccessTokenRefreshListener(this);
+        this.authService = service;
+        this.configured = true;
+    }
+
+    public void createBotOAuthClientService(WebexTeamsConfiguration config) {
+        String thingUID = this.getThing().getUID().getAsString();
+        AccessTokenResponse response = new AccessTokenResponse();
+        response.setAccessToken(config.token);
+        response.setScope(OAUTH_SCOPE);
+        response.setTokenType("Bearer");
+        response.setExpiresIn(Long.MAX_VALUE); // Bot access tokens don't expire
+        logger.debug("Creating OAuth Client Service for {}", thingUID);
+        OAuthClientService service = oAuthFactory.createOAuthClientService(thingUID, OAUTH_TOKEN_URL,
+                OAUTH_AUTHORIZATION_URL, "not used", null, OAUTH_SCOPE, false);
+        try {
+            service.importAccessTokenResponse(response);
+        } catch (OAuthException e) {
+            throw new WebexTeamsApiException("Failed to create oauth client with bot token", e);
+        }
+        this.authService = service;
+        this.configured = true;
+    }
+
+    boolean isConfigured() {
+        return configured;
+    }
+
+    public String authorize(String redirectUri, String reqCode) {
+        try {
+            logger.debug("Make call to Webex to get access token.");
+            final AccessTokenResponse credentials = authService.getAccessTokenResponseByAuthorizationCode(reqCode,
+                    redirectUri);
+            // Not doing anything with the token. It's used indirectly through authService.
+            refresh();
+            final String user = getUser();
+            logger.info("Authorized for user: {}", user);
+            startRefresh();
+            return user;
+        } catch (RuntimeException | OAuthException | IOException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            throw new WebexTeamsException("Failed to authorize", e);
+        } catch (final OAuthResponseException e) {
+            throw new WebexTeamsException("OAuth exception", e);
+        }
+    }
+
+    public boolean isAuthorized() {
+        final AccessTokenResponse accessTokenResponse = getAccessTokenResponse();
+
+        if ("person".equals(this.accountType)) {
+            return accessTokenResponse != null && accessTokenResponse.getAccessToken() != null
+                    && accessTokenResponse.getRefreshToken() != null;
+        } else {
+            // bots don't need no refreshToken!
+            return accessTokenResponse != null && accessTokenResponse.getAccessToken() != null;
+        }
+    }
+
+    private @Nullable AccessTokenResponse getAccessTokenResponse() {
+        try {
+            return this.authService == null ? null : this.authService.getAccessTokenResponse();
+        } catch (OAuthException | IOException | OAuthResponseException | RuntimeException e) {
+            logger.debug("Exception checking authorization: ", e);
+            return null;
+        }
+    }
+
+    public boolean equalsThingUID(String thingUID) {
+        return getThing().getUID().getAsString().equals(thingUID);
+    }
+
+    public String formatAuthorizationUrl(String redirectUri) {
+        try {
+            if (this.configured) {
+                return this.authService.getAuthorizationUrl(redirectUri, null, thing.getUID().getAsString());
+            } else {
+                return "";
+            }
+        } catch (final OAuthException e) {
+            logger.debug("Error constructing AuthorizationUrl: ", e);
+            return "";
+        }
     }
 
     // mainly used to refresh the auth token when using OAuth
-    private void refresh() {
-        if (status == ThingStatus.ONLINE) {
+    private boolean refresh() {
+        synchronized (refreshSynchronization) {
             Person person;
             try {
                 person = client.getPerson();
                 updateState(CHANNEL_BOTNAME, StringType.valueOf(person.getDisplayName()));
-                updateProperty("personType", person.getType());
-                updateProperty("name", person.getDisplayName());
+                String type = person.getType();
+                if (type == null) {
+                    type = "?";
+                }
+                updateProperty(PROPERTY_WEBEX_TYPE, type);
+                this.accountType = type;
+                updateProperty(PROPERTY_WEBEX_NAME, person.getDisplayName());
 
                 // Only when the identity is a person:
                 if (person.getType().equalsIgnoreCase("person")) {
@@ -166,11 +267,47 @@ public class WebexTeamsHandler extends BaseThingHandler {
                     String lastActivity = df.format(person.getLastActivity());
                     updateState(CHANNEL_LASTACTIVITY, new DateTimeType(lastActivity));
                 }
+                updateStatus(ThingStatus.ONLINE);
+                return true;
             } catch (WebexTeamsApiException e) {
-                logger.warn("Failed to update display name: {}", e.getMessage());
+                logger.warn("Failed to refresh: {}", e.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             }
-
+            return false;
         }
+    }
+
+    private void startRefresh() {
+        synchronized (refreshSynchronization) {
+            if (refresh()) {
+                cancelSchedulers();
+                if (active) {
+                    refreshFuture = scheduler.scheduleWithFixedDelay(this::refresh, 0, config.refreshPeriod,
+                            TimeUnit.SECONDS);
+                }
+            }
+        }
+    }
+
+    /**
+     * Cancels all running schedulers.
+     */
+    private synchronized void cancelSchedulers() {
+        if (refreshFuture != null) {
+            refreshFuture.cancel(true);
+        }
+    }
+
+    public String getUser() {
+        return thing.getProperties().getOrDefault(PROPERTY_WEBEX_NAME, "");
+    }
+
+    public ThingUID getUID() {
+        return thing.getUID();
+    }
+
+    public String getLabel() {
+        return thing.getLabel() == null ? "" : thing.getLabel().toString();
     }
 
     /**
@@ -311,5 +448,10 @@ public class WebexTeamsHandler extends BaseThingHandler {
     @Override
     public <T> T getConfigAs(Class<T> configurationClass) {
         return super.getConfigAs(configurationClass);
+    }
+
+    @Override
+    public void onAccessTokenResponse(AccessTokenResponse tokenResponse) {
+        // TODO Auto-generated method stub
     }
 }

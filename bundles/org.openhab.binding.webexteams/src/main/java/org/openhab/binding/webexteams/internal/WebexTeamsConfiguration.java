@@ -12,22 +12,18 @@
  */
 package org.openhab.binding.webexteams.internal;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-
 /**
  * The {@link WebexTeamsConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Tom Deckers - Initial contribution
  */
-@NonNullByDefault
 public class WebexTeamsConfiguration {
 
     // static strings used when interacting with Configuration.
     public static final String TOKEN = "token";
     public static final String CLIENT_ID = "clientId";
     public static final String CLIENT_SECRET = "clientSecret";
-    public static final String AUTH_CODE = "authCode";
-    public static final String REFRESH_TOKEN = "refreshToken";
+    public static final String REFRESH_PERIOD = "refreshPeriod";
     public static final String ROOM_ID = "roomId";
 
     /**
@@ -36,7 +32,6 @@ public class WebexTeamsConfiguration {
     public String token = "";
     public String clientId = "";
     public String clientSecret = "";
-    public String authCode = "";
-    public String refreshToken = "";
+    public int refreshPeriod = 300;
     public String roomId = "";
 }

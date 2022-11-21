@@ -44,12 +44,14 @@ public class WebexTeamsHandlerFactory extends BaseThingHandlerFactory {
 
     private final OAuthFactory oAuthFactory;
     private final HttpClient httpClient;
+    private final WebexAuthService authService;
 
     @Activate
     public WebexTeamsHandlerFactory(@Reference OAuthFactory oAuthFactory,
-            @Reference HttpClientFactory httpClientFactory) {
+            @Reference HttpClientFactory httpClientFactory, @Reference WebexAuthService authService) {
         this.oAuthFactory = oAuthFactory;
         this.httpClient = httpClientFactory.getCommonHttpClient();
+        this.authService = authService;
     }
 
     @Override
@@ -62,9 +64,18 @@ public class WebexTeamsHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_ACCOUNT.equals(thingTypeUID)) {
-            return new WebexTeamsHandler(thing, oAuthFactory, httpClient);
+            final WebexTeamsHandler handler = new WebexTeamsHandler(thing, oAuthFactory, httpClient);
+            authService.addWebexTeamsHandler(handler);
+            return handler;
         }
 
         return null;
+    }
+
+    @Override
+    protected synchronized void removeHandler(ThingHandler thingHandler) {
+        if (thingHandler instanceof WebexTeamsHandler) {
+            authService.removeWebexTeamsHandler((WebexTeamsHandler) thingHandler);
+        }
     }
 }
