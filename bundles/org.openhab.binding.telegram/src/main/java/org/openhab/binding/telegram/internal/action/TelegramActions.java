@@ -237,7 +237,8 @@ public class TelegramActions implements ThingActions {
         }
         TelegramHandler localHandler = handler;
         if (localHandler != null) {
-            SendMessage sendMessage = new SendMessage(chatId, message);
+            String escapedMessage = message.replace("_", "\\_");
+            SendMessage sendMessage = new SendMessage(chatId, escapedMessage);
             if (localHandler.getParseMode() != null) {
                 sendMessage.parseMode(localHandler.getParseMode());
             }
