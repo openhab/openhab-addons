@@ -16,6 +16,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
+ * a <code>Message</code> that is sent or received through the API.
+ * 
  * @author Tom Deckers - Initial contribution
  */
 @NonNullByDefault

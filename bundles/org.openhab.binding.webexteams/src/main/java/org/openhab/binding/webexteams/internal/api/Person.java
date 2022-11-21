@@ -18,6 +18,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
+ * a <code>Person</code> object that is received from the Webex API.
+ * 
  * @author Tom Deckers - Initial contribution
  */
 @NonNullByDefault

@@ -25,18 +25,15 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.webexteams.WebexTeamsActions;
 import org.openhab.binding.webexteams.internal.api.Message;
 import org.openhab.binding.webexteams.internal.api.Person;
 import org.openhab.binding.webexteams.internal.api.WebexTeamsApi;
-import org.openhab.binding.webexteams.internal.api.WebexTeamsApiException;
 import org.openhab.core.auth.client.oauth2.AccessTokenRefreshListener;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthException;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.auth.client.oauth2.OAuthResponseException;
-import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
@@ -72,8 +69,6 @@ public class WebexTeamsHandler extends BaseThingHandler implements AccessTokenRe
 
     private @NonNullByDefault({}) OAuthClientService authService;
 
-    private ThingStatus status = ThingStatus.UNKNOWN;
-
     private boolean configured = false; // is the handler instance properly configured?
     private volatile boolean active; // is the handler instance active?
     String accountType = ""; // bot or person?
@@ -91,11 +86,6 @@ public class WebexTeamsHandler extends BaseThingHandler implements AccessTokenRe
         // No commands supported on any channel
     }
 
-    @Override
-    public void handleRemoval() {
-        updateStatus(ThingStatus.REMOVED);
-    }
-
     // creates list of available Actions
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
@@ -108,7 +98,7 @@ public class WebexTeamsHandler extends BaseThingHandler implements AccessTokenRe
         active = true;
         config = getConfigAs(WebexTeamsConfiguration.class);
 
-        updateStatus(this.status);
+        updateStatus(ThingStatus.UNKNOWN);
 
         final String token = config.token;
         final String clientId = config.clientId;
@@ -116,20 +106,21 @@ public class WebexTeamsHandler extends BaseThingHandler implements AccessTokenRe
 
         if (!token.isBlank()) { // For bots
             logger.debug("I think I'm a bot.");
-            createBotOAuthClientService(config);
-
+            try {
+                createBotOAuthClientService(config);
+            } catch (WebexTeamsException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/confErrorNotAuth");
+                return;
+            }
         } else if (!clientId.isBlank()) { // For integrations
             logger.debug("I think I'm a person.");
             if (clientSecret.isBlank()) {
-                this.status = ThingStatus.OFFLINE;
-                updateStatus(this.status, ThingStatusDetail.CONFIGURATION_ERROR, "@text/confErrorNoSecret");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/confErrorNoSecret");
                 return;
             }
             createIntegrationOAuthClientService(config);
-
         } else { // If no bot or integration credentials, go offline
-            this.status = ThingStatus.OFFLINE;
-            updateStatus(this.status, ThingStatusDetail.CONFIGURATION_ERROR, "@text/confErrorTokenOrId");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/confErrorTokenOrId");
             return;
         }
 
@@ -154,7 +145,7 @@ public class WebexTeamsHandler extends BaseThingHandler implements AccessTokenRe
         cancelSchedulers();
     }
 
-    public void createIntegrationOAuthClientService(WebexTeamsConfiguration config) {
+    private void createIntegrationOAuthClientService(WebexTeamsConfiguration config) {
         String thingUID = this.getThing().getUID().getAsString();
         logger.debug("Creating OAuth Client Service for {}", thingUID);
         OAuthClientService service = oAuthFactory.createOAuthClientService(thingUID, OAUTH_TOKEN_URL, OAUTH_AUTH_URL,
@@ -164,7 +155,7 @@ public class WebexTeamsHandler extends BaseThingHandler implements AccessTokenRe
         this.configured = true;
     }
 
-    public void createBotOAuthClientService(WebexTeamsConfiguration config) {
+    private void createBotOAuthClientService(WebexTeamsConfiguration config) throws WebexTeamsException {
         String thingUID = this.getThing().getUID().getAsString();
         AccessTokenResponse response = new AccessTokenResponse();
         response.setAccessToken(config.token);
@@ -177,7 +168,7 @@ public class WebexTeamsHandler extends BaseThingHandler implements AccessTokenRe
         try {
             service.importAccessTokenResponse(response);
         } catch (OAuthException e) {
-            throw new WebexTeamsApiException("Failed to create oauth client with bot token", e);
+            throw new WebexTeamsException("Failed to create oauth client with bot token", e);
         }
         this.authService = service;
         this.configured = true;
@@ -187,12 +178,13 @@ public class WebexTeamsHandler extends BaseThingHandler implements AccessTokenRe
         return configured;
     }
 
-    public String authorize(String redirectUri, String reqCode) {
+    protected String authorize(String redirectUri, String reqCode) throws WebexTeamsException {
         try {
             logger.debug("Make call to Webex to get access token.");
-            final AccessTokenResponse credentials = authService.getAccessTokenResponseByAuthorizationCode(reqCode,
-                    redirectUri);
+
             // Not doing anything with the token. It's used indirectly through authService.
+            authService.getAccessTokenResponseByAuthorizationCode(reqCode, redirectUri);
+
             refresh();
             final String user = getUser();
             logger.info("Authorized for user: {}", user);
@@ -250,7 +242,6 @@ public class WebexTeamsHandler extends BaseThingHandler implements AccessTokenRe
             Person person;
             try {
                 person = client.getPerson();
-                updateState(CHANNEL_BOTNAME, StringType.valueOf(person.getDisplayName()));
                 String type = person.getType();
                 if (type == null) {
                     type = "?";
@@ -260,7 +251,7 @@ public class WebexTeamsHandler extends BaseThingHandler implements AccessTokenRe
                 updateProperty(PROPERTY_WEBEX_NAME, person.getDisplayName());
 
                 // Only when the identity is a person:
-                if (person.getType().equalsIgnoreCase("person")) {
+                if ("person".equalsIgnoreCase(person.getType())) {
                     String status = person.getStatus();
                     updateState(CHANNEL_STATUS, StringType.valueOf(status));
                     DateFormat df = new SimpleDateFormat(ISO8601_FORMAT);
@@ -269,7 +260,7 @@ public class WebexTeamsHandler extends BaseThingHandler implements AccessTokenRe
                 }
                 updateStatus(ThingStatus.ONLINE);
                 return true;
-            } catch (WebexTeamsApiException e) {
+            } catch (WebexTeamsException e) {
                 logger.warn("Failed to refresh: {}", e.getMessage());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             }
@@ -319,7 +310,6 @@ public class WebexTeamsHandler extends BaseThingHandler implements AccessTokenRe
      *         <code>false</code> in all other cases.
      */
     public boolean sendMessage(String msg) {
-
         Message message = new Message();
         message.setRoomId(config.roomId);
         message.setMarkdown(msg);
@@ -337,7 +327,6 @@ public class WebexTeamsHandler extends BaseThingHandler implements AccessTokenRe
      *         <code>false</code> in all other cases.
      */
     public boolean sendMessage(String msg, String attach) {
-
         Message message = new Message();
         message.setRoomId(config.roomId);
         message.setMarkdown(msg);
@@ -350,7 +339,7 @@ public class WebexTeamsHandler extends BaseThingHandler implements AccessTokenRe
      * Send a message to a specific room
      * 
      * @param roomId roomId of the room to send to
-     * @param msg markdown text string to be sent*
+     * @param msg markdown text string to be sent
      * @return <code>true</code>, if sending the message has been successful and
      *         <code>false</code> in all other cases.
      */
@@ -363,7 +352,7 @@ public class WebexTeamsHandler extends BaseThingHandler implements AccessTokenRe
     }
 
     /**
-     * Send a message to a specific room
+     * Send a message to a specific room, with attachment
      * 
      * @param roomId roomId of the room to send to
      * @param msg markdown text string to be sent
@@ -386,7 +375,8 @@ public class WebexTeamsHandler extends BaseThingHandler implements AccessTokenRe
      * 
      * @param personEmail email address of the person to send to
      * @param msg markdown text string to be sent
-     * @return
+     * @return <code>true</code>, if sending the message has been successful and
+     *         <code>false</code> in all other cases.
      */
     public boolean sendPersonMessage(String personEmail, String msg) {
         Message message = new Message();
@@ -397,12 +387,13 @@ public class WebexTeamsHandler extends BaseThingHandler implements AccessTokenRe
     }
 
     /**
-     * Sends a message to a specific person, identified by email
+     * Sends a message to a specific person, identified by email, with attachment
      * 
      * @param personEmail email address of the person to send to
      * @param msg markdown text string to be sent
      * @param attach URL of the attachment*
-     * @return
+     * @return <code>true</code>, if sending the message has been successful and
+     *         <code>false</code> in all other cases.
      */
     public boolean sendPersonMessage(String personEmail, String msg, String attach) {
         Message message = new Message();
@@ -421,33 +412,13 @@ public class WebexTeamsHandler extends BaseThingHandler implements AccessTokenRe
      *         <code>false</code> in all other cases.
      */
     private boolean sendMessage(Message msg) {
-        client.sendMessage(msg);
-        return true;
-    }
-
-    @Override
-    public Configuration editConfiguration() {
-        return super.editConfiguration();
-    }
-
-    @Override
-    public void updateConfiguration(Configuration config) {
-        super.updateConfiguration(config);
-    }
-
-    @Override
-    public void updateProperty(String name, @Nullable String value) {
-        super.updateProperty(name, value);
-    }
-
-    @Override
-    public Configuration getConfig() {
-        return super.getConfig();
-    }
-
-    @Override
-    public <T> T getConfigAs(Class<T> configurationClass) {
-        return super.getConfigAs(configurationClass);
+        try {
+            client.sendMessage(msg);
+            return true;
+        } catch (WebexTeamsException e) {
+            logger.warn("Failed to send message: {}", e.getMessage());
+        }
+        return false;
     }
 
     @Override

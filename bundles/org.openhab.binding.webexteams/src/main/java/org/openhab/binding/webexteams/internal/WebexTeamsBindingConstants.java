@@ -30,7 +30,6 @@ public class WebexTeamsBindingConstants {
     public static final ThingTypeUID THING_TYPE_ACCOUNT = new ThingTypeUID(BINDING_ID, "account");
 
     // List of all Channel ids
-    public static final String CHANNEL_BOTNAME = "botname";
     public static final String CHANNEL_STATUS = "status";
     public static final String CHANNEL_LASTACTIVITY = "lastactivity";
 

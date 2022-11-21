@@ -12,13 +12,15 @@
  */
 package org.openhab.binding.webexteams.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link WebexTeamsConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Tom Deckers - Initial contribution
  */
+@NonNullByDefault
 public class WebexTeamsConfiguration {
-
     // static strings used when interacting with Configuration.
     public static final String TOKEN = "token";
     public static final String CLIENT_ID = "clientId";

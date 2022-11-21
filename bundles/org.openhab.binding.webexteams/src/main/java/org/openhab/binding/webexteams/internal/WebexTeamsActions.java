@@ -10,11 +10,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.webexteams;
+package org.openhab.binding.webexteams.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.webexteams.internal.WebexTeamsHandler;
 import org.openhab.core.automation.annotation.ActionInput;
 import org.openhab.core.automation.annotation.ActionOutput;
 import org.openhab.core.automation.annotation.RuleAction;
@@ -53,7 +52,7 @@ public class WebexTeamsActions implements ThingActions {
         }
     }
 
-    @RuleAction(label = "@text/sendMessageActionLabel", description = "@text/sendMessageActionDescription")
+    @RuleAction(label = "@text/sendMessageAttActionLabel", description = "@text/sendMessageAttActionDescription")
     public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean sendMessage(
             @ActionInput(name = "text") @Nullable String text, @ActionInput(name = "attach") @Nullable String attach) {
         if (text == null) {
@@ -142,7 +141,7 @@ public class WebexTeamsActions implements ThingActions {
         }
     }
 
-    @RuleAction(label = "@text/sendPersonMessageActionLabel", description = "@text/sendPersonMessageActionDescription")
+    @RuleAction(label = "@text/sendPersonMessageAttActionLabel", description = "@text/sendPersonMessageAttActionDescription")
     public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean sendPersonMessage(
             @ActionInput(name = "personEmail") @Nullable String personEmail,
             @ActionInput(name = "text") @Nullable String text, @ActionInput(name = "attach") @Nullable String attach) {

@@ -16,6 +16,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.webexteams.internal.WebexTeamsException;
 
 /**
+ * Signals a general exception with interacting with the Webex API.
+ * 
  * @author Tom Deckers - Initial contribution
  */
 @NonNullByDefault

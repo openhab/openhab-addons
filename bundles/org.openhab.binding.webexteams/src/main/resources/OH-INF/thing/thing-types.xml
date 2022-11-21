@@ -17,23 +17,22 @@
 
 		<properties>
 			<property name="type"></property>
-			<property name="name"></property>
 		</properties>
 
 		<config-description>
 			<parameter name="token" type="text" required="false">
 				<context>password</context>
-				<label>Token</label>
-				<description>Authentication token (Bot)</description>
+				<label>Authorization Token</label>
+				<description>Authorization token. Only use with a bot account.</description>
 			</parameter>
 			<parameter name="clientId" type="text" required="false">
 				<label>Client Id</label>
-				<description>OAuth client Id (Integration)</description>
+				<description>Client Id. Only use with a person integration.</description>
 			</parameter>
 			<parameter name="clientSecret" type="text" required="false">
 				<context>password</context>
 				<label>Client Secret</label>
-				<description>OAuth client secret (Integration)</description>
+				<description>Client Secret. Only use with a person integration.</description>
 			</parameter>
 			<parameter name="refreshPeriod" type="integer" required="false">
 				<label>Refresh Period (seconds)</label>
@@ -42,7 +41,7 @@
 					300 secs.</description>
 			</parameter>
 			<parameter name="roomId" type="text" required="false">
-				<label>Default room Id</label>
+				<label>Default Room Id</label>
 				<description>Id of the default room to send messages</description>
 			</parameter>
 		</config-description>
@@ -51,20 +50,20 @@
 	<!-- Botname Channel Type -->
 	<channel-type id="botname">
 		<item-type>String</item-type>
-		<label>Bot Name</label><!-- Use uppercase words, except prepositions. 2-3 words, max 25 chars -->
-		<description>Name of the Webex Teams bot</description>
+		<label>Bot Name</label>
+		<description>The full name of the account</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="status">
 		<item-type>String</item-type>
-		<label>Status</label><!-- Use uppercase words, except prepositions. 2-3 words, max 25 chars -->
-		<description>Status of the identity</description>
+		<label>Status</label>
+		<description>The current presence status of the person</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="lastactivity">
 		<item-type>DateTime</item-type>
-		<label>Last Activity</label><!-- Use uppercase words, except prepositions. 2-3 words, max 25 chars -->
-		<description>Last Activity</description>
+		<label>Last Activity</label>
+		<description>The date and time of the person's last activity within Webex</description>
 		<state readOnly="true"/>
 	</channel-type>
 

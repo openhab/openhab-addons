@@ -71,18 +71,23 @@ public class WebexTeamsApi {
     public WebexTeamsApi(OAuthClientService authService, HttpClient httpClient) {
         this.authService = authService;
         this.httpClient = httpClient;
-
-        // WebexTeamsConfiguration config = handler.getConfigAs(WebexTeamsConfiguration.class);
     }
 
-    public Person getPerson() {
+    /**
+     * Get a <code>Person</code> object for the account.
+     * 
+     * @return a <code>Person</code> object
+     * @throws WebexAuthenticationException when authentication fails
+     * @throws WebexTeamsApiException for other failures
+     */
+    public Person getPerson() throws WebexTeamsApiException, WebexAuthenticationException {
         URI url = getUrl(WEBEX_API_ENDPOINT + "/people/me");
 
         Person person = request(url, HttpMethod.GET, Person.class, null);
         return person;
     }
 
-    private URI getUrl(@Nullable String url) {
+    private URI getUrl(@Nullable String url) throws WebexTeamsApiException {
         URI uri;
         try {
             uri = new URI(url);
@@ -92,7 +97,8 @@ public class WebexTeamsApi {
         return uri;
     }
 
-    private <I, O> O request(URI url, HttpMethod method, Class<O> clazz, I body) {
+    private <I, O> O request(URI url, HttpMethod method, Class<O> clazz, I body)
+            throws WebexAuthenticationException, WebexTeamsApiException {
         try {
             // Refresh is handled automatically by this method
             AccessTokenResponse response = this.authService.getAccessTokenResponse();
@@ -100,14 +106,16 @@ public class WebexTeamsApi {
             String authToken = response == null ? null : response.getAccessToken();
             if (authToken == null) {
                 throw new WebexAuthenticationException("Auth token is null");
-            } else
+            } else {
                 return doRequest(url, method, authToken, clazz, body);
+            }
         } catch (OAuthException | IOException | OAuthResponseException e) {
             throw new WebexAuthenticationException("Not authenticated", e);
         }
     }
 
-    private <I, O> O doRequest(URI url, HttpMethod method, String authToken, Class<O> clazz, I body) {
+    private <I, O> O doRequest(URI url, HttpMethod method, String authToken, Class<O> clazz, I body)
+            throws WebexAuthenticationException, WebexTeamsApiException {
         Gson gson = new Gson();
         try {
             Request req = httpClient.newRequest(url).method(method);
@@ -144,7 +152,6 @@ public class WebexTeamsApi {
                     String text = new BufferedReader(new InputStreamReader(input, StandardCharsets.UTF_8)).lines()
                             .collect(Collectors.joining("\n"));
                     logger.warn("Content: {}", text);
-
                 } catch (IOException e) {
                     throw new WebexTeamsApiException("ioexception", e);
                 }
@@ -162,7 +169,7 @@ public class WebexTeamsApi {
     }
 
     // sendMessage
-    public Message sendMessage(Message msg) {
+    public Message sendMessage(Message msg) throws WebexTeamsApiException, WebexAuthenticationException {
         URI url = getUrl(WEBEX_API_ENDPOINT + "/messages");
         Message response = request(url, HttpMethod.POST, Message.class, msg);
         logger.debug("Sent message, id: {}", response.getId());

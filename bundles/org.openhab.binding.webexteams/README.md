@@ -18,20 +18,18 @@ No Things are being discovered by this binding.
 Webex Teams supports two main types of app integration:
 
 * Bot: a separate identity that can be used to communicate with people and rooms.
-* Integration: OAuth integration that allows the binding to act on a persons behalf.
+* Person or Integration: OAuth integration that allows the binding to act on a persons behalf.
 
-Both of these integrations must be first configured on the [Webex Developers](https://developer.webex.com/my-apps) 
-website.
+Both of these accounts must be first configured on the [Webex Developers](https://developer.webex.com/my-apps) website.
+When creating a person integration, it's important you customize the redirect URL based on your OpenHab installation.
+For example if you run your openHAB server on `http://openhab:8080` you should add [http://openhab:8080/connectwebex](http://openhab:8080/connectwebex) to the redirect URIs.
 
-To use the bot identity, only configure the `token` (Authentication token).
+To use a bot account, only configure the `token` (Authentication token).
 
-To use the OAuth interation, configure `clientId`, `clientSecret` and `authCode`.  To make life easier, use the following redirect URL: `https://files.ducbase.com/authcode/index.html` when creating the Webex Teams app at the URL above.  This will provide you with a convenient way to copy the auth code once redirected by Webex Teams.  The auth code is obtained by using the Authorization URL from the Webex Developers integration setup page.
+To use a person integration, configure `clientId` and `clientSecret`.
+When the account is configured as a Thing in OpenHab, navigate to the redirect URL (as described above) and authorize your account.
 
-As long as the binding is configured with credentials it will refresh tokens.  When the binding was down for a prolongued time
-you may have to obtain a new auth code.  In this case, delete the refresh token from the configuration and apply the new auth token.
-
-You shouldn't configure both an authentication token (used for bots) AND clientId/clientSecret (used for integrations).  In that
-case the binding will use the clientId/clientSecret.
+You shouldn't configure both an authentication token (used for bots) AND clientId/clientSecret (used for person integrations).  In that case the binding will use the authentication token.
 
 A default room id is required for use with the `sendMessage` action.
 
@@ -39,11 +37,10 @@ A default room id is required for use with the `sendMessage` action.
 
 | Name            | Type    | Description                           | Default | Required | Advanced |
 |-----------------|---------|---------------------------------------|---------|----------|----------|
-| token           | password| (Bot) authentication token            | N/A     | no       | no       |
-| clientId        | text    | (OAuth) client id                     | N/A     | no       | no       |
-| clientSecret    | password| (OAuth) client secret                 | N/A     | no       | no       |
-| authCode        | text    | (OAuth) auth code                     | N/A     | no       | no       |
-| refreshToken    | password| (OAuth) refresh token                 | N/A     | no       | yes      |
+| token           | text    | (Bot) authentication token            | N/A     | no       | no       |
+| clientId        | text    | (Person) client id                    | N/A     | no       | no       |
+| clientSecret    | text    | (Person) client secret                | N/A     | no       | no       |
+| refreshPeriod   | integer | Refresh period for channels (seconds) | N/A     | no       | no       |
 | roomId          | text    | ID of the default room                | N/A     | no       | no       |
 
 ## Channels
@@ -54,34 +51,42 @@ A default room id is required for use with the `sendMessage` action.
 | WebexTeams Account | status       | String    | Account presence status: active, call, inactive, ...         |
 | WebexTeams Account | lastactivity | DateTime  | The date and time of the person's last activity within Webex |
 
+Note: status and lastactivity are only updated for person integrations
+
 ## Full Example
 
 
 webexteams.things:
 
+Configure a bot account:
+
 ```
 Thing webexteams:account:bot [ token="XXXXXX", roomId="YYYYYY" ]
-
 ```
 
-DSL rules use `getActions` to get a reference to the thing.
+Configure a person integration account:
 
-    val botActions = getActions("webexteams", "webexteams:account:bot")
-
-In a DSL rule you can use following actions:
+```
+Thing webexteams:account:person [ clientId="XXXXXX", clientSecret="YYYYYY" roomId="ZZZZZZ" ]
+```
 
 ## Rule Action
 
-This binding includes rule actions for sending messages:
+DSL rules use `getActions` to get a reference to the thing.
 
+`val botActions = getActions("webexteams", "webexteams:account:bot")`
 
-* `var success = botActions.sendMessage(String markdown)`
-* `var success = botActions.sendMessage(String markdown, String attach)`
-* `var success = botActions.sendRoomMessage(String roomId, String markdown)`
-* `var success = botActions.sendRoomMessage(String roomId, String markdown, String attach)`
-* `var success = botActions.sendPersonMessage(String personEmail, String markdown)`
-* `var success = botActions.sendPersonMessage(String personEmail, String markdown, String attach)`
+This binding includes these DSL rule actions for sending messages:
 
-Attachments must be URLs.  Sending local files is not supported at this moment.
+* `var success = botActions.sendMessage(String markdown)` - Send a message to the default room.
+* `var success = botActions.sendMessage(String markdown, String attach)` - Send a message to the default room, with attachment.
+* `var success = botActions.sendRoomMessage(String roomId, String markdown)` - Send a message to a specific room.
+* `var success = botActions.sendRoomMessage(String roomId, String markdown, String attach)` - Send a message to a specific room, with attachment.
+* `var success = botActions.sendPersonMessage(String personEmail, String markdown)` - Send a direct message to a person.
+* `var success = botActions.sendPersonMessage(String personEmail, String markdown, String attach)` - Send a direct message to a person, with attachment.
+
+Sending messages for bot or person accounts works exactly the same.
+Attachments must be URLs.  
+Sending local files is not supported at this moment.
 
 

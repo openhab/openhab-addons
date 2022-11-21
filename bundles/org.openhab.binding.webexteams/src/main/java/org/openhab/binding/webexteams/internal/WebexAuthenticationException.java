@@ -15,6 +15,8 @@ package org.openhab.binding.webexteams.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
+ * Signals an issue with API authentication.
+ * 
  * @author Tom Deckers - Initial contribution
  */
 @NonNullByDefault

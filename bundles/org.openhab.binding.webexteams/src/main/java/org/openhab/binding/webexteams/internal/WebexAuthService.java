@@ -121,8 +121,9 @@ public class WebexAuthService {
      * @param state The Spotify returned state value
      * @param code The Spotify returned code value
      * @return returns the name of the Spotify user that is authorized
+     * @throws WebexTeamsException if no handler was found for the state
      */
-    public String authorize(String servletBaseURL, String state, String code) {
+    public String authorize(String servletBaseURL, String state, String code) throws WebexTeamsException {
         logger.debug("Authorizing for state: {}, code: {}", state, code);
 
         final WebexTeamsHandler listener = getWebexTeamsHandler(state);

@@ -127,7 +127,7 @@ public class WebexAuthServlet extends HttpServlet {
                 try {
                     replaceMap.put(KEY_AUTHORIZED_USER, String.format(HTML_USER_AUTHORIZED,
                             authService.authorize(servletBaseURL, reqState, reqCode)));
-                } catch (RuntimeException e) {
+                } catch (WebexTeamsException e) {
                     logger.debug("Exception during authorizaton: ", e);
                     replaceMap.put(KEY_ERROR, String.format(HTML_ERROR, e.getMessage()));
                 }

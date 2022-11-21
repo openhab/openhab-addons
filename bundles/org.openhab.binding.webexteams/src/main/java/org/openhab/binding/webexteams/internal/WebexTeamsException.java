@@ -15,10 +15,12 @@ package org.openhab.binding.webexteams.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
+ * Signals a general exception in the code.
+ * 
  * @author Tom Deckers - Initial contribution
  */
 @NonNullByDefault
-public class WebexTeamsException extends RuntimeException {
+public class WebexTeamsException extends Exception {
     public WebexTeamsException() {
         super();
     }
