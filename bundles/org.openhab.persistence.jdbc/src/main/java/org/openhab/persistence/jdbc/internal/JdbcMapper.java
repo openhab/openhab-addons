@@ -31,6 +31,7 @@ import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.core.persistence.HistoricItem;
 import org.openhab.core.persistence.PersistenceItemInfo;
 import org.openhab.core.types.State;
+import org.openhab.persistence.jdbc.internal.dto.Column;
 import org.openhab.persistence.jdbc.internal.dto.ItemVO;
 import org.openhab.persistence.jdbc.internal.dto.ItemsVO;
 import org.openhab.persistence.jdbc.internal.dto.JdbcPersistenceItemInfo;
@@ -169,6 +170,17 @@ public class JdbcMapper {
         List<ItemsVO> vol = conf.getDBDAO().doGetItemTables(isvo);
         logTime("getItemTables", timerStart, System.currentTimeMillis());
         return vol;
+    }
+
+    protected List<Column> getTableColumns(String tableName) throws JdbcSQLException {
+        logger.debug("JDBC::getTableColumns");
+        long timerStart = System.currentTimeMillis();
+        ItemsVO isvo = new ItemsVO();
+        isvo.setJdbcUriDatabaseName(conf.getDbName());
+        isvo.setTableName(tableName);
+        List<Column> is = conf.getDBDAO().doGetTableColumns(isvo);
+        logTime("getTableColumns", timerStart, System.currentTimeMillis());
+        return is;
     }
 
     /****************

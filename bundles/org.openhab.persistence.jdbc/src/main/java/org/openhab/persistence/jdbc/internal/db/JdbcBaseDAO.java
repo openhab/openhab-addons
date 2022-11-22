@@ -56,6 +56,7 @@ import org.openhab.core.persistence.FilterCriteria.Ordering;
 import org.openhab.core.persistence.HistoricItem;
 import org.openhab.core.types.State;
 import org.openhab.core.types.TypeParser;
+import org.openhab.persistence.jdbc.internal.dto.Column;
 import org.openhab.persistence.jdbc.internal.dto.ItemVO;
 import org.openhab.persistence.jdbc.internal.dto.ItemsVO;
 import org.openhab.persistence.jdbc.internal.dto.JdbcHistoricItem;
@@ -91,6 +92,7 @@ public class JdbcBaseDAO {
     protected String sqlDeleteItemsEntry = "DELETE FROM #itemsManageTable# WHERE ItemName='#itemname#'";
     protected String sqlGetItemIDTableNames = "SELECT ItemId, ItemName FROM #itemsManageTable#";
     protected String sqlGetItemTables = "SELECT table_name FROM information_schema.tables WHERE table_type='BASE TABLE' AND table_schema='#jdbcUriDatabaseName#' AND NOT table_name='#itemsManageTable#'";
+    protected String sqlGetTableColumnTypes = "SELECT column_name, column_type, is_nullable FROM information_schema.columns WHERE table_schema='#jdbcUriDatabaseName#' AND table_name='#tableName#'";
     protected String sqlCreateItemTable = "CREATE TABLE IF NOT EXISTS #tableName# (time #tablePrimaryKey# NOT NULL, value #dbType#, PRIMARY KEY(time))";
     protected String sqlInsertItemValue = "INSERT INTO #tableName# (TIME, VALUE) VALUES( #tablePrimaryValue#, ? ) ON DUPLICATE KEY UPDATE VALUE= ?";
     protected String sqlGetRowCount = "SELECT COUNT(*) FROM #tableName#";
@@ -370,6 +372,18 @@ public class JdbcBaseDAO {
         logger.debug("JDBC::doGetItemTables sql={}", sql);
         try {
             return Yank.queryBeanList(sql, ItemsVO.class, null);
+        } catch (YankSQLException e) {
+            throw new JdbcSQLException(e);
+        }
+    }
+
+    public List<Column> doGetTableColumns(ItemsVO vo) throws JdbcSQLException {
+        String sql = StringUtilsExt.replaceArrayMerge(sqlGetTableColumnTypes,
+                new String[] { "#jdbcUriDatabaseName#", "#tableName#" },
+                new String[] { vo.getJdbcUriDatabaseName(), vo.getTableName() });
+        logger.debug("JDBC::doGetTableColumns sql={}", sql);
+        try {
+            return Yank.queryBeanList(sql, Column.class, null);
         } catch (YankSQLException e) {
             throw new JdbcSQLException(e);
         }

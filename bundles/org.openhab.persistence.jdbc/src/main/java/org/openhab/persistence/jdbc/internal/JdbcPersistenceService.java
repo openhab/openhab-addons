@@ -40,6 +40,8 @@ import org.openhab.core.persistence.QueryablePersistenceService;
 import org.openhab.core.persistence.strategy.PersistenceStrategy;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
+import org.openhab.persistence.jdbc.internal.db.JdbcBaseDAO;
+import org.openhab.persistence.jdbc.internal.dto.Column;
 import org.openhab.persistence.jdbc.internal.dto.ItemsVO;
 import org.openhab.persistence.jdbc.internal.exceptions.JdbcException;
 import org.openhab.persistence.jdbc.internal.exceptions.JdbcSQLException;
@@ -301,6 +303,56 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
      */
     public Collection<String> getItemNames() {
         return itemNameToTableNameMap.keySet();
+    }
+
+    /**
+     * Get a map of item names to table names.
+     */
+    public Map<String, String> getItemNameToTableNameMap() {
+        return itemNameToTableNameMap;
+    }
+
+    public Collection<String> getSchemaIssues(String tableName, String itemName) throws JdbcSQLException {
+        List<String> issues = new ArrayList<>();
+        Item item;
+        try {
+            item = itemRegistry.getItem(itemName);
+        } catch (ItemNotFoundException e) {
+            return issues;
+        }
+        JdbcBaseDAO dao = conf.getDBDAO();
+        String timeDataType = dao.sqlTypes.get("tablePrimaryKey");
+        if (timeDataType == null) {
+            return issues;
+        }
+        String valueDataType = dao.getDataType(item);
+        List<Column> columns = getTableColumns(tableName);
+        for (Column column : columns) {
+            String columnName = column.getColumnName();
+            if ("time".equalsIgnoreCase(columnName)) {
+                if (!"time".equals(columnName)) {
+                    issues.add("Column name 'time' expected, but is '" + columnName + "'");
+                }
+                if (!timeDataType.equalsIgnoreCase(column.getColumnType())) {
+                    issues.add("Column type '" + timeDataType + "' expected, but is '"
+                            + column.getColumnType().toUpperCase() + "'");
+                }
+                if (column.getIsNullable()) {
+                    issues.add("Column 'time' expected to be NOT NULL, but is nullable");
+                }
+            } else if ("value".equalsIgnoreCase(columnName)) {
+                if (!"value".equals(columnName)) {
+                    issues.add("Column name 'value' expected, but is '" + columnName + "'");
+                }
+                if (!valueDataType.equalsIgnoreCase(column.getColumnType())) {
+                    issues.add("Column type '" + valueDataType + "' expected, but is '"
+                            + column.getColumnType().toUpperCase() + "'");
+                }
+            } else {
+                issues.add("Column '" + columnName + "' not expected");
+            }
+        }
+        return issues;
     }
 
     /**

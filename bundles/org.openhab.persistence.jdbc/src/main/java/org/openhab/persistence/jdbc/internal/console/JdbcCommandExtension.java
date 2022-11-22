@@ -13,8 +13,11 @@
 package org.openhab.persistence.jdbc.internal.console;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -44,13 +47,18 @@ import org.osgi.service.component.annotations.Reference;
 @Component(service = ConsoleCommandExtension.class)
 public class JdbcCommandExtension extends AbstractConsoleCommandExtension implements ConsoleCommandCompleter {
 
+    private static final String CMD_SCHEMA = "schema";
     private static final String CMD_TABLES = "tables";
     private static final String CMD_RELOAD = "reload";
+    private static final String SUBCMD_SCHEMA_CHECK = "check";
     private static final String SUBCMD_TABLES_LIST = "list";
     private static final String SUBCMD_TABLES_CLEAN = "clean";
     private static final String PARAMETER_ALL = "all";
     private static final String PARAMETER_FORCE = "force";
-    private static final StringsCompleter CMD_COMPLETER = new StringsCompleter(List.of(CMD_TABLES, CMD_RELOAD), false);
+    private static final StringsCompleter CMD_COMPLETER = new StringsCompleter(
+            List.of(CMD_SCHEMA, CMD_TABLES, CMD_RELOAD), false);
+    private static final StringsCompleter SUBCMD_SCHEMA_COMPLETER = new StringsCompleter(List.of(SUBCMD_SCHEMA_CHECK),
+            false);
     private static final StringsCompleter SUBCMD_TABLES_COMPLETER = new StringsCompleter(
             List.of(SUBCMD_TABLES_LIST, SUBCMD_TABLES_CLEAN), false);
 
@@ -109,6 +117,11 @@ public class JdbcCommandExtension extends AbstractConsoleCommandExtension implem
                     return true;
                 }
             }
+        } else if (args.length == 2 && CMD_SCHEMA.equalsIgnoreCase(args[0])) {
+            if (SUBCMD_SCHEMA_CHECK.equalsIgnoreCase(args[1])) {
+                checkSchema(persistenceService, console);
+                return true;
+            }
         } else if (args.length == 1 && CMD_RELOAD.equalsIgnoreCase(args[0])) {
             reload(persistenceService, console);
             return true;
@@ -116,7 +129,30 @@ public class JdbcCommandExtension extends AbstractConsoleCommandExtension implem
         return false;
     }
 
-    private void listTables(JdbcPersistenceService persistenceService, Console console, Boolean all)
+    private void checkSchema(JdbcPersistenceService persistenceService, Console console) throws JdbcSQLException {
+        Map<String, String> itemNameToTableNameMap = persistenceService.getItemNameToTableNameMap();
+        int itemNameMaxLength = Math.max(itemNameToTableNameMap.entrySet().stream().map(i -> i.getKey().length())
+                .max(Integer::compare).orElse(0), 4);
+        int tableNameMaxLength = Math.max(itemNameToTableNameMap.entrySet().stream().map(i -> i.getValue().length())
+                .max(Integer::compare).orElse(0), 5);
+        console.println(String.format("%1$-" + (tableNameMaxLength + 2) + "s%2$-" + (itemNameMaxLength + 2) + "s%3$s",
+                "Table", "Item", "Issue"));
+        console.println("-".repeat(tableNameMaxLength) + "  " + "-".repeat(itemNameMaxLength) + "  " + "-".repeat(64));
+        for (Entry<String, String> entry : itemNameToTableNameMap.entrySet()) {
+            String itemName = entry.getKey();
+            String tableName = entry.getValue();
+            Collection<String> issues = persistenceService.getSchemaIssues(tableName, itemName);
+            if (!issues.isEmpty()) {
+                for (String issue : issues) {
+                    console.println(String.format(
+                            "%1$-" + (tableNameMaxLength + 2) + "s%2$-" + (itemNameMaxLength + 2) + "s%3$s", tableName,
+                            itemName, issue));
+                }
+            }
+        }
+    }
+
+    private void listTables(JdbcPersistenceService persistenceService, Console console, boolean all)
             throws JdbcSQLException {
         List<ItemTableCheckEntry> entries = persistenceService.getCheckedEntries();
         if (!all) {
@@ -176,7 +212,7 @@ public class JdbcCommandExtension extends AbstractConsoleCommandExtension implem
 
     @Override
     public List<String> getUsages() {
-        return Arrays.asList(
+        return Arrays.asList(buildCommandUsage(CMD_SCHEMA + " " + SUBCMD_SCHEMA_CHECK, "check schema integrity"),
                 buildCommandUsage(CMD_TABLES + " " + SUBCMD_TABLES_LIST + " [" + PARAMETER_ALL + "]",
                         "list tables (all = include valid)"),
                 buildCommandUsage(
@@ -197,6 +233,8 @@ public class JdbcCommandExtension extends AbstractConsoleCommandExtension implem
         } else if (cursorArgumentIndex == 1) {
             if (CMD_TABLES.equalsIgnoreCase(args[0])) {
                 return SUBCMD_TABLES_COMPLETER.complete(args, cursorArgumentIndex, cursorPosition, candidates);
+            } else if (CMD_SCHEMA.equalsIgnoreCase(args[0])) {
+                return SUBCMD_SCHEMA_COMPLETER.complete(args, cursorArgumentIndex, cursorPosition, candidates);
             }
         } else if (cursorArgumentIndex == 2) {
             if (CMD_TABLES.equalsIgnoreCase(args[0])) {
