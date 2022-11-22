@@ -29,11 +29,14 @@ public class StateMachine {
     private State state;
     private long periodMs;
     private double dutycycle;
+    private String ruleUID;
 
-    public StateMachine(ScheduledExecutorService scheduler, Consumer<Boolean> controlOutput, long periodMs) {
+    public StateMachine(ScheduledExecutorService scheduler, Consumer<Boolean> controlOutput, long periodMs,
+            String ruleUID) {
         this.scheduler = scheduler;
         this.controlOutput = controlOutput;
         this.periodMs = periodMs;
+        this.ruleUID = ruleUID;
         this.state = new AlwaysOffState(this);
     }
 
@@ -64,6 +67,10 @@ public class StateMachine {
 
     public void setState(State current) {
         this.state = current;
+    }
+
+    public String getRuleUID() {
+        return ruleUID;
     }
 
     public void controlOutput(boolean on) {
