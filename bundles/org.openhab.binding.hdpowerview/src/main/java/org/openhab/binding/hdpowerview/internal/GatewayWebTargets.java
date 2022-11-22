@@ -460,17 +460,22 @@ public class GatewayWebTargets implements Closeable, HostnameVerifier {
         Client client = clientBuilder.sslContext(httpClient.getSslContextFactory().getSslContext())
                 .hostnameVerifier(null).hostnameVerifier(this).readTimeout(0, TimeUnit.SECONDS).build();
 
-        // open SSE channel for shades
-        SseEventSource shadeEventSource = eventSourceFactory.newSource(client.target(shadeEvents));
-        shadeEventSource.register(this::onSSeShadeEvent, this::onSseShadeError);
-        shadeEventSource.open();
-        this.shadeEventSource = shadeEventSource;
+        try {
+            // open SSE channel for shades
+            SseEventSource shadeEventSource = eventSourceFactory.newSource(client.target(shadeEvents));
+            shadeEventSource.register(this::onSSeShadeEvent, this::onSseShadeError);
+            shadeEventSource.open();
+            this.shadeEventSource = shadeEventSource;
 
-        // open SSE channel for scenes
-        SseEventSource sceneEventSource = eventSourceFactory.newSource(client.target(sceneEvents));
-        sceneEventSource.register(this::onSseSceneEvent, this::onSseSceneError);
-        sceneEventSource.open();
-        this.sceneEventSource = sceneEventSource;
+            // open SSE channel for scenes
+            SseEventSource sceneEventSource = eventSourceFactory.newSource(client.target(sceneEvents));
+            sceneEventSource.register(this::onSseSceneEvent, this::onSseSceneError);
+            sceneEventSource.open();
+            this.sceneEventSource = sceneEventSource;
+        } catch (Exception e) {
+            // SSE documentation does not say what exceptions may be thrown, so catch everything
+            logger.warn("sseOpen() {}", e.getMessage(), e);
+        }
     }
 
     /**
@@ -494,7 +499,7 @@ public class GatewayWebTargets implements Closeable, HostnameVerifier {
                             eventSource.open();
                         }
                     } catch (Exception e) {
-                        // SSE documentation does not say what exceptions may be thrown, so catch anything
+                        // SSE documentation does not say what exceptions may be thrown, so catch everything
                         logger.warn("sseReOpen() {}", e.getMessage(), e);
                         exception = true;
                     }
