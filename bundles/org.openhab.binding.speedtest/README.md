@@ -16,16 +16,20 @@ Fully supported and maintained by Ookla with the latest Speedtest technology for
 
 ## What functionality does Ookla's Speedtest offer?
 
-* Output of a timestamp instead of using the openHAB timestamp
+The Speedtest Binding is using the following functionality, provided by Ookla's Speedtest:
+
+* Output of an accurate timestamp per measurement
 * Output of Ping time and Jitter
 * Output of Bandwidth, transferred Bytes and elapsed time for Down-/Upload
 * Output of the used interface with Internal/External IP, MAC Address and the Internet Service Provider (ISP)
 * Output of a result ID and a result URL
-* Output of the used Server and location
+* Output of the used Server and location the Speedtest was run against
 * Possiblity to pre-select a server used for testing
 
 
-## What functionality does the Speedtest Binding offer?
+## What interfaces does the Speedtest Binding offer?
+
+The Speedtest Binding provides the Ookla's Speedtest functionality via the following openHAB interface:
 
 * Execute Speedtest time based or triggered
 * Provide results via openHAB Channels
@@ -90,3 +94,31 @@ Ensure that the user that openHAB is running with, has the permissions to access
 | `interfaceExternalIp` | `String`                  | IP address of the external interface that was used for the test   |
 | `resultUrl`           | `String`                  | The URL to the Speedtest results in HTML on the Ookla webserver   |
 | `triggerTest`         | `Switch`                  | Trigger in order to run Speedtest manually                        |
+
+
+## Full Example
+
+**Thing File**
+
+```java
+Thing   speedtest:speedtest:myspeedtest   "Ookla Speedtest"    [ execPath="/usr/bin/speedtest", refreshInterval=60 ]
+```
+
+**Item File**
+
+```java
+String              	    Speedtest_Server  	            "Server"               	{ channel="speedtest:speedtest:myspeedtest:server" }
+Number:Time              	Speedtest_Ping_Jitter         	"Ping Jitter"           { channel="speedtest:speedtest:myspeedtest:pingJitter" }
+Number:Time              	Speedtest_Ping_Latency	        "Ping Latency"      	{ channel="speedtest:speedtest:myspeedtest:pingLatency" }
+Number:DataTransferRate     Speedtest_Download_Bandwith	    "Download Bandwith"     { channel="speedtest:speedtest:myspeedtest:downloadBandwidth" }
+Number:DataAmount           Speedtest_Download_Bytes	    "Download Bytes"      	{ channel="speedtest:speedtest:myspeedtest:downloadBytes" }
+Number:Time              	Speedtest_Download_Elapsed	    "Download Elapsed"      { channel="speedtest:speedtest:myspeedtest:downloadElapsed" }
+Number:DataTransferRate     Speedtest_Upload_Bandwith	    "Upload Bandwith"      	{ channel="speedtest:speedtest:myspeedtest:uploadBandwidth" }
+Number:DataAmount           Speedtest_Upload_Bytes	        "Upload Bytes"      	{ channel="speedtest:speedtest:myspeedtest:uploadBytes" }
+Number:Time              	Speedtest_Upload_Elapsed        "Upload Elapsed"      	{ channel="speedtest:speedtest:myspeedtest:uploadElapsed" }
+String              	    Speedtest_ISP         	        "ISP"      	            { channel="speedtest:speedtest:myspeedtest:isp" }
+String              	    Speedtest_Interface_InternalIP  "Internal IP Address"   { channel="speedtest:speedtest:myspeedtest:interfaceInternalIp" }
+String              	    Speedtest_Interface_ExternalIP  "External IP Address"	{ channel="speedtest:speedtest:myspeedtest:interfaceExternalIp" }
+String              	    Speedtest_ResultURL    	        "Result URL"	        { channel="speedtest:speedtest:myspeedtest:resultUrl" }
+Switch              	    Speedtest_TriggerTest    	    "Trigger Test"	        { channel="speedtest:speedtest:myspeedtest:triggerTest" }
+```

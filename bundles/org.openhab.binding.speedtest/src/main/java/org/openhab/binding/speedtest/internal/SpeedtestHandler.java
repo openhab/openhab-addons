@@ -138,7 +138,7 @@ public class SpeedtestHandler extends BaseThingHandler {
 
         if (!checkConfig(speedTestCommand)) { // check the config
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Speedtest executable not found. Please check configuration.");
+                    "Speedtest executable not found or not executable. Please check configuration.");
             return;
         }
         if (!getSpeedTestVersion()) {
@@ -207,7 +207,7 @@ public class SpeedtestHandler extends BaseThingHandler {
                 return true;
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Speedtest version not recognized, Speedtest CLI tool from Ookla is REQUIRED (https://www.speedtest.net/). Please check installation/configuration.");
+                        "Unsupported type of Speedtest recognized, Speedtest CLI tool from Ookla is REQUIRED (https://www.speedtest.net/). Please check installation/configuration.");
                 return false;
             }
         }
@@ -512,14 +512,14 @@ public class SpeedtestHandler extends BaseThingHandler {
 
     public boolean checkExecPath(String path) {
         File file = new File(path);
-        if (isFileExists(file)) {
+        if (fileExistsAndIsExecutable(file)) {
             return true;
         } else {
             return false;
         }
     }
 
-    private static boolean isFileExists(File file) {
-        return file.exists() && !file.isDirectory();
+    private static boolean fileExistsAndIsExecutable(File file) {
+        return file.exists() && !file.isDirectory() && file.canExecute();
     }
 }
