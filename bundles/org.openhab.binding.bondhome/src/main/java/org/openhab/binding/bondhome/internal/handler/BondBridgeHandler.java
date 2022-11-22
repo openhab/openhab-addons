@@ -204,21 +204,28 @@ public class BondBridgeHandler extends BaseBridgeHandler {
         BondDeviceState updateState = pushUpdate.deviceState;
         String topic = pushUpdate.topic;
         String deviceId = null;
+        String topicType = null;
         if (topic != null) {
-            deviceId = topic.split("/")[1];
+            String parts[] = topic.split("/");
+            deviceId = parts[1];
+            topicType = parts[2];
         }
         // We can't use getThingByUID because we don't know the type of device and thus
         // don't know the full uid (that is we cannot tell a fan from a fireplace, etc,
         // from the contents of the update)
         if (deviceId != null) {
-            synchronized (handlers) {
-                for (BondDeviceHandler handler : handlers) {
-                    String handlerDeviceId = handler.getDeviceId();
-                    if (handlerDeviceId.equalsIgnoreCase(deviceId)) {
-                        handler.updateChannelsFromState(updateState);
-                        break;
+            if (topicType != null && topicType.equals("state")) {
+                synchronized (handlers) {
+                    for (BondDeviceHandler handler : handlers) {
+                        String handlerDeviceId = handler.getDeviceId();
+                        if (handlerDeviceId.equalsIgnoreCase(deviceId)) {
+                            handler.updateChannelsFromState(updateState);
+                            break;
+                        }
                     }
                 }
+            } else {
+                logger.trace("could not read topic type from push update or type was not state.");
             }
         } else {
             logger.warn("Can not read device Id from push update.");
