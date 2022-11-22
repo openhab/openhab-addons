@@ -26,7 +26,8 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonObject;
 
 /**
- * @author andras
+ *
+ * @author Andras Uhrin - Initial contribution
  *
  */
 public class FreeAtHomeDatapointGroup {
@@ -38,7 +39,6 @@ public class FreeAtHomeDatapointGroup {
     public static final int DATAPOINTGROUP_DIRECTION_OUTPUT = 2;
     public static final int DATAPOINTGROUP_DIRECTION_INPUTOUTPUT = 3;
 
-    private int datapointGroupFunctionId;
     private int datapointGroupDirection;
     private int pairingId;
     private String functionString;
@@ -55,12 +55,11 @@ public class FreeAtHomeDatapointGroup {
     }
 
     boolean addDatapointToGroup(int direction, int neededPairingId, String channelId, JsonObject jsonObjectOfChannel) {
-
         FreeAtHomeDatapoint newDatapoint = new FreeAtHomeDatapoint();
 
         boolean result = newDatapoint.searchForDatapoint(direction, neededPairingId, channelId, jsonObjectOfChannel);
 
-        if (result == true) {
+        if (result) {
             switch (direction) {
                 case DATAPOINT_DIRECTION_INPUT: {
                     inputDatapoint = newDatapoint;
@@ -207,9 +206,7 @@ public class FreeAtHomeDatapointGroup {
     }
 
     public ValueStateConverter getValueStateConverter() {
-
         if (valueStateConverter == null) {
-
             if (functionString == null) {
                 functionString = PidTranslationUtils.getValueTypeForPairingId(String.format("0x%04X", pairingId));
 

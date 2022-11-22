@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link FreeAtHomeSystemDiscoveryService} is responsible for performing discovery of things
  *
- * @author Andras Uhrin
+ * @author Andras Uhrin - Initial contribution
  */
 @Component(service = DiscoveryService.class)
 @NonNullByDefault
@@ -42,7 +42,6 @@ public class FreeAtHomeSystemDiscoveryService extends AbstractDiscoveryService {
     Runnable runnable = new Runnable() {
         @Override
         public void run() {
-
             FreeAtHomeBridgeHandler bridge = FreeAtHomeBridgeHandler.freeAtHomeSystemHandler;
 
             if (bridge != null) {
@@ -94,7 +93,6 @@ public class FreeAtHomeSystemDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startScan() {
-
         this.removeOlderResults(getTimestampOfLastScan());
 
         scheduler.execute(runnable);

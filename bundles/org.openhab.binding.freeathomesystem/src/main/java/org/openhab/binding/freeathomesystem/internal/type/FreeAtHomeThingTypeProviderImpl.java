@@ -25,7 +25,8 @@ import org.openhab.core.thing.type.ThingType;
 import org.osgi.service.component.annotations.Component;
 
 /**
- * @author andras
+ *
+ * @author Andras Uhrin - Initial contribution
  *
  */
 

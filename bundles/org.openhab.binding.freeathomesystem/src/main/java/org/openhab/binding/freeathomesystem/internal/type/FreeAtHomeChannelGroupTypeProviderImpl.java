@@ -25,10 +25,10 @@ import org.openhab.core.thing.type.ChannelGroupTypeUID;
 import org.osgi.service.component.annotations.Component;
 
 /**
- * @author andras
+ *
+ * @author Andras Uhrin - Initial contribution
  *
  */
-
 @Component(service = { FreeAtHomeChannelGroupTypeProvider.class, ChannelGroupTypeProvider.class })
 public class FreeAtHomeChannelGroupTypeProviderImpl implements FreeAtHomeChannelGroupTypeProvider {
 
@@ -51,6 +51,6 @@ public class FreeAtHomeChannelGroupTypeProviderImpl implements FreeAtHomeChannel
 
     @Override
     public void addChannelGroupType(ChannelGroupType channelGroupType) {
-        // TODO Auto-generated method stub
+        // method stub
     }
 }

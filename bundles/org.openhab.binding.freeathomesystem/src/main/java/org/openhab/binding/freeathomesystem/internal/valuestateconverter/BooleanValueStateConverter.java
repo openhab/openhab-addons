@@ -28,7 +28,6 @@ public class BooleanValueStateConverter implements ValueStateConverter {
 
     @Override
     public State convertToState(String value) {
-
         if (value.equals("1")) {
             return OnOffType.ON;
         } else {
@@ -38,7 +37,6 @@ public class BooleanValueStateConverter implements ValueStateConverter {
 
     @Override
     public String convertToValueString(State state) {
-
         if (state.equals(OnOffType.ON)) {
             return "1";
         }

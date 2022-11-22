@@ -16,7 +16,8 @@ import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeProvider;
 
 /**
- * @author andras
+ *
+ * @author Andras Uhrin - Initial contribution
  *
  */
 public interface FreeAtHomeChannelTypeProvider extends ChannelTypeProvider {

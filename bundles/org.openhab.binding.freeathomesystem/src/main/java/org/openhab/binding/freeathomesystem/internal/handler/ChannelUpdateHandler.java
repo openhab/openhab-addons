@@ -54,7 +54,6 @@ public class ChannelUpdateHandler {
 
     public boolean registerChannel(String eventDatapointID, FreeAtHomeSystemBaseHandler thingHandler,
             ChannelUID channelUID, ValueStateConverter valueConverter) {
-
         DatapointChannelAssignment datapointElement = new DatapointChannelAssignment(thingHandler, valueConverter,
                 channelUID);
 
@@ -64,7 +63,6 @@ public class ChannelUpdateHandler {
     }
 
     public boolean unregisterChannel(String eventDatapointID) {
-
         datapoints.remove(eventDatapointID);
 
         return true;
@@ -73,7 +71,6 @@ public class ChannelUpdateHandler {
     public boolean registerChannel(@Nullable String deviceID, @Nullable String deviceChannel,
             @Nullable String deviceDatapoint, FreeAtHomeSystemBaseHandler thingHandler, ChannelUID channelUID,
             ValueStateConverter valueConverter) {
-
         String eventDatapointID = new String(deviceID + "/" + deviceChannel + "/" + deviceDatapoint);
 
         return registerChannel(eventDatapointID, thingHandler, channelUID, valueConverter);
@@ -81,7 +78,6 @@ public class ChannelUpdateHandler {
 
     public boolean unregisterChannel(@Nullable String deviceID, @Nullable String deviceChannel,
             @Nullable String deviceDatapoint) {
-
         String eventDatapointID = new String(deviceID + "/" + deviceChannel + "/" + deviceDatapoint);
 
         return unregisterChannel(eventDatapointID);
@@ -89,7 +85,6 @@ public class ChannelUpdateHandler {
 
     // Method to call the bridge handler event update
     public boolean updateChannelByDatapointEvent(String eventDatapointID, String valueString) {
-
         boolean ret = false;
 
         DatapointChannelAssignment datapointElement = datapoints.get(eventDatapointID);
