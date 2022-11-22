@@ -14,9 +14,7 @@
 package org.openhab.binding.freeathomesystem.internal.datamodel;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
@@ -59,7 +57,6 @@ public class FreeAtHomeDeviceDescription {
     }
 
     public FreeAtHomeDeviceDescription(JsonObject jsonObject, String id) {
-
         // set the device ID
         deviceId = id;
 
@@ -112,10 +109,6 @@ public class FreeAtHomeDeviceDescription {
         logger.info("Detecting device features - device id: {} - device label: {}", this.deviceId, this.deviceLabel);
 
         if (jsonObjectOfChannels != null) {
-            Set<String> keys = jsonObjectOfChannels.keySet();
-
-            Iterator<String> iter = keys.iterator();
-
             // Scan channels for functions
             for (String nextChannel : jsonObjectOfChannels.keySet()) {
                 FreeAtHomeDeviceChannel newChannel = new FreeAtHomeDeviceChannel();

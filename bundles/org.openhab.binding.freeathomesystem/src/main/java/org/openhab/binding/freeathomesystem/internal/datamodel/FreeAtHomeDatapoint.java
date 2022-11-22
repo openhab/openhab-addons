@@ -15,15 +15,18 @@ package org.openhab.binding.freeathomesystem.internal.datamodel;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonObject;
 
 /**
- * @author andras
+ *
+ * @author Andras Uhrin - Initial contribution
  *
  */
+@NonNullByDefault
 public class FreeAtHomeDatapoint {
 
     private final Logger logger = LoggerFactory.getLogger(FreeAtHomeDatapoint.class);
@@ -53,7 +56,6 @@ public class FreeAtHomeDatapoint {
                 localDataponits = jsonObjectOfChannel.getAsJsonObject("outputs");
                 break;
             }
-
         }
 
         Set<String> keys = localDataponits.keySet();
@@ -61,7 +63,7 @@ public class FreeAtHomeDatapoint {
         Iterator<String> iter = keys.iterator();
 
         // Scan datapoints for pairingID IDs
-        while (iter.hasNext() && (foundedId) == false) {
+        while (iter.hasNext() && (!foundedId)) {
             String datapointId = iter.next();
 
             JsonObject datapointJsonObject = localDataponits.getAsJsonObject(datapointId);
@@ -69,7 +71,6 @@ public class FreeAtHomeDatapoint {
             int pairingIDFunction = datapointJsonObject.get("pairingID").getAsInt();
 
             if (pairingIDFunction == neededPairingIDFunction) {
-
                 this.channelId = channelId;
                 this.datapointId = datapointId;
 
@@ -80,7 +81,7 @@ public class FreeAtHomeDatapoint {
         }
 
         // not founded id add dummy
-        if (foundedId == false) {
+        if (!foundedId) {
             this.channelId = "";
             this.datapointId = "";
 

@@ -14,6 +14,7 @@ package org.openhab.binding.freeathomesystem.internal.util;
 
 import static org.openhab.binding.freeathomesystem.internal.FreeAtHomeSystemBindingConstants.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
@@ -21,13 +22,14 @@ import org.openhab.core.thing.type.ChannelGroupTypeUID;
 import org.openhab.core.thing.type.ChannelTypeUID;
 
 /**
- * @author andras
+ *
+ * @author Andras Uhrin - Initial contribution
  *
  */
+@NonNullByDefault
 public class UidUtils {
 
     public static ChannelGroupTypeUID generateChannelGroupTypeUID(String groupLabel) {
-
         String channelNameString;
 
         channelNameString = groupLabel + "_channelgroupstype";
@@ -38,7 +40,6 @@ public class UidUtils {
     }
 
     public static ChannelTypeUID generateChannelTypeUID(String valueType, boolean isReadOnly) {
-
         String channelNameString;
 
         if (isReadOnly) {
@@ -53,7 +54,6 @@ public class UidUtils {
     }
 
     public static ChannelUID generateChannelUID(ThingUID thingUID, String deviceId, String channelID, String label) {
-
         String localLabel = label.replaceAll("[^a-zA-Z\\d\\s:]", "_").replace(" ", "_").toLowerCase();
 
         ChannelUID channelUID = new ChannelUID(thingUID, String.format("%s_%s_%s", deviceId, channelID, localLabel));
@@ -61,7 +61,6 @@ public class UidUtils {
     }
 
     public static ThingTypeUID generateThingUID() {
-
         return new ThingTypeUID(BINDING_ID, FREEATHOMEDEVICE_TYPE_ID);
     }
 }

@@ -34,7 +34,6 @@ public class BinaryValueStateConverter implements ValueStateConverter {
 
     @Override
     public State convertToState(String value) {
-
         int intValue = Integer.decode(value);
         int result;
 
@@ -49,7 +48,6 @@ public class BinaryValueStateConverter implements ValueStateConverter {
 
     @Override
     public String convertToValueString(State state) {
-
         if (state.equals(OnOffType.ON)) {
             return "1";
         }

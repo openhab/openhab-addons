@@ -95,8 +95,6 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
 
     int numberOfComponents = 0;
 
-    private int requestCounter = 0;
-
     private final int BRIDGE_WEBSOCKET_RECONNECT_DELAY = 30;
 
     private List<String> listOfComponentId = new ArrayList<String>();
@@ -115,7 +113,6 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         logger.warn("Unknown handle command for the bridge - channellUID {}, command {}", channelUID, command);
     }
 
@@ -215,17 +212,14 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
                 // check the output
                 if (jsonTree != null) {
                     if (jsonTree.isJsonObject()) {
-
                         JsonObject jsonObject = jsonTree.getAsJsonObject();
 
                         jsonObject = jsonObject.getAsJsonObject(sysApUID);
 
                         if (jsonObject != null) {
-
                             jsonObject = jsonObject.getAsJsonObject("devices");
 
                             if (jsonObject != null) {
-
                                 device = new FreeAtHomeDeviceDescription(jsonObject, id);
 
                             }
@@ -254,7 +248,6 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
      */
     @SuppressWarnings("deprecation")
     public String getDatapoint(@Nullable String deviceId, @Nullable String channel, @Nullable String datapoint) {
-
         if ((deviceId == null) || (channel == null) || (datapoint == null)) {
             return new String("0");
         }
@@ -265,8 +258,6 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
             Request req = httpClient.newRequest(url);
 
             logger.debug("Get datapoint by url: {}", url);
-
-            requestCounter++;
 
             if (req != null) {
                 ContentResponse response = req.send();
@@ -326,12 +317,9 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
      */
     public boolean setDatapoint(@Nullable String deviceId, @Nullable String channel, @Nullable String datapoint,
             String valueString) {
-
         if ((deviceId == null) || (channel == null) || (datapoint == null)) {
             return false;
         }
-
-        requestCounter++;
 
         String url = baseUrl + "/rest/datapoint/" + sysApUID + "/" + deviceId + "." + channel + "." + datapoint;
         try {
@@ -369,7 +357,6 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
      */
     @SuppressWarnings("deprecation")
     public void processSocketEvent(String receivedText) {
-
         JsonReader reader = new JsonReader(new StringReader(receivedText));
 
         reader.setLenient(true);
@@ -447,7 +434,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
             ret = false;
         }
 
-        if (ret == true) {
+        if (ret) {
             // Add authentication credentials and make a check.
             try {
                 // Add authentication credentials.
@@ -463,7 +450,6 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
 
                 // check status
                 if (res.getStatus() == 200) {
-
                     // response OK
                     httpConnectionOK.set(true);
 
@@ -471,7 +457,6 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
 
                     logger.info("HTTP connection to SysAP is OK");
                 } else {
-
                     // response NOK, set error
                     httpConnectionOK.set(false);
 
@@ -479,7 +464,6 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
 
                     logger.info("Wrong credentials for SysAP");
                 }
-
             } catch (URISyntaxException | InterruptedException | ExecutionException | TimeoutException ex) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Cannot open http connection, wrong passord");
@@ -543,7 +527,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
 
         ret = closeHttpConnection();
 
-        if (ret == true) {
+        if (ret) {
             ret = openHttpConnection();
         }
 
@@ -605,7 +589,6 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
      */
     @SuppressWarnings({ "deprecation", "null" })
     public void closeWebSocketConnection() {
-
         if (socketMonitor != null) {
             socketMonitor.stop();
         }
@@ -724,8 +707,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
         baseUrl = "http://" + ipAddress + "/fhapi/v1/api";
 
         // Open Http connection
-        if (openHttpConnection() == false) {
-
+        if (!openHttpConnection()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Cannot open http connection, wrong password or IP address");
 
@@ -735,8 +717,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
         }
 
         // Open the websocket connection for immediate status updates
-        if (openWebSocketConnection() == false) {
-
+        if (!openWebSocketConnection()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Cannot open websocket connection");
 
@@ -781,7 +762,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
 
             try {
                 // while (!isInterrupted()) {
-                if (httpConnectionOK.get() == true) {
+                if (httpConnectionOK.get()) {
                     if (connectSession()) {
                         socket.awaitEndCommunication();
                     }

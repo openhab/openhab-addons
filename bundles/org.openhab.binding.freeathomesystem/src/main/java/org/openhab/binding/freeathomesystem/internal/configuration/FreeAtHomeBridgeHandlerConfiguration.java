@@ -10,20 +10,23 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.freeathomesystem.internal.type;
 
-import org.openhab.core.thing.binding.ThingTypeProvider;
-import org.openhab.core.thing.type.ThingType;
+package org.openhab.binding.freeathomesystem.internal.configuration;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
+ * The {@link FreeAtHomeBridgeHandlerConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Andras Uhrin - Initial contribution
- *
  */
-public interface FreeAtHomeThingTypeProvider extends ThingTypeProvider {
+@NonNullByDefault
+public class FreeAtHomeBridgeHandlerConfiguration {
 
     /**
-     * Adds the ThingType to this provider.
+     * Bridgeconfiguration parameter.
      */
-    public void addThingType(ThingType thingType);
+    public String ipaddress = "";
+    public String username = "";
+    public String password = "";
 }

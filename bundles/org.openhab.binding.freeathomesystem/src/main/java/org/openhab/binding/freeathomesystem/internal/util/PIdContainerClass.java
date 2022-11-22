@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.freeathomesystem.internal.util;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link PIdContainerClass} his a helper class for pairing IDs
  *
  * @author Andras Uhrin - Initial contribution
  *
  */
+@NonNullByDefault
 public class PIdContainerClass {
     String valueType;
     String category;
@@ -28,15 +31,11 @@ public class PIdContainerClass {
 
     PIdContainerClass(String pValueType, String pCategory, String pMin, String pMax, String pLabel,
             String pDescription) {
-
         this.valueType = pValueType;
         this.category = pCategory;
         this.min = 0;// Integer.getInteger(pMin);
         this.max = 100;// Integer.getInteger(pMax);
         this.Label = pLabel;
         this.Descprition = pDescription;
-    }
-
-    PIdContainerClass() {
     }
 }

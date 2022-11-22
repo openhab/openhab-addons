@@ -16,12 +16,16 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link FidTranslationUtils} having constant values for json parsing
  *
  * @author Andras Uhrin - Initial contribution
  *
  */
+@NonNullByDefault
 public class FidTranslationUtils {
 
     private static final Map<String, String> mapFunctionId;
@@ -324,10 +328,9 @@ public class FidTranslationUtils {
         mapDesc.put("0x00AA", "Room temperature controller with fan speed level"); // FID_VRV_GATEWAY
 
         mapFunctionId = Collections.unmodifiableMap(mapDesc);
-
     }
 
-    public static String getFunctionIdText(String Key) {
+    public static @Nullable String getFunctionIdText(String Key) {
         String functionIdString = mapFunctionId.get(Key);
 
         return functionIdString;

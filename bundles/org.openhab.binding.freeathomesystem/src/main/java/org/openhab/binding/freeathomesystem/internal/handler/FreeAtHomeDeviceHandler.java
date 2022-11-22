@@ -60,12 +60,9 @@ import org.slf4j.LoggerFactory;
  */
 public class FreeAtHomeDeviceHandler extends FreeAtHomeSystemBaseHandler {
 
-    private FreeAtHomeBridgeHandler freeAtHomeBridge = null;
-
     private final Logger logger = LoggerFactory.getLogger(FreeAtHomeDeviceHandler.class);
     private FreeAtHomeDeviceDescription device = new FreeAtHomeDeviceDescription();
     private FreeAtHomeChannelTypeProvider channelTypeProvider;
-    private FreeAtHomeChannelGroupTypeProvider channelGroupTypeProvider;
 
     private String deviceID;
 
@@ -78,7 +75,6 @@ public class FreeAtHomeDeviceHandler extends FreeAtHomeSystemBaseHandler {
         super(thing);
 
         this.channelTypeProvider = channelTypeProvider;
-        this.channelGroupTypeProvider = channelGroupTypeProvider;
     }
 
     @Override
@@ -137,7 +133,6 @@ public class FreeAtHomeDeviceHandler extends FreeAtHomeSystemBaseHandler {
 
             updateState(channelUID, vsc.convertToState(valueStr));
         } else {
-
             FreeAtHomeDatapointGroup dpg = mapChannelUID.get(channelUID);
 
             ValueStateConverter vsc = dpg.getValueStateConverter();
@@ -169,7 +164,8 @@ public class FreeAtHomeDeviceHandler extends FreeAtHomeSystemBaseHandler {
                 try {
                     Thread.sleep(3000);
                 } catch (InterruptedException e) {
-
+                    logger.debug("Handle wait for scene {} - at channel {} - full command {}", deviceID,
+                            channelUID.getAsString(), command.toFullString());
                 }
 
                 updateState(channelUID, OnOffType.OFF);
@@ -183,7 +179,6 @@ public class FreeAtHomeDeviceHandler extends FreeAtHomeSystemBaseHandler {
 
     public ChannelTypeUID createChannelTypeForDatapointgroup(FreeAtHomeDatapointGroup dpg,
             ChannelTypeUID channelTypeUID) {
-
         StateDescriptionFragmentBuilder stateFragment = StateDescriptionFragmentBuilder.create();
 
         stateFragment.withReadOnly(dpg.isReadOnly());
@@ -195,9 +190,8 @@ public class FreeAtHomeDeviceHandler extends FreeAtHomeSystemBaseHandler {
             stateFragment.withMinimum(min).withMaximum(max);
         }
 
-        ChannelTypeBuilder channelTypeBuilder;
         EventDescription eventDescription = null;
-        channelTypeBuilder = ChannelTypeBuilder
+        ChannelTypeBuilder channelTypeBuilder = ChannelTypeBuilder
                 .state(channelTypeUID,
                         String.format("%s-%s-%s-%s", dpg.getLabel(), dpg.getOpenHabItemType(), dpg.getOpenHabCategory(),
                                 "type"),
@@ -242,17 +236,14 @@ public class FreeAtHomeDeviceHandler extends FreeAtHomeSystemBaseHandler {
         List<Channel> thingChannels = new ArrayList<>(this.getThing().getChannels());
 
         if (thingChannels.isEmpty()) {
-
             ThingBuilder thingBuilder = editThing();
 
             ThingUID thingUID = thing.getUID();
 
             for (int i = 0; i < device.getNumberOfChannels(); i++) {
-
                 FreeAtHomeDeviceChannel channel = device.getChannel(i);
 
                 for (int j = 0; j < channel.getNumberOfDatapointGroup(); j++) {
-
                     FreeAtHomeDatapointGroup dpg = channel.getDatapointGroup(j);
                     Map<String, String> channelProps = new HashMap<>();
 
@@ -310,7 +301,6 @@ public class FreeAtHomeDeviceHandler extends FreeAtHomeSystemBaseHandler {
                                 "Thing channel registered - device: {} - channelUID: {} - channel label: {} - category: {}",
                                 device.getDeviceId() + device.getDeviceLabel(), channelUID.getAsString(),
                                 dpg.getLabel(), dpg.getOpenHabCategory());
-
                     }
                 }
 
@@ -348,11 +338,9 @@ public class FreeAtHomeDeviceHandler extends FreeAtHomeSystemBaseHandler {
         }
 
         for (int i = 0; i < device.getNumberOfChannels(); i++) {
-
             FreeAtHomeDeviceChannel channel = device.getChannel(i);
 
             for (int j = 0; j < channel.getNumberOfDatapointGroup(); j++) {
-
                 FreeAtHomeDatapointGroup dpg = channel.getDatapointGroup(j);
 
                 ChannelTypeUID channelTypeUID = UidUtils.generateChannelTypeUID(dpg.getValueType(), dpg.isReadOnly());
@@ -392,15 +380,12 @@ public class FreeAtHomeDeviceHandler extends FreeAtHomeSystemBaseHandler {
         List<Channel> thingChannels = new ArrayList<>(this.getThing().getChannels());
 
         if (thingChannels.isEmpty()) {
-
             ThingUID thingUID = thing.getUID();
 
             for (int i = 0; i < device.getNumberOfChannels(); i++) {
-
                 FreeAtHomeDeviceChannel channel = device.getChannel(i);
 
                 for (int j = 0; j < channel.getNumberOfDatapointGroup(); j++) {
-
                     FreeAtHomeDatapointGroup dpg = channel.getDatapointGroup(j);
 
                     // in case of output channel, unregister it for updates

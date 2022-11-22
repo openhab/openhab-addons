@@ -133,33 +133,6 @@ Switch Switch_Livingroom_Double_1                         "Moodlight Livingroom"
 Switch Switch_Livingroom_Double_2                         "Moodlight Livingroom"     <switch>  (Livingroom)  ["Light"]   { channel="freeathomesystem:actuator:0836e63805:ABB700887F0A_1:switchChannel }
 ```
 
-## Debugging and Tracing
-If you want to see what's going on in the binding, switch the log level to DEBUG in the Karaf console
-
-```shell
-log:set DEBUG org.openhab.binding.freeathomesystem
-```
-
-If you want to see even more, switch to TRACE to also see the SysAP request/response data
-
-```shell
-log:set TRACE org.openhab.binding.freeathomesystem
-```
-
-Set the logging back to normal
-
-```shell
-log:set INFO org.openhab.binding.freeathomesystem
-```
-
-To identify problems, a full startup TRACE log will be needed:
-
-```shell
-stop org.openhab.binding.freeathomesystem
-log:set TRACE org.openhab.binding.freeathomesystem
-start org.openhab.binding.freeathomesystem
-```
-
 # Communities
 
 [Busch-Jaeger Community](https://community.busch-jaeger.de/)

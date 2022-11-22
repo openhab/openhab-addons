@@ -16,7 +16,8 @@ import org.openhab.core.thing.type.ChannelGroupType;
 import org.openhab.core.thing.type.ChannelGroupTypeProvider;
 
 /**
- * @author andras
+ *
+ * @author Andras Uhrin - Initial contribution
  *
  */
 public interface FreeAtHomeChannelGroupTypeProvider extends ChannelGroupTypeProvider {

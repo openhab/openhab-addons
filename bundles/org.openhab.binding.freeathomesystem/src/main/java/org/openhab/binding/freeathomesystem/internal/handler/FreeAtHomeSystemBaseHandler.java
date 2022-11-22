@@ -36,12 +36,12 @@ public class FreeAtHomeSystemBaseHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        // TODO Auto-generated method stub
+        // method stub
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // TODO Auto-generated method stub
+        // method stub
     }
 
     public void handleEventBasedUpdate(ChannelUID channelUID, State state) {

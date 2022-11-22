@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeathomesystem.internal.util.FidTranslationUtils;
 import org.openhab.binding.freeathomesystem.internal.util.HexUtils;
 import org.slf4j.Logger;
@@ -46,17 +47,15 @@ public class FreeAtHomeDeviceChannel {
 
     public boolean createChannelFromJson(String deviceLabel, String channelId, JsonObject jsonObjectOfChannels,
             boolean isScene, boolean isRule) {
-
         JsonObject channelObject = jsonObjectOfChannels.getAsJsonObject(channelId);
 
         channelFunctionID = channelObject.get("functionID").getAsString();
 
-        if (isScene == true) {
+        if (isScene) {
             channelFunctionID = channelFunctionID.substring(0, channelFunctionID.length() - 1) + "0";
         }
 
         if (!channelFunctionID.isEmpty()) {
-
             channelLabel = channelObject.get("displayName").getAsString();
 
             if (channelLabel.isEmpty()) {
@@ -78,7 +77,6 @@ public class FreeAtHomeDeviceChannel {
 
                 break;
             }
-
             case FID_TRIGGER:
             case FID_SWITCH_ACTUATOR: {
                 this.channelId = channelId;
@@ -93,7 +91,6 @@ public class FreeAtHomeDeviceChannel {
 
                 break;
             }
-
             case FID_ROOM_TEMPERATURE_CONTROLLER_MASTER_WITHOUT_FAN:
             case FID_RADIATOR_ACTUATOR_MASTER: {
                 this.channelId = channelId;
@@ -137,7 +134,6 @@ public class FreeAtHomeDeviceChannel {
 
                 break;
             }
-
             case FID_WINDOW_DOOR_POSITION_SENSOR:
             case FID_WINDOW_DOOR_SENSOR: {
 
@@ -155,7 +151,6 @@ public class FreeAtHomeDeviceChannel {
 
                 break;
             }
-
             case FID_SCENE_TRIGGER: {
                 this.channelId = channelId;
 
@@ -168,7 +163,6 @@ public class FreeAtHomeDeviceChannel {
 
                 break;
             }
-
             case FID_RULE_SWITCH: {
                 this.channelId = channelId;
 
@@ -182,7 +176,6 @@ public class FreeAtHomeDeviceChannel {
 
                 break;
             }
-
             case FID_DES_DOOR_OPENER_ACTUATOR: {
                 this.channelId = channelId;
 
@@ -196,7 +189,6 @@ public class FreeAtHomeDeviceChannel {
 
                 break;
             }
-
             case FID_DES_LEVEL_CALL_SENSOR:
             case FID_DES_DOOR_RINGING_SENSOR: {
                 this.channelId = channelId;
@@ -210,7 +202,6 @@ public class FreeAtHomeDeviceChannel {
 
                 break;
             }
-
             case FID_DES_LIGHT_SWITCH_ACTUATOR: {
                 this.channelId = channelId;
 
@@ -224,7 +215,6 @@ public class FreeAtHomeDeviceChannel {
 
                 break;
             }
-
             case FID_DIMMING_ACTUATOR: {
                 this.channelId = channelId;
 
@@ -270,7 +260,6 @@ public class FreeAtHomeDeviceChannel {
 
                 break;
             }
-
             default: {
                 logger.info("Unknown channel found - Channel FID: {}", channelFunctionID);
 
@@ -297,9 +286,10 @@ public class FreeAtHomeDeviceChannel {
         return channelFunctionID;
     }
 
-    public String getFunctionIdText() {
-        return FidTranslationUtils
+    public @Nullable String getFunctionIdText() {
+        String functionIdText = FidTranslationUtils
                 .getFunctionIdText(String.format("0x%04X", HexUtils.getIntegerFromHex(channelFunctionID)));
+        return functionIdText;
     }
 
     public int getNumberOfDatapointGroup() {

@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.freeathomesystem.internal.util;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * helper class to work with hex numbers
  *
- * @author andras
+ * @author Andras Uhrin - Initial contribution
  *
  */
+@NonNullByDefault
 public class HexUtils {
 
     public static int getIntegerFromHex(String strHexValue) {
