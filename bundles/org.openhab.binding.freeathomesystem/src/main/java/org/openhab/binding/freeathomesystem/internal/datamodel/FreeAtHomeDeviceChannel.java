@@ -136,7 +136,6 @@ public class FreeAtHomeDeviceChannel {
             }
             case FID_WINDOW_DOOR_POSITION_SENSOR:
             case FID_WINDOW_DOOR_SENSOR: {
-
                 this.channelId = channelId;
 
                 FreeAtHomeDatapointGroup newDatapointGroup = new FreeAtHomeDatapointGroup();
