@@ -84,7 +84,6 @@ class HomekitAccessoryRegistry {
     }
 
     public synchronized void unsetBridge() {
-        final HomekitRoot oldBridge = bridge;
         bridge = null;
     }
 
