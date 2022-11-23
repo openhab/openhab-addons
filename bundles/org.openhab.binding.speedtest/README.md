@@ -50,12 +50,14 @@ You can find the latest version of those terms at the following webpages:
 
 Speedtest thing.
 
+
 ## Binding Configuration
 
 For this binding to work, you MUST install Ookla's Speedtest command line tool (`speedtest` or `speedtest.exe`).
 It will not work with other versions like `speedtest-cli` or other `speedtest` variants.
 
 To install Ookla's version of Speedtest, head to https://www.speedtest.net/apps/cli and follow the instructions for your Operating System.
+
 
 ## Thing Configuration
 
@@ -70,11 +72,13 @@ This can be used if you want to use the "Trigger Test" channel in order to test 
 
 Ensure that the user that openHAB is running with, has the permissions to access and execute the executable.
 
+
 ## Properties
 
 | Property            | Description                                                                                                |
 |---------------------|------------------------------------------------------------------------------------------------------------|
 | Server List 1...10  | A List of Ookla Speedtest servers that can be used in order to specify a specific server for the Speedtest.<br/>Configure the Server ID via the `serverID` Thing Configuration Parameter. |
+
 
 ## Channels
 
@@ -107,18 +111,18 @@ Thing   speedtest:speedtest:myspeedtest   "Ookla Speedtest"    [ execPath="/usr/
 **Item File**
 
 ```java
-String              	    Speedtest_Server  	            "Server"               	{ channel="speedtest:speedtest:myspeedtest:server" }
-Number:Time              	Speedtest_Ping_Jitter         	"Ping Jitter"           { channel="speedtest:speedtest:myspeedtest:pingJitter" }
-Number:Time              	Speedtest_Ping_Latency	        "Ping Latency"      	{ channel="speedtest:speedtest:myspeedtest:pingLatency" }
-Number:DataTransferRate     Speedtest_Download_Bandwith	    "Download Bandwith"     { channel="speedtest:speedtest:myspeedtest:downloadBandwidth" }
-Number:DataAmount           Speedtest_Download_Bytes	    "Download Bytes"      	{ channel="speedtest:speedtest:myspeedtest:downloadBytes" }
-Number:Time              	Speedtest_Download_Elapsed	    "Download Elapsed"      { channel="speedtest:speedtest:myspeedtest:downloadElapsed" }
-Number:DataTransferRate     Speedtest_Upload_Bandwith	    "Upload Bandwith"      	{ channel="speedtest:speedtest:myspeedtest:uploadBandwidth" }
-Number:DataAmount           Speedtest_Upload_Bytes	        "Upload Bytes"      	{ channel="speedtest:speedtest:myspeedtest:uploadBytes" }
-Number:Time              	Speedtest_Upload_Elapsed        "Upload Elapsed"      	{ channel="speedtest:speedtest:myspeedtest:uploadElapsed" }
-String              	    Speedtest_ISP         	        "ISP"      	            { channel="speedtest:speedtest:myspeedtest:isp" }
-String              	    Speedtest_Interface_InternalIP  "Internal IP Address"   { channel="speedtest:speedtest:myspeedtest:interfaceInternalIp" }
-String              	    Speedtest_Interface_ExternalIP  "External IP Address"	{ channel="speedtest:speedtest:myspeedtest:interfaceExternalIp" }
-String              	    Speedtest_ResultURL    	        "Result URL"	        { channel="speedtest:speedtest:myspeedtest:resultUrl" }
-Switch              	    Speedtest_TriggerTest    	    "Trigger Test"	        { channel="speedtest:speedtest:myspeedtest:triggerTest" }
+String                    Speedtest_Server                "Server"                { channel="speedtest:speedtest:myspeedtest:server" }
+Number:Time               Speedtest_Ping_Jitter           "Ping Jitter"           { channel="speedtest:speedtest:myspeedtest:pingJitter" }
+Number:Time               Speedtest_Ping_Latency          "Ping Latency"          { channel="speedtest:speedtest:myspeedtest:pingLatency" }
+Number:DataTransferRate   Speedtest_Download_Bandwith     "Download Bandwith"     { channel="speedtest:speedtest:myspeedtest:downloadBandwidth" }
+Number:DataAmount         Speedtest_Download_Bytes        "Download Bytes"        { channel="speedtest:speedtest:myspeedtest:downloadBytes" }
+Number:Time               Speedtest_Download_Elapsed      "Download Elapsed"      { channel="speedtest:speedtest:myspeedtest:downloadElapsed" }
+Number:DataTransferRate   Speedtest_Upload_Bandwith       "Upload Bandwith"       { channel="speedtest:speedtest:myspeedtest:uploadBandwidth" }
+Number:DataAmount         Speedtest_Upload_Bytes          "Upload Bytes"          { channel="speedtest:speedtest:myspeedtest:uploadBytes" }
+Number:Time               Speedtest_Upload_Elapsed        "Upload Elapsed"        { channel="speedtest:speedtest:myspeedtest:uploadElapsed" }
+String                    Speedtest_ISP                   "ISP"                   { channel="speedtest:speedtest:myspeedtest:isp" }
+String                    Speedtest_Interface_InternalIP  "Internal IP Address"   { channel="speedtest:speedtest:myspeedtest:interfaceInternalIp" }
+String                    Speedtest_Interface_ExternalIP  "External IP Address"   { channel="speedtest:speedtest:myspeedtest:interfaceExternalIp" }
+String                    Speedtest_ResultURL             "Result URL"            { channel="speedtest:speedtest:myspeedtest:resultUrl" }
+Switch                    Speedtest_TriggerTest           "Trigger Test"          { channel="speedtest:speedtest:myspeedtest:triggerTest" }
 ```
