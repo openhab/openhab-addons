@@ -208,6 +208,12 @@ Manual changes in the index table, `Items`, will not be picked up automatically 
 The same is true when manually adding new item tables or deleting existing ones.
 After making such changes, the command `jdbc reload` can be used to reload the index.
 
+#### Check/fix Schema
+
+Use the command `jdbc schema check` to perform an integrity check of the schema.
+
+Identified issues can be fixed automatically using the command `jdbc schema fix` (all items having issues) or `jdbc schema fix <itemName>` (single item).
+
 ### For Developers
 
 * Clearly separated source files for the database-specific part of openHAB logic.
