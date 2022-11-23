@@ -237,6 +237,24 @@
 
 	</thing-type>
 
+	<thing-type id="smart-bulb">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="shc"/>
+		</supported-bridge-type-refs>
+
+		<label>Smart Bulb</label>
+		<description>A smart bulb connected via Zigbee.</description>
+
+		<channels>
+			<channel id="power-switch" typeId="system.power"/>
+			<channel id="brightness" typeId="system.brightness"/>
+			<channel id="color" typeId="system.color"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:boschshc:device"/>
+
+	</thing-type>
+
 	<channel-type id="system-availability">
 		<item-type>Switch</item-type>
 		<label>System Availability</label>
