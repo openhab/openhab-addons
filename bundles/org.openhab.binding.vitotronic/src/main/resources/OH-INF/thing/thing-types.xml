@@ -533,7 +533,14 @@
 		<item-type>Number</item-type>
 		<label>Currentmode</label>
 		<description>Current Mode</description>
-		<state pattern="%d" readOnly="true"/>
+		<state pattern="%d" readOnly="true">
+			<options>
+				<option value="0">Standby Operation</option>
+				<option value="1">Reduced Operation</option>
+				<option value="2">Normal Operation</option>
+				<option value="3">Continuous Normal Operation</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="partymode">
