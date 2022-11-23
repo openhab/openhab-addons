@@ -741,7 +741,6 @@ public class JdbcBaseDAO {
             }
         }
         String itemType = item.getClass().getSimpleName().toUpperCase();
-        logger.debug("JDBC::getItemType: Try to use ItemType {} for Item {}", itemType, i.getName());
         if (sqlTypes.get(itemType) == null) {
             logger.warn(
                     "JDBC::getItemType: No sqlType found for ItemType {}, use ItemType for STRINGITEM as Fallback for {}",
