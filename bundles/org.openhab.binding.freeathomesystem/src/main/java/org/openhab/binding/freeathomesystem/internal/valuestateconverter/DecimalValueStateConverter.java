@@ -34,7 +34,6 @@ public class DecimalValueStateConverter implements ValueStateConverter {
 
     @Override
     public String convertToValueString(State state) {
-
         String valueString = ((DecimalType) state).toString();
 
         return valueString;

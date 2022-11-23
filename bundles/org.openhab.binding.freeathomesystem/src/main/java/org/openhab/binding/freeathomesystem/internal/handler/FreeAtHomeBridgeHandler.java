@@ -168,7 +168,6 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
             } else {
                 ret = false;
             }
-
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             logger.error("Error to build up the Component list [ {} ]", e.getMessage());
 
@@ -221,13 +220,11 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
 
                             if (jsonObject != null) {
                                 device = new FreeAtHomeDeviceDescription(jsonObject, id);
-
                             }
                         }
                     }
                 }
             }
-
         } catch (InterruptedException e) {
             logger.error("No communication possible to get device list - Communication interrupt [ {} ]",
                     e.getMessage());
@@ -297,7 +294,6 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
                     }
                 }
             }
-
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             logger.error("Communication error by getDatapoint [{}]", e.getMessage());
 
@@ -339,7 +335,6 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
 
                 restartHttpConnection();
             }
-
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             logger.error("Communication error by setDatapoint [{}]", e.getMessage());
 
@@ -425,7 +420,6 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
             logger.info("Start http client");
 
             ret = true;
-
         } catch (Exception ex) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Cannot start http client");
 
@@ -504,7 +498,6 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
             logger.debug("Stop http client");
 
             ret = true;
-
         } catch (Exception ex) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Cannot stop http client");
 

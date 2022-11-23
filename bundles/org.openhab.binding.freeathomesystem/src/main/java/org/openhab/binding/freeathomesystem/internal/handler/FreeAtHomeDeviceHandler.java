@@ -141,7 +141,6 @@ public class FreeAtHomeDeviceHandler extends FreeAtHomeSystemBaseHandler {
 
             if (command instanceof StopMoveType) {
                 valueString = "0";
-
             } else {
                 state = ((State) command);
                 valueString = vsc.convertToValueString(state);
@@ -155,7 +154,6 @@ public class FreeAtHomeDeviceHandler extends FreeAtHomeSystemBaseHandler {
             } else {
                 updateState(channelUID, new StringType("STOP"));
             }
-
         }
 
         if (device.isScene()) {
@@ -170,7 +168,6 @@ public class FreeAtHomeDeviceHandler extends FreeAtHomeSystemBaseHandler {
 
                 updateState(channelUID, OnOffType.OFF);
             });
-
         }
 
         logger.debug("Handle command switch {} - at channel {} - full command {}", deviceID, channelUID.getAsString(),
@@ -268,7 +265,7 @@ public class FreeAtHomeDeviceHandler extends FreeAtHomeSystemBaseHandler {
                     String channelLabel = String.format("%s - %s", channel.getFunctionIdText(), dpg.getLabel());
 
                     Channel thingChannel = ChannelBuilder.create(channelUID)
-                            .withAcceptedItemType(dpg.getOpenHabItemType()).withKind(ChannelKind.TRIGGER)
+                            .withAcceptedItemType(dpg.getOpenHabItemType()).withKind(ChannelKind.STATE)
                             .withProperties(channelProps).withLabel(channelLabel).withDescription(dpg.getDescription())
                             .withType(channelTypeUID).build();
                     thingChannels.add(thingChannel);
@@ -308,7 +305,6 @@ public class FreeAtHomeDeviceHandler extends FreeAtHomeSystemBaseHandler {
 
                 updateThing(thingBuilder.build());
             }
-
         } else {
             reloadChannelTypes();
         }
