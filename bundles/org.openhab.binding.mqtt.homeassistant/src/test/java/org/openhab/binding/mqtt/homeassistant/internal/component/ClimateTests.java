@@ -34,11 +34,11 @@ import org.openhab.core.library.unit.SIUnits;
  *
  * @author Anton Kharuzhy - Initial contribution
  */
-@SuppressWarnings("ConstantConditions")
 @NonNullByDefault
 public class ClimateTests extends AbstractComponentTests {
     public static final String CONFIG_TOPIC = "climate/0x847127fffe11dd6a_climate_zigbee2mqtt";
 
+    @SuppressWarnings("null")
     @Test
     public void testTS0601Climate() {
         var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC), "{"
@@ -102,6 +102,7 @@ public class ClimateTests extends AbstractComponentTests {
         assertPublished("zigbee2mqtt/th1/set/current_heating_setpoint", "25");
     }
 
+    @SuppressWarnings("null")
     @Test
     public void testTS0601ClimateNotSendIfOff() {
         var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC), "{"
@@ -185,6 +186,7 @@ public class ClimateTests extends AbstractComponentTests {
         assertPublished("zigbee2mqtt/th1/set/current_heating_setpoint", "25");
     }
 
+    @SuppressWarnings("null")
     @Test
     public void testClimate() {
         var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC),

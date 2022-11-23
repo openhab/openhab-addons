@@ -25,13 +25,15 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class NuvoMessageEvent extends EventObject {
     private static final long serialVersionUID = 1L;
     private final String type;
-    private final String key;
+    private final String zone;
+    private final String src;
     private final String value;
 
-    public NuvoMessageEvent(Object source, String type, String key, String value) {
+    public NuvoMessageEvent(Object source, String type, String zone, String src, String value) {
         super(source);
         this.type = type;
-        this.key = key;
+        this.zone = zone;
+        this.src = src;
         this.value = value;
     }
 
@@ -39,8 +41,12 @@ public class NuvoMessageEvent extends EventObject {
         return type;
     }
 
-    public String getKey() {
-        return key;
+    public String getZone() {
+        return zone;
+    }
+
+    public String getSrc() {
+        return src;
     }
 
     public String getValue() {

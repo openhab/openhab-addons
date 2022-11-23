@@ -14,12 +14,12 @@ package org.openhab.binding.hue.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.hue.internal.ConfigUpdate;
-import org.openhab.binding.hue.internal.FullGroup;
-import org.openhab.binding.hue.internal.FullLight;
-import org.openhab.binding.hue.internal.FullSensor;
-import org.openhab.binding.hue.internal.StateUpdate;
 import org.openhab.binding.hue.internal.discovery.HueDeviceDiscoveryService;
+import org.openhab.binding.hue.internal.dto.ConfigUpdate;
+import org.openhab.binding.hue.internal.dto.FullGroup;
+import org.openhab.binding.hue.internal.dto.FullLight;
+import org.openhab.binding.hue.internal.dto.FullSensor;
+import org.openhab.binding.hue.internal.dto.StateUpdate;
 
 /**
  * Access to the Hue system for light handlers.

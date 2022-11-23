@@ -119,7 +119,7 @@ public class TapoThingConstants {
     public static final String DEVICE_PROPERTY_USAGE_7 = "time_usage_past7";
     public static final String DEVICE_PROPERTY_USAGE_30 = "time_usage_past30";
     public static final String DEVICE_PROPERTY_USAGE_TODAY = "time_usage_today";
-    public static final String DEVICE_REPRASENTATION_PROPERTY = "macAddress";
+    public static final String DEVICE_REPRESENTATION_PROPERTY = "macAddress";
     // lightning effects
     public static final String DEVICE_PROPERTY_EFFECT = "lighting_effect";
     public static final String PROPERTY_LIGHTNING_EFFECT_BRIGHNTESS = "brightness";

@@ -13,11 +13,16 @@
 package org.openhab.binding.somfytahoma.internal.console;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants;
 import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaBridgeHandler;
 import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaActionGroup;
 import org.openhab.core.io.console.Console;
+import org.openhab.core.io.console.ConsoleCommandCompleter;
+import org.openhab.core.io.console.StringsCompleter;
 import org.openhab.core.io.console.extensions.AbstractConsoleCommandExtension;
 import org.openhab.core.io.console.extensions.ConsoleCommandExtension;
 import org.openhab.core.thing.Thing;
@@ -36,9 +41,10 @@ import org.osgi.service.component.annotations.Reference;
 
 @NonNullByDefault
 @Component(service = ConsoleCommandExtension.class)
-public class SomfyTahomaCommandExtension extends AbstractConsoleCommandExtension {
+public class SomfyTahomaCommandExtension extends AbstractConsoleCommandExtension implements ConsoleCommandCompleter {
 
     private static final String SCENARIOS = "scenarios";
+    private static final StringsCompleter SUBCMD_COMPLETER = new StringsCompleter(List.of(SCENARIOS), false);
 
     private final ThingRegistry thingRegistry;
 
@@ -51,13 +57,7 @@ public class SomfyTahomaCommandExtension extends AbstractConsoleCommandExtension
     @Override
     public void execute(String[] args, Console console) {
         if (args.length == 2) {
-            Thing thing = null;
-            try {
-                ThingUID thingUID = new ThingUID(args[0]);
-                thing = thingRegistry.get(thingUID);
-            } catch (IllegalArgumentException e) {
-                thing = null;
-            }
+            Thing thing = getThing(args[0]);
             ThingHandler thingHandler = null;
             SomfyTahomaBridgeHandler bridgeHandler = null;
             if (thing != null) {
@@ -91,5 +91,37 @@ public class SomfyTahomaCommandExtension extends AbstractConsoleCommandExtension
     @Override
     public List<String> getUsages() {
         return List.of(buildCommandUsage("<bridgeUID> " + SCENARIOS, "list all the scenarios with their id"));
+    }
+
+    @Override
+    public @Nullable ConsoleCommandCompleter getCompleter() {
+        return this;
+    }
+
+    @Override
+    public boolean complete(String[] args, int cursorArgumentIndex, int cursorPosition, List<String> candidates) {
+        if (cursorArgumentIndex <= 0) {
+            return new StringsCompleter(thingRegistry.getAll().stream()
+                    .filter(t -> SomfyTahomaBindingConstants.THING_TYPE_BRIDGE.equals(t.getThingTypeUID()))
+                    .map(t -> t.getUID().getAsString()).collect(Collectors.toList()), true).complete(args,
+                            cursorArgumentIndex, cursorPosition, candidates);
+        } else if (cursorArgumentIndex == 1) {
+            Thing thing = getThing(args[0]);
+            if (thing != null && SomfyTahomaBindingConstants.THING_TYPE_BRIDGE.equals(thing.getThingTypeUID())) {
+                return SUBCMD_COMPLETER.complete(args, cursorArgumentIndex, cursorPosition, candidates);
+            }
+        }
+        return false;
+    }
+
+    private @Nullable Thing getThing(String uid) {
+        Thing thing = null;
+        try {
+            ThingUID thingUID = new ThingUID(uid);
+            thing = thingRegistry.get(thingUID);
+        } catch (IllegalArgumentException e) {
+            thing = null;
+        }
+        return thing;
     }
 }

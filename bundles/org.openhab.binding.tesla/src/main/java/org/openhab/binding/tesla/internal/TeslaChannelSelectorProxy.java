@@ -1076,7 +1076,7 @@ public class TeslaChannelSelectorProxy {
                 }
             }
 
-            throw new IllegalArgumentException("Not valid value selector");
+            throw new IllegalArgumentException("Not valid value selector. Received Selector: " + valueSelectorText);
         }
 
         public static TeslaChannelSelector getValueSelectorFromRESTID(String valueSelectorText)
@@ -1087,7 +1087,7 @@ public class TeslaChannelSelectorProxy {
                 }
             }
 
-            throw new IllegalArgumentException("Not valid value selector");
+            throw new IllegalArgumentException("Not valid value selector. Received Selector: " + valueSelectorText);
         }
     }
 

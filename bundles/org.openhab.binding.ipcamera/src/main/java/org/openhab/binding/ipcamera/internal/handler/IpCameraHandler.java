@@ -1270,9 +1270,6 @@ public class IpCameraHandler extends BaseThingHandler {
             case HIKVISION_THING:
                 HikvisionHandler hikvisionHandler = new HikvisionHandler(getHandle(), cameraConfig.getNvrChannel());
                 hikvisionHandler.handleCommand(channelUID, command);
-                if (lowPriorityRequests.isEmpty()) {
-                    lowPriorityRequests = hikvisionHandler.getLowPriorityRequests();
-                }
                 break;
             case FOSCAM_THING:
                 FoscamHandler foscamHandler = new FoscamHandler(getHandle(), cameraConfig.getUser(),
@@ -1630,6 +1627,9 @@ public class IpCameraHandler extends BaseThingHandler {
                 }
                 if (snapshotUri.isEmpty()) {
                     snapshotUri = "/ISAPI/Streaming/channels/" + cameraConfig.getNvrChannel() + "01/picture";
+                }
+                if (lowPriorityRequests.isEmpty()) {
+                    lowPriorityRequests.add("/ISAPI/System/IO/inputs/" + cameraConfig.getNvrChannel() + "/status");
                 }
                 break;
             case INSTAR_THING:

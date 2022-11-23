@@ -58,6 +58,7 @@ public class NanoleafBindingConstants {
     public static final String CHANNEL_SWIPE_EVENT_DOWN = "DOWN";
     public static final String CHANNEL_SWIPE_EVENT_LEFT = "LEFT";
     public static final String CHANNEL_SWIPE_EVENT_RIGHT = "RIGHT";
+    public static final String CHANNEL_LAYOUT = "layout";
 
     // List of light panel channels
     public static final String CHANNEL_PANEL_COLOR = "color";
@@ -78,7 +79,7 @@ public class NanoleafBindingConstants {
     public static final String API_MIN_FW_VER_CANVAS = "1.1.0";
     public static final String MODEL_ID_LIGHTPANELS = "NL22";
 
-    public static final List<String> MODELS_WITH_TOUCHSUPPORT = Arrays.asList("NL29", "NL42");
+    public static final List<String> MODELS_WITH_TOUCHSUPPORT = Arrays.asList("NL29", "NL42", "NL47", "NL48", "NL52");
     public static final String DEVICE_TYPE_LIGHTPANELS = "lightPanels";
     public static final String DEVICE_TYPE_TOUCHSUPPORT = "canvas"; // we need to keep this enum for backward
                                                                     // compatibility even though not only canvas type
@@ -93,4 +94,8 @@ public class NanoleafBindingConstants {
 
     // Color channels increase/decrease brightness step size
     public static final int BRIGHTNESS_STEP_SIZE = 5;
+
+    // Layout rendering
+    public static final int LAYOUT_LIGHT_RADIUS = 8;
+    public static final int LAYOUT_BORDER_WIDTH = 30;
 }

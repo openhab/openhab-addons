@@ -65,6 +65,7 @@ public class TeslaBindingConstants {
     public static final String COMMAND_SET_SENTRY_MODE = "set_sentry_mode";
     public static final String COMMAND_SET_TEMP = "set_temps";
     public static final String COMMAND_SET_VALET_MODE = "set_valet_mode";
+    public static final String COMMAND_STEERING_WHEEL_HEATER = "remote_steering_wheel_heater_request";
     public static final String COMMAND_SUN_ROOF = "sun_roof_control";
     public static final String COMMAND_THROTTLE = "commandthrottle";
     public static final String COMMAND_WAKE_UP = "wake_up";

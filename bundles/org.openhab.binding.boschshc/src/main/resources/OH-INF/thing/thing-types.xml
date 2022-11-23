@@ -30,12 +30,30 @@
 
 	</thing-type>
 
+	<thing-type id="smart-plug-compact">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="shc"/>
+		</supported-bridge-type-refs>
+
+		<label>Compact Smart Plug</label>
+		<description>A compact smart plug with energy monitoring capabilities.</description>
+
+		<channels>
+			<channel id="power-switch" typeId="system.power"/>
+			<channel id="power-consumption" typeId="power-consumption"/>
+			<channel id="energy-consumption" typeId="energy-consumption"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:boschshc:device"/>
+
+	</thing-type>
+
 	<thing-type id="twinguard">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="shc"/>
 		</supported-bridge-type-refs>
 
-		<label>TwinGuard</label>
+		<label>Twinguard</label>
 		<description>The Twinguard smoke detector warns you in case of fire and constantly monitors the air.</description>
 
 		<channels>
@@ -47,6 +65,8 @@
 			<channel id="air-description" typeId="air-description"/>
 			<channel id="purity-rating" typeId="purity-rating"/>
 			<channel id="combined-rating" typeId="combined-rating"/>
+			<channel id="battery-level" typeId="system.battery-level"/>
+			<channel id="low-battery" typeId="system.low-battery"/>
 		</channels>
 
 		<config-description-ref uri="thing-type:boschshc:device"/>
@@ -63,6 +83,8 @@
 
 		<channels>
 			<channel id="contact" typeId="contact"/>
+			<channel id="battery-level" typeId="system.battery-level"/>
+			<channel id="low-battery" typeId="system.low-battery"/>
 		</channels>
 
 		<config-description-ref uri="thing-type:boschshc:device"/>
@@ -80,6 +102,8 @@
 
 		<channels>
 			<channel id="latest-motion" typeId="latest-motion"/>
+			<channel id="battery-level" typeId="system.battery-level"/>
+			<channel id="low-battery" typeId="system.low-battery"/>
 		</channels>
 
 		<config-description-ref uri="thing-type:boschshc:device"/>
@@ -114,6 +138,8 @@
 			<channel id="temperature" typeId="temperature"/>
 			<channel id="valve-tappet-position" typeId="valve-tappet-position"/>
 			<channel id="child-lock" typeId="child-lock"/>
+			<channel id="battery-level" typeId="system.battery-level"/>
+			<channel id="low-battery" typeId="system.low-battery"/>
 		</channels>
 
 		<config-description-ref uri="thing-type:boschshc:device"/>
@@ -149,6 +175,8 @@
 		<channels>
 			<channel id="temperature" typeId="temperature"/>
 			<channel id="humidity" typeId="humidity"/>
+			<channel id="battery-level" typeId="system.battery-level"/>
+			<channel id="low-battery" typeId="system.low-battery"/>
 		</channels>
 
 		<config-description-ref uri="thing-type:boschshc:device"/>

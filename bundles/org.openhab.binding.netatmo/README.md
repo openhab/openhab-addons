@@ -697,6 +697,13 @@ Bridge netatmo:account:myaccount "Netatmo Account" [clientId="xxxxx", clientSecr
                 Type live-stream-url : live#vpn-stream-url [ quality="low" ]
         }
     }
+    Bridge home myhomeheating "Home heating" [ id="..." ] {
+        Bridge plug relay "Boiler relay" [ id="..." ] {
+            thermostat thermostat "Thermostat" [ id="..." ]
+            valve valveoffice "Valve in office" [ id="..." ]
+        }
+        room office "Office" [ id="..." ]
+    }
 }
 ```
 

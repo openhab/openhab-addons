@@ -224,6 +224,20 @@
 		<state pattern="%s" readOnly="true"/>
 	</channel-type>
 
+	<channel-type id="obstruction_alarm">
+		<item-type>Switch</item-type>
+		<label>Obstruction Alarm</label>
+		<description>Obstruction alarm of the blinds. The blinds were stopped and moved a bit in the opposite direction.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperature_alarm">
+		<item-type>Switch</item-type>
+		<label>Temperature Alarm</label>
+		<description>Temperature alarm of the blinds. Indicates overheating of the motor.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
 	<channel-type id="last_change">
 		<item-type>DateTime</item-type>
 		<label>Last Change</label>
@@ -236,7 +250,6 @@
 		<item-type>Rollershutter</item-type>
 		<label>Rollershutter Control</label>
 		<description>Controls the rollershutter and states its opening level in percent</description>
-		<category>Blinds</category>
 	</channel-type>
 
 </thing:thing-descriptions>

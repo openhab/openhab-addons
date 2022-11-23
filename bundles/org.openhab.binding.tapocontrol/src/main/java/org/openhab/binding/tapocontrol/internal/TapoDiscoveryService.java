@@ -69,7 +69,7 @@ public class TapoDiscoveryService extends AbstractDiscoveryService implements Th
     @Override
     public void activate() {
         TapoBridgeConfiguration config = bridge.getBridgeConfig();
-        if (config.cloudDiscoveryEnabled || config.udpDiscoveryEnabled) {
+        if (config.cloudDiscovery) {
             startBackgroundDiscovery();
         }
     }
@@ -148,12 +148,12 @@ public class TapoDiscoveryService extends AbstractDiscoveryService implements Th
             ThingUID bridgeUID = tapoBridge.getUID();
             ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, deviceMAC);
             return DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                    .withRepresentationProperty(DEVICE_REPRASENTATION_PROPERTY).withBridge(bridgeUID).withLabel(label)
+                    .withRepresentationProperty(DEVICE_REPRESENTATION_PROPERTY).withBridge(bridgeUID).withLabel(label)
                     .build();
         } else {
             ThingUID thingUID = new ThingUID(BINDING_ID, deviceMAC);
             return DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                    .withRepresentationProperty(DEVICE_REPRASENTATION_PROPERTY).withLabel(label).build();
+                    .withRepresentationProperty(DEVICE_REPRESENTATION_PROPERTY).withLabel(label).build();
         }
     }
 

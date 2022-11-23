@@ -16,11 +16,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link RegoConnection} is responsible for creating connections to clients.
  *
  * @author Boris Krivonog - Initial contribution
  */
+@NonNullByDefault
 public interface RegoConnection {
     /**
      * Connect to the receiver. Return true if the connection has succeeded or if already connected.

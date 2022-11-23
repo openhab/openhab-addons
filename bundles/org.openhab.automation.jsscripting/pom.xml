@@ -22,10 +22,10 @@
       !jdk.internal.reflect.*,
       !jdk.vm.ci.services
     </bnd.importpackage>
-    <graal.version>21.3.0</graal.version>
+    <graal.version>22.0.0.2</graal.version> <!-- DO NOT UPGRADE: 22.0.0.2 is the latest version working on armv7l / OpenJDK 11.0.16 -->
     <asm.version>6.2.1</asm.version>
     <oh.version>${project.version}</oh.version>
-    <ohjs.version>openhab@2.0.4</ohjs.version>
+    <ohjs.version>openhab@2.1.0</ohjs.version>
   </properties>
 
   <build>
@@ -50,7 +50,7 @@
         <artifactId>frontend-maven-plugin</artifactId>
         <version>1.12.0</version>
         <configuration>
-          <nodeVersion>v12.16.1</nodeVersion>
+          <nodeVersion>v16.17.1</nodeVersion>
           <workingDirectory>target/js</workingDirectory>
         </configuration>
         <executions>
@@ -135,11 +135,7 @@
       <artifactId>js</artifactId>
       <version>${graal.version}</version>
     </dependency>
-    <dependency>
-      <groupId>com.ibm.icu</groupId>
-      <artifactId>icu4j</artifactId>
-      <version>69.1</version>
-    </dependency>
+    <!-- com.ibm.icu.icu4j/69.1 is not required on GraalJS >= 22.0.0 as it moved to org.graalvm.truffle -->
 
     <!-- include as version required is older than OH provides -->
     <dependency>

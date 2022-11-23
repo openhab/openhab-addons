@@ -12,15 +12,18 @@
  */
 package org.openhab.binding.regoheatpump.internal.rego6xx;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link ResponseParserFactory} is responsible for providing parsers for all known data
  * forms coming from the rego 6xx unit.
  *
  * @author Boris Krivonog - Initial contribution
  */
+@NonNullByDefault
 public class ResponseParserFactory {
     public static final ResponseParser<Short> SHORT = new ShortResponseParser();
     public static final ResponseParser<String> STRING = new StringResponseParser();
     public static final ResponseParser<ErrorLine> ERROR_LINE = new ErrorLineResponseParser();
-    public static final ResponseParser<Void> WRITE = new WriteResponse();
+    public static final ResponseParser<String> WRITE = new WriteResponse();
 }

@@ -34,8 +34,8 @@ public class TibberBindingConstants {
     // Tibber base URL for queries and mutations
     public static final String BASE_URL = "https://api.tibber.com/v1-beta/gql";
 
-    // Tibber websocket endpoint for live subscription
-    public static final String SUBSCRIPTION_URL = "wss://api.tibber.com/v1-beta/gql/subscriptions";
+    // Tibber driver version
+    public static final String TIBBER_DRIVER = "com.tibber/1.8.3";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID TIBBER_THING_TYPE = new ThingTypeUID(BINDING_ID, "tibberapi");

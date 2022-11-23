@@ -4,9 +4,10 @@ Binding for the Bosch Smart Home.
 
 - [Bosch Smart Home Binding](#bosch-smart-home-binding)
   - [Supported Things](#supported-things)
-    - [In-Wall switches & Smart Plugs](#in-wall-switches-smart-plugs)
-    - [TwinGuard smoke detector](#twinguard-smoke-detector)
-    - [Door/Window contact](#door-window-contact)
+    - [In-Wall Switch](#in-wall-switch)
+    - [Compact Smart Plug](#compact-smart-plug)
+    - [Twinguard Smoke Detector](#twinguard-smoke-detector)
+    - [Door/Window Contact](#door-window-contact)
     - [Motion Detector](#motion-detector)
     - [Shutter Control](#shutter-control)
     - [Thermostat](#thermostat)
@@ -24,19 +25,31 @@ Binding for the Bosch Smart Home.
 
 ## Supported Things
 
-### In-Wall switches & Smart Plugs
+### In-Wall Switch
 
 A simple light control.
 
 **Thing Type ID**: `in-wall-switch`
 
-| Channel Type ID    | Item Type     | Writable | Description                                  |
-| ------------------ | ------------- | :------: | -------------------------------------------- |
-| power-switch       | Switch        | &#9745;  | Current state of the switch.                 |
-| power-consumption  | Number:Power  | &#9744;  | Current power consumption (W) of the device. |
-| energy-consumption | Number:Energy | &#9744;  | Energy consumption of the device.            |
+| Channel Type ID    | Item Type     | Writable | Description                                      |
+| ------------------ | ------------- | :------: | ------------------------------------------------ |
+| power-switch       | Switch        | &#9745;  | Current state of the switch.                     |
+| power-consumption  | Number:Power  | &#9744;  | Current power consumption (W) of the device.     |
+| energy-consumption | Number:Energy | &#9744;  | Cumulated energy consumption (Wh) of the device. |
 
-### TwinGuard smoke detector
+### Compact Smart Plug
+
+A compact smart plug with energy monitoring capabilities.
+
+**Thing Type ID**: `smart-plug-compact`
+
+| Channel Type ID    | Item Type     | Writable | Description                                      |
+| ------------------ | ------------- | :------: | ------------------------------------------------ |
+| power-switch       | Switch        | &#9745;  | Current state of the switch.                     |
+| power-consumption  | Number:Power  | &#9744;  | Current power consumption (W) of the device.     |
+| energy-consumption | Number:Energy | &#9744;  | Cumulated energy consumption (Wh) of the device. |
+
+### Twinguard Smoke Detector
 
 The Twinguard smoke detector warns you in case of fire and constantly monitors the air.
 
@@ -52,8 +65,10 @@ The Twinguard smoke detector warns you in case of fire and constantly monitors t
 | purity-rating      | String               | &#9744;  | Rating of current measured purity.                                                                |
 | air-description    | String               | &#9744;  | Overall description of the air quality.                                                           |
 | combined-rating    | String               | &#9744;  | Combined rating of the air quality.                                                               |
+| battery-level      | Number               | &#9744;  | Current battery level percentage as integer number. Bosch-specific battery levels are mapped to numbers as follows: `OK`: 100, `LOW_BATTERY`: 10, `CRITICAL_LOW`: 1, `CRITICALLY_LOW_BATTERY`: 1, `NOT_AVAILABLE`: `UNDEF`. |
+| low-battery        | Switch               | &#9744;  | Indicates whether the battery is low (`ON`) or OK (`OFF`). |
 
-### Door/Window contact
+### Door/Window Contact
 
 Detects open windows and doors.
 
@@ -62,6 +77,8 @@ Detects open windows and doors.
 | Channel Type ID | Item Type | Writable | Description                  |
 | --------------- | --------- | :------: | ---------------------------- |
 | contact         | Contact   | &#9744;  | Contact state of the device. |
+| battery-level   | Number    | &#9744;  | Current battery level percentage as integer number. Bosch-specific battery levels are mapped to numbers as follows: `OK`: 100, `LOW_BATTERY`: 10, `CRITICAL_LOW`: 1, `CRITICALLY_LOW_BATTERY`: 1, `NOT_AVAILABLE`: `UNDEF`. |
+| low-battery     | Switch    | &#9744;  | Indicates whether the battery is low (`ON`) or OK (`OFF`). |
 
 ### Motion Detector
 
@@ -72,6 +89,8 @@ Detects every movement through an intelligent combination of passive infra-red t
 | Channel Type ID | Item Type | Writable | Description                    |
 | --------------- | --------- | :------: | ------------------------------ |
 | latest-motion   | DateTime  | &#9744;  | The date of the latest motion. |
+| battery-level   | Number    | &#9744;  | Current battery level percentage as integer number. Bosch-specific battery levels are mapped to numbers as follows: `OK`: 100, `LOW_BATTERY`: 10, `CRITICAL_LOW`: 1, `CRITICALLY_LOW_BATTERY`: 1, `NOT_AVAILABLE`: `UNDEF`. |
+| low-battery     | Switch    | &#9744;  | Indicates whether the battery is low (`ON`) or OK (`OFF`). |
 
 ### Shutter Control
 
@@ -94,6 +113,8 @@ Radiator thermostat
 | temperature           | Number:Temperature   | &#9744;  | Current measured temperature.                  |
 | valve-tappet-position | Number:Dimensionless | &#9744;  | Current open ratio of valve tappet (0 to 100). |
 | child-lock            | Switch               | &#9745;  | Indicates if child lock is active.             |
+| battery-level         | Number               | &#9744;  | Current battery level percentage as integer number. Bosch-specific battery levels are mapped to numbers as follows: `OK`: 100, `LOW_BATTERY`: 10, `CRITICAL_LOW`: 1, `CRITICALLY_LOW_BATTERY`: 1, `NOT_AVAILABLE`: `UNDEF`. |
+| low-battery           | Switch               | &#9744;  | Indicates whether the battery is low (`ON`) or OK (`OFF`). |
 
 ### Climate Control
 
@@ -116,6 +137,8 @@ Display of the current room temperature as well as the relative humidity in the 
 | --------------- | -------------------- | :------: | ------------------------------------- |
 | temperature     | Number:Temperature   | &#9744;  | Current measured temperature.         |
 | humidity        | Number:Dimensionless | &#9744;  | Current measured humidity (0 to 100). |
+| battery-level   | Number               | &#9744;  | Current battery level percentage as integer number. Bosch-specific battery levels are mapped to numbers as follows: `OK`: 100, `LOW_BATTERY`: 10, `CRITICAL_LOW`: 1, `CRITICALLY_LOW_BATTERY`: 1, `NOT_AVAILABLE`: `UNDEF`. |
+| low-battery     | Switch               | &#9744;  | Indicates whether the battery is low (`ON`) or OK (`OFF`). |
 
 ### Security Camera 360
 
