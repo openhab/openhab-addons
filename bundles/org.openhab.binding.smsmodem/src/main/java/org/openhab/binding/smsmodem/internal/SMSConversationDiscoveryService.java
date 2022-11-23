@@ -56,8 +56,10 @@ public class SMSConversationDiscoveryService extends AbstractDiscoveryService
 
     public void buildDiscovery(String sender) {
         String senderSanitized = sender.replaceAll("[^a-zA-Z0-9+]", "_");
-        ThingUID thingUID = SMSModemHandlerFactory
-                .getSMSConversationUID(SMSModemBindingConstants.SMSCONVERSATION_THING_TYPE, senderSanitized, bridgeUid);
+
+        ThingUID thingUID = new ThingUID(SMSModemBindingConstants.SMSCONVERSATION_THING_TYPE, senderSanitized,
+                bridgeUid.getId());
+
         DiscoveryResult result = DiscoveryResultBuilder.create(thingUID)
                 .withProperty(SMSModemBindingConstants.SMSCONVERSATION_PARAMETER_RECIPIENT, senderSanitized)
                 .withLabel("Conversation with " + sender).withBridge(bridgeUid)

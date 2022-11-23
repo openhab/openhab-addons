@@ -132,6 +132,7 @@ public class SMSModemBridgeHandler extends BaseBridgeHandler
 
     @Override
     public void initialize() {
+        updateStatus(ThingStatus.UNKNOWN);
         shouldRun = true;
         ScheduledFuture<?> checkScheduledFinal = checkScheduled;
         if (checkScheduledFinal == null || (checkScheduledFinal.isDone()) && this.shouldRun) {
@@ -180,7 +181,11 @@ public class SMSModemBridgeHandler extends BaseBridgeHandler
             }
         } catch (ModemConfigurationException e) {
             String message = e.getMessage();
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+            if (e.getCause() != null && e.getCause() instanceof IOException) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, message);
+            }
         }
     }
 

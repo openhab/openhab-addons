@@ -19,12 +19,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smsmodem.internal.handler.SMSConversationHandler;
 import org.openhab.binding.smsmodem.internal.handler.SMSModemBridgeHandler;
-import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
-import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
@@ -74,32 +72,5 @@ public class SMSModemHandlerFactory extends BaseThingHandlerFactory {
         }
 
         return null;
-    }
-
-    @Override
-    public @Nullable Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration,
-            @Nullable ThingUID thingUID, @Nullable ThingUID bridgeUID) {
-        if (SMSModemBridgeHandler.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
-            return super.createThing(thingTypeUID, configuration, thingUID, null);
-        }
-        if (SMSConversationHandler.SUPPORTED_THING_TYPES_UIDS.equals(thingTypeUID)) {
-            if (bridgeUID != null) {
-                ThingUID safethingUID = thingUID == null
-                        ? getSMSConversationUID(thingTypeUID,
-                                (String) configuration
-                                        .get(SMSModemBindingConstants.SMSCONVERSATION_PARAMETER_RECIPIENT),
-                                bridgeUID)
-                        : thingUID;
-                return super.createThing(thingTypeUID, configuration, safethingUID, bridgeUID);
-            } else {
-                throw new IllegalArgumentException("Cannot create a SMSConversation without a SMSModem bridge");
-            }
-
-        }
-        throw new IllegalArgumentException("The thing type " + thingTypeUID + " is not supported by the binding.");
-    }
-
-    public static ThingUID getSMSConversationUID(ThingTypeUID thingTypeUID, String recipient, ThingUID bridgeUID) {
-        return new ThingUID(thingTypeUID, recipient, bridgeUID.getId());
     }
 }
