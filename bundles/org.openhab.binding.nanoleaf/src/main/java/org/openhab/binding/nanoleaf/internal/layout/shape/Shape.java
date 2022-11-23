@@ -26,7 +26,7 @@ import org.openhab.binding.nanoleaf.internal.layout.ShapeType;
 import org.openhab.core.library.types.HSBType;
 
 /**
- * Draws shapes is panel with a single LED.
+ * Draws shapes, which are panels with a single LED.
  *
  * @author Jørgen Austvik - Initial contribution
  */
