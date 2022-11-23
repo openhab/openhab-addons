@@ -53,7 +53,7 @@ import com.google.gson.Gson;
 public class SpeedtestHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(SpeedtestHandler.class);
     private SpeedtestConfiguration config = new SpeedtestConfiguration();
-    private Gson GSON = new Gson();
+    private Gson gson = new Gson();
     private static Runtime rt = Runtime.getRuntime();
     private long pollingInterval = 1440;
     private String serverID = "";
@@ -67,19 +67,19 @@ public class SpeedtestHandler extends BaseThingHandler {
     private String speedTestCommand = "";
     private static OS os = OS.NOT_SET;
 
-    private String ping_jitter = "";
-    private String ping_latency = "";
-    private String download_bandwidth = "";
-    private String download_bytes = "";
-    private String download_elapsed = "";
-    private String upload_bandwidth = "";
-    private String upload_bytes = "";
-    private String upload_elapsed = "";
+    private String pingJitter = "";
+    private String pingLatency = "";
+    private String downloadBandwidth = "";
+    private String downloadBytes = "";
+    private String downloadElapsed = "";
+    private String uploadBandwidth = "";
+    private String uploadBytes = "";
+    private String uploadElapsed = "";
     private String isp = "";
-    private String interface_internalIp = "";
-    private String interface_externalIp = "";
-    private String result_url = "";
-    private String server_name = "";
+    private String interfaceInternalIp = "";
+    private String interfaceExternalIp = "";
+    private String resultUrl = "";
+    private String server = "";
 
     /**
      * Contains information about which operating system openHAB is running on.
@@ -102,7 +102,7 @@ public class SpeedtestHandler extends BaseThingHandler {
         logger.debug("handleCommand channel: {} command: {}", channelUID, command);
         String ch = channelUID.getId();
         if (command instanceof RefreshType) {
-            if (!server_name.isBlank()) {
+            if (!server.isBlank()) {
                 updateChannels();
             }
             return;
@@ -278,19 +278,19 @@ public class SpeedtestHandler extends BaseThingHandler {
                 ResultContainer.class);
         if (tmpCont != null) {
             if (tmpCont.getType().equals("result")) {
-                ping_jitter = tmpCont.getPing().getJitter();
-                ping_latency = tmpCont.getPing().getLatency();
-                download_bandwidth = tmpCont.getDownload().getBandwidth();
-                download_bytes = tmpCont.getDownload().getBytes();
-                download_elapsed = tmpCont.getDownload().getElapsed();
-                upload_bandwidth = tmpCont.getUpload().getBandwidth();
-                upload_bytes = tmpCont.getUpload().getBytes();
-                upload_elapsed = tmpCont.getUpload().getElapsed();
+                pingJitter = tmpCont.getPing().getJitter();
+                pingLatency = tmpCont.getPing().getLatency();
+                downloadBandwidth = tmpCont.getDownload().getBandwidth();
+                downloadBytes = tmpCont.getDownload().getBytes();
+                downloadElapsed = tmpCont.getDownload().getElapsed();
+                uploadBandwidth = tmpCont.getUpload().getBandwidth();
+                uploadBytes = tmpCont.getUpload().getBytes();
+                uploadElapsed = tmpCont.getUpload().getElapsed();
                 isp = tmpCont.getIsp();
-                interface_internalIp = tmpCont.getInterface().getInternalIp();
-                interface_externalIp = tmpCont.getInterface().getExternalIp();
-                result_url = tmpCont.getResult().getUrl();
-                server_name = tmpCont.getServer().getName() + " (" + tmpCont.getServer().getId().toString() + ") "
+                interfaceInternalIp = tmpCont.getInterface().getInternalIp();
+                interfaceExternalIp = tmpCont.getInterface().getExternalIp();
+                resultUrl = tmpCont.getResult().getUrl();
+                server = tmpCont.getServer().getName() + " (" + tmpCont.getServer().getId().toString() + ") "
                         + tmpCont.getServer().getLocation();
                 updateChannels();
             }
@@ -305,7 +305,7 @@ public class SpeedtestHandler extends BaseThingHandler {
             String dataOut = executeCmd(speedTestCommand + arguments);
             if (type != String.class) {
                 @Nullable
-                T obj = GSON.fromJson(dataOut, type);
+                T obj = gson.fromJson(dataOut, type);
                 return obj;
             } else {
                 @SuppressWarnings("unchecked")
@@ -324,58 +324,55 @@ public class SpeedtestHandler extends BaseThingHandler {
     private void updateChannels() {
         logger.debug("Updating channels");
 
-        State newState = new QuantityType<>(Double.parseDouble(ping_jitter) / 1000.0, Units.SECOND);
-        logger.debug("ping_jitter: {}", newState);
+        State newState = new QuantityType<>(Double.parseDouble(pingJitter) / 1000.0, Units.SECOND);
+        logger.debug("pingJitter: {}", newState);
         updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.PING_JITTER), newState);
 
-        newState = new QuantityType<>(Double.parseDouble(ping_latency) / 1000.0, Units.SECOND);
-        logger.debug("ping_latency: {}", newState);
+        newState = new QuantityType<>(Double.parseDouble(pingLatency) / 1000.0, Units.SECOND);
+        logger.debug("pingLatency: {}", newState);
         updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.PING_LATENCY), newState);
 
-        newState = new QuantityType<>(Double.parseDouble(download_bandwidth) / 125000.0, Units.MEGABIT_PER_SECOND);
-        logger.debug("download_bandwidth: {}", newState);
+        newState = new QuantityType<>(Double.parseDouble(downloadBandwidth) / 125000.0, Units.MEGABIT_PER_SECOND);
+        logger.debug("downloadBandwidth: {}", newState);
         updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.DOWNLOAD_BANDWIDTH), newState);
 
-        newState = new QuantityType<>(Double.parseDouble(download_bytes), Units.BYTE);
-        logger.debug("download_bytes: {}", newState);
+        newState = new QuantityType<>(Double.parseDouble(downloadBytes), Units.BYTE);
+        logger.debug("downloadBytes: {}", newState);
         updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.DOWNLOAD_BYTES), newState);
 
-        newState = new QuantityType<>(Double.parseDouble(download_elapsed) / 1000.0, Units.SECOND);
-        logger.debug("download_elapsed: {}", newState);
+        newState = new QuantityType<>(Double.parseDouble(downloadElapsed) / 1000.0, Units.SECOND);
+        logger.debug("downloadElapsed: {}", newState);
         updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.DOWNLOAD_ELAPSED), newState);
 
-        newState = new QuantityType<>(Double.parseDouble(upload_bandwidth) / 125000.0, Units.MEGABIT_PER_SECOND);
-        logger.debug("upload_bandwidth: {}", newState);
+        newState = new QuantityType<>(Double.parseDouble(uploadBandwidth) / 125000.0, Units.MEGABIT_PER_SECOND);
+        logger.debug("uploadBandwidth: {}", newState);
         updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.UPLOAD_BANDWIDTH), newState);
 
-        newState = new QuantityType<>(Double.parseDouble(upload_bytes), Units.BYTE);
-        logger.debug("upload_bytes: {}", newState);
+        newState = new QuantityType<>(Double.parseDouble(uploadBytes), Units.BYTE);
+        logger.debug("uploadBytes: {}", newState);
         updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.UPLOAD_BYTES), newState);
 
-        newState = new QuantityType<>(Double.parseDouble(upload_elapsed) / 1000.0, Units.SECOND);
-        logger.debug("upload_elapsed: {}", newState);
+        newState = new QuantityType<>(Double.parseDouble(uploadElapsed) / 1000.0, Units.SECOND);
+        logger.debug("uploadElapsed: {}", newState);
         updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.UPLOAD_ELAPSED), newState);
 
         updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.INTERFACE_EXTERNALIP),
-                new StringType(String.valueOf(interface_externalIp)));
+                new StringType(String.valueOf(interfaceExternalIp)));
         updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.INTERFACE_INTERNALIP),
-                new StringType(String.valueOf(interface_internalIp)));
+                new StringType(String.valueOf(interfaceInternalIp)));
         updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.ISP),
                 new StringType(String.valueOf(isp)));
         updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.RESULT_URL),
-                new StringType(String.valueOf(result_url)));
+                new StringType(String.valueOf(resultUrl)));
         updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.SERVER),
-                new StringType(String.valueOf(server_name)));
+                new StringType(String.valueOf(server)));
     }
 
     /*
      * Checks to make sure the executable for speedtest is valid
      */
     public boolean checkConfig(String execPath) {
-        if (checkExecPath(execPath)) { // Check if entered path exists
-            return true;
-        }
-        return false;
+        return checkExecPath(execPath); // Check if entered path exists
     }
 
     /*
@@ -512,11 +509,7 @@ public class SpeedtestHandler extends BaseThingHandler {
 
     public boolean checkExecPath(String path) {
         File file = new File(path);
-        if (fileExistsAndIsExecutable(file)) {
-            return true;
-        } else {
-            return false;
-        }
+        return fileExistsAndIsExecutable(file);
     }
 
     private static boolean fileExistsAndIsExecutable(File file) {
