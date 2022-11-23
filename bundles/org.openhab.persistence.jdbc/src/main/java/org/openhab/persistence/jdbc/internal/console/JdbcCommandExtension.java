@@ -51,14 +51,15 @@ public class JdbcCommandExtension extends AbstractConsoleCommandExtension implem
     private static final String CMD_TABLES = "tables";
     private static final String CMD_RELOAD = "reload";
     private static final String SUBCMD_SCHEMA_CHECK = "check";
+    private static final String SUBCMD_SCHEMA_FIX = "fix";
     private static final String SUBCMD_TABLES_LIST = "list";
     private static final String SUBCMD_TABLES_CLEAN = "clean";
     private static final String PARAMETER_ALL = "all";
     private static final String PARAMETER_FORCE = "force";
     private static final StringsCompleter CMD_COMPLETER = new StringsCompleter(
             List.of(CMD_SCHEMA, CMD_TABLES, CMD_RELOAD), false);
-    private static final StringsCompleter SUBCMD_SCHEMA_COMPLETER = new StringsCompleter(List.of(SUBCMD_SCHEMA_CHECK),
-            false);
+    private static final StringsCompleter SUBCMD_SCHEMA_COMPLETER = new StringsCompleter(
+            List.of(SUBCMD_SCHEMA_CHECK, SUBCMD_SCHEMA_FIX), false);
     private static final StringsCompleter SUBCMD_TABLES_COMPLETER = new StringsCompleter(
             List.of(SUBCMD_TABLES_LIST, SUBCMD_TABLES_CLEAN), false);
 
@@ -117,10 +118,18 @@ public class JdbcCommandExtension extends AbstractConsoleCommandExtension implem
                     return true;
                 }
             }
-        } else if (args.length == 2 && CMD_SCHEMA.equalsIgnoreCase(args[0])) {
-            if (SUBCMD_SCHEMA_CHECK.equalsIgnoreCase(args[1])) {
+        } else if (args.length > 1 && CMD_SCHEMA.equalsIgnoreCase(args[0])) {
+            if (args.length == 2 && SUBCMD_SCHEMA_CHECK.equalsIgnoreCase(args[1])) {
                 checkSchema(persistenceService, console);
                 return true;
+            } else if (SUBCMD_SCHEMA_FIX.equalsIgnoreCase(args[1])) {
+                if (args.length == 2) {
+                    fixSchema(persistenceService, console);
+                    return true;
+                } else if (args.length == 3) {
+                    fixSchema(persistenceService, console, args[2]);
+                    return true;
+                }
             }
         } else if (args.length == 1 && CMD_RELOAD.equalsIgnoreCase(args[0])) {
             reload(persistenceService, console);
@@ -149,6 +158,36 @@ public class JdbcCommandExtension extends AbstractConsoleCommandExtension implem
                             itemName, issue));
                 }
             }
+        }
+    }
+
+    private void fixSchema(JdbcPersistenceService persistenceService, Console console) {
+        Map<String, String> itemNameToTableNameMap = persistenceService.getItemNameToTableNameMap();
+        for (Entry<String, String> entry : itemNameToTableNameMap.entrySet()) {
+            String itemName = entry.getKey();
+            String tableName = entry.getValue();
+            fixSchema(persistenceService, console, tableName, itemName);
+        }
+    }
+
+    private void fixSchema(JdbcPersistenceService persistenceService, Console console, String itemName) {
+        Map<String, String> itemNameToTableNameMap = persistenceService.getItemNameToTableNameMap();
+        String tableName = itemNameToTableNameMap.get(itemName);
+        if (tableName != null) {
+            fixSchema(persistenceService, console, tableName, itemName);
+        } else {
+            console.println("Table not found for item '" + itemName + "'");
+        }
+    }
+
+    private void fixSchema(JdbcPersistenceService persistenceService, Console console, String tableName,
+            String itemName) {
+        try {
+            if (persistenceService.fixSchemaIssues(tableName, itemName)) {
+                console.println("Fixed table '" + tableName + "' for item '" + itemName + "'");
+            }
+        } catch (JdbcSQLException e) {
+            console.println("Failed to fix table '" + tableName + "' for item '" + itemName + "': " + e.getMessage());
         }
     }
 
@@ -213,6 +252,7 @@ public class JdbcCommandExtension extends AbstractConsoleCommandExtension implem
     @Override
     public List<String> getUsages() {
         return Arrays.asList(buildCommandUsage(CMD_SCHEMA + " " + SUBCMD_SCHEMA_CHECK, "check schema integrity"),
+                buildCommandUsage(CMD_SCHEMA + " " + SUBCMD_SCHEMA_FIX + " [<itemName>]", "fix schema integrity"),
                 buildCommandUsage(CMD_TABLES + " " + SUBCMD_TABLES_LIST + " [" + PARAMETER_ALL + "]",
                         "list tables (all = include valid)"),
                 buildCommandUsage(
@@ -247,6 +287,14 @@ public class JdbcCommandExtension extends AbstractConsoleCommandExtension implem
                 } else if (SUBCMD_TABLES_LIST.equalsIgnoreCase(args[1])) {
                     new StringsCompleter(List.of(PARAMETER_ALL), false).complete(args, cursorArgumentIndex,
                             cursorPosition, candidates);
+                }
+            } else if (CMD_SCHEMA.equalsIgnoreCase(args[0])) {
+                if (SUBCMD_SCHEMA_FIX.equalsIgnoreCase(args[1])) {
+                    JdbcPersistenceService persistenceService = getPersistenceService();
+                    if (persistenceService != null) {
+                        return new StringsCompleter(persistenceService.getItemNames(), true).complete(args,
+                                cursorArgumentIndex, cursorPosition, candidates);
+                    }
                 }
             }
         }

@@ -312,6 +312,14 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
         return itemNameToTableNameMap;
     }
 
+    /**
+     * Check schema for integrity issues.
+     *
+     * @param tableName for which columns should be checked
+     * @param itemName that corresponds to table
+     * @return Collection of strings, each describing an identified issue
+     * @throws JdbcSQLException on SQL errors
+     */
     public Collection<String> getSchemaIssues(String tableName, String itemName) throws JdbcSQLException {
         List<String> issues = new ArrayList<>();
         Item item;
@@ -348,11 +356,56 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
                     issues.add("Column type '" + valueDataType + "' expected, but is '"
                             + column.getColumnType().toUpperCase() + "'");
                 }
+                if (!column.getIsNullable()) {
+                    issues.add("Column 'value' expected to be nullable, but is NOT NULL");
+                }
             } else {
                 issues.add("Column '" + columnName + "' not expected");
             }
         }
         return issues;
+    }
+
+    /**
+     * Fix schema issues.
+     *
+     * @param tableName for which columns should be repaired
+     * @param itemName that corresponds to table
+     * @return true if table was altered, otherwise false
+     * @throws JdbcSQLException on SQL errors
+     */
+    public boolean fixSchemaIssues(String tableName, String itemName) throws JdbcSQLException {
+        Item item;
+        try {
+            item = itemRegistry.getItem(itemName);
+        } catch (ItemNotFoundException e) {
+            return false;
+        }
+        JdbcBaseDAO dao = conf.getDBDAO();
+        String timeDataType = dao.sqlTypes.get("tablePrimaryKey");
+        if (timeDataType == null) {
+            return false;
+        }
+        String valueDataType = dao.getDataType(item);
+        List<Column> columns = getTableColumns(tableName);
+        boolean isFixed = false;
+        for (Column column : columns) {
+            String columnName = column.getColumnName();
+            if ("time".equalsIgnoreCase(columnName)) {
+                if (!"time".equals(columnName) || !timeDataType.equalsIgnoreCase(column.getColumnType())
+                        || column.getIsNullable()) {
+                    alterTableColumn(tableName, "time", timeDataType, false);
+                    isFixed = true;
+                }
+            } else if ("value".equalsIgnoreCase(columnName)) {
+                if (!"value".equals(columnName) || !valueDataType.equalsIgnoreCase(column.getColumnType())
+                        || !column.getIsNullable()) {
+                    alterTableColumn(tableName, "value", valueDataType, true);
+                    isFixed = true;
+                }
+            }
+        }
+        return isFixed;
     }
 
     /**

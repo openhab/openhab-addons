@@ -201,6 +201,14 @@ public class JdbcMapper {
         return vo;
     }
 
+    protected void alterTableColumn(String tableName, String columnName, String columnType, boolean nullable)
+            throws JdbcSQLException {
+        logger.debug("JDBC::alterTableColumn");
+        long timerStart = System.currentTimeMillis();
+        conf.getDBDAO().doAlterTableColumn(tableName, columnName, columnType, nullable);
+        logTime("alterTableColumn", timerStart, System.currentTimeMillis());
+    }
+
     protected void storeItemValue(Item item, State itemState, @Nullable ZonedDateTime date) throws JdbcException {
         logger.debug("JDBC::storeItemValue: item={} state={} date={}", item, itemState, date);
         String tableName = getTable(item);

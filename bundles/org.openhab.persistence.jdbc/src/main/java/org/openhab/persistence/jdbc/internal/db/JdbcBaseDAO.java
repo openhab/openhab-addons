@@ -94,7 +94,8 @@ public class JdbcBaseDAO {
     protected String sqlGetItemTables = "SELECT table_name FROM information_schema.tables WHERE table_type='BASE TABLE' AND table_schema='#jdbcUriDatabaseName#' AND NOT table_name='#itemsManageTable#'";
     protected String sqlGetTableColumnTypes = "SELECT column_name, column_type, is_nullable FROM information_schema.columns WHERE table_schema='#jdbcUriDatabaseName#' AND table_name='#tableName#'";
     protected String sqlCreateItemTable = "CREATE TABLE IF NOT EXISTS #tableName# (time #tablePrimaryKey# NOT NULL, value #dbType#, PRIMARY KEY(time))";
-    protected String sqlInsertItemValue = "INSERT INTO #tableName# (TIME, VALUE) VALUES( #tablePrimaryValue#, ? ) ON DUPLICATE KEY UPDATE VALUE= ?";
+    protected String sqlAlterTableColumn = "ALTER TABLE #tableName# MODIFY COLUMN #columnName# #columnType#";
+    protected String sqlInsertItemValue = "INSERT INTO #tableName# (time, value) VALUES( #tablePrimaryValue#, ? ) ON DUPLICATE KEY UPDATE VALUE= ?";
     protected String sqlGetRowCount = "SELECT COUNT(*) FROM #tableName#";
 
     /********
@@ -409,6 +410,19 @@ public class JdbcBaseDAO {
                 new String[] { "#tableName#", "#dbType#", "#tablePrimaryKey#" },
                 new String[] { vo.getTableName(), vo.getDbType(), sqlTypes.get("tablePrimaryKey") });
         logger.debug("JDBC::doCreateItemTable sql={}", sql);
+        try {
+            Yank.execute(sql, null);
+        } catch (YankSQLException e) {
+            throw new JdbcSQLException(e);
+        }
+    }
+
+    public void doAlterTableColumn(String tableName, String columnName, String columnType, boolean nullable)
+            throws JdbcSQLException {
+        String sql = StringUtilsExt.replaceArrayMerge(sqlAlterTableColumn,
+                new String[] { "#tableName#", "#columnName#", "#columnType#" },
+                new String[] { tableName, columnName, nullable ? columnType : columnType + " NOT NULL" });
+        logger.debug("JDBC::doAlterTableColumn sql={}", sql);
         try {
             Yank.execute(sql, null);
         } catch (YankSQLException e) {
