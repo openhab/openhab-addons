@@ -532,8 +532,8 @@
 	<channel-type id="currentmode">
 		<item-type>Number</item-type>
 		<label>Currentmode</label>
-		<description>Currentmode</description>
-		<state pattern="%d" readOnly="true" max="3" min="0" step="1"/>
+		<description>Current Mode</description>
+		<state pattern="%d" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="partymode">
