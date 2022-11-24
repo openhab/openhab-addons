@@ -186,24 +186,47 @@ public class InstarHandler extends ChannelDuplexHandler {
 
     public void alarmTriggered(String alarm) {
         ipCameraHandler.logger.debug("Alarm has been triggered:{}", alarm);
-        switch (alarm) {
+        String[] queries = alarm.split("&");
+        // older cameras placed the & for the first query, whilst newer cameras do not.
+        switch (queries[0]) {
             case "/instar?&active=1":// The motion area boxes 1-4
+            case "/instar?active=1":
             case "/instar?&active=2":
+            case "/instar?active=2":
             case "/instar?&active=3":
+            case "/instar?active=3":
             case "/instar?&active=4":
+            case "/instar?active=4":
                 ipCameraHandler.motionDetected(CHANNEL_MOTION_ALARM);
                 break;
             case "/instar?&active=5":// PIR
+            case "/instar?active=5":
                 ipCameraHandler.motionDetected(CHANNEL_PIR_ALARM);
                 break;
             case "/instar?&active=6":// Audio Alarm
+            case "/instar?active=6":
                 ipCameraHandler.audioDetected();
                 break;
             case "/instar?&active=7":// Motion Area 1
+            case "/instar?active=7":
             case "/instar?&active=8":// Motion Area 2
+            case "/instar?active=8":
             case "/instar?&active=9":// Motion Area 3
+            case "/instar?active=9":
             case "/instar?&active=10":// Motion Area 4
+            case "/instar?active=10":
                 ipCameraHandler.motionDetected(CHANNEL_MOTION_ALARM);
+                break;
+        }
+        switch (queries[1]) {
+            case "object=1":// person/human
+                ipCameraHandler.motionDetected(CHANNEL_HUMAN_ALARM);
+                break;
+            case "object=2":// car/Vehicles
+                ipCameraHandler.motionDetected(CHANNEL_CAR_ALARM);
+                break;
+            case "object=3":// Animals
+                ipCameraHandler.motionDetected(CHANNEL_ANIMAL_ALARM);
                 break;
         }
     }
