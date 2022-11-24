@@ -53,6 +53,7 @@ public abstract class MonopriceAudioConnector {
 
     /** true if the connection is established, false if not */
     private boolean connected;
+    private boolean initialPollComplete = false;
 
     private AmplifierModel amp = AmplifierModel.AMPLIFIER;
 
@@ -76,6 +77,24 @@ public abstract class MonopriceAudioConnector {
      */
     protected void setConnected(boolean connected) {
         this.connected = connected;
+    }
+
+    /**
+     * Get whether the initial polling is complete or not
+     *
+     * @return true if initial polling is complete
+     */
+    public boolean isInitialPollComplete() {
+        return initialPollComplete;
+    }
+
+    /**
+     * Set whether the initial polling is complete or not
+     *
+     * @param initialPollComplete true if initial polling is complete
+     */
+    public void setInitialPollComplete(boolean initialPollComplete) {
+        this.initialPollComplete = initialPollComplete;
     }
 
     public void setAmplifierModel(AmplifierModel amp) {
@@ -173,7 +192,7 @@ public abstract class MonopriceAudioConnector {
         sendCommand(zoneId, amp.getQueryPrefix(), null);
     }
 
-    public void queryBalanceTone(String zoneId) throws MonopriceAudioException {
+    public void queryTrebBassBalance(String zoneId) throws MonopriceAudioException {
         sendCommand(EMPTY, amp.getQueryPrefix() + zoneId + amp.getTrebleCmd(), null);
         sendCommand(EMPTY, amp.getQueryPrefix() + zoneId + amp.getBassCmd(), null);
         sendCommand(EMPTY, amp.getQueryPrefix() + zoneId + amp.getBalanceCmd(), null);
@@ -211,7 +230,7 @@ public abstract class MonopriceAudioConnector {
             dataOut.write(messageStr.getBytes(StandardCharsets.US_ASCII));
             dataOut.flush();
         } catch (IOException e) {
-            throw new MonopriceAudioException("Send command \"" + cmd + "\" failed: " + e.getMessage(), e);
+            throw new MonopriceAudioException("Send command \"" + messageStr + "\" failed: " + e.getMessage(), e);
         }
     }
 
@@ -265,7 +284,7 @@ public abstract class MonopriceAudioConnector {
      * @param value the value
      */
     private void dispatchKeyValue(String key, String value) {
-        MonopriceAudioMessageEvent event = new MonopriceAudioMessageEvent(this, key, value);
+        MonopriceAudioMessageEvent event = new MonopriceAudioMessageEvent(this, key, value, initialPollComplete);
         listeners.forEach(l -> l.onNewMessageEvent(event));
     }
 }

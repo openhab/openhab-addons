@@ -27,11 +27,13 @@ public class MonopriceAudioMessageEvent extends EventObject {
     private static final long serialVersionUID = 1L;
     private final String key;
     private final String value;
+    private final boolean initialPollComplete;
 
-    public MonopriceAudioMessageEvent(Object source, String key, String value) {
+    public MonopriceAudioMessageEvent(Object source, String key, String value, boolean initialPollComplete) {
         super(source);
         this.key = key;
         this.value = value;
+        this.initialPollComplete = initialPollComplete;
     }
 
     public String getKey() {
@@ -40,5 +42,9 @@ public class MonopriceAudioMessageEvent extends EventObject {
 
     public String getValue() {
         return value;
+    }
+
+    public boolean isInitialPollComplete() {
+        return initialPollComplete;
     }
 }
