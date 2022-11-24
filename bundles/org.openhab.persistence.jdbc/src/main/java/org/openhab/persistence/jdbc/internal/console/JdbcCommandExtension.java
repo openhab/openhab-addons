@@ -18,6 +18,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -139,15 +140,16 @@ public class JdbcCommandExtension extends AbstractConsoleCommandExtension implem
     }
 
     private void checkSchema(JdbcPersistenceService persistenceService, Console console) throws JdbcSQLException {
-        Map<String, String> itemNameToTableNameMap = persistenceService.getItemNameToTableNameMap();
-        int itemNameMaxLength = Math.max(itemNameToTableNameMap.entrySet().stream().map(i -> i.getKey().length())
-                .max(Integer::compare).orElse(0), 4);
-        int tableNameMaxLength = Math.max(itemNameToTableNameMap.entrySet().stream().map(i -> i.getValue().length())
-                .max(Integer::compare).orElse(0), 5);
+        List<Entry<String, String>> itemNameToTableName = persistenceService.getItemNameToTableNameMap().entrySet()
+                .stream().sorted(Map.Entry.comparingByKey()).collect(Collectors.toList());
+        int itemNameMaxLength = Math
+                .max(itemNameToTableName.stream().map(i -> i.getKey().length()).max(Integer::compare).orElse(0), 4);
+        int tableNameMaxLength = Math
+                .max(itemNameToTableName.stream().map(i -> i.getValue().length()).max(Integer::compare).orElse(0), 5);
         console.println(String.format("%1$-" + (tableNameMaxLength + 2) + "s%2$-" + (itemNameMaxLength + 2) + "s%3$s",
                 "Table", "Item", "Issue"));
         console.println("-".repeat(tableNameMaxLength) + "  " + "-".repeat(itemNameMaxLength) + "  " + "-".repeat(64));
-        for (Entry<String, String> entry : itemNameToTableNameMap.entrySet()) {
+        for (Entry<String, String> entry : itemNameToTableName) {
             String itemName = entry.getKey();
             String tableName = entry.getValue();
             Collection<String> issues = persistenceService.getSchemaIssues(tableName, itemName);
@@ -162,8 +164,9 @@ public class JdbcCommandExtension extends AbstractConsoleCommandExtension implem
     }
 
     private void fixSchema(JdbcPersistenceService persistenceService, Console console) {
-        Map<String, String> itemNameToTableNameMap = persistenceService.getItemNameToTableNameMap();
-        for (Entry<String, String> entry : itemNameToTableNameMap.entrySet()) {
+        List<Entry<String, String>> itemNameToTableName = persistenceService.getItemNameToTableNameMap().entrySet()
+                .stream().sorted(Map.Entry.comparingByKey()).collect(Collectors.toList());
+        for (Entry<String, String> entry : itemNameToTableName) {
             String itemName = entry.getKey();
             String tableName = entry.getValue();
             fixSchema(persistenceService, console, tableName, itemName);
