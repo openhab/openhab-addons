@@ -12,7 +12,7 @@
 
   <artifactId>org.openhab.automation.jsscripting</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: Automation :: JS Scripting</name>
+  <name>openHAB Add-ons :: Bundles :: Automation :: JavaScript Scripting</name>
 
   <properties>
     <bnd.importpackage>
