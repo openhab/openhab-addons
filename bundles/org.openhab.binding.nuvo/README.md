@@ -40,7 +40,7 @@ The thing has the following configuration parameters:
 |--------------------------|--------------- |-------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------|
 | Serial Port              | serialPort     | Serial port to use for connecting to the Nuvo whole house amplifier device                                                                      | a comm port name                                                                   |
 | Address                  | host           | Host name or IP address of the machine connected to the Nuvo whole house amplifier serial port (serial over IP) or MPS4 server                  | host name or ip                                                                    |
-| Port                     | port           | Communication port (serial over IP).                                                                                                            | ip port number                                                                     |
+| Port                     | port           | Communication port (serial over IP)                                                                                                             | ip port number                                                                     |
 | Number of Zones          | numZones       | (Optional) Number of zones on the amplifier to utilize in the binding (up to 20 zones when zone expansion modules are used)                     | (1-20; default 6)                                                                  |
 | Favorite Labels          | favoriteLabels | A comma separated list of up to 12 label names that are loaded into the 'favorites' channel of each zone. These represent keypad favorites 1-12 | Optional; Comma separated list, max 12 items. ie: Favorite 1,Favorite 2,Favorite 3 |
 | Sync Clock on GConcerto  | clockSync      | (Optional) If set to true, the binding will sync the internal clock on the Grand Concerto to match the openHAB host's system clock              | Boolean; default false                                                             |
@@ -52,7 +52,7 @@ The thing has the following configuration parameters:
 Some notes:
 
 * If the port is set to 5006, the binding will adjust its protocol to connect to the Nuvo amplifier thing via an MPS4 IP connection.
-* MPS4 connections do not support commands using `SxDISPINFO`& `SxDISPLINE` (display_lineN channels) including those outlined in the advanced rules section below.
+* MPS4 connections do not support commands using `SxDISPINFO`& `SxDISPLINE` (display_lineN channels) including those outlined in the advanced rules section below. In this case,`SxDISPINFOTWO` and `SxDISPLINES` must be used instead. See the *very advanced* rule examples below.
 * As of OH 3.4.0, the binding supports NuvoNet source communication for any/all of the amplifier's 6 inputs but only when using an MPS4 connection.
 * By implementing NuvoNet communication, the binding can now support sending custom menus, custom favorite lists, album art, etc. to the Nuvo keypads for each source configured as an openHAB NuvoNet source.
 * If a zone has a maximum volume limit configured by the Nuvo configurator, the volume slider will automatically drop back to that level if set above the configured limit.
