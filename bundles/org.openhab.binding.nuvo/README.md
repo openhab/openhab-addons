@@ -365,16 +365,12 @@ rule "Load track play info for Source 3"
 when
     Item Item_Containing_TrackLength received update
 then
-    if (null === actions) {
-        logInfo("actions", "Actions not found, check thing ID")
-        return
-    }
     // strip off any non-numeric characters and multiply seconds by 10 (Nuvo expects tenths of a second)
     var int trackLength = Integer::parseInt(Item_Containing_TrackLength.state.toString.replaceAll("[\\D]", "")) * 10
 
     // '0' indicates the track is just starting (at position 0), '2' indicates to Nuvo that the track is playing
     // The Nuvo keypad will now begin counting up the elapsed time displayed (starting from 0)
-    actions.sendNuvoCommand("S3DISPINFO," + trackLength.toString() + ",0,2")
+    sendCommand(nuvo_system_sendcmd, "S3DISPINFO," + trackLength.toString() + ",0,2")
     
 end
 
@@ -427,25 +423,20 @@ then
     var int trackLength = Integer::parseInt(Item_Containing_TrackLength.state.toString.replaceAll("[\\D]", "")) * 10
     var int trackPosition = Integer::parseInt(Item_Containing_TrackPosition.state.toString.replaceAll("[\\D]", "")) * 10
 
-    if (null === actions) {
-        logInfo("actions", "Actions not found, check thing ID")
-        return
-    }
-
     switch playMode {
         case "Nothing playing": {
             // when idle, '1' tells Nuvo to display 'idle' on the keypad
-            actions.sendNuvoCommand("S3DISPINFO,0,0,1")
+            sendCommand(nuvo_system_sendcmd, "S3DISPINFO,0,0,1")
         }
         case "Playing": {
             // when playback starts or resumes, '2' tells Nuvo to display 'playing' on the keypad
             // trackPosition does not need to be updated continuously, Nuvo will automatically count up the elapsed time displayed on the keypad 
-            actions.sendNuvoCommand("S3DISPINFO," + trackLength.toString() + "," + trackPosition.toString() + ",2")
+            sendCommand(nuvo_system_sendcmd, "S3DISPINFO," + trackLength.toString() + "," + trackPosition.toString() + ",2")
         }
         case "Paused": {
             // when playback is paused, '3' tells Nuvo to display 'paused' on the keypad and stop counting up the elapsed time
             // trackPosition should indicate the time elapsed of the track when playback was paused
-            actions.sendNuvoCommand("S3DISPINFO," + trackLength.toString() + "," + trackPosition.toString() + ",3")
+            sendCommand(nuvo_system_sendcmd, "S3DISPINFO," + trackLength.toString() + "," + trackPosition.toString() + ",3")
         }
     }
 end
