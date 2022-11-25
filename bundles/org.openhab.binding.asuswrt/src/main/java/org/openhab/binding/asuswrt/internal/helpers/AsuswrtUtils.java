@@ -369,7 +369,7 @@ public class AsuswrtUtils {
      * 
      * @param numVal
      */
-    public static DecimalType getDecimalTypel(@Nullable Long numVal) {
+    public static DecimalType getDecimalType(@Nullable Long numVal) {
         return new DecimalType((numVal != null ? numVal : 0));
     }
 

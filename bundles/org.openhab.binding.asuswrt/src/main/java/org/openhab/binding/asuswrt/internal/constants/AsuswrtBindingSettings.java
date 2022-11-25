@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.asuswrt.internal.constants;
 
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -32,12 +34,15 @@ public class AsuswrtBindingSettings {
     public static final String HTTP_USER_AGENT = "asusrouter-Android-DUTUtil-1.0.0.3.58-163";
     public static final String HTTP_CONTENT_CHARSET = "utf-8";
     public static final String HTTP_PROTOCOL = "http://";
+    public static final String HTTPS_PROTOCOL = "https://";
+    public static final Boolean HTTP_SSL_TRUST_ALL = true; // trust all ssl-certs
 
     public static final Integer COOKIE_LIFETIME_S = 3600; // lifetime of login-cookie
     public static final Integer POLLING_INTERVAL_S_MIN = 10; // minimum polling interval
     public static final Integer POLLING_INTERVAL_S_DEFAULT = 30; // default polling interval
     public static final Integer RECONNECT_INTERVAL_S = 30; // interval trying try to reconnect to router
-    public static final Integer DISCOVERY_TIMEOUT_S = 10; // discovery service timeout
+    public static final Integer DISCOVERY_TIMEOUT_S = 10; // discovery service timeout in s
+    public static final Integer DISCOVERY_AUTOREMOVE_S = 1800; // discovery service remove things after x seconds
 
     // List of device commands
     public static final String CMD_GET_SYSINFO = "nvram_get(productid);nvram_get(firmver);nvram_get(buildno);nvram_get(extendno);nvram_get(lan_hwaddr);";
@@ -49,4 +54,10 @@ public class AsuswrtBindingSettings {
     public static final String CMD_GET_USAGE = "cpu_usage(appobj);memory_usage(appobj);";
     public static final String CMD_GET_MEMUSAGE = "memory_usage(appobj);";
     public static final String CMD_GET_CPUUSAGE = "cpu_usage(appobj);";
+
+    // List of Interfaces
+    public static final String INTERFACE_WAN = "wan";
+    public static final String INTERFACE_LAN = "lan";
+    public static final String INTERFACE_WLAN = "wlan";
+    public static final Set<String> INTERFACE_LIST = Set.of(INTERFACE_WAN, INTERFACE_LAN);
 }

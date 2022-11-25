@@ -16,6 +16,7 @@ import static org.openhab.binding.asuswrt.internal.constants.AsuswrtBindingConst
 import static org.openhab.binding.asuswrt.internal.constants.AsuswrtBindingSettings.*;
 import static org.openhab.binding.asuswrt.internal.helpers.AsuswrtUtils.*;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,6 +24,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.asuswrt.internal.structures.AsuswrtClientInfo;
 import org.openhab.binding.asuswrt.internal.structures.AsuswrtClientList;
+import org.openhab.binding.asuswrt.internal.structures.AsuswrtInterfaceList;
+import org.openhab.binding.asuswrt.internal.structures.AsuswrtIpInfo;
 import org.openhab.binding.asuswrt.internal.things.AsuswrtRouter;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -42,6 +45,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class AsuswrtDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
     private final Logger logger = LoggerFactory.getLogger(AsuswrtDiscoveryService.class);
+    private String uid = "";
     protected @NonNullByDefault({}) AsuswrtRouter router;
 
     /***********************************
@@ -60,6 +64,7 @@ public class AsuswrtDiscoveryService extends AbstractDiscoveryService implements
     @Override
     public void deactivate() {
         super.deactivate();
+        removeAllResults();
     }
 
     @Override
@@ -68,6 +73,7 @@ public class AsuswrtDiscoveryService extends AbstractDiscoveryService implements
             AsuswrtRouter router = (AsuswrtRouter) handler;
             router.setDiscoveryService(this);
             this.router = router;
+            this.uid = router.getUID().getAsString();
         }
     }
 
@@ -87,23 +93,42 @@ public class AsuswrtDiscoveryService extends AbstractDiscoveryService implements
      */
     @Override
     public void startScan() {
-        removeOlderResults(getTimestampOfLastScan());
+        logger.trace("{} starting scan", uid);
         if (router != null) {
+            /* query Data */
             router.queryDeviceData(false);
-            AsuswrtClientList clientList = router.getDeviceInfo().getClients();
-            handleScanResults(clientList);
+            /* discover interfaces */
+            AsuswrtInterfaceList ifList = router.getInterfaces();
+            handleInterfaceScan(ifList);
+            /* discover clients */
+            AsuswrtClientList clientList = router.getClients();
+            handleClientScan(clientList);
         }
     }
 
+    @Override
+    public void stopScan() {
+        super.stopScan();
+        removeOlderResults(getTimestampOfLastScan());
+    }
+
     /**
-     * work with result from get clients from router
-     * 
-     * @param deviceList
+     * Remove all scan results
      */
-    public void handleScanResults(AsuswrtClientList clientList) {
+    public void removeAllResults() {
+        removeOlderResults(new Date().getTime());
+    }
+
+    /**
+     * Work with result from get interfaces from router
+     * Create DiscoveryResult from interfaceList
+     * 
+     * @param ifList
+     */
+    public void handleInterfaceScan(AsuswrtInterfaceList ifList) {
         try {
-            for (AsuswrtClientInfo client : clientList) {
-                DiscoveryResult discoveryResult = createDiscoveryResult(client);
+            for (AsuswrtIpInfo ifInfo : ifList) {
+                DiscoveryResult discoveryResult = createInterfaceResult(ifInfo);
                 thingDiscovered(discoveryResult);
             }
         } catch (Exception e) {
@@ -111,40 +136,99 @@ public class AsuswrtDiscoveryService extends AbstractDiscoveryService implements
         }
     }
 
-    public DiscoveryResult createDiscoveryResult(AsuswrtClientInfo clientInfo) {
-        String clientMac = clientInfo.getMac();
-        String unformatedMac = unformatMac(clientMac);
+    /**
+     * Work with result from get clients from router
+     * Create DiscoveryResult from clientList
+     * 
+     * @param deviceList
+     */
+    public void handleClientScan(AsuswrtClientList clientList) {
+        try {
+            for (AsuswrtClientInfo client : clientList) {
+                DiscoveryResult discoveryResult = createClientResult(client);
+                thingDiscovered(discoveryResult);
+            }
+        } catch (Exception e) {
+            logger.debug("error handling scan results", e);
+        }
+    }
+
+    /***********************************
+     *
+     * CREATE DISCOVERY RESULTS
+     *
+     ************************************/
+    /**
+     * Create DiscoveryResult from single interfaceInfo
+     * 
+     * @param interfaceInfo
+     * @return
+     */
+    public DiscoveryResult createInterfaceResult(AsuswrtIpInfo interfaceInfo) {
+        String ifName = interfaceInfo.getName();
+        String macAddress = interfaceInfo.getMAC();
+        String unformatedMac = unformatMac(macAddress);
+        String label = "AwrtInterface_" + ifName;
+
+        Map<String, Object> properties = new HashMap<>();
+        properties.put(NETWORK_REPRASENTATION_PROPERTY, ifName);
+        properties.put(Thing.PROPERTY_MAC_ADDRESS, macAddress);
+
+        logger.debug("{} thing discovered: '{}", uid, label);
+        if (this.router != null) {
+            ThingUID bridgeUID = router.getUID();
+            ThingUID thingUID = new ThingUID(THING_TYPE_INTERFACE, bridgeUID, ifName);
+            return DiscoveryResultBuilder.create(thingUID).withProperties(properties)
+                    .withRepresentationProperty(NETWORK_REPRASENTATION_PROPERTY).withBridge(bridgeUID).withLabel(label)
+                    .build();
+        } else {
+            ThingUID thingUID = new ThingUID(BINDING_ID, ifName);
+            return DiscoveryResultBuilder.create(thingUID).withProperties(properties)
+                    .withRepresentationProperty(NETWORK_REPRASENTATION_PROPERTY).withLabel(label).build();
+        }
+    }
+
+    /**
+     * Create DiscoveryResult from single clientInfo
+     * 
+     * @param clientInfo
+     * @return
+     */
+    public DiscoveryResult createClientResult(AsuswrtClientInfo clientInfo) {
+        String macAddress = clientInfo.getMac();
+        String unformatedMac = unformatMac(macAddress);
         String clientName;
         String nickName;
-        String label;
+        String label = "AwrtClient_";
 
         /* create label and thing names */
         clientName = stringOrDefault(clientInfo.getName(), "client_" + unformatedMac);
         nickName = stringOrDefault(clientInfo.getNickName(), clientName);
         if (nickName.equals(clientName)) {
-            label = nickName;
+            label += nickName;
         } else {
-            label = nickName + " (" + clientName + ")";
+            label += nickName + " (" + clientName + ")";
         }
 
         /* create properties */
         Map<String, Object> properties = new HashMap<>();
-        properties.put(Thing.PROPERTY_MAC_ADDRESS, clientInfo.getMac());
+        properties.put(Thing.PROPERTY_MAC_ADDRESS, macAddress);
         properties.put(Thing.PROPERTY_VENDOR, clientInfo.getVendor());
         properties.put(PROPERTY_CLIENT_NAME, clientName);
         properties.put(CHANNEL_CLIENT_NICKNAME, nickName);
 
-        logger.debug("client '{}'' discovered", clientMac);
+        logger.debug("{} thing discovered: '{}", uid, label);
         if (this.router != null) {
             ThingUID bridgeUID = router.getUID();
             ThingUID thingUID = new ThingUID(THING_TYPE_CLIENT, bridgeUID, unformatedMac);
             return DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                    .withRepresentationProperty(CLIENT_REPRASENTATION_PROPERTY).withBridge(bridgeUID).withLabel(label)
-                    .build();
+                    .withRepresentationProperty(CLIENT_REPRASENTATION_PROPERTY).withTTL(DISCOVERY_AUTOREMOVE_S)
+                    .withBridge(bridgeUID).withLabel(label).build();
         } else {
             ThingUID thingUID = new ThingUID(BINDING_ID, unformatedMac);
             return DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                    .withRepresentationProperty(CLIENT_REPRASENTATION_PROPERTY).withLabel(label).build();
+                    .withRepresentationProperty(CLIENT_REPRASENTATION_PROPERTY).withTTL(DISCOVERY_AUTOREMOVE_S)
+                    .withLabel(label).build();
         }
     }
 }

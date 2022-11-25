@@ -13,11 +13,11 @@
 		<label>Asuswrt Client</label>
 		<description>Client connected to Asuswrt-Rotuer</description>
 		<channel-groups>
-			<channel-group id="client" typeId="clientInfoGroup"></channel-group>
+			<channel-group id="networkInfo" typeId="clientNetworkGroup"></channel-group>
 		</channel-groups>
 		<properties>
 			<property name="vendor">Vendor</property>
-			<property name="clientName">DNS Name</property>
+			<property name="dnsName">DNS Name</property>
 		</properties>
 		<representation-property>macAddress</representation-property>
 
@@ -36,17 +36,17 @@
 
 	<!-- ############################### CHANNEL-GROUPS ############################### -->
 
-	<channel-group-type id="clientInfoGroup">
+	<channel-group-type id="clientNetworkGroup">
 		<label>Clients</label>
 		<description>Clients connected to router</description>
 		<channels>
-			<channel id="isOnline" typeId="isOnlineType"></channel>
+			<channel id="networkState" typeId="isOnlineType"></channel>
 			<channel id="ipAddress" typeId="ipAddressType">
 				<description>Client IP-Address</description>
 			</channel>
 			<channel id="ipMethod" typeId="ipProtoType"></channel>
 			<channel id="internetState" typeId="internetStateType"></channel>
-			<channel id="onlineEvent" typeId="clientOnlineEventType"></channel>
+			<channel id="connectionEvent" typeId="clientOnlineEventType"></channel>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

@@ -3,7 +3,6 @@
 This binding adds support to control get informations from ASUS-Router (Copyright © ASUS).
 
 #  !! EARLY BETA !!
-
 #  BINDING AND REDME NOT FULLY WORKING/COMPLETED
 
 ## Supported Things
@@ -78,6 +77,7 @@ All devices support some of the following channels:
 |                  | onlineClientsCount | Number:Dimensionless   | Count of online clients                    | router                            |
 
 
+
 ## Events
 
 All devices support some of the following Events:
@@ -95,5 +95,4 @@ If you want to see what's going on in the binding, switch the loglevel to TRACE 
 
 Set the logging back to normal
 
-`log:set INFO org.openhab.binding.asuswrt`+
-
+`log:set INFO org.openhab.binding.asuswrt`

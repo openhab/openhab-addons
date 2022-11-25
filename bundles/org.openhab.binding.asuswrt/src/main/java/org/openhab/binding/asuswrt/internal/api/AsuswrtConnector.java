@@ -19,6 +19,10 @@ import static org.openhab.binding.asuswrt.internal.helpers.AsuswrtUtils.*;
 import java.net.NoRouteToHostException;
 import java.util.concurrent.TimeoutException;
 
+import javax.net.ssl.SSLException;
+import javax.net.ssl.SSLHandshakeException;
+import javax.net.ssl.SSLKeyException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.openhab.binding.asuswrt.internal.structures.AsuswrtConfiguration;
@@ -66,7 +70,7 @@ public class AsuswrtConnector extends AsuswrtHttpClient {
      * @return
      */
     public Boolean login() {
-        String url = routerConfig.url + "/login.cgi";
+        String url = getURL("login.cgi");
         String encodedCredentials = credentials.getEncodedCredentials();
         String payload = "";
 
@@ -80,7 +84,7 @@ public class AsuswrtConnector extends AsuswrtHttpClient {
         if (response != null) {
             setCookieFromResponse(response);
         }
-        if (isValidLogin()) {
+        if (cookieStore.isValid()) {
             router.setState(ThingStatus.ONLINE);
             return true;
         }
@@ -92,9 +96,7 @@ public class AsuswrtConnector extends AsuswrtHttpClient {
      * unset cookie
      */
     public void logout() {
-        this.cookie = "";
-        this.token = "";
-        this.cookieTimeStamp = 0L;
+        this.cookieStore.resetCookie();
     }
 
     /**
@@ -116,10 +118,12 @@ public class AsuswrtConnector extends AsuswrtHttpClient {
         Long now = System.currentTimeMillis();
 
         router.errorHandler.reset();
-        checkAuth();
+        if (cookieStore.cookieIsExpired()) {
+            login();
+        }
 
         if (now > this.lastQuery + HTTP_QUERY_MIN_GAP_MS) {
-            String url = routerConfig.url + "/appGet.cgi";
+            String url = getURL("appGet.cgi");
             String payload = "hook=" + command;
             this.lastQuery = now;
 
@@ -171,6 +175,9 @@ public class AsuswrtConnector extends AsuswrtHttpClient {
         if (e instanceof TimeoutException || e instanceof NoRouteToHostException) {
             router.errorHandler.raiseError(ERR_CONN_TIMEOUT, errorMessage);
             router.setState(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
+        } else if (e instanceof SSLException || e instanceof SSLKeyException || e instanceof SSLHandshakeException) {
+            router.errorHandler.raiseError(ERR_SSL_EXCEPTION, payload);
+            router.setState(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
         } else if (e instanceof InterruptedException) {
             router.errorHandler.raiseError(new Exception(e), payload);
             router.setState(ThingStatus.UNKNOWN, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
@@ -182,32 +189,34 @@ public class AsuswrtConnector extends AsuswrtHttpClient {
 
     /***********************************
      *
+     * PRIVATE STUFF
+     *
+     ************************************/
+    /**
+     * Get Target URL
+     * 
+     * @param site
+     * @return
+     */
+    protected String getURL(String site) {
+        String url = routerConfig.hostname;
+        if (routerConfig.useSSL) {
+            url = HTTPS_PROTOCOL + url;
+            if (routerConfig.httpsPort != 443) {
+                url = url + ":" + routerConfig.httpsPort;
+            }
+        } else {
+            url = HTTP_PROTOCOL + url;
+            if (routerConfig.httpPort != 80) {
+                url = url + ":" + routerConfig.httpPort;
+            }
+        }
+        return url + "/" + site;
+    }
+
+    /***********************************
+     *
      * PUBLIC STUFF
      *
      ************************************/
-
-    /**
-     * check if cookie is set and not expired
-     * 
-     * @return
-     */
-    public Boolean isValidLogin() {
-        Boolean cookieExpired = System.currentTimeMillis() > this.cookieTimeStamp + (COOKIE_LIFETIME_S * 1000);
-        if (cookieExpired.equals(true)) {
-            logger.trace("({}) cookie is expired ", uid);
-        }
-        return cookieExpired.equals(false) && !this.cookie.isBlank();
-    }
-
-    /**
-     * check authentication (login) and relogin if not
-     * 
-     * @return
-     */
-    public Boolean checkAuth() {
-        if (isValidLogin().equals(false)) {
-            return login();
-        }
-        return true;
-    }
 }

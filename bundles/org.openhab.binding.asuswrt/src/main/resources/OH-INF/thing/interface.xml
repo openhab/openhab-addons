@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="asuswrt"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Router Thing Type -->
+	<thing-type id="interface">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="router"/>
+		</supported-bridge-type-refs>
+
+		<label>Router Interface</label>
+		<description>Interface of Router</description>
+		<channel-groups>
+			<channel-group id="networkInfo" typeId="ifInfoGroup"></channel-group>
+		</channel-groups>
+		<representation-property>interfaceName</representation-property>
+
+		<config-description>
+			<parameter name="interfaceName" type="text" required="true">
+				<label>Interface Name</label>
+				<description>Name of selected interface. *Maybe not all are supported by your device*</description>
+				<options>
+					<option value="wan">WAN</option>
+					<option value="lan">LAN</option>
+				</options>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+
+	<!-- ############################### CHANNEL-GROUPS ############################### -->
+
+	<!-- INterface Information -->
+	<channel-group-type id="ifInfoGroup">
+		<label>LAN-Status</label>
+		<description>LAN connection state</description>
+		<channels>
+			<channel id="macAddress" typeId="macAddressType"></channel>
+			<channel id="ipAddress" typeId="ipAddressType"></channel>
+			<channel id="ipMethod" typeId="ipProtoType"></channel>
+			<channel id="subnet" typeId="ipNetmaskType"></channel>
+			<channel id="gateway" typeId="ipGatewayType"></channel>
+			<channel id="dnsServers" typeId="dnsServerType"></channel>
+			<channel id="networkState" typeId="ipConnectionState"></channel>
+			<channel id="connectionEvent" typeId="connectionEventType"></channel>
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>

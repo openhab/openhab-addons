@@ -14,6 +14,7 @@ package org.openhab.binding.asuswrt.internal;
 
 import static org.openhab.binding.asuswrt.internal.constants.AsuswrtBindingConstants.*;
 import static org.openhab.binding.asuswrt.internal.constants.AsuswrtBindingSettings.*;
+import static org.openhab.binding.asuswrt.internal.constants.AsuswrtErrorConstants.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -21,7 +22,9 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.asuswrt.internal.things.AsuswrtClient;
+import org.openhab.binding.asuswrt.internal.things.AsuswrtInterface;
 import org.openhab.binding.asuswrt.internal.things.AsuswrtRouter;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -50,15 +53,21 @@ public class AsuswrtHandlerFactory extends BaseThingHandlerFactory {
     private final HttpClient httpClient;
 
     public AsuswrtHandlerFactory() {
+        // set SslContextfactory
+        SslContextFactory sslContextFactory = new SslContextFactory.Client();
+        if (HTTP_SSL_TRUST_ALL) {
+            sslContextFactory.setTrustAll(true);
+            sslContextFactory.setEndpointIdentificationAlgorithm(null);
+        }
         // create new httpClient
-        httpClient = new HttpClient();
+        httpClient = new HttpClient(sslContextFactory);
         httpClient.setFollowRedirects(false);
         httpClient.setMaxConnectionsPerDestination(HTTP_MAX_CONNECTIONS);
         httpClient.setMaxRequestsQueuedPerDestination(HTTP_MAX_QUEUED_REQUESTS);
         try {
             httpClient.start();
         } catch (Exception e) {
-            logger.error("cannot start httpClient");
+            logger.error(ERR_HTTP_CLIENT_FAILED);
         }
     }
 
@@ -91,6 +100,11 @@ public class AsuswrtHandlerFactory extends BaseThingHandlerFactory {
             if (router != null) {
                 return new AsuswrtClient(thing, router);
             }
+        } else if (THING_TYPE_INTERFACE.equals(thingTypeUID)) {
+            AsuswrtRouter router = getRouter(thing);
+            if (router != null) {
+                return new AsuswrtInterface(thing, router);
+            }
         }
         return null;
     }
@@ -111,7 +125,7 @@ public class AsuswrtHandlerFactory extends BaseThingHandlerFactory {
                 }
             }
         }
-        logger.debug("bridge router not found");
+        logger.warn(ERR_BRIDGE_NOT_DECLARED);
         return null;
     }
 }

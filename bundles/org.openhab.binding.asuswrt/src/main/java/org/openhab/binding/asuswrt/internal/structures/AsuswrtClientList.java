@@ -169,6 +169,15 @@ public class AsuswrtClientList implements Iterable<AsuswrtClientInfo> {
         return clients.toString();
     }
 
+    /**
+     * Return count of clients in list
+     * 
+     * @return
+     */
+    public Integer getCount() {
+        return this.clientList.size();
+    }
+
     /*
      * Return ; seperated list with macAddresses
      */

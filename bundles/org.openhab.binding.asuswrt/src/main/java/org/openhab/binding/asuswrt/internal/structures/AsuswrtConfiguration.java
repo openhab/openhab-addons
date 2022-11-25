@@ -12,13 +12,7 @@
  */
 package org.openhab.binding.asuswrt.internal.structures;
 
-import static org.openhab.binding.asuswrt.internal.constants.AsuswrtBindingSettings.*;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.config.core.Configuration;
-import org.openhab.core.thing.Thing;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link AsuswrtConfiguration} class contains fields mapping thing configuration parameters.
@@ -27,23 +21,25 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class AsuswrtConfiguration {
-    private final Logger logger = LoggerFactory.getLogger(AsuswrtConfiguration.class);
 
     /* THING CONFIGUTATION PROPERTYS */
     public static final String CONFIG_USER = "username";
     public static final String CONFIG_PASS = "password";
     public static final String CONFIG_HOSTNAME = "hostname";
     public static final String CONFIG_UPDATE_INTERVAL = "refreshInterval";
+    public static final String CONFIG_SSL_AUTH = "useSSL";
+    public static final String CONFIG_PORT_HTTP = "httpPort";
+    public static final String CONFIG_PORT_HTTPS = "httpsPort";
 
     /* THING CONFIGUTATION PARAMETERS */
     public String hostname = "";
     public String username = "";
     public String password = "";
-    public String url = "";
     public int pollingInterval = 20;
     public int reconnectInterval = 60;
     public int discoveryInterval = 3600;
+    public int httpPort = 80;
+    public int httpsPort = 443;
     public boolean autoDiscoveryEnabled = false;
-
-    private Thing router;
+    public boolean useSSL = false;
 }

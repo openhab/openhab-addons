@@ -35,9 +35,7 @@ public class AsuswrtRouterInfo {
     private String productId = "";
     private String fwVersion = "";
     private String fwBuild = "";
-    private AsuswrtIpInfo lanInfo = new AsuswrtIpInfo();
-    private AsuswrtIpInfo wanInfo = new AsuswrtIpInfo();
-    private AsuswrtClientList clientList = new AsuswrtClientList();
+    private String macAddress = "";
     private Map<String, AsuswrtUsage> usageStats = new HashMap<>();
 
     /**
@@ -69,8 +67,6 @@ public class AsuswrtRouterInfo {
      */
     public void setAllData(JsonObject jsonObject) {
         setSysInfo(jsonObject);
-        setNetworkData(jsonObject);
-        setClientData(jsonObject);
         setUsageStats(jsonObject);
     }
 
@@ -84,29 +80,10 @@ public class AsuswrtRouterInfo {
             this.productId = jsonObject.get(JSON_MEMBER_PRODUCTID).toString();
             this.fwVersion = jsonObject.get(JSON_MEMBER_FIRMWARE).toString();
             this.fwBuild = jsonObject.get(JSON_MEMBER_BUILD).toString();
-            this.lanInfo.setData(jsonObject, CHANNEL_GROUP_SYSINFO);
+            this.macAddress = jsonObject.get(JSON_MEMBER_MAC).toString();
         } catch (Exception e) {
             logger.trace("incomplete SysInfo");
         }
-    }
-
-    /**
-     * Set Network from jsonObject
-     * 
-     * @param jsonObject with network data
-     */
-    public void setNetworkData(JsonObject jsonObject) {
-        this.lanInfo.setData(jsonObject, CHANNEL_GROUP_LANINFO);
-        this.wanInfo.setData(jsonObject, CHANNEL_GROUP_WANINFO);
-    }
-
-    /**
-     * Set ClientList from jsonObject
-     * 
-     * @param jsonObject
-     */
-    public void setClientData(JsonObject jsonObject) {
-        this.clientList.setData(jsonObject);
     }
 
     /**
@@ -150,19 +127,7 @@ public class AsuswrtRouterInfo {
     }
 
     public String getMAC() {
-        return this.lanInfo.getMAC();
-    }
-
-    public AsuswrtIpInfo getLanInfo() {
-        return this.lanInfo;
-    }
-
-    public AsuswrtIpInfo getWanInfo() {
-        return this.wanInfo;
-    }
-
-    public AsuswrtClientList getClients() {
-        return this.clientList;
+        return this.macAddress;
     }
 
     public AsuswrtUsage getMemUsage() {

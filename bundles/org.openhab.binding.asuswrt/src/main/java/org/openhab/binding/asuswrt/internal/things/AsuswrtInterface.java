@@ -19,8 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.asuswrt.internal.helpers.AsuswrtUtils;
-import org.openhab.binding.asuswrt.internal.structures.AsuswrtClientInfo;
+import org.openhab.binding.asuswrt.internal.structures.AsuswrtIpInfo;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -38,9 +37,10 @@ import org.slf4j.LoggerFactory;
  * @author Christian Wild - Initial contribution
  */
 @NonNullByDefault
-public class AsuswrtClient extends BaseThingHandler {
-    private final Logger logger = LoggerFactory.getLogger(AsuswrtClient.class);
+public class AsuswrtInterface extends BaseThingHandler {
+    private final Logger logger = LoggerFactory.getLogger(AsuswrtInterface.class);
     private final AsuswrtRouter router;
+    private String ifName = "";
     private Map<String, Object> oldStates = new HashMap<>();
     protected final String uid;
 
@@ -50,7 +50,7 @@ public class AsuswrtClient extends BaseThingHandler {
      * @param thing Thing object representing client
      * @param router Router (Bridge) Thing
      */
-    public AsuswrtClient(Thing thing, AsuswrtRouter router) {
+    public AsuswrtInterface(Thing thing, AsuswrtRouter router) {
         super(thing);
         this.router = router;
         this.uid = getThing().getUID().getAsString();
@@ -68,9 +68,15 @@ public class AsuswrtClient extends BaseThingHandler {
     @Override
     public void initialize() {
         logger.trace("({}) Initializing thing ", uid);
-        router.queryDeviceData(false);
-        refreshData();
-        updateStatus(ThingStatus.ONLINE);
+        Configuration config = getThing().getConfiguration();
+        if (config.containsKey(PROPERTY_INTERFACE_NAME)) {
+            this.ifName = config.get(PROPERTY_INTERFACE_NAME).toString();
+            updateProperty(NETWORK_REPRASENTATION_PROPERTY, ifName);
+            updateChannels();
+            updateStatus(ThingStatus.ONLINE);
+        } else {
+            logger.debug("({}) configurtation error", uid);
+        }
     }
 
     /***********************************
@@ -84,62 +90,55 @@ public class AsuswrtClient extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            refreshData();
+            updateChannels();
+        }
+    }
+
+    public void updateChannels() {
+        try {
+            AsuswrtIpInfo interfaceInfo = router.getInterfaces().getByName(ifName);
+            fireEvents(interfaceInfo);
+            updateInterfaceData(interfaceInfo);
+        } catch (Exception e) {
+            logger.debug("({}) unable to refresh data - property interfaceName not found ", uid);
         }
     }
 
     /**
-     * update clientpropedrties
+     * Update Network Channels
      * 
-     * @param clientInfo
+     * @param deviceInfo
      */
-    public void updateClientProperties(AsuswrtClientInfo clientInfo) {
-        logger.trace("({}) clientPropertiesChanged ", uid);
-        Map<String, String> properties = editProperties();
-        properties.put(Thing.PROPERTY_MAC_ADDRESS, clientInfo.getMac());
-        properties.put(Thing.PROPERTY_VENDOR, clientInfo.getVendor());
-        properties.put(PROPERTY_CLIENT_NAME, clientInfo.getName());
-        updateProperties(properties);
-    }
-
-    /**
-     * Update Thing-Channels
-     * 
-     * @param clientInfo
-     */
-    public void updateChannels(AsuswrtClientInfo clientInfo) {
-        updateState(getChannelID(CHANNEL_GROUP_NETWORK, CHANNEL_NETWORK_STATE), getOnOffType(clientInfo.isOnline()));
-        updateState(getChannelID(CHANNEL_GROUP_NETWORK, CHANNEL_NETWORK_INTERNET),
-                getOnOffType(clientInfo.getInternetState()));
-        updateState(getChannelID(CHANNEL_GROUP_NETWORK, CHANNEL_NETWORK_IP), getStringType(clientInfo.getIP()));
+    private void updateInterfaceData(AsuswrtIpInfo interfaceInfo) {
+        updateState(getChannelID(CHANNEL_GROUP_NETWORK, CHANNEL_NETWORK_MAC), getStringType(interfaceInfo.getMAC()));
+        updateState(getChannelID(CHANNEL_GROUP_NETWORK, CHANNEL_NETWORK_IP),
+                getStringType(interfaceInfo.getIpAddress()));
+        updateState(getChannelID(CHANNEL_GROUP_NETWORK, CHANNEL_NETWORK_MASK),
+                getStringType(interfaceInfo.getSubnet()));
+        updateState(getChannelID(CHANNEL_GROUP_NETWORK, CHANNEL_NETWORK_GATEWAY),
+                getStringType(interfaceInfo.getGateway()));
         updateState(getChannelID(CHANNEL_GROUP_NETWORK, CHANNEL_NETWORK_METHOD),
-                getStringType(clientInfo.getIpMethod()));
+                getStringType(interfaceInfo.getIpProto()));
+        updateState(getChannelID(CHANNEL_GROUP_NETWORK, CHANNEL_NETWORK_DNS),
+                getStringType(interfaceInfo.getDNSNServer()));
+        updateState(getChannelID(CHANNEL_GROUP_NETWORK, CHANNEL_NETWORK_STATE),
+                getOnOffType(interfaceInfo.isConnected()));
     }
 
     /**
-     * fire events when new clientInformations changed
+     * fire events when new informations changed
      * 
      * @param clientInfo
      */
-    private void fireEvents(AsuswrtClientInfo clientInfo) {
-        if (checkForStateChange(CHANNEL_GROUP_NETWORK, clientInfo.isOnline())) {
-            if (clientInfo.isOnline()) {
+    public void fireEvents(AsuswrtIpInfo interfaceInfo) {
+        Boolean isConnected = interfaceInfo.isConnected();
+        if (checkForStateChange(CHANNEL_NETWORK_STATE, isConnected)) {
+            if (isConnected) {
                 triggerChannel(getChannelID(CHANNEL_GROUP_NETWORK, EVENT_CONNECTION), EVENT_STATE_CONNECTED);
             } else {
-                triggerChannel(getChannelID(CHANNEL_GROUP_NETWORK, EVENT_CONNECTION), EVENT_STATE_GONE);
+                triggerChannel(getChannelID(CHANNEL_GROUP_NETWORK, EVENT_CONNECTION), EVENT_STATE_DISCONNECTED);
             }
         }
-    }
-
-    /**
-     * refresh data
-     */
-    private void refreshData() {
-        String mac = getMac();
-        AsuswrtClientInfo clientInfo = router.getClients().getClientByMAC(mac);
-        fireEvents(clientInfo);
-        updateClientProperties(clientInfo);
-        updateChannels(clientInfo);
     }
 
     /***********************************
@@ -147,32 +146,6 @@ public class AsuswrtClient extends BaseThingHandler {
      * FUNCTIONS
      *
      ************************************/
-
-    /**
-     * Get MAC-Address of Client from properties or settings
-     * 
-     * @return
-     */
-    public String getMac() {
-        String mac = "";
-        Map<String, String> properties = getThing().getProperties();
-        Configuration config = getThing().getConfiguration();
-
-        /* get mac from properties */
-        if (properties.containsKey(Thing.PROPERTY_MAC_ADDRESS)) {
-            mac = config.get(Thing.PROPERTY_MAC_ADDRESS).toString();
-        }
-
-        /* get mac from config */
-        if (mac.isBlank() && config.containsKey(Thing.PROPERTY_MAC_ADDRESS)) {
-            mac = config.get(Thing.PROPERTY_MAC_ADDRESS).toString();
-        }
-
-        if (mac.isBlank()) {
-            logger.debug("({}) cant find macAddress in properties and config", uid);
-        }
-        return AsuswrtUtils.formatMac(mac, ':');
-    }
 
     /**
      * Get ChannelID including group
@@ -197,7 +170,7 @@ public class AsuswrtClient extends BaseThingHandler {
      */
     protected String getChannelFromID(ChannelUID channelID) {
         String channel = channelID.getIdWithoutGroup();
-        channel = channel.replace(CHANNEL_GROUP_CLIENT + "#", "");
+        channel = channel.replace(CHANNEL_GROUP_NETWORK + "#", "");
         return channel;
     }
 

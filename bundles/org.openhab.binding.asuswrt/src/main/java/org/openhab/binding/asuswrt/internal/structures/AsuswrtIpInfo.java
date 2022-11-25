@@ -13,6 +13,7 @@
 package org.openhab.binding.asuswrt.internal.structures;
 
 import static org.openhab.binding.asuswrt.internal.constants.AsuswrtBindingConstants.*;
+import static org.openhab.binding.asuswrt.internal.constants.AsuswrtBindingSettings.*;
 import static org.openhab.binding.asuswrt.internal.helpers.AsuswrtUtils.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -26,12 +27,12 @@ import com.google.gson.JsonObject;
  */
 @NonNullByDefault
 public class AsuswrtIpInfo {
+    private String ifName = "";
     private String hwAddress = "";
     private String ipAddress = "";
     private String ipProto = "";
     private String subnet = "";
     private String gateway = "";
-    private String name = "";
     private String dnsServer = "";
     private Boolean connected = false;
 
@@ -45,10 +46,12 @@ public class AsuswrtIpInfo {
      * 
      * INIT CLASS
      * 
+     * @param interfaceName name of interface
      * @param jsonObject with ipInfo
      */
-    public AsuswrtIpInfo(JsonObject jsonObject) {
-        setData(jsonObject, CHANNEL_GROUP_SYSINFO);
+    public AsuswrtIpInfo(String ifName, JsonObject jsonObject) {
+        this.ifName = ifName;
+        setData(jsonObject);
     }
 
     /***********************************
@@ -63,23 +66,23 @@ public class AsuswrtIpInfo {
      * @param jsonObject jsonObject data is stored
      * @param channelGroup channelGroup data belongs to
      */
-    public void setData(JsonObject jsonObject, String channelGroup) {
-        this.hwAddress = jsonObjectToString(jsonObject, JSON_MEMBER_MAC, this.hwAddress);
-        switch (channelGroup) {
-            case CHANNEL_GROUP_LANINFO:
-                this.ipAddress = jsonObjectToString(jsonObject, JSON_MEMBER_LAN_IP, this.ipAddress);
-                this.subnet = jsonObjectToString(jsonObject, JSON_MEMBER_LAN_NETMASK, this.subnet);
-                this.gateway = jsonObjectToString(jsonObject, JSON_MEMBER_LAN_GATEWAY, this.gateway);
-                this.ipProto = jsonObjectToString(jsonObject, JSON_MEMBER_LAN_PROTO, this.ipProto);
-                break;
-            case CHANNEL_GROUP_WANINFO:
-                this.ipAddress = jsonObjectToString(jsonObject, JSON_MEMBER_WAN_IP, this.ipAddress);
-                this.subnet = jsonObjectToString(jsonObject, JSON_MEMBER_WAN_NETMASK, this.subnet);
-                this.gateway = jsonObjectToString(jsonObject, JSON_MEMBER_WAN_GATEWAY, this.gateway);
-                this.ipProto = jsonObjectToString(jsonObject, JSON_MEMBER_WAN_PROTO, this.ipProto);
-                this.dnsServer = jsonObjectToString(jsonObject, JSON_MEMBER_WAN_DNS_SERVER, this.dnsServer);
-                this.connected = (jsonObjectToInt(jsonObject, JSON_MEMBER_WAN_CONNECTED).equals(1));
-                break;
+    public void setData(JsonObject jsonObject) {
+        if (ifName.startsWith(INTERFACE_LAN)) {
+            this.hwAddress = jsonObjectToString(jsonObject, JSON_MEMBER_MAC, this.hwAddress);
+            this.ipAddress = jsonObjectToString(jsonObject, JSON_MEMBER_LAN_IP, this.ipAddress);
+            this.subnet = jsonObjectToString(jsonObject, JSON_MEMBER_LAN_NETMASK, this.subnet);
+            this.gateway = jsonObjectToString(jsonObject, JSON_MEMBER_LAN_GATEWAY, this.gateway);
+            this.ipProto = jsonObjectToString(jsonObject, JSON_MEMBER_LAN_PROTO, this.ipProto);
+        } else if (ifName.startsWith(INTERFACE_WAN)) {
+            this.hwAddress = jsonObjectToString(jsonObject, JSON_MEMBER_MAC, this.hwAddress);
+            this.ipAddress = jsonObjectToString(jsonObject, JSON_MEMBER_WAN_IP, this.ipAddress);
+            this.subnet = jsonObjectToString(jsonObject, JSON_MEMBER_WAN_NETMASK, this.subnet);
+            this.gateway = jsonObjectToString(jsonObject, JSON_MEMBER_WAN_GATEWAY, this.gateway);
+            this.ipProto = jsonObjectToString(jsonObject, JSON_MEMBER_WAN_PROTO, this.ipProto);
+            this.dnsServer = jsonObjectToString(jsonObject, JSON_MEMBER_WAN_DNS_SERVER, this.dnsServer);
+            this.connected = (jsonObjectToInt(jsonObject, JSON_MEMBER_WAN_CONNECTED).equals(1));
+        } else if (ifName.startsWith(INTERFACE_WLAN)) {
+            // ToDo
         }
     }
 
@@ -114,7 +117,7 @@ public class AsuswrtIpInfo {
     }
 
     public String getName() {
-        return this.name;
+        return this.ifName;
     }
 
     public Boolean isConnected() {

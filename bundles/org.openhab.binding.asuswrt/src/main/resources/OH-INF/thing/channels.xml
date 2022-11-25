@@ -95,6 +95,12 @@
 		<description>List with mac-addresses of online clients</description>
 		<state readOnly="true"></state>
 	</channel-type>
+	<channel-type id="clientsOnlineCountType">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Online Clients Count</label>
+		<description>number online clients</description>
+		<state pattern="%.0f" readOnly="true"></state>
+	</channel-type>
 	<channel-type id="clientNickName">
 		<item-type>String</item-type>
 		<label>Nickname</label>

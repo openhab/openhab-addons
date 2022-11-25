@@ -45,13 +45,10 @@ import com.google.gson.JsonObject;
 @NonNullByDefault
 public class AsuswrtHttpClient {
     private final Logger logger = LoggerFactory.getLogger(AsuswrtHttpClient.class);
-
     private Gson gson = new Gson();
-    protected String cookie = "";
-    protected String token = "";
-    protected Long cookieTimeStamp = 0L;
     protected AsuswrtRouter router;
     protected final String uid;
+    public AsuswrtCookie cookieStore = new AsuswrtCookie();
 
     /**
      * INIT CLASS
@@ -94,7 +91,7 @@ public class AsuswrtHttpClient {
      */
     @Nullable
     protected ContentResponse getSyncRequest(String url, String payload) {
-        logger.trace("({}) sendRequest '{}' to '{}' with cookie '{}'", uid, payload, url, this.cookie);
+        logger.trace("({}) sendRequest '{}' to '{}' with cookie '{}'", uid, payload, url, cookieStore.getCookie());
         Request httpRequest = this.router.getHttpClient().newRequest(url).method(HttpMethod.POST.toString());
 
         /* set header */
@@ -121,7 +118,7 @@ public class AsuswrtHttpClient {
      * @param command command executed - this will handle RepsonseType
      */
     protected void sendAsyncRequest(String url, String payload, String command) {
-        logger.trace("({}) sendAsncRequest to '{}' with cookie '{}'", uid, url, this.cookie);
+        logger.trace("({}) sendAsncRequest to '{}' with cookie '{}'", uid, url, cookieStore.getCookie());
         try {
             Request httpRequest = router.getHttpClient().newRequest(url).method(HttpMethod.POST.toString());
 
@@ -163,8 +160,8 @@ public class AsuswrtHttpClient {
         /* set header */
         httpRequest.header("content-type", HTTP_CONTENT_TYPE);
         httpRequest.header("user-agent", HTTP_USER_AGENT);
-        if (!this.cookie.isBlank()) {
-            httpRequest.header("cookie", this.cookie);
+        if (cookieStore.isValid()) {
+            httpRequest.header("cookie", cookieStore.getCookie());
         }
         return httpRequest;
     }
@@ -186,13 +183,10 @@ public class AsuswrtHttpClient {
 
         if (e instanceof TimeoutException) {
             logger.debug("({}) sendAsyncRequest timeout'{}'", uid, errorMessage);
-            router.errorHandler.raiseError(ERR_CONN_TIMEOUT, errorMessage);
         } else if (e instanceof InterruptedException) {
             logger.debug("({}) sending request interrupted: {}", uid, e.toString());
-            router.errorHandler.raiseError(new Exception(e), payload);
         } else {
             logger.debug("({}) sendAsyncRequest failed'{}'", uid, errorMessage);
-            router.errorHandler.raiseError(new Exception(e), errorMessage);
         }
     }
 
@@ -216,7 +210,7 @@ public class AsuswrtHttpClient {
      * @param response
      */
     protected void setCookieFromResponse(ContentResponse response) {
-        resetToken();
+        cookieStore.resetCookie();
         if (response.getStatus() == 200) {
             String rBody = response.getContentAsString();
             logger.trace("({}) received response '{}'", uid, rBody);
@@ -224,9 +218,8 @@ public class AsuswrtHttpClient {
                 /* get json object 'asus_token' */
                 JsonObject jsonObject = gson.fromJson(rBody, JsonObject.class);
                 if (jsonObject != null && jsonObject.has(JSON_MEMBER_TOKEN)) {
-                    this.token = jsonObject.get(JSON_MEMBER_TOKEN).getAsString();
-                    this.cookie = "asus_token=" + token;
-                    this.cookieTimeStamp = System.currentTimeMillis();
+                    String token = jsonObject.get(JSON_MEMBER_TOKEN).getAsString();
+                    this.cookieStore.setCookie("asus_token=" + token);
                 }
             } catch (Exception e) {
                 logger.debug("({}) {} on login request '{}'", uid, ERR_RESPONSE, e.getMessage());
@@ -236,14 +229,6 @@ public class AsuswrtHttpClient {
             String reason = AsuswrtUtils.getValueOrDefault(response.getReason(), "");
             router.errorHandler.raiseError(ERR_RESPONSE, reason);
         }
-    }
-
-    /**
-     * reset Token (Logout)
-     */
-    protected void resetToken() {
-        this.token = "";
-        this.cookie = "";
     }
 
     /**

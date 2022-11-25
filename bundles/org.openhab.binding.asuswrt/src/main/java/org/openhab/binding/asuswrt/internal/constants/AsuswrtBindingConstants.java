@@ -34,8 +34,10 @@ public class AsuswrtBindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_ROUTER = new ThingTypeUID(BINDING_ID, "router");
     public static final ThingTypeUID THING_TYPE_CLIENT = new ThingTypeUID(BINDING_ID, "client");
+    public static final ThingTypeUID THING_TYPE_INTERFACE = new ThingTypeUID(BINDING_ID, "interface");
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_ROUTER, THING_TYPE_CLIENT);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_ROUTER, THING_TYPE_CLIENT,
+            THING_TYPE_INTERFACE);
 
     /*** THINGS WITH CHANNEL GROUPS ***/
     public static final Set<ThingTypeUID> CHANNEL_GROUP_THING_SET = Collections
@@ -46,18 +48,13 @@ public class AsuswrtBindingConstants {
      * item channel names
      ***/
 
-    // general channels
-    public static final String CHANNEL_IP_ADDRESS = "ipAddress";
-    public static final String CHANNEL_MAC_ADDRESS = "macAddress";
-    public static final String CHANNEL_SUBNET = "subnet";
-    public static final String CHANNEL_GATEWAY = "gateway";
-    public static final String CHANNEL_IP_METHOD = "ipMethod";
-    public static final String EVENT_CONNECTION = "connectionEvent";
-
     // general event constats
     public static final String EVENT_STATE_CONNECTED = "connected";
     public static final String EVENT_STATE_GONE = "gone";
     public static final String EVENT_STATE_DISCONNECTED = "disconnected";
+
+    // global channels
+    public static final String CHANNELS_ALL = "anyChannel";
 
     // channel group system info
     public static final String CHANNEL_GROUP_SYSINFO = "sysInfo";
@@ -68,29 +65,39 @@ public class AsuswrtBindingConstants {
     public static final String CHANNEL_MEM_USED_PERCENT = "memUsedPercent";
     public static final String CHANNEL_CPU_USED_PERCENT = "cpuUsedPercent";
 
-    // channel group lan information
-    public static final String CHANNEL_GROUP_LANINFO = "lanInfo";
-
-    // channel group wan information
-    public static final String CHANNEL_GROUP_WANINFO = "wanInfo";
-    public static final String CHANNEL_WAN_DNS_SERVER = "wanDNS";
-    public static final String CHANNEL_WAN_STATUS = "wanStatus";
+    // channel group interface information
+    public static final String CHANNEL_GROUP_NETWORK = "networkInfo";
+    public static final String CHANNEL_NETWORK_IP = "ipAddress";
+    public static final String CHANNEL_NETWORK_MAC = "macAddress";
+    public static final String CHANNEL_NETWORK_MASK = "subnet";
+    public static final String CHANNEL_NETWORK_GATEWAY = "gateway";
+    public static final String CHANNEL_NETWORK_METHOD = "ipMethod";
+    public static final String CHANNEL_NETWORK_DNS = "dnsServers";
+    public static final String CHANNEL_NETWORK_STATE = "networkState";
+    public static final String CHANNEL_NETWORK_INTERNET = "internetState";
+    public static final String EVENT_CONNECTION = "connectionEvent";
 
     // channel group clientList information
     public static final String CHANNEL_GROUP_CLIENTS = "clientList";
     public static final String CHANNEL_CLIENTS_KNOWN = "knownClients";
     public static final String CHANNEL_CLIENTS_ONLINE = "onlineClients";
+    public static final String CHANNEL_CLIENTS_COUNT = "onlineClientsCount";
     public static final String CHANNEL_CLIENTS_ONLINE_MAC = "onlineMACs";
 
     // channel group client information
-    public static final String CLIENT_REPRASENTATION_PROPERTY = "macAddress";
-    public static final String PROPERTY_CLIENT_MAC = "macAddress";
-    public static final String PROPERTY_CLIENT_NAME = "clientName";
     public static final String CHANNEL_GROUP_CLIENT = "client";
-    public static final String CHANNEL_CLIENT_NICKNAME = "clientNick";
-    public static final String CHANNEL_CLIENT_ONLINE = "isOnline";
-    public static final String CHANNEL_CLIENT_INETSTATE = "internetState";
-    public static final String EVENT_CLIENT_ONLINE = "onlineEvent";
+    public static final String CHANNEL_CLIENT_NICKNAME = "clientName";
+
+    /**
+     * PROPERTIES
+     */
+
+    // interface
+    public static final String PROPERTY_INTERFACE_NAME = "interfaceName";
+    public static final String NETWORK_REPRASENTATION_PROPERTY = "interfaceName";
+    // client
+    public static final String PROPERTY_CLIENT_NAME = "dnsName";
+    public static final String CLIENT_REPRASENTATION_PROPERTY = "macAddress";
 
     /***
      * JSON REQUEST MEMBERNAMES

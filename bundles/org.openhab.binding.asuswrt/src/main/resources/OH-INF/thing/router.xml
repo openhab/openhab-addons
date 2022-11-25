@@ -10,8 +10,6 @@
 		<description>Router with asuswrt or asuswrt-merlin OS</description>
 		<channel-groups>
 			<channel-group id="sysInfo" typeId="sysInfoGroup"></channel-group>
-			<channel-group id="lanInfo" typeId="lanInfoGroup"></channel-group>
-			<channel-group id="wanInfo" typeId="wanInfoGroup"></channel-group>
 			<channel-group id="clientList" typeId="clientListGroup"></channel-group>
 		</channel-groups>
 
@@ -30,6 +28,23 @@
 				<context>password</context>
 				<label>Password</label>
 				<description>Password to access the device</description>
+			</parameter>
+			<parameter name="useSSL" type="boolean">
+				<label>Use SSL</label>
+				<description>Use SSL to authenticate. If not use http</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="httpPort" type="integer">
+				<label>HTTP-Port</label>
+				<description>Port used for HTTP-connection</description>
+				<default>80</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="httpsPort" type="integer">
+				<label>HTTPS-Port</label>
+				<description>Port used for HTTPS-connection</description>
+				<default>443</default>
+				<advanced>true</advanced>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" unit="s" min="1">
 				<label>Refresh Interval</label>
@@ -73,34 +88,6 @@
 		</channels>
 	</channel-group-type>
 
-	<!-- LAN Information -->
-	<channel-group-type id="lanInfoGroup">
-		<label>LAN-Status</label>
-		<description>LAN connection state</description>
-		<channels>
-			<channel id="macAddress" typeId="macAddressType"></channel>
-			<channel id="ipAddress" typeId="ipAddressType"></channel>
-			<channel id="ipMethod" typeId="ipProtoType"></channel>
-			<channel id="subnet" typeId="ipNetmaskType"></channel>
-			<channel id="gateway" typeId="ipGatewayType"></channel>
-		</channels>
-	</channel-group-type>
-
-	<!-- WAN Information -->
-	<channel-group-type id="wanInfoGroup">
-		<label>WAN-Status</label>
-		<description>WAN connection state</description>
-		<channels>
-			<channel id="wanDNS" typeId="dnsServerType"></channel>
-			<channel id="ipAddress" typeId="ipAddressType"></channel>
-			<channel id="ipMethod" typeId="ipProtoType"></channel>
-			<channel id="subnet" typeId="ipNetmaskType"></channel>
-			<channel id="gateway" typeId="ipGatewayType"></channel>
-			<channel id="wanStatus" typeId="ipConnectionState"></channel>
-			<channel id="connectionEvent" typeId="connectionEventType"></channel>
-		</channels>
-	</channel-group-type>
-
 	<!--CLIENTS -->
 	<channel-group-type id="clientListGroup">
 		<label>Clients</label>
@@ -114,6 +101,7 @@
 				<description>Online Clients with Name and MAC-Addresses</description>
 			</channel>
 			<channel id="onlineMACs" typeId="clientsOnlineMacType"></channel>
+			<channel id="onlineClientsCount" typeId="clientsOnlineCountType"></channel>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

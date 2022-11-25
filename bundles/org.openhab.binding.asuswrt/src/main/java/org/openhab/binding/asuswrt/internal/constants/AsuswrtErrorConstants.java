@@ -26,10 +26,13 @@ public class AsuswrtErrorConstants {
     /****************************************
      * LIST OF ERROR MESSAGES
      ****************************************/
+    public static final String ERR_HTTP_CLIENT_FAILED = "Starting 'httpClient' failed";
     public static final String ERR_CONN_TIMEOUT = "Connection Timeout";
     public static final String ERR_RESPONSE = "Response not okay";
     public static final String ERR_JSON_FOMRAT = "Unexpected or malfomrated JSON-response";
     public static final String ERR_JSON_UNKNOWN_MEMBER = "JSON member not found";
+    public static final String ERR_SSL_EXCEPTION = "SSL Exception";
     public static final String ERR_INVALID_MAC_ADDRESS = "Invalid MAC-Address";
     public static final String ERR_BRIDGE_OFFLINE = "Bridge is offline";
+    public static final String ERR_BRIDGE_NOT_DECLARED = "Bridge not found or not declared";
 }
