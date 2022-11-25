@@ -2005,6 +2005,7 @@
 			<channel id="carAlarm" typeId="carAlarm"/>
 			<channel id="humanAlarm" typeId="humanAlarm"/>
 			<channel id="animalAlarm" typeId="animalAlarm"/>
+			<channel id="lastEventData" typeId="lastEventData"/>
 			<channel id="enableMotionAlarm" typeId="enableMotionAlarm"/>
 			<channel id="motionAlarm" typeId="motionAlarm"/>
 			<channel id="externalMotion" typeId="externalMotion"/>

@@ -185,9 +185,9 @@ public class InstarHandler extends ChannelDuplexHandler {
     }
 
     public void alarmTriggered(String alarm) {
-        ipCameraHandler.logger.debug("Alarm has been triggered:{}", alarm);
         // older cameras placed the & for the first query, whilst newer cameras do not.
         // examples are /instar?&active=6 vs /instar?active=6&object=0
+        ipCameraHandler.setChannelState(CHANNEL_LAST_EVENT_DATA, new StringType(alarm));
         String alarmCode = alarm.replaceAll(".+active=", "");
         alarmCode = alarmCode.replaceAll("&.+", "");
         String objectCode = alarm.replaceAll(".+object=", "");
@@ -213,19 +213,22 @@ public class InstarHandler extends ChannelDuplexHandler {
             default:
                 ipCameraHandler.logger.debug("Unknown alarm code:{}", alarmCode);
         }
-        switch (objectCode) {
-            case "0":
-                break;
-            case "1":// person/human
-                ipCameraHandler.motionDetected(CHANNEL_HUMAN_ALARM);
-                break;
-            case "2":// car/Vehicles
-                ipCameraHandler.motionDetected(CHANNEL_CAR_ALARM);
-                break;
-            case "3":// Animals
-            case "4":
-                ipCameraHandler.motionDetected(CHANNEL_ANIMAL_ALARM);
-                break;
+        if (!objectCode.isEmpty()) {
+            switch (objectCode) {
+                case "0":// no object
+                    break;
+                case "1":// person/human
+                    ipCameraHandler.motionDetected(CHANNEL_HUMAN_ALARM);
+                    break;
+                case "2":// car/vehicles
+                    ipCameraHandler.motionDetected(CHANNEL_CAR_ALARM);
+                    break;
+                case "3":// animals
+                case "4":
+                case "5":
+                    ipCameraHandler.motionDetected(CHANNEL_ANIMAL_ALARM);
+                    break;
+            }
         }
     }
 
