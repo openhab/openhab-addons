@@ -26,8 +26,8 @@
 							"label": "Custom Service Toggle Mode"
 						},
 						{
-							"value": "custom-service-toggle-fan-leve",
-							"label": "Custom Service Toggle Fan Leve"
+							"value": "custom-service-toggle-fan-level",
+							"label": "Custom Service Toggle Fan Level"
 						}
 					]
 				},
@@ -87,13 +87,13 @@
 							"name": "matchValue",
 							"parameters": [
 								{
-									"matchValue": "custom-service-toggle-fan-leve"
+									"matchValue": "custom-service-toggle-fan-level"
 								}
 							]
 						}
 					}
 				],
-				"readmeComment": "Value mapping `[\"air-purifier-toggle\"\u003d\"Air Purifier Toggle\",\"filter-reset-filter-life\"\u003d\"Filter Reset Filter Life\",\"custom-service-toggle-mode\"\u003d\"Custom Service Toggle Mode\",\"custom-service-toggle-fan-leve\"\u003d\"Custom Service Toggle Fan Leve\"]`"
+				"readmeComment": "Value mapping `[\"air-purifier-toggle\"\u003d\"Air Purifier Toggle\",\"filter-reset-filter-life\"\u003d\"Filter Reset Filter Life\",\"custom-service-toggle-mode\"\u003d\"Custom Service Toggle Mode\",\"custom-service-toggle-fan-level\"\u003d\"Custom Service Toggle Fan Level\"]`"
 			},
 			{
 				"property": "on",
@@ -431,11 +431,11 @@
 				"readmeComment": "Value mapping `[\"1\"\u003d\"Celsius\",\"2\"\u003d\"Fahrenheit\"]`"
 			},
 			{
-				"property": "moto-speed-rpm",
+				"property": "motor-speed-rpm",
 				"siid": 9,
 				"piid": 1,
-				"friendlyName": "Custom Service - Moto Speed Rpm",
-				"channel": "moto_speed_rpm",
+				"friendlyName": "Custom Service - Motor Speed Rpm",
+				"channel": "motor_speed_rpm",
 				"type": "Number",
 				"stateDescription": {
 					"minimum": 0,
@@ -507,11 +507,11 @@
 				]
 			},
 			{
-				"property": "buttom-door",
+				"property": "bottom-door",
 				"siid": 9,
 				"piid": 6,
 				"friendlyName": "Custom Service - Buttom Door",
-				"channel": "buttom_door",
+				"channel": "bottom_door",
 				"type": "Switch",
 				"stateDescription": {
 					"readOnly": true
