@@ -68,7 +68,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class MonopriceAudioHandler extends BaseThingHandler implements MonopriceAudioMessageEventListener {
     private static final long RECON_POLLING_INTERVAL_SEC = 60;
-    private static final long INITIAL_POLLING_DELAY_SEC = 5;
+    private static final long INITIAL_POLLING_DELAY_SEC = 10;
 
     private static final String ZONE = "zone";
     private static final String ALL = "all";
@@ -95,6 +95,7 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
     private int numZones = ZERO;
     private int allVolume = ONE;
     private int initialAllVolume = ZERO;
+    private boolean disableKeypadPolling = false;
     private Object sequenceLock = new Object();
 
     public MonopriceAudioHandler(Thing thing, MonopriceAudioStateDescriptionOptionProvider stateDescriptionProvider,
@@ -114,6 +115,7 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
         numZones = config.numZones;
         final String ignoreZonesConfig = config.ignoreZones;
         amp = AmplifierModel.valueOf(thing.getThingTypeUID().getId().toUpperCase());
+        disableKeypadPolling = config.disableKeypadPolling || amp == AmplifierModel.MONOPRICE70;
 
         // build a Map with a MonopriceAudioZoneDTO for each zoneId
         zoneDataMap = amp.getZoneIds().stream().limit(numZones)
@@ -352,7 +354,7 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                                                 updateChannelState(zoneDataMap.get(streamZoneId), CHANNEL_TYPE_SOURCE);
                                             }
                                         } catch (MonopriceAudioException e) {
-                                            logger.warn("Error Setting Source for  All Zones: {}", e.getMessage());
+                                            logger.warn("Error Setting Source for All Zones: {}", e.getMessage());
                                         }
                                     }
                                 });
@@ -451,28 +453,30 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
         }
 
         switch (key) {
+            case MonopriceAudioConnector.KEY_ZONE_UPDATE:
+                MonopriceAudioZoneDTO newZoneData = amp.getZoneData(evt.getValue());
+                MonopriceAudioZoneDTO zoneData = zoneDataMap.get(newZoneData.getZone());
+                if (amp.getZoneIds().contains(newZoneData.getZone()) && zoneData != null) {
+                    if (amp == AmplifierModel.MONOPRICE70) {
+                        processMonoprice70Update(newZoneData);
+                    } else {
+                        processZoneUpdate(zoneData, newZoneData);
+                    }
+                } else {
+                    logger.debug("invalid event: {} for key: {} or zone data null", evt.getValue(), key);
+                }
+                break;
+
+            case MonopriceAudioConnector.KEY_PING:
+                lastPollingUpdate = System.currentTimeMillis();
+                break;
+
             case MonopriceAudioConnector.KEY_ERROR:
                 logger.debug("Reading feedback message failed");
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Reading thread ended");
                 closeConnection();
                 break;
 
-            case MonopriceAudioConnector.KEY_ZONE_UPDATE:
-                MonopriceAudioZoneDTO newZoneData = amp.getZoneData(evt.getValue());
-                MonopriceAudioZoneDTO zoneData = zoneDataMap.get(newZoneData.getZone());
-                if (amp.getZoneIds().contains(newZoneData.getZone()) && zoneData != null) {
-                    if (amp != AmplifierModel.MONOPRICE70) {
-                        processZoneUpdate(zoneData, newZoneData);
-                    } else {
-                        if (!evt.isInitialPollComplete()) {
-                            processMonoprice70Update(newZoneData);
-                        }
-                        lastPollingUpdate = System.currentTimeMillis();
-                    }
-                } else {
-                    logger.debug("invalid event: {} for key: {} or zone data null", evt.getValue(), key);
-                }
-                break;
             default:
                 logger.debug("onNewMessageEvent: unhandled key {}", key);
                 break;
@@ -485,7 +489,6 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
     private void scheduleReconnectJob() {
         logger.debug("Schedule reconnect job");
         cancelReconnectJob();
-        connector.setInitialPollComplete(false);
         reconnectJob = scheduler.scheduleWithFixedDelay(() -> {
             synchronized (sequenceLock) {
                 if (!connector.isConnected()) {
@@ -494,32 +497,39 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                     String error = null;
 
                     if (openConnection()) {
-                        try {
-                            long prevUpdateTime = lastPollingUpdate;
+                        long prevUpdateTime = lastPollingUpdate;
+                        // poll all zones on the amplifier to get current state
+                        amp.getZoneIds().stream().limit(numZones).forEach((streamZoneId) -> {
+                            try {
+                                connector.queryZone(streamZoneId);
 
-                            if (amp == AmplifierModel.XANTECH) {
+                                if (amp == AmplifierModel.MONOPRICE70) {
+                                    connector.queryTrebBassBalance(streamZoneId);
+                                }
+                            } catch (MonopriceAudioException e) {
+                                logger.debug("Polling error: {}", e.getMessage());
+                            }
+                        });
+
+                        if (amp == AmplifierModel.XANTECH) {
+                            try {
                                 // for xantech send the commands to enable unsolicited updates
                                 connector.sendCommand(EMPTY, "ZA1", null);
                                 connector.sendCommand(EMPTY, "ZP10", null); // Zone Periodic Auto Update set to 10 secs
-                            } else {
-                                // all other amps, just query zone 1 to see if the amp responds
-                                connector.queryZone(amp.getZoneIds().get(0));
+                            } catch (MonopriceAudioException e) {
+                                logger.debug("Error sending Xantech periodic update commands: {}", e.getMessage());
                             }
+                        }
 
-                            // prevUpdateTime should have changed if a zone update was received
-                            if (lastPollingUpdate == prevUpdateTime) {
-                                error = "Amplifier not responding to status requests";
-                            }
-
-                        } catch (MonopriceAudioException e) {
-                            error = "First command after connection failed";
-                            logger.warn("{}: {}", error, e.getMessage());
-                            closeConnection();
+                        // prevUpdateTime should have changed if a zone update was received
+                        if (lastPollingUpdate == prevUpdateTime) {
+                            error = "Amplifier not responding to status requests";
                         }
                     } else {
                         error = "Reconnection failed";
                     }
                     if (error != null) {
+                        closeConnection();
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, error);
                     } else {
                         updateStatus(ThingStatus.ONLINE);
@@ -553,34 +563,28 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                 if (connector.isConnected()) {
                     logger.debug("Polling the amplifier for updated status...");
 
-                    // 31028 does not have keypads so we only need to poll all the zones once
-                    if (doFullPoll()) {
+                    if (!disableKeypadPolling) {
                         // poll each zone up to the number of zones specified in the configuration
                         amp.getZoneIds().stream().limit(numZones).forEach((streamZoneId) -> {
                             try {
                                 connector.queryZone(streamZoneId);
-
-                                if (amp == AmplifierModel.MONOPRICE70) {
-                                    connector.queryTrebBassBalance(streamZoneId);
-                                }
                             } catch (MonopriceAudioException e) {
-                                logger.warn("Polling error: {}", e.getMessage());
+                                logger.debug("Polling error: {}", e.getMessage());
                             }
                         });
                     } else {
                         try {
-                            // poll zone 1 only to see if the connection is alive
-                            connector.queryZone(amp.getZoneIds().get(0));
+                            // ping only (no zone updates) to verify the connection is still alive
+                            connector.sendPing();
                         } catch (MonopriceAudioException e) {
-                            logger.warn("Polling error: {}", e.getMessage());
+                            logger.debug("Ping error: {}", e.getMessage());
                         }
                     }
-                    connector.setInitialPollComplete(true);
 
                     // if the last successful polling update was more than 2.25 intervals ago, the amplifier
                     // is either switched off or not responding even though the connection is still good
                     if ((System.currentTimeMillis() - lastPollingUpdate) > (pollingInterval * 2.25 * 1000)) {
-                        logger.warn("Amplifier not responding to status requests");
+                        logger.debug("Amplifier not responding to status requests");
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                                 "Amplifier not responding to status requests");
                         closeConnection();
@@ -589,15 +593,6 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                 }
             }
         }, INITIAL_POLLING_DELAY_SEC, pollingInterval, TimeUnit.SECONDS);
-    }
-
-    private boolean doFullPoll() {
-        if (amp == AmplifierModel.MONOPRICE70 && connector.isInitialPollComplete()) {
-            return false;
-        }
-
-        // TODO: Some Xantech amps might not need full polling since they support unsolicited updates
-        return true;
     }
 
     /**
@@ -735,5 +730,6 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
             updateChannelState(newZoneData, CHANNEL_TYPE_VOLUME);
             updateChannelState(newZoneData, CHANNEL_TYPE_SOURCE);
         }
+        lastPollingUpdate = System.currentTimeMillis();
     }
 }

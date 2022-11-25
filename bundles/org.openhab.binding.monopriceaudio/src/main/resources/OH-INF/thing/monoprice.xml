@@ -160,6 +160,11 @@
 				<description>Friendly Name for the Input Source to Be Displayed in the UI (ie: Chromecast, Radio, CD, etc.)</description>
 				<default>Source 6</default>
 			</parameter>
+			<parameter name="disableKeypadPolling" type="boolean" required="false">
+				<label>Disable Keypad Polling</label>
+				<description>If physical keypads are not used, this option will disable polling the amplifier for zone updates</description>
+				<default>false</default>
+			</parameter>
 		</config-description>
 	</thing-type>
 

@@ -25,11 +25,12 @@ Note: Compatible clones (including 4 zone versions) from McLELLAND, Factor, Soun
 
 ***The following three thing types were implemented via available documentation only and have not been tested. Please open an issue for any bugs found when using these thing types.***  
 
-Monoprice 31028 or OSD Audio PAM1270 70 Volt Amplifiers use the `monoprice70` id. 6 zones per amp (not linkable) and 2 source inputs are supported.  
+Monoprice 31028 or OSD Audio PAM1270 70 Volt Amplifiers use the `monoprice70` thing id. 6 zones per amp (not linkable) and 2 source inputs are supported.  
 
-Dayton Audio DAX88 Amplifiers use the `dax88` id. 8 zones (2 un-amplified) per amp (not linkable) and 8 source inputs are supported.  
+Dayton Audio DAX88 Amplifiers use the `dax88` thing id. 8 zones (2 un-amplified) per amp (not linkable) and 8 source inputs are supported.  
 
-Xantech MRC88, MX88, MRAUDIO8X8 or CM8X8 Amplifiers use the `xantech` id. Up to 16 zones with 2 linked amps and 8 source inputs are supported.
+Xantech MRC88, MX88, MRAUDIO8X8 or CM8X8 Amplifiers use the `xantech` thing id. Up to 16 zones with 2 linked amps and 8 source inputs are supported.
+Some Xantech amps provide unsolicited zone updates for keypad actions and may work with the `disableKeypadPolling` option set to true which will prevent un-necessary polling of the amplifier. 
 Note: MRC44 amps do not support serial control.  
 
 ## Discovery
@@ -46,23 +47,24 @@ All settings are through thing configuration parameters.
 
 The thing has the following configuration parameters (number of sources and zones is amplifier dependent):
 
-| Parameter Label      | Parameter ID     | Description                                                                                                                    | Accepted values  |
-|----------------------|------------------|--------------------------------------------------------------------------------------------------------------------------------|------------------|
-| Serial Port          | serialPort       | Serial port to use for connecting to the whole house amplifier device                                                          | Serial port name |
-| Address              | host             | Host name or IP address of the amplifier or serial over IP device                                                              | Host name or IP  |
-| Port                 | port             | Communication port (default 8080 for newer amps with built-in serial over IP)                                                  | TCP port number  |
-| Number of Zones      | numZones         | (Optional) Number of amplifier zones to utilize in the binding (See Supported Things for max number of zones per Thing type)   | 1-18; default 6  |
-| Polling Interval     | pollingInterval  | (Optional) Configures how often (in seconds) to poll the amplifier to check for zone updates                                   | 5-60; default 15 |
-| Ignore Zones         | ignoreZones      | (Optional) A comma separated list of Zone numbers that will ignore the 'All Zone' (except All Off) commands                    | ie: "1,6,10"     |
-| Initial All Volume   | initialAllVolume | (Optional) When 'All' zones are activated, the volume will reset to this value to prevent excessive blaring of sound ;)        | 1-30; default 10 |
-| Source 1 Input Label | inputLabel1      | (Optional) Friendly name for the input source to be displayed in the UI (ie: Chromecast, Radio, CD, etc.) (default "Source 1") | A free text name |
-| Source 2 Input Label | inputLabel2      | (Optional) Friendly name for the input source to be displayed in the UI (ie: Chromecast, Radio, CD, etc.) (default "Source 2") | A free text name |
-| Source 3 Input Label | inputLabel3      | (Optional) Friendly name for the input source to be displayed in the UI (ie: Chromecast, Radio, CD, etc.) (default "Source 3") | A free text name |
-| Source 4 Input Label | inputLabel4      | (Optional) Friendly name for the input source to be displayed in the UI (ie: Chromecast, Radio, CD, etc.) (default "Source 4") | A free text name |
-| Source 5 Input Label | inputLabel5      | (Optional) Friendly name for the input source to be displayed in the UI (ie: Chromecast, Radio, CD, etc.) (default "Source 5") | A free text name |
-| Source 6 Input Label | inputLabel6      | (Optional) Friendly name for the input source to be displayed in the UI (ie: Chromecast, Radio, CD, etc.) (default "Source 6") | A free text name |
-| Source 7 Input Label | inputLabel7      | (Optional) Friendly name for the input source to be displayed in the UI (ie: Chromecast, Radio, CD, etc.) (default "Source 7") | A free text name |
-| Source 8 Input Label | inputLabel8      | (Optional) Friendly name for the input source to be displayed in the UI (ie: Chromecast, Radio, CD, etc.) (default "Source 8") | A free text name |
+| Parameter Label        | Parameter ID         | Description                                                                                                                    | Accepted values  |
+|------------------------|----------------------|--------------------------------------------------------------------------------------------------------------------------------|------------------|
+| Serial Port            | serialPort           | Serial port to use for connecting to the whole house amplifier device                                                          | Serial port name |
+| Address                | host                 | Host name or IP address of the amplifier or serial over IP device                                                              | Host name or IP  |
+| Port                   | port                 | Communication port (default 8080 for newer amps with built-in serial over IP)                                                  | TCP port number  |
+| Number of Zones        | numZones             | (Optional) Number of amplifier zones to utilize in the binding (See Supported Things for max number of zones per Thing type)   | 1-18; default 6  |
+| Polling Interval       | pollingInterval      | (Optional) Configures how often (in seconds) to poll the amplifier to check for zone updates                                   | 5-60; default 15 |
+| Ignore Zones           | ignoreZones          | (Optional) A comma separated list of Zone numbers that will ignore the 'All Zone' (except All Off) commands                    | ie: "1,6,10"     |
+| Initial All Volume     | initialAllVolume     | (Optional) When 'All' zones are activated, the volume will reset to this value to prevent excessive blaring of sound ;)        | 1-30; default 10 |
+| Source 1 Input Label   | inputLabel1          | (Optional) Friendly name for the input source to be displayed in the UI (ie: Chromecast, Radio, CD, etc.) (default "Source 1") | A free text name |
+| Source 2 Input Label   | inputLabel2          | (Optional) Friendly name for the input source to be displayed in the UI (ie: Chromecast, Radio, CD, etc.) (default "Source 2") | A free text name |
+| Source 3 Input Label   | inputLabel3          | (Optional) Friendly name for the input source to be displayed in the UI (ie: Chromecast, Radio, CD, etc.) (default "Source 3") | A free text name |
+| Source 4 Input Label   | inputLabel4          | (Optional) Friendly name for the input source to be displayed in the UI (ie: Chromecast, Radio, CD, etc.) (default "Source 4") | A free text name |
+| Source 5 Input Label   | inputLabel5          | (Optional) Friendly name for the input source to be displayed in the UI (ie: Chromecast, Radio, CD, etc.) (default "Source 5") | A free text name |
+| Source 6 Input Label   | inputLabel6          | (Optional) Friendly name for the input source to be displayed in the UI (ie: Chromecast, Radio, CD, etc.) (default "Source 6") | A free text name |
+| Source 7 Input Label   | inputLabel7          | (Optional) Friendly name for the input source to be displayed in the UI (ie: Chromecast, Radio, CD, etc.) (default "Source 7") | A free text name |
+| Source 8 Input Label   | inputLabel8          | (Optional) Friendly name for the input source to be displayed in the UI (ie: Chromecast, Radio, CD, etc.) (default "Source 8") | A free text name |
+| Disable Keypad Polling | disableKeypadPolling | Set to **true** if physical keypads are not used so the binding will not needlessly poll all the amplifier zones for changes   | true or false    |
 
 Some notes:
 

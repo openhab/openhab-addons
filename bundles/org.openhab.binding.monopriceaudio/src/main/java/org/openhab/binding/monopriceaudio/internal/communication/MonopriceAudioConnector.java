@@ -39,9 +39,8 @@ public abstract class MonopriceAudioConnector {
 
     // Message types
     public static final String KEY_ZONE_UPDATE = "zone_update";
-    // Special keys used by the binding
+    public static final String KEY_PING = "ping";
     public static final String KEY_ERROR = "error";
-    public static final String MSG_VALUE_ON = "on";
 
     private final Logger logger = LoggerFactory.getLogger(MonopriceAudioConnector.class);
 
@@ -53,7 +52,7 @@ public abstract class MonopriceAudioConnector {
 
     /** true if the connection is established, false if not */
     private boolean connected;
-    private boolean initialPollComplete = false;
+    private boolean pingResponseOnly;
 
     private AmplifierModel amp = AmplifierModel.AMPLIFIER;
 
@@ -77,24 +76,7 @@ public abstract class MonopriceAudioConnector {
      */
     protected void setConnected(boolean connected) {
         this.connected = connected;
-    }
-
-    /**
-     * Get whether the initial polling is complete or not
-     *
-     * @return true if initial polling is complete
-     */
-    public boolean isInitialPollComplete() {
-        return initialPollComplete;
-    }
-
-    /**
-     * Set whether the initial polling is complete or not
-     *
-     * @param initialPollComplete true if initial polling is complete
-     */
-    public void setInitialPollComplete(boolean initialPollComplete) {
-        this.initialPollComplete = initialPollComplete;
+        this.pingResponseOnly = false;
     }
 
     public void setAmplifierModel(AmplifierModel amp) {
@@ -126,6 +108,7 @@ public abstract class MonopriceAudioConnector {
      * Stop the thread that handles the feedback messages and close the opened input and output streams
      */
     protected void cleanup() {
+        this.pingResponseOnly = false;
         Thread readerThread = this.readerThread;
         OutputStream dataOut = this.dataOut;
         if (dataOut != null) {
@@ -190,6 +173,19 @@ public abstract class MonopriceAudioConnector {
      */
     public void queryZone(String zoneId) throws MonopriceAudioException {
         sendCommand(zoneId, amp.getQueryPrefix(), null);
+    }
+
+    /**
+     * Get ping success events from the amplifier only. If amplifier does not have keypads or supports
+     * unsolicited updates, the use of this method will cause the connector to only send ping success events until the
+     * next time the connection is reset.
+     *
+     * @throws MonopriceAudioException - In case of any problem
+     */
+    public void sendPing() throws MonopriceAudioException {
+        pingResponseOnly = true;
+        // poll zone 1 status only to see if the amp responds
+        sendCommand(amp.getZoneIds().get(0), amp.getQueryPrefix(), null);
     }
 
     public void queryTrebBassBalance(String zoneId) throws MonopriceAudioException {
@@ -258,6 +254,11 @@ public abstract class MonopriceAudioConnector {
      * @param incomingMessage the received message
      */
     public void handleIncomingMessage(byte[] incomingMessage) {
+        if (pingResponseOnly) {
+            dispatchKeyValue(KEY_PING, EMPTY);
+            return;
+        }
+
         String message = new String(incomingMessage, StandardCharsets.US_ASCII).trim();
 
         if (EMPTY.equals(message)) {
@@ -265,7 +266,7 @@ public abstract class MonopriceAudioConnector {
         }
 
         if (READ_ERROR.equals(message)) {
-            dispatchKeyValue(KEY_ERROR, MSG_VALUE_ON);
+            dispatchKeyValue(KEY_ERROR, EMPTY);
             return;
         }
 
@@ -284,7 +285,7 @@ public abstract class MonopriceAudioConnector {
      * @param value the value
      */
     private void dispatchKeyValue(String key, String value) {
-        MonopriceAudioMessageEvent event = new MonopriceAudioMessageEvent(this, key, value, initialPollComplete);
+        MonopriceAudioMessageEvent event = new MonopriceAudioMessageEvent(this, key, value);
         listeners.forEach(l -> l.onNewMessageEvent(event));
     }
 }
