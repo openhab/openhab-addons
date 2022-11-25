@@ -1521,6 +1521,9 @@ public class IpCameraHandler extends BaseThingHandler {
                 }
                 noMotionDetected(CHANNEL_MOTION_ALARM);
                 noMotionDetected(CHANNEL_PIR_ALARM);
+                noMotionDetected(CHANNEL_HUMAN_ALARM);
+                noMotionDetected(CHANNEL_CAR_ALARM);
+                noMotionDetected(CHANNEL_ANIMAL_ALARM);
                 noAudioDetected();
                 break;
             case HIKVISION_THING:
