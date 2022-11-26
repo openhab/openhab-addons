@@ -25,6 +25,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -70,7 +71,7 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
     private int lastAccessoryCount;
     private Map<String, String> knownAccessories = new HashMap<>();
     private int instance;
-    private boolean newDummies = false;
+    private List<String> priorDummies = new ArrayList<>();
 
     private final Set<String> pendingUpdates = new HashSet<>();
 
@@ -252,7 +253,6 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
         final int newRevision = accessoryRegistry.makeNewConfigurationRevision();
         lastAccessoryCount = accessoryRegistry.getAllAccessories().size();
         logger.info("Created {} HomeKit items in instance {}.", accessoryRegistry.getAllAccessories().size(), instance);
-        checkForDummyAccessories();
         logger.trace("Making new configuration revision {}", newRevision);
         storage.put(REVISION_CONFIG, "" + newRevision);
         storage.put(KNOWN_ACCESSORIES, knownAccessories);
@@ -287,8 +287,8 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
             bridge.batchUpdate();
         }
 
-        boolean changed = false;
         try {
+            boolean changed = false;
             boolean removed = false;
             for (final String name : pendingUpdates) {
                 String oldValue = knownAccessories.get(name);
@@ -296,16 +296,14 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
                 logger.trace(" Add items {}", name);
                 getItemOptional(name).ifPresent(this::createRootAccessories);
                 if (accessoryChanged(name, oldValue)) {
-                    logger.error("{} changed", name);
                     changed = true;
                 }
             }
             pendingUpdates.clear();
             if (checkMissingAccessories() || changed) {
                 makeNewConfigurationRevision();
-            } else if (newDummies) {
-                checkForDummyAccessories();
             }
+            checkForDummyAccessories();
         } finally {
             if (bridge != null) {
                 bridge.completeUpdateBatch();
@@ -506,11 +504,9 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
      */
     private boolean checkMissingAccessories() {
         List<String> toRemove = new ArrayList<>();
-        newDummies = false;
         for (Map.Entry<String, String> accessory : knownAccessories.entrySet()) {
             if (!accessoryRegistry.getAllAccessories().containsKey(accessory.getKey())) {
                 if (settings.useDummyAccessories) {
-                    newDummies = true;
                     logger.debug("Creating dummy accessory for missing item {}.", accessory.getKey());
                     accessoryRegistry.addRootAccessory(accessory.getKey(),
                             new DummyHomekitAccessory(accessory.getKey(), accessory.getValue()));
@@ -525,24 +521,46 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
     }
 
     private void checkForDummyAccessories() {
-        var dummyAccessories = accessoryRegistry.getAllAccessories().values().stream()
-                .filter(a -> a instanceof DummyHomekitAccessory).toArray(HomekitAccessory[]::new);
-        switch (dummyAccessories.length) {
-            case 0:
-                break;
-            case 1:
-                try {
-                    logger.warn(
-                            "{} has been replaced with a dummy. See https://www.openhab.org/addons/integrations/homekit/#dummy-accessories for more information.",
-                            dummyAccessories[0].getSerialNumber().get());
-                } catch (InterruptedException | ExecutionException e) {
-                }
-                break;
-            default:
-                logger.warn(
-                        "{} accessories have been replaced with dummies. See https://www.openhab.org/addons/integrations/homekit/#dummy-accessories for more information.",
-                        dummyAccessories.length);
-                break;
+        List<String> currentDummies = accessoryRegistry.getAllAccessories().values().stream()
+                .filter(a -> a instanceof DummyHomekitAccessory).map(a -> {
+                    try {
+                        return a.getSerialNumber().get();
+                    } catch (InterruptedException | ExecutionException e) {
+                        return "<unknown>";
+                    }
+                }).collect(Collectors.toList());
+
+        List<String> resolvedDummies = new ArrayList(priorDummies);
+        resolvedDummies.removeAll(currentDummies);
+        List<String> newDummies = new ArrayList(currentDummies);
+        newDummies.removeAll(priorDummies);
+
+        if (resolvedDummies.size() <= 5) {
+            for (String item : resolvedDummies) {
+                logger.info("{} has been resolved to an actual accessory, and is no longer a dummy.", item);
+            }
+        } else if (currentDummies.isEmpty() && !resolvedDummies.isEmpty()) {
+            logger.info("All dummy accessories have been resolved to actual accessories.");
+        } else if (!resolvedDummies.isEmpty()) {
+            logger.info("{} dummy accessories have been resolved to actual accessories.", resolvedDummies.size());
         }
+
+        if (newDummies.size() <= 5) {
+            for (String item : newDummies) {
+                logger.warn(
+                        "{} has been replaced with a dummy. See https://www.openhab.org/addons/integrations/homekit/#dummy-accessories for more information.",
+                        item);
+            }
+        } else if (!newDummies.isEmpty()) {
+            logger.warn(
+                    "{} accessories have been replaced with dummies. See https://www.openhab.org/addons/integrations/homekit/#dummy-accessories for more information.",
+                    newDummies.size());
+        } else if (!currentDummies.isEmpty()) {
+            logger.warn(
+                    "{} accessories are still dummies. See https://www.openhab.org/addons/integrations/homekit/#dummy-accessories for more information.",
+                    currentDummies.size());
+        }
+        priorDummies.clear();
+        priorDummies.addAll(currentDummies);
     }
 }
