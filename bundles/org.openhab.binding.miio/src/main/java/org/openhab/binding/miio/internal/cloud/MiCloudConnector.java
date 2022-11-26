@@ -413,7 +413,7 @@ public class MiCloudConnector {
             JsonElement resp = JsonParser.parseString(parseJson(content));
             CloudLogin1DTO jsonResp = GSON.fromJson(resp, CloudLogin1DTO.class);
             final String sign = jsonResp.getSign();
-            if (sign != null && !jsonResp.getSign().isBlank()) {
+            if (sign != null && !sign.isBlank()) {
                 logger.trace("Xiaomi Login step 1 sign = {}", sign);
                 return sign;
             } else {
