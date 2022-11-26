@@ -53,9 +53,9 @@ abstract class AbstractHomekitPositionAccessoryImpl extends AbstractHomekitAcces
     protected int closedPosition;
     protected int openPosition;
     private final Map<PositionStateEnum, String> positionStateMapping;
-    protected boolean emulateState = false;
+    protected boolean emulateState;
 
-    protected PositionStateEnum state = PositionStateEnum.STOPPED;
+    protected PositionStateEnum emulatedState = PositionStateEnum.STOPPED;
 
     public AbstractHomekitPositionAccessoryImpl(HomekitTaggedItem taggedItem,
             List<HomekitTaggedItem> mandatoryCharacteristics, HomekitAccessoryUpdater updater,
@@ -63,7 +63,6 @@ abstract class AbstractHomekitPositionAccessoryImpl extends AbstractHomekitAcces
         super(taggedItem, mandatoryCharacteristics, updater, settings);
         final boolean inverted = getAccessoryConfigurationAsBoolean(HomekitTaggedItem.INVERTED, true);
         emulateState = getAccessoryConfigurationAsBoolean(HomekitTaggedItem.EMULATE_STATE, false);
-
         closedPosition = inverted ? 0 : 100;
         openPosition = inverted ? 100 : 0;
         positionStateMapping = new EnumMap<>(PositionStateEnum.class);
@@ -77,17 +76,8 @@ abstract class AbstractHomekitPositionAccessoryImpl extends AbstractHomekitAcces
         return CompletableFuture.completedFuture(convertPositionState(CURRENT_POSITION, openPosition, closedPosition));
     }
 
-    private PositionStateEnum determineState() {
-        final int currentPosition = convertPositionState(CURRENT_POSITION, openPosition, closedPosition);
-        final int targetPosition = convertPositionState(TARGET_POSITION, openPosition, closedPosition);
-        final PositionStateEnum state = currentPosition == targetPosition ? PositionStateEnum.STOPPED
-                : currentPosition < targetPosition ? PositionStateEnum.INCREASING : PositionStateEnum.DECREASING;
-        logger.info(" State {} / position {} {}", state, currentPosition, targetPosition);
-        return state;
-    }
-
     public CompletableFuture<PositionStateEnum> getPositionState() {
-        return CompletableFuture.completedFuture(emulateState ? determineState()
+        return CompletableFuture.completedFuture(emulateState ? emulatedState
                 : getKeyFromMapping(POSITION_STATE, positionStateMapping, PositionStateEnum.STOPPED));
     }
 
@@ -99,15 +89,26 @@ abstract class AbstractHomekitPositionAccessoryImpl extends AbstractHomekitAcces
         getCharacteristic(TARGET_POSITION).ifPresentOrElse(taggedItem -> {
             final Item item = taggedItem.getItem();
             final int targetPosition = convertPosition(value, openPosition);
-
             if (item instanceof RollershutterItem) {
-                PositionStateEnum state = emulateState ? determineState()
+                PositionStateEnum state = emulateState ? emulatedState
                         : getKeyFromMapping(POSITION_STATE, positionStateMapping, PositionStateEnum.STOPPED);
-                if ((targetPosition == 0 && state == PositionStateEnum.DECREASING)
-                        || ((targetPosition == 100 && state == PositionStateEnum.INCREASING))) {
+                logger.info(" state {} {}", state, targetPosition);
+                if ((targetPosition == 100 && state == PositionStateEnum.DECREASING)
+                        || ((targetPosition == 0 && state == PositionStateEnum.INCREASING))) {
                     ((RollershutterItem) item).send(StopMoveType.STOP);
+                    if (emulateState) {
+                        emulatedState = PositionStateEnum.STOPPED;
+                    }
                 } else {
                     ((RollershutterItem) item).send(new PercentType(targetPosition));
+                    if (emulateState) {
+                        @Nullable
+                        PercentType currentPosition = item.getStateAs(PercentType.class);
+                        emulatedState = currentPosition == null || currentPosition.intValue() == targetPosition ? PositionStateEnum.STOPPED
+                                : currentPosition.intValue() < targetPosition ? PositionStateEnum.INCREASING
+                                        : PositionStateEnum.DECREASING;
+
+                    }
                 }
             } else if (item instanceof DimmerItem) {
                 ((DimmerItem) item).send(new PercentType(targetPosition));
