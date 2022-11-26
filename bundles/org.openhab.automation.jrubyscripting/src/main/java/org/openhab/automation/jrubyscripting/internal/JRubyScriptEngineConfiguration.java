@@ -171,11 +171,11 @@ public class JRubyScriptEngineConfiguration {
         int validGems = 0;
         for (String gem : gems) {
             gem = gem.trim();
-            String version = "";
+            String[] versions = {};
             if (gem.contains("=")) {
-                String[] gemParts = gem.split("=");
+                String[] gemParts = gem.split("=", 2);
                 gem = gemParts[0].trim();
-                version = gemParts[1].trim();
+                versions = gemParts[1].split(";");
             }
 
             if (gem.isEmpty()) {
@@ -183,8 +183,11 @@ public class JRubyScriptEngineConfiguration {
             }
 
             gemCommand += "  gem '" + gem + "'";
-            if (!version.isEmpty()) {
-                gemCommand += ", '" + version + "'";
+            for (String version : versions) {
+                version = version.trim();
+                if (!version.isEmpty()) {
+                    gemCommand += ", '" + version + "'";
+                }
             }
             gemCommand += ", require: false\n";
             validGems += 1;
