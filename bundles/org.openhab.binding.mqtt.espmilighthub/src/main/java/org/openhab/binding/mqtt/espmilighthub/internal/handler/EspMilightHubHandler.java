@@ -261,12 +261,12 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttConnec
 
     private static BigDecimal polynomialFit(BigDecimal x, BigDecimal[] coefficients) {
         var result = BigDecimal.ZERO;
-        var x_accumulator = BigDecimal.ONE;
+        var xAccumulator = BigDecimal.ONE;
         // forms K[4]*x^0 + K[3]*x^1 + K[2]*x^2 + K[1]*x^3 + K[0]*x^4
         // (or reverse the order of terms for the usual way of writing it in academic papers)
         for (int i = coefficients.length - 1; i >= 0; i--) {
-            result = result.add(coefficients[i].multiply(x_accumulator));
-            x_accumulator = x_accumulator.multiply(x);
+            result = result.add(coefficients[i].multiply(xAccumulator));
+            xAccumulator = xAccumulator.multiply(x);
         }
         return result;
     }
