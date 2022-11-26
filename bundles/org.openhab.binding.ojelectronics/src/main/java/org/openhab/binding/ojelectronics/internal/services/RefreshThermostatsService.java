@@ -83,7 +83,7 @@ public class RefreshThermostatsService {
                     try {
                         refreshHandler.accept(Objects.requireNonNull(thingHandler), thermostat);
                     } catch (Exception e) {
-                        logger.error("Error Handling Refresh of thermostat {} {}", thermostat, e);
+                        logger.info("Error Handling Refresh of thermostat {}", thermostat, e);
                     }
                 });
     }

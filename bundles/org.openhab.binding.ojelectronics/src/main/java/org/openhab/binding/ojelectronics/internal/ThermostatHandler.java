@@ -168,7 +168,7 @@ public class ThermostatHandler extends BaseThingHandler {
         return currentThermostat;
     }
 
-    private ThermostatModel GetCurrentThermostat() {
+    private ThermostatModel getCurrentThermostat() {
         return Objects.requireNonNull(currentThermostat);
     }
 
@@ -179,7 +179,7 @@ public class ThermostatHandler extends BaseThingHandler {
 
     private void updateManualSetpoint(Command command) {
         if (command instanceof QuantityType<?>) {
-            GetCurrentThermostat().manualModeSetpoint = (int) (((QuantityType<?>) command).floatValue() * 100);
+            getCurrentThermostat().manualModeSetpoint = (int) (((QuantityType<?>) command).floatValue() * 100);
         } else {
             logger.warn("Unable to set value {}", command);
         }
@@ -192,7 +192,7 @@ public class ThermostatHandler extends BaseThingHandler {
 
     private void updateBoostEndTime(Command command) {
         if (command instanceof DateTimeType) {
-            GetCurrentThermostat().boostEndTime = Objects
+            getCurrentThermostat().boostEndTime = Objects
                     .requireNonNull(Date.from(((DateTimeType) command).getZonedDateTime().toInstant()));
         } else {
             logger.warn("Unable to set value {}", command);
@@ -206,7 +206,7 @@ public class ThermostatHandler extends BaseThingHandler {
 
     private void updateComfortEndTime(Command command) {
         if (command instanceof DateTimeType) {
-            GetCurrentThermostat().comfortEndTime = Objects
+            getCurrentThermostat().comfortEndTime = Objects
                     .requireNonNull(Date.from(((DateTimeType) command).getZonedDateTime().toInstant()));
         } else {
             logger.warn("Unable to set value {}", command);
@@ -220,7 +220,7 @@ public class ThermostatHandler extends BaseThingHandler {
 
     private void updateComfortSetpoint(Command command) {
         if (command instanceof QuantityType<?>) {
-            GetCurrentThermostat().comfortSetpoint = (int) (((QuantityType<?>) command).floatValue() * 100);
+            getCurrentThermostat().comfortSetpoint = (int) (((QuantityType<?>) command).floatValue() * 100);
         } else {
             logger.warn("Unable to set value {}", command);
         }
@@ -235,7 +235,7 @@ public class ThermostatHandler extends BaseThingHandler {
         if (command instanceof StringType && (REVERSE_REGULATION_MODES.containsKey(command.toString().toLowerCase()))) {
             final @Nullable Integer mode = REVERSE_REGULATION_MODES.get(command.toString().toLowerCase());
             if (mode != null) {
-                GetCurrentThermostat().regulationMode = mode;
+                getCurrentThermostat().regulationMode = mode;
             }
         } else {
             logger.warn("Unable to set value {}", command);
@@ -308,7 +308,7 @@ public class ThermostatHandler extends BaseThingHandler {
 
     private void updateVacationBeginDay(Command command) {
         if (command instanceof DateTimeType) {
-            GetCurrentThermostat().vacationBeginDay = Objects.requireNonNull(
+            getCurrentThermostat().vacationBeginDay = Objects.requireNonNull(
                     Date.from(((DateTimeType) command).getZonedDateTime().toInstant().truncatedTo(ChronoUnit.DAYS)));
         } else {
             logger.warn("Unable to set value {}", command);
@@ -324,7 +324,7 @@ public class ThermostatHandler extends BaseThingHandler {
 
     private void updateVacationEndDay(Command command) {
         if (command instanceof DateTimeType) {
-            GetCurrentThermostat().vacationEndDay = Objects.requireNonNull(
+            getCurrentThermostat().vacationEndDay = Objects.requireNonNull(
                     Date.from(((DateTimeType) command).getZonedDateTime().toInstant().truncatedTo(ChronoUnit.DAYS)));
         } else {
             logger.warn("Unable to set value {}", command);

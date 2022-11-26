@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
