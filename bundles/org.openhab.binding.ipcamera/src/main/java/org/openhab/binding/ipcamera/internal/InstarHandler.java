@@ -185,26 +185,53 @@ public class InstarHandler extends ChannelDuplexHandler {
     }
 
     public void alarmTriggered(String alarm) {
-        ipCameraHandler.logger.debug("Alarm has been triggered:{}", alarm);
-        switch (alarm) {
-            case "/instar?&active=1":// The motion area boxes 1-4
-            case "/instar?&active=2":
-            case "/instar?&active=3":
-            case "/instar?&active=4":
+        // older cameras placed the & for the first query, whilst newer cameras do not.
+        // examples are /instar?&active=6 vs /instar?active=6&object=0
+        ipCameraHandler.setChannelState(CHANNEL_LAST_EVENT_DATA, new StringType(alarm));
+        String alarmCode = alarm.replaceAll(".+active=", "");
+        alarmCode = alarmCode.replaceAll("&.+", "");
+        String objectCode = alarm.replaceAll(".+object=", "");
+        switch (alarmCode) {
+            case "1":// The motion area boxes 1-4
+            case "2":
+            case "3":
+            case "4":
                 ipCameraHandler.motionDetected(CHANNEL_MOTION_ALARM);
                 break;
-            case "/instar?&active=5":// PIR
+            case "5":// PIR
                 ipCameraHandler.motionDetected(CHANNEL_PIR_ALARM);
                 break;
-            case "/instar?&active=6":// Audio Alarm
+            case "6":// Audio Alarm
                 ipCameraHandler.audioDetected();
                 break;
-            case "/instar?&active=7":// Motion Area 1
-            case "/instar?&active=8":// Motion Area 2
-            case "/instar?&active=9":// Motion Area 3
-            case "/instar?&active=10":// Motion Area 4
+            case "7":// Motion area 1 + PIR
+            case "8":// Motion area 2 + PIR
+            case "9":// Motion area 3 + PIR
+            case "10":// Motion area 4 + PIR
                 ipCameraHandler.motionDetected(CHANNEL_MOTION_ALARM);
+                ipCameraHandler.motionDetected(CHANNEL_PIR_ALARM);
                 break;
+            default:
+                ipCameraHandler.logger.debug("Unknown alarm code:{}", alarmCode);
+        }
+        if (!objectCode.isEmpty()) {
+            switch (objectCode) {
+                case "0":// no object
+                    break;
+                case "1":// person/human
+                    ipCameraHandler.motionDetected(CHANNEL_HUMAN_ALARM);
+                    break;
+                case "2":// car/vehicles
+                    ipCameraHandler.motionDetected(CHANNEL_CAR_ALARM);
+                    break;
+                case "3":// animals
+                case "4":
+                case "5":
+                    ipCameraHandler.motionDetected(CHANNEL_ANIMAL_ALARM);
+                    break;
+                default:
+                    ipCameraHandler.logger.debug("Unknown object detection code:{}", objectCode);
+            }
         }
     }
 
