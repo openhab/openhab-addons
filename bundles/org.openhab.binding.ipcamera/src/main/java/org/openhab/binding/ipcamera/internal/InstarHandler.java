@@ -230,7 +230,7 @@ public class InstarHandler extends ChannelDuplexHandler {
                     ipCameraHandler.motionDetected(CHANNEL_ANIMAL_ALARM);
                     break;
                 default:
-                    ipCameraHandler.logger.debug("Unknown object detection code:{}", alarmCode);
+                    ipCameraHandler.logger.debug("Unknown object detection code:{}", objectCode);
             }
         }
     }
