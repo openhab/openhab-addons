@@ -80,7 +80,7 @@ Clicking on that image or adding it to a dashboard will show a picture of your c
 
 If your canvas has elements we dont know how to draw a layout for yet, please reach out, and we will ask for some information and will try to add support for your elements.
 
-![Image](doc/Layout.jpg)
+![Image](doc/Layout.png)
 
 There is an alternative method for canvas that use square panels, you can request the layout through a [console command](https://www.openhab.org/docs/administration/console.html):
 
