@@ -17,6 +17,7 @@ import static org.openhab.io.homekit.internal.HomekitCharacteristicType.ON_STATE
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
 import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
@@ -28,8 +29,9 @@ import io.github.hapjava.services.impl.BasicFanService;
 /**
  * Implements Fan using an Item that provides an On/Off state
  *
- * @author Eugen Freiter - Initial contribution
+ * @author Cody Cutrer - Initial contribution
  */
+@NonNullByDefault({})
 class HomekitBasicFanImpl extends AbstractHomekitAccessoryImpl implements BasicFanAccessory {
     private final BooleanItemReader onReader;
 
