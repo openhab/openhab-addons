@@ -204,11 +204,12 @@ public class InstarHandler extends ChannelDuplexHandler {
             case "6":// Audio Alarm
                 ipCameraHandler.audioDetected();
                 break;
-            case "7":// Motion Area 1
-            case "8":// Motion Area 2
-            case "9":// Motion Area 3
-            case "10":// Motion Area 4
+            case "7":// Motion area 1 + PIR
+            case "8":// Motion area 2 + PIR
+            case "9":// Motion area 3 + PIR
+            case "10":// Motion area 4 + PIR
                 ipCameraHandler.motionDetected(CHANNEL_MOTION_ALARM);
+                ipCameraHandler.motionDetected(CHANNEL_PIR_ALARM);
                 break;
             default:
                 ipCameraHandler.logger.debug("Unknown alarm code:{}", alarmCode);
@@ -228,6 +229,8 @@ public class InstarHandler extends ChannelDuplexHandler {
                 case "5":
                     ipCameraHandler.motionDetected(CHANNEL_ANIMAL_ALARM);
                     break;
+                default:
+                    ipCameraHandler.logger.debug("Unknown object detection code:{}", alarmCode);
             }
         }
     }
