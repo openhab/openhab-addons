@@ -72,6 +72,7 @@ public class JdbcDerbyDAO extends JdbcBaseDAO {
         // Prevent error against duplicate time value (seldom): No powerful Merge found:
         // http://www.codeproject.com/Questions/162627/how-to-insert-new-record-in-my-table-if-not-exists
         sqlInsertItemValue = "INSERT INTO #tableName# (TIME, VALUE) VALUES( #tablePrimaryValue#, CAST( ? as #dbType#) )";
+        sqlAlterTableColumn = "ALTER TABLE #tableName# ALTER COLUMN #columnName# SET DATA TYPE #columnType#";
     }
 
     private void initSqlTypes() {
