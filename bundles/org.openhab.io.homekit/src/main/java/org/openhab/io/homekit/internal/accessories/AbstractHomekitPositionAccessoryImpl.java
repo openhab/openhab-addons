@@ -32,6 +32,7 @@ import org.openhab.core.library.items.RollershutterItem;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StopMoveType;
+import org.openhab.core.library.types.UpDownType;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
 import org.openhab.io.homekit.internal.HomekitCharacteristicType;
 import org.openhab.io.homekit.internal.HomekitSettings;
@@ -54,6 +55,7 @@ abstract class AbstractHomekitPositionAccessoryImpl extends AbstractHomekitAcces
     protected int openPosition;
     private final Map<PositionStateEnum, String> positionStateMapping;
     protected boolean emulateState;
+    protected boolean emulateStopSameDirection;
 
     protected PositionStateEnum emulatedState = PositionStateEnum.STOPPED;
 
@@ -62,7 +64,9 @@ abstract class AbstractHomekitPositionAccessoryImpl extends AbstractHomekitAcces
             HomekitSettings settings) {
         super(taggedItem, mandatoryCharacteristics, updater, settings);
         final boolean inverted = getAccessoryConfigurationAsBoolean(HomekitTaggedItem.INVERTED, true);
-        emulateState = getAccessoryConfigurationAsBoolean(HomekitTaggedItem.EMULATE_STATE, false);
+        emulateState = getAccessoryConfigurationAsBoolean(HomekitTaggedItem.EMULATE_STOP_STATE, false);
+        emulateStopSameDirection = getAccessoryConfigurationAsBoolean(HomekitTaggedItem.EMULATE_STOP_SAME_DIRECTION,
+                false);
         closedPosition = inverted ? 0 : 100;
         openPosition = inverted ? 100 : 0;
         positionStateMapping = new EnumMap<>(PositionStateEnum.class);
@@ -90,24 +94,26 @@ abstract class AbstractHomekitPositionAccessoryImpl extends AbstractHomekitAcces
             final Item item = taggedItem.getItem();
             final int targetPosition = convertPosition(value, openPosition);
             if (item instanceof RollershutterItem) {
-                PositionStateEnum state = emulateState ? emulatedState
-                        : getKeyFromMapping(POSITION_STATE, positionStateMapping, PositionStateEnum.STOPPED);
-                logger.info(" state {} {}", state, targetPosition);
-                if ((targetPosition == 100 && state == PositionStateEnum.DECREASING)
-                        || ((targetPosition == 0 && state == PositionStateEnum.INCREASING))) {
-                    ((RollershutterItem) item).send(StopMoveType.STOP);
-                    if (emulateState) {
-                        emulatedState = PositionStateEnum.STOPPED;
+                // HomeKit home app never sends STOP. we emulate stop if we receive 100% or 0% while the blind is moving
+                if (emulateState && (targetPosition == 100 && emulatedState == PositionStateEnum.DECREASING)
+                        || ((targetPosition == 0 && emulatedState == PositionStateEnum.INCREASING))) {
+                    if (emulateStopSameDirection) {
+                        // some blinds devices do not support "STOP" but would stop if receive UP/DOWN while moving
+                        ((RollershutterItem) item)
+                                .send(emulatedState == PositionStateEnum.INCREASING ? UpDownType.UP : UpDownType.DOWN);
+                    } else {
+                        ((RollershutterItem) item).send(StopMoveType.STOP);
                     }
+                    emulatedState = PositionStateEnum.STOPPED;
                 } else {
                     ((RollershutterItem) item).send(new PercentType(targetPosition));
                     if (emulateState) {
                         @Nullable
                         PercentType currentPosition = item.getStateAs(PercentType.class);
-                        emulatedState = currentPosition == null || currentPosition.intValue() == targetPosition ? PositionStateEnum.STOPPED
+                        emulatedState = currentPosition == null || currentPosition.intValue() == targetPosition
+                                ? PositionStateEnum.STOPPED
                                 : currentPosition.intValue() < targetPosition ? PositionStateEnum.INCREASING
                                         : PositionStateEnum.DECREASING;
-
                     }
                 }
             } else if (item instanceof DimmerItem) {

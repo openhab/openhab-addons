@@ -310,7 +310,19 @@ In case you need to disable this logic you can do it with configuration paramete
 Rollershutter window_covering "Window Rollershutter" {homekit = "WindowCovering"  [inverted=false]}
 Rollershutter window          "Window"               {homekit = "Window" [inverted=false]}
 Rollershutter door            "Door"                 {homekit = "Door" [inverted=false]}
+ ```
 
+HomeKit home app never sends STOP" but only the target position. 
+If you add configuration parameter "stop=true", openHAB will emulate stop and send "STOP" command to rollenshutter item if you click on the blind icon in the home app while the blind is moving.
+
+```xtend
+Rollershutter window_covering "Window Rollershutter" {homekit = "WindowCovering"  [stop=true]}
+ ```
+
+Some blinds devices do support "STOP" command but would stop if they receive UP/DOWN while moving om the same direction. In order to support such devices add "stopSameDirection" parameter.
+
+```xtend
+Rollershutter window_covering "Window Rollershutter" {homekit = "WindowCovering"  [stop=true, stopSameDirection=true]}
  ```
 
 Window covering can have a number of optional characteristics like horizontal & vertical tilt, obstruction status and hold position trigger.
@@ -528,7 +540,7 @@ In order to combine multiple accessories to one HomeKit accessory you need:
 e.g. configuration for a fan with light would look as follows
 
 ```xtend
-Group           FanWithLight        "Fan with Light"                           {homekit = "Fan,Light"}
+Group           FanWithLight        "Fan with Light"                           {homekit = "Fan,Lighting"}
 Switch          FanActiveStatus     "Fan Active Status"     (FanWithLight)     {homekit = "Fan.ActiveStatus"}
 Number          FanRotationSpeed    "Fan Rotation Speed"    (FanWithLight)     {homekit = "Fan.RotationSpeed"}
 Switch          Light               "Light"                 (FanWithLight)     {homekit = "Lighting.OnState"}
