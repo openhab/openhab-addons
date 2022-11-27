@@ -56,7 +56,6 @@ abstract class AbstractHomekitPositionAccessoryImpl extends AbstractHomekitAcces
     private final Map<PositionStateEnum, String> positionStateMapping;
     protected boolean emulateState;
     protected boolean emulateStopSameDirection;
-
     protected PositionStateEnum emulatedState = PositionStateEnum.STOPPED;
 
     public AbstractHomekitPositionAccessoryImpl(HomekitTaggedItem taggedItem,
