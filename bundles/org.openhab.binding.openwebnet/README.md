@@ -225,7 +225,7 @@ With this configuration when AUX `where=4` goes ON, the Alarm will execute the a
 | `network`                    | `bus_alarm_system`                     | Switch      | Alarm system network state (`ON` = network ok, `OFF` = no network)    |      R      |
 | `battery`                    | `bus_alarm_system`                     | String      | Alarm system battery state (`OK`, `FAULT`, `UNLOADED`)                |      R      |
 | `armed`                      | `bus_alarm_system`, `bus_alarm_zone`   | Switch      | Alarm system or zone is armed (`ON`) or disarmed (`OFF`)              |      R      |
-| `alarm`                      | `bus_alarm_zone`                       | String      | Current alarm for the zone  (`NO_ALARM`, `INTRUSION`, `TAMPERING`, `ANTI_PANIC`) |      R      |
+| `alarm`                      | `bus_alarm_zone`                       | String      | Current alarm for the zone  (`SILENT`, `INTRUSION`, `TAMPERING`, `ANTI_PANIC`) |      R      |
 
 
 ### Thermo channels
@@ -326,8 +326,8 @@ Bridge openwebnet:bus_gateway:mybridge "MyHOMEServer1" [ host="192.168.1.35", pa
       bus_cenplus_scenario_control  LR_CENplus_scenario  "Living Room CEN+"         [ where="212", buttons="1,5,18" ]
       bus_dry_contact_ir            LR_IR_sensor         "Living Room IR Sensor"    [ where="399" ]
       
-      bus_aux		                 Alarm_activation	 "Alarm activation"         [ where="4" ]
-      bus_aux		                 Alarm_deactivation	 "Alarm deactivation"       [ where="5" ]
+      bus_aux                       Alarm_activation     "Alarm activation"         [ where="4" ]
+      bus_aux                       Alarm_deactivation   "Alarm deactivation"       [ where="5" ]
 
       bus_alarm_system              AlarmSys             "Alarm System"             [ where="0"   ]
       bus_alarm_zone                AlarmZone3           "Alarm Zone 3"             [ where="#3"  ]
@@ -521,10 +521,10 @@ rule "alarm proxy item: update based on iAlarmSystemArmed"
 when
     Item iAlarmSystemArmed received update
 then
-    if(iAlarmSystemArmed.state == ON){
+    if(newState == ON){
         iAlarmSystemArmedControl.postUpdate(ON)
     }
-    else if(iAlarmSystemArmed.state == OFF){
+    else if(newState == OFF){
         iAlarmSystemArmedControl.postUpdate(OFF)
     }
 end

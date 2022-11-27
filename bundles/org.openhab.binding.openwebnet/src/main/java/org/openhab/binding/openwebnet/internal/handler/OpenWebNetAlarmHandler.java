@@ -100,7 +100,7 @@ public class OpenWebNetAlarmHandler extends OpenWebNetThingHandler {
     @Override
     protected void refreshDevice(boolean refreshAll) {
         if (refreshAll) {
-            logger.debug("--- refreshDevice() : refreshing via ALARM CENTRAL UNIT... ({})", thing.getUID());
+            logger.debug("--- refreshDevice() : refreshing all via ALARM CENTRAL UNIT... ({})", thing.getUID());
             try {
                 send(Alarm.requestSystemStatus());
                 lastAllDevicesRefreshTS = System.currentTimeMillis();
@@ -160,27 +160,15 @@ public class OpenWebNetAlarmHandler extends OpenWebNetThingHandler {
     }
 
     private void updateAlarmSystemState(WhatAlarm w) {
-        if (w == Alarm.WhatAlarm.SYSTEM_ACTIVE) {
-            updateState(CHANNEL_ALARM_SYSTEM_STATE, OnOffType.ON);
-        } else {
-            updateState(CHANNEL_ALARM_SYSTEM_STATE, OnOffType.OFF);
-        }
+        updateState(CHANNEL_ALARM_SYSTEM_STATE, OnOffType.from(w == Alarm.WhatAlarm.SYSTEM_ACTIVE));
     }
 
     private void updateAlarmSystemArmed(WhatAlarm w) {
-        if (w == Alarm.WhatAlarm.SYSTEM_ENGAGED) {
-            updateState(CHANNEL_ALARM_SYSTEM_ARMED, OnOffType.ON);
-        } else {
-            updateState(CHANNEL_ALARM_SYSTEM_ARMED, OnOffType.OFF);
-        }
+        updateState(CHANNEL_ALARM_SYSTEM_ARMED, OnOffType.from(w == Alarm.WhatAlarm.SYSTEM_ENGAGED));
     }
 
     private void updateNetworkState(WhatAlarm w) {
-        if (w == Alarm.WhatAlarm.SYSTEM_NETWORK_ERROR) {
-            updateState(CHANNEL_ALARM_SYSTEM_NETWORK, OnOffType.OFF);
-        } else {
-            updateState(CHANNEL_ALARM_SYSTEM_NETWORK, OnOffType.ON);
-        }
+        updateState(CHANNEL_ALARM_SYSTEM_NETWORK, OnOffType.from(w == Alarm.WhatAlarm.SYSTEM_NETWORK_ERROR));
     }
 
     private void updateBatteryState(WhatAlarm w) {
@@ -218,11 +206,7 @@ public class OpenWebNetAlarmHandler extends OpenWebNetThingHandler {
     }
 
     private void updateZoneArmed(WhatAlarm w) {
-        if (w == Alarm.WhatAlarm.ZONE_ENGAGED) {
-            updateState(CHANNEL_ALARM_ZONE_ARMED, OnOffType.ON);
-        } else {
-            updateState(CHANNEL_ALARM_ZONE_ARMED, OnOffType.OFF);
-        }
+        updateState(CHANNEL_ALARM_ZONE_ARMED, OnOffType.from(w == Alarm.WhatAlarm.ZONE_ENGAGED));
     }
 
     private void updateZoneAlarmState(WhatAlarm w) {
