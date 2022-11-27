@@ -33,7 +33,7 @@ Both types of modules work fine with NibeGW. The difference between the two is, 
 
 ## Ethernet Shield W5100
 
-This Ethernet shield is based on Wiznet W5100 Ethernet Chip. It is supported by the Adruino Ehternet Library. NibeGW supports the wthernet shield. No special configuration is needed.
+This Ethernet shield is based on Wiznet W5100 Ethernet Chip. It is supported by the Adruino Ehternet Library. No special configuration is needed, NibeGW supports this shield out of the box.
 
 
 ## Arduino Uno
@@ -104,7 +104,7 @@ Commands:
  5 -> set verbose level to 5
 ```
 
-On the target IP you can see the receiving udp messages with netcat (if oyu changes the default target port 9999, you also have to adjust it here):
+On the target IP you can see the receiving udp messages with netcat (if you changed the default target port 9999, you also have to adjust it here):
 
 ```
 nc -lu 9999 | hexdump -C
