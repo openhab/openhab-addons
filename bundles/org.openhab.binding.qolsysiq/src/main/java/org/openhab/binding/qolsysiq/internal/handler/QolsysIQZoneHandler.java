@@ -30,6 +30,8 @@ import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.types.Command;
@@ -55,23 +57,20 @@ public class QolsysIQZoneHandler extends BaseThingHandler {
     public void initialize() {
         logger.debug("initialize");
         zoneId = getConfigAs(QolsysIQZoneConfiguration.class).id;
-        Bridge bridge = getBridge();
-        if (bridge != null) {
-            BridgeHandler handler = bridge.getHandler();
-            if (handler != null && handler instanceof QolsysIQPartitionHandler) {
-                Zone z = ((QolsysIQPartitionHandler) handler).getZone(zoneId());
-                if (z != null) {
-                    updateZone(z);
-                }
-            }
-        }
+        initializeZone();
+    }
+
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusChanged) {
+        logger.debug("bridgeStatusChanged {}", bridgeStatusChanged);
+        initializeZone();
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
     }
 
-    public int zoneId() {
+    public int getZoneId() {
         return zoneId;
     }
 
@@ -82,6 +81,7 @@ public class QolsysIQZoneHandler extends BaseThingHandler {
         Map<String, String> props = new HashMap<String, String>();
         props.put("type", zone.type);
         props.put("name", zone.name);
+        props.put("group", zone.group);
         props.put("zoneID", zone.id);
         props.put("zonePhysicalType", String.valueOf(zone.zonePhysicalType));
         props.put("zoneAlarmType", String.valueOf(zone.zoneAlarmType));
@@ -94,14 +94,35 @@ public class QolsysIQZoneHandler extends BaseThingHandler {
     }
 
     protected void zoneActiveEvent(ZoneActiveEvent event) {
-        if (event.zone.zoneId == zoneId()) {
+        if (event.zone.zoneId == getZoneId()) {
             updateZoneStatus(event.zone.status);
         }
     }
 
     protected void zoneUpdateEvent(ZoneUpdateEvent event) {
-        if (event.zone.zoneId == zoneId()) {
+        if (event.zone.zoneId == getZoneId()) {
             updateZone(event.zone);
+        }
+    }
+
+    private void initializeZone() {
+        Bridge bridge = getBridge();
+        if (bridge != null) {
+            BridgeHandler handler = bridge.getHandler();
+            if (handler instanceof QolsysIQPartitionHandler) {
+                if (handler.getThing().getStatus() != ThingStatus.ONLINE) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                    return;
+                }
+                Zone z = ((QolsysIQPartitionHandler) handler).getZone(getZoneId());
+                if (z == null) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+                    return;
+                }
+                updateZone(z);
+            }
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
         }
     }
 

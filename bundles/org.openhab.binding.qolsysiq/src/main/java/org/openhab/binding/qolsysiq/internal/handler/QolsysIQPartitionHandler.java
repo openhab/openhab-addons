@@ -47,6 +47,7 @@ import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
@@ -71,7 +72,6 @@ public class QolsysIQPartitionHandler extends BaseBridgeHandler implements Qolsy
     private @Nullable QolsysIQChildDiscoveryService discoveryService;
     private @Nullable ScheduledFuture<?> delayFuture;
     private @Nullable ScheduledFuture<?> errorFuture;
-    private @Nullable Partition partitionCache;
     private @Nullable String armCode;
     private @Nullable String disarmCode;
     private List<Zone> zones = Collections.synchronizedList(new LinkedList<Zone>());
@@ -85,10 +85,20 @@ public class QolsysIQPartitionHandler extends BaseBridgeHandler implements Qolsy
     public void initialize() {
         QolsysIQPartitionConfiguration config = getConfigAs(QolsysIQPartitionConfiguration.class);
         partitionId = config.id;
-        armCode = config.armCode.strip().length() == 0 ? null : config.armCode;
-        disarmCode = config.disarmCode.strip().length() == 0 ? null : config.disarmCode;
+        armCode = config.armCode.isBlank() ? null : config.armCode;
+        disarmCode = config.disarmCode.isBlank() ? null : config.disarmCode;
         logger.debug("initialize partition {}", partitionId);
-        refresh();
+        QolsysIQPanelHandler panel = panelHandler();
+        if (panel == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+        } else if (panel.getThing().getStatus() != ThingStatus.ONLINE) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+        } else {
+            updateStatus(ThingStatus.UNKNOWN);
+            scheduler.execute(() -> {
+                panel.refresh();
+            });
+        }
     }
 
     @Override
@@ -144,7 +154,7 @@ public class QolsysIQPartitionHandler extends BaseBridgeHandler implements Qolsy
                             code = armCode;
                         }
                     }
-                    panel.sendAction(new ArmingAction(armingType, partitionId(), code));
+                    panel.sendAction(new ArmingAction(armingType, getPartitionId(), code));
                 } catch (IllegalArgumentException e) {
                     logger.debug("Unknown arm type {} to channel {}", armingTypeName, channelUID);
                 }
@@ -172,7 +182,7 @@ public class QolsysIQPartitionHandler extends BaseBridgeHandler implements Qolsy
      *
      * @return
      */
-    public int partitionId() {
+    public int getPartitionId() {
         return partitionId;
     }
 
@@ -191,7 +201,6 @@ public class QolsysIQPartitionHandler extends BaseBridgeHandler implements Qolsy
     }
 
     protected void alarmEvent(AlarmEvent event) {
-        // is this needed? I need to trigger the alarm and see if two updates are sent
         if (event.alarmType != AlarmType.NONE && event.alarmType != AlarmType.ZONEOPEN) {
             updatePartitionStatus(PartitionStatus.ALARM);
         }
@@ -201,10 +210,6 @@ public class QolsysIQPartitionHandler extends BaseBridgeHandler implements Qolsy
     protected void armingEvent(ArmingEvent event) {
         updatePartitionStatus(event.armingType);
         updateDelay(event.delay == null ? 0 : event.delay);
-        Partition partitionCache = this.partitionCache;
-        if (partitionCache != null) {
-            partitionCache.status = event.armingType;
-        }
     }
 
     protected void errorEvent(ErrorEvent event) {
@@ -225,7 +230,6 @@ public class QolsysIQPartitionHandler extends BaseBridgeHandler implements Qolsy
         if (getThing().getStatus() != ThingStatus.ONLINE) {
             updateStatus(ThingStatus.ONLINE);
         }
-        this.partitionCache = partition;
         updatePartitionStatus(partition.status);
         setSecureArm(partition.secureArm);
         if (partition.status != PartitionStatus.ALARM) {
@@ -303,7 +307,8 @@ public class QolsysIQPartitionHandler extends BaseBridgeHandler implements Qolsy
     private void cancelExitDelayJob() {
         ScheduledFuture<?> delayFuture = this.delayFuture;
         if (delayFuture != null) {
-            delayFuture.cancel(false);
+            delayFuture.cancel(true);
+            this.delayFuture = null;
         }
         updateState(QolsysIQBindingConstants.CHANNEL_PARTITION_COMMAND_DELAY, new DecimalType(0));
     }
@@ -311,7 +316,8 @@ public class QolsysIQPartitionHandler extends BaseBridgeHandler implements Qolsy
     private void cancelErrorDelayJob() {
         ScheduledFuture<?> errorFuture = this.errorFuture;
         if (errorFuture != null) {
-            errorFuture.cancel(false);
+            errorFuture.cancel(true);
+            this.errorFuture = null;
         }
         clearErrorEvent();
     }
@@ -335,8 +341,8 @@ public class QolsysIQPartitionHandler extends BaseBridgeHandler implements Qolsy
     private @Nullable QolsysIQZoneHandler zoneHandler(int zoneId) {
         for (Thing thing : getThing().getThings()) {
             ThingHandler handler = thing.getHandler();
-            if (handler != null && handler instanceof QolsysIQZoneHandler) {
-                if (((QolsysIQZoneHandler) handler).zoneId() == zoneId) {
+            if (handler instanceof QolsysIQZoneHandler) {
+                if (((QolsysIQZoneHandler) handler).getZoneId() == zoneId) {
                     return (QolsysIQZoneHandler) handler;
                 }
             }
@@ -348,7 +354,7 @@ public class QolsysIQPartitionHandler extends BaseBridgeHandler implements Qolsy
         Bridge bridge = getBridge();
         if (bridge != null) {
             BridgeHandler handler = bridge.getHandler();
-            if (handler != null && handler instanceof QolsysIQPanelHandler) {
+            if (handler instanceof QolsysIQPanelHandler) {
                 return (QolsysIQPanelHandler) handler;
             }
         }

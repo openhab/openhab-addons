@@ -317,7 +317,7 @@ public class QolsysIQPanelHandler extends BaseBridgeHandler
         for (Thing thing : getThing().getThings()) {
             ThingHandler handler = thing.getHandler();
             if (handler instanceof QolsysIQPartitionHandler) {
-                if (((QolsysIQPartitionHandler) handler).partitionId() == partitionId) {
+                if (((QolsysIQPartitionHandler) handler).getPartitionId() == partitionId) {
                     return (QolsysIQPartitionHandler) handler;
                 }
             }
