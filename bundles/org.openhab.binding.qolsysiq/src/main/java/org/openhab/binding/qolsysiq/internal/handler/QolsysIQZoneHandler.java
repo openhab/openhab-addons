@@ -88,9 +88,6 @@ public class QolsysIQZoneHandler extends BaseThingHandler {
         props.put("zoneType", zone.zoneType.toString());
         props.put("partitionId", String.valueOf(zone.partitionId));
         getThing().setProperties(props);
-        if (getThing().getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.ONLINE);
-        }
     }
 
     protected void zoneActiveEvent(ZoneActiveEvent event) {
@@ -107,20 +104,19 @@ public class QolsysIQZoneHandler extends BaseThingHandler {
 
     private void initializeZone() {
         Bridge bridge = getBridge();
-        if (bridge != null) {
-            BridgeHandler handler = bridge.getHandler();
-            if (handler instanceof QolsysIQPartitionHandler) {
-                if (handler.getThing().getStatus() != ThingStatus.ONLINE) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-                    return;
-                }
-                Zone z = ((QolsysIQPartitionHandler) handler).getZone(getZoneId());
-                if (z == null) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
-                    return;
-                }
-                updateZone(z);
+        BridgeHandler handler = bridge == null ? null : bridge.getHandler();
+        if (bridge != null && handler instanceof QolsysIQPartitionHandler) {
+            if (handler.getThing().getStatus() != ThingStatus.ONLINE) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                return;
             }
+            Zone z = ((QolsysIQPartitionHandler) handler).getZone(getZoneId());
+            if (z == null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Zone not found in partition");
+                return;
+            }
+            updateZone(z);
+            updateStatus(ThingStatus.ONLINE);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
         }

@@ -88,17 +88,7 @@ public class QolsysIQPartitionHandler extends BaseBridgeHandler implements Qolsy
         armCode = config.armCode.isBlank() ? null : config.armCode;
         disarmCode = config.disarmCode.isBlank() ? null : config.disarmCode;
         logger.debug("initialize partition {}", partitionId);
-        QolsysIQPanelHandler panel = panelHandler();
-        if (panel == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
-        } else if (panel.getThing().getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-        } else {
-            updateStatus(ThingStatus.UNKNOWN);
-            scheduler.execute(() -> {
-                panel.refresh();
-            });
-        }
+        initializePartition();
     }
 
     @Override
@@ -109,10 +99,12 @@ public class QolsysIQPartitionHandler extends BaseBridgeHandler implements Qolsy
 
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        super.bridgeStatusChanged(bridgeStatusInfo);
-        if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
+        if (bridgeStatusInfo.getStatus() != ThingStatus.ONLINE) {
             cancelExitDelayJob();
             cancelErrorDelayJob();
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+        } else {
+            initializePartition();
         }
     }
 
@@ -227,9 +219,6 @@ public class QolsysIQPartitionHandler extends BaseBridgeHandler implements Qolsy
     }
 
     protected void updatePartition(Partition partition) {
-        if (getThing().getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.ONLINE);
-        }
         updatePartitionStatus(partition.status);
         setSecureArm(partition.secureArm);
         if (partition.status != PartitionStatus.ALARM) {
@@ -245,12 +234,29 @@ public class QolsysIQPartitionHandler extends BaseBridgeHandler implements Qolsy
                 }
             });
         }
+        if (getThing().getStatus() != ThingStatus.ONLINE) {
+            updateStatus(ThingStatus.ONLINE);
+        }
         discoverChildDevices();
     }
 
     protected @Nullable Zone getZone(Integer zoneId) {
         synchronized (zones) {
             return zones.stream().filter(z -> z.zoneId.equals(zoneId)).findAny().orElse(null);
+        }
+    }
+
+    private void initializePartition() {
+        QolsysIQPanelHandler panel = panelHandler();
+        if (panel == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+        } else if (panel.getThing().getStatus() != ThingStatus.ONLINE) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+        } else {
+            updateStatus(ThingStatus.UNKNOWN);
+            scheduler.execute(() -> {
+                panel.refresh();
+            });
         }
     }
 
