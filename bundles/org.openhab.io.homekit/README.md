@@ -312,8 +312,8 @@ Rollershutter window          "Window"               {homekit = "Window" [invert
 Rollershutter door            "Door"                 {homekit = "Door" [inverted=false]}
  ```
 
-HomeKit home app never sends STOP" but only the target position. 
-If you add configuration parameter "stop=true", openHAB will emulate stop and send "STOP" command to rollenshutter item if you click on the blind icon in the home app while the blind is moving.
+HomeKit home app never sends "STOP" but only the target position. 
+If you add configuration parameter "stop=true", openHAB will emulate stop and send "STOP" command to rollershutter item if you click on the blind icon in the iOS home app while the blind is moving.
 
 ```xtend
 Rollershutter window_covering "Window Rollershutter" {homekit = "WindowCovering"  [stop=true]}
