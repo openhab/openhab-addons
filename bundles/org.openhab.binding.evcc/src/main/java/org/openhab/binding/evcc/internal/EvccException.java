@@ -10,26 +10,25 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.evcc.internal.api;
+package org.openhab.binding.evcc.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.evcc.internal.EvccException;
 
 /**
- * The {@link EvccApiException} signals that an API request by {@link EvccAPI} failed.
- * 
+ * The {@link EvccException} signals that an operation in the evcc binding failed.
+ *
  * @author Florian Hotze - Initial contribution
  */
 @NonNullByDefault
-public class EvccApiException extends EvccException {
+public class EvccException extends Exception {
 
-    private static final long serialVersionUID = -1935778974024277328L;
+    private static final long serialVersionUID = -3109722274503587002L;
 
-    public EvccApiException(String message) {
+    public EvccException(String message) {
         super(message);
     }
 
-    public EvccApiException(String message, Throwable cause) {
+    public EvccException(String message, Throwable cause) {
         super(message, cause);
     }
 }
