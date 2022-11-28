@@ -214,6 +214,12 @@ Use the command `jdbc schema check` to perform an integrity check of the schema.
 
 Identified issues can be fixed automatically using the command `jdbc schema fix` (all items having issues) or `jdbc schema fix <itemName>` (single item).
 
+Issues than can be identified and possibly fixed:
+
+- Wrong column name case (`time` and `name`).
+- Wrong column type. Before fixing this, make sure that time-zone is correctly configured.
+- Unexpected column (identify only).
+
 ### For Developers
 
 * Clearly separated source files for the database-specific part of openHAB logic.
