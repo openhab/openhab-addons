@@ -184,6 +184,9 @@ public class LiquidCheckHandler extends BaseThingHandler {
                         double fillIndicator = (double) response.payload.measure.content / config.maxContent * 100;
                         updateState(FILL_INDICATOR_CHANNEL, new QuantityType<>(fillIndicator, Units.PERCENT));
                     }
+                    if (thing.getStatus().equals(ThingStatus.OFFLINE)) {
+                        updateStatus(ThingStatus.ONLINE);
+                    }
                 } else {
                     logger.debug("Json is null");
                 }
