@@ -216,12 +216,12 @@ OpenHAB is a highly dynamic system, and prone to occasional misconfigurations wh
 This is a problem for Homekit because if the bridge makes a connection, but accessories are missing, then the Homekit database will simply remove that accessory.
 When the accessory does come back (i.e. because you corrected a syntax error in an .items file, or OpenHAB completes booting), all customization of that accessory will be lost - the room assignment, customized  name, custom icon, status/home screen/favorite preferences, etc.
 In order to work around this, the Homekit addon can create dummy accessories for any accessory it has previously published to Homekit.
-To enable this behavior, turn on the `createDummyAccessories` setting.
+To enable this behavior, turn on the `useDummyAccessories` setting.
 OpenHAB will then simply present a non-interactive accessory for any that are missing.
 The OpenHAB log will also contain information whenever a dummy accessory is created.
 If the item backing the accessory is later re-created, everything will sync back up and nothing will be lost.
 You can also run the console command `openhab:homekit listDummyAccessories` to see which items are missing.
-Apple devices may or may not show "Not Responding" for some or all accessories when there are dummy accessories, since it won't be updating.
+Apple devices may or may not show "Not Responding" for some or all accessories when there are dummy accessories, since they will no longer be backed by actual items with state.
 It's recommended that you resolve this state as soon as possible, since Homekit may decide your entire bridge is being uncooperative, and remove everything itself.
 If you actually meant to remove an item, you will need to purge the dummy items from the database so that they'll disappear from the Home app altogether.
 In order to do so, run the console command `openhab:homekit pruneDummyAccessories`.
