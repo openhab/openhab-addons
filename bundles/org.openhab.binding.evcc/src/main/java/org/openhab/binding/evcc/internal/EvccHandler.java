@@ -96,7 +96,7 @@ public class EvccHandler extends BaseThingHandler {
                         if (command instanceof StringType) {
                             evccAPI.setMode(loadpoint, command.toString());
                         } else {
-                            throw new EvccException("Command has wrong type, StringType required!");
+                            logger.debug("Command has wrong type, StringType required!");
                         }
                         break;
                     case CHANNEL_LOADPOINT_MIN_SOC:
@@ -105,7 +105,7 @@ public class EvccHandler extends BaseThingHandler {
                         } else if (command instanceof DecimalType) {
                             evccAPI.setMinSoC(loadpoint, ((DecimalType) command).intValue());
                         } else {
-                            throw new EvccException("Command has wrong type, QuantityType or DecimalType required!");
+                            logger.debug("Command has wrong type, QuantityType or DecimalType required!");
                         }
                         break;
                     case CHANNEL_LOADPOINT_TARGET_SOC:
@@ -115,7 +115,7 @@ public class EvccHandler extends BaseThingHandler {
                         } else if (command instanceof DecimalType) {
                             evccAPI.setTargetSoC(loadpoint, ((DecimalType) command).intValue());
                         } else {
-                            throw new EvccException("Command has wrong type, QuantityType or DecimalType required!");
+                            logger.debug("Command has wrong type, QuantityType or DecimalType required!");
                         }
                         break;
                     case CHANNEL_LOADPOINT_TARGET_TIME:
@@ -132,7 +132,7 @@ public class EvccHandler extends BaseThingHandler {
                                 }
                             }
                         } else {
-                            throw new EvccException("Command has wrong type, DateTimeType required!");
+                            logger.debug("Command has wrong type, DateTimeType required!");
                         }
                         break;
                     case CHANNEL_LOADPOINT_TARGET_TIME_ENABLED:
@@ -143,14 +143,14 @@ public class EvccHandler extends BaseThingHandler {
                             evccAPI.unsetTargetCharge(loadpoint);
                             targetTimeEnabled = false;
                         } else {
-                            throw new EvccException("Command has wrong type, OnOffType required!");
+                            logger.debug("Command has wrong type, OnOffType required!");
                         }
                         break;
                     case CHANNEL_LOADPOINT_PHASES:
                         if (command instanceof DecimalType) {
                             evccAPI.setPhases(loadpoint, ((DecimalType) command).intValue());
                         } else {
-                            throw new EvccException("Command has wrong type, DecimalType required!");
+                            logger.debug("Command has wrong type, DecimalType required!");
                         }
                         break;
                     case CHANNEL_LOADPOINT_MIN_CURRENT:
@@ -160,7 +160,7 @@ public class EvccHandler extends BaseThingHandler {
                         } else if (command instanceof DecimalType) {
                             evccAPI.setMinCurrent(loadpoint, ((DecimalType) command).intValue());
                         } else {
-                            throw new EvccException("Command has wrong type, QuantityType or DecimalType required!");
+                            logger.debug("Command has wrong type, QuantityType or DecimalType required!");
                         }
                         break;
                     case CHANNEL_LOADPOINT_MAX_CURRENT:
@@ -170,13 +170,13 @@ public class EvccHandler extends BaseThingHandler {
                         } else if (command instanceof DecimalType) {
                             evccAPI.setMaxCurrent(loadpoint, ((DecimalType) command).intValue());
                         } else {
-                            throw new EvccException("Command has wrong type, QuantityType or DecimalType required!");
+                            logger.debug("Command has wrong type, QuantityType or DecimalType required!");
                         }
                         break;
                     default:
                         return;
                 }
-            } catch (EvccException e) {
+            } catch (EvccApiException e) {
                 Throwable cause = e.getCause();
                 if (cause == null) {
                     logger.debug("Failed to handle command {} for channel {}: {}", command, channelUID, e.getMessage());

@@ -13,7 +13,6 @@
 package org.openhab.binding.evcc.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.evcc.internal.EvccException;
 
 /**
  * The {@link EvccApiException} signals that an API request by {@link EvccAPI} failed.
@@ -21,7 +20,7 @@ import org.openhab.binding.evcc.internal.EvccException;
  * @author Florian Hotze - Initial contribution
  */
 @NonNullByDefault
-public class EvccApiException extends EvccException {
+public class EvccApiException extends Exception {
 
     private static final long serialVersionUID = -1935778974024277328L;
 
