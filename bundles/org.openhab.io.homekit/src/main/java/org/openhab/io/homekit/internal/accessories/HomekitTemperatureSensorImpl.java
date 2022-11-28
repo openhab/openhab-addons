@@ -75,8 +75,9 @@ class HomekitTemperatureSensorImpl extends AbstractHomekitAccessoryImpl implemen
 
     @Override
     public double getMinStepCurrentTemperature() {
-        return getAccessoryConfiguration(HomekitCharacteristicType.CURRENT_TEMPERATURE, HomekitTaggedItem.STEP,
-                BigDecimal.valueOf(TargetTemperatureCharacteristic.DEFAULT_STEP)).doubleValue();
+        return HomekitCharacteristicFactory.getTemperatureStep(
+                getCharacteristic(HomekitCharacteristicType.CURRENT_TEMPERATURE).get(),
+                TargetTemperatureCharacteristic.DEFAULT_STEP);
     }
 
     @Override
