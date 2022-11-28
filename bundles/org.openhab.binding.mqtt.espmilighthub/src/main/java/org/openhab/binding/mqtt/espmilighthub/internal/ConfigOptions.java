@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class ConfigOptions {
-    public BigDecimal duvThreshold = BigDecimal.ONE;
+    public BigDecimal duvThreshold = new BigDecimal("0.003");
     public int whiteThreshold = -1;
     public int whiteSat = -1;
     public int whiteHue = -1;
