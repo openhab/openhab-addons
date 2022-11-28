@@ -20,5 +20,5 @@ package org.openhab.binding.qolsysiq.internal.client.dto.action;
 public enum AlarmActionType {
     AUXILIARY,
     FIRE,
-    POLCIE
+    POLICE
 }
