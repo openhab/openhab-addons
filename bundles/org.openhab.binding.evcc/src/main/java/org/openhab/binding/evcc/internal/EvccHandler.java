@@ -101,7 +101,7 @@ public class EvccHandler extends BaseThingHandler {
                         break;
                     case CHANNEL_LOADPOINT_MIN_SOC:
                         if (command instanceof QuantityType) {
-                            evccAPI.setMinSoC(loadpoint, ((QuantityType<?>) command).intValue());
+                            evccAPI.setMinSoC(loadpoint, ((QuantityType<?>) command).toUnit(Units.PERCENT).intValue());
                         } else if (command instanceof DecimalType) {
                             evccAPI.setMinSoC(loadpoint, ((DecimalType) command).intValue());
                         } else {
@@ -110,7 +110,8 @@ public class EvccHandler extends BaseThingHandler {
                         break;
                     case CHANNEL_LOADPOINT_TARGET_SOC:
                         if (command instanceof QuantityType) {
-                            evccAPI.setTargetSoC(loadpoint, ((QuantityType<?>) command).intValue());
+                            evccAPI.setTargetSoC(loadpoint,
+                                    ((QuantityType<?>) command).toUnit(Units.PERCENT).intValue());
                         } else if (command instanceof DecimalType) {
                             evccAPI.setTargetSoC(loadpoint, ((DecimalType) command).intValue());
                         } else {
@@ -154,7 +155,8 @@ public class EvccHandler extends BaseThingHandler {
                         break;
                     case CHANNEL_LOADPOINT_MIN_CURRENT:
                         if (command instanceof QuantityType) {
-                            evccAPI.setMinCurrent(loadpoint, ((QuantityType<?>) command).intValue());
+                            evccAPI.setMinCurrent(loadpoint,
+                                    ((QuantityType<?>) command).toUnit(Units.AMPERE).intValue());
                         } else if (command instanceof DecimalType) {
                             evccAPI.setMinCurrent(loadpoint, ((DecimalType) command).intValue());
                         } else {
@@ -163,7 +165,8 @@ public class EvccHandler extends BaseThingHandler {
                         break;
                     case CHANNEL_LOADPOINT_MAX_CURRENT:
                         if (command instanceof QuantityType) {
-                            evccAPI.setMaxCurrent(loadpoint, ((QuantityType<?>) command).intValue());
+                            evccAPI.setMaxCurrent(loadpoint,
+                                    ((QuantityType<?>) command).toUnit(Units.AMPERE).intValue());
                         } else if (command instanceof DecimalType) {
                             evccAPI.setMaxCurrent(loadpoint, ((DecimalType) command).intValue());
                         } else {
