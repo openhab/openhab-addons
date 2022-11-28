@@ -322,6 +322,12 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
      */
     public Collection<String> getSchemaIssues(String tableName, String itemName) throws JdbcSQLException {
         List<String> issues = new ArrayList<>();
+
+        if (!checkDBAccessability()) {
+            logger.warn("JDBC::getSchemaIssues: database not connected");
+            return issues;
+        }
+
         Item item;
         try {
             item = itemRegistry.getItem(itemName);
@@ -375,6 +381,11 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
      * @throws JdbcSQLException on SQL errors
      */
     public boolean fixSchemaIssues(String tableName, String itemName) throws JdbcSQLException {
+        if (!checkDBAccessability()) {
+            logger.warn("JDBC::fixSchemaIssues: database not connected");
+            return false;
+        }
+
         Item item;
         try {
             item = itemRegistry.getItem(itemName);
@@ -469,6 +480,11 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
      * @throws JdbcSQLException
      */
     public boolean cleanupItem(String itemName, boolean force) throws JdbcSQLException {
+        if (!checkDBAccessability()) {
+            logger.warn("JDBC::cleanupItem: database not connected");
+            return false;
+        }
+
         String tableName = itemNameToTableNameMap.get(itemName);
         if (tableName == null) {
             return false;
