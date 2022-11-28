@@ -106,6 +106,7 @@ Note that the group 0 (or ALL group) is not auto discovered as a thing and thus 
 | `oneTriggersNightMode` | Night mode is a much lower level of light and this feature allows it to be auto selected when your fader/slider moves to 1%. NOTE: Night mode by design locks out some controls of a physical remote, so this feature is disabled by default. | Y | false |
 | `powerFailsToMinimum` | If lights loose power from the power switch OR a power outage, they will default to using the lowest brightness if the light was turned off before the power failure occurred. | Y | true |
 | `whiteThreshold` | This feature allows you to use a color control to change to using the real white LEDs when the saturation is equal to, or below this threshold. -1 will disable this feature. | Y | 12 |
+| `duvThreshold` | This feature allows you to use a color control to change to using the real warm/cool white LEDs to set a white color temperature if the color is within a certain threshold of the block body curve. 1 will effectively disable this feature. The default settings maps well to Apple's HomeKit that will allow you to choose a color temperature, but sends it as an HSB value. See https://www.waveformlighting.com/tech/calculate-duv-from-cie-1931-xy-coordinates/ for more information. | Y | 0.003 |
 
 ## Channels
 
