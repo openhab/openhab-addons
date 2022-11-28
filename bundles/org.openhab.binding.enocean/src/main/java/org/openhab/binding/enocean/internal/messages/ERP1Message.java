@@ -108,11 +108,12 @@ public class ERP1Message extends BasePacket {
                     }
                     break;
                 case SIG:
+                case MSC:
                     teachIn = false;
                     senderId = Arrays.copyOfRange(payload, dataLength - 5, dataLength - 1);
                     break;
                 default:
-                    break;
+                    rorg = RORG.Unknown;
             }
 
         } catch (Exception e) {
