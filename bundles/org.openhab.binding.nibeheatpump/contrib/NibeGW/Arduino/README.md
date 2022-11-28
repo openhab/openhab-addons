@@ -3,7 +3,7 @@
 
 ## RS-485 Modules
 
-For setttings up a NibeGW you need a RS485 module. Most cheap modules out there are compatible with 5V voltage and therefore compatible with Arduino based hardware. Mostly you will get one of two commonly used designs:
+For settting up a NibeGW you need a RS485 module. While ProDiNo already have RS-485 support included, you need a seperate module for Arduino Uno. Most cheap modules out there are compatible with 5V voltage and therefore compatible with Arduino based hardware. Mostly you will get one of two commonly used designs:
 
 * Modules based on Max1348 chip, which has 2 pins on the Arduino side (RXD, TXD) + VCC + GND
 * Modules based on Max485 chip, which has 4 pins on the Arduino side (RO, RE, DE, DI) + VCC + GND
@@ -34,6 +34,8 @@ Both types of modules work fine with NibeGW. The difference between the two is, 
 ## Ethernet Shield W5100
 
 This Ethernet shield is based on Wiznet W5100 Ethernet Chip. It is supported by the Adruino Ehternet Library. No special configuration is needed, NibeGW supports this shield out of the box.
+
+ProDiNo already have Ethernet included, so there's no need for a seperate Ethernet Shield. Also the ProDiNo Ethernet is supported by NibeGW out of the box.
 
 
 ## Arduino Uno
@@ -70,7 +72,7 @@ Enable support for HARDWARE_SERIAL:
 #define HARDWARE_SERIAL
 ```
 
-##  PRODINo ESP32 Ethernet v1 
+##  ProDiNo ESP32 Ethernet v1 
 
 Todo
 
