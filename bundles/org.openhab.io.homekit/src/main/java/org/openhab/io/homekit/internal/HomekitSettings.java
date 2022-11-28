@@ -12,6 +12,8 @@
  */
 package org.openhab.io.homekit.internal;
 
+import org.openhab.core.service.StartLevelService;
+
 /**
  * Provides the configured and static settings for the Homekit addon
  *
@@ -30,7 +32,7 @@ public class HomekitSettings {
     public String pin = "031-45-154";
     public String setupId;
     public String qrCode;
-    public int startDelay = 30;
+    public int startLevel = StartLevelService.STARTLEVEL_STATES;
     public boolean useDummyAccessories = false;
     public boolean useFahrenheitTemperature = false;
     public boolean useOHmDNS = false;
@@ -96,6 +98,9 @@ public class HomekitSettings {
             return false;
         }
         if (instances != other.instances) {
+            return false;
+        }
+        if (startLevel != other.startLevel) {
             return false;
         }
         if (thermostatTargetModeAuto == null) {

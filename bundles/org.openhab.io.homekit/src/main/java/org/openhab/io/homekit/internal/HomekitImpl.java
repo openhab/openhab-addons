@@ -22,7 +22,6 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import javax.jmdns.JmDNS;
 
@@ -37,6 +36,10 @@ import org.openhab.core.items.MetadataRegistry;
 import org.openhab.core.net.CidrAddress;
 import org.openhab.core.net.NetworkAddressChangeListener;
 import org.openhab.core.net.NetworkAddressService;
+import org.openhab.core.service.ReadyMarker;
+import org.openhab.core.service.ReadyMarkerFilter;
+import org.openhab.core.service.ReadyService;
+import org.openhab.core.service.StartLevelService;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.storage.StorageService;
 import org.openhab.io.homekit.Homekit;
@@ -66,7 +69,7 @@ import io.github.hapjava.server.impl.crypto.HAPSetupCodeUtils;
         Constants.SERVICE_PID + "=org.openhab.homekit", "port:Integer=9123" })
 @ConfigurableService(category = "io", label = "HomeKit Integration", description_uri = "io:homekit")
 @NonNullByDefault
-public class HomekitImpl implements Homekit, NetworkAddressChangeListener {
+public class HomekitImpl implements Homekit, NetworkAddressChangeListener, ReadyService.ReadyTracker {
     private final Logger logger = LoggerFactory.getLogger(HomekitImpl.class);
 
     private final StorageService storageService;
@@ -74,6 +77,7 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener {
     private final ConfigurationAdmin configAdmin;
     private final ItemRegistry itemRegistry;
     private final MetadataRegistry metadataRegistry;
+    private final ReadyService readyService;
 
     private final List<HomekitAuthInfoImpl> authInfos = new ArrayList<>();
     private HomekitSettings settings;
@@ -81,6 +85,7 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener {
     private final List<HomekitServer> homekitServers = new ArrayList<>();
     private final List<HomekitRoot> bridges = new ArrayList<>();
     private MDNSClient mdnsClient;
+    private int currentStartLevel = 0;
 
     private final List<HomekitChangeListener> changeListeners = new ArrayList<>();
 
@@ -90,7 +95,8 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener {
     @Activate
     public HomekitImpl(@Reference StorageService storageService, @Reference ItemRegistry itemRegistry,
             @Reference NetworkAddressService networkAddressService, @Reference MetadataRegistry metadataRegistry,
-            @Reference ConfigurationAdmin configAdmin, @Reference MDNSClient mdnsClient, Map<String, Object> properties)
+            @Reference ConfigurationAdmin configAdmin, @Reference MDNSClient mdnsClient,
+            @Reference ReadyService readyService, Map<String, Object> properties)
             throws IOException, InvalidAlgorithmParameterException {
         this.storageService = storageService;
         this.networkAddressService = networkAddressService;
@@ -99,13 +105,9 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener {
         this.mdnsClient = mdnsClient;
         this.itemRegistry = itemRegistry;
         this.metadataRegistry = metadataRegistry;
+        this.readyService = readyService;
         networkAddressService.addNetworkAddressChangeListener(this);
-        try {
-            startHomekitServer();
-        } catch (IOException | InvalidAlgorithmParameterException e) {
-            logger.warn("cannot activate HomeKit binding. {}", e.getMessage());
-            throw e;
-        }
+        readyService.registerTracker(this, new ReadyMarkerFilter().withType(StartLevelService.STARTLEVEL_MARKER_TYPE));
     }
 
     private HomekitSettings processConfig(Map<String, Object> properties) {
@@ -160,7 +162,9 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener {
                     || oldSettings.instances != settings.instances) {
                 // the HomeKit server settings changed. we do a complete re-init
                 stopHomekitServer();
-                startHomekitServer();
+                if (currentStartLevel >= settings.startLevel) {
+                    startHomekitServer();
+                }
             } else {
                 for (HomekitChangeListener changeListener : changeListeners) {
                     changeListener.updateSettings(settings);
@@ -168,6 +172,43 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener {
             }
         } catch (IOException | InvalidAlgorithmParameterException e) {
             logger.warn("could not initialize HomeKit bridge: {}", e.getMessage());
+        }
+    }
+
+    @Override
+    public synchronized void onReadyMarkerAdded(ReadyMarker readyMarker) {
+        int newLevel = Integer.parseInt(readyMarker.getIdentifier());
+
+        if (newLevel > currentStartLevel) {
+            onStartLevelChanged(newLevel);
+        }
+    }
+
+    @Override
+    @SuppressWarnings("PMD.EmptyWhileStmt")
+    public synchronized void onReadyMarkerRemoved(ReadyMarker readyMarker) {
+        int newLevel = Integer.parseInt(readyMarker.getIdentifier());
+
+        if (currentStartLevel > newLevel) {
+            while (newLevel-- > 0 && !readyService
+                    .isReady(new ReadyMarker(StartLevelService.STARTLEVEL_MARKER_TYPE, Integer.toString(newLevel)))) {
+            }
+            onStartLevelChanged(newLevel);
+        }
+    }
+
+    private void onStartLevelChanged(int newStartLevel) {
+        int previousLevel = currentStartLevel;
+        currentStartLevel = newStartLevel;
+
+        if (previousLevel < settings.startLevel && newStartLevel >= settings.startLevel) {
+            try {
+                startHomekitServer();
+            } catch (IOException | InvalidAlgorithmParameterException e) {
+                logger.warn("could not initialize HomeKit bridge: {}", e.getMessage());
+            }
+        } else if (previousLevel >= settings.startLevel && newStartLevel < settings.startLevel) {
+            stopHomekitServer();
         }
     }
 
@@ -187,21 +228,7 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener {
 
         final int lastAccessoryCount = changeListener.getLastAccessoryCount();
         int currentAccessoryCount = changeListener.getAccessories().size();
-        if (!settings.useDummyAccessories && currentAccessoryCount < lastAccessoryCount) {
-            logger.debug(
-                    "it looks like not all items were initialized yet. Old configuration had {} accessories, the current one has only {} accessories. Delay HomeKit bridge start for {} seconds.",
-                    lastAccessoryCount, currentAccessoryCount, settings.startDelay);
-            scheduler.schedule(() -> {
-                if (currentAccessoryCount < lastAccessoryCount) {
-                    // the number of items is still different, maybe it is desired.
-                    // make new configuration revision.
-                    changeListener.makeNewConfigurationRevision();
-                }
-                bridge.start();
-            }, settings.startDelay, TimeUnit.SECONDS);
-        } else { // start bridge immediately.
-            bridge.start();
-        }
+        bridge.start();
         return bridge;
     }
 
@@ -319,6 +346,9 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener {
     @Override
     public synchronized void onChanged(final List<CidrAddress> added, final List<CidrAddress> removed) {
         logger.trace("HomeKit bridge reacting on network interface changes.");
+        if (currentStartLevel < settings.startLevel) {
+            return;
+        }
         removed.forEach(i -> {
             logger.trace("removed interface {}", i.getAddress().toString());
             if (i.getAddress().equals(networkInterface)) {
