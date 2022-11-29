@@ -18,10 +18,18 @@ package org.openhab.binding.bondhome.internal;
  * @author Cody Cutrer - Initial contribution
  */
 public class BondException extends Exception {
-    public BondException() {
-    }
+    private boolean wasBridgeSetOffline;
 
     public BondException(String message) {
+        this(message, false);
+    }
+
+    public BondException(String message, boolean wasBridgeSetOffline) {
         super(message);
+        this.wasBridgeSetOffline = wasBridgeSetOffline;
+    }
+
+    public boolean wasBridgeSetOffline() {
+        return wasBridgeSetOffline;
     }
 }

@@ -113,7 +113,9 @@ public class BondDeviceHandler extends BaseThingHandler {
                 deviceState = api.getDeviceState(deviceId);
                 updateChannelsFromState(deviceState);
             } catch (BondException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                if (!e.wasBridgeSetOffline()) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                }
             }
             return;
         }
@@ -463,7 +465,9 @@ public class BondDeviceHandler extends BaseThingHandler {
             logger.trace("Getting device properties for {} ({})", config.deviceId, this.getThing().getLabel());
             deviceProperties = api.getDeviceProperties(deviceId);
         } catch (BondException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            if (!e.wasBridgeSetOffline()) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            }
             return;
         }
 
@@ -719,7 +723,9 @@ public class BondDeviceHandler extends BaseThingHandler {
                     deviceState = api.getDeviceState(deviceId);
                     updateChannelsFromState(deviceState);
                 } catch (BondException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                    if (!e.wasBridgeSetOffline()) {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                    }
                 }
             };
             this.pollingJob = scheduler.scheduleWithFixedDelay(pollingCommand, 60, 300, TimeUnit.SECONDS);

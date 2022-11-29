@@ -236,7 +236,7 @@ public class BondHttpApi {
                     // Don't retry or throw an exception if we get unauthorized, just set the bridge offline
                     bridgeHandler.setBridgeOffline(ThingStatusDetail.CONFIGURATION_ERROR,
                             "@text/offline.conf-error.incorrect-local-token");
-                    throw new BondException("@text/offline.conf-error.incorrect-local-token");
+                    throw new BondException("@text/offline.conf-error.incorrect-local-token", true);
                 }
                 if (response.getStatus() == HttpStatus.NOT_FOUND_404) {
                     throw new BondException("@text/offline.comm-error.device-not-found");
@@ -258,7 +258,7 @@ public class BondHttpApi {
                         logger.debug("Repeated Bond API calls to {} timed out.", uri);
                         bridgeHandler.setBridgeOffline(ThingStatusDetail.COMMUNICATION_ERROR,
                                 "@text/offline.comm-error.timeout");
-                        throw new BondException("@text/offline.comm-error.timeout");
+                        throw new BondException("@text/offline.comm-error.timeout", true);
                     } else {
                         throw new BondException("@text/offline.conf-error.api-call-failed");
                     }
