@@ -31,14 +31,15 @@ import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openwebnet4j.OpenDeviceType;
 import org.openwebnet4j.message.BaseOpenMessage;
 import org.openwebnet4j.message.Where;
+import org.openwebnet4j.message.WhereThermo;
 import org.openwebnet4j.message.WhereZigBee;
 import org.openwebnet4j.message.Who;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link OpenWebNetDeviceDiscoveryService} is responsible for discovering OpenWebNet devices connected to a
- * bridge/gateway
+ * The {@link OpenWebNetDeviceDiscoveryService} is responsible for discovering
+ * OpenWebNet devices connected to a bridge/gateway
  *
  * @author Massimo Valla - Initial contribution
  * @author Andrea Conte - Energy management, Thermoregulation
@@ -86,14 +87,16 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
     }
 
     /**
-     * Create and notify to Inbox a new DiscoveryResult based on WHERE, OpenDeviceType and BaseOpenMessage
+     * Create and notify to Inbox a new DiscoveryResult based on WHERE,
+     * OpenDeviceType and BaseOpenMessage
      *
      * @param where the discovered device's address (WHERE)
      * @param deviceType {@link OpenDeviceType} of the discovered device
-     * @param message the OWN message received that identified the device (optional)
+     * @param message the OWN message received that identified the device
+     *            (optional)
      */
     public void newDiscoveryResult(Where where, OpenDeviceType deviceType, @Nullable BaseOpenMessage baseMsg) {
-        logger.info("newDiscoveryResult() WHERE={}, deviceType={}", where, deviceType);
+        logger.debug("newDiscoveryResult() WHERE={}, deviceType={}", where, deviceType);
         ThingTypeUID thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_GENERIC_DEVICE; // generic device
         String thingLabel = OpenWebNetBindingConstants.THING_LABEL_GENERIC_DEVICE;
         Who deviceWho = Who.UNKNOWN;
@@ -210,6 +213,12 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
         DiscoveryResult discoveryResult = null;
 
         String whereConfig = where.value();
+
+        // remove # from discovered thermo zone or central unit
+        if (OpenWebNetBindingConstants.THING_TYPE_BUS_THERMO_ZONE.equals(thingTypeUID)
+                || OpenWebNetBindingConstants.THING_TYPE_BUS_THERMO_CU.equals(thingTypeUID)) {
+            whereConfig = "" + ((WhereThermo) where).getZone();
+        }
         if (where instanceof WhereZigBee && WhereZigBee.UNIT_02.equals(((WhereZigBee) where).getUnit())) {
             logger.debug("UNIT=02 found (WHERE={}) -> will remove previous result if exists", where);
             thingRemoved(thingUID); // remove previously discovered thing
