@@ -172,7 +172,15 @@ Firmware of the device don't accept commands coming from other subnets.
 Set the communication in the thing configuration to 'cloud'.
 
 _Cloud connectivity is not working_
-The most common problem is a wrong userId/password. Try to fix your userId/password.
+The most common problem is a wrong or missing userId/password. Update your Xiaomi cloud userId & password in the [miio binding configuration screen](#binding-configuration).
+If the problem persists you can try the following:
+
+* Xiaomi Account verification might be needed. For some users login by the binding is unsuccessful as account verification is required, but the binding currently has no possibilities to handle this.
+In order to pass validation your (openHAB server) ip need to be validated/confirmed. 
+Browse to [https://account.xiaomi.com/](https://account.xiaomi.com/) and logon to your account. Note: use the same external ip address as your openHAB server, e.g.  you may need to disable your VPN.
+* If above is not possible or fails, You can try to find in the binding debug logging a `location url`. Try to login using this url (just after it fails) with your browser.
+* Several users also reported success by resetting their Xiaomi password.
+
 If it still fails, you're bit out of luck. You may try to restart openHAB (not just the binding) to clean the cookies. 
 As the cloud logon process is still little understood, your only luck might be to enable trace logging and see if you can translate the Chinese error code that it returns.
 
@@ -347,6 +355,17 @@ Currently the miio binding supports more than 340 different models.
 | Roborock S7                        | miio:vacuum      | [roborock.vacuum.a15](#roborock-vacuum-a15) | Yes          |            |
 | Roborock S4 Max                    | miio:vacuum      | [roborock.vacuum.a19](#roborock-vacuum-a19) | Yes          |            |
 | Roborock T7S Plus                  | miio:vacuum      | [roborock.vacuum.a23](#roborock-vacuum-a23) | Yes          |            |
+| Roborock G10S Pro                  | miio:vacuum      | [roborock.vacuum.a26](#roborock-vacuum-a26) | Yes          |            |
+| Roborock S7 MaxV                   | miio:vacuum      | [roborock.vacuum.a27](#roborock-vacuum-a27) | Yes          |            |
+| Roborock G10                       | miio:vacuum      | [roborock.vacuum.a29](#roborock-vacuum-a29) | Yes          |            |
+| Roborock G10                       | miio:vacuum      | [roborock.vacuum.a30](#roborock-vacuum-a30) | Yes          |            |
+| Roborock Q5                        | miio:vacuum      | [roborock.vacuum.a34](#roborock-vacuum-a34) | Yes          |            |
+| Roborock T8                        | miio:vacuum      | [roborock.vacuum.a37](#roborock-vacuum-a37) | Yes          |            |
+| Roborock Q7 Max                    | miio:vacuum      | [roborock.vacuum.a38](#roborock-vacuum-a38) | Yes          |            |
+| Roborock Q7                        | miio:vacuum      | [roborock.vacuum.a40](#roborock-vacuum-a40) | Yes          |            |
+| Roborock G10S                      | miio:vacuum      | [roborock.vacuum.a46](#roborock-vacuum-a46) | Yes          |            |
+| Roborock T8 Plus                   | miio:vacuum      | [roborock.vacuum.a52](#roborock-vacuum-a52) | Yes          |            |
+| Roborock S7 Pro Ultra              | miio:vacuum      | [roborock.vacuum.a62](#roborock-vacuum-a62) | Yes          |            |
 | Xiaowa C1                          | miio:vacuum      | [roborock.vacuum.c1](#roborock-vacuum-c1) | Yes          |            |
 | Roborock Xiaowa E Series Vacuum v2 | miio:unsupported | roborock.vacuum.e2     | No           |            |
 | Mi Robot Vacuum 1S                 | miio:vacuum      | [roborock.vacuum.m1s](#roborock-vacuum-m1s) | Yes          |            |
@@ -1259,7 +1278,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
-| actions              | String               | Actions                                  |            |
+| actions              | String               | Actions                                  | Value mapping `["vacuum-start-sweep"="Vacuum Start Sweep","vacuum-stop-sweeping"="Vacuum Stop Sweeping","battery-start-charge"="Battery Start Charge","brush-cleaner-reset-brush-life"="Brush Cleaner Reset Brush Life","brush-cleaner-reset-brush-life"="Brush Cleaner Reset Brush Life","filter-reset-filter-life"="Filter Reset Filter Life","vacuum-extend-start-clean"="Vacuum Extend Start Clean","vacuum-extend-stop-clean"="Vacuum Extend Stop Clean","map-map-req"="Map Map Req","map-update-map"="Map Update Map","audio-position"="Audio Position","audio-play-sound"="Audio Play Sound","time-delete-timer"="Time Delete Timer"]` |
 | status               | Number               | Robot Cleaner - Status                   | Value mapping `["1"="Sweeping","2"="Idle","3"="Paused","4"="Error","5"="Go Charging","6"="Charging","7"="Mopping"]` |
 | fault                | Number               | Robot Cleaner - Device Fault             |            |
 | battery_level        | Number:Dimensionless | Battery - Battery Level                  |            |
@@ -1701,8 +1720,8 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
-| actions              | String               | Robot Cleaner - Actions                  |            |
-| advanced_actions     | String               | Robot Cleaner - Advanced Actions         |            |
+| actions              | String               | Robot Cleaner - Actions                  | Value mapping `["vacuum-start-sweep"="Start","vacuum-start-sweep-mop"="Start Sweep+Mop","vacuum-start-only-sweep"="Start Sweep","vacuum-start-only-mop"="Start Mop","vacuum-dock"="Dock","vacuum-stop-sweeping"="Pause","vacuum-start-room-sweep"="Start Room Sweep"]` |
+| advanced_actions     | String               | Robot Cleaner - Advanced Actions         | Value mapping `["sweep-reset-consumable"="Sweep Reset Consumable","sweep-set-calibration"="Sweep Set Calibration","sweep-set-room-clean"="Sweep Set Room Clean","sweep-set-preference-clean"="Sweep Set Preference Clean","sweep-get-preference-clean"="Sweep Get Preference Clean","sweep-set-preference-type"="Sweep Set Preference Type","sweep-set-go-charging"="Sweep Set Go Charging","sweep-erase-preference"="Sweep Erase Preference","sweep-set-preference-ii"="Sweep Set Preference Ii","sweep-get-preference-ii"="Sweep Get Preference Ii","order-add"="Order Add","order-del"="Order Del","order-get"="Order Get","order-add-ii"="Order Add Ii","order-get-map-order-count"="Order Get Map Order Count","order-add-iii"="Order Add Iii","point-zone-start-point-clean"="Point Zone Start Point Clean","point-zone-pause-point-clean"="Point Zone Pause Point Clean","point-zone-start-zone-clean"="Point Zone Start Zone Clean","point-zone-pause-zone-clean"="Point Zone Pause Zone Clean","point-zone-set-beauty-wall"="Point Zone Set Beauty Wall","point-zone-set-virtual-wall"="Point Zone Set Virtual Wall","point-zone-set-zone-point"="Point Zone Set Zone Point","point-zone-start-point-clean-ii"="Point Zone Start Point Clean Ii","map-get-map-list"="Map Get Map List","map-upload-by-mapid"="Map Upload By Mapid","map-set-cur-map"="Map Set Cur Map","map-del-map"="Map Del Map","map-rename-map"="Map Rename Map","map-upload-by-maptype"="Map Upload By Maptype","map-rename-room"="Map Rename Room","map-arrange-room"="Map Arrange Room","map-split-room"="Map Split Room","map-reset-map"="Map Reset Map","map-build-new-map"="Map Build New Map","map-get-cur-path"="Map Get Cur Path","map-get-map-room-list"="Map Get Map Room List","map-upload-by-mapid-ii"="Map Upload By Mapid Ii","map-upload-by-maptype-ii"="Map Upload By Maptype Ii","map-reset-map-ii"="Map Reset Map Ii","map-build-map-ii"="Map Build Map Ii","map-set-mijia-room-list"="Map Set Mijia Room List","disturb-set-notdisturb"="Disturb Set Notdisturb","language-download-voice"="Language Download Voice","language-get-download-status"="Language Get Download Status"]` |
 | status               | Number               | Robot Cleaner - Status                   | Value mapping `["0"="Sleep","1"="Idle","2"="Paused","3"="Go Charging","4"="Charging","5"="Sweeping","6"="Sweeping and Mopping","7"="Mopping","8"="Upgrading"]` |
 | fault                | Number               | Robot Cleaner - Device Fault             |            |
 | mode                 | Number               | Robot Cleaner - Mode                     | Value mapping `["0"="Sweep","1"="Sweep And Mop","2"="Mop"]` |
@@ -2013,7 +2032,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | total-clean-area     | Number:Area          | Clean Record - Total Clean Area          |            |
 | total-clean-time     | Number               | Clean Record - Total Clean Time          |            |
 | total-clean-count    | Number               | Clean Record - Total Clean Count         |            |
-| language             | Number               | Language - Language                      | Value mapping `["0"="English","1"="简体中文","2"="Español","3"="Русский","4"="Italiano","5"="Français","6"="Deutsch","7"="한국어","8"="Polski"]` |
+| language             | Number               | Language - Language                      | Value mapping `["0"="English","1"="Chinese","2"="Spanish","3"="Russian","4"="Italian","5"="French","6"="German","7"="Korean","8"="Polish"]` |
 | not-disturb-switch   | Switch               | Language - Not Disturb Switch            |            |
 | mop-status           | Number               | Other Status - Mop Status                | Value mapping `["0"="Mop Uninstall","1"="Mop Install"]` |
 
@@ -2654,14 +2673,15 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
 | power                | Switch               | Power                                    |            |
-| powerUsage           | Number               | Power Consumption                        |            |
+| mode                 | String               | Mode                                     | Value mapping `["normal"="Normal","green"="Green"]` |
+| powerUsage           | Number:Power         | Power Consumption                        |            |
+| voltage              | Number:ElectricPotential | Voltage                                  |            |
 | led                  | Switch               | wifi LED                                 |            |
-| power_price          | Number               | power_price                              |            |
-| current              | Number               | Current                                  |            |
+| power_price          | Number               | Power Price                              |            |
+| power_factor         | Number               | Power Factor                             |            |
+| current              | Number:ElectricCurrent | Current                                  |            |
+| elec_leakage         | Number:ElectricCurrent | Electic Leakage                          |            |
 | temperature          | Number:Temperature   | Temperature                              |            |
-| lp_autooff           | Number               | Low Power Auto Off                       |            |
-| lp_autooff_delay     | Number               | Low Power Limit Time                     |            |
-| lp_threshold         | Number               | Low Power Threshold                      |            |
 
 ### ROIDMI EVE vacuum (<a name="roidmi-vacuum-v60">roidmi.vacuum.v60</a>) Channels
 
@@ -5243,15 +5263,21 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
 | power                | Switch               | Power                                    |            |
-| mode                 | String               | Mode                                     |            |
+| mode                 | String               | Mode                                     | Value mapping `["auto"="Auto","favorite"="Favorite","silent"="Silent","high"="High","medium"="Medium","idle"="Idle","strong"="Strong"]` |
 | humidity             | Number:Dimensionless | Humidity                                 |            |
 | aqi                  | Number               | Air Quality Index                        |            |
-| brightness           | Dimmer               | Brightness                               |            |
+| averageaqi           | Number               | Average Air Quality Index                |            |
 | led                  | Switch               | LED Status                               |            |
-| act_det              | Switch               | Air AutoDetect                           |            |
 | buzzer               | Switch               | Buzzer Status                            |            |
 | filtermaxlife        | Number               | Filter Max Life                          |            |
-| filterlive           | Number               | Filter Life                              |            |
+| filterhours          | Number:Time          | Filter Hours used                        |            |
+| usedhours            | Number:Time          | Run Time                                 |            |
+| motorspeed           | Number               | Motor Speed                              |            |
+| filterlife           | Number               | Filter Life                              |            |
+| favoritelevel        | Number               | Favorite Level                           | Value mapping `["0"="Favorite 0","1"="Favorite 1","2"="Favorite 2","3"="Favorite 3","4"="Favorite 4","5"="Favorite 5","6"="Favorite 6","7"="Favorite 7","8"="Favorite 8","9"="Favorite 9","10"="Favorite 10","11"="Favorite 11","12"="Favorite 13","13"="Favorite 13","14"="Favorite 14","15"="Favorite 15"]` |
+| temperature          | Number:Temperature   | Temperature                              |            |
+| purifyvolume         | Number:Volume        | Purified Volume                          |            |
+| childlock            | Switch               | Child Lock                               |            |
 
 ### Mi Air Purifier v2 (<a name="zhimi-airpurifier-v2">zhimi.airpurifier.v2</a>) Channels
 
@@ -8331,14 +8357,15 @@ note: Autogenerated example. Replace the id (powerstrip) in the channel with you
 ```
 Group G_powerstrip "CHINGMI Smart Power Strip v1" <status>
 Switch power "Power" (G_powerstrip) {channel="miio:basic:powerstrip:power"}
-Number powerUsage "Power Consumption" (G_powerstrip) {channel="miio:basic:powerstrip:powerUsage"}
+String mode "Mode" (G_powerstrip) {channel="miio:basic:powerstrip:mode"}
+Number:Power powerUsage "Power Consumption" (G_powerstrip) {channel="miio:basic:powerstrip:powerUsage"}
+Number:ElectricPotential voltage "Voltage" (G_powerstrip) {channel="miio:basic:powerstrip:voltage"}
 Switch led "wifi LED" (G_powerstrip) {channel="miio:basic:powerstrip:led"}
-Number power_price "power_price" (G_powerstrip) {channel="miio:basic:powerstrip:power_price"}
-Number current "Current" (G_powerstrip) {channel="miio:basic:powerstrip:current"}
+Number power_price "Power Price" (G_powerstrip) {channel="miio:basic:powerstrip:power_price"}
+Number power_factor "Power Factor" (G_powerstrip) {channel="miio:basic:powerstrip:power_factor"}
+Number:ElectricCurrent current "Current" (G_powerstrip) {channel="miio:basic:powerstrip:current"}
+Number:ElectricCurrent elec_leakage "Electic Leakage" (G_powerstrip) {channel="miio:basic:powerstrip:elec_leakage"}
 Number:Temperature temperature "Temperature" (G_powerstrip) {channel="miio:basic:powerstrip:temperature"}
-Number lp_autooff "Low Power Auto Off" (G_powerstrip) {channel="miio:basic:powerstrip:lp_autooff"}
-Number lp_autooff_delay "Low Power Limit Time" (G_powerstrip) {channel="miio:basic:powerstrip:lp_autooff_delay"}
-Number lp_threshold "Low Power Threshold" (G_powerstrip) {channel="miio:basic:powerstrip:lp_threshold"}
 ```
 
 ### ROIDMI EVE vacuum (roidmi.vacuum.v60) item file lines
@@ -11383,12 +11410,18 @@ Switch power "Power" (G_airpurifier) {channel="miio:basic:airpurifier:power"}
 String mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
 Number:Dimensionless humidity "Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:humidity"}
 Number aqi "Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:aqi"}
-Dimmer brightness "Brightness" (G_airpurifier) {channel="miio:basic:airpurifier:brightness"}
+Number averageaqi "Average Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:averageaqi"}
 Switch led "LED Status" (G_airpurifier) {channel="miio:basic:airpurifier:led"}
-Switch act_det "Air AutoDetect" (G_airpurifier) {channel="miio:basic:airpurifier:act_det"}
 Switch buzzer "Buzzer Status" (G_airpurifier) {channel="miio:basic:airpurifier:buzzer"}
 Number filtermaxlife "Filter Max Life" (G_airpurifier) {channel="miio:basic:airpurifier:filtermaxlife"}
-Number filterlive "Filter Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlive"}
+Number:Time filterhours "Filter Hours used" (G_airpurifier) {channel="miio:basic:airpurifier:filterhours"}
+Number:Time usedhours "Run Time" (G_airpurifier) {channel="miio:basic:airpurifier:usedhours"}
+Number motorspeed "Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motorspeed"}
+Number filterlife "Filter Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
+Number favoritelevel "Favorite Level" (G_airpurifier) {channel="miio:basic:airpurifier:favoritelevel"}
+Number:Temperature temperature "Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
+Number:Volume purifyvolume "Purified Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purifyvolume"}
+Switch childlock "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:childlock"}
 ```
 
 ### Mi Air Purifier v2 (zhimi.airpurifier.v2) item file lines
