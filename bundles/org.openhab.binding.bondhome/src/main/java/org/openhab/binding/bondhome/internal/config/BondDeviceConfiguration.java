@@ -15,6 +15,7 @@ package org.openhab.binding.bondhome.internal.config;
 import static org.openhab.binding.bondhome.internal.BondHomeBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link BondHomeConfiguration} class contains fields mapping thing configuration parameters.
@@ -27,6 +28,6 @@ public class BondDeviceConfiguration {
     /**
      * Configuration for a Bond Device
      */
-    public String deviceId = API_MISSING_DEVICE_NAME;
-    public String lastDeviceConfigurationHash = API_HASH;
+    public @Nullable String deviceId;
+    public @Nullable String lastDeviceConfigurationHash;
 }

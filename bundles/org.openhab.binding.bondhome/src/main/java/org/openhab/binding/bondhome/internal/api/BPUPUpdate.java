@@ -35,7 +35,7 @@ public class BPUPUpdate {
     // The Bond ID
     @SerializedName("B")
     @Expose(serialize = true, deserialize = true)
-    public String bondId = API_MISSING_BOND_ID;
+    public @Nullable String bondId;
     // The topic (the path from HTTP URL)
     @SerializedName("t")
     @Expose(serialize = true, deserialize = true)

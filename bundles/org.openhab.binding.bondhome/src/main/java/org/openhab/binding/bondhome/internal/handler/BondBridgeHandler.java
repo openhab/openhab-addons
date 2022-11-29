@@ -15,7 +15,6 @@ package org.openhab.binding.bondhome.internal.handler;
 import static org.openhab.binding.bondhome.internal.BondHomeBindingConstants.*;
 import static org.openhab.core.thing.Thing.*;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Collection;
@@ -29,6 +28,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.bondhome.internal.BondException;
 import org.openhab.binding.bondhome.internal.api.BPUPListener;
 import org.openhab.binding.bondhome.internal.api.BPUPUpdate;
 import org.openhab.binding.bondhome.internal.api.BondDeviceState;
@@ -100,6 +100,12 @@ public class BondBridgeHandler extends BaseBridgeHandler {
 
     private void initializeThing() {
         BondBridgeConfiguration localConfig = config;
+        if (localConfig.localToken == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.conf-error.incorrect-local-token");
+            this.initializer = null;
+            return;
+        }
         if (localConfig.ipAddress == null) {
             try {
                 String lookupAddress = localConfig.serialNumber + ".local";
@@ -236,7 +242,8 @@ public class BondBridgeHandler extends BaseBridgeHandler {
      * Returns the Id of the bridge associated with the handler
      */
     public String getBridgeId() {
-        return config.serialNumber;
+        String serialNumber = config.serialNumber;
+        return serialNumber == null ? "" : serialNumber;
     }
 
     /**
@@ -250,7 +257,8 @@ public class BondBridgeHandler extends BaseBridgeHandler {
      * Returns the local token of the bridge associated with the handler as a string
      */
     public String getBridgeToken() {
-        return config.localToken;
+        String localToken = config.localToken;
+        return localToken == null ? "" : localToken;
     }
 
     /**
@@ -295,30 +303,32 @@ public class BondBridgeHandler extends BaseBridgeHandler {
         }
     }
 
+    private void updateProperty(Map<String, String> thingProperties, String key, @Nullable String value) {
+        if (value == null) {
+            return;
+        }
+        thingProperties.put(key, value);
+    }
+
     private void updateBridgeProperties() {
-        BondSysVersion myVersion = null;
+        BondSysVersion myVersion;
         try {
             myVersion = api.getBridgeVersion();
-        } catch (IOException e) {
+        } catch (BondException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             return;
         }
-        if (myVersion != null) {
-            // Update all the thing properties based on the result
-            Map<String, String> thingProperties = editProperties();
-            thingProperties.put(PROPERTY_VENDOR, myVersion.make);
-            thingProperties.put(PROPERTY_MODEL_ID, myVersion.model);
-            thingProperties.put(PROPERTY_SERIAL_NUMBER, myVersion.bondid);
-            thingProperties.put(PROPERTY_FIRMWARE_VERSION, myVersion.firmwareVersion);
-            updateProperties(thingProperties);
-            updateStatus(ThingStatus.ONLINE);
-            BondDiscoveryService localDiscoveryService = discoveryService;
-            if (localDiscoveryService != null) {
-                localDiscoveryService.discoverNow();
-            }
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.comm-error.no-version");
+        // Update all the thing properties based on the result
+        Map<String, String> thingProperties = editProperties();
+        updateProperty(thingProperties, PROPERTY_VENDOR, myVersion.make);
+        updateProperty(thingProperties, PROPERTY_MODEL_ID, myVersion.model);
+        updateProperty(thingProperties, PROPERTY_SERIAL_NUMBER, myVersion.bondid);
+        updateProperty(thingProperties, PROPERTY_FIRMWARE_VERSION, myVersion.firmwareVersion);
+        updateProperties(thingProperties);
+        updateStatus(ThingStatus.ONLINE);
+        BondDiscoveryService localDiscoveryService = discoveryService;
+        if (localDiscoveryService != null) {
+            localDiscoveryService.discoverNow();
         }
     }
 

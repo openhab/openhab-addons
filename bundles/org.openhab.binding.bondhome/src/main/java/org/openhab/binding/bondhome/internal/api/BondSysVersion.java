@@ -15,6 +15,7 @@ package org.openhab.binding.bondhome.internal.api;
 import static org.openhab.binding.bondhome.internal.BondHomeBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -35,35 +36,35 @@ public class BondSysVersion {
     // The current state hash
     @SerializedName("_")
     @Expose(serialize = false, deserialize = true)
-    public String hash = API_HASH;
+    public @Nullable String hash;
 
     @Expose(serialize = true, deserialize = true)
-    public String target = BOND_BRIDGE_TARGET;
+    public @Nullable String target;
 
     @SerializedName("fw_ver")
     @Expose(serialize = true, deserialize = true)
-    public String firmwareVersion = BOND_LAST_KNOWN_FIRMWARE;
+    public @Nullable String firmwareVersion;
 
     @SerializedName("fw_date")
     @Expose(serialize = true, deserialize = true)
-    public String firmwareDate = BOND_LAST_KNOWN_FIRMWARE_DATE;
+    public @Nullable String firmwareDate;
 
     @Expose(serialize = true, deserialize = true)
-    public String make = BOND_BRIDGE_MAKE;
+    public @Nullable String make;
 
     @Expose(serialize = true, deserialize = true)
-    public String model = BOND_BRIDGE_MODEL;
+    public @Nullable String model;
 
     @SerializedName("branding_profile")
     @Expose(serialize = true, deserialize = true)
-    public String brandingProfile = BOND_BRIDGE_BRANDING;
+    public @Nullable String brandingProfile;
 
     @Expose(serialize = true, deserialize = true)
-    public String bondid = API_MISSING_BOND_ID;
+    public @Nullable String bondid;
 
     @SerializedName("upgrade_http")
     @Expose(serialize = true, deserialize = true)
-    public Boolean upgradeHttp = true;
+    public @Nullable Boolean upgradeHttp;
 
     @Expose(serialize = true, deserialize = true)
     public int api;

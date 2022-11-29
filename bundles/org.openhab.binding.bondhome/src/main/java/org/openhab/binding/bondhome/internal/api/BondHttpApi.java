@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -34,6 +35,7 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.InputStreamContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
+import org.openhab.binding.bondhome.internal.BondException;
 import org.openhab.binding.bondhome.internal.handler.BondBridgeHandler;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -71,14 +73,14 @@ public class BondHttpApi {
      * @throws IOException
      */
     @Nullable
-    public BondSysVersion getBridgeVersion() throws IOException {
+    public BondSysVersion getBridgeVersion() throws BondException {
         String json = request("/v2/sys/version");
         logger.trace("BondHome device info : {}", json);
         try {
             return gson.fromJson(json, BondSysVersion.class);
         } catch (JsonParseException e) {
             logger.debug("Could not parse sys/version JSON '{}'", json, e);
-            return null;
+            throw new BondException("@text/offline.comm-error.unparseable-response");
         }
     }
 
@@ -89,7 +91,7 @@ public class BondHttpApi {
      * @throws IOException
      */
     @Nullable
-    public List<String> getDevices() throws IOException {
+    public List<String> getDevices() throws BondException {
 
         List<String> list = new ArrayList<>();
         String json = request("/v2/devices/");
@@ -107,7 +109,7 @@ public class BondHttpApi {
             return list;
         } catch (JsonParseException e) {
             logger.debug("Could not parse devices JSON '{}'", json, e);
-            return null;
+            throw new BondException("@text/offline.comm-error.unparseable-response");
         }
     }
 
@@ -119,14 +121,14 @@ public class BondHttpApi {
      * @throws IOException
      */
     @Nullable
-    public BondDevice getDevice(String deviceId) throws IOException {
+    public BondDevice getDevice(String deviceId) throws BondException {
         String json = request("/v2/devices/" + deviceId);
         logger.trace("BondHome device info : {}", json);
         try {
             return gson.fromJson(json, BondDevice.class);
         } catch (JsonParseException e) {
             logger.debug("Could not parse device {}'s JSON '{}'", deviceId, json, e);
-            return null;
+            throw new BondException("@text/offline.comm-error.unparseable-response");
         }
     }
 
@@ -138,14 +140,14 @@ public class BondHttpApi {
      * @throws IOException
      */
     @Nullable
-    public BondDeviceState getDeviceState(String deviceId) throws IOException {
+    public BondDeviceState getDeviceState(String deviceId) throws BondException {
         String json = request("/v2/devices/" + deviceId + "/state");
         logger.trace("BondHome device state : {}", json);
         try {
             return gson.fromJson(json, BondDeviceState.class);
         } catch (JsonParseException e) {
             logger.debug("Could not parse device {}'s state JSON '{}'", deviceId, json, e);
-            return null;
+            throw new BondException("@text/offline.comm-error.unparseable-response");
         }
     }
 
@@ -157,14 +159,14 @@ public class BondHttpApi {
      * @throws IOException
      */
     @Nullable
-    public BondDeviceProperties getDeviceProperties(String deviceId) throws IOException {
+    public BondDeviceProperties getDeviceProperties(String deviceId) throws BondException {
         String json = request("/v2/devices/" + deviceId + "/properties");
         logger.trace("BondHome device properties : {}", json);
         try {
             return gson.fromJson(json, BondDeviceProperties.class);
         } catch (JsonParseException e) {
             logger.debug("Could not parse device {}'s property JSON '{}'", deviceId, json, e);
-            return null;
+            throw new BondException("@text/offline.comm-error.unparseable-response");
         }
     }
 
@@ -183,29 +185,25 @@ public class BondHttpApi {
             payload = "{\"argument\":" + argument + "}";
         }
         InputStream content = new ByteArrayInputStream(payload.getBytes());
-        try {
-            logger.debug("HTTP PUT to {} with content {}", url, payload);
+        logger.debug("HTTP PUT to {} with content {}", url, payload);
 
-            final HttpClient httpClient = httpClientFactory.getCommonHttpClient();
-            final Request request = httpClient.newRequest(url).method(HttpMethod.PUT)
-                    .header("BOND-Token", bridgeHandler.getBridgeToken())
-                    .timeout(BOND_API_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        final HttpClient httpClient = httpClientFactory.getCommonHttpClient();
+        final Request request = httpClient.newRequest(url).method(HttpMethod.PUT)
+                .header("BOND-Token", bridgeHandler.getBridgeToken())
+                .timeout(BOND_API_TIMEOUT_MS, TimeUnit.MILLISECONDS);
 
-            try (final InputStreamContentProvider inputStreamContentProvider = new InputStreamContentProvider(
-                    content)) {
-                request.content(inputStreamContentProvider, "application/json");
-            }
-            ContentResponse response;
-            try {
-                response = request.send();
-            } catch (Exception e) {
-                throw new IOException(e);
-            }
-
-            logger.debug("HTTP response from {}: {}", deviceId, response.getStatus());
-        } catch (IOException ignored) {
-            logger.warn("Unable to execute device action!", ignored);
+        try (final InputStreamContentProvider inputStreamContentProvider = new InputStreamContentProvider(content)) {
+            request.content(inputStreamContentProvider, "application/json");
         }
+        ContentResponse response;
+        try {
+            response = request.send();
+        } catch (Exception e) {
+            logger.warn("Unable to execute device action {} against device {}: {}", deviceId, action, e.getMessage());
+            return;
+        }
+
+        logger.debug("HTTP response from {}: {}", deviceId, response.getStatus());
     }
 
     /**
@@ -213,7 +211,7 @@ public class BondHttpApi {
      *
      * @param uri: URI (e.g. "/settings")
      */
-    private synchronized String request(String uri) throws IOException {
+    private synchronized String request(String uri) throws BondException {
         String httpResponse = "ERROR";
         String url = "http://" + bridgeHandler.getBridgeIpAddress() + uri;
         int numRetriesRemaining = 3;
@@ -225,67 +223,44 @@ public class BondHttpApi {
                 final Request request = httpClient.newRequest(url).method(HttpMethod.GET).header("BOND-Token",
                         bridgeHandler.getBridgeToken());
                 ContentResponse response;
-                try {
-                    response = request.send();
-                } catch (Exception e) {
-                    throw new IOException(e);
-                }
+                response = request.send();
                 String encoding = response.getEncoding() != null ? response.getEncoding().replaceAll("\"", "").trim()
                         : StandardCharsets.UTF_8.name();
                 try {
                     httpResponse = new String(response.getContent(), encoding);
                 } catch (UnsupportedEncodingException e) {
-                    throw new IOException("@text/offline.comm-error.no-response");
+                    throw new BondException("@text/offline.comm-error.no-response");
                 }
                 // handle known errors
                 if (response.getStatus() == HttpStatus.UNAUTHORIZED_401) {
                     // Don't retry or throw an exception if we get unauthorized, just set the bridge offline
-                    numRetriesRemaining = 0;
                     bridgeHandler.setBridgeOffline(ThingStatusDetail.CONFIGURATION_ERROR,
                             "@text/offline.conf-error.incorrect-local-token");
+                    throw new BondException("@text/offline.conf-error.incorrect-local-token");
                 }
                 if (response.getStatus() == HttpStatus.NOT_FOUND_404) {
-                    // Don't retry if the device wasn't found by the bridge.
-                    numRetriesRemaining = 0;
-                    throw new IOException("@text/offline.comm-error.device-not-found");
+                    throw new BondException("@text/offline.comm-error.device-not-found");
                 }
                 // all api responses return Json. If we get something else it must
                 // be an error message, e.g. http result code
                 if (!httpResponse.startsWith("{") && !httpResponse.startsWith("[")) {
-                    throw new IOException("@text/offline.comm-error.unexpected-response");
+                    throw new BondException("@text/offline.comm-error.unexpected-response");
                 }
 
                 logger.debug("HTTP response from request to {}: {}", uri, httpResponse);
                 return httpResponse;
-            } catch (IOException e) {
-                Throwable ioeCause = e.getCause();
-                @Nullable
-                String errorMessage = e.getMessage();
-                if (ioeCause != null) {
-                    @Nullable
-                    String innerErrorMessage = ioeCause.getMessage();
-                    if (innerErrorMessage != null) {
-                        logger.debug("Last request to Bond Bridge failed; {} retries remaining. Failure cause: {}",
-                                numRetriesRemaining, innerErrorMessage);
-                    } else {
-                        logger.debug("Last request to Bond Bridge failed; {} retries remaining. Failure cause unknown",
-                                numRetriesRemaining);
-                    }
-                } else if (errorMessage != null) {
-                    logger.debug("Last request to Bond Bridge failed; {} retries remaining. Failure cause: {}",
-                            numRetriesRemaining, errorMessage);
-                } else {
-                    logger.debug("Last request to Bond Bridge failed; {} retries remaining. Failure cause unknown",
-                            numRetriesRemaining);
-                }
+            } catch (InterruptedException | TimeoutException | ExecutionException e) {
+                logger.debug("Last request to Bond Bridge failed; {} retries remaining: {} Failure cause: {}",
+                        numRetriesRemaining, e.getMessage());
                 numRetriesRemaining--;
                 if (numRetriesRemaining == 0) {
-                    if (e.getCause() instanceof TimeoutException) {
+                    if (e instanceof TimeoutException) {
                         logger.debug("Repeated Bond API calls to {} timed out.", uri);
                         bridgeHandler.setBridgeOffline(ThingStatusDetail.COMMUNICATION_ERROR,
                                 "@text/offline.comm-error.timeout");
+                        throw new BondException("@text/offline.comm-error.timeout");
                     } else {
-                        throw new IOException("@text/offline.conf-error.api-call-failed");
+                        throw new BondException("@text/offline.conf-error.api-call-failed");
                     }
                 }
             }

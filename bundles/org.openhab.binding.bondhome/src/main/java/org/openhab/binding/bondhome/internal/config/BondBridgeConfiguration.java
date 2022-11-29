@@ -29,8 +29,8 @@ public class BondBridgeConfiguration {
     /**
      * Configuration for a Bond Bridge
      */
-    public String serialNumber = API_MISSING_BOND_ID;
-    public String localToken = API_MISSING_LOCAL_TOKEN;
+    public @Nullable String serialNumber;
+    public @Nullable String localToken;
     public @Nullable String ipAddress;
 
     public @Nullable String getIpAddress() {

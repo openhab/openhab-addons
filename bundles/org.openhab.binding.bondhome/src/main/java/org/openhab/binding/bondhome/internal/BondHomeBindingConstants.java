@@ -111,16 +111,4 @@ public class BondHomeBindingConstants {
      */
     public static final int BOND_BPUP_PORT = 30007;
     public static final int BOND_API_TIMEOUT_MS = 3000;
-    public static final String API_HASH = "hash";
-    public static final String API_MISSING_DEVICE_NAME = "deviceName";
-    public static final String API_MISSING_TEMPLATE = "template";
-    public static final String API_MISSING_BOND_ID = "ZZBL12345";
-    public static final String API_MISSING_LOCAL_TOKEN = "localToken";
-
-    public static final String BOND_BRIDGE_TARGET = "zermatt";
-    public static final String BOND_LAST_KNOWN_FIRMWARE = "v2.10.21";
-    public static final String BOND_LAST_KNOWN_FIRMWARE_DATE = "Wed Feb 19 15:31:13 UTC 2020";
-    public static final String BOND_BRIDGE_MAKE = "Olibra";
-    public static final String BOND_BRIDGE_MODEL = "BD-1000";
-    public static final String BOND_BRIDGE_BRANDING = "O_BD-1000";
 }

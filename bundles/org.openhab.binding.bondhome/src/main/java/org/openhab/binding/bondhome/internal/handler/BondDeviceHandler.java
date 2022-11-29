@@ -14,7 +14,6 @@ package org.openhab.binding.bondhome.internal.handler;
 
 import static org.openhab.binding.bondhome.internal.BondHomeBindingConstants.*;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -26,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.bondhome.internal.BondException;
 import org.openhab.binding.bondhome.internal.api.BondDevice;
 import org.openhab.binding.bondhome.internal.api.BondDeviceAction;
 import org.openhab.binding.bondhome.internal.api.BondDeviceProperties;
@@ -92,6 +92,7 @@ public class BondDeviceHandler extends BaseThingHandler {
                     config.deviceId, command, channelUID);
             return;
         }
+        String deviceId = Objects.requireNonNull(config.deviceId);
 
         logger.trace("Bond device handler for {} received command {} on channel {}", config.deviceId, command,
                 channelUID);
@@ -109,9 +110,9 @@ public class BondDeviceHandler extends BaseThingHandler {
         if (command instanceof RefreshType) {
             logger.trace("Executing refresh command");
             try {
-                deviceState = api.getDeviceState(config.deviceId);
+                deviceState = api.getDeviceState(deviceId);
                 updateChannelsFromState(deviceState);
-            } catch (IOException e) {
+            } catch (BondException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
             return;
@@ -124,7 +125,7 @@ public class BondDeviceHandler extends BaseThingHandler {
         switch (channelUID.getId()) {
             case CHANNEL_POWER:
                 logger.trace("Power state command");
-                api.executeDeviceAction(config.deviceId,
+                api.executeDeviceAction(deviceId,
                         command == OnOffType.ON ? BondDeviceAction.TURN_ON : BondDeviceAction.TURN_OFF, null);
                 break;
 
@@ -138,7 +139,7 @@ public class BondDeviceHandler extends BaseThingHandler {
                 }
 
                 if (devInfo.actions.contains(action)) {
-                    api.executeDeviceAction(config.deviceId, action, null);
+                    api.executeDeviceAction(deviceId, action, null);
                 } else {
                     logger.warn("Device {} does not support command {}.", config.deviceId, command);
                 }
@@ -146,7 +147,7 @@ public class BondDeviceHandler extends BaseThingHandler {
 
             case CHANNEL_FAN_POWER:
                 logger.trace("Fan power state command");
-                api.executeDeviceAction(config.deviceId,
+                api.executeDeviceAction(deviceId,
                         command == OnOffType.ON ? BondDeviceAction.TURN_FP_FAN_ON : BondDeviceAction.TURN_FP_FAN_OFF,
                         null);
                 break;
@@ -178,10 +179,10 @@ public class BondDeviceHandler extends BaseThingHandler {
                         }
                     }
                     logger.trace("Fan speed command with speed set as {}", value);
-                    api.executeDeviceAction(config.deviceId, action, value);
+                    api.executeDeviceAction(deviceId, action, value);
                 } else if (command instanceof IncreaseDecreaseType) {
                     logger.trace("Fan increase/decrease speed command");
-                    api.executeDeviceAction(config.deviceId,
+                    api.executeDeviceAction(deviceId,
                             ((IncreaseDecreaseType) command == IncreaseDecreaseType.INCREASE
                                     ? BondDeviceAction.INCREASE_SPEED
                                     : BondDeviceAction.DECREASE_SPEED),
@@ -195,7 +196,7 @@ public class BondDeviceHandler extends BaseThingHandler {
                         action = command == OnOffType.ON ? BondDeviceAction.TURN_ON : BondDeviceAction.TURN_OFF;
                     }
                     if (action != null) {
-                        api.executeDeviceAction(config.deviceId, action, null);
+                        api.executeDeviceAction(deviceId, action, null);
                     }
                 } else {
                     logger.info("Unsupported command on fan speed channel");
@@ -204,7 +205,7 @@ public class BondDeviceHandler extends BaseThingHandler {
 
             case CHANNEL_FAN_BREEZE_STATE:
                 logger.trace("Fan enable/disable breeze command");
-                api.executeDeviceAction(config.deviceId,
+                api.executeDeviceAction(deviceId,
                         command == OnOffType.ON ? BondDeviceAction.BREEZE_ON : BondDeviceAction.BREEZE_OFF, null);
                 break;
 
@@ -221,14 +222,14 @@ public class BondDeviceHandler extends BaseThingHandler {
             case CHANNEL_FAN_DIRECTION:
                 logger.trace("Fan direction command {}", command.toString());
                 if (command instanceof StringType) {
-                    api.executeDeviceAction(config.deviceId, BondDeviceAction.SET_DIRECTION,
+                    api.executeDeviceAction(deviceId, BondDeviceAction.SET_DIRECTION,
                             command.toString().equals("winter") ? -1 : 1);
                 }
                 break;
 
             case CHANNEL_LIGHT_POWER:
                 logger.trace("Fan light state command");
-                api.executeDeviceAction(config.deviceId,
+                api.executeDeviceAction(deviceId,
                         command == OnOffType.ON ? BondDeviceAction.TURN_LIGHT_ON : BondDeviceAction.TURN_LIGHT_OFF,
                         null);
                 break;
@@ -244,17 +245,17 @@ public class BondDeviceHandler extends BaseThingHandler {
                         action = BondDeviceAction.SET_BRIGHTNESS;
                     }
                     logger.trace("Fan light brightness command with value of {}", value);
-                    api.executeDeviceAction(config.deviceId, action, value);
+                    api.executeDeviceAction(deviceId, action, value);
                 } else if (command instanceof IncreaseDecreaseType) {
                     logger.trace("Fan light brightness increase/decrease command {}", command);
-                    api.executeDeviceAction(config.deviceId,
+                    api.executeDeviceAction(deviceId,
                             ((IncreaseDecreaseType) command == IncreaseDecreaseType.INCREASE
                                     ? BondDeviceAction.INCREASE_BRIGHTNESS
                                     : BondDeviceAction.DECREASE_BRIGHTNESS),
                             null);
                 } else if (command instanceof OnOffType) {
                     logger.trace("Fan light brightness command {}", command);
-                    api.executeDeviceAction(config.deviceId,
+                    api.executeDeviceAction(deviceId,
                             command == OnOffType.ON ? BondDeviceAction.TURN_LIGHT_ON : BondDeviceAction.TURN_LIGHT_OFF,
                             null);
                 } else {
@@ -263,14 +264,14 @@ public class BondDeviceHandler extends BaseThingHandler {
                 break;
 
             case CHANNEL_UP_LIGHT_ENABLE:
-                api.executeDeviceAction(config.deviceId, command == OnOffType.ON ? BondDeviceAction.TURN_UP_LIGHT_ON
+                api.executeDeviceAction(deviceId, command == OnOffType.ON ? BondDeviceAction.TURN_UP_LIGHT_ON
                         : BondDeviceAction.TURN_UP_LIGHT_OFF, null);
                 break;
 
             case CHANNEL_UP_LIGHT_POWER:
                 // To turn on the up light, we first have to enable it and then turn on the lights
                 enableUpLight();
-                api.executeDeviceAction(config.deviceId,
+                api.executeDeviceAction(deviceId,
                         command == OnOffType.ON ? BondDeviceAction.TURN_LIGHT_ON : BondDeviceAction.TURN_LIGHT_OFF,
                         null);
                 break;
@@ -287,17 +288,17 @@ public class BondDeviceHandler extends BaseThingHandler {
                         action = BondDeviceAction.SET_UP_LIGHT_BRIGHTNESS;
                     }
                     logger.trace("Fan up light brightness command with value of {}", value);
-                    api.executeDeviceAction(config.deviceId, action, value);
+                    api.executeDeviceAction(deviceId, action, value);
                 } else if (command instanceof IncreaseDecreaseType) {
                     logger.trace("Fan uplight brightness increase/decrease command {}", command);
-                    api.executeDeviceAction(config.deviceId,
+                    api.executeDeviceAction(deviceId,
                             ((IncreaseDecreaseType) command == IncreaseDecreaseType.INCREASE
                                     ? BondDeviceAction.INCREASE_UP_LIGHT_BRIGHTNESS
                                     : BondDeviceAction.DECREASE_UP_LIGHT_BRIGHTNESS),
                             null);
                 } else if (command instanceof OnOffType) {
                     logger.trace("Fan up light brightness command {}", command);
-                    api.executeDeviceAction(config.deviceId,
+                    api.executeDeviceAction(deviceId,
                             command == OnOffType.ON ? BondDeviceAction.TURN_LIGHT_ON : BondDeviceAction.TURN_LIGHT_OFF,
                             null);
                 } else {
@@ -306,14 +307,14 @@ public class BondDeviceHandler extends BaseThingHandler {
                 break;
 
             case CHANNEL_DOWN_LIGHT_ENABLE:
-                api.executeDeviceAction(config.deviceId, command == OnOffType.ON ? BondDeviceAction.TURN_DOWN_LIGHT_ON
+                api.executeDeviceAction(deviceId, command == OnOffType.ON ? BondDeviceAction.TURN_DOWN_LIGHT_ON
                         : BondDeviceAction.TURN_DOWN_LIGHT_OFF, null);
                 break;
 
             case CHANNEL_DOWN_LIGHT_POWER:
                 // To turn on the down light, we first have to enable it and then turn on the lights
-                api.executeDeviceAction(config.deviceId, BondDeviceAction.TURN_DOWN_LIGHT_ON, null);
-                api.executeDeviceAction(config.deviceId,
+                api.executeDeviceAction(deviceId, BondDeviceAction.TURN_DOWN_LIGHT_ON, null);
+                api.executeDeviceAction(deviceId,
                         command == OnOffType.ON ? BondDeviceAction.TURN_LIGHT_ON : BondDeviceAction.TURN_LIGHT_OFF,
                         null);
                 break;
@@ -330,17 +331,17 @@ public class BondDeviceHandler extends BaseThingHandler {
                         action = BondDeviceAction.SET_DOWN_LIGHT_BRIGHTNESS;
                     }
                     logger.trace("Fan down light brightness command with value of {}", value);
-                    api.executeDeviceAction(config.deviceId, action, value);
+                    api.executeDeviceAction(deviceId, action, value);
                 } else if (command instanceof IncreaseDecreaseType) {
                     logger.trace("Fan down light brightness increase/decrease command");
-                    api.executeDeviceAction(config.deviceId,
+                    api.executeDeviceAction(deviceId,
                             ((IncreaseDecreaseType) command == IncreaseDecreaseType.INCREASE
                                     ? BondDeviceAction.INCREASE_DOWN_LIGHT_BRIGHTNESS
                                     : BondDeviceAction.DECREASE_DOWN_LIGHT_BRIGHTNESS),
                             null);
                 } else if (command instanceof OnOffType) {
                     logger.trace("Fan down light brightness command {}", command);
-                    api.executeDeviceAction(config.deviceId,
+                    api.executeDeviceAction(deviceId,
                             command == OnOffType.ON ? BondDeviceAction.TURN_LIGHT_ON : BondDeviceAction.TURN_LIGHT_OFF,
                             null);
                 } else {
@@ -359,16 +360,16 @@ public class BondDeviceHandler extends BaseThingHandler {
                         action = BondDeviceAction.SET_FLAME;
                     }
                     logger.trace("Fireplace flame command with value of {}", value);
-                    api.executeDeviceAction(config.deviceId, action, value);
+                    api.executeDeviceAction(deviceId, action, value);
                 } else if (command instanceof IncreaseDecreaseType) {
                     logger.trace("Fireplace flame increase/decrease command");
-                    api.executeDeviceAction(config.deviceId,
+                    api.executeDeviceAction(deviceId,
                             ((IncreaseDecreaseType) command == IncreaseDecreaseType.INCREASE
                                     ? BondDeviceAction.INCREASE_FLAME
                                     : BondDeviceAction.DECREASE_FLAME),
                             null);
                 } else if (command instanceof OnOffType) {
-                    api.executeDeviceAction(config.deviceId,
+                    api.executeDeviceAction(deviceId,
                             command == OnOffType.ON ? BondDeviceAction.TURN_ON : BondDeviceAction.TURN_OFF, null);
                 } else {
                     logger.info("Unsupported command on flame channel");
@@ -390,7 +391,7 @@ public class BondDeviceHandler extends BaseThingHandler {
                     action = BondDeviceAction.HOLD;
                 }
                 if (action != null) {
-                    api.executeDeviceAction(config.deviceId, action, null);
+                    api.executeDeviceAction(deviceId, action, null);
                 }
                 break;
 
@@ -402,11 +403,13 @@ public class BondDeviceHandler extends BaseThingHandler {
     }
 
     private void enableUpLight() {
-        Objects.requireNonNull(api).executeDeviceAction(config.deviceId, BondDeviceAction.TURN_UP_LIGHT_ON, null);
+        Objects.requireNonNull(api).executeDeviceAction(Objects.requireNonNull(config.deviceId),
+                BondDeviceAction.TURN_UP_LIGHT_ON, null);
     }
 
     private void enableDownLight() {
-        Objects.requireNonNull(api).executeDeviceAction(config.deviceId, BondDeviceAction.TURN_DOWN_LIGHT_ON, null);
+        Objects.requireNonNull(api).executeDeviceAction(Objects.requireNonNull(config.deviceId),
+                BondDeviceAction.TURN_DOWN_LIGHT_ON, null);
     }
 
     @Override
@@ -437,6 +440,14 @@ public class BondDeviceHandler extends BaseThingHandler {
     }
 
     private void initializeThing() {
+        String deviceId = config.deviceId;
+
+        if (deviceId == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.conf-error.no-device-id");
+            return;
+        }
+
         if (!getBridgeAndAPI()) {
             return;
         }
@@ -448,16 +459,20 @@ public class BondDeviceHandler extends BaseThingHandler {
 
         try {
             logger.trace("Getting device information for {} ({})", config.deviceId, this.getThing().getLabel());
-            deviceInfo = api.getDevice(config.deviceId);
+            deviceInfo = api.getDevice(deviceId);
             logger.trace("Getting device properties for {} ({})", config.deviceId, this.getThing().getLabel());
-            deviceProperties = api.getDeviceProperties(config.deviceId);
-        } catch (IOException e) {
+            deviceProperties = api.getDeviceProperties(deviceId);
+        } catch (BondException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            return;
         }
 
         final BondDevice devInfo = this.deviceInfo;
         final BondDeviceProperties devProperties = this.deviceProperties;
-        if (devInfo == null || devProperties == null) {
+        BondDeviceType devType;
+        String devHash;
+        if (devInfo == null || devProperties == null || (devType = devInfo.type) == null
+                || (devHash = devInfo.hash) == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error.no-device-properties");
             return;
@@ -467,7 +482,7 @@ public class BondDeviceHandler extends BaseThingHandler {
         // recreate the thing to make sure all possible channels are available
         // NOTE: This will cause the thing to be disposed and re-initialized
         if (wasThingUpdatedExternally(devInfo)) {
-            recreateAllChannels(devInfo.type, devInfo.hash);
+            recreateAllChannels(devType, devHash);
             return;
         }
 
@@ -483,14 +498,21 @@ public class BondDeviceHandler extends BaseThingHandler {
         logger.debug("Finished initializing device!");
     }
 
+    private void updateProperty(Map<String, String> thingProperties, String key, @Nullable String value) {
+        if (value == null) {
+            return;
+        }
+        thingProperties.put(key, value);
+    }
+
     private void updateDevicePropertiesFromBond(BondDevice devInfo, BondDeviceProperties devProperties) {
         // Update all the thing properties based on the result
         Map<String, String> thingProperties = new HashMap<String, String>();
-        thingProperties.put(CONFIG_DEVICE_ID, config.deviceId);
+        updateProperty(thingProperties, CONFIG_DEVICE_ID, config.deviceId);
         logger.trace("Updating device name to {}", devInfo.name);
-        thingProperties.put(PROPERTIES_DEVICE_NAME, devInfo.name);
+        updateProperty(thingProperties, PROPERTIES_DEVICE_NAME, devInfo.name);
         logger.trace("Updating other device properties for {} ({})", config.deviceId, this.getThing().getLabel());
-        thingProperties.put(PROPERTIES_TEMPLATE_NAME, devInfo.template);
+        updateProperty(thingProperties, PROPERTIES_TEMPLATE_NAME, devInfo.template);
         thingProperties.put(PROPERTIES_MAX_SPEED, String.valueOf(devProperties.maxSpeed));
         thingProperties.put(PROPERTIES_TRUST_STATE, String.valueOf(devProperties.trustState));
         thingProperties.put(PROPERTIES_ADDRESS, String.valueOf(devProperties.addr));
@@ -510,7 +532,7 @@ public class BondDeviceHandler extends BaseThingHandler {
 
         // Create a new configuration
         final Map<String, Object> map = new HashMap<>();
-        map.put(CONFIG_DEVICE_ID, config.deviceId);
+        map.put(CONFIG_DEVICE_ID, Objects.requireNonNull(config.deviceId));
         map.put(CONFIG_LATEST_HASH, currentHash);
         Configuration newConfiguration = new Configuration(map);
 
@@ -568,7 +590,8 @@ public class BondDeviceHandler extends BaseThingHandler {
     }
 
     public String getDeviceId() {
-        return config.deviceId;
+        String deviceId = config.deviceId;
+        return deviceId == null ? "" : deviceId;
     }
 
     public synchronized void updateChannelsFromState(@Nullable BondDeviceState updateState) {
@@ -643,7 +666,8 @@ public class BondDeviceHandler extends BaseThingHandler {
     private boolean hasConfigurationError() {
         final ThingStatusInfo statusInfo = getThing().getStatusInfo();
         return statusInfo.getStatus() == ThingStatus.OFFLINE
-                && statusInfo.getStatusDetail() == ThingStatusDetail.CONFIGURATION_ERROR || disposed;
+                && statusInfo.getStatusDetail() == ThingStatusDetail.CONFIGURATION_ERROR || disposed
+                || config.deviceId == null;
     }
 
     private synchronized boolean wasThingUpdatedExternally(BondDevice devInfo) {
@@ -688,11 +712,13 @@ public class BondDeviceHandler extends BaseThingHandler {
                             "@text/offline.comm-error.no-api");
                     return;
                 }
-                logger.trace("Polling for current state for {} ({})", config.deviceId, this.getThing().getLabel());
+
+                String deviceId = Objects.requireNonNull(config.deviceId);
+                logger.trace("Polling for current state for {} ({})", deviceId, this.getThing().getLabel());
                 try {
-                    deviceState = api.getDeviceState(config.deviceId);
+                    deviceState = api.getDeviceState(deviceId);
                     updateChannelsFromState(deviceState);
-                } catch (IOException e) {
+                } catch (BondException e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 }
             };

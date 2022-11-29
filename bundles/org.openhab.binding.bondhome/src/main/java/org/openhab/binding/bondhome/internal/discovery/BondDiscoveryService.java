@@ -14,13 +14,13 @@ package org.openhab.binding.bondhome.internal.discovery;
 
 import static org.openhab.binding.bondhome.internal.BondHomeBindingConstants.*;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.bondhome.internal.BondException;
 import org.openhab.binding.bondhome.internal.api.BondDevice;
 import org.openhab.binding.bondhome.internal.api.BondHttpApi;
 import org.openhab.binding.bondhome.internal.handler.BondBridgeHandler;
@@ -93,18 +93,19 @@ public class BondDiscoveryService extends AbstractDiscoveryService implements Th
             if (deviceList != null) {
                 for (final String deviceId : deviceList) {
                     BondDevice thisDevice = api.getDevice(deviceId);
-                    if (thisDevice != null) {
+                    String deviceName;
+                    if (thisDevice != null && (deviceName = thisDevice.name) != null) {
                         final ThingUID deviceUid = new ThingUID(thisDevice.type.getThingTypeUID(), bridgeUid, deviceId);
                         final DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(deviceUid)
                                 .withBridge(bridgeUid).withLabel(thisDevice.name)
                                 .withProperty(CONFIG_DEVICE_ID, deviceId)
-                                .withProperty(PROPERTIES_DEVICE_NAME, thisDevice.name)
+                                .withProperty(PROPERTIES_DEVICE_NAME, deviceName)
                                 .withRepresentationProperty(CONFIG_DEVICE_ID).build();
                         thingDiscovered(discoveryResult);
                     }
                 }
             }
-        } catch (IOException ignored) {
+        } catch (BondException ignored) {
             logger.warn("Error getting devices for discovery: {}", ignored.getMessage());
         } finally {
             removeOlderResults(getTimestampOfLastScan());

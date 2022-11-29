@@ -39,16 +39,16 @@ public class BondDevice {
     // The current device hash
     @SerializedName("_")
     @Expose(serialize = false, deserialize = true)
-    public String hash = API_HASH;
+    public @Nullable String hash;
     // The name associated with the device in the bond app
     @Expose(serialize = true, deserialize = true)
-    public String name = API_MISSING_DEVICE_NAME;
+    public @Nullable String name;
     // The device type
     @Expose(serialize = true, deserialize = true)
     public BondDeviceType type = BondDeviceType.GENERIC_DEVICE;
     // The remote control template being used
     @Expose(serialize = true, deserialize = true)
-    public String template = API_MISSING_TEMPLATE;
+    public @Nullable String template;
     // A list of the available actions
     @Expose(serialize = false, deserialize = true)
     public List<BondDeviceAction> actions = Arrays.asList(BondDeviceAction.TURN_ON);
