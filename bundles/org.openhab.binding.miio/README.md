@@ -177,8 +177,7 @@ If the problem persists you can try the following:
 
 * Xiaomi Account verification might be needed. For some users login by the binding is unsuccessful as account verification is required, but the binding currently has no possibilities to handle this.
 In order to pass validation your (openHAB server) ip need to be validated/confirmed. 
-Logon to [https://account.xiaomi.com/](https://account.xiaomi.com/). If your openHAB server is not communicating from the same external ip address as your regular browser (e.g. because of hosting external or via vpn), connect **from the ip of your openHAB server** with a browser.
-![verification](doc/account_verification.png)
+Browse to [https://account.xiaomi.com/](https://account.xiaomi.com/) and logon to your account. Note: use the same external ip address as your openHAB server, e.g.  you may need to disable your VPN.
 * If above is not possible or fails, You can try to find in the binding debug logging a `location url`. Try to login using this url (just after it fails) with your browser.
 * Several users also reported success by resetting their Xiaomi password.
 
