@@ -14,6 +14,7 @@
 		<description>Interface of Router</description>
 		<channel-groups>
 			<channel-group id="networkInfo" typeId="ifInfoGroup"></channel-group>
+			<channel-group id="traffic" typeId="trafficGroup"></channel-group>
 		</channel-groups>
 		<representation-property>interfaceName</representation-property>
 

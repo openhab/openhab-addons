@@ -167,7 +167,6 @@ public class AsuswrtDiscoveryService extends AbstractDiscoveryService implements
     public DiscoveryResult createInterfaceResult(AsuswrtIpInfo interfaceInfo) {
         String ifName = interfaceInfo.getName();
         String macAddress = interfaceInfo.getMAC();
-        String unformatedMac = unformatMac(macAddress);
         String label = "AwrtInterface_" + ifName;
 
         Map<String, Object> properties = new HashMap<>();

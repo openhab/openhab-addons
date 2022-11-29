@@ -46,8 +46,8 @@
 				<default>443</default>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="refreshInterval" type="integer" unit="s" min="1">
-				<label>Refresh Interval</label>
+			<parameter name="pollingInterval" type="integer" unit="s" min="3">
+				<label>Polling Interval</label>
 				<description>Interval the device is polled in sec.</description>
 				<default>20</default>
 				<advanced>true</advanced>
@@ -102,6 +102,7 @@
 			</channel>
 			<channel id="onlineMACs" typeId="clientsOnlineMacType"></channel>
 			<channel id="onlineClientsCount" typeId="clientsOnlineCountType"></channel>
+			<channel id="clientOnlineEvent" typeId="clientOnlineEventType"></channel>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

@@ -17,6 +17,8 @@ import static org.openhab.binding.asuswrt.internal.constants.AsuswrtBindingSetti
 import static org.openhab.binding.asuswrt.internal.helpers.AsuswrtUtils.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonObject;
 
@@ -27,6 +29,8 @@ import com.google.gson.JsonObject;
  */
 @NonNullByDefault
 public class AsuswrtIpInfo {
+    private final Logger logger = LoggerFactory.getLogger(AsuswrtIpInfo.class);
+    private AsuswrtTraffic traffic = new AsuswrtTraffic();
     private String ifName = "";
     private String hwAddress = "";
     private String ipAddress = "";
@@ -51,6 +55,7 @@ public class AsuswrtIpInfo {
      */
     public AsuswrtIpInfo(String ifName, JsonObject jsonObject) {
         this.ifName = ifName;
+        this.traffic = new AsuswrtTraffic(ifName);
         setData(jsonObject);
     }
 
@@ -68,12 +73,14 @@ public class AsuswrtIpInfo {
      */
     public void setData(JsonObject jsonObject) {
         if (ifName.startsWith(INTERFACE_LAN)) {
+            logger.trace("(AsuswrtIpInfo) setData for interface {}", INTERFACE_LAN);
             this.hwAddress = jsonObjectToString(jsonObject, JSON_MEMBER_MAC, this.hwAddress);
             this.ipAddress = jsonObjectToString(jsonObject, JSON_MEMBER_LAN_IP, this.ipAddress);
             this.subnet = jsonObjectToString(jsonObject, JSON_MEMBER_LAN_NETMASK, this.subnet);
             this.gateway = jsonObjectToString(jsonObject, JSON_MEMBER_LAN_GATEWAY, this.gateway);
             this.ipProto = jsonObjectToString(jsonObject, JSON_MEMBER_LAN_PROTO, this.ipProto);
         } else if (ifName.startsWith(INTERFACE_WAN)) {
+            logger.trace("(AsuswrtIpInfo) setData for interface {}", INTERFACE_WAN);
             this.hwAddress = jsonObjectToString(jsonObject, JSON_MEMBER_MAC, this.hwAddress);
             this.ipAddress = jsonObjectToString(jsonObject, JSON_MEMBER_WAN_IP, this.ipAddress);
             this.subnet = jsonObjectToString(jsonObject, JSON_MEMBER_WAN_NETMASK, this.subnet);
@@ -81,8 +88,9 @@ public class AsuswrtIpInfo {
             this.ipProto = jsonObjectToString(jsonObject, JSON_MEMBER_WAN_PROTO, this.ipProto);
             this.dnsServer = jsonObjectToString(jsonObject, JSON_MEMBER_WAN_DNS_SERVER, this.dnsServer);
             this.connected = (jsonObjectToInt(jsonObject, JSON_MEMBER_WAN_CONNECTED).equals(1));
-        } else if (ifName.startsWith(INTERFACE_WLAN)) {
-            // ToDo
+        }
+        if (jsonObject.has(JSON_MEMBER_TRAFFIC)) {
+            traffic.setData(jsonObject.getAsJsonObject(JSON_MEMBER_TRAFFIC));
         }
     }
 
@@ -91,6 +99,10 @@ public class AsuswrtIpInfo {
      * GET VALUES
      *
      ************************************/
+
+    public AsuswrtTraffic geTraffic() {
+        return this.traffic;
+    }
 
     public String getMAC() {
         return this.hwAddress;

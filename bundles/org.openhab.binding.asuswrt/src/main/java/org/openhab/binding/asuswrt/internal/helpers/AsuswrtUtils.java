@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.asuswrt.internal.helpers;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.regex.Pattern;
 
 import javax.measure.Unit;
@@ -440,5 +442,24 @@ public class AsuswrtUtils {
      */
     public static State getQuantityType(@Nullable Number numVal, Unit<?> unit) {
         return new QuantityType<>((numVal != null ? numVal : 0), unit);
+    }
+
+    /************************************
+     * DATE UTILS
+     ***********************************/
+    /**
+     * Checks if two date objects are on the same day ignoring time.
+     *
+     * @param date1 the first date, not altered, not null
+     * @param date2 the second date, not altered, not null
+     * @return true if they represent the same day
+     */
+    public static boolean isSameDay(final Date date1, final Date date2) {
+        final Calendar cal1 = Calendar.getInstance();
+        cal1.setTime(date1);
+        final Calendar cal2 = Calendar.getInstance();
+        cal2.setTime(date2);
+        return cal1.get(Calendar.ERA) == cal2.get(Calendar.ERA) && cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR)
+                && cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
     }
 }

@@ -83,10 +83,20 @@ public class AsuswrtBindingConstants {
     public static final String CHANNEL_CLIENTS_ONLINE = "onlineClients";
     public static final String CHANNEL_CLIENTS_COUNT = "onlineClientsCount";
     public static final String CHANNEL_CLIENTS_ONLINE_MAC = "onlineMACs";
+    public static final String EVENT_CLIENT_CONNECTION = "clientOnlineEvent";
 
     // channel group client information
     public static final String CHANNEL_GROUP_CLIENT = "client";
     public static final String CHANNEL_CLIENT_NICKNAME = "clientName";
+
+    // channel group traffic
+    public static final String CHANNEL_GROUP_TRAFFIC = "traffic";
+    public static final String CHANNEL_TRAFFIC_TOTAL_RX = "totalRX";
+    public static final String CHANNEL_TRAFFIC_TOTAL_TX = "totalTX";
+    public static final String CHANNEL_TRAFFIC_TODAY_RX = "todayRX";
+    public static final String CHANNEL_TRAFFIC_TODAY_TX = "todayTX";
+    public static final String CHANNEL_TRAFFIC_CURRENT_RX = "curRX";
+    public static final String CHANNEL_TRAFFIC_CURRENT_TX = "curTX";
 
     /**
      * PROPERTIES
@@ -173,4 +183,13 @@ public class AsuswrtBindingConstants {
     public static final String JSON_MEMBER_MEM_USED = "mem_used";
     public static final String JSON_MEMBER_MEM_FREE = "mem_free";
     public static final Integer USAGE_CPU_COUNT = 4; // max count of cpu-cores
+
+    // traffic
+    public static final String JSON_MEMBER_TRAFFIC = "netdev";
+    public static final String JSON_MEMBER_INET_RX = "INTERNET_rx";
+    public static final String JSON_MEMBER_INET_TX = "INTERNET_tx";
+    public static final String JSON_MEMBER_LAN_RX = "WIRED_rx";
+    public static final String JSON_MEMBER_LAN_TX = "WIRED_tx";
+    public static final String JSON_MEMBER_WLAN_RX = "WIRELESS{}_rx";
+    public static final String JSON_MEMBER_WLAN_TX = "WIRELESS{}_tx";
 }

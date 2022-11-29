@@ -2,10 +2,6 @@
 
 This binding adds support to control get informations from ASUS-Router (Copyright © ASUS).
 
-#  !! EARLY BETA !!
-
-#  BINDING AND REDME NOT FULLY WORKING/COMPLETED
-
 ## Supported Things
 
 Binding supports ASUS-Router with AsusWRT or -AsusWRT-Merlin Firmware.
@@ -76,14 +72,22 @@ All devices support some of the following channels:
 |                  | onlineClients      | text (RO)              | Online clients with name and MAC-Addresses | router                            |
 |                  | onlineMACs         | text (RO)              | List with mac-addresses of online clients  | router                            |    
 |                  | onlineClientsCount | Number:Dimensionless   | Count of online clients                    | router                            |
+| traffic          | curRX              | Number:DataTransferRate| Current DataTransferRate MBits/s (receive) | interface, client                 |
+|                  | curTX              | Number:DataTransferRate| Current DataTransferRate MBits/s (send)    | interface, client                 |
+|                  | todayRX            | Number:DataAmount      | Data received since 0:00 a clock in MB     | interface, client                 |
+|                  | todayTX            | Number:DataAmount      | Data sent since 0:00 a clock in MB         | interface, client                 |
+|                  | totalRX            | Number:DataAmount      | Data received since reboot in MB           | interface, client                 |
+|                  | totalTX            | Number:DataAmount      | Data sent since reboot in MB               | interface, client                 |
 
 
 ## Events
 
 All devices support some of the following Events:
-| group            | event           |kind        | description                                                            | things supporting this event    |
-|------------------|-----------------|------------|------------------------------------------------------------------------|---------------------------------|
-| networkInfo      | connectionEvent | Trigger    | Fired if Client leaves ('gone') or enters ('connected') the network    | interface, client               |
+| group            | event             |kind        | description                                                            | things supporting this event    |
+|------------------|-------------------|------------|------------------------------------------------------------------------|---------------------------------|
+| networkInfo      | connectionEvent   | Trigger    | Fired if connection is established ('connected') or ('disconnected')   | interface                       |
+|                  | clientOnlineEvent | Trigger    | Fired if Client leaves ('gone') or enters ('connected') the network    | client                          |
+| clientListGroup  | clientOnlineEvent | Trigger    | Fired if Client leaves ('gone') or enters ('connected') the network    | router                          |
 
 
 

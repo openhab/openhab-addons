@@ -57,7 +57,6 @@ public class AsuswrtInterfaceList implements Iterable<AsuswrtIpInfo> {
      * @param ipInfoInfo AsuswrtIpInfo
      */
     private void addInterface(AsuswrtIpInfo ipInfo) {
-
         this.ipInfoList.add(ipInfo);
     }
 

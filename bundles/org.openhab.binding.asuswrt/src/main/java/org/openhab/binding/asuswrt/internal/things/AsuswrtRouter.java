@@ -255,8 +255,8 @@ public class AsuswrtRouter extends BaseBridgeHandler {
      */
     @SuppressWarnings("null")
     public void queryDeviceData(Boolean asyncRequest) {
-        connector.queryDeviceData(
-                CMD_GET_SYSINFO + CMD_GET_USAGE + CMD_GET_LANINFO + CMD_GET_WANINFO + CMD_GET_CLIENTLIST, asyncRequest);
+        connector.queryDeviceData(CMD_GET_SYSINFO + CMD_GET_USAGE + CMD_GET_LANINFO + CMD_GET_WANINFO
+                + CMD_GET_CLIENTLIST + CMD_GET_TRAFFIC, asyncRequest);
     }
 
     /**
@@ -449,6 +449,16 @@ public class AsuswrtRouter extends BaseBridgeHandler {
                 getDecimalType(clientList.getOnlineClients().getCount()));
         updateState(getChannelID(CHANNEL_GROUP_CLIENTS, CHANNEL_CLIENTS_ONLINE_MAC),
                 getStringType(clientList.getOnlineClients().getMacAddresses()));
+    }
+
+    /**
+     * Fire Event
+     * 
+     * @param channelUID
+     * @param event
+     */
+    protected void fireEvent(String channel, String event) {
+        triggerChannel(channel, event);
     }
 
     /***********************************

@@ -4,6 +4,34 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
+	<!-- ####################### GLOBAL CHANNEL GROUPS ########################## -->
+
+	<!-- Traffic -->
+	<channel-group-type id="trafficGroup">
+		<label>Traffic</label>
+		<description>Traffic Monitoring</description>
+		<channels>
+			<channel id="curRX" typeId="currentTrafficType">
+				<label>Current Traffic Received</label>
+			</channel>
+			<channel id="curTX" typeId="currentTrafficType">
+				<label>Current Traffic Sent</label>
+			</channel>
+			<channel id="todayRX" typeId="todayTrafficType">
+				<label>Today Traffic Received</label>
+			</channel>
+			<channel id="todayTX" typeId="todayTrafficType">
+				<label>Today Traffic Sent</label>
+			</channel>
+			<channel id="totalRX" typeId="totalTrafficType">
+				<label>Total Traffic Received</label>
+			</channel>
+			<channel id="totalTX" typeId="totalTrafficType">
+				<label>Total Traffic Sent</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
 
 	<!-- ############################### CHANNELS ############################### -->
 
@@ -124,4 +152,28 @@
 		<label>Onlinestate Changed Trigger</label>
 		<description>Event is fired if Client leaves ('gone') or enters ('connected') the network</description>
 	</channel-type>
+
+
+	<!-- Traffic -->
+	<channel-type id="currentTrafficType">
+		<item-type>Number:DataTransferRate</item-type>
+		<label>Current Traffic</label>
+		<description>Current Traffic in MBit/s</description>
+		<state pattern="%.2f %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="todayTrafficType">
+		<item-type>Number:DataAmount</item-type>
+		<label>Today Traffic</label>
+		<description>Total Traffic in MB since 0:00 a clock</description>
+		<state pattern="%.0f %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="totalTrafficType">
+		<item-type>Number:DataAmount</item-type>
+		<label>Total Traffic</label>
+		<description>Total Traffic in MB since reboot</description>
+		<state pattern="%.0f %unit%" readOnly="true"></state>
+	</channel-type>
+
 </thing:thing-descriptions>

@@ -13,6 +13,7 @@
 package org.openhab.binding.asuswrt.internal.structures;
 
 import static org.openhab.binding.asuswrt.internal.constants.AsuswrtBindingConstants.*;
+import static org.openhab.binding.asuswrt.internal.constants.AsuswrtBindingSettings.*;
 import static org.openhab.binding.asuswrt.internal.helpers.AsuswrtUtils.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -26,8 +27,7 @@ import com.google.gson.JsonObject;
  */
 @NonNullByDefault
 public class AsuswrtClientInfo {
-    private Integer curRx = 0;
-    private Integer curTx = 0;
+    private AsuswrtTraffic traffic = new AsuswrtTraffic();
     private Integer defaultType = 0;
     private String dpiDevice = "";
     private String dpiType = "";
@@ -55,8 +55,6 @@ public class AsuswrtClientInfo {
     private Integer rog = 0;
     private Integer rssi = 0;
     private String ssid = "";
-    private Integer totalRx = 0;
-    private Integer totalTx = 0;
     private String vendor = "";
     private String wlConnectTime = "";
     private Integer wtfast = 0;
@@ -74,6 +72,7 @@ public class AsuswrtClientInfo {
      * @param jsonObject with clientinfo
      */
     public AsuswrtClientInfo(JsonObject jsonObject) {
+        this.traffic = new AsuswrtTraffic(INTERFACE_CLIENT);
         setData(jsonObject);
     }
 
@@ -84,8 +83,7 @@ public class AsuswrtClientInfo {
      * @param jsonObject
      */
     public void setData(JsonObject jsonObject) {
-        this.curRx = jsonObjectToInt(jsonObject, JSON_MEMBER_CLIENT_RXCUR, this.curRx);
-        this.curTx = jsonObjectToInt(jsonObject, JSON_MEMBER_CLIENT_TXCUR, this.curTx);
+        this.traffic.setData(jsonObject);
         this.defaultType = jsonObjectToInt(jsonObject, JSON_MEMBER_CLIENT_DEFTYPE, this.defaultType);
         this.dpiDevice = jsonObjectToString(jsonObject, JSON_MEMBER_CLIENT_DPIDEVICE, this.dpiDevice);
         this.dpiType = jsonObjectToString(jsonObject, JSON_MEMBER_CLIENT_DPITYPE, this.dpiType);
@@ -113,8 +111,6 @@ public class AsuswrtClientInfo {
         this.rog = jsonObjectToInt(jsonObject, JSON_MEMBER_CLIENT_ROG, this.rog);
         this.rssi = jsonObjectToInt(jsonObject, JSON_MEMBER_CLIENT_RSSI, this.rssi);
         this.ssid = jsonObjectToString(jsonObject, JSON_MEMBER_CLIENT_SSID, this.ssid);
-        this.totalRx = jsonObjectToInt(jsonObject, JSON_MEMBER_CLIENT_RXTOTAL, this.totalRx);
-        this.totalTx = jsonObjectToInt(jsonObject, JSON_MEMBER_CLIENT_TXTOTAL, this.totalTx);
         this.vendor = jsonObjectToString(jsonObject, JSON_MEMBER_CLIENT_VENDOR, this.vendor);
         this.wlConnectTime = jsonObjectToString(jsonObject, JSON_MEMBER_CLIENT_CONNECTTIME, this.wlConnectTime);
         this.wtfast = jsonObjectToInt(jsonObject, JSON_MEMBER_CLIENT_WTFAST, this.wtfast);
@@ -126,12 +122,8 @@ public class AsuswrtClientInfo {
      *
      ************************************/
 
-    public Integer getRX() {
-        return this.curRx;
-    }
-
-    public Integer getTX() {
-        return this.curTx;
+    public AsuswrtTraffic getTraffic() {
+        return this.traffic;
     }
 
     public Integer getDefaultType() {
@@ -244,14 +236,6 @@ public class AsuswrtClientInfo {
 
     public String getSSID() {
         return this.ssid;
-    }
-
-    public Integer getTotalRX() {
-        return this.totalRx;
-    }
-
-    public Integer getTotalTX() {
-        return this.totalTx;
     }
 
     public String getVendor() {

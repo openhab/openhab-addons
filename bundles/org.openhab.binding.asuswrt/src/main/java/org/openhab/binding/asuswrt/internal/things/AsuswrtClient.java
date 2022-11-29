@@ -21,7 +21,9 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.asuswrt.internal.helpers.AsuswrtUtils;
 import org.openhab.binding.asuswrt.internal.structures.AsuswrtClientInfo;
+import org.openhab.binding.asuswrt.internal.structures.AsuswrtTraffic;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -107,13 +109,33 @@ public class AsuswrtClient extends BaseThingHandler {
      * 
      * @param clientInfo
      */
-    public void updateChannels(AsuswrtClientInfo clientInfo) {
+    public void updateClientChannels(AsuswrtClientInfo clientInfo) {
         updateState(getChannelID(CHANNEL_GROUP_NETWORK, CHANNEL_NETWORK_STATE), getOnOffType(clientInfo.isOnline()));
         updateState(getChannelID(CHANNEL_GROUP_NETWORK, CHANNEL_NETWORK_INTERNET),
                 getOnOffType(clientInfo.getInternetState()));
         updateState(getChannelID(CHANNEL_GROUP_NETWORK, CHANNEL_NETWORK_IP), getStringType(clientInfo.getIP()));
         updateState(getChannelID(CHANNEL_GROUP_NETWORK, CHANNEL_NETWORK_METHOD),
                 getStringType(clientInfo.getIpMethod()));
+    }
+
+    /**
+     * Update Traffic Channels
+     * 
+     * @param traffic
+     */
+    private void updateTrafficChannels(AsuswrtTraffic traffic) {
+        updateState(getChannelID(CHANNEL_GROUP_TRAFFIC, CHANNEL_TRAFFIC_CURRENT_RX),
+                getQuantityType(traffic.getCurrentRX(), Units.MEGABIT_PER_SECOND));
+        updateState(getChannelID(CHANNEL_GROUP_TRAFFIC, CHANNEL_TRAFFIC_CURRENT_TX),
+                getQuantityType(traffic.getCurrentTX(), Units.MEGABIT_PER_SECOND));
+        updateState(getChannelID(CHANNEL_GROUP_TRAFFIC, CHANNEL_TRAFFIC_TODAY_RX),
+                getQuantityType(traffic.getTodayRX(), Units.MEGABYTE));
+        updateState(getChannelID(CHANNEL_GROUP_TRAFFIC, CHANNEL_TRAFFIC_TODAY_TX),
+                getQuantityType(traffic.getTodayTX(), Units.MEGABYTE));
+        updateState(getChannelID(CHANNEL_GROUP_TRAFFIC, CHANNEL_TRAFFIC_TOTAL_RX),
+                getQuantityType(traffic.getTotalRX(), Units.MEGABYTE));
+        updateState(getChannelID(CHANNEL_GROUP_TRAFFIC, CHANNEL_TRAFFIC_TOTAL_TX),
+                getQuantityType(traffic.getTotalTX(), Units.MEGABYTE));
     }
 
     /**
@@ -124,9 +146,11 @@ public class AsuswrtClient extends BaseThingHandler {
     private void fireEvents(AsuswrtClientInfo clientInfo) {
         if (checkForStateChange(CHANNEL_GROUP_NETWORK, clientInfo.isOnline())) {
             if (clientInfo.isOnline()) {
-                triggerChannel(getChannelID(CHANNEL_GROUP_NETWORK, EVENT_CONNECTION), EVENT_STATE_CONNECTED);
+                triggerChannel(getChannelID(CHANNEL_GROUP_NETWORK, EVENT_CLIENT_CONNECTION), EVENT_STATE_CONNECTED);
+                router.fireEvent(getChannelID(CHANNEL_GROUP_CLIENTS, EVENT_CLIENT_CONNECTION), EVENT_STATE_CONNECTED);
             } else {
-                triggerChannel(getChannelID(CHANNEL_GROUP_NETWORK, EVENT_CONNECTION), EVENT_STATE_GONE);
+                triggerChannel(getChannelID(CHANNEL_GROUP_NETWORK, EVENT_CLIENT_CONNECTION), EVENT_STATE_GONE);
+                router.fireEvent(getChannelID(CHANNEL_GROUP_CLIENTS, EVENT_CLIENT_CONNECTION), EVENT_STATE_GONE);
             }
         }
     }
@@ -139,7 +163,8 @@ public class AsuswrtClient extends BaseThingHandler {
         AsuswrtClientInfo clientInfo = router.getClients().getClientByMAC(mac);
         fireEvents(clientInfo);
         updateClientProperties(clientInfo);
-        updateChannels(clientInfo);
+        updateClientChannels(clientInfo);
+        updateTrafficChannels(clientInfo.getTraffic());
     }
 
     /***********************************

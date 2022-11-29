@@ -19,8 +19,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import com.google.gson.JsonObject;
 
 /**
- * The {@link AsuswrtUsage} class handles usage statis
- * tics
+ * The {@link AsuswrtUsage} class handles usage statistics
  *
  * @author Christian Wild - Initial contribution
  */

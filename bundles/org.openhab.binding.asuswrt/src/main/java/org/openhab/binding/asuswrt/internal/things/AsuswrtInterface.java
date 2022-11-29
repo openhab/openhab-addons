@@ -20,7 +20,9 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.asuswrt.internal.structures.AsuswrtIpInfo;
+import org.openhab.binding.asuswrt.internal.structures.AsuswrtTraffic;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -98,7 +100,8 @@ public class AsuswrtInterface extends BaseThingHandler {
         try {
             AsuswrtIpInfo interfaceInfo = router.getInterfaces().getByName(ifName);
             fireEvents(interfaceInfo);
-            updateInterfaceData(interfaceInfo);
+            updateInterfaceChannels(interfaceInfo);
+            updateTrafficChannels(interfaceInfo.geTraffic());
         } catch (Exception e) {
             logger.debug("({}) unable to refresh data - property interfaceName not found ", uid);
         }
@@ -109,7 +112,7 @@ public class AsuswrtInterface extends BaseThingHandler {
      * 
      * @param deviceInfo
      */
-    private void updateInterfaceData(AsuswrtIpInfo interfaceInfo) {
+    private void updateInterfaceChannels(AsuswrtIpInfo interfaceInfo) {
         updateState(getChannelID(CHANNEL_GROUP_NETWORK, CHANNEL_NETWORK_MAC), getStringType(interfaceInfo.getMAC()));
         updateState(getChannelID(CHANNEL_GROUP_NETWORK, CHANNEL_NETWORK_IP),
                 getStringType(interfaceInfo.getIpAddress()));
@@ -123,6 +126,26 @@ public class AsuswrtInterface extends BaseThingHandler {
                 getStringType(interfaceInfo.getDNSNServer()));
         updateState(getChannelID(CHANNEL_GROUP_NETWORK, CHANNEL_NETWORK_STATE),
                 getOnOffType(interfaceInfo.isConnected()));
+    }
+
+    /**
+     * Update Traffic Channels
+     * 
+     * @param traffic
+     */
+    private void updateTrafficChannels(AsuswrtTraffic traffic) {
+        updateState(getChannelID(CHANNEL_GROUP_TRAFFIC, CHANNEL_TRAFFIC_CURRENT_RX),
+                getQuantityType(traffic.getCurrentRX(), Units.MEGABIT_PER_SECOND));
+        updateState(getChannelID(CHANNEL_GROUP_TRAFFIC, CHANNEL_TRAFFIC_CURRENT_TX),
+                getQuantityType(traffic.getCurrentTX(), Units.MEGABIT_PER_SECOND));
+        updateState(getChannelID(CHANNEL_GROUP_TRAFFIC, CHANNEL_TRAFFIC_TODAY_RX),
+                getQuantityType(traffic.getTodayRX(), Units.MEGABYTE));
+        updateState(getChannelID(CHANNEL_GROUP_TRAFFIC, CHANNEL_TRAFFIC_TODAY_TX),
+                getQuantityType(traffic.getTodayTX(), Units.MEGABYTE));
+        updateState(getChannelID(CHANNEL_GROUP_TRAFFIC, CHANNEL_TRAFFIC_TOTAL_RX),
+                getQuantityType(traffic.getTotalRX(), Units.MEGABYTE));
+        updateState(getChannelID(CHANNEL_GROUP_TRAFFIC, CHANNEL_TRAFFIC_TOTAL_TX),
+                getQuantityType(traffic.getTotalTX(), Units.MEGABYTE));
     }
 
     /**
