@@ -48,15 +48,9 @@ public final class GraalJSScriptEngineFactory implements ScriptEngineFactory {
 
     @Activate
     public GraalJSScriptEngineFactory(final @Reference JSScriptServiceUtil jsScriptServiceUtil,
-            Map<String, Object> config) {
-        this.jsScriptServiceUtil = jsScriptServiceUtil;
-        modified(config);
-    }
-
-    @Activate
-    public GraalJSScriptEngineFactory(final @Reference JSDependencyTracker jsDependencyTracker,
-            Map<String, Object> config) {
+            final @Reference JSDependencyTracker jsDependencyTracker, Map<String, Object> config) {
         this.jsDependencyTracker = jsDependencyTracker;
+        this.jsScriptServiceUtil = jsScriptServiceUtil;
         modified(config);
     }
 
