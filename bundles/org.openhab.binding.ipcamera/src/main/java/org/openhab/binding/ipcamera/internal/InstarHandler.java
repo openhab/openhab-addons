@@ -14,6 +14,7 @@ package org.openhab.binding.ipcamera.internal;
 
 import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.*;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -62,43 +63,61 @@ public class InstarHandler extends ChannelDuplexHandler {
             ipCameraHandler.logger.trace("HTTP Result back from camera is \t:{}:", content);
             switch (requestUrl) {
                 case "/param.cgi?cmd=getinfrared":
-                    if (content.contains("var infraredstat=\"auto")) {
+                    if (content.contains("var infraredstat=\"auto") || content.contains("infraredstat=\"2")) {
                         ipCameraHandler.setChannelState(CHANNEL_AUTO_LED, OnOffType.ON);
                     } else {
                         ipCameraHandler.setChannelState(CHANNEL_AUTO_LED, OnOffType.OFF);
                     }
                     break;
                 case "/param.cgi?cmd=getoverlayattr&-region=1":// Text Overlays
-                    if (content.contains("var show_1=\"0\"")) {
+                    if (content.contains("var show_1=\"0\"") || content.contains("show=\"0\"")) {
                         ipCameraHandler.setChannelState(CHANNEL_TEXT_OVERLAY, StringType.EMPTY);
                     } else {
                         value1 = Helper.searchString(content, "var name_1=\"");
                         if (!value1.isEmpty()) {
                             ipCameraHandler.setChannelState(CHANNEL_TEXT_OVERLAY, StringType.valueOf(value1));
+                        } else {
+                            value1 = Helper.searchString(content, "name=\"");
+                            if (!value1.isEmpty()) {
+                                ipCameraHandler.setChannelState(CHANNEL_TEXT_OVERLAY, StringType.valueOf(value1));
+                            }
                         }
                     }
                     break;
-                case "/cgi-bin/hi3510/param.cgi?cmd=getmdattr":// Motion Alarm
-                    // Motion Alarm
+                case "/cgi-bin/hi3510/param.cgi?cmd=getmdattr":// Motion Alarm old
                     if (content.contains("var m1_enable=\"1\"")) {
                         ipCameraHandler.setChannelState(CHANNEL_ENABLE_MOTION_ALARM, OnOffType.ON);
                     } else {
                         ipCameraHandler.setChannelState(CHANNEL_ENABLE_MOTION_ALARM, OnOffType.OFF);
                     }
                     break;
-                case "/cgi-bin/hi3510/param.cgi?cmd=getaudioalarmattr":// Audio Alarm
-                    if (content.contains("var aa_enable=\"1\"")) {
+                case "/param.cgi?cmd=getalarmattr":// Motion Alarm new
+                    if (content.contains("armed=\"1")) {
+                        ipCameraHandler.setChannelState(CHANNEL_ENABLE_MOTION_ALARM, OnOffType.ON);
+                    } else {
+                        ipCameraHandler.setChannelState(CHANNEL_ENABLE_MOTION_ALARM, OnOffType.OFF);
+                    }
+                    break;
+                case "/param.cgi?cmd=getaudioalarmattr":// Audio Alarm
+                    if (content.contains("enable=\"1\"")) {
                         ipCameraHandler.setChannelState(CHANNEL_ENABLE_AUDIO_ALARM, OnOffType.ON);
-                        value1 = Helper.searchString(content, "var aa_value=\"");
-                        if (!value1.isEmpty()) {
+                        value1 = Helper.searchString(content, "aa_value=\"");
+                        if (!value1.isEmpty()) {// old cameras have threshold in percentage
                             ipCameraHandler.setChannelState(CHANNEL_THRESHOLD_AUDIO_ALARM, PercentType.valueOf(value1));
+                        } else {
+                            value1 = Helper.searchString(content, "threshold=\"");
+                            if (!value1.isEmpty()) {// newer cameras have values up to 10
+                                ipCameraHandler.setChannelState(CHANNEL_THRESHOLD_AUDIO_ALARM,
+                                        PercentType.valueOf(value1 + "0"));
+                            }
                         }
                     } else {
                         ipCameraHandler.setChannelState(CHANNEL_ENABLE_AUDIO_ALARM, OnOffType.OFF);
+                        ipCameraHandler.setChannelState(CHANNEL_THRESHOLD_AUDIO_ALARM, OnOffType.OFF);
                     }
                     break;
-                case "param.cgi?cmd=getpirattr":// PIR Alarm
-                    if (content.contains("var pir_enable=\"1\"")) {
+                case "/param.cgi?cmd=getpirattr":// PIR Alarm
+                    if (content.contains("enable=\"1\"")) {
                         ipCameraHandler.setChannelState(CHANNEL_ENABLE_PIR_ALARM, OnOffType.ON);
                     } else {
                         ipCameraHandler.setChannelState(CHANNEL_ENABLE_PIR_ALARM, OnOffType.OFF);
@@ -107,12 +126,14 @@ public class InstarHandler extends ChannelDuplexHandler {
                     ipCameraHandler.noMotionDetected(CHANNEL_PIR_ALARM);
                     break;
                 case "/param.cgi?cmd=getioattr":// External Alarm Input
-                    if (content.contains("var io_enable=\"1\"")) {
+                    if (content.contains("enable=\"1\"")) {
                         ipCameraHandler.setChannelState(CHANNEL_ENABLE_EXTERNAL_ALARM_INPUT, OnOffType.ON);
                     } else {
                         ipCameraHandler.setChannelState(CHANNEL_ENABLE_EXTERNAL_ALARM_INPUT, OnOffType.OFF);
                     }
                     break;
+                default:
+                    ipCameraHandler.logger.debug("Unknown reply from URI:{}", requestUrl);
             }
         } finally {
             ReferenceCountUtil.release(msg);
@@ -126,14 +147,17 @@ public class InstarHandler extends ChannelDuplexHandler {
         } // end of "REFRESH"
         switch (channelUID.getId()) {
             case CHANNEL_THRESHOLD_AUDIO_ALARM:
-                int value = Math.round(Float.valueOf(command.toString()));
-                if (value == 0) {
+                if (OnOffType.OFF.equals(command) || PercentType.ZERO.equals(command)) {
+                    ipCameraHandler.sendHttpGET("/param.cgi?cmd=setaudioalarmattr&enable=0");
                     ipCameraHandler.sendHttpGET("/cgi-bin/hi3510/param.cgi?cmd=setaudioalarmattr&-aa_enable=0");
-                } else {
+                } else if (OnOffType.ON.equals(command)) {
+                    ipCameraHandler.sendHttpGET("/param.cgi?cmd=setaudioalarmattr&enable=1");
                     ipCameraHandler.sendHttpGET("/cgi-bin/hi3510/param.cgi?cmd=setaudioalarmattr&-aa_enable=1");
-                    ipCameraHandler
-                            .sendHttpGET("/cgi-bin/hi3510/param.cgi?cmd=setaudioalarmattr&-aa_enable=1&-aa_value="
-                                    + command.toString());
+                } else if (command instanceof PercentType) {
+                    int value = ((PercentType) command).toBigDecimal().divide(BigDecimal.TEN).intValue();
+                    ipCameraHandler.sendHttpGET("/param.cgi?cmd=setaudioalarmattr&enable=1&threshold=" + value);
+                    ipCameraHandler.sendHttpGET(
+                            "/cgi-bin/hi3510/param.cgi?cmd=setaudioalarmattr&-aa_enable=1&-aa_value=" + value * 10);
                 }
                 return;
             case CHANNEL_ENABLE_AUDIO_ALARM:
@@ -145,9 +169,11 @@ public class InstarHandler extends ChannelDuplexHandler {
                 return;
             case CHANNEL_ENABLE_MOTION_ALARM:
                 if (OnOffType.ON.equals(command)) {
+                    ipCameraHandler.sendHttpGET("/param.cgi?cmd=setalarmattr&armed=1");
                     ipCameraHandler.sendHttpGET(
                             "/cgi-bin/hi3510/param.cgi?cmd=setmdattr&-enable=1&-name=1&cmd=setmdattr&-enable=1&-name=2&cmd=setmdattr&-enable=1&-name=3&cmd=setmdattr&-enable=1&-name=4");
                 } else {
+                    ipCameraHandler.sendHttpGET("/param.cgi?cmd=setalarmattr&armed=0");
                     ipCameraHandler.sendHttpGET(
                             "/cgi-bin/hi3510/param.cgi?cmd=setmdattr&-enable=0&-name=1&cmd=setmdattr&-enable=0&-name=2&cmd=setmdattr&-enable=0&-name=3&cmd=setmdattr&-enable=0&-name=4");
                 }
@@ -162,22 +188,28 @@ public class InstarHandler extends ChannelDuplexHandler {
                 return;
             case CHANNEL_AUTO_LED:
                 if (OnOffType.ON.equals(command)) {
+                    ipCameraHandler.sendHttpGET("/param.cgi?cmd=setinfrared&-infraredstat=2");
                     ipCameraHandler.sendHttpGET("/param.cgi?cmd=setinfrared&-infraredstat=auto");
                 } else {
+                    ipCameraHandler.sendHttpGET("/param.cgi?cmd=setinfrared&-infraredstat=0");
                     ipCameraHandler.sendHttpGET("/param.cgi?cmd=setinfrared&-infraredstat=close");
                 }
                 return;
             case CHANNEL_ENABLE_PIR_ALARM:
                 if (OnOffType.ON.equals(command)) {
+                    ipCameraHandler.sendHttpGET("/param.cgi?cmd=setpirattr&enable=1");
                     ipCameraHandler.sendHttpGET("/param.cgi?cmd=setpirattr&-pir_enable=1");
                 } else {
+                    ipCameraHandler.sendHttpGET("/param.cgi?cmd=setpirattr&enable=0");
                     ipCameraHandler.sendHttpGET("/param.cgi?cmd=setpirattr&-pir_enable=0");
                 }
                 return;
             case CHANNEL_ENABLE_EXTERNAL_ALARM_INPUT:
                 if (OnOffType.ON.equals(command)) {
+                    ipCameraHandler.sendHttpGET("/param.cgi?cmd=setioattr&enable=1");
                     ipCameraHandler.sendHttpGET("/param.cgi?cmd=setioattr&-io_enable=1");
                 } else {
+                    ipCameraHandler.sendHttpGET("/param.cgi?cmd=setioattr&enable=0");
                     ipCameraHandler.sendHttpGET("/param.cgi?cmd=setioattr&-io_enable=0");
                 }
                 return;
@@ -216,17 +248,33 @@ public class InstarHandler extends ChannelDuplexHandler {
         }
         if (!objectCode.isEmpty()) {
             switch (objectCode) {
+                // person=1, car=2, animal=4 so 1+2+4=7 means one of each.
                 case "0":// no object
                     break;
-                case "1":// person/human
+                case "1":
                     ipCameraHandler.motionDetected(CHANNEL_HUMAN_ALARM);
                     break;
-                case "2":// car/vehicles
+                case "2":
                     ipCameraHandler.motionDetected(CHANNEL_CAR_ALARM);
                     break;
-                case "3":// animals
+                case "3":
+                    ipCameraHandler.motionDetected(CHANNEL_HUMAN_ALARM);
+                    ipCameraHandler.motionDetected(CHANNEL_CAR_ALARM);
+                    break;
                 case "4":
+                    ipCameraHandler.motionDetected(CHANNEL_ANIMAL_ALARM);
+                    break;
                 case "5":
+                    ipCameraHandler.motionDetected(CHANNEL_HUMAN_ALARM);
+                    ipCameraHandler.motionDetected(CHANNEL_ANIMAL_ALARM);
+                    break;
+                case "6":
+                    ipCameraHandler.motionDetected(CHANNEL_CAR_ALARM);
+                    ipCameraHandler.motionDetected(CHANNEL_ANIMAL_ALARM);
+                    break;
+                case "7":
+                    ipCameraHandler.motionDetected(CHANNEL_HUMAN_ALARM);
+                    ipCameraHandler.motionDetected(CHANNEL_CAR_ALARM);
                     ipCameraHandler.motionDetected(CHANNEL_ANIMAL_ALARM);
                     break;
                 default:
@@ -239,13 +287,13 @@ public class InstarHandler extends ChannelDuplexHandler {
     // added here. Binding steps through the list.
     public ArrayList<String> getLowPriorityRequests() {
         ArrayList<String> lowPriorityRequests = new ArrayList<String>(2);
-        lowPriorityRequests.add("/cgi-bin/hi3510/param.cgi?cmd=getaudioalarmattr");
+        lowPriorityRequests.add("/param.cgi?cmd=getaudioalarmattr");
         lowPriorityRequests.add("/cgi-bin/hi3510/param.cgi?cmd=getmdattr");
+        lowPriorityRequests.add("/param.cgi?cmd=getalarmattr");
         lowPriorityRequests.add("/param.cgi?cmd=getinfrared");
         lowPriorityRequests.add("/param.cgi?cmd=getoverlayattr&-region=1");
         lowPriorityRequests.add("/param.cgi?cmd=getpirattr");
         lowPriorityRequests.add("/param.cgi?cmd=getioattr"); // ext alarm input on/off
-        // lowPriorityRequests.add("/param.cgi?cmd=getserverinfo");
         return lowPriorityRequests;
     }
 }

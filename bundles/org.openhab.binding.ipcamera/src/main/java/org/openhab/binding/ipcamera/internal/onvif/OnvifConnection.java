@@ -409,7 +409,7 @@ public class OnvifConnection {
         request.headers().add("Content-Type",
                 "application/soap+xml; charset=utf-8; action=\"" + actionString + "/" + requestType + "\"");
         request.headers().add("Charset", "utf-8");
-        request.headers().set("Host", extractIPportFromUrl(xAddr));
+        request.headers().set("Host", ipAddress + ":" + onvifPort);
         request.headers().set("Connection", HttpHeaderValues.CLOSE);
         request.headers().set("Accept-Encoding", "gzip, deflate");
         String fullXml = "<s:Envelope xmlns:s=\"http://www.w3.org/2003/05/soap-envelope\"" + extraEnvelope + ">"
@@ -578,8 +578,11 @@ public class OnvifConnection {
             onvifPort = Integer.parseInt(url.substring(beginIndex + 1, endIndex));
         } else {// 192.168.1.1
             ipAddress = url;
+            deviceXAddr = "http://" + ipAddress + "/onvif/device_service";
             logger.debug("No Onvif Port found when parsing:{}", url);
+            return;
         }
+        deviceXAddr = "http://" + ipAddress + ":" + onvifPort + "/onvif/device_service";
     }
 
     public void gotoPreset(int index) {
