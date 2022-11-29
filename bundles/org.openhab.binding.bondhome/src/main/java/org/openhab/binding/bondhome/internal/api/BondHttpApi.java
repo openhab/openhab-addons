@@ -250,18 +250,14 @@ public class BondHttpApi {
                 logger.debug("HTTP response from request to {}: {}", uri, httpResponse);
                 return httpResponse;
             } catch (InterruptedException | TimeoutException | ExecutionException e) {
-                logger.debug("Last request to Bond Bridge failed; {} retries remaining: {} Failure cause: {}",
-                        numRetriesRemaining, e.getMessage());
+                logger.debug("Last request to Bond Bridge failed; {} retries remaining: {}", numRetriesRemaining,
+                        e.getMessage());
                 numRetriesRemaining--;
                 if (numRetriesRemaining == 0) {
-                    if (e instanceof TimeoutException) {
-                        logger.debug("Repeated Bond API calls to {} timed out.", uri);
-                        bridgeHandler.setBridgeOffline(ThingStatusDetail.COMMUNICATION_ERROR,
-                                "@text/offline.comm-error.timeout");
-                        throw new BondException("@text/offline.comm-error.timeout", true);
-                    } else {
-                        throw new BondException("@text/offline.conf-error.api-call-failed");
-                    }
+                    logger.debug("Repeated Bond API calls to {} failed.", uri);
+                    bridgeHandler.setBridgeOffline(ThingStatusDetail.COMMUNICATION_ERROR,
+                            "@text/offline.comm-error.api-call-failed");
+                    throw new BondException("@text/offline.conf-error.api-call-failed", true);
                 }
             }
         } while (numRetriesRemaining > 0);

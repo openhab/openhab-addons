@@ -220,7 +220,7 @@ public class BondBridgeHandler extends BaseBridgeHandler {
         // don't know the full uid (that is we cannot tell a fan from a fireplace, etc,
         // from the contents of the update)
         if (deviceId != null) {
-            if (topicType != null && topicType.equals("state")) {
+            if (topicType != null && "state".equals(topicType)) {
                 synchronized (handlers) {
                     for (BondDeviceHandler handler : handlers) {
                         String handlerDeviceId = handler.getDeviceId();

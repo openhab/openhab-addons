@@ -14,6 +14,7 @@ package org.openhab.binding.bondhome.internal.api;
 
 import static org.openhab.binding.bondhome.internal.BondHomeBindingConstants.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 import com.google.gson.annotations.SerializedName;
@@ -24,6 +25,7 @@ import com.google.gson.annotations.SerializedName;
  * @author Sara Geleskie Damiano - Initial contribution
  *
  */
+@NonNullByDefault
 public enum BondDeviceType {
     @SerializedName("CF")
     CEILING_FAN(THING_TYPE_BOND_FAN),

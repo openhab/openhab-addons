@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.bondhome.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Thrown for various API issues.
  *
  * @author Cody Cutrer - Initial contribution
  */
+@NonNullByDefault
 public class BondException extends Exception {
     private boolean wasBridgeSetOffline;
 
