@@ -20,6 +20,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -46,7 +47,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Tom Deckers - Initial contribution
  */
-@Component(service = WebexAuthService.class, configurationPid = "binding.webex.authService")
+@Component(service = WebexAuthService.class, configurationPid = "binding.webexteams.authService")
 @NonNullByDefault
 public class WebexAuthService {
 
@@ -56,9 +57,9 @@ public class WebexAuthService {
 
     private final Logger logger = LoggerFactory.getLogger(WebexAuthService.class);
 
-    private final List<WebexTeamsHandler> handlers = new ArrayList<>();
+    private final List<WebexTeamsHandler> handlers = Collections.synchronizedList(new ArrayList<>());
 
-    private static final String ERROR_UKNOWN_BRIDGE = "Returned 'state' by doesn't match any accounts. Has the account been removed?";
+    private static final String ERROR_UKNOWN_BRIDGE = "Returned 'state' by oauth redirect doesn't match any accounts. Has the account been removed?";
 
     private @NonNullByDefault({}) HttpService httpService;
     private @NonNullByDefault({}) BundleContext bundleContext;
@@ -114,13 +115,13 @@ public class WebexAuthService {
     }
 
     /**
-     * Call with Spotify redirect uri returned State and Code values to get the refresh and access tokens and persist
+     * Call with Webex redirect uri returned State and Code values to get the refresh and access tokens and persist
      * these values
      *
-     * @param servletBaseURL the servlet base, which will be the Spotify redirect url
-     * @param state The Spotify returned state value
-     * @param code The Spotify returned code value
-     * @return returns the name of the Spotify user that is authorized
+     * @param servletBaseURL the servlet base, which will be the Webex redirect url
+     * @param state The Webex returned state value
+     * @param code The Webex returned code value
+     * @return returns the name of the Webex user that is authorized
      * @throws WebexTeamsException if no handler was found for the state
      */
     public String authorize(String servletBaseURL, String state, String code) throws WebexTeamsException {

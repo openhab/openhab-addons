@@ -10,13 +10,13 @@
 		<description>WebexTeams account used to send messages.</description>
 
 		<channels>
-			<channel id="botname" typeId="botname"/>
 			<channel id="status" typeId="status"/>
 			<channel id="lastactivity" typeId="lastactivity"/>
 		</channels>
 
 		<properties>
 			<property name="type"></property>
+			<property name="name"></property>
 		</properties>
 
 		<config-description>
@@ -48,12 +48,6 @@
 	</thing-type>
 
 	<!-- Botname Channel Type -->
-	<channel-type id="botname">
-		<item-type>String</item-type>
-		<label>Bot Name</label>
-		<description>The full name of the account</description>
-		<state readOnly="true"/>
-	</channel-type>
 	<channel-type id="status">
 		<item-type>String</item-type>
 		<label>Status</label>

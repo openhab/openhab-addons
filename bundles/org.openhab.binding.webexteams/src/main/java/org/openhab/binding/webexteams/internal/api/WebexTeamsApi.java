@@ -15,6 +15,7 @@ package org.openhab.binding.webexteams.internal.api;
 import static org.openhab.binding.webexteams.internal.WebexTeamsBindingConstants.*;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -23,16 +24,13 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.api.Response;
-import org.eclipse.jetty.client.util.InputStreamResponseListener;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -45,6 +43,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * WebexTeamsApi implements API integration with Webex Teams.
@@ -60,14 +60,9 @@ public class WebexTeamsApi {
 
     private final Logger logger = LoggerFactory.getLogger(WebexTeamsApi.class);
 
-    private final @NonNullByDefault({}) OAuthClientService authService;
-    private final @NonNullByDefault({}) HttpClient httpClient;
+    private final OAuthClientService authService;
+    private final HttpClient httpClient;
 
-    /**
-     * Constructor.
-     * 
-     * @param WebexTeamsHandler hander interact with handler context.
-     */
     public WebexTeamsApi(OAuthClientService authService, HttpClient httpClient) {
         this.authService = authService;
         this.httpClient = httpClient;
@@ -81,13 +76,13 @@ public class WebexTeamsApi {
      * @throws WebexTeamsApiException for other failures
      */
     public Person getPerson() throws WebexTeamsApiException, WebexAuthenticationException {
-        URI url = getUrl(WEBEX_API_ENDPOINT + "/people/me");
+        URI url = getUri(WEBEX_API_ENDPOINT + "/people/me");
 
         Person person = request(url, HttpMethod.GET, Person.class, null);
         return person;
     }
 
-    private URI getUrl(@Nullable String url) throws WebexTeamsApiException {
+    private URI getUri(String url) throws WebexTeamsApiException {
         URI uri;
         try {
             uri = new URI(url);
@@ -128,30 +123,29 @@ public class WebexTeamsApi {
                 req.header("Content-type", "application/json");
             }
 
-            InputStreamResponseListener listener = new InputStreamResponseListener();
-            req.send(listener);
+            ContentResponse response = req.send();
 
-            // Wait for the response headers to arrive
-            Response response = listener.get(5, TimeUnit.SECONDS);
             logger.debug("Response: {} - {}", response.getStatus(), response.getReason());
 
             if (response.getStatus() == HttpStatus.UNAUTHORIZED_401) {
+                response.abort(new Exception(response.getReason()));
                 throw new WebexAuthenticationException();
             } else if (response.getStatus() == HttpStatus.OK_200) {
                 // Obtain the input stream on the response content
-                try (InputStream input = listener.getInputStream()) {
+                try (InputStream input = new ByteArrayInputStream(response.getContent())) {
                     Reader reader = new InputStreamReader(input);
                     O entity = gson.fromJson(reader, clazz);
                     return entity;
-                } catch (IOException e) {
-                    throw new WebexTeamsApiException("ioexception", e);
+                } catch (IOException | JsonIOException | JsonSyntaxException e) {
+                    throw new WebexTeamsApiException("exception", e);
                 }
             } else {
                 logger.warn("Unexpected response {} - {}", response.getStatus(), response.getReason());
-                try (InputStream input = listener.getInputStream()) {
+                try (InputStream input = new ByteArrayInputStream(response.getContent())) {
                     String text = new BufferedReader(new InputStreamReader(input, StandardCharsets.UTF_8)).lines()
                             .collect(Collectors.joining("\n"));
                     logger.warn("Content: {}", text);
+                    response.abort(new Exception(response.getReason()));
                 } catch (IOException e) {
                     throw new WebexTeamsApiException("ioexception", e);
                 }
@@ -160,17 +154,21 @@ public class WebexTeamsApi {
                         String.format("Unexpected response {} - {}", response.getStatus(), response.getReason()));
             }
         } catch (TimeoutException e) {
-            logger.error("Request timeout", e);
+            logger.warn("Request timeout", e);
             throw new WebexTeamsApiException("Request timeout", e);
-        } catch (InterruptedException | ExecutionException e) {
-            logger.error("Request error", e);
+        } catch (ExecutionException e) {
+            logger.warn("Request error", e);
             throw new WebexTeamsApiException("Request error", e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.warn("Request interrupted", e);
+            throw new WebexTeamsApiException("Request interrupted", e);
         }
     }
 
     // sendMessage
     public Message sendMessage(Message msg) throws WebexTeamsApiException, WebexAuthenticationException {
-        URI url = getUrl(WEBEX_API_ENDPOINT + "/messages");
+        URI url = getUri(WEBEX_API_ENDPOINT + "/messages");
         Message response = request(url, HttpMethod.POST, Message.class, msg);
         logger.debug("Sent message, id: {}", response.getId());
         return response;

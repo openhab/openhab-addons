@@ -29,7 +29,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.util.MultiMap;
-import org.eclipse.jetty.util.StringUtil;
 import org.eclipse.jetty.util.UrlEncoded;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -120,10 +119,10 @@ public class WebexAuthServlet extends HttpServlet {
 
             replaceMap.put(KEY_PAGE_REFRESH,
                     params.isEmpty() ? "" : String.format(HTML_META_REFRESH_CONTENT, servletBaseURL));
-            if (!StringUtil.isBlank(reqError)) {
+            if (!reqError.isBlank()) {
                 logger.debug("Webex redirected with an error: {}", reqError);
                 replaceMap.put(KEY_ERROR, String.format(HTML_ERROR, reqError));
-            } else if (!StringUtil.isBlank(reqState)) {
+            } else if (!reqState.isBlank()) {
                 try {
                     replaceMap.put(KEY_AUTHORIZED_USER, String.format(HTML_USER_AUTHORIZED,
                             authService.authorize(servletBaseURL, reqState, reqCode)));
@@ -138,7 +137,7 @@ public class WebexAuthServlet extends HttpServlet {
     /**
      * Formats the HTML of all available Webex Accounts and returns it as a String
      *
-     * @param accountTemplate The player template to format the account values in
+     * @param accountTemplate The account template to format the account values in
      * @param servletBaseURL the redirect_uri to be used in the authorization url created on the authorization button.
      * @return A String with the accounts formatted with the account template
      */
@@ -153,7 +152,7 @@ public class WebexAuthServlet extends HttpServlet {
     /**
      * Formats the HTML of a Webex Account and returns it as a String
      *
-     * @param accountTemplate The account template to format the player values in
+     * @param accountTemplate The account template to format the account values in
      * @param handler The handler for the account to format
      * @param servletBaseURL the redirect_uri to be used in the authorization url created on the authorization button.
      * @return A String with the account formatted with the account template
@@ -175,7 +174,7 @@ public class WebexAuthServlet extends HttpServlet {
             map.put(ACCOUNT_SHOWBTN, "u-hide");
             map.put(ACCOUNT_SHWOMSG, "u-show");
             map.put(ACCOUNT_MSG, "Authorized.");
-        } else if (!StringUtil.isBlank(webexUser)) {
+        } else if (!webexUser.isBlank()) {
             map.put(ACCOUNT_USER_ID, String.format(" (Unauthorized user: %s)", webexUser));
             map.put(ACCOUNT_SHOWBTN, "u-show");
             map.put(ACCOUNT_SHWOMSG, "u-hide");

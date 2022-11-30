@@ -18,7 +18,7 @@ No Things are being discovered by this binding.
 Webex Teams supports two main types of app integration:
 
 * Bot: a separate identity that can be used to communicate with people and rooms.
-* Person or Integration: OAuth integration that allows the binding to act on a persons behalf.
+* Person integration: OAuth integration that allows the binding to act on behalf of a persons.
 
 Both of these accounts must be first configured on the [Webex Developers](https://developer.webex.com/my-apps) website.
 When creating a person integration, it's important you customize the redirect URL based on your OpenHab installation.
@@ -40,14 +40,13 @@ A default room id is required for use with the `sendMessage` action.
 | token           | text    | (Bot) authentication token            | N/A     | no       | no       |
 | clientId        | text    | (Person) client id                    | N/A     | no       | no       |
 | clientSecret    | text    | (Person) client secret                | N/A     | no       | no       |
-| refreshPeriod   | integer | Refresh period for channels (seconds) | N/A     | no       | no       |
+| refreshPeriod   | integer | Refresh period for channels (seconds) | 300     | no       | no       |
 | roomId          | text    | ID of the default room                | N/A     | no       | no       |
 
 ## Channels
 
 | Thing              | channel      | type      | description                                                  |
 |--------------------|--------------|-----------|--------------------------------------------------------------|
-| WebexTeams Account | botname      | String    | Name of the bot as configured at developer.webex.com/my-apps |
 | WebexTeams Account | status       | String    | Account presence status: active, call, inactive, ...         |
 | WebexTeams Account | lastactivity | DateTime  | The date and time of the person's last activity within Webex |
 
@@ -67,7 +66,7 @@ Thing webexteams:account:bot [ token="XXXXXX", roomId="YYYYYY" ]
 Configure a person integration account:
 
 ```
-Thing webexteams:account:person [ clientId="XXXXXX", clientSecret="YYYYYY" roomId="ZZZZZZ" ]
+Thing webexteams:account:person [ clientId="XXXXXX", clientSecret="YYYYYY", roomId="ZZZZZZ" ]
 ```
 
 ## Rule Action
@@ -76,7 +75,7 @@ DSL rules use `getActions` to get a reference to the thing.
 
 `val botActions = getActions("webexteams", "webexteams:account:bot")`
 
-This binding includes these DSL rule actions for sending messages:
+This binding includes these rule actions for sending messages:
 
 * `var success = botActions.sendMessage(String markdown)` - Send a message to the default room.
 * `var success = botActions.sendMessage(String markdown, String attach)` - Send a message to the default room, with attachment.

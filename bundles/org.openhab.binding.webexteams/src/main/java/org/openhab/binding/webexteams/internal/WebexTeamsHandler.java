@@ -19,6 +19,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
@@ -298,7 +299,7 @@ public class WebexTeamsHandler extends BaseThingHandler implements AccessTokenRe
     }
 
     public String getLabel() {
-        return thing.getLabel() == null ? "" : thing.getLabel().toString();
+        return Objects.requireNonNullElse(thing.getLabel(), "");
     }
 
     /**
