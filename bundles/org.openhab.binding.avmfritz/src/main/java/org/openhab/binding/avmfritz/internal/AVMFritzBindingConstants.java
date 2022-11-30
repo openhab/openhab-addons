@@ -136,6 +136,8 @@ public class AVMFritzBindingConstants {
     public static final String CHANNEL_NEXTTEMP = "next_temp";
     public static final String CHANNEL_BATTERY_LOW = "battery_low";
     public static final String CHANNEL_BATTERY = "battery_level";
+    public static final String CHANNEL_OBSTRUCTION_ALARM = "obstruction_alarm";
+    public static final String CHANNEL_TEMPERATURE_ALARM = "temperature_alarm";
     public static final String CHANNEL_CONTACT_STATE = "contact_state";
     public static final String CHANNEL_PRESS = "press";
     public static final String CHANNEL_LAST_CHANGE = "last_change";

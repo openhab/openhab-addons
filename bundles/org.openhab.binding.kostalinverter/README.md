@@ -291,7 +291,7 @@ String SolarStatus "Solar status [%s]" <energy> { channel="kostalinverter:kostal
 demo.items:
 
 ```
-Number:Power                GridOutputPower             "PV Output Power"                           <energy> { channel="kostalinverter:piko1020:mypiko1020:gridOutputPower" }
+Number:Power                GridOutputPower             "Grid Output Power"                         <energy> { channel="kostalinverter:piko1020:mypiko1020:gridOutputPower" }
 Number:Energy               YieldDaySecondGen           "PV Output Power Day"                       <energy> { channel="kostalinverter:piko1020:mypiko1020:yieldDaySecondGen" }
 Number:Energy               YieldTotalSecondGen         "PV Output Power Total"                     <energy> { channel="kostalinverter:piko1020:mypiko1020:yieldTotalSecondgen" }  
 Number:Dimensionless        OperatingStatus             "Operating Status"                          <energy> { channel="kostalinverter:piko1020:mypiko1020:operatingStatus" }

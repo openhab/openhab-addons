@@ -171,11 +171,11 @@ public class JRubyScriptEngineConfiguration {
         int validGems = 0;
         for (String gem : gems) {
             gem = gem.trim();
-            String version = "";
+            String[] versions = {};
             if (gem.contains("=")) {
-                String[] gemParts = gem.split("=");
+                String[] gemParts = gem.split("=", 2);
                 gem = gemParts[0].trim();
-                version = gemParts[1].trim();
+                versions = gemParts[1].split(";");
             }
 
             if (gem.isEmpty()) {
@@ -183,8 +183,11 @@ public class JRubyScriptEngineConfiguration {
             }
 
             gemCommand += "  gem '" + gem + "'";
-            if (!version.isEmpty()) {
-                gemCommand += ", '" + version + "'";
+            for (String version : versions) {
+                version = version.trim();
+                if (!version.isEmpty()) {
+                    gemCommand += ", '" + version + "'";
+                }
             }
             gemCommand += ", require: false\n";
             validGems += 1;
@@ -199,7 +202,7 @@ public class JRubyScriptEngineConfiguration {
             logger.trace("Gem install code:\n{}", gemCommand);
             engine.eval(gemCommand);
         } catch (ScriptException e) {
-            logger.warn("Error installing Gems: {}", e.getMessage());
+            logger.warn("Error installing Gems", unwrap(e));
         }
     }
 
@@ -221,7 +224,7 @@ public class JRubyScriptEngineConfiguration {
                         logger.trace("Injecting require statement: {}", requireStatement);
                         engine.eval(requireStatement);
                     } catch (ScriptException e) {
-                        logger.warn("Error evaluating statement {}: {}", requireStatement, e.getMessage());
+                        logger.warn("Error evaluating `{}`", requireStatement, unwrap(e));
                     }
                 });
     }
@@ -239,7 +242,7 @@ public class JRubyScriptEngineConfiguration {
                 logger.trace("Setting Ruby environment with code: {} ", environmentSetting);
                 engine.eval(environmentSetting);
             } catch (ScriptException e) {
-                logger.warn("Error setting ruby environment", e);
+                logger.warn("Error setting Ruby environment", unwrap(e));
             }
         });
 
@@ -267,7 +270,7 @@ public class JRubyScriptEngineConfiguration {
             try {
                 engine.eval(code);
             } catch (ScriptException exception) {
-                logger.warn("Error setting $LOAD_PATH from RUBYLIB='{}': {}", rubyLib.get(), exception.getMessage());
+                logger.warn("Error setting $LOAD_PATH from RUBYLIB='{}'", rubyLib.get(), unwrap(exception));
             }
         }
     }
@@ -291,6 +294,20 @@ public class JRubyScriptEngineConfiguration {
         return CONFIGURATION_TYPE_MAP
                 .getOrDefault(configurationType, Collections.<OptionalConfigurationElement> emptyList()).stream()
                 .filter(element -> element.getValue().isPresent());
+    }
+
+    /**
+     * Unwraps the cause of an exception, if it has one.
+     *
+     * Since a user cares about the _Ruby_ stack trace of the throwable, not
+     * the details of where openHAB called it.
+     */
+    private Throwable unwrap(Throwable e) {
+        Throwable cause = e.getCause();
+        if (cause != null) {
+            return cause;
+        }
+        return e;
     }
 
     /**

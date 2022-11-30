@@ -134,6 +134,10 @@
 
 		<!--
 			# T A B L E O P E R A T I O N S
+			# Items Manage Table (optional, default: "items")
+			# for Migration from MYSQL-Bundle set to 'Items'.
+			#itemsManageTable=Items
+
 			# Tablename Prefix String (optional, default: "item")
 			# for Migration from MYSQL-Bundle set to 'Item'.
 			#tableNamePrefix=Item
@@ -143,6 +147,11 @@
 			#tableUseRealItemNames=
 			tableUseRealItemNames=true
 
+			# Tablename Prefix generation, using case sensitive item names (optional, default: disabled -> table names are lower cased
+			# with numeric suffix appended).
+			# If true, no suffix is used.
+			#tableCaseSensitiveItemNames=true
+
 			# Tablename Suffix length (optional, default: 4 -> 0001-9999)
 			# for Migration from MYSQL-Bundle set to 0.
 			#tableIdDigitCount=
@@ -151,6 +160,11 @@
 			# USE WITH CARE! Deactivate after Renaming is done!
 			#rebuildTableNames=true
 		-->
+		<parameter name="itemsManageTable" type="text">
+			<label>Items Manage Table</label>
+			<description><![CDATA[Items Manage Table <br>(optional, default: "items"). <br>
+			For migration from MYSQL-Bundle set to 'Items'.]]></description>
+		</parameter>
 		<parameter name="tableNamePrefix" type="text">
 			<label>Tablename Prefix String</label>
 			<description><![CDATA[Tablename prefix string <br>(optional, default: "item"). <br>
@@ -165,6 +179,15 @@
 				<option value="false">Disable</option>
 			</options>
 		</parameter>
+		<parameter name="tableCaseSensitiveItemNames" type="text">
+			<label>Tablename Case Sensitive</label>
+			<description><![CDATA[Enables Tablename generation with case sensitive item names case when "Tablename Realname Generation" is enabled <br>
+			If true, no suffix is used. (optional, default: disabled -> table names are lower cased with numeric suffix appended).]]></description>
+			<options>
+				<option value="true">Enable</option>
+				<option value="false">Disable</option>
+			</options>
+		</parameter>
 		<parameter name="tableIdDigitCount" type="text">
 			<label>Tablename Suffix ID Count</label>
 			<description><![CDATA[Tablename Suffix ID Count <br>(optional, default: 4 -> 0001-9999). <br>
@@ -172,7 +195,8 @@
 		</parameter>
 		<parameter name="rebuildTableNames" type="text">
 			<label>Tablename Rebuild</label>
-			<description><![CDATA[Rename existing tables using 'Tablename Realname Generation' and 'Tablename Suffix ID Count', (optional, default: disabled). <br>
+			<description><![CDATA[Rename existing tables using 'Tablename Prefix String', 'Tablename Realname Generation', 'Tablename Case Sensitive' and
+			'Tablename Suffix ID Count'. (optional, default: disabled). <br>
 			USE WITH CARE! Deactivate after renaming is done!]]></description>
 			<options>
 				<option value="true">Enable</option>

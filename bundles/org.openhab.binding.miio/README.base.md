@@ -172,7 +172,15 @@ Firmware of the device don't accept commands coming from other subnets.
 Set the communication in the thing configuration to 'cloud'.
 
 _Cloud connectivity is not working_
-The most common problem is a wrong userId/password. Try to fix your userId/password.
+The most common problem is a wrong or missing userId/password. Update your Xiaomi cloud userId & password in the [miio binding configuration screen](#binding-configuration).
+If the problem persists you can try the following:
+
+* Xiaomi Account verification might be needed. For some users login by the binding is unsuccessful as account verification is required, but the binding currently has no possibilities to handle this.
+In order to pass validation your (openHAB server) ip need to be validated/confirmed. 
+Browse to [https://account.xiaomi.com/](https://account.xiaomi.com/) and logon to your account. Note: use the same external ip address as your openHAB server, e.g.  you may need to disable your VPN.
+* If above is not possible or fails, You can try to find in the binding debug logging a `location url`. Try to login using this url (just after it fails) with your browser.
+* Several users also reported success by resetting their Xiaomi password.
+
 If it still fails, you're bit out of luck. You may try to restart openHAB (not just the binding) to clean the cookies. 
 As the cloud logon process is still little understood, your only luck might be to enable trace logging and see if you can translate the Chinese error code that it returns.
 

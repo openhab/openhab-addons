@@ -44,6 +44,8 @@ public class HueTlsTrustManagerProvider implements TlsTrustManagerProvider {
 
     private final Logger logger = LoggerFactory.getLogger(HueTlsTrustManagerProvider.class);
 
+    private @Nullable PEMTrustManager trustManager;
+
     public HueTlsTrustManagerProvider(String hostname, boolean useSelfSignedCertificate) {
         this.hostname = hostname;
         this.useSelfSignedCertificate = useSelfSignedCertificate;
@@ -56,20 +58,33 @@ public class HueTlsTrustManagerProvider implements TlsTrustManagerProvider {
 
     @Override
     public X509ExtendedTrustManager getTrustManager() {
+        PEMTrustManager localTrustManager = getPEMTrustManager();
+        if (localTrustManager == null) {
+            logger.error("Cannot get the PEM certificate - returning a TrustAllTrustManager");
+        }
+        return localTrustManager != null ? localTrustManager : TrustAllTrustManager.getInstance();
+    }
+
+    public @Nullable PEMTrustManager getPEMTrustManager() {
+        PEMTrustManager localTrustManager = trustManager;
+        if (localTrustManager != null) {
+            return localTrustManager;
+        }
         try {
             if (useSelfSignedCertificate) {
                 logger.trace("Use self-signed certificate downloaded from Hue Bridge.");
                 // use self-signed certificate downloaded from Hue Bridge
-                return PEMTrustManager.getInstanceFromServer("https://" + getHostName());
+                localTrustManager = PEMTrustManager.getInstanceFromServer("https://" + getHostName());
             } else {
                 logger.trace("Use Signify private CA Certificate for Hue Bridges from resources.");
                 // use Signify private CA Certificate for Hue Bridges from resources
-                return getInstanceFromResource(PEM_FILENAME);
+                localTrustManager = getInstanceFromResource(PEM_FILENAME);
             }
+            this.trustManager = localTrustManager;
         } catch (CertificateException | MalformedURLException e) {
-            logger.error("An unexpected exception occurred - returning a TrustAllTrustManager: {}", e.getMessage(), e);
+            logger.debug("An unexpected exception occurred: {}", e.getMessage(), e);
         }
-        return TrustAllTrustManager.getInstance();
+        return localTrustManager;
     }
 
     /**

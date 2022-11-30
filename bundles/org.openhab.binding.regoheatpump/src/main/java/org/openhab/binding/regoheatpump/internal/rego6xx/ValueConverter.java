@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.regoheatpump.internal.rego6xx;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link ValueConverter} is responsible for converting various rego 6xx specific data types.
  *
  * @author Boris Krivonog - Initial contribution
  */
+@NonNullByDefault
 class ValueConverter {
     public static byte[] shortToSevenBitFormat(short value) {
         byte b1 = (byte) ((value & 0xC000) >> 14);

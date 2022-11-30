@@ -155,7 +155,7 @@ Temperature sensors can be configured defining a `bus_thermo_sensor` Thing with 
     - example sensor `5` of external zone `00` --> `where="500"`
     - example: slave sensor `3` of zone `2` --> `where="302"`
 
-The (optional) Central Unit can be configured defining a `bus_themo_cu` Thing.
+The (optional) Central Unit can be configured defining a `bus_themo_cu` Thing with the `where` configuration parameter (`OpenWebNet Address`) set to `where="0"`.
 
 ##### Central Unit integration missing points 
 

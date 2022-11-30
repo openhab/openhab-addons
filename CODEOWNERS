@@ -6,8 +6,8 @@
 
 # Add-on maintainers:
 /bundles/org.openhab.automation.groovyscripting/ @wborn
-/bundles/org.openhab.automation.jrubyscripting/ @boc-tothefuture
-/bundles/org.openhab.automation.jsscripting/ @jpg0
+/bundles/org.openhab.automation.jrubyscripting/ @boc-tothefuture @ccutrer @jimtng
+/bundles/org.openhab.automation.jsscripting/ @jpg0 @florian-h05
 /bundles/org.openhab.automation.jythonscripting/ @openhab/add-ons-maintainers
 /bundles/org.openhab.automation.pidcontroller/ @fwolter
 /bundles/org.openhab.automation.pwm/ @fwolter
@@ -77,6 +77,7 @@
 /bundles/org.openhab.binding.dsmr/ @Hilbrand
 /bundles/org.openhab.binding.dwdpollenflug/ @DerOetzi
 /bundles/org.openhab.binding.dwdunwetter/ @limdul79
+/bundles/org.openhab.binding.easee/ @alexf2015
 /bundles/org.openhab.binding.echonetlite/ @mikeb01
 /bundles/org.openhab.binding.ecobee/ @mhilbush
 /bundles/org.openhab.binding.ecotouch/ @sibbi77
@@ -138,7 +139,7 @@
 /bundles/org.openhab.binding.iammeter/ @lewei50
 /bundles/org.openhab.binding.iaqualink/ @digitaldan
 /bundles/org.openhab.binding.icalendar/ @daMihe
-/bundles/org.openhab.binding.icloud/ @pgfeller
+/bundles/org.openhab.binding.icloud/ @openhab/add-ons-maintainers
 /bundles/org.openhab.binding.ihc/ @paulianttila
 /bundles/org.openhab.binding.innogysmarthome/ @ollie-dev
 /bundles/org.openhab.binding.insteon/ @robnielsen
@@ -152,6 +153,7 @@
 /bundles/org.openhab.binding.jablotron/ @octa22
 /bundles/org.openhab.binding.jeelink/ @vbier
 /bundles/org.openhab.binding.jellyfin/ @GiviMAD
+/bundles/org.openhab.binding.juicenet/ @jsjames
 /bundles/org.openhab.binding.kaleidescape/ @mlobstein
 /bundles/org.openhab.binding.keba/ @kgoderis
 /bundles/org.openhab.binding.km200/ @Markinus
@@ -185,6 +187,7 @@
 /bundles/org.openhab.binding.meater/ @jannegpriv
 /bundles/org.openhab.binding.mecmeter/ @kaikreuzer
 /bundles/org.openhab.binding.melcloud/ @lucacalcaterra @paulianttila @thewiep
+/bundles/org.openhab.binding.mercedesme/ @weymann
 /bundles/org.openhab.binding.meteoalerte/ @clinique
 /bundles/org.openhab.binding.meteoblue/ @9037568
 /bundles/org.openhab.binding.meteostick/ @cdjackson
@@ -269,6 +272,7 @@
 /bundles/org.openhab.binding.pushover/ @cweitkamp
 /bundles/org.openhab.binding.pushsafer/ @appzer @cweitkamp
 /bundles/org.openhab.binding.qbus/ @QbusKoen
+/bundles/org.openhab.binding.qolsysiq/ @digitaldan
 /bundles/org.openhab.binding.radiothermostat/ @mlobstein
 /bundles/org.openhab.binding.regoheatpump/ @crnjan
 /bundles/org.openhab.binding.revogi/ @andibraeu
@@ -348,6 +352,7 @@
 /bundles/org.openhab.binding.venstarthermostat/ @hww3 @digitaldan
 /bundles/org.openhab.binding.ventaair/ @t2000
 /bundles/org.openhab.binding.verisure/ @jannegpriv
+/bundles/org.openhab.binding.vesync/ @dag81
 /bundles/org.openhab.binding.vigicrues/ @clinique
 /bundles/org.openhab.binding.vitotronic/ @steand
 /bundles/org.openhab.binding.volvooncall/ @clinique @Jamstah
@@ -370,7 +375,7 @@
 /bundles/org.openhab.binding.yioremote/ @miloit
 /bundles/org.openhab.binding.zoneminder/ @mhilbush
 /bundles/org.openhab.binding.zway/ @pathec
-/bundles/org.openhab.io.homekit/ @andylintner @yfre
+/bundles/org.openhab.io.homekit/ @andylintner @ccutrer @yfre
 /bundles/org.openhab.io.hueemulation/ @davidgraeff @digitaldan
 /bundles/org.openhab.io.imperihome/ @pdegeus
 /bundles/org.openhab.io.metrics/ @pravussum

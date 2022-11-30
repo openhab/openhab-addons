@@ -140,10 +140,14 @@ Script debug logging is enabled by default at the `INFO` level, but can be confi
 log:set DEBUG org.openhab.automation.script
 ```
 
-The default logger name prefix is `org.openhab.automation.script`, this can be changed by assigning a new prefix to the `loggerName` property of the console.
+The default logger name prefix is `org.openhab.automation.script`, this can be changed by assigning a new string to the `loggerName` property of the console.
+
+Please be aware that messages might not appear in the logs if the logger name does not start with `org.openhab`.
+This behaviour is due to [log4j2](https://logging.apache.org/log4j/2.x/) requiring definition for each logger prefix.
+
 
 ```javascript
-console.loggerName = "custom"
+console.loggerName = "org.openhab.custom"
 ```
 
 Supported logging functions include:
@@ -162,58 +166,76 @@ See <https://developer.mozilla.org/en-US/docs/Web/API/console> for more informat
 
 ### Timers
 
+JS Scripting provides access to the global `setTimeout`, `setInterval`, `clearTimeout` and `clearInterval` methods specified in the [Web APIs](https://developer.mozilla.org/en-US/docs/Web/API).
+
+When a script is unloaded, all created timers and intervals are automatically cancelled.
+
 #### SetTimeout
 
-The global `setTimeout()` method sets a timer which executes a function or specified piece of code once the timer expires.
+The global [`setTimeout()`](https://developer.mozilla.org/en-US/docs/Web/API/setTimeout) method sets a timer which executes a function once the timer expires.
+`setTimeout()` returns a `timeoutId` (a positive integer value) which identifies the timer created.
 
 ```javascript
-var ohTimer = setTimeout(callbackFunction, delay);
+var timeoutId = setTimeout(callbackFunction, delay);
 ```
 
-The global `clearTimeout()` method cancels a timeout previously established by calling `setTimeout()`.
+`delay` is an integer value that represents the amount of milliseconds to wait before the timer expires.
 
-The openHAB implementation of `setTimeout()` differs from the [HTML DOM API's `setTimeout()`](https://developer.mozilla.org/en-US/docs/Web/API/setTimeout).
-openHAB does not return the integer timeoutID as standard JS does, instead it returns an instance of [openHAB Timer](#openhab-timer).
+The global [`clearTimeout(timeoutId)`](https://developer.mozilla.org/en-US/docs/Web/API/clearTimeout) method cancels a timeout previously established by calling `setTimeout()`.
 
 #### SetInterval
 
-The setInterval() method repeatedly calls a function or executes a code snippet, with a fixed time delay between each call.
+The global [`setInterval()`](https://developer.mozilla.org/en-US/docs/Web/API/setInterval) method repeatedly calls a function, with a fixed time delay between each call.
+`setInterval()` returns an `intervalId` (a positive integer value) which identifies the interval created.
 
 ```javascript
-var ohIntervalTimer = setInterval(callbackFunction, delay);
+var intervalId = setInterval(callbackFunction, delay);
 ```
 
-The global `clearInterval()` method cancels a timed, repeating action which was previously established by a call to `setInterval()`.
+`delay` is an integer value that represents the amount of milliseconds to wait before the timer expires.
 
-NOTE: Timers will not be canceled if a script is deleted or modified, it is up to the user to manage timers.
-See using the [cache](#cache) namespace as well as [ScriptLoaded](#initialization-hook-scriptloaded) and [ScriptUnLoaded](#deinitialization-hook-scriptunloaded) for a convenient way of managing persisted objects, such as timers between reloads or deletions of scripts.
+The global [`clearInterval(intervalId)`](https://developer.mozilla.org/en-US/docs/Web/API/clearInterval) method cancels a timed, repeating action which was previously established by a call to `setInterval()`.
 
-The openHAB implementation of `setInterval()` differs from the [HTML DOM API's `setInterval()`](https://developer.mozilla.org/en-US/docs/Web/API/setInterval).
-openHAB does not return the integer timeoutID as standard JS does, instead it returns an instance of [openHAB Timer](#openhab-timer).
+#### Accessing Variables
 
-#### openHAB Timer
+You can access all variables of the current context in the created timers.
 
-A native openHAB Timer instance has the following methods:
-
-- `cancel()`: Cancels the timer. ⇒ `boolean`: true, if cancellation was successful
-- `getExecutionTime()`: The scheduled execution time or null if timer was cancelled. ⇒ `time.ZonedDateTime` or `null`
-- `isActive()`: Whether the scheduled execution is yet to happen. ⇒ `boolean`
-- `isCancelled()`: Whether the timer has been cancelled. ⇒ `boolean`
-- `isRunning()`: Whether the scheduled code is currently executed. ⇒ `boolean`
-- `hasTerminated()`: Whether the scheduled execution has already terminated. ⇒ `boolean`
-- `reschedule(time.ZonedDateTime)`: Reschedules a timer to a new starting time. This can also be called after a timer has terminated, which will result in another execution of the same code. ⇒ `boolean`: true, if rescheduling was successful
-
-Examples:
+Note: Variables can be mutated (changed) after the timer has been created.
+Be aware that this can lead to unattended side effects, e.g. when you change the variable after timer creation, which can make debugging quite difficult!
 
 ```javascript
-var timer = setTimeout(() => { console.log('Timer expired.'); }, 10000); // Would log 'Timer expired.' in 10s.
-if (timer.isActive()) console.log('Timer is waiting to execute.');
-timer.cancel();
-if (timer.isCancelled()) console.log('Timer has been cancelled.');
-timer.reschedule(time.ZonedDateTime.now().plusSeconds(2)); // Logs 'Timer expired.' in 2s.
+var myVar = 'Hello world!';
+
+// Schedule a timer that expires in ten seconds
+setTimeout(() => {
+  console.info(`Timer expired with myVar = "${myVar}"`);
+}, 10000);
+
+myVar = 'Hello mutation!'; // When the timer runs, it will log "Hello mutation!" instead of "Hello world!"
 ```
 
-See [openHAB JavaDoc - Timer](https://www.openhab.org/javadoc/latest/org/openhab/core/model/script/actions/timer) for full API documentation.
+If you need to pass some variables to the timer but avoid that they can get mutated, use a function generator.
+
+**Pass variables using a function generator** <!-- markdownlint-disable-line MD036 -->
+
+This allows you to pass variables to the timer's callback function during timer creation.
+The variables can NOT be mutated after the timer function generator was used to create the callback function.
+
+```javascript
+// Function generator for the timer's callback function
+function cbFuncGen (myVariable) {
+  return function () {
+    console.info(`Timer expired with myVar = "${myVariable}"`);
+  };
+}
+
+var myVar = 'Hello world!';
+
+// Schedule a timer that expires in ten seconds
+setTimeout(cbFuncGen(myVar), 10000);
+
+myVar = 'Hello mutation!'; // When the timer runs, it will log "Hello world!"
+```
 
 ### Paths
 
@@ -231,14 +253,14 @@ The items namespace allows interactions with openHAB items.
 
 See [openhab-js : items](https://openhab.github.io/openhab-js/items.html) for full API documentation.
 
-- items : <code>object</code>
-  - .getItem(name, nullIfMissing) ⇒ <code>Item</code>
-  - .getItems() ⇒ <code>Array.&lt;Item&gt;</code>
-  - .getItemsByTag(...tagNames) ⇒ <code>Array.&lt;Item&gt;</code>
+- items : `object`
+  - .getItem(name, nullIfMissing) ⇒ `Item`
+  - .getItems() ⇒ `Array[Item]`
+  - .getItemsByTag(...tagNames) ⇒ `Array[Item]`
   - .addItem([itemConfig](#itemconfig))
-  - .removeItem(itemOrItemName) ⇒ <code>Boolean</code>
+  - .removeItem(itemOrItemName) ⇒ `boolean`
   - .replaceItem([itemConfig](#itemconfig))
-  - .safeItemName(s) ⇒ <code>String</code>
+  - .safeItemName(s) ⇒ `string`
 
 ```javascript
 const item = items.getItem("KitchenLight");
@@ -249,24 +271,26 @@ console.log("Kitchen Light State", item.state);
 
 Calling `getItem(...)` returns an `Item` object with the following properties:
 
-- Item : <code>object</code>
-  - .type ⇒ <code>String</code>
-  - .name ⇒ <code>String</code>
-  - .label ⇒ <code>String</code>
+- Item : `object`
+  - .rawItem ⇒ `HostItem`
   - .history ⇒ [`ItemHistory`](#itemhistory)
-  - .state ⇒ <code>String</code>
-  - .rawState ⇒ <code>HostState</code>
-  - .members ⇒ <code>Array.&lt;Item&gt;</code>
-  - .descendents ⇒ <code>Array.&lt;Item&gt;</code>
-  - .isUninitialized ⇒ <code>Boolean</code>
-  - .groupNames ⇒ <code>Array.&lt;String&gt;</code>
-  - .tags ⇒ <code>Array.&lt;String&gt;</code>
-  - .getMetadataValue(namespace) ⇒ <code>String</code>
-  - .updateMetadataValue(namespace, value) ⇒ <code>String</code>
-  - .upsertMetadataValue(namespace, value) ⇒ <code>Boolean</code>
+  - .semantics ⇒ [`ItemSemantics`](https://openhab.github.io/openhab-js/items.ItemSemantics.html)
+  - .type ⇒ `string`
+  - .name ⇒ `string`
+  - .label ⇒ `string`
+  - .state ⇒ `string`
+  - .rawState ⇒ `HostState`
+  - .members ⇒ `Array[Item]`
+  - .descendents ⇒ `Array[Item]`
+  - .isUninitialized ⇒ `boolean`
+  - .groupNames ⇒ `Array[string]`
+  - .tags ⇒ `Array[string]`
+  - .getMetadataValue(namespace) ⇒ `string`
+  - .updateMetadataValue(namespace, value) ⇒ `string`
+  - .upsertMetadataValue(namespace, value) ⇒ `boolean`
   - .updateMetadataValues(namespaceToValues)
   - .sendCommand(value)
-  - .sendCommandIfDifferent(value) ⇒ <code>Boolean</code>
+  - .sendCommandIfDifferent(value) ⇒ `boolean`
   - .postUpdate(value)
   - .addGroups(...groupNamesOrItems)
   - .removeGroups(...groupNamesOrItems)
@@ -287,17 +311,17 @@ console.log("KitchenLight state", item.state)
 
 Calling `addItem(itemConfig)` or `replaceItem(itemConfig)` requires the `itemConfig` object with the following properties:
 
-- itemConfig : <code>object</code>
-  - .type ⇒ <code>String</code>
-  - .name ⇒ <code>String</code>
-  - .label ⇒ <code>String</code>
-  - .category (icon) ⇒ <code>String</code>
-  - .groups ⇒ <code>Array.&lt;String&gt;</code>
-  - .tags ⇒ <code>Array.&lt;String&gt;</code>
-  - .channels ⇒ <code>String|Object { channeluid: { config } }</code>
-  - .metadata ⇒ <code>Object { namespace: value }|Object { namespace: { value: value , config: { config } } }</code>
-  - .giBaseType ⇒ <code>String</code>
-  - .groupFunction ⇒ <code>String</code>
+- itemConfig : `object`
+  - .type ⇒ `string`
+  - .name ⇒ `string`
+  - .label ⇒ `string`
+  - .category (icon) ⇒ `string`
+  - .groups ⇒ `Array[string]`
+  - .tags ⇒ `Array[string]`
+  - .channels ⇒ `string | Object { channeluid: { config } }`
+  - .metadata ⇒ `Object { namespace: value } | Object { namespace: { value: value , config: { config } } }`
+  - .giBaseType ⇒ `string`
+  - .groupFunction ⇒ `string`
 
 Note: `.type` and `.name` are required.
 Basic UI and the mobile apps need `metadata.stateDescription.config.pattern` to render the state of an Item.
@@ -486,14 +510,41 @@ Replace `<url>` with the request url.
 
 #### ScriptExecution Actions
 
-See [openhab-js : actions.ScriptExecution](https://openhab.github.io/openhab-js/actions.html#.ScriptExecution) for complete documentation.
+The `ScriptExecution` actions provide the `callScript(string scriptName)` method, which calls a script located at the `$OH_CONF/scripts` folder, as well as the `createTimer` method.
+
+You can also create timers using the [native JS methods for timer creation](#timers), your choice depends on the versatility you need.
+Sometimes, using `setTimer` is much faster and easier, but other times, you need the versatility that `createTimer` provides.
+
+##### `createTimer`
+
+```javascript
+actions.ScriptExecution.createTimer(time.ZonedDateTime instant, function callback);
+
+actions.ScriptExecution.createTimer(string identifier, time.ZonedDateTime instant, function callback);
+```
+
+`createTimer` accepts the following arguments:
+
+- `string` identifier (optional): Identifies the timer by a string, used e.g. for logging errors that occur during the callback execution.
+- [`time.ZonedDateTime`](#timetozdt) instant: Point in time when the callback should be executed.
+- `function` callback: Callback function to execute when the timer expires.
+
+`createTimer` returns an openHAB Timer, that provides the following methods:
+
+- `cancel()`: Cancels the timer. ⇒ `boolean`: true, if cancellation was successful
+- `getExecutionTime()`: The scheduled execution time or null if timer was cancelled. ⇒ `time.ZonedDateTime` or `null`
+- `isActive()`: Whether the scheduled execution is yet to happen. ⇒ `boolean`
+- `isCancelled()`: Whether the timer has been cancelled. ⇒ `boolean`
+- `hasTerminated()`: Whether the scheduled execution has already terminated. ⇒ `boolean`
+- `reschedule(time.ZonedDateTime)`: Reschedules a timer to a new starting time. This can also be called after a timer has terminated, which will result in another execution of the same code. ⇒ `boolean`: true, if rescheduling was successful
+
 
 ```javascript
 var now = time.ZonedDateTime.now();
 
 // Function to run when the timer goes off.
 function timerOver () {
-  console.info('The timer is over.');
+  console.info('The timer expired.');
 }
 
 // Create the Timer.
@@ -509,51 +560,7 @@ var active = myTimer.isActive();
 myTimer.reschedule(now.plusSeconds(5));
 ```
 
-If you need to pass some variables to the timer, there are two options to do so:
-
-**Use a function generator** <!-- markdownlint-disable-line MD036 -->
-
-This allows you to pass variables to the timer‘s callback function at timer creation.
-The variables can not be mutated after the timer function generator was used to create the function.
-
-```javascript
-var now = time.ZonedDateTime.now();
-
-// Function to run when the timer goes off.
-function timerOver (myVariable) {
-  return function () {
-    console.info('The timer is over. myVariable is: ' + myVariable);
-  }
-}
-
-// Create the Timer.
-var myTimer = actions.ScriptExecution.createTimer('My Timer', now.plusSeconds(10), timerOver('Hello world!'));
-```
-
-**Pass a single variable to the timer** <!--markdownlint-disable-line MD036 -->
-
-This allows you to pass a single variable to the timer's callback function.
-Variables can be mutated (changed) after the timer has been created.
-Be aware that this can lead to unattended side effects, e.g. when you change the variable after timer creation, which can make debugging quite difficult!
-
-```javascript
-var now = time.ZonedDateTime.now();
-
-// Function to run when the timer goes off.
-function timerOver () {
-  console.info('The timer is over. myVariable is: ' + myVariable);
-}
-
-var myVariable = 'Hello world!';
-
-// Create the Timer.
-var myTimer = actions.ScriptExecution.createTimerWithArgument('My Timer', now.plusSeconds(10), myVariable, timerOver);
-
-myVariable = 'Hello mutation!';
-// When the timer runs, it will log "Hello mutation!" instead of "Hello world!"
-```
-
-You may also pass `this` to the timer to have access to all variables from the current context.
+See [openhab-js : actions.ScriptExecution](https://openhab.github.io/openhab-js/actions.ScriptExecution.html) for complete documentation.
 
 #### Semantics Actions
 
@@ -612,8 +619,8 @@ console.log("Count",counter.times++);
 ```js
 let counter = cache.get("counter");
 if(counter == null){
-     counter = {times: 0};
-     cache.put("counter", counter);
+  counter = {times: 0};
+  cache.put("counter", counter);
 }
 console.log("Count",counter.times++);
 ```
@@ -835,7 +842,7 @@ Operations and conditions can also optionally take functions:
 
 ```javascript
 rules.when().item("F1_light").changed().then(event => {
-    console.log(event);
+  console.log(event);
 }).build("Test Rule", "My Test Rule");
 ```
 
@@ -910,7 +917,7 @@ Additionally all the above triggers have the following functions:
 ```javascript
 // Basic rule, when the BedroomLight1 is changed, run a custom function
 rules.when().item('BedroomLight1').changed().then(e => {
-    console.log("BedroomLight1 state", e.newState)
+  console.log("BedroomLight1 state", e.newState)
 }).build();
 
 // Turn on the kitchen light at SUNSET
@@ -954,7 +961,7 @@ This tables gives an overview over the `event` object:
 | `newState`        | `ItemStateChangeTrigger`, `GroupStateChangeTrigger`  | New state of Item or Group that triggered event                                     | N/A                    |
 | `receivedState`   | `ItemStateUpdateTrigger`, `GroupStateUpdateTrigger`  | State of Item that triggered event                                                  | `triggeringItem.state` |
 | `receivedCommand` | `ItemCommandTrigger`, `GroupCommandTrigger`          | Command that triggered event                                                        | `receivedCommand`      |
-| `itemName`        | `Item****Trigger`                                    | Name of Item that triggered event                                                   | `triggeringItem.name`  |
+| `itemName`        | `Item****Trigger`, `Group****Trigger`                | Name of Item that triggered event                                                   | `triggeringItem.name`  |
 | `receivedEvent`   | `ChannelEventTrigger`                                | Channel event that triggered event                                                  | N/A                    |
 | `channelUID`      | `ChannelEventTrigger`                                | UID of channel that triggered event                                                 | N/A                    |
 | `oldStatus`       | `ThingStatusChangeTrigger`                           | Previous state of Thing that triggered event                                        | N/A                    |

@@ -46,7 +46,6 @@ import org.openhab.automation.jsscripting.internal.fs.PrefixedSeekableByteChanne
 import org.openhab.automation.jsscripting.internal.fs.ReadOnlySeekableByteArrayChannel;
 import org.openhab.automation.jsscripting.internal.fs.watch.JSDependencyTracker;
 import org.openhab.automation.jsscripting.internal.scriptengine.InvocationInterceptingScriptEngineWithInvocableAndAutoCloseable;
-import org.openhab.automation.jsscripting.internal.threading.ThreadsafeTimers;
 import org.openhab.core.automation.module.script.ScriptExtensionAccessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,7 +57,8 @@ import com.oracle.truffle.js.scriptengine.GraalJSScriptEngine;
  *
  * @author Jonathan Gilbert - Initial contribution
  * @author Dan Cunningham - Script injections
- * @author Florian Hotze - Create lock object for multi-thread synchronization
+ * @author Florian Hotze - Create lock object for multi-thread synchronization; Inject the {@link JSRuntimeFeatures}
+ *         into the JS context
  */
 public class OpenhabGraalJSScriptEngine
         extends InvocationInterceptingScriptEngineWithInvocableAndAutoCloseable<GraalJSScriptEngine> {
@@ -71,21 +71,23 @@ public class OpenhabGraalJSScriptEngine
 
     // shared lock object for synchronization of multi-thread access
     private final Object lock = new Object();
+    private final JSRuntimeFeatures jsRuntimeFeatures;
 
     // these fields start as null because they are populated on first use
     private String engineIdentifier;
     private Consumer<String> scriptDependencyListener;
 
     private boolean initialized = false;
-    private String globalScript;
+    private final String globalScript;
 
     /**
      * Creates an implementation of ScriptEngine (& Invocable), wrapping the contained engine, that tracks the script
      * lifecycle and provides hooks for scripts to do so too.
      */
-    public OpenhabGraalJSScriptEngine(@Nullable String injectionCode) {
+    public OpenhabGraalJSScriptEngine(@Nullable String injectionCode, JSScriptServiceUtil jsScriptServiceUtil) {
         super(null); // delegate depends on fields not yet initialised, so we cannot set it immediately
         this.globalScript = GLOBAL_REQUIRE + (injectionCode != null ? injectionCode : "");
+        this.jsRuntimeFeatures = jsScriptServiceUtil.getJSRuntimeFeatures(lock);
 
         LOGGER.debug("Initializing GraalJS script engine...");
 
@@ -209,7 +211,10 @@ public class OpenhabGraalJSScriptEngine
         delegate.getBindings(ScriptContext.ENGINE_SCOPE).put(REQUIRE_WRAPPER_NAME, wrapRequireFn);
         // Injections into the JS runtime
         delegate.put("require", wrapRequireFn.apply((Function<Object[], Object>) delegate.get("require")));
-        delegate.put("ThreadsafeTimers", new ThreadsafeTimers(lock));
+        jsRuntimeFeatures.getFeatures().forEach((key, obj) -> {
+            LOGGER.debug("Injecting {} into the JS runtime...", key);
+            delegate.put(key, obj);
+        });
 
         initialized = true;
 
@@ -218,6 +223,19 @@ public class OpenhabGraalJSScriptEngine
         } catch (ScriptException e) {
             LOGGER.error("Could not inject global script", e);
         }
+    }
+
+    @Override
+    public Object invokeFunction(String s, Object... objects) throws ScriptException, NoSuchMethodException {
+        // Synchronize multi-thread access to avoid exceptions when reloading a script file while the script is running
+        synchronized (lock) {
+            return super.invokeFunction(s, objects);
+        }
+    }
+
+    @Override
+    public void close() {
+        jsRuntimeFeatures.close();
     }
 
     /**

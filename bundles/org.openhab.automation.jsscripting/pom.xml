@@ -12,7 +12,7 @@
 
   <artifactId>org.openhab.automation.jsscripting</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: Automation :: JSScripting</name>
+  <name>openHAB Add-ons :: Bundles :: Automation :: JavaScript Scripting</name>
 
   <properties>
     <bnd.importpackage>
@@ -22,10 +22,10 @@
       !jdk.internal.reflect.*,
       !jdk.vm.ci.services
     </bnd.importpackage>
-    <graal.version>22.3.0</graal.version>
+    <graal.version>22.0.0.2</graal.version> <!-- DO NOT UPGRADE: 22.0.0.2 is the latest version working on armv7l / OpenJDK 11.0.16 -->
     <asm.version>6.2.1</asm.version>
     <oh.version>${project.version}</oh.version>
-    <ohjs.version>openhab@2.0.4</ohjs.version>
+    <ohjs.version>openhab@2.1.1</ohjs.version>
   </properties>
 
   <build>
@@ -48,9 +48,9 @@
       <plugin>
         <groupId>com.github.eirslett</groupId>
         <artifactId>frontend-maven-plugin</artifactId>
-        <version>1.12.0</version>
+        <version>1.12.1</version>
         <configuration>
-          <nodeVersion>v16.17.1</nodeVersion>
+          <nodeVersion>v16.17.1</nodeVersion> <!-- DO NOT DOWNGRADE: NodeJS < 16 doesn't support Apple Silicon -->
           <workingDirectory>target/js</workingDirectory>
         </configuration>
         <executions>
@@ -67,7 +67,7 @@
               <goal>npm</goal>
             </goals>
             <configuration>
-              <arguments>install ${ohjs.version} webpack webpack-cli</arguments>
+              <arguments>install ${ohjs.version} webpack@5.75.0 webpack-cli@4.10.0</arguments> <!-- webpack-cli >= 5.0.0 doesn't properly process the given entrypoint -->
             </configuration>
           </execution>
           <execution>
@@ -135,11 +135,7 @@
       <artifactId>js</artifactId>
       <version>${graal.version}</version>
     </dependency>
-    <dependency>
-      <groupId>com.ibm.icu</groupId>
-      <artifactId>icu4j</artifactId>
-      <version>69.1</version>
-    </dependency>
+    <!-- com.ibm.icu.icu4j/69.1 is not required on GraalJS >= 22.0.0 as it moved to org.graalvm.truffle -->
 
     <!-- include as version required is older than OH provides -->
     <dependency>

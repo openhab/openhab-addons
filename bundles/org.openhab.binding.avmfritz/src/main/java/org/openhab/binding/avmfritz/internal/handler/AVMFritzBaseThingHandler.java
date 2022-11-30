@@ -152,7 +152,11 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
                     updateHumiditySensor(deviceModel.getHumidity());
                 }
                 if (deviceModel.isHANFUNAlarmSensor()) {
-                    updateHANFUNAlarmSensor(deviceModel.getAlert());
+                    if (deviceModel.isHANFUNBlinds()) {
+                        updateHANFUNBlindsAlarmSensor(deviceModel.getAlert());
+                    } else {
+                        updateHANFUNAlarmSensor(deviceModel.getAlert());
+                    }
                 }
                 if (deviceModel.isHANFUNBlinds()) {
                     updateLevelControl(deviceModel.getLevelControlModel());
@@ -171,6 +175,17 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
         if (alertModel != null) {
             updateThingChannelState(CHANNEL_CONTACT_STATE,
                     AlertModel.ON.equals(alertModel.getState()) ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
+        }
+    }
+
+    private void updateHANFUNBlindsAlarmSensor(@Nullable AlertModel alertModel) {
+        if (alertModel != null) {
+            updateThingChannelState(CHANNEL_OBSTRUCTION_ALARM,
+                    OnOffType.from(alertModel.hasObstructionAlarmOccurred()));
+            updateThingChannelState(CHANNEL_TEMPERATURE_ALARM, OnOffType.from(alertModel.hasTemperaturAlarmOccurred()));
+            if (alertModel.hasUnknownAlarmOccurred()) {
+                logger.warn("Unknown blinds alarm {}", alertModel.getState());
+            }
         }
     }
 
@@ -397,6 +412,8 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
             case CHANNEL_BATTERY_LOW:
             case CHANNEL_CONTACT_STATE:
             case CHANNEL_LAST_CHANGE:
+            case CHANNEL_OBSTRUCTION_ALARM:
+            case CHANNEL_TEMPERATURE_ALARM:
                 logger.debug("Channel {} is a read-only channel and cannot handle command '{}'", channelId, command);
                 break;
             case CHANNEL_OUTLET:

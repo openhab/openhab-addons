@@ -14,6 +14,7 @@ package org.openhab.binding.nanoleaf.internal.handler;
 
 import static org.openhab.binding.nanoleaf.internal.NanoleafBindingConstants.*;
 
+import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
@@ -43,6 +44,7 @@ import org.openhab.binding.nanoleaf.internal.OpenAPIUtils;
 import org.openhab.binding.nanoleaf.internal.commanddescription.NanoleafCommandDescriptionProvider;
 import org.openhab.binding.nanoleaf.internal.config.NanoleafControllerConfig;
 import org.openhab.binding.nanoleaf.internal.discovery.NanoleafPanelsDiscoveryService;
+import org.openhab.binding.nanoleaf.internal.layout.NanoleafLayout;
 import org.openhab.binding.nanoleaf.internal.model.AuthToken;
 import org.openhab.binding.nanoleaf.internal.model.BooleanState;
 import org.openhab.binding.nanoleaf.internal.model.Brightness;
@@ -65,6 +67,7 @@ import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -72,6 +75,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -103,6 +107,7 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
     private @Nullable HttpClient httpClientSSETouchEvent;
     private @Nullable Request sseTouchjobRequest;
     private List<NanoleafControllerListener> controllerListeners = new CopyOnWriteArrayList<NanoleafControllerListener>();
+    private PanelLayout previousPanelLayout = new PanelLayout();
 
     private @NonNullByDefault({}) ScheduledFuture<?> pairingJob;
     private @NonNullByDefault({}) ScheduledFuture<?> updateJob;
@@ -664,6 +669,7 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
 
         updateProperties();
         updateConfiguration();
+        updateLayout(controllerInfo.getPanelLayout());
 
         for (NanoleafControllerListener controllerListener : controllerListeners) {
             controllerListener.onControllerInfoFetched(getThing().getUID(), controllerInfo);
@@ -702,6 +708,33 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
             getThing().getProperties().forEach((key, value) -> {
                 logger.trace("Thing property: key {} value {}", key, value);
             });
+        }
+    }
+
+    private void updateLayout(PanelLayout panelLayout) {
+        ChannelUID layoutChannel = new ChannelUID(getThing().getUID(), CHANNEL_LAYOUT);
+        ThingHandlerCallback callback = getCallback();
+        if (callback != null) {
+            if (!callback.isChannelLinked(layoutChannel)) {
+                // Don't generate image unless it is used
+                return;
+            }
+        }
+
+        if (previousPanelLayout.equals(panelLayout)) {
+            logger.trace("Not rendering panel layout as it is the same as previous rendered panel layout");
+            return;
+        }
+
+        try {
+            byte[] bytes = NanoleafLayout.render(panelLayout);
+            if (bytes.length > 0) {
+                updateState(CHANNEL_LAYOUT, new RawType(bytes, "image/png"));
+            }
+
+            previousPanelLayout = panelLayout;
+        } catch (IOException ioex) {
+            logger.warn("Failed to create layout image", ioex);
         }
     }
 

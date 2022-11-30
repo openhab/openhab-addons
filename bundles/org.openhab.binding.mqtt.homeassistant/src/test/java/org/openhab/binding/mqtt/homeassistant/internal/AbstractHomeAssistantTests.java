@@ -12,19 +12,15 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal;
 
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyBoolean;
-import static org.mockito.Mockito.anyInt;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -64,7 +60,6 @@ import org.openhab.transform.jinja.internal.profiles.JinjaTransformationProfile;
  *
  * @author Anton Kharuzhy - Initial contribution
  */
-@SuppressWarnings({ "ConstantConditions" })
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 @NonNullByDefault
@@ -87,7 +82,6 @@ public abstract class AbstractHomeAssistantTests extends JavaTest {
     protected @Mock @NonNullByDefault({}) ThingTypeRegistry thingTypeRegistry;
     protected @Mock @NonNullByDefault({}) TransformationServiceProvider transformationServiceProvider;
 
-    @SuppressWarnings("NotNullFieldNotInitialized")
     protected @NonNullByDefault({}) MqttChannelTypeProvider channelTypeProvider;
 
     protected final Bridge bridgeThing = BridgeBuilder.create(BRIDGE_TYPE_UID, BRIDGE_UID).build();
@@ -126,7 +120,9 @@ public abstract class AbstractHomeAssistantTests extends JavaTest {
             final var subscriber = (MqttMessageSubscriber) invocation.getArgument(1);
 
             subscriptions.putIfAbsent(topic, ConcurrentHashMap.newKeySet());
-            subscriptions.get(topic).add(subscriber);
+            Set<MqttMessageSubscriber> subscribers = subscriptions.get(topic);
+            Objects.requireNonNull(subscribers); // Invariant, thanks to putIfAbsent above. To make compiler happy
+            subscribers.add(subscriber);
             return CompletableFuture.completedFuture(true);
         }).when(bridgeConnection).subscribe(any(), any());
 
@@ -154,6 +150,7 @@ public abstract class AbstractHomeAssistantTests extends JavaTest {
      * @param relativePath path from src/test/java/org/openhab/binding/mqtt/homeassistant/internal
      * @return path
      */
+    @SuppressWarnings("null")
     protected Path getResourcePath(String relativePath) {
         try {
             return Paths.get(AbstractHomeAssistantTests.class.getResource(relativePath).toURI());

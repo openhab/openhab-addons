@@ -167,7 +167,7 @@ If you do not specify any of these, the binding will use the default which shoul
 |-|-|
 | `ipAddress`| The IP address or host name of your camera. |
 | `port`| This port will be used for HTTP calls for fetching the snapshot and any API calls. |
-| `onvifPort`| The port your camera uses for ONVIF connections. This is needed for PTZ movement, events, and the auto discovery of RTSP and snapshot URLs. |
+| `onvifPort`| The port your camera uses for ONVIF connections. This is needed for PTZ movement, events, and the auto discovery of RTSP and snapshot URLs. A value of 0 will prevent the binding from trying to connect to ONVIF. |
 | `username`| Leave blank if your camera does not use login details. |
 | `password`| Leave blank if your camera does not use login details. |
 | `onvifMediaProfile`| 0 (default) is your cameras Mainstream and the numbers above 0 are the substreams. Any auto discovered URLs will use the streams that this indicates. You can always override the URLs should you wish to use something different for one of them. |

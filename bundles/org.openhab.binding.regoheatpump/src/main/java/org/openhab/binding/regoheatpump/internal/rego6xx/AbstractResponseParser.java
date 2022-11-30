@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.regoheatpump.internal.rego6xx;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.util.HexUtils;
 
 /**
@@ -20,6 +21,7 @@ import org.openhab.core.util.HexUtils;
  *
  * @author Boris Krivonog - Initial contribution
  */
+@NonNullByDefault
 abstract class AbstractResponseParser<T> implements ResponseParser<T> {
     private static final byte COMPUTER_ADDRESS = (byte) 0x01;
 

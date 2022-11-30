@@ -28,19 +28,19 @@ import org.openhab.core.thing.ThingStatusDetail;
  * The device ID of physical devices has to be configured in the thing configuration.
  * <p>
  * Examples for physical device IDs are:
- * 
+ *
  * <pre>
  * hdm:Cameras:d20354de-44b5-3acc-924c-24c98d59da42
  * hdm:ZigBee:000d6f0016d1cdae
  * </pre>
- * 
+ *
  * @author Stefan Kästle - Initial contribution
  * @author Christian Oeing - refactorings of e.g. server registration
  * @author David Pace - Handler abstraction
  *
  */
 @NonNullByDefault
-public class BoschSHCDeviceHandler extends BoschSHCHandler {
+public abstract class BoschSHCDeviceHandler extends BoschSHCHandler {
 
     /**
      * Bosch SHC configuration loaded from openHAB configuration.
@@ -85,6 +85,7 @@ public class BoschSHCDeviceHandler extends BoschSHCHandler {
      *
      * @return Unique id of the Bosch device.
      */
+    @Override
     public @Nullable String getBoschID() {
         if (config != null) {
             return config.id;

@@ -389,9 +389,6 @@ public abstract class Packet {
     }
 
     public boolean isFulfilled(Packet somePacket) {
-        if (isExpectedResponse(somePacket.getPacketType())) {
-            return true;
-        }
-        return false;
+        return isExpectedResponse(somePacket.getPacketType());
     }
 }
