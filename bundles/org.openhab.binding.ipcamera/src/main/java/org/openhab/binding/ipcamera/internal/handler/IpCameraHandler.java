@@ -170,6 +170,7 @@ public class IpCameraHandler extends BaseThingHandler {
     private String basicAuth = "";
     public boolean useBasicAuth = false;
     public boolean useDigestAuth = false;
+    public boolean newInstarApi = false;
     public String snapshotUri = "";
     public String mjpegUri = "";
     private byte[] currentSnapshot = new byte[] { (byte) 0x00 };
