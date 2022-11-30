@@ -231,11 +231,12 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_STATUS, CHANNEL_LAST_UPDATE, "lastUpdate", ITEMT_DATETIME))
 
                 // Addon with external sensors
-                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_ESENDOR_TEMP1, "sensorExtTemp", ITEMT_TEMP))
-                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_ESENDOR_TEMP2, "sensorExtTemp", ITEMT_TEMP))
-                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_ESENDOR_TEMP3, "sensorExtTemp", ITEMT_TEMP))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_ESENSOR_TEMP1, "sensorExtTemp", ITEMT_TEMP))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_ESENSOR_TEMP2, "sensorExtTemp", ITEMT_TEMP))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_ESENSOR_TEMP3, "sensorExtTemp", ITEMT_TEMP))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_ESENSOR_HUMIDITY, "sensorExtHum", ITEMT_PERCENT))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_ESENSOR_VOLTAGE, "sensorExtVolt", ITEMT_VOLT))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_ESENSOR_INPUT1, "sensorContact", ITEMT_CONTACT))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_ESENSOR_DIGITALINPUT, "sensorExtDigitalInput",
                         ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_ESENSOR_ANALOGINPUT, "sensorExtAnalogInput",
@@ -343,10 +344,14 @@ public class ShellyChannelDefinitions {
         }
 
         // Shelly 1/1PM and Plus 1/1PM Addon
+        addChannel(thing, add,
+                profile.settings.extSwitch != null && profile.settings.extSwitch.input0 != null
+                        && idx == getInteger(profile.settings.extSwitch.input0.relayNum),
+                CHGR_SENSOR, CHANNEL_ESENSOR_INPUT + (profile.settings.extSwitch.input0.relayNum + 1));
         if (profile.status.extTemperature != null) {
-            addChannel(thing, add, profile.status.extTemperature.sensor1 != null, CHGR_SENSOR, CHANNEL_ESENDOR_TEMP1);
-            addChannel(thing, add, profile.status.extTemperature.sensor2 != null, CHGR_SENSOR, CHANNEL_ESENDOR_TEMP2);
-            addChannel(thing, add, profile.status.extTemperature.sensor3 != null, CHGR_SENSOR, CHANNEL_ESENDOR_TEMP3);
+            addChannel(thing, add, profile.status.extTemperature.sensor1 != null, CHGR_SENSOR, CHANNEL_ESENSOR_TEMP1);
+            addChannel(thing, add, profile.status.extTemperature.sensor2 != null, CHGR_SENSOR, CHANNEL_ESENSOR_TEMP2);
+            addChannel(thing, add, profile.status.extTemperature.sensor3 != null, CHGR_SENSOR, CHANNEL_ESENSOR_TEMP3);
         }
         addChannel(thing, add, profile.status.extHumidity != null, CHGR_SENSOR, CHANNEL_ESENSOR_HUMIDITY);
         addChannel(thing, add, profile.status.extVoltage != null, CHGR_SENSOR, CHANNEL_ESENSOR_VOLTAGE);

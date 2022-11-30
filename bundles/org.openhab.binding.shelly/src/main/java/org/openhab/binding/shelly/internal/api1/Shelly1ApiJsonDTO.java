@@ -618,6 +618,11 @@ public class Shelly1ApiJsonDTO {
         public @Nullable ArrayList<ShellySettingsRgbwLight> lights;
         public @Nullable ArrayList<ShellySettingsEMeter> emeters;
         public @Nullable ArrayList<ShellyThermnostat> thermostats; // TRV
+
+        @SerializedName("ext_switch_enable")
+        public Integer externalSwitchEnable;
+        @SerializedName("ext_switch")
+        public ShellyStatusSensor.ShellyExtSwitchSettings extSwitch;
         @SerializedName("ext_temperature")
         public ShellyStatusSensor.ShellyExtTemperature extTemperature; // Shelly 1/1PM: sensor values
         @SerializedName("ext_humidity")
@@ -742,6 +747,8 @@ public class Shelly1ApiJsonDTO {
         public ShellyStatusSensor.ShellyExtVoltage extVoltage; // Shelly ´Plus 1/1PM: sensor values
         public ShellyStatusSensor.ShellyExtAnalogInput extAnalogInput; // Shelly ´Plus 1/1PM: sensor values
         public ShellyStatusSensor.ShellyExtDigitalInput extDigitalInput; // Shelly ´Plus 1/1PM: sensor values
+        @SerializedName("ext_switch")
+        public ShellyStatusSensor.ShellyExtSwitchStatus extSwitch;
 
         // Internal device temp
         public ShellySensorTmp tmp = new ShellySensorTmp(); // Shelly 1PM
@@ -1066,6 +1073,25 @@ public class Shelly1ApiJsonDTO {
 
         public static class ShellyADC {
             public Double voltage;
+        }
+
+        public static class ShellyExtSwitchSettings {
+            public static class ShellyExtSwitchSettingsInput {
+                @SerializedName("relay_num")
+                public Integer relayNum;
+            }
+
+            @SerializedName("0")
+            public ShellyExtSwitchSettingsInput input0;
+        }
+
+        public static class ShellyExtSwitchStatus {
+            public static class ShellyExtSwitchStatusInput {
+                public Integer input;
+            }
+
+            @SerializedName("0")
+            public ShellyExtSwitchStatusInput input0;
         }
 
         public ShellySensorTmp tmp;

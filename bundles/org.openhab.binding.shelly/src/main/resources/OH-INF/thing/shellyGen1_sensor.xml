@@ -470,7 +470,7 @@
 			<tag>Measurement</tag>
 			<tag>Temperature</tag>
 		</tags>
-		<state readOnly="true" pattern="%.2f %unit%">
+		<state readOnly="true" pattern="%.1f %unit%">
 		</state>
 	</channel-type>
 

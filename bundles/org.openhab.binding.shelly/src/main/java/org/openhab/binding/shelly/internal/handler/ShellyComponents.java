@@ -110,27 +110,34 @@ public class ShellyComponents {
 
             updated |= thingHandler.updateChannel(groupName, CHANNEL_OUTPUT, getOnOff(relay.ison));
             updated |= thingHandler.updateChannel(groupName, CHANNEL_TIMER_ACTIVE, getOnOff(relay.hasTimer));
+            if (status.extSwitch != null) {
+                if (status.extSwitch.input0 != null) {
+                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_ESENSOR_INPUT1,
+                            getInteger(status.extSwitch.input0.input) == 1 ? OpenClosedType.OPEN
+                                    : OpenClosedType.CLOSED);
+                }
+            }
             if (status.extTemperature != null) {
                 // Shelly 1/1PM support up to 3 external sensors
                 // for whatever reason those are not represented as an array, but 3 elements
                 if (status.extTemperature.sensor1 != null) {
-                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_ESENDOR_TEMP1,
+                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_ESENSOR_TEMP1,
                             toQuantityType(getDouble(status.extTemperature.sensor1.tC), DIGITS_TEMP, SIUnits.CELSIUS));
                 }
                 if (status.extTemperature.sensor2 != null) {
-                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_ESENDOR_TEMP2,
+                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_ESENSOR_TEMP2,
                             toQuantityType(getDouble(status.extTemperature.sensor2.tC), DIGITS_TEMP, SIUnits.CELSIUS));
                 }
                 if (status.extTemperature.sensor3 != null) {
-                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_ESENDOR_TEMP3,
+                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_ESENSOR_TEMP3,
                             toQuantityType(getDouble(status.extTemperature.sensor3.tC), DIGITS_TEMP, SIUnits.CELSIUS));
                 }
                 if (status.extTemperature.sensor4 != null) {
-                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_ESENDOR_TEMP4,
+                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_ESENSOR_TEMP4,
                             toQuantityType(getDouble(status.extTemperature.sensor4.tC), DIGITS_TEMP, SIUnits.CELSIUS));
                 }
                 if (status.extTemperature.sensor5 != null) {
-                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_ESENDOR_TEMP5,
+                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_ESENSOR_TEMP5,
                             toQuantityType(getDouble(status.extTemperature.sensor5.tC), DIGITS_TEMP, SIUnits.CELSIUS));
                 }
             }

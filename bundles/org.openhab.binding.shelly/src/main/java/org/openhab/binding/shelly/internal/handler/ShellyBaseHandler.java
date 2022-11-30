@@ -582,14 +582,14 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 profile.fwDate);
         logger.debug("{}: Shelly settings info for {}: {}", thingName, profile.hostname, profile.settingsJson);
         logger.debug("{}: Device "
-                + "hasRelays:{} (numRelays={}),isRoller:{} (numRoller={}),isDimmer:{},numMeter={},isEMeter:{})"
+                + "hasRelays:{} (numRelays={}),isRoller:{} (numRoller={}),isDimmer:{},numMeter={},isEMeter:{}), ext. Switch Add-On: {}"
                 + ",isSensor:{},isDS:{},hasBattery:{}{},isSense:{},isMotion:{},isLight:{},isBulb:{},isDuo:{},isRGBW2:{},inColor:{}"
                 + ",alwaysOn:{}, updatePeriod:{}sec", thingName, profile.hasRelays, profile.numRelays, profile.isRoller,
-                profile.numRollers, profile.isDimmer, profile.numMeters, profile.isEMeter, profile.isSensor,
-                profile.isDW, profile.hasBattery,
-                profile.hasBattery ? " (low battery threshold=" + config.lowBattery + "%)" : "", profile.isSense,
-                profile.isMotion, profile.isLight, profile.isBulb, profile.isDuo, profile.isRGBW2, profile.inColor,
-                profile.alwaysOn, profile.updatePeriod);
+                profile.numRollers, profile.isDimmer, profile.numMeters, profile.isEMeter,
+                profile.settings.extSwitch != null ? "installed" : "n/a", profile.isSensor, profile.isDW,
+                profile.hasBattery, profile.hasBattery ? " (low battery threshold=" + config.lowBattery + "%)" : "",
+                profile.isSense, profile.isMotion, profile.isLight, profile.isBulb, profile.isDuo, profile.isRGBW2,
+                profile.inColor, profile.alwaysOn, profile.updatePeriod);
         if (profile.status.extTemperature != null || profile.status.extHumidity != null
                 || profile.status.extVoltage != null || profile.status.extAnalogInput != null) {
             logger.debug("{}: Shelly Add-On detected with at least 1 external sensor", thingName);
