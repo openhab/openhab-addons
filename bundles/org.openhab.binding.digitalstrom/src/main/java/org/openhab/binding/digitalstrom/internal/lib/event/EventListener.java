@@ -258,7 +258,7 @@ public class EventListener {
      * Removes a subscribed event and unsubscibe it, if it is not needed by other {@link EventHandler}'s.
      *
      * @param unsubscribeEvent event name to unsubscibe
-     * @param eventHandlerID EventHandler-ID of the EventHandler that unsubscibe a event
+     * @param eventHandlerID EventHandler-ID of the EventHandler that unsubscibe an event
      */
     public void removeSubscribe(String unsubscribeEvent, String eventHandlerID) {
         if (subscribedEvents != null && !subscribedEvents.contains(unsubscribeEvent)) {

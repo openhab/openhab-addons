@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Configuration settings for an {@link org.openhab.binding.lutron.internal.handler.LeapBridgeHandler}.
+ * Configuration settings for a {@link org.openhab.binding.lutron.internal.handler.LeapBridgeHandler}.
  *
  * @author Bob Adair - Initial contribution
  */

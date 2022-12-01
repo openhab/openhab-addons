@@ -28,7 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Profile to offer the RegexTransformationservice on a ItemChannelLink
+ * Profile to offer the RegexTransformationservice on an ItemChannelLink
  *
  * @author Stefan Triller - initial contribution
  *

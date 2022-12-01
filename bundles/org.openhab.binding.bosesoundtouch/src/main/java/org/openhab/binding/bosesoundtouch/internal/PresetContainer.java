@@ -60,7 +60,7 @@ public class PresetContainer {
     }
 
     /**
-     * Adds a ContentItem as Preset, with presetID. Note that a eventually existing id in preset will be overwritten by
+     * Adds a ContentItem as Preset, with presetID. Note that an eventually existing id in preset will be overwritten by
      * presetID
      *
      * @param presetID

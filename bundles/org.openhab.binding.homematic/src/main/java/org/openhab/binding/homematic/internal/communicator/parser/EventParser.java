@@ -20,7 +20,7 @@ import org.openhab.binding.homematic.internal.model.HmDevice;
 import org.openhab.binding.homematic.internal.model.HmParamsetType;
 
 /**
- * Parses a event received from a Homematic gateway.
+ * Parses an event received from a Homematic gateway.
  *
  * @author Gerhard Riegler - Initial contribution
  */

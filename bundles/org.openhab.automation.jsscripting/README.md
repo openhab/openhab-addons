@@ -299,7 +299,7 @@ Calling `getItem(...)` returns an `Item` object with the following properties:
 
 ```javascript
 const item = items.getItem("KitchenLight");
-//send a ON command
+//send an ON command
 item.sendCommand("ON");
 //Post an update
 item.postUpdate("OFF");

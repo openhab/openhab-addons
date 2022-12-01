@@ -75,7 +75,7 @@ Don’t forget to reboot the CMI after you uploaded the coe.csv file.
 
 This thing reflecting one of our 'schema API page' as defined in the prerequisites.
 This thing doesn't need the bridge.
-Multiple of these pages on different C.M.I.'s could be defined within a openHAB instance.
+Multiple of these pages on different C.M.I.'s could be defined within an openHAB instance.
 
 * TA C.M.I. CoE Bridge
 
@@ -108,7 +108,7 @@ The thing has the following configuration parameters:
 | API Schema ID           | schemaId     | ID of the schema API page                                                                                     | 1-256                  |
 | Poll Interval           | pollInterval | Poll interval (in seconds) how often to poll the API Page                                                     | 1-300; default 10      |
 
-This thing doesn't need a bridge. Multiple of these things for different C.M.I.'s could be defined within a openHAB instance.
+This thing doesn't need a bridge. Multiple of these things for different C.M.I.'s could be defined within an openHAB instance.
 
 ### TA C.M.I. CoE Connection
 

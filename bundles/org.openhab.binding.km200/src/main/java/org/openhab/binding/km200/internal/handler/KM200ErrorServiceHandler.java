@@ -28,7 +28,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
- * The KM200ErrorService representing a error service with its all capabilities
+ * The KM200ErrorService representing an error service with its all capabilities
  *
  * @author Markus Eckhardt - Initial contribution
  */

@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.persistence.FilterCriteria;
 
 /**
- * Creates InfluxDB query sentence given a OpenHab persistence {@link FilterCriteria}
+ * Creates InfluxDB query sentence given an OpenHab persistence {@link FilterCriteria}
  *
  * @author Joan Pujol Espinar - Initial contribution
  */

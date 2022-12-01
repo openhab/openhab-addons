@@ -99,7 +99,7 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
             // suppressed. Otherwise, the task will only terminate via cancellation or
             // termination of the executor.
             try {
-                // Authenticate - thing status update with a error message
+                // Authenticate - thing status update with an error message
                 if (mZWayApi.getLogin() != null) {
                     // Thing status set to online in login callback
                     logger.info("Z-Way bridge successfully authenticated");

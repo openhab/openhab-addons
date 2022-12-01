@@ -208,7 +208,7 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
                 logger.trace("Storing item {} in InfluxDB point {}", item, point);
                 influxDBRepository.write(point);
             } else {
-                logger.trace("Ignoring item {} as is cannot be converted to a InfluxDB point", item);
+                logger.trace("Ignoring item {} as is cannot be converted to an InfluxDB point", item);
             }
         } else {
             logger.debug("store ignored, InfluxDB is not yet connected");
