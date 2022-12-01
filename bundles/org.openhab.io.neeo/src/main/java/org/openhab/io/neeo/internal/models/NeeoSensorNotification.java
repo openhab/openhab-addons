@@ -18,7 +18,7 @@ import org.openhab.io.neeo.internal.NeeoConstants;
 import org.openhab.io.neeo.internal.NeeoUtil;
 
 /**
- * The model representing an NEEO sensor notification (serialize/deserialize json use only).
+ * The model representing a NEEO sensor notification (serialize/deserialize json use only).
  *
  * @author Tim Roberts - Initial Contribution
  */

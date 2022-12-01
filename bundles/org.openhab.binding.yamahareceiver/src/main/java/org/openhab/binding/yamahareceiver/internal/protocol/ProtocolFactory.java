@@ -28,7 +28,7 @@ import org.openhab.binding.yamahareceiver.internal.state.SystemControlStateListe
 import org.openhab.binding.yamahareceiver.internal.state.ZoneControlStateListener;
 
 /**
- * Factory to create a {@link AbstractConnection} connection object based on a feature test.
+ * Factory to create an {@link AbstractConnection} connection object based on a feature test.
  * Also returns implementation objects for all the protocol interfaces.
  * <p>
  * At the moment only the XML protocol is supported.
@@ -39,7 +39,7 @@ import org.openhab.binding.yamahareceiver.internal.state.ZoneControlStateListene
 public interface ProtocolFactory {
     /**
      * Asynchronous method to create and return a connection object. Depending
-     * on the feature test it might be either a {@link XMLConnection} or a JsonConnection.
+     * on the feature test it might be either an {@link XMLConnection} or a JsonConnection.
      *
      * @param host The host name
      * @param connectionStateListener

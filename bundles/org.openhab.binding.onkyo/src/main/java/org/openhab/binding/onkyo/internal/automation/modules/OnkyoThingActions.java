@@ -24,7 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Some automation actions to be used with a {@link OnkyoThingActions}
+ * Some automation actions to be used with an {@link OnkyoThingActions}
  *
  * @author David Masshardt - initial contribution
  */

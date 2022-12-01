@@ -71,7 +71,7 @@ DateTime collectionDay_paper "Next paper collection" {channel="ahawastecollectio
 ```
 
 
-Example for rule that sends an notification with collected waste types on day before collection
+Example for rule that sends a notification with collected waste types on day before collection
 
 ```
 triggers:

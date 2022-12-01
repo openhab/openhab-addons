@@ -38,7 +38,7 @@ import org.openhab.binding.deutschebahn.internal.timetable.dto.TimetableStop;
 import org.openhab.core.library.types.DateTimeType;
 
 /**
- * Helper for loading the required amount of {@link TimetableStop} via an {@link TimetablesV1Api}.
+ * Helper for loading the required amount of {@link TimetableStop} via a {@link TimetablesV1Api}.
  * This consists of a series of calls.
  *
  * @author Sönke Küper - initial contribution
@@ -73,7 +73,7 @@ public final class TimetableLoader {
     private Date lastRequestedChanges;
 
     /**
-     * Creates an new {@link TimetableLoader}.
+     * Creates a new {@link TimetableLoader}.
      *
      * @param api {@link TimetablesV1Api} to use.
      * @param stopPredicate Filter for selection of loaded {@link TimetableStop}.

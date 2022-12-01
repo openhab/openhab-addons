@@ -27,7 +27,7 @@ public interface FilterCriteriaQueryCreator {
      * 
      * @param criteria Criteria to create query from
      * @param retentionPolicy Name of the retentionPolicy/bucket to use in query
-     * @return Created query as an String
+     * @return Created query as a String
      */
     String createQuery(FilterCriteria criteria, String retentionPolicy);
 

@@ -773,7 +773,7 @@ public interface Device extends GeneralDeviceInformation {
     boolean isSensorEchoBoxEnabled();
 
     /**
-     * Sets the {@link DeviceSensorValue} through a {@link EventItem} of the type
+     * Sets the {@link DeviceSensorValue} through an {@link EventItem} of the type
      * {@link EventNames#DEVICE_SENSOR_VALUE}.
      *
      * @param event of the sensor update
