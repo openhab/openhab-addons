@@ -53,7 +53,7 @@ public class LivisiDeviceDiscoveryService extends AbstractDiscoveryService
     private @Nullable LivisiBridgeHandler bridgeHandler;
 
     /**
-     * Construct an {@link LivisiDeviceDiscoveryService}.
+     * Construct a {@link LivisiDeviceDiscoveryService}.
      */
     public LivisiDeviceDiscoveryService() {
         super(SEARCH_TIME_SECONDS);

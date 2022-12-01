@@ -27,7 +27,7 @@ public final class AndPredicate implements TimetableStopPredicate {
     private final TimetableStopPredicate second;
 
     /**
-     * Creates an new {@link AndPredicate}.
+     * Creates a new {@link AndPredicate}.
      */
     public AndPredicate(TimetableStopPredicate first, TimetableStopPredicate second) {
         this.first = first;

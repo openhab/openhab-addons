@@ -39,7 +39,7 @@ import com.google.gson.JsonObject;
  * added {@link EventHandler} about the detected events, if it supports the event-type.<br>
  * You can add {@link EventHandler}'s through the constructors or the methods {@link #addEventHandler(EventHandler)} and
  * {@link #addEventHandlers(List)}.<br>
- * You can also delete a {@link EventHandler} though the method {@link #removeEventHandler(EventHandler)}.<br>
+ * You can also delete an {@link EventHandler} though the method {@link #removeEventHandler(EventHandler)}.<br>
  * If the {@link EventListener} is started, both methods subscribe respectively unsubscribe the event-types of the
  * {@link EventHandler}/s automatically.<br>
  * If you want to dynamically subscribe event-types, e.g. because a configuration has changed and a
@@ -106,7 +106,7 @@ public class EventListener {
     }
 
     /**
-     * Creates a new {@link EventListener} without a {@link EventHandler}<br>
+     * Creates a new {@link EventListener} without an {@link EventHandler}<br>
      * <br>
      * To get notified by events you have to call {@link #start()} and {@link #addEventHandler(EventHandler)} or
      * {@link #addEventHandlers(List)}.
@@ -188,7 +188,7 @@ public class EventListener {
     }
 
     /**
-     * Adds a {@link EventHandler}'s and subscribe the supported event-types, if the
+     * Adds an {@link EventHandler}'s and subscribe the supported event-types, if the
      * {@link EventListener} is started and the event-types are not already subscribed.<br>
      * <br>
      * <b>Note:</b><br>
@@ -217,7 +217,7 @@ public class EventListener {
     }
 
     /**
-     * Remove a {@link EventHandler} and unsubscribes the supported event-types, if the
+     * Remove an {@link EventHandler} and unsubscribes the supported event-types, if the
      * {@link EventListener} is started and no other {@link EventHandler} needed the event-types.
      *
      * @param eventHandler to remove

@@ -215,7 +215,7 @@ public final class EventAttribute<VALUE_TYPE, STATE_TYPE extends State>
     private static final SimpleDateFormat DATETIME_FORMAT = new SimpleDateFormat("yyMMddHHmm");
 
     /**
-     * Creates an new {@link EventAttribute}.
+     * Creates a new {@link EventAttribute}.
      *
      * @param getter Function to get the raw value.
      * @param setter Function to set the raw value.

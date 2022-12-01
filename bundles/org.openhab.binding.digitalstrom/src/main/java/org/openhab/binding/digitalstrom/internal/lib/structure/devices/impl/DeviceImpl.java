@@ -1679,7 +1679,7 @@ public class DeviceImpl extends AbstractGeneralDeviceInformations implements Dev
     }
 
     /**
-     * if an {@link DeviceStatusListener} is registered inform him about the new
+     * if a {@link DeviceStatusListener} is registered inform him about the new
      * state otherwise do nothing.
      *
      * @param deviceStateUpdate

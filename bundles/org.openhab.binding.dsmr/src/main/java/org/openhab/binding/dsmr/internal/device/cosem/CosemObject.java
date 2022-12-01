@@ -105,7 +105,7 @@ public class CosemObject {
     /**
      * Parses the List of COSEM String value to COSEM objects values.
      * <p>
-     * When the parser has problems it throws an {@link ParseException}. The
+     * When the parser has problems it throws a {@link ParseException}. The
      * already parsed values will still be available. It is up to the caller how
      * to handle a partially parsed message.
      *

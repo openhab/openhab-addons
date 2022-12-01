@@ -177,7 +177,7 @@ The binding tries to post received values as the item types described in the cha
 ### Rule examples
 
 You can use the trigger channel to create a rule to calculate additional values.
-Create an new manual Item with a meaningful id, fx. WundergroundUpdateReceiverBinging_HeatIndex with a Number type.
+Create a new manual Item with a meaningful id, fx. WundergroundUpdateReceiverBinging_HeatIndex with a Number type.
 Create a rule that triggers when the trigger channel is updated and the following DSL:
 
 ```

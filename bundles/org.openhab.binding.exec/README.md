@@ -91,7 +91,7 @@ DateTime APCLastExecution {channel="exec:command:apc:lastexecution"}
 
 ## Full Example
 
-Following is an example how to set up an exec command thing, pass it a parameter, debug it with a rule and set the returned string to an Number Item. 
+Following is an example how to set up an exec command thing, pass it a parameter, debug it with a rule and set the returned string to a Number Item.
 
 **demo.things**
 

@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public interface AhaCollectionScheduleFactory {
 
     /**
-     * Creates an new {@link AhaCollectionSchedule} for the given location.
+     * Creates a new {@link AhaCollectionSchedule} for the given location.
      */
     public AhaCollectionSchedule create(final String commune, final String street, final String houseNumber,
             final String houseNumberAddon, final String collectionPlace);

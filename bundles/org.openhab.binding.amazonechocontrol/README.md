@@ -599,7 +599,7 @@ then
 end
 ```
 
-## Playing an alarm sound for 15 seconds with an openHAB rule if an door contact was opened:
+## Playing an alarm sound for 15 seconds with an openHAB rule if a door contact was opened:
 
 1) Do get the ID of your sound, follow the steps in "How To Get IDs"
 2) Write down the text in the square brackets. e.g. ECHO:system_alerts_repetitive01 for the nightstand sound

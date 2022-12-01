@@ -20,7 +20,7 @@ import org.openhab.binding.deutschebahn.internal.AttributeSelection;
 import org.openhab.binding.deutschebahn.internal.timetable.dto.TimetableStop;
 
 /**
- * Abstract predicate that filters timetable stops by an selected attribute of an {@link TimetableStop}.
+ * Abstract predicate that filters timetable stops by a selected attribute of a {@link TimetableStop}.
  * 
  * If value has multiple values (for example stations on the planned-path) the predicate will return <code>true</code>,
  * if at least one value matches the given filter.
@@ -34,7 +34,7 @@ public final class TimetableStopByStringEventAttributeFilter implements Timetabl
     private final Pattern filter;
 
     /**
-     * Creates an new {@link TimetableStopByStringEventAttributeFilter}.
+     * Creates a new {@link TimetableStopByStringEventAttributeFilter}.
      */
     TimetableStopByStringEventAttributeFilter(final AttributeSelection attributeSelection, final Pattern filter) {
         this.attributeSelection = attributeSelection;

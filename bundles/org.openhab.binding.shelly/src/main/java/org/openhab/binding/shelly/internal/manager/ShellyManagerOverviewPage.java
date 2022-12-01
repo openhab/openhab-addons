@@ -168,7 +168,7 @@ public class ShellyManagerOverviewPage extends ShellyManagerPage {
                     logger.debug("{}: No firmware files found for device type {}", LOG_PREFIX, deviceType);
                 } else {
                     // Create selection list
-                    json = "{" + json.replace("[{", "\"versions\":[{") + "}"; // make it an named array
+                    json = "{" + json.replace("[{", "\"versions\":[{") + "}"; // make it a named array
                     FwArchList list = getFirmwareArchiveList(deviceType);
                     ArrayList<FwArchEntry> versions = list.versions;
                     if (versions != null) {

@@ -34,7 +34,7 @@ public interface EventItem {
 
     /**
      * Returns {@link HashMap} with the properties fiels of this {@link EventItem}.
-     * The key is a {@link EventResponseEnum} and represents the property name
+     * The key is an {@link EventResponseEnum} and represents the property name
      * and the value is the property value.
      *
      * @return the properties of this {@link EventItem}
@@ -43,7 +43,7 @@ public interface EventItem {
 
     /**
      * Returns {@link HashMap} with the source fields of this {@link EventItem}.
-     * The key is a {@link EventResponseEnum} and represents the property name
+     * The key is an {@link EventResponseEnum} and represents the property name
      * and the value is the property value.
      *
      * @return the properties of this {@link EventItem}
