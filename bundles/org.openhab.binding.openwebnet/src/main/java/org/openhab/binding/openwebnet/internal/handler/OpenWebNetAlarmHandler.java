@@ -81,7 +81,7 @@ public class OpenWebNetAlarmHandler extends OpenWebNetThingHandler {
                 lastAllDevicesRefreshTS = System.currentTimeMillis();
             } else {
                 if (w != null) {
-                    send(Alarm.requestZoneStatus(w.value()));
+                    send(Alarm.requestZoneStatus("#" + w.value()));
                 } else {
                     logger.debug("null where while requesting state for channel {}", channel);
                 }
@@ -119,16 +119,16 @@ public class OpenWebNetAlarmHandler extends OpenWebNetThingHandler {
         super.handleMessage(msg);
         ThingTypeUID thingType = thing.getThingTypeUID();
         if (THING_TYPE_BUS_ALARM_SYSTEM.equals(thingType)) {
-            updateCU((Alarm) msg);
+            updateSystem((Alarm) msg);
         } else {
             updateZone((Alarm) msg);
         }
     }
 
-    private void updateCU(Alarm msg) {
+    private void updateSystem(Alarm msg) {
         WhatAlarm w = (WhatAlarm) msg.getWhat();
         if (w == null) {
-            logger.debug("Alarm.updateCU() WHAT is null. Frame={}", msg);
+            logger.debug("Alarm.updateSystem() WHAT is null. Frame={}", msg);
             return;
         }
         switch (w) {
@@ -155,7 +155,7 @@ public class OpenWebNetAlarmHandler extends OpenWebNetThingHandler {
             case DELAY_END:
             case NO_CONNECTION_TO_DEVICE:
             default:
-                logger.debug("Alarm.updateCU() Ignoring unsupported WHAT {}. Frame={}", msg.getWhat(), msg);
+                logger.debug("Alarm.updateSystem() Ignoring unsupported WHAT {}. Frame={}", msg.getWhat(), msg);
         }
     }
 
@@ -168,7 +168,7 @@ public class OpenWebNetAlarmHandler extends OpenWebNetThingHandler {
     }
 
     private void updateNetworkState(WhatAlarm w) {
-        updateState(CHANNEL_ALARM_SYSTEM_NETWORK, OnOffType.from(w == Alarm.WhatAlarm.SYSTEM_NETWORK_ERROR));
+        updateState(CHANNEL_ALARM_SYSTEM_NETWORK, OnOffType.from(w == Alarm.WhatAlarm.SYSTEM_NETWORK_OK));
     }
 
     private void updateBatteryState(WhatAlarm w) {
@@ -190,7 +190,7 @@ public class OpenWebNetAlarmHandler extends OpenWebNetThingHandler {
         switch (w) {
             case ZONE_DISENGAGED:
             case ZONE_ENGAGED:
-                updateZoneArmed(w);
+                updateZoneState(w);
                 break;
             case ZONE_ALARM_INTRUSION:
             case ZONE_ALARM_TAMPERING:
@@ -205,8 +205,8 @@ public class OpenWebNetAlarmHandler extends OpenWebNetThingHandler {
         }
     }
 
-    private void updateZoneArmed(WhatAlarm w) {
-        updateState(CHANNEL_ALARM_ZONE_ARMED, OnOffType.from(w == Alarm.WhatAlarm.ZONE_ENGAGED));
+    private void updateZoneState(WhatAlarm w) {
+        updateState(CHANNEL_ALARM_ZONE_STATE, OnOffType.from(w == Alarm.WhatAlarm.ZONE_ENGAGED));
     }
 
     private void updateZoneAlarmState(WhatAlarm w) {

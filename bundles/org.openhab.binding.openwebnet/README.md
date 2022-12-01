@@ -44,8 +44,8 @@ The following Things and OpenWebNet `WHOs` are supported:
 | Lighting                      |     `1`     |             `bus_on_off_switch`, `bus_dimmer`              | BUS switches and dimmers                                         | Successfully tested: F411/2, F411/4, F411U2, F422, F429. Some discovery issues reported with F429 (DALI Dimmers)                                                                                           |
 | Automation                    |     `2`     |                      `bus_automation`                      | BUS roller shutters, with position feedback and auto-calibration | Successfully tested: LN4672M2                                                                                                                                                                              |
 | Temperature Control           |     `4`     |  `bus_thermo_zone`, `bus_thermo_sensor`, `bus_thermo_cu`   | Thermo zones management and temperature sensors (probes)         | Successfully tested: H/LN4691, HS4692, KG4691; thermo sensors: L/N/NT4577 + 3455; Central Units (4 or 99 zones) are not fully supported yet. See [Channels - Thermo](#configuring-thermo) for more details |
-| Alarm                         |     `5`     |  `bus_alarm_system`, `bus_alarm_zone`                      | BUS alarm system and zones                                       | Successfully tested: Alarm system 3486  |
-| Auxiliary (AUX)               |     `9`     |  `bus_aux`                                                 | AUX commands                                                     | Successfully tested: AUX configured for bulgrar-alarm unit 3486. **Only sending AUX commands is supported**    |
+| Alarm                         |     `5`     |  `bus_alarm_system`, `bus_alarm_zone`                      | BUS Alarm system and zones                                       | Successfully tested: Burglar-alarm Unit 3486  |
+| Auxiliary (AUX)               |     `9`     |  `bus_aux`                                                 | AUX commands                                                     | Successfully tested: AUX configured for Burglar-alarm Unit 3486. **Only sending AUX commands is supported**    |
 | Basic, CEN & CEN+ Scenarios   | `0`, `15`, `25` | `bus_scenario_control`, `bus_cen_scenario_control`, `bus_cenplus_scenario_control` | Basic and CEN/CEN+ Scenarios events and virtual activation                 | Successfully tested: CEN/CEN+ scenario control: HC/HD/HS/L/N/NT4680 and basic scenario modules F420/IR3456 + L4680 (WHO=0)      |
 | Dry Contact and IR Interfaces |    `25`     |                    `bus_dry_contact_ir`                    | Dry Contacts and IR Interfaces                                   | Successfully tested: contact interfaces F428 and 3477; IR sensors: HC/HD/HS/L/N/NT4610      |
 | Energy Management             |    `18`     |                     `bus_energy_meter`                     | Energy Management                                                | Successfully tested: F520, F521. Partially tested: F522, F523                               |
@@ -138,7 +138,7 @@ For any manually added device, you must configure:
         - dry Contact or IR Interface `99`: add `3` before --> `where="399"`
         - energy meter F520/F521 numbered `1`: add `5` before  --> `where="51"`
         - energy meter F522/F523 numbered `4`: add `7` before and `#0` after --> `where="74#0"`
-        - alarm zone `2` --> `where="#2"`
+        - alarm zone `2` --> `where="2"`
     - example for ZigBee devices: `where=765432101#9`. The ID of the device (ADDR part) is usually written in hexadecimal on the device itself, for example `ID 0074CBB1`: convert to decimal (`7654321`) and add `01#9` at the end to obtain `where=765432101#9`. For 2-unit switch devices (`zb_on_off_switch2u`), last part should be `00#9`.
  
 
@@ -174,14 +174,14 @@ The (optional) Central Unit can be configured defining a `bus_themo_cu` Thing wi
 
 BUS Auxiliary commands (WHO=9) can be used to send on the BUS commands to control, for example, external devices or a BTicino Alarm system. 
 
-The BTicino Alarm system **cannot** be controlled directly via the OpenWebNet protocol: the only possibility is to use AUX commands and configure your Alarm Control Panel (Automations section) to execute some commands (e.g. Arm alarm) when it receives a particular AUX OpenWebNet command.
-Alarm Control Automations allow you to run an OpenWebNet command when a particular event occurs; in this case, the events are changes of state of the AUX device (WHO=9) and the command to be performed is a burglar alarm command (WHO=5).
+The BTicino Alarm system **cannot** be controlled directly via the OpenWebNet protocol: the only possibility is to use AUX commands and configure your Burglar-alarm Unit (`Automations` section) to execute some commands (e.g. Arm alarm) when it receives a particular AUX OpenWebNet command.
+Alarm Automations allow you to run an OpenWebNet command when a particular event occurs; in this case, the events are changes of state of the AUX device (WHO=9) and the command to be performed is a burglar alarm command (WHO=5).
 
-To configure Alarm Control Automations go to the menu:
+To configure Alarm Automations go to the menu:
 
     Antitheft -> Automations
 
-##### Example configuration Automation 1: when AUX-4 goes ON, then ARM all Zones
+##### Example configuration Automation 1: when AUX-4 goes ON, then ARM all zones
 
 With this configuration when AUX `where=4` goes ON, the Alarm will execute the automation and send command `*5*8##` to ARM all zones:
 
@@ -189,17 +189,17 @@ With this configuration when AUX `where=4` goes ON, the Alarm will execute the a
     Event: command OPEN = *9*1*4##
     OPEN command to execute: *5*8##
 
-##### Example configuration Automation 2: when AUX-5 goes ON, then DISARM active Zones
+##### Example configuration Automation 2: when AUX-4 goes OFF, then DISARM all zones
 
-    Name: Disarm active zones
-    Event: command OPEN = *9*1*5##
+    Name: Disarm all zones
+    Event: command OPEN = *9*0*4##
     OPEN command to execute: *5*9##
 
-##### Example configuration Automation 3: when AUX-6 goes ON, then ARM Zones 1, 2, 3, 4
+##### Example configuration Automation 3: when AUX-5 goes ON, then ARM zones 1, 3, 4
 
-    Name: Arm zones 1-4
-    Event: command OPEN = *9*1*6##
-    OPEN command to execute: *5*8#1234##
+    Name: Arm zones 1 3 4
+    Event: command OPEN = *9*1*5##
+    OPEN command to execute: *5*8#134##
 
 ## Channels 
 
@@ -221,10 +221,10 @@ With this configuration when AUX `where=4` goes ON, the Alarm will execute the a
 
 | Channel Type ID (channel ID) | Applies to Thing Type IDs              | Item Type   | Description                                                           | Read/Write  |
 |------------------------------|----------------------------------------|-------------|-----------------------------------------------------------------------|:-----------:|
-| `state`                      | `bus_alarm_system`                     | Switch      | Alarm system is active (`ON`) or inactive (`OFF`)                     |      R      |
+| `state`                      | `bus_alarm_system`, `bus_alarm_zone`   | Switch      | Alarm system or zone is active (`ON`) or inactive (`OFF`)             |      R      |
 | `network`                    | `bus_alarm_system`                     | Switch      | Alarm system network state (`ON` = network ok, `OFF` = no network)    |      R      |
 | `battery`                    | `bus_alarm_system`                     | String      | Alarm system battery state (`OK`, `FAULT`, `UNLOADED`)                |      R      |
-| `armed`                      | `bus_alarm_system`, `bus_alarm_zone`   | Switch      | Alarm system or zone is armed (`ON`) or disarmed (`OFF`)              |      R      |
+| `armed`                      | `bus_alarm_system`                     | Switch      | Alarm system is armed (`ON`) or disarmed (`OFF`)                      |      R      |
 | `alarm`                      | `bus_alarm_zone`                       | String      | Current alarm for the zone  (`SILENT`, `INTRUSION`, `TAMPERING`, `ANTI_PANIC`) |      R      |
 
 
@@ -299,7 +299,7 @@ In order to activate one of them you have to use two different channels:
 - with `mode` you can set the mode (`WEEKLY` or `SCENARIO`)
 - with `weeklyProgram` (if `WEEKLY` was set) or with `scenarioProgram` (if `SCENARIO` was set) you can set the program number
 
-Example: if you want to activate SCENARIO #9 on the thermo Central Unit you have to set `mode` = `SCENARIO` and `scenarioProgram` = `9`.
+Example: if you want to activate SCENARIO number 9 on the thermo Central Unit you have to set `mode` = `SCENARIO` and `scenarioProgram` = `9`.
 
 ## Full Example
 
@@ -326,11 +326,10 @@ Bridge openwebnet:bus_gateway:mybridge "MyHOMEServer1" [ host="192.168.1.35", pa
       bus_cenplus_scenario_control  LR_CENplus_scenario  "Living Room CEN+"         [ where="212", buttons="1,5,18" ]
       bus_dry_contact_ir            LR_IR_sensor         "Living Room IR Sensor"    [ where="399" ]
       
-      bus_aux                       Alarm_activation     "Alarm activation"         [ where="4" ]
-      bus_aux                       Alarm_deactivation   "Alarm deactivation"       [ where="5" ]
+      bus_aux                       Alarm_Control        "Alarm control"            [ where="4" ]
 
-      bus_alarm_system              AlarmSys             "Alarm System"             [ where="0"   ]
-      bus_alarm_zone                AlarmZone3           "Alarm Zone 3"             [ where="#3"  ]
+      bus_alarm_system              Alarm_Sys            "Alarm System"             [ where="0"  ]
+      bus_alarm_zone                Alarm_Zone_3         "Alarm Zone 3"             [ where="3"  ]
 }
 ```
 
@@ -391,17 +390,14 @@ String	            iCENPlusProxyItem	        "CEN+ Proxy Item"
 
 Switch              iLR_IR_sensor               "Sensor"                                        { channel="openwebnet:bus_dry_contact_ir:mybridge:LR_IR_sensor:sensor" }
 
-// alarm aux, central unit and a zone
-String              iAlarm_activation           "Alarm Activation"		                        { channel="openwebnet:bus_aux:mybridge:Alarm_activation:aux"}
-String              iAlarm_deactivation         "Alarm Deactivation"		                    { channel="openwebnet:bus_aux:mybridge:Alarm_deactivation:aux"}
-Switch              iAlarmSystemState           "Alarm state"                  (gAlarm)         { channel="openwebnet:bus_alarm_system:mybridge:AlarmSys:state" }
-Switch              iAlarmSystemArmed           "Alarm armed"                  (gAlarm)         { channel="openwebnet:bus_alarm_system:mybridge:AlarmSys:armed" }
-//this is a proxy item to be used by rules to send on/off commands to aux items that control alarm:
-Switch              iAlarmSystemArmedControl    "Alarm armed control"          (gAlarm)         ["Arm/Disarm"]
-Switch              iAlarmSystemNetwork         "Alarm network"                (gAlarm)         { channel="openwebnet:bus_alarm_system:mybridge:AlarmSys:network" }
-String              iAlarmSystemBattery         "Alarm battery"                (gAlarm)         { channel="openwebnet:bus_alarm_system:mybridge:AlarmSys:battery" }
-Switch              iAlarmZone3Armed            "Zone 3"                       (gAlarm)         { channel="openwebnet:bus_alarm_zone:mybridge:AlarmZone3:armed" }
-String              iAlarmZone3Alarm            "Zone 3 Alarm"                 (gAlarm)         { channel="openwebnet:bus_alarm_zone:mybridge:AlarmZone3:alarm" }
+// alarm aux, alarm unit and a zone
+String              iAlarm_Control              "Alarm Control Arm/Disarm"     (gAlarm)         { channel="openwebnet:bus_aux:mybridge:Alarm_Control:aux"}
+Switch              iAlarm_System_State         "Alarm state"                  (gAlarm)         { channel="openwebnet:bus_alarm_system:mybridge:Alarm_Sys:state" }
+Switch              iAlarm_System_Armed         "Alarm armed"                  (gAlarm)         { channel="openwebnet:bus_alarm_system:mybridge:Alarm_Sys:armed" }
+Switch              iAlarm_System_Network       "Alarm network"                (gAlarm)         { channel="openwebnet:bus_alarm_system:mybridge:Alarm_Sys:network" }
+String              iAlarm_System_Battery       "Alarm battery"                (gAlarm)         { channel="openwebnet:bus_alarm_system:mybridge:Alarm_Sys:battery" }
+Switch              iAlarm_Zone_3_State         "Zone 3 state"                 (gAlarm)         { channel="openwebnet:bus_alarm_zone:mybridge:Alarm_Zone_3:state" }
+String              iAlarm_Zone_3_Alarm         "Zone 3 alarm"                 (gAlarm)         { channel="openwebnet:bus_alarm_zone:mybridge:Alarm_Zone_3:alarm" }
 ```
 
 Example items linked to OpenWebNet ZigBee devices:
@@ -451,13 +447,13 @@ sitemap openwebnet label="OpenWebNet Binding Example Sitemap"
     
     Frame label="Alarm"
     {
-         Switch  item=iAlarmSystemState         label="Alarm state"
-         Switch  item=iAlarmSystemArmedControl  label="Arm alarm"          icon="shield"
-         Switch  item=iAlarmSystemArmed         label="Armed"              icon="shield"
-         Switch  item=iAlarmSystemNetwork       label="Network"            icon="network"
-         Default item=iAlarmSystemBattery       label="Battery"            icon="battery"
-         Switch  item=iAlarmZone3Armed          label="Zone 3 armed"       icon="shield"
-         Default item=iAlarmZone3Alarm          label="Zone 3 alarm"       icon="siren"
+         Switch  item=iAlarm_System_State       label="Alarm state"
+         Switch  item=iAlarm_Control            label="Arm/Disarm alarm"   icon="shield"
+         Switch  item=iAlarm_System_Armed       label="Armed"              icon="shield"
+         Switch  item=iAlarm_System_Network     label="Network"            icon="network"
+         Default item=iAlarm_System_Battery     label="Battery"            icon="battery"
+         Switch  item=iAlarm_Zone_3_State       label="Zone 3 state"
+         Default item=iAlarm_Zone_3_Alarm       label="Zone 3 alarm"       icon="siren"
     }
 }
 ```
@@ -502,33 +498,6 @@ when
 then
     sendCommand(iLR_dimmer, DECREASE)  
 end
-
-
-rule "alarm proxy item: send command to aux items"
-when
-    Item iAlarmSystemArmedControl received command
-then
-    if(receivedCommand == ON){
-        iAlarm_activation.sendCommand("ON")
-    }
-    else if(receivedCommand == OFF){
-        iAlarm_deactivation.sendCommand("ON")
-    }
-end
-
-
-rule "alarm proxy item: update based on iAlarmSystemArmed"
-when
-    Item iAlarmSystemArmed received update
-then
-    if(newState == ON){
-        iAlarmSystemArmedControl.postUpdate(ON)
-    }
-    else if(newState == OFF){
-        iAlarmSystemArmedControl.postUpdate(OFF)
-    }
-end
-
 
 ```
 

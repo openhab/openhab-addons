@@ -23,7 +23,7 @@
 
 		<properties>
 			<property name="vendor">BTicino/Legrand</property>
-			<property name="model">Alarm System</property>
+			<property name="model">BTicino Burglar-alarm Unit 3486</property>
 			<property name="ownDeviceType">5100</property>
 		</properties>
 
@@ -32,7 +32,7 @@
 		<config-description>
 			<parameter name="where" type="text" readOnly="true">
 				<label>OpenWebNet Address (where)</label>
-				<description>The Alarm system has no where address (set where to 0 as default).</description>
+				<description>The alarm system has no where address (set where to 0 as default).</description>
 				<default>0</default>
 			</parameter>
 		</config-description>

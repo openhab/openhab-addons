@@ -427,14 +427,14 @@
 	<channel-type id="alarmNetwork">
 		<item-type>Switch</item-type>
 		<label>Network State</label>
-		<description>Alarm network state (ON = network ok, OFF = no network) (read only).</description>
+		<description>Alarm system network state (ON = network OK, OFF = no network) (read only).</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="alarmBattery">
 		<item-type>String</item-type>
 		<label>Battery State</label>
-		<description>Alarm battery state (read only).</description>
+		<description>Alarm system battery state (read only).</description>
 		<state readOnly="true">
 			<options>
 				<option value="OK">Ok</option>
@@ -458,4 +458,10 @@
 		</state>
 	</channel-type>
 
+	<channel-type id="alarmZoneState">
+		<item-type>Switch</item-type>
+		<label>Alarm Zone State</label>
+		<description>Alarm zone is active (ON) or inactive (OFF) (read only).</description>
+		<state readOnly="true"/>
+	</channel-type>
 </thing:thing-descriptions>
