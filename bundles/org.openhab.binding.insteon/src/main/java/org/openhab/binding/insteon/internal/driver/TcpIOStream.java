@@ -24,20 +24,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Implements IOStream for the older hubs (pre 2014).
+ * Implements IOStream for an Insteon Legacy Hub
  * Also works for serial ports exposed via tcp, eg. ser2net
  *
  * @author Bernd Pfrommer - Initial contribution
  * @author Rob Nielsen - Port to openHAB 2 insteon binding
- *
+ * @author Jeremy Setton - Improvements for openHAB 3 insteon binding
  */
 @NonNullByDefault
 public class TcpIOStream extends IOStream {
     private final Logger logger = LoggerFactory.getLogger(TcpIOStream.class);
 
-    private @Nullable String host = null;
-    private int port = -1;
-    private @Nullable Socket socket = null;
+    private String host;
+    private int port;
+    private @Nullable Socket socket;
 
     /**
      * Constructor
@@ -51,29 +51,30 @@ public class TcpIOStream extends IOStream {
     }
 
     @Override
-    public boolean open() {
-        if (host == null || port < 0) {
-            logger.warn("tcp connection to hub not properly configured!");
-            return (false);
-        }
-        try {
-            socket = new Socket(host, port);
-            open(socket);
-        } catch (UnknownHostException e) {
-            logger.warn("unknown host name: {}", host);
-            return (false);
-        } catch (IOException e) {
-            logger.warn("cannot open connection to {} port {}: {}", host, port, e.getMessage());
-            return (false);
-        }
-        return true;
+    public boolean isOpen() {
+        return socket != null;
     }
 
-    private void open(@Nullable Socket socket) throws IOException {
-        if (socket != null) {
-            in = socket.getInputStream();
-            out = socket.getOutputStream();
+    @Override
+    public boolean open() {
+        if (isOpen()) {
+            logger.warn("socket is already open");
+            return false;
         }
+
+        try {
+            Socket socket = new Socket(host, port);
+            this.in = socket.getInputStream();
+            this.out = socket.getOutputStream();
+            this.socket = socket;
+            return true;
+        } catch (UnknownHostException e) {
+            logger.warn("unknown host name: {}", host);
+        } catch (IOException e) {
+            logger.warn("cannot open connection to {} port {}: {}", host, port, e.getMessage());
+        }
+
+        return false;
     }
 
     @Override
@@ -83,7 +84,7 @@ public class TcpIOStream extends IOStream {
             try {
                 in.close();
             } catch (IOException e) {
-                logger.warn("failed to close input stream", e);
+                logger.debug("failed to close input stream", e);
             }
             this.in = null;
         }
@@ -93,7 +94,7 @@ public class TcpIOStream extends IOStream {
             try {
                 out.close();
             } catch (IOException e) {
-                logger.warn("failed to close output stream", e);
+                logger.debug("failed to close output stream", e);
             }
             this.out = null;
         }
@@ -103,7 +104,7 @@ public class TcpIOStream extends IOStream {
             try {
                 socket.close();
             } catch (IOException e) {
-                logger.warn("failed to close the socket", e);
+                logger.debug("failed to close the socket", e);
             }
             this.socket = null;
         }

@@ -12,20 +12,15 @@
  */
 package org.openhab.binding.insteon.internal.message;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.TreeSet;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.insteon.internal.device.InsteonAddress;
-import org.openhab.binding.insteon.internal.utils.Utils;
-import org.openhab.binding.insteon.internal.utils.Utils.ParsingException;
-import org.osgi.framework.FrameworkUtil;
+import org.openhab.binding.insteon.internal.utils.BitwiseUtils;
+import org.openhab.binding.insteon.internal.utils.ByteUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,6 +32,7 @@ import org.slf4j.LoggerFactory;
  * @author Bernd Pfrommer - Initial contribution
  * @author Daniel Pfrommer - openHAB 1 insteonplm binding
  * @author Rob Nielsen - Port to openHAB 2 insteon binding
+ * @author Jeremy Setton - Improvements for openHAB 3 insteon binding
  */
 @NonNullByDefault
 public class Msg {
@@ -69,40 +65,32 @@ public class Msg {
 
         public static Direction getDirectionFromString(String dir) {
             Direction direction = map.get(dir);
-            if (direction != null) {
-                return direction;
-            } else {
-                throw new IllegalArgumentException("Unable to find direction for " + dir);
+            if (direction == null) {
+                throw new IllegalArgumentException("direction " + dir + " not found");
             }
+            return direction;
         }
     }
-
-    // has the structure of all known messages
-    private static final Map<String, Msg> MSG_MAP = new HashMap<>();
-    // maps between command number and the length of the header
-    private static final Map<Integer, Integer> HEADER_MAP = new HashMap<>();
-    // has templates for all message from modem to host
-    private static final Map<Integer, Msg> REPLY_MAP = new HashMap<>();
 
     private int headerLength = -1;
     private byte[] data;
     private MsgDefinition definition = new MsgDefinition();
     private Direction direction = Direction.TO_MODEM;
     private long quietTime = 0;
+    private boolean replayed = false;
+    private long timestamp = System.currentTimeMillis();
 
     /**
      * Constructor
      *
      * @param headerLength length of message header (in bytes)
-     * @param data byte array with message
      * @param dataLength length of byte array data (in bytes)
-     * @param dir direction of the message (from/to modem)
+     * @param direction direction of the message (from/to modem)
      */
-    public Msg(int headerLength, byte[] data, int dataLength, Direction dir) {
+    public Msg(int headerLength, int dataLength, Direction direction) {
         this.headerLength = headerLength;
-        this.direction = dir;
+        this.direction = direction;
         this.data = new byte[dataLength];
-        System.arraycopy(data, 0, this.data, 0, dataLength);
     }
 
     /**
@@ -111,33 +99,12 @@ public class Msg {
      *
      * @param m the message to make a copy of
      */
-    public Msg(Msg m) {
-        headerLength = m.headerLength;
-        data = m.data.clone();
+    public Msg(Msg msg) {
+        this.headerLength = msg.headerLength;
+        this.data = msg.data.clone();
         // the message definition usually doesn't change, but just to be sure...
-        definition = new MsgDefinition(m.definition);
-        direction = m.direction;
-    }
-
-    static {
-        // Use xml msg loader to load configs
-        try {
-            InputStream stream = FrameworkUtil.getBundle(Msg.class).getResource("/msg_definitions.xml").openStream();
-            if (stream != null) {
-                Map<String, Msg> msgs = XMLMessageReader.readMessageDefinitions(stream);
-                MSG_MAP.putAll(msgs);
-            } else {
-                logger.warn("could not get message definition resource!");
-            }
-        } catch (IOException e) {
-            logger.warn("i/o error parsing xml insteon message definitions", e);
-        } catch (ParsingException e) {
-            logger.warn("parse error parsing xml insteon message definitions", e);
-        } catch (FieldException e) {
-            logger.warn("got field exception while parsing xml insteon message definitions", e);
-        }
-        buildHeaderMap();
-        buildLengthMap();
+        this.definition = new MsgDefinition(msg.definition);
+        this.direction = msg.direction;
     }
 
     //
@@ -155,7 +122,7 @@ public class Msg {
         return quietTime;
     }
 
-    public byte @Nullable [] getData() {
+    public byte[] getData() {
         return data;
     }
 
@@ -179,47 +146,72 @@ public class Msg {
         return data.length < 2 ? -1 : data[1];
     }
 
+    public long getTimestamp() {
+        return timestamp;
+    }
+
     public boolean isPureNack() {
         return data.length == 2 && data[1] == 0x15;
     }
 
     public boolean isExtended() {
-        if (getLength() < 2) {
+        try {
+            return BitwiseUtils.isBitFlagSet(getInt("messageFlags"), 4);
+        } catch (FieldException e) {
             return false;
         }
-        if (!definition.containsField("messageFlags")) {
-            return (false);
-        }
-        try {
-            byte flags = getByte("messageFlags");
-            return ((flags & 0x10) == 0x10);
-        } catch (FieldException e) {
-            // do nothing
-        }
-        return false;
     }
 
-    public boolean isUnsolicited() {
-        // if the message has an ACK/NACK, it is in response to our message,
-        // otherwise it is out-of-band, i.e. unsolicited
-        return !definition.containsField("ACK/NACK");
+    public boolean isFromAddress(InsteonAddress address) {
+        try {
+            return getAddress("fromAddress").equals(address);
+        } catch (FieldException e) {
+            return false;
+        }
+    }
+
+    public boolean isInbound() {
+        return direction == Direction.FROM_MODEM;
+    }
+
+    public boolean isOutbound() {
+        return direction == Direction.TO_MODEM;
     }
 
     public boolean isEcho() {
-        return isPureNack() || !isUnsolicited();
+        return isPureNack() || isReply();
     }
 
-    public boolean isOfType(MsgType mt) {
+    public boolean isReply() {
+        return containsField("ACK/NACK");
+    }
+
+    public boolean isReplyAck() {
         try {
-            MsgType t = MsgType.fromValue(getByte("messageFlags"));
-            return (t == mt);
+            return getByte("ACK/NACK") == 0x06;
         } catch (FieldException e) {
             return false;
         }
+    }
+
+    public boolean isReplyNack() {
+        try {
+            return getByte("ACK/NACK") == 0x15;
+        } catch (FieldException e) {
+            return false;
+        }
+    }
+
+    public boolean isOfType(MsgType t) {
+        return t == getType();
     }
 
     public boolean isBroadcast() {
         return isOfType(MsgType.ALL_LINK_BROADCAST) || isOfType(MsgType.BROADCAST);
+    }
+
+    public boolean isAllLinkBroadcast() {
+        return isOfType(MsgType.ALL_LINK_BROADCAST);
     }
 
     public boolean isCleanup() {
@@ -230,101 +222,127 @@ public class Msg {
         return isOfType(MsgType.ALL_LINK_BROADCAST) || isOfType(MsgType.ALL_LINK_CLEANUP);
     }
 
+    public boolean isDirect() {
+        return isOfType(MsgType.DIRECT);
+    }
+
     public boolean isAckOfDirect() {
         return isOfType(MsgType.ACK_OF_DIRECT);
+    }
+
+    public boolean isNackOfDirect() {
+        return isOfType(MsgType.NACK_OF_DIRECT);
+    }
+
+    public boolean isAckOrNackOfDirect() {
+        return isOfType(MsgType.ACK_OF_DIRECT) || isOfType(MsgType.NACK_OF_DIRECT);
     }
 
     public boolean isAllLinkCleanupAckOrNack() {
         return isOfType(MsgType.ALL_LINK_CLEANUP_ACK) || isOfType(MsgType.ALL_LINK_CLEANUP_NACK);
     }
 
+    public boolean isInsteonMessage() {
+        return containsField("messageFlags");
+    }
+
     public boolean isX10() {
-        try {
-            int cmd = getByte("Cmd") & 0xff;
-            if (cmd == 0x63 || cmd == 0x52) {
-                return true;
-            }
-        } catch (FieldException e) {
-        }
-        return false;
+        return containsField("X10Flag");
     }
 
-    public void setDefinition(MsgDefinition d) {
-        definition = d;
+    public boolean isReplayed() {
+        return replayed;
     }
 
-    public void setQuietTime(long t) {
-        quietTime = t;
+    public void setData(byte[] data, int dataLength) {
+        this.data = new byte[dataLength];
+        System.arraycopy(data, 0, this.data, 0, dataLength);
+    }
+
+    public void setDefinition(MsgDefinition definition) {
+        this.definition = definition;
+    }
+
+    public void setQuietTime(long quietTime) {
+        this.quietTime = quietTime;
+    }
+
+    public void setIsReplayed(boolean replayed) {
+        this.replayed = replayed;
     }
 
     public void addField(Field f) {
         definition.addField(f);
     }
 
-    public @Nullable InsteonAddress getAddr(String name) {
-        @Nullable
-        InsteonAddress a = null;
-        try {
-            a = definition.getField(name).getAddress(data);
-        } catch (FieldException e) {
-            // do nothing, we'll return null
-        }
-        return a;
+    public boolean containsField(String key) {
+        return definition.containsField(key);
     }
 
-    public int getHopsLeft() throws FieldException {
-        int hops = (getByte("messageFlags") & 0x0c) >> 2;
-        return hops;
+    public int getHopsLeft() {
+        try {
+            return (getByte("messageFlags") & 0x0C) >> 2;
+        } catch (FieldException e) {
+            return -1;
+        }
+    }
+
+    public int getMaxHops() {
+        try {
+            return getByte("messageFlags") & 0x03;
+        } catch (FieldException e) {
+            return -1;
+        }
     }
 
     /**
-     * Will put a byte at the specified key
+     * Sets a byte in specific field
      *
      * @param key the string key in the message definition
      * @param value the byte to put
      */
-    public void setByte(@Nullable String key, byte value) throws FieldException {
-        Field f = definition.getField(key);
-        f.setByte(data, value);
+    public void setByte(String key, byte value) throws FieldException {
+        Field field = definition.getField(key);
+        field.setByte(data, value);
     }
 
     /**
-     * Will put an int at the specified field key
+     * Sets an int in specific field
      *
      * @param key the name of the field
      * @param value the int to put
      */
     public void setInt(String key, int value) throws FieldException {
-        Field f = definition.getField(key);
-        f.setInt(data, value);
+        Field field = definition.getField(key);
+        field.setInt(data, value);
     }
 
     /**
-     * Will put address bytes at the field
+     * Sets address bytes in specific field
      *
      * @param key the name of the field
-     * @param adr the address to put
+     * @param address the address to put
      */
-    public void setAddress(String key, InsteonAddress adr) throws FieldException {
-        Field f = definition.getField(key);
-        f.setAddress(data, adr);
+    public void setAddress(String key, InsteonAddress address) throws FieldException {
+        Field field = definition.getField(key);
+        field.setAddress(data, address);
     }
 
     /**
-     * Will fetch a byte
+     * Returns a byte
      *
      * @param key the name of the field
      * @return the byte
      */
     public byte getByte(String key) throws FieldException {
-        return (definition.getField(key).getByte(data));
+        return definition.getField(key).getByte(data);
     }
 
     /**
-     * Will fetch a byte array starting at a certain field
+     * Returns a byte array starting at a certain field
      *
      * @param key the name of the first field
-     * @param number of bytes to get
+     * @param numBytes number of bytes to get
      * @return the byte array
      */
     public byte[] getBytes(String key, int numBytes) throws FieldException {
@@ -333,37 +351,168 @@ public class Msg {
             throw new FieldException("data index out of bounds!");
         }
         byte[] section = new byte[numBytes];
-        byte[] data = this.data;
         System.arraycopy(data, offset, section, 0, numBytes);
         return section;
     }
 
     /**
-     * Will fetch address from field
+     * Returns the address from a field
      *
-     * @param field the filed name to fetch
+     * @param key the name of the field
      * @return the address
      */
-    public InsteonAddress getAddress(String field) throws FieldException {
-        return (definition.getField(field).getAddress(data));
+    public InsteonAddress getAddress(String key) throws FieldException {
+        return definition.getField(key).getAddress(data);
     }
 
     /**
-     * Fetch 3-byte (24bit) from message
+     * Returns a byte array starting at a certain field as an up to 32-bit integer
      *
-     * @param key1 the key of the msb
-     * @param key2 the key of the second msb
-     * @param key3 the key of the lsb
+     * @param key the name of the first field
+     * @param numBytes number of bytes to use for conversion
      * @return the integer
      */
-    public int getInt24(String key1, String key2, String key3) throws FieldException {
-        int i = (definition.getField(key1).getByte(data) << 16) & (definition.getField(key2).getByte(data) << 8)
-                & definition.getField(key3).getByte(data);
+    public int getBytesAsInt(String key, int numBytes) throws FieldException {
+        if (numBytes < 1 || numBytes > 4) {
+            throw new FieldException("number of bytes out of bounds!");
+        }
+        int i = 0;
+        int shift = 8 * (numBytes - 1);
+        for (byte b : getBytes(key, numBytes)) {
+            i |= (b & 0xFF) << shift;
+            shift -= 8;
+        }
         return i;
     }
 
-    public String toHexString() {
-        return Utils.getHexString(data);
+    /**
+     * Returns a byte as a 8-bit integer
+     *
+     * @param key the name of the field
+     * @return the integer
+     */
+    public int getInt(String key) throws FieldException {
+        return getByte(key) & 0xFF;
+    }
+
+    /**
+     * Returns a 2-byte array starting at a certain field as a 16-bit integer
+     *
+     * @param key the name of the first field
+     * @return the integer
+     */
+    public int getInt16(String key) throws FieldException {
+        return getBytesAsInt(key, 2);
+    }
+
+    /**
+     * Returns a 3-byte array starting at a certain field as a 24-bit integer
+     *
+     * @param key the name of the first field
+     * @return the integer
+     */
+    public int getInt24(String key) throws FieldException {
+        return getBytesAsInt(key, 3);
+    }
+
+    /**
+     * Returns a 4-byte array starting at a certain field as a 32-bit integer
+     *
+     * @param key the name of the first field
+     * @return the integer
+     */
+    public int getInt32(String key) throws FieldException {
+        return getBytesAsInt(key, 4);
+    }
+
+    /**
+     * Returns a byte as a hex string
+     *
+     * @param key the name of the field
+     * @return the hex string
+     */
+    public String getHexString(String key) throws FieldException {
+        return ByteUtils.getHexString(getByte(key));
+    }
+
+    /**
+     * Returns a byte array starting at a certain field as a hex string
+     *
+     * @param key the name of the field
+     * @param numBytes number of bytes to get
+     * @return the hex string
+     */
+    public String getHexString(String key, int numBytes) throws FieldException {
+        return ByteUtils.getHexString(getBytes(key, numBytes), numBytes);
+    }
+
+    /**
+     * Returns the address from a field or null if not found
+     *
+     * @param key the name of the field
+     * @return the address if available, otherwise null
+     */
+    public @Nullable InsteonAddress getAddressOrNull(String key) {
+        try {
+            return getAddress(key);
+        } catch (FieldException e) {
+            return null;
+        }
+    }
+
+    /**
+     * Returns a byte as a 8-bit integer or default value
+     *
+     * @param key the name of the field
+     * @param def the default value to use if field not available
+     * @return the integer
+     */
+    public int getIntOrDefault(String key, int def) {
+        try {
+            return getInt(key);
+        } catch (FieldException e) {
+            return def;
+        }
+    }
+
+    /**
+     * Returns group based on specific message characteristics
+     *
+     * @return group number if available, otherwise -1
+     */
+    public int getGroup() {
+        try {
+            if (isAllLinkBroadcast()) {
+                return getAddress("toAddress").getLowByte() & 0xFF;
+            }
+            if (isCleanup()) {
+                return getInt("command2");
+            }
+            if (isExtended()) {
+                byte cmd1 = getByte("command1");
+                byte cmd2 = getByte("command2");
+                // group number for specific extended msg located in userData1 byte
+                if (cmd1 == 0x2E && cmd2 == 0x00) {
+                    return getInt("userData1");
+                }
+            }
+        } catch (FieldException e) {
+            logger.warn("got field exception on msg: {}", e.getMessage());
+        }
+        return -1;
+    }
+
+    /**
+     * Returns msg type based on message flags
+     *
+     * @return msg type
+     */
+    public MsgType getType() {
+        try {
+            return MsgType.fromValue(getByte("messageFlags"));
+        } catch (FieldException | IllegalArgumentException e) {
+            return MsgType.INVALID;
+        }
     }
 
     /**
@@ -394,101 +543,143 @@ public class Msg {
     }
 
     /**
-     * Calculate and set the CRC with the older 1-byte method
+     * Calculates the CRC using the older 1-byte method
      *
      * @return the calculated crc
+     * @throws FieldException
      */
-    public int setCRC() {
-        int crc;
-        try {
-            crc = getByte("command1") + getByte("command2");
-            byte[] bytes = getBytes("userData1", 13); // skip userData14!
-            for (byte b : bytes) {
-                crc += b;
-            }
-            crc = ((~crc) + 1) & 0xFF;
-            setByte("userData14", (byte) (crc & 0xFF));
-        } catch (FieldException e) {
-            logger.warn("got field exception on msg {}:", this, e);
-            crc = 0;
+    public int calculateCRC() throws FieldException {
+        int crc = 0;
+        byte[] bytes = getBytes("command1", 15); // skip userData14
+        for (byte b : bytes) {
+            crc += b;
         }
-        return crc;
+        return (~crc + 1) & 0xFF;
     }
 
     /**
-     * Calculate and set the CRC with the newer 2-byte method
+     * Calculates the CRC using the newer 2-byte method
      *
      * @return the calculated crc
+     * @throws FieldException
      */
-    public int setCRC2() {
+    public int calculateCRC2() throws FieldException {
         int crc = 0;
-        try {
-            byte[] bytes = getBytes("command1", 14);
-            for (int loop = 0; loop < bytes.length; loop++) {
-                int b = bytes[loop] & 0xFF;
-                for (int bit = 0; bit < 8; bit++) {
-                    int fb = b & 0x01;
-                    if ((crc & 0x8000) == 0) {
-                        fb = fb ^ 0x01;
-                    }
-                    if ((crc & 0x4000) == 0) {
-                        fb = fb ^ 0x01;
-                    }
-                    if ((crc & 0x1000) == 0) {
-                        fb = fb ^ 0x01;
-                    }
-                    if ((crc & 0x0008) == 0) {
-                        fb = fb ^ 0x01;
-                    }
-                    crc = ((crc << 1) | fb) & 0xFFFF;
-                    b = b >> 1;
+        byte[] bytes = getBytes("command1", 14); // skip userData13/14
+        for (int loop = 0; loop < bytes.length; loop++) {
+            int b = bytes[loop] & 0xFF;
+            for (int bit = 0; bit < 8; bit++) {
+                int fb = b & 0x01;
+                if ((crc & 0x8000) == 0) {
+                    fb = fb ^ 0x01;
                 }
+                if ((crc & 0x4000) == 0) {
+                    fb = fb ^ 0x01;
+                }
+                if ((crc & 0x1000) == 0) {
+                    fb = fb ^ 0x01;
+                }
+                if ((crc & 0x0008) == 0) {
+                    fb = fb ^ 0x01;
+                }
+                crc = (crc << 1) | fb;
+                b = b >> 1;
             }
+        }
+        return crc & 0xFFFF;
+    }
+
+    /**
+     * Checks if message has a valid CRC using the older 1-byte method
+     *
+     * @return true if valid
+     */
+    public boolean hasValidCRC() {
+        try {
+            return getInt("userData14") == calculateCRC();
+        } catch (FieldException e) {
+            logger.warn("got field exception on msg {}:", e.getMessage());
+        }
+        return false;
+    }
+
+    /**
+     * Checks if message has a valid CRC using the newer 2-byte method is valid
+     *
+     * @return true if valid
+     */
+    public boolean hasValidCRC2() {
+        try {
+            return getInt16("userData13") == calculateCRC2();
+        } catch (FieldException e) {
+            logger.warn("got field exception on msg {}:", e.getMessage());
+        }
+        return false;
+    }
+
+    /**
+     * Sets the calculated CRC using the older 1-byte method
+     */
+    public void setCRC() {
+        try {
+            int crc = calculateCRC();
+            setByte("userData14", (byte) crc);
+        } catch (FieldException e) {
+            logger.warn("got field exception on msg {}:", e.getMessage());
+        }
+    }
+
+    /**
+     * Sets the calculated CRC using the newer 2-byte method
+     */
+    public void setCRC2() {
+        try {
+            int crc = calculateCRC2();
             setByte("userData13", (byte) ((crc >> 8) & 0xFF));
             setByte("userData14", (byte) (crc & 0xFF));
         } catch (FieldException e) {
-            logger.warn("got field exception on msg {}:", this, e);
-            crc = 0;
+            logger.warn("got field exception on msg {}:", e.getMessage());
         }
-        return crc;
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (obj == this) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        Msg other = (Msg) obj;
+        return Arrays.equals(data, other.data);
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + Arrays.hashCode(data);
+        return result;
     }
 
     @Override
     public String toString() {
         String s = (direction == Direction.TO_MODEM) ? "OUT:" : "IN:";
-        // need to first sort the fields by offset
-        Comparator<Field> cmp = new Comparator<Field>() {
-            @Override
-            public int compare(Field f1, Field f2) {
-                return f1.getOffset() - f2.getOffset();
-            }
-        };
-        TreeSet<Field> fields = new TreeSet<>(cmp);
-        for (Field f : definition.getFields().values()) {
-            fields.add(f);
-        }
-        for (Field f : fields) {
-            if (f.getName().equals("messageFlags")) {
-                byte b;
-                try {
-                    b = f.getByte(data);
-                    MsgType t = MsgType.fromValue(b);
-                    s += f.toString(data) + "=" + t.toString() + ":" + (b & 0x03) + ":" + ((b & 0x0c) >> 2) + "|";
-                } catch (FieldException e) {
-                    logger.warn("toString error: ", e);
-                } catch (IllegalArgumentException e) {
-                    logger.warn("toString msg type error: ", e);
-                }
+        for (Field field : definition.getFields()) {
+            if ("messageFlags".equals(field.getName())) {
+                s += field.toString(data) + "=" + getType() + ":" + getHopsLeft() + ":" + getMaxHops() + "|";
             } else {
-                s += f.toString(data) + "|";
+                s += field.toString(data) + "|";
             }
         }
         return s;
     }
 
     /**
-     * Factory method to create Msg from raw byte stream received from the
-     * serial port.
+     * Factory method to create Msg from raw byte stream received from the serial port.
      *
      * @param buf the raw received bytes
      * @param msgLen length of received buffer
@@ -499,52 +690,44 @@ public class Msg {
         if (buf.length < 2) {
             return null;
         }
-        Msg template = REPLY_MAP.get(cmdToKey(buf[1], isExtended));
+        Msg template = MsgDefinitionLoader.instance().getTemplate(buf[1], isExtended, Direction.FROM_MODEM);
         if (template == null) {
-            return null; // cannot find lookup map
+            return null;
         }
         if (msgLen != template.getLength()) {
             logger.warn("expected msg {} len {}, got {}", template.getCommandNumber(), template.getLength(), msgLen);
             return null;
         }
-        Msg msg = new Msg(template.getHeaderLength(), buf, msgLen, Direction.FROM_MODEM);
-        msg.setDefinition(template.getDefinition());
-        return (msg);
+        Msg msg = new Msg(template);
+        msg.setData(buf, msgLen);
+        return msg;
     }
 
     /**
-     * Finds the header length from the insteon command in the received message
+     * Factory method to determine the header length of a received message
      *
-     * @param cmd the insteon command received in the message
+     * @param cmd the message command received
      * @return the length of the header to expect
      */
     public static int getHeaderLength(byte cmd) {
-        Integer len = HEADER_MAP.get((int) cmd);
-        if (len == null) {
-            return (-1); // not found
-        }
-        return len;
+        Msg msg = MsgDefinitionLoader.instance().getTemplate(cmd, Direction.FROM_MODEM);
+        return msg != null ? msg.getHeaderLength() : -1;
     }
 
     /**
-     * Tries to determine the length of a received Insteon message.
+     * Factory method to determine the length of a received message
      *
-     * @param b Insteon message command received
-     * @param isExtended flag indicating if it is an extended message
+     * @param cmd the message command received
+     * @param isExtended if is an extended message
      * @return message length, or -1 if length cannot be determined
      */
-    public static int getMessageLength(byte b, boolean isExtended) {
-        int key = cmdToKey(b, isExtended);
-        Msg msg = REPLY_MAP.get(key);
-        if (msg == null) {
-            return -1;
-        }
-        return msg.getLength();
+    public static int getMessageLength(byte cmd, boolean isExtended) {
+        Msg msg = MsgDefinitionLoader.instance().getTemplate(cmd, isExtended, Direction.FROM_MODEM);
+        return msg != null ? msg.getLength() : -1;
     }
 
     /**
-     * From bytes received thus far, tries to determine if an Insteon
-     * message is extended or standard.
+     * Factory method to determine if a message is extended
      *
      * @param buf the received bytes
      * @param len the number of bytes received so far
@@ -560,43 +743,159 @@ public class Msg {
             return false;
         } // not enough data to tell if extended
         byte flags = buf[headerLength - 1]; // last byte says flags
-        boolean isExtended = (flags & 0x10) == 0x10; // bit 4 is the message
-        return (isExtended);
+        boolean isExtended = BitwiseUtils.isBitFlagSet(flags & 0xFF, 4);
+        return isExtended;
     }
 
     /**
-     * Creates Insteon message (for sending) of a given type
+     * Factory method to create a message to send for a given cmd
      *
-     * @param type the type of message to create, as defined in the xml file
-     * @return reference to message created
-     * @throws IOException if there is no such message type known
+     * @param cmd the message cmd to create, as defined in the xml file
+     * @return the insteon message
+     * @throws InvalidMessageTypeException
+     */
+    public static Msg makeMessage(byte cmd) throws InvalidMessageTypeException {
+        Msg msg = MsgDefinitionLoader.instance().getTemplate(cmd, Direction.TO_MODEM);
+        if (msg == null) {
+            throw new InvalidMessageTypeException("unknown message command: " + ByteUtils.getHexString(cmd));
+        }
+        return new Msg(msg);
+    }
+
+    /**
+     * Factory method to create an Insteon message to send for a given type
+     *
+     * @param type the message type to create, as defined in the xml file
+     * @return the insteon message
+     * @throws InvalidMessageTypeException
      */
     public static Msg makeMessage(String type) throws InvalidMessageTypeException {
-        Msg m = MSG_MAP.get(type);
-        if (m == null) {
+        Msg msg = MsgDefinitionLoader.instance().getTemplate(type);
+        if (msg == null) {
             throw new InvalidMessageTypeException("unknown message type: " + type);
         }
-        return new Msg(m);
+        return new Msg(msg);
     }
 
-    private static int cmdToKey(byte cmd, boolean isExtended) {
-        return (cmd + (isExtended ? 256 : 0));
+    /**
+     * Factory method to create a broadcast message to send
+     *
+     * @param group the broadcast group to send the message to
+     * @param cmd1 the message command 1 field
+     * @param cmd2 the message command 2 field
+     * @return the broadcast message
+     * @throws FieldException
+     * @throws InvalidMessageTypeException
+     */
+    public static Msg makeBroadcastMessage(int group, byte cmd1, byte cmd2)
+            throws FieldException, InvalidMessageTypeException {
+        Msg msg = Msg.makeMessage("SendStandardMessage");
+        msg.setAddress("toAddress", new InsteonAddress((byte) 0, (byte) 0, (byte) (group & 0xFF)));
+        msg.setByte("messageFlags", (byte) 0xCF);
+        msg.setByte("command1", cmd1);
+        msg.setByte("command2", cmd2);
+        msg.setQuietTime(0L);
+        return msg;
     }
 
-    private static void buildHeaderMap() {
-        for (Msg m : MSG_MAP.values()) {
-            if (m.getDirection() == Direction.FROM_MODEM) {
-                HEADER_MAP.put((int) m.getCommandNumber(), m.getHeaderLength());
-            }
+    /**
+     * Factory method to create a standard message to send
+     *
+     * @param address the address to send the message to
+     * @param cmd1 the message command 1 field
+     * @param cmd2 the message command 2 field
+     * @return the standard message
+     * @throws FieldException
+     * @throws InvalidMessageTypeException
+     */
+    public static Msg makeStandardMessage(InsteonAddress address, byte cmd1, byte cmd2)
+            throws FieldException, InvalidMessageTypeException {
+        Msg msg = Msg.makeMessage("SendStandardMessage");
+        msg.setAddress("toAddress", address);
+        msg.setByte("messageFlags", (byte) 0x0F);
+        msg.setByte("command1", cmd1);
+        msg.setByte("command2", cmd2);
+        // set default quiet time accounting for ack response
+        msg.setQuietTime(1000L);
+        return msg;
+    }
+
+    /**
+     * Factory method to create an extended message to send with optional CRC
+     *
+     * @param address the address to send the message to
+     * @param cmd1 the message command 1 field
+     * @param cmd2 the message command 2 field
+     * @param setCRC if the CRC should be set
+     * @return extended message
+     * @throws FieldException
+     * @throws InvalidMessageTypeException
+     */
+    public static Msg makeExtendedMessage(InsteonAddress address, byte cmd1, byte cmd2, boolean setCRC)
+            throws FieldException, InvalidMessageTypeException {
+        return makeExtendedMessage(address, cmd1, cmd2, new byte[] {}, setCRC);
+    }
+
+    /**
+     * Factory method to create an extended message to send with specific user data and optional CRC
+     *
+     * @param address the address to send the message to
+     * @param cmd1 the message command 1 field
+     * @param cmd2 the message command 2 field
+     * @param data the message user data fields
+     * @param setCRC if the CRC should be set
+     * @return extended message
+     * @throws FieldException
+     * @throws InvalidMessageTypeException
+     */
+    public static Msg makeExtendedMessage(InsteonAddress address, byte cmd1, byte cmd2, byte[] data, boolean setCRC)
+            throws FieldException, InvalidMessageTypeException {
+        Msg msg = Msg.makeMessage("SendExtendedMessage");
+        msg.setAddress("toAddress", address);
+        msg.setByte("messageFlags", (byte) 0x1F);
+        msg.setByte("command1", cmd1);
+        msg.setByte("command2", cmd2);
+        msg.setUserData(data);
+        if (setCRC) {
+            msg.setCRC();
         }
+        // set default quiet time accounting for ack followed by direct response messages
+        msg.setQuietTime(2000L);
+        return msg;
     }
 
-    private static void buildLengthMap() {
-        for (Msg m : MSG_MAP.values()) {
-            if (m.getDirection() == Direction.FROM_MODEM) {
-                int key = cmdToKey(m.getCommandNumber(), m.isExtended());
-                REPLY_MAP.put(key, m);
-            }
-        }
+    /**
+     * Factory method to create an extended message to send with specific user data and CRC2
+     *
+     * @param address the address to send the message to
+     * @param cmd1 the message command 1 field
+     * @param cmd2 the message command 2 field
+     * @param data the message user data fields
+     * @return extended message
+     * @throws FieldException
+     * @throws InvalidMessageTypeException
+     */
+    public static Msg makeExtendedMessageCRC2(InsteonAddress address, byte cmd1, byte cmd2, byte[] data)
+            throws FieldException, InvalidMessageTypeException {
+        Msg msg = Msg.makeExtendedMessage(address, cmd1, cmd2, data, false);
+        msg.setCRC2();
+        return msg;
+    }
+
+    /**
+     * Factory method to create an X10 message to send
+     *
+     * @param rawX10 the X10 raw field
+     * @param X10Flag the X10 flag field
+     * @return the X10 message
+     * @throws FieldException
+     * @throws InvalidMessageTypeException
+     */
+    public static Msg makeX10Message(byte rawX10, byte X10Flag) throws FieldException, InvalidMessageTypeException {
+        Msg msg = Msg.makeMessage("SendX10Message");
+        msg.setByte("rawX10", rawX10);
+        msg.setByte("X10Flag", X10Flag);
+        msg.setQuietTime(300L);
+        return msg;
     }
 }

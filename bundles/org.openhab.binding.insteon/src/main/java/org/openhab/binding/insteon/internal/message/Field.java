@@ -12,12 +12,10 @@
  */
 package org.openhab.binding.insteon.internal.message;
 
-import java.util.Objects;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.insteon.internal.device.InsteonAddress;
-import org.openhab.binding.insteon.internal.utils.Utils;
+import org.openhab.binding.insteon.internal.utils.ByteUtils;
 
 /**
  * An Insteon message has several fields with known type and offset
@@ -45,10 +43,10 @@ public final class Field {
         return type;
     }
 
-    public Field(String name, DataType type, int off) {
+    public Field(String name, DataType type, int offset) {
         this.name = name;
         this.type = type;
-        this.offset = off;
+        this.offset = offset;
     }
 
     private void check(int arrayLen, DataType t) throws FieldException {
@@ -78,7 +76,7 @@ public final class Field {
         try {
             switch (type) {
                 case BYTE:
-                    s += Utils.getHexByte(getByte(array));
+                    s += ByteUtils.getHexString(getByte(array));
                     break;
                 case INT:
                     s += Integer.toString(getInt(array));
@@ -196,19 +194,41 @@ public final class Field {
 
     /**
      * Equals test
+     *
+     * @return true if equal
      */
     @Override
-    public boolean equals(@Nullable Object o) {
-        if (o instanceof Field) {
-            Field f = (Field) o;
-            return (f.getName().equals(getName())) && (f.getOffset() == getOffset());
-        } else {
+    public boolean equals(@Nullable Object obj) {
+        if (obj == this) {
+            return true;
+        }
+        if (obj == null) {
             return false;
         }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        Field other = (Field) obj;
+        if (!name.equals(other.name)) {
+            return false;
+        }
+        if (offset != other.offset) {
+            return false;
+        }
+        return true;
     }
 
+    /**
+     * Calculates hash code
+     *
+     * @return hash code
+     */
     @Override
     public int hashCode() {
-        return Objects.hash(getName(), getOffset());
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + name.hashCode();
+        result = prime * result + offset;
+        return result;
     }
 }

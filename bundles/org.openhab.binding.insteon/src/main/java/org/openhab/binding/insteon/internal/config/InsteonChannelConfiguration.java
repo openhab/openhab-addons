@@ -12,60 +12,60 @@
  */
 package org.openhab.binding.insteon.internal.config;
 
-import java.util.Map;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.insteon.internal.device.InsteonAddress;
-import org.openhab.core.thing.ChannelUID;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.insteon.internal.device.RampRate;
 
 /**
  *
- * This file contains config information needed for each channel
+ * The {@link InsteonChannelConfiguration} is the configuration for an insteon channel.
  *
  * @author Rob Nielsen - Initial contribution
+ * @author Jeremy Setton - Improvements for openHAB 3 insteon binding
  */
 @NonNullByDefault
 public class InsteonChannelConfiguration {
 
-    private final ChannelUID channelUID;
-    private final String channelName;
-    private final InsteonAddress address;
-    private final String feature;
-    private final String productKey;
-    private final Map<String, String> parameters;
+    private int group = -1;
+    private int onLevel = -1;
+    private double rampRate = -1;
 
-    public InsteonChannelConfiguration(ChannelUID channelUID, String feature, InsteonAddress address, String productKey,
-            Map<String, String> parameters) {
-        this.channelUID = channelUID;
-        this.feature = feature;
-        this.address = address;
-        this.productKey = productKey;
-        this.parameters = parameters;
-
-        this.channelName = channelUID.getAsString();
+    public int getGroup() {
+        return group;
     }
 
-    public ChannelUID getChannelUID() {
-        return channelUID;
+    public int getOnLevel() {
+        return onLevel;
     }
 
-    public String getChannelName() {
-        return channelName;
+    public @Nullable RampRate getRampRate() {
+        return rampRate == -1 ? null : RampRate.fromTime(rampRate);
     }
 
-    public InsteonAddress getAddress() {
-        return address;
+    public void setGroup(int group) {
+        this.group = group;
     }
 
-    public String getFeature() {
-        return feature;
+    public void setOnLevel(int onLevel) {
+        this.onLevel = onLevel;
     }
 
-    public String getProductKey() {
-        return productKey;
+    public void setRampRate(RampRate rampRate) {
+        this.rampRate = rampRate.getTimeInSeconds();
     }
 
-    public Map<String, String> getParameters() {
-        return parameters;
+    @Override
+    public String toString() {
+        String s = "";
+        if (group != -1) {
+            s += " group=" + group;
+        }
+        if (onLevel != -1) {
+            s += " onLevel=" + onLevel;
+        }
+        if (rampRate != -1) {
+            s += " rampRate=" + rampRate;
+        }
+        return s;
     }
 }

@@ -12,25 +12,25 @@
  */
 package org.openhab.binding.insteon.internal.device;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.insteon.internal.config.InsteonChannelConfiguration;
-import org.openhab.binding.insteon.internal.device.DeviceFeatureListener.StateChangeType;
+import org.openhab.binding.insteon.internal.handler.InsteonChannelHandler;
+import org.openhab.binding.insteon.internal.handler.feature.CommandHandler;
+import org.openhab.binding.insteon.internal.handler.feature.MessageDispatcher;
+import org.openhab.binding.insteon.internal.handler.feature.MessageHandler;
+import org.openhab.binding.insteon.internal.handler.feature.PollHandler;
 import org.openhab.binding.insteon.internal.message.Msg;
-import org.openhab.binding.insteon.internal.utils.Utils.ParsingException;
+import org.openhab.binding.insteon.internal.utils.ParameterParser;
+import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,8 +48,8 @@ import org.slf4j.LoggerFactory;
  * 3) CommandHandler: translates commands from the openhab bus into an Insteon message.
  * 4) PollHandler: creates an Insteon message to query the DeviceFeature
  *
- * Lastly, DeviceFeatureListeners can register with the DeviceFeature to get notifications when
- * the state of a feature has changed. In practice, a DeviceFeatureListener corresponds to an
+ * Lastly, InsteonChannelHandler can register with the DeviceFeature to get notifications when
+ * the state of a feature has changed. In practice, a InsteonChannelHandler corresponds to an
  * openHAB item.
  *
  * The character of a DeviceFeature is thus given by a set of message and command handlers.
@@ -61,53 +61,54 @@ import org.slf4j.LoggerFactory;
  * @author Daniel Pfrommer - Initial contribution
  * @author Bernd Pfrommer - openHAB 1 insteonplm binding
  * @author Rob Nielsen - Port to openHAB 2 insteon binding
+ * @author Jeremy Setton - Improvements for openHAB 3 insteon binding
  */
 @NonNullByDefault
 public class DeviceFeature {
-    public static enum QueryStatus {
+    public enum QueryStatus {
         NEVER_QUERIED,
+        QUERY_CREATED,
+        QUERY_QUEUED,
         QUERY_PENDING,
-        QUERY_ANSWERED
+        QUERY_ANSWERED,
+        NOT_POLLABLE
     }
+
+    public enum StateChangeType {
+        ALWAYS,
+        CHANGED
+    };
 
     private static final Logger logger = LoggerFactory.getLogger(DeviceFeature.class);
 
-    private static Map<String, FeatureTemplate> features = new HashMap<>();
-
+    private String name;
+    private String type;
     private InsteonDevice device = new InsteonDevice();
-    private String name = "INVALID_FEATURE_NAME";
-    private boolean isStatus = false;
-    private int directAckTimeout = 6000;
-    private QueryStatus queryStatus = QueryStatus.NEVER_QUERIED;
+    private QueryStatus queryStatus = QueryStatus.NOT_POLLABLE;
+    private State state = UnDefType.NULL;
+    private @Nullable Double lastMsgValue;
+    private @Nullable Msg lastQueryMsg;
 
-    private MessageHandler defaultMsgHandler = new MessageHandler.DefaultMsgHandler(this);
-    private CommandHandler defaultCommandHandler = new CommandHandler.WarnCommandHandler(this);
-    private @Nullable PollHandler pollHandler = null;
-    private @Nullable MessageDispatcher dispatcher = null;
+    private MessageHandler defaultMsgHandler = MessageHandler.makeDefaultHandler(this);
+    private CommandHandler defaultCommandHandler = CommandHandler.makeDefaultHandler(this);
+    private @Nullable PollHandler pollHandler;
+    private @Nullable MessageDispatcher dispatcher;
+    private @Nullable DeviceFeature groupFeature;
 
-    private Map<Integer, @Nullable MessageHandler> msgHandlers = new HashMap<>();
-    private Map<Class<? extends Command>, @Nullable CommandHandler> commandHandlers = new HashMap<>();
-    private List<DeviceFeatureListener> listeners = new ArrayList<>();
+    private Map<String, String> parameters = new HashMap<>();
+    private Map<Integer, MessageHandler> msgHandlers = new HashMap<>();
+    private Map<Class<? extends Command>, CommandHandler> commandHandlers = new HashMap<>();
+    private Map<ChannelUID, InsteonChannelHandler> channelHandlers = new HashMap<>();
     private List<DeviceFeature> connectedFeatures = new ArrayList<>();
 
     /**
      * Constructor
      *
-     * @param device Insteon device to which this feature belongs
-     * @param name descriptive name for that feature
+     * @param type feature type
      */
-    public DeviceFeature(InsteonDevice device, String name) {
-        this.name = name;
-        setDevice(device);
-    }
-
-    /**
-     * Constructor
-     *
-     * @param name descriptive name of the feature
-     */
-    public DeviceFeature(String name) {
-        this.name = name;
+    public DeviceFeature(String type) {
+        this.name = type; // use feature type as name by default
+        this.type = type;
     }
 
     // various simple getters
@@ -115,92 +116,212 @@ public class DeviceFeature {
         return name;
     }
 
-    public synchronized QueryStatus getQueryStatus() {
-        return queryStatus;
+    public String getType() {
+        return type;
     }
 
     public InsteonDevice getDevice() {
         return device;
     }
 
-    public boolean isFeatureGroup() {
+    public Map<String, String> getParameters() {
+        synchronized (parameters) {
+            return parameters;
+        }
+    }
+
+    public @Nullable String getParameter(String key) {
+        synchronized (parameters) {
+            return parameters.get(key);
+        }
+    }
+
+    public boolean hasParameter(String key) {
+        synchronized (parameters) {
+            return parameters.containsKey(key);
+        }
+    }
+
+    public boolean getParameterAsBoolean(String key, boolean defaultValue) {
+        return ParameterParser.getParameterAsOrDefault(getParameter(key), Boolean.class, defaultValue);
+    }
+
+    public int getParameterAsInteger(String key, int defaultValue) {
+        return ParameterParser.getParameterAsOrDefault(getParameter(key), Integer.class, defaultValue);
+    }
+
+    public synchronized @Nullable Double getLastMsgValue() {
+        return lastMsgValue;
+    }
+
+    public double getLastMsgValueAsDouble(double defaultValue) {
+        Double lastMsgValue = getLastMsgValue();
+        return lastMsgValue == null ? defaultValue : lastMsgValue.doubleValue();
+    }
+
+    public int getLastMsgValueAsInteger(int defaultValue) {
+        Double lastMsgValue = getLastMsgValue();
+        return lastMsgValue == null ? defaultValue : lastMsgValue.intValue();
+    }
+
+    public synchronized @Nullable Msg getLastQueryMessage() {
+        return lastQueryMsg;
+    }
+
+    public int getLastQueryCommand() {
+        Msg lastQueryMsg = getLastQueryMessage();
+        return lastQueryMsg == null ? -1 : lastQueryMsg.getIntOrDefault("command1", -1);
+    }
+
+    public int getLastQueryCommand2() {
+        Msg lastQueryMsg = getLastQueryMessage();
+        return lastQueryMsg == null ? -1 : lastQueryMsg.getIntOrDefault("command2", -1);
+    }
+
+    public synchronized QueryStatus getQueryStatus() {
+        return queryStatus;
+    }
+
+    public synchronized State getState() {
+        return state;
+    }
+
+    public boolean isGroupFeature() {
         return !connectedFeatures.isEmpty();
     }
 
-    public boolean isStatusFeature() {
-        return isStatus;
+    public boolean isPartOfGroupFeature() {
+        return groupFeature != null;
     }
 
-    public int getDirectAckTimeout() {
-        return directAckTimeout;
+    public boolean isControllerFeature() {
+        String linkType = getParameter("link");
+        return "both".equals(linkType) || "controller".equals(linkType);
+    }
+
+    public boolean isResponderFeature() {
+        String linkType = getParameter("link");
+        return "both".equals(linkType) || "responder".equals(linkType);
+    }
+
+    public boolean isEventFeature() {
+        return getParameterAsBoolean("event", false);
+    }
+
+    public boolean isHiddenFeature() {
+        return getParameterAsBoolean("hidden", false);
+    }
+
+    public boolean isStatusFeature() {
+        return getParameterAsBoolean("status", false);
+    }
+
+    public int getGroup() {
+        return getParameterAsInteger("group", 1);
     }
 
     public MessageHandler getDefaultMsgHandler() {
         return defaultMsgHandler;
     }
 
-    public Map<Integer, @Nullable MessageHandler> getMsgHandlers() {
-        return this.msgHandlers;
-    }
-
-    public List<DeviceFeature> getConnectedFeatures() {
-        return (connectedFeatures);
-    }
-
-    // various simple setters
-    public void setStatusFeature(boolean f) {
-        isStatus = f;
-    }
-
-    public void setPollHandler(@Nullable PollHandler h) {
-        pollHandler = h;
-    }
-
-    public void setDevice(InsteonDevice d) {
-        device = d;
-    }
-
-    public void setMessageDispatcher(@Nullable MessageDispatcher md) {
-        dispatcher = md;
-    }
-
-    public void setDefaultCommandHandler(CommandHandler ch) {
-        defaultCommandHandler = ch;
-    }
-
-    public void setDefaultMsgHandler(MessageHandler mh) {
-        defaultMsgHandler = mh;
-    }
-
-    public synchronized void setQueryStatus(QueryStatus status) {
-        logger.trace("{} set query status to: {}", name, status);
-        queryStatus = status;
-    }
-
-    public void setTimeout(@Nullable String s) {
-        if (s != null && !s.isEmpty()) {
-            try {
-                directAckTimeout = Integer.parseInt(s);
-                logger.trace("ack timeout set to {}", directAckTimeout);
-            } catch (NumberFormatException e) {
-                logger.warn("invalid number for timeout: {}", s);
-            }
+    public @Nullable MessageHandler getMsgHandler(int key) {
+        synchronized (msgHandlers) {
+            return msgHandlers.get(key);
         }
     }
 
-    /**
-     * Add a listener (item) to a device feature
-     *
-     * @param l the listener
-     */
-    public void addListener(DeviceFeatureListener l) {
-        synchronized (listeners) {
-            for (DeviceFeatureListener m : listeners) {
-                if (m.getItemName().equals(l.getItemName())) {
-                    return;
-                }
-            }
-            listeners.add(l);
+    public MessageHandler getOrDefaultMsgHandler(int key) {
+        synchronized (msgHandlers) {
+            return msgHandlers.getOrDefault(key, defaultMsgHandler);
+        }
+    }
+
+    public @Nullable CommandHandler getCommandHandler(Class<? extends Command> key) {
+        synchronized (commandHandlers) {
+            return commandHandlers.get(key);
+        }
+    }
+
+    public @Nullable PollHandler getPollHandler() {
+        return pollHandler;
+    }
+
+    public List<DeviceFeature> getConnectedFeatures() {
+        return connectedFeatures;
+    }
+
+    public @Nullable DeviceFeature getGroupFeature() {
+        return groupFeature;
+    }
+
+    // various simple setters
+    public void setDevice(InsteonDevice device) {
+        this.device = device;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setMessageDispatcher(@Nullable MessageDispatcher dispatcher) {
+        this.dispatcher = dispatcher;
+    }
+
+    public void setPollHandler(@Nullable PollHandler pollHandler) {
+        this.pollHandler = pollHandler;
+    }
+
+    public void setDefaultCommandHandler(CommandHandler defaultCommandHandler) {
+        this.defaultCommandHandler = defaultCommandHandler;
+    }
+
+    public void setDefaultMsgHandler(MessageHandler defaultMsgHandler) {
+        this.defaultMsgHandler = defaultMsgHandler;
+    }
+
+    public void setGroupFeature(DeviceFeature groupFeature) {
+        this.groupFeature = groupFeature;
+    }
+
+    public synchronized void setLastMsgValue(double lastMsgValue) {
+        if (logger.isTraceEnabled()) {
+            logger.trace("{}:{} set last message value to: {}", device.getAddress(), name, lastMsgValue);
+        }
+        this.lastMsgValue = lastMsgValue;
+    }
+
+    public synchronized void setLastQueryMessage(@Nullable Msg lastQueryMsg) {
+        this.lastQueryMsg = lastQueryMsg;
+    }
+
+    public synchronized void setState(State state) {
+        if (logger.isTraceEnabled()) {
+            logger.trace("{}:{} set state to: {}", device.getAddress(), name, state);
+        }
+        this.state = state;
+    }
+
+    public synchronized void setQueryStatus(QueryStatus queryStatus) {
+        if (logger.isTraceEnabled()) {
+            logger.trace("{}:{} set query status to: {}", device.getAddress(), name, queryStatus);
+        }
+        this.queryStatus = queryStatus;
+    }
+
+    public void initializeQueryStatus() {
+        PollHandler pollHandler = this.pollHandler;
+        // set query status to never queried if feature pollable,
+        // otherwise to not pollable if not already in that state
+        if (pollHandler != null && pollHandler.makeMsg() != null) {
+            setQueryStatus(QueryStatus.NEVER_QUERIED);
+        } else if (queryStatus != QueryStatus.NOT_POLLABLE) {
+            setQueryStatus(QueryStatus.NOT_POLLABLE);
+        }
+    }
+
+    public void addParameters(Map<String, String> params) {
+        synchronized (parameters) {
+            parameters.putAll(params);
         }
     }
 
@@ -208,84 +329,189 @@ public class DeviceFeature {
      * Adds a connected feature such that this DeviceFeature can
      * act as a feature group
      *
-     * @param f the device feature related to this feature
+     * @param feature the device feature connected to this feature
      */
-    public void addConnectedFeature(DeviceFeature f) {
-        connectedFeatures.add(f);
-    }
-
-    public boolean hasListeners() {
-        if (!listeners.isEmpty()) {
-            return true;
-        }
-        for (DeviceFeature f : connectedFeatures) {
-            if (f.hasListeners()) {
-                return true;
-            }
-        }
-        return false;
+    public void addConnectedFeature(DeviceFeature feature) {
+        connectedFeatures.add(feature);
     }
 
     /**
-     * removes a DeviceFeatureListener from this feature
+     * Adds a channel handler to this feature
      *
-     * @param aItemName name of the item to remove as listener
-     * @return true if a listener was removed
+     * @param channelUID the channel uid to add
+     * @param handler the channel handler to add
      */
-    public boolean removeListener(String aItemName) {
-        boolean listenerRemoved = false;
-        synchronized (listeners) {
-            for (Iterator<DeviceFeatureListener> it = listeners.iterator(); it.hasNext();) {
-                DeviceFeatureListener fl = it.next();
-                if (fl.getItemName().equals(aItemName)) {
-                    it.remove();
-                    listenerRemoved = true;
-                }
+    public void addChannelHandler(ChannelUID channelUID, InsteonChannelHandler handler) {
+        synchronized (channelHandlers) {
+            if (!channelHandlers.containsKey(channelUID)) {
+                channelHandlers.put(channelUID, handler);
             }
         }
-        return listenerRemoved;
     }
 
-    public boolean isReferencedByItem(String aItemName) {
-        synchronized (listeners) {
-            for (DeviceFeatureListener fl : listeners) {
-                if (fl.getItemName().equals(aItemName)) {
-                    return true;
-                }
-            }
+    /**
+     * Removes a channel handler from this feature
+     *
+     * @param channelUID the channel uid to remove
+     */
+    public void removeChannelHandler(ChannelUID channelUID) {
+        synchronized (channelHandlers) {
+            channelHandlers.remove(channelUID);
         }
-        return false;
+    }
+
+    /**
+     * Returns a channel handler based on channel uid
+     *
+     * @param channelUID the channel uid to check
+     * @return channel handler if defined, otherwise null
+     */
+    public @Nullable InsteonChannelHandler getChannelHandler(ChannelUID channelUID) {
+        synchronized (channelHandlers) {
+            return channelHandlers.get(channelUID);
+        }
+    }
+
+    /**
+     * Returns list of channel handlers for this feature
+     *
+     * @return list of channel handlers
+     */
+    public List<InsteonChannelHandler> getChannelHandlers() {
+        synchronized (channelHandlers) {
+            return new ArrayList<>(channelHandlers.values());
+        }
+    }
+
+    /**
+     * Checks if this feature has a defined channel handler for a specific channel
+     *
+     * @param channelUID the channel uid to check
+     * @return true if a handler is defined
+     */
+    public boolean hasChannelHandler(ChannelUID channelUID) {
+        return getChannelHandler(channelUID) != null;
+    }
+
+    /**
+     * Checks if this feature or any its connected features has a defined channel handler
+     *
+     * @return true if at least one handler is defined
+     */
+    public boolean hasChannelHandlers() {
+        return !getChannelHandlers().isEmpty()
+                || getConnectedFeatures().stream().anyMatch(DeviceFeature::hasChannelHandlers);
+    }
+
+    /**
+     * Checks if this feature or any its connected features has a responder feature
+     *
+     * @return true if at least one feature is a responder
+     */
+    public boolean hasResponderFeatures() {
+        return isResponderFeature() || getConnectedFeatures().stream().anyMatch(DeviceFeature::hasResponderFeatures);
+    }
+
+    /**
+     * Checks if a message is a successful response queried by this feature
+     *
+     * @param msg the message to check
+     * @return true if my direct ack
+     */
+    public boolean isMyDirectAck(Msg msg) {
+        return msg.isAckOfDirect() && !msg.isReplayed() && isQueryPending();
+    }
+
+    /**
+     * Checks if a message is a response queried by this feature
+     *
+     * @param msg the message to check
+     * @return true if my direct ack or nack
+     */
+    public boolean isMyDirectAckOrNack(Msg msg) {
+        return msg.isAckOrNackOfDirect() && !msg.isReplayed() && isQueryPending();
+    }
+
+    /**
+     * Checks if a message is a successful im reply queried by this feature
+     *
+     * @param msg the message to check
+     * @return true if my im reply ack
+     */
+    public boolean isMyIMReplyAck(Msg msg) {
+        return msg.isReplyAck() && !msg.isInsteonMessage() && !msg.isX10() && isQueryPending();
+    }
+
+    /**
+     * Checks if a message is an im reply queried by this feature
+     *
+     * @param msg the message to check
+     * @return true if my im reply
+     */
+    public boolean isMyIMReply(Msg msg) {
+        return msg.isReply() && !msg.isInsteonMessage() && !msg.isX10() && isQueryPending();
+    }
+
+    /**
+     * Checks if this feature in query pending status
+     *
+     * @return true if query pending status
+     */
+    private boolean isQueryPending() {
+        return getQueryStatus() == QueryStatus.QUERY_PENDING;
     }
 
     /**
      * Called when message is incoming. Dispatches message according to message dispatcher
      *
-     * @param msg The message to dispatch
+     * @param msg the message to dispatch
      * @return true if dispatch successful
      */
     public boolean handleMessage(Msg msg) {
         MessageDispatcher dispatcher = this.dispatcher;
         if (dispatcher == null) {
-            logger.warn("{} no dispatcher for msg {}", name, msg);
+            logger.warn("{}:{} no dispatcher for msg {}", device.getAddress(), name, msg);
             return false;
+        }
+        if (logger.isTraceEnabled()) {
+            logger.trace("{}:{} handling message using dispatcher {}", device.getAddress(), name,
+                    dispatcher.getClass().getSimpleName());
         }
         return dispatcher.dispatch(msg);
     }
 
     /**
-     * Called when an openhab command arrives for this device feature
+     * Called when a related device command triggers for this device feature
      *
-     * @param c the binding config of the item which sends the command
+     * @param config the channel config of the item which sends the command
      * @param cmd the command to be exectued
      */
-    public void handleCommand(InsteonChannelConfiguration c, Command cmd) {
-        Class<? extends Command> key = cmd.getClass();
-        CommandHandler h = commandHandlers.containsKey(key) ? commandHandlers.get(key) : defaultCommandHandler;
-        if (h != null) {
-            logger.trace("{} uses {} to handle command {} for {}", getName(), h.getClass().getSimpleName(),
-                    key.getSimpleName(), getDevice().getAddress());
-            h.handleCommand(c, cmd, getDevice());
+    public void handleCommand(InsteonChannelConfiguration config, Command cmd) {
+        handleCommand(null, config, cmd);
+    }
+
+    /**
+     * Called when an openhab command arrives for this device feature
+     *
+     * @param channelUID the channel uid of the item which sends the command
+     * @param config the channel config of the item which sends the command
+     * @param cmd the command to be exectued
+     */
+    public void handleCommand(@Nullable ChannelUID channelUID, InsteonChannelConfiguration config, Command cmd) {
+        Class<? extends Command> cmdClass = cmd.getClass();
+        CommandHandler cmdHandler = commandHandlers.getOrDefault(cmdClass, defaultCommandHandler);
+        if (!cmdHandler.canHandle(cmd)) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("{}:{} command {}:{} cannot be handled by {}", device.getAddress(), name,
+                        cmdClass.getSimpleName(), cmd, cmdHandler.getClass().getSimpleName());
+            }
+            return;
         }
+        if (logger.isTraceEnabled()) {
+            logger.trace("{}:{} handling command {}:{} using handler {}", device.getAddress(), name,
+                    cmdClass.getSimpleName(), cmd, cmdHandler.getClass().getSimpleName());
+        }
+        cmdHandler.handleCommand(channelUID, config, cmd);
     }
 
     /**
@@ -298,150 +524,182 @@ public class DeviceFeature {
         if (pollHandler == null) {
             return null;
         }
-        logger.trace("{} making poll msg for {} using handler {}", getName(), getDevice().getAddress(),
-                pollHandler.getClass().getSimpleName());
-        Msg m = pollHandler.makeMsg(device);
-        return m;
+        if (logger.isTraceEnabled()) {
+            logger.trace("{}:{} making poll msg using handler {}", device.getAddress(), name,
+                    pollHandler.getClass().getSimpleName());
+        }
+        return pollHandler.makeMsg();
     }
 
     /**
-     * Publish new state to all device feature listeners, but give them
-     * additional dataKey and dataValue information so they can decide
-     * whether to publish the data to the bus.
+     * Sends request message to device
      *
-     * @param newState state to be published
-     * @param changeType what kind of changes to publish
-     * @param dataKey the key on which to filter
-     * @param dataValue the value that must be matched
+     * @param msg request message to send
      */
-    public void publish(State newState, StateChangeType changeType, String dataKey, String dataValue) {
-        logger.debug("{}:{} publishing: {}", this.getDevice().getAddress(), getName(), newState);
-        synchronized (listeners) {
-            for (DeviceFeatureListener listener : listeners) {
-                listener.stateChanged(newState, changeType, dataKey, dataValue);
+    public void sendRequest(Msg msg) {
+        device.enqueueRequest(msg, this);
+    }
+
+    /**
+     * Publishes a state to all channel handlers for this feature
+     *
+     * @param state the state to publish
+     * @param changeType the state change type
+     */
+    public void publishState(State state, StateChangeType changeType) {
+        State oldState = getState();
+        if (oldState.equals(state) && changeType != StateChangeType.ALWAYS) {
+            return;
+        }
+        getChannelHandlers().forEach(handler -> handler.updateState(state));
+        setState(state);
+    }
+
+    /**
+     * Triggers an event to all channel handlers for this feature
+     *
+     * @param event the event name to trigger
+     */
+    public void triggerEvent(String event) {
+        if (!isEventFeature()) {
+            logger.warn("{}:{} not configured to handle triggered event", device.getAddress(), name);
+            return;
+        }
+        getChannelHandlers().forEach(handler -> handler.triggerEvent(event));
+    }
+
+    /**
+     * Triggers a poll at this feature, group feature or device level,
+     * in order of precedence depending on pollability
+     *
+     * @param delay scheduling delay (in milliseconds)
+     */
+    public void triggerPoll(long delay) {
+        // trigger feature poll if pollable
+        if (doPoll(delay) != null) {
+            if (logger.isTraceEnabled()) {
+                logger.trace("{}:{} triggered poll on this feature", device.getAddress(), name);
             }
+            return;
+        }
+        // trigger group feature poll if defined and pollable, as fallback
+        DeviceFeature groupFeature = getGroupFeature();
+        if (groupFeature != null && groupFeature.doPoll(delay) != null) {
+            if (logger.isTraceEnabled()) {
+                logger.trace("{}:{} triggered poll on group feature {}", device.getAddress(), name,
+                        groupFeature.getName());
+            }
+            return;
+        }
+        // trigger device poll limiting to responder features, as last option
+        device.doPollResponders(delay);
+    }
+
+    /**
+     * Executes the polling of this feature
+     *
+     * @param delay scheduling delay (in milliseconds)
+     * @return poll message
+     */
+    public @Nullable Msg doPoll(long delay) {
+        Msg msg = makePollMsg();
+        if (msg != null) {
+            device.enqueueDelayedRequest(msg, this, delay);
+        }
+        return msg;
+    }
+
+    /**
+     * Adjusts related devices from a specific channel handler
+     *
+     * @param channelUID channel uid
+     * @param cmd the command to adjust to
+     */
+    public void adjustRelatedDevices(ChannelUID channelUID, Command cmd) {
+        InsteonChannelHandler handler = getChannelHandler(channelUID);
+        if (handler != null) {
+            handler.adjustRelatedDevices(cmd);
         }
     }
 
     /**
-     * Publish new state to all device feature listeners
+     * Polls related devices from all channel handlers
      *
-     * @param newState state to be published
-     * @param changeType what kind of changes to publish
+     * @param delay scheduling delay (in milliseconds)
      */
-    public void publish(State newState, StateChangeType changeType) {
-        logger.debug("{}:{} publishing: {}", this.getDevice().getAddress(), getName(), newState);
-        synchronized (listeners) {
-            for (DeviceFeatureListener listener : listeners) {
-                listener.stateChanged(newState, changeType);
-            }
+    public void pollRelatedDevices(long delay) {
+        getChannelHandlers().forEach(handler -> handler.pollRelatedDevices(delay));
+    }
+
+    /**
+     * Polls related devices from a specific channel handler
+     *
+     * @param channelUID channel uid
+     * @param delay scheduling delay (in milliseconds)
+     */
+    public void pollRelatedDevices(ChannelUID channelUID, long delay) {
+        InsteonChannelHandler handler = getChannelHandler(channelUID);
+        if (handler != null) {
+            handler.pollRelatedDevices(delay);
         }
     }
 
     /**
-     * Poll all device feature listeners for related devices
+     * Updates channel config for all channel handlers
      */
-    public void pollRelatedDevices() {
-        synchronized (listeners) {
-            for (DeviceFeatureListener listener : listeners) {
-                listener.pollRelatedDevices();
-            }
-        }
+    public void updateChannelConfigs() {
+        getChannelHandlers().forEach(InsteonChannelHandler::updateChannelConfig);
     }
 
     /**
-     * Adds a message handler to this device feature.
+     * Adds a message handler to this device feature
      *
-     * @param cm1 The insteon cmd1 of the incoming message for which the handler should be used
+     * @param cmd1 The insteon cmd1 of the incoming message for which the handler should be used
      * @param handler the handler to invoke
      */
-    public void addMessageHandler(int cm1, @Nullable MessageHandler handler) {
+    public void addMessageHandler(int cmd1, MessageHandler handler) {
         synchronized (msgHandlers) {
-            msgHandlers.put(cm1, handler);
+            msgHandlers.put(cmd1, handler);
         }
     }
 
     /**
      * Adds a command handler to this device feature
      *
-     * @param c the command for which this handler is invoked
+     * @param classRef the command class reference for which this handler is invoked
      * @param handler the handler to call
      */
-    public void addCommandHandler(Class<? extends Command> c, @Nullable CommandHandler handler) {
+    public void addCommandHandler(Class<? extends Command> classRef, CommandHandler handler) {
         synchronized (commandHandlers) {
-            commandHandlers.put(c, handler);
+            commandHandlers.put(classRef, handler);
         }
     }
 
     /**
-     * Turn DeviceFeature into String
+     * Returns this device feature information as a string
      */
     @Override
     public String toString() {
-        return name + "(" + listeners.size() + ":" + commandHandlers.size() + ":" + msgHandlers.size() + ")";
-    }
-
-    /**
-     * Factory method for creating DeviceFeatures.
-     *
-     * @param s The name of the device feature to create.
-     * @return The newly created DeviceFeature, or null if requested DeviceFeature does not exist.
-     */
-    @Nullable
-    public static DeviceFeature makeDeviceFeature(String s) {
-        DeviceFeature f = null;
-        synchronized (features) {
-            FeatureTemplate ft = features.get(s);
-            if (ft != null) {
-                f = ft.build();
-            } else {
-                logger.warn("unimplemented feature requested: {}", s);
-            }
+        String s = name + "->" + type;
+        if (!parameters.isEmpty()) {
+            s += parameters;
         }
-        return f;
+        s += "(" + channelHandlers.size() + ":" + commandHandlers.size() + ":" + msgHandlers.size() + ")";
+        return s;
     }
 
     /**
-     * Reads the features templates from an input stream and puts them in global map
+     * Factory method for creating DeviceFeature
      *
-     * @param input the input stream from which to read the feature templates
+     * @param type the device feature type
+     * @return the newly created DeviceFeature, or null if requested DeviceFeature does not exist.
      */
-    public static void readFeatureTemplates(InputStream input) {
-        try {
-            List<FeatureTemplate> featureTemplates = FeatureTemplateLoader.readTemplates(input);
-            synchronized (features) {
-                for (FeatureTemplate f : featureTemplates) {
-                    features.put(f.getName(), f);
-                }
-            }
-        } catch (IOException e) {
-            logger.warn("IOException while reading device features", e);
-        } catch (ParsingException e) {
-            logger.warn("Parsing exception while reading device features", e);
+    public static @Nullable DeviceFeature makeDeviceFeature(String type) {
+        FeatureTemplate template = FeatureTemplateLoader.instance().getTemplate(type);
+        if (template == null) {
+            logger.warn("unknown feature type: {}", type);
+            return null;
         }
-    }
-
-    /**
-     * Reads the feature templates from a file and adds them to a global map
-     *
-     * @param file name of the file to read from
-     */
-    public static void readFeatureTemplates(String file) {
-        try {
-            FileInputStream fis = new FileInputStream(file);
-            readFeatureTemplates(fis);
-        } catch (FileNotFoundException e) {
-            logger.warn("cannot read feature templates from file {} ", file, e);
-        }
-    }
-
-    /**
-     * static initializer
-     */
-    static {
-        // read features from xml file and store them in a map
-        InputStream input = DeviceFeature.class.getResourceAsStream("/device_features.xml");
-        Objects.requireNonNull(input);
-        readFeatureTemplates(input);
+        return template.build();
     }
 }

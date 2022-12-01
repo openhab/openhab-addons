@@ -1,0 +1,924 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="insteon"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- state channel types -->
+
+	<channel-type id="acDelay" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>AC Delay</label>
+		<description>AC Delay</description>
+		<state min="2" max="20" step="1" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="alarmDelay" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Alarm Delay</label>
+		<description>Alarm Delay</description>
+	</channel-type>
+
+	<channel-type id="alarmDuration" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Alarm Duration</label>
+		<description>Alarm Duration</description>
+		<state min="0" max="127" step="1" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="alarmType" advanced="true">
+		<item-type>String</item-type>
+		<label>Alarm Type</label>
+		<description>Alarm Type</description>
+		<state>
+			<options>
+				<option value="CHIME">Chime</option>
+				<option value="LOUD_SIREN">Loud Siren</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="armed">
+		<item-type>Switch</item-type>
+		<label>Armed</label>
+		<description>Armed State</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="backlightDuration" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Back Light Duration</label>
+		<description>Back Light Duration</description>
+		<state min="0" max="255" step="1" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="batteryLevel">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Battery Level</label>
+		<description>Battery Level</description>
+		<category>BatteryLevel</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="batteryPowered">
+		<item-type>Switch</item-type>
+		<label>Battery Powered</label>
+		<description>Battery Powered State</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="beep" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Beep</label>
+		<description>Beep (command only)</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy> <!-- command only -->
+	</channel-type>
+
+	<channel-type id="broadcastOnOff">
+		<item-type>Switch</item-type>
+		<label>Broadcast On/Off</label>
+		<description>Broadcast On/Off (command only)</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy> <!-- command only -->
+	</channel-type>
+
+	<channel-type id="broadcastFastOnOff">
+		<item-type>Switch</item-type>
+		<label>Broadcast Fast On/Off</label>
+		<description>Broadcast Fast On/Off (command only)</description>
+	</channel-type>
+
+	<channel-type id="broadcastManualChange">
+		<item-type>Rollershutter</item-type>
+		<label>Broadcast Manual Change</label>
+		<description>Broadcast Manual Change (command only)</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy> <!-- command only -->
+	</channel-type>
+
+	<channel-type id="buttonA">
+		<item-type>Switch</item-type>
+		<label>Button A</label>
+		<description>Button A</description>
+	</channel-type>
+
+	<channel-type id="buttonB">
+		<item-type>Switch</item-type>
+		<label>Button B</label>
+		<description>Button B</description>
+	</channel-type>
+
+	<channel-type id="buttonC">
+		<item-type>Switch</item-type>
+		<label>Button C</label>
+		<description>Button C</description>
+	</channel-type>
+
+	<channel-type id="buttonD">
+		<item-type>Switch</item-type>
+		<label>Button D</label>
+		<description>Button D</description>
+	</channel-type>
+
+	<channel-type id="buttonE">
+		<item-type>Switch</item-type>
+		<label>Button E</label>
+		<description>Button E</description>
+	</channel-type>
+
+	<channel-type id="buttonF">
+		<item-type>Switch</item-type>
+		<label>Button F</label>
+		<description>Button F</description>
+	</channel-type>
+
+	<channel-type id="buttonG">
+		<item-type>Switch</item-type>
+		<label>Button G</label>
+		<description>Button G</description>
+	</channel-type>
+
+	<channel-type id="buttonH">
+		<item-type>Switch</item-type>
+		<label>Button H</label>
+		<description>Button H</description>
+	</channel-type>
+
+	<channel-type id="buttonBeep" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Button Beep</label>
+		<description>Beep on Button Press</description>
+	</channel-type>
+
+	<channel-type id="buttonConfig" advanced="true">
+		<item-type>String</item-type>
+		<label>Button Config</label>
+		<description>Button Config</description>
+		<state>
+			<options>
+				<option value="6-BUTTON">6-Button</option>
+				<option value="8-BUTTON">8-Button</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="buttonLock" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Button Lock</label>
+		<description>Button Lock</description>
+	</channel-type>
+
+	<channel-type id="carbonMonoxideAlarm">
+		<item-type>Switch</item-type>
+		<label>Carbon Monoxide Alarm</label>
+		<description>Carbon Monoxide Alarm</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="contact">
+		<item-type>Contact</item-type>
+		<label>Contact</label>
+		<description>Contact State</description>
+	</channel-type>
+
+	<channel-type id="coolSetPoint">
+		<item-type>Number:Temperature</item-type>
+		<label>Cool Set Point</label>
+		<description>Cool Set Point</description>
+		<category>Temperature</category>
+		<state step="0.5" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="daylight">
+		<item-type>Contact</item-type>
+		<label>Daylight</label>
+		<description>Daylight State</description>
+	</channel-type>
+
+	<channel-type id="dimmer">
+		<item-type>Dimmer</item-type>
+		<label>Dimmer</label>
+		<description>Dimmer</description>
+		<category>Light</category>
+		<autoUpdatePolicy>veto</autoUpdatePolicy> <!-- binding controls state updates -->
+		<config-description-ref uri="channel-type:insteon:dimmer"/>
+	</channel-type>
+
+	<channel-type id="energyOffset" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Energy Set Point Offset</label>
+		<description>Energy Set Point Offset</description>
+		<state step="0.5" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="energySaving">
+		<item-type>Switch</item-type>
+		<label>Energy Saving</label>
+		<description>Energy Saving</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="fanMode">
+		<item-type>String</item-type>
+		<label>Fan Mode</label>
+		<description>Fan Mode</description>
+		<state>
+			<options>
+				<option value="AUTO">Auto</option>
+				<option value="ON">On</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="fanSpeed">
+		<item-type>String</item-type>
+		<label>Fan Speed</label>
+		<description>Fan Speed</description>
+		<state>
+			<options>
+				<option value="OFF">Off</option>
+				<option value="LOW">Low</option>
+				<option value="MEDIUM">Medium</option>
+				<option value="HIGH">High</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="fanState">
+		<item-type>Switch</item-type>
+		<label>Fan State</label>
+		<description>Fan State</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="heatSetPoint">
+		<item-type>Number:Temperature</item-type>
+		<label>Heat Set Point</label>
+		<description>Heat Set Point</description>
+		<category>Temperature</category>
+		<state step="0.5" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="humidity">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Humidity</label>
+		<description>Current Humidity</description>
+		<category>Humidity</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="humidityControl">
+		<item-type>String</item-type>
+		<label>Humidity Control</label>
+		<description>Humidity Control State</description>
+		<state readOnly="true">
+			<options>
+				<option value="OFF">Off</option>
+				<option value="DEHUMIDIFYING">Dehumidifying</option>
+				<option value="HUMIDIFYING">Humidifying</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="humidityHigh">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Humidity High</label>
+		<description>Humidity High Setpoint</description>
+		<category>Humidity</category>
+		<state step="1" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="humidityLow">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Humidity Low</label>
+		<description>Humidity Low Setpoint</description>
+		<category>Humidity</category>
+		<state step="1" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="kWh">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Usage</label>
+		<description>Energy Usage in Kilowatt Hour</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="lastHeardFrom">
+		<item-type>DateTime</item-type>
+		<label>Last Heard From</label>
+		<description>Last Heard From</description>
+		<category>Time</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="leak">
+		<item-type>Switch</item-type>
+		<label>Leak</label>
+		<description>Leak Detected</description>
+		<category>Water</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="ledBrightness" advanced="true">
+		<item-type>Dimmer</item-type>
+		<label>LED Brightness</label>
+		<description>LED Brightness</description>
+	</channel-type>
+
+	<channel-type id="ledOnOff" advanced="true">
+		<item-type>Switch</item-type>
+		<label>LED On/Off</label>
+		<description>LED On/Off</description>
+	</channel-type>
+
+	<channel-type id="ledTraffic" advanced="true">
+		<item-type>Switch</item-type>
+		<label>LED Traffic</label>
+		<description>LED Blink on Traffic</description>
+	</channel-type>
+
+	<channel-type id="lightLevel">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Light Level</label>
+		<description>Light Level</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="load">
+		<item-type>Switch</item-type>
+		<label>Load</label>
+		<description>Load State</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="loadSense" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Load Sense</label>
+		<description>Load Sense</description>
+	</channel-type>
+
+	<channel-type id="loadSenseBottom" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Load Sense Bottom</label>
+		<description>Load Sense Bottom</description>
+	</channel-type>
+
+	<channel-type id="loadSenseTop" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Load Sense Top</label>
+		<description>Load Sense Top</description>
+	</channel-type>
+
+	<channel-type id="lock">
+		<item-type>Switch</item-type>
+		<label>Lock</label>
+		<description>Lock</description>
+		<category>Lock</category>
+	</channel-type>
+
+	<channel-type id="lowBattery">
+		<item-type>Switch</item-type>
+		<label>Low Battery</label>
+		<description>Low Battery Alert</description>
+		<category>LowBattery</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="momentaryDuration" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Momentary Duration</label>
+		<description>Momentary Duration</description>
+		<state min="0.2" max="25" step="0.1" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="monitorMode" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Monitor Mode</label>
+		<description>Monitor Mode</description>
+	</channel-type>
+
+	<channel-type id="motion">
+		<item-type>Switch</item-type>
+		<label>Motion</label>
+		<description>Motion Detected</description>
+		<category>Motion</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="onLevel" advanced="true">
+		<item-type>Dimmer</item-type>
+		<label>On Level</label>
+		<description>On Level</description>
+	</channel-type>
+
+	<channel-type id="operationMode" advanced="true">
+		<item-type>String</item-type>
+		<label>Operation Mode</label>
+		<description>Switch Operation Mode</description>
+		<state>
+			<options>
+				<option value="LATCHING">Latching</option>
+				<option value="SINGLE_MOMENTARY">Single Momentary</option>
+				<option value="DUAL_MOMENTARY">Dual Momentary</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="outletBottom">
+		<item-type>Switch</item-type>
+		<label>Outlet Bottom</label>
+		<description>Outlet Bottom</description>
+		<category>PowerOutlet</category>
+	</channel-type>
+
+	<channel-type id="outletTop">
+		<item-type>Switch</item-type>
+		<label>Outlet Top</label>
+		<description>Outlet Top</description>
+		<category>PowerOutlet</category>
+	</channel-type>
+
+	<channel-type id="programLock" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Programming Lock</label>
+		<description>Local Programming Lock</description>
+	</channel-type>
+
+	<channel-type id="rampRate" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Ramp Rate</label>
+		<description>Ramp Rate</description>
+		<state>
+			<options>
+				<option value="0.1 s">0.1 Seconds (Instant)</option>
+				<option value="0.2 s">0.2 Seconds</option>
+				<option value="0.3 s">0.3 Seconds</option>
+				<option value="0.5 s">0.5 Seconds (Fast)</option>
+				<option value="2 s">2 Seconds (Medium)</option>
+				<option value="4.5 s">4.5 Seconds</option>
+				<option value="6.5 s">6.5 Seconds (Slow)</option>
+				<option value="8.5 s">8.5 Seconds</option>
+				<option value="19 s">19 Seconds</option>
+				<option value="21.5 s">21.5 Seconds</option>
+				<option value="23.5 s">23.5 Seconds</option>
+				<option value="26 s">26 Seconds</option>
+				<option value="28 s">28 Seconds</option>
+				<option value="30 s">30 Seconds</option>
+				<option value="32 s">32 Seconds</option>
+				<option value="34 s">34 Seconds</option>
+				<option value="38.5 s">38.5 Seconds</option>
+				<option value="43 s">43 Seconds</option>
+				<option value="47 s">47 Seconds</option>
+				<option value="60 s">1 Minute</option>
+				<option value="90 s">1.5 Minutes</option>
+				<option value="120 s">2 Minutes</option>
+				<option value="150 s">2.5 Minutes</option>
+				<option value="180 s">3 Minutes</option>
+				<option value="210 s">3.5 Minutes</option>
+				<option value="240 s">4 Minutes</option>
+				<option value="270 s">4.5 minutes</option>
+				<option value="300 s">5 Minutes</option>
+				<option value="360 s">6 Minutes</option>
+				<option value="420 s">7 Minutes</option>
+				<option value="480 s">8 Minutes</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="relayMode" advanced="true">
+		<item-type>String</item-type>
+		<label>Relay Mode</label>
+		<description>Output Relay Mode</description>
+		<state>
+			<options>
+				<option value="LATCHING">Latching</option>
+				<option value="MOMENTARY_A">Momentary A</option>
+				<option value="MOMENTARY_B">Momentary B</option>
+				<option value="MOMENTARY_C">Momentary C</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="relaySensorFollow" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Relay Sensor Follow</label>
+		<description>Output Relay Follows Input Sensor</description>
+	</channel-type>
+
+	<channel-type id="reset">
+		<item-type>Switch</item-type>
+		<label>Reset</label>
+		<description>Reset (command only)</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy> <!-- command only -->
+	</channel-type>
+
+	<channel-type id="resumeDim" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Resume Dim</label>
+		<description>Resume at Last Dim Level</description>
+	</channel-type>
+
+	<channel-type id="rollershutter">
+		<item-type>Rollershutter</item-type>
+		<label>Rollershutter</label>
+		<description>Rollershutter</description>
+		<category>Rollershutter</category>
+		<autoUpdatePolicy>veto</autoUpdatePolicy> <!-- binding controls state updates -->
+	</channel-type>
+
+	<channel-type id="siren">
+		<item-type>Switch</item-type>
+		<label>Siren</label>
+		<description>Siren</description>
+		<category>Siren</category>
+	</channel-type>
+
+	<channel-type id="smokeAlarm">
+		<item-type>Switch</item-type>
+		<label>Smoke Alarm</label>
+		<description>Smoke Alarm</description>
+		<category>Smoke</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="stage1Duration" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Stage 1 Duration</label>
+		<description>Stage 1 Duration</description>
+		<state min="1" max="60" step="1" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="stayAwake" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Stay Awake</label>
+		<description>Stay Awake for Extended Time (command only on some products)</description>
+	</channel-type>
+
+	<channel-type id="switch">
+		<item-type>Switch</item-type>
+		<label>Switch</label>
+		<description>Switch</description>
+		<category>Switch</category>
+	</channel-type>
+
+	<channel-type id="syncTime" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Sync Time</label>
+		<description>Sync Time (command only)</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy> <!-- command only -->
+	</channel-type>
+
+	<channel-type id="systemMode">
+		<item-type>String</item-type>
+		<label>System Mode</label>
+		<description>System Mode</description>
+		<state>
+			<options>
+				<option value="OFF">Off</option>
+				<option value="HEAT">Heat</option>
+				<option value="COOL">Cool</option>
+				<option value="AUTO">Auto</option>
+				<option value="PROGRAM">Program</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="systemState">
+		<item-type>String</item-type>
+		<label>System State</label>
+		<description>System State</description>
+		<state readOnly="true">
+			<options>
+				<option value="OFF">Off</option>
+				<option value="COOLING">Cooling</option>
+				<option value="HEATING">Heating</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="tamperSwitch">
+		<item-type>Contact</item-type>
+		<label>Tamper Switch</label>
+		<description>Tamper Switch</description>
+	</channel-type>
+
+	<channel-type id="temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Current Temperature</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="temperatureFormat" advanced="true">
+		<item-type>String</item-type>
+		<label>Temperature Format</label>
+		<description>Temperature Format</description>
+		<state>
+			<options>
+				<option value="CELSIUS">Celsius</option>
+				<option value="FAHRENHEIT">Fahrenheit</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="testAlarm" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Test Alarm</label>
+		<description>Test Alarm</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="timeFormat" advanced="true">
+		<item-type>String</item-type>
+		<label>Time Format</label>
+		<description>Time Format</description>
+		<state>
+			<options>
+				<option value="12H">12-Hour</option>
+				<option value="24H">24-Hour</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="toggleMode" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Toggle Mode</label>
+		<description>3-Way Toggle Mode</description>
+	</channel-type>
+
+	<channel-type id="toggleModeButtonA" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Toggle Mode Button A</label>
+		<description>Toggle Mode Button A</description>
+	</channel-type>
+
+	<channel-type id="toggleModeButtonB" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Toggle Mode Button B</label>
+		<description>Toggle Mode Button B</description>
+	</channel-type>
+
+	<channel-type id="toggleModeButtonC" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Toggle Mode Button C</label>
+		<description>Toggle Mode Button C</description>
+	</channel-type>
+
+	<channel-type id="toggleModeButtonD" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Toggle Mode Button D</label>
+		<description>Toggle Mode Button D</description>
+	</channel-type>
+
+	<channel-type id="toggleModeButtonE" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Toggle Mode Button E</label>
+		<description>Toggle Mode Button E</description>
+	</channel-type>
+
+	<channel-type id="toggleModeButtonF" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Toggle Mode Button F</label>
+		<description>Toggle Mode Button F</description>
+	</channel-type>
+
+	<channel-type id="toggleModeButtonG" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Toggle Mode Button G</label>
+		<description>Toggle Mode Button G</description>
+	</channel-type>
+
+	<channel-type id="toggleModeButtonH" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Toggle Mode Button H</label>
+		<description>Toggle Mode Button H</description>
+	</channel-type>
+
+	<channel-type id="watts">
+		<item-type>Number:Power</item-type>
+		<label>Power Usage</label>
+		<description>Power Usage in Watts</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<!-- trigger channel types -->
+
+	<channel-type id="eventButton" advanced="true">
+		<kind>trigger</kind>
+		<label>Event Button</label>
+		<description>Event Button</description>
+		<event>
+			<options>
+				<option value="PRESSED_ON"/>
+				<option value="PRESSED_OFF"/>
+				<option value="DOUBLE_PRESSED_ON"/>
+				<option value="DOUBLE_PRESSED_OFF"/>
+				<option value="HELD_UP"/>
+				<option value="HELD_DOWN"/>
+				<option value="RELEASED"/>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="eventButtonA" advanced="true">
+		<kind>trigger</kind>
+		<label>Event Button A</label>
+		<description>Event Button A</description>
+		<event>
+			<options>
+				<option value="PRESSED_ON"/>
+				<option value="PRESSED_OFF"/>
+				<option value="DOUBLE_PRESSED_ON"/>
+				<option value="DOUBLE_PRESSED_OFF"/>
+				<option value="HELD_UP"/>
+				<option value="HELD_DOWN"/>
+				<option value="RELEASED"/>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="eventButtonB" advanced="true">
+		<kind>trigger</kind>
+		<label>Event Button B</label>
+		<description>Event Button B</description>
+		<event>
+			<options>
+				<option value="PRESSED_ON"/>
+				<option value="PRESSED_OFF"/>
+				<option value="DOUBLE_PRESSED_ON"/>
+				<option value="DOUBLE_PRESSED_OFF"/>
+				<option value="HELD_UP"/>
+				<option value="HELD_DOWN"/>
+				<option value="RELEASED"/>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="eventButtonC" advanced="true">
+		<kind>trigger</kind>
+		<label>Event Button C</label>
+		<description>Event Button C</description>
+		<event>
+			<options>
+				<option value="PRESSED_ON"/>
+				<option value="PRESSED_OFF"/>
+				<option value="DOUBLE_PRESSED_ON"/>
+				<option value="DOUBLE_PRESSED_OFF"/>
+				<option value="HELD_UP"/>
+				<option value="HELD_DOWN"/>
+				<option value="RELEASED"/>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="eventButtonD" advanced="true">
+		<kind>trigger</kind>
+		<label>Event Button D</label>
+		<description>Event Button D</description>
+		<event>
+			<options>
+				<option value="PRESSED_ON"/>
+				<option value="PRESSED_OFF"/>
+				<option value="DOUBLE_PRESSED_ON"/>
+				<option value="DOUBLE_PRESSED_OFF"/>
+				<option value="HELD_UP"/>
+				<option value="HELD_DOWN"/>
+				<option value="RELEASED"/>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="eventButtonE" advanced="true">
+		<kind>trigger</kind>
+		<label>Event Button E</label>
+		<description>Event Button E</description>
+		<event>
+			<options>
+				<option value="PRESSED_ON"/>
+				<option value="PRESSED_OFF"/>
+				<option value="DOUBLE_PRESSED_ON"/>
+				<option value="DOUBLE_PRESSED_OFF"/>
+				<option value="HELD_UP"/>
+				<option value="HELD_DOWN"/>
+				<option value="RELEASED"/>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="eventButtonF" advanced="true">
+		<kind>trigger</kind>
+		<label>Event Button F</label>
+		<description>Event Button F</description>
+		<event>
+			<options>
+				<option value="PRESSED_ON"/>
+				<option value="PRESSED_OFF"/>
+				<option value="DOUBLE_PRESSED_ON"/>
+				<option value="DOUBLE_PRESSED_OFF"/>
+				<option value="HELD_UP"/>
+				<option value="HELD_DOWN"/>
+				<option value="RELEASED"/>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="eventButtonG" advanced="true">
+		<kind>trigger</kind>
+		<label>Event Button G</label>
+		<description>Event Button G</description>
+		<event>
+			<options>
+				<option value="PRESSED_ON"/>
+				<option value="PRESSED_OFF"/>
+				<option value="DOUBLE_PRESSED_ON"/>
+				<option value="DOUBLE_PRESSED_OFF"/>
+				<option value="HELD_UP"/>
+				<option value="HELD_DOWN"/>
+				<option value="RELEASED"/>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="eventButtonH" advanced="true">
+		<kind>trigger</kind>
+		<label>Event Button H</label>
+		<description>Event Button H</description>
+		<event>
+			<options>
+				<option value="PRESSED_ON"/>
+				<option value="PRESSED_OFF"/>
+				<option value="DOUBLE_PRESSED_ON"/>
+				<option value="DOUBLE_PRESSED_OFF"/>
+				<option value="HELD_UP"/>
+				<option value="HELD_DOWN"/>
+				<option value="RELEASED"/>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="eventButtonMain" advanced="true">
+		<kind>trigger</kind>
+		<label>Event Button Main</label>
+		<description>Event Button Main</description>
+		<event>
+			<options>
+				<option value="PRESSED_ON"/>
+				<option value="PRESSED_OFF"/>
+				<option value="DOUBLE_PRESSED_ON"/>
+				<option value="DOUBLE_PRESSED_OFF"/>
+				<option value="HELD_UP"/>
+				<option value="HELD_DOWN"/>
+				<option value="RELEASED"/>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="eventButtonBottom" advanced="true">
+		<kind>trigger</kind>
+		<label>Event Button Bottom</label>
+		<description>Event Button Bottom</description>
+		<event>
+			<options>
+				<option value="PRESSED_ON"/>
+				<option value="PRESSED_OFF"/>
+				<option value="DOUBLE_PRESSED_ON"/>
+				<option value="DOUBLE_PRESSED_OFF"/>
+				<option value="HELD_UP"/>
+				<option value="HELD_DOWN"/>
+				<option value="RELEASED"/>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="eventButtonTop" advanced="true">
+		<kind>trigger</kind>
+		<label>Event Button Top</label>
+		<description>Event Button Top</description>
+		<event>
+			<options>
+				<option value="PRESSED_ON"/>
+				<option value="PRESSED_OFF"/>
+				<option value="DOUBLE_PRESSED_ON"/>
+				<option value="DOUBLE_PRESSED_OFF"/>
+				<option value="HELD_UP"/>
+				<option value="HELD_DOWN"/>
+				<option value="RELEASED"/>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="imEventButton" advanced="true">
+		<kind>trigger</kind>
+		<label>Event Button</label>
+		<description>Event Button</description>
+		<event>
+			<options>
+				<option value="PRESSED"/>
+				<option value="HELD"/>
+				<option value="RELEASED"/>
+			</options>
+		</event>
+	</channel-type>
+
+</thing:thing-descriptions>

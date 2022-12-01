@@ -76,10 +76,9 @@ public enum DataType {
      */
     public static DataType getDataType(String name) {
         DataType dataType = typeMap.get(name);
-        if (dataType != null) {
-            return dataType;
-        } else {
-            throw new IllegalArgumentException("Unable to find data type for " + name);
+        if (dataType == null) {
+            throw new IllegalArgumentException("data type " + name + " not found");
         }
+        return dataType;
     }
 }

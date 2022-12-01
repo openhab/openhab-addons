@@ -1,598 +1,863 @@
 <xml>
-	<!-- device types
 
-		#
-		# PLEASE KEEP PRODUCT KEYS IN INCREASING ORDER:
-		#
-		# - first the devices with insteon assigned product keys
-		# - then X10 devices (key starting with X)
-		# - then Insteon devices with fake keys (starting with F)
-		#
+	<!-- Base features for all device types except Network Bridge and X10 -->
 
-		#
-		Example entry:
+	<base-features>
+		<feature name="insteonEngine">InsteonEngine</feature>
+		<feature name="ping">Ping</feature>
+		<feature name="databaseDelta">DatabaseDelta</feature>
+		<feature name="lastHeardFrom">GenericLastTime</feature>
+	</base-features>
 
-		<device productKey="F00.00.05">
-		<model>2456-D3</model>
-		<description>LampLinc V2</description>
+	<!-- Generalized Controllers -->
+
+	<device-type name="GeneralizedController">
+		<feature name="eventButton">GenericButtonEvent</feature>
+	</device-type>
+
+	<device-type name="GeneralizedController_ControLinc" batteryPowered="true">
+		<feature name="eventButtonA" group="1">GenericButtonEvent</feature>
+		<feature name="eventButtonB" group="2">GenericButtonEvent</feature>
+		<feature name="eventButtonC" group="3">GenericButtonEvent</feature>
+		<feature name="eventButtonD" group="4">GenericButtonEvent</feature>
+		<feature name="eventButtonE" group="5">GenericButtonEvent</feature>
+		<feature name="eventButtonF" group="6">GenericButtonEvent</feature>
+	</device-type>
+
+	<device-type name="GeneralizedController_RemoteLinc" batteryPowered="true">
+		<feature name="eventButtonA" group="1">GenericButtonEvent</feature>
+		<feature name="eventButtonB" group="2">GenericButtonEvent</feature>
+		<feature name="eventButtonC" group="3">GenericButtonEvent</feature>
+		<feature name="eventButtonD" group="4">GenericButtonEvent</feature>
+		<feature name="eventButtonE" group="5">GenericButtonEvent</feature>
+		<feature name="eventButtonF" group="6">GenericButtonEvent</feature>
+		<feature-group name="opFlagsGroup" type="OpFlagsGroup">
+			<feature name="stayAwake" bit="3" on="0x06" off="0x07">OpFlags</feature>
+		</feature-group>
+	</device-type>
+
+	<device-type name="GeneralizedController_MiniRemoteScene4" batteryPowered="true">
+		<feature name="eventButtonA" group="1">GenericButtonEvent</feature>
+		<feature name="eventButtonB" group="2">GenericButtonEvent</feature>
+		<feature name="eventButtonC" group="3">GenericButtonEvent</feature>
+		<feature name="eventButtonD" group="4">GenericButtonEvent</feature>
+		<feature-group name="opFlagsGroup" type="OpFlagsGroup">
+			<feature name="programLock" bit="0" on="0x00" off="0x01">OpFlags</feature>
+			<feature name="ledOnOff" bit="1" on="0x02" off="0x03">OpFlags</feature>
+			<feature name="buttonBeep" bit="2" on="0x04" off="0x05">OpFlags</feature>
+			<feature name="stayAwake" bit="3" on="0x06" off="0x07">OpFlags</feature>
+		</feature-group>
+	</device-type>
+
+	<device-type name="GeneralizedController_MiniRemoteScene8" batteryPowered="true">
+		<feature name="eventButtonA" group="1">GenericButtonEvent</feature>
+		<feature name="eventButtonB" group="2">GenericButtonEvent</feature>
+		<feature name="eventButtonC" group="3">GenericButtonEvent</feature>
+		<feature name="eventButtonD" group="4">GenericButtonEvent</feature>
+		<feature name="eventButtonE" group="5">GenericButtonEvent</feature>
+		<feature name="eventButtonF" group="6">GenericButtonEvent</feature>
+		<feature name="eventButtonG" group="7">GenericButtonEvent</feature>
+		<feature name="eventButtonH" group="8">GenericButtonEvent</feature>
+		<feature-group name="opFlagsGroup" type="OpFlagsGroup">
+			<feature name="programLock" bit="0" on="0x00" off="0x01">OpFlags</feature>
+			<feature name="ledOnOff" bit="1" on="0x02" off="0x03">OpFlags</feature>
+			<feature name="buttonBeep" bit="2" on="0x04" off="0x05">OpFlags</feature>
+			<feature name="stayAwake" bit="3" on="0x06" off="0x07">OpFlags</feature>
+		</feature-group>
+	</device-type>
+
+	<device-type name="GeneralizedController_MiniRemoteSwitch" batteryPowered="true">
+		<feature name="eventButton">GenericButtonEvent</feature>
+		<feature-group name="opFlagsGroup" type="OpFlagsGroup">
+			<feature name="programLock" bit="0" on="0x00" off="0x01">OpFlags</feature>
+			<feature name="ledOnOff" bit="1" on="0x02" off="0x03">OpFlags</feature>
+			<feature name="buttonBeep" bit="2" on="0x04" off="0x05">OpFlags</feature>
+			<feature name="stayAwake" bit="3" on="0x06" off="0x07">OpFlags</feature>
+		</feature-group>
+	</device-type>
+
+	<!-- Dimmable Lighting Control -->
+
+	<device-type name="DimmableLightingControl">
 		<feature name="dimmer">GenericDimmer</feature>
-		<feature name="lastheardfrom">GenericLastTime</feature>
-		</device>
+		<feature name="eventButton">GenericButtonEvent</feature>
+	</device-type>
 
-	-->
-
-	<!-- #################################################
-		devices with regular insteon product keys
-	-->
-
-	<device productKey="0x00001A">
-		<model>2450</model>
-		<description>IO Link</description>
-		<feature name="contact">IOLincContact</feature>
-		<feature name="lastheardfrom">GenericLastTime</feature>
-		<feature name="switch">IOLincSwitch</feature>
-	</device>
-
-	<device productKey="0x000037">
-		<model>2486D</model>
-		<description>KeypadLinc Dimmer</description>
+	<device-type name="DimmableLightingControl_LampLinc">
 		<feature name="dimmer">GenericDimmer</feature>
-		<feature name="manualchange">ManualChange</feature>
-		<feature name="fastonoff">FastOnOff</feature>
-		<feature name="lastheardfrom">GenericLastTime</feature>
-	</device>
-
-	<device productKey="0x000039">
-		<model>2663-222</model>
-		<description>On/Off Outlet</description>
-		<feature name="topoutlet">GenericSwitch</feature>
-		<feature name="bottomoutlet">BottomOutlet</feature>
-		<feature name="lastheardfrom">GenericLastTime</feature>
-	</device>
-
-	<device productKey="0x000041">
-		<model>2484DWH8</model>
-		<description>KeypadLinc Countdown Timer</description>
-		<feature name="dimmer">GenericDimmer</feature>
-		<feature name="manualchange">ManualChange</feature>
-		<feature name="fastonoff">FastOnOff</feature>
-		<feature name="lastheardfrom">GenericLastTime</feature>
-	</device>
-
-	<device productKey="0x000045">
-		<model>2413U</model>
-		<description>PowerLinc 2413U USB modem</description>
-		<feature name="broadcastonoff">GroupBroadcastOnOff</feature>
-	</device>
-
-	<device productKey="0x000049">
-		<model>2843-222</model>
-		<description>Wireless Open/Close Sensor</description>
-		<feature name="contact">GenericContact</feature>
-		<feature name="lastheardfrom">GenericLastTime</feature>
-	</device>
-
-	<device productKey="0x00004A">
-		<model>2842-222</model>
-		<description>Motion Sensor</description>
-		<feature name="contact">WirelessMotionSensorContact</feature>
-		<feature name="lightlevelabovethreshold">WirelessMotionSensorLightLevelAboveThreshold</feature>
-		<feature name="lowbattery">WirelessMotionSensorLowBattery</feature>
-		<feature name="data">MotionSensorData</feature>
-		<feature name="lastheardfrom">GenericLastTime</feature>
-	</device>
-
-	<device productKey="0x000050">
-		<model>2486DWH6</model>
-		<description>KeypadLinc Dimmer - 6 Button</description>
-		<feature name="loaddimmer">LoadDimmerButton</feature>
-		<feature name="rampdimmer">LoadDimmerRamp</feature>
-		<feature name="manualchange">ManualChange</feature>
-		<feature name="fastonoff">LoadDimmerFastOnOff</feature>
-		<feature_group name="button_group" type="KeyPadButtonGroup">
-			<feature name="keypadbuttona">KeyPadButton3</feature>
-			<feature name="keypadbuttonb">KeyPadButton4</feature>
-			<feature name="keypadbuttonc">KeyPadButton5</feature>
-			<feature name="keypadbuttond">KeyPadButton6</feature>
-		</feature_group>
-		<feature name="lastheardfrom">GenericLastTime</feature>
-	</device>
-
-	<device productKey="0x000051">
-		<model>2486DWH8</model>
-		<description>KeypadLinc Dimmer - 8 Button</description>
-		<feature name="loaddimmer">LoadDimmerButton</feature>
-		<feature name="rampdimmer">LoadDimmerRamp</feature>
-		<feature name="manualchange">ManualChange</feature>
-		<feature name="fastonoff">LoadDimmerFastOnOff</feature>
-		<feature_group name="button_group" type="KeyPadButtonGroup">
-			<feature name="keypadbuttonb">KeyPadButton2</feature>
-			<feature name="keypadbuttonc">KeyPadButton3</feature>
-			<feature name="keypadbuttond">KeyPadButton4</feature>
-			<feature name="keypadbuttone">KeyPadButton5</feature>
-			<feature name="keypadbuttonf">KeyPadButton6</feature>
-			<feature name="keypadbuttong">KeyPadButton7</feature>
-			<feature name="keypadbuttonh">KeyPadButton8</feature>
-		</feature_group>
-
-		<feature name="lastheardfrom">GenericLastTime</feature>
-	</device>
-
-	<device productKey="0x000068">
-		<model>2472D</model>
-		<description>OutletLinc Dimmer</description>
-		<feature name="dimmer">GenericDimmer</feature>
-		<feature name="manualchange">ManualChange</feature>
-		<feature name="fastonoff">FastOnOff</feature>
-		<feature name="lastheardfrom">GenericLastTime</feature>
-		<feature name="ledonoff">LEDOnOff</feature>
+		<feature name="eventButton">GenericButtonEvent</feature>
 		<feature name="beep">Beep</feature>
-		<feature_group name="ext_group" type="ExtStatusGroup">
-			<feature name="ledbrightness">LEDBrightness</feature>
-			<feature name="ramprate">RampRate</feature>
-		</feature_group>
-	</device>
+		<feature-group name="extDataGroup" type="ExtDataGroup">
+			<feature name="ledBrightness">LEDBrightness</feature>
+			<feature name="rampRate">RampRate</feature>
+			<feature name="onLevel">OnLevel</feature>
+		</feature-group>
+		<feature-group name="opFlagsGroup" type="OpFlagsGroup">
+			<feature name="programLock" bit="0" on="0x00" off="0x01">OpFlags</feature>
+			<feature name="ledTraffic" bit="1" on="0x02" off="0x03">OpFlags</feature>
+			<feature name="resumeDim" bit="2" on="0x04" off="0x05">OpFlags</feature>
+			<feature name="ledOnOff" bit="4" on="0x09" off="0x08" inverted="true" hidden="true">OpFlags</feature>
+			<feature name="loadSense" bit="5" on="0x0A" off="0x0B">OpFlags</feature>
+		</feature-group>
+	</device-type>
 
-	<!-- #################################################
-		X10 devices with made-up product keys Xaa.bb.cc
-	-->
-
-	<device productKey="X00.00.01">
-		<model>X10 switch</model>
-		<description>any simple X10 switch</description>
-		<feature name="switch">X10Switch</feature>
-	</device>
-	<device productKey="X00.00.02">
-		<model>X10 dimmer</model>
-		<description>Generic X10 Dimmer without preset</description>
-		<feature name="switch">X10Switch</feature>
-		<feature name="dimmer">X10Dimmer</feature>
-	</device>
-	<device productKey="X00.00.03">
-		<model>X10 motion sensor</model>
-		<description>Generic X10 motion sensor</description>
-		<feature name="contact">X10Contact</feature>
-	</device>
-
-	<!-- ###################################################
-		Insteon devices with made-up product keys Faa.bb.cc
-	-->
-
-	<device productKey="F00.00.01">
-		<model>2477D</model>
-		<description>SwitchLinc Dimmer</description>
+	<device-type name="DimmableLightingControl_SwitchLinc">
 		<feature name="dimmer">GenericDimmer</feature>
-		<feature name="manualchange">ManualChange</feature>
-		<feature name="fastonoff">FastOnOff</feature>
-		<feature name="lastheardfrom">GenericLastTime</feature>
-		<feature name="ledonoff">LEDOnOff</feature>
+		<feature name="eventButton">GenericButtonEvent</feature>
 		<feature name="beep">Beep</feature>
-		<feature_group name="ext_group" type="ExtStatusGroup">
-			<feature name="ledbrightness">LEDBrightness</feature>
-			<feature name="ramprate">RampRate</feature>
-			<feature name="onlevel">OnLevel</feature>
-		</feature_group>
-	</device>
+		<feature-group name="extDataGroup" type="ExtDataGroup">
+			<feature name="ledBrightness">LEDBrightness</feature>
+			<feature name="rampRate">RampRate</feature>
+			<feature name="onLevel">OnLevel</feature>
+		</feature-group>
+		<feature-group name="opFlagsGroup" type="OpFlagsGroup">
+			<feature name="programLock" bit="0" on="0x00" off="0x01">OpFlags</feature>
+			<feature name="ledTraffic" bit="1" on="0x02" off="0x03">OpFlags</feature>
+			<feature name="resumeDim" bit="2" on="0x04" off="0x05">OpFlags</feature>
+			<feature name="ledOnOff" bit="4" on="0x09" off="0x08" inverted="true" hidden="true">OpFlags</feature>
+			<feature name="buttonBeep" bit="5" on="0x0A" off="0x0B">OpFlags</feature>
+		</feature-group>
+	</device-type>
 
-	<device productKey="F00.00.02">
-		<model>2477S</model>
-		<description>SwitchLinc Switch</description>
-		<feature name="switch">GenericSwitch</feature>
-		<feature name="fastonoff">FastOnOff</feature>
-		<feature name="lastheardfrom">GenericLastTime</feature>
-		<feature name="ledonoff">LEDOnOff</feature>
+	<device-type name="DimmableLightingControl_ToggleLinc">
+		<feature name="dimmer">GenericDimmer</feature>
+		<feature name="eventButton">GenericButtonEvent</feature>
 		<feature name="beep">Beep</feature>
-		<feature_group name="ext_group" type="ExtStatusGroup">
-			<feature name="ledbrightness">LEDBrightness</feature>
-		</feature_group>
-	</device>
+		<feature-group name="extDataGroup" type="ExtDataGroup">
+			<feature name="rampRate">RampRate</feature>
+			<feature name="onLevel">OnLevel</feature>
+		</feature-group>
+		<feature-group name="opFlagsGroup" type="OpFlagsGroup">
+			<feature name="programLock" bit="0" on="0x00" off="0x01">OpFlags</feature>
+			<feature name="ledTraffic" bit="1" on="0x02" off="0x03">OpFlags</feature>
+			<feature name="resumeDim" bit="2" on="0x04" off="0x05">OpFlags</feature>
+			<feature name="buttonBeep" bit="5" on="0x0A" off="0x0B">OpFlags</feature>
+		</feature-group>
+	</device-type>
 
-	<device productKey="F00.00.03">
-		<model>2845-222</model>
-		<description>Hidden Door Sensor</description>
-		<feature name="contact">WirelessMotionSensorContact</feature>
-		<feature name="data">HiddenDoorSensorData</feature>
-		<feature name="lastheardfrom">GenericLastTime</feature>
-	</device>
-
-	<device productKey="F00.00.04">
-		<model>2876S</model>
-		<description>ICON Switch</description>
-		<feature name="switch">GenericSwitch</feature>
-		<feature name="lastheardfrom">GenericLastTime</feature>
-	</device>
-
-	<device productKey="F00.00.05">
-		<model>2456D3</model>
-		<description>LampLinc V2</description>
+	<device-type name="DimmableLightingControl_InLineLinc">
 		<feature name="dimmer">GenericDimmer</feature>
-		<feature name="manualchange">ManualChange</feature>
-		<feature name="fastonoff">FastOnOff</feature>
-		<feature name="lastheardfrom">GenericLastTime</feature>
-	</device>
-
-	<device productKey="F00.00.06">
-		<model>2442-222</model>
-		<description>Micro Dimmer</description>
-		<feature name="dimmer">GenericDimmer</feature>
-		<feature name="manualchange">ManualChange</feature>
-		<feature name="fastonoff">FastOnOff</feature>
-		<feature name="lastheardfrom">GenericLastTime</feature>
-	</device>
-
-	<device productKey="F00.00.07">
-		<model>2453-222</model>
-		<description>DIN Rail On/Off</description>
-		<feature name="switch">GenericSwitch</feature>
-		<feature name="lastheardfrom">GenericLastTime</feature>
-	</device>
-
-	<device productKey="F00.00.08">
-		<model>2452-222</model>
-		<description>DIN Rail Dimmer</description>
-		<feature name="dimmer">GenericDimmer</feature>
-		<feature name="manualchange">ManualChange</feature>
-		<feature name="fastonoff">FastOnOff</feature>
-		<feature name="lastheardfrom">GenericLastTime</feature>
-	</device>
-
-	<device productKey="F00.00.09">
-		<model>2458-A1</model>
-		<description>MorningLinc RF Lock Controller</description>
-		<feature name="switch">GenericSwitch</feature>
-	</device>
-
-	<device productKey="F00.00.0A">
-		<model>2852-222</model>
-		<description>Leak Sensor</description>
-		<feature name="contact">LeakSensorContact</feature>
-		<feature name="lastheardfrom">GenericLastTime</feature>
-	</device>
-
-	<device productKey="F00.00.0B">
-		<model>2672-422</model>
-		<description>LED Dimmer</description>
-		<feature name="dimmer">GenericDimmer</feature>
-		<feature name="manualchange">ManualChange</feature>
-		<feature name="fastonoff">FastOnOff</feature>
-		<feature name="lastheardfrom">GenericLastTime</feature>
-	</device>
-
-	<device productKey="F00.00.0C">
-		<model>2476D</model>
-		<description>SwitchLinc Dimmer</description>
-		<feature name="dimmer">GenericDimmer</feature>
-		<feature name="manualchange">ManualChange</feature>
-		<feature name="fastonoff">FastOnOff</feature>
-		<feature name="lastheardfrom">GenericLastTime</feature>
-	</device>
-
-	<device productKey="F00.00.0D">
-		<model>2634-222</model>
-		<description>On/Off Dual-Band Outdoor Module</description>
-		<feature name="switch">GenericSwitch</feature>
-		<feature name="lastheardfrom">GenericLastTime</feature>
-		<feature name="ledonoff">LEDOnOff</feature>
+		<feature name="eventButton">GenericButtonEvent</feature>
 		<feature name="beep">Beep</feature>
-	</device>
+		<feature-group name="extDataGroup" type="ExtDataGroup">
+			<feature name="rampRate">RampRate</feature>
+			<feature name="onLevel">OnLevel</feature>
+		</feature-group>
+		<feature-group name="opFlagsGroup" type="OpFlagsGroup">
+			<feature name="programLock" bit="0" on="0x00" off="0x01">OpFlags</feature>
+			<feature name="ledTraffic" bit="1" on="0x02" off="0x03">OpFlags</feature>
+			<feature name="ledOnOff" bit="4" on="0x09" off="0x08" inverted="true">OpFlags</feature>
+		</feature-group>
+	</device-type>
 
-	<device productKey="F00.00.10">
-		<model>2342-2</model>
-		<description>Mini Remote</description>
-		<feature name="buttona">RemoteButton1</feature>
-		<feature name="buttonb">RemoteButton2</feature>
-		<feature name="buttonc">RemoteButton3</feature>
-		<feature name="buttond">RemoteButton4</feature>
-		<feature name="lastheardfrom">GenericLastTime</feature>
-	</device>
-
-	<device productKey="F00.00.11">
-		<model>2466D</model>
-		<description>ToggleLinc Dimmer</description>
+	<device-type name="DimmableLightingControl_FanLinc">
 		<feature name="dimmer">GenericDimmer</feature>
-		<feature name="rampdimmer">RampDimmer</feature>
-		<feature name="manualchange">ManualChange</feature>
-		<feature name="fastonoff">FastOnOff</feature>
-		<feature name="lastheardfrom">GenericLastTime</feature>
-	</device>
+		<feature name="fanSpeed">FanLincFan</feature>
+		<feature name="beep">Beep</feature>
+		<feature-group name="extDataGroup" type="ExtDataGroup">
+			<feature name="ledBrightness">LEDBrightness</feature>
+			<feature name="rampRate">RampRate</feature>
+			<feature name="onLevel">OnLevel</feature>
+		</feature-group>
+		<feature-group name="opFlagsGroup" type="OpFlagsGroup">
+			<feature name="programLock" bit="0" on="0x00" off="0x01">OpFlags</feature>
+			<feature name="ledTraffic" bit="1" on="0x02" off="0x03">OpFlags</feature>
+			<feature name="ledOnOff" bit="4" on="0x09" off="0x08" inverted="true" hidden="true">OpFlags</feature>
+		</feature-group>
+	</device-type>
 
-	<device productKey="F00.00.12">
-		<model>2466S</model>
-		<description>ToggleLinc Switch</description>
+	<device-type name="DimmableLightingControl_OutletLinc">
+		<feature name="dimmer">GenericDimmer</feature>
+		<feature name="eventButton">GenericButtonEvent</feature>
+		<feature-group name="opFlagsGroup" type="OpFlagsGroup">
+			<feature name="programLock" bit="0" on="0x00" off="0x01">OpFlags</feature>
+			<feature name="ledTraffic" bit="1" on="0x02" off="0x03">OpFlags</feature>
+			<feature name="ledOnOff" bit="4" on="0x09" off="0x08" inverted="true">OpFlags</feature>
+			<feature name="loadSense" bit="5" on="0x0A" off="0x0B">OpFlags</feature>
+		</feature-group>
+	</device-type>
+
+	<device-type name="DimmableLightingControl_KeypadButton6">
+		<feature name="dimmer">GenericDimmer</feature>
+		<feature-group name="buttonGroup" type="KeypadButtonStatusGroup">
+			<feature name="buttonA" group="3">KeypadButton</feature>
+			<feature name="buttonB" group="4">KeypadButton</feature>
+			<feature name="buttonC" group="5">KeypadButton</feature>
+			<feature name="buttonD" group="6">KeypadButton</feature>
+		</feature-group>
+		<feature name="eventButtonMain" group="1">GenericButtonEvent</feature>
+		<feature name="eventButtonA" group="3">GenericButtonEvent</feature>
+		<feature name="eventButtonB" group="4">GenericButtonEvent</feature>
+		<feature name="eventButtonC" group="5">GenericButtonEvent</feature>
+		<feature name="eventButtonD" group="6">GenericButtonEvent</feature>
+		<feature name="beep">Beep</feature>
+		<feature-group name="extDataGroup" type="ExtDataGroup">
+			<feature name="ledBrightness">LEDBrightness</feature>
+			<feature name="rampRate">RampRate</feature>
+			<feature name="onLevel">OnLevel</feature>
+		</feature-group>
+		<feature-group name="extDataGroupButtonA" type="ExtDataGroup" group="3">
+			<feature name="onMaskButtonA">KeypadButtonOnMask</feature>
+			<feature name="offMaskButtonA">KeypadButtonOffMask</feature>
+			<feature name="toggleModeButtonA">KeypadButtonToggleMode</feature>
+		</feature-group>
+		<feature-group name="extDataGroupButtonB" type="ExtDataGroup" group="4">
+			<feature name="onMaskButtonB">KeypadButtonOnMask</feature>
+			<feature name="offMaskButtonB">KeypadButtonOffMask</feature>
+			<feature name="toggleModeButtonB">KeypadButtonToggleMode</feature>
+		</feature-group>
+		<feature-group name="extDataGroupButtonC" type="ExtDataGroup" group="5">
+			<feature name="onMaskButtonC">KeypadButtonOnMask</feature>
+			<feature name="offMaskButtonC">KeypadButtonOffMask</feature>
+			<feature name="toggleModeButtonC">KeypadButtonToggleMode</feature>
+		</feature-group>
+		<feature-group name="extDataGroupButtonD" type="ExtDataGroup" group="6">
+			<feature name="onMaskButtonD">KeypadButtonOnMask</feature>
+			<feature name="offMaskButtonD">KeypadButtonOffMask</feature>
+			<feature name="toggleModeButtonD">KeypadButtonToggleMode</feature>
+		</feature-group>
+		<feature-group name="opFlagsGroup" type="OpFlagsGroup">
+			<feature name="programLock" bit="0" on="0x00" off="0x01">OpFlags</feature>
+			<feature name="ledTraffic" bit="1" on="0x02" off="0x03">OpFlags</feature>
+			<feature name="resumeDim" bit="2" on="0x04" off="0x05">OpFlags</feature>
+			<feature name="buttonConfig" bit="3" on="0x06" off="0x07">KeypadButtonConfig</feature>
+			<feature name="ledOnOff" bit="4" on="0x09" off="0x08" inverted="true" hidden="true">OpFlags</feature>
+			<feature name="buttonBeep" bit="5" on="0x0A" off="0x0B">OpFlags</feature>
+		</feature-group>
+	</device-type>
+
+	<device-type name="DimmableLightingControl_KeypadButton8">
+		<feature name="dimmer">GenericDimmer</feature>
+		<feature-group name="buttonGroup" type="KeypadButtonStatusGroup">
+			<feature name="buttonB" group="2">KeypadButton</feature>
+			<feature name="buttonC" group="3">KeypadButton</feature>
+			<feature name="buttonD" group="4">KeypadButton</feature>
+			<feature name="buttonE" group="5">KeypadButton</feature>
+			<feature name="buttonF" group="6">KeypadButton</feature>
+			<feature name="buttonG" group="7">KeypadButton</feature>
+			<feature name="buttonH" group="8">KeypadButton</feature>
+		</feature-group>
+		<feature name="eventButtonMain" group="1">GenericButtonEvent</feature>
+		<feature name="eventButtonB" group="2">GenericButtonEvent</feature>
+		<feature name="eventButtonC" group="3">GenericButtonEvent</feature>
+		<feature name="eventButtonD" group="4">GenericButtonEvent</feature>
+		<feature name="eventButtonE" group="5">GenericButtonEvent</feature>
+		<feature name="eventButtonF" group="6">GenericButtonEvent</feature>
+		<feature name="eventButtonG" group="7">GenericButtonEvent</feature>
+		<feature name="eventButtonH" group="8">GenericButtonEvent</feature>
+		<feature name="beep">Beep</feature>
+		<feature-group name="extDataGroup" type="ExtDataGroup">
+			<feature name="ledBrightness">LEDBrightness</feature>
+			<feature name="rampRate">RampRate</feature>
+			<feature name="onLevel">OnLevel</feature>
+		</feature-group>
+		<feature-group name="extDataGroupButtonB" type="ExtDataGroup" group="2">
+			<feature name="onMaskButtonB">KeypadButtonOnMask</feature>
+			<feature name="offMaskButtonB">KeypadButtonOffMask</feature>
+			<feature name="toggleModeButtonB">KeypadButtonToggleMode</feature>
+		</feature-group>
+		<feature-group name="extDataGroupButtonC" type="ExtDataGroup" group="3">
+			<feature name="onMaskButtonC">KeypadButtonOnMask</feature>
+			<feature name="offMaskButtonC">KeypadButtonOffMask</feature>
+			<feature name="toggleModeButtonC">KeypadButtonToggleMode</feature>
+		</feature-group>
+		<feature-group name="extDataGroupButtonD" type="ExtDataGroup" group="4">
+			<feature name="onMaskButtonD">KeypadButtonOnMask</feature>
+			<feature name="offMaskButtonD">KeypadButtonOffMask</feature>
+			<feature name="toggleModeButtonD">KeypadButtonToggleMode</feature>
+		</feature-group>
+		<feature-group name="extDataGroupButtonE" type="ExtDataGroup" group="5">
+			<feature name="onMaskButtonE">KeypadButtonOnMask</feature>
+			<feature name="offMaskButtonE">KeypadButtonOffMask</feature>
+			<feature name="toggleModeButtonE">KeypadButtonToggleMode</feature>
+		</feature-group>
+		<feature-group name="extDataGroupButtonF" type="ExtDataGroup" group="6">
+			<feature name="onMaskButtonF">KeypadButtonOnMask</feature>
+			<feature name="offMaskButtonF">KeypadButtonOffMask</feature>
+			<feature name="toggleModeButtonF">KeypadButtonToggleMode</feature>
+		</feature-group>
+		<feature-group name="extDataGroupButtonG" type="ExtDataGroup" group="7">
+			<feature name="onMaskButtonG">KeypadButtonOnMask</feature>
+			<feature name="offMaskButtonG">KeypadButtonOffMask</feature>
+			<feature name="toggleModeButtonG">KeypadButtonToggleMode</feature>
+		</feature-group>
+		<feature-group name="extDataGroupButtonH" type="ExtDataGroup" group="8">
+			<feature name="onMaskButtonH">KeypadButtonOnMask</feature>
+			<feature name="offMaskButtonH">KeypadButtonOffMask</feature>
+			<feature name="toggleModeButtonH">KeypadButtonToggleMode</feature>
+		</feature-group>
+		<feature-group name="opFlagsGroup" type="OpFlagsGroup">
+			<feature name="programLock" bit="0" on="0x00" off="0x01">OpFlags</feature>
+			<feature name="ledTraffic" bit="1" on="0x02" off="0x03">OpFlags</feature>
+			<feature name="resumeDim" bit="2" on="0x04" off="0x05">OpFlags</feature>
+			<feature name="buttonConfig" bit="3" on="0x06" off="0x07">KeypadButtonConfig</feature>
+			<feature name="ledOnOff" bit="4" on="0x09" off="0x08" inverted="true" hidden="true">OpFlags</feature>
+			<feature name="buttonBeep" bit="5" on="0x0A" off="0x0B">OpFlags</feature>
+		</feature-group>
+	</device-type>
+
+	<device-type name="DimmableLightingControl_LEDBulb">
+		<feature name="dimmer">GenericDimmer</feature>
+		<feature name="beep">Beep</feature>
+		<feature-group name="extDataGroup" type="ExtDataGroup">
+			<feature name="rampRate">RampRate</feature>
+			<feature name="onLevel">OnLevel</feature>
+		</feature-group>
+		<feature-group name="opFlagsGroup" type="OpFlagsGroup">
+			<feature name="programLock" bit="0" on="0x00" off="0x01">OpFlags</feature>
+		</feature-group>
+	</device-type>
+
+	<device-type name="DimmableLightingControl_MicroModule">
+		<feature name="dimmer">GenericDimmer</feature>
+		<feature name="eventButton">GenericButtonEvent</feature>
+		<feature name="beep">Beep</feature>
+		<feature-group name="extDataGroup" type="ExtDataGroup">
+			<feature name="ledBrightness">LEDBrightness</feature>
+			<feature name="rampRate">RampRate</feature>
+			<feature name="onLevel">OnLevel</feature>
+		</feature-group>
+		<feature-group name="opFlagsGroup" type="OpFlagsGroup">
+			<feature name="programLock" bit="0" on="0x00" off="0x01">OpFlags</feature>
+			<feature name="ledTraffic" bit="1" on="0x02" off="0x03">OpFlags</feature>
+			<feature name="resumeDim" bit="2" on="0x04" off="0x05">OpFlags</feature>
+			<feature name="ledOnOff" bit="4" on="0x09" off="0x08" inverted="true" hidden="true">OpFlags</feature>
+			<feature name="buttonBeep" bit="5" on="0x0A" off="0x0B">OpFlags</feature>
+		</feature-group>
+		<feature-group name="microModuleOpFlagsGroup" type="MicroModuleOpFlagsGroup">
+			<feature name="operationMode">MicroModuleOpMode</feature>
+			<feature name="toggleMode" bit="2" on="0x23" off="0x22" inverted="true">OpFlags</feature>
+		</feature-group>
+	</device-type>
+
+	<!-- Switched Lighting Control -->
+
+	<device-type name="SwitchedLightingControl">
 		<feature name="switch">GenericSwitch</feature>
-		<feature name="lastheardfrom">GenericLastTime</feature>
-	</device>
+		<feature name="eventButton">GenericButtonEvent</feature>
+	</device-type>
 
-	<device productKey="F00.00.13">
-		<model>2672-222</model>
-		<description>LED Bulb</description>
-		<feature name="dimmer">GenericDimmer</feature>
-		<feature name="rampdimmer">RampDimmer_3435</feature>
-		<feature name="manualchange">ManualChange</feature>
-		<feature name="fastonoff">FastOnOff</feature>
-		<feature name="lastheardfrom">GenericLastTime</feature>
-	</device>
-
-	<device productKey="F00.00.14">
-		<model>2487S</model>
-		<description>KeypadLinc On/Off 6-Button Scene Control </description>
-		<feature name="loadswitch">LoadSwitchButton</feature>
-		<feature name="loadswitchmanualchange">LoadSwitchManualChange</feature>
-		<feature name="loadswitchfastonoff">LoadSwitchFastOnOff</feature>
-		<feature_group name="button_group" type="KeyPadButtonGroup">
-			<feature name="keypadbuttona">KeyPadButton3</feature>
-			<feature name="keypadbuttonb">KeyPadButton4</feature>
-			<feature name="keypadbuttonc">KeyPadButton5</feature>
-			<feature name="keypadbuttond">KeyPadButton6</feature>
-		</feature_group>
-		<feature_group name="fastonoff_button_group" type="FastOnOffButtonGroup">
-			<feature name="fastonoffbuttona">FastOnOffButton3</feature>
-			<feature name="fastonoffbuttonb">FastOnOffButton4</feature>
-			<feature name="fastonoffbuttonc">FastOnOffButton5</feature>
-			<feature name="fastonoffbuttond">FastOnOffButton6</feature>
-		</feature_group>
-		<feature_group name="manualchange_button_group" type="ManualChangeButtonGroup">
-			<feature name="manualchangebuttona">ManualChangeButton3</feature>
-			<feature name="manualchangebuttonb">ManualChangeButton4</feature>
-			<feature name="manualchangebuttonc">ManualChangeButton5</feature>
-			<feature name="manualchangebuttond">ManualChangeButton6</feature>
-		</feature_group>
-		<feature name="lastheardfrom">GenericLastTime</feature>
-	</device>
-
-	<device productKey="F00.00.15">
-		<model>2334-232</model>
-		<description>Keypad Dimmer Switch, 6-Button </description>
-		<feature name="loaddimmer">LoadDimmerButton</feature>
-		<feature name="rampdimmer">LoadDimmerRamp</feature>
-		<feature name="manualchange">ManualChange</feature>
-		<feature name="fastonoff">LoadDimmerFastOnOff</feature>
-		<feature_group name="button_group" type="KeyPadButtonGroup">
-			<feature name="keypadbuttona">KeyPadButton3</feature>
-			<feature name="keypadbuttonb">KeyPadButton4</feature>
-			<feature name="keypadbuttonc">KeyPadButton5</feature>
-			<feature name="keypadbuttond">KeyPadButton6</feature>
-		</feature_group>
-		<feature_group name="fastonoff_button_group" type="FastOnOffButtonGroup">
-			<feature name="fastonoffbuttona">FastOnOffButton3</feature>
-			<feature name="fastonoffbuttonb">FastOnOffButton4</feature>
-			<feature name="fastonoffbuttonc">FastOnOffButton5</feature>
-			<feature name="fastonoffbuttond">FastOnOffButton6</feature>
-		</feature_group>
-		<feature_group name="manualchange_button_group" type="ManualChangeButtonGroup">
-			<feature name="manualchangebuttona">ManualChangeButton3</feature>
-			<feature name="manualchangebuttonb">ManualChangeButton4</feature>
-			<feature name="manualchangebuttonc">ManualChangeButton5</feature>
-			<feature name="manualchangebuttond">ManualChangeButton6</feature>
-		</feature_group>
-		<feature_group name="ext_group" type="ExtStatusGroup">
-			<feature name="ledbrightness">LEDBrightness</feature>
-			<feature name="ramprate">RampRate</feature>
-			<feature name="onlevel">OnLevel</feature>
-		</feature_group>
-		<feature name="ledonoff">LEDOnOff</feature>
+	<device-type name="SwitchedLightingControl_SwitchLinc">
+		<feature name="switch">GenericSwitch</feature>
+		<feature name="eventButton">GenericButtonEvent</feature>
 		<feature name="beep">Beep</feature>
-		<feature name="lastheardfrom">GenericLastTime</feature>
-	</device>
+		<feature-group name="extDataGroup" type="ExtDataGroup">
+			<feature name="ledBrightness">LEDBrightness</feature>
+		</feature-group>
+		<feature-group name="opFlagsGroup" type="OpFlagsGroup">
+			<feature name="programLock" bit="0" on="0x00" off="0x01">OpFlags</feature>
+			<feature name="ledTraffic" bit="1" on="0x02" off="0x03">OpFlags</feature>
+			<feature name="ledOnOff" bit="4" on="0x09" off="0x08" inverted="true" hidden="true">OpFlags</feature>
+			<feature name="buttonBeep" bit="5" on="0x0A" off="0x0B">OpFlags</feature>
+		</feature-group>
+	</device-type>
 
-	<device productKey="F00.00.16">
-		<model>2334-232</model>
-		<description>Keypad Dimmer Switch, 8-Button </description>
-		<feature name="loaddimmer">LoadDimmerButton</feature>
-		<feature name="rampdimmer">LoadDimmerRamp</feature>
-		<feature name="manualchange">ManualChange</feature>
-		<feature name="fastonoff">LoadDimmerFastOnOff</feature>
-		<feature_group name="button_group" type="KeyPadButtonGroup">
-			<feature name="keypadbuttonb">KeyPadButton2</feature>
-			<feature name="keypadbuttonc">KeyPadButton3</feature>
-			<feature name="keypadbuttond">KeyPadButton4</feature>
-			<feature name="keypadbuttone">KeyPadButton5</feature>
-			<feature name="keypadbuttonf">KeyPadButton6</feature>
-			<feature name="keypadbuttong">KeyPadButton7</feature>
-			<feature name="keypadbuttonh">KeyPadButton8</feature>
-		</feature_group>
-		<feature_group name="fastonoff_button_group" type="FastOnOffButtonGroup">
-			<feature name="fastonoffbuttonb">FastOnOffButton2</feature>
-			<feature name="fastonoffbuttonc">FastOnOffButton3</feature>
-			<feature name="fastonoffbuttond">FastOnOffButton4</feature>
-			<feature name="fastonoffbuttone">FastOnOffButton5</feature>
-			<feature name="fastonoffbuttonf">FastOnOffButton6</feature>
-			<feature name="fastonoffbuttong">FastOnOffButton7</feature>
-			<feature name="fastonoffbuttonh">FastOnOffButton8</feature>
-		</feature_group>
-		<feature_group name="manualchange_button_group" type="ManualChangeButtonGroup">
-			<feature name="manualchangebuttonb">ManualChangeButton2</feature>
-			<feature name="manualchangebuttonc">ManualChangeButton3</feature>
-			<feature name="manualchangebuttond">ManualChangeButton4</feature>
-			<feature name="manualchangebuttone">ManualChangeButton5</feature>
-			<feature name="manualchangebuttonf">ManualChangeButton6</feature>
-			<feature name="manualchangebuttong">ManualChangeButton7</feature>
-			<feature name="manualchangebuttonh">ManualChangeButton8</feature>
-		</feature_group>
-		<feature_group name="ext_group" type="ExtStatusGroup">
-			<feature name="ledbrightness">LEDBrightness</feature>
-			<feature name="ramprate">RampRate</feature>
-			<feature name="onlevel">OnLevel</feature>
-		</feature_group>
-		<feature name="ledonoff">LEDOnOff</feature>
+	<device-type name="SwitchedLightingControl_ToggleLinc">
+		<feature name="switch">GenericSwitch</feature>
+		<feature name="eventButton">GenericButtonEvent</feature>
 		<feature name="beep">Beep</feature>
-		<feature name="lastheardfrom">GenericLastTime</feature>
-	</device>
+		<feature-group name="opFlagsGroup" type="OpFlagsGroup">
+			<feature name="programLock" bit="0" on="0x00" off="0x01">OpFlags</feature>
+			<feature name="ledTraffic" bit="1" on="0x02" off="0x03">OpFlags</feature>
+			<feature name="buttonBeep" bit="5" on="0x0A" off="0x0B">OpFlags</feature>
+		</feature-group>
+	</device-type>
 
-	<device productKey="F00.00.17">
-		<model>2423A1</model>
-		<description>iMeter Solo Power Meter</description>
-		<feature name="meter">PowerMeter</feature>
-		<feature name="lastheardfrom">GenericLastTime</feature>
-	</device>
+	<device-type name="SwitchedLightingControl_InLineLinc">
+		<feature name="switch">GenericSwitch</feature>
+		<feature name="eventButton">GenericButtonEvent</feature>
+		<feature name="beep">Beep</feature>
+		<feature-group name="opFlagsGroup" type="OpFlagsGroup">
+			<feature name="programLock" bit="0" on="0x00" off="0x01">OpFlags</feature>
+			<feature name="ledTraffic" bit="1" on="0x02" off="0x03">OpFlags</feature>
+			<feature name="ledOnOff" bit="4" on="0x09" off="0x08" inverted="true">OpFlags</feature>
+		</feature-group>
+	</device-type>
 
-	<device productKey="F00.00.18">
-		<model>2441TH</model>
-		<description>Insteon Thermostat</description>
-		<feature_group name="data1_group" type="ThermostatData1Group">
-			<feature name="backlightduration">ThermostatBackLightDuration</feature>
-			<feature name="acdelay">ThermostatACDelay</feature>
-		</feature_group>
-		<feature_group name="data1b_group" type="ThermostatData1bGroup">
-			<feature name="humidityhigh">ThermostatHumidityHigh</feature>
-			<feature name="humiditylow">ThermostatHumidityLow</feature>
-			<feature name="stage1duration">ThermostatStage1Duration</feature>
-		</feature_group>
-		<feature_group name="data2_group" type="ThermostatData2Group">
-			<feature name="coolsetpoint">ThermostatCoolSetPoint</feature>
-			<feature name="heatsetpoint">ThermostatHeatSetPoint</feature>
-			<feature name="systemmode">ThermostatSystemMode</feature>
-			<feature name="fanmode">ThermostatFanMode</feature>
-			<feature name="isheating">ThermostatIsHeating</feature>
-			<feature name="iscooling">ThermostatIsCooling</feature>
-			<feature name="temperature">ThermostatTemperatureFahrenheit</feature>
-			<!--
-				<feature name="tempcelsius">ThermostatTemperatureCelsius</feature>
-				<feature name="tempfahrenheit">ThermostatTemperatureFahrenheit</feature>
-			-->
+	<device-type name="SwitchedLightingControl_ApplianceLinc">
+		<feature name="switch">GenericSwitch</feature>
+		<feature name="eventButton">GenericButtonEvent</feature>
+		<feature name="beep">Beep</feature>
+		<feature-group name="opFlagsGroup" type="OpFlagsGroup">
+			<feature name="programLock" bit="0" on="0x00" off="0x01">OpFlags</feature>
+			<feature name="ledTraffic" bit="1" on="0x02" off="0x03">OpFlags</feature>
+			<feature name="ledOnOff" bit="4" on="0x09" off="0x08" inverted="true">OpFlags</feature>
+			<feature name="loadSense" bit="5" on="0x0A" off="0x0B">OpFlags</feature>
+		</feature-group>
+	</device-type>
+
+	<device-type name="SwitchedLightingControl_OutletLinc">
+		<feature name="switch">GenericSwitch</feature>
+		<feature name="eventButton">GenericButtonEvent</feature>
+		<feature name="beep">Beep</feature>
+		<feature-group name="opFlagsGroup" type="OpFlagsGroup">
+			<feature name="programLock" bit="0" on="0x00" off="0x01">OpFlags</feature>
+			<feature name="ledTraffic" bit="1" on="0x02" off="0x03">OpFlags</feature>
+			<feature name="ledOnOff" bit="4" on="0x09" off="0x08" inverted="true">OpFlags</feature>
+			<feature name="loadSense" bit="5" on="0x0A" off="0x0B">OpFlags</feature>
+		</feature-group>
+	</device-type>
+
+	<device-type name="SwitchedLightingControl_OnOffOutlet">
+		<feature-group name="outletStatusGroup" type="OutletStatusGroup">
+			<feature name="outletTop" group="1">OutletSwitch</feature>
+			<feature name="outletBottom" group="2">OutletSwitch</feature>
+		</feature-group>
+		<feature name="eventButtonTop" group="1">GenericButtonEvent</feature>
+		<feature name="eventButtonBottom" group="2">GenericButtonEvent</feature>
+		<feature name="beep">Beep</feature>
+		<feature-group name="extDataGroup" type="ExtDataGroup">
+			<feature name="ledBrightness">LEDBrightness</feature>
+		</feature-group>
+		<feature-group name="opFlagsGroup" type="OpFlagsGroup">
+			<feature name="programLock" bit="0" on="0x00" off="0x01">OpFlags</feature>
+			<feature name="ledTraffic" bit="1" on="0x02" off="0x03">OpFlags</feature>
+			<feature name="loadSenseTop" bit="3" on="0x06" off="0x07">OpFlags</feature>
+			<feature name="loadSenseBottom" bit="2" on="0x04" off="0x05">OpFlags</feature>
+			<feature name="ledOnOff" bit="4" on="0x09" off="0x08" inverted="true" hidden="true">OpFlags</feature>
+			<feature name="buttonBeep" bit="5" on="0x0A" off="0x0B">OpFlags</feature>
+		</feature-group>
+	</device-type>
+
+	<device-type name="SwitchedLightingControl_KeypadButton6">
+		<feature name="switch">GenericSwitch</feature>
+		<feature-group name="buttonGroup" type="KeypadButtonStatusGroup">
+			<feature name="buttonA" group="3">KeypadButton</feature>
+			<feature name="buttonB" group="4">KeypadButton</feature>
+			<feature name="buttonC" group="5">KeypadButton</feature>
+			<feature name="buttonD" group="6">KeypadButton</feature>
+		</feature-group>
+		<feature name="eventButtonMain" group="1">GenericButtonEvent</feature>
+		<feature name="eventButtonA" group="3">GenericButtonEvent</feature>
+		<feature name="eventButtonB" group="4">GenericButtonEvent</feature>
+		<feature name="eventButtonC" group="5">GenericButtonEvent</feature>
+		<feature name="eventButtonD" group="6">GenericButtonEvent</feature>
+		<feature name="beep">Beep</feature>
+		<feature-group name="extDataGroup" type="ExtDataGroup">
+			<feature name="ledBrightness">LEDBrightness</feature>
+		</feature-group>
+		<feature-group name="extDataGroupButtonA" type="ExtDataGroup" group="3">
+			<feature name="onMaskButtonA">KeypadButtonOnMask</feature>
+			<feature name="offMaskButtonA">KeypadButtonOffMask</feature>
+			<feature name="toggleModeButtonA">KeypadButtonToggleMode</feature>
+		</feature-group>
+		<feature-group name="extDataGroupButtonB" type="ExtDataGroup" group="4">
+			<feature name="onMaskButtonB">KeypadButtonOnMask</feature>
+			<feature name="offMaskButtonB">KeypadButtonOffMask</feature>
+			<feature name="toggleModeButtonB">KeypadButtonToggleMode</feature>
+		</feature-group>
+		<feature-group name="extDataGroupButtonC" type="ExtDataGroup" group="5">
+			<feature name="onMaskButtonC">KeypadButtonOnMask</feature>
+			<feature name="offMaskButtonC">KeypadButtonOffMask</feature>
+			<feature name="toggleModeButtonC">KeypadButtonToggleMode</feature>
+		</feature-group>
+		<feature-group name="extDataGroupButtonD" type="ExtDataGroup" group="6">
+			<feature name="onMaskButtonD">KeypadButtonOnMask</feature>
+			<feature name="offMaskButtonD">KeypadButtonOffMask</feature>
+			<feature name="toggleModeButtonD">KeypadButtonToggleMode</feature>
+		</feature-group>
+		<feature-group name="opFlagsGroup" type="OpFlagsGroup">
+			<feature name="programLock" bit="0" on="0x00" off="0x01">OpFlags</feature>
+			<feature name="ledTraffic" bit="1" on="0x02" off="0x03">OpFlags</feature>
+			<feature name="buttonConfig" bit="3" on="0x06" off="0x07">KeypadButtonConfig</feature>
+			<feature name="ledOnOff" bit="4" on="0x09" off="0x08" inverted="true" hidden="true">OpFlags</feature>
+			<feature name="buttonBeep" bit="5" on="0x0A" off="0x0B">OpFlags</feature>
+		</feature-group>
+	</device-type>
+
+	<device-type name="SwitchedLightingControl_KeypadButton8">
+		<feature name="switch">GenericSwitch</feature>
+		<feature-group name="buttonGroup" type="KeypadButtonStatusGroup">
+			<feature name="buttonB" group="2">KeypadButton</feature>
+			<feature name="buttonC" group="3">KeypadButton</feature>
+			<feature name="buttonD" group="4">KeypadButton</feature>
+			<feature name="buttonE" group="5">KeypadButton</feature>
+			<feature name="buttonF" group="6">KeypadButton</feature>
+			<feature name="buttonG" group="7">KeypadButton</feature>
+			<feature name="buttonH" group="8">KeypadButton</feature>
+		</feature-group>
+		<feature name="eventButtonMain" group="1">GenericButtonEvent</feature>
+		<feature name="eventButtonB" group="2">GenericButtonEvent</feature>
+		<feature name="eventButtonC" group="3">GenericButtonEvent</feature>
+		<feature name="eventButtonD" group="4">GenericButtonEvent</feature>
+		<feature name="eventButtonE" group="5">GenericButtonEvent</feature>
+		<feature name="eventButtonF" group="6">GenericButtonEvent</feature>
+		<feature name="eventButtonG" group="7">GenericButtonEvent</feature>
+		<feature name="eventButtonH" group="8">GenericButtonEvent</feature>
+		<feature name="beep">Beep</feature>
+		<feature-group name="extDataGroup" type="ExtDataGroup">
+			<feature name="ledBrightness">LEDBrightness</feature>
+		</feature-group>
+		<feature-group name="extDataGroupButtonB" type="ExtDataGroup" group="2">
+			<feature name="onMaskButtonB">KeypadButtonOnMask</feature>
+			<feature name="offMaskButtonB">KeypadButtonOffMask</feature>
+			<feature name="toggleModeButtonB">KeypadButtonToggleMode</feature>
+		</feature-group>
+		<feature-group name="extDataGroupButtonC" type="ExtDataGroup" group="3">
+			<feature name="onMaskButtonC">KeypadButtonOnMask</feature>
+			<feature name="offMaskButtonC">KeypadButtonOffMask</feature>
+			<feature name="toggleModeButtonC">KeypadButtonToggleMode</feature>
+		</feature-group>
+		<feature-group name="extDataGroupButtonD" type="ExtDataGroup" group="4">
+			<feature name="onMaskButtonD">KeypadButtonOnMask</feature>
+			<feature name="offMaskButtonD">KeypadButtonOffMask</feature>
+			<feature name="toggleModeButtonD">KeypadButtonToggleMode</feature>
+		</feature-group>
+		<feature-group name="extDataGroupButtonE" type="ExtDataGroup" group="5">
+			<feature name="onMaskButtonE">KeypadButtonOnMask</feature>
+			<feature name="offMaskButtonE">KeypadButtonOffMask</feature>
+			<feature name="toggleModeButtonE">KeypadButtonToggleMode</feature>
+		</feature-group>
+		<feature-group name="extDataGroupButtonF" type="ExtDataGroup" group="6">
+			<feature name="onMaskButtonF">KeypadButtonOnMask</feature>
+			<feature name="offMaskButtonF">KeypadButtonOffMask</feature>
+			<feature name="toggleModeButtonF">KeypadButtonToggleMode</feature>
+		</feature-group>
+		<feature-group name="extDataGroupButtonG" type="ExtDataGroup" group="7">
+			<feature name="onMaskButtonG">KeypadButtonOnMask</feature>
+			<feature name="offMaskButtonG">KeypadButtonOffMask</feature>
+			<feature name="toggleModeButtonG">KeypadButtonToggleMode</feature>
+		</feature-group>
+		<feature-group name="extDataGroupButtonH" type="ExtDataGroup" group="8">
+			<feature name="onMaskButtonH">KeypadButtonOnMask</feature>
+			<feature name="offMaskButtonH">KeypadButtonOffMask</feature>
+			<feature name="toggleModeButtonH">KeypadButtonToggleMode</feature>
+		</feature-group>
+		<feature-group name="opFlagsGroup" type="OpFlagsGroup">
+			<feature name="programLock" bit="0" on="0x00" off="0x01">OpFlags</feature>
+			<feature name="ledTraffic" bit="1" on="0x02" off="0x03">OpFlags</feature>
+			<feature name="buttonConfig" bit="3" on="0x06" off="0x07">KeypadButtonConfig</feature>
+			<feature name="ledOnOff" bit="4" on="0x09" off="0x08" inverted="true" hidden="true">OpFlags</feature>
+			<feature name="buttonBeep" bit="5" on="0x0A" off="0x0B">OpFlags</feature>
+		</feature-group>
+	</device-type>
+
+	<device-type name="SwitchedLightingControl_MicroModule">
+		<feature name="switch">GenericSwitch</feature>
+		<feature name="eventButton">GenericButtonEvent</feature>
+		<feature name="beep">Beep</feature>
+		<feature-group name="extDataGroup" type="ExtDataGroup">
+			<feature name="ledBrightness">LEDBrightness</feature>
+		</feature-group>
+		<feature-group name="opFlagsGroup" type="OpFlagsGroup">
+			<feature name="programLock" bit="0" on="0x00" off="0x01">OpFlags</feature>
+			<feature name="ledTraffic" bit="1" on="0x02" off="0x03">OpFlags</feature>
+			<feature name="ledOnOff" bit="4" on="0x09" off="0x08" inverted="true" hidden="true">OpFlags</feature>
+			<feature name="buttonBeep" bit="5" on="0x0A" off="0x0B">OpFlags</feature>
+		</feature-group>
+		<feature-group name="microModuleOpFlagsGroup" type="MicroModuleOpFlagsGroup">
+			<feature name="operationMode">MicroModuleOpMode</feature>
+			<feature name="toggleMode" bit="2" on="0x23" off="0x22" inverted="true">OpFlags</feature>
+		</feature-group>
+	</device-type>
+
+	<!-- Network Bridges -->
+
+	<device-type name="NetworkBridge_Hub">
+		<feature name="broadcastOnOff">GroupBroadcastOnOff</feature>
+		<feature name="broadcastFastOnOff">GroupBroadcastFastOnOff</feature>
+		<feature name="broadcastManualChange">GroupBroadcastManualChange</feature>
+		<feature name="imEventButton">IMButtonEvent</feature>
+		<feature name="ledOnOff">IMLEDOnOff</feature>
+		<feature-group name="imConfigGroup" type="IMConfigGroup">
+			<feature name="ledControl" bit="5" hidden="true">IMConfigFlags</feature>
+			<feature name="monitorMode" bit="6">IMConfigFlags</feature>
+			<feature name="programLock" bit="7">IMConfigFlags</feature>
+		</feature-group>
+	</device-type>
+
+	<device-type name="NetworkBridge_PLM">
+		<feature name="broadcastOnOff">GroupBroadcastOnOff</feature>
+		<feature name="broadcastFastOnOff">GroupBroadcastFastOnOff</feature>
+		<feature name="broadcastManualChange">GroupBroadcastManualChange</feature>
+		<feature name="imEventButton">IMButtonEvent</feature>
+		<feature name="ledOnOff">IMLEDOnOff</feature>
+		<feature name="beep">IMBeep</feature>
+		<feature-group name="imConfigGroup" type="IMConfigGroup">
+			<feature name="ledControl" bit="5" hidden="true">IMConfigFlags</feature>
+			<feature name="monitorMode" bit="6">IMConfigFlags</feature>
+			<feature name="programLock" bit="7">IMConfigFlags</feature>
+		</feature-group>
+	</device-type>
+
+	<!-- Climate Control -->
+
+	<device-type name="ClimateControl_Thermostat">
+		<feature-group name="thermostatData2Group" type="ThermostatData2Group">
+			<feature name="coolSetPoint">ThermostatCoolSetPoint</feature>
+			<feature name="heatSetPoint">ThermostatHeatSetPoint</feature>
+			<feature name="systemMode">ThermostatSystemMode</feature>
+			<feature name="systemState">ThermostatSystemState</feature>
+			<feature name="energySaving">ThermostatEnergySaving</feature>
+			<feature name="fanMode">ThermostatFanMode</feature>
+			<feature name="temperature">ThermostatTemperature</feature>
 			<feature name="humidity">ThermostatHumidity</feature>
-		</feature_group>
-		<feature name="lastheardfrom">GenericLastTime</feature>
-	</device>
-
-	<device productKey="F00.00.19">
-		<model>2457D2</model>
-		<description>LampLinc Dimmer</description>
-		<feature name="dimmer">GenericDimmer</feature>
-		<feature name="manualchange">ManualChange</feature>
-		<feature name="fastonoff">FastOnOff</feature>
-		<feature name="lastheardfrom">GenericLastTime</feature>
-		<feature name="ledonoff">LEDOnOff</feature>
+		</feature-group>
+		<feature-group name="thermostatData1bGroup" type="ThermostatData1bGroup">
+			<feature name="humidityHigh">ThermostatHumidityHigh</feature>
+			<feature name="humidityLow">ThermostatHumidityLow</feature>
+			<feature name="humidityControl">ThermostatHumidityControl</feature>
+			<feature name="stage1Duration">ThermostatStage1Duration</feature>
+		</feature-group>
+		<feature name="syncTime">ThermostatSyncTime</feature>
 		<feature name="beep">Beep</feature>
-	</device>
+		<feature-group name="thermostatData1Group" type="ThermostatData1Group">
+			<feature name="backlightDuration">ThermostatBackLightDuration</feature>
+			<feature name="acDelay">ThermostatACDelay</feature>
+			<feature name="energyOffset">ThermostatEnergyOffset</feature>
+			<feature name="programLock" bit="0">ThermostatOpFlags</feature>
+			<feature name="buttonBeep" bit="1">ThermostatOpFlags</feature>
+			<feature name="buttonLock" bit="2">ThermostatOpFlags</feature>
+			<feature name="temperatureFormat">ThermostatTemperatureFormat</feature>
+			<feature name="timeFormat">ThermostatTimeFormat</feature>
+			<feature name="ledOnOff" bit="6">ThermostatOpFlags</feature>
+		</feature-group>
+	</device-type>
 
-	<device productKey="F00.00.1A">
-		<model>2475SDB</model>
-		<description>In-LineLinc Relay</description>
-		<feature name="switch">GenericSwitch</feature>
-		<feature name="lastheardfrom">GenericLastTime</feature>
-	</device>
-
-	<device productKey="F00.00.1B">
-		<model>2635-222</model>
-		<description>On/Off Module</description>
-		<feature name="switch">GenericSwitch</feature>
-		<feature name="lastheardfrom">GenericLastTime</feature>
-		<feature name="ledonoff">LEDOnOff</feature>
+	<device-type name="ClimateControl_WirelessThermostat" batteryPowered="true">
+		<feature-group name="thermostatData2Group" type="ThermostatData2Group">
+			<feature name="coolSetPoint">ThermostatCoolSetPoint</feature>
+			<feature name="heatSetPoint">ThermostatHeatSetPoint</feature>
+			<feature name="systemMode">ThermostatSystemMode</feature>
+			<feature name="systemState">ThermostatSystemState</feature>
+			<feature name="energySaving">ThermostatEnergySaving</feature>
+			<feature name="fanMode">ThermostatFanMode</feature>
+			<feature name="temperature">ThermostatTemperature</feature>
+			<feature name="humidity">ThermostatHumidity</feature>
+		</feature-group>
+		<feature-group name="thermostatData1bGroup" type="ThermostatData1bGroup">
+			<feature name="humidityHigh">ThermostatHumidityHigh</feature>
+			<feature name="humidityLow">ThermostatHumidityLow</feature>
+			<feature name="humidityControl">ThermostatHumidityControl</feature>
+			<feature name="stage1Duration">ThermostatStage1Duration</feature>
+		</feature-group>
+		<feature name="syncTime">ThermostatSyncTime</feature>
 		<feature name="beep">Beep</feature>
-	</device>
+		<feature-group name="thermostatData1Group" type="ThermostatData1Group">
+			<feature name="backlightDuration">ThermostatBackLightDuration</feature>
+			<feature name="acDelay">ThermostatACDelay</feature>
+			<feature name="energyOffset">ThermostatEnergyOffset</feature>
+			<feature name="programLock" bit="0">ThermostatOpFlags</feature>
+			<feature name="buttonBeep" bit="1">ThermostatOpFlags</feature>
+			<feature name="buttonLock" bit="2">ThermostatOpFlags</feature>
+			<feature name="temperatureFormat">ThermostatTemperatureFormat</feature>
+			<feature name="timeFormat">ThermostatTimeFormat</feature>
+			<feature name="ledOnOff" bit="6">ThermostatOpFlags</feature>
+		</feature-group>
+		<feature-group name="opFlagsGroup" type="OpFlagsGroup">
+			<feature name="stayAwake" on="0x06" off="0x07">OpFlags</feature>
+		</feature-group>
+	</device-type>
 
-	<device productKey="F00.00.1C">
-		<model>2475F</model>
-		<description>FanLinc Module</description>
-		<feature name="lightdimmer">GenericDimmer</feature>
-		<feature name="fan">FanLincFan</feature>
-		<feature name="lastheardfrom">GenericLastTime</feature>
-	</device>
-
-	<device productKey="F00.00.1D">
-		<model>2456S3</model>
-		<description>ApplianceLinc</description>
-		<feature name="switch">GenericSwitch</feature>
-		<feature name="lastheardfrom">GenericLastTime</feature>
-	</device>
-
-	<device productKey="F00.00.1E">
-		<model>2674-222</model>
-		<description>LED Bulb (recessed)</description>
-		<feature name="dimmer">GenericDimmer</feature>
-		<feature name="rampdimmer">RampDimmer</feature>
-		<feature name="manualchange">ManualChange</feature>
-		<feature name="fastonoff">FastOnOff</feature>
-		<feature name="lastheardfrom">GenericLastTime</feature>
-	</device>
-
-	<device productKey="F00.00.1F">
-		<model>2477SA1</model>
-		<description>220V 30-amp Load Controller N/O</description>
-		<feature name="switch">GenericSwitch</feature>
-		<feature name="fastonoff">FastOnOff</feature>
-		<feature name="lastheardfrom">GenericLastTime</feature>
-	</device>
-	<device productKey="F00.00.20">
-		<model>2342-222</model>
-		<description>Mini Remote (8 Button)</description>
-		<feature name="buttona">RemoteButton2</feature>
-		<feature name="buttonb">RemoteButton1</feature>
-		<feature name="buttonc">RemoteButton4</feature>
-		<feature name="buttond">RemoteButton3</feature>
-		<feature name="buttone">RemoteButton6</feature>
-		<feature name="buttonf">RemoteButton5</feature>
-		<feature name="buttong">RemoteButton8</feature>
-		<feature name="buttonh">RemoteButton7</feature>
-		<feature name="lastheardfrom">GenericLastTime</feature>
-	</device>
-	<device productKey="F00.00.21">
-		<model>2441V</model>
-		<description>Insteon Thermostat Adaptor for Venstar</description>
-		<feature_group name="data1b_group" type="ThermostatData1bGroup">
-			<feature name="coolsetpoint">VenstarCoolSetPoint</feature>
-			<feature name="heatsetpoint">VenstarHeatSetPoint</feature>
-			<feature name="systemmode">VenstarSystemMode</feature>
-			<feature name="fanmode">VenstarFanMode</feature>
-			<feature name="tempfahrenheit">VenstarTemperatureFahrenheit</feature>
+	<device-type name="ClimateControl_VenstarThermostat">
+		<feature-group name="thermostatDataGroup" type="ThermostatData1Group">
+			<feature name="coolSetPoint">VenstarCoolSetPoint</feature>
+			<feature name="heatSetPoint">VenstarHeatSetPoint</feature>
+			<feature name="systemMode">VenstarSystemMode</feature>
+			<feature name="systemState">ThermostatSystemState</feature>
+			<feature name="fanMode">VenstarFanMode</feature>
+			<feature name="fanState">VenstarFanState</feature>
+			<feature name="temperature">VenstarTemperature</feature>
 			<feature name="humidity">VenstarHumidity</feature>
-			<feature name="isheating">VenstarIsHeating</feature>
-			<feature name="iscooling">VenstarIsCooling</feature>
-		</feature_group>
-		<feature name="lastheardfrom">GenericLastTime</feature>
-	</device>
-	<device productKey="F00.00.22">
-		<model>2982-222</model>
-		<description>Insteon Smoke Bridge</description>
-		<feature name="notification">ReceiveBroadcast</feature>
-		<feature name="lastheardfrom">GenericLastTime</feature>
-	</device>
+		</feature-group>
+		<feature name="temperatureFormat">VenstarTemperatureFormat</feature>
+		<feature-group name="opFlagsGroup" type="OpFlagsGroup">
+			<feature name="programLock" bit="7" on="0x04" off="0x05">OpFlags</feature>
+			<feature name="ledOnOff" bit="5" on="0x06" off="0x07" inverted="true">OpFlags</feature>
+		</feature-group>
+	</device-type>
 
-	<device productKey="F00.00.23">
-		<model>2487S</model>
-		<description>KeypadLinc On/Off 8-Button Scene Control </description>
-		<feature name="loadswitch">LoadSwitchButton</feature>
-		<feature name="loadswitchmanualchange">LoadSwitchManualChange</feature>
-		<feature name="loadswitchfastonoff">LoadSwitchFastOnOff</feature>
-		<feature_group name="button_group" type="KeyPadButtonGroup">
-			<feature name="keypadbuttonb">KeyPadButton2</feature>
-			<feature name="keypadbuttonc">KeyPadButton3</feature>
-			<feature name="keypadbuttond">KeyPadButton4</feature>
-			<feature name="keypadbuttone">KeyPadButton5</feature>
-			<feature name="keypadbuttonf">KeyPadButton6</feature>
-			<feature name="keypadbuttong">KeyPadButton7</feature>
-			<feature name="keypadbuttonh">KeyPadButton8</feature>
-		</feature_group>
-		<feature_group name="fastonoff_button_group" type="FastOnOffButtonGroup">
-			<feature name="fastonoffbuttonb">FastOnOffButton2</feature>
-			<feature name="fastonoffbuttonc">FastOnOffButton3</feature>
-			<feature name="fastonoffbuttond">FastOnOffButton4</feature>
-			<feature name="fastonoffbuttone">FastOnOffButton5</feature>
-			<feature name="fastonoffbuttonf">FastOnOffButton6</feature>
-			<feature name="fastonoffbuttong">FastOnOffButton7</feature>
-			<feature name="fastonoffbuttonh">FastOnOffButton8</feature>
-		</feature_group>
-		<feature_group name="manualchange_button_group" type="ManualChangeButtonGroup">
-			<feature name="manualchangebuttonb">ManualChangeButton2</feature>
-			<feature name="manualchangebuttonc">ManualChangeButton3</feature>
-			<feature name="manualchangebuttond">ManualChangeButton4</feature>
-			<feature name="manualchangebuttone">ManualChangeButton5</feature>
-			<feature name="manualchangebuttonf">ManualChangeButton6</feature>
-			<feature name="manualchangebuttong">ManualChangeButton7</feature>
-			<feature name="manualchangebuttonh">ManualChangeButton8</feature>
-		</feature_group>
-		<feature name="lastheardfrom">GenericLastTime</feature>
-	</device>
+	<!-- Sensors and Actuators -->
 
-	<device productKey="F00.00.24">
-		<model>2844-222</model>
-		<description>Motion Sensor II</description>
-		<feature name="contact">WirelessMotionSensorContact</feature>
-		<feature name="lightlevelabovethreshold">WirelessMotionSensorLightLevelAboveThreshold</feature>
-		<feature name="lowbattery">WirelessMotionSensorLowBattery</feature>
-		<feature name="data">MotionSensor2Data</feature>
-		<feature name="tamperswitch">WirelessMotionSensor2TamperSwitch</feature>
-		<feature name="lastheardfrom">GenericLastTime</feature>
-	</device>
+	<device-type name="SensorsActuators_IOLinc">
+		<feature name="switch">GenericSwitch</feature>
+		<feature name="contact">GenericSensorContact</feature>
+		<feature-group name="extDataGroup" type="ExtDataGroup">
+			<feature name="momentaryDuration">IOLincMomentaryDuration</feature>
+		</feature-group>
+		<feature-group name="opFlagsGroup" type="OpFlagsGroup">
+			<feature name="programLock" bit="0" on="0x00" off="0x01">OpFlags</feature>
+			<feature name="ledTraffic" bit="1" on="0x02" off="0x03">OpFlags</feature>
+			<feature name="relaySensorFollow" bit="2" on="0x04" off="0x05">OpFlags</feature>
+			<feature name="relayMode">IOLincRelayMode</feature>
+		</feature-group>
+	</device-type>
+
+	<device-type name="SensorsActuators_Siren">
+		<feature name="siren">SirenAlarm</feature>
+		<feature name="armed">SirenArmedState</feature>
+		<feature-group name="extDataGroup" type="ExtDataGroup">
+			<feature name="alarmType">SirenAlarmType</feature>
+			<feature name="alarmDelay">SirenAlarmDelay</feature>
+			<feature name="alarmDuration">SirenAlarmDuration</feature>
+		</feature-group>
+		<feature-group name="opFlagsGroup" type="OpFlagsGroup">
+			<feature name="programLock" bit="0" on="0x00" off="0x01">OpFlags</feature>
+			<feature name="ledTraffic" bit="1" on="0x02" off="0x03">OpFlags</feature>
+			<feature name="ledOnOff" bit="4" on="0x09" off="0x08" inverted="true">OpFlags</feature>
+		</feature-group>
+	</device-type>
+
+	<!-- Energy Management -->
+
+	<device-type name="EnergyManagement_PowerMeter">
+		<feature-group name="powerMeterDataGroup" type="PowerMeterDataGroup">
+			<feature name="kWh">PowerMeterKWh</feature>
+			<feature name="watts">PowerMeterWatts</feature>
+			<feature name="reset">PowerMeterReset</feature>
+		</feature-group>
+	</device-type>
+
+	<device-type name="EnergyManagement_LoadController">
+		<feature name="switch">GenericSwitch</feature>
+		<feature name="load">GenericSensorState</feature>
+		<feature-group name="opFlagsGroup" type="OpFlagsGroup">
+			<feature name="programLock" bit="0" on="0x00" off="0x01">OpFlags</feature>
+			<feature name="loadSense" bit="5" on="0x06" off="0x07">OpFlags</feature>
+		</feature-group>
+	</device-type>
+
+	<!-- Window Coverings -->
+
+	<device-type name="WindowCovering_MicroModule">
+		<feature name="rollershutter">GenericDimmer</feature>
+		<feature name="eventButton">GenericButtonEvent</feature>
+		<feature name="beep">Beep</feature>
+		<feature-group name="extDataGroup" type="ExtDataGroup">
+			<feature name="ledBrightness">LEDBrightness</feature>
+			<feature name="rampRate">RampRate</feature>
+			<feature name="onLevel">OnLevel</feature>
+		</feature-group>
+		<feature-group name="opFlagsGroup" type="OpFlagsGroup">
+			<feature name="programLock" bit="0" on="0x00" off="0x01">OpFlags</feature>
+			<feature name="ledTraffic" bit="1" on="0x02" off="0x03">OpFlags</feature>
+			<feature name="resumeDim" bit="2" on="0x04" off="0x05">OpFlags</feature>
+			<feature name="ledOnOff" bit="4" on="0x09" off="0x08" inverted="true" hidden="true">OpFlags</feature>
+		</feature-group>
+		<feature-group name="microModuleOpFlagsGroup" type="MicroModuleOpFlagsGroup">
+			<feature name="operationMode">MicroModuleOpMode</feature>
+			<feature name="toggleMode" bit="2" on="0x23" off="0x22" inverted="true">OpFlags</feature>
+		</feature-group>
+	</device-type>
+
+	<!-- Access Control -->
+
+	<device-type name="AccessControl_LockController">
+		<feature name="lock">GenericSwitch</feature>
+		<feature name="eventButton">GenericButtonEvent</feature>
+		<feature name="beep">Beep</feature>
+		<feature-group name="opFlagsGroup" type="OpFlagsGroup">
+			<feature name="programLock" bit="0" on="0x00" off="0x01">OpFlags</feature>
+			<feature name="ledTraffic" bit="1" on="0x02" off="0x03">OpFlags</feature>
+			<feature name="ledOnOff" bit="4" on="0x09" off="0x08" inverted="true">OpFlags</feature>
+		</feature-group>
+	</device-type>
+
+	<!-- Security, Health, Safety -->
+
+	<device-type name="SecurityHealthSafety_MotionSensor" batteryPowered="true">
+		<feature name="motion">WirelessSensorState</feature>
+		<feature name="daylight" group="2">WirelessSensorState</feature>
+		<feature name="lowBattery" group="3">WirelessSensorState</feature>
+		<feature-group name="extDataGroup" type="extDataGroup">
+			<feature name="batteryLevel">MotionSensorBatteryLevel</feature>
+			<feature name="lightLevel">MotionSensorLightLevel</feature>
+		</feature-group>
+		<feature-group name="opFlagsGroup" type="OpFlagsGroup">
+			<feature name="programLock" bit="7" on="0x00" off="0x01">OpFlags</feature>
+			<feature name="ledOnOff" bit="5" on="0x03" off="0x02" inverted="true">OpFlags</feature>
+			<feature name="stayAwake" on="0x18" off="0x19">OpFlags</feature>
+		</feature-group>
+		<feature name="heartbeatMonitor">HeartbeatMonitor</feature>
+	</device-type>
+
+	<device-type name="SecurityHealthSafety_MotionSensor2" batteryPowered="true">
+		<feature name="motion">WirelessSensorState</feature>
+		<feature name="daylight" group="2">WirelessSensorState</feature>
+		<feature name="lowBattery" group="3">WirelessSensorState</feature>
+		<feature name="tamperSwitch" group="16">WirelessSensorContact</feature>
+		<feature-group name="motionSensor2DataGroup" type="MotionSensor2DataGroup">
+			<feature name="batteryLevel">MotionSensor2BatteryLevel</feature>
+			<feature name="lightLevel">MotionSensor2LightLevel</feature>
+			<feature name="temperature">MotionSensor2Temperature</feature>
+		</feature-group>
+		<feature-group name="motionSensor2StatusGroup" type="MotionSensor2StatusGroup">
+			<feature name="batteryPowered">MotionSensor2BatteryPowered</feature>
+		</feature-group>
+		<feature-group name="opFlagsGroup" type="OpFlagsGroup">
+			<feature name="programLock" bit="7" on="0x00" off="0x01">OpFlags</feature>
+			<feature name="ledOnOff" bit="5" on="0x03" off="0x02" inverted="true">OpFlags</feature>
+			<feature name="buttonBeep" bit="3" on="0x04" off="0x05">OpFlags</feature>
+			<feature name="stayAwake" on="0x18" off="0x19">OpFlags</feature>
+		</feature-group>
+		<feature name="heartbeatMonitor">HeartbeatMonitor</feature>
+	</device-type>
+
+	<device-type name="SecurityHealthSafety_OpenCloseSensor" batteryPowered="true">
+		<feature name="contact">WirelessSensorContact</feature>
+		<feature-group name="extDataGroup" type="ExtDataGroup">
+			<feature name="ledBrightness">WirelessSensorLEDBrightness</feature>
+		</feature-group>
+		<feature-group name="opFlagsGroup" type="OpFlagsGroup">
+			<feature name="programLock" bit="7" on="0x00" off="0x01">OpFlags</feature>
+			<feature name="ledOnOff" bit="5" on="0x03" off="0x02" inverted="true" hidden="true">OpFlags</feature>
+			<feature name="stayAwake" on="0x18" off="0x19">OpFlags</feature>
+		</feature-group>
+		<feature name="heartbeatMonitor">HeartbeatMonitor</feature>
+	</device-type>
+
+	<device-type name="SecurityHealthSafety_DoorSensor" batteryPowered="true">
+		<feature name="contact">WirelessSensorContact</feature>
+		<feature name="lowBattery" group="3">WirelessSensorState</feature>
+		<feature-group name="extDataGroup" type="ExtDataGroup">
+			<feature name="batteryLevel">DoorSensorBatteryLevel</feature>
+		</feature-group>
+		<feature-group name="opFlagsGroup" type="OpFlagsGroup">
+			<feature name="programLock" bit="7" on="0x00" off="0x01">OpFlags</feature>
+			<feature name="ledOnOff" bit="5" on="0x03" off="0x02" inverted="true">OpFlags</feature>
+			<feature name="stayAwake" on="0x18" off="0x19">OpFlags</feature>
+		</feature-group>
+		<feature name="heartbeatMonitor">HeartbeatMonitor</feature>
+	</device-type>
+
+	<device-type name="SecurityHealthSafety_LeakSensor" batteryPowered="true">
+		<feature name="leak">LeakSensorState</feature>
+		<feature-group name="extDataGroup" type="ExtDataGroup">
+			<feature name="ledBrightness">WirelessSensorLEDBrightness</feature>
+		</feature-group>
+		<feature-group name="opFlagsGroup" type="OpFlagsGroup">
+			<feature name="programLock" bit="7" on="0x00" off="0x01">OpFlags</feature>
+			<feature name="ledOnOff" bit="5" on="0x03" off="0x02" inverted="true" hidden="true">OpFlags</feature>
+			<feature name="stayAwake" on="0x18" off="0x19">OpFlags</feature>
+		</feature-group>
+		<feature name="heartbeatMonitor">HeartbeatMonitor</feature>
+	</device-type>
+
+	<device-type name="SecurityHealthSafety_SmokeBridge">
+		<feature name="smokeAlarm" event="1">SmokeSensorState</feature>
+		<feature name="carbonMonoxideAlarm" event="2">SmokeSensorState</feature>
+		<feature name="testAlarm" event="3">SmokeSensorState</feature>
+		<feature name="lowBattery" event="6">SmokeSensorState</feature>
+		<feature name="beep">Beep</feature>
+		<feature-group name="opFlagsGroup" type="OpFlagsGroup">
+			<feature name="programLock" bit="0" on="0x00" off="0x01">OpFlags</feature>
+			<feature name="ledTraffic" bit="1" on="0x02" off="0x03">OpFlags</feature>
+			<feature name="ledOnOff" bit="4" on="0x09" off="0x08" inverted="true">OpFlags</feature>
+		</feature-group>
+	</device-type>
+
+	<!-- X10 -->
+
+	<device-type name="X10_Switch">
+		<feature name="switch">X10Switch</feature>
+	</device-type>
+
+	<device-type name="X10_Dimmer">
+		<feature name="dimmer">X10Dimmer</feature>
+	</device-type>
+
+	<device-type name="X10_Sensor">
+		<feature name="contact">X10Contact</feature>
+	</device-type>
+
 </xml>
