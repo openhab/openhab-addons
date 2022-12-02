@@ -61,7 +61,7 @@ Here, the WebThings provided by the *Internet Monitor Service*: the *Internet Co
 
 ![discovery picture](doc/speedmonitor.png) 
 
-Alternatively, you may add the WebThing as a openHAB Thing by using a webthing.thing file that has to be located inside the things folder.  
+Alternatively, you may add the WebThing as an openHAB Thing by using a webthing.thing file that has to be located inside the things folder.  
 
 ```
 Thing  webthing:generic:speedmonitor [ webThingURI="http://192.168.1.27:9496/0" ]

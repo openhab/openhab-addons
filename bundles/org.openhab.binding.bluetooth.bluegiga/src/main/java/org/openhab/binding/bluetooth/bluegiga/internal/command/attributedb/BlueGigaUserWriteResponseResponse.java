@@ -21,7 +21,7 @@ import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaResponse;
  * This command is used by the GATT server to acknowledge to the remote device that the
  * attribute's value was written. This feature again allows the user application to
  * acknowledged the attribute write operations instead of the Smart stack doing it
- * automatically. Bluetooth The command should be used when a event is received where the
+ * automatically. Bluetooth The command should be used when an event is received where the
  * reason why value has changed Value corresponds to
  * attributes_attribute_change_reason_write_request_user. This response must be sent
  * within 30 seconds or otherwise a timeout will occur.

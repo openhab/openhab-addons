@@ -135,7 +135,7 @@ public class DeviceFeatureListener {
 
     /**
      * Publish the state. In the case of PercentType, if the value is
-     * 0, send a OnOffType.OFF and if the value is 100, send a OnOffType.ON.
+     * 0, send an OnOffType.OFF and if the value is 100, send an OnOffType.ON.
      * That way an openHAB Switch will work properly with a Insteon dimmer,
      * as long it is used like a switch (On/Off). An openHAB DimmerItem will
      * internally convert the ON back to 100% and OFF back to 0, so there is

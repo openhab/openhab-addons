@@ -34,7 +34,7 @@ public class ConverterFactory {
     private static Map<String, TypeConverter<?>> converterCache = new HashMap<>();
 
     /**
-     * Returns the converter for a itemType.
+     * Returns the converter for an itemType.
      */
     public static TypeConverter<?> createConverter(String itemType) throws ConverterException {
         Class<? extends TypeConverter<?>> converterClass = null;

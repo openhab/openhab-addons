@@ -528,7 +528,7 @@ sitemap smarthome label="Smart Home Devices"
 
 The url <YOUR_OPENHAB>/amazonechocontrol/<YOUR_ACCOUNT>/PROXY/<API_URL> provides a proxy server with an authenticated connection to the amazon alexa server. This can be used to call alexa api from rules.
 
-E.g. to read out the history call from an installation on openhab:8080 with a account named account1:
+E.g. to read out the history call from an installation on openhab:8080 with an account named account1:
 
 http://openhab:8080/amazonechocontrol/account1/PROXY/api/activities?startTime=&size=50&offset=1
 

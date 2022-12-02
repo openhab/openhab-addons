@@ -132,7 +132,7 @@ public class HmDatapoint implements Cloneable {
     }
 
     /**
-     * Returns the index of the value in a option list.
+     * Returns the index of the value in an option list.
      */
     public int getOptionIndex(String option) {
         if (options != null && option != null) {
@@ -147,7 +147,7 @@ public class HmDatapoint implements Cloneable {
     }
 
     /**
-     * Returns the value of a option list.
+     * Returns the value of an option list.
      */
     public @Nullable String getOptionValue() {
         Integer idx = getIntegerValue();

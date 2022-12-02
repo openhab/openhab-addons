@@ -116,7 +116,7 @@ import io.github.hapjava.characteristics.impl.windowcovering.TargetVerticalTiltA
 import tech.units.indriya.unit.UnitDimension;
 
 /**
- * Creates a optional characteristics .
+ * Creates an optional characteristics .
  *
  * @author Eugen Freiter - Initial contribution
  */

@@ -202,7 +202,7 @@ public class HomekitAccessoryFactory {
     }
 
     /**
-     * return HomeKit accessory types for a OH item based on meta data
+     * return HomeKit accessory types for an OH item based on meta data
      *
      * @param item OH item
      * @param metadataRegistry meta data registry
@@ -372,7 +372,7 @@ public class HomekitAccessoryFactory {
     }
 
     /**
-     * collect optional HomeKit characteristics for a OH item.
+     * collect optional HomeKit characteristics for an OH item.
      *
      * @param taggedItem main OH item
      * @param metadataRegistry OH metadata registry

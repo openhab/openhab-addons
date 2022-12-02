@@ -259,7 +259,7 @@ public class KM200DataHandler {
                         }
                     }
                     return null;
-                case DATA_TYPE_ERROR_LIST: /* Check whether the type is a errorList */
+                case DATA_TYPE_ERROR_LIST: /* Check whether the type is an errorList */
                     KM200ErrorServiceHandler eService = null;
                     logger.trace("state of type errorList: {}", nodeRoot);
                     if (null != parent) {

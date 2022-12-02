@@ -22,7 +22,7 @@ import org.openhab.io.imperihome.internal.model.param.DeviceParam;
 import org.openhab.io.imperihome.internal.model.param.ParamType;
 
 /**
- * MultiSwitch device, mimics behavior of a OH Switch with a mapping.
+ * MultiSwitch device, mimics behavior of an OH Switch with a mapping.
  *
  * @author Pepijn de Geus - Initial contribution
  */

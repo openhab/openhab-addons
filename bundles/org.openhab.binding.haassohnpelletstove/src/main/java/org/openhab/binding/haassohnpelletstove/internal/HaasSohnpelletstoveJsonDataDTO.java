@@ -16,7 +16,7 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link HaasSohnpelletstoveJsonDataDTO} is the Java class used to map the JSON
- * response to a Oven request.
+ * response to an Oven request.
  *
  * @author Christian Feininger - Initial contribution
  */

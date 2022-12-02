@@ -151,7 +151,7 @@ public class ZWayZWaveDeviceHandler extends ZWayDeviceHandler {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                 "Checking configuration and bridge...");
 
-        // Configuration - thing status update with a error message
+        // Configuration - thing status update with an error message
         mConfig = loadAndCheckConfiguration();
 
         if (mConfig != null) {

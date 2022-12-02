@@ -167,7 +167,7 @@ Other devices support
 | Channel Type ID   | Item Type                | Access Mode | Description                           | Thing types                                     |
 |-------------------|--------------------------|:-----------:|---------------------------------------|-------------------------------------------------|
 | brightness        | Dimmer                   |     R/W     | Brightness of the light               | `dimmablelight`, `colortemperaturelight`        |                                 
-| switch            | Switch                   |     R/W     | State of a ON/OFF device              | `onofflight`                                    |
+| switch            | Switch                   |     R/W     | State of an ON/OFF device             | `onofflight`                                    |
 | color             | Color                    |     R/W     | Color of an multi-color light         | `colorlight`, `extendedcolorlight`, `lightgroup`|
 | color_temperature | Number                   |     R/W     | Color temperature in Kelvin. The value range is determined by each individual light     | `colortemperaturelight`, `extendedcolorlight`, `lightgroup` |
 | effect            | String                   |     R/W     | Effect selection. Allowed commands are set dynamically                                  | `colorlight`                                    |
