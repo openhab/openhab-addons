@@ -53,12 +53,12 @@ import org.slf4j.LoggerFactory;
 import com.oracle.truffle.js.scriptengine.GraalJSScriptEngine;
 
 /**
- * GraalJS Script Engine implementation
+ * GraalJS ScriptEngine implementation
  *
  * @author Jonathan Gilbert - Initial contribution
  * @author Dan Cunningham - Script injections
  * @author Florian Hotze - Create lock object for multi-thread synchronization; Inject the {@link JSRuntimeFeatures}
- *         into the JS context
+ *         into the JS context; Fix memory leak caused by HostObject by making HostAccess reference static
  */
 public class OpenhabGraalJSScriptEngine
         extends InvocationInterceptingScriptEngineWithInvocableAndAutoCloseable<GraalJSScriptEngine> {
@@ -66,10 +66,24 @@ public class OpenhabGraalJSScriptEngine
     private static final Logger LOGGER = LoggerFactory.getLogger(OpenhabGraalJSScriptEngine.class);
     private static final String GLOBAL_REQUIRE = "require(\"@jsscripting-globals\");";
     private static final String REQUIRE_WRAPPER_NAME = "__wraprequire__";
-    // final CommonJS search path for our library
+    /** Final CommonJS search path for our library */
     private static final Path NODE_DIR = Paths.get("node_modules");
+    /** Provides unlimited host access as well as custom translations from JS to Java Objects */
+    private static final HostAccess HOST_ACCESS = HostAccess.newBuilder(HostAccess.ALL)
+            // Translate JS-Joda ZonedDateTime to java.time.ZonedDateTime
+            .targetTypeMapping(Value.class, ZonedDateTime.class, (v) -> v.hasMember("withFixedOffsetZone"), v -> {
+                return ZonedDateTime.parse(v.invokeMember("withFixedOffsetZone").invokeMember("toString").asString());
+            }, HostAccess.TargetMappingPrecedence.LOW)
 
-    // shared lock object for synchronization of multi-thread access
+            // Translate JS-Joda Duration to java.time.Duration
+            .targetTypeMapping(Value.class, Duration.class,
+                    // picking two members to check as Duration has many common function names
+                    (v) -> v.hasMember("minusDuration") && v.hasMember("toNanos"), v -> {
+                        return Duration.ofNanos(v.invokeMember("toNanos").asLong());
+                    }, HostAccess.TargetMappingPrecedence.LOW)
+            .build();
+
+    /** Shared lock object for synchronization of multi-thread access */
     private final Object lock = new Object();
     private final JSRuntimeFeatures jsRuntimeFeatures;
 
@@ -91,27 +105,11 @@ public class OpenhabGraalJSScriptEngine
 
         LOGGER.debug("Initializing GraalJS script engine...");
 
-        // Custom translate JS Objects - > Java Objects
-        HostAccess hostAccess = HostAccess.newBuilder(HostAccess.ALL)
-                // Translate JS-Joda ZonedDateTime to java.time.ZonedDateTime
-                .targetTypeMapping(Value.class, ZonedDateTime.class, (v) -> v.hasMember("withFixedOffsetZone"), v -> {
-                    return ZonedDateTime
-                            .parse(v.invokeMember("withFixedOffsetZone").invokeMember("toString").asString());
-                }, HostAccess.TargetMappingPrecedence.LOW)
-
-                // Translate JS-Joda Duration to java.time.Duration
-                .targetTypeMapping(Value.class, Duration.class,
-                        // picking two members to check as Duration has many common function names
-                        (v) -> v.hasMember("minusDuration") && v.hasMember("toNanos"), v -> {
-                            return Duration.ofNanos(v.invokeMember("toNanos").asLong());
-                        }, HostAccess.TargetMappingPrecedence.LOW)
-                .build();
-
         delegate = GraalJSScriptEngine.create(
                 Engine.newBuilder().allowExperimentalOptions(true).option("engine.WarnInterpreterOnly", "false")
                         .build(),
-                Context.newBuilder("js").allowExperimentalOptions(true).allowAllAccess(true).allowHostAccess(hostAccess)
-                        .option("js.commonjs-require-cwd", JSDependencyTracker.LIB_PATH)
+                Context.newBuilder("js").allowExperimentalOptions(true).allowAllAccess(true)
+                        .allowHostAccess(HOST_ACCESS).option("js.commonjs-require-cwd", JSDependencyTracker.LIB_PATH)
                         .option("js.nashorn-compat", "true") // to ease migration
                         .option("js.ecmascript-version", "2021") // nashorn compat will enforce es5 compatibility, we
                                                                  // want ecma2021
@@ -236,6 +234,7 @@ public class OpenhabGraalJSScriptEngine
     @Override
     public void close() {
         jsRuntimeFeatures.close();
+        delegate.close();
     }
 
     /**
