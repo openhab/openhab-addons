@@ -12,6 +12,8 @@
  */
 package org.openhab.persistence.jdbc.internal.db;
 
+import java.time.ZonedDateTime;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.knowm.yank.Yank;
 import org.knowm.yank.exceptions.YankSQLException;
@@ -86,6 +88,22 @@ public class JdbcH2DAO extends JdbcBaseDAO {
                 new String[] { storedVO.getTableName(), storedVO.getDbType(), sqlTypes.get("tablePrimaryValue") });
         Object[] params = { storedVO.getValue() };
         logger.debug("JDBC::doStoreItemValue sql={} value='{}'", sql, storedVO.getValue());
+        try {
+            Yank.execute(sql, params);
+        } catch (YankSQLException e) {
+            throw new JdbcSQLException(e);
+        }
+    }
+
+    @Override
+    public void doStoreItemValue(Item item, State itemState, ItemVO vo, ZonedDateTime date) throws JdbcSQLException {
+        ItemVO storedVO = storeItemValueProvider(item, itemState, vo);
+        String sql = StringUtilsExt.replaceArrayMerge(sqlInsertItemValue,
+                new String[] { "#tableName#", "#dbType#", "#tablePrimaryValue#" },
+                new String[] { storedVO.getTableName(), storedVO.getDbType(), "?" });
+        java.sql.Timestamp timestamp = new java.sql.Timestamp(date.toInstant().toEpochMilli());
+        Object[] params = { timestamp, storedVO.getValue() };
+        logger.debug("JDBC::doStoreItemValue sql={} timestamp={} value='{}'", sql, timestamp, storedVO.getValue());
         try {
             Yank.execute(sql, params);
         } catch (YankSQLException e) {
