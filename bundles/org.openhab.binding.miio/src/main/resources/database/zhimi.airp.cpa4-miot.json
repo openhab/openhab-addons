@@ -1,7 +1,7 @@
 {
 	"deviceMapping": {
 		"id": [
-			"zhimi.airp.mb4a"
+			"zhimi.airp.cpa4"
 		],
 		"propertyMethod": "get_properties",
 		"maxProperties": 1,
@@ -14,8 +14,16 @@
 				"stateDescription": {
 					"options": [
 						{
+							"value": "air-purifier-toggle",
+							"label": "Air Purifier Toggle"
+						},
+						{
 							"value": "filter-reset-filter-life",
 							"label": "Filter Reset Filter Life"
+						},
+						{
+							"value": "custom-service-toggle-mode",
+							"label": "Custom Service Toggle Mode"
 						}
 					]
 				},
@@ -24,6 +32,20 @@
 					{
 						"command": "action",
 						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "air-purifier-toggle"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "UNKNOWN",
 						"parameters": [
 							3.0
 						],
@@ -37,16 +59,30 @@
 								}
 							]
 						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 9,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "custom-service-toggle-mode"
+								}
+							]
+						}
 					}
 				],
-				"readmeComment": "Value mapping `[\"filter-reset-filter-life\"\u003d\"Filter Reset Filter Life\"]`"
+				"readmeComment": "Value mapping `[\"air-purifier-toggle\"\u003d\"Air Purifier Toggle\",\"filter-reset-filter-life\"\u003d\"Filter Reset Filter Life\",\"custom-service-toggle-mode\"\u003d\"Custom Service Toggle Mode\"]`"
 			},
 			{
-				"property": "on",
+				"property": "power",
 				"siid": 2,
 				"piid": 1,
-				"friendlyName": "Power",
-				"channel": "on",
+				"friendlyName": "Air Purifier - Switch Status",
+				"channel": "power",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -66,18 +102,33 @@
 				"piid": 2,
 				"friendlyName": "Air Purifier - Device Fault",
 				"channel": "fault",
-				"type": "String",
+				"type": "Number",
 				"stateDescription": {
-					"readOnly": true
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "No Faults"
+						},
+						{
+							"value": "2",
+							"label": "Motor Stuck"
+						},
+						{
+							"value": "3",
+							"label": "Sensor Lost"
+						}
+					]
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"No Faults\",\"2\"\u003d\"Motor Stuck\",\"3\"\u003d\"Sensor Lost\"]`"
 			},
 			{
 				"property": "mode",
 				"siid": 2,
 				"piid": 4,
-				"friendlyName": "Mode",
+				"friendlyName": "Air Purifier - Mode",
 				"channel": "mode",
 				"type": "Number",
 				"stateDescription": {
@@ -115,11 +166,9 @@
 				"friendlyName": "Environment - PM2 5 Density",
 				"channel": "pm2_5_density",
 				"type": "Number",
+				"unit": "μg/m3",
 				"stateDescription": {
-					"minimum": 0,
-					"maximum": 600,
-					"step": 1,
-					"pattern": "%.1f",
+					"pattern": "%.0f",
 					"readOnly": true
 				},
 				"refresh": true,
@@ -134,9 +183,6 @@
 				"type": "Number:Dimensionless",
 				"unit": "percentage",
 				"stateDescription": {
-					"minimum": 0,
-					"maximum": 100,
-					"step": 1,
 					"pattern": "%.0f %unit%",
 					"readOnly": true
 				},
@@ -152,9 +198,21 @@
 				"type": "Number:Time",
 				"unit": "hours",
 				"stateDescription": {
-					"minimum": 0,
-					"maximum": 65000,
-					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "filter-left-time",
+				"siid": 4,
+				"piid": 4,
+				"friendlyName": "Filter - Filter Left Time",
+				"channel": "filter_left_time",
+				"type": "Number:Time",
+				"unit": "days",
+				"stateDescription": {
 					"pattern": "%.0f %unit%",
 					"readOnly": true
 				},
@@ -177,27 +235,6 @@
 				]
 			},
 			{
-				"property": "brightness",
-				"siid": 7,
-				"piid": 2,
-				"friendlyName": "Screen - Brightness",
-				"channel": "brightness",
-				"type": "Number",
-				"stateDescription": {
-					"minimum": 0,
-					"maximum": 8,
-					"step": 1,
-					"pattern": "%.0f"
-				},
-				"refresh": true,
-				"actions": [
-					{
-						"command": "set_properties",
-						"parameterType": "NUMBER"
-					}
-				]
-			},
-			{
 				"property": "physical-controls-locked",
 				"siid": 8,
 				"piid": 1,
@@ -213,15 +250,48 @@
 				]
 			},
 			{
+				"property": "brightness",
+				"siid": 13,
+				"piid": 2,
+				"friendlyName": "Screen - Brightness",
+				"channel": "brightness",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Off"
+						},
+						{
+							"value": "1",
+							"label": "Bright"
+						},
+						{
+							"value": "2",
+							"label": "Brightest"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Off\",\"1\"\u003d\"Bright\",\"2\"\u003d\"Brightest\"]`"
+			},
+			{
 				"property": "motor-speed-rpm",
 				"siid": 9,
 				"piid": 1,
 				"friendlyName": "Custom Service - Motor Speed Rpm",
-				"channel": "moto_speed_rpm",
+				"channel": "motor_speed_rpm",
 				"type": "Number",
 				"stateDescription": {
 					"minimum": 0,
-					"maximum": 65535,
+					"maximum": 2500,
 					"step": 1,
 					"pattern": "%.0f",
 					"readOnly": true
@@ -230,28 +300,90 @@
 				"actions": []
 			},
 			{
-				"property": "miio-lib-version",
+				"property": "country-code",
 				"siid": 9,
-				"piid": 2,
-				"friendlyName": "Custom Service - Miio Lib Version",
-				"channel": "miio_lib_version",
-				"type": "String",
-				"stateDescription": {
-					"readOnly": true
-				},
-				"refresh": true,
-				"actions": []
-			},
-			{
-				"property": "favorite-speed",
-				"siid": 9,
-				"piid": 3,
-				"friendlyName": "Custom Service - Favorite Speed",
-				"channel": "favorite_speed",
+				"piid": 10,
+				"friendlyName": "Custom Service - Country Code",
+				"channel": "country_code",
 				"type": "Number",
 				"stateDescription": {
-					"minimum": 300,
-					"maximum": 2200,
+					"options": [
+						{
+							"value": "17230",
+							"label": "CN"
+						},
+						{
+							"value": "17749",
+							"label": "EU"
+						},
+						{
+							"value": "21843",
+							"label": "US"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				],
+				"readmeComment": "Value mapping `[\"17230\"\u003d\"CN\",\"17749\"\u003d\"EU\",\"21843\"\u003d\"US\"]`"
+			},
+			{
+				"property": "favorite-level",
+				"siid": 9,
+				"piid": 11,
+				"friendlyName": "Custom Service - Favorite Level",
+				"channel": "favorite_level",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 14,
+					"step": 1,
+					"pattern": "%.0f"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "filter-used-time-dbg",
+				"siid": 9,
+				"piid": 12,
+				"friendlyName": "Custom Service - Filter Used Time Dbg",
+				"channel": "filter_used_time_dbg",
+				"type": "Number:Time",
+				"unit": "hours",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 7000,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": false,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				]
+			},
+			{
+				"property": "aqi-updata-heartbeat",
+				"siid": 11,
+				"piid": 4,
+				"friendlyName": "Aqi - Aqi Updata Heartbeat",
+				"channel": "aqi_updata_heartbeat",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 65535,
 					"step": 1,
 					"pattern": "%.0f"
 				},
@@ -262,30 +394,8 @@
 						"parameterType": "STRING"
 					}
 				]
-			},
-			{
-				"property": "aqi-updata-heartbeat",
-				"siid": 9,
-				"piid": 4,
-				"friendlyName": "Custom Service - Aqi Updata Heartbeat",
-				"channel": "aqi_updata_heartbeat",
-				"type": "Number:Time",
-				"unit": "seconds",
-				"stateDescription": {
-					"minimum": 0,
-					"maximum": 65534,
-					"step": 1,
-					"pattern": "%.0f %unit%"
-				},
-				"refresh": true,
-				"actions": [
-					{
-						"command": "set_properties",
-						"parameterType": "NUMBER"
-					}
-				]
 			}
 		],
-		"experimental": false
+		"experimental": true
 	}
 }
