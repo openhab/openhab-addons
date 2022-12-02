@@ -53,12 +53,12 @@ import org.slf4j.LoggerFactory;
 import com.oracle.truffle.js.scriptengine.GraalJSScriptEngine;
 
 /**
- * GraalJS Script Engine implementation
+ * GraalJS ScriptEngine implementation
  *
  * @author Jonathan Gilbert - Initial contribution
  * @author Dan Cunningham - Script injections
  * @author Florian Hotze - Create lock object for multi-thread synchronization; Inject the {@link JSRuntimeFeatures}
- *         into the JS context
+ *         into the JS context; Fix memory leak caused by HostObject by making HostAccess reference static
  */
 public class OpenhabGraalJSScriptEngine
         extends InvocationInterceptingScriptEngineWithInvocableAndAutoCloseable<GraalJSScriptEngine> {
@@ -66,9 +66,9 @@ public class OpenhabGraalJSScriptEngine
     private static final Logger LOGGER = LoggerFactory.getLogger(OpenhabGraalJSScriptEngine.class);
     private static final String GLOBAL_REQUIRE = "require(\"@jsscripting-globals\");";
     private static final String REQUIRE_WRAPPER_NAME = "__wraprequire__";
-    // final CommonJS search path for our library
+    /** Final CommonJS search path for our library */
     private static final Path NODE_DIR = Paths.get("node_modules");
-    // Custom translate JS Objects - > Java Objects
+    /** Provides unlimited host access as well as custom translations from JS to Java Objects */
     private static final HostAccess HOST_ACCESS = HostAccess.newBuilder(HostAccess.ALL)
             // Translate JS-Joda ZonedDateTime to java.time.ZonedDateTime
             .targetTypeMapping(Value.class, ZonedDateTime.class, (v) -> v.hasMember("withFixedOffsetZone"), v -> {
@@ -83,7 +83,7 @@ public class OpenhabGraalJSScriptEngine
                     }, HostAccess.TargetMappingPrecedence.LOW)
             .build();
 
-    // shared lock object for synchronization of multi-thread access
+    /** Shared lock object for synchronization of multi-thread access */
     private final Object lock = new Object();
     private final JSRuntimeFeatures jsRuntimeFeatures;
 
