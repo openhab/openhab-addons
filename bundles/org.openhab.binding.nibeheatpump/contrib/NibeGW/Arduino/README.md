@@ -48,7 +48,8 @@ Also the ProDiNo Ethernet is supported by NibeGW out of the box.
 
 ## Arduino Uno
 
-Arduino Uno has only one serial port which is shared with USB. So make sure to disconnect all hardware (ethernet shield, RS485 module, etc.) while uploading the compiled sketch to the Arduino.
+Arduino Uno has only one serial port which is shared with USB. 
+So make sure to disconnect all hardware (ethernet shield, RS485 module, etc.) while uploading the compiled sketch to the Arduino.
 Furthermore do not use the USB port while Arduino is communicating with the Nibe heatpump.
 
 For compiling NibeGW, you have to make the following changes to the code:
