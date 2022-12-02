@@ -234,6 +234,7 @@ public class OpenhabGraalJSScriptEngine
     @Override
     public void close() {
         jsRuntimeFeatures.close();
+        delegate.close();
     }
 
     /**
