@@ -68,6 +68,20 @@ public class OpenhabGraalJSScriptEngine
     private static final String REQUIRE_WRAPPER_NAME = "__wraprequire__";
     // final CommonJS search path for our library
     private static final Path NODE_DIR = Paths.get("node_modules");
+    // Custom translate JS Objects - > Java Objects
+    private static final HostAccess HOST_ACCESS = HostAccess.newBuilder(HostAccess.ALL)
+            // Translate JS-Joda ZonedDateTime to java.time.ZonedDateTime
+            .targetTypeMapping(Value.class, ZonedDateTime.class, (v) -> v.hasMember("withFixedOffsetZone"), v -> {
+                return ZonedDateTime.parse(v.invokeMember("withFixedOffsetZone").invokeMember("toString").asString());
+            }, HostAccess.TargetMappingPrecedence.LOW)
+
+            // Translate JS-Joda Duration to java.time.Duration
+            .targetTypeMapping(Value.class, Duration.class,
+                    // picking two members to check as Duration has many common function names
+                    (v) -> v.hasMember("minusDuration") && v.hasMember("toNanos"), v -> {
+                        return Duration.ofNanos(v.invokeMember("toNanos").asLong());
+                    }, HostAccess.TargetMappingPrecedence.LOW)
+            .build();
 
     // shared lock object for synchronization of multi-thread access
     private final Object lock = new Object();
@@ -91,27 +105,11 @@ public class OpenhabGraalJSScriptEngine
 
         LOGGER.debug("Initializing GraalJS script engine...");
 
-        // Custom translate JS Objects - > Java Objects
-        HostAccess hostAccess = HostAccess.newBuilder(HostAccess.ALL)
-                // Translate JS-Joda ZonedDateTime to java.time.ZonedDateTime
-                .targetTypeMapping(Value.class, ZonedDateTime.class, (v) -> v.hasMember("withFixedOffsetZone"), v -> {
-                    return ZonedDateTime
-                            .parse(v.invokeMember("withFixedOffsetZone").invokeMember("toString").asString());
-                }, HostAccess.TargetMappingPrecedence.LOW)
-
-                // Translate JS-Joda Duration to java.time.Duration
-                .targetTypeMapping(Value.class, Duration.class,
-                        // picking two members to check as Duration has many common function names
-                        (v) -> v.hasMember("minusDuration") && v.hasMember("toNanos"), v -> {
-                            return Duration.ofNanos(v.invokeMember("toNanos").asLong());
-                        }, HostAccess.TargetMappingPrecedence.LOW)
-                .build();
-
         delegate = GraalJSScriptEngine.create(
                 Engine.newBuilder().allowExperimentalOptions(true).option("engine.WarnInterpreterOnly", "false")
                         .build(),
-                Context.newBuilder("js").allowExperimentalOptions(true).allowAllAccess(true).allowHostAccess(hostAccess)
-                        .option("js.commonjs-require-cwd", JSDependencyTracker.LIB_PATH)
+                Context.newBuilder("js").allowExperimentalOptions(true).allowAllAccess(true)
+                        .allowHostAccess(HOST_ACCESS).option("js.commonjs-require-cwd", JSDependencyTracker.LIB_PATH)
                         .option("js.nashorn-compat", "true") // to ease migration
                         .option("js.ecmascript-version", "2021") // nashorn compat will enforce es5 compatibility, we
                                                                  // want ecma2021
