@@ -274,20 +274,19 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
                 });
             }
 
-            StateDescriptionFragmentBuilder stateFragment = StateDescriptionFragmentBuilder.create();
+            StateDescriptionFragmentBuilder stateFragment = StateDescriptionFragmentBuilder.create()
+                    .withPattern(MetadataUtils.getStatePattern(dp)).withReadOnly(dp.isReadOnly());
             if (dp.isNumberType()) {
-                BigDecimal min = MetadataUtils.createBigDecimal(dp.getMinValue());
-                BigDecimal max = MetadataUtils.createBigDecimal(dp.getMaxValue());
-                if (ITEM_TYPE_DIMMER.equals(itemType)
-                        && (max.compareTo(new BigDecimal("1.0")) == 0 || max.compareTo(new BigDecimal("1.01")) == 0)) {
-                    // For dimmers with a max value of 1.01 or 1.0 the values must be corrected
+                final BigDecimal min, max;
+                if (ITEM_TYPE_DIMMER.equals(itemType) || ITEM_TYPE_ROLLERSHUTTER.equals(itemType)) {
+                    // those types use PercentTypeConverter, so set up min and max as percent values
                     min = MetadataUtils.createBigDecimal(0);
                     max = MetadataUtils.createBigDecimal(100);
+                } else {
+                    min = MetadataUtils.createBigDecimal(dp.getMinValue());
+                    max = MetadataUtils.createBigDecimal(dp.getMaxValue());
                 }
-                stateFragment.withMinimum(min).withMaximum(max).withPattern(MetadataUtils.getStatePattern(dp))
-                        .withReadOnly(dp.isReadOnly());
-            } else {
-                stateFragment.withPattern(MetadataUtils.getStatePattern(dp)).withReadOnly(dp.isReadOnly());
+                stateFragment.withMinimum(min).withMaximum(max);
             }
             if (options != null) {
                 stateFragment.withOptions(options);
