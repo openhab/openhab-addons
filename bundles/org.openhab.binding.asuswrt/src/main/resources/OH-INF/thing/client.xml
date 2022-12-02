@@ -18,14 +18,14 @@
 		</channel-groups>
 		<properties>
 			<property name="vendor">Vendor</property>
-			<property name="dnsName">DNS Name</property>
+			<property name="dnsName">DNS-Name</property>
 		</properties>
 		<representation-property>macAddress</representation-property>
 
 		<config-description>
 			<parameter name="macAddress" type="text" required="true">
 				<label>MAC-Address</label>
-				<description>MAC address of the device</description>
+				<description>MAC-Address of the device</description>
 				<default>00:00:00:00:00:00</default>
 			</parameter>
 			<parameter name="clientNick" type="text" required="false">

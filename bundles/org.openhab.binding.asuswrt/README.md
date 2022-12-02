@@ -1,10 +1,10 @@
 # Asuswrt Binding
 
-This binding adds support to control get informations from ASUS-Router (Copyright © ASUS).
+This binding adds support to read information from ASUS-Routers (Copyright © ASUS).
 
 ## Supported Things
 
-Binding supports ASUS-Router with AsusWRT or -AsusWRT-Merlin Firmware.
+This binding supports ASUS routers with Asuswrt or [Asuswrt-Merlin](https://www.asuswrt-merlin.net/) firmware.
 Firmware 5.x.x (some DSL models) is NOT supported (not AsusWRT).
 
 | ThingType     | Name       | Descripion                              |
@@ -88,16 +88,3 @@ All devices support some of the following Events:
 | networkInfo      | connectionEvent   | Trigger    | Fired if connection is established ('connected') or ('disconnected')   | interface                       |
 |                  | clientOnlineEvent | Trigger    | Fired if Client leaves ('gone') or enters ('connected') the network    | client                          |
 | clientListGroup  | clientOnlineEvent | Trigger    | Fired if Client leaves ('gone') or enters ('connected') the network    | router                          |
-
-
-
-## Debugging and Tracing
-
-If you want to see what's going on in the binding, switch the loglevel to TRACE in the Karaf console
-
-`log:set TRACE org.openhab.binding.asuswrt`
-
-Set the logging back to normal
-
-`log:set INFO org.openhab.binding.asuswrt`+
-

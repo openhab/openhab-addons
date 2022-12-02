@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -120,7 +120,7 @@ public class AsuswrtUtils {
      * @return
      */
     public static boolean isValidMacAddress(String mac) {
-        // Mac addresses usually are 6 * 2 hex nibbles separated by colons,
+        // MAC-Addresses usually are 6 * 2 hex nibbles separated by colons,
         // but apparently it is legal to have 4 * 3 hex nibbles as well,
         // and the separators can be any of : or - or . or nothing.
         return (patternMacPairs.matcher(mac).find() || patternMacTriples.matcher(mac).find());

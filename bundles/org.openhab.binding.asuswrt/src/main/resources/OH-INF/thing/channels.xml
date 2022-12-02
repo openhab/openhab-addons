@@ -59,7 +59,7 @@
 	<channel-type id="dnsNameType">
 		<item-type>String</item-type>
 		<label>DNS-Name</label>
-		<description>DNS Name</description>
+		<description>DNS-Name</description>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="dnsServerType">
@@ -119,8 +119,8 @@
 	</channel-type>
 	<channel-type id="clientsOnlineMacType">
 		<item-type>String</item-type>
-		<label>Online MAC Addresses</label>
-		<description>List with mac-addresses of online clients</description>
+		<label>Online MAC-Addresses</label>
+		<description>List with MAC-Addresses of online clients</description>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="clientsOnlineCountType">

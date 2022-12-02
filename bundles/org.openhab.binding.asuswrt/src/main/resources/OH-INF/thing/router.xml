@@ -17,7 +17,7 @@
 			<parameter name="hostname" type="text" required="true">
 				<context>network-address</context>
 				<label>Hostname</label>
-				<description>Hostname or IP address of the device</description>
+				<description>Hostname or IP-Address of the device</description>
 				<default>router.asus.com</default>
 			</parameter>
 			<parameter name="username" type="text" required="true">
