@@ -296,6 +296,7 @@
 /bundles/org.openhab.binding.serial/ @MikeJMajor
 /bundles/org.openhab.binding.serialbutton/ @kaikreuzer
 /bundles/org.openhab.binding.shelly/ @markus7017
+/bundles/org.openhab.binding.shieldtv/ @morph166955
 /bundles/org.openhab.binding.siemensrds/ @andrewfg
 /bundles/org.openhab.binding.silvercrestwifisocket/ @jmvaz
 /bundles/org.openhab.binding.sinope/ @chaton78
