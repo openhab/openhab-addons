@@ -74,7 +74,7 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
         }
         ;
         this.webSocketClient = passedWebSocketClient;
-        // connection = new EmbyConnection(this, WebSocketClient);
+        connection = new EmbyConnection(this, passedWebSocketClient);
     }
 
     public void sendCommand(String commandURL, String payload) {
@@ -112,7 +112,6 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
     }
 
     private void establishConnection() {
-        connection = new EmbyConnection(this, webSocketClient);
         scheduler.execute(() -> {
             try {
 
@@ -124,7 +123,7 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                                 "Connection could not be established");
                     }
-                }, 10000, config.refreshInterval, TimeUnit.MILLISECONDS);
+                }, 360000, 360000, TimeUnit.MILLISECONDS);
 
             } catch (Exception e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
@@ -242,6 +241,6 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
     @Override
     public void dispose() {
         connection.close();
-        connectionCheckerFuture.cancel(true);
+        // connectionCheckerFuture.cancel(true);
     }
 }
