@@ -97,6 +97,7 @@ public class AndroidDebugBridgeDevice {
     private int port = 5555;
     private int timeoutSec = 5;
     private int recordDuration;
+    private @Nullable Integer maxVolumeLevel = null;
     private @Nullable Socket socket;
     private @Nullable AdbConnection connection;
     private @Nullable Future<String> commandFuture;
@@ -375,7 +376,17 @@ public class AndroidDebugBridgeDevice {
             AndroidDebugBridgeDeviceReadException, TimeoutException, ExecutionException {
         if (isAtLeastVersion(11)) {
             String volumeResp = runAdbShell("settings", "get", "system", volumeSettingKey);
-            return new VolumeInfo(Integer.parseInt(volumeResp.replace("\n", "")), 0, deviceMaxVolume);
+            var maxVolumeLevel = this.maxVolumeLevel;
+            if (maxVolumeLevel != null) {
+                try {
+                    maxVolumeLevel = Integer.parseInt(getDeviceProp("ro.config.media_vol_steps"));
+                    this.maxVolumeLevel = maxVolumeLevel;
+                } catch (NumberFormatException ignored) {
+                    logger.debug("Max volume level not available, using 'deviceMaxVolume' config");
+                    maxVolumeLevel = deviceMaxVolume;
+                }
+            }
+            return new VolumeInfo(Integer.parseInt(volumeResp.replace("\n", "")), 0, maxVolumeLevel);
         } else {
             String volumeResp = runAdbShell("media", "volume", "--show", "--stream", String.valueOf(stream), "--get",
                     "|", "grep", "volume");

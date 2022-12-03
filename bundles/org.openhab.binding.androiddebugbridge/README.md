@@ -50,7 +50,7 @@ You could customize the discovery process through the binding options.
 | refreshTime | int | Seconds between device status refreshes (default: 30) |
 | timeout | int | Command timeout in seconds (default: 5) |
 | recordDuration | int | Record input duration in seconds |
-| deviceMaxVolume | int | Assumed max volume for devices with android versions that do not expose this value (>=android 11). |
+| deviceMaxVolume | int | Assumed max volume for devices with android versions that do not expose this value. |
 | volumeSettingKey | String | Settings key for android versions where volume is gather using settings command (>=android 11). |
 | mediaStateJSONConfig | String | Expects a JSON array. Allow to configure the media state detection method per app. Described in the following section |
 
