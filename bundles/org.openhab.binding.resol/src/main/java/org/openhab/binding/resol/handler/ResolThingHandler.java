@@ -48,7 +48,6 @@ import de.resol.vbus.SpecificationFile;
 import de.resol.vbus.SpecificationFile.Enum;
 import de.resol.vbus.SpecificationFile.EnumVariant;
 import de.resol.vbus.SpecificationFile.Language;
-import tech.units.indriya.AbstractUnit;
 
 /**
  * The {@link ResolThingHandler} is responsible for handling commands, which are
@@ -255,7 +254,7 @@ public class ResolThingHandler extends ResolBaseThingHandler {
                                         this.updateState(channelId, q);
                                     } catch (IllegalArgumentException e) {
                                         logger.debug("unit of '{}' unknown in openHAB", str);
-                                        QuantityType<?> q = new QuantityType<>(dd, AbstractUnit.ONE);
+                                        QuantityType<?> q = new QuantityType<>(dd, Units.ONE);
                                         this.updateState(channelId, q);
                                     }
                                 }
