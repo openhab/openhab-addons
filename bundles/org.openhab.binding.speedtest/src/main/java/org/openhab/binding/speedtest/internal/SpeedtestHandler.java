@@ -65,7 +65,8 @@ public class SpeedtestHandler extends BaseThingHandler {
     public static final String[] SHELL_NIX = new String[] { "sh", "bash", "zsh", "csh" };
 
     private String speedTestCommand = "";
-    private static OS os = OS.NOT_SET;
+    private static volatile OS os = OS.NOT_SET;
+    private static final Object lock = new Object();
 
     private String pingJitter = "";
     private String pingLatency = "";
@@ -490,22 +491,26 @@ public class SpeedtestHandler extends BaseThingHandler {
 
     public static OS getOperatingSystemType() {
         if (os == OS.NOT_SET) {
-            String operSys = System.getProperty("os.name");
-            if (operSys == null) {
-                os = OS.UNKNOWN;
-            } else {
-                operSys = operSys.toLowerCase();
+            synchronized (lock) {
+                if (os == OS.NOT_SET) {
+                    String operSys = System.getProperty("os.name");
+                    if (operSys == null) {
+                        os = OS.UNKNOWN;
+                    } else {
+                        operSys = operSys.toLowerCase();
 
-                if (operSys.contains("win")) {
-                    os = OS.WINDOWS;
-                } else if (operSys.contains("nix") || operSys.contains("nux") || operSys.contains("aix")) {
-                    os = OS.LINUX;
-                } else if (operSys.contains("mac")) {
-                    os = OS.MAC;
-                } else if (operSys.contains("sunos")) {
-                    os = OS.SOLARIS;
-                } else {
-                    os = OS.UNKNOWN;
+                        if (operSys.contains("win")) {
+                            os = OS.WINDOWS;
+                        } else if (operSys.contains("nix") || operSys.contains("nux") || operSys.contains("aix")) {
+                            os = OS.LINUX;
+                        } else if (operSys.contains("mac")) {
+                            os = OS.MAC;
+                        } else if (operSys.contains("sunos")) {
+                            os = OS.SOLARIS;
+                        } else {
+                            os = OS.UNKNOWN;
+                        }
+                    }
                 }
             }
         }
