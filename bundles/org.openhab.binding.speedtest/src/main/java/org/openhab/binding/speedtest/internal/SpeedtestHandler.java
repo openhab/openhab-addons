@@ -371,13 +371,13 @@ public class SpeedtestHandler extends BaseThingHandler {
      */
     public boolean checkConfig(String execPath) {
         File file = new File(execPath);
-        if (checkFileExists(file)) { // Check if entered path exists
+        if (!checkFileExists(file)) { // Check if entered path exists
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Speedtest executable not found. Please check configuration.");
             return false;
         }
 
-        if (checkFileExecutable(file)) { // Check if speedtest is executable
+        if (!checkFileExecutable(file)) { // Check if speedtest is executable
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Speedtest CLI tool not executable. Please check installation/configuration.");
             return false;
