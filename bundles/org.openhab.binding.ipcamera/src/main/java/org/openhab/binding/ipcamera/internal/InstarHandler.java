@@ -157,24 +157,26 @@ public class InstarHandler extends ChannelDuplexHandler {
                 case CHANNEL_THRESHOLD_AUDIO_ALARM:
                 case CHANNEL_ENABLE_AUDIO_ALARM:
                     ipCameraHandler.sendHttpGET("/param.cgi?cmd=getaudioalarmattr");
-                    return;
+                    break;
                 case CHANNEL_ENABLE_EXTERNAL_ALARM_INPUT:
                     ipCameraHandler.sendHttpGET("/param.cgi?cmd=getioattr");
-                    return;
+                    break;
                 case CHANNEL_ENABLE_MOTION_ALARM:
                     if (ipCameraHandler.newInstarApi) {
                         ipCameraHandler.sendHttpGET("/param.cgi?cmd=getalarmattr");
                     } else {
                         ipCameraHandler.sendHttpGET("/cgi-bin/hi3510/param.cgi?cmd=getmdattr");
                     }
-                    return;
+                    break;
                 case CHANNEL_ENABLE_PIR_ALARM:
                     ipCameraHandler.sendHttpGET("/param.cgi?cmd=getpirattr");
+                    break;
                 case CHANNEL_AUTO_LED:
                     ipCameraHandler.sendHttpGET("/param.cgi?cmd=getinfrared");
+                    break;
                 case CHANNEL_TEXT_OVERLAY:
                     ipCameraHandler.sendHttpGET("/param.cgi?cmd=getoverlayattr&-region=1");
-                    return;
+                    break;
             }
             return;
         } // end of "REFRESH"
