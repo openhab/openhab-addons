@@ -66,7 +66,7 @@ public class SpeedtestHandler extends BaseThingHandler {
 
     private String speedTestCommand = "";
     private static volatile OS os = OS.NOT_SET;
-    private static final Object lock = new Object();
+    private static final Object LOCK = new Object();
 
     private String pingJitter = "";
     private String pingLatency = "";
@@ -490,7 +490,7 @@ public class SpeedtestHandler extends BaseThingHandler {
     }
 
     public static OS getOperatingSystemType() {
-        synchronized (lock) {
+        synchronized (LOCK) {
             if (os == OS.NOT_SET) {
                 String operSys = System.getProperty("os.name");
                 if (operSys == null) {
