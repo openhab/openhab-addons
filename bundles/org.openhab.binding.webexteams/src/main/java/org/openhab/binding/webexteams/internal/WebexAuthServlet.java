@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class WebexAuthServlet extends HttpServlet {
-
+    static final long serialVersionUID = 42L;
     private static final String CONTENT_TYPE = "text/html;charset=UTF-8";
 
     // Simple HTML templates for inserting messages.
@@ -83,16 +83,18 @@ public class WebexAuthServlet extends HttpServlet {
     @Override
     protected void doGet(@Nullable HttpServletRequest req, @Nullable HttpServletResponse resp)
             throws ServletException, IOException {
-        logger.debug("Webex auth callback servlet received GET request {}.", req.getRequestURI());
-        final String servletBaseURL = req.getRequestURL().toString();
-        final Map<String, String> replaceMap = new HashMap<>();
+        if (req != null && resp != null) {
+            logger.debug("Webex auth callback servlet received GET request {}.", req.getRequestURI());
+            final String servletBaseURL = req.getRequestURL().toString();
+            final Map<String, String> replaceMap = new HashMap<>();
 
-        handleRedirect(replaceMap, servletBaseURL, req.getQueryString());
-        resp.setContentType(CONTENT_TYPE);
-        replaceMap.put(KEY_REDIRECT_URI, servletBaseURL);
-        replaceMap.put(KEY_ACCOUNTS, formatAccounts(this.accountTemplate, servletBaseURL));
-        resp.getWriter().append(replaceKeysFromMap(this.indexTemplate, replaceMap));
-        resp.getWriter().close();
+            handleRedirect(replaceMap, servletBaseURL, req.getQueryString());
+            resp.setContentType(CONTENT_TYPE);
+            replaceMap.put(KEY_REDIRECT_URI, servletBaseURL);
+            replaceMap.put(KEY_ACCOUNTS, formatAccounts(this.accountTemplate, servletBaseURL));
+            resp.getWriter().append(replaceKeysFromMap(this.indexTemplate, replaceMap));
+            resp.getWriter().close();
+        }
     }
 
     /**

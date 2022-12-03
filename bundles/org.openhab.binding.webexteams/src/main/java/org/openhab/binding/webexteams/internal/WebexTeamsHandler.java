@@ -68,13 +68,13 @@ public class WebexTeamsHandler extends BaseThingHandler implements AccessTokenRe
     private final HttpClient httpClient;
     private @Nullable WebexTeamsApi client;
 
-    private @NonNullByDefault({}) OAuthClientService authService;
+    private @Nullable OAuthClientService authService;
 
     private boolean configured = false; // is the handler instance properly configured?
     private volatile boolean active; // is the handler instance active?
     String accountType = ""; // bot or person?
 
-    private @NonNullByDefault({}) Future<?> refreshFuture;
+    private @Nullable Future<?> refreshFuture;
 
     public WebexTeamsHandler(Thing thing, OAuthFactory oAuthFactory, HttpClient httpClient) {
         super(thing);
@@ -95,11 +95,9 @@ public class WebexTeamsHandler extends BaseThingHandler implements AccessTokenRe
 
     @Override
     public void initialize() {
-        logger.debug("Initializing...");
+        logger.debug("Initializing thing {}", this.getThing().getUID());
         active = true;
         config = getConfigAs(WebexTeamsConfiguration.class);
-
-        updateStatus(ThingStatus.UNKNOWN);
 
         final String token = config.token;
         final String clientId = config.clientId;
@@ -125,20 +123,29 @@ public class WebexTeamsHandler extends BaseThingHandler implements AccessTokenRe
             return;
         }
 
-        this.client = new WebexTeamsApi(authService, httpClient);
+        updateStatus(ThingStatus.UNKNOWN);
+
+        OAuthClientService localAuthService = this.authService;
+        if (localAuthService == null) {
+            logger.warn("authService not properly initialized");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "authService not properly initialized");
+            return;
+        }
+
+        this.client = new WebexTeamsApi(localAuthService, httpClient);
 
         // Start with update status by calling Webex. If no credentials available no polling should be started.
         scheduler.execute(() -> {
-            if (refresh()) {
-                startRefresh();
-            }
+            startRefresh();
         });
     }
 
     @Override
     public void dispose() {
-        logger.debug("Disposing...");
+        logger.debug("Disposing thing {}", this.getThing().getUID());
         active = false;
+        OAuthClientService authService = this.authService;
         if (authService != null) {
             authService.removeAccessTokenRefreshListener(this);
         }
@@ -184,17 +191,21 @@ public class WebexTeamsHandler extends BaseThingHandler implements AccessTokenRe
             logger.debug("Make call to Webex to get access token.");
 
             // Not doing anything with the token. It's used indirectly through authService.
-            authService.getAccessTokenResponseByAuthorizationCode(reqCode, redirectUri);
+            OAuthClientService authService = this.authService;
+            if (authService != null) {
+                authService.getAccessTokenResponseByAuthorizationCode(reqCode, redirectUri);
+            }
 
-            refresh();
+            startRefresh();
             final String user = getUser();
             logger.info("Authorized for user: {}", user);
-            startRefresh();
+
             return user;
         } catch (RuntimeException | OAuthException | IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             throw new WebexTeamsException("Failed to authorize", e);
         } catch (final OAuthResponseException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             throw new WebexTeamsException("OAuth exception", e);
         }
     }
@@ -213,7 +224,8 @@ public class WebexTeamsHandler extends BaseThingHandler implements AccessTokenRe
 
     private @Nullable AccessTokenResponse getAccessTokenResponse() {
         try {
-            return this.authService == null ? null : this.authService.getAccessTokenResponse();
+            OAuthClientService authService = this.authService;
+            return authService == null ? null : authService.getAccessTokenResponse();
         } catch (OAuthException | IOException | OAuthResponseException | RuntimeException e) {
             logger.debug("Exception checking authorization: ", e);
             return null;
@@ -227,12 +239,18 @@ public class WebexTeamsHandler extends BaseThingHandler implements AccessTokenRe
     public String formatAuthorizationUrl(String redirectUri) {
         try {
             if (this.configured) {
-                return this.authService.getAuthorizationUrl(redirectUri, null, thing.getUID().getAsString());
+                OAuthClientService authService = this.authService;
+                if (authService != null) {
+                    return authService.getAuthorizationUrl(redirectUri, null, thing.getUID().getAsString());
+                } else {
+                    logger.warn("AuthService not properly initialized");
+                    return "";
+                }
             } else {
                 return "";
             }
         } catch (final OAuthException e) {
-            logger.debug("Error constructing AuthorizationUrl: ", e);
+            logger.warn("Error constructing AuthorizationUrl: ", e);
             return "";
         }
     }
@@ -242,6 +260,13 @@ public class WebexTeamsHandler extends BaseThingHandler implements AccessTokenRe
         synchronized (refreshSynchronization) {
             Person person;
             try {
+                WebexTeamsApi client = this.client;
+                if (client == null) {
+                    logger.warn("Client not properly initialized");
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            "Client not properly initialized");
+                    return false;
+                }
                 person = client.getPerson();
                 String type = person.getType();
                 if (type == null) {
@@ -263,7 +288,7 @@ public class WebexTeamsHandler extends BaseThingHandler implements AccessTokenRe
                 return true;
             } catch (WebexTeamsException e) {
                 logger.warn("Failed to refresh: {}", e.getMessage());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
             return false;
         }
@@ -285,8 +310,10 @@ public class WebexTeamsHandler extends BaseThingHandler implements AccessTokenRe
      * Cancels all running schedulers.
      */
     private synchronized void cancelSchedulers() {
-        if (refreshFuture != null) {
-            refreshFuture.cancel(true);
+        Future<?> future = this.refreshFuture;
+        if (future != null) {
+            future.cancel(true);
+            this.refreshFuture = null;
         }
     }
 
@@ -414,8 +441,14 @@ public class WebexTeamsHandler extends BaseThingHandler implements AccessTokenRe
      */
     private boolean sendMessage(Message msg) {
         try {
-            client.sendMessage(msg);
-            return true;
+            WebexTeamsApi client = this.client;
+            if (client != null) {
+                client.sendMessage(msg);
+                return true;
+            } else {
+                logger.warn("Client not properly initialized");
+                return false;
+            }
         } catch (WebexTeamsException e) {
             logger.warn("Failed to send message: {}", e.getMessage());
         }
@@ -424,6 +457,5 @@ public class WebexTeamsHandler extends BaseThingHandler implements AccessTokenRe
 
     @Override
     public void onAccessTokenResponse(AccessTokenResponse tokenResponse) {
-        // TODO Auto-generated method stub
     }
 }

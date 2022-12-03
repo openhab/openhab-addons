@@ -128,7 +128,6 @@ public class WebexTeamsApi {
             logger.debug("Response: {} - {}", response.getStatus(), response.getReason());
 
             if (response.getStatus() == HttpStatus.UNAUTHORIZED_401) {
-                response.abort(new Exception(response.getReason()));
                 throw new WebexAuthenticationException();
             } else if (response.getStatus() == HttpStatus.OK_200) {
                 // Obtain the input stream on the response content
@@ -137,7 +136,7 @@ public class WebexTeamsApi {
                     O entity = gson.fromJson(reader, clazz);
                     return entity;
                 } catch (IOException | JsonIOException | JsonSyntaxException e) {
-                    throw new WebexTeamsApiException("exception", e);
+                    throw new WebexTeamsApiException("Exception while processing API response", e);
                 }
             } else {
                 logger.warn("Unexpected response {} - {}", response.getStatus(), response.getReason());
@@ -145,9 +144,9 @@ public class WebexTeamsApi {
                     String text = new BufferedReader(new InputStreamReader(input, StandardCharsets.UTF_8)).lines()
                             .collect(Collectors.joining("\n"));
                     logger.warn("Content: {}", text);
-                    response.abort(new Exception(response.getReason()));
                 } catch (IOException e) {
-                    throw new WebexTeamsApiException("ioexception", e);
+                    throw new WebexTeamsApiException(
+                            String.format("Unexpected response code: {}", response.getStatus()), e);
                 }
 
                 throw new WebexTeamsApiException(

@@ -21,6 +21,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class WebexTeamsException extends Exception {
+    static final long serialVersionUID = 43L;
+
     public WebexTeamsException() {
         super();
     }
