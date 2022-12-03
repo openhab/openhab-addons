@@ -227,7 +227,7 @@ The binding also monitors that the device is responding at least once within a g
 The period is computed depending on the device type and configuration:
 
 - battery  powered devices: &lt;sleepPeriod from device config&gt; + 10min, usually 12h+10min=730min
-- else, if CoIoT or WevSocket is enabled: 3*&lt;update Period from device settings&gt;+10sec, usually3*15+10=45sec
+- else, if CoIoT or WebSocket is enabled: 3*&lt;update Period from device settings&gt;+10sec, usually3*15+10=45sec
 - else 2*60+10sec = 130sec
 
 Once the timer expires the device switches to OFFFLINE and the bindings starts to re-initialize the device periodically. 
