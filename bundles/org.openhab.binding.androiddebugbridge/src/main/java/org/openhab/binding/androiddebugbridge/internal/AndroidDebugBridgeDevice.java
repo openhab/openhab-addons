@@ -377,7 +377,7 @@ public class AndroidDebugBridgeDevice {
         if (isAtLeastVersion(11)) {
             String volumeResp = runAdbShell("settings", "get", "system", volumeSettingKey);
             var maxVolumeLevel = this.maxVolumeLevel;
-            if (maxVolumeLevel != null) {
+            if (maxVolumeLevel == null) {
                 try {
                     maxVolumeLevel = Integer.parseInt(getDeviceProp("ro.config.media_vol_steps"));
                     this.maxVolumeLevel = maxVolumeLevel;
