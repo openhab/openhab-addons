@@ -87,7 +87,7 @@ public class ShellyDeviceProfile {
     public boolean isLight = false; // true if it is a Shelly Bulb/RGBW2
     public boolean isBulb = false; // true only if it is a Bulb
     public boolean isDuo = false; // true only if it is a Duo
-    public boolean isRGBW2 = false; // true only if it a a RGBW2
+    public boolean isRGBW2 = false; // true only if it a RGBW2
     public boolean inColor = false; // true if bulb/rgbw2 is in color mode
 
     public boolean isSensor = false; // true for HT & Smoke

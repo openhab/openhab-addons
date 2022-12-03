@@ -180,7 +180,7 @@ public final class FilterParser {
     }
 
     /**
-     * State while parsing an disjunction.
+     * State while parsing a disjunction.
      */
     private static final class OrState extends State {
 

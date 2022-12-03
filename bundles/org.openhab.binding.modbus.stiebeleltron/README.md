@@ -10,9 +10,9 @@ In case the modbus extension is not yet installed on the ISG, the ISG Updater To
 This bundle adds the following thing types to the Modbus binding.
 Note, that the things will show up under the Modbus binding.
 
-| Thing              | ThingTypeID | Description                                        |
-| ------------------ | ----------- | -------------------------------------------------- |
-| Stiebel Eltron ISG | heatpump    | A stiebel eltron heat pump connected through a ISG |
+| Thing              | ThingTypeID | Description                                         |
+| ------------------ | ----------- | --------------------------------------------------- |
+| Stiebel Eltron ISG | heatpump    | A stiebel eltron heat pump connected through an ISG |
 
 ## Discovery
 

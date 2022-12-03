@@ -76,7 +76,7 @@ For other gateways you can add them manually, see [Thing Configuration](#thing-c
 #### Discovery by Activation
 
 BUS devices can also be discovered if they are activated while an Inbox Scan has been started: start a new Scan, wait 15-20 seconds and then _while the Scan is still active_, activate the physical device (for example dim the dimmer) to have it discovered by the binding.
-Setting the parameter `discoveryByActivation=true` for a BUS gateway Thing makes discovery by activation always working also when a Inbox Scan hasn't been started.
+Setting the parameter `discoveryByActivation=true` for a BUS gateway Thing makes discovery by activation always working also when an Inbox Scan hasn't been started.
 
 If a device cannot be discovered automatically from Inbox it's always possible to add it manually, see [Configuring Devices](#configuring-devices).
 
@@ -212,7 +212,7 @@ With this configuration when AUX `where=4` goes ON, the Alarm will execute the a
 | `shutter`                               | `bus_automation`                                              | Rollershutter | To activate roller shutters (`UP`, `DOWN`, `STOP`, Percent - [see Shutter position](#shutter-position))               |     R/W     |
 | `scenario`                              | `bus_scenario_control`                                        | String        | Trigger channel for Basic scenario events [see possible values](#scenario-channels)                                   | R (TRIGGER) |
 | `button#X`                              | `bus_cen_scenario_control`, `bus_cenplus_scenario_control`    | String        | Trigger channel for CEN/CEN+ scenario events [see possible values](#scenario-channels)                                | R (TRIGGER) |
-| `sensor`                                | `bus_dry_contact_ir`                                          | Switch        | Indicates if a Dry Contact Interface is `ON`/`OFF`, or if a IR Sensor is detecting movement (`ON`), or not  (`OFF`)   |      R      |
+| `sensor`                                | `bus_dry_contact_ir`                                          | Switch        | Indicates if a Dry Contact Interface is `ON`/`OFF`, or if an IR Sensor is detecting movement (`ON`), or not  (`OFF`)  |      R      |
 | `power`                                 | `bus_energy_meter`                                            | Number:Power  | The current active power usage from Energy Meter                                                                      |      R      |
 | `aux`                                   | `bus_aux`                                                     | String        | Possible commands: `ON`, `OFF`, `TOGGLE`, `STOP`, `UP`, `DOWN`, `ENABLED`, `DISABLED`, `RESET_GEN`, `RESET_BI`, `RESET_TRI`. Only `ON` and `OFF` are supported for now |     R/W     |
 

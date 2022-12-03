@@ -24,7 +24,7 @@ Once a JuiceNet Account bridge has been created, any JuiceBox EV Chargers associ
 The configuration required is to create a JuiceNet account thing and fill in the appropriate API token.
 The API token can be found on the Account page at https://home.juice.net/Manage.
 
-A JuiceBox EV Charger requires a a unitID which can also be found in the device settings at the JuiceNet web page.
+A JuiceBox EV Charger requires a unitID which can also be found in the device settings at the JuiceNet web page.
 
 ## Channels
 

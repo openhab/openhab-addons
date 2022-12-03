@@ -229,7 +229,7 @@ public class WebthingDiscoveryService extends AbstractDiscoveryService implement
             // endpoints supporting multiple WebThings.
             //
             // In the routine below the enpoint will be checked for single WebThings first, than for multiple
-            // WebThings if a ingle WebTHing has not been found.
+            // WebThings if a single WebThing has not been found.
             // Furthermore, first it will be tried to connect the endpoint using https. If this fails, as fallback
             // plain http is used.
 

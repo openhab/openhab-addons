@@ -34,7 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This is a abstract superclass for BluetoothAdapter implementations. This class takes care of inactive device cleanup
+ * This is an abstract superclass for BluetoothAdapter implementations. This class takes care of inactive device cleanup
  * as well as handling background and active discovery logic.
  *
  * Subclasses will primarily be responsible for device discovery

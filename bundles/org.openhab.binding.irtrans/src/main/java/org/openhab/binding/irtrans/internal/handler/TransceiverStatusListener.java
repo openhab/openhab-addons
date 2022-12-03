@@ -16,7 +16,7 @@ import org.openhab.binding.irtrans.internal.IrCommand;
 
 /**
  * The {@link TransceiverStatusListener} is interface that is to be implemented
- * by all classes that wish to be informed of events happening to a infrared
+ * by all classes that wish to be informed of events happening to an infrared
  * transceiver
  *
  * @author Karel Goderis - Initial contribution

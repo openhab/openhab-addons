@@ -66,7 +66,7 @@ public class BaseDmxChannel implements Comparable<BaseDmxChannel> {
     /**
      * get DMX channel
      *
-     * @return a integer for the DMX channel
+     * @return an integer for the DMX channel
      */
     public int getChannelId() {
         return dmxChannelId;
@@ -75,7 +75,7 @@ public class BaseDmxChannel implements Comparable<BaseDmxChannel> {
     /**
      * get DMX universe
      *
-     * @return a integer for the DMX universe
+     * @return an integer for the DMX universe
      */
     public int getUniverseId() {
         return universeId;
@@ -84,7 +84,7 @@ public class BaseDmxChannel implements Comparable<BaseDmxChannel> {
     /**
      * set the DMX universe id
      *
-     * @param universeId a integer for the new universe
+     * @param universeId an integer for the new universe
      */
     public void setUniverseId(int universeId) {
         this.universeId = universeId;

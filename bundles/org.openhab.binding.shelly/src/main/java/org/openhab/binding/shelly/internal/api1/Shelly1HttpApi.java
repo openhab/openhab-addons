@@ -463,7 +463,7 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
     }
 
     /**
-     * Sends a IR key code to the Shelly Sense.
+     * Sends an IR key code to the Shelly Sense.
      *
      * @param keyCode A keyCoud could be a symbolic name (as defined in the key map on the device) or a PRONTO Code in
      *            plain or hex64 format

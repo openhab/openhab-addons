@@ -15,7 +15,7 @@ package org.openhab.binding.jeelink.internal.ec3k;
 import org.openhab.binding.jeelink.internal.Reading;
 
 /**
- * Reading of a EC3000 sensor.
+ * Reading of an EC3000 sensor.
  *
  * @author Volker Bier - Initial contribution
  */

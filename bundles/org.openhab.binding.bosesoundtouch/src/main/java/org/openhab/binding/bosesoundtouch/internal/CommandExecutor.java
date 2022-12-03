@@ -111,7 +111,7 @@ public class CommandExecutor implements AvailableSources {
     }
 
     /**
-     * Initializes a API Request on this device
+     * Initializes an API Request on this device
      *
      * @param apiRequest the apiRequest thats informations should be collected
      */
