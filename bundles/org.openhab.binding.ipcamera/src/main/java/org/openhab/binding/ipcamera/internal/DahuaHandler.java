@@ -169,18 +169,85 @@ public class DahuaHandler extends ChannelDuplexHandler {
                     ipCameraHandler.setChannelState(CHANNEL_TOO_BLURRY_ALARM, OnOffType.OFF);
                 }
                 break;
+            case "AccessControl":
+                if ("Pulse".equals(action)) {
+                    if (content.contains("\"Method\" : 1")) {
+                        if (content.contains("\"ErrorCode\" : 0")) {
+                            startIndex = content.indexOf("CardNo", startIndex) + 11;
+                            if (startIndex > 0) {
+                                endIndex = content.indexOf(",", startIndex) - 1;
+                                String cardNo = content.substring(startIndex, endIndex);
+                                ipCameraHandler.setChannelState(CHANNEL_ACCEPTED_CARD_NUMBER, new StringType(cardNo));
+                                ipCameraHandler.setChannelState(CHANNEL_DOOR_UNLOCK, OnOffType.ON);
+                            }
+                        }
+                    } else if (content.contains("\"Method\" : 5")) {
+                        ipCameraHandler.setChannelState(CHANNEL_DOOR_UNLOCK, OnOffType.ON);
+                        ipCameraHandler.logger.debug("Door opened from button");
+                    } else if (content.contains("\"Method\" : 4")) {
+                        ipCameraHandler.setChannelState(CHANNEL_DOOR_UNLOCK, OnOffType.ON);
+                        ipCameraHandler.logger.debug("Door opened remotely");
+                    }
+                } else {
+                    ipCameraHandler.logger.debug("Unrecognised Access control Dahua event, content={}", content);
+                }
+                break;
+            case "DoorCard":
+                if ("Pulse".equals(action)) {
+                    if (content.contains("\"Number\"")) {
+                        startIndex = content.indexOf("Number", startIndex) + 11;
+                        if (startIndex > 0) {
+                            endIndex = content.indexOf(",", startIndex) - 1;
+                            String cardNo = content.substring(startIndex, endIndex);
+                            ipCameraHandler.setChannelState(CHANNEL_UNACCEPTED_CARD_NUMBER, new StringType(cardNo));
+                        }
+                    }
+                } else {
+                    ipCameraHandler.logger.debug("Unrecognised Access control Dahua event, content={}", content);
+                }
+                break;
+            case "ProfileAlarmTransmit":
+                if ("Start".equals(action)) {
+                    if (content.contains("DoorMagnetism"))
+                        ipCameraHandler.setChannelState(CHANNEL_MAGNETIC_LOCK_WARNING, OnOffType.ON);
+                } else if ("Stop".equals(action)) {
+                    if (content.contains("DoorMagnetism"))
+                        ipCameraHandler.setChannelState(CHANNEL_MAGNETIC_LOCK_WARNING, OnOffType.OFF);
+                } else {
+                    ipCameraHandler.logger.debug("Unrecognised Alarm Dahua event, content={}", content);
+                }
+                break;
+            case "DoorStatus":
+                if ("Pulse".equals(action)) {
+                    if (content.contains("\"Relay\" : true")) {
+                        ipCameraHandler.setChannelState(CHANNEL_DOOR_UNLOCK, OnOffType.OFF);
+                    } else if (content.contains("\"Status\" : \"Close\"")) {
+                        ipCameraHandler.setChannelState(CHANNEL_DOOR_CONTACT, OnOffType.ON);
+                    } else if (content.contains("\"Status\" : \"Open\"")) {
+                        ipCameraHandler.setChannelState(CHANNEL_DOOR_CONTACT, OnOffType.OFF);
+                    } else {
+                        ipCameraHandler.logger.debug("Unrecognised Door status Dahua event, content={}", content);
+                    }
+                }
+                break;
             case "AlarmLocal":
                 if ("Start".equals(action)) {
                     if (content.contains("index=0")) {
                         ipCameraHandler.setChannelState(CHANNEL_EXTERNAL_ALARM_INPUT, OnOffType.ON);
+                    } else if (content.contains("index=3")) {
+                        ipCameraHandler.setChannelState(CHANNEL_EXIT_BUTTON, OnOffType.ON);
                     } else {
                         ipCameraHandler.setChannelState(CHANNEL_EXTERNAL_ALARM_INPUT2, OnOffType.ON);
+                        ipCameraHandler.logger.trace("External alarm Dahua event, content={}", content);
                     }
                 } else if ("Stop".equals(action)) {
                     if (content.contains("index=0")) {
                         ipCameraHandler.setChannelState(CHANNEL_EXTERNAL_ALARM_INPUT, OnOffType.OFF);
+                    } else if (content.contains("index=3")) {
+                        ipCameraHandler.setChannelState(CHANNEL_EXIT_BUTTON, OnOffType.OFF);
                     } else {
                         ipCameraHandler.setChannelState(CHANNEL_EXTERNAL_ALARM_INPUT2, OnOffType.OFF);
+                        ipCameraHandler.logger.trace("External alarm Dahua event, content={}", content);
                     }
                 }
                 break;
@@ -201,6 +268,7 @@ public class DahuaHandler extends ChannelDuplexHandler {
             case "RtspSessionDisconnect":
             case "LeFunctionStatusSync":
             case "RecordDelete":
+            case "SIPRegisterResult":
                 break;
             default:
                 ipCameraHandler.logger.debug("Unrecognised Dahua event, Code={}, action={}", code, action);
@@ -213,6 +281,12 @@ public class DahuaHandler extends ChannelDuplexHandler {
             ipCameraHandler.setChannelState(CHANNEL_ENABLE_MOTION_ALARM, OnOffType.ON);
         } else if (content.contains("table.MotionDetect[" + nvrChannel + "].Enable=false")) {
             ipCameraHandler.setChannelState(CHANNEL_ENABLE_MOTION_ALARM, OnOffType.OFF);
+        }
+
+        // Handle MotionDetectLevel alarm
+        if (content.contains("table.MotionDetect[0].Level=")) {
+            String value = ipCameraHandler.returnValueFromString(content, "table.MotionDetect[0].Level=");
+            ipCameraHandler.setChannelState(CHANNEL_MOTION_DETECTION_LEVEL, PercentType.valueOf(value));
         }
 
         // determine if the audio alarm is turned on or off.
@@ -240,6 +314,14 @@ public class DahuaHandler extends ChannelDuplexHandler {
         } else if (content.contains("table.LeLensMask[0].Enable=false")) {
             ipCameraHandler.setChannelState(CHANNEL_ENABLE_PRIVACY_MODE, OnOffType.OFF);
         }
+
+        // determine if exit button is enabled
+        if (content.contains("table.AccessControlGeneral.ButtonExitEnable=true")) {
+            ipCameraHandler.setChannelState(CHANNEL_ENABLE_PRIVACY_MODE, OnOffType.ON);
+        } else if (content.contains("table.AccessControlGeneral.ButtonExitEnable=false")) {
+            ipCameraHandler.setChannelState(CHANNEL_ENABLE_PRIVACY_MODE, OnOffType.OFF);
+        }
+        //
     }
 
     // This handles the incoming http replies back from the camera.
@@ -280,6 +362,13 @@ public class DahuaHandler extends ChannelDuplexHandler {
                 case CHANNEL_ENABLE_PRIVACY_MODE:
                     ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=getConfig&name=LeLensMask[0]");
                     return;
+                case CHANNEL_MOTION_DETECTION_LEVEL:
+                    ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=getConfig&name=MotionDetect[0]");
+                    return;
+                case CHANNEL_EXIT_BUTTON_ENABLED:
+                    ipCameraHandler
+                            .sendHttpGET("/cgi-bin/configManager.cgi?action=getConfig&name=AccessControlGeneral");
+                    return;
             }
             return;
         } // end of "REFRESH"
@@ -315,14 +404,15 @@ public class DahuaHandler extends ChannelDuplexHandler {
                 }
                 return;
             case CHANNEL_THRESHOLD_AUDIO_ALARM:
-                int threshold = Math.round(Float.valueOf(command.toString()));
-
-                if (threshold == 0) {
-                    ipCameraHandler.sendHttpGET(
-                            "/cgi-bin/configManager.cgi?action=setConfig&AudioDetect[0].MutationThreold=1");
-                } else {
-                    ipCameraHandler.sendHttpGET(
-                            "/cgi-bin/configManager.cgi?action=setConfig&AudioDetect[0].MutationThreold=" + threshold);
+                if (command instanceof PercentType) {
+                    if (PercentType.ZERO.equals(command)) {
+                        ipCameraHandler.sendHttpGET(
+                                "/cgi-bin/configManager.cgi?action=setConfig&AudioDetect[0].MutationThreold=1");
+                    } else {
+                        ipCameraHandler.sendHttpGET(
+                                "/cgi-bin/configManager.cgi?action=setConfig&AudioDetect[0].MutationThreold="
+                                        + ((PercentType) command).intValue());
+                    }
                 }
                 return;
             case CHANNEL_ENABLE_AUDIO_ALARM:
@@ -352,6 +442,19 @@ public class DahuaHandler extends ChannelDuplexHandler {
                             .sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&MotionDetect[0].Enable=false");
                 }
                 return;
+            case CHANNEL_MOTION_DETECTION_LEVEL:
+                if (command instanceof DecimalType) {
+                    if (DecimalType.ZERO.equals(command)) {
+                        ipCameraHandler.sendHttpGET(
+                                "/cgi-bin/configManager.cgi?action=setConfig&MotionDetect[0].Enable=false&MotionDetect[0].Level="
+                                        + ((DecimalType) command).intValue());
+                    } else {
+                        ipCameraHandler.sendHttpGET(
+                                "/cgi-bin/configManager.cgi?action=setConfig&MotionDetect[0].Enable=true&MotionDetect[0].EventHandler.Dejitter=1&MotionDetect[0].Level="
+                                        + ((DecimalType) command).intValue());
+                    }
+                }
+                return;
             case CHANNEL_ACTIVATE_ALARM_OUTPUT:
                 if (OnOffType.ON.equals(command)) {
                     ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&AlarmOut[0].Mode=1");
@@ -373,6 +476,21 @@ public class DahuaHandler extends ChannelDuplexHandler {
                 } else if (OnOffType.ON.equals(command)) {
                     ipCameraHandler
                             .sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&LeLensMask[0].Enable=true");
+                }
+                return;
+            case CHANNEL_DOOR_UNLOCK:
+                if (OnOffType.ON.equals(command)) {
+                    ipCameraHandler
+                            .sendHttpGET("/cgi-bin/accessControl.cgi?action=openDoor&channel=1&UserID=101&Type=Remote");
+                }
+                return;
+            case CHANNEL_EXIT_BUTTON_ENABLED:
+                if (OnOffType.ON.equals(command)) {
+                    ipCameraHandler.sendHttpGET(
+                            "/cgi-bin/configManager.cgi?action=setConfig&AccessControlGeneral.ButtonExitEnable=true");
+                } else if (OnOffType.OFF.equals(command)) {
+                    ipCameraHandler.sendHttpGET(
+                            "/cgi-bin/configManager.cgi?action=setConfig&AccessControlGeneral.ButtonExitEnable=false");
                 }
                 return;
         }
