@@ -150,9 +150,32 @@ public class InstarHandler extends ChannelDuplexHandler {
         }
     }
 
-    // This handles the commands that come from the Openhab event bus.
+    // This handles the commands that come from the openHAB event bus.
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
+            switch (channelUID.getId()) {
+                case CHANNEL_THRESHOLD_AUDIO_ALARM:
+                case CHANNEL_ENABLE_AUDIO_ALARM:
+                    ipCameraHandler.sendHttpGET("/param.cgi?cmd=getaudioalarmattr");
+                    return;
+                case CHANNEL_ENABLE_EXTERNAL_ALARM_INPUT:
+                    ipCameraHandler.sendHttpGET("/param.cgi?cmd=getioattr");
+                    return;
+                case CHANNEL_ENABLE_MOTION_ALARM:
+                    if (ipCameraHandler.newInstarApi) {
+                        ipCameraHandler.sendHttpGET("/param.cgi?cmd=getalarmattr");
+                    } else {
+                        ipCameraHandler.sendHttpGET("/cgi-bin/hi3510/param.cgi?cmd=getmdattr");
+                    }
+                    return;
+                case CHANNEL_ENABLE_PIR_ALARM:
+                    ipCameraHandler.sendHttpGET("/param.cgi?cmd=getpirattr");
+                case CHANNEL_AUTO_LED:
+                    ipCameraHandler.sendHttpGET("/param.cgi?cmd=getinfrared");
+                case CHANNEL_TEXT_OVERLAY:
+                    ipCameraHandler.sendHttpGET("/param.cgi?cmd=getoverlayattr&-region=1");
+                    return;
+            }
             return;
         } // end of "REFRESH"
         if (ipCameraHandler.newInstarApi) {

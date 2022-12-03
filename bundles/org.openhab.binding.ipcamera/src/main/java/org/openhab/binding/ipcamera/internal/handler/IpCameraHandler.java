@@ -1643,7 +1643,8 @@ public class IpCameraHandler extends BaseThingHandler {
                 if (mjpegUri.isEmpty()) {
                     mjpegUri = "/mjpegstream.cgi?-chn=12";
                 }
-                // Newer Instar cameras use this to setup the Alarm Server
+                // Newer Instar cameras use this to setup the Alarm Server, plus it is used to work out which API is
+                // implemented based on the response to these two requests.
                 sendHttpGET(
                         "/param.cgi?cmd=setasaction&-server=1&enable=1&-interval=1&cmd=setasattr&-as_index=1&-as_server="
                                 + hostIp + "&-as_port=" + SERVLET_PORT + "&-as_path=/ipcamera/"
