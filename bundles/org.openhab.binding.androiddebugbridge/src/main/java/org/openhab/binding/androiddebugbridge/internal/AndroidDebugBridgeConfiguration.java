@@ -49,7 +49,7 @@ public class AndroidDebugBridgeConfiguration {
     /**
      * Settings key for android versions where volume is gather using settings command (>=android 11).
      */
-    public String volumeSettingKey = "volume_music_hdmi";;
+    public String volumeSettingKey = "volume_music_hdmi";
     /**
      * Configure media state detection behavior by package
      */
