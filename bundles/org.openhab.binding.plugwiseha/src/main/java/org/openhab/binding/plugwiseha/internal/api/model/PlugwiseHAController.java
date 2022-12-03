@@ -402,7 +402,7 @@ public class PlugwiseHAController {
         locationWithChangesOnly.setId(location.getId());
 
         LocationsArray locations = new LocationsArray();
-        locations.Items = new Location[] { locationWithChangesOnly };
+        locations.items = new Location[] { locationWithChangesOnly };
 
         request.setBodyParameter(locations);
 
