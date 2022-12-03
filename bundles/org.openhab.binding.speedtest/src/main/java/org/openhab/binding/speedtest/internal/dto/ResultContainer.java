@@ -46,7 +46,7 @@ public class ResultContainer {
     private String isp;
     @SerializedName("interface")
     @Expose
-    private Interface _interface;
+    private Interface networkInterface;
     @SerializedName("server")
     @Expose
     private Server server;
@@ -111,11 +111,11 @@ public class ResultContainer {
     }
 
     public Interface getInterface() {
-        return _interface;
+        return networkInterface;
     }
 
-    public void setInterface(Interface _interface) {
-        this._interface = _interface;
+    public void setInterface(Interface networkInterface) {
+        this.networkInterface = networkInterface;
     }
 
     public Server getServer() {
