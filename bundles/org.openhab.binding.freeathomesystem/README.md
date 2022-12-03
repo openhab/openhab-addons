@@ -11,9 +11,11 @@ It requires a System Access Point with version 2.6.1 or higher.
 # Supported Devices
 
 **Network Gateway / System Access Point**
+
  - ABB / Busch-Jaeger System Access Point 2.0
 
 **Sensors and Actuators**
+
  - Switch Actuator Sensor with single and multiple channels (wired and wireless)
  - Dimming Actuator Sensor with single and multiple channels (wired and wireless)
  - Switch Actuator 4-channel
@@ -21,17 +23,20 @@ It requires a System Access Point with version 2.6.1 or higher.
  - Hue devices (untested)
 
 **Blinds and Windows**
+
  - Shutter Actuator with single and multiple channels (wired and wireless)
  - Blind Actuator  with single and multiple channels (wired and wireless)
  - Attic window actuator
  - Awning actuator
 
 **Room Temperature Control**
+
  - Room temperature controller master without fan
  - Room temperature controller master with fan
  - Room temperature controller slave
 
 **Other devices** (e.g. movement detector, ring sensor and door opener)
+
  - IP-touch panel (function: door opener, door ring sensor)
  - Movement Detector Actuator
 
@@ -81,6 +86,7 @@ There are several settings for a bridge:
 | **password** (required) | Password of the user |
 
 The syntax for a bridge is:
+
 ```java
 freeathomesystem:bridge:NAME
 ```
@@ -123,11 +129,13 @@ Number LivingRoom_ThermostatHeatingDemand                 "Thermostat Heating De
 ```
 
 Sample for the free@home sensor/actuator 1/1
+
 ```
 Switch SwitchMoodlight_Livingroom                         "Moodlight Livingroom"     <switch>  (Livingroom)  ["Light"]   { channel="freeathomesystem:actuator:0836e63805:ABB700D85E0A_0:switchChannel }
 ```
 
 Sample for the free@home sensor/actuator 2/2
+
 ```
 Switch Switch_Livingroom_Double_1                         "Moodlight Livingroom"     <switch>  (Livingroom)  ["Light"]   { channel="freeathomesystem:actuator:0836e63805:ABB700887F0A_0:switchChannel }
 Switch Switch_Livingroom_Double_2                         "Moodlight Livingroom"     <switch>  (Livingroom)  ["Light"]   { channel="freeathomesystem:actuator:0836e63805:ABB700887F0A_1:switchChannel }

@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.ThingTypeProvider;
@@ -31,12 +31,12 @@ import org.osgi.service.component.annotations.Component;
  */
 
 @Component(service = { FreeAtHomeThingTypeProvider.class, ThingTypeProvider.class })
-
+@NonNullByDefault
 public class FreeAtHomeThingTypeProviderImpl implements FreeAtHomeThingTypeProvider {
     private final Map<ThingTypeUID, ThingType> thingTypesByUID = new HashMap<>();
 
     @Override
-    public @NonNull Collection<@NonNull ThingType> getThingTypes(@Nullable Locale locale) {
+    public Collection<ThingType> getThingTypes(@Nullable Locale locale) {
         Map<ThingTypeUID, ThingType> copy = new HashMap<>(thingTypesByUID);
         return copy.values();
     }
@@ -47,7 +47,9 @@ public class FreeAtHomeThingTypeProviderImpl implements FreeAtHomeThingTypeProvi
     }
 
     @Override
-    public void addThingType(ThingType thingType) {
-        thingTypesByUID.put(thingType.getUID(), thingType);
+    public void addThingType(@Nullable ThingType thingType) {
+        if (thingType != null) {
+            thingTypesByUID.put(thingType.getUID(), thingType);
+        }
     }
 }

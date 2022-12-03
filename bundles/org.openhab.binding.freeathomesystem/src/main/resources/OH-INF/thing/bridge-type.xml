@@ -6,9 +6,7 @@
 
 	<bridge-type id="bridge">
 		<label>Free@Home Bridge</label>
-		<description>This bridge represents the Free@Home Gateway.
-		</description>
-
+		<description>This bridge represents the Free@Home Gateway</description>
 
 		<config-description>
 			<parameter-group name="identification">
@@ -37,6 +35,4 @@
 
 		</config-description>
 	</bridge-type>
-
-
 </thing:thing-descriptions>

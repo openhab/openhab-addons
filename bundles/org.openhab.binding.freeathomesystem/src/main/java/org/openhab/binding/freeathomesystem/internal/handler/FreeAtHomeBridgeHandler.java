@@ -95,7 +95,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
 
     int numberOfComponents = 0;
 
-    private final int BRIDGE_WEBSOCKET_RECONNECT_DELAY = 30;
+    private static final int BRIDGE_WEBSOCKET_RECONNECT_DELAY = 30;
 
     private List<String> listOfComponentId = new ArrayList<String>();
 

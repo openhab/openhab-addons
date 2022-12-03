@@ -30,7 +30,6 @@ import org.osgi.service.component.annotations.Component;
  * @author Andras Uhrin - Initial contribution
  *
  */
-
 @Component(service = { FreeAtHomeChannelTypeProvider.class, ChannelTypeProvider.class })
 public class FreeAtHomeChannelTypeProviderImpl implements FreeAtHomeChannelTypeProvider {
 
@@ -39,9 +38,11 @@ public class FreeAtHomeChannelTypeProviderImpl implements FreeAtHomeChannelTypeP
     @Override
     public Collection<@NonNull ChannelType> getChannelTypes(@Nullable Locale locale) {
         Collection<ChannelType> result = new ArrayList<>();
+
         for (ChannelTypeUID uid : channelTypesByUID.keySet()) {
             result.add(channelTypesByUID.get(uid));
         }
+
         return result;
     }
 
@@ -51,7 +52,9 @@ public class FreeAtHomeChannelTypeProviderImpl implements FreeAtHomeChannelTypeP
     }
 
     @Override
-    public void addChannelType(ChannelType channelType) {
-        channelTypesByUID.put(channelType.getUID(), channelType);
+    public void addChannelType(@Nullable ChannelType channelType) {
+        if (channelType != null) {
+            channelTypesByUID.put(channelType.getUID(), channelType);
+        }
     }
 }

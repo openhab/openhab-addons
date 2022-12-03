@@ -28,7 +28,7 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class FidTranslationUtils {
 
-    private static final Map<String, String> mapFunctionId;
+    private static final Map<String, String> MAP_FUNCTIONID;
 
     public static final int FID_UNKNOWN = 0xFFFFAAFF; // Control element
 
@@ -327,11 +327,11 @@ public class FidTranslationUtils {
         mapDesc.put("0x00A8", "Door lock control"); // FID_DOOR_LOCK_CONTROL
         mapDesc.put("0x00AA", "Room temperature controller with fan speed level"); // FID_VRV_GATEWAY
 
-        mapFunctionId = Collections.unmodifiableMap(mapDesc);
+        MAP_FUNCTIONID = Collections.unmodifiableMap(mapDesc);
     }
 
     public static @Nullable String getFunctionIdText(String Key) {
-        String functionIdString = mapFunctionId.get(Key);
+        String functionIdString = MAP_FUNCTIONID.get(Key);
 
         return functionIdString;
     }

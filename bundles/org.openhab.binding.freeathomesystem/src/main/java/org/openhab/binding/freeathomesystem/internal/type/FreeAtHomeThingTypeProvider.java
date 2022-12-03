@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.freeathomesystem.internal.type;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.binding.ThingTypeProvider;
 import org.openhab.core.thing.type.ThingType;
 
@@ -20,6 +21,7 @@ import org.openhab.core.thing.type.ThingType;
  * @author Andras Uhrin - Initial contribution
  *
  */
+@NonNullByDefault
 public interface FreeAtHomeThingTypeProvider extends ThingTypeProvider {
 
     /**

@@ -44,7 +44,6 @@ import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.EventDescription;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
@@ -59,6 +58,8 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class FreeAtHomeDeviceHandler extends FreeAtHomeSystemBaseHandler {
+
+    private static final String CHANNEL_URI = "channel-type:freeathomesystem:config";
 
     private final Logger logger = LoggerFactory.getLogger(FreeAtHomeDeviceHandler.class);
     private FreeAtHomeDeviceDescription device = new FreeAtHomeDeviceDescription();
@@ -187,7 +188,14 @@ public class FreeAtHomeDeviceHandler extends FreeAtHomeSystemBaseHandler {
             stateFragment.withMinimum(min).withMaximum(max);
         }
 
-        EventDescription eventDescription = null;
+        try {
+            configDescriptionUriChannel = new URI(CHANNEL_URI);
+        } catch (URISyntaxException e) {
+            logger.debug("Channel config URI cannot create for datapoint - datapoint group: {}", dpg.getLabel());
+
+            return null;
+        }
+
         ChannelTypeBuilder channelTypeBuilder = ChannelTypeBuilder
                 .state(channelTypeUID,
                         String.format("%s-%s-%s-%s", dpg.getLabel(), dpg.getOpenHabItemType(), dpg.getOpenHabCategory(),
@@ -195,15 +203,8 @@ public class FreeAtHomeDeviceHandler extends FreeAtHomeSystemBaseHandler {
                         dpg.getOpenHabItemType())
                 .withCategory(dpg.getOpenHabCategory()).withStateDescriptionFragment(stateFragment.build());
 
-        try {
-            configDescriptionUriChannel = new URI("channel-type:freeathomesystem:config");
-        } catch (URISyntaxException e) {
-            logger.debug("Channel config URI cannot create for datapoint - datapoint group: {}", dpg.getLabel());
-
-            return null;
-        }
-
         ChannelType channelType = channelTypeBuilder.isAdvanced(false)
+                .withConfigDescriptionURI(configDescriptionUriChannel)
                 .withDescription(String.format("Type for channel - %s ", dpg.getLabel())).build();
 
         channelTypeProvider.addChannelType(channelType);
@@ -376,8 +377,6 @@ public class FreeAtHomeDeviceHandler extends FreeAtHomeSystemBaseHandler {
         List<Channel> thingChannels = new ArrayList<>(this.getThing().getChannels());
 
         if (thingChannels.isEmpty()) {
-            ThingUID thingUID = thing.getUID();
-
             for (int i = 0; i < device.getNumberOfChannels(); i++) {
                 FreeAtHomeDeviceChannel channel = device.getChannel(i);
 

@@ -26,8 +26,8 @@ public class PIdContainerClass {
     String category;
     int min;
     int max;
-    String Label;
-    String Descprition;
+    String label;
+    String descprition;
 
     PIdContainerClass(String pValueType, String pCategory, String pMin, String pMax, String pLabel,
             String pDescription) {
@@ -35,7 +35,7 @@ public class PIdContainerClass {
         this.category = pCategory;
         this.min = 0;// Integer.getInteger(pMin);
         this.max = 100;// Integer.getInteger(pMax);
-        this.Label = pLabel;
-        this.Descprition = pDescription;
+        this.label = pLabel;
+        this.descprition = pDescription;
     }
 }

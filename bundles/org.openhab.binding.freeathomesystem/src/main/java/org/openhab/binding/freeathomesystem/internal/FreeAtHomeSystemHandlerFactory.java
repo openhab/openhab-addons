@@ -61,7 +61,7 @@ public class FreeAtHomeSystemHandlerFactory extends BaseThingHandlerFactory {
     private final FreeAtHomeChannelTypeProvider channelTypeProvider;
     private final FreeAtHomeChannelGroupTypeProvider channelGroupsTypeProvider;
 
-    private @Nullable ThingType generteThingTypes() {
+    private void generteThingTypes() {
         String label = "free-at-home-device";
         String description = String.format("Generic free@home device");
 
@@ -77,13 +77,16 @@ public class FreeAtHomeSystemHandlerFactory extends BaseThingHandlerFactory {
         try {
             configDescriptionURI = new URI("thing-type:freeathomesystem:free-at-home-device");
 
-            return ThingTypeBuilder.instance(thingTypeUID, label).withSupportedBridgeTypeUIDs(supportedBridgeTypeUids)
-                    .withDescription(description).withProperties(properties)
-                    .withConfigDescriptionURI(configDescriptionURI).build();
+            ThingType thingType = ThingTypeBuilder.instance(thingTypeUID, label)
+                    .withSupportedBridgeTypeUIDs(supportedBridgeTypeUids).withDescription(description)
+                    .withProperties(properties).withConfigDescriptionURI(configDescriptionURI).build();
+
+            this.thingTypeProvider.addThingType(thingType);
         } catch (URISyntaxException e) {
             logger.debug("Exception during creating config description URI");
         }
-        return null;
+
+        return;
     }
 
     @Activate
@@ -94,7 +97,7 @@ public class FreeAtHomeSystemHandlerFactory extends BaseThingHandlerFactory {
         this.channelTypeProvider = channelTypeProvider;
         this.channelGroupsTypeProvider = channelGroupsTypeProvider;
 
-        this.thingTypeProvider.addThingType(generteThingTypes());
+        generteThingTypes();
     }
 
     @Override

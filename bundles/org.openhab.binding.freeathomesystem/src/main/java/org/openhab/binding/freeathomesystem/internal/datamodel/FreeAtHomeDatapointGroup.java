@@ -41,10 +41,10 @@ public class FreeAtHomeDatapointGroup {
 
     private int datapointGroupDirection;
     private int pairingId;
+
     private String functionString;
     private FreeAtHomeDatapoint inputDatapoint;
     private FreeAtHomeDatapoint outputDatapoint;
-
     private ValueStateConverter valueStateConverter;
 
     FreeAtHomeDatapointGroup() {
