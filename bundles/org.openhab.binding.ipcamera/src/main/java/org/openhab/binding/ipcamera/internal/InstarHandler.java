@@ -63,7 +63,7 @@ public class InstarHandler extends ChannelDuplexHandler {
             ipCameraHandler.logger.trace("HTTP Result back from camera is \t:{}:", content);
             switch (requestUrl) {
                 case "/param.cgi?cmd=getinfrared":
-                    if (content.contains("var infraredstat=\"auto") || content.contains("infraredstat=\"2")) {
+                    if (content.contains("var infraredstat=\"auto") || content.contains("infraredstat=\"2\"")) {
                         ipCameraHandler.setChannelState(CHANNEL_AUTO_LED, OnOffType.ON);
                     } else {
                         ipCameraHandler.setChannelState(CHANNEL_AUTO_LED, OnOffType.OFF);
@@ -92,7 +92,7 @@ public class InstarHandler extends ChannelDuplexHandler {
                     }
                     break;
                 case "/param.cgi?cmd=getalarmattr":// Motion Alarm new
-                    if (content.contains("armed=\"1")) {
+                    if (content.contains("armed=\"1\"")) {
                         ipCameraHandler.setChannelState(CHANNEL_ENABLE_MOTION_ALARM, OnOffType.ON);
                     } else {
                         ipCameraHandler.setChannelState(CHANNEL_ENABLE_MOTION_ALARM, OnOffType.OFF);
