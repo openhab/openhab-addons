@@ -172,6 +172,14 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
+	<channel-type id="returnWaterTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Return Water Temperature</label>
+		<description>Gets the temperature of the return water</description>
+		<category>heating</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
 	<channel-type id="dhwSetpoint">
 		<item-type>Number:Temperature</item-type>
 		<label>Domestic Hot Water Setpoint Temperature</label>
