@@ -12,10 +12,16 @@
  */
 package org.openhab.binding.systeminfo.internal.model;
 
+import javax.measure.quantity.ElectricPotential;
+import javax.measure.quantity.Temperature;
+import javax.measure.quantity.Time;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.library.dimension.DataAmount;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 
 /**
@@ -104,9 +110,9 @@ public interface SysteminfoInterface {
     /**
      * Get the System uptime (time since boot).
      *
-     * @return time in minutes since boot
+     * @return time since boot
      */
-    public DecimalType getCpuUptime();
+    public QuantityType<Time> getCpuUptime();
 
     /**
      * Get the number of threads currently running
@@ -119,101 +125,101 @@ public interface SysteminfoInterface {
     /**
      * Returns total size of memory
      *
-     * @return memory size in MB
+     * @return memory size
      */
-    public DecimalType getMemoryTotal();
+    public QuantityType<DataAmount> getMemoryTotal();
 
     /**
      * Returns available size of memory
      *
-     * @return memory size in MB
+     * @return memory size
      */
-    public DecimalType getMemoryAvailable();
+    public QuantityType<DataAmount> getMemoryAvailable();
 
     /**
      * Returns used size of memory
      *
-     * @return memory size in MB
+     * @return memory size
      */
-    public DecimalType getMemoryUsed();
+    public QuantityType<DataAmount> getMemoryUsed();
 
     /**
      * Percents of available memory on the machine
      *
      * @return percent of available memory or null, if no information is available
      */
-    public @Nullable DecimalType getMemoryAvailablePercent();
+    public @Nullable PercentType getMemoryAvailablePercent();
 
     /**
      * Percents of used memory on the machine
      *
      * @return percent of used memory or null, if no information is available
      */
-    public @Nullable DecimalType getMemoryUsedPercent();
+    public @Nullable PercentType getMemoryUsedPercent();
 
     // Swap memory info
     /**
      * Returns total size of swap memory
      *
-     * @return memory size in MB or 0, if no there is no swap memory
+     * @return memory size or 0, if there is no swap memory
      */
-    public @Nullable DecimalType getSwapTotal();
+    public @Nullable QuantityType<DataAmount> getSwapTotal();
 
     /**
      * Returns available size swap of memory
      *
-     * @return memory size in MB or 0, if no there is no swap memory
+     * @return memory size or 0, if no there is no swap memory
      */
-    public @Nullable DecimalType getSwapAvailable();
+    public @Nullable QuantityType<DataAmount> getSwapAvailable();
 
     /**
      * Returns used size of swap memory
      *
-     * @return memory size in MB or 0, if no there is no swap memory
+     * @return memory size or 0, if no there is no swap memory
      */
-    public @Nullable DecimalType getSwapUsed();
+    public @Nullable QuantityType<DataAmount> getSwapUsed();
 
     /**
      * Percents of available swap memory on the machine
      *
      * @return percent of available memory or null, if no there is no swap memory
      */
-    public @Nullable DecimalType getSwapAvailablePercent();
+    public @Nullable PercentType getSwapAvailablePercent();
 
     /**
      * Percents of used swap memory on the machine
      *
      * @return percent of used memory or null, if no there is no swap memory
      */
-    public @Nullable DecimalType getSwapUsedPercent();
+    public @Nullable PercentType getSwapUsedPercent();
 
     // Storage info
     /**
      * Returns the total space of the logical storage volume.
      *
      * @param deviceIndex - the index of the logical volume
-     * @return storage size in MB
+     * @return storage size
      * @throws DeviceNotFoundException
      */
-    public DecimalType getStorageTotal(int deviceIndex) throws DeviceNotFoundException;
+    public QuantityType<DataAmount> getStorageTotal(int deviceIndex) throws DeviceNotFoundException;
 
     /**
      * Returns the available storage space on the logical storage volume
      *
      * @param deviceIndex - the index of the logical volume
-     * @return storage size in MB
+     * @return storage size
      * @throws DeviceNotFoundException
      */
-    public DecimalType getStorageAvailable(int deviceIndex) throws DeviceNotFoundException;
+    public QuantityType<DataAmount> getStorageAvailable(int deviceIndex) throws DeviceNotFoundException;
 
     /**
      * Gets the used storage space on the logical storage volume
      *
      * @param deviceIndex - the index of the logical volume
-     * @return storage size in MB
+     * @return storage size
      * @throws DeviceNotFoundException
      */
-    public DecimalType getStorageUsed(int deviceIndex) throws DeviceNotFoundException;
+    public QuantityType<DataAmount> getStorageUsed(int deviceIndex) throws DeviceNotFoundException;
 
     /**
      * Gets the percent of available storage on the logical volume
@@ -222,7 +228,7 @@ public interface SysteminfoInterface {
      * @return percent of available storage or null
      * @throws DeviceNotFoundException
      */
-    public @Nullable DecimalType getStorageAvailablePercent(int deviceIndex) throws DeviceNotFoundException;
+    public @Nullable PercentType getStorageAvailablePercent(int deviceIndex) throws DeviceNotFoundException;
 
     /**
      * Gets the percent of used storage on the logical volume
@@ -231,7 +237,7 @@ public interface SysteminfoInterface {
      * @return percent of used storage or null
      * @throws DeviceNotFoundException
      */
-    public @Nullable DecimalType getStorageUsedPercent(int deviceIndex) throws DeviceNotFoundException;
+    public @Nullable PercentType getStorageUsedPercent(int deviceIndex) throws DeviceNotFoundException;
 
     /**
      * Gets the name of the logical storage volume
@@ -330,20 +336,20 @@ public interface SysteminfoInterface {
     public DecimalType getNetworkPacketsSent(int networkIndex) throws DeviceNotFoundException;
 
     /**
-     * Get data sent in MB for this network
+     * Get data sent for this network
      *
      * @param networkIndex - the index of the network
      * @throws DeviceNotFoundException
      */
-    public DecimalType getNetworkDataSent(int networkIndex) throws DeviceNotFoundException;
+    public QuantityType<DataAmount> getNetworkDataSent(int networkIndex) throws DeviceNotFoundException;
 
     /**
-     * Get data received in MB for this network
+     * Get data received for this network
      *
      * @param networkIndex - the index of the network
      * @throws DeviceNotFoundException
      */
-    public DecimalType getNetworkDataReceived(int networkIndex) throws DeviceNotFoundException;
+    public QuantityType<DataAmount> getNetworkDataReceived(int networkIndex) throws DeviceNotFoundException;
 
     // Display info
     /**
@@ -358,16 +364,16 @@ public interface SysteminfoInterface {
     /**
      * Get the information from the CPU temperature sensors.
      *
-     * @return Temperature in degrees Celsius if available, null otherwise.
+     * @return Temperature if available, null otherwise.
      */
-    public @Nullable DecimalType getSensorsCpuTemperature();
+    public @Nullable QuantityType<Temperature> getSensorsCpuTemperature();
 
     /**
      * Get the information for the CPU voltage.
      *
-     * @return Voltage in Volts if available, null otherwise.
+     * @return Voltage if available, null otherwise.
      */
-    public @Nullable DecimalType getSensorsCpuVoltage();
+    public @Nullable QuantityType<ElectricPotential> getSensorsCpuVoltage();
 
     /**
      * Get fan speed
@@ -383,19 +389,19 @@ public interface SysteminfoInterface {
      * Get estimated time remaining for the power source.
      *
      * @param deviceIndex
-     * @return minutes remaining charge or null, if the time is estimated as unlimited
+     * @return duration remaining charge or null, if the time is estimated as unlimited
      * @throws DeviceNotFoundException
      */
-    public @Nullable DecimalType getBatteryRemainingTime(int deviceIndex) throws DeviceNotFoundException;
+    public @Nullable QuantityType<Time> getBatteryRemainingTime(int deviceIndex) throws DeviceNotFoundException;
 
     /**
      * Battery remaining capacity.
      *
      * @param deviceIndex
-     * @return percentage value /0-100/
+     * @return percentage value
      * @throws DeviceNotFoundException
      */
-    public DecimalType getBatteryRemainingCapacity(int deviceIndex) throws DeviceNotFoundException;
+    public PercentType getBatteryRemainingCapacity(int deviceIndex) throws DeviceNotFoundException;
 
     /**
      * Get battery name
@@ -433,10 +439,10 @@ public interface SysteminfoInterface {
      * Returns the size of RAM memory only usage of the process
      *
      * @param pid - the PID of the process
-     * @return memory size in MB
+     * @return memory size
      * @throws DeviceNotFoundException- thrown if process with this PID can not be found
      */
-    public @Nullable DecimalType getProcessMemoryUsage(int pid) throws DeviceNotFoundException;
+    public @Nullable QuantityType<DataAmount> getProcessMemoryUsage(int pid) throws DeviceNotFoundException;
 
     /**
      * Returns the full path of the executing process.
