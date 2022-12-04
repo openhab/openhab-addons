@@ -70,7 +70,7 @@ public class WebexTeamsHandler extends BaseThingHandler implements AccessTokenRe
 
     private @Nullable OAuthClientService authService;
 
-    private boolean configured = false; // is the handler instance properly configured?
+    private boolean configured; // is the handler instance properly configured?
     private volatile boolean active; // is the handler instance active?
     String accountType = ""; // bot or person?
 
@@ -97,6 +97,7 @@ public class WebexTeamsHandler extends BaseThingHandler implements AccessTokenRe
     public void initialize() {
         logger.debug("Initializing thing {}", this.getThing().getUID());
         active = true;
+        this.configured = false;
         config = getConfigAs(WebexTeamsConfiguration.class);
 
         final String token = config.token;
@@ -210,6 +211,9 @@ public class WebexTeamsHandler extends BaseThingHandler implements AccessTokenRe
 
     public boolean isAuthorized() {
         final AccessTokenResponse accessTokenResponse = getAccessTokenResponse();
+        if (accessTokenResponse == null) {
+            return false;
+        }
 
         if ("person".equals(this.accountType)) {
             return accessTokenResponse != null && accessTokenResponse.getAccessToken() != null
@@ -287,7 +291,7 @@ public class WebexTeamsHandler extends BaseThingHandler implements AccessTokenRe
                 updateStatus(ThingStatus.ONLINE);
                 return true;
             } catch (WebexTeamsException e) {
-                logger.warn("Failed to refresh: {}", e.getMessage());
+                logger.warn("Failed to refresh: {}.  Did you authorize?", e.getMessage());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
             return false;
