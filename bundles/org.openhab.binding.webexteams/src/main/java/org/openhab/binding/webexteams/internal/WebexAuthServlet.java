@@ -121,7 +121,7 @@ public class WebexAuthServlet extends HttpServlet {
 
             replaceMap.put(KEY_PAGE_REFRESH,
                     params.isEmpty() ? "" : String.format(HTML_META_REFRESH_CONTENT, servletBaseURL));
-            if (!reqError.isBlank()) {
+            if (reqError != null && !reqError.isBlank()) {
                 logger.debug("Webex redirected with an error: {}", reqError);
                 replaceMap.put(KEY_ERROR, String.format(HTML_ERROR, reqError));
             } else if (!reqState.isBlank()) {
@@ -172,12 +172,12 @@ public class WebexAuthServlet extends HttpServlet {
             map.put(ACCOUNT_SHWOMSG, "u-show");
             map.put(ACCOUNT_MSG, "Configure account.");
         } else if (handler.isAuthorized()) {
-            map.put(ACCOUNT_USER_ID, String.format(" (Authorized user: %s)", webexUser));
+            map.put(ACCOUNT_USER_ID, String.format("Authorized user: %s", webexUser));
             map.put(ACCOUNT_SHOWBTN, "u-hide");
             map.put(ACCOUNT_SHWOMSG, "u-show");
             map.put(ACCOUNT_MSG, "Authorized.");
-        } else if (!webexUser.isBlank()) {
-            map.put(ACCOUNT_USER_ID, String.format(" (Unauthorized user: %s)", webexUser));
+        } else if (webexUser.isBlank()) {
+            map.put(ACCOUNT_USER_ID, "Unauthorized user");
             map.put(ACCOUNT_SHOWBTN, "u-show");
             map.put(ACCOUNT_SHWOMSG, "u-hide");
             map.put(ACCOUNT_MSG, "");
