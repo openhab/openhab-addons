@@ -94,7 +94,12 @@ public class JRubyScriptEngineConfiguration {
         logger.trace("JRuby Script Engine Configuration: {}", config);
         configurationParameters.forEach((k, v) -> v.clearValue());
         config.forEach(this::processConfigValue);
-        configureScriptEngine(factory);
+
+        configureSystemProperties();
+
+        ScriptEngine engine = factory.getScriptEngine();
+        configureRubyEnvironment(engine);
+        configureGems(engine);
     }
 
     /**
@@ -110,19 +115,6 @@ public class JRubyScriptEngineConfiguration {
         } else {
             logger.debug("Ignoring unexpected configuration key: {}", key);
         }
-    }
-
-    /**
-     * Configure the ScriptEngine
-     * 
-     * @param factory Script Engine to configure
-     */
-    void configureScriptEngine(ScriptEngineFactory factory) {
-        configureSystemProperties();
-
-        ScriptEngine engine = factory.getScriptEngine();
-        configureRubyEnvironment(engine);
-        configureGems(engine);
     }
 
     /**
@@ -175,14 +167,16 @@ public class JRubyScriptEngineConfiguration {
     /**
      * Makes Gem home directory if it does not exist
      */
-    private void ensureGemHomeExists(String gemHome) {
+    private boolean ensureGemHomeExists(String gemHome) {
         File gemHomeDirectory = new File(gemHome);
         if (!gemHomeDirectory.exists()) {
             logger.debug("gem_home directory does not exist, creating");
             if (!gemHomeDirectory.mkdirs()) {
                 logger.warn("Error creating gem_home directory");
+                return false;
             }
         }
+        return true;
     }
 
     /**
@@ -202,7 +196,9 @@ public class JRubyScriptEngineConfiguration {
             return;
         }
 
-        ensureGemHomeExists(gemHome);
+        if (!ensureGemHomeExists(gemHome)) {
+            return;
+        }
 
         boolean checkUpdate = "true".equals(get(CHECK_UPDATE_CONFIG_KEY));
 
