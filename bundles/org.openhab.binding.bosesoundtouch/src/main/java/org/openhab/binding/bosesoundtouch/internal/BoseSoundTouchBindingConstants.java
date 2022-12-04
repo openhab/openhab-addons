@@ -19,6 +19,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
@@ -28,6 +29,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * @author Christian Niessner - Initial contribution
  * @author Thomas Traunbauer - Initial contribution
  */
+@NonNullByDefault
 public class BoseSoundTouchBindingConstants {
 
     public static final String BINDING_ID = "bosesoundtouch";

@@ -17,6 +17,7 @@ import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bosesoundtouch.internal.handler.BoseSoundTouchHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -29,10 +30,12 @@ import org.xml.sax.helpers.XMLReaderFactory;
  * @author Christian Niessner - Initial contribution
  * @author Thomas Traunbauer - Initial contribution
  */
+
+@NonNullByDefault
 public class XMLResponseProcessor {
     private BoseSoundTouchHandler handler;
 
-    private Map<XMLHandlerState, Map<String, XMLHandlerState>> stateSwitchingMap;
+    private Map<XMLHandlerState, Map<String, XMLHandlerState>> stateSwitchingMap = new HashMap<>();
 
     public XMLResponseProcessor(BoseSoundTouchHandler handler) {
         this.handler = handler;

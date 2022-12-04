@@ -19,6 +19,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.storage.DeletableStorage;
 import org.openhab.core.storage.Storage;
 import org.slf4j.Logger;
@@ -30,6 +32,7 @@ import org.slf4j.LoggerFactory;
  * @author Thomas Traunbauer - Initial contribution
  * @author Kai Kreuzer - Refactored it to use storage instead of file
  */
+@NonNullByDefault
 public class PresetContainer {
 
     private final Logger logger = LoggerFactory.getLogger(PresetContainer.class);
@@ -41,6 +44,7 @@ public class PresetContainer {
      * Creates a new instance of this class
      */
     public PresetContainer(Storage<ContentItem> storage) {
+        mapOfPresets = new HashMap<>();
         this.storage = storage;
         init();
     }
@@ -133,10 +137,12 @@ public class PresetContainer {
     }
 
     private void readFromStorage() {
-        Collection<ContentItem> items = storage.getValues();
+        Collection<@Nullable ContentItem> items = storage.getValues();
         for (ContentItem item : items) {
             try {
-                put(item.getPresetID(), item);
+                if (item != null) {
+                    put(item.getPresetID(), item);
+                }
             } catch (ContentItemNotPresetableException e) {
                 logger.debug("Item '{}' is not presetable - ignoring it.", item.getItemName());
             }
