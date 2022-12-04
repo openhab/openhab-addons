@@ -40,11 +40,14 @@ import org.osgi.service.component.annotations.Reference;
 public final class GraalJSScriptEngineFactory implements ScriptEngineFactory {
     private static final String CFG_INJECTION_ENABLED = "injectionEnabled";
     private static final String INJECTION_CODE = "Object.assign(this, require('openhab'));";
-    private final JSDependencyTracker jsDependencyTracker;
     private boolean injectionEnabled = true;
 
     public static final String MIME_TYPE = "application/javascript;version=ECMAScript-2021";
+    private static final String ALT_MIME_TYPE = "text/javascript;version=ECMAScript-2021";
+    private static final String ALIAS = "graaljs";
+
     private final JSScriptServiceUtil jsScriptServiceUtil;
+    private final JSDependencyTracker jsDependencyTracker;
 
     @Activate
     public GraalJSScriptEngineFactory(final @Reference JSScriptServiceUtil jsScriptServiceUtil,
@@ -68,7 +71,7 @@ public final class GraalJSScriptEngineFactory implements ScriptEngineFactory {
         // scriptTypes.addAll(graalJSEngineFactory.getMimeTypes());
         // scriptTypes.addAll(graalJSEngineFactory.getExtensions());
 
-        return List.of(MIME_TYPE);
+        return List.of(MIME_TYPE, ALT_MIME_TYPE, ALIAS);
     }
 
     @Override
