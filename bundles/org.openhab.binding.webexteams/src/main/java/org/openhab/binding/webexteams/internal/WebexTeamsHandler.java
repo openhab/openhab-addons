@@ -123,8 +123,6 @@ public class WebexTeamsHandler extends BaseThingHandler implements AccessTokenRe
             return;
         }
 
-        updateStatus(ThingStatus.UNKNOWN);
-
         OAuthClientService localAuthService = this.authService;
         if (localAuthService == null) {
             logger.warn("authService not properly initialized");
@@ -133,12 +131,12 @@ public class WebexTeamsHandler extends BaseThingHandler implements AccessTokenRe
             return;
         }
 
+        updateStatus(ThingStatus.UNKNOWN);
+
         this.client = new WebexTeamsApi(localAuthService, httpClient);
 
         // Start with update status by calling Webex. If no credentials available no polling should be started.
-        scheduler.execute(() -> {
-            startRefresh();
-        });
+        scheduler.execute(this::startRefresh);
     }
 
     @Override
@@ -282,7 +280,9 @@ public class WebexTeamsHandler extends BaseThingHandler implements AccessTokenRe
                     updateState(CHANNEL_STATUS, StringType.valueOf(status));
                     DateFormat df = new SimpleDateFormat(ISO8601_FORMAT);
                     String lastActivity = df.format(person.getLastActivity());
-                    updateState(CHANNEL_LASTACTIVITY, new DateTimeType(lastActivity));
+                    if (lastActivity != null) {
+                        updateState(CHANNEL_LASTACTIVITY, new DateTimeType(lastActivity));
+                    }
                 }
                 updateStatus(ThingStatus.ONLINE);
                 return true;

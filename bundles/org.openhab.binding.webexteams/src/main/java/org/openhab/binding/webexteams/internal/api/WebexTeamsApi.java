@@ -136,6 +136,7 @@ public class WebexTeamsApi {
                     O entity = gson.fromJson(reader, clazz);
                     return entity;
                 } catch (IOException | JsonIOException | JsonSyntaxException e) {
+                    logger.warn("Exception while processing API response: {}", e.getMessage());
                     throw new WebexTeamsApiException("Exception while processing API response", e);
                 }
             } else {
