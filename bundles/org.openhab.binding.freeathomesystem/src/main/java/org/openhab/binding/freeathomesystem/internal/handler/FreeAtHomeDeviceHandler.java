@@ -349,6 +349,15 @@ public class FreeAtHomeDeviceHandler extends FreeAtHomeSystemBaseHandler {
                 ChannelUID channelUID = UidUtils.generateChannelUID(thingUID, device.getDeviceId(),
                         channel.getChannelId(), dpg.getLabel());
 
+                // in case of output channel, register it for updates
+                if (dpg.getOutputDatapoint() != null) {
+                    // Register channel for event based state updated
+                    ChannelUpdateHandler updateHandler = freeAtHomeBridge.channelUpdateHandler;
+
+                    updateHandler.registerChannel(device.getDeviceId(), channel.getChannelId(),
+                            dpg.getOutputDatapoint().getDatapointId(), this, channelUID, dpg.getValueStateConverter());
+                }
+
                 // add the datapoint group to the maping channel
                 mapChannelUID.put(channelUID, dpg);
 
