@@ -23,7 +23,6 @@ public class GetLabelRequest extends Packet {
     public static final int TYPE = 0x17;
 
     public GetLabelRequest() {
-        setTagged(false);
         setAddressable(true);
         setResponseRequired(true);
     }

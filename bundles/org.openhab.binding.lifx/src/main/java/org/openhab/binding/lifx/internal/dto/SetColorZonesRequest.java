@@ -70,7 +70,6 @@ public class SetColorZonesRequest extends Packet {
     }
 
     public SetColorZonesRequest() {
-        setTagged(false);
         setAddressable(true);
         setResponseRequired(true);
     }
