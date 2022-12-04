@@ -42,7 +42,7 @@ This Ethernet shield is based on Wiznet W5100 Ethernet Chip.
 It is supported by the Arduino Ehternet Library.
 No special configuration is needed, NibeGW supports this shield out of the box.
 
-ProDiNo already have Ethernet included, so there's no need for a seperate Ethernet Shield.
+ProDiNo already have Ethernet included, so there's no need for a separate Ethernet Shield.
 Also the ProDiNo Ethernet is supported by NibeGW out of the box.
 
 
