@@ -620,7 +620,7 @@ public class Shelly1ApiJsonDTO {
         public @Nullable ArrayList<ShellyThermnostat> thermostats; // TRV
 
         @SerializedName("ext_switch_enable")
-        public Integer externalSwitchEnable;
+        public Boolean externalSwitchEnable;
         @SerializedName("ext_switch")
         public ShellyStatusSensor.ShellyExtSwitchSettings extSwitch;
         @SerializedName("ext_temperature")
