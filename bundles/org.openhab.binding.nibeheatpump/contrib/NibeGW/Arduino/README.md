@@ -4,7 +4,7 @@
 ## RS-485 Modules
 
 For settting up a NibeGW you need a RS485 module. 
-While ProDiNo already have RS-485 support included, you need a seperate module for Arduino Uno.
+While ProDiNo already have RS-485 support included, you need a separate module for Arduino Uno.
 Most cheap modules out there are compatible with 5V voltage and therefore compatible with Arduino based hardware.
 Mostly you will get one of two commonly used designs:
 
