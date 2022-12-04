@@ -122,7 +122,7 @@ public class JRubyScriptEngineFactory extends AbstractScriptEngineFactory {
             // we inject like this instead of using the script context, because
             // this is executed _before_ the dependency tracker is added to the script context.
             // But we need this set up before we inject our requires
-            scriptEngine.put("$dependency_listener", jrubyDependencyTracker.getTracker(wrapper.getScriptIdentifier()));
+            scriptEngine.put("$dependencyListener", jrubyDependencyTracker.getTracker(wrapper.getScriptIdentifier()));
         }
 
         // scopeValues is called twice. The first call only passed 'se'. The second call passed the rest of the
