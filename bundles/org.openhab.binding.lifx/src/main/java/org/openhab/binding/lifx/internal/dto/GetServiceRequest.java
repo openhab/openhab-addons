@@ -23,7 +23,6 @@ public class GetServiceRequest extends Packet {
     public static final int TYPE = 0x02;
 
     public GetServiceRequest() {
-        setTagged(true);
         setAddressable(true);
     }
 
