@@ -14,10 +14,6 @@ Auto-discovery is supported if the Vizio TV can be located on the local network 
 Otherwise the thing must be manually added.
 When the TV is discovered, a pairing process to obtain an authentication token from the TV must be completed using the openHAB console. See below for details.
 
-## Binding Configuration
-
-The binding has no configuration options, all configuration is done at the Thing level.
-
 ## Thing Configuration
 
 The thing has a few configuration parameters:
@@ -32,7 +28,7 @@ The thing has a few configuration parameters:
 ### Console Commands for Pairing:
 
 To obtain an authorization token that enables openHAB to authenticate with the TV, the following console commands must be used while the TV is turned on.
-The first command will send a pairing start request to the TV. This triggers the TV to display a 4-digit PIN code on screen that must be sent with the second command.
+The first command will send a pairing start request to the TV. This triggers the TV to display a 4-digit pairing code on screen that must be sent with the second command.
 
 Start Pairing:
 
@@ -132,7 +128,8 @@ An entry for an application has a `name` element and a `config` element containi
 
 If an app is running that is not currently recognized by the binding, the `activeApp` channel will display a message that contains the `APP_ID` and `NAME_SPACE` which can be used to create the missing record for that app in the JSON.
 
-If an app that is in the JSON database is not recognized by the biding when running or fails to start when selected, try adjusting the `NAME_SPACE` value for that app. `NAME_SPACE` seems to be a version number and adjusting the number up or down may correct the mis-match between the TV and the binding. 
+If an app that is in the JSON database fails to start when selected, try adjusting the `NAME_SPACE` value for that app.
+`NAME_SPACE` seems to be a version number and adjusting the number up or down may correct the mismatch between the TV and the binding. 
 
 A current list of `APP_ID`'s can be found at http://hometest.buddytv.netdna-cdn.com/appservice/vizio_apps_prod.json
 and `NAME_SPACE` &amp; `MESSAGE` values needed can be found at http://hometest.buddytv.netdna-cdn.com/appservice/app_availability_prod.json

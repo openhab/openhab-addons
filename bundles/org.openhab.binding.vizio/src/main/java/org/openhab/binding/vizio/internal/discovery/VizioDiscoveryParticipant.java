@@ -24,6 +24,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.mdns.MDNSDiscoveryParticipant;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Component;
@@ -33,7 +34,6 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link VizioDiscoveryParticipant} is responsible processing the
  * results of searches for mDNS services of type _viziocast._tcp.local.
- * *
  *
  * @author Michael Lobstein - Initial contribution
  */
@@ -68,7 +68,7 @@ public class VizioDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
             result = DiscoveryResultBuilder.create(thingUid).withLabel(label).withRepresentationProperty(PROPERTY_UUID)
                     .withProperty(PROPERTY_UUID, thingUid.getId())
-                    .withProperty(PROPERTY_MODEL_NUMBER, service.getPropertyString("mdl"))
+                    .withProperty(Thing.PROPERTY_MODEL_ID, service.getPropertyString("mdl"))
                     .withProperty(PROPERTY_HOST_NAME, inetAddress).withProperty(PROPERTY_PORT, port).build();
             logger.debug("Created {} for Vizio TV at {}, name: '{}'", result, inetAddress, label);
         }

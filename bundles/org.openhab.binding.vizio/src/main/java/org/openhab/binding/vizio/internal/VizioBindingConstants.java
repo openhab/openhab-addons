@@ -32,7 +32,6 @@ public class VizioBindingConstants {
     public static final String PROPERTY_PORT = "port";
     public static final String PROPERTY_AUTH_TOKEN = "authToken";
     public static final String PROPERTY_APP_LIST_JSON = "appListJson";
-    public static final String PROPERTY_MODEL_NUMBER = "Model Number";
     public static final String EMPTY = "";
     public static final String MODIFY_STRING_SETTING_JSON = "{\"REQUEST\": \"MODIFY\",\"VALUE\": \"%s\",\"HASHVAL\": %d}";
     public static final String MODIFY_INT_SETTING_JSON = "{\"REQUEST\": \"MODIFY\",\"VALUE\": %d,\"HASHVAL\": %d}";
