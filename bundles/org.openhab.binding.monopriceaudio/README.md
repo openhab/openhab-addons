@@ -64,7 +64,7 @@ The thing has the following configuration parameters (number of sources and zone
 | Source 6 Input Label   | inputLabel6          | (Optional) Friendly name for the input source to be displayed in the UI (ie: Chromecast, Radio, CD, etc.) (default "Source 6") | A free text name |
 | Source 7 Input Label   | inputLabel7          | (Optional) Friendly name for the input source to be displayed in the UI (ie: Chromecast, Radio, CD, etc.) (default "Source 7") | A free text name |
 | Source 8 Input Label   | inputLabel8          | (Optional) Friendly name for the input source to be displayed in the UI (ie: Chromecast, Radio, CD, etc.) (default "Source 8") | A free text name |
-| Disable Keypad Polling | disableKeypadPolling | Set to **true** if physical keypads are not used so the binding will not needlessly poll all the amplifier zones for changes   | true or false    |
+| Disable Keypad Polling | disableKeypadPolling | Set to **true** if physical keypads are not used so the binding will not needlessly poll the amplifier zones for changes       | true or false    |
 
 Some notes:
 

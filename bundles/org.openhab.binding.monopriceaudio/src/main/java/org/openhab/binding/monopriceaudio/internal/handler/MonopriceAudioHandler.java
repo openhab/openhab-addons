@@ -240,7 +240,7 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
             }
 
             if (command instanceof RefreshType) {
-                updateChannelState(zoneDataMap.get(zoneId), channelType);
+                updateChannelState(zoneId, channelType);
                 return;
             }
 
@@ -324,13 +324,13 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                                     try {
                                         connector.sendCommand(streamZoneId, amp.getPowerCmd(), cmd);
                                         zoneDataMap.get(streamZoneId).setPower(amp.getFormattedValue(cmd));
-                                        updateChannelState(zoneDataMap.get(streamZoneId), CHANNEL_TYPE_POWER);
+                                        updateChannelState(streamZoneId, CHANNEL_TYPE_POWER);
 
                                         if (command == OnOffType.ON) {
                                             // reset the volume of each zone to allVolume
                                             connector.sendCommand(streamZoneId, amp.getVolumeCmd(), allVolume);
                                             zoneDataMap.get(streamZoneId).setVolume(allVolume);
-                                            updateChannelState(zoneDataMap.get(streamZoneId), CHANNEL_TYPE_VOLUME);
+                                            updateChannelState(streamZoneId, CHANNEL_TYPE_VOLUME);
                                         }
                                     } catch (MonopriceAudioException e) {
                                         logger.warn("Error Turning All Zones On: {}", e.getMessage());
@@ -351,7 +351,7 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                                             if (zoneDataMap.get(streamZoneId).isPowerOn()
                                                     && !zoneDataMap.get(streamZoneId).isMuted()) {
                                                 zoneDataMap.get(streamZoneId).setSource(amp.getFormattedValue(value));
-                                                updateChannelState(zoneDataMap.get(streamZoneId), CHANNEL_TYPE_SOURCE);
+                                                updateChannelState(streamZoneId, CHANNEL_TYPE_SOURCE);
                                             }
                                         } catch (MonopriceAudioException e) {
                                             logger.warn("Error Setting Source for All Zones: {}", e.getMessage());
@@ -373,7 +373,7 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                                         if (zoneDataMap.get(streamZoneId).isPowerOn()
                                                 && !zoneDataMap.get(streamZoneId).isMuted()) {
                                             zoneDataMap.get(streamZoneId).setVolume(allVolume);
-                                            updateChannelState(zoneDataMap.get(streamZoneId), CHANNEL_TYPE_VOLUME);
+                                            updateChannelState(streamZoneId, CHANNEL_TYPE_VOLUME);
                                         }
                                     } catch (MonopriceAudioException e) {
                                         logger.warn("Error Setting Volume for All Zones: {}", e.getMessage());
@@ -391,7 +391,7 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                                         connector.sendCommand(streamZoneId, amp.getMuteCmd(), cmd);
                                         if (zoneDataMap.get(streamZoneId).isPowerOn()) {
                                             zoneDataMap.get(streamZoneId).setMute(amp.getFormattedValue(cmd));
-                                            updateChannelState(zoneDataMap.get(streamZoneId), CHANNEL_TYPE_MUTE);
+                                            updateChannelState(streamZoneId, CHANNEL_TYPE_MUTE);
                                         }
                                     } catch (MonopriceAudioException e) {
                                         logger.warn("Error Setting Mute for All Zones: {}", e.getMessage());
@@ -458,7 +458,7 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                 MonopriceAudioZoneDTO zoneData = zoneDataMap.get(newZoneData.getZone());
                 if (amp.getZoneIds().contains(newZoneData.getZone()) && zoneData != null) {
                     if (amp == AmplifierModel.MONOPRICE70) {
-                        processMonoprice70Update(newZoneData);
+                        processMonoprice70Update(zoneData, newZoneData);
                     } else {
                         processZoneUpdate(zoneData, newZoneData);
                     }
@@ -606,18 +606,104 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
         }
     }
 
+    private void processZoneUpdate(MonopriceAudioZoneDTO zoneData, MonopriceAudioZoneDTO newZoneData) {
+        // only process the update if something actually changed in this zone since the last polling update
+        if (!newZoneData.toString().equals(zoneData.toString())) {
+            if (!newZoneData.getPage().equals(zoneData.getPage())) {
+                zoneData.setPage(newZoneData.getPage());
+                updateChannelState(zoneData.getZone(), CHANNEL_TYPE_PAGE);
+            }
+
+            if (!newZoneData.getPower().equals(zoneData.getPower())) {
+                zoneData.setPower(newZoneData.getPower());
+                updateChannelState(zoneData.getZone(), CHANNEL_TYPE_POWER);
+            }
+
+            if (!newZoneData.getMute().equals(zoneData.getMute())) {
+                zoneData.setMute(newZoneData.getMute());
+                updateChannelState(zoneData.getZone(), CHANNEL_TYPE_MUTE);
+            }
+
+            if (!newZoneData.getDnd().equals(zoneData.getDnd())) {
+                zoneData.setDnd(newZoneData.getDnd());
+                updateChannelState(zoneData.getZone(), CHANNEL_TYPE_DND);
+            }
+
+            if (newZoneData.getVolume() != zoneData.getVolume()) {
+                zoneData.setVolume(newZoneData.getVolume());
+                updateChannelState(zoneData.getZone(), CHANNEL_TYPE_VOLUME);
+            }
+
+            if (newZoneData.getTreble() != zoneData.getTreble()) {
+                zoneData.setTreble(newZoneData.getTreble());
+                updateChannelState(zoneData.getZone(), CHANNEL_TYPE_TREBLE);
+            }
+
+            if (newZoneData.getBass() != zoneData.getBass()) {
+                zoneData.setBass(newZoneData.getBass());
+                updateChannelState(zoneData.getZone(), CHANNEL_TYPE_BASS);
+            }
+
+            if (newZoneData.getBalance() != zoneData.getBalance()) {
+                zoneData.setBalance(newZoneData.getBalance());
+                updateChannelState(zoneData.getZone(), CHANNEL_TYPE_BALANCE);
+            }
+
+            if (!newZoneData.getSource().equals(zoneData.getSource())) {
+                zoneData.setSource(newZoneData.getSource());
+                updateChannelState(zoneData.getZone(), CHANNEL_TYPE_SOURCE);
+            }
+
+            if (!newZoneData.getKeypad().equals(zoneData.getKeypad())) {
+                zoneData.setKeypad(newZoneData.getKeypad());
+                updateChannelState(zoneData.getZone(), CHANNEL_TYPE_KEYPAD);
+            }
+
+        }
+        lastPollingUpdate = System.currentTimeMillis();
+    }
+
+    private void processMonoprice70Update(MonopriceAudioZoneDTO zoneData, MonopriceAudioZoneDTO newZoneData) {
+        if (newZoneData.getTreble() != NIL) {
+            zoneData.setTreble(newZoneData.getTreble());
+            updateChannelState(zoneData.getZone(), CHANNEL_TYPE_TREBLE);
+        } else if (newZoneData.getBass() != NIL) {
+            zoneData.setBass(newZoneData.getBass());
+            updateChannelState(zoneData.getZone(), CHANNEL_TYPE_BASS);
+        } else if (newZoneData.getBalance() != NIL) {
+            zoneData.setBalance(newZoneData.getBalance());
+            updateChannelState(zoneData.getZone(), CHANNEL_TYPE_BALANCE);
+        } else {
+            zoneData.setPower(newZoneData.getPower());
+            zoneData.setMute(newZoneData.getMute());
+            zoneData.setVolume(newZoneData.getVolume());
+            zoneData.setSource(newZoneData.getSource());
+            updateChannelState(zoneData.getZone(), CHANNEL_TYPE_POWER);
+            updateChannelState(zoneData.getZone(), CHANNEL_TYPE_MUTE);
+            updateChannelState(zoneData.getZone(), CHANNEL_TYPE_VOLUME);
+            updateChannelState(zoneData.getZone(), CHANNEL_TYPE_SOURCE);
+
+        }
+        lastPollingUpdate = System.currentTimeMillis();
+    }
+
     /**
      * Update the state of a channel
      *
-     * @param channel the channel
+     * @param zoneId the zone id used to lookup the channel to be updated
+     * @param channelType the channel type to be updated
      */
-    private void updateChannelState(@Nullable MonopriceAudioZoneDTO zoneData, String channelType) {
+    private void updateChannelState(String zoneId, String channelType) {
+        MonopriceAudioZoneDTO zoneData = zoneDataMap.get(zoneId);
+
         if (zoneData != null) {
-            String channel = zoneData.getZone() + CHANNEL_DELIMIT + channelType;
+            String channel = amp.getZoneName(zoneId) + CHANNEL_DELIMIT + channelType;
 
             if (!isLinked(channel)) {
                 return;
             }
+
+            logger.debug("updating channel state for zone: {}, channel type: {}", zoneId, channelType);
 
             State state = UnDefType.UNDEF;
             switch (channelType) {
@@ -658,78 +744,5 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
             }
             updateState(channel, state);
         }
-    }
-
-    private void processZoneUpdate(MonopriceAudioZoneDTO zoneData, MonopriceAudioZoneDTO newZoneData) {
-        // only process the update if something actually changed in this zone since the last polling update
-        if (!newZoneData.toString().equals(zoneData.toString())) {
-            if (!newZoneData.getPage().equals(zoneData.getPage())) {
-                zoneData.setPage(newZoneData.getPage());
-                updateChannelState(zoneData, CHANNEL_TYPE_PAGE);
-            }
-
-            if (!newZoneData.getPower().equals(zoneData.getPower())) {
-                zoneData.setPower(newZoneData.getPower());
-                updateChannelState(zoneData, CHANNEL_TYPE_POWER);
-            }
-
-            if (!newZoneData.getMute().equals(zoneData.getMute())) {
-                zoneData.setMute(newZoneData.getMute());
-                updateChannelState(zoneData, CHANNEL_TYPE_MUTE);
-            }
-
-            if (!newZoneData.getDnd().equals(zoneData.getDnd())) {
-                zoneData.setDnd(newZoneData.getDnd());
-                updateChannelState(zoneData, CHANNEL_TYPE_DND);
-            }
-
-            if (newZoneData.getVolume() != zoneData.getVolume()) {
-                zoneData.setVolume(newZoneData.getVolume());
-                updateChannelState(zoneData, CHANNEL_TYPE_VOLUME);
-            }
-
-            if (newZoneData.getTreble() != zoneData.getTreble()) {
-                zoneData.setTreble(newZoneData.getTreble());
-                updateChannelState(zoneData, CHANNEL_TYPE_TREBLE);
-            }
-
-            if (newZoneData.getBass() != zoneData.getBass()) {
-                zoneData.setBass(newZoneData.getBass());
-                updateChannelState(zoneData, CHANNEL_TYPE_BASS);
-            }
-
-            if (newZoneData.getBalance() != zoneData.getBalance()) {
-                zoneData.setBalance(newZoneData.getBalance());
-                updateChannelState(zoneData, CHANNEL_TYPE_BALANCE);
-            }
-
-            if (!newZoneData.getSource().equals(zoneData.getSource())) {
-                zoneData.setSource(newZoneData.getSource());
-                updateChannelState(zoneData, CHANNEL_TYPE_SOURCE);
-            }
-
-            if (!newZoneData.getKeypad().equals(zoneData.getKeypad())) {
-                zoneData.setKeypad(newZoneData.getKeypad());
-                updateChannelState(zoneData, CHANNEL_TYPE_KEYPAD);
-            }
-
-        }
-        lastPollingUpdate = System.currentTimeMillis();
-    }
-
-    private void processMonoprice70Update(MonopriceAudioZoneDTO newZoneData) {
-        if (newZoneData.getTreble() != NIL) {
-            updateChannelState(newZoneData, CHANNEL_TYPE_TREBLE);
-        } else if (newZoneData.getBass() != NIL) {
-            updateChannelState(newZoneData, CHANNEL_TYPE_BASS);
-        } else if (newZoneData.getBalance() != NIL) {
-            updateChannelState(newZoneData, CHANNEL_TYPE_BALANCE);
-        } else {
-            updateChannelState(newZoneData, CHANNEL_TYPE_POWER);
-            updateChannelState(newZoneData, CHANNEL_TYPE_MUTE);
-            updateChannelState(newZoneData, CHANNEL_TYPE_VOLUME);
-            updateChannelState(newZoneData, CHANNEL_TYPE_SOURCE);
-        }
-        lastPollingUpdate = System.currentTimeMillis();
     }
 }
