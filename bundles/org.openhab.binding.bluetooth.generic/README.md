@@ -25,7 +25,7 @@ Generic bluetooth devices will be discovered for any connectable bluetooth devic
 ## Channels
 
 Channels will be dynamically created based on types of characteristics the device supports.
-This binding contains a mostly complete database of standardized GATT services and characteristics 
+This binding contains a mostly complete database of standardized GATT services and characteristics
 that is used to map characteristics to one or multiple channels.
 
 Characteristics not in the database will be mapped to a single `String` channel labeled `Unknown`.
