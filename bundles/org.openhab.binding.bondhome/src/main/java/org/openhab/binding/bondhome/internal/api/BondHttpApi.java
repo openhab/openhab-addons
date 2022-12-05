@@ -255,7 +255,6 @@ public class BondHttpApi {
                     throw new BondException("@text/offline.conf-error.api-call-failed", true);
                 }
             }
-        } while (numRetriesRemaining > 0);
-        return "";
+        } while (true);
     }
 }
