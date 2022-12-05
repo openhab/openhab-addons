@@ -21,6 +21,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -71,12 +72,11 @@ public class BondHttpApi {
      * @return the {@link BondSysVersion}
      * @throws BondException
      */
-    @Nullable
     public BondSysVersion getBridgeVersion() throws BondException {
         String json = request("/v2/sys/version");
         logger.trace("BondHome device info : {}", json);
         try {
-            return gson.fromJson(json, BondSysVersion.class);
+            return Objects.requireNonNull(gson.fromJson(json, BondSysVersion.class));
         } catch (JsonParseException e) {
             logger.debug("Could not parse sys/version JSON '{}'", json, e);
             throw new BondException("@text/offline.comm-error.unparseable-response");
@@ -89,7 +89,6 @@ public class BondHttpApi {
      * @return an array of device id's
      * @throws BondException
      */
-    @Nullable
     public List<String> getDevices() throws BondException {
 
         List<String> list = new ArrayList<>();
@@ -119,12 +118,11 @@ public class BondHttpApi {
      * @return the {@link BondDevice}
      * @throws BondException
      */
-    @Nullable
     public BondDevice getDevice(String deviceId) throws BondException {
         String json = request("/v2/devices/" + deviceId);
         logger.trace("BondHome device info : {}", json);
         try {
-            return gson.fromJson(json, BondDevice.class);
+            return Objects.requireNonNull(gson.fromJson(json, BondDevice.class));
         } catch (JsonParseException e) {
             logger.debug("Could not parse device {}'s JSON '{}'", deviceId, json, e);
             throw new BondException("@text/offline.comm-error.unparseable-response");
@@ -138,12 +136,11 @@ public class BondHttpApi {
      * @return the {@link BondDeviceState}
      * @throws BondException
      */
-    @Nullable
     public BondDeviceState getDeviceState(String deviceId) throws BondException {
         String json = request("/v2/devices/" + deviceId + "/state");
         logger.trace("BondHome device state : {}", json);
         try {
-            return gson.fromJson(json, BondDeviceState.class);
+            return Objects.requireNonNull(gson.fromJson(json, BondDeviceState.class));
         } catch (JsonParseException e) {
             logger.debug("Could not parse device {}'s state JSON '{}'", deviceId, json, e);
             throw new BondException("@text/offline.comm-error.unparseable-response");
@@ -157,12 +154,11 @@ public class BondHttpApi {
      * @return the {@link BondDeviceProperties}
      * @throws BondException
      */
-    @Nullable
     public BondDeviceProperties getDeviceProperties(String deviceId) throws BondException {
         String json = request("/v2/devices/" + deviceId + "/properties");
         logger.trace("BondHome device properties : {}", json);
         try {
-            return gson.fromJson(json, BondDeviceProperties.class);
+            return Objects.requireNonNull(gson.fromJson(json, BondDeviceProperties.class));
         } catch (JsonParseException e) {
             logger.debug("Could not parse device {}'s property JSON '{}'", deviceId, json, e);
             throw new BondException("@text/offline.comm-error.unparseable-response");
