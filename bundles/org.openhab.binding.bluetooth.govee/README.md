@@ -1,6 +1,6 @@
 # Govee
 
-This extension adds support for [Govee](https://www.govee.com/) Bluetooth Devices. 
+This extension adds support for [Govee](https://www.govee.com/) Bluetooth Devices.
 
 ## Supported Things
 
@@ -13,7 +13,7 @@ Only two thing types are supported by this extension at the moment.
 
 ## Discovery
 
-As any other Bluetooth device, Govee devices are discovered automatically by the corresponding bridge. 
+As any other Bluetooth device, Govee devices are discovered automatically by the corresponding bridge.
 
 ## Thing Configuration
 
@@ -24,7 +24,7 @@ Govee things have the following configuration parameters:
 | all                         | address                 | yes      |         | The Bluetooth address of the device (in format "XX:XX:XX:XX:XX:XX")               |
 | all                         | refreshInterval         |          | 300     | How often, in seconds, the sensor data of the device should be refreshed          |
 | goveeHygrometer<sup>1</sup> | temperatureCalibration  | no       |         | Offset to apply to temperature<sup>2</sup> sensor readings                        |
-| goveeHygrometer<sup>1</sup> | humidityCalibration     | no       |         | Offset to apply to humidity sensor readings                                       |        
+| goveeHygrometer<sup>1</sup> | humidityCalibration     | no       |         | Offset to apply to humidity sensor readings                                       |
 | goveeHygrometerMonitor      | temperatureWarningAlarm |          | false   | Enables warning alarms to be broadcast when temperature is out of specified range |
 | goveeHygrometerMonitor      | temperatureWarningMin   |          | 0       | The lower safe temperature<sup>2</sup> threshold <sup>3</sup>                     |
 | goveeHygrometerMonitor      | temperatureWarningMax   |          | 0       | The upper safe temperature<sup>2</sup> threshold <sup>3</sup>                     |
@@ -33,8 +33,8 @@ Govee things have the following configuration parameters:
 | goveeHygrometerMonitor      | humidityWarningMax      |          | 0       | The upper safe humidity threshold <sup>3</sup>                                    |
 
 1. Available to both `goveeHygrometer` and `goveeHygrometerMonitor` thing types.
-2. In °C
-3. Only applies if alarm feature is enabled
+1. In °C
+1. Only applies if alarm feature is enabled
 
 ## Channels
 
@@ -49,19 +49,19 @@ Govee things have the following channels in addition to the default bluetooth ch
 | goveeHygrometerMonitor      | humidityAlarm    | Switch                 | Indicates if current humidity is out of range. <sup>2</sup>    |
 
 1. Available to both `goveeHygrometer` and `goveeHygrometerMonitor` thing types.
-2. Only applies if warning alarms are enabled in the configuration.
+1. Only applies if warning alarms are enabled in the configuration.
 
 ## Example
 
 demo.things:
 
-```
+```java
 bluetooth:goveeHygrometer:hci0:beacon  "Govee Temperature Humidity Monitor" (bluetooth:bluez:hci0) [ address="12:34:56:78:9A:BC" ]
 ```
 
 demo.items:
 
-```
+```java
 Number:Temperature      temperature "Room Temperature [%.1f %unit%]" { channel="bluetooth:goveeHygrometer:hci0:beacon:temperature" }
 Number:Dimensionless    humidity    "Humidity [%.0f %unit%]"         { channel="bluetooth:goveeHygrometer:hci0:beacon:humidity" }
 Number:Dimensionless    battery    "Battery [%.0f %unit%]"         { channel="bluetooth:goveeHygrometer:hci0:beacon:battery" }
