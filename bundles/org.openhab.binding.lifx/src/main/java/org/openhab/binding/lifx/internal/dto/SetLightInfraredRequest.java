@@ -33,7 +33,6 @@ public class SetLightInfraredRequest extends Packet {
     }
 
     public SetLightInfraredRequest() {
-        setTagged(false);
         setAddressable(true);
         setResponseRequired(true);
     }
