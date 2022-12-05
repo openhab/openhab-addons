@@ -15,7 +15,6 @@ package org.openhab.binding.bondhome.internal.api;
 import static org.openhab.binding.bondhome.internal.BondHomeBindingConstants.*;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
@@ -70,7 +69,7 @@ public class BondHttpApi {
      * Gets version information about the Bond bridge
      *
      * @return the {@link BondSysVersion}
-     * @throws IOException
+     * @throws BondException
      */
     @Nullable
     public BondSysVersion getBridgeVersion() throws BondException {
@@ -88,7 +87,7 @@ public class BondHttpApi {
      * Gets a list of the attached devices
      *
      * @return an array of device id's
-     * @throws IOException
+     * @throws BondException
      */
     @Nullable
     public List<String> getDevices() throws BondException {
@@ -118,7 +117,7 @@ public class BondHttpApi {
      *
      * @param deviceId The ID of the device
      * @return the {@link BondDevice}
-     * @throws IOException
+     * @throws BondException
      */
     @Nullable
     public BondDevice getDevice(String deviceId) throws BondException {
@@ -137,7 +136,7 @@ public class BondHttpApi {
      *
      * @param deviceId The ID of the device
      * @return the {@link BondDeviceState}
-     * @throws IOException
+     * @throws BondException
      */
     @Nullable
     public BondDeviceState getDeviceState(String deviceId) throws BondException {
@@ -156,7 +155,7 @@ public class BondHttpApi {
      *
      * @param deviceId The ID of the device
      * @return the {@link BondDeviceProperties}
-     * @throws IOException
+     * @throws BondException
      */
     @Nullable
     public BondDeviceProperties getDeviceProperties(String deviceId) throws BondException {
