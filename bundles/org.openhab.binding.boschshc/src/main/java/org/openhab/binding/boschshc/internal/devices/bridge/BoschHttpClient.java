@@ -87,7 +87,7 @@ public class BoschHttpClient extends HttpClient {
     /**
      * Returns a Bosch SHC URL for the endpoint, using port 8444.
      *
-     * @param endpoint a endpoint, see https://apidocs.bosch-smarthome.com/local/index.html
+     * @param endpoint an endpoint, see https://apidocs.bosch-smarthome.com/local/index.html
      * @return Bosch SHC URL for passed endpoint
      */
     public String getBoschShcUrl(String endpoint) {
@@ -97,7 +97,7 @@ public class BoschHttpClient extends HttpClient {
     /**
      * Returns a SmartHome URL for the endpoint - shortcut of {@link BoschSslUtil::getBoschShcUrl()}
      *
-     * @param endpoint a endpoint, see https://apidocs.bosch-smarthome.com/local/index.html
+     * @param endpoint an endpoint, see https://apidocs.bosch-smarthome.com/local/index.html
      * @return SmartHome URL for passed endpoint
      */
     public String getBoschSmartHomeUrl(String endpoint) {

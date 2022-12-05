@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Used to map messages to be sent to the Visonic alarm panel to a ENUM value
+ * Used to map messages to be sent to the Visonic alarm panel to an ENUM value
  *
  * @author Laurent Garnier - Initial contribution
  */

@@ -33,7 +33,7 @@ The second is the initial delay and on-time for each zone when an execute comman
 
 This is optional, it is recommended to let the binding discover and add Etherrain controllers.
 
-To manually configure a Etherrain controller you may specify it's host name or ip ("host"). 
+To manually configure an Etherrain controller you may specify its host name or ip ("host"). 
 You can also optionally specify the unit's password ("pw"), port it is communicating on ("port") or refresh rate ("refresh") 
 
 ```

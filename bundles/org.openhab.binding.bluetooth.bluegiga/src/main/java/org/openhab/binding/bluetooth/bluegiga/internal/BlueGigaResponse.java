@@ -53,7 +53,7 @@ public abstract class BlueGigaResponse extends BlueGigaPacket {
     }
 
     /**
-     * Reads a int8 from the output stream
+     * Reads an int8 from the output stream
      *
      * @return value read from input
      */

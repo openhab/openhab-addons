@@ -17,7 +17,7 @@ import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link LocationEx} is the common interface for dto holding a extra location data
+ * The {@link LocationEx} is the common interface for dto holding an extra location data
  *
  * @author Gaël L'hopital - Initial contribution
  *

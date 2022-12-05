@@ -394,14 +394,14 @@ public interface Device extends GeneralDeviceInformation {
     List<Short> getSavedScenes();
 
     /**
-     * Initializes a internal device update as call scene for the given scene number.
+     * Initializes an internal device update as call scene for the given scene number.
      *
      * @param sceneNumber to call
      */
     void internalCallScene(Short sceneNumber);
 
     /**
-     * Initializes a internal device update as undo scene.
+     * Initializes an internal device update as undo scene.
      */
     void internalUndoScene();
 

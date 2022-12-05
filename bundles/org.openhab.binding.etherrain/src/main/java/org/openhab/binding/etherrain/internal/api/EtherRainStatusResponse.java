@@ -15,7 +15,7 @@ package org.openhab.binding.etherrain.internal.api;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link EtherRainStatusResponse} is a encapsulation of responses from the EtherRain
+ * The {@link EtherRainStatusResponse} is an encapsulation of responses from the EtherRain
  *
  * @author Joe Inkenbrandt - Initial contribution
  */

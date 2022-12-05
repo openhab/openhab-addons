@@ -15,7 +15,7 @@ package org.openhab.binding.hyperion.internal.protocol;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link HyperionCommand} is a abstract class for sending commands
+ * The {@link HyperionCommand} is an abstract class for sending commands
  * to the Hyperion server.
  *
  * @author Daniel Walters - Initial contribution

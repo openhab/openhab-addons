@@ -1007,7 +1007,7 @@ You should calibrate the valve using the device Web UI or Shelly App before star
 
 |Group     |Channel      |Type     |read-only|Description                                                            |
 |----------|-------------|---------|---------|-----------------------------------------------------------------------|
-|control   |key          |String   |r/w      |Send a IR key to the sense. There a 3 different types supported        |
+|control   |key          |String   |r/w      |Send an IR key to the sense. There a 3 different types supported       |
 |          |             |         |         |Stored key: send the key code defined by the App , e.g. 123_1_up       |
 |          |             |         |         |Pronto hex: send a Pronto Code in hex format, e.g. 0000 006C 0022 ...  |
 |          |             |         |         |Pronto base64: in base64 format, will be send 1:1 to the Sense         |
