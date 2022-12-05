@@ -28,13 +28,7 @@ public class BooleanValueStateConverter implements ValueStateConverter {
 
     @Override
     public State convertToState(String value) {
-        Integer intValue = Integer.decode(value);
-
-        if (intValue.intValue() == 1) {
-            return OnOffType.ON;
-        } else {
-            return OnOffType.OFF;
-        }
+        return OnOffType.from(value);
     }
 
     @Override
