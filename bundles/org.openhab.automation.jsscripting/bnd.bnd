@@ -1,9 +1,10 @@
 Bundle-SymbolicName: ${project.artifactId}
 DynamicImport-Package: *
 Import-Package: org.openhab.core.automation.module.script,javax.management,javax.script,javax.xml.datatype,javax.xml.stream;version="[1.0,2)",org.osgi.framework;version="[1.8,2)",org.slf4j;version="[1.7,2)"
-Require-Capability: osgi.extender;
+Require-Capability: 
+    osgi.extender:=
       filter:="(osgi.extender=osgi.serviceloader.processor)",
-    osgi.serviceloader;
+    osgi.serviceloader:=
       filter:="(osgi.serviceloader=org.graalvm.polyglot.impl.AbstractPolyglotImpl)";
       cardinality:=multiple
 
