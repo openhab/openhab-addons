@@ -166,7 +166,7 @@ public class VizioHandler extends BaseThingHandler {
             }
         } catch (JsonSyntaxException e) {
             logger.debug("Invalid App List Configuration in thing configuration. Exception: {}", e.getMessage(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.configuration-error-applist");
             return;
         }

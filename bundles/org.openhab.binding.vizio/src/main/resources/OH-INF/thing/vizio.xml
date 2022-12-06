@@ -45,7 +45,7 @@
 			</parameter>
 			<parameter name="authToken" type="text" required="false">
 				<label>Auth Token</label>
-				<description>Auth Token that is obtained via the pairing process; See README for details</description>
+				<description>Auth Token that is obtained via the pairing process; See documentation for details</description>
 			</parameter>
 			<parameter name="appListJson" type="text" required="false">
 				<context>script</context>
