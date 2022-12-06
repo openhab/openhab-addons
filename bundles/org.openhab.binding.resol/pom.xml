@@ -18,7 +18,7 @@
     <dependency>
       <groupId>de.resol</groupId>
       <artifactId>vbus</artifactId>
-      <version>0.7.0</version>
+      <version>0.10.0</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>

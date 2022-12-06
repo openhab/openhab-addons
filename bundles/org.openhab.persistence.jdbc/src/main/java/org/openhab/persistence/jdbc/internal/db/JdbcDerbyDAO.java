@@ -13,6 +13,7 @@
 package org.openhab.persistence.jdbc.internal.db;
 
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -72,6 +73,7 @@ public class JdbcDerbyDAO extends JdbcBaseDAO {
         // Prevent error against duplicate time value (seldom): No powerful Merge found:
         // http://www.codeproject.com/Questions/162627/how-to-insert-new-record-in-my-table-if-not-exists
         sqlInsertItemValue = "INSERT INTO #tableName# (TIME, VALUE) VALUES( #tablePrimaryValue#, CAST( ? as #dbType#) )";
+        sqlAlterTableColumn = "ALTER TABLE #tableName# ALTER COLUMN #columnName# SET DATA TYPE #columnType#";
     }
 
     private void initSqlTypes() {
@@ -193,6 +195,22 @@ public class JdbcDerbyDAO extends JdbcBaseDAO {
     }
 
     @Override
+    public void doStoreItemValue(Item item, State itemState, ItemVO vo, ZonedDateTime date) throws JdbcSQLException {
+        ItemVO storedVO = storeItemValueProvider(item, itemState, vo);
+        String sql = StringUtilsExt.replaceArrayMerge(sqlInsertItemValue,
+                new String[] { "#tableName#", "#dbType#", "#tablePrimaryValue#" },
+                new String[] { storedVO.getTableName().toUpperCase(), storedVO.getDbType(), "?" });
+        java.sql.Timestamp timestamp = new java.sql.Timestamp(date.toInstant().toEpochMilli());
+        Object[] params = { timestamp, storedVO.getValue() };
+        logger.debug("JDBC::doStoreItemValue sql={} timestamp={} value='{}'", sql, timestamp, storedVO.getValue());
+        try {
+            Yank.execute(sql, params);
+        } catch (YankSQLException e) {
+            throw new JdbcSQLException(e);
+        }
+    }
+
+    @Override
     public List<HistoricItem> doGetHistItemFilterQuery(Item item, FilterCriteria filter, int numberDecimalcount,
             String table, String name, ZoneId timeZone) throws JdbcSQLException {
         String sql = histItemFilterQueryProvider(filter, numberDecimalcount, table, name, timeZone);
@@ -226,12 +244,12 @@ public class JdbcDerbyDAO extends JdbcBaseDAO {
         String filterString = "";
         if (filter.getBeginDate() != null) {
             filterString += filterString.isEmpty() ? " WHERE" : " AND";
-            filterString += " TIME>'" + JDBC_DATE_FORMAT.format(filter.getBeginDate().withZoneSameInstant(timeZone))
+            filterString += " TIME>='" + JDBC_DATE_FORMAT.format(filter.getBeginDate().withZoneSameInstant(timeZone))
                     + "'";
         }
         if (filter.getEndDate() != null) {
             filterString += filterString.isEmpty() ? " WHERE" : " AND";
-            filterString += " TIME<'" + JDBC_DATE_FORMAT.format(filter.getEndDate().withZoneSameInstant(timeZone))
+            filterString += " TIME<='" + JDBC_DATE_FORMAT.format(filter.getEndDate().withZoneSameInstant(timeZone))
                     + "'";
         }
         filterString += (filter.getOrdering() == Ordering.ASCENDING) ? " ORDER BY time ASC" : " ORDER BY time DESC";

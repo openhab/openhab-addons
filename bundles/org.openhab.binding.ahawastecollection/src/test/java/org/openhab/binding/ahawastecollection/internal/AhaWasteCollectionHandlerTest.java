@@ -58,7 +58,7 @@ public class AhaWasteCollectionHandlerTest {
     }
 
     /**
-     * Exception indicating that the execution of an script within the stub-Scheduler failed.
+     * Exception indicating that the execution of a script within the stub-Scheduler failed.
      */
     private static class SchedulerRuntimeException extends RuntimeException {
 
@@ -70,7 +70,7 @@ public class AhaWasteCollectionHandlerTest {
     }
 
     /**
-     * Creates an {@link CronScheduler} that executes all commands synchronous.
+     * Creates a {@link CronScheduler} that executes all commands synchronous.
      */
     @SuppressWarnings("unchecked")
     private static CronScheduler createStubScheduler() {

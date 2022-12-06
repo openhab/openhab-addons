@@ -100,23 +100,25 @@ org.openhab.homekit:name=openHAB
 org.openhab.homekit:instances=1
 ```
 
+Some settings are only visible in UI if the checkbox "Show advanced" is activated.
+
 ### Overview of all settings
 
-| Setting                  | Description                                                                                                                                                                                                                             | Default value |
-|:-------------------------|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:--------------|
-| networkInterface         | IP address or domain name under which the HomeKit bridge can be reached. If no value is configured, the add-on uses the first network adapter address configured for openHAB.                                                                                  | (none)        |
-| port                     | Port under which the HomeKit bridge can be reached.                                                                                                                                                                                     | 9123          |
-| useOHmDNS                | mDNS service is used to advertise openHAB as HomeKit bridge in the network so that HomeKit clients can find it. openHAB has already mDNS service running. This option defines whether the mDNS service of openHAB or a separate service should be used.   | false  |
-| blockUserDeletion        | Blocks HomeKit user deletion in openHAB and as result unpairing of devices. If you experience an issue with accessories becoming non-responsive after some time, try to enable this setting. You can also enable this setting if your HomeKit setup is done and you will not re-pair ios devices.                                              | false         |
-| pin                      | Pin code used for pairing with iOS devices. Apparently, pin codes are provided by Apple and represent specific device types, so they cannot be chosen freely. The pin code 031-45-154 is used in sample applications and known to work. | 031-45-154    |
-| startDelay               | HomeKit start delay in seconds in case the number of accessories is lower than last time. This helps to avoid resetting home app in case not all items have been initialised properly before HomeKit integration start.                 | 30            |
-| useFahrenheitTemperature | Set to true to use Fahrenheit degrees, or false to use Celsius degrees. Note if an item has a QuantityType as its state, this configuration is ignored and it's always converted properly.                                              | false         |
-| thermostatTargetModeCool | Word used for activating the cooling mode of the device (if applicable). It can be overwritten at item level.                                                                                                                           | CoolOn        |
-| thermostatTargetModeHeat | Word used for activating the heating mode of the device (if applicable). It can be overwritten at item level.                                                                                                                           | HeatOn        |
-| thermostatTargetModeAuto | Word used for activating the automatic mode of the device (if applicable). It can be overwritten at item level.                                                                                                                         | Auto          |
-| thermostatTargetModeOff  | Word used to set the thermostat mode of the device to off (if applicable).  It can be overwritten at item level.                                                                                                                        | Off           |
-| name                     | Name under which this HomeKit bridge is announced on the network. This is also the name displayed on the iOS device when searching for available bridges.                                                                               | openHAB       |
-| instances                | Defines how many bridges to expose. Necessary if you have more than 149 accessories. Accessories must be assigned to additional instances via metadata. Additional bridges will use incrementing port numbers.                          | 1             |
+| Setting                  | Description                                                                                                                                                                                                                                                                                       | Default value |
+|:-------------------------|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:--------------|
+| networkInterface         | IP address or domain name under which the HomeKit bridge can be reached. If no value is configured, the add-on uses the primary IP address configured for openHAB. If unsure, keep it empty                                                                                                       | (none)        |
+| port                     | Port under which the HomeKit bridge can be reached.                                                                                                                                                                                                                                               | 9123          |
+| useOHmDNS                | mDNS service is used to advertise openHAB as HomeKit bridge in the network so that HomeKit clients can find it. openHAB has already mDNS service running. This option defines whether the mDNS service of openHAB or a separate service should be used.                                           | false  |
+| blockUserDeletion        | Blocks HomeKit user deletion in openHAB and as result unpairing of devices. If you experience an issue with accessories becoming non-responsive after some time, try to enable this setting. You can also enable this setting if your HomeKit setup is done and you will not re-pair ios devices. | false         |
+| pin                      | Pin code used for pairing with iOS devices. Apparently, pin codes are provided by Apple and represent specific device types, so they cannot be chosen freely. The pin code 031-45-154 is used in sample applications and known to work.                                                           | 031-45-154    |
+| startDelay               | HomeKit start delay in seconds in case the number of accessories is lower than last time. This helps to avoid resetting home app in case not all items have been initialised properly before HomeKit integration start.                                                                           | 30            |
+| useFahrenheitTemperature | Set to true to use Fahrenheit degrees, or false to use Celsius degrees. Note if an item has a QuantityType as its state, this configuration is ignored and it's always converted properly.                                                                                                        | false         |
+| thermostatTargetModeCool | Word used for activating the cooling mode of the device (if applicable). It can be overwritten at item level.                                                                                                                                                                                     | CoolOn        |
+| thermostatTargetModeHeat | Word used for activating the heating mode of the device (if applicable). It can be overwritten at item level.                                                                                                                                                                                     | HeatOn        |
+| thermostatTargetModeAuto | Word used for activating the automatic mode of the device (if applicable). It can be overwritten at item level.                                                                                                                                                                                   | Auto          |
+| thermostatTargetModeOff  | Word used to set the thermostat mode of the device to off (if applicable).  It can be overwritten at item level.                                                                                                                                                                                  | Off           |
+| name                     | Name under which this HomeKit bridge is announced on the network. This is also the name displayed on the iOS device when searching for available bridges.                                                                                                                                         | openHAB       |
+| instances                | Defines how many bridges to expose. Necessary if you have more than 149 accessories. Accessories must be assigned to additional instances via metadata. Additional bridges will use incrementing port numbers.                                                                                    | 1             |
 
 ## Item Configuration
 
@@ -310,7 +312,19 @@ In case you need to disable this logic you can do it with configuration paramete
 Rollershutter window_covering "Window Rollershutter" {homekit = "WindowCovering"  [inverted=false]}
 Rollershutter window          "Window"               {homekit = "Window" [inverted=false]}
 Rollershutter door            "Door"                 {homekit = "Door" [inverted=false]}
+ ```
 
+HomeKit home app never sends "STOP" but only the target position. 
+If you add configuration parameter "stop=true", openHAB will emulate stop and send "STOP" command to rollershutter item if you click on the blind icon in the iOS home app while the blind is moving.
+
+```xtend
+Rollershutter window_covering "Window Rollershutter" {homekit = "WindowCovering"  [stop=true]}
+ ```
+
+Some blinds devices do support "STOP" command but would stop if they receive UP/DOWN while moving om the same direction. In order to support such devices add "stopSameDirection" parameter.
+
+```xtend
+Rollershutter window_covering "Window Rollershutter" {homekit = "WindowCovering"  [stop=true, stopSameDirection=true]}
  ```
 
 Window covering can have a number of optional characteristics like horizontal & vertical tilt, obstruction status and hold position trigger.
@@ -528,7 +542,7 @@ In order to combine multiple accessories to one HomeKit accessory you need:
 e.g. configuration for a fan with light would look as follows
 
 ```xtend
-Group           FanWithLight        "Fan with Light"                           {homekit = "Fan,Light"}
+Group           FanWithLight        "Fan with Light"                           {homekit = "Fan,Lighting"}
 Switch          FanActiveStatus     "Fan Active Status"     (FanWithLight)     {homekit = "Fan.ActiveStatus"}
 Number          FanRotationSpeed    "Fan Rotation Speed"    (FanWithLight)     {homekit = "Fan.RotationSpeed"}
 Switch          Light               "Light"                 (FanWithLight)     {homekit = "Lighting.OnState"}

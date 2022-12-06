@@ -95,7 +95,7 @@ public class Location extends Device {
     public void update(DeviceDTO deviceDTO) {
         super.update(deviceDTO);
 
-        // values to put on a overview dashboard
+        // values to put on an overview dashboard
         this.addWattQuantity(CHANNEL_POWER_BUFFERED, deviceDTO);
         this.addWattQuantity(CHANNEL_POWER_SELF_CONSUMED, deviceDTO);
         this.addWattQuantity(CHANNEL_POWER_SELF_SUPPLIED, deviceDTO);

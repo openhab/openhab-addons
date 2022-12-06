@@ -22,7 +22,7 @@ Additionally, the parameter `backgroundDiscovery` can be set to true/false. When
 
 ## Example
 
-This is how an BlueGiga adapter can be configured textually in a *.things file:
+This is how a BlueGiga adapter can be configured textually in a *.things file:
 
 ```
 Bridge bluetooth:bluegiga:1 [ port="/dev/ttyS0", backgroundDiscovery=false ]

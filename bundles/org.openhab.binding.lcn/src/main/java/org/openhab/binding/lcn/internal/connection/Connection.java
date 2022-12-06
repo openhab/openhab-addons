@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This class represents a configured connection to one LCN-PCHK.
- * It uses a {@link AsynchronousSocketChannel} to connect to LCN-PCHK.
+ * It uses an {@link AsynchronousSocketChannel} to connect to LCN-PCHK.
  * Included logic:
  * <ul>
  * <li>Reconnection on connection loss

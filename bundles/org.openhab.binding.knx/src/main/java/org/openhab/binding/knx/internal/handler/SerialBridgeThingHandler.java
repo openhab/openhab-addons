@@ -21,7 +21,7 @@ import org.openhab.core.thing.ThingStatus;
 
 /**
  * The {@link IPBridgeThingHandler} is responsible for handling commands, which are
- * sent to one of the channels. It implements a KNX Serial/USB Gateway, that either acts a a
+ * sent to one of the channels. It implements a KNX Serial/USB Gateway, that either acts as a
  * conduit for other {@link DeviceThingHandler}s, or for Channels that are
  * directly defined on the bridge
  *

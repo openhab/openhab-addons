@@ -184,7 +184,7 @@ Example (using Jython script):
 
 ### The Simplest case 
 
-Define a InfluxDB2 database thing and a query with an interval execution.
+Define an InfluxDB2 database thing and a query with an interval execution.
 That executes the query every 15 seconds and punts the result in `myItem`.
 
     # Bridge Thing definition

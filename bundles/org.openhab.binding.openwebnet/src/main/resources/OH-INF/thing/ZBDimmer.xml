@@ -11,7 +11,7 @@
 		</supported-bridge-type-refs>
 
 		<label>ZigBee Dimmer</label>
-		<description>A OpenWebNet ZigBee dimmer for the dimmer control of 1 light. BTicino models: 4585/4594/etc.</description>
+		<description>An OpenWebNet ZigBee dimmer for the dimmer control of 1 light. BTicino models: 4585/4594/etc.</description>
 
 		<channels>
 			<channel id="brightness" typeId="brightness"/>

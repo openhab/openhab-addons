@@ -41,7 +41,7 @@
 		</config-description>
 	</thing-type>
 
-	<!-- Channel type that represents the collection time of an waste type. -->
+	<!-- Channel type that represents the collection time of a waste type. -->
 	<channel-type id="collectionDateGeneralWaste">
 		<item-type>DateTime</item-type>
 		<label>General Waste</label>

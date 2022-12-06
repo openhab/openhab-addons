@@ -140,7 +140,7 @@ public abstract class ConnectorBase<T> implements IMeterReaderConnector<T> {
     }
 
     /**
-     * Emitting of values shall happen here. If there is a event based emitting, this can be overriden.
+     * Emitting of values shall happen here. If there is an event based emitting, this can be overriden.
      *
      * @param initMessage The message which shall be written before reading the values.
      * @param emitter The {@link FlowableEmitter} to emit the values to.

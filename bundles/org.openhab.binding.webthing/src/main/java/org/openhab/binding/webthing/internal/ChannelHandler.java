@@ -43,7 +43,7 @@ public interface ChannelHandler {
     void updateItemState(ChannelUID channelUID, Command command);
 
     /**
-     * Listener that will be notified, if a Item state is changed
+     * Listener that will be notified, if an Item state is changed
      */
     interface ItemChangedListener {
 

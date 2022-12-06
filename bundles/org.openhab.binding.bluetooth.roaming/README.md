@@ -35,7 +35,7 @@ The `backgroundDiscovery` parameter is true by default.
 
 ## Example
 
-This is how an Roaming adapter can be configured textually in a *.things file:
+This is how a Roaming adapter can be configured textually in a *.things file:
 
 ```
 Bridge bluetooth:roaming:ctrl "BLE Roaming Adapter" [ backgroundDiscovery=true]

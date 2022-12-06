@@ -205,9 +205,9 @@ public class JdbcBaseDAOTest {
         filter.setEndDate(parseDateTimeString("2022-01-15T15:01:44"));
 
         String sql = jdbcBaseDAO.histItemFilterQueryProvider(filter, 0, DB_TABLE_NAME, "TEST", UTC_ZONE_ID);
-        assertThat(sql, is("SELECT time, value FROM " + DB_TABLE_NAME + " WHERE TIME>'" //
+        assertThat(sql, is("SELECT time, value FROM " + DB_TABLE_NAME + " WHERE TIME>='" //
                 + JdbcBaseDAO.JDBC_DATE_FORMAT.format(filter.getBeginDate()) + "'" //
-                + " AND TIME<'" + JdbcBaseDAO.JDBC_DATE_FORMAT.format(filter.getEndDate()) + "' ORDER BY time DESC"));
+                + " AND TIME<='" + JdbcBaseDAO.JDBC_DATE_FORMAT.format(filter.getEndDate()) + "' ORDER BY time DESC"));
     }
 
     @Test
@@ -230,9 +230,9 @@ public class JdbcBaseDAOTest {
         filter.setEndDate(parseDateTimeString("2022-01-15T15:01:44"));
 
         String sql = jdbcBaseDAO.histItemFilterDeleteProvider(filter, DB_TABLE_NAME, UTC_ZONE_ID);
-        assertThat(sql, is("DELETE FROM " + DB_TABLE_NAME + " WHERE TIME>'" //
+        assertThat(sql, is("DELETE FROM " + DB_TABLE_NAME + " WHERE TIME>='" //
                 + JdbcBaseDAO.JDBC_DATE_FORMAT.format(filter.getBeginDate()) + "'" //
-                + " AND TIME<'" + JdbcBaseDAO.JDBC_DATE_FORMAT.format(filter.getEndDate()) + "'"));
+                + " AND TIME<='" + JdbcBaseDAO.JDBC_DATE_FORMAT.format(filter.getEndDate()) + "'"));
     }
 
     @Test
@@ -246,7 +246,7 @@ public class JdbcBaseDAOTest {
         filter.setBeginDate(parseDateTimeString("2022-01-10T15:01:44"));
 
         String sql = jdbcBaseDAO.resolveTimeFilter(filter, UTC_ZONE_ID);
-        assertThat(sql, is(" WHERE TIME>'" + JdbcBaseDAO.JDBC_DATE_FORMAT.format(filter.getBeginDate()) + "'"));
+        assertThat(sql, is(" WHERE TIME>='" + JdbcBaseDAO.JDBC_DATE_FORMAT.format(filter.getBeginDate()) + "'"));
     }
 
     @Test
@@ -254,7 +254,7 @@ public class JdbcBaseDAOTest {
         filter.setEndDate(parseDateTimeString("2022-01-15T15:01:44"));
 
         String sql = jdbcBaseDAO.resolveTimeFilter(filter, UTC_ZONE_ID);
-        assertThat(sql, is(" WHERE TIME<'" + JdbcBaseDAO.JDBC_DATE_FORMAT.format(filter.getEndDate()) + "'"));
+        assertThat(sql, is(" WHERE TIME<='" + JdbcBaseDAO.JDBC_DATE_FORMAT.format(filter.getEndDate()) + "'"));
     }
 
     @Test
@@ -263,8 +263,8 @@ public class JdbcBaseDAOTest {
         filter.setEndDate(parseDateTimeString("2022-01-15T15:01:44"));
 
         String sql = jdbcBaseDAO.resolveTimeFilter(filter, UTC_ZONE_ID);
-        assertThat(sql, is(" WHERE TIME>'" + JdbcBaseDAO.JDBC_DATE_FORMAT.format(filter.getBeginDate()) + "'" //
-                + " AND TIME<'" + JdbcBaseDAO.JDBC_DATE_FORMAT.format(filter.getEndDate()) + "'"));
+        assertThat(sql, is(" WHERE TIME>='" + JdbcBaseDAO.JDBC_DATE_FORMAT.format(filter.getBeginDate()) + "'" //
+                + " AND TIME<='" + JdbcBaseDAO.JDBC_DATE_FORMAT.format(filter.getEndDate()) + "'"));
     }
 
     private ZonedDateTime parseDateTimeString(String dts) {

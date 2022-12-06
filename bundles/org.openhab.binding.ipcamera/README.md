@@ -167,7 +167,7 @@ If you do not specify any of these, the binding will use the default which shoul
 |-|-|
 | `ipAddress`| The IP address or host name of your camera. |
 | `port`| This port will be used for HTTP calls for fetching the snapshot and any API calls. |
-| `onvifPort`| The port your camera uses for ONVIF connections. This is needed for PTZ movement, events, and the auto discovery of RTSP and snapshot URLs. |
+| `onvifPort`| The port your camera uses for ONVIF connections. This is needed for PTZ movement, events, and the auto discovery of RTSP and snapshot URLs. A value of 0 will prevent the binding from trying to connect to ONVIF. |
 | `username`| Leave blank if your camera does not use login details. |
 | `password`| Leave blank if your camera does not use login details. |
 | `onvifMediaProfile`| 0 (default) is your cameras Mainstream and the numbers above 0 are the substreams. Any auto discovered URLs will use the streams that this indicates. You can always override the URLs should you wish to use something different for one of them. |
@@ -188,7 +188,7 @@ If you do not specify any of these, the binding will use the default which shoul
 | `customAudioAlarmUrl`| Foscam only, for custom enable audio alarm use. More info found in Foscam's setup steps. |
 | `mjpegUrl`| A HTTP URL for MJPEG format streams. If you enter 'ffmpeg' the stream can be generated from the RTSP URL. |
 | `ffmpegInput`| Best if this stream is in H.264 format and can be RTSP or HTTP URLs. Leave this blank to use the auto detected RTSP address for ONVIF cameras. |
-| `ffmpegInputOptions` | Allows you to specify any options before the -i on the commands for FFmpeg. If you have a ESP32 camera that only has a mjpeg stream then make this equal `-f mjpeg`. |
+| `ffmpegInputOptions` | Allows you to specify any options before the -i on the commands for FFmpeg. If you have an ESP32 camera that only has a mjpeg stream then make this equal `-f mjpeg`. |
 | `ffmpegLocation`| The full path including the filename for where you have installed FFmpeg. The default should work for most Linux installs but if using windows use this format: `c:\ffmpeg\bin\ffmpeg.exe` |
 | `ffmpegOutput`| The full path to a unique folder (different for each camera) where FFmpeg has the ability to write files to ending with a slash. If you leave this blank, the binding will automatically use `$OPENHAB_USERDATA/ipcamera/UID`. See here for where this is located on your installation, <https://www.openhab.org/docs/installation/#getting-installation-info> |
 | `hlsOutOptions`| This gives you direct access to specify your own FFmpeg options to be used. Default: `-strict -2 -f lavfi -i aevalsrc=0 -acodec aac -vcodec copy -hls_flags delete_segments -hls_time 2 -hls_list_size 4` |

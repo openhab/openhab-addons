@@ -35,7 +35,7 @@ Controller Things require a parent [Account Bridge](#Account-Bridge-Thing)
      
 ### Local Thing
 
-The Local Thing type uses an undocumented API that allows direct HTTP access to a irrigation controller on the user's network.  
+The Local Thing type uses an undocumented API that allows direct HTTP access to an irrigation controller on the user's network.  
 This provides a subset of features compared to the Cloud Thing type limited to basic zone control.  
 Controlling zones through the local API will not be reported back to the cloud service or the Hydrawise mobile/web applications, and reporting functionality will not reflect the locally controlled state. 
 
@@ -57,13 +57,13 @@ Use Cases
 
 ### Account Thing
 
-| Configuration Name | type    | required | Comments                                                                                                                 |
-|--------------------|---------|----------|--------------------------------------------------------------------------------------------------------------------------|
-| userName           | String  | False    | The Hydrawise account user name                                                                                          |
-| password           | String  | False    | The Hydrawise account password                                                                                           |
-| savePassword       | Boolean | False    | By default the password will be not be persisted after the first login attempt unless this is true, defaults to false    |
-| refresh            | Integer | False    | Defaults to a 60 second polling rate, more frequent polling may cause the service to deny requests                       |
-| refreshToken       | Boolean | False    | A oAuth refresh token, this will be automatically configured after the first login and updated as the token is refreshed |
+| Configuration Name | type    | required | Comments                                                                                                                  |
+|--------------------|---------|----------|---------------------------------------------------------------------------------------------------------------------------|
+| userName           | String  | False    | The Hydrawise account user name                                                                                           |
+| password           | String  | False    | The Hydrawise account password                                                                                            |
+| savePassword       | Boolean | False    | By default the password will be not be persisted after the first login attempt unless this is true, defaults to false     |
+| refresh            | Integer | False    | Defaults to a 60 second polling rate, more frequent polling may cause the service to deny requests                        |
+| refreshToken       | Boolean | False    | An oAuth refresh token, this will be automatically configured after the first login and updated as the token is refreshed |
 
 ### Controller Thing
 

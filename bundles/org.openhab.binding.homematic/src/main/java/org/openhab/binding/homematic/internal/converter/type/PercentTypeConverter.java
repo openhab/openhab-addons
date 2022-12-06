@@ -26,7 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Converts between a Homematic datapoint value and a openHAB PercentType.
+ * Converts between a Homematic datapoint value and an openHAB PercentType.
  *
  * @author Gerhard Riegler - Initial contribution
  */

@@ -23,7 +23,6 @@ public class GetVersionRequest extends Packet {
     public static final int TYPE = 0x20;
 
     public GetVersionRequest() {
-        setTagged(false);
         setAddressable(true);
         setResponseRequired(true);
     }

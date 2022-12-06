@@ -149,7 +149,7 @@ public class DiscoverComponents implements MqttMessageSubscriber {
         this.connectionRef = new WeakReference<>(connection);
 
         // Subscribe to the wildcard topic and start receive MQTT retained topics
-        this.topics.parallelStream().map(t -> connection.subscribe(t, this)).collect(FutureCollector.allOf())
+        this.topics.stream().map(t -> connection.subscribe(t, this)).collect(FutureCollector.allOf())
                 .thenRun(this::subscribeSuccess).exceptionally(this::subscribeFail);
 
         return discoverFinishedFuture;
@@ -161,7 +161,7 @@ public class DiscoverComponents implements MqttMessageSubscriber {
         if (connection != null && discoverTime > 0) {
             this.stopDiscoveryFuture = scheduler.schedule(() -> {
                 this.stopDiscoveryFuture = null;
-                this.topics.parallelStream().forEach(t -> connection.unsubscribe(t, this));
+                this.topics.stream().forEach(t -> connection.unsubscribe(t, this));
                 this.discoveredListener = null;
                 discoverFinishedFuture.complete(null);
             }, discoverTime, TimeUnit.MILLISECONDS);
@@ -180,7 +180,7 @@ public class DiscoverComponents implements MqttMessageSubscriber {
         this.discoveredListener = null;
         final MqttBrokerConnection connection = connectionRef.get();
         if (connection != null) {
-            this.topics.parallelStream().forEach(t -> connection.unsubscribe(t, this));
+            this.topics.stream().forEach(t -> connection.unsubscribe(t, this));
             connectionRef.clear();
         }
         discoverFinishedFuture.completeExceptionally(e);

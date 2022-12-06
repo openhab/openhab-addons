@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.io.neeo.internal.NeeoUtil;
 
 /**
- * The model representing an NEEO recipe urls (serialize/deserialize json use only).
+ * The model representing a NEEO recipe urls (serialize/deserialize json use only).
  *
  * @author Tim Roberts - Initial Contribution
  */

@@ -74,6 +74,7 @@ public class Shelly2ApiJsonDTO {
     // Input types
     public static final String SHELLY2_INPUTT_SWITCH = "switch";
     public static final String SHELLY2_INPUTT_BUTTON = "button";
+    public static final String SHELLY2_INPUTT_ANALOG = "analog"; // Shelly Addon: analogous input
 
     // Switcm modes
     public static final String SHELLY2_API_MODE_DETACHED = "detached";
@@ -253,6 +254,8 @@ public class Shelly2ApiJsonDTO {
             public Boolean invert;
             @SerializedName("factory_reset")
             public Boolean factoryReset;
+            @SerializedName("report_thr")
+            public Double reportTreshold; // only for type analog
         }
 
         public class Shelly2DevConfigSwitch {
@@ -413,6 +416,8 @@ public class Shelly2ApiJsonDTO {
         public class Shelly2InputStatus {
             public Integer id;
             public Boolean state;
+            public Double percent; // analog input only
+            public ArrayList<String> errors;// shown only if at least one error is present.
         }
 
         public static class Shelly2DeviceStatusResult {
@@ -456,6 +461,11 @@ public class Shelly2ApiJsonDTO {
                 public Double rh;
             }
 
+            public class Shelly2DeviceStatusVoltage {
+                public Integer id;
+                public Double voltage;
+            }
+
             public class Shelly2DeviceStatusTempId extends Shelly2DeviceStatusTemp {
                 public Integer id;
             }
@@ -490,6 +500,8 @@ public class Shelly2ApiJsonDTO {
             public Shelly2InputStatus input2;
             @SerializedName("input:3")
             public Shelly2InputStatus input3;
+            @SerializedName("input:100")
+            public Shelly2InputStatus input100; // Digital Input from Add-On
 
             @SerializedName("switch:0")
             public Shelly2RelayStatus switch0;
@@ -503,10 +515,27 @@ public class Shelly2ApiJsonDTO {
             @SerializedName("cover:0")
             public Shelly2CoverStatus cover0;
 
-            @SerializedName("humidity:0")
-            public Shelly2DeviceStatusHumidity humidity0;
             @SerializedName("temperature:0")
             public Shelly2DeviceStatusTempId temperature0;
+            @SerializedName("temperature:100")
+            public Shelly2DeviceStatusTempId temperature100;
+            @SerializedName("temperature:101")
+            public Shelly2DeviceStatusTempId temperature101;
+            @SerializedName("temperature:102")
+            public Shelly2DeviceStatusTempId temperature102;
+            @SerializedName("temperature:103")
+            public Shelly2DeviceStatusTempId temperature103;
+            @SerializedName("temperature:104")
+            public Shelly2DeviceStatusTempId temperature104;
+
+            @SerializedName("humidity:0")
+            public Shelly2DeviceStatusHumidity humidity0;
+            @SerializedName("humidity:100")
+            public Shelly2DeviceStatusHumidity humidity100;
+
+            @SerializedName("voltmeter:100")
+            public Shelly2DeviceStatusVoltage voltmeter100;
+
             @SerializedName("devicepower:0")
             public Shelly2DeviceStatusPower devicepower0;
         }

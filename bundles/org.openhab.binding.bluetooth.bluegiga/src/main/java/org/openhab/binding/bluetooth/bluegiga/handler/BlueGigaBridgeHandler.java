@@ -436,7 +436,7 @@ public class BlueGigaBridgeHandler extends AbstractBluetoothBridgeHandler<BlueGi
         cancelScheduledPassiveScan();
         bgEndProcedure();
 
-        // Start a active scan
+        // Start an active scan
         bgStartScanning(true, configuration.activeScanInterval, configuration.activeScanWindow);
     }
 

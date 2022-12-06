@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Parses an {@link FilterToken}-Sequence into a {@link TimetableStopPredicate}.
+ * Parses a {@link FilterToken}-Sequence into a {@link TimetableStopPredicate}.
  * 
  * @author Sönke Küper - Initial contribution.
  */
@@ -180,7 +180,7 @@ public final class FilterParser {
     }
 
     /**
-     * State while parsing an disjunction.
+     * State while parsing a disjunction.
      */
     private static final class OrState extends State {
 
@@ -287,7 +287,7 @@ public final class FilterParser {
     }
 
     /**
-     * Parses the given {@link FilterToken} into an {@link TimetableStopPredicate}.
+     * Parses the given {@link FilterToken} into a {@link TimetableStopPredicate}.
      */
     public static TimetableStopPredicate parse(final List<FilterToken> tokens) throws FilterParserException {
         State state = new InitialState();

@@ -75,7 +75,7 @@ Don’t forget to reboot the CMI after you uploaded the coe.csv file.
 
 This thing reflecting one of our 'schema API page' as defined in the prerequisites.
 This thing doesn't need the bridge.
-Multiple of these pages on different C.M.I.'s could be defined within a openHAB instance.
+Multiple of these pages on different C.M.I.'s could be defined within an openHAB instance.
 
 * TA C.M.I. CoE Bridge
 
@@ -108,7 +108,7 @@ The thing has the following configuration parameters:
 | API Schema ID           | schemaId     | ID of the schema API page                                                                                     | 1-256                  |
 | Poll Interval           | pollInterval | Poll interval (in seconds) how often to poll the API Page                                                     | 1-300; default 10      |
 
-This thing doesn't need a bridge. Multiple of these things for different C.M.I.'s could be defined within a openHAB instance.
+This thing doesn't need a bridge. Multiple of these things for different C.M.I.'s could be defined within an openHAB instance.
 
 ### TA C.M.I. CoE Connection
 
@@ -152,7 +152,7 @@ But this also means for CoE-Messages from openHAB to TA C.M.I. we have to send m
 But due to OH's design there is no default restore of previous values out of the box.
 So after OH startup the _output thing channels_ are either initialized with it's configured default value or flagged as 'unknown' until the first update on the channel happens.
 You could either use some 'illegal' value as initial value and use _CoE Value Validation_ on the TA side to detect invalid values.
-An other option would be to use only every 4th analog and 16th digital channel if you only need a few channels.
+Another option would be to use only every 4th analog and 16th digital channel if you only need a few channels.
 Additionally you could use [OH's persistence service](https://www.openhab.org/docs/configuration/persistence.html#restoring-item-states-on-restart) and it's option to [restore the item states](https://www.openhab.org/docs/configuration/persistence.html#restoring-item-states-on-restart) during OH startup.
 As this only restores the item states you have to write a rule issuing _postUpdates_ on the items with the item's current value so the channel for the binding is updated.
 

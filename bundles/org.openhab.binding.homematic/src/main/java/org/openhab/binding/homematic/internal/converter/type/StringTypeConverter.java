@@ -19,7 +19,7 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.Type;
 
 /**
- * Converts between a Homematic datapoint value and a openHAB StringType.
+ * Converts between a Homematic datapoint value and an openHAB StringType.
  *
  * @author Gerhard Riegler - Initial contribution
  */

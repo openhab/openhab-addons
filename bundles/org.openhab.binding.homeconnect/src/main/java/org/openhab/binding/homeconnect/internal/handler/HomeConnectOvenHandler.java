@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@link HomeConnectOvenHandler} is responsible for handling commands, which are
- * sent to one of the channels of a oven.
+ * sent to one of the channels of an oven.
  *
  * @author Jonas Brüstel - Initial contribution
  */

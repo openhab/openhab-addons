@@ -25,7 +25,7 @@ public abstract class FilterToken {
     private final int position;
 
     /**
-     * Creates an new {@link FilterToken}.
+     * Creates a new {@link FilterToken}.
      */
     public FilterToken(int position) {
         this.position = position;

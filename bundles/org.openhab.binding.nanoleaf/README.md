@@ -80,7 +80,7 @@ Clicking on that image or adding it to a dashboard will show a picture of your c
 
 If your canvas has elements we dont know how to draw a layout for yet, please reach out, and we will ask for some information and will try to add support for your elements.
 
-![Image](doc/Layout.jpg)
+![Image](doc/Layout.png)
 
 There is an alternative method for canvas that use square panels, you can request the layout through a [console command](https://www.openhab.org/docs/administration/console.html):
 
@@ -104,7 +104,15 @@ Compare the following output with the right picture at the beginning of the arti
                                     41451                                     
 
 ```
-         
+
+## State
+
+The state channel shows an image of the panels on the wall.
+You have to configure things for each panel to get the correct color. 
+Since the colors of the panels can make it difficult to see the panel ids, please use the layout channel where the background color is always white to identify them.
+
+![Image](doc/NanoCanvas_rendered.jpg)
+
 ## Thing Configuration
 
 The controller thing has the following parameters:
@@ -137,10 +145,12 @@ The controller bridge has the following channels:
 | colorTemperatureAbs | Number    | Color temperature (in Kelvin, 1200 to 6500) of all light panels                                           | No        |
 | colorMode           | String    | Color mode of the light panels                                                                            | Yes       |
 | effect              | String    | Selected effect of the light panels                                                                       | No        |
+| layout              | Image     | Shows the layout of your panels with IDs.                                                                 | Yes       |
 | rhythmState         | Switch    | Connection state of the rhythm module                                                                     | Yes       |
 | rhythmActive        | Switch    | Activity state of the rhythm module                                                                       | Yes       |
 | rhythmMode          | Number    | Sound source for the rhythm module. 0=Microphone, 1=Aux cable                                             | No        |
-| swipe               | Trigger   | [Canvas / Shapes Only] Detects Swipes over the panel.LEFT, RIGHT, UP, DOWN events are supported.          | YES        |
+| state               | Image     | Shows the current state of your panels with colors.                                                       | Yes       |
+| swipe               | Trigger   | [Canvas / Shapes Only] Detects Swipes over the panel.LEFT, RIGHT, UP, DOWN events are supported.          | Yes       |
 
 
 

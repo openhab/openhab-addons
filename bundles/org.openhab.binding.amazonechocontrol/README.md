@@ -528,7 +528,7 @@ sitemap smarthome label="Smart Home Devices"
 
 The url <YOUR_OPENHAB>/amazonechocontrol/<YOUR_ACCOUNT>/PROXY/<API_URL> provides a proxy server with an authenticated connection to the amazon alexa server. This can be used to call alexa api from rules.
 
-E.g. to read out the history call from an installation on openhab:8080 with a account named account1:
+E.g. to read out the history call from an installation on openhab:8080 with an account named account1:
 
 http://openhab:8080/amazonechocontrol/account1/PROXY/api/activities?startTime=&size=50&offset=1
 
@@ -599,7 +599,7 @@ then
 end
 ```
 
-## Playing an alarm sound for 15 seconds with an openHAB rule if an door contact was opened:
+## Playing an alarm sound for 15 seconds with an openHAB rule if a door contact was opened:
 
 1) Do get the ID of your sound, follow the steps in "How To Get IDs"
 2) Write down the text in the square brackets. e.g. ECHO:system_alerts_repetitive01 for the nightstand sound

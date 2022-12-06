@@ -184,7 +184,7 @@ public class BlueGigaTransactionManager implements BlueGigaSerialEventListener {
     }
 
     /**
-     * Sends an BlueGiga request without waiting for the response.
+     * Sends a BlueGiga request without waiting for the response.
      *
      * @param bleCommand {@link BlueGigaCommand}
      * @return response {@link Future} {@link BlueGigaResponse}

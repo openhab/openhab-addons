@@ -14,9 +14,9 @@ The following databases are currently supported and tested:
 | [HSQLDB](http://hsqldb.org/)                 | [hsqldb-2.3.3.jar](https://mvnrepository.com/artifact/org.hsqldb/hsqldb) |
 | [MariaDB](https://mariadb.org/)              | [mariadb-java-client-3.0.8.jar](https://mvnrepository.com/artifact/org.mariadb.jdbc/mariadb-java-client) |
 | [MySQL](https://www.mysql.com/)              | [mysql-connector-java-8.0.30.jar](https://mvnrepository.com/artifact/mysql/mysql-connector-java) |
-| [PostgreSQL](https://www.postgresql.org/)    | [postgresql-42.4.1.jar](https://mvnrepository.com/artifact/org.postgresql/postgresql) |
+| [PostgreSQL](https://www.postgresql.org/)    | [postgresql-42.4.3.jar](https://mvnrepository.com/artifact/org.postgresql/postgresql) |
 | [SQLite](https://www.sqlite.org/)            | [sqlite-jdbc-3.16.1.jar](https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc) |
-| [TimescaleDB](https://www.timescale.com/)    | [postgresql-42.4.1.jar](https://mvnrepository.com/artifact/org.postgresql/postgresql) |
+| [TimescaleDB](https://www.timescale.com/)    | [postgresql-42.4.3.jar](https://mvnrepository.com/artifact/org.postgresql/postgresql) |
 
 ## Table of Contents
 
@@ -207,6 +207,18 @@ In other words, extracting this information from the index before removing it, c
 Manual changes in the index table, `Items`, will not be picked up automatically for performance reasons.
 The same is true when manually adding new item tables or deleting existing ones.
 After making such changes, the command `jdbc reload` can be used to reload the index.
+
+#### Check/fix Schema
+
+Use the command `jdbc schema check` to perform an integrity check of the schema.
+
+Identified issues can be fixed automatically using the command `jdbc schema fix` (all items having issues) or `jdbc schema fix <itemName>` (single item).
+
+Issues than can be identified and possibly fixed:
+
+- Wrong column name case (`time` and `name`).
+- Wrong column type. Before fixing this, make sure that time-zone is correctly configured.
+- Unexpected column (identify only).
 
 ### For Developers
 

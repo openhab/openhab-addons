@@ -170,6 +170,7 @@ public class IpCameraHandler extends BaseThingHandler {
     private String basicAuth = "";
     public boolean useBasicAuth = false;
     public boolean useDigestAuth = false;
+    public boolean newInstarApi = false;
     public String snapshotUri = "";
     public String mjpegUri = "";
     private byte[] currentSnapshot = new byte[] { (byte) 0x00 };
@@ -1371,7 +1372,7 @@ public class IpCameraHandler extends BaseThingHandler {
             }
             return;
         }
-        if (!onvifCamera.isConnected()) {
+        if (cameraConfig.getOnvifPort() > 0 && !onvifCamera.isConnected()) {
             logger.debug("About to connect to the IP Camera using the ONVIF PORT at IP:{}:{}", cameraConfig.getIp(),
                     cameraConfig.getOnvifPort());
             onvifCamera.connect(thing.getThingTypeUID().getId().equals(ONVIF_THING));
@@ -1521,6 +1522,9 @@ public class IpCameraHandler extends BaseThingHandler {
                 }
                 noMotionDetected(CHANNEL_MOTION_ALARM);
                 noMotionDetected(CHANNEL_PIR_ALARM);
+                noMotionDetected(CHANNEL_HUMAN_ALARM);
+                noMotionDetected(CHANNEL_CAR_ALARM);
+                noMotionDetected(CHANNEL_ANIMAL_ALARM);
                 noAudioDetected();
                 break;
             case HIKVISION_THING:
@@ -1639,11 +1643,19 @@ public class IpCameraHandler extends BaseThingHandler {
                 if (mjpegUri.isEmpty()) {
                     mjpegUri = "/mjpegstream.cgi?-chn=12";
                 }
+                // Newer Instar cameras use this to setup the Alarm Server, plus it is used to work out which API is
+                // implemented based on the response to these two requests.
+                sendHttpGET(
+                        "/param.cgi?cmd=setasaction&-server=1&enable=1&-interval=1&cmd=setasattr&-as_index=1&-as_server="
+                                + hostIp + "&-as_port=" + SERVLET_PORT + "&-as_path=/ipcamera/"
+                                + getThing().getUID().getId()
+                                + "/instar&-as_ssl=0&-as_insecure=0&-as_mode=0&-as_activequery=1&-as_auth=0&-as_query1=0&-as_query2=0&-as_query3=0&-as_query4=0&-as_query5=0");
+                // Older Instar cameras use this to setup the Alarm Server
                 sendHttpGET(
                         "/param.cgi?cmd=setmdalarm&-aname=server2&-switch=on&-interval=1&cmd=setalarmserverattr&-as_index=3&-as_server="
                                 + hostIp + "&-as_port=" + SERVLET_PORT + "&-as_path=/ipcamera/"
                                 + getThing().getUID().getId()
-                                + "/instar&-as_queryattr1=&-as_queryval1=&-as_queryattr2=&-as_queryval2=&-as_queryattr3=&-as_queryval3=&-as_activequery=1&-as_auth=0&-as_query1=0&-as_query2=0&-as_query3=0");
+                                + "/instar&-as_ssl=0&-as_mode=1&-as_activequery=1&-as_auth=0&-as_query1=0&-as_query2=0&-as_query3=0&-as_query4=0&-as_query5=0");
                 break;
         }
         // for poll times 9 seconds and above don't display a warning about the Image channel.
@@ -1658,7 +1670,7 @@ public class IpCameraHandler extends BaseThingHandler {
 
     private void tryConnecting() {
         if (!thing.getThingTypeUID().getId().equals(GENERIC_THING)
-                && !thing.getThingTypeUID().getId().equals(DOORBIRD_THING)) {
+                && !thing.getThingTypeUID().getId().equals(DOORBIRD_THING) && cameraConfig.getOnvifPort() > 0) {
             onvifCamera = new OnvifConnection(this, cameraConfig.getIp() + ":" + cameraConfig.getOnvifPort(),
                     cameraConfig.getUser(), cameraConfig.getPassword());
             onvifCamera.setSelectedMediaProfile(cameraConfig.getOnvifMediaProfile());

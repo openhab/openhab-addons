@@ -44,7 +44,9 @@ import org.openhab.binding.nanoleaf.internal.OpenAPIUtils;
 import org.openhab.binding.nanoleaf.internal.commanddescription.NanoleafCommandDescriptionProvider;
 import org.openhab.binding.nanoleaf.internal.config.NanoleafControllerConfig;
 import org.openhab.binding.nanoleaf.internal.discovery.NanoleafPanelsDiscoveryService;
+import org.openhab.binding.nanoleaf.internal.layout.LayoutSettings;
 import org.openhab.binding.nanoleaf.internal.layout.NanoleafLayout;
+import org.openhab.binding.nanoleaf.internal.layout.PanelState;
 import org.openhab.binding.nanoleaf.internal.model.AuthToken;
 import org.openhab.binding.nanoleaf.internal.model.BooleanState;
 import org.openhab.binding.nanoleaf.internal.model.Brightness;
@@ -101,12 +103,12 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
     private static final int CONNECT_TIMEOUT = 10;
 
     private final Logger logger = LoggerFactory.getLogger(NanoleafControllerHandler.class);
-    private HttpClientFactory httpClientFactory;
-    private HttpClient httpClient;
+    private final HttpClientFactory httpClientFactory;
+    private final HttpClient httpClient;
 
     private @Nullable HttpClient httpClientSSETouchEvent;
     private @Nullable Request sseTouchjobRequest;
-    private List<NanoleafControllerListener> controllerListeners = new CopyOnWriteArrayList<NanoleafControllerListener>();
+    private final List<NanoleafControllerListener> controllerListeners = new CopyOnWriteArrayList<NanoleafControllerListener>();
     private PanelLayout previousPanelLayout = new PanelLayout();
 
     private @NonNullByDefault({}) ScheduledFuture<?> pairingJob;
@@ -515,9 +517,8 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
                     localhttpSSEClientTouchEvent.setIdleTimeout(CONNECT_TIMEOUT * 1000L);
                     sseTouchjobRequest = localhttpSSEClientTouchEvent.newRequest(eventUri);
                     final Request localSSETouchjobRequest = sseTouchjobRequest;
-                    int requestHashCode = -1;
                     if (localSSETouchjobRequest != null) {
-                        requestHashCode = localSSETouchjobRequest.hashCode();
+                        int requestHashCode = localSSETouchjobRequest.hashCode();
 
                         logger.debug("tj: triggering new touch job request {} for {} with client {}", requestHashCode,
                                 thing.getUID(), eventHashcode);
@@ -525,23 +526,21 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
                             String s = StandardCharsets.UTF_8.decode(content).toString();
                             logger.debug("touch detected for controller {}", thing.getUID());
                             logger.trace("content {}", s);
-                            Scanner eventContent = new Scanner(s);
+                            try (Scanner eventContent = new Scanner(s)) {
+                                while (eventContent.hasNextLine()) {
+                                    String line = eventContent.nextLine().trim();
+                                    if (line.startsWith("data:")) {
+                                        String json = line.substring(5).trim();
 
-                            while (eventContent.hasNextLine()) {
-                                String line = eventContent.nextLine().trim();
-                                if (line.startsWith("data:")) {
-                                    String json = line.substring(5).trim();
-
-                                    try {
-                                        TouchEvents touchEvents = gson.fromJson(json, TouchEvents.class);
-                                        handleTouchEvents(Objects.requireNonNull(touchEvents));
-                                    } catch (JsonSyntaxException e) {
-                                        logger.error("Couldn't parse touch event json {}", json);
+                                        try {
+                                            TouchEvents touchEvents = gson.fromJson(json, TouchEvents.class);
+                                            handleTouchEvents(Objects.requireNonNull(touchEvents));
+                                        } catch (JsonSyntaxException e) {
+                                            logger.error("Couldn't parse touch event json {}", json);
+                                        }
                                     }
                                 }
                             }
-
-                            eventContent.close();
                             logger.debug("leaving touch onContent");
                         }).onResponseSuccess((response) -> {
                             logger.trace("tj: r={} touch event SUCCESS: {}", response.getRequest(), response);
@@ -670,6 +669,7 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
         updateProperties();
         updateConfiguration();
         updateLayout(controllerInfo.getPanelLayout());
+        updateState(controllerInfo.getPanelLayout());
 
         for (NanoleafControllerListener controllerListener : controllerListeners) {
             controllerListener.onControllerInfoFetched(getThing().getUID(), controllerInfo);
@@ -711,6 +711,24 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
         }
     }
 
+    private void updateState(PanelLayout panelLayout) {
+        ChannelUID stateChannel = new ChannelUID(getThing().getUID(), CHANNEL_STATE);
+
+        Bridge bridge = getThing();
+        List<Thing> things = bridge.getThings();
+        try {
+            LayoutSettings settings = new LayoutSettings(false, true, true, true);
+            byte[] bytes = NanoleafLayout.render(panelLayout, new PanelState(things), settings);
+            if (bytes.length > 0) {
+                updateState(stateChannel, new RawType(bytes, "image/png"));
+            }
+
+            previousPanelLayout = panelLayout;
+        } catch (IOException ioex) {
+            logger.warn("Failed to create state image", ioex);
+        }
+    }
+
     private void updateLayout(PanelLayout panelLayout) {
         ChannelUID layoutChannel = new ChannelUID(getThing().getUID(), CHANNEL_LAYOUT);
         ThingHandlerCallback callback = getCallback();
@@ -726,10 +744,13 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
             return;
         }
 
+        Bridge bridge = getThing();
+        List<Thing> things = bridge.getThings();
         try {
-            byte[] bytes = NanoleafLayout.render(panelLayout);
+            LayoutSettings settings = new LayoutSettings(true, false, true, false);
+            byte[] bytes = NanoleafLayout.render(panelLayout, new PanelState(things), settings);
             if (bytes.length > 0) {
-                updateState(CHANNEL_LAYOUT, new RawType(bytes, "image/png"));
+                updateState(layoutChannel, new RawType(bytes, "image/png"));
             }
 
             previousPanelLayout = panelLayout;

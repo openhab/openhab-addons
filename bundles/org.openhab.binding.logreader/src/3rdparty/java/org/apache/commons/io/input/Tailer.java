@@ -61,7 +61,7 @@ import org.apache.commons.io.FileUtils;
  * </ul>
  * </li>
  * <li>Using an {@link java.util.concurrent.Executor}</li>
- * <li>Using an {@link Thread}</li>
+ * <li>Using a {@link Thread}</li>
  * </ul>
  *
  * <p>

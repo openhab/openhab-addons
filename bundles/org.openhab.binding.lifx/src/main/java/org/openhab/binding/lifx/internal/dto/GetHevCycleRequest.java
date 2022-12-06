@@ -22,7 +22,6 @@ public class GetHevCycleRequest extends Packet {
     public static final int TYPE = 0x8E;
 
     public GetHevCycleRequest() {
-        setTagged(false);
         setAddressable(true);
         setResponseRequired(true);
     }

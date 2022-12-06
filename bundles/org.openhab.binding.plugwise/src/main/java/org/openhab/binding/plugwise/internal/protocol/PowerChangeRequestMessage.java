@@ -18,7 +18,7 @@ import org.openhab.binding.plugwise.internal.protocol.field.MACAddress;
 
 /**
  * Requests the power state of a relay device (Circle, Circle+, Stealth) to be switched on/off. The current power state
- * of a device is retrieved by sending a {@link InformationRequestMessage} and reading the
+ * of a device is retrieved by sending an {@link InformationRequestMessage} and reading the
  * {@link InformationResponseMessage#getPowerState()} value.
  *
  * @author Wouter Born, Karel Goderis - Initial contribution

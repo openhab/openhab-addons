@@ -36,14 +36,14 @@ public final class TimetablesV1ApiStub implements TimetablesV1Api {
     }
 
     /**
-     * Creates an new {@link TimetablesV1ApiStub}, that returns the given result.
+     * Creates a new {@link TimetablesV1ApiStub}, that returns the given result.
      */
     public static TimetablesV1ApiStub createWithResult(Timetable timetable) {
         return new TimetablesV1ApiStub(timetable);
     }
 
     /**
-     * Creates an new {@link TimetablesV1ApiStub} that throws an Exception.
+     * Creates a new {@link TimetablesV1ApiStub} that throws an Exception.
      */
     public static TimetablesV1ApiStub createWithException() {
         return new TimetablesV1ApiStub(null);

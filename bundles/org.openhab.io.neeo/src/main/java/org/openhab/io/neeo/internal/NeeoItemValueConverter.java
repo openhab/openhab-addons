@@ -183,7 +183,7 @@ public class NeeoItemValueConverter {
     }
 
     /**
-     * Takes the given <code>formatPattern</code> and replaces it with a analog
+     * Takes the given <code>formatPattern</code> and replaces it with an analog
      * String-based pattern to replace all value Occurrences with a dash ("-").
      *
      * @param formatPattern the original pattern which will be replaces by a

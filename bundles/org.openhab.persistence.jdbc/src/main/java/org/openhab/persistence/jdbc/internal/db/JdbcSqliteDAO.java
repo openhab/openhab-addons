@@ -12,6 +12,8 @@
  */
 package org.openhab.persistence.jdbc.internal.db;
 
+import java.time.ZonedDateTime;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.knowm.yank.Yank;
@@ -55,6 +57,7 @@ public class JdbcSqliteDAO extends JdbcBaseDAO {
                                            // "PRAGMA SCHEMA_VERSION";
         sqlIfTableExists = "SELECT name FROM sqlite_master WHERE type='table' AND name='#searchTable#'";
         sqlCreateItemsTableIfNot = "CREATE TABLE IF NOT EXISTS #itemsManageTable# (ItemId INTEGER PRIMARY KEY AUTOINCREMENT, #colname# #coltype# NOT NULL)";
+        sqlGetItemTables = "SELECT name AS table_name FROM sqlite_master WHERE type='table' AND name NOT IN ('#itemsManageTable#','sqlite_sequence')";
         sqlInsertItemValue = "INSERT OR IGNORE INTO #tableName# (TIME, VALUE) VALUES( #tablePrimaryValue#, CAST( ? as #dbType#) )";
     }
 
@@ -114,6 +117,22 @@ public class JdbcSqliteDAO extends JdbcBaseDAO {
                 new String[] { storedVO.getTableName(), storedVO.getDbType(), sqlTypes.get("tablePrimaryValue") });
         Object[] params = { storedVO.getValue() };
         logger.debug("JDBC::doStoreItemValue sql={} value='{}'", sql, storedVO.getValue());
+        try {
+            Yank.execute(sql, params);
+        } catch (YankSQLException e) {
+            throw new JdbcSQLException(e);
+        }
+    }
+
+    @Override
+    public void doStoreItemValue(Item item, State itemState, ItemVO vo, ZonedDateTime date) throws JdbcSQLException {
+        ItemVO storedVO = storeItemValueProvider(item, itemState, vo);
+        String sql = StringUtilsExt.replaceArrayMerge(sqlInsertItemValue,
+                new String[] { "#tableName#", "#dbType#", "#tablePrimaryValue#" },
+                new String[] { storedVO.getTableName(), storedVO.getDbType(), "?" });
+        java.sql.Timestamp timestamp = new java.sql.Timestamp(date.toInstant().toEpochMilli());
+        Object[] params = { timestamp, storedVO.getValue() };
+        logger.debug("JDBC::doStoreItemValue sql={} timestamp={} value='{}'", sql, timestamp, storedVO.getValue());
         try {
             Yank.execute(sql, params);
         } catch (YankSQLException e) {

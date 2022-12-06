@@ -11,7 +11,7 @@
 		</supported-bridge-type-refs>
 
 		<label>ZigBee Switch</label>
-		<description>A OpenWebNet ZigBee switch (actuator) for the control of 1 load/light. BTicino models: 4591/3684/etc.</description>
+		<description>An OpenWebNet ZigBee switch (actuator) for the control of 1 load/light. BTicino models: 4591/3684/etc.</description>
 
 		<channels>
 			<channel id="switch_01" typeId="switch"/>

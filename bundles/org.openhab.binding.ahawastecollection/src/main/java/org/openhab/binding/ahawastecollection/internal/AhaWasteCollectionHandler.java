@@ -125,7 +125,7 @@ public class AhaWasteCollectionHandler extends BaseThingHandler {
     }
 
     /**
-     * Schedules an job that updates the collection dates at midnight.
+     * Schedules a job that updates the collection dates at midnight.
      */
     private void restartJob() {
         this.logger.debug("Restarting jobs for thing {}", this.getThing().getUID());

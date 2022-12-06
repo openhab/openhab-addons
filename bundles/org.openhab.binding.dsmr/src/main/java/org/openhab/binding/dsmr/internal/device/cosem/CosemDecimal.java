@@ -44,7 +44,7 @@ class CosemDecimal extends CosemValueDescriptor<DecimalType> {
     }
 
     /**
-     * Parses a String value (that represents an decimal) to an {@link DecimalType} object.
+     * Parses a String value (that represents an decimal) to a {@link DecimalType} object.
      *
      * @param cosemValue the value to parse
      * @return {@link DecimalType} representing the value of the cosem value
