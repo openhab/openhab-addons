@@ -456,7 +456,7 @@
 		<item-type>String</item-type>
 		<label>Smoke Check State</label>
 		<description>State of last smoke detector check.</description>
-		<state readOnly="true">
+		<state readOnly="false">
 			<options>
 				<option value="NONE">None</option>
 				<option value="SMOKE_TEST_REQUESTED">Test requested</option>

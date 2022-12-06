@@ -17,6 +17,7 @@ import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.services.BoschSHCService;
 import org.openhab.binding.boschshc.internal.services.smokedetectorcheck.dto.SmokeDetectorCheckServiceState;
 import org.openhab.core.library.types.PlayPauseType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.Command;
 
 /**
@@ -33,6 +34,13 @@ public class SmokeDetectorCheckService extends BoschSHCService<SmokeDetectorChec
 
     @Override
     public SmokeDetectorCheckServiceState handleCommand(Command command) throws BoschSHCException {
+        if (command instanceof StringType) {
+            var stringCommand = (StringType) command;
+            var state = new SmokeDetectorCheckServiceState();
+            state.value = SmokeDetectorCheckState.from(stringCommand.toString());
+            return state;
+        }
+
         if (command instanceof PlayPauseType) {
             var playPauseCommand = (PlayPauseType) command;
             if (playPauseCommand.equals(PlayPauseType.PLAY)) {

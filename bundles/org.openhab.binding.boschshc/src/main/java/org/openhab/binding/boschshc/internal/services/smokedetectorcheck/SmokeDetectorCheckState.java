@@ -24,5 +24,14 @@ public enum SmokeDetectorCheckState {
     NONE,
     SMOKE_TEST_REQUESTED,
     SMOKE_TEST_OK,
-    SMOKE_TEST_FAILED
+    SMOKE_TEST_FAILED;
+
+    public static SmokeDetectorCheckState from(String stateString) {
+
+        try {
+            return SmokeDetectorCheckState.valueOf(stateString);
+        } catch (Exception a) {
+            return NONE;
+        }
+    }
 }
