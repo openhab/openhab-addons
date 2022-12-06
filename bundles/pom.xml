@@ -390,6 +390,7 @@
     <module>org.openhab.binding.vesync</module>
     <module>org.openhab.binding.vigicrues</module>
     <module>org.openhab.binding.vitotronic</module>
+    <module>org.openhab.binding.vizio</module>
     <module>org.openhab.binding.volvooncall</module>
     <module>org.openhab.binding.warmup</module>
     <module>org.openhab.binding.weathercompany</module>
