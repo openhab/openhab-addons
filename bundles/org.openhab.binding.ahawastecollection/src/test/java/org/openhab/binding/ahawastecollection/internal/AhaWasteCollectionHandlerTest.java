@@ -79,8 +79,8 @@ public class AhaWasteCollectionHandlerTest {
         return new CronScheduler() {
 
             @Override
-            public final ScheduledCompletableFuture<Void> schedule(final CronJob cronJob,
-                    final Map<String, Object> config, final String cronExpression) {
+            public ScheduledCompletableFuture<Void> schedule(final CronJob cronJob, final Map<String, Object> config,
+                    final String cronExpression) {
                 try {
                     cronJob.run(config);
                 } catch (final Exception e) {
@@ -90,7 +90,7 @@ public class AhaWasteCollectionHandlerTest {
             }
 
             @Override
-            public final ScheduledCompletableFuture<Void> schedule(final SchedulerRunnable runnable,
+            public ScheduledCompletableFuture<Void> schedule(final SchedulerRunnable runnable,
                     final String cronExpression) {
                 try {
                     runnable.run();
@@ -102,21 +102,21 @@ public class AhaWasteCollectionHandlerTest {
         };
     }
 
-    private static Thing mockThing(final Configuration config) {
+    private static Thing mockThing() {
         final Thing thing = mock(Thing.class);
         when(thing.getUID())
                 .thenReturn(new ThingUID(AhaWasteCollectionBindingConstants.THING_TYPE_SCHEDULE, "collectionCalendar"));
-        when(thing.getConfiguration()).thenReturn(config);
+        when(thing.getConfiguration()).thenReturn(CONFIG);
 
         final Channel channelBioWaste = mockChannel(thing.getUID(), AhaWasteCollectionBindingConstants.BIOWASTE);
         final Channel channelGeneralWaste = mockChannel(thing.getUID(),
                 AhaWasteCollectionBindingConstants.GENERAL_WASTE);
         final Channel channelPaper = mockChannel(thing.getUID(), AhaWasteCollectionBindingConstants.PAPER);
-        final Channel channelLeightweightPackaging = mockChannel(thing.getUID(),
+        final Channel channelLightweightPackaging = mockChannel(thing.getUID(),
                 AhaWasteCollectionBindingConstants.LEIGHTWEIGHT_PACKAGING);
 
         when(thing.getChannels()).thenReturn(
-                Arrays.asList(channelBioWaste, channelGeneralWaste, channelLeightweightPackaging, channelPaper));
+                Arrays.asList(channelBioWaste, channelGeneralWaste, channelLightweightPackaging, channelPaper));
         return thing;
     }
 
@@ -149,7 +149,7 @@ public class AhaWasteCollectionHandlerTest {
 
     @Test
     public void testUpdateChannels() {
-        final Thing thing = mockThing(CONFIG);
+        final Thing thing = mockThing();
         final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
         final AhaWasteCollectionHandler handler = createAndInitHandler(callback, thing);
 

@@ -60,7 +60,6 @@ public class AhaWasteCollectionHandler extends BaseThingHandler {
     private final TimeZoneProvider timeZoneProvider;
     private final Logger logger = LoggerFactory.getLogger(AhaWasteCollectionHandler.class);
 
-    private @Nullable AhaWasteCollectionConfiguration config;
     private @Nullable AhaCollectionSchedule collectionSchedule;
 
     private @Nullable ScheduledCompletableFuture<?> dailyJob;
@@ -102,13 +101,13 @@ public class AhaWasteCollectionHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        this.config = this.getConfigAs(AhaWasteCollectionConfiguration.class);
+        final AhaWasteCollectionConfiguration config = this.getConfigAs(AhaWasteCollectionConfiguration.class);
 
-        final String commune = this.config.commune;
-        final String street = this.config.street;
-        final String houseNumber = this.config.houseNumber;
-        final String houseNumberAddon = this.config.houseNumberAddon;
-        final String collectionPlace = this.config.collectionPlace;
+        final String commune = config.commune;
+        final String street = config.street;
+        final String houseNumber = config.houseNumber;
+        final String houseNumberAddon = config.houseNumberAddon;
+        final String collectionPlace = config.collectionPlace;
 
         if (commune.isBlank() || street.isBlank() || houseNumber.isBlank() || collectionPlace.isBlank()) {
             this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
