@@ -129,7 +129,7 @@ You can connect this channel to a Contact or Switch item.
 
 ### Channel Type "color"
 
-* __color_mode__: A required string that defines the color representation: "hsb", "rgb" or "xyY" (x,y,brightness).
+* __colorMode__: A required string that defines the color representation: "hsb", "rgb" or "xyY" (x,y,brightness).
 * __on__: An optional string (like "BRIGHT") that is recognized as on state. (ON will always be recognized.)
 * __off__: An optional string (like "DARK") that is recognized as off state. (OFF will always be recognized.)
 * __onBrightness__: If you connect this channel to a Switch item and turn it on,
@@ -246,7 +246,7 @@ Thing mqtt:topic:mything "mything" (mqtt:broker:myUnsecureBroker) {
     Type switch : lamp "Kitchen Lamp" [ stateTopic="lamp/enabled", commandTopic="lamp/enabled/set" ]
     Type switch : fancylamp "Fancy Lamp" [ stateTopic="fancy/lamp/state", commandTopic="fancy/lamp/command", on="i-am-on", off="i-am-off" ]
     Type string : alarmpanel "Alarm system" [ stateTopic="alarm/panel/state", commandTopic="alarm/panel/set", allowedStates="ARMED_HOME,ARMED_AWAY,UNARMED" ]
-    Type color : lampcolor "Kitchen Lamp color" [ stateTopic="lamp/color", commandTopic="lamp/color/set", rgb=true ]
+    Type color : lampcolor "Kitchen Lamp color" [ stateTopic="lamp/color", commandTopic="lamp/color/set", colorMode="RGB" ]
     Type dimmer : blind "Blind" [ stateTopic="blind/state", commandTopic="blind/set", min=0, max=5, step=1 ]
 }
 ```
