@@ -211,7 +211,7 @@ public class VizioHandler extends BaseThingHandler {
             } catch (VizioException e) {
                 logger.debug("Unable to retrieve Vizio TV power mode info. Exception: {}", e.getMessage(), e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/offline.configuration-error-get-power");
+                        "@text/offline.communication-error-get-power");
             }
 
             if (powerOn && (isLinked(VOLUME) || isLinked(MUTE))) {
@@ -392,7 +392,7 @@ public class VizioHandler extends BaseThingHandler {
                             logger.debug("Unable to send power {} command to the Vizio TV, Exception: {}", command,
                                     e.getMessage());
                             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                    "@text/offline.communication-set-power");
+                                    "@text/offline.communication-error-set-power");
                         }
                     }
                     break;
