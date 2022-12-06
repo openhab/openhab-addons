@@ -1,7 +1,6 @@
 # CoronaStats Binding
 
-This binding provides the statistic about cases of COVID-19 from the website https://corona-stats.online/.
-
+This binding provides the statistic about cases of COVID-19 from the website [https://corona-stats.online/](https://corona-stats.online/).
 
 ## Supported Things
 
@@ -10,7 +9,7 @@ The `country` thing, representing the statistics for a specified country.
 
 ## Discovery
 
-This binding adds a default `world` thing to the Inbox. 
+This binding adds a default `world` thing to the Inbox.
 This can be used as bridge for country things you may add manually.
 
 ## Thing Configuration
@@ -27,7 +26,7 @@ This can be used as bridge for country things you may add manually.
 | ------------- | :-----: | :------: | ------------------------------------------------- |
 | `countryCode` |    -    |   yes    | 2-letter code for the country you want to display |
 
-For the correct 2-letter country code have a look at the website https://corona-stats.online/
+For the correct 2-letter country code have a look at the website [https://corona-stats.online/](https://corona-stats.online/)
 
 ## Channels
 
@@ -49,7 +48,7 @@ For the correct 2-letter country code have a look at the website https://corona-
 
 ### Things
 
-```
+```java
 Bridge coronastats:world:stats "Corona Stats World" @ "Corona" [refresh=15] {
     Thing country usa "Corona Stats USA" @ "Corona" [countryCode="US"]
     Thing country germany "Corona Stats Germany" @ "Corona" [countryCode="DE"]
@@ -62,7 +61,7 @@ Bridge coronastats:world:stats "Corona Stats World" @ "Corona" [refresh=15] {
 
 ### Items
 
-```
+```java
 Number:Dimensionless coronaCasesWorld "Total Cases World [%,d]"
     {channel="coronastats:world:stats:cases"}
 
@@ -102,7 +101,7 @@ DateTime coronaUpdatedUSA "Updated USA [%1$tA, %1$td.%1$tm.%1$tY %1$tH:%1$tM]"
 
 ### Sitemap
 
-```
+```perl
 Text label="Corona" {
     Frame label="World" {
         Text item=coronaCasesWorld
