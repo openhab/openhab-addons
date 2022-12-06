@@ -15,13 +15,13 @@ This procedure opens TCP/IP port 1012 on your FRITZ!Box.
 (It can be deactivated again by dialing `#96*4*`.)
 You can test if everything is working with the Telnet program from your openHAB server:
 
-```text
+```shell
 telnet fritz.box 1012
 ```
 
 If you see an output like this:
 
-```text
+```shell
 Trying 192.168.178.1...
 Connected to fritz.box.
 Escape character is '^]'.
