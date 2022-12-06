@@ -4,7 +4,6 @@ This binding communicates with the Generac MobileLink API and reports on the sta
 
 ## Supported Things
 
-
 ### MobileLink Account
 
 A MobileLink account bridge thing represents a user's MobileLink account and is responsible for authentication and polling for updates.
@@ -31,12 +30,11 @@ The MobileLink account bridge must be added manually. Once added, generator thin
 | password        | The password used to login to the MobileLink service                               |
 | refreshInterval | The frequency to poll for generator updates, minimum duration is 30 seconds        |
 
-
 ## Channels
 
 ### Generator Channels
 
-All channels are read-only. 
+All channels are read-only.
 
 | channel                 | type                 | description                               |
 |-------------------------|----------------------|-------------------------------------------|
@@ -54,7 +52,6 @@ All channels are read-only.
 | fuelLevel               | Number:Dimensionless | Fuel level                                |
 | batteryVoltage          | String               | Battery voltage status                    |
 | serviceStatus           | Switch               | Service status                            |
-
 
 ## Full Example
 
