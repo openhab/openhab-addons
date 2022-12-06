@@ -22,7 +22,7 @@
 		</channels>
 
 		<properties>
-			<property name="Model Number">unknown</property>
+			<property name="modelId">unknown</property>
 		</properties>
 
 		<representation-property>uuid</representation-property>
@@ -90,7 +90,7 @@
 				<option value="MuteToggle">Mute Toggle</option>
 				<option value="ChannelUp">Channel Up</option>
 				<option value="ChannelDown">Channel Down</option>
-				<option value="PreviousCh">Previous Ch</option>
+				<option value="PreviousCh">Previous Channel</option>
 				<option value="InputToggle">Input Toggle</option>
 				<option value="SeekFwd">Seek Fwd</option>
 				<option value="SeekBack">Seek Back</option>
