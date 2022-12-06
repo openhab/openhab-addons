@@ -164,4 +164,4 @@ NULL=undefiniert
 UNDEF=undefiniert
 ```
 
-If you're unsure if the binding is working correctly, you can access the data directly by visiting <https://maps.dwd.de/geoserver/dwd/ows?service=WFS&version=2.0.0&request=GetFeature&typeName=dwd:Warnungen_Gemeinden&CQL_FILTER=WARNCELLID%20LIKE%20%27CELL_ID%27> (replace `CELL_ID` with your Cell ID), allowing the download and opening the downloaded `.xml` file.
+If you're unsure if the binding is working correctly, you can access the data directly by visiting `https://maps.dwd.de/geoserver/dwd/ows?service=WFS&version=2.0.0&request=GetFeature&typeName=dwd:Warnungen_Gemeinden&CQL_FILTER=WARNCELLID%20LIKE%20%27CELL_ID%27` (replace `CELL_ID` with your Cell ID), allowing the download and opening the downloaded `.xml` file.

@@ -71,7 +71,7 @@ Follow the instructions in the tutorial [here](https://developer.legrand.com/tut
 When registering your new Legrand Application for openHAB BTicino Smarther Bridge you have to specify the allowed Reply URL, aka white-listed address.
 Here you have to specify the URL to the Bridge Authorization page on your server.
 
-For example if you run your openHAB server on <http://openhabianpi:8080> you should set `http://openhabianpi:8080/bticinosmarther/connectsmarther` as the "First Reply URL" required field in Step 1.
+For example if you run your openHAB server on `http://openhabianpi:8080` you should set `http://openhabianpi:8080/bticinosmarther/connectsmarther` as the "First Reply URL" required field in Step 1.
 Other Reply URLs (second, third, etc.) you can leave them blank.
 
 This is **very important** since the authorize process with Legrand takes place using your client web browser and Legrand will have to know the right URL to your openHAB server for the authorization to be completed.

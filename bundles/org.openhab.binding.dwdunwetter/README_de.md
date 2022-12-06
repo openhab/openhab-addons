@@ -148,4 +148,4 @@ NULL=undefiniert
 UNDEF=undefiniert
 ```
 
-Wenn du unsicher bist, ob das Binding korrekt funktioniert, kannst du die Wetterdaten direkt mit deinem Browser abrufen, indem du <https://maps.dwd.de/geoserver/dwd/ows?service=WFS&version=2.0.0&request=GetFeature&typeName=dwd:Warnungen_Gemeinden&CQL_FILTER=WARNCELLID%20LIKE%20%27CELL_ID%27> (ersetze `CELL_ID` mit deiner Cell ID) besuchst, den Datei Download zulässt und die heruntergeladene `.xml` Datei öffnest.
+Wenn du unsicher bist, ob das Binding korrekt funktioniert, kannst du die Wetterdaten direkt mit deinem Browser abrufen, indem du `https://maps.dwd.de/geoserver/dwd/ows?service=WFS&version=2.0.0&request=GetFeature&typeName=dwd:Warnungen_Gemeinden&CQL_FILTER=WARNCELLID%20LIKE%20%27CELL_ID%27` (ersetze `CELL_ID` mit deiner Cell ID) besuchst, den Datei Download zulässt und die heruntergeladene `.xml` Datei öffnest.

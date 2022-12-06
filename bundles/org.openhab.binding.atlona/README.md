@@ -1,7 +1,7 @@
 # Atlona Binding
 
 This binding integrates Atlona AT-UHD-PRO3 HdBaseT matrix switches [Atlona AT-UHD-PRO3 HdBaseT matrix switches](https://www.atlona.com) into your openHAB installation.
-The older HD model 6x6 matrix [AT-PRO3HD66M] (<https://atlona.com/product/at-pro3hd66m/>) is also supported.
+The older HD model 6x6 matrix [AT-PRO3HD66M](https://atlona.com/product/at-pro3hd66m/) is also supported.
 
 ## Supported Things
 

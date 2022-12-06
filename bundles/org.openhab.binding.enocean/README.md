@@ -372,8 +372,8 @@ Thing centralCommand 11223344 "Light" @ "Living room" [ enoceanId="11223344", se
 ## Rules and Profiles
 
 The rockerSwitch things use _system:rawrocker_ channel types.
-So they trigger _DIR1[/2]_\__PRESSED_ and DIR1[/2]_\__RELEASED_events.
-These channels can be directly linked to simple items like Switch, Dimmer or Player with the help of_profiles_.
+So they trigger _DIR1[/2]\___PRESSED_ and _DIR1[/2]\___RELEASED_ events.
+These channels can be directly linked to simple items like Switch, Dimmer or Player with the help of _profiles_.
 If you want to do more advanced stuff, you have to implement rules which react to these events
 
 ```xtend
