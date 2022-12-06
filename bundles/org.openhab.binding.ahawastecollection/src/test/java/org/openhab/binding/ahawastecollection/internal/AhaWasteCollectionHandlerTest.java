@@ -20,11 +20,13 @@ import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Map;
+import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.scheduler.CronJob;
@@ -126,8 +128,15 @@ public class AhaWasteCollectionHandlerTest {
 
     private static AhaWasteCollectionHandler createAndInitHandler(final ThingHandlerCallback callback,
             final Thing thing) {
+        // Executor that executes all commands synchronous.
+        final ScheduledExecutorService executorStub = Mockito.mock(ScheduledExecutorService.class);
+        doAnswer((InvocationOnMock invocation) -> {
+            ((Runnable) invocation.getArguments()[0]).run();
+            return null;
+        }).when(executorStub).execute(any(Runnable.class));
+
         final AhaWasteCollectionHandler handler = new AhaWasteCollectionHandler(thing, createStubScheduler(),
-                ZoneId::systemDefault, new AhaCollectionScheduleStubFactory());
+                ZoneId::systemDefault, new AhaCollectionScheduleStubFactory(), executorStub);
         handler.setCallback(callback);
         handler.initialize();
         return handler;
@@ -146,19 +155,16 @@ public class AhaWasteCollectionHandlerTest {
 
         try {
             verify(callback).statusUpdated(eq(thing), argThat(arg -> arg.getStatus().equals(ThingStatus.UNKNOWN)));
-            verify(callback, timeout(1000)).statusUpdated(eq(thing),
-                    argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
-            verify(callback, timeout(1000)).stateUpdated(
-                    new ChannelUID(thing.getUID(), AhaWasteCollectionBindingConstants.BIOWASTE),
+            verify(callback).statusUpdated(eq(thing), argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
+            verify(callback).stateUpdated(new ChannelUID(thing.getUID(), AhaWasteCollectionBindingConstants.BIOWASTE),
                     getDateTime(AhaCollectionScheduleStub.BIO_WASTE_DATE));
-            verify(callback, timeout(1000)).stateUpdated(
+            verify(callback).stateUpdated(
                     new ChannelUID(thing.getUID(), AhaWasteCollectionBindingConstants.GENERAL_WASTE),
                     getDateTime(AhaCollectionScheduleStub.GENERAL_WASTE_DATE));
-            verify(callback, timeout(1000)).stateUpdated(
+            verify(callback).stateUpdated(
                     new ChannelUID(thing.getUID(), AhaWasteCollectionBindingConstants.LEIGHTWEIGHT_PACKAGING),
                     getDateTime(AhaCollectionScheduleStub.LEIGHTWEIGHT_PACKAGING_DATE));
-            verify(callback, timeout(1000)).stateUpdated(
-                    new ChannelUID(thing.getUID(), AhaWasteCollectionBindingConstants.PAPER),
+            verify(callback).stateUpdated(new ChannelUID(thing.getUID(), AhaWasteCollectionBindingConstants.PAPER),
                     getDateTime(AhaCollectionScheduleStub.PAPER_DATE));
         } finally {
             handler.dispose();

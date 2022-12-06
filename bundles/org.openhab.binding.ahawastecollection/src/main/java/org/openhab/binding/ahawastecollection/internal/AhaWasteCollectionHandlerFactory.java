@@ -68,7 +68,7 @@ public class AhaWasteCollectionHandlerFactory extends BaseThingHandlerFactory {
                             collectionPlace);
                 }
             };
-            return new AhaWasteCollectionHandler(thing, this.scheduler, this.timeZoneProvider, factory);
+            return new AhaWasteCollectionHandler(thing, this.scheduler, this.timeZoneProvider, factory, null);
         }
         return null;
     }

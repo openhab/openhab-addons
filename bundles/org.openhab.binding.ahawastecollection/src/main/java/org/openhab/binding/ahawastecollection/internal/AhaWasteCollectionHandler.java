@@ -18,6 +18,7 @@ import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -66,13 +67,17 @@ public class AhaWasteCollectionHandler extends BaseThingHandler {
 
     private final AhaCollectionScheduleFactory scheduleFactory;
 
+    private final ScheduledExecutorService executorService;
+
     public AhaWasteCollectionHandler(final Thing thing, final CronScheduler scheduler,
-            final TimeZoneProvider timeZoneProvider, final AhaCollectionScheduleFactory scheduleFactory) {
+            final TimeZoneProvider timeZoneProvider, final AhaCollectionScheduleFactory scheduleFactory,
+            @Nullable final ScheduledExecutorService executorService) {
         super(thing);
         this.cronScheduler = scheduler;
         this.timeZoneProvider = timeZoneProvider;
         this.scheduleFactory = scheduleFactory;
         this.cache = new ExpiringCache<>(Duration.ofMinutes(5), this::loadCollectionDates);
+        this.executorService = executorService == null ? this.scheduler : executorService;
     }
 
     private Map<WasteType, CollectionDate> loadCollectionDates() {
@@ -89,7 +94,7 @@ public class AhaWasteCollectionHandler extends BaseThingHandler {
     @Override
     public void handleCommand(final ChannelUID channelUID, final Command command) {
         if (command instanceof RefreshType) {
-            this.scheduler.execute(this::updateCollectionDates);
+            this.executorService.execute(this::updateCollectionDates);
         } else {
             this.logger.warn("The AHA Abfuhrkalender is a read-only binding and can not handle commands");
         }
@@ -116,7 +121,7 @@ public class AhaWasteCollectionHandler extends BaseThingHandler {
 
         this.updateStatus(ThingStatus.UNKNOWN);
 
-        this.scheduler.execute(() -> {
+        this.executorService.execute(() -> {
             final boolean online = this.updateCollectionDates();
             if (online) {
                 this.restartJob();
