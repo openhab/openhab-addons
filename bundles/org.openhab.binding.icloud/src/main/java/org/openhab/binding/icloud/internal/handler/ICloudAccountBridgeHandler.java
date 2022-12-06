@@ -163,7 +163,7 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
                     return null;
                 }
             }
-            if (!success) {
+            if (authState != AuthState.AUTHENTICATED && !success) {
                 return null;
             }
 

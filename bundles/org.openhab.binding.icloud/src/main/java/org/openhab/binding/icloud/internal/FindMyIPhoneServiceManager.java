@@ -78,7 +78,7 @@ public class FindMyIPhoneServiceManager {
      */
     public void playSound(String deviceId) throws IOException, InterruptedException {
 
-        Map<String, Object> request = Map.of("device", deviceId, "fmyl", true);
+        Map<String, Object> request = Map.of("device", deviceId, "fmyl", true, "subject", "Message from OpenHAB.");
         this.session.post(this.fmipSoundUrl.toString(), this.gson.toJson(request), null);
     }
 }
