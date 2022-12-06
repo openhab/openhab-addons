@@ -11,9 +11,9 @@ Therefore using a refresh rate shorter doesn't provide more information.
 
 The follow things are supported:
 
-* `envoy` The Envoy gateway thing, which is a bridge thing.
-* `inverter` A Enphase micro inverter connected to a solar panel.
-* `relay`  A Enphase relay.
+- `envoy` The Envoy gateway thing, which is a bridge thing.
+- `inverter` A Enphase micro inverter connected to a solar panel.
+- `relay`  A Enphase relay.
 
 Not all Envoy gateways support all channels and things.
 Therefore some data on inverters and the relay may not be available.
@@ -87,7 +87,7 @@ The `inverter` and `relay` have the following additional advanced channels:
 
 Things example:
 
-```
+```java
 Bridge enphase:envoy:789012 "Envoy" [ serialNumber="12345789012" ] {
   Things:
     inverter 123456 "Enphase Inverter 123456" [ serialNumber="789012123456" ]
@@ -97,7 +97,7 @@ Bridge enphase:envoy:789012 "Envoy" [ serialNumber="12345789012" ] {
 
 Items example:
 
-```
+```java
 Number:Power  envoyWattsNow          "Watts Now [%d %unit%]"          { channel="enphase:envoy:789012:production#wattsNow" }
 Number:Energy envoyWattHoursToday    "Watt Hours Today [%d %unit%]"   { channel="enphase:envoy:789012:production#wattHoursToday" }
 Number:Energy envoyWattHours7Days    "Watt Hours 7 Days [%.1f kWh]"   { channel="enphase:envoy:789012:production#wattHoursSevenDays" }
