@@ -280,6 +280,9 @@ public class NanoleafPanelHandler extends BaseThingHandler {
             case 1:
                 triggerChannel(CHANNEL_PANEL_TAP, CommonTriggerEvents.DOUBLE_PRESSED);
                 break;
+            case 6:
+                triggerChannel(CHANNEL_PANEL_TAP, CommonTriggerEvents.LONG_PRESSED);
+                break;
         }
     }
 
