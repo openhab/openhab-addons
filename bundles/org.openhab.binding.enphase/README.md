@@ -12,8 +12,13 @@ Therefore using a refresh rate shorter doesn't provide more information.
 The follow things are supported:
 
 - `envoy` The Envoy gateway thing, which is a bridge thing.
+<<<<<<< HEAD
 - `inverter` An Enphase micro inverter connected to a solar panel.
 - `relay`  An Enphase relay.
+=======
+- `inverter` A Enphase micro inverter connected to a solar panel.
+- `relay`  A Enphase relay.
+>>>>>>> aa09aa1c74d362b3cfd98528259f05c7fcf4f0de
 
 Not all Envoy gateways support all channels and things.
 Therefore some data on inverters and the relay may not be available.
