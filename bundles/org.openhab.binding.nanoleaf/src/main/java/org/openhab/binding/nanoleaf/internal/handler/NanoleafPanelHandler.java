@@ -270,7 +270,7 @@ public class NanoleafPanelHandler extends BaseThingHandler {
     /**
      * Apply the gesture to the panel
      *
-     * @param gesture Only 0=single tap and 1=double tap are supported
+     * @param gesture Only 0=single tap, 1=double tap and 6=long press are supported
      */
     public void updatePanelGesture(int gesture) {
         switch (gesture) {
