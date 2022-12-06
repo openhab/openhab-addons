@@ -22,9 +22,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collector;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.utils.FutureCollector;
@@ -107,14 +105,11 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler
      * @return A future that completes normal on success and exceptionally on any errors.
      */
     protected CompletableFuture<@Nullable Void> start(MqttBrokerConnection connection) {
-        @NonNull
-        Collector<@NonNull CompletableFuture<@Nullable Void>, @NonNull Set<@NonNull CompletableFuture<@Nullable Void>>, @NonNull CompletableFuture<@Nullable Void>> allOfCollector = FutureCollector
-                .allOf();
         return availabilityStates.values().stream().map(cChannel -> {
-            final @NonNull CompletableFuture<@Nullable Void> fut;
-            fut = cChannel == null ? CompletableFuture.completedFuture(null) : cChannel.start(connection, scheduler, 0);
+            final CompletableFuture<@Nullable Void> fut = cChannel == null ? CompletableFuture.completedFuture(null)
+                    : cChannel.start(connection, scheduler, 0);
             return fut;
-        }).collect(allOfCollector);
+        }).collect(FutureCollector.allOf());
     }
 
     /**

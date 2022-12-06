@@ -14,14 +14,11 @@ package org.openhab.binding.mqtt.homeassistant.internal.component;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
@@ -123,11 +120,8 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
      */
     public CompletableFuture<@Nullable Void> start(MqttBrokerConnection connection, ScheduledExecutorService scheduler,
             int timeout) {
-        @NonNull
-        Collector<@NonNull CompletableFuture<@Nullable Void>, @NonNull Set<@NonNull CompletableFuture<@Nullable Void>>, @NonNull CompletableFuture<@Nullable Void>> allOfCollector = FutureCollector
-                .allOf();
         return channels.values().stream().map(cChannel -> cChannel.start(connection, scheduler, timeout))
-                .collect(allOfCollector);
+                .collect(FutureCollector.allOf());
     }
 
     /**
@@ -137,10 +131,7 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
      *         exceptionally on errors.
      */
     public CompletableFuture<@Nullable Void> stop() {
-        @NonNull
-        Collector<@NonNull CompletableFuture<@Nullable Void>, @NonNull Set<@NonNull CompletableFuture<@Nullable Void>>, @NonNull CompletableFuture<@Nullable Void>> allOfCollector = FutureCollector
-                .allOf();
-        return channels.values().stream().map(ComponentChannel::stop).collect(allOfCollector);
+        return channels.values().stream().map(ComponentChannel::stop).collect(FutureCollector.allOf());
     }
 
     /**
