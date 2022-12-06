@@ -35,7 +35,6 @@ Depending on the thing type, different channels are provided:
 | players         | Number    | The number of players on server         |
 | maxPlayers      | Number    | The maximum number of players on server |
 
-
 ### Player
 
 | Channel Type ID            | Item Type | Description                                                |
@@ -50,13 +49,11 @@ Depending on the thing type, different channels are provided:
 | playerLocation             | Location  | The player location                                        |
 | playerGameMode             | Number    | The players game mode                                      |
 
-
 ### Sign
 
 | Channel Type ID | Item Type | Description                                  |
 |-----------------|-----------|----------------------------------------------|
 | signActive      | Switch    | Does the sign have powered redstone below it |
-
 
 #### Active switch (Controllable from openHAB)
 
@@ -69,7 +66,7 @@ Depending on the thing type, different channels are provided:
 ### Example Thing Definition
 
 The easiest method to add Minecraft servers, players, and signs is use the automatic discovery.
-You can also manually define the objects using thing configuration files. 
+You can also manually define the objects using thing configuration files.
 Players and signs are connected through Minecraft server [bridges](https://www.openhab.org/docs/configuration/things.html#defining-bridges-using-files).
 
 ```xtend

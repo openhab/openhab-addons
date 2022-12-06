@@ -49,7 +49,7 @@ The Météo Alerte information that are retrieved is available as these channels
 | avalanches-icon       | Image     | Pictogram of Avalanche alert level            |
 | vague-submersion-icon | Image     | Pictogram of Wave Submersion alert level      |
 
-(*) Each alert level is described by a color : 
+(*) Each alert level is described by a color :
 
 | Code | Color  | Description                               |
 |------|--------|-------------------------------------------|
@@ -58,18 +58,17 @@ The Météo Alerte information that are retrieved is available as these channels
 | 2    | Orange | Be "very vigilant" in the concerned areas |
 | 3    | Red    | Absolute vigilance required               |
 
-
 ## Full Example
 
 meteoalert.things:
 
-```
+```java
 Thing meteoalerte:department:yvelines @ "MyCity" [department="YVELINES", refresh=12]
 ```
 
 meteoalert.items:
 
-```
+```java
 Group gMeteoAlert "Alertes Météo" <weather> 
     String  MA_Dept78                    "Département 78 [%s]"   <aqi>       (gMeteoAlert)   {channel="meteoalerte:department:yvelines:comment"}
     Number  MA_etat_canicule             "Canicule [%s]"         <aqi>       (gMeteoAlert)   {channel="meteoalerte:department:yvelines:canicule"}

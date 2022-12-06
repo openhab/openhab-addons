@@ -1,9 +1,10 @@
+# Xtend Examples
 
 ## Examples
 
 Have a look at the following textual examples.
 
-### A broker Thing with a Generic MQTT Thing and a few channels 
+### A broker Thing with a Generic MQTT Thing and a few channels
 
 demo1.things:
 
@@ -23,7 +24,7 @@ Bridge mqtt:broker:myUnsecureBroker [ host="192.168.0.42", secure=false ]
 
 demo2.things:
 
-```xtend
+```java
 Bridge mqtt:broker:WorkBroker "Work Broker" [ host="localhost", port="1883", secure=false, username="openhabian", password="ohmqtt", clientID="WORKOPENHAB24" ]
 
 Thing mqtt:topic:WorkBroker:WorkSonoff "Work Sonoff" (mqtt:broker:WorkBroker) @ "Home" {
@@ -32,8 +33,10 @@ Thing mqtt:topic:WorkBroker:WorkSonoff "Work Sonoff" (mqtt:broker:WorkBroker) @ 
         Type switch : WorkLightTele "Work Tele" [ stateTopic="tele/worklight/STATE", transformationPattern="JSONPATH:$.POWER" ]
 }
 ```
+
 tasmota.things: Example of a Tasmota Device with Availablity-Topic state and standard Online/Offline message-payload
-```xtend
+
+```java
 Bridge mqtt:broker:mybroker [ host="192.168.0.42", secure=false ]
 {
     Thing mqtt:topic:SP111 "SP111" [availabilityTopic="tele/tasmota/LWT", payloadAvailable="Online", payloadNotAvailable="Offline"]{
@@ -131,7 +134,7 @@ You do not need to convert everything in one go. MQTT1 and MQTT2 can coexist.
 
 > For mqtt1 make sure you have enabled the Legacy 1.x repository and installed "mqtt1".
 
-### 1 Command / 1 State topic 
+### 1 Command / 1 State topic
 
 Assume you have this item:
 
@@ -151,7 +154,7 @@ Bridge mqtt:broker:myUnsecureBroker [ host="192.168.0.42", secure=false ]
 }
 ```
 
-Add as many channels as you have items and add the *stateTopic* and *commandTopic* accordingly. 
+Add as many channels as you have items and add the _stateTopic_ and _commandTopic_ accordingly.
 
 Your items change to:
 
@@ -159,8 +162,7 @@ Your items change to:
 Switch ExampleItem "Heatpump Power" { channel="mqtt:topic:myUnsecureBroker:mything:heatpumpChannel" }
 ```
 
-
-### 1 Command / 2 State topics 
+### 1 Command / 2 State topics
 
 If you receive updates from two different topics, you need to create multiple channels now, 1 for each MQTT receive topic.
 
