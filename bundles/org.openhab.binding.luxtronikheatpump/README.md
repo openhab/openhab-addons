@@ -2,20 +2,22 @@
 
 This binding gives the possibility to integrate any Heatpump that is based on the Luxtronik 2 contol unit of Alpha Innotec. This includes heatpumps of:
 
-* Alpha InnoTec
-* Buderus (Logamatic HMC20, HMC20 Z)
-* CTA All-In-One (Aeroplus)
-* Elco
-* Nibe (AP-AW10)
-* Roth (ThermoAura®, ThermoTerra)
-* (Siemens) Novelan (WPR NET)
-* Wolf Heiztechnik (BWL/BWS)
+- Alpha InnoTec
+- Buderus (Logamatic HMC20, HMC20 Z)
+- CTA All-In-One (Aeroplus)
+- Elco
+- Nibe (AP-AW10)
+- Roth (ThermoAura®, ThermoTerra)
+- (Siemens) Novelan (WPR NET)
+- Wolf Heiztechnik (BWL/BWS)
 
 This binding was tested with:
 
-* Siemens Novelan LD 7
+- Siemens Novelan LD 7
 
-_If you have another heatpump the binding works with, let us know, so we can extend the list_
+:::tip Note
+If you have another heatpump the binding works with, let us know, so we can extend the list
+:::
 
 Note: The whole functionality is based on data that was reverse engineered, so use it at your own risk.
 
@@ -283,7 +285,6 @@ The following channels are holding read only values:
 
 The usage of the numbered channels above is currently unknown. If you are able to directly match one of the values to any value reported by your heat pump, feel free to report back on the forum, so we are able to give the channel a proper name instead.
 
-
 The following channels are also writable:
 | channel  | type   | advanced | description                  |
 |----------|--------|----------|------------------------------|
@@ -306,14 +307,13 @@ The following channels are also writable:
 | comfortCoolingATExcess | Number:Time |   | AT Excess |
 | comfortCoolingATUndercut | Number:Time |   | AT undercut |
 
-
 ## Example
 
 Below you can find some example textual configuration for a heatpump with some basic functionallity. This can be extended/adjusted according to your needs and depending on the availability of channels (see list above).
 
 _heatpump.things:_
 
-```
+```java
 Thing luxtronikheatpump:heatpump:heatpump "Heatpump" [
     ipAddress="192.168.178.12",
     port="8889",
@@ -323,7 +323,7 @@ Thing luxtronikheatpump:heatpump:heatpump "Heatpump" [
 
 _heatpump.items:_
 
-```
+```java
 Group    gHeatpump   "Heatpump"   <temperature>
 
 Number:Temperature HeatPump_Temp_Outside   "Temperature outside [%.1f °C]"   <temperature> (gHeatpump) { channel="luxtronikheatpump:heatpump:heatpump:temperatureOutside" }
@@ -343,7 +343,7 @@ Number HeatPump_warmwater_temperature   "Hot water temperature [%.1f]"  (gHeatpu
 
 _heatpump.sitemap:_
 
-```
+```perl
 sitemap heatpump label="Heatpump" {
     Frame label="Heatpump" {
         Text item=HeatPump_State_Ext

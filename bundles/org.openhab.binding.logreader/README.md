@@ -8,13 +8,13 @@ When certain log events are recognized, openHAB rules can be used to send notifi
 This binding supports one ThingType: `reader`.
 A reader supports 3 separate channels
 
-  * One for errors
-  * one for warnings
-  * one custom channel for other purposes.
+- One for errors
+- one for warnings
+- one custom channel for other purposes.
 
 ## Thing Configuration
 
-The `reader` Thing has the following configuration parameters: 
+The `reader` Thing has the following configuration parameters:
 
 | Parameter                     | Type    | Required | Default if omitted               | Description                                                                             |
 | ------------------------------| ------- | -------- | -------------------------------- |-----------------------------------------------------------------------------------------|
@@ -76,15 +76,15 @@ String   logreaderLastCustom        "Last Custom [%s]"                          
 ```xtend
 
 sitemap logreader_example label="Example" {
-	Frame label="openHAB Log Reader" {
-		Text item=logreaderErrors
-		Text item=logreaderLastError
-		Text item=logreaderWarnings
-		Text item=logreaderLastWarning
-		Text item=logreaderCustoms
-		Text item=logreaderLastCustom
-		Text item=logreaderLogRotated
-	}
+ Frame label="openHAB Log Reader" {
+  Text item=logreaderErrors
+  Text item=logreaderLastError
+  Text item=logreaderWarnings
+  Text item=logreaderLastWarning
+  Text item=logreaderCustoms
+  Text item=logreaderLastCustom
+  Text item=logreaderLogRotated
+ }
 }
 
 ```
@@ -113,7 +113,7 @@ rule "LogReader"
 ```
 
 Be careful when sending e.g. email notifications.
-You could easily send thousand of *spam* emails in short period if e.g. one binding is in error loop.
+You could easily send thousand of _spam_ emails in short period if e.g. one binding is in error loop.
 
 ### Thing status
 
