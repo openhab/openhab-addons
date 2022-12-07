@@ -45,7 +45,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link OpenWebNetEnergyHandler} is responsible for handling commands/messages for a Energy Management OpenWebNet
+ * The {@link OpenWebNetEnergyHandler} is responsible for handling commands/messages for an Energy Management OpenWebNet
  * device. It extends the abstract {@link OpenWebNetThingHandler}.
  *
  * @author Massimo Valla - Initial contribution
@@ -195,7 +195,7 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
     }
 
     /**
-     * Updates energy power state based on a EnergyManagement message received from the OWN network
+     * Updates energy power state based on an EnergyManagement message received from the OWN network
      *
      * @param msg the EnergyManagement message received
      * @throws FrameException

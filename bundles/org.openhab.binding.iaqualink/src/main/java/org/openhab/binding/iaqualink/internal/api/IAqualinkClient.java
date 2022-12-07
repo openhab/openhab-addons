@@ -54,7 +54,7 @@ import com.google.gson.JsonPrimitive;
 /**
  * IAqualink HTTP Client
  *
- * The {@link IAqualinkClient} provides basic HTTP commands to control and monitor a iAquaLink
+ * The {@link IAqualinkClient} provides basic HTTP commands to control and monitor an iAquaLink
  * based system.
  *
  * GSON is used to provide custom deserialization on the JSON results. These results
@@ -241,7 +241,7 @@ public class IAqualinkClient {
     }
 
     /**
-     * Sends a Auxiliary dimmer command
+     * Sends an Auxiliary dimmer command
      *
      * @param serialNumber
      * @param sessionId

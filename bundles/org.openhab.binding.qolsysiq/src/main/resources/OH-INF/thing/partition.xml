@@ -42,7 +42,7 @@
 	<channel-type id="armState">
 		<item-type>String</item-type>
 		<label>Partition Arm State</label>
-		<description>Reports the current partition arm state or sends a arm or disarm command to the system. For security
+		<description>Reports the current partition arm state or sends an arm or disarm command to the system. For security
 			codes, append the 6 digit code to the command separated by a colon (e.g. 'DISARM:123456')</description>
 		<category>Alarm</category>
 		<state>

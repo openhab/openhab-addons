@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.shelly.internal.api;
 
+import static org.openhab.binding.shelly.internal.util.ShellyUtils.getString;
+
 import java.net.ConnectException;
 import java.net.MalformedURLException;
 import java.net.NoRouteToHostException;
@@ -90,6 +92,10 @@ public class ShellyApiException extends Exception {
             message = apiResult.toString();
         }
         return message;
+    }
+
+    public boolean isJsonError() {
+        return getString(getMessage()).startsWith("Unable to create object of type");
     }
 
     public boolean isApiException() {

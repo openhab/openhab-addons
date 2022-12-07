@@ -187,7 +187,7 @@ public class PS4PacketHandler {
      * Tries to start an application on the PS4.
      *
      * @param applicationId The ID of the application.
-     * @return A appStart-packet
+     * @return An appStart-packet
      */
     static ByteBuffer makeApplicationPacket(String applicationId) {
         ByteBuffer packet = newPacketForEncryption(8 + 16, PS4Command.APP_START_REQ);

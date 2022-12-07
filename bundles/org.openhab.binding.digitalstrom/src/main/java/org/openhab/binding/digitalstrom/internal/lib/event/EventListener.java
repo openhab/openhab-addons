@@ -289,7 +289,7 @@ public class EventListener {
     }
 
     /**
-     * Adds a event and subscribed it, if it is not subscribed already.
+     * Adds an event and subscribes it, if it is not subscribed already.
      *
      * @param subscribeEvent event name to subscribe
      */
@@ -304,7 +304,7 @@ public class EventListener {
     }
 
     /**
-     * Adds the events of the {@link List} and subscribe them, if a event is not subscribed already.
+     * Adds the events of the {@link List} and subscribe them, if an event is not subscribed already.
      *
      * @param subscribeEvents event name to subscribe
      */

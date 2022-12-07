@@ -19,7 +19,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * converts the hexadecimal string representation to a integer value between 0 - 100
+ * converts the hexadecimal string representation to an integer value between 0 - 100
  *
  * @author Kris Jespers - Initial contribution
  */

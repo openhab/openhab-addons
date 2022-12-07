@@ -22,7 +22,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link OpenWebNetBindingConstants} class defines common constants, which are used across the whole binding.
+ * The {@link OpenWebNetBindingConstants} class defines common constants, which
+ * are used across the whole binding.
  *
  * @author Massimo Valla - Initial contribution, updates
  * @author Gilberto Cocchi - Thermoregulation
@@ -72,6 +73,10 @@ public class OpenWebNetBindingConstants {
     public static final String THING_LABEL_BUS_CENPLUS_SCENARIO_CONTROL = "CEN+ Scenario Control";
     public static final ThingTypeUID THING_TYPE_BUS_SCENARIO = new ThingTypeUID(BINDING_ID, "bus_scenario_control");
     public static final String THING_LABEL_BUS_SCENARIO = "Scenario Control";
+    public static final ThingTypeUID THING_TYPE_BUS_ALARM_SYSTEM = new ThingTypeUID(BINDING_ID, "bus_alarm_system");
+    public static final String THING_LABEL_BUS_ALARM_SYSTEM = "Alarm System";
+    public static final ThingTypeUID THING_TYPE_BUS_ALARM_ZONE = new ThingTypeUID(BINDING_ID, "bus_alarm_zone");
+    public static final String THING_LABEL_BUS_ALARM_ZONE = "Alarm Zone";
     public static final ThingTypeUID THING_TYPE_BUS_AUX = new ThingTypeUID(BINDING_ID, "bus_aux");
     public static final String THING_LABEL_BUS_AUX = "Auxiliary";
     // ZIGBEE
@@ -107,12 +112,16 @@ public class OpenWebNetBindingConstants {
     public static final Set<ThingTypeUID> SCENARIO_BASIC_SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BUS_SCENARIO);
     // ## Aux
     public static final Set<ThingTypeUID> AUX_SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BUS_AUX);
+    // ## Alarm
+    public static final Set<ThingTypeUID> ALARM_SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BUS_ALARM_SYSTEM,
+            THING_TYPE_BUS_ALARM_ZONE);
+
     // ## Groups
     public static final Set<ThingTypeUID> DEVICE_SUPPORTED_THING_TYPES = Stream
             .of(LIGHTING_SUPPORTED_THING_TYPES, AUTOMATION_SUPPORTED_THING_TYPES,
                     THERMOREGULATION_SUPPORTED_THING_TYPES, ENERGY_MANAGEMENT_SUPPORTED_THING_TYPES,
                     SCENARIO_SUPPORTED_THING_TYPES, SCENARIO_BASIC_SUPPORTED_THING_TYPES, AUX_SUPPORTED_THING_TYPES,
-                    GENERIC_SUPPORTED_THING_TYPES)
+                    ALARM_SUPPORTED_THING_TYPES, GENERIC_SUPPORTED_THING_TYPES)
             .flatMap(Collection::stream).collect(Collectors.toCollection(HashSet::new));
     public static final Set<ThingTypeUID> BRIDGE_SUPPORTED_THING_TYPES = Set.of(THING_TYPE_ZB_GATEWAY,
             THING_TYPE_BUS_GATEWAY);
@@ -157,6 +166,13 @@ public class OpenWebNetBindingConstants {
     public static final String CHANNEL_SCENARIO = "scenario";
     // aux
     public static final String CHANNEL_AUX = "aux";
+    // alarm
+    public static final String CHANNEL_ALARM_SYSTEM_STATE = "state";
+    public static final String CHANNEL_ALARM_SYSTEM_ARMED = "armed";
+    public static final String CHANNEL_ALARM_SYSTEM_NETWORK = "network";
+    public static final String CHANNEL_ALARM_SYSTEM_BATTERY = "battery";
+    public static final String CHANNEL_ALARM_ZONE_STATE = "state";
+    public static final String CHANNEL_ALARM_ZONE_ALARM_STATE = "alarm";
 
     // devices config properties
     public static final String CONFIG_PROPERTY_WHERE = "where";
