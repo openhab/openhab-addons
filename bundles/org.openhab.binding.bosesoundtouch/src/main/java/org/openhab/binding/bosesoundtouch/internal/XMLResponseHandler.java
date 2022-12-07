@@ -55,8 +55,8 @@ public class XMLResponseHandler extends DefaultHandler {
 
     private Map<XMLHandlerState, Map<String, XMLHandlerState>> stateSwitchingMap;
 
-    private Stack<XMLHandlerState> states;
-    private XMLHandlerState state;
+    private final Stack<XMLHandlerState> states = new Stack<>();
+    private XMLHandlerState state = XMLHandlerState.INIT;
     private boolean msgHeaderWasValid;
 
     private ContentItem contentItem;
@@ -64,7 +64,6 @@ public class XMLResponseHandler extends DefaultHandler {
     private OnOffType rateEnabled;
     private OnOffType skipEnabled;
     private OnOffType skipPreviousEnabled;
-
     private State nowPlayingSource;
 
     private BoseSoundTouchConfiguration masterDeviceId;
@@ -84,9 +83,6 @@ public class XMLResponseHandler extends DefaultHandler {
         this.handler = handler;
         this.commandExecutor = handler.getCommandExecutor();
         this.stateSwitchingMap = stateSwitchingMap;
-        states = new Stack<>();
-        state = XMLHandlerState.INIT;
-        nowPlayingSource = null;
     }
 
     @Override
@@ -382,9 +378,15 @@ public class XMLResponseHandler extends DefaultHandler {
                 isPresetable = Boolean.parseBoolean(attributes.getValue("isPresetable"));
                 attributeLength = attributes.getLength();
 
-                contentItem.setSource(source);
-                contentItem.setSourceAccount(sourceAccount);
-                contentItem.setLocation(location);
+                if (source != null) {
+                    contentItem.setSource(source);
+                }
+                if (sourceAccount != null) {
+                    contentItem.setSourceAccount(sourceAccount);
+                }
+                if (location != null) {
+                    contentItem.setLocation(location);
+                }
                 contentItem.setPresetable(isPresetable);
             }
 

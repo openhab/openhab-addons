@@ -27,6 +27,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.StatusCode;
@@ -76,7 +77,7 @@ import org.slf4j.LoggerFactory;
  * @author Kai Kreuzer - code clean up
  * @author Alexander Kostadinov - Handling of websocket ping-pong mechanism for thing status check
  */
-
+@NonNullByDefault
 public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocketListener, WebSocketFrameListener {
 
     private static final int MAX_MISSED_PONGS_COUNT = 2;
@@ -374,7 +375,8 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
 
     @Override
     public void onWebSocketError(@Nullable Throwable e) {
-        Throwable localThrowable = (e != null) ? e : new Throwable("Null Exception passed to onWebSocketError");
+        Throwable localThrowable = (e != null) ? e
+                : new IllegalStateException("Null Exception passed to onWebSocketError");
         logger.debug("{}: Error during websocket communication: {}", getDeviceName(), localThrowable.getMessage(),
                 localThrowable);
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, localThrowable.getMessage());
@@ -404,7 +406,7 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
     }
 
     @Override
-    public void onWebSocketBinary(byte[] payload, int offset, int len) {
+    public void onWebSocketBinary(byte @Nullable [] payload, int offset, int len) {
         // we don't expect binary data so just dump if we get some...
         logger.debug("{}: onWebSocketBinary({}, {}, '{}')", getDeviceName(), offset, len, Arrays.toString(payload));
     }
@@ -519,7 +521,7 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
     public void handleGroupUpdated(BoseSoundTouchConfiguration masterPlayerConfiguration) {
         String deviceId = getMacAddress();
 
-        if (masterPlayerConfiguration != null && masterPlayerConfiguration.macAddress != null) {
+        if (masterPlayerConfiguration.macAddress != null) {
             // Stereo pair
             if (Objects.equals(masterPlayerConfiguration.macAddress, deviceId)) {
                 if (getThing().getThingTypeUID().equals(BST_10_THING_TYPE_UID)) {

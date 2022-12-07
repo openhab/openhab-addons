@@ -35,7 +35,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
 public class XMLResponseProcessor {
     private BoseSoundTouchHandler handler;
 
-    private Map<XMLHandlerState, Map<String, XMLHandlerState>> stateSwitchingMap = new HashMap<>();
+    private final Map<XMLHandlerState, Map<String, XMLHandlerState>> stateSwitchingMap = new HashMap<>();
 
     public XMLResponseProcessor(BoseSoundTouchHandler handler) {
         this.handler = handler;
@@ -51,8 +51,6 @@ public class XMLResponseProcessor {
 
     // initializes our XML parsing state machine
     private void init() {
-        stateSwitchingMap = new HashMap<>();
-
         Map<String, XMLHandlerState> msgInitMap = new HashMap<>();
         stateSwitchingMap.put(XMLHandlerState.INIT, msgInitMap);
         msgInitMap.put("msg", XMLHandlerState.Msg);

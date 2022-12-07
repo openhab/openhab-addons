@@ -39,13 +39,12 @@ public class ContentItem {
     private int presetID = 0;
     private @Nullable String containerArt;
     @Expose
-    private final Map<String, String> additionalAttributes;
+    private final Map<String, String> additionalAttributes = new HashMap<>();
 
     /**
      * Creates a new instance of this class
      */
     public ContentItem() {
-        additionalAttributes = new HashMap<>();
     }
 
     /**

@@ -17,6 +17,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -37,20 +38,14 @@ public class PresetContainer {
 
     private final Logger logger = LoggerFactory.getLogger(PresetContainer.class);
 
-    private HashMap<Integer, ContentItem> mapOfPresets;
+    private final Map<Integer, ContentItem> mapOfPresets = new HashMap<>();
     private Storage<ContentItem> storage;
 
     /**
      * Creates a new instance of this class
      */
     public PresetContainer(Storage<ContentItem> storage) {
-        mapOfPresets = new HashMap<>();
         this.storage = storage;
-        init();
-    }
-
-    private void init() {
-        this.mapOfPresets = new HashMap<>();
         readFromStorage();
     }
 

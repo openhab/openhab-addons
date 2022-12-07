@@ -46,10 +46,10 @@ public class CommandExecutor implements AvailableSources {
     private final BoseSoundTouchHandler handler;
 
     private boolean currentMuted;
-    private @Nullable ContentItem currentContentItem;
+    private @Nullable ContentItem currentContentItem = null;
     private @Nullable OperationModeType currentOperationMode;
 
-    private Map<String, Boolean> mapOfAvailableFunctions;
+    private final Map<String, Boolean> mapOfAvailableFunctions = new HashMap<>();
 
     /**
      * Creates a new instance of this class
@@ -57,9 +57,9 @@ public class CommandExecutor implements AvailableSources {
      * @param handler the handler that created this CommandExecutor
      */
     public CommandExecutor(BoseSoundTouchHandler handler) {
-        mapOfAvailableFunctions = new HashMap<>();
         this.handler = handler;
-        init();
+        getInformations(APIRequest.INFO);
+        currentOperationMode = OperationModeType.OFFLINE;
     }
 
     /**
@@ -137,26 +137,25 @@ public class CommandExecutor implements AvailableSources {
     public void setCurrentContentItem(ContentItem contentItem) {
         if (contentItem.isValid()) {
             ContentItem psFound = null;
-            if (handler.getPresetContainer() != null) {
-                Collection<ContentItem> listOfPresets = handler.getPresetContainer().getAllPresets();
-                for (ContentItem ps : listOfPresets) {
-                    if (ps.isPresetable()) {
-                        String localLocation = ps.getLocation();
-                        if (localLocation != null) {
-                            if (localLocation.equals(contentItem.getLocation())) {
-                                psFound = ps;
-                            }
+            Collection<ContentItem> listOfPresets = handler.getPresetContainer().getAllPresets();
+            for (ContentItem ps : listOfPresets) {
+                if (ps.isPresetable()) {
+                    String localLocation = ps.getLocation();
+                    if (localLocation != null) {
+                        if (localLocation.equals(contentItem.getLocation())) {
+                            psFound = ps;
                         }
                     }
                 }
-                int presetID = 0;
-                if (psFound != null) {
-                    presetID = psFound.getPresetID();
-                }
-                contentItem.setPresetID(presetID);
-
-                currentContentItem = contentItem;
             }
+            int presetID = 0;
+            if (psFound != null) {
+                presetID = psFound.getPresetID();
+            }
+            contentItem.setPresetID(presetID);
+
+            currentContentItem = contentItem;
+
         }
         updateOperatingValues();
     }
@@ -358,14 +357,6 @@ public class CommandExecutor implements AvailableSources {
      */
     public void updatePresetGUIState(DecimalType state) {
         handler.updateState(CHANNEL_PRESET, state);
-    }
-
-    private void init() {
-        getInformations(APIRequest.INFO);
-        currentOperationMode = OperationModeType.OFFLINE;
-        currentContentItem = null;
-
-        mapOfAvailableFunctions = new HashMap<>();
     }
 
     private void postContentItem(ContentItem contentItem) {
