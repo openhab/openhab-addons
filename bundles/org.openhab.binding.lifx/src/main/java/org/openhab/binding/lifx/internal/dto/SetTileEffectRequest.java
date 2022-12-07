@@ -66,7 +66,6 @@ public class SetTileEffectRequest extends Packet {
     private Effect effect;
 
     public SetTileEffectRequest() {
-        setTagged(false);
         setAddressable(true);
         setAckRequired(true);
     }

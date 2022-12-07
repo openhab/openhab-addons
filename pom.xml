@@ -72,7 +72,7 @@
     <bnd.version>6.3.0</bnd.version>
     <commons.net.version>3.7.2</commons.net.version>
     <eea.version>2.2.1</eea.version>
-    <jackson.version>2.12.5</jackson.version>
+    <jackson.version>2.12.7</jackson.version>
     <karaf.version>4.3.7</karaf.version>
     <netty.version>4.1.72.Final</netty.version>
     <okhttp.version>3.14.9</okhttp.version>

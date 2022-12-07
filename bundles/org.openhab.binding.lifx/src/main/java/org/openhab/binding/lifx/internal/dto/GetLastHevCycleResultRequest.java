@@ -22,7 +22,6 @@ public class GetLastHevCycleResultRequest extends Packet {
     public static final int TYPE = 0x94;
 
     public GetLastHevCycleResultRequest() {
-        setTagged(false);
         setAddressable(true);
         setResponseRequired(true);
     }

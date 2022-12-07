@@ -13,7 +13,7 @@
 package org.openhab.binding.melcloud.internal.config;
 
 /**
- * Config class for a A.C. device.
+ * Config class for an A.C. device.
  *
  * @author Pauli Anttila - Initial Contribution
  *

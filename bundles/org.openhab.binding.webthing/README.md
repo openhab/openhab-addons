@@ -6,7 +6,7 @@ The [Web Thing API](https://iot.mozilla.org/wot/) describes an open and generic 
 like motion sensors, web-connected displays or awning controls. Devices implementing the Web Thing standard can be integrated 
 into smart home systems such as openHAB to monitor and control them.
 These days, the Web Thing API is primarily used by makers to provide a common API to their physical devices. 
-For instance, the Web Thing API has been used by makers to provide an open way to control [LEDs on a ESP8266 board](https://github.com/WebThingsIO/webthing-arduino) 
+For instance, the Web Thing API has been used by makers to provide an open way to control [LEDs on an ESP8266 board](https://github.com/WebThingsIO/webthing-arduino) 
 or to monitor [a PIR motion sensor on Raspberry Pi](https://pypi.org/project/pi-pir-webthing/).
 
 ## Supported Things

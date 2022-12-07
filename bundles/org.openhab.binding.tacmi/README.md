@@ -152,7 +152,7 @@ But this also means for CoE-Messages from openHAB to TA C.M.I. we have to send m
 But due to OH's design there is no default restore of previous values out of the box.
 So after OH startup the _output thing channels_ are either initialized with it's configured default value or flagged as 'unknown' until the first update on the channel happens.
 You could either use some 'illegal' value as initial value and use _CoE Value Validation_ on the TA side to detect invalid values.
-An other option would be to use only every 4th analog and 16th digital channel if you only need a few channels.
+Another option would be to use only every 4th analog and 16th digital channel if you only need a few channels.
 Additionally you could use [OH's persistence service](https://www.openhab.org/docs/configuration/persistence.html#restoring-item-states-on-restart) and it's option to [restore the item states](https://www.openhab.org/docs/configuration/persistence.html#restoring-item-states-on-restart) during OH startup.
 As this only restores the item states you have to write a rule issuing _postUpdates_ on the items with the item's current value so the channel for the binding is updated.
 

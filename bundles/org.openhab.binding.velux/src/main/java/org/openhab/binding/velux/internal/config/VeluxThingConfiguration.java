@@ -52,21 +52,21 @@ public class VeluxThingConfiguration extends Configuration {
     String sceneName = VeluxBindingConstants.UNKNOWN;
 
     /**
-     * {@link #serial} of type {@link String}, identifying a io-homecontrol device by its serial number (i.e.
+     * {@link #serial} of type {@link String}, identifying an io-homecontrol device by its serial number (i.e.
      * 43:12:14:5A:12:1C:05:5F).
      * <P>
      * <B>Configuration for the channels actuator, rollershutter and window:</B>
      * </P>
      * <UL>
-     * <LI>{@link #serial} for identification of a io-homecontrol device,</LI>
-     * <LI>{@link #name} for alternate identification of a io-homecontrol device,</LI>
+     * <LI>{@link #serial} for identification of an io-homecontrol device,</LI>
+     * <LI>{@link #name} for alternate identification of an io-homecontrol device,</LI>
      * <LI>{@link #inverted} for modified value behavior.</LI>
      * <LI>{@link #velocity} for modified action speed.</LI>
      * </UL>
      */
     public String serial = VeluxProductSerialNo.UNKNOWN;
     /**
-     * {@link #name} of type {@link String}, identifying a io-homecontrol device by its registration name especially
+     * {@link #name} of type {@link String}, identifying an io-homecontrol device by its registration name especially
      * for <B>somfy</B> as they do not provide a valid serial number.
      * <P>
      * Part of the {@link #serial Configuration for the channels actuator, rollershutter and window}.

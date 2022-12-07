@@ -23,7 +23,6 @@ public class GetInfoRequest extends Packet {
     public static final int TYPE = 0x22;
 
     public GetInfoRequest() {
-        setTagged(false);
         setAddressable(true);
         setResponseRequired(true);
     }

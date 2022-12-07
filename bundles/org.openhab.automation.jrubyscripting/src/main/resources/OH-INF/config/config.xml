@@ -48,15 +48,17 @@
 
 		<parameter name="gem_home" type="text" required="false" groupName="environment">
 			<label>GEM_HOME</label>
-			<description><![CDATA[Location Ruby Gems will be installed and loaded, directory will be created if missing and gem
-			    installs are specified. Defaults to "<tt>OPENHAB_CONF/scripts/lib/ruby/gem_home</tt>" when not specified.
+			<description><![CDATA[Location Ruby Gems will be installed to and loaded from. Directory will be created if necessary.
+				You can use <tt>{RUBY_ENGINE_VERSION}</tt>, <tt>{RUBY_ENGINE}</tt> and/or <tt>{RUBY_VERSION}</tt> replacements in this value to automatically point to
+				a new directory when the addon is updated with a new version of JRuby.
+				Defaults to "<tt>OPENHAB_CONF/automation/ruby/.gem/{RUBY_ENGINE_VERSION}</tt>" when not specified.
 				]]></description>
 		</parameter>
 
 		<parameter name="rubylib" type="text" required="false" groupName="environment">
 			<label>RUBYLIB</label>
 			<description><![CDATA[Search path for user libraries. Separate each path with a colon (semicolon in Windows). Defaults to
-				"<tt>OPENHAB_CONF/automation/lib/ruby</tt>" when not specified.]]></description>
+				"<tt>OPENHAB_CONF/automation/ruby/lib</tt>" when not specified.]]></description>
 		</parameter>
 
 		<parameter name="local_context" type="text" required="false" groupName="system">

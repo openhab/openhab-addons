@@ -63,7 +63,7 @@ Number:Dimensionless		KebaCurrentRange  		"Maximum supply current [%.1f %%]"			{
 Number:ElectricCurrent  	KebaCurrent  			"Maximum supply current [%.3f A]"			{channel="keba:kecontact:1:maxpresetcurrent"}
 Number:ElectricCurrent  	KebaSystemCurrent  		"Maximum system supply current [%.3f A]"	{channel="keba:kecontact:1:maxsystemcurrent"} 
 Number:ElectricCurrent  	KebaFailSafeCurrent  	"Failsafe supply current [%.3f A]"			{channel="keba:kecontact:1:failsafecurrent"} 
-String 						KebaState  				"Operating State [%s]"						{channel="keba:kecontact:1:state"}
+Number 						KebaState  				"Operating State [%s]"						{channel="keba:kecontact:1:state"}
 Switch 						KebaSwitch  			"Enabled"									{channel="keba:kecontact:1:enabled"}
 Switch 						KebaWallboxPlugged  	"Plugged into wallbox"						{channel="keba:kecontact:1:wallbox"}
 Switch 						KebaVehiclePlugged  	"Plugged into vehicle"						{channel="keba:kecontact:1:vehicle"}
