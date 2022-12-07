@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.sinope.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link SinopeConfigStatusMessage} defines
  * the keys to be used for {@link ConfigStatusMessage}s.
@@ -19,6 +21,7 @@ package org.openhab.binding.sinope.internal;
  * @author Pascal Larin - Initial Contribution
  *
  */
+@NonNullByDefault
 public enum SinopeConfigStatusMessage {
     HOST_MISSING("missing-host-configuration"),
     PORT_MISSING("missing-port-configuration"),

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mihome"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="gateway">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+		<label>Xiaomi Mi Smart Home Gateway</label>
+		<description>Multifunctional Gateway with a built in light, ambient light sensor and capability to play sounds.</description>
+		<channels>
+			<channel id="brightness" typeId="brightness" />
+			<channel id="illumination" typeId="illumination" />
+			<channel id="color" typeId="color" />
+			<channel id="colorTemperature" typeId="colorTemperature" />
+			<channel typeId="enableSound" id="enableSound" />
+			<channel typeId="sound" id="sound" />
+			<channel typeId="volume" id="volume" />
+		</channels>
+		<config-description-ref uri="thing-type:mihome:device" />
+	</thing-type>
+</thing:thing-descriptions>

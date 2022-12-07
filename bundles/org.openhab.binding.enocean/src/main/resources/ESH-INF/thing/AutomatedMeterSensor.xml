@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="enocean"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="automatedMeterSensor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>Automated Meter Sensor</label>
+		<description>Sensor for different meters like energy measurement (EEP: A5-12)</description>
+
+		<config-description>
+			<parameter name="enoceanId" type="text">
+				<label>EnOceanId</label>
+				<description>EnOceanId of device this thing belongs to</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="receivingEEPId" type="text">
+				<label>EEP</label>
+				<description>EEP which is used by panel</description>
+				<options>
+					<option value="A5_12_00">A5-12-00 Counter</option>
+					<option value="A5_12_01">A5-12-01 Electricity</option>
+					<option value="A5_12_02">A5-12-02 Gas</option>
+					<option value="A5_12_03">A5-12-03 Water</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
+				<required>true</required>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+</thing:thing-descriptions>

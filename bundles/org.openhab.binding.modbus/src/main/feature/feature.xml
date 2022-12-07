@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<features name="org.openhab.binding.modbus-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.4.0">
+    <repository>file:${basedirRoot}/bundles/org.openhab.io.transport.modbus/target/feature/feature.xml</repository>
+
+    <feature name="openhab-binding-modbus" description="Modbus Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-transport-modbus</feature>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.modbus/${project.version}</bundle>
+    </feature>
+</features>

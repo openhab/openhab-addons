@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="samsungtv"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="tv">
+		<label>Samsung TV</label>
+		<description>Allows to control Samsung TV</description>
+
+		<channels>
+			<channel id="volume" typeId="volume" />
+			<channel id="mute" typeId="mute" />
+			<channel id="brightness" typeId="brightness" />
+			<channel id="contrast" typeId="contrast" />
+			<channel id="sharpness" typeId="sharpness" />
+			<channel id="colorTemperature" typeId="colortemperature" />
+			<channel id="sourceName" typeId="sourcename" />
+			<channel id="sourceId" typeId="sourceid" />
+			<channel id="channel" typeId="channel" />
+			<channel id="programTitle" typeId="programtitle" />
+			<channel id="channelName" typeId="channelname" />
+			<channel id="url" typeId="url" />
+			<channel id="stopBrowser" typeId="stopbrowser" />
+			<channel id="keyCode" typeId="keycode" />
+			<channel id="power" typeId="power" />
+			<channel id="artMode" typeId="artmode" />
+			<channel id="sourceApp" typeId="sourceapp" />
+		</channels>
+
+		<config-description-ref uri="thing-type:samsungtv:tv" />
+	</thing-type>
+
+</thing:thing-descriptions>

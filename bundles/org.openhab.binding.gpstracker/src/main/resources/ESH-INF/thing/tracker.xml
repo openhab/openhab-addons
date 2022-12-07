@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="gpstracker"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<!-- Thing Types -->
+	<thing-type id="tracker" extensible="regionDistance">
+		<label>Tracker Device</label>
+		<description>Device running tracker application</description>
+
+		<channels>
+			<channel id="lastLocation" typeId="system.location"/>
+			<channel id="batteryLevel" typeId="system.battery-level"/>
+			<channel id="regionTrigger" typeId="regionTrigger"/>
+			<channel id="lastReport" typeId="lastReport"/>
+			<channel id="gpsAccuracy" typeId="gpsAccuracy"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:gpstracker:tracker"/>
+	</thing-type>
+	
+	<!-- Channel Types -->
+	<channel-type id="regionDistance">
+		<item-type>Number:Length</item-type>
+		<label>Distance</label>
+		<description>Distance from region</description>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+		<config-description-ref uri="channel-type:gpstracker:distance"/>
+	</channel-type>
+	<channel-type id="gpsAccuracy">
+		<item-type>Number:Length</item-type>
+		<label>Accuracy</label>
+		<description>GPS accuracy</description>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="lastReport">
+		<item-type>DateTime</item-type>
+		<label>Last Seen</label>
+		<description>Last report timestamp</description>
+		<state pattern="%1$tF %1$tR" readOnly="true"/>
+	</channel-type>
+	<channel-type id="regionTrigger">
+		<kind>trigger</kind>
+		<label>Region Trigger</label>
+		<description>Trigger channel for entering/leaving regions. Payload is the region name with prefix &gt; for entering and &lt; for leaving.</description>
+		<event/>
+	</channel-type>
+</thing:thing-descriptions>

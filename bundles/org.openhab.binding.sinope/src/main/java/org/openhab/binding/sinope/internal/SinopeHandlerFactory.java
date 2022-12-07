@@ -17,7 +17,10 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.sinope.SinopeBindingConstants;
+import org.openhab.binding.sinope.handler.SinopeDimmerHandler;
 import org.openhab.binding.sinope.handler.SinopeGatewayHandler;
 import org.openhab.binding.sinope.handler.SinopeThermostatHandler;
 import org.openhab.binding.sinope.internal.discovery.SinopeThingsDiscoveryService;
@@ -38,6 +41,7 @@ import org.osgi.service.component.annotations.Component;
  * @author Pascal Larin - Initial contribution
  */
 @Component(service = ThingHandlerFactory.class)
+@NonNullByDefault
 public class SinopeHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = SinopeBindingConstants.SUPPORTED_THING_TYPES_UIDS;
@@ -49,6 +53,7 @@ public class SinopeHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
+    @Nullable
     protected ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
@@ -58,6 +63,8 @@ public class SinopeHandlerFactory extends BaseThingHandlerFactory {
             return bridge;
         } else if (SinopeBindingConstants.THING_TYPE_THERMO.equals(thingTypeUID)) {
             return new SinopeThermostatHandler(thing);
+        } else if (SinopeBindingConstants.THING_TYPE_DIMMER.equals(thingTypeUID)) {
+            return new SinopeDimmerHandler(thing);
         }
         return null;
     }

@@ -6,9 +6,11 @@ This binding supports multiple gateways with multiple devices.
 
 ## Supported Things
 
-The Sinopé bridge is required as a "bridge" for accessing any other Sinopé devices.
+The Sinopé GT125 bridge is required as a "bridge" for accessing any other Sinopé devices.
 
-Right now, only the thermostat devices (3000W and 4000W) (TH1120RF) are supported.
+Right now, the following devices are supported:
+- Thermostats (3000W and 4000W) (TH1120RF) 
+- Dimmers and Switches (DM2500RF and SW2500RF). Note: Switches are handled as a dimmer that can have only two intensities: 0 (OFF) or 100 (ON).
 
 ## Discovery
 
@@ -87,6 +89,7 @@ The devices are identified by the ids that a Sinopé device returns when you hav
 
 ```
 thermostat room [ deviceId = "0x00 0x00 0x35 0x86" ]
+dimmer room [ deviceId = "0x00 0x00 0x35 0x87" ]
 ```
 
 ## Channels
@@ -101,15 +104,24 @@ Thermostat devices support some of the following channels:
  setpointMode        | String (RW) | Thermostat set point mode                                                                                                              |     
  heatingLevel        | Number (R)  | Heating Level                                                                                                                             | 
 
+Dimmer/Switch devices support the following channels:
+
+ Channel Type ID         | Item Type   | Description                                                                                                                                                                                                   |
+-------------------------|-------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+ dimmerOutputIntensity   | Number (RW) | Output Intensity (0 = OFF, 100 = Full Intensity). For switches, 0 = OFF, 100 = ON                                                                                                                             |   
+ lightMode               | Number (RW) | Light Mode (1 = Manual (Hold), 2 = Auto (Schedule), 3 = Random (Simulation of presence), 130 = Bypass Auto (Temporary hold until the next scheduled period)                                                   |    
+
+
 ## Full Example
 
-In this example setup the Sinopé Gateway is represented as a Bridge **Home** with thermostat **Room**
+In this example setup the Sinopé Gateway is represented as a Bridge **Home** with thermostat **Room** and dimmer "RoomDimmer"
 
 ### demo.things:
 
 ```
 Bridge sinope:gateway:home [ hostname="sinope", gatewayId="1234-4567-1234-1234", apiKey="0x12 0x34 0x56 0x78 0x9A 0xBC 0xDE 0xF0"] {
   thermostat room [ deviceId = "00003586" ]
+  dimmer roomdimmer [ deviceId = "00003587" ]
 }
 ```
 
@@ -121,6 +133,9 @@ Number Room_Out "Outside Temp. [%.2f °C]" <temperature> { channel="sinope:therm
 Number Room_SetPoint "Room Set Point [%.2f °C]" <temperature> { channel="sinope:thermostat:home:room:setpointTemperature" }
 Number Room_SetPointMode "Room Set Point Mode" { channel="sinope:thermostat:home:room:setpointMode" }
 Number Room_HeatLevel "Room Heating level [%d]" <heating> { channel="sinope:thermostat:home:room:heatingLevel" }
+
+Number Room_Dimmer_OutputIntensity "Dimmer Output Intensity [%d] %%" <light> { channel="sinope:dimmer:home:roomdimmer:dimmerOutputIntensity" }
+Number Room_Dimmer_LightMode "Dimmer Light Mode [%d] <light> { channel="sinope:dimmer:home:roomdimmer:lightMode" }
 ```
 
 ### demo.sitemap:
@@ -134,6 +149,9 @@ sitemap demo label="Main Menu"
      Setpoint item=Room_SetPoint  label="Set Point [%.1f °C]" step=0.5 minValue=5 maxValue=35
      Switch item=Room_SetPointMode mappings=[2=Manual, 3=Auto, 5=Away]
      Slider item=Room_HeatLevel
+
+     Slider item=Room_Dimmer_OutputIntensity label="Dimmer Ouput Intensity"
+     Switch item=Room_Dimmer_LightMode label="Dimmer Light Mode" mappings=[1=Manual, 2=Auto, 3=Random, 130=BypassAuto]
   }
 }
 ```

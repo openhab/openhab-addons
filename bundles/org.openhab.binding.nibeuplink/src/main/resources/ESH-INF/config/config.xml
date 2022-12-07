@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:nibeuplink:web">
+		<parameter-group name="authentication">
+			<label>Authentication</label>
+			<description>Authentication settings.</description>
+		</parameter-group>
+		<parameter-group name="connection">
+			<label>Connection</label>
+			<description>Connection settings.</description>
+		</parameter-group>
+		<parameter-group name="general">
+			<label>General</label>
+			<description>General settings.</description>
+		</parameter-group>
+		<parameter-group name="customChannels">
+			<label>Custom Channels</label>
+			<description>Custom Channel configuration</description>
+		</parameter-group>
+
+		<parameter name="user" type="text" required="true" groupName="authentication">
+			<label>Username</label>
+			<description>The Username to login at NibeIplink.</description>
+		</parameter>
+		<parameter name="password" type="text" required="true" groupName="authentication">
+			<label>Password</label>
+			<context>password</context>
+			<description>The Password to login at NibeIplink.</description>
+		</parameter>
+		<parameter name="nibeId" type="text" required="true" groupName="general">
+			<label>Nibe ID</label>
+			<description>The ID to identify the heat pump at NibeIplink.</description>
+		</parameter>
+		<parameter name="pollingInterval" type="integer" required="false" min="30" max="3600" unit="s"
+			groupName="connection">
+			<label>Polling Interval</label>
+			<description>Interval in which data is polled from Nibe Uplink (in seconds).</description>
+			<default>60</default>
+		</parameter>
+		<parameter name="customChannel01" type="integer" required="false" min="10000" max="50000"
+			groupName="customChannels">
+			<label>Channel 01</label>
+			<description>ID of an additional custom channel</description>
+		</parameter>
+		<parameter name="customChannel02" type="integer" required="false" min="10000" max="50000"
+			groupName="customChannels">
+			<label>Channel 02</label>
+			<description>ID of an additional custom channel</description>
+		</parameter>
+		<parameter name="customChannel03" type="integer" required="false" min="10000" max="50000"
+			groupName="customChannels">
+			<label>Channel 03</label>
+			<description>ID of an additional custom channel</description>
+		</parameter>
+		<parameter name="customChannel04" type="integer" required="false" min="10000" max="50000"
+			groupName="customChannels">
+			<label>Channel 04</label>
+			<description>ID of an additional custom channel</description>
+		</parameter>
+		<parameter name="customChannel05" type="integer" required="false" min="10000" max="50000"
+			groupName="customChannels">
+			<label>Channel 05</label>
+			<description>ID of an additional custom channel</description>
+		</parameter>
+		<parameter name="customChannel06" type="integer" required="false" min="10000" max="50000"
+			groupName="customChannels">
+			<label>Channel 06</label>
+			<description>ID of an additional custom channel</description>
+		</parameter>
+		<parameter name="customChannel07" type="integer" required="false" min="10000" max="50000"
+			groupName="customChannels">
+			<label>Channel 07</label>
+			<description>ID of an additional custom channel</description>
+		</parameter>
+		<parameter name="customChannel08" type="integer" required="false" min="10000" max="50000"
+			groupName="customChannels">
+			<label>Channel 08</label>
+			<description>ID of an additional custom channel</description>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>

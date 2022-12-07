@@ -38,11 +38,6 @@ public abstract class SinopeRequest extends SinopeFrame {
     /**
      * @see org.openhab.binding.sinope.internal.core.base.SinopeFrame#getPayload()
      */
-    /*
-     *
-     *
-     * @see ca.tulip.sinope.core.internal.SinopeFrame#getPayload()
-     */
     @Override
     public byte[] getPayload() {
         if (getInternal_payload() == null) {
@@ -80,7 +75,8 @@ public abstract class SinopeRequest extends SinopeFrame {
      */
     @Override
     protected void setInternal_payload(byte[] internal_payload) {
-        logger.debug("Request Frame: {}", ByteUtil.toString(internal_payload));
+        logger.debug("Thread:{} - Request Frame: {}", Thread.currentThread().getId(),
+                ByteUtil.toString(internal_payload));
         super.setInternal_payload(internal_payload);
     }
 }

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="telegram"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="telegramBot">
+		<label>Telegram Bot</label>
+		<description>Thing to receive the latest message send to a Telegram Bot.</description>
+
+		<channels>
+			<channel id="lastMessageText" typeId="lastMessageText" />
+			<channel id="lastMessageDate" typeId="lastMessageDate" />
+			<channel id="lastMessageName" typeId="lastMessageName" />
+			<channel id="lastMessageUsername" typeId="lastMessageUsername" />
+			<channel id="chatId" typeId="chatId" />
+			<channel id="replyId" typeId="replyId" />
+		</channels>
+
+		<config-description>
+			<parameter name="botToken" type="text" required="true">
+				<label>Bot Token</label>
+				<description>Enter the bot token you received from the "BotFather".</description>
+			</parameter>
+			<parameter name="chatIds" type="text" required="true" multiple="true">
+				<label>Chat Ids</label>
+				<description>Enter your chat id. Only messages from this id will be send to openHAB.</description>
+			</parameter>
+			<parameter name="parseMode" type="text" required="false">
+				<label>Parse Mode</label>
+				<options>
+					<option value="">No Formatting</option>
+					<option value="HTML">HTML</option>
+					<option value="Markdown">Markdown</option>
+				</options>
+				<description>Support for formatted messages, values: Markdown or HTML. Default: no formatting is used.</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="lastMessageText">
+		<item-type>String</item-type>
+		<label>Last Message Text</label>
+		<description>Contains the latest message text as a string</description>
+		<state readOnly="true"/>
+	</channel-type>
+	
+	<channel-type id="lastMessageDate">
+		<item-type>DateTime</item-type>
+		<label>Last Message Date</label>
+		<description>Contains the latest message date as a DateTime</description>
+		<state readOnly="true"/>
+	</channel-type>
+	
+	<channel-type id="lastMessageName">
+		<item-type>String</item-type>
+		<label>Last Message Name</label>
+		<description>Contains the latest message senders name as a string</description>
+		<state readOnly="true"/>
+	</channel-type>
+	
+	<channel-type id="lastMessageUsername">
+		<item-type>String</item-type>
+		<label>Last Message Username</label>
+		<description>Contains the latest message senders username as a string</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="chatId">
+		<item-type>String</item-type>
+		<label>Chat Id</label>
+		<description>Contains the id of chat from where the message was received.</description>
+		<state readOnly="true"/>
+	</channel-type>	
+
+	<channel-type id="replyId">
+		<item-type>String</item-type>
+		<label>Reply Id</label>
+		<description>Contains the id of the reply which was passed to sendTelegram() as replyId. This id can be used to have an unambiguous assignment of the user reply to the message which was sent by the bot.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>
