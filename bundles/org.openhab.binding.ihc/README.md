@@ -136,7 +136,7 @@ E.g. if item state has been OFF, profile will send ON command to item.
 
 Example:
 
-```xtend
+```java
 Dimmer test { channel="ihc:controller:elko:my_test_trigger"[profile="ihc:pushbutton-to-command", short-press-command="TOGGLE", long-press-command="INCREASE", long-press-time=1000, repeat-time=200] }
 ```
 
@@ -146,7 +146,7 @@ Will send TOGGLE (ON/OFF) command to Dimmer test item when short button press is
 
 ### example.things
 
-```xtend
+```java
 ihc:controller:elko [ hostname="192.168.1.2", username="openhab", password="secret", timeout=5000, loadProjectFile=true, createChannelsAutomatically=false, tlsVersion="TLSv1" ] {
     Channels:
         Type switch                : my_test_switch  "My Test Switch"          [ resourceId=3988827 ]
@@ -167,7 +167,7 @@ ihc:controller:elko [ hostname="192.168.1.2", username="openhab", password="secr
 
 ### example.items
 
-```xtend
+```java
 Switch test_switch  "Test Switch"    { channel="ihc:controller:elko:my_test_switch" }
 Switch test_contact "Test Contact"   { channel="ihc:controller:elko:my_test_contact" }
 Number test_number  "Test Number"    { channel="ihc:controller:elko:my_test_number" }
@@ -182,7 +182,7 @@ Dimmer dimmer { channel="ihc:controller:elko:my_test_trigger"[profile="ihc:pushb
 
 ### example.rules
 
-```xtend
+```java
 rule "My test trigger test rule"
 when
     Channel 'ihc:controller:elko:my_test_trigger' triggered LONG_PRESS 

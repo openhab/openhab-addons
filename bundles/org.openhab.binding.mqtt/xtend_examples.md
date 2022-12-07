@@ -8,7 +8,7 @@ Be aware that if your brokers certificate changes, you need to remove the connec
 
 `mqttConnections.things`:
 
-```xtend
+```java
 mqtt:broker:mySecureBroker [ host="192.168.0.41", secure=true, certificatepin=true, publickeypin=true ]
 ```
 
@@ -18,7 +18,7 @@ The second connection is a plain, unsecured one. Unsecure connections are defaul
 
 `mqttConnections.things`:
 
-```xtend
+```java
 mqtt:broker:myUnsecureBroker [ host="192.168.0.42", secure=false ]
 ```
 
@@ -30,7 +30,7 @@ The credentials are plain values on the wire, therefore you should only use this
 
 `mqttConnections.things`:
 
-```xtend
+```java
 mqtt:broker:myAuthentificatedBroker [ host="192.168.0.43", secure=false, username="user", password="password" ]
 ```
 
@@ -43,6 +43,6 @@ in [Java MessageDigest Algorithms](https://docs.oracle.com/javase/9/docs/specs/s
 
 `mqttConnections.things`:
 
-```xtend
+```java
 mqtt:broker:pinToPublicKey [ host="192.168.0.44", secure=true, publickeypin=true, publickey="SHA-256:9a6f30e67ae9723579da2575c35daf7da3b370b04ac0bde031f5e1f5e4617eb8" ]
 ```

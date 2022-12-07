@@ -246,7 +246,7 @@ Items are configured the typical way, using `channel` to bind the item to a part
 
 For example, in the following example, item `Temperature_Modbus_Livingroom` is bound to channel `number` of thing `modbus:data:siemensplc:holding:livingroom_temperature`.
 
-```bash
+```java
 Number  Temperature_Modbus_Livingroom                       "Temperature Living room [%.1f °C]"           <temperature>   { channel="modbus:data:siemensplc:holding:livingroom_temperature:number" }
 ```
 
@@ -303,7 +303,7 @@ To summarize (credits to [rossko57's community post](https://community.openhab.o
 
 You can disable `autoupdate` as follows:
 
-```bash
+```java
 Number  Temperature_Modbus_Livingroom                       "Temperature Living room [%.1f °C]"           <temperature>   { channel="modbus:data:siemensplc:holding:livingroom_temperature:number", autoupdate="false" }
 ```
 

@@ -243,7 +243,7 @@ Only add parameters to the Bridge and Thing configuration if you know exactly wh
 
 knx.things:
 
-```xtend
+```java
 Bridge knx:ip:bridge [
     type="ROUTER",
     autoReconnectPeriod=60 //optional, do not set <30 sec.
@@ -260,7 +260,7 @@ Bridge knx:ip:bridge [
 
 knx.things:
 
-```xtend
+```java
 Bridge knx:ip:bridge [
     type="TUNNEL",
     ipAddress="192.168.0.111",
@@ -276,7 +276,7 @@ Bridge knx:ip:bridge [
 
 ### Full Example
 
-```xtend
+```java
 //TUNNEL
 Bridge knx:ip:bridge [
     type="TUNNEL",
@@ -321,7 +321,7 @@ Bridge knx:ip:bridge [
 
 knx.items:
 
-```xtend
+```java
 Switch        demoSwitch         "Light [%s]"               <light>          { channel="knx:device:bridge:generic:demoSwitch" }
 Dimmer        demoDimmer         "Dimmer [%d %%]"           <light>          { channel="knx:device:bridge:generic:demoDimmer" }
 Rollershutter demoRollershutter  "Shade [%d %%]"            <rollershutter>  { channel="knx:device:bridge:generic:demoRollershutter" }
@@ -333,7 +333,7 @@ DateTime      demoDatetime       "Alarm [%1$tH:%1$tM]"                       { c
 
 knx.sitemap:
 
-```xtend
+```perl
 sitemap knx label="KNX Demo Sitemap" {
   Frame label="Demo Elements" {
     Switch item=demoSwitch
@@ -352,7 +352,7 @@ sitemap knx label="KNX Demo Sitemap" {
 
 control.things:
 
-```xtend
+```java
 Bridge knx:serial:bridge [
     serialPort="/dev/ttyAMA0",
     readingPause=50,
@@ -380,7 +380,7 @@ Bridge hue:bridge:bridge "Philips Hue Bridge" [
 
 knx.items:
 
-```xtend
+```java
 Switch        demoSwitch         "Light [%s]"               <light>          { channel="hue:0210:bridge:1:color", channel="knx:device:bridge:generic:controlSwitch" }
 Dimmer        demoDimmer         "Dimmer [%d %%]"           <light>          { channel="hue:0210:bridge:1:color", channel="knx:device:bridge:generic:controlDimmer" }
 ```

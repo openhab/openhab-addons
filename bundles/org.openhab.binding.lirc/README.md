@@ -37,7 +37,7 @@ a bridge is configured.
 
 ### Things
 
-```xtend
+```java
 Bridge lirc:bridge:local [ host="192.168.1.120", portNumber="9001" ] {
     Thing remote Onkyo_RC_799M [ remote="Onkyo_RC-799M" ]
     Thing remote Samsung [ remote="Samsung" ]
@@ -55,14 +55,14 @@ Remote:
 
 ### Items
 
-```xtend
+```java
 String Remote_AVReceiver { channel="lirc:remote:local:Onkyo_RC_799M:transmit" }
 String Remote_TV { channel="lirc:remote:local:Samsung:transmit" }
 ```
 
 ### Rules
 
-```xtend
+```java
 rule "LIRC Test"
 when
     Channel 'lirc:remote:local:Samsung:event' triggered KEY_DVD

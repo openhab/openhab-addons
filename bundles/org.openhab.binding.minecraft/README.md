@@ -69,7 +69,7 @@ The easiest method to add Minecraft servers, players, and signs is use the autom
 You can also manually define the objects using thing configuration files.
 Players and signs are connected through Minecraft server [bridges](https://www.openhab.org/docs/configuration/things.html#defining-bridges-using-files).
 
-```xtend
+```java
 Bridge minecraft:server:myminecraftserver "Minecraft server for Friends" @ "Minecraft" [ hostname="192.168.1.100", port=10692 ] {
   Thing player my_name "My Minecraft User" @ "Minecraft" [ playerName="minecraft_username" ]
   Thing player friends_name "My Friend's Minecraft User" @ "Minecraft" [ playerName="friends_username" ]

@@ -512,26 +512,26 @@ Then you need to change the HLS settings to what you need, some are suggestions 
 
 Less delay behind realtime (no audio) if your cameras iFrames are 1 second apart (-hls_time 1):
 
-```bash
+```shell
 -strict -2 -f lavfi -i aevalsrc=0 -acodec aac -vcodec copy -hls_flags delete_segments -hls_time 1 -hls_list_size 4
 ```
 
 For cameras with no audio in the stream (default setting).
 
-```bash
+```shell
 -strict -2 -f lavfi -i aevalsrc=0 -acodec aac -vcodec copy -hls_flags delete_segments -hls_time 2 -hls_list_size 4
 ```
 
 For cameras with audio in the stream.
 Note: will break Chromecast if the camera does not send audio which is why this is not the default.
 
-```bash
+```shell
 -strict -2 -acodec aac -vcodec copy -hls_flags delete_segments -hls_time 2 -hls_list_size 4
 ```
 
 Some browsers require larger segment sizes to prevent choppy playback, this can be done with this setting to create 10 second segment files which increases the time before you can get playback working.
 
-```bash
+```shell
 -strict -2 -f lavfi -i aevalsrc=0 -acodec aac -vcodec copy -hls_flags delete_segments -hls_time 10 -hls_list_size 4
 
 ```

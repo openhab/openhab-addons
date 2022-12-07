@@ -57,7 +57,7 @@ All channels are read-only.
 
 ### Things
 
-```xtend
+```java
 Bridge generacmobilelink:account:main "MobileLink Account" [ userName="foo@bar.com", password="secret",refreshInterval=60 ] {
     Thing generator 123456 "MobileLink Generator" [ generatorId="123456" ]
 }
@@ -65,7 +65,7 @@ Bridge generacmobilelink:account:main "MobileLink Account" [ userName="foo@bar.c
 
 ### Items
 
-```xtend
+```java
 Switch GeneratorConnected "Connected [%s]" {channel="generacmobilelink:generator:main:123456:connected"}
 Switch GeneratorGreenLight "Green Light [%s]" {channel="generacmobilelink:generator:main:123456:greenLight"}
 Switch GeneratorYellowLight "Yellow Light [%s]" {channel="generacmobilelink:generator:main:123456:yellowLight"}
@@ -77,7 +77,7 @@ String GeneratorAlarm "Alarm [%s]" {channel="generacmobilelink:generator:main:12
 
 ### Sitemap
 
-```xtend
+```perl
 sitemap MobileLink label="Demo Sitemap" {
   Frame label="Generator" {
     Switch item=GeneratorConnected

@@ -58,7 +58,7 @@ This example reads different values of items from a KMXXX Device.
 
 `things/kmxxx.things`:
 
-```xtend
+```java
 Bridge km200:kmdevice:0815 "testKMDevice" @ "Room" [ privateKey= "1234567890abcdef1234567890abcdef", maxnbrrepeats=10.0, readDelay=100, refreshInterval=30, maxNbrRepeats=10, ip4Address="192.168.1.111", refreshinterval=30.0, readdelay=100.0 ] {
  heatingCircuit 1 "TestHC1"
  sensor 1 "TestSensors"
@@ -67,7 +67,7 @@ Bridge km200:kmdevice:0815 "testKMDevice" @ "Room" [ privateKey= "1234567890abcd
 
 `items/kmxxx.items`:
 
-```xtend
+```java
 Number  budWater  "Water temperature  [%.1f °C]"    {channel="km200:dhwCircuit:0815:1:actualTemp"}
 Number  budOutdoor  "Outdoor temperature  [%.1f °C]"    {channel="km200:sensor:0815:1:outdoor_t1"}
 ```
