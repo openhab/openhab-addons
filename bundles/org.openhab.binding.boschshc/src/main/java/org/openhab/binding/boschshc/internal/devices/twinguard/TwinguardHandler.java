@@ -36,7 +36,7 @@ import org.openhab.core.thing.Thing;
  * @author Stefan Kästle - Initial contribution
  * @author Christian Oeing - Use service instead of custom logic
  * @author Christian Oeing - Add smoke detector service
- * @author Gerd Zanker - AbstractSmokeDetectorHandler refactroring for reuse
+ * @author Gerd Zanker - AbstractSmokeDetectorHandler refactoring for reuse
  */
 @NonNullByDefault
 public class TwinguardHandler extends AbstractSmokeDetectorHandler {

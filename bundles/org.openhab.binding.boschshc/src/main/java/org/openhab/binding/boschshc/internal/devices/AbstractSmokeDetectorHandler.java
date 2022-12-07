@@ -29,7 +29,7 @@ import org.openhab.core.types.Command;
  * Abstract handler implementation for devices with a smoke detector.
  *
  * @author Christian Oeing - Initial contribution
- * @author Gerd Zanker - AbstractSmokeDetectorHandler refactroring for reuse
+ * @author Gerd Zanker - AbstractSmokeDetectorHandler refactoring for reuse
  */
 @NonNullByDefault
 public abstract class AbstractSmokeDetectorHandler extends AbstractBatteryPoweredDeviceHandler {

@@ -20,7 +20,7 @@ import org.openhab.core.thing.Thing;
  * The smoke detector warns you in case of fire.
  *
  * @author Christian Oeing - Initial contribution
- * @author Gerd Zanker - AbstractSmokeDetectorHandler refactroring for reuse
+ * @author Gerd Zanker - AbstractSmokeDetectorHandler refactoring for reuse
  */
 @NonNullByDefault
 public class SmokeDetectorHandler extends AbstractSmokeDetectorHandler {
