@@ -28,7 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Class for communicating with the Rotel device through a IP connection or a serial over IP connection
+ * Class for communicating with the Rotel device through an IP connection or a serial over IP connection
  *
  * @author Laurent Garnier - Initial contribution
  */

@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@link Atd100Handler} is responsible for handling commands, which are
- * sent to one of the channels of a ATD-100 device.
+ * sent to one of the channels of an ATD-100 device.
  *
  * @author Krzysztof Goworek - Initial contribution
  */

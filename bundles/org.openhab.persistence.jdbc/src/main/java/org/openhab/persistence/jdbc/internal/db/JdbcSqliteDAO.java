@@ -57,6 +57,7 @@ public class JdbcSqliteDAO extends JdbcBaseDAO {
                                            // "PRAGMA SCHEMA_VERSION";
         sqlIfTableExists = "SELECT name FROM sqlite_master WHERE type='table' AND name='#searchTable#'";
         sqlCreateItemsTableIfNot = "CREATE TABLE IF NOT EXISTS #itemsManageTable# (ItemId INTEGER PRIMARY KEY AUTOINCREMENT, #colname# #coltype# NOT NULL)";
+        sqlGetItemTables = "SELECT name AS table_name FROM sqlite_master WHERE type='table' AND name NOT IN ('#itemsManageTable#','sqlite_sequence')";
         sqlInsertItemValue = "INSERT OR IGNORE INTO #tableName# (TIME, VALUE) VALUES( #tablePrimaryValue#, CAST( ? as #dbType#) )";
     }
 

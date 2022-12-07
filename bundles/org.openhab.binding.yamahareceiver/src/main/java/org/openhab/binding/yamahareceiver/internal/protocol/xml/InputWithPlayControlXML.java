@@ -60,7 +60,7 @@ public class InputWithPlayControlXML extends AbstractInputControlXML implements 
     protected String skipBackwardValue = "Skip Rev";
 
     /**
-     * Create a InputWithPlayControl object for altering menu positions and requesting current menu information as well
+     * Create an InputWithPlayControl object for altering menu positions and requesting current menu information as well
      * as controlling the playback and choosing a preset item.
      *
      * @param inputID The input ID like USB or NET_RADIO.

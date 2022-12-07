@@ -269,7 +269,7 @@ public class CapabilityDTO {
     /**
      * Returns true, if the {@link CapabilityDTO} is of type EnergyConsumptionSensor.
      *
-     * @return true if it is a EnergyConsumptionSensor, otherwise false
+     * @return true if it is an EnergyConsumptionSensor, otherwise false
      */
     public boolean isTypeEnergyConsumptionSensor() {
         return TYPE_ENERGYCONSUMPTIONSENSOR.equals(getType());

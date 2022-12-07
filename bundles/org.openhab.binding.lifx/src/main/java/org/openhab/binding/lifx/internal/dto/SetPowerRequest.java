@@ -35,14 +35,12 @@ public class SetPowerRequest extends Packet {
 
     public SetPowerRequest() {
         state = PowerState.OFF;
-        setTagged(false);
         setAddressable(true);
         setResponseRequired(true);
     }
 
     public SetPowerRequest(PowerState state) {
         this.state = state;
-        setTagged(false);
         setAddressable(true);
         setResponseRequired(true);
     }

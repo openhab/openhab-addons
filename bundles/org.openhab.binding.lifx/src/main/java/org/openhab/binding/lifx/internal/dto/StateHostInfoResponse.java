@@ -48,12 +48,6 @@ public class StateHostInfoResponse extends Packet {
         return rx;
     }
 
-    public StateHostInfoResponse() {
-        setTagged(false);
-        setAddressable(true);
-        setResponseRequired(true);
-    }
-
     @Override
     public int packetType() {
         return TYPE;

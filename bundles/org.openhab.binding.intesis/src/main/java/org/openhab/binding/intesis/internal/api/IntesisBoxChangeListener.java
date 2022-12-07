@@ -17,7 +17,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.thing.ThingStatus;
 
 /**
- * The {@link IntesisBoxChangeListener} is in interface for a IntesisBox changed consumer
+ * The {@link IntesisBoxChangeListener} is in interface for an IntesisBox changed consumer
  *
  * @author Hans-Jörg Merk - Initial contribution
  */

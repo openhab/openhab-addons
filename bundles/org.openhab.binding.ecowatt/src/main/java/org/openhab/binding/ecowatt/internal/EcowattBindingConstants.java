@@ -32,5 +32,7 @@ public class EcowattBindingConstants {
     // List of all Channel ids
     public static final String CHANNEL_TODAY_SIGNAL = "todaySignal";
     public static final String CHANNEL_TOMORROW_SIGNAL = "tomorrowSignal";
+    public static final String CHANNEL_IN_TWO_DAYS_SIGNAL = "inTwoDaysSignal";
+    public static final String CHANNEL_IN_THREE_DAYS_SIGNAL = "inThreeDaysSignal";
     public static final String CHANNEL_CURRENT_HOUR_SIGNAL = "currentHourSignal";
 }

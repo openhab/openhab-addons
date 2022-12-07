@@ -23,7 +23,6 @@ public class GetPowerRequest extends Packet {
     public static final int TYPE = 0x14;
 
     public GetPowerRequest() {
-        setTagged(false);
         setAddressable(true);
         setResponseRequired(true);
     }

@@ -156,7 +156,7 @@ public class AtlonaPro3Handler extends AtlonaHandler<AtlonaPro3Capabilities> {
                         final boolean makeOn = ((OnOffType) command) == OnOffType.ON;
                         atlonaHandler.setIrOn(makeOn);
                     } else {
-                        logger.debug("Received a IRLOCK channel command with a non OnOffType: {}", command);
+                        logger.debug("Received an IRLOCK channel command with a non OnOffType: {}", command);
                     }
 
                     break;

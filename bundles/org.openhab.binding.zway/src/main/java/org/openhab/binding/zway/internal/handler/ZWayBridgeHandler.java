@@ -241,7 +241,7 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
         // Set thing status to a valid status
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Checking configuration...");
 
-        // Configuration - thing status update with a error message
+        // Configuration - thing status update with an error message
         mConfig = loadAndCheckConfiguration();
 
         if (mConfig != null) {
