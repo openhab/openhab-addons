@@ -27,6 +27,7 @@ import org.openhab.binding.boschshc.internal.devices.smokedetector.SmokeDetector
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.services.smokedetectorcheck.SmokeDetectorCheckState;
 import org.openhab.binding.boschshc.internal.services.smokedetectorcheck.dto.SmokeDetectorCheckServiceState;
+import org.openhab.core.library.types.PlayPauseType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 
@@ -78,6 +79,18 @@ public abstract class AbstractSmokeDetectorHandlerTest<T extends AbstractSmokeDe
                 smokeDetectorCheckStateCaptor.capture());
         state = smokeDetectorCheckStateCaptor.getValue();
         assertSame(SmokeDetectorCheckState.SMOKE_TEST_FAILED, state.value);
+    }
+
+    @Test
+    public void testHandleCommand_PlayPauseType()
+            throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
+
+        getFixture().handleCommand(new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_SMOKE_CHECK),
+                PlayPauseType.PLAY);
+        verify(getBridgeHandler()).putState(eq(getDeviceID()), eq("SmokeDetectorCheck"),
+                smokeDetectorCheckStateCaptor.capture());
+        SmokeDetectorCheckServiceState state = smokeDetectorCheckStateCaptor.getValue();
+        assertSame(SmokeDetectorCheckState.SMOKE_TEST_REQUESTED, state.value);
     }
 
     @Test
