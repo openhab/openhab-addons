@@ -1,8 +1,8 @@
 # Kaleidescape Binding
 
 This binding now makes it possible to easily integrate almost all of the capabilities of the Kaleidescape control protocol into openHAB.
-Beyond just integrating playback transport controls, all meta-data provided via the control protocol are made available for display purposes and to use in rules.
-By using rules, it is possible to control other Things such lighting, projector lens shift, screen masking, etc. based on events that occur during movie playback.
+Beyond just integrating playback transport controls, all meta-data provided via the control protocol is made available for display purposes and to use in rules.
+By using rules, it is possible to control other Things such as lighting, projector lens shift, screen masking, etc. based on events that occur during movie playback.
 Finally, any other command that is supported by the control protocol can be sent to the component through rules.
 See [Kaleidescape-System-Control-Protocol-Reference-Manual.pdf](https://support.kaleidescape.com/article/Control-Protocol-Reference-Manual) for a reference of available commands.
 
@@ -23,11 +23,6 @@ The binding supports either a TCP/IP connection or direct serial port connection
 
 Manually initiated Auto-discovery will locate all supported Kaleidescape components if they are on the same IP subnet of the openHAB server.
 In the Inbox, select Search For Things and then choose the Kaleidescape Binding to initiate a discovery scan.
-
-## Binding Configuration
-
-There are no overall binding configuration settings that need to be set.
-All settings are through thing configuration parameters.
 
 ## Thing Configuration
 
