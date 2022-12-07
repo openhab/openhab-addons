@@ -59,7 +59,7 @@ Some notes:
 
 - Here is an example of ser2net.yaml (for ser2net version >= 4) you can use to share your serial port /dev/ttyUSB0 on IP port 4444 using [ser2net Linux tool](https://sourceforge.net/projects/ser2net/) (take care, the baud rate is specific to the Epson projector):
 
-```text
+```yaml
 connection: &conEpson
     accepter: tcp,4444
     enable: on
