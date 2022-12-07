@@ -17,12 +17,15 @@ import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bosesoundtouch.internal.handler.BoseSoundTouchHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
  * The {@link XMLResponseProcessor} class handles the XML mapping
@@ -42,8 +45,10 @@ public class XMLResponseProcessor {
         init();
     }
 
-    public void handleMessage(String msg) throws SAXException, IOException {
-        XMLReader reader = XMLReaderFactory.createXMLReader();
+    public void handleMessage(String msg) throws SAXException, IOException, ParserConfigurationException {
+        SAXParserFactory parserFactory = SAXParserFactory.newInstance();
+        SAXParser parser = parserFactory.newSAXParser();
+        XMLReader reader = parser.getXMLReader();
         reader.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
         reader.setContentHandler(new XMLResponseHandler(handler, stateSwitchingMap));
         reader.parse(new InputSource(new StringReader(msg)));

@@ -370,13 +370,12 @@ public class XMLResponseHandler extends DefaultHandler {
             String location = "";
             String sourceAccount = "";
             Boolean isPresetable = false;
-            int attributeLength = 0;
+
             if (attributes != null) {
                 source = attributes.getValue("source");
                 sourceAccount = attributes.getValue("sourceAccount");
                 location = attributes.getValue("location");
                 isPresetable = Boolean.parseBoolean(attributes.getValue("isPresetable"));
-                attributeLength = attributes.getLength();
 
                 if (source != null) {
                     contentItem.setSource(source);
@@ -388,23 +387,25 @@ public class XMLResponseHandler extends DefaultHandler {
                     contentItem.setLocation(location);
                 }
                 contentItem.setPresetable(isPresetable);
-            }
 
-            for (int attrId = 0; attrId < attributeLength; attrId++) {
-                String attrName = attributes.getLocalName(attrId);
-                if ("source".equalsIgnoreCase(attrName)) {
-                    continue;
+                for (int attrId = 0; attrId < attributes.getLength(); attrId++) {
+                    String attrName = attributes.getLocalName(attrId);
+                    if ("source".equalsIgnoreCase(attrName)) {
+                        continue;
+                    }
+                    if ("location".equalsIgnoreCase(attrName)) {
+                        continue;
+                    }
+                    if ("sourceAccount".equalsIgnoreCase(attrName)) {
+                        continue;
+                    }
+                    if ("isPresetable".equalsIgnoreCase(attrName)) {
+                        continue;
+                    }
+                    if (attrName != null) {
+                        contentItem.setAdditionalAttribute(attrName, attributes.getValue(attrId));
+                    }
                 }
-                if ("location".equalsIgnoreCase(attrName)) {
-                    continue;
-                }
-                if ("sourceAccount".equalsIgnoreCase(attrName)) {
-                    continue;
-                }
-                if ("isPresetable".equalsIgnoreCase(attrName)) {
-                    continue;
-                }
-                contentItem.setAdditionalAttribute(attrName, attributes.getValue(attrId));
             }
         }
     }
