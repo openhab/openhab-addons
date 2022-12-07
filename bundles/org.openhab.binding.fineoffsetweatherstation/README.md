@@ -295,7 +295,7 @@ This is an example configuration for the WH2650 gateway
 
 _weatherstation.things_:
 
-```xtend
+```java
 Bridge fineoffsetweatherstation:gateway:3906700515 "Weather station" [
      ip="192.168.1.42",
      port="45000", 
@@ -310,7 +310,7 @@ Bridge fineoffsetweatherstation:gateway:3906700515 "Weather station" [
 
 _weatherstation.items_:
 
-```xtend
+```java
 Group WH25 "WH25"  <Sensor> ["Sensor"]
 Number SignalWH25        "Signal WH25"      <QualityOfService> (WH25) ["Measurement", "Level"] { channel="fineoffsetweatherstation:sensor:3906700515:WH25:signal" }
 Switch BatteryStatusWH25 "Low Battery WH25" <LowBattery>       (WH25) ["Energy", "LowBattery"] { channel="fineoffsetweatherstation:sensor:3906700515:WH25:lowBattery" }

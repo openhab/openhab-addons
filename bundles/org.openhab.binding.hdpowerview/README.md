@@ -138,8 +138,8 @@ Depending on whether the shade is a top-down, bottom-up, left-right, right-left,
 |                             |                   | ▼                     | _**Left**_       | `CLOSED`       | 100%              | ▼                    |
 | Dual action<br>(lower rail) | `position`        | ▲                     | Up               | `OPEN`         | 0%                | ▲                    |
 |                             |                   | ▼                     | Down             | `CLOSED`       | 100%              | ▼                    |
-| Dual action<br>(upper rail) | _**`secondary`**_ | ▲                     | Up               | **`CLOSED`** | 0%<sup>1)</sup>   | ![daulaction_right](doc/right.png)   |
-|                             |                   | ▼                     | Down             | **`OPEN`**   | 100%<sup>1)</sup> | ![dualaction_left](doc/left.png)    |
+| Dual action<br>(upper rail) | _**`secondary`**_ | ▲                     | Up               | **`CLOSED`** | 0%<sup>1)</sup>   | ![dual_action arrow_right](doc/right.png)   |
+|                             |                   | ▼                     | Down             | **`OPEN`**   | 100%<sup>1)</sup> | ![dual_action arrow_left](doc/left.png)    |
 | Blackout panel ('DuoLite')  | _**`secondary`**_ | ▲                     | Up               | `OPEN`         | 0%                | ▲                    |
 |                             |                   | ▼                     | Down             | `CLOSED`       | 100%              | ▼                    |
 

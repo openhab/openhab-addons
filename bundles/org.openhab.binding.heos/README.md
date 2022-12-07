@@ -57,9 +57,9 @@ The password and the user name are used to login to the HEOS account.
 This is required to load the favorites, playlists and so on from personal settings.
 If no login information is provided these features can't be used.
 
-````java
+```java
 Bridge heos:bridge:main "name" [ipAddress="192.168.0.1", unsername="xxx", password="123456"]
-````
+```
 
 ### Player Configuration
 
@@ -71,9 +71,9 @@ Player have the following configuration parameter
 
 For manual configuration a player can be defined as followed:
 
-````java
+```java
 Thing heos:player:player1 "name" [pid="123456789"]
-````
+```
 
 PID behind the heos:player:--- should be changed as required.
 It is recommended to use the Player PID.

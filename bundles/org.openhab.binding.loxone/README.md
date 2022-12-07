@@ -47,13 +47,13 @@ Where:
 
 Example 1 - minimal required configuration:
 
-```text
+```java
 loxone:miniserver:504F2414780F [ user="kryten", password="jmc2017", host="loxone.local", port=80 ]
 ```
 
 Example 2 - additionally keep alive period is set to 2 minutes and Websocket maximum binary message size to 8MB:
 
-```text
+```java
 loxone:miniserver:504F2414780F [ user="kryten", password="jmc2017", host="192.168.0.210", port=80, keepAlivePeriod=120, maxBinMsgSize=8192 ]
 ```
 
@@ -322,7 +322,7 @@ sitemap loxone label="Loxone Example Menu"
 
 ### transform/garagedoor.map:
 
-```java
+```text
 OFF=Closed
 ON=Open
 -=Unknown

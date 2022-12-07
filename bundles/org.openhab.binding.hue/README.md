@@ -117,13 +117,13 @@ Bridge hue:bridge:1 [ ipAddress="192.168.0.64", userName="qwertzuiopasdfghjklyxc
 The devices are identified by the number that the Hue Bridge assigns to them (also shown in the Hue App as an identifier).
 Thus, all it needs for manual configuration is this single value like
 
-```text
+```java
 0210 bulb1 "Lamp 1" @ "Office" [ lightId="1" ]
 ```
 
 or
 
-```text
+```java
 0107 motion-sensor "Motion Sensor" @ "Entrance" [ sensorId="4" ]
 ```
 

@@ -8,7 +8,7 @@ Have a look at the following textual examples.
 
 demo1.things:
 
-```xtend
+```java
 Bridge mqtt:broker:myUnsecureBroker [ host="192.168.0.42", secure=false ]
 {
     Thing topic mything {
@@ -54,20 +54,20 @@ Bridge mqtt:broker:mybroker [ host="192.168.0.42", secure=false ]
 
 When using .things and .items files for configuration, items and channels follow the format of:
 
-```xtend
+```java
 <ITEM-TYPE> <ITEM-NAME> "<FRIENDLY-NAME>" { channel="mqtt:topic:<BROKER-NAME>:<THING-NAME>:<CHANNEL-NAME>" }
 ```
 
 demo1.items:
 
-```xtend
+```java
 Switch Kitchen_Light "Kitchen Light" { channel="mqtt:topic:myUnsecureBroker:mything:lamp" }
 Rollershutter shutter "Blind" { channel="mqtt:topic:myUnsecureBroker:mything:blind" }
 ```
 
 demo2.items:
 
-```xtend
+```java
 Switch SW_WorkLight "Work Light Switch" { channel="mqtt:topic:WorkBroker:WorkSonoff:WorkLight", channel="mqtt:topic:WorkBroker:WorkSonoff:WorkLightTele" }
 ```
 
@@ -75,7 +75,7 @@ Switch SW_WorkLight "Work Light Switch" { channel="mqtt:topic:WorkBroker:WorkSon
 
 An example "demo.rules" rule to publish to `system/started` with the value `true` on every start:
 
-```xtend
+```java
 rule "Send startup message"
 when
   System started
@@ -91,7 +91,7 @@ To synchronize item items from a SOURCE openHAB instance to a DESTINATION instan
 
 Define a broker and a trigger channel for your DESTINATION openHAB installation (`thing` file):
 
-```xtend
+```java
 Bridge mqtt:broker:myUnsecureBroker [ host="192.168.0.42", secure=false ]
 {
     Channels:
@@ -102,7 +102,7 @@ Bridge mqtt:broker:myUnsecureBroker [ host="192.168.0.42", secure=false ]
 The trigger channel will trigger for each received message on the MQTT topic "allItems/".
 Now push those changes to your items in a `rules` file:
 
-```xtend
+```java
 rule "Receive all"
 when 
       Channel "mqtt:broker:myUnsecureBroker:myTriggerChannel" triggered
@@ -117,7 +117,7 @@ end
 On your SOURCE openHAB installation, you need to define a group `myGroupOfItems` and add all items
 to it that you want to synchronize. Then add this rule to a `rule` file:
 
-```xtend
+```java
 rule "Publish all"
 when 
       Member of myGroupOfItems changed
@@ -138,13 +138,13 @@ You do not need to convert everything in one go. MQTT1 and MQTT2 can coexist.
 
 Assume you have this item:
 
-```xtend
+```java
 Switch ExampleItem "Heatpump Power" { mqtt=">[mosquitto:heatpump/set:command:*:DEFAULT)],<[mosquitto:heatpump:JSONPATH($.power)]" }
 ```
 
 This converts to an entry in your *.things file with a **Broker Thing** and a **Generic MQTT Thing** that uses the bridge:
 
-```xtend
+```java
 Bridge mqtt:broker:myUnsecureBroker [ host="192.168.0.42", secure=false ]
 {
     Thing topic mything "My Thing" {
@@ -158,7 +158,7 @@ Add as many channels as you have items and add the _stateTopic_ and _commandTopi
 
 Your items change to:
 
-```xtend
+```java
 Switch ExampleItem "Heatpump Power" { channel="mqtt:topic:myUnsecureBroker:mything:heatpumpChannel" }
 ```
 
@@ -166,13 +166,13 @@ Switch ExampleItem "Heatpump Power" { channel="mqtt:topic:myUnsecureBroker:mythi
 
 If you receive updates from two different topics, you need to create multiple channels now, 1 for each MQTT receive topic.
 
-```xtend
+```java
 Switch ExampleItem "Heatpump Power" { mqtt=">[mosquitto:heatpump/set:command:*:DEFAULT)],<[mosquitto:heatpump/state1:state:*:DEFAULT,<[mosquitto:heatpump/state2:state:*:DEFAULT" }
 ```
 
 This converts to:
 
-```xtend
+```java
 Bridge mqtt:broker:myUnsecureBroker [ host="192.168.0.42", secure=false ]
 {
     Thing topic mything "My Thing" {
@@ -186,7 +186,7 @@ Bridge mqtt:broker:myUnsecureBroker [ host="192.168.0.42", secure=false ]
 Link both channels to one item. That item will publish to "heatpump/set" on a change and
 receive values from "heatpump/state1" and "heatpump/state2".
 
-```xtend
+```java
 Switch ExampleItem "Heatpump Power" { channel="mqtt:topic:myUnsecureBroker:mything:heatpumpChannel",
                                       channel="mqtt:topic:myUnsecureBroker:mything:heatpumpChannel2" }
 ```

@@ -759,7 +759,7 @@ Flipping this switch to "ON" will cause the modem to send a broadcast message wi
 Channels can also be configured using the device configuration parameter of the device.
 The key in the JSON object is `broadcastGroups` and the value is an array of integers:
 
-### Things (deviceCOnfig)
+### Things (device Config)
 
 ```java
 Bridge insteon:network:home [port="/dev/ttyUSB0"] {
@@ -818,10 +818,10 @@ Under openSUSE this is `/run/lock` and is managed by the **lock** group.
 
 Example commands to grant openHAB access (adjust for your distribution):
 
-````shell
+```shell
 usermod -a -G dialout openhab
 usermod -a -G lock openhab
-````
+```
 
 Insufficient access to the lock directory will result in openHAB failing to access the device, even if the device itself is writable.
 

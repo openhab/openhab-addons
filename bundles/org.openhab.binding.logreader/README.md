@@ -51,7 +51,7 @@ List of channels
 
 ### example.things
 
-```xtend
+```java
 
 logreader:reader:openhablog[ refreshRate=1000, errorPatterns="ERROR+", errorBlacklistingPatterns="annoying error which should be ignored|Another annoying error which should be ignored" ]
 
@@ -59,7 +59,7 @@ logreader:reader:openhablog[ refreshRate=1000, errorPatterns="ERROR+", errorBlac
 
 ### example.items
 
-```xtend
+```java
 
 DateTime logreaderLogRotated        "Last Log Rotation [%1$tY.%1$tm.%1$te %1$tR]"   <time>  { channel="logreader:reader:openhablog:logRotated" }
 Number   logreaderErrors            "Error events matched [%d]"                     <alarm> { channel="logreader:reader:openhablog:errorEvents" }
@@ -73,7 +73,7 @@ String   logreaderLastCustom        "Last Custom [%s]"                          
 
 ### example.sitemap
 
-```xtend
+```perl
 
 sitemap logreader_example label="Example" {
  Frame label="openHAB Log Reader" {
@@ -91,7 +91,7 @@ sitemap logreader_example label="Example" {
 
 ### example.rules
 
-```xtend
+```java
 rule "LogReader"
     when
         Channel "logreader:reader:openhablog:newErrorEvent" triggered
@@ -102,7 +102,7 @@ rule "LogReader"
 
 Use the rules with your Telegram Bot (need openHAB Telegram Binding installed and configured)
 
-```xtend
+```java
 rule "LogReader"
     when
         Channel 'logreader:reader:openhablog:newErrorEvent' triggered

@@ -77,18 +77,18 @@ The following channels are supported:
 
 ### Things-file
 
-````java
+```java
 Bridge meater:meaterapi:block     "MEATER Block"   [email="", password="", refresh=30] {
   meaterprobe probe1 "Meater Probe 1" [deviceId=""]
   meaterprobe probe2 "Meater Probe 2" [deviceId=""]
   meaterprobe probe3 "Meater Probe 3" [deviceId=""]
   meaterprobe probe4 "Meater Probe 4" [deviceId=""]
 }
-````
+```
 
 ### Items-file
 
-````java
+```java
 Number:Temperature Probe1InternalTemperature   {channel="meater:meaterprobe:block:probe1:internalTemperature"}
 Number:Temperature Probe1AmbientTemperature    {channel="meater:meaterprobe:block:probe1:ambientTemperature"}
 String             Probe1CookId                {channel="meater:meaterprobe:block:probe1:cookId"}
@@ -140,4 +140,4 @@ Number:Time        Probe4CookRemainingTime     {channel="meater:meaterprobe:bloc
 DateTime           Probe4CookEstimatedEndTime  {channel="meater:meaterprobe:block:probe4:cookEstimatedEndTime"}
 String             Probe4Status                {channel="meater:meaterprobe:block:probe4:status"}
 DateTime           Probe4LastConnection        {channel="meater:meaterprobe:block:probe4:lastConnection"}
-````
+```

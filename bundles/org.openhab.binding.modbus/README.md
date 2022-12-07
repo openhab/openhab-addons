@@ -222,7 +222,7 @@ See [Transformations](#transformations) for more details.
 | --------------- | --------------- | ----------------------------------- |
 | `number`        | `Number`        | Data as number                      |
 | `switch`        | `Switch`        | Data as switch (`ON` / `OFF`)       |
-| `contact`       | `Contact`      | Data as contact (`OPEN` / `CLOSED`) |
+| `contact`       | `Contact`       | Data as contact (`OPEN` / `CLOSED`) |
 | `dimmer`        | `Dimmer`        | Data as dimmer                      |
 | `datetime`      | `DateTime`      | Data as a date time                 |
 | `string`        | `String`        | Data as string                      |

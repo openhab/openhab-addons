@@ -52,11 +52,11 @@ Naturally this is not the same thing as the real thing but helps to identify sim
 
 1. Download [diagslave](https://www.modbusdriver.com/diagslave.html) and start modbus tcp server (slave) using this command:
 
-```shell
-./diagslave -m tcp -a 1 -p 55502
-```
+    ```shell
+    ./diagslave -m tcp -a 1 -p 55502
+    ```
 
-2. Configure openHAB's modbus slave to connect to `127.0.0.1:55502`.
+1. Configure openHAB's modbus slave to connect to `127.0.0.1:55502`.
 
 ## Writing Data
 
@@ -64,7 +64,7 @@ See this [community post](https://community.openhab.org/t/something-is-rounding-
 
 You can also use `modpoll` to write data:
 
-```bash
+```shell
 # write value=5 to holding register 40001 (index=0 in the binding)
 ./modpoll -m tcp -a 1 -r 1 -t4 -p 502 127.0.0.1 5
 # set coil 00001 (index=0 in the binding) to TRUE
