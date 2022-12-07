@@ -108,7 +108,7 @@ The `resultString` channel is the only valid one if `scalarResult=false`, and in
             column1 : value,
             column2 : value
         },
-        { ... }, //row2        
+        { ... }, //row2
         { ... }  //row3
     ]
 }

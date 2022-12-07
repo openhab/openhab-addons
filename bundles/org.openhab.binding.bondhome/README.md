@@ -90,14 +90,14 @@ Available commands:
 
 ### `bond.things` File
 
-```
+```java
 bondhome:bondBridge:BD123456 "Bond Bridge" [ ipAddress="192.168.0.10", localToken="abc123", serialNumber="BD123456" ]
 bondhome:bondFan:BD123456:0d11f00 "Living Room Fan" (bondhome:bondBridge:BD123456) [ deviceId="0d11f00" ]
 ```
 
 ### `bond.items` File
 
-```
+```java
 Switch GreatFan_Switch "Great Room Fan" { channel="bondhome:bondFan:BD123456:0d11f00:common#power" }
 Dimmer GreatFan_Dimmer "Great Room Fan" { channel="bondhome:bondFan:BD123456:0d11f00:fan#speed" }
 String GreatFan_Rotation "Great Room Fan Rotation" { channel="bondhome:bondFan:BD123456:0d11f00:fan#direction" }
