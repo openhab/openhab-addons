@@ -3,7 +3,7 @@
 This binding supports the Bose SoundTouch multiroom system.
 
 ## Supported Things
- 
+
 The following Bose devices are supported:
 
 | Name                                  | Thing Type                  |
@@ -16,17 +16,17 @@ The following Bose devices are supported:
 | Bose SoundTouch Wireless Link Adapter | wirelessLinkAdapter         |
 | Bose SoundTouch SA-5 Amplifier        | sa5Amplifier                |
 | Any other Bose SoundTouch device      | device                      |
- 
+
 ## Discovery
- 
+
 Speakers are automatically discovered using mDNS in the local network.
- 
+
 ## Binding Configuration
- 
+
 The binding has no configuration options, all configuration is done at Thing level.
- 
+
 ## Thing Configuration
- 
+
 All thing types have the same configuration parameters:
 
 | Parameter Name      | Type   | Required | Description                                                  |
@@ -39,7 +39,7 @@ The required properties are set when using discovery. For manual configuration, 
 Note that the device might have two MAC addresses, one for ethernet and one for Wifi.
 
 The authorization key is used to identify the client application when using the Notification API. It must be requested from the developer portal.
- 
+
 ## Channels
 
 All devices share the same set of channels, while some of them might not be available on all devices.
@@ -48,7 +48,7 @@ All devices share the same set of channels, while some of them might not be avai
 |---------------------------|-----------|--------------------------------------------------------------|
 | keyCode                   | String    | Simulates pushing a remote control button                    |
 | mute                      | Switch    | Mutes the sound                                              |
-| notificationsound         | String    | Play a notification sound by a given URI                     |                              
+| notificationsound         | String    | Play a notification sound by a given URI                     |
 | nowPlayingAlbum           | String    | Current playing album name                                   |
 | nowPlayingArtist          | String    | Current playing artist name                                  |
 | nowPlayingArtwork         | Image     | Artwork for the current playing song                         |
@@ -68,29 +68,28 @@ All devices share the same set of channels, while some of them might not be avai
 | skipPreviousEnabled       | Switch    | Current source allows scrolling through tracks               |
 | volume                    | Dimmer    | Set or get the volume                                        |
 | bass                      | Number    | Bass (-9 minimum, 0 maximum)                                 |
- 
 
-The *notificationsound* channel has the following optional configuration parameters:
+The _notificationsound_ channel has the following optional configuration parameters:
 
- - notificationVolume - Desired volume level while playing the notification, it must be between 10 and 70 (inclusive). A value outside this range will result in an error and not play the notification.
- - notificationService - The service providing the notification
- - notificationReason - The reason for the notification
- - notificationMessage - Further details about the notification
- 
+- notificationVolume - Desired volume level while playing the notification, it must be between 10 and 70 (inclusive). A value outside this range will result in an error and not play the notification.
+- notificationService - The service providing the notification
+- notificationReason - The reason for the notification
+- notificationMessage - Further details about the notification
+
 The texts for the notification service, reason and message appear on the device display (when available) and the SoundTouch application screen.
 Upon completion of the notification, the speaker volume returns to its original value. If not present, the notification will play at the existing volume level.
- 
+
 ## Full Example
 
 Things:
 
-```
+```java
 bosesoundtouch:device:demo @ "Living"  [ host="192.168.1.2", macAddress="123456789ABC" ]
 ```
 
 Items:
 
-```
+```java
 Switch  Bose1_Power                      "Power: [%s]"          <switch>      { channel="bosesoundtouch:device:demo:power" }
 Dimmer  Bose1_Volume                     "Volume: [%d %%]"      <volume>      { channel="bosesoundtouch:device:demo:volume" }
 Number  Bose1_Bass                       "Bass: [%d %%]"        <volume>      { channel="bosesoundtouch:device:demo:bass" }
@@ -116,27 +115,27 @@ String  Bose1_nowPlayingTrack            "Track: [%s]"          <text>        { 
 
 Sitemap:
 
-```
+```perl
 sitemap demo label="Bose Test Items"
 {
-	Frame label="Bose 1" {
+ Frame label="Bose 1" {
         Switch item=Bose1_Power
-		Slider item=Bose1_Volume
-		Text item=Bose1_Bass
-		Switch item=Bose1_Mute
-		Text item=Bose1_OperationMode
-		Text item=Bose1_PlayerControl
-		Text item=Bose1_Preset
-		Text item=Bose1_SaveAsPreset
-		Text item=Bose1_KeyCode
-		Text item=Bose1_nowPlayingAlbum
-		Text item=Bose1_nowPlayingArtist
-		Text item=Bose1_nowPlayingArtwork
-		Text item=Bose1_nowPlayingDescription
-		Text item=Bose1_nowPlayingGenre
-		Text item=Bose1_nowPlayingItemName
-		Text item=Bose1_nowPlayingStationLocation
-		Text item=Bose1_nowPlayingTrack
-	}
+  Slider item=Bose1_Volume
+  Text item=Bose1_Bass
+  Switch item=Bose1_Mute
+  Text item=Bose1_OperationMode
+  Text item=Bose1_PlayerControl
+  Text item=Bose1_Preset
+  Text item=Bose1_SaveAsPreset
+  Text item=Bose1_KeyCode
+  Text item=Bose1_nowPlayingAlbum
+  Text item=Bose1_nowPlayingArtist
+  Text item=Bose1_nowPlayingArtwork
+  Text item=Bose1_nowPlayingDescription
+  Text item=Bose1_nowPlayingGenre
+  Text item=Bose1_nowPlayingItemName
+  Text item=Bose1_nowPlayingStationLocation
+  Text item=Bose1_nowPlayingTrack
+ }
 }
 ```
