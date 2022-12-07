@@ -1894,10 +1894,12 @@ public class LivisiDeviceHandlerTest {
 
         @Override
         public boolean equals(@Nullable Object o) {
-            if (this == o)
+            if (this == o) {
                 return true;
-            if (o == null || getClass() != o.getClass())
+            }
+            if (o == null || getClass() != o.getClass()) {
                 return false;
+            }
             TriggeredEvent that = (TriggeredEvent) o;
             return channelUID.equals(that.channelUID) && triggerValue.equals(that.triggerValue);
         }

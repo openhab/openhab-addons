@@ -44,8 +44,8 @@ public class DeviceStructureManager {
     private final Logger logger = LoggerFactory.getLogger(DeviceStructureManager.class);
 
     private final FullDeviceManager deviceManager;
-    private final Map<String, DeviceDTO> deviceMap;
-    private final Map<String, DeviceDTO> capabilityIdToDeviceMap;
+    private final Map<String, DeviceDTO> deviceMap = Collections.synchronizedMap(new HashMap<>());
+    private final Map<String, DeviceDTO> capabilityIdToDeviceMap = new ConcurrentHashMap<>();
     private String bridgeDeviceId = "";
 
     /**
@@ -55,8 +55,6 @@ public class DeviceStructureManager {
      */
     public DeviceStructureManager(FullDeviceManager deviceManager) {
         this.deviceManager = deviceManager;
-        deviceMap = Collections.synchronizedMap(new HashMap<>());
-        capabilityIdToDeviceMap = new ConcurrentHashMap<>();
     }
 
     /**
