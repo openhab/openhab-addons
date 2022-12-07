@@ -23,10 +23,10 @@ No auto discovery supported.
 
 | Parameter       | Type   | Description                                              | Advanced | Required |
 |-----------------|--------|----------------------------------------------------------|----------|----------|
-| url             | String | URL of evcc web UI, e.g. *https://demo.evcc.io*          | No       | Yes      |
+| url             | String | URL of evcc web UI, e.g. `https://demo.evcc.io`          | No       | Yes      |
 | refreshInterval | Number | Interval the status is polled in seconds (minimum is 15) | Yes      | No       |
 
-Default value for *refreshInterval* is 60 seconds.
+Default value for _refreshInterval_ is 60 seconds.
 
 ## Channels
 
@@ -44,11 +44,10 @@ Please note that some of them are only available when evcc is properly configure
 | general#homePower          | Number:Power         | R          | Current power taken by home.                                                                                 |
 | general#pvPower            | Number:Power         | R          | Current power from photovoltaik.                                                                             |
 
-
 ### Loadpoint channels
 
 Those channels exist per configured loadpoint.
-Please note that you have to replace *N* with your loadpoint number.
+Please note that you have to replace _N_ with your loadpoint number.
 
 | Channel                             | Type                   | Read/Write | Description                                                                                         |
 |-------------------------------------|------------------------|------------|-----------------------------------------------------------------------------------------------------|
@@ -84,13 +83,13 @@ Please note that you have to replace *N* with your loadpoint number.
 
 ### Thing(s)
 
-```
+```java
 Thing evcc:device:demo "evcc Demo" [url="https://demo.evcc.io", refreshInterval=60]
 ```
 
 ### Items
 
-```
+```java
 // General
 Number:Power              evcc_demo_batteryPower                           "Battery Power [%.1f kW]"                         <energy>          {channel="evcc:device:demo:general#batteryPower"}
 Number:Dimensionless      evcc_demo_batterySoC                             "Battery SoC [%d %%]"                             <batterylevel>    {channel="evcc:device:demo:general#batterySoC"}
@@ -132,7 +131,7 @@ String                    evcc_demo_loadpoint0_vehicleName                 "Vehi
 
 ### Sitemap
 
-```
+```perl
 sitemap evcc label="evcc Demo" {
     Frame label="General" {
         Text item=evcc_demo_batteryPower

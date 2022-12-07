@@ -15,17 +15,17 @@ The information are requested from the timetable api of Deutsche Bahn developer 
 To configure a timetable you first need to register at Deutsche Bahn developer portal and register for timetable API to get an access key.
 
 1. Go to [DB API Marketplace](https://developers.deutschebahn.com/)
-2. Register new account or login with an existing one
-3. If no application is configured yet (check Tab "Anwendungen" at top) create a new application. Only the name is required, for example openHAB, any other fields can be left blank.
-4. Remember the shown **Client ID** and **Client Secret**.
-5. Go to **Katalog** and search for **Timetables** api.
-6. Within **Zugehörige APIs** select the Timetables api.
-7. Select **Abonnieren** at top left of the page.
-8. Select the Nutzungsplan **Free** by clicking **Abonnieren**.
-9. Select the previously created application.
-10. Click **Next**.
-11. Click **Fertig**.
-12. Now you have successfully registered the api within an application. The **Client ID** and **Client Secret** can now be used during bridge configuration.
+1. Register new account or login with an existing one
+1. If no application is configured yet (check Tab "Anwendungen" at top) create a new application. Only the name is required, for example openHAB, any other fields can be left blank.
+1. Remember the shown **Client ID** and **Client Secret**.
+1. Go to **Katalog** and search for **Timetables** api.
+1. Within **Zugehörige APIs** select the Timetables api.
+1. Select **Abonnieren** at top left of the page.
+1. Select the Nutzungsplan **Free** by clicking **Abonnieren**.
+1. Select the previously created application.
+1. Click **Next**.
+1. Click **Fertig**.
+1. Now you have successfully registered the api within an application. The **Client ID** and **Client Secret** can now be used during bridge configuration.
 
 ### Determine the EVA-No of your station
 
@@ -47,13 +47,13 @@ In addition, you can configure if only arrivals, only departures or all trains s
 | `trainFilter` |  | Yes | Selects the trains that will be displayed in the timetable. Either only arrivals, only departures or all trains can be displayed. |
 | `additionalFilter` | | No | Specifies additional filters for trains, that should be displayed within the timetable. |
 
-** Additional filter **
+**Additional filter**
 If you only want to display certain trains within your timetable, you can specify an additional filter. This will be evaluated when loading trains,
 and only trains that matches the given filter will be contained within the timetable.
 
 To specify an advanced filter you can
 
-- specify a filter for the value of a given channel. Therefore, you must specify the channel name (with channel group) and specify a compare value like this: 
+- specify a filter for the value of a given channel. Therefore, you must specify the channel name (with channel group) and specify a compare value like this:
 `departure#line="RE60"` this will select all trains with line RE60
 - use regular expressions for expected channel values, for example:  `departure#line="RE.*"`, this will match all lines starting with "RE".
 - combine multiple statements as "and" conjunction by using `&`. If used, both parts must match, for example: `departure#line="RE60" & trip#category="WFB"`
@@ -83,23 +83,22 @@ train things, the channels of these trains will be undefined.
 |-|-|-|-|
 | `position` | | Yes | The position of the train within the timetable. |
 
-
 ## Channels
 
 Each train has a set of channels, that provides access to any information served by the timetable API. A detailed description of the values and their meaning can be found within
 the [Timetables V1 API Description](https://developers.deutschebahn.com/db-api-marketplace/apis/product/timetables).
 The information are grouped into three channel-groups:
 The first channel group (trip) contains all information for the trip of the train, for example the category (like ICE, RE, S).
-The second and third channel group contains information about the arrival and the departure of the train at the given station. 
+The second and third channel group contains information about the arrival and the departure of the train at the given station.
 Both of the groups may provide an 'UNDEF' channel value, when the train does not arrive / depart at this station
-(due it starts or ends at the given station). If you have configured your timetable to contain only departures (with property trainFilter) the departure channel values will always be defined 
+(due it starts or ends at the given station). If you have configured your timetable to contain only departures (with property trainFilter) the departure channel values will always be defined
 and if you have selected only arrivals the arrival channel values will always be defined.
 Channels will have a 'NULL' channel value, when the corresponding attribute is not set.
 
 Basically most information are available as planned and changed value. This allows to easy display changed values (for example the delay or changed platform).
 
+### Channels for trip information
 
-**Channels for trip information**
 | channel  | type   | description                  |
 |----------|--------|------------------------------|
 | category | String | Provides the category of the trip, e.g. "ICE" or "RE". |
@@ -108,8 +107,8 @@ Basically most information are available as planned and changed value. This allo
 | trip-type | String | Provides the type of the trip. |
 | owner | String | Provides the owner of the train. A unique short-form and only intended to map a trip to specific evu (EisenbahnVerkehrsUnternehmen). |
 
+### Channels for arrival / departure
 
-**Channels for arrival / departure**
 | channel  | type   | description                  |
 |----------|--------|------------------------------|
 | planned-path  | String | Provides the planned path of a train. |
@@ -138,7 +137,7 @@ Basically most information are available as planned and changed value. This allo
 
 timetable.things
 
-```
+```java
 Bridge deutschebahn:timetable:timetableLehrte "Fahrplan Lehrte" [ accessToken="XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", trainFilter="departures", evaNo="8000226" ] {
   Thing deutschebahn:train:timetableLehrte:lehrteZug1 "Zug 1" [ position="1" ]
   Thing deutschebahn:train:timetableLehrte:lehrteZug2 "Zug 2" [ position="2" ]
@@ -147,7 +146,7 @@ Bridge deutschebahn:timetable:timetableLehrte "Fahrplan Lehrte" [ accessToken="X
 
 timetable.items
 
-```
+```java
 // Groups
 Group zug1 "Zug 1"
 Group zug1Fahrt "Zug 1 Fahrt" (zug1)
@@ -216,7 +215,7 @@ String Zug1_Departure_Wings "Wings" (zug1Abfahrt) {channel="deutschebahn:train:t
 
 Example widget for displaying train details
 
-```
+```yaml
 uid: timetable_train_details
 tags:
   - card
@@ -363,7 +362,6 @@ slots:
                       font-weight: bold
                       text-align: right
 ```
-
 
 Using the widget for displaying the next four departures:
 
