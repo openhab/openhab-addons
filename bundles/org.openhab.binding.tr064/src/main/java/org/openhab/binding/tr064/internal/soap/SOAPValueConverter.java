@@ -103,11 +103,11 @@ public class SOAPValueConverter {
                 default:
             }
         } else if (command instanceof StringType) {
-            if (dataType.equals("string")) {
+            if ("string".equals(dataType)) {
                 return Optional.of(command.toString());
             }
         } else if (command instanceof OnOffType) {
-            if (dataType.equals("boolean")) {
+            if ("boolean".equals(dataType)) {
                 return Optional.of(OnOffType.ON.equals(command) ? "1" : "0");
             }
         }
@@ -212,7 +212,7 @@ public class SOAPValueConverter {
     private State processDecaDecibel(State state, Tr064ChannelConfig channelConfig) {
         Float value = state.as(DecimalType.class).floatValue() / 10;
 
-        return new QuantityType(value, Units.DECIBEL);
+        return new QuantityType<>(value, Units.DECIBEL);
     }
 
     /**
