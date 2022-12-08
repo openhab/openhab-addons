@@ -24,7 +24,7 @@ An example setup would run the following command: "ser2sock -p 10000 -s /dev/tty
 Note: This is the setup utlized for the majority of my testing of this binding.
 
 Note: If you are on a Linux system, the framework may not see a symbolically linked device (i.e. /dev/ttyRS485).
-To use a symbolically linked device, add the following line to */etc/default/openhab* `EXTRA_JAVA_OPTS="-Dgnu.io.rxtx.SerialPorts=/dev/ttyRS485"`
+To use a symbolically linked device, add the following line to _/etc/default/openhab_ `EXTRA_JAVA_OPTS="-Dgnu.io.rxtx.SerialPorts=/dev/ttyRS485"`
 
 Once you have the interface connected to your system, it is best to test basic connectivity.
 Note the protocol is a binary protocol (not ASCII text based) and in order to view the communication packets, one must use a program capable of a binary/HEX mode.
@@ -77,7 +77,7 @@ The following table shows the available configuration parameters for each thing.
 Currently automatic discovery is not supported.
 Here is an example of a thing configuration file called 'pentair.things':
 
-```
+```java
 Bridge pentair:ip_bridge:1 [ address="192.168.1.202", port=10001 ] {
     easytouch main [ id=16 ]
     intelliflo pump1 [ id=96 ]
@@ -86,7 +86,8 @@ Bridge pentair:ip_bridge:1 [ address="192.168.1.202", port=10001 ] {
 ```
 
 For a serial bridge you would use a configuration similar to this, again saved as 'pentair.things':
-```
+
+```java
 Bridge pentair:serial_bridge:1 [ serialPort="/dev/ttyUSB0" ] {
     easytouch main [ id=16 ]
     intelliflo pump1 [ id=96 ]
@@ -145,7 +146,7 @@ Pentair things support a variety of channels as seen below in the following tabl
 
 The following is an example of an item file (pentair.items), you can change the °F to °C if you are using metric temperature units:
 
-```
+```java
 Group gPool          "Pool"
 
 Number Pool_Temp               "Pool Temp [%.1f °F]"          <temperature>   (gPool) { channel = "pentair:easytouch:1:main:pooltemp" }
@@ -185,7 +186,8 @@ Number Pump_PPC                "Pump PPC [%d]"                                (g
 ```
 
 Here is an example of a complete sitemap, saved as `pentair.sitemap`.  Adjust the temperature values for metric if so desired.
-```
+
+```perl
 sitemap pool label="Pool stuff" {
   Frame label="Pool" {
     Switch item=Mode_Pool
@@ -206,8 +208,8 @@ sitemap pool label="Pool stuff" {
 
 ## References
 
-Setting up RS485 and basic protocol - https://www.sdyoung.com/home/decoding-the-pentair-easytouch-rs-485-protocol/
-ser2sock GitHub - https://github.com/nutechsoftware/ser2sock
+Setting up RS485 and basic protocol - <https://www.sdyoung.com/home/decoding-the-pentair-easytouch-rs-485-protocol/>
+ser2sock GitHub - <https://github.com/nutechsoftware/ser2sock>
 
 ## Future Enhancements
 
