@@ -14,8 +14,7 @@
 			<description>Air Purifier device token for communication
 			</description>
 		</parameter>
-		<parameter name="deviceUUID" type="text" required="false"
-			pattern="^([0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12})$">
+		<parameter name="deviceUUID" type="text" required="false">
 			<label>Device ID (UDN)</label>
 			<description>Device ID number for communication (in UUID)
 			</description>
