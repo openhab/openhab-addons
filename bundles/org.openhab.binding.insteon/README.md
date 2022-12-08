@@ -525,7 +525,7 @@ For safety reasons, only close the garage door if you have visual contact to mak
 > NOTE: If the I/O Linc contact status appears delayed, or returns the wrong value when the sensor changes states, the contact was likely ON (status LED lit) when the modem was linked as a responder.
 Examples of this behavior would include: The status remaining CLOSED for up to 3 minutes after the door is opened, or the status remains OPEN for up to three minutes after the garage is opened and immedialty closed again.
 To resolve this behavior the I/O Linc will need to be unlinked and then re-linked to the modem with the contact OFF (stats LED off). 
-That would be with the door open when using the insteon garage kit.
+That would be with the door open when using the Insteon garage kit.
 
 ### Keypads
 
