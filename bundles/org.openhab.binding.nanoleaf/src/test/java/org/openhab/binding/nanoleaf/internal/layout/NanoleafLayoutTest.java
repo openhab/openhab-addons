@@ -47,7 +47,8 @@ public class NanoleafLayoutTest {
     static @Nullable Path temporaryDirectory;
 
     @ParameterizedTest
-    @ValueSource(strings = { "lasvegas.json", "theduck.json", "squares.json", "wings.json", "spaceinvader.json" })
+    @ValueSource(strings = { "lasvegas.json", "theduck.json", "squares.json", "wings.json", "spaceinvader.json",
+            "lines.json" })
     public void testFile(String fileName) throws Exception {
         Path file = Path.of("src/test/resources/", fileName);
         assertTrue(Files.exists(file), "File should exist: " + file);

@@ -33,8 +33,8 @@ You can set the **color** for each panel and in the case of a Nanoleaf Canvas or
 | Shapes Mini Triangles  | NL48 | Mini Triangles                                             |     X     |       X       |
 | Elements Hexagon       | NL52 | Elements Hexagons                                          |     X     |       X       |
 | Smart Bulb             | NL45 | Smart Bulb                                                 |     -     |               |
-| Lightstrip             | NL55 | Lightstrip                                                 |     -     |               |
-| Lines                  | NL59 | Lines                                                      |     -     |               |
+| Lightstrip             | NL55 | Lightstrip                                                 |     -     |       -       |
+| Lines                  | NL59 | Lines                                                      |     X     |               |
 | Canvas                 | NL29 | Squares                                                    |     X     |       X       |
 
  x  = Supported  (-) = unknown (no device available to test)

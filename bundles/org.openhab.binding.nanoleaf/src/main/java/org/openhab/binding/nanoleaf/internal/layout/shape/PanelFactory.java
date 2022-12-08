@@ -81,13 +81,21 @@ public class PanelFactory {
                 Point2D pos3 = new Point2D(hexShape.getPosX(), hexShape.getPosY());
                 return new Hexagon(shapeType, hexShape.getPanelId(), pos3, hexShape.getOrientation());
 
+            case LINE:
+                return new SingleLine(shapeType, positionDatum);
+
             case CORNER:
                 return new HexagonCorners(shapeType, positionDatum);
 
+            case NONE:
+                PositionDatum noShape = positionDatum.get(0);
+                Point2D pos4 = new Point2D(noShape.getPosX(), noShape.getPosY());
+                return new NoDraw(shapeType, noShape.getPanelId(), pos4);
+
             default:
                 PositionDatum shape = positionDatum.get(0);
-                Point2D pos4 = new Point2D(shape.getPosX(), shape.getPosY());
-                return new Point(shapeType, shape.getPanelId(), pos4);
+                Point2D pos5 = new Point2D(shape.getPosX(), shape.getPosY());
+                return new Point(shapeType, shape.getPanelId(), pos5);
         }
     }
 }
