@@ -1,0 +1,38 @@
+
+default: true
+
+# Expect dash usage for unorderd lists
+MD004:
+    style: dash
+
+# Allow long line lengths
+MD013: false
+
+# Allow duplicate headers for different nesting
+MD024:
+    allow_different_nesting: true
+
+# Allow Multiple top level headers in the same document
+MD025: false
+
+# Allow trailing punctuation in headers
+MD026: false
+MD029:
+    style: one
+
+# Allow inline HTML
+MD033: false
+
+# Code block style
+MD046:
+    style: fenced
+
+#Emphasiszis in underscore
+MD049:
+    style: underscore
+
+#Strong in asterisk
+MD050:
+    style: asterisk
+
+# Searchfilter => bundles/org.openhab.binding.c*/*.md
