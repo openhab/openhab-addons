@@ -62,7 +62,7 @@ public class Layout {
     }
 
     /**
-     * Returns an text representation for a canvas layout.
+     * Returns a text representation for a canvas layout.
      *
      * Note only canvas supported currently due to its easy geometry
      *

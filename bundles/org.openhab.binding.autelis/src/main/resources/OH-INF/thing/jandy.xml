@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<thing-type id="jandy">
 		<label>Jandy Pool Controller</label>
-		<description>A Jandy pool control thing represents a Autelis pool controller for Jandy systems</description>
+		<description>A Jandy pool control thing represents an Autelis pool controller for Jandy systems</description>
 		<channels>
 			<channel id="system-runstate" typeId="system-runstate"/>
 			<channel id="system-model" typeId="system-model"/>
@@ -209,11 +209,11 @@
 			</parameter>
 			<parameter name="user" type="text" required="true">
 				<label>User Name</label>
-				<description>The user name to use when connecting to a Autelis Controller.</description>
+				<description>The user name to use when connecting to an Autelis Controller.</description>
 			</parameter>
 			<parameter name="password" type="text" required="true">
 				<label>Password</label>
-				<description>The password to use when connecting to a Autelis Controller.</description>
+				<description>The password to use when connecting to an Autelis Controller.</description>
 			</parameter>
 			<parameter name="refresh" type="integer" required="false">
 				<label>Refresh Interval</label>
@@ -296,7 +296,7 @@
 	<channel-type id="equipment-switch">
 		<item-type>Switch</item-type>
 		<label>Equipment Switch</label>
-		<description>The current state of a equipment switch</description>
+		<description>The current state of an equipment switch</description>
 	</channel-type>
 	<channel-type id="equipment-ht">
 		<item-type>Number</item-type>

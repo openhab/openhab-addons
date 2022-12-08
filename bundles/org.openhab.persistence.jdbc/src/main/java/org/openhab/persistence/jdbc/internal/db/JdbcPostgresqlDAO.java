@@ -199,12 +199,12 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
         String filterString = "";
         if (filter.getBeginDate() != null) {
             filterString += filterString.isEmpty() ? " WHERE" : " AND";
-            filterString += " TIME>'" + JDBC_DATE_FORMAT.format(filter.getBeginDate().withZoneSameInstant(timeZone))
+            filterString += " TIME>='" + JDBC_DATE_FORMAT.format(filter.getBeginDate().withZoneSameInstant(timeZone))
                     + "'";
         }
         if (filter.getEndDate() != null) {
             filterString += filterString.isEmpty() ? " WHERE" : " AND";
-            filterString += " TIME<'" + JDBC_DATE_FORMAT.format(filter.getEndDate().withZoneSameInstant(timeZone))
+            filterString += " TIME<='" + JDBC_DATE_FORMAT.format(filter.getEndDate().withZoneSameInstant(timeZone))
                     + "'";
         }
         filterString += (filter.getOrdering() == Ordering.ASCENDING) ? " ORDER BY time ASC" : " ORDER BY time DESC";

@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<thing-type id="controller">
 		<label>iAquaLink Pool Controller</label>
-		<description>A iAquaLink pool control thing represents a iAquaLink pool controller for Jandy/Zodiac systems
+		<description>An iAquaLink pool control thing represents an iAquaLink pool controller for Jandy/Zodiac systems
 		</description>
 		<channels>
 			<channel id="status" typeId="status"/>
@@ -91,12 +91,12 @@
 		<config-description>
 			<parameter name="userName" type="text" required="true">
 				<label>User Name</label>
-				<description>The user name to use when connecting to a iAqualink Account</description>
+				<description>The user name to use when connecting to an iAqualink Account</description>
 			</parameter>
 			<parameter name="password" type="text" required="true">
 				<context>password</context>
 				<label>Password</label>
-				<description>The password to use when connecting to a iAqualink Account</description>
+				<description>The password to use when connecting to an iAqualink Account</description>
 			</parameter>
 			<parameter name="refresh" type="integer" required="true">
 				<label>Refresh Interval</label>
@@ -283,7 +283,7 @@
 	<channel-type id="equipment-switch">
 		<item-type>Switch</item-type>
 		<label>Equipment Switch</label>
-		<description>The current state of a equipment switch</description>
+		<description>The current state of an equipment switch</description>
 	</channel-type>
 
 	<channel-type id="equipment-heater">

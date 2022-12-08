@@ -149,8 +149,8 @@ Switch living_room_pump_lock "Floor heating pump lock [MAP:(plugwiseha.map):%s]"
 Number:Power living_room_pump_power_usage "Floor heating pump power [%0.2fW]" {channel="plugwiseha:appliance_pump:home:living_room_pump:powerUsage"}
 
 Number:Pressure	main_boiler_waterpressure "Waterpressure" { channel="plugwiseha:appliance_boiler:home:main_boiler:waterPressure"}
-Switch	main_boiler_chState "Heating active" { channel="plugwiseha:appliance_boiler:home:main_boiler:chActive"}
-Switch	main_boiler_dhwState "Domestic hot water active" { channel="plugwiseha:appliance_boiler:home:main_boiler:dhwActive"}
+Switch	main_boiler_chState "Heating active" { channel="plugwiseha:appliance_boiler:home:main_boiler:chState"}
+Switch	main_boiler_dhwState "Domestic hot water active" { channel="plugwiseha:appliance_boiler:home:main_boiler:dhwState"}
 
 Switch main_boiler_coolingState "Cooling state" { channel="plugwiseha:appliance_boiler:home:main_boiler:coolingState"}
 Number:Temperature main_boiler_intendedBoilerTemp "Intended boiler temperature" {channel="plugwiseha:appliance_boiler:home:living_room_thermostat:intendedBoilerTemp"}

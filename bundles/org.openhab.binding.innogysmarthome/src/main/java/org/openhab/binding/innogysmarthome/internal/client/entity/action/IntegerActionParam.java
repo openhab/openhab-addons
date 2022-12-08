@@ -13,7 +13,7 @@
 package org.openhab.binding.innogysmarthome.internal.client.entity.action;
 
 /**
- * Defines the structure of a {@link IntegerActionParam}.
+ * Defines the structure of an {@link IntegerActionParam}.
  *
  * @author Oliver Kuhl - Initial contribution
  */

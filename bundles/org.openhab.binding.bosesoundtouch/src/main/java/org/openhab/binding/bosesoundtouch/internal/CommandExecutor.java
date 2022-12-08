@@ -83,7 +83,7 @@ public class CommandExecutor implements AvailableSources {
      * Adds a ContentItem to the PresetContainer
      *
      * @param id the id the ContentItem should be reached
-     * @param contentItem the contentItem that should be saved as PRESET. Note that a eventually set presetID of the
+     * @param contentItem the contentItem that should be saved as PRESET. Note that an eventually set presetID of the
      *            ContentItem will be overwritten with id
      */
     public void addContentItemToPresetContainer(int id, ContentItem contentItem) {
@@ -111,7 +111,7 @@ public class CommandExecutor implements AvailableSources {
     }
 
     /**
-     * Initializes a API Request on this device
+     * Initializes an API Request on this device
      *
      * @param apiRequest the apiRequest thats informations should be collected
      */

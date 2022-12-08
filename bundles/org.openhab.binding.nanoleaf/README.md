@@ -104,7 +104,15 @@ Compare the following output with the right picture at the beginning of the arti
                                     41451                                     
 
 ```
-         
+
+## State
+
+The state channel shows an image of the panels on the wall.
+You have to configure things for each panel to get the correct color. 
+Since the colors of the panels can make it difficult to see the panel ids, please use the layout channel where the background color is always white to identify them.
+
+![Image](doc/NanoCanvas_rendered.jpg)
+
 ## Thing Configuration
 
 The controller thing has the following parameters:
@@ -137,19 +145,21 @@ The controller bridge has the following channels:
 | colorTemperatureAbs | Number    | Color temperature (in Kelvin, 1200 to 6500) of all light panels                                           | No        |
 | colorMode           | String    | Color mode of the light panels                                                                            | Yes       |
 | effect              | String    | Selected effect of the light panels                                                                       | No        |
+| layout              | Image     | Shows the layout of your panels with IDs.                                                                 | Yes       |
 | rhythmState         | Switch    | Connection state of the rhythm module                                                                     | Yes       |
 | rhythmActive        | Switch    | Activity state of the rhythm module                                                                       | Yes       |
 | rhythmMode          | Number    | Sound source for the rhythm module. 0=Microphone, 1=Aux cable                                             | No        |
-| swipe               | Trigger   | [Canvas / Shapes Only] Detects Swipes over the panel.LEFT, RIGHT, UP, DOWN events are supported.          | YES        |
+| state               | Image     | Shows the current state of your panels with colors.                                                       | Yes       |
+| swipe               | Trigger   | [Canvas / Shapes Only] Detects Swipes over the panel.LEFT, RIGHT, UP, DOWN events are supported.          | Yes       |
 
 
 
 A lightpanel thing has the following channels:
 
-| Channel             | Type      | Description                                                                                              | Read Only |
-|---------------------|-----------|----------------------------------------------------------------------------------------------------------|-----------|
-| color               | Color     | Color of the individual light panel                                                                      | No        |
-| tap                 | Trigger   | [Canvas / Shapes Only] Sends events of gestures. SHORT_PRESSED and DOUBLE_PRESSED events are supported.  | Yes       |
+| Channel             | Type      | Description                                                                                                           | Read Only |
+|---------------------|-----------|-----------------------------------------------------------------------------------------------------------------------|-----------|
+| color               | Color     | Color of the individual light panel                                                                                   | No        |
+| tap                 | Trigger   | [Canvas / Shapes Only] Sends events of gestures. SHORT_PRESSED, LONG_PRESSED and DOUBLE_PRESSED events are supported. | Yes       |
 
 The color channels support full color control with hue, saturation and brightness values.
 For example, brightness of *all* panels at once can be controlled by defining a dimmer item for the color channel of the *controller thing*.

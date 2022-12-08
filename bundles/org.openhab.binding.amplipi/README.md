@@ -2,7 +2,6 @@
 
 This binding supports the multi-room audio system [AmpliPi](http://www.amplipi.com/) from [MicroNova](http://www.micro-nova.com/).
 
-
 ## Supported Things
 
 The AmpliPi itself is modeled as a Bridge of type `controller`.
@@ -56,7 +55,7 @@ If no volume value is passed, the current volume of each zone is used, otherwise
 
 amplipi.things:
 
-```
+```java
 Bridge amplipi:controller:1 "My AmpliPi" [ hostname="amplipi.local" ] {
     zone zone2 "Living Room" [ id=1 ]
 }
@@ -64,7 +63,7 @@ Bridge amplipi:controller:1 "My AmpliPi" [ hostname="amplipi.local" ] {
 
 amplipi.items:
 
-```
+```java
 Number      Preset      "Preset"                { channel="amplipi:controller:1:preset" }
 String      Input1      "Input 1"               { channel="amplipi:controller:1:input1" }
 String      Input2      "Input 2"               { channel="amplipi:controller:1:input2" }
@@ -78,7 +77,7 @@ Number      SourceZ2    "Source Zone2"          { channel="amplipi:zone:1:zone2:
 
 amplipi.sitemap:
 
-```
+```perl
 sitemap amplipi label="Main Menu"
 {
     Frame label="AmpliPi" {

@@ -124,7 +124,7 @@ public class ZoneTemperatureControlHandler extends BaseThingHandler implements T
      *
      * @param config the {@link Configuration} to be checked
      * @param bridge the responsible {@link BridgeHandler}
-     * @return zoneID the existing dS zoneID or a error constant
+     * @return zoneID the existing dS zoneID or an error constant
      */
     public static int getZoneID(Configuration config, BridgeHandler bridge) {
         if (config == null || config.get(DigitalSTROMBindingConstants.ZONE_ID) == null) {

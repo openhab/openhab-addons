@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
 /**
  * * The {@link UpnpAudioSinkHandler} is a base class for ThingHandlers for devices which support UPnP playback. It
  * implements the AudioSink interface.
- * This will allow to register the derived ThingHandler to be registered as a AudioSink in the framework.
+ * This will allow to register the derived ThingHandler to be registered as an AudioSink in the framework.
  *
  * @author Paul Frank - Initial contribution
  */

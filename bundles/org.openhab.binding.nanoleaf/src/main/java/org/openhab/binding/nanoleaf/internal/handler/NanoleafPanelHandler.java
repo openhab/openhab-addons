@@ -72,12 +72,12 @@ public class NanoleafPanelHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(NanoleafPanelHandler.class);
 
-    private HttpClient httpClient;
+    private final HttpClient httpClient;
     // JSON parser for API responses
     private final Gson gson = new Gson();
 
     // holds current color data per panel
-    private Map<String, HSBType> panelInfo = new HashMap<>();
+    private final Map<String, HSBType> panelInfo = new HashMap<>();
 
     private @NonNullByDefault({}) ScheduledFuture<?> singleTapJob;
     private @NonNullByDefault({}) ScheduledFuture<?> doubleTapJob;
@@ -227,7 +227,7 @@ public class NanoleafPanelHandler extends BaseThingHandler {
             Write write = new Write();
             write.setCommand("display");
             write.setAnimType("static");
-            String panelID = this.thing.getConfiguration().get(CONFIG_PANEL_ID).toString();
+            Integer panelID = Integer.valueOf(this.thing.getConfiguration().get(CONFIG_PANEL_ID).toString());
             @Nullable
             BridgeHandler handler = bridge.getHandler();
             if (handler != null) {
@@ -239,8 +239,8 @@ public class NanoleafPanelHandler extends BaseThingHandler {
                     write.setAnimData(String.format("1 %s 1 %d %d %d 0 10", panelID, red, green, blue));
                 } else {
                     // this is only used in special streaming situations with canvas which is not yet supported
-                    int quotient = Integer.divideUnsigned(Integer.valueOf(panelID), 256);
-                    int remainder = Integer.remainderUnsigned(Integer.valueOf(panelID), 256);
+                    int quotient = Integer.divideUnsigned(panelID, 256);
+                    int remainder = Integer.remainderUnsigned(panelID, 256);
                     write.setAnimData(
                             String.format("0 1 %d %d %d %d %d 0 0 10", quotient, remainder, red, green, blue));
                 }
@@ -270,7 +270,7 @@ public class NanoleafPanelHandler extends BaseThingHandler {
     /**
      * Apply the gesture to the panel
      *
-     * @param gesture Only 0=single tap and 1=double tap are supported
+     * @param gesture Only 0=single tap, 1=double tap and 6=long press are supported
      */
     public void updatePanelGesture(int gesture) {
         switch (gesture) {
@@ -280,12 +280,20 @@ public class NanoleafPanelHandler extends BaseThingHandler {
             case 1:
                 triggerChannel(CHANNEL_PANEL_TAP, CommonTriggerEvents.DOUBLE_PRESSED);
                 break;
+            case 6:
+                triggerChannel(CHANNEL_PANEL_TAP, CommonTriggerEvents.LONG_PRESSED);
+                break;
         }
     }
 
     public String getPanelID() {
         String panelID = getThing().getConfiguration().get(CONFIG_PANEL_ID).toString();
         return panelID;
+    }
+
+    public @Nullable HSBType getColor() {
+        String panelID = getPanelID();
+        return panelInfo.get(panelID);
     }
 
     private @Nullable HSBType getPanelColor() {
@@ -357,9 +365,9 @@ public class NanoleafPanelHandler extends BaseThingHandler {
                 String[] panelDataPoints = Arrays.copyOfRange(tokenizedData, 2, tokenizedData.length);
                 for (int i = 0; i < panelDataPoints.length; i++) {
                     if (i % 8 == 0) {
-                        String idQuotient = panelDataPoints[i];
-                        String idRemainder = panelDataPoints[i + 1];
-                        Integer idNum = Integer.valueOf(idQuotient) * 256 + Integer.valueOf(idRemainder);
+                        Integer idQuotient = Integer.valueOf(panelDataPoints[i]);
+                        Integer idRemainder = Integer.valueOf(panelDataPoints[i + 1]);
+                        Integer idNum = idQuotient * 256 + idRemainder;
                         if (String.valueOf(idNum).equals(panelID)) {
                             // found panel data - store it
                             panelInfo.put(panelID,

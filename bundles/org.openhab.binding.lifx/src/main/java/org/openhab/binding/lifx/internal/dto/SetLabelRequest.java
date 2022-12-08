@@ -30,7 +30,6 @@ public class SetLabelRequest extends Packet {
     private String label;
 
     public SetLabelRequest() {
-        setTagged(false);
         setAddressable(true);
         setAckRequired(true);
     }

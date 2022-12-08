@@ -127,7 +127,7 @@ public class UniFiClientThingHandler extends UniFiBaseThingHandler<UniFiClient, 
                 break;
             case CHANNEL_UPTIME:
                 // mgb: uptime should default to 0 seconds
-                state = DecimalType.ZERO;
+                state = new QuantityType<>(0, Units.SECOND);
                 break;
             case CHANNEL_EXPERIENCE:
                 // mgb: uptime + experience should default to 0
@@ -200,7 +200,7 @@ public class UniFiClientThingHandler extends UniFiBaseThingHandler<UniFiClient, 
             // :uptime
             case CHANNEL_UPTIME:
                 if (client.getUptime() != null) {
-                    state = new DecimalType(client.getUptime());
+                    state = new QuantityType<>(client.getUptime(), Units.SECOND);
                 }
                 break;
 

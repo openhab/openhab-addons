@@ -55,7 +55,7 @@ public interface VirtualDatapointHandler {
     public boolean canHandleEvent(HmDatapoint dp);
 
     /**
-     * Handles a event to extract data required for the virtual datapoint.
+     * Handles an event to extract data required for the virtual datapoint.
      */
     public void handleEvent(VirtualGateway gateway, HmDatapoint dp);
 

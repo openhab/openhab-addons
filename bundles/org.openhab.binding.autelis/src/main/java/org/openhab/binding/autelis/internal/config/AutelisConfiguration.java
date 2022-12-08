@@ -13,7 +13,7 @@
 package org.openhab.binding.autelis.internal.config;
 
 /**
- * Configuration properties for connecting to a Autelis Controller
+ * Configuration properties for connecting to an Autelis Controller
  *
  * @author Dan Cunningham - Initial contribution
  *

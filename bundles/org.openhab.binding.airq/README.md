@@ -120,13 +120,13 @@ The rw column is empty if the channel is only readable, w if the channel can be 
 
 ### air-Q.things
 
-```
+```java
 Thing airq:airq:1 "air-Q" [ ipAddress="192.168.0.68", password="myAirQPassword" ]
 ```
 
 ### air-Q.items
 
-```
+```java
 String                airQ_status                 "Status of Sensors"                     {channel="airq:airq:1:status"}
 Number:Length         airQ_avgFineDustSize        "Average Size of Fine Dust"             {channel="airq:airq:1:avgFineDustSize"}
 Number:Dimensionless  airQ_fineDustCnt00_3        "Fine Dust >0,3 µm"                     {channel="airq:airq:1:fineDustCnt00_3"}

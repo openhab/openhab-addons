@@ -63,7 +63,7 @@ public enum TPLinkSmartHomeThingType {
     KP105("kp105", DeviceType.PLUG),
     KP115("kp115", DeviceType.PLUG_WITH_ENERGY),
     KP125("kp125", DeviceType.PLUG_WITH_ENERGY),
-    KP405("kp405", DeviceType.DIMMER),
+    KP401("kp401", DeviceType.PLUG),
 
     // Switch Thing Type UIDs
     HS200("hs200", DeviceType.SWITCH),
@@ -73,6 +73,7 @@ public enum TPLinkSmartHomeThingType {
     ES20M("es20m", DeviceType.DIMMER),
     HS220("hs220", DeviceType.DIMMER),
     KS230("ks230", DeviceType.DIMMER),
+    KP405("kp405", DeviceType.DIMMER),
 
     // Power Strip Thing Type UIDs.
     EP40("ep40", DeviceType.STRIP, 2),

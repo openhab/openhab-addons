@@ -61,7 +61,7 @@ public class ColorValue extends Value {
      * @param colorMode The color mode: HSB, RGB or XYY.
      * @param onValue The ON value string. This will be compared to MQTT messages.
      * @param offValue The OFF value string. This will be compared to MQTT messages.
-     * @param onBrightness When receiving a ON command, the brightness percentage is set to this value
+     * @param onBrightness When receiving an ON command, the brightness percentage is set to this value
      */
     public ColorValue(ColorMode colorMode, @Nullable String onValue, @Nullable String offValue, int onBrightness) {
         super(CoreItemFactory.COLOR, List.of(OnOffType.class, PercentType.class, StringType.class));
