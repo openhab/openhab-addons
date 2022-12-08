@@ -489,7 +489,12 @@ and create a file "lock.map" in the transforms directory with these entries:
 ### I/O Linc (garage door openers)
 
 The I/O Linc devices are really two devices in one: a relay and a contact.
-Link the modem both ways, as responder and controller using the set buttons as described in the instructions.
+To control the relay, link the modem as a controller using the set buttons as described in the instructions.
+To get the status of the contact, the modem must also be linked as a responder to the I/O Linc.
+The I/O Linc has a feature to invert the contact or match the contact when it sends commands to any linked responders.
+This is based on the status of the contact when it is linked, and was intended for controlling other devices with the contact.
+The binding expects the contact to be inverted to work properly.
+Ensure the contact is OFF (status LED is dark/garage door open) when linking the modem as a responder to the I/O Linc in order for it to function properly.
 
 Add this map into your transforms directory as "contact.map":
 
@@ -517,9 +522,10 @@ To make it visible in the GUI, put this into your sitemap file:
 
 For safety reasons, only close the garage door if you have visual contact to make sure there is no obstruction! The use of automated rules for closing garage doors is dangerous.
 
-> NOTE: If the I/O Linc returns the wrong value when the device is polled (For example you open the garage door and the state correctly shows OPEN, but during polling it shows CLOSED), you probably linked the device with the PLM or hub when the door was in the wrong position.
-You need unlink and then link again with the door in the opposite position.
-Please see the Insteon I/O Linc documentation for further details.
+> NOTE: If the I/O Linc contact status appears delayed, or returns the wrong value when the sensor changes states, the contact was likely ON (status LED lit) when the modem was linked as a responder.
+Examples of this behavior would include: The status remaining CLOSED for up to 3 minutes after the door is opened, or the status remains OPEN for up to three minutes after the garage is opened and immediately closed again.
+To resolve this behavior the I/O Linc will need to be unlinked and then re-linked to the modem with the contact OFF (stats LED off). 
+That would be with the door open when using the Insteon garage kit.
 
 ### Keypads
 
