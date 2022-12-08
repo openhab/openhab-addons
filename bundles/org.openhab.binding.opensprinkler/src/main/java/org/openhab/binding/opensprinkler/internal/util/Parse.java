@@ -112,7 +112,7 @@ public class Parse {
     }
 
     /**
-     * Parses an String array from a JSON string given its key name.
+     * Parses a String array from a JSON string given its key name.
      *
      * @param jsonData The JSON formatted string to parse from.
      * @param keyName The name of the object array to search through.

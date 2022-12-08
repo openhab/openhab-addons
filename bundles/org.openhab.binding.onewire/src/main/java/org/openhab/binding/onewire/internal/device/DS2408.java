@@ -20,7 +20,7 @@ import org.openhab.binding.onewire.internal.handler.OwBaseThingHandler;
 import org.openhab.binding.onewire.internal.owserver.OwserverDeviceParameter;
 
 /**
- * The {@link DS2408} class defines an DS2408 device
+ * The {@link DS2408} class defines a DS2408 device
  *
  * @author Jan N. Klug - Initial contribution
  */

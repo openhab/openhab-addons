@@ -54,7 +54,7 @@ public class TemperatureControlConfig extends BaseTemperatureControl {
     }
 
     /**
-     * Creates a new {@link TemperatureControlConfig} through the {@link JsonObject} which will be returned by an zone
+     * Creates a new {@link TemperatureControlConfig} through the {@link JsonObject} which will be returned by a zone
      * call.<br>
      * Because of zone calls does not include a zoneID or zoneName in the json response, the zoneID and zoneName have to
      * be handed over the constructor.

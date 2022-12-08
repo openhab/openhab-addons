@@ -235,7 +235,7 @@ public class OBISIdentifier {
     }
 
     /**
-     * Returns an reduced OBIS Identifier.
+     * Returns a reduced OBIS Identifier.
      *
      * @return reduced OBIS Identifier
      */
@@ -244,7 +244,7 @@ public class OBISIdentifier {
     }
 
     /**
-     * Returns an reduced OBIS Identifier with group E set to null (.i.e. not applicable)
+     * Returns a reduced OBIS Identifier with group E set to null (.i.e. not applicable)
      *
      * @return reduced OBIS Identifier
      */

@@ -236,7 +236,7 @@ The digitalSTROM-Scenes can be defined with following parameters.
 | Scene ID or name | sceneID |The call scene ID or scene name, e.g. preset 1 for scene ID 5. Callable scenes are from 0 to 126. | false | false |
 
 The Scene-Thing-Type _Named-Scene_ and _Group-Scene_ have all parameters.
-The _Apartment-Scene_ only has the parameters _Scene name_ and _Scene ID_ an the _Zone-Scene_ has all parameters without _Group ID or name_.
+The _Apartment-Scene_ only has the parameters _Scene name_ and _Scene ID_ and the _Zone-Scene_ has all parameters without _Group ID or name_.
 
 ### Textual configuration examples
 

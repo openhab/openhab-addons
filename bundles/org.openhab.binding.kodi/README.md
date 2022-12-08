@@ -1,6 +1,6 @@
 # Kodi Binding
 
-[Kodi](https://kodi.tv) (formerly known as XBMC) is an free and open source (GPL) software media center for playing videos, music, pictures, games, and more.
+[Kodi](https://kodi.tv) (formerly known as XBMC) is a free and open source (GPL) software media center for playing videos, music, pictures, games, and more.
 Kodi runs on Linux, OS X, BSD, Windows, iOS, and Android.
 It allows users to play and view most videos, music, podcasts, and other digital media files from local and network storage media and the internet.
 

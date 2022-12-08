@@ -15,7 +15,7 @@ package org.openhab.binding.deutschebahn.internal.filter;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * A token representing a part of an filter expression.
+ * A token representing a part of a filter expression.
  * 
  * @author Sönke Küper - Initial contribution.
  */

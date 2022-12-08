@@ -149,7 +149,7 @@ public final class LinuxInputHandler extends DeviceReadingHandler {
             @Nullable
             EvdevDevice currentDevice = device;
             if (currentDevice == null) {
-                throw new IOException("trying to handle events without an device");
+                throw new IOException("trying to handle events without a device");
             }
             SelectionKey evdevReady = currentDevice.register(selector);
 

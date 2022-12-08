@@ -182,7 +182,7 @@ public class KeContactHandler extends BaseThingHandler {
             if (!isKebaReachable()) {
                 logger.debug("isKebaReachable() timed out after '{}' milliseconds", System.currentTimeMillis() - stamp);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "An timeout occurred while polling the charging station");
+                        "A timeout occurred while polling the charging station");
             } else {
                 ByteBuffer response = cache.get(CACHE_REPORT_1);
                 if (response == null) {
