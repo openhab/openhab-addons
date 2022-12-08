@@ -17,7 +17,7 @@ import java.util.Map;
 import org.openhab.binding.digitalstrom.internal.lib.event.constants.EventResponseEnum;
 
 /**
- * The {@link EventItem} represents an event item of an digitalSTROM-Event.
+ * The {@link EventItem} represents an event item of a digitalSTROM-Event.
  *
  * @author Alexander Betker
  * @author Michael Ochel - add getSource()

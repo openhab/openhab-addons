@@ -86,7 +86,7 @@ The bridge could be used for multiple C.M.I. devices.
 * TA C.M.I. CoE Connection - Thing
 
 This thing reflects a connection to a node behind a specific C.M.I..
-This node could be every CAN-Capable device from TA which allows to define an CAN-Input.
+This node could be every CAN-Capable device from TA which allows to define a CAN-Input.
 
 ## Discovery
 
@@ -114,7 +114,7 @@ This thing doesn't need a bridge. Multiple of these things for different C.M.I.'
 
 The _TA C.M.I. CoE Connection_ has to be manually configured.
 
-This thing reflects a connection to a node behind a specific C.M.I.. This node could be every CAN-Capable device from TA which allows to define an CAN-Input.
+This thing reflects a connection to a node behind a specific C.M.I.. This node could be every CAN-Capable device from TA which allows to define a CAN-Input.
 
 | Parameter Label         | Parameter ID    | Description                                                                                                   | Accepted values        |
 |-------------------------|-----------------|---------------------------------------------------------------------------------------------------------------|------------------------|

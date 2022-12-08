@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.deutschebahn.internal.timetable.dto.TimetableStop;
 
 /**
- * Predicate to match an TimetableStop
+ * Predicate to match a TimetableStop
  * 
  * @author Sönke Küper - initial contribution.
  */

@@ -15,7 +15,7 @@ package org.openhab.binding.deutschebahn.internal.filter;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * A token representing an conjunction.
+ * A token representing a conjunction.
  * 
  * @author Sönke Küper - Initial contribution.
  */

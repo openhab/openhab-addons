@@ -365,7 +365,7 @@ public class LcnModuleHandler extends BaseThingHandler {
     }
 
     /**
-     * Invoked when an trigger for this LCN module should be fired to openHAB.
+     * Invoked when a trigger for this LCN module should be fired to openHAB.
      *
      * @param channelGroup the Channel to update
      * @param channelId the ID within the Channel to update

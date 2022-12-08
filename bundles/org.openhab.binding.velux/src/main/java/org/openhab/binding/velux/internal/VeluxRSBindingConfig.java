@@ -137,7 +137,7 @@ public class VeluxRSBindingConfig extends VeluxBindingConfig {
     }
 
     /**
-     * Returns the next shutter level for an DOWN command w/ adjusting the actual position.
+     * Returns the next shutter level for a DOWN command w/ adjusting the actual position.
      *
      * @return <b>rollershutterLevel</b> of type Integer with next position after DOWN command.
      */

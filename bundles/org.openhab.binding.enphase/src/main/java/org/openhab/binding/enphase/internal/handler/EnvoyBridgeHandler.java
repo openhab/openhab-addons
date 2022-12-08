@@ -398,7 +398,7 @@ public class EnvoyBridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * @return Returns true if the bridge is online and not has an configuration pending.
+     * @return Returns true if the bridge is online and not has a configuration pending.
      */
     public boolean isOnline() {
         return getThing().getStatus() == ThingStatus.ONLINE;

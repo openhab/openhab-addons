@@ -9,7 +9,7 @@ The binding can act as
 * Modbus TCP Client (that is, as modbus master), querying data from Modbus TCP servers (that is, modbus slaves)
 * Modbus serial master, querying data from modbus serial slaves
 
-The Modbus binding polls the slave data with an configurable poll period.
+The Modbus binding polls the slave data with a configurable poll period.
 openHAB commands are translated to write requests.
 
 The binding has the following extensions:

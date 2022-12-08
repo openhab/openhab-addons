@@ -15,7 +15,7 @@ package org.openhab.binding.loxone.internal.controls;
 import org.openhab.binding.loxone.internal.types.LxUuid;
 
 /**
- * An LeftRightDigital type of control on Loxone Miniserver.
+ * A LeftRightDigital type of control on Loxone Miniserver.
  * <p>
  * According to Loxone API documentation, LeftRightDigital control is a virtual input that is digital and has an input
  * type left-right buttons. It has no states and can only accept commands. Only left/right (which are actually equal to

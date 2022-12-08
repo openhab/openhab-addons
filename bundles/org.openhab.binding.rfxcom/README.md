@@ -978,7 +978,7 @@ using them to configure a raw thing item.
         information.
 
 *   closedPulses - Closed Pulses
-    *   Pulses to send for an CLOSED command. Space delimited pulse lengths
+    *   Pulses to send for a CLOSED command. Space delimited pulse lengths
         in usec. Must be an even number of pulse lengths, with a maximum
         of 142 total pulses. Max pulse length is 65535. Pulses of value 0
         will be transmitted as 10000. See the RFXtfx user guide for more

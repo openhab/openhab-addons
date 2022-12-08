@@ -111,7 +111,7 @@ public class DeviceImpl extends AbstractGeneralDeviceInformations implements Dev
 
     /*
      * Saves the refresh priorities and reading initialized flag of power sensors as
-     * an matrix. The first array fields are 0 = active power, 1 = output current, 2
+     * a matrix. The first array fields are 0 = active power, 1 = output current, 2
      * = electric meter, 3 = power consumption and in each field is a string array
      * with the fields 0 = refresh priority 1 = reading initial flag (true = reading
      * is initialized, otherwise false)
