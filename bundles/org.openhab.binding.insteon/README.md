@@ -494,7 +494,7 @@ To get the status of the contact, the modem must also be linked as a responder t
 The I/O Linc has a feature to invert the contact or match the contact when it sends commands to any linked responders.
 This is based on the status of the contact when it is linked, and was intended for controlling other devices with the contact.
 The binding expects the contact to be inverted to work properly.
-Ensure the contact is OFF (status LED is dark/garage door open) when linking the the modem as a responder to the I/O Linc in order for it to function properly.
+Ensure the contact is OFF (status LED is dark/garage door open) when linking the modem as a responder to the I/O Linc in order for it to function properly.
 
 Add this map into your transforms directory as "contact.map":
 
