@@ -490,7 +490,7 @@ and create a file "lock.map" in the transforms directory with these entries:
 
 The I/O Linc devices are really two devices in one: a relay and a contact.
 To control the relay, link the modem as a controller using the set buttons as described in the instructions.
-To get the status of the contact, the the modem must also be linked as a responder to the I/O Linc.
+To get the status of the contact, the modem must also be linked as a responder to the I/O Linc.
 The I/O linc has a feature to invert the contact or match the contact when it sends commands to any linked responders.
 This is based on the status of the contact when it is linked, and was intended for controlling other devices with the contact.
 The binding expects the contact to be inverted to work properly.
