@@ -20,6 +20,7 @@ import static org.mockito.Mockito.verify;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -40,12 +41,12 @@ import com.google.gson.JsonParser;
  * @author Gerd Zanker - Initial contribution
  *
  */
-
+@NonNullByDefault
 public abstract class AbstractSmokeDetectorHandlerTest<T extends AbstractSmokeDetectorHandler>
         extends AbstractBatteryPoweredDeviceHandlerTest<T> {
 
     @Captor
-    private ArgumentCaptor<SmokeDetectorCheckServiceState> smokeDetectorCheckStateCaptor;
+    private @NonNullByDefault({}) ArgumentCaptor<SmokeDetectorCheckServiceState> smokeDetectorCheckStateCaptor;
 
     @Test
     public void testHandleCommand()

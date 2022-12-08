@@ -14,6 +14,7 @@ package org.openhab.binding.boschshc.internal.devices;
 
 import static org.mockito.Mockito.verify;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -30,6 +31,7 @@ import com.google.gson.JsonParser;
  *
  * @param <T> type of the battery-powered device to be tested
  */
+@NonNullByDefault
 public abstract class AbstractBatteryPoweredDeviceHandlerTest<T extends AbstractBatteryPoweredDeviceHandler>
         extends AbstractBoschSHCDeviceHandlerTest<T> {
 
