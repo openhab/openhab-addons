@@ -60,7 +60,7 @@ public class NanoleafLayout {
 
         List<PositionDatum> positionDatums = layout.getPositionData();
         if (positionDatums == null) {
-            logger.warn("Returning no image as we dont have any position datums to render");
+            logger.warn("Returning no image as we don't have any position datums to render");
             return new byte[] {};
         }
 
