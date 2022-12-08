@@ -59,7 +59,7 @@ public class NanoleafBindingConstants {
     public static final String CHANNEL_SWIPE_EVENT_LEFT = "LEFT";
     public static final String CHANNEL_SWIPE_EVENT_RIGHT = "RIGHT";
     public static final String CHANNEL_LAYOUT = "layout";
-    public static final String CHANNEL_STATE = "state";
+    public static final String CHANNEL_VISUAL_STATE = "visualState";
 
     // List of light panel channels
     public static final String CHANNEL_PANEL_COLOR = "color";

@@ -31,6 +31,8 @@ import org.openhab.binding.nanoleaf.internal.model.GlobalOrientation;
 import org.openhab.binding.nanoleaf.internal.model.Layout;
 import org.openhab.binding.nanoleaf.internal.model.PanelLayout;
 import org.openhab.binding.nanoleaf.internal.model.PositionDatum;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Renders the Nanoleaf layout to an image.
@@ -40,6 +42,7 @@ import org.openhab.binding.nanoleaf.internal.model.PositionDatum;
 @NonNullByDefault
 public class NanoleafLayout {
 
+    private static final Logger logger = LoggerFactory.getLogger(NanoleafLayout.class);
     private static final Color COLOR_BACKGROUND = Color.WHITE;
 
     public static byte[] render(PanelLayout panelLayout, PanelState state, LayoutSettings settings) throws IOException {
@@ -51,11 +54,13 @@ public class NanoleafLayout {
 
         Layout layout = panelLayout.getLayout();
         if (layout == null) {
+            logger.warn("Returning no image as we dont have any layout to render");
             return new byte[] {};
         }
 
         List<PositionDatum> positionDatums = layout.getPositionData();
         if (positionDatums == null) {
+            logger.warn("Returning no image as we dont have any position datums to render");
             return new byte[] {};
         }
 

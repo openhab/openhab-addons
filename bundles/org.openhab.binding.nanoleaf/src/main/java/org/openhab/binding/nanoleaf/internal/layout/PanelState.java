@@ -23,6 +23,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.nanoleaf.internal.handler.NanoleafPanelHandler;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.thing.Thing;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Stores the state of the panels.
@@ -32,6 +34,7 @@ import org.openhab.core.thing.Thing;
 @NonNullByDefault
 public class PanelState {
 
+    private static final Logger logger = LoggerFactory.getLogger(PanelState.class);
     private final Map<Integer, HSBType> panelStates = new HashMap<>();
 
     public PanelState(List<Thing> panels) {
@@ -40,13 +43,26 @@ public class PanelState {
             NanoleafPanelHandler panelHandler = (NanoleafPanelHandler) panel.getHandler();
             if (panelHandler != null) {
                 HSBType c = panelHandler.getColor();
+
+                if (c == null) {
+                    logger.trace("Panel {}: Failed to get color", panelId);
+                }
+
                 HSBType color = (c == null) ? HSBType.BLACK : c;
                 panelStates.put(panelId, color);
+            } else {
+                logger.trace("Panel {}: Couldn't find handler", panelId);
             }
         }
     }
 
     public HSBType getHSBForPanel(Integer panelId) {
+        if (logger.isTraceEnabled()) {
+            if (!panelStates.containsKey(panelId)) {
+                logger.trace("Failed to get color for panel {}, falling back to black", panelId);
+            }
+        }
+
         return panelStates.getOrDefault(panelId, HSBType.BLACK);
     }
 }

@@ -110,6 +110,8 @@ Compare the following output with the right picture at the beginning of the arti
 The state channel shows an image of the panels on the wall.
 You have to configure things for each panel to get the correct color. 
 Since the colors of the panels can make it difficult to see the panel ids, please use the layout channel where the background color is always white to identify them.
+For state to work, you need to set static colors to your panel. 
+This is because Nanoleaf does not return updates on colors for dynamic effects and animations.
 
 ![Image](doc/NanoCanvas_rendered.jpg)
 
