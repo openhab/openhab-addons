@@ -65,7 +65,7 @@ Please see the example below.
 ## Channels
 
 | Thing                                                                              | Channel                         | Note                                                                                                                                                                                                                              |
-|------------------------------------------------------------------------------------|---------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ---------------------------------------------------------------------------------- | ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | bridge                                                                             | N.A                             | bridge does not expose any channel                                                                                                                                                                                                |
 | gateway                                                                            | status                          | status of your gateway                                                                                                                                                                                                            |
 | gateway                                                                            | scenarios                       | used to run the scenarios defined in the cloud portal                                                                                                                                                                             |
@@ -73,7 +73,7 @@ Please see the example below.
 | gate                                                                               | gate_state                      | get state of your gate (open, closed, pedestrian)                                                                                                                                                                                 |
 | gate                                                                               | gate_position                   | get position (0-100%) of your gate (where supported)                                                                                                                                                                              |
 | roller shutter, shutter, screen, ven. blind, garage door, awning, pergola, curtain | control                         | device controller which reacts to commands UP/DOWN/ON/OFF/OPEN/CLOSE/MY/STOP + closure 0-100                                                                                                                                      |
-| roller shutter                                                                     | moving                          | Indicates if the device is currently operating a command                                                                                                                                                            |
+| roller shutter                                                                     | moving                          | Indicates if the device is currently operating a command                                                                                                                                                                          |
 | window                                                                             | control                         | device controller which reacts to commands UP/DOWN/ON/OFF/OPEN/CLOSE/STOP + closure 0-100                                                                                                                                         |
 | silent roller shutter                                                              | silent_control                  | similar to control channel but in silent mode                                                                                                                                                                                     |
 | venetian blind, adjustable slats roller shutter, bioclimatic pergola               | orientation                     | percentual orientation of the blind's slats, it can have value 0-100. For IO Homecontrol devices only (non RTS)                                                                                                                   |
@@ -150,7 +150,7 @@ Please see the example below.
 | hitachi (yutaki) air to water heating zone                                         | zone_mode                       | sets the zone mode (Auto, Manual)                                                                                                                                                                                                 |
 | hitachi (yutaki) air to water heating zone                                         | thermostat_setting_zone1        | controls the thermostat setting for the zone 1                                                                                                                                                                                    |
 | hitachi (yutaki) air to water heating zone                                         | wh_setting_temp_zone1           | controls the water heating setting temperature for the zone 1                                                                                                                                                                     |
-| hitachi (yutaki) air to water heating zone                                         | room_ambient_temp_zone1         | controls the room ambient temperature for the zone 1                                                                                                                                                                               |
+| hitachi (yutaki) air to water heating zone                                         | room_ambient_temp_zone1         | controls the room ambient temperature for the zone 1                                                                                                                                                                              |
 | hitachi (yutaki) domestic hot water                                                | anti_legionella                 | controls the anti legionella mode (Run, Stop)                                                                                                                                                                                     |
 | hitachi (yutaki) domestic hot water                                                | anti_legionella_temp            | controls the anti legionella temperature                                                                                                                                                                                          |
 | hitachi (yutaki) domestic hot water                                                | target_boost_mode               | controls the boost mode (No request, Enabled, Disabled)                                                                                                                                                                           |
@@ -193,13 +193,13 @@ When a roller shutter-like thing receives STOP command, there are two possible b
 
 If you want to set the MY position of a roller shutter and you don't care the possible movement, try sending the MOVE command (OH2 does not know MY, so it stands for "move to MY position")
 
-```
+```java
 CONTROL_CHANNEL.sendCommand(MOVE)
 ```
 
 Blinds and adjustable slats roller shutters can control their closure and orientation by sending a comma separated string consisting of closure (0-100) and orientation (0-100) to the "closure_orientaion" channel.
 
-```
+```java
 CLOSURE_ORIENTATION_CHANNEL.sendCommand("50,50")
 ```
 
@@ -207,7 +207,7 @@ CLOSURE_ORIENTATION_CHANNEL.sendCommand("50,50")
 
 .things file
 
-```
+```java
 Bridge somfytahoma:bridge:237dbae7 "Somfy Tahoma Bridge" [ email="my@email.com", password="MyPassword", refresh=10 , statusTimeout=30] {
     Thing gateway 1214-4519-8041 "Tahoma gateway" [ id="1214-4519-8041" ]
     Thing rollershutter 31da8dac-8e09-455a-bc7a-6ed70f740001 "Bedroom" [ url="io://0204-1234-8041/6825356" ]
@@ -233,7 +233,7 @@ Awnings, garage doors, screens, blinds, and windows things have the same notatio
 
 .items file
 
-```
+```java
 String TahomaVersion "Tahoma version [%s]" { channel="somfytahoma:gateway:237dbae7:1214-4519-8041:version" }
 Rollershutter RollerShutterBedroom "Roller shutter [%d %%]"  {channel="somfytahoma:rollershutter:237dbae7:31da8dac-8e09-455a-bc7a-6ed70f740001:control"}
 Dimmer RollerShutterBedroomD "Roller shutter dimmer [%.1f]"  {channel="somfytahoma:rollershutter:237dbae7:31da8dac-8e09-455a-bc7a-6ed70f740001:control"}
@@ -285,7 +285,7 @@ Switch HeatingSwitch "Ext heating switch"  { channel="somfytahoma:exteriorheatin
 
 .sitemap file
 
-```
+```perl
 Text item=TahomaVersion
 Switch item=Rollers1UP label="Roller shutters 1st floor" mappings=[ON="UP"]
 Switch item=Rollers1DOWN  label="Roller shutters 1st floor" mappings=[ON="DOWN"]
@@ -326,7 +326,7 @@ This binding is compatible with the official Alexa Smart Home Skill.
 Since Rolleshutter items are unsupported, only Dimmer with control channel can be used.
 Syntax in .item file is as follows:
 
-```
+```java
 Dimmer RollerShutterLivingD "Roller shutter living [%.1f]"  [ "Lighting" ] {channel="somfytahoma:rollershutter:237dbae7:87bf0403-a45d-4037-b874-28f4ece30004:control"}
 ```
 

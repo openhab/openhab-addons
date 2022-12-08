@@ -49,7 +49,7 @@ Each bed requires a bed ID as defined by the SleepIQ service.
 
 ### Sample Thing Configuration
 
-```
+```java
 Bridge sleepiq:cloud:1 [ username="mail@example.com", password="password", pollingInterval=60, logging=false ]
 {
     Thing dualBed master [ bedId="-9999999999999999999" ]
@@ -83,7 +83,7 @@ All channels within this group are read-only.
 
 Here is a sample item configuration:
 
-```
+```java
 Switch      MasterBedroom_SleepIQ_InBed_Alice          "In Bed [%s]"        { channel="sleepiq:dualBed:1:master:left#inBed" }
 Number      MasterBedroom_SleepIQ_SleepNumber_Alice    "Sleep Number [%s]"  { channel="sleepiq:dualBed:1:master:left#sleepNumber" }
 Number      MasterBedroom_SleepIQ_Pressure_Alice       "Pressure [%s]"      { channel="sleepiq:dualBed:1:master:left#pressure" }

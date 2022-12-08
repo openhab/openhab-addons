@@ -2,17 +2,17 @@
 
 The system information binding provides operating system and hardware information including:
 
--   Operating system name, version and manufacturer;
--   CPU average load for last 1, 5, 15 minutes, name, description, number of physical and logical cores, running threads number, system uptime;
--   Free, total and available memory;
--   Free, total and available swap memory;
--   Hard drive name, model and serial number;
--   Free, total, available storage space and storage type (NTSFS, FAT32 ..);
--   Battery information - estimated remaining time, capacity, name;
--   Sensors information - CPU voltage and temperature, fan speeds;
--   Display information;
--   Network IP,name and adapter name, mac, data sent and received, packets sent and received;
--   Process information - size of RAM memory used, CPU load, process name, path, number of threads.
+- Operating system name, version and manufacturer;
+- CPU average load for last 1, 5, 15 minutes, name, description, number of physical and logical cores, running threads number, system uptime;
+- Free, total and available memory;
+- Free, total and available swap memory;
+- Hard drive name, model and serial number;
+- Free, total, available storage space and storage type (NTSFS, FAT32 ..);
+- Battery information - estimated remaining time, capacity, name;
+- Sensors information - CPU voltage and temperature, fan speeds;
+- Display information;
+- Network IP,name and adapter name, mac, data sent and received, packets sent and received;
+- Process information - size of RAM memory used, CPU load, process name, path, number of threads.
 
 The binding uses the [OSHI](https://github.com/oshi/oshi) library to access this information regardless of the underlying OS and hardware.
 
@@ -22,11 +22,11 @@ The binding supports only one thing type - **computer**. This thing represents a
 
 The thing has the following properties:
 
--   `cpu_logicalCores` - Number of CPU logical cores
--   `cpu_physicalCores` - Number of CPU physical cores
--   `os_manufacturer` - The manufacturer of the operating system
--   `os_version` - The version of the operating system
--   `os_family` - The family of the operating system
+- `cpu_logicalCores` - Number of CPU logical cores
+- `cpu_physicalCores` - Number of CPU physical cores
+- `os_manufacturer` - The manufacturer of the operating system
+- `os_version` - The version of the operating system
+- `os_family` - The family of the operating system
 
 If multiple storage or display devices support is needed, a new thing type has to be defined.
 
@@ -42,14 +42,14 @@ The configuration of the Thing gives the user the possibility to update channels
 
 The thing has two configuration parameters:
 
-*   **interval_high** - refresh interval in seconds for channels with 'High' priority configuration. Default value is 1 s.
-*   **interval_medium** - refresh interval in seconds for channels with 'Medium' priority configuration. Default value is 60s.
+- **interval_high** - refresh interval in seconds for channels with 'High' priority configuration. Default value is 1 s.
+- **interval_medium** - refresh interval in seconds for channels with 'Medium' priority configuration. Default value is 60s.
 
 That means that by default configuration:
 
-*   channels with priority set to 'High' are updated every second
-*   channels with priority set to 'Medium' are updated every minute
-*   channels with priority set to 'Low' are updated only at initialization or if the `REFRESH` command is sent to the channel.
+- channels with priority set to 'High' are updated every second
+- channels with priority set to 'Medium' are updated every minute
+- channels with priority set to 'Low' are updated only at initialization or if the `REFRESH` command is sent to the channel.
 
 For more info see [channel configuration](#channel-configuration)
 
@@ -61,39 +61,39 @@ In the list below, you can find, how are channel group and channels id`s related
 
 **thing** `computer`
 
-*   **group** `memory`
-  * **channel** `available, total, used, availablePercent, usedPercent, usedHeapPercent, availableHeap`
-*   **group** `swap`
-  * **channel** `available, total, used, availablePercent, usedPercent`
-*   **group** `storage` (deviceIndex)
-  * **channel** `available, total, used, availablePercent, usedPercent, name, description, type`
-*   **group** `drive` (deviceIndex)
-  * **channel** `name, model, serial`
-*   **group** `display` (deviceIndex)
-  * **channel** `information`
-*   **group** `battery` (deviceIndex)
-  * **channel** `name, remainingCapacity, remainingTime`
-*   **group** `cpu`
-  * **channel** `name, description, load, load1, load5, load15, uptime, threads`
-*   **group** `sensors`
-  * **channel** `cpuTemp, cpuVoltage, fanSpeed`
-*   **group** `network` (deviceIndex)
-  * **channel** `ip, mac, networkDisplayName, networkName, packetsSent, packetsReceived, dataSent, dataReceived`
-*   **group** `currentProcess`
-  * **channel** `load, used, name, threads, path`
-*   **group** `process` (pid)
-  * **channel** `load, used, name, threads, path`
+- **group** `memory`
+  - **channel** `available, total, used, availablePercent, usedPercent, usedHeapPercent, availableHeap`
+- **group** `swap`
+  - **channel** `available, total, used, availablePercent, usedPercent`
+- **group** `storage` (deviceIndex)
+  - **channel** `available, total, used, availablePercent, usedPercent, name, description, type`
+- **group** `drive` (deviceIndex)
+  - **channel** `name, model, serial`
+- **group** `display` (deviceIndex)
+  - **channel** `information`
+- **group** `battery` (deviceIndex)
+  - **channel** `name, remainingCapacity, remainingTime`
+- **group** `cpu`
+  - **channel** `name, description, load, load1, load5, load15, uptime, threads`
+- **group** `sensors`
+  - **channel** `cpuTemp, cpuVoltage, fanSpeed`
+- **group** `network` (deviceIndex)
+  - **channel** `ip, mac, networkDisplayName, networkName, packetsSent, packetsReceived, dataSent, dataReceived`
+- **group** `currentProcess`
+  - **channel** `load, used, name, threads, path`
+- **group** `process` (pid)
+  - **channel** `load, used, name, threads, path`
 
 The groups marked with "(deviceIndex)" may have device index attached to the Channel Group.
 
--   channel ::= channel_group & (deviceIndex) & # channel_id
--   deviceIndex ::= number >= 0
--   (e.g. *storage1#available*)
+- channel ::= channel_group & (deviceIndex) & # channel_id
+- deviceIndex ::= number >= 0
+- (e.g. _storage1#available_)
 
 The `fanSpeed` channel in the `sensors` group may have a device index attached to the Channel.
 
--   channel ::= channel_group & # channel_id & (deviceIndex)
--   deviceIndex ::= number >= 0
+- channel ::= channel_group & # channel_id & (deviceIndex)
+- deviceIndex ::= number >= 0
 
 Channels or channel groups without a trailing index will show the data for the first device (index 0) if multiple exist.
 If only one device for a group exists, no channels or channel groups with indexes will be created.
@@ -154,9 +154,9 @@ The binding will trigger the necessary changes (reduce or increase the refresh t
 Each of the channels has a default configuration parameter - priority.
 It has the following options:
 
--   **High**
--   **Medium**
--   **Low**
+- **High**
+- **Medium**
+- **Low**
 
 The ''load'' channel will update total or by process CPU load at the frequency defined by the priority update interval, by default high priority, every second.
 The value corresponds to the average CPU load over the interval.
@@ -187,13 +187,13 @@ For a general problem with the binding report the issue directly to openHAB.
 
 Things:
 
-```
+```java
 Thing systeminfo:computer:work [interval_high=3, interval_medium=60]
 ```
 
 Items:
 
-```
+```java
 /* Network information*/
 String Network_AdapterName        "Adapter name"        <network>        { channel="systeminfo:computer:work:network#networkDisplayName" }
 String Network_Name               "Name"                <network>        { channel="systeminfo:computer:work:network#networkName" }
@@ -273,7 +273,7 @@ String Process_path               "Path"                <none>           { chann
 
 Sitemap:
 
-```
+```perl
 sitemap systeminfo label="Systeminfo" {
     Frame label="Network Information" {
         Default item=Network_AdapterName
