@@ -13,11 +13,11 @@
 package org.openhab.binding.boschshc.internal.services.smokedetectorcheck.dto;
 
 import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
-import org.openhab.binding.boschshc.internal.services.smokedetectorcheck.SmokeDetectorCheckService;
 import org.openhab.binding.boschshc.internal.services.smokedetectorcheck.SmokeDetectorCheckState;
 
 /**
- * State for {@link SmokeDetectorCheckService} to get the current smoke test state and request a new smoke test.
+ * State for {@link org.openhab.binding.boschshc.internal.services.smokedetectorcheck.SmokeDetectorCheckService}
+ * to get the current smoke test state and request a new smoke test.
  *
  * @author Christian Oeing - Initial contribution
  */
