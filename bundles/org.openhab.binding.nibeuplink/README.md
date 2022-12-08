@@ -22,7 +22,7 @@ Auto-Discovery is not supported, as credentials are necessary to login into Nibe
 
 The syntax for a heat pump thing is:
 
-```
+```java
 nibeuplink:<THING TYPE>:<NAME>
 ```
 
@@ -50,7 +50,7 @@ username used to login on NibeUplink
 password used to login on NibeUplink
 
 - **nibeId** (required)  
-Id of your heatpump in NibeUplink (can be found in the URL after successful login: https://www.nibeuplink.com/System/**<nibeId>>**/Status/Overview)
+Id of your heatpump in NibeUplink (can be found in the URL after successful login: `https://www.nibeuplink.com/System/**<nibeId>>**/Status/Overview`)
 
 - **pollingInterval**  
 interval (seconds) in which values are retrieved from NibeUplink.
@@ -65,19 +65,19 @@ Usually this settings should not be changed.
 
 - minimum configuration
 
-```
+```java
 nibeuplink:vvm320:mynibe [ user="...", password="...", nibeId="..."]
 ```
 
 - with pollingInterval
 
-```
+```java
 nibeuplink:vvm320:mynibe[ user="...", password="...", nibeId="...", pollingInterval=... ]
 ```
 
 - multiple heat pumps
 
-```
+```java
 nibeuplink:vvm320:home1 [ user="...", password="...", nibeId="..."]
 nibeuplink:vvm320:home2  [ user="...", password="...", nibeId="..."]
 ```
@@ -196,7 +196,7 @@ Following models/channels are currently available:
 | compressor#43439 | Number:Dimensionless | 0      | 100     | No       | EP14-GP2 Brine Pump Speed                |                               |
 | airsupply#40025  | Number:Temperature   | -32767 | 32767   | No       | BT20 Exhaust air temp. 1                 |                               |
 | airsupply#40026  | Number:Temperature   | -32767 | 32767   | No       | BT21 Vented air temp. 1                  |                               |
-	
+
 ### F1155 / 1255
 
 | Channel Type ID  | Item Type            | Min    | Max     | Writable | Description                           | Allowed Values (write access) |
@@ -309,12 +309,11 @@ There are three custom channel types available, which allow different scaling of
 - type-number-scale10
 - type-number-scale100
 
-
 ## Full Example
 
 ### Thing
 
-```
+```java
 nibeuplink:vvm320:mynibe     [ user="nibe@my-domain.de", password="secret123", nibeId="4711", pollingInterval=300] {
    Channels:
         Type type-number-scale10  : 47015 "min supply temp heating"
@@ -330,7 +329,7 @@ Channels which represent two states (such as on/off) are represented as Switch.
 Channels which have more than two states are internally represented as number.
 You need to define a map file which also gives you the opportunity to translate the state into your preferred language.
 
-```
+```java
 Number:Temperature      NIBE_SUPPLY            "Vorlauf"                                 { channel="nibeuplink:vvm320:mynibe:base#40008" }
 Number:Temperature      NIBE_RETURN            "Rücklauf [%.2f °F]"                      { channel="nibeuplink:vvm320:mynibe:base#40012" }
 Number:Temperature      NIBE_HW_TOP            "Brauchwasser oben"                       { channel="nibeuplink:vvm320:mynibe:hotwater#40013" }
@@ -346,12 +345,11 @@ Number                  NIBE_MIN_SUP_COOL      "min supply temp. cooling [%d °C
 
 Please define each state as integer.
 
-```
+```text
 0=Eco
 1=Norm
 2=Lux
 ```
-
 
 ### Sitemaps
 
@@ -359,6 +357,6 @@ Please take care of the status channels.
 If you use selection items an automatic mapping will be applied.
 If you prefer switch items a mapping must be applied like this:
 
-```
+```java
 Switch item=NIBE_HW_MODE mappings=[0="Eco", 1="Norm"]
 ```
