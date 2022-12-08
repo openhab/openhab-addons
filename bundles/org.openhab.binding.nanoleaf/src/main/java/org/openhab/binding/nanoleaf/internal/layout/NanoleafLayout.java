@@ -54,7 +54,7 @@ public class NanoleafLayout {
 
         Layout layout = panelLayout.getLayout();
         if (layout == null) {
-            logger.warn("Returning no image as we dont have any layout to render");
+            logger.warn("Returning no image as we don't have any layout to render");
             return new byte[] {};
         }
 
