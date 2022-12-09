@@ -5,14 +5,13 @@ This allows you to dynamically adjust the charge current for your car depending 
 
 ## Supported Things
 
-This binding provides three thing types: 
+This binding provides three thing types:
 
 | Thing/Bridge        | Thing Type          | Description                                                                                   |
 |---------------------|---------------------|-----------------------------------------------------------------------------------------------|
 | bridge              | site                | cloud connection to a site within an Easee account                                            |
 | thing               | charger             | the physical charger which is connected to a circuit within the given site                    |
 | thing               | mastercharger       | like the "normal" charger but with additional capability to control the circuit               |
-
 
 Basically any Easee wallbox that supports the Cloud API should automatically be supported by this binding.
 
@@ -28,7 +27,7 @@ The following configuration parameters are available for the binding/bridge:
 |-------------------------|----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | username                | yes      | The username to login at Easee Cloud service. This should be an e-mail address or phone number.                                                                                                                                                                                                                                                   |
 | passord                 | yes      | Your password to login at Easee Cloud service.                                                                                                                                                                                                                                                                                                    |
-| siteId                  | yes      | The ID of the site containing the wallbox(es) and circuit(s) that should be integrated into openHAB. The ID of your site can be found via the sites overview (https://easee.cloud/sites). You just need to click one of the sites listed there, the id will be part of the URL which is then opened. It will be a number with typically 6 digits. |
+| siteId                  | yes      | The ID of the site containing the wallbox(es) and circuit(s) that should be integrated into openHAB. The ID of your site can be found via the sites overview (<https://easee.cloud/sites>). You just need to click one of the sites listed there, the id will be part of the URL which is then opened. It will be a number with typically 6 digits. |
 | dataPollingInterval     | no       | Interval (seconds) in which live data values are retrieved from the Easee Cloud API. (default = 120)                                                                                                                                                                                                                                              |
 
 ## Thing configuration
@@ -113,27 +112,26 @@ The Master Charger is like the "normal" charger but has some extra channels to c
 
 ## Full Example
 
-### Thing                                                                                                                                                                    
+### Thing
 
 #### Minimum configuration
 
-```
+```java
 Bridge easee:site:mysite1 [ username="abc@def.net", password="secret", siteId="123456" ]
 ```
 
 #### Manual configuration with two chargers, pollingInterval set to 60 seconds.
 
-```
+```java
 Bridge easee:site:mysite1 [ username="abc@def.net", password="secret", siteId="471111", dataPollingInterval=60 ] {
         Thing mastercharger myCharger1 [ id="EHXXXXX1", circuitId="1234567" ]
         Thing charger myCharger2 [ id="EHXXXXX2" ]
 }
 ```
 
-
 ### Items
 
-```
+```java
 Number:ElectricCurrent  Easee_Circuit_Phase1                  "Phase 1"                                   { channel="easee:mastercharger:mysite1:myCharger1:dynamicCurrent#phase1" }
 Number:ElectricCurrent  Easee_Circuit_Phase2                  "Phase 2"                                   { channel="easee:mastercharger:mysite1:myCharger1:dynamicCurrent#phase2" }
 Number:ElectricCurrent  Easee_Circuit_Phase3                  "Phase 3"                                   { channel="easee:mastercharger:mysite1:myCharger1:dynamicCurrent#phase3" }
@@ -143,7 +141,7 @@ Switch                  Easee_Charger_Start_Stop              "Start / Stop"    
 
 ### Sitemap
 
-```
+```java
     Switch item=Easee_Circuit_Dynamic_Phases mappings=["0;0;0"="0.00 kW", "6;0;0"="1.44 kW", "7;0;0"="1.68 kW", "8;0;0"="1.92 kW", "9;0;0"="2.16 kW", "10;0;0"="2.40 kW", "16;0;0"="3.72 kW", "16;16;16"="11.1 kW"] icon="energy"
 ```
 
@@ -151,7 +149,7 @@ Switch                  Easee_Charger_Start_Stop              "Start / Stop"    
 
 easeePhases.map will make the phase setting more readable.
 
-```
+```text
 0;0;0=0.00 kW
 6;0;0=1.44 kW
 7;0;0=1.68 kW
