@@ -23,7 +23,6 @@ public class GetWifiInfoRequest extends Packet {
     public static final int TYPE = 0x10;
 
     public GetWifiInfoRequest() {
-        setTagged(false);
         setAddressable(true);
         setResponseRequired(true);
     }

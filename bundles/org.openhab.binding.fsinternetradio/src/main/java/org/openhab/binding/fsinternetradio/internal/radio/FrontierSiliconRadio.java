@@ -19,7 +19,7 @@ import java.io.IOException;
 import org.eclipse.jetty.client.HttpClient;
 
 /**
- * Class representing a internet radio based on the frontier silicon chipset. Tested with "hama IR110" and Medion
+ * Class representing an internet radio based on the frontier silicon chipset. Tested with "hama IR110" and Medion
  * MD87180" internet radios.
  *
  * @author Rainer Ostendorf
