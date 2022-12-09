@@ -2,15 +2,15 @@
 
 This binding can be used to control the following types of whole house multi-zone amplifier systems:
 
-* Monoprice MPR-SG6Z (10761), Monoprice Passive Matrix (39261), Dayton Audio DAX66 or compatible clones
-* Monoprice 31028 or OSD Audio PAM1270 **(untested)**
-* Dayton Audio DAX88 **(untested)**
-* Xantech MRC88, MX88, MRAUDIO8X8 or CM8X8 **(untested)**
+- Monoprice MPR-SG6Z (10761), Monoprice Passive Matrix (39261), Dayton Audio DAX66 or compatible clones
+- Monoprice 31028 or OSD Audio PAM1270 **(untested)**
+- Dayton Audio DAX88 **(untested)**
+- Xantech MRC88, MX88, MRAUDIO8X8 or CM8X8 **(untested)**
 
 The binding supports two different kinds of connections:
 
-* serial connection,
-* serial over IP connection
+- serial connection,
+- serial over IP connection
 
 For users without a serial port on the server side, you can use a USB to serial adapter.
 
@@ -38,11 +38,6 @@ Note: MRC44 amps do not support serial control.
 Discovery is not supported.
 You have to add all things manually.
 
-## Binding Configuration
-
-There are no overall binding configuration settings that need to be set.
-All settings are through thing configuration parameters.
-
 ## Thing Configuration
 
 The thing has the following configuration parameters (number of sources and zones is amplifier dependent):
@@ -68,21 +63,21 @@ The thing has the following configuration parameters (number of sources and zone
 
 Some notes:
 
-* On the 10761/DAX66 amp, activating the 'Page All Zones' feature can only be done through the +12v trigger input on the back of the amplifier.
+- On the 10761/DAX66 amp, activating the 'Page All Zones' feature can only be done through the +12v trigger input on the back of the amplifier.
 
-* On Linux, you may get an error stating the serial port cannot be opened when the MonopriceAudio binding tries to load.
-* You can get around this by adding the `openhab` user to the `dialout` group like this: `usermod -a -G dialout openhab`.
-* Also on Linux you may have issues with the USB if using two serial USB devices e.g. MonopriceAudio and RFXcom.
-* See the [general documentation about serial port configuration](/docs/administration/serial.html) for more on symlinking the USB ports.
-* Here is an example of ser2net.conf (for ser2net version < 4) you can use to share your serial port /dev/ttyUSB0 on IP port 8080 using [ser2net Linux tool](https://sourceforge.net/projects/ser2net/):
+- On Linux, you may get an error stating the serial port cannot be opened when the MonopriceAudio binding tries to load.
+- You can get around this by adding the `openhab` user to the `dialout` group like this: `usermod -a -G dialout openhab`.
+- Also on Linux you may have issues with the USB if using two serial USB devices e.g. MonopriceAudio and RFXcom.
+- See the [general documentation about serial port configuration](/docs/administration/serial.html) for more on symlinking the USB ports.
+- Here is an example of ser2net.conf (for ser2net version < 4) you can use to share your serial port /dev/ttyUSB0 on IP port 8080 using [ser2net Linux tool](https://sourceforge.net/projects/ser2net/):
 
-```
+```text
 8080:raw:0:/dev/ttyUSB0:9600 8DATABITS NONE 1STOPBIT LOCAL
 ```
 
-* Here is an example of ser2net.yaml (for ser2net version >= 4) you can use to share your serial port /dev/ttyUSB0 on IP port 8080 using [ser2net Linux tool](https://sourceforge.net/projects/ser2net/):
+- Here is an example of ser2net.yaml (for ser2net version >= 4) you can use to share your serial port /dev/ttyUSB0 on IP port 8080 using [ser2net Linux tool](https://sourceforge.net/projects/ser2net/):
 
-```
+```text
 connection: &conMono
     accepter: tcp,8080
     enable: on
@@ -119,7 +114,7 @@ Note that dnd, page and keypad not available on all amps.
 
 monoprice.things:
 
-```
+```java
 // Monoprice 10761, 39261 / DAX66 (serial port connection)
 monopriceaudio:amplifier:myamp "Monoprice WHA" [ serialPort="COM5", pollingInterval=15, numZones=6, inputLabel1="Chromecast", inputLabel2="Radio", inputLabel3="CD Player", inputLabel4="Bluetooth Audio", inputLabel5="HTPC", inputLabel6="Phono" ]
 
@@ -140,7 +135,7 @@ monopriceaudio:xantech:myamp "Xantech WHA" [ serialPort="COM5", pollingInterval=
 
 monoprice.items:
 
-```
+```java
 // substitute 'amplifier' for the appropriate thing id if using 31028, DAX88 or Xantech amplifier
 
 Switch all_allpower "All Zones Power" { channel="monopriceaudio:amplifier:myamp:all#allpower" }
@@ -164,7 +159,7 @@ Switch z1_keypad "Keypad Connected: [%s]" { channel="monopriceaudio:amplifier:my
 
 monoprice.sitemap:
 
-```
+```perl
 sitemap monoprice label="Audio Control" {
     Frame label="All Zones" {
         Switch item=all_allpower label="All Zones On" mappings=[ON=" "]

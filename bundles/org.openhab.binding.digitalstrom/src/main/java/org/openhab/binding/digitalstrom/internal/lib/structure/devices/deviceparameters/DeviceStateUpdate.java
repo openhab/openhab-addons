@@ -63,7 +63,7 @@ public interface DeviceStateUpdate {
     static final String UPDATE_SCENE_CONFIG = "sceneConfig";
 
     // general
-    /** command to refresh the output value of an device. */
+    /** command to refresh the output value of a device. */
     static final String REFRESH_OUTPUT = "refreshOutput";
 
     // standard values

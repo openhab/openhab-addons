@@ -632,7 +632,7 @@ public class BridgeHandler extends BaseBridgeHandler
                 case WRONG_APP_TOKEN:
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "User defined Application-Token is wrong. "
-                                    + "Please set user name and password to generate an Application-Token or set an valid Application-Token.");
+                                    + "Please set user name and password to generate an Application-Token or set a valid Application-Token.");
                     stopServices();
                     return;
                 case WRONG_USER_OR_PASSWORD:

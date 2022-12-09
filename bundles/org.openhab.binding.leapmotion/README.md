@@ -43,13 +43,13 @@ This binding specifies 3 profiles for the `gesture` channel to make it easy to l
 
 demo.things:
 
-```
+```java
 Thing leapmotion:controller:1 MyLeapMotion
 ```
 
 demo.items:
 
-```
+```java
 Switch DemoSwitch  "Switch"         { channel="leapmotion:controller:1:gesture" }
 Color  RGBLight    "RGB Light"      { channel="leapmotion:controller:1:gesture" }
 Dimmer DimmedLight "Dimmer [%d %%]" { channel="leapmotion:controller:1:gesture"[profile="leapmotion:dimmer", mode="fingers"] } 

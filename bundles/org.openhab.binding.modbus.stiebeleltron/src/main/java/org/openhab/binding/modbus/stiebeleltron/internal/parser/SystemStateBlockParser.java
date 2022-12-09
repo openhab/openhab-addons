@@ -17,7 +17,7 @@ import org.openhab.binding.modbus.stiebeleltron.internal.dto.SystemStateBlock;
 import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
 
 /**
- * Parses inverter modbus data into an System State Block
+ * Parses inverter modbus data into a System State Block
  *
  * @author Paul Frank - Initial contribution
  *

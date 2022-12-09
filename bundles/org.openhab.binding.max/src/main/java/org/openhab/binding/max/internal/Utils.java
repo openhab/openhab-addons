@@ -69,7 +69,7 @@ public final class Utils {
     }
 
     /**
-     * Converts an Java signed byte into its general (unsigned) value as being
+     * Converts a Java signed byte into its general (unsigned) value as being
      * used in other programming languages and platforms.
      *
      * @param b

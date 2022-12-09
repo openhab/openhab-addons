@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonObject;
 
 /**
- * The {@link DeviceSensorValue} contains all needed information of an device sensor, e.g. the sensor type, to detect
+ * The {@link DeviceSensorValue} contains all needed information of a device sensor, e.g. the sensor type, to detect
  * which kind of sensor it is (see {@link SensorEnum}), the sensor index to read out sensor at the digitalSTROM device
  * by calling {@link DsAPI#getDeviceSensorValue(String, DSID, String, String, Short)} and as well as of course the value
  * and

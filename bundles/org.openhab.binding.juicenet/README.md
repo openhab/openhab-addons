@@ -8,7 +8,7 @@ In addition to getting the status of various items from the EV charger, it is al
 This binding supports the following things:
 
 | thing               | type    | description                  |
-|----------           |-------- |------------------------------ | 
+|----------           |-------- |------------------------------ |
 | JuiceNet Account    | Bridge  | This represents the cloud account to interface with the JuiceNet API.  |
 | JuiceBox EV Charger | Device  | This interfaces to a specific JuiceBox EV charger associated with the JuiceNet account. |
 
@@ -18,11 +18,10 @@ This binding should work with multiple JuiceBox EV chargers associated with the 
 
 Once a JuiceNet Account bridge has been created, any JuiceBox EV Chargers associated with this account will be discovered.
 
-
 ### Thing Configuration
 
 The configuration required is to create a JuiceNet account thing and fill in the appropriate API token.
-The API token can be found on the Account page at https://home.juice.net/Manage.
+The API token can be found on the Account page at <https://home.juice.net/Manage>.
 
 A JuiceBox EV Charger requires a unitID which can also be found in the device settings at the JuiceNet web page.
 
@@ -66,7 +65,7 @@ A JuiceBox EV Charger requires a unitID which can also be found in the device se
 
 If configuring the binding with manual configuration an example thing file looks like this:
 
-```
+```java
 Bridge juicenet:account:myaccount [ apiToken="xxxx-xxxx-xxxx-xxxx-xxxxx" ] {
     Thing device JamesCharger [ unitID="xxxxxxx" ]
 }
@@ -76,7 +75,7 @@ Bridge juicenet:account:myaccount [ apiToken="xxxx-xxxx-xxxx-xxxx-xxxxx" ] {
 
 An example of an items file is here.
 
-```
+```java
 String                  JuiceNet_Name               "Name"                                                      { channel="juicenet:device:myaccount:JamesCharger:name" }
 String                  JuiceNet_State              "Device State"                                              { channel="juicenet:device:myaccount:JamesCharger:state" }
 String                  JuiceNet_ChargingState      "Charging State"                                            { channel="juicenet:device:myaccount:JamesCharger:chargingState" }
@@ -115,7 +114,7 @@ The following custom widget can be used with this binding.
 
 ![JuiceBox Widget](doc/widget.png)
 
-```
+```yaml
 uid: widget_JuiceBox
 tags: []
 props:
@@ -267,4 +266,3 @@ slots:
             config:
               text: =items[props.prefix + "_CarDescription"].state
 ```
-

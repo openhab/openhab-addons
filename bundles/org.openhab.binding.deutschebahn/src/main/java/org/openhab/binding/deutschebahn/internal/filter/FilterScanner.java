@@ -90,7 +90,7 @@ public final class FilterScanner {
     }
 
     /**
-     * State scanning an channel name until the equals-sign.
+     * State scanning a channel name until the equals-sign.
      */
     private final class ChannelNameState implements State {
 

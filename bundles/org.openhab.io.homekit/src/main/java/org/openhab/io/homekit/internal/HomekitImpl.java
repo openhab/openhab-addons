@@ -184,9 +184,10 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener {
         bridges.add(bridge);
         bridge.setConfigurationIndex(changeListener.getConfigurationRevision());
         bridge.refreshAuthInfo();
+
         final int lastAccessoryCount = changeListener.getLastAccessoryCount();
         int currentAccessoryCount = changeListener.getAccessories().size();
-        if (currentAccessoryCount < lastAccessoryCount) {
+        if (!settings.useDummyAccessories && currentAccessoryCount < lastAccessoryCount) {
             logger.debug(
                     "it looks like not all items were initialized yet. Old configuration had {} accessories, the current one has only {} accessories. Delay HomeKit bridge start for {} seconds.",
                     lastAccessoryCount, currentAccessoryCount, settings.startDelay);
@@ -222,7 +223,7 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener {
                 if (i != 0) {
                     storage_key += i;
                 }
-                Storage<String> storage = storageService.getStorage(storage_key);
+                Storage<Object> storage = storageService.getStorage(storage_key);
                 HomekitAuthInfoImpl authInfo = new HomekitAuthInfoImpl(storage, settings.pin, settings.setupId,
                         settings.blockUserDeletion);
 
@@ -270,9 +271,6 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener {
     @Deactivate
     protected void deactivate() {
         networkAddressService.removeNetworkAddressChangeListener(this);
-        for (HomekitChangeListener changeListener : changeListeners) {
-            changeListener.clearAccessories();
-        }
         stopHomekitServer();
     }
 
@@ -308,6 +306,13 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener {
             refreshAuthInfo();
         } catch (Exception e) {
             logger.warn("could not clear HomeKit pairings", e);
+        }
+    }
+
+    @Override
+    public void pruneDummyAccessories() {
+        for (HomekitChangeListener changeListener : changeListeners) {
+            changeListener.pruneDummyAccessories();
         }
     }
 

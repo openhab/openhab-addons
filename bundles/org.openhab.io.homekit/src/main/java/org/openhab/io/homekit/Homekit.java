@@ -53,4 +53,9 @@ public interface Homekit {
      * clear all pairings with HomeKit clients
      */
     void clearHomekitPairings();
+
+    /**
+     * Prune dummy accessories (accessories that no longer have associated items)
+     */
+    void pruneDummyAccessories();
 }

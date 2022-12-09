@@ -17,7 +17,7 @@ import org.openhab.binding.digitalstrom.internal.lib.serverconnection.constants.
 import com.google.gson.JsonObject;
 
 /**
- * The {@link DeviceBinaryInput} contains all information of an device binary input, e.g. binary input type id (see
+ * The {@link DeviceBinaryInput} contains all information of a device binary input, e.g. binary input type id (see
  * {@link DeviceBinarayInputEnum}, state and so on.
  *
  * @author Michael Ochel - initial contributer
