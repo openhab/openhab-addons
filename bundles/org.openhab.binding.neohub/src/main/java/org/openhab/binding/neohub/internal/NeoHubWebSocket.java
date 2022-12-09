@@ -32,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * Handles the ASCII based communication via web socket between openHAB and NeoHub
@@ -53,7 +54,7 @@ public class NeoHubWebSocket extends NeoHubSocketBase {
 
     private @Nullable Session session = null;
     private String responseOuter = "";
-    private boolean responseWaiting;
+    private boolean responsePending;
 
     /**
      * DTO to receive and parse the response JSON.
@@ -170,35 +171,42 @@ public class NeoHubWebSocket extends NeoHubSocketBase {
 
         // initialise the response
         responseOuter = "";
-        responseWaiting = true;
+        responsePending = true;
 
         // send the request
-        logger.trace("Sending request: {}", requestOuter);
+        logger.trace("sendMessage() request:{}", requestOuter);
         session.getRemote().sendString(requestOuter);
 
         // sleep and loop until we get a response or the socket is closed
         int sleepRemainingMilliseconds = config.socketTimeout * 1000;
-        while (responseWaiting && (sleepRemainingMilliseconds > 0)) {
+        while (responsePending) {
             try {
                 Thread.sleep(SLEEP_MILLISECONDS);
                 sleepRemainingMilliseconds = sleepRemainingMilliseconds - SLEEP_MILLISECONDS;
+                if (sleepRemainingMilliseconds <= 0) {
+                    throw new NeoHubException("No response (timed out).");
+                }
             } catch (InterruptedException e) {
-                throw new NeoHubException(String.format("Read timeout '%s'", e.getMessage()));
+                throw new NeoHubException("No response (interrupted).", e);
             }
         }
 
-        // extract the inner response from the outer response string
-        Response responseDto = gson.fromJson(responseOuter, Response.class);
-        if (responseDto != null && NeoHubBindingConstants.HM_SET_COMMAND_RESPONSE.equals(responseDto.message_type)) {
-            String responseJson = responseDto.response;
-            if (responseJson != null) {
-                responseJson = jsonUnEscape(responseJson);
-                logger.trace("Received response: {}", responseJson);
-                return responseJson;
+        if (!responseOuter.isEmpty()) {
+            try {
+                // extract the inner response from the outer response string
+                Response responseDto = gson.fromJson(responseOuter, Response.class);
+                if (responseDto != null
+                        && NeoHubBindingConstants.HM_SET_COMMAND_RESPONSE.equals(responseDto.message_type)) {
+                    String responseJson = responseDto.response;
+                    if (responseJson != null) {
+                        return jsonUnEscape(responseJson).strip();
+                    }
+                }
+            } catch (JsonSyntaxException e) {
+                // fall through..
             }
         }
-        logger.debug("Null or invalid response.");
-        return "";
+        throw new NeoHubException("Invalid response.");
     }
 
     @Override
@@ -212,27 +220,31 @@ public class NeoHubWebSocket extends NeoHubSocketBase {
 
     @OnWebSocketConnect
     public void onConnect(Session session) {
-        logger.trace("onConnect: ok");
+        logger.debug("onConnect() ok");
         this.session = session;
     }
 
     @OnWebSocketClose
     public void onClose(int statusCode, String reason) {
-        logger.trace("onClose: code:{}, reason:{}", statusCode, reason);
-        responseWaiting = false;
+        logger.debug("onClose() statusCode:{}, reason:{}", statusCode, reason);
+        responsePending = false;
         this.session = null;
     }
 
     @OnWebSocketError
     public void onError(Throwable cause) {
-        logger.trace("onError: cause:{}", cause.getMessage());
+        logger.debug("onError() cause:{}", cause.getMessage());
         closeSession();
     }
 
     @OnWebSocketMessage
     public void onMessage(String msg) {
-        logger.trace("onMessage: msg:{}", msg);
-        responseOuter = msg;
-        responseWaiting = false;
+        responseOuter = msg.strip();
+        if (logger.isTraceEnabled()) {
+            logger.trace("onMessage() response:{}", responseOuter);
+        } else {
+            logger.debug("onMessage() response length:{}", responseOuter.length());
+        }
+        responsePending = false;
     }
 }

@@ -59,6 +59,7 @@ import com.google.gson.JsonSyntaxException;
 public class NeoHubHandler extends BaseBridgeHandler {
 
     private static final String SEE_README = "See documentation chapter \"Connection Refused Errors\"";
+    private static final int MAX_FAILED_SEND_ATTEMPTS = 2;
 
     private final Logger logger = LoggerFactory.getLogger(NeoHubHandler.class);
 
@@ -86,6 +87,7 @@ public class NeoHubHandler extends BaseBridgeHandler {
 
     private ApiVersion apiVersion = ApiVersion.LEGACY;
     private boolean isApiOnline = false;
+    private int failedAttempts = 0;
 
     public NeoHubHandler(Bridge bridge) {
         super(bridge);
@@ -394,7 +396,16 @@ public class NeoHubHandler extends BaseBridgeHandler {
         }
 
         NeoHubAbstractDeviceData deviceData = fromNeoHubGetDeviceData();
-        if (deviceData != null) {
+        if (deviceData == null) {
+            failedAttempts++;
+            if ((socket instanceof NeoHubWebSocket) && (failedAttempts < MAX_FAILED_SEND_ATTEMPTS)) {
+                logger.debug("lazyPollingSchedulerExecute() deviceData:null, trying again");
+                scheduler.submit(() -> lazyPollingSchedulerExecute());
+            }
+            return;
+        } else {
+            failedAttempts = 0;
+
             // dispatch deviceData to each of the hub's owned devices ..
             List<Thing> children = getThing().getThings();
             for (Thing child : children) {
