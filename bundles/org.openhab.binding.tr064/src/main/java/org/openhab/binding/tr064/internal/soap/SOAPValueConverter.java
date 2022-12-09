@@ -232,10 +232,9 @@ public class SOAPValueConverter {
             int messageCount = responseContent.split("<New>1</New>").length - 1;
 
             return new DecimalType(messageCount);
-        } catch (TimeoutException e){
+        } catch (TimeoutException e) {
             throw new PostProcessingException("Failed to get TAM list due to time out from URL " + state.toString(), e);
-        }
-        catch (InterruptedException | ExecutionException e) {
+        } catch (InterruptedException | ExecutionException e) {
             throw new PostProcessingException("Failed to get TAM list from URL " + state.toString(), e);
         }
     }
