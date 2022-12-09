@@ -236,7 +236,7 @@ public class PlugwiseHAControllerRequest<T> {
                     final ByteBuffer next = it.next();
                     final byte[] bytes = new byte[next.capacity()];
                     next.get(bytes);
-                    content = new String(bytes, StandardCharsets.UTF_8);
+                    content += String.format("{}\n", new String(bytes, StandardCharsets.UTF_8));
                 }
             }
 
