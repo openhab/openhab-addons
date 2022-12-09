@@ -21,7 +21,6 @@ import java.nio.file.Path;
 import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
-import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -77,13 +76,9 @@ public class NanoleafLayoutTest {
         // Files.write(permanentOutFile, result);
     }
 
-    private class TestPanelState extends PanelState {
+    private class TestPanelState implements PanelState {
         private final HSBType testColors[] = { HSBType.fromRGB(160, 120, 40), HSBType.fromRGB(80, 60, 20),
                 HSBType.fromRGB(120, 90, 30), HSBType.fromRGB(200, 150, 60) };
-
-        public TestPanelState() {
-            super(Collections.emptyList());
-        }
 
         @Override
         public HSBType getHSBForPanel(Integer panelId) {

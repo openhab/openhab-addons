@@ -10,18 +10,27 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
+
 package org.openhab.binding.nanoleaf.internal.layout;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.HSBType;
 
 /**
- * Stores the state of the panels.
+ * Always returns the same color for all panels.
  *
  * @author Jørgen Austvik - Initial contribution
  */
 @NonNullByDefault
-public interface PanelState {
+public class ConstantPanelState implements PanelState {
+    private final HSBType color;
 
-    HSBType getHSBForPanel(Integer panelId);
+    public ConstantPanelState(HSBType color) {
+        this.color = color;
+    }
+
+    @Override
+    public HSBType getHSBForPanel(Integer panelId) {
+        return color;
+    }
 }
