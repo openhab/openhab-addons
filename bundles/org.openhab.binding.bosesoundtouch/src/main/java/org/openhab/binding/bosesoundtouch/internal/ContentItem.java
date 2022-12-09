@@ -42,12 +42,6 @@ public class ContentItem {
     private final Map<String, String> additionalAttributes = new HashMap<>();
 
     /**
-     * Creates a new instance of this class
-     */
-    public ContentItem() {
-    }
-
-    /**
      * Returns true if this ContentItem is defined as Preset
      *
      * @return true if this ContentItem is defined as Preset
