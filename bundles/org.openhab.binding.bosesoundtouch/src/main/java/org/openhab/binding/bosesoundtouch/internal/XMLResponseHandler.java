@@ -145,7 +145,7 @@ public class XMLResponseHandler extends DefaultHandler {
                 if ("request".equals(localName)) {
                     state = XMLHandlerState.Unprocessed; // TODO implement request id / response tracking...
                 } else {
-                    logger.warn("{}: Unhandled XML entity during {}: '{}'", handler.getDeviceName(), curState,
+                    logger.debug("{}: Unhandled XML entity during {}: '{}'", handler.getDeviceName(), curState,
                             localName);
                     state = XMLHandlerState.Unprocessed;
                 }
