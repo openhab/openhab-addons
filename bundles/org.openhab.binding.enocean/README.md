@@ -35,41 +35,41 @@ This number can be chosen manually or the next free/unused number can be determi
 
 This binding is developed on and tested with the following devices
 
- * USB300 and EnOceanPi gateways
- * The following Eltako actuators:
-    * FSR14 (light switch)
-    * FSB14 (rollershutter)
-    * FUD14 (dimmer)
-    * FSSA-230V (smart plug)
-    * FWZ12-65A (energy meter)
-    * FTKE (window / door contact)
-    * FPE-1 & FPE-2 (window / door contact)
-    * TF-FGB (window handle)
-    * TF-FKB (window contact)
-    * TF-AHDSB (outdoor brightness sensor)
-    * FAFT60 (outdoor temperature & humidity sensor)
- * The following Opus actuators:
-    * GN-A-R12V-SR-4 (light)
-    * GN-A-R12V-MF-2 (light)
-    * GN-A-R12V-LZ/UD (dimmer)
-    * GN-A-R12V-JRG-2 (rollershutter)
-    * GN-A-U230V-JRG (rollershutter)
-    * OPUS-FUNK PLUS Jalousieaktor 1fach UP (rollershutter)
-    * OPUS-Funk PLUS Steckdosenleiste (smart multiple socket)
- * NodOn: 
-    * Smart Plug (ASP-2-1-10)
-    * In Wall Switch (SIN-2-2-00, SIN-2-1-0x)
-    * In Wall Rollershutter (SIN-2-RS-01)
-    * Temperature & humidity sensor (STPH-2-1-05)
- * Permundo 
-    * PSC234 (smart plug with metering) = Afriso APR234
-    * PSC132 (smart switch actor with metering)
-    * PSC152 (smart blinds control)
- * Thermokon SR04 room control
- * Hoppe SecuSignal window handles
- * Rocker switches (NodOn, Eltako FT55 etc)
- * Siegenia Senso Secure window sensors
- * Soda window handles
+- USB300 and EnOceanPi gateways
+- The following Eltako actuators:
+  - FSR14 (light switch)
+  - FSB14 (rollershutter)
+  - FUD14 (dimmer)
+  - FSSA-230V (smart plug)
+  - FWZ12-65A (energy meter)
+  - FTKE (window / door contact)
+  - FPE-1 & FPE-2 (window / door contact)
+  - TF-FGB (window handle)
+  - TF-FKB (window contact)
+  - TF-AHDSB (outdoor brightness sensor)
+  - FAFT60 (outdoor temperature & humidity sensor)
+- The following Opus actuators:
+  - GN-A-R12V-SR-4 (light)
+  - GN-A-R12V-MF-2 (light)
+  - GN-A-R12V-LZ/UD (dimmer)
+  - GN-A-R12V-JRG-2 (rollershutter)
+  - GN-A-U230V-JRG (rollershutter)
+  - OPUS-FUNK PLUS Jalousieaktor 1fach UP (rollershutter)
+  - OPUS-Funk PLUS Steckdosenleiste (smart multiple socket)
+- NodOn:
+  - Smart Plug (ASP-2-1-10)
+  - In Wall Switch (SIN-2-2-00, SIN-2-1-0x)
+  - In Wall Rollershutter (SIN-2-RS-01)
+  - Temperature & humidity sensor (STPH-2-1-05)
+- Permundo
+  - PSC234 (smart plug with metering) = Afriso APR234
+  - PSC132 (smart switch actor with metering)
+  - PSC152 (smart blinds control)
+- Thermokon SR04 room control
+- Hoppe SecuSignal window handles
+- Rocker switches (NodOn, Eltako FT55 etc)
+- Siegenia Senso Secure window sensors
+- Soda window handles
 
 However, because of the standardized EnOcean protocol it is more important which EEP this binding supports.
 Hence if your device supports one of the following EEPs the chances are good that your device is also supported by this binding.
@@ -131,10 +131,10 @@ To pair a sensor with its thing, you first have to start the discovery scan for 
 Then press the "teach-in" button of the sensor.
 The sensor sends a teach-in message which contains the information about the EEP and the EnOceanId of the sensor.
 If the EEP is known by this binding the thing representation of the device is created.
-The corresponding channels are created dynamically, too. 
+The corresponding channels are created dynamically, too.
 
 ### Actuators
- 
+
 If the actuator supports UTE teach-in, the corresponding thing can be created and paired automatically.
 First you have to **start the discovery scan for a gateway**.
 Then press the teach-in button of the actuator.
@@ -258,7 +258,7 @@ If you want to receive messages of your EnOcean devices you have to set **the en
 
 ## Channels
 
-The channels of a thing are determined automatically based on the chosen EEP. 
+The channels of a thing are determined automatically based on the chosen EEP.
 
 |Channel              | Item               | Description |
 |---------------------|--------------------|---------------------------------|
@@ -335,11 +335,10 @@ The channels of a thing are determined automatically based on the chosen EEP.
 | rssi                 | Number                   | Received Signal Strength Indication (dBm) of last received message |
 | repeatCount          | Number                   | Number of repeaters involved in the transmission of the telegram |
 | lastReceived         | DateTime                 | Date and time the last telegram was received |
-| statusRequestEvent   | Trigger                  | Emits event 'requestAnswer' | 
+| statusRequestEvent   | Trigger                  | Emits event 'requestAnswer' |
 | windowBreachEvent    | Trigger                  | Emits event 'ALARM' |
 | protectionPlusEvent  | Trigger                  | Emits event 'ALARM' |
 | vacationModeToggleEvent | Trigger               | Emits events 'ACTIVATED', 'DEACTIVATED' |
-
 
 Items linked to bi-directional actuators (actuator sends status messages back) should always disable the `autoupdate`.
 This is especially true for Eltako rollershutter, as their position is calculated out of the current position and the moving time.
@@ -373,7 +372,7 @@ Thing centralCommand 11223344 "Light" @ "Living room" [ enoceanId="11223344", se
 ## Rules and Profiles
 
 The rockerSwitch things use _system:rawrocker_ channel types.
-So they trigger _DIR1[/2]_\__PRESSED_ and DIR1[/2]_\__RELEASED_ events.
+So they trigger _DIR1[/2]\___PRESSED_ and _DIR1[/2]\___RELEASED_ events.
 These channels can be directly linked to simple items like Switch, Dimmer or Player with the help of _profiles_.
 If you want to do more advanced stuff, you have to implement rules which react to these events
 
@@ -448,13 +447,13 @@ These conversion functions can be defined with the help of transformation functi
 |                                 | suppressRepeating |                            | true, false |
 
 Supported channels: genericSwitch, genericRollershutter, genericDimmer, genericNumber, genericString, genericColor, genericTeachInCMD.
-You have to define the transformationType (e.g. MAP) and transformationFunction (e.g. for MAP: file name of mapping file) for each of these channels. 
+You have to define the transformationType (e.g. MAP) and transformationFunction (e.g. for MAP: file name of mapping file) for each of these channels.
 
 For an inbound transformation (EnOcean message => openHAB state) you receive the channel id and the EnOcean data in hex separated by a pipe.
 Your transformation function has to return the openHAB State type and value separated by a pipe.
 If you want to use a mapping transformation, your mapping file has to look like this for a genericThing using EEP F6_FF_FF:
 
-```
+```text
 ChannelId|EnoceanData(Hex)=openHABState|Value
 genericSwitch|70=OnOffType|ON
 genericSwitch|50=OnOffType|OFF
@@ -467,7 +466,7 @@ Your transformation function has to return the payload of the EnOcean message.
 You do not have to worry about CRC and header data.
 If you want to use a mapping transformation, your mapping file has to look like this for a genericThing using EEP A5_FF_FF:
 
-```
+```text
 ChannelId|openHABCommand=EnoceanData(Hex)
 genericSwitch|ON=01000009
 genericSwitch|OFF=01000008

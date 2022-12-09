@@ -60,7 +60,7 @@ The devices support some of the following channels:
 | `alarm_burglary`            | Switch               | Indicates if a burglary alarm is active.                                                     | `area`                                              |
 | `alarm_fire`                | Switch               | Indicates if a fire alarm is active.                                                         | `area`                                              |
 | `alarm_gas`                 | Switch               | Indicates if a gas alarm is active.                                                          | `area`                                              |
-| `alarm_auxiliary`           | Switch               | Indicates if a auxiliary alarm is active.                                                    | `area`                                              |
+| `alarm_auxiliary`           | Switch               | Indicates if an auxiliary alarm is active.                                                   | `area`                                              |
 | `alarm_freeze`              | Switch               | Indicates if a freeze alarm is active.                                                       | `area`                                              |
 | `alarm_water`               | Switch               | Indicates if a water alarm is active.                                                        | `area`                                              |
 | `alarm_duress`              | Switch               | Indicates if a duress alarm is active.                                                       | `area`                                              |

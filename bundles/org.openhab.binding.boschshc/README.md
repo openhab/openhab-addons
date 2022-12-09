@@ -7,7 +7,7 @@ Binding for the Bosch Smart Home.
     - [In-Wall Switch](#in-wall-switch)
     - [Compact Smart Plug](#compact-smart-plug)
     - [Twinguard Smoke Detector](#twinguard-smoke-detector)
-    - [Door/Window Contact](#door-window-contact)
+    - [Door/Window Contact](#doorwindow-contact)
     - [Motion Detector](#motion-detector)
     - [Shutter Control](#shutter-control)
     - [Thermostat](#thermostat)
@@ -209,7 +209,7 @@ The system password is set by you during your initial registration steps in the 
 A keystore file with a self-signed certificate is created automatically.
 This certificate is used for pairing between the Bridge and the Bosch Smart Home Controller.
 
-*Press and hold the Bosch Smart Home Controller Bridge button until the LED starts blinking after you save your settings for pairing*.
+_Press and hold the Bosch Smart Home Controller Bridge button until the LED starts blinking after you save your settings for pairing_.
 
 ## Getting the device IDs
 
@@ -217,15 +217,15 @@ Bosch IDs for found devices are displayed in the openHAB log on bootup (`OPENHAB
 
 The log can also be called using the following command.
 
-```
+```bash
 tail -f /var/log/openhab/openhab.log /var/log/openhab/events.log
 ```
 
-Alternatively, the log can be viewed using the OpenHab Log Viewer (frontail) via http://openhab:9001.
+Alternatively, the log can be viewed using the OpenHab Log Viewer (frontail) via <http://openhab:9001>.
 
 Example:
 
-```
+```bash
 2020-08-11 12:42:49.490 [INFO ] [chshc.internal.BoschSHCBridgeHandler] - Found device: name=Heizung id=hdm:HomeMaticIP:3014F711A000XXXXXXXXXXXX
 2020-08-11 12:42:49.495 [INFO ] [chshc.internal.BoschSHCBridgeHandler] - Found device: name=-RoomClimateControl- id=roomClimateControl_hz_1
 2020-08-11 12:42:49.497 [INFO ] [chshc.internal.BoschSHCBridgeHandler] - Found device: name=-VentilationService- id=ventilationService
@@ -245,7 +245,7 @@ Example:
 
 You define your Bosch devices by adding them either to a `.things` file in your `$OPENHAB_CONF/things` folder like this:
 
-```
+```java
 Bridge boschshc:shc:1 [ ipAddress="192.168.x.y", password="XXXXXXXXXX" ] {
   Thing in-wall-switch bathroom "Bathroom" [ id="hdm:HomeMaticIP:3014F711A000XXXXXXXXXXXX" ]
   Thing in-wall-switch bedroom "Bedroom" [ id="hdm:HomeMaticIP:3014F711A000XXXXXXXXXXXX" ]
@@ -269,7 +269,7 @@ Or by adding them via UI: Settings -> Things -> "+" -> Bosch Smart Home Binding.
 
 You define the items which should be linked to your Bosch devices via a `.items` file in your `$OPENHAB_CONF/items` folder like this:
 
-```
+```java
 Switch Bosch_Bathroom    "Bath Room"    { channel="boschshc:in-wall-switch:1:bathroom:power-switch" }
 Switch Bosch_Bedroom     "Bed Room"     { channel="boschshc:in-wall-switch:1:bedroom:power-switch" }
 Switch Bosch_Kitchen     "Kitchen"      { channel="boschshc:in-wall-switch:1:kitchen:power-switch" }

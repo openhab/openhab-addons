@@ -133,8 +133,8 @@ public class TACmiCoEBridgeHandler extends BaseBridgeHandler {
 
                 } catch (RuntimeException e) {
                     // we catch runtime exceptions here to prevent the receiving thread to stop accidentally if
-                    // something like a IllegalStateException or NumberFormatExceptions are thrown. This indicates a bug
-                    // or a situation / setup I'm not thinking of ;)
+                    // something like an IllegalStateException or NumberFormatExceptions are thrown. This indicates a
+                    // bug or a situation / setup I'm not thinking of ;)
                     if (isInterrupted()) {
                         return;
                     }

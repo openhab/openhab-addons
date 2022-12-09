@@ -13,7 +13,7 @@ ThingTypeUID: `account`
 
 ### Generator
 
-A Generator thing represents a individual generator linked to an account bridge. Multiple generators are supported.  
+A Generator thing represents an individual generator linked to an account bridge. Multiple generators are supported.  
 
 ThingTypeUID: `generator`
 

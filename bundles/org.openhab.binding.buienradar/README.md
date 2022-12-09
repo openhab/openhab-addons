@@ -1,13 +1,12 @@
 # Buienradar Binding
 
-The Buienradar Binding periodically (5 minute intervals) retrieves rainfall predictions from the Dutch 
-[buienradar.nl webservice API.](https://www.buienradar.nl/overbuienradar/gratis-weerdata).
+The Buienradar Binding periodically (5 minute intervals) retrieves rainfall predictions from the Dutch [buienradar.nl webservice API.](https://www.buienradar.nl/overbuienradar/gratis-weerdata).
 
-Using the binding, we can 
+Using the binding, we can
 
-* warn of upcoming rainfall when there are open windows or doors
-* prevent watering the outside plants needlessly,
-* warn when we are about to leave the house.
+- warn of upcoming rainfall when there are open windows or doors
+- prevent watering the outside plants needlessly,
+- warn when we are about to leave the house.
 
 ## Supported Things
 
@@ -21,13 +20,13 @@ No auto-discovery is currently possible.
 
 The configuration can be done by adding a Rain Forecast Thing using the UI, or by adding it to a `.things` file:
 
-```
+```java
 Thing buienradar:rain_forecast:home [ location="52.198864211111925,5.4192629660193585" ]
 ```
 
 and adding the relevant items as such in your `.items` file. Please note that the buienradar service only provides predictions in 5 minutes intervals with a maximum of two hours (120 minutes):
 
-```
+```java
 Number RAIN_CURRENT "Current rain" (Rain) {channel="buienradar:rain_forecast:home:forecast_0" }
 Number RAIN_5MIN "Rain 5 min." (Rain) {channel="buienradar:rain_forecast:home:forecast_5" }
 Number RAIN_10MIN "Rain 10 min." (Rain) {channel="buienradar:rain_forecast:home:forecast_10" }
@@ -63,12 +62,10 @@ In this example we use the 'Discrete' plugin of Grafana to visualize the predict
 
 The mappings are as follows:
 
-* 0 – 0.01: None (rgba(204, 204, 204, 0))
-* 0.01 – 1: Very light (#badff4)
-* 1 – 5: Light (#6ed0e0)
-* 5 – 20: Medium (#1f78c1)
-* 20 – 50: Heavy (#ef843c)
-* 50 – 80: Very heavy (#e24d42)
-* 80 – 100: Extremely heavy (#890f02)
-
-
+- 0 – 0.01: None (rgba(204, 204, 204, 0))
+- 0.01 – 1: Very light (#badff4)
+- 1 – 5: Light (#6ed0e0)
+- 5 – 20: Medium (#1f78c1)
+- 20 – 50: Heavy (#ef843c)
+- 50 – 80: Very heavy (#e24d42)
+- 80 – 100: Extremely heavy (#890f02)

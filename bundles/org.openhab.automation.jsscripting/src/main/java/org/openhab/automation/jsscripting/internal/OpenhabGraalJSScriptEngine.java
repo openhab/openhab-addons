@@ -179,6 +179,9 @@ public class OpenhabGraalJSScriptEngine
         }
 
         ScriptContext ctx = delegate.getContext();
+        if (ctx == null) {
+            throw new IllegalStateException("Failed to retrieve script context");
+        }
 
         // these are added post-construction, so we need to fetch them late
         this.engineIdentifier = (String) ctx.getAttribute(CONTEXT_KEY_ENGINE_IDENTIFIER);
@@ -234,7 +237,6 @@ public class OpenhabGraalJSScriptEngine
     @Override
     public void close() {
         jsRuntimeFeatures.close();
-        delegate.close();
     }
 
     /**

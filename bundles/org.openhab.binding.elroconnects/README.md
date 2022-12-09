@@ -18,16 +18,16 @@ Many of the sensor devices are battery powered.
 
 The ELRO Connects supported device types are:
 
-* Elro Connects account: `account`
-* K1 connector hub: `connector`
-* Smoke detector: `smokealarm`
-* Carbon monoxide detector: `coalarm`
-* Heat detector: `heatalarm`
-* Water detector: `wateralarm`
-* Windows/door contact: `entrysensor`
-* Motion detector: `motionsensor`
-* Temperature and humidity monitor: `temperaturesensor`
-* Plug-in switch: `powersocket`
+- Elro Connects account: `account`
+- K1 connector hub: `connector`
+- Smoke detector: `smokealarm`
+- Carbon monoxide detector: `coalarm`
+- Heat detector: `heatalarm`
+- Water detector: `wateralarm`
+- Windows/door contact: `entrysensor`
+- Motion detector: `motionsensor`
+- Temperature and humidity monitor: `temperaturesensor`
+- Plug-in switch: `powersocket`
 
 `account` is a bridge thing type that will allow automatic discovery and configuration of the available K1 connectors on the specified ELRO Connects account.
 This bridge is optional.
@@ -49,7 +49,7 @@ All online K1 connectors configured on the account will be discovered.
 Notice that K1 connectors in another network than the LAN will also get discovered, but will not go online when accepted from the inbox without adjusting the `connector` configuration (set the IP address).
 
 The K1 connector `connector` will be auto-discovered when an ELRO Connects `account` bridge has been created and initialized.
-It can also be configured manually without first setting up an `account` bridge and linking it to that `account` bridge. 
+It can also be configured manually without first setting up an `account` bridge and linking it to that `account` bridge.
 Once the bridge thing representing the K1 connector is correctly set up and online, discovery will allow discovering all devices connected to the K1 connector (as set up in the Elro Connects app).
 
 If devices are outside reliable RF range, devices known to the K1 hub will be discovered but may stay offline when added as a thing.
@@ -172,7 +172,7 @@ The full syntax and help text is available in the console using the `elroconnect
 
 .things:
 
-```
+```java
 Bridge elroconnects:connector:myhub [ connectorId="ST_aabbccddaabbccdd", refreshInterval=120 ] {
     smokealarm 1 "LivingRoom" [ deviceId="1" ]
     coalarm 2 "Garage" [ deviceId="2" ]
@@ -187,7 +187,7 @@ Bridge elroconnects:connector:myhub [ connectorId="ST_aabbccddaabbccdd", refresh
 
 .items:
 
-```
+```java
 String Scene            {channel="elroconnects:connector:myhub:scene"}
 Number BatteryLevel     {channel="elroconnects:smokealarm:myhub:1:battery"}
 Switch AlarmTest        {channel="elroconnects:smokealarm:myhub:1:test"}
@@ -195,7 +195,7 @@ Switch AlarmTest        {channel="elroconnects:smokealarm:myhub:1:test"}
 
 .sitemap:
 
-```
+```perl
 Text item=Scene
 Number item=BatteryLevel
 Switch item=AlarmTest
@@ -203,7 +203,7 @@ Switch item=AlarmTest
 
 Example trigger rule:
 
-```
+```java
 rule "example trigger rule"
 when
     Channel 'elroconnects:smokealarm:myhub:1:smokeAlarm' triggered

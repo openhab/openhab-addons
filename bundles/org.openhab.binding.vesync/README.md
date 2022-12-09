@@ -16,11 +16,11 @@ Air Humidifier Classic 200S (Same as 300S without the nightlight from initial ch
 
 This binding supports the follow thing types:
 
-| Thing          | Thing Type | Thing Type UID | Discovery | Description                                                          |
-|----------------|------------|----------------|-----------|----------------------------------------------------------------------|
-| Bridge         | Bridge     | bridge         | Manual    | A single connection to the VeSync API                                |
-| Air Purifier   | Thing      | airPurifier    | Automatic | A Air Purifier supporting V2 e.g. Core200S/Core300S or Core400S unit |
-| Air Humidifier | Thing      | airHumidifier  | Automatic | A Air Humidifier supporting V2 e.g. Classic300S or 600s              |
+| Thing          | Thing Type | Thing Type UID | Discovery | Description                                                           |
+|----------------|------------|----------------|-----------|-----------------------------------------------------------------------|
+| Bridge         | Bridge     | bridge         | Manual    | A single connection to the VeSync API                                 |
+| Air Purifier   | Thing      | airPurifier    | Automatic | An Air Purifier supporting V2 e.g. Core200S/Core300S or Core400S unit |
+| Air Humidifier | Thing      | airHumidifier  | Automatic | An Air Humidifier supporting V2 e.g. Classic300S or 600s              |
 
 
 

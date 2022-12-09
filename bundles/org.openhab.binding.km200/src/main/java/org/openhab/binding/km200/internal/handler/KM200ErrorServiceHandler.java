@@ -112,7 +112,7 @@ public class KM200ErrorServiceHandler {
     }
 
     /**
-     * This function returns a error string with all parameters
+     * This function returns an error string with all parameters
      */
     public @Nullable String getErrorString() {
         String value = "";

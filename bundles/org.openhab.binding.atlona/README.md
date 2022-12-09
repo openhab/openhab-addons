@@ -1,7 +1,7 @@
 # Atlona Binding
 
 This binding integrates Atlona AT-UHD-PRO3 HdBaseT matrix switches [Atlona AT-UHD-PRO3 HdBaseT matrix switches](https://www.atlona.com) into your openHAB installation.
-The older HD model 6x6 matrix [AT-PRO3HD66M] (https://atlona.com/product/at-pro3hd66m/) is also supported.
+The older HD model 6x6 matrix [AT-PRO3HD66M](https://atlona.com/product/at-pro3hd66m/) is also supported.
 
 ## Supported Things
 
@@ -190,14 +190,14 @@ The # of presets allowed depends on the firmware you are using (5 presets up to 
 
 As of firmware 1.6.03 (rev 13), there are three issues on Atlona firmware (I have notified them on these issues):
 
--   clearX command does not work.  The TCP/IP command "ClearX" as specified in Atlona's protocol will ALWAYS return a "Command Failed".  Please avoid this channel until atlona releases a new firmware.
+- clearX command does not work.  The TCP/IP command "ClearX" as specified in Atlona's protocol will ALWAYS return a "Command Failed".  Please avoid this channel until atlona releases a new firmware.
 
--   There is no way to query what the current status is of: panellock, and irenable.  This add-on simply assumes that panellock is off and irenable is on at startup.
+- There is no way to query what the current status is of: panellock, and irenable.  This add-on simply assumes that panellock is off and irenable is on at startup.
 
--   If you make a change in the switches UI that requires a reboot (mainly changing any of the settings on the "Network" tab in the switch configuration UI), this add-on's connection will be inconsistently closed at different times.
+- If you make a change in the switches UI that requires a reboot (mainly changing any of the settings on the "Network" tab in the switch configuration UI), this add-on's connection will be inconsistently closed at different times.
 The thing will go OFFLINE and then back ONLINE when the reconnect attempt is made - and then it starts all over again.  Please make sure you reboot as soon as possible when the switch UI notifies you.
 
--   a bug in the firmware will sometimes cause memory presets to disappear after a reboot
+- a bug in the firmware will sometimes cause memory presets to disappear after a reboot
 
 As of firmware 1.6.8 (rev 14),
 
@@ -211,19 +211,19 @@ As of firmware 1.6.8 (rev 14),
 
 Here is an example with minimal configuration parameters (using default values with no telnet login):
 
-```
+```java
 atlona:pro3-88m:home [ ipAddress="192.168.1.30" ]
 ```
 
 Here is another example with minimal configuration parameters (using default values with telnet login):
 
-```
+```java
 atlona:pro3-88m:home [ ipAddress="192.168.1.30", userName="me", password="12345" ]
 ```
 
 Here is a full configuration example:
 
-```
+```java
 atlona:pro3-88m:home [ ipAddress="192.168.1.30", userName="me", password="12345", polling=600, ping=30, retryPolling=10 ]
 ```
 
@@ -231,7 +231,7 @@ atlona:pro3-88m:home [ ipAddress="192.168.1.30", userName="me", password="12345"
 
 Here is an example of items for the AT-UHD-PRO33-88M:
 
-```
+```java
 Switch Atlona_Power "Power" { channel = "atlona:pro3-88m:home:primary#power" }
 Switch Atlona_PanelLock "Panel Lock" { channel = "atlona:pro3-88m:home:primary#panellock" }
 Switch Atlona_Presets "Preset Command" { channel = "atlona:pro3-88m:home:primary#presetcmd" }
@@ -274,7 +274,7 @@ Switch Atlona_VolumeMute6 "Mute 6" { channel = "atlona:pro3-88m:home:volume1#vol
 
 ### SiteMap
 
-```
+```perl
 sitemap demo label="Main Menu" {
     Frame label="Atlona" {
         Text label="Device" {
@@ -332,7 +332,7 @@ Be sure they are in sync with the mappings above.
 
 ### atlonainputports.map
 
-```
+```text
 1=CableBox
 2=BluRay Player
 3=Roku
@@ -347,7 +347,7 @@ NULL=-
 
 ### atlonaoutputports.map
 
-```
+```text
 1=Living Room
 2=Master Bed
 3=Kitchen

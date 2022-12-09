@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  * The {@link AbstractSensorJobExecutor} provides the working process to execute implementations of {@link SensorJob}'s
  * in the time interval set at the {@link Config}.
  * <p>
- * The following methods can be overridden by subclasses to implement a execution priority:
+ * The following methods can be overridden by subclasses to implement an execution priority:
  * </p>
  * <ul>
  * <li>{@link #addLowPriorityJob(SensorJob)}</li>

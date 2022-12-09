@@ -26,7 +26,7 @@ There is no support to discover the available keypads.
 
 ## Prerequisites
 
-For the binding to work the panel has also to be programmed appropriately. 
+For the binding to work the panel has also to be programmed appropriately.
 
 ### Programming locations for the NX-8E control panel
 
@@ -281,7 +281,7 @@ The binding supports the following actions on the respective things.
 
 The following is an example of a things file (caddx.things):
 
-```
+```java
 Bridge caddx:bridge:thebridge  "Bridge"                   [ protocol="Binary", serialPort="/dev/ttyUSB0", baud=38400, maxZoneNumber=18 ] {
     Thing partition partition1 "Groundfloor alarm"        [ partitionNumber=1 ]
     Thing zone      zone1      "Livingroom motion sensor" [ zoneNumber=1 ]
@@ -295,7 +295,7 @@ Bridge caddx:bridge:thebridge  "Bridge"                   [ protocol="Binary", s
 
 The following is an example of an items file (caddx.items):
 
-```
+```java
 Group:Contact:OR(OPEN,CLOSED)  MotionSensors   "Motion Sensors [%s]"   <motion>
 Group:Contact:OR(OPEN,CLOSED)  Windows         "Windows open [%s]"     <window>
 
@@ -312,7 +312,7 @@ Switch    Partition1_EntryGuard "Entry Guard [%s]"      <groundfloor>   { channe
 
 The following is an example of a sitemap file (home.sitemap):
 
-```
+```perl
 sitemap home label="Home" {
     Frame label="Ground floor" {
     Text item=Partition1_Armed
@@ -337,7 +337,7 @@ sitemap home label="Home" {
 
 The following is a rule example with calling of an action on the binding
 
-```
+```java
 rule "Zone Bypass on Chime Off"
 when
     Item caddx_partition_thebridge_partition1_partition_chime_mode_on changed from ON to OFF

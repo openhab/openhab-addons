@@ -270,7 +270,7 @@ public class NanoleafPanelHandler extends BaseThingHandler {
     /**
      * Apply the gesture to the panel
      *
-     * @param gesture Only 0=single tap and 1=double tap are supported
+     * @param gesture Only 0=single tap, 1=double tap and 6=long press are supported
      */
     public void updatePanelGesture(int gesture) {
         switch (gesture) {
@@ -279,6 +279,9 @@ public class NanoleafPanelHandler extends BaseThingHandler {
                 break;
             case 1:
                 triggerChannel(CHANNEL_PANEL_TAP, CommonTriggerEvents.DOUBLE_PRESSED);
+                break;
+            case 6:
+                triggerChannel(CHANNEL_PANEL_TAP, CommonTriggerEvents.LONG_PRESSED);
                 break;
         }
     }

@@ -60,7 +60,7 @@ Note: If you would also like to use the binding to set parameter values, ensure 
 
 bsblan.things:
 
-```
+```java
 Bridge bsblan:bridge:heating [host="192.168.1.100", refreshInterval=30, username="atari", password="800xl"] {
     Thing parameter p700  [id=700]
     Thing parameter p710  [id=710]
@@ -70,7 +70,7 @@ Bridge bsblan:bridge:heating [host="192.168.1.100", refreshInterval=30, username
 
 bsblan.items:
 
-```
+```java
 Number BsbParameter700NumberValue  { channel="bsblan:parameter:heating:p700:number-value" }
 Number BsbParameter710NumberValue  { channel="bsblan:parameter:heating:p710:number-value" }
 String BsbParameter8730Description { channel="bsblan:parameter:heating:p8730:description" }
@@ -78,7 +78,7 @@ String BsbParameter8730Description { channel="bsblan:parameter:heating:p8730:des
 
 bsblan.sitemap:
 
-```
+```perl
 sitemap bsblan label="BSB-LAN" {
     Selection item=BsbParameter700NumberValue label="Operating Mode" mappings=[0="Protection", 1="Automatic", 2="Reduced", 3="Comfort"] icon="heating"
     Setpoint item=BsbParameter710NumberValue label="Room Temperature Comfort Setpoint [%.1f °C]" icon="temperature" minValue=22.0 maxValue=25.0 step=0.5

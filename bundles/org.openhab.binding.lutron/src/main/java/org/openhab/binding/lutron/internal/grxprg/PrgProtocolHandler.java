@@ -431,7 +431,7 @@ class PrgProtocolHandler {
     }
 
     /**
-     * Converts a hex zone intensity back to a integer - handles shade zones as well
+     * Converts a hex zone intensity back to an integer - handles shade zones as well
      *
      * @param controlUnit the control unit
      * @param zone the zone

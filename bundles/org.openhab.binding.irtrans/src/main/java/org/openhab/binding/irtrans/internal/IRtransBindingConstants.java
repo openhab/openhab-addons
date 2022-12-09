@@ -36,7 +36,7 @@ public class IRtransBindingConstants {
     public static final String BLASTER_CHANNEL_TYPE = "blaster";
     public static final String RECEIVER_CHANNEL_TYPE = "receiver";
 
-    // List of possible leds on a IRtrans transceiver
+    // List of possible leds on an IRtrans transceiver
     public enum Led {
         DEFAULT("D"),
         INTERNAL("I"),

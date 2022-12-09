@@ -156,10 +156,10 @@ The controller bridge has the following channels:
 
 A lightpanel thing has the following channels:
 
-| Channel             | Type      | Description                                                                                              | Read Only |
-|---------------------|-----------|----------------------------------------------------------------------------------------------------------|-----------|
-| color               | Color     | Color of the individual light panel                                                                      | No        |
-| tap                 | Trigger   | [Canvas / Shapes Only] Sends events of gestures. SHORT_PRESSED and DOUBLE_PRESSED events are supported.  | Yes       |
+| Channel             | Type      | Description                                                                                                           | Read Only |
+|---------------------|-----------|-----------------------------------------------------------------------------------------------------------------------|-----------|
+| color               | Color     | Color of the individual light panel                                                                                   | No        |
+| tap                 | Trigger   | [Canvas / Shapes Only] Sends events of gestures. SHORT_PRESSED, LONG_PRESSED and DOUBLE_PRESSED events are supported. | Yes       |
 
 The color channels support full color control with hue, saturation and brightness values.
 For example, brightness of *all* panels at once can be controlled by defining a dimmer item for the color channel of the *controller thing*.
