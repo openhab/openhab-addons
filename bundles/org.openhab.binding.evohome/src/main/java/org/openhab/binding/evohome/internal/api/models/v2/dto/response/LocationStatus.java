@@ -10,31 +10,33 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.evohome.internal.api.models.v2.response;
+package org.openhab.binding.evohome.internal.api.models.v2.dto.response;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Response model for the gateway info
+ * Response model for the location status
  *
  * @author Jasper van Zuijlen - Initial contribution
  *
  */
-public class GatewayInfo {
+public class LocationStatus {
 
-    @SerializedName("gatewayId")
-    private String gatewayId;
+    @SerializedName("locationId")
+    private String locationId;
 
-    @SerializedName("mac")
-    private String macAddress;
+    @SerializedName("gateways")
+    private List<GatewayStatus> gateways;
 
-    @SerializedName("crc")
-    private String crc;
+    public LocationStatus() {
+        locationId = "";
+        gateways = new ArrayList<>();
+    }
 
-    @SerializedName("isWiFi")
-    private boolean isWifi;
-
-    public String getGatewayId() {
-        return gatewayId;
+    public List<GatewayStatus> getGateways() {
+        return gateways;
     }
 }

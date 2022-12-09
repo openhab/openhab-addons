@@ -10,25 +10,25 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.evohome.internal.api.models.v2.response;
+package org.openhab.binding.evohome.internal.api.models.v2.dto.response;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Response model for the system mode status
+ * Response model for the active fault
  *
  * @author Jasper van Zuijlen - Initial contribution
  *
  */
-public class SystemModeStatus {
+public class ActiveFault {
 
-    @SerializedName("mode")
-    private String mode;
+    @SerializedName("faultType")
+    private String faultType;
 
-    @SerializedName("isPermanent")
-    private boolean isPermanent;
+    @SerializedName("since")
+    private String since;
 
-    public String getMode() {
-        return mode;
+    public String getFaultType() {
+        return faultType;
     }
 }

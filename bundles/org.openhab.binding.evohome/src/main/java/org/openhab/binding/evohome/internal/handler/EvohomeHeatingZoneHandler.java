@@ -12,8 +12,10 @@
  */
 package org.openhab.binding.evohome.internal.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.evohome.internal.EvohomeBindingConstants;
-import org.openhab.binding.evohome.internal.api.models.v2.response.ZoneStatus;
+import org.openhab.binding.evohome.internal.api.models.v2.dto.response.ZoneStatus;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
@@ -31,11 +33,12 @@ import org.openhab.core.types.RefreshType;
  * @author Neil Renaud - Working implementation
  * @author Jasper van Zuijlen - Refactor + Permanent Zone temperature setting
  */
+@NonNullByDefault
 public class EvohomeHeatingZoneHandler extends BaseEvohomeHandler {
 
     private static final int CANCEL_SET_POINT_OVERRIDE = 0;
-    private ThingStatus tcsStatus;
-    private ZoneStatus zoneStatus;
+    private @Nullable ThingStatus tcsStatus;
+    private @Nullable ZoneStatus zoneStatus;
 
     public EvohomeHeatingZoneHandler(Thing thing) {
         super(thing);
@@ -46,7 +49,7 @@ public class EvohomeHeatingZoneHandler extends BaseEvohomeHandler {
         super.initialize();
     }
 
-    public void update(ThingStatus tcsStatus, ZoneStatus zoneStatus) {
+    public void update(@Nullable ThingStatus tcsStatus, @Nullable ZoneStatus zoneStatus) {
         this.tcsStatus = tcsStatus;
         this.zoneStatus = zoneStatus;
 

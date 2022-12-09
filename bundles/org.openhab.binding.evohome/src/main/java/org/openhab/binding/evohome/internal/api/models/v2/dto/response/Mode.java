@@ -10,36 +10,33 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.evohome.internal.api.models.v2.request;
+package org.openhab.binding.evohome.internal.api.models.v2.dto.response;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Request model for the mode
+ * Response model for the mode
  *
  * @author Jasper van Zuijlen - Initial contribution
  *
  */
 public class Mode {
 
-    Mode(String mode) {
-        systemMode = mode;
-        timeUntil = null;
-        permanent = true;
-    }
-
-    Mode(String mode, int day, int month, int year) {
-        systemMode = mode;
-        timeUntil = String.format("%s-%s-%sT00:00:00Z", year, month, day);
-        permanent = false;
-    }
-
     @SerializedName("systemMode")
     private String systemMode;
 
-    @SerializedName("timeUntil")
-    private String timeUntil;
+    @SerializedName("canBePermanent")
+    private boolean canBePermanent;
 
-    @SerializedName("permanent")
-    private boolean permanent;
+    @SerializedName("canBeTemporary")
+    private boolean canBeTemporary;
+
+    @SerializedName("timingMode")
+    private String timingMode;
+
+    @SerializedName("maxDuration")
+    private String maxDuration;
+
+    @SerializedName("timingResolution")
+    private String timingResolution;
 }

@@ -10,27 +10,29 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.evohome.internal.api.models.v2.response;
+package org.openhab.binding.evohome.internal.api.models.v2.dto.response;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Response model for the schedule capabilities
+ * Response model for the heat setpoint status
  *
  * @author Jasper van Zuijlen - Initial contribution
  *
  */
-public class ScheduleCapabilities {
+public class HeatSetpointStatus {
 
-    @SerializedName("maxSwitchpointsPerDay")
-    private int maxSwitchpointsPerDay;
+    @SerializedName("targetHeatTemperature")
+    private double targetTemperature;
 
-    @SerializedName("minSwitchpointsPerDay")
-    private int minSwitchpointsPerDay;
+    @SerializedName("setpointMode")
+    private String setpointMode;
 
-    @SerializedName("setpointValueResolution")
-    private double setpointValueResolution;
+    public double getTargetTemperature() {
+        return targetTemperature;
+    }
 
-    @SerializedName("timingResolution")
-    private String timingResolution;
+    public String getSetpointMode() {
+        return setpointMode;
+    }
 }

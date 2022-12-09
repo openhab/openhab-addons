@@ -10,31 +10,25 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.evohome.internal.api.models.v2.response;
-
-import java.util.List;
+package org.openhab.binding.evohome.internal.api.models.v2.dto.response;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Response model for the location
+ * Response model for the temperature status
  *
  * @author Jasper van Zuijlen - Initial contribution
  *
  */
-public class Location {
+public class TemperatureStatus {
 
-    @SerializedName("locationInfo")
-    private LocationInfo locationInfo;
+    @SerializedName("temperature")
+    private double temperature;
 
-    @SerializedName("gateways")
-    private List<Gateway> gateways;
+    @SerializedName("isAvailable")
+    private boolean isAvailable;
 
-    public LocationInfo getLocationInfo() {
-        return locationInfo;
-    }
-
-    public List<Gateway> getGateways() {
-        return gateways;
+    public double getTemperature() {
+        return temperature;
     }
 }

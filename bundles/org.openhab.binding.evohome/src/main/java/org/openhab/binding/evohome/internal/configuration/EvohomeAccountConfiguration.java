@@ -12,15 +12,18 @@
  */
 package org.openhab.binding.evohome.internal.configuration;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Contains the configuration of the binding.
  *
  * @author Jasper van Zuijlen - Initial contribution
  *
  */
+@NonNullByDefault
 public class EvohomeAccountConfiguration {
-    public String username;
-    public String password;
-    public String applicationId;
+    public String username = "";
+    public String password = "";
+    public String applicationId = "";
     public int refreshInterval;
 }

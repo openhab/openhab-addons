@@ -10,29 +10,30 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.evohome.internal.api.models.v2.response;
+package org.openhab.binding.evohome.internal.api.models.v2.dto.response;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Response model for the heat setpoint status
+ * Response model for the time zone
  *
  * @author Jasper van Zuijlen - Initial contribution
  *
  */
-public class HeatSetpointStatus {
+public class TimeZone {
 
-    @SerializedName("targetHeatTemperature")
-    private double targetTemperature;
+    @SerializedName("timeZoneId")
+    private String timeZoneId;
 
-    @SerializedName("setpointMode")
-    private String setpointMode;
+    @SerializedName("displayName")
+    private String displayName;
 
-    public double getTargetTemperature() {
-        return targetTemperature;
-    }
+    @SerializedName("offsetMinutes")
+    private int offsetMinutes;
 
-    public String getSetpointMode() {
-        return setpointMode;
-    }
+    @SerializedName("currentOffsetMinutes")
+    private int currentOffsetMinutes;
+
+    @SerializedName("supportsDaylightSaving")
+    private boolean supportsDaylightSaving;
 }

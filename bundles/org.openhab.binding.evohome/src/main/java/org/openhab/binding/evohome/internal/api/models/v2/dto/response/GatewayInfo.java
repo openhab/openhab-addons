@@ -10,25 +10,31 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.evohome.internal.api.models.v2.response;
+package org.openhab.binding.evohome.internal.api.models.v2.dto.response;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Response model for the temperature status
+ * Response model for the gateway info
  *
  * @author Jasper van Zuijlen - Initial contribution
  *
  */
-public class TemperatureStatus {
+public class GatewayInfo {
 
-    @SerializedName("temperature")
-    private double temperature;
+    @SerializedName("gatewayId")
+    private String gatewayId;
 
-    @SerializedName("isAvailable")
-    private boolean isAvailable;
+    @SerializedName("mac")
+    private String macAddress;
 
-    public double getTemperature() {
-        return temperature;
+    @SerializedName("crc")
+    private String crc;
+
+    @SerializedName("isWiFi")
+    private boolean isWifi;
+
+    public String getGatewayId() {
+        return gatewayId;
     }
 }

@@ -10,30 +10,27 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.evohome.internal.api.models.v2.response;
+package org.openhab.binding.evohome.internal.api.models.v2.dto.response;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Response model for the time zone
+ * Response model for the location owner
  *
  * @author Jasper van Zuijlen - Initial contribution
  *
  */
-public class TimeZone {
+public class LocationOwner {
 
-    @SerializedName("timeZoneId")
-    private String timeZoneId;
+    @SerializedName("userId")
+    private int userId;
 
-    @SerializedName("displayName")
-    private String displayName;
+    @SerializedName("username")
+    private String username;
 
-    @SerializedName("offsetMinutes")
-    private int offsetMinutes;
+    @SerializedName("firstname")
+    private String firstName;
 
-    @SerializedName("currentOffsetMinutes")
-    private int currentOffsetMinutes;
-
-    @SerializedName("supportsDaylightSaving")
-    private boolean supportsDaylightSaving;
+    @SerializedName("lastname")
+    private String lastName;
 }

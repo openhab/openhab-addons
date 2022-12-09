@@ -10,25 +10,16 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.evohome.internal.api.models.v2.response;
+package org.openhab.binding.evohome.internal.api.models.v2.dto.response;
 
-import com.google.gson.annotations.SerializedName;
+import java.util.ArrayList;
 
 /**
- * Response model for the active fault
+ * Alias for a list of location statuses
  *
  * @author Jasper van Zuijlen - Initial contribution
  *
  */
-public class ActiveFault {
-
-    @SerializedName("faultType")
-    private String faultType;
-
-    @SerializedName("since")
-    private String since;
-
-    public String getFaultType() {
-        return faultType;
-    }
+public class LocationsStatus extends ArrayList<LocationStatus> {
+    private static final long serialVersionUID = 1L;
 }
