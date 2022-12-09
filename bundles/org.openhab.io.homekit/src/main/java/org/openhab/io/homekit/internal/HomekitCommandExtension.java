@@ -17,7 +17,10 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.io.console.Console;
+import org.openhab.core.io.console.ConsoleCommandCompleter;
+import org.openhab.core.io.console.StringsCompleter;
 import org.openhab.core.io.console.extensions.AbstractConsoleCommandExtension;
 import org.openhab.core.io.console.extensions.ConsoleCommandExtension;
 import org.openhab.io.homekit.Homekit;
@@ -43,6 +46,20 @@ public class HomekitCommandExtension extends AbstractConsoleCommandExtension {
     private static final String SUBCMD_ALLOW_UNAUTHENTICATED = "allowUnauthenticated";
     private static final String SUBCMD_PRUNE_DUMMY_ACCESSORIES = "pruneDummyAccessories";
     private static final String SUBCMD_LIST_DUMMY_ACCESSORIES = "listDummyAccessories";
+    private static final StringsCompleter SUBCMD_COMPLETER = new StringsCompleter(
+            List.of(SUBCMD_CLEAR_PAIRINGS, SUBCMD_LIST_ACCESSORIES, SUBCMD_PRINT_ACCESSORY,
+                    SUBCMD_ALLOW_UNAUTHENTICATED, SUBCMD_PRUNE_DUMMY_ACCESSORIES, SUBCMD_LIST_DUMMY_ACCESSORIES),
+            false);
+
+    private class CommandCompleter implements ConsoleCommandCompleter {
+        public boolean complete(String[] args, int cursorArgumentIndex, int cursorPosition, List<String> candidates) {
+            if (cursorArgumentIndex == 0) {
+                boolean result = SUBCMD_COMPLETER.complete(args, cursorArgumentIndex, cursorPosition, candidates);
+                return result;
+            }
+            return false;
+        }
+    }
 
     private final Logger logger = LoggerFactory.getLogger(HomekitCommandExtension.class);
 
@@ -112,6 +129,11 @@ public class HomekitCommandExtension extends AbstractConsoleCommandExtension {
     @Reference
     public void setHomekit(Homekit homekit) {
         this.homekit = homekit;
+    }
+
+    @Override
+    public @Nullable ConsoleCommandCompleter getCompleter() {
+        return new CommandCompleter();
     }
 
     private void clearHomekitPairings(Console console) {
