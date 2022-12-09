@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.icloud.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  *
  * Exception for errors during calls of the iCloud API.
  *
  * @author Simon Spielmann Initial contribution
  */
+@NonNullByDefault
 public class ICloudApiResponseException extends RuntimeException {
 
     private int statusCode;

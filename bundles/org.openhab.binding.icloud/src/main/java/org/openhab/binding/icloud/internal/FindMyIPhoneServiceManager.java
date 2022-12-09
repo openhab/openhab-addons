@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.icloud.internal.json.response.ICloudDeviceInformation;
 
 import com.google.gson.Gson;
@@ -27,6 +28,7 @@ import com.google.gson.GsonBuilder;
  *
  * @author Simon Spielmann Initial Contribution.
  */
+@NonNullByDefault
 public class FindMyIPhoneServiceManager {
 
     private ICloudSession session;

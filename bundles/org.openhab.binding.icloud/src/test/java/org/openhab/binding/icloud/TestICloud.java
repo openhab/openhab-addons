@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Scanner;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.openhab.binding.icloud.internal.ICloudDeviceInformationParser;
@@ -32,10 +34,13 @@ import org.openhab.core.storage.json.internal.JsonStorage;
  *
  * @author Simon Spielmann
  */
+@NonNullByDefault
 public class TestICloud {
 
+    @Nullable
     private final String E_MAIL = System.getProperty("icloud.test.email");
 
+    @Nullable
     private final String PW = System.getProperty("icloud.test.pw");
 
     @Test
@@ -49,7 +54,6 @@ public class TestICloud {
                 0, 1000, 1000, List.of());
 
         ICloudService service = new ICloudService(this.E_MAIL, this.PW, stateStorage);
-        // ICloudService service = new ICloudService(this.E_MAIL, this.PW, new VolatileStorage<>());
         service.authenticate(false);
         if (service.requires2fa()) {
             System.out.print("Code: ");
