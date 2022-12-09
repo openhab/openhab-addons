@@ -10,7 +10,7 @@ The CCU has to be configured to have "XML-RPC" set to "Full Access" or "Restrict
 Also the "Remote Homematic-Script API" has to be set to "Full Access" or "Restricted access".
 When the option "Restricted access" is used, some ports have to be added to the "Port opening" list.
 
-```
+```text
 2000;
 2001;
 2010;
@@ -24,7 +24,7 @@ Also under `Home page > Settings > Control panel` with the menu `Security` the o
 
 If this is not done the binding will not be able to connect to the CCU and the CCU Thing will stay uninitialized and sets a timeout exception:
 
-```
+```text
 xxx-xx-xx xx:xx:xx.xxx [hingStatusInfoChangedEvent] - - 'homematic:bridge:xxx' changed from INITIALIZING to OFFLINE (COMMUNICATION_ERROR): java.net.SocketTimeoutException: Connect Timeout
 ```
 
@@ -175,9 +175,9 @@ If set to true, devices are automatically unpaired from the gateway when their c
 If set to true, devices are automatically factory reset when their corresponding things are removed.
 Due to the factory reset, the device will also be unpaired from the gateway, even if "unpairOnDeletion" is set to false! (default = false)
 
-- **bufferSize** 
-If a large number of devices are connected to the gateway, the default buffersize of 2048 kB may be too small for communication with the gateway. 
-In this case, e.g. the discovery fails. 
+- **bufferSize**
+If a large number of devices are connected to the gateway, the default buffersize of 2048 kB may be too small for communication with the gateway.
+In this case, e.g. the discovery fails.
 With this setting the buffer size can be adjusted. The value is specified in kB.
 
 The syntax for a bridge is:
@@ -192,19 +192,19 @@ homematic:bridge:NAME
 
 ### Example
 
-**Minimum configuration**
+#### Minimum configuration
 
 ```java
 Bridge homematic:bridge:ccu [ gatewayAddress="..."]
 ```
 
-**With callback settings**
+#### With callback settings
 
 ```java
 Bridge homematic:bridge:ccu [ gatewayAddress="...", callbackHost="...", callbackPort=... ]
 ```
 
-**Multiple bridges**
+#### Multiple bridges
 
 ```java
 Bridge homematic:bridge:lxccu [ gatewayAddress="..."]
@@ -374,10 +374,10 @@ The remote control display is limited to five characters, a longer text is trunc
 
 You have several additional options to control the display.
 
-- BEEP *(TONE1, TONE2, TONE3)* - let the remote control beep
-- BACKLIGHT *(BACKLIGHT_ON, BLINK_SLOW, BLINK_FAST)* - control the display backlight
-- UNIT *(PERCENT, WATT, CELSIUS, FAHRENHEIT)* - display one of these units
-- SYMBOL *(BULB, SWITCH, WINDOW, DOOR, BLIND, SCENE, PHONE, BELL, CLOCK, ARROW_UP, ARROW_DOWN)* - display symbols, multiple symbols possible
+- BEEP _(TONE1, TONE2, TONE3)_ - let the remote control beep
+- BACKLIGHT _(BACKLIGHT_ON, BLINK_SLOW, BLINK_FAST)_ - control the display backlight
+- UNIT _(PERCENT, WATT, CELSIUS, FAHRENHEIT)_ - display one of these units
+- SYMBOL _(BULB, SWITCH, WINDOW, DOOR, BLIND, SCENE, PHONE, BELL, CLOCK, ARROW_UP, ARROW_DOWN)_ - display symbols, multiple symbols possible
 
 You can combine any option, they must be separated by a comma.
 If you specify more than one option for BEEP, BACKLIGHT and UNIT, only the first one is taken into account and all others are ignored. For SYMBOL you can specify multiple options.
@@ -426,11 +426,11 @@ Adds multiple virtual datapoints to the HM-Dis-WM55 and HM-Dis-EP-WM55 devices t
 
 **Note:** The HM-Dis-EP-WM55 has only a black and white display and therefore does not support datapoints for colored lines. In addition, only lines 1-3 can be set.
 
-#### Example ####
+#### Example
 
 Display text at line 1,3 and 5 when the bottom button on the display is pressed
 
-**Items**
+##### Items
 
 ```java
 String Display_line_1   "Line 1"    { channel="homematic:HM-Dis-WM55:ccu:NEQ0123456:1#DISPLAY_LINE_1" }
@@ -449,7 +449,7 @@ Switch Button_bottom    "Button"    { channel="homematic:HM-Dis-WM55:ccu:NEQ0123
 Switch Display_submit   "Submit"    { channel="homematic:HM-Dis-WM55:ccu:NEQ0123456:1#DISPLAY_SUBMIT" }
 ```
 
-**Rule**
+##### Rule
 
 ```javascript
 rule "Display Test"
@@ -473,6 +473,7 @@ end
 ```
 
 **Available icons:**
+
 - NONE
 - OFF
 - ON
@@ -488,6 +489,7 @@ end
 - SIGNAL_RED
 
 **Available colors (only HM-Dis-WM55):**
+
 - NONE(=WHITE)
 - WHITE
 - RED
@@ -503,6 +505,7 @@ The HmIP-WRCD display lines can be set via a combined parameter:
 ```java
 String Display_CombinedParam "Combined Parameter" {channel="homematic:HmIP-WRCD:ccu:123456:3#COMBINED_PARAMETER"}
 ```
+
 #### Set Display Lines
 
 The combined parameter can be used in a rule file like this:
@@ -518,17 +521,18 @@ openhab:send Display_CombinedParam '{DDBC=WHITE,DDTC=BLACK,DDI=0,DDA=CENTER,DDS=
 ```
 
 **Key translation:**
-- DDBC: Background color of this line. (*WHITE*, *BLACK*)
-- DDTC: Text color of this line. (*WHITE*, *BLACK*)
+
+- DDBC: Background color of this line. (_WHITE_, _BLACK_)
+- DDTC: Text color of this line. (_WHITE_, _BLACK_)
 - DDI: Icon to be shown after text. (see icon listing below)
-- DDA: Alignment of this line. (*LEFT*, *CENTER*, *RIGHT*)
+- DDA: Alignment of this line. (_LEFT_, _CENTER_, _RIGHT_)
 - DDS: Text of this line. (String, but see special character listing below)
-- DDID: Line number. (*1-5*)
-- DDC: Commit, should be set in the last line, otherwise leave unset. (*true*)
+- DDID: Line number. (_1-5_)
+- DDC: Commit, should be set in the last line, otherwise leave unset. (_true_)
 
 Each line can be updated separately without changing the other lines.
 
-Multiple lines can be updated within one command, use comma to separate each line. 
+Multiple lines can be updated within one command, use comma to separate each line.
 Here an example for a rule file:
 
 ```java
@@ -536,6 +540,7 @@ Display_CombinedParam.sendCommand("{DDBC=WHITE,DDTC=BLACK,DDI=24,DDA=LEFT,DDS=Wi
 ```
 
 **Special Characters:**
+
 - [ -> Ä
 - \# -> Ö
 - $ -> Ü
@@ -552,6 +557,7 @@ Display_CombinedParam.sendCommand("{DDBC=WHITE,DDTC=BLACK,DDI=24,DDA=LEFT,DDS=Wi
 - @ -> Arrow Down Right
 
 **Icons:**
+
 - 0 - No Icon
 - 1 - Light off
 - 2 - Light on
@@ -592,17 +598,21 @@ The display can also make short beep alarms:
 ```java
 Display_CombinedParam.sendCommand("{R=0,IN=10,ANS=0}")
 ```
-Note, that a commit (`DDC`) is not necessary for sounds. 
+
+Note, that a commit (`DDC`) is not necessary for sounds.
 
 As with line configuration, this can be combined with other line updates, separated with a comma.
 
-**Key translations**
-- R: Repetitions (*0 to 15*, 15=infinite)
-- IN: Interval (*5 to 80* in steps of five)
-- ANS: Beep sound (*-1 to 7*, see beep table)
+##### Key translations
 
-**Beep Sounds**
+- R: Repetitions (_0 to 15_, 15=infinite)
+- IN: Interval (_5 to 80_ in steps of five)
+- ANS: Beep sound (_-1 to 7_, see beep table)
+
+##### Beep Sounds
+
 This is the official mapping for the beep sounds
+
 - -1 - No Sound
 - 0 - Empty Battery
 - 1 - Alarm Off
@@ -615,7 +625,7 @@ This is the official mapping for the beep sounds
 
 ## Troubleshooting
 
-**SHORT & LONG_PRESS events of push buttons do not occur on the event bus**
+### SHORT & LONG_PRESS events of push buttons do not occur on the event bus
 
 It seems buttons like the HM-PB-2-WM55 do just send these kind of events to the CCU if they are mentioned in a CCU program.
 A simple workaround to make them send these events is, to create a program (rule inside the CCU) that does just have a "When" part and no "Then" part, in this "When" part each channel needs to be mentioned at least once.
@@ -623,13 +633,13 @@ As the HM-PB-2-WM55 for instance has two channels, it is enough to mention the S
 The LONG_PRESS events will work automatically as they are part of the same channels.
 After the creation of this program, the button device will receive configuration data from the CCU which have to be accepted by pressing the config-button at the back of the device.
 
-**INSTALL_TEST**
+### INSTALL_TEST
 
 If a button is still not working and you do not see any PRESS_LONG / SHORT in your log file (log level DEBUG), it could be because of enabled security.
 Try to disable security of your buttons in the HomeMatic Web GUI and try again.
 If you can't disable security try to use key INSTALL_TEST which gets updated to ON for each key press
 
-**-1 Failure**
+### -1 Failure
 
 A device may return this failure while fetching the datapoint values.
 I have tested pretty much but I did not find the reason.
@@ -640,12 +650,12 @@ Fetching values is only done at startup or if you trigger a REFRESH.
 I hope this will be fixed in one of the next CCU firmwares.
 With [Homegear](https://www.homegear.eu) everything works as expected.
 
-**No variables and scripts in GATEWAY-EXTRAS**
+### No variables and scripts in GATEWAY-EXTRAS
 
 The gateway autodetection of the binding can not clearly identify the gateway and falls back to the default implementation.
 Use the ```gatewayType=ccu``` config to force the binding to use the CCU implementation.
 
-**Variables out of sync**
+### Variables out of sync
 
 The CCU only sends an event if a datapoint of a device has changed.
 There is (currently) no way to receive an event automatically when a variable has changed.
@@ -663,7 +673,7 @@ In scripts:
 :::: tabs
 
 ::: tab JavaScript
- 
+
 ``` javascript
 import org.openhab.core.types.RefreshType
 ...
@@ -677,6 +687,7 @@ Var_1.sendCommand(RefreshType.REFRESH)
 ``` php
 Var_1.sendCommand(REFRESH)
 ```
+
 :::
 
 ::::
@@ -689,7 +700,7 @@ You have to delete the thing, start a scan and add it again.
 In case of problems in the discovery or if above mentioned error message appears in `openhab.log`, the size for the transmission buffer for the communication with the gateway is too small.
 The problem can be solved by increasing the `bufferSize` value in the bridge configuration.
 
-**Rollershutters are inverted**
+### Rollershutters are inverted
 
 openHAB and the CCU are using different values for the same state of a rollershutter.
 Examples: HmIP-BROLL, HmIP-FROLL, HmIP-BBL, HmIP-FBL and HmIP-DRBLI4
@@ -698,7 +709,7 @@ Examples: HmIP-BROLL, HmIP-FROLL, HmIP-BBL, HmIP-FBL and HmIP-DRBLI4
 | openHAB | 0%   | 100%   |
 | CCU     | 100% | 0%     |
 
-** The binding does not receive any status changes from the Homematic gateway**
+### The binding does not receive any status changes from the Homematic gateway
 
 First of all, make sure that none of the ports needed to receive status changes from the gateway are blocked by firewall settings.
 

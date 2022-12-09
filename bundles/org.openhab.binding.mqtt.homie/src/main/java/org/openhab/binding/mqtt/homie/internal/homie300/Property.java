@@ -291,7 +291,7 @@ public class Property implements AttributeChanged {
             f.completeExceptionally(new IllegalStateException("Attributes not yet received!"));
             return f;
         }
-        // Make sure we set the callback again which might have been nulled during an stop
+        // Make sure we set the callback again which might have been nulled during a stop
         channelState.setChannelStateUpdateListener(this.callback);
         return channelState.start(connection, scheduler, timeout);
     }

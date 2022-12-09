@@ -156,6 +156,14 @@ public class Appliance extends PlugwiseBaseModel implements PlugwiseComparableDa
         return this.pointLogs.getIntendedBoilerTempUnit();
     }
 
+    public Optional<Double> getReturnWaterTemp() {
+        return this.pointLogs.getReturnWaterTemp();
+    }
+
+    public Optional<String> getReturnWaterTempUnit() {
+        return this.pointLogs.getReturnWaterTempUnit();
+    }
+
     public Optional<Boolean> getFlameState() {
         return this.pointLogs.getFlameState();
     }

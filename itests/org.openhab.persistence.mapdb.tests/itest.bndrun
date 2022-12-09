@@ -53,10 +53,10 @@ Fragment-Host: org.openhab.persistence.mapdb
 	org.ops4j.pax.logging.pax-logging-api;version='[2.0.16,2.0.17)',\
 	ch.qos.logback.classic;version='[1.2.11,1.2.12)',\
 	ch.qos.logback.core;version='[1.2.11,1.2.12)',\
-	biz.aQute.tester.junit-platform;version='[6.3.0,6.3.1)',\
 	org.openhab.core;version='[3.4.0,3.4.1)',\
 	org.openhab.core.config.core;version='[3.4.0,3.4.1)',\
 	org.openhab.core.persistence;version='[3.4.0,3.4.1)',\
 	org.openhab.core.test;version='[3.4.0,3.4.1)',\
 	org.openhab.persistence.mapdb;version='[3.4.0,3.4.1)',\
-	org.openhab.persistence.mapdb.tests;version='[3.4.0,3.4.1)'
+	org.openhab.persistence.mapdb.tests;version='[3.4.0,3.4.1)',\
+	biz.aQute.tester.junit-platform;version='[6.4.0,6.4.1)'

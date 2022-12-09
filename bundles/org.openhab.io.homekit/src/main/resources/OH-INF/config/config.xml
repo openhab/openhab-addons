@@ -74,6 +74,12 @@
 			<default>30</default>
 			<advanced>true</advanced>
 		</parameter>
+		<parameter name="useDummyAccessories" type="boolean" required="true" groupName="core">
+			<label>Use Dummy Accessories</label>
+			<description><![CDATA[Create dummy accessories when an item is missing. See <a href="https://www.openhab.org/addons/integrations/homekit/#dummy-accessories">the documentation</a> for more information.
+			]]></description>
+			<default>false</default>
+		</parameter>
 		<parameter name="useFahrenheitTemperature" type="boolean" required="true" groupName="thermostat">
 			<label>Use Fahrenheit Temperature</label>
 			<description>Defines whether or not to direct HomeKit clients to use fahrenheit temperatures instead of celsius.</description>

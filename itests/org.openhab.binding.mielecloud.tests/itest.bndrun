@@ -73,7 +73,6 @@ Fragment-Host: org.openhab.binding.mielecloud
 	org.ops4j.pax.web.pax-web-spi;version='[7.3.25,7.3.26)',\
 	ch.qos.logback.classic;version='[1.2.11,1.2.12)',\
 	ch.qos.logback.core;version='[1.2.11,1.2.12)',\
-	biz.aQute.tester.junit-platform;version='[6.3.0,6.3.1)',\
 	org.openhab.binding.mielecloud;version='[3.4.0,3.4.1)',\
 	org.openhab.binding.mielecloud.tests;version='[3.4.0,3.4.1)',\
 	org.openhab.core;version='[3.4.0,3.4.1)',\
@@ -86,4 +85,6 @@ Fragment-Host: org.openhab.binding.mielecloud
 	org.openhab.core.io.net;version='[3.4.0,3.4.1)',\
 	org.openhab.core.test;version='[3.4.0,3.4.1)',\
 	org.openhab.core.thing;version='[3.4.0,3.4.1)',\
-	org.openhab.core.thing.xml;version='[3.4.0,3.4.1)'
+	org.openhab.core.thing.xml;version='[3.4.0,3.4.1)',\
+	biz.aQute.tester.junit-platform;version='[6.4.0,6.4.1)',\
+	org.osgi.service.cm;version='[1.6.0,1.6.1)'

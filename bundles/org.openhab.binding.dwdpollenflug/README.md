@@ -1,19 +1,17 @@
 # DWD Pollenflug Binding
 
-The "Deutsche Wetterdienst" (DWD) reports the current pollen count index for Germany on a daily base and a forecast for tomorrow and the day after tomorrow. 
-This binding allows you to retrieve this data for your region or partregion. You can find a map of the data here: 
-
-https://isabel.dwd.de/DE/leistungen/gefahrenindizespollen/gefahrenindexpollen.html
-
+The "Deutsche Wetterdienst" (DWD) reports the current pollen count index for Germany on a daily base and a forecast for tomorrow and the day after tomorrow.
+This binding allows you to retrieve this data for your region or partregion.
+You can find a map of the data [here](https://isabel.dwd.de/DE/leistungen/gefahrenindizespollen/gefahrenindexpollen.html)
 
 ## Supported Things
 
-This binding supports a bridge thing (`bridge`), which polls the dataset for Germany in an adjustable interval. 
+This binding supports a bridge thing (`bridge`), which polls the dataset for Germany in an adjustable interval.
 And it supports a region thing (`region`), representing the data for all pollen types of a region or partregion.
 
 ## Discovery
 
-This binding adds a default `bridge` thing to the Inbox. 
+This binding adds a default `bridge` thing to the Inbox.
 This can be used for `region` things you may add manually.
 
 ## Thing Configuration
@@ -30,9 +28,9 @@ This can be used for `region` things you may add manually.
 | ---------- | :-----: | :------: | ------------------------------------------------------------------- |
 | `regionID` |    -    |   yes    | The id of the region. The available options are in the table below. |
 
-#### Manual region or partregion selection ####
+#### Manual region or partregion selection
 
-The region ID is the partregion_id or if there is no partregion the region_id from this [json](https://opendata.dwd.de/climate_environment/health/alerts/s31fg.json) of DWD. 
+The region ID is the partregion_id or if there is no partregion the region_id from this [json](https://opendata.dwd.de/climate_environment/health/alerts/s31fg.json) of DWD.
 You can refer to the following table.
 
 | regionID | Region                         | Partregion                                         |
@@ -119,18 +117,18 @@ There are the following possible string values:
 
 ## Full Example
 
-### Things file for region "Brandenburg und Berlin" and partregion "Bayern - Mainfranken" ###
+### Things file for region "Brandenburg und Berlin" and partregion "Bayern - Mainfranken"
 
-```
+```java
 Bridge dwdpollenflug:bridge:dwd "DWD pollen count Bridge" [refresh="15"] {
     Thing region region50 "DWD pollen count region" @ "APIS" [regionID="50"]
     Thing region partregion124 "DWD pollen count partregion" @ "APIS" [regionID="124"]
 }
 ```
 
-### Items example for region "Brandenburg und Berlin" and pollen type ash-tree ###
+### Items example for region "Brandenburg und Berlin" and pollen type ash-tree
 
-```
+```java
 String pollenTodayEsche
     "Esche [MAP(pollen.map):%s]"
     {channel="dwdpollenflug:region:dwd:region50:ash#today"}
@@ -145,9 +143,9 @@ String pollenDayAfterTomorrowEsche
 
 ```
 
-### Transform map file pollen.map ###
+### Transform map file pollen.map
 
-```
+```text
 0=keine (0)
 0-1=keine bis gering (0-1)
 1=gering (1)
@@ -160,9 +158,9 @@ String pollenDayAfterTomorrowEsche
 NULL=keine Daten
 ```
 
-### Sitemap example for region "Brandenburg und Berlin" and pollen type ash-tree ###
+### Sitemap example for region "Brandenburg und Berlin" and pollen type ash-tree
 
-```
+```perl
 Text label="Pollenflugindex" {
     Frame {
         Text item=pollenTodayEsche

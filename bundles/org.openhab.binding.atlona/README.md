@@ -1,19 +1,18 @@
 # Atlona Binding
 
-This binding integrates Atlona AT-UHD-PRO3 HdBaseT matrix switches [Atlona AT-UHD-PRO3 HdBaseT matrix switches](https://www.atlona.com) into your openHAB installation.
-The older HD model 6x6 matrix [AT-PRO3HD66M] (https://atlona.com/product/at-pro3hd66m/) is also supported.
+This binding integrates [Atlona](https://www.atlona.com) AT-UHD-PRO3 or AT-PRO3HD66M HDBaseT matrix switches into your openHAB installation.
 
 ## Supported Things
 
 This binding supports the following thing types:
 
-| Thing         | Thing Type | Description                                             |
-|---------------|------------|---------------------------------------------------------|
-| pro3-44m      | Thing      | The AT-UHD-PRO3-44M 4x4 HDBaseT matrix.                 |
-| pro3-66m      | Thing      | The AT-UHD-PRO3-66M 6x6 HDBaseT matrix.                 |
-| pro3-88m      | Thing      | The AT-UHD-PRO3-88M 8x8 HDBaseT matrix.                 |
-| pro3-1616m    | Thing      | The AT-UHD-PRO3-1616M 16x16 HDBaseT matrix.             |
-| pro3-hd66m    | Thing      | The AT-PRO3HD66M 6x6 HDBaseT matrix.                    |
+| Thing         | Thing Type | Description                                                                                 |
+|---------------|------------|---------------------------------------------------------------------------------------------|
+| pro3-44m      | Thing      | The [AT-UHD-PRO3-44M 4x4 HDBaseT matrix](https://atlona.com/product/at-uhd-pro3-44m/)       |
+| pro3-66m      | Thing      | The [AT-UHD-PRO3-66M 6x6 HDBaseT matrix](https://atlona.com/product/at-uhd-pro3-66m/)       |
+| pro3-88m      | Thing      | The [AT-UHD-PRO3-88M 8x8 HDBaseT matrix](https://atlona.com/product/at-uhd-pro3-88m/)       |
+| pro3-1616m    | Thing      | The [AT-UHD-PRO3-1616M 16x16 HDBaseT matrix](https://atlona.com/product/at-uhd-pro3-1616m/) |
+| pro3-hd66m    | Thing      | The [AT-PRO3HD66M 6x6 HDBaseT matrix](https://atlona.com/product/at-pro3hd66m/)             |
 
 ## Discovery
 
@@ -21,18 +20,18 @@ The Atlona AT-UHD-PRO3 switch can be discovered by starting a discovery scan in 
 The "SDDP" (simple device discovery protocol) button will initiate the discovery process.
 If "Telnet Login" is enabled ("Network" tab from the switch configuration UI), you will need to set the username and password in the configuration of the newly discovered thing before a connection can be made.
 
-## Binding configuration
+## Thing Configuration
 
-```java
-atlona:pro3-88m:home [ ipAddress="192.168.1.30", userName="me", password="12345", polling=600, ping=30, retryPolling=10 ]
-```
+The thing has the following configuration parameters:
 
-- `ipAddress`: Hostname or IP address of the matrix switch
-- `userName`: (optional) the username to login with (only if Telnet Login is enabled)
-- `password`: (optional) the password to login with (only if Telnet Login is enabled)
-- `polling`: (optional) the time (in seconds) to poll the state from the actual switch (default: 600)
-- `ping`: (optional) the time (in seconds) to ping the switch to keep our connection alive (default: 30)
-- `retryPolling`: (optional) the time (in seconds) to retry a connection if the connection has failed (default: 10)
+| Name            | Type    | Description                                                             | Default | Required | Advanced |
+|-----------------|---------|-------------------------------------------------------------------------|---------|----------|----------|
+| ipAddress       | text    | Hostname or IP address of the matrix switch                             | N/A     | yes      | no       |
+| userName        | text    | The username to login with (only if Telnet Login is enabled)            | N/A     | no       | yes      |
+| password        | text    | The password to login with (only if Telnet Login is enabled)            | N/A     | no       | yes      |
+| polling         | Integer | The interval to poll for the current state of the switch in sec.        | 600     | no       | yes      |
+| ping            | Integer | The interval to ping the switch to keep the connection alive in sec.    | 30      | no       | yes      |
+| retryPolling    | Integer | The interval to retry a connection if the connection has failed in sec. | 10      | no       | yes      |
 
 ### username/password
 
@@ -52,7 +51,9 @@ If it is higher than the "IP Timeout" value, the switch will timeout our connect
 
 ## Channels
 
-| Thing      | Channel Type ID                                                 | Item Type | Access | Description                                                                               |
+The following channels are available:
+
+| Thing      | Channel ID                                                      | Item Type | Access | Description                                                                               |
 |------------|-----------------------------------------------------------------|-----------|--------|-------------------------------------------------------------------------------------------|
 | pro3-44m   | primary#power                                                   | Switch    | RW     | Matrix Power Switch                                                                       |
 | pro3-44m   | primary#panellock                                               | Switch    | RW     | Sets the front panel locked or unlocked                                                   |
@@ -188,42 +189,47 @@ The # of presets allowed depends on the firmware you are using (5 presets up to 
 
 ## Changes/Warnings
 
-As of firmware 1.6.03 (rev 13), there are three issues on Atlona firmware (I have notified them on these issues):
+Note: Firmware versions 16.1.x are now the latest available for the AT-UHD-PRO3 line.
+The following issues were noted back when this binding was originally developed using older firmware versions.
 
--   clearX command does not work.  The TCP/IP command "ClearX" as specified in Atlona's protocol will ALWAYS return a "Command Failed".  Please avoid this channel until atlona releases a new firmware.
+As of firmware 1.6.03 (rev 13), there were three issues with the Atlona firmware:
 
--   There is no way to query what the current status is of: panellock, and irenable.  This add-on simply assumes that panellock is off and irenable is on at startup.
+- The `clearX` command does not work.  The TCP/IP command "ClearX" as specified in Atlona's protocol will ALWAYS return a "Command Failed".  Please avoid this channel until Atlona releases a new firmware.
 
--   If you make a change in the switches UI that requires a reboot (mainly changing any of the settings on the "Network" tab in the switch configuration UI), this add-on's connection will be inconsistently closed at different times.
+- There is no way to query for the current status of `panellock` and `irenable`.  The thing will default `panellock` to OFF and `irenable` to ON at startup.
+
+- If you make a change in the switches UI that requires a reboot (mainly changing any of the settings on the "Network" tab in the switch configuration UI), this add-on's connection will be inconsistently closed at different times.
 The thing will go OFFLINE and then back ONLINE when the reconnect attempt is made - and then it starts all over again.  Please make sure you reboot as soon as possible when the switch UI notifies you.
 
--   a bug in the firmware will sometimes cause memory presets to disappear after a reboot
+- A bug in the firmware will sometimes cause memory presets to disappear after a reboot.
 
 As of firmware 1.6.8 (rev 14),
 
-- The "clearX" command has been fixed and works now.
-- The number of presets have increased to 10
-- If telnet mode is enabled, you must use the admin username/password to issue a matrixreset
+- The `clearX` command has been fixed and works now.
 
-## Example
+- The number of presets has increased to 10.
+
+- If telnet mode is enabled, you must use the admin username/password to issue a `resetmatrix` command.
+
+## Full Example
 
 ### Things
 
 Here is an example with minimal configuration parameters (using default values with no telnet login):
 
-```
+```java
 atlona:pro3-88m:home [ ipAddress="192.168.1.30" ]
 ```
 
 Here is another example with minimal configuration parameters (using default values with telnet login):
 
-```
+```java
 atlona:pro3-88m:home [ ipAddress="192.168.1.30", userName="me", password="12345" ]
 ```
 
 Here is a full configuration example:
 
-```
+```java
 atlona:pro3-88m:home [ ipAddress="192.168.1.30", userName="me", password="12345", polling=600, ping=30, retryPolling=10 ]
 ```
 
@@ -231,7 +237,7 @@ atlona:pro3-88m:home [ ipAddress="192.168.1.30", userName="me", password="12345"
 
 Here is an example of items for the AT-UHD-PRO33-88M:
 
-```
+```java
 Switch Atlona_Power "Power" { channel = "atlona:pro3-88m:home:primary#power" }
 Switch Atlona_PanelLock "Panel Lock" { channel = "atlona:pro3-88m:home:primary#panellock" }
 Switch Atlona_Presets "Preset Command" { channel = "atlona:pro3-88m:home:primary#presetcmd" }
@@ -272,9 +278,9 @@ Switch Atlona_VolumeMute5 "Mute 5" { channel = "atlona:pro3-88m:home:volume1#vol
 Switch Atlona_VolumeMute6 "Mute 6" { channel = "atlona:pro3-88m:home:volume1#volumemute" }
 ```
 
-### SiteMap
+### Sitemap
 
-```
+```perl
 sitemap demo label="Main Menu" {
     Frame label="Atlona" {
         Text label="Device" {
@@ -294,16 +300,16 @@ sitemap demo label="Main Menu" {
             Switch item=Atlona_PortPower8
             Switch item=Atlona_PortPower9
             Switch item=Atlona_PortPower10
-            Selection item=Atlona_PortOutput1 mappings=[1="CableBox",2="BluRay Player",3="Roku",4="Apple TV",5="Input 5",6="Input 6",7="Input 7",8="Input 8"]
-            Selection item=Atlona_PortOutput2 mappings=[1="CableBox",2="BluRay Player",3="Roku",4="Apple TV",5="Input 5",6="Input 6",7="Input 7",8="Input 8"]
-            Selection item=Atlona_PortOutput3 mappings=[1="CableBox",2="BluRay Player",3="Roku",4="Apple TV",5="Input 5",6="Input 6",7="Input 7",8="Input 8"]
-            Selection item=Atlona_PortOutput4 mappings=[1="CableBox",2="BluRay Player",3="Roku",4="Apple TV",5="Input 5",6="Input 6",7="Input 7",8="Input 8"]
-            Selection item=Atlona_PortOutput5 mappings=[1="CableBox",2="BluRay Player",3="Roku",4="Apple TV",5="Input 5",6="Input 6",7="Input 7",8="Input 8"]
-            Selection item=Atlona_PortOutput6 mappings=[1="CableBox",2="BluRay Player",3="Roku",4="Apple TV",5="Input 5",6="Input 6",7="Input 7",8="Input 8"]
-            Selection item=Atlona_PortOutput7 mappings=[1="CableBox",2="BluRay Player",3="Roku",4="Apple TV",5="Input 5",6="Input 6",7="Input 7",8="Input 8"]
-            Selection item=Atlona_PortOutput8 mappings=[1="CableBox",2="BluRay Player",3="Roku",4="Apple TV",5="Input 5",6="Input 6",7="Input 7",8="Input 8"] visibility=[Atlona_PortMirror8==0]
-            Selection item=Atlona_PortOutput9 mappings=[1="CableBox",2="BluRay Player",3="Roku",4="Apple TV",5="Input 5",6="Input 6",7="Input 7",8="Input 8"]
-            Selection item=Atlona_PortOutput10 mappings=[1="CableBox",2="BluRay Player",3="Roku",4="Apple TV",5="Input 5",6="Input 6",7="Input 7",8="Input 8"] visibility=[Atlona_PortMirror10==0]
+            Selection item=Atlona_PortOutput1 mappings=[1="CableBox",2="Blu-ray Player",3="Roku",4="Apple TV",5="Input 5",6="Input 6",7="Input 7",8="Input 8"]
+            Selection item=Atlona_PortOutput2 mappings=[1="CableBox",2="Blu-ray Player",3="Roku",4="Apple TV",5="Input 5",6="Input 6",7="Input 7",8="Input 8"]
+            Selection item=Atlona_PortOutput3 mappings=[1="CableBox",2="Blu-ray Player",3="Roku",4="Apple TV",5="Input 5",6="Input 6",7="Input 7",8="Input 8"]
+            Selection item=Atlona_PortOutput4 mappings=[1="CableBox",2="Blu-ray Player",3="Roku",4="Apple TV",5="Input 5",6="Input 6",7="Input 7",8="Input 8"]
+            Selection item=Atlona_PortOutput5 mappings=[1="CableBox",2="Blu-ray Player",3="Roku",4="Apple TV",5="Input 5",6="Input 6",7="Input 7",8="Input 8"]
+            Selection item=Atlona_PortOutput6 mappings=[1="CableBox",2="Blu-ray Player",3="Roku",4="Apple TV",5="Input 5",6="Input 6",7="Input 7",8="Input 8"]
+            Selection item=Atlona_PortOutput7 mappings=[1="CableBox",2="Blu-ray Player",3="Roku",4="Apple TV",5="Input 5",6="Input 6",7="Input 7",8="Input 8"]
+            Selection item=Atlona_PortOutput8 mappings=[1="CableBox",2="Blu-ray Player",3="Roku",4="Apple TV",5="Input 5",6="Input 6",7="Input 7",8="Input 8"] visibility=[Atlona_PortMirror8==0]
+            Selection item=Atlona_PortOutput9 mappings=[1="CableBox",2="Blu-ray Player",3="Roku",4="Apple TV",5="Input 5",6="Input 6",7="Input 7",8="Input 8"]
+            Selection item=Atlona_PortOutput10 mappings=[1="CableBox",2="Blu-ray Player",3="Roku",4="Apple TV",5="Input 5",6="Input 6",7="Input 7",8="Input 8"] visibility=[Atlona_PortMirror10==0]
             Selection item=Atlona_PortMirror8 mappings=[0="None",1="Living Room",2="Master Bed",3="Kitchen",4="Output 4",5="Output 5",6="Output 6",7="Output 7",9="Output 9"]
             Selection item=Atlona_PortMirror10 mappings=[0="None",1="Living Room",2="Master Bed",3="Kitchen",4="Output 4",5="Output 5",6="Output 6",7="Output 7",9="Output 9"]
         }
@@ -332,9 +338,9 @@ Be sure they are in sync with the mappings above.
 
 ### atlonainputports.map
 
-```
+```text
 1=CableBox
-2=BluRay Player
+2=Blu-ray Player
 3=Roku
 4=Apple TV
 5=Input 5
@@ -347,7 +353,7 @@ NULL=-
 
 ### atlonaoutputports.map
 
-```
+```text
 1=Living Room
 2=Master Bed
 3=Kitchen

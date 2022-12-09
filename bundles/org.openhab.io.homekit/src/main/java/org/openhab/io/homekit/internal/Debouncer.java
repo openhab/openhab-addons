@@ -101,7 +101,7 @@ class Debouncer {
                 try {
                     action.run();
                 } catch (Exception e) {
-                    logger.warn("Debouncer {} action resulted in error: {}", name, e.getMessage());
+                    logger.warn("Debouncer {} action resulted in error", name, e);
                 }
             } else {
                 logger.warn("Invalid state in debouncer. Should not have reached here!");

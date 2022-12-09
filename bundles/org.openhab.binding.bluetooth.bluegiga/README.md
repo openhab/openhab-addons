@@ -10,7 +10,6 @@ It defines the following bridge type:
 |----------------|---------------------------------------------------------------------------|
 | bluegiga       | A BlueGiga USB dongle using a BLED112 chip                                |
 
-
 ## Discovery
 
 The adapter cannot be discovered; its serial port must be manually configured.
@@ -24,6 +23,6 @@ Additionally, the parameter `backgroundDiscovery` can be set to true/false. When
 
 This is how a BlueGiga adapter can be configured textually in a *.things file:
 
-```
+```java
 Bridge bluetooth:bluegiga:1 [ port="/dev/ttyS0", backgroundDiscovery=false ]
 ```

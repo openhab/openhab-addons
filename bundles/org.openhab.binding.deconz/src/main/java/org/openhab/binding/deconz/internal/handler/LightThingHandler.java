@@ -303,7 +303,7 @@ public class LightThingHandler extends DeconzBaseThingHandler {
         LightMessage lightMessage = (LightMessage) stateResponse;
 
         if (needsPropertyUpdate) {
-            // if we did not receive an ctmin/ctmax, then we probably don't need it
+            // if we did not receive a ctmin/ctmax, then we probably don't need it
             needsPropertyUpdate = false;
 
             Integer ctmax = lightMessage.ctmax;

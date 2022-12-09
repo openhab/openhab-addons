@@ -669,7 +669,7 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
         updateProperties();
         updateConfiguration();
         updateLayout(controllerInfo.getPanelLayout());
-        updateState(controllerInfo.getPanelLayout());
+        updateVisualState(controllerInfo.getPanelLayout());
 
         for (NanoleafControllerListener controllerListener : controllerListeners) {
             controllerListener.onControllerInfoFetched(getThing().getUID(), controllerInfo);
@@ -711,16 +711,27 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
         }
     }
 
-    private void updateState(PanelLayout panelLayout) {
-        ChannelUID stateChannel = new ChannelUID(getThing().getUID(), CHANNEL_STATE);
+    private void updateVisualState(PanelLayout panelLayout) {
+        ChannelUID stateChannel = new ChannelUID(getThing().getUID(), CHANNEL_VISUAL_STATE);
 
         Bridge bridge = getThing();
         List<Thing> things = bridge.getThings();
+        if (things == null) {
+            logger.trace("No things to get state from!");
+            return;
+        }
+
         try {
             LayoutSettings settings = new LayoutSettings(false, true, true, true);
-            byte[] bytes = NanoleafLayout.render(panelLayout, new PanelState(things), settings);
+            logger.trace("Getting panel state for {} things", things.size());
+            PanelState panelState = new PanelState(things);
+            byte[] bytes = NanoleafLayout.render(panelLayout, panelState, settings);
             if (bytes.length > 0) {
                 updateState(stateChannel, new RawType(bytes, "image/png"));
+                logger.trace("Rendered visual state of panel {} in updateState has {} bytes", getThing().getUID(),
+                        bytes.length);
+            } else {
+                logger.debug("Visual state of {} failed to produce any image", getThing().getUID());
             }
 
             previousPanelLayout = panelLayout;
@@ -740,7 +751,8 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
         }
 
         if (previousPanelLayout.equals(panelLayout)) {
-            logger.trace("Not rendering panel layout as it is the same as previous rendered panel layout");
+            logger.trace("Not rendering panel layout for {} as it is the same as previous rendered panel layout",
+                    getThing().getUID());
             return;
         }
 
@@ -751,6 +763,10 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
             byte[] bytes = NanoleafLayout.render(panelLayout, new PanelState(things), settings);
             if (bytes.length > 0) {
                 updateState(layoutChannel, new RawType(bytes, "image/png"));
+                logger.trace("Rendered layout of panel {} in updateState has {} bytes", getThing().getUID(),
+                        bytes.length);
+            } else {
+                logger.debug("Layout of {} failed to produce any image", getThing().getUID());
             }
 
             previousPanelLayout = panelLayout;

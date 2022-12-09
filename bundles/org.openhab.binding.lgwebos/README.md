@@ -20,7 +20,7 @@ If channel `power` receives `ON`, the binding will attempt to power on the TV by
 
 ## Binding Configuration
 
-The binding has no configuration parameter. 
+The binding has no configuration parameter.
 
 ## Discovery
 
@@ -46,7 +46,7 @@ Parameters:
 
 Set host and key parameter as in the following example:
 
-```
+```java
 Thing lgwebos:WebOSTV:tv1 [host="192.168.2.119", key="6ef1dff6c7c936c8dc5056fc85ea3aef", macAddress="3c:cd:93:c2:20:e0"]
 ```
 
@@ -92,7 +92,6 @@ This list has been compiled mostly through trial and error, but the codes applic
 | PAUSE       | "PAUSE" button                                           |
 | STOP        | "STOP" button                                            |
 
-
 A sample HABPanel remote control widget can be found [in this GitHub repository.](https://github.com/bbrodt/openhab2-misc)
 
 ## Console Commands
@@ -100,7 +99,7 @@ A sample HABPanel remote control widget can be found [in this GitHub repository.
 The binding provides a few commands you can use in the console.
 Enter the command `openhab:lgwebos` to get the usage.
 
-```
+```shell
 Usage: openhab:lgwebos <thingUID> applications - list applications
 Usage: openhab:lgwebos <thingUID> channels - list channels
 Usage: openhab:lgwebos <thingUID> accesskey - show the access key
@@ -114,13 +113,13 @@ The command `accesskey` reports in the console the access key used to connect to
 
 demo.things:
 
-```
+```java
 Thing lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46 [host="192.168.2.119", key="6ef1dff6c7c936c8dc5056fc85ea3aef", macAddress="3c:cd:93:c2:20:e0"]
 ```
 
 demo.items:
 
-```
+```java
 Switch LG_TV0_Power "TV Power" <television>  { autoupdate="false", channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:power" }
 Switch LG_TV0_Mute  "TV Mute"                { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:mute"}
 Dimmer LG_TV0_Volume "Volume [%d]"           { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:volume" }
@@ -136,7 +135,7 @@ Player LG_TV0_Player                         { channel="lgwebos:WebOSTV:3aab9eea
 
 demo.sitemap:
 
-```
+```perl
 sitemap demo label="Main Menu"
 {
     Frame label="TV" {
@@ -152,10 +151,9 @@ sitemap demo label="Main Menu"
 }
 ```
 
-
 demo.rules:
 
-```
+```java
 // for relative volume changes
 rule "VolumeUpDown"
 when Item LG_TV0_VolDummy received command
@@ -183,10 +181,9 @@ then
 end
 ```
 
-
 Example of a toast message.
 
-```
+```java
 LG_TV0_Toast.sendCommand("Hello World")
 ```
 
@@ -196,7 +193,7 @@ Multiple actions are supported by this binding. In classic rules these are acces
 
 Example
 
-```
+```java
  val actions = getActions("lgwebos","lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46")
  if(null === actions) {
         logInfo("actions", "Actions not found, check thing ID")
@@ -216,7 +213,7 @@ Parameters:
 
 Example:
 
-```
+```java
 actions.showToast("Hello World")
 ```
 
@@ -233,7 +230,7 @@ Parameters:
 
 Example:
 
-```
+```java
 actions.showToast("http://localhost:8080/icon/energy?format=png","Hello World")
 ```
 
@@ -249,7 +246,7 @@ Parameters:
 
 Example:
 
-```
+```java
 actions.launchBrowser("https://www.openhab.org")
 ```
 
@@ -265,7 +262,7 @@ Parameters:
 
 Examples:
 
-```
+```java
 actions.launchApplication("com.webos.app.tvguide") // TV Guide
 actions.launchApplication("com.webos.app.livetv") // TV
 actions.launchApplication("com.webos.app.hdmi1") // HDMI1
@@ -286,7 +283,7 @@ Parameters:
 
 Examples:
 
-```
+```java
 actions.launchApplication("appId","{\"key\":\"value\"}")
 ```
 
@@ -304,7 +301,7 @@ Parameters:
 
 Example:
 
-```
+```java
 actions.sendText("Some text")
 ```
 
@@ -320,7 +317,7 @@ Parameters:
 
 Example:
 
-```
+```java
 actions.sendButton("HOME")
 ```
 
@@ -339,7 +336,7 @@ ENTER will remove the keyboard when on-screen keyboard is displayed with focus i
 
 Example:
 
-```
+```java
 actions.sendKeyboard("ENTER")
 ```
 
@@ -349,7 +346,7 @@ TV will switch one channel up in the current channel list.
 
 Example:
 
-```
+```java
 actions.increaseChannel
 ```
 
@@ -359,7 +356,7 @@ TV will switch one channel down in the current channel list.
 
 Example:
 
-```
+```java
 actions.decreaseChannel
 ```
 
@@ -367,7 +364,6 @@ actions.decreaseChannel
 
 In case of issues you may find it helpful to enable debug level logging and check you log file. Log into openHAB console and enable debug logging for this binding:
 
-```
+```shell
 log:set debug org.openhab.binding.lgwebos
 ```
-

@@ -72,7 +72,7 @@ HomeKit integration supports following accessory types:
   
   ![ios_add_accessory_wizard.png](doc/ios_add_accessory_wizard.png)
   
-Add metadata to more item or fine-tune your configuration using further settings
+Add metadata to more items or fine-tune your configuration using further settings
 
 
 ## Global Configuration
@@ -98,6 +98,7 @@ org.openhab.homekit:useOHmDNS=false
 org.openhab.homekit:blockUserDeletion=false
 org.openhab.homekit:name=openHAB
 org.openhab.homekit:instances=1
+org.openhab.homekit:useDummyAccessories=false
 ```
 
 Some settings are only visible in UI if the checkbox "Show advanced" is activated.
@@ -108,10 +109,10 @@ Some settings are only visible in UI if the checkbox "Show advanced" is activate
 |:-------------------------|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:--------------|
 | networkInterface         | IP address or domain name under which the HomeKit bridge can be reached. If no value is configured, the add-on uses the primary IP address configured for openHAB. If unsure, keep it empty                                                                                                       | (none)        |
 | port                     | Port under which the HomeKit bridge can be reached.                                                                                                                                                                                                                                               | 9123          |
-| useOHmDNS                | mDNS service is used to advertise openHAB as HomeKit bridge in the network so that HomeKit clients can find it. openHAB has already mDNS service running. This option defines whether the mDNS service of openHAB or a separate service should be used.                                           | false  |
+| useOHmDNS                | mDNS service is used to advertise openHAB as HomeKit bridge in the network so that HomeKit clients can find it. openHAB has already mDNS service running. This option defines whether the mDNS service of openHAB or a separate service should be used.                                           | false         |
 | blockUserDeletion        | Blocks HomeKit user deletion in openHAB and as result unpairing of devices. If you experience an issue with accessories becoming non-responsive after some time, try to enable this setting. You can also enable this setting if your HomeKit setup is done and you will not re-pair ios devices. | false         |
 | pin                      | Pin code used for pairing with iOS devices. Apparently, pin codes are provided by Apple and represent specific device types, so they cannot be chosen freely. The pin code 031-45-154 is used in sample applications and known to work.                                                           | 031-45-154    |
-| startDelay               | HomeKit start delay in seconds in case the number of accessories is lower than last time. This helps to avoid resetting home app in case not all items have been initialised properly before HomeKit integration start.                                                                           | 30            |
+| startDelay               | HomeKit start delay in seconds in case the number of accessories is lower than last time. This helps to avoid resetting home app in case not all items have been initialised properly before HomeKit integration start. Ignored if `useDummyAccessories` is on.                                   | 30            |
 | useFahrenheitTemperature | Set to true to use Fahrenheit degrees, or false to use Celsius degrees. Note if an item has a QuantityType as its state, this configuration is ignored and it's always converted properly.                                                                                                        | false         |
 | thermostatTargetModeCool | Word used for activating the cooling mode of the device (if applicable). It can be overwritten at item level.                                                                                                                                                                                     | CoolOn        |
 | thermostatTargetModeHeat | Word used for activating the heating mode of the device (if applicable). It can be overwritten at item level.                                                                                                                                                                                     | HeatOn        |
@@ -119,6 +120,7 @@ Some settings are only visible in UI if the checkbox "Show advanced" is activate
 | thermostatTargetModeOff  | Word used to set the thermostat mode of the device to off (if applicable).  It can be overwritten at item level.                                                                                                                                                                                  | Off           |
 | name                     | Name under which this HomeKit bridge is announced on the network. This is also the name displayed on the iOS device when searching for available bridges.                                                                                                                                         | openHAB       |
 | instances                | Defines how many bridges to expose. Necessary if you have more than 149 accessories. Accessories must be assigned to additional instances via metadata. Additional bridges will use incrementing port numbers.                                                                                    | 1             |
+| useDummyAccessories      | When an accessory is missing, substitute a dummy in its place instead of removing it. See [Dummy Accessories](#dummy-accessories). | false     |
 
 ## Item Configuration
 
@@ -208,6 +210,22 @@ Switch light1 "Light 1" (gLight) {homekit="Lighting.OnState"}
 Switch light2 "Light 2" (gLight) {homekit="Lighting.OnState"}
 ```
 
+## Dummy Accessories
+
+OpenHAB is a highly dynamic system, and prone to occasional misconfigurations where items can't be loaded for various reasons, especially if you're using something besides the UI to manage your items.
+This is a problem for Homekit because if the bridge makes a connection, but accessories are missing, then the Homekit database will simply remove that accessory.
+When the accessory does come back (i.e. because you corrected a syntax error in an .items file, or OpenHAB completes booting), all customization of that accessory will be lost - the room assignment, customized  name, custom icon, status/home screen/favorite preferences, etc.
+In order to work around this, the Homekit addon can create dummy accessories for any accessory it has previously published to Homekit.
+To enable this behavior, turn on the `useDummyAccessories` setting.
+OpenHAB will then simply present a non-interactive accessory for any that are missing.
+The OpenHAB log will also contain information whenever a dummy accessory is created.
+If the item backing the accessory is later re-created, everything will sync back up and nothing will be lost.
+You can also run the console command `openhab:homekit listDummyAccessories` to see which items are missing.
+Apple devices may or may not show "Not Responding" for some or all accessories when there are dummy accessories, since they will no longer be backed by actual items with state.
+It's recommended that you resolve this state as soon as possible, since Homekit may decide your entire bridge is being uncooperative, and remove everything itself.
+If you actually meant to remove an item, you will need to purge the dummy items from the database so that they'll disappear from the Home app altogether.
+In order to do so, run the console command `openhab:homekit pruneDummyAccessories`.
+Alternatively, disabling, saving, and then re-enabling `useDummyAccessories` in the addon settings will have the same effect.
 
 ## Accessory Configuration Details
 
@@ -729,6 +747,10 @@ Support for this is planned for the future release of openHAB HomeKit binding.
 |                      |                             | RotationSpeed                | Number, Dimmer                | Fan rotation speed in % (1-100)                                                                                                                                                                                                                                                                                                                     |
 |                      |                             | SwingMode                    | Number, Switch                | Swing mode.  values: 0/OFF=SWING DISABLED, 1/ON=SWING ENABLED. Flag [inverted=true] swaps the default mapping                                                                                                                                                                                                                                       |
 |                      |                             | LockControl                  | Number, Switch                | Status of physical control lock.  values: 0/OFF=CONTROL LOCK DISABLED, 1/ON=CONTROL LOCK ENABLED.Flag [inverted=true] swaps the default mapping                                                                                                                                                                                                     |
+| BasicFan             |                             |                              |                               | Fan. A BasicFan is a subset of Fan, but the Home app allows you to customize the icon of the accessory to show a ceiling fan.                                                                                                                                                                                                                       |
+|                      | OnState                     |                              | Switch, Dimmer                | Accessory current working status. A value of "ON"/"OPEN" indicates that the accessory is active and is functioning without any errors.                                                                                                                                                                                                              |
+|                      |                             | RotationDirection            | Number, Switch                | Rotation direction.  values: 0/OFF=CLOCKWISE, 1/ON=COUNTER CLOCKWISE. Flag [inverted=true] swaps the default mapping                                                                                                                                                                                                                                |
+|                      |                             | RotationSpeed                | Number, Dimmer                | Fan rotation speed in % (1-100)                                                                                                                                                                                                                                                                                                                     |
 | Thermostat           |                             |                              |                               | A thermostat requires all mandatory characteristics defined below                                                                                                                                                                                                                                                                                   |
 |                      | CurrentTemperature          |                              | Number                        | Current temperature. supported configuration: minValue, maxValue, step                                                                                                                                                                                                                                                                              |
 |                      | TargetTemperature           |                              | Number                        | Target temperature. supported configuration: minValue, maxValue, step                                                                                                                                                                                                                                                                               |

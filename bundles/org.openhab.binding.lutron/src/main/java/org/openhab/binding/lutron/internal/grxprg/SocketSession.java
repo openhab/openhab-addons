@@ -31,7 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Represents a restartable socket connection to the underlying telnet session with an GRX-PRG/GRX-CI-PRG. Commands can
+ * Represents a restartable socket connection to the underlying telnet session with a GRX-PRG/GRX-CI-PRG. Commands can
  * be sent via {@link #sendCommand(String)} and responses will be received on the {@link SocketSessionCallback}
  *
  * @author Tim Roberts - Initial contribution
