@@ -280,8 +280,7 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         intializeItem(channelUID, DEFAULT_TEST_ITEM_NAME, acceptedItemType);
     }
 
-    private <T extends State> void assertItemState(String acceptedItemType, String itemName, String priority,
-            State expectedState) {
+    private void assertItemState(String acceptedItemType, String itemName, String priority, State expectedState) {
         Thing thing = systemInfoThing;
         if (thing == null) {
             throw new AssertionError("Thing is null");

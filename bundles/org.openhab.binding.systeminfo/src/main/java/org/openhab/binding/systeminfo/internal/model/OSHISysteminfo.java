@@ -441,14 +441,14 @@ public class OSHISysteminfo implements SysteminfoInterface {
     }
 
     @Override
-    public @Nullable QuantityType<DataAmount> getSwapTotal() {
+    public QuantityType<DataAmount> getSwapTotal() {
         long swapTotal = memory.getVirtualMemory().getSwapTotal();
         swapTotal = getSizeInMB(swapTotal);
         return new QuantityType<>(swapTotal, Units.MEBIBYTE);
     }
 
     @Override
-    public @Nullable QuantityType<DataAmount> getSwapAvailable() {
+    public QuantityType<DataAmount> getSwapAvailable() {
         long swapTotal = memory.getVirtualMemory().getSwapTotal();
         long swapUsed = memory.getVirtualMemory().getSwapUsed();
         long swapAvailable = swapTotal - swapUsed;
@@ -457,7 +457,7 @@ public class OSHISysteminfo implements SysteminfoInterface {
     }
 
     @Override
-    public @Nullable QuantityType<DataAmount> getSwapUsed() {
+    public QuantityType<DataAmount> getSwapUsed() {
         long swapUsed = memory.getVirtualMemory().getSwapUsed();
         swapUsed = getSizeInMB(swapUsed);
         return new QuantityType<>(swapUsed, Units.MEBIBYTE);

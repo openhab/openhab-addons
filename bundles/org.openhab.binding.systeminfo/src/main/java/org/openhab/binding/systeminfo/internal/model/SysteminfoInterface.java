@@ -164,21 +164,21 @@ public interface SysteminfoInterface {
      *
      * @return memory size or 0, if there is no swap memory
      */
-    public @Nullable QuantityType<DataAmount> getSwapTotal();
+    public QuantityType<DataAmount> getSwapTotal();
 
     /**
      * Returns available size swap of memory
      *
      * @return memory size or 0, if no there is no swap memory
      */
-    public @Nullable QuantityType<DataAmount> getSwapAvailable();
+    public QuantityType<DataAmount> getSwapAvailable();
 
     /**
      * Returns used size of swap memory
      *
      * @return memory size or 0, if no there is no swap memory
      */
-    public @Nullable QuantityType<DataAmount> getSwapUsed();
+    public QuantityType<DataAmount> getSwapUsed();
 
     /**
      * Percents of available swap memory on the machine
