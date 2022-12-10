@@ -1575,12 +1575,11 @@ public class IpCameraHandler extends BaseThingHandler {
                 setupFfmpegFormat(FFmpegFormat.RTSP_ALARMS);
             }
         }
-        if (ffmpegMjpeg != null) {// check if the thread has frozen due to camera doing a soft reboot
-            localFfmpeg = ffmpegMjpeg;
-            if (localFfmpeg == null || !localFfmpeg.getIsAlive()) {
-                setupFfmpegFormat(FFmpegFormat.MJPEG);
-                logger.debug("MJPEG was not being produced by FFmpeg when it should have been, restarting FFmpeg.");
-            }
+        // check if the thread has frozen due to camera doing a soft reboot
+        localFfmpeg = ffmpegMjpeg;
+        if (localFfmpeg != null && !localFfmpeg.getIsAlive()) {
+            logger.debug("MJPEG was not being produced by FFmpeg when it should have been, restarting FFmpeg.");
+            setupFfmpegFormat(FFmpegFormat.MJPEG);
         }
         if (openChannels.size() > 10) {
             logger.debug("There are {} open Channels being tracked.", openChannels.size());
