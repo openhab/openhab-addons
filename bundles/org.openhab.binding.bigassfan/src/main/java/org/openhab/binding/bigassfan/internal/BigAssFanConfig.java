@@ -12,26 +12,29 @@
  */
 package org.openhab.binding.bigassfan.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link BigAssFanConfig} is responsible for storing the BigAssFan thing configuration.
  *
  * @author Mark Hilbush - Initial contribution
  */
+@NonNullByDefault
 public class BigAssFanConfig {
     /**
      * Name of the device
      */
-    private String label;
+    private String label = "";
 
     /**
      * IP address of the device
      */
-    private String ipAddress;
+    private String ipAddress = "";
 
     /**
      * MAC address of the device
      */
-    private String macAddress;
+    private String macAddress = "";
 
     public String getLabel() {
         return label;
@@ -58,16 +61,7 @@ public class BigAssFanConfig {
     }
 
     public boolean isValid() {
-        if (label == null || label.isBlank()) {
-            return false;
-        }
-        if (ipAddress == null || ipAddress.isBlank()) {
-            return false;
-        }
-        if (macAddress == null || macAddress.isBlank()) {
-            return false;
-        }
-        return true;
+        return label.isBlank() || ipAddress.isBlank() || macAddress.isBlank();
     }
 
     @Override

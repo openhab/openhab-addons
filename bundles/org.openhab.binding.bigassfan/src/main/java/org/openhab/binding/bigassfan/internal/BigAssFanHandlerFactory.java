@@ -53,7 +53,10 @@ public class BigAssFanHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
-            return new BigAssFanHandler(thing, networkAddressService.getPrimaryIpv4HostAddress());
+            String address = networkAddressService.getPrimaryIpv4HostAddress();
+            if (address != null) {
+                return new BigAssFanHandler(thing, address);
+            }
         }
         return null;
     }
