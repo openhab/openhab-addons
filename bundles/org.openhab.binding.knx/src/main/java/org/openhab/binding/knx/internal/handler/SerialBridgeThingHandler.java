@@ -71,7 +71,7 @@ public class SerialBridgeThingHandler extends KNXBridgeBaseThingHandler {
     public void dispose() {
         final var tmpInitJob = initJob;
         if (tmpInitJob != null) {
-            while (!tmpInitJob.isDone()) {
+            if (!tmpInitJob.isDone()) {
                 logger.trace("Bridge {}, shutdown during init, trying to cancel", thing.getUID());
                 tmpInitJob.cancel(true);
                 try {
