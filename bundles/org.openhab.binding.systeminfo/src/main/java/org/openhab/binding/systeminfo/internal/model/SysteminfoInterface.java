@@ -30,6 +30,7 @@ import org.openhab.core.library.types.StringType;
  * @author Svilen Valkanov - Initial contribution
  * @author Wouter Born - Add null annotations
  * @author Mark Herwege - Add dynamic creation of extra channels
+ * @author Mark Herwege - Use units of measure
  */
 @NonNullByDefault
 public interface SysteminfoInterface {
@@ -82,7 +83,7 @@ public interface SysteminfoInterface {
     /**
      * Returns the system cpu load.
      *
-     * @return the system cpu load between 0 and 1 or null, if no information is available
+     * @return the system cpu load between 0 and 100% or null, if no information is available
      */
     public @Nullable PercentType getSystemCpuLoad();
 

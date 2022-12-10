@@ -280,7 +280,8 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         intializeItem(channelUID, DEFAULT_TEST_ITEM_NAME, acceptedItemType);
     }
 
-    private void assertItemState(String acceptedItemType, String itemName, String priority, State expectedState) {
+    private <T extends State> void assertItemState(String acceptedItemType, String itemName, String priority,
+            State expectedState) {
         Thing thing = systemInfoThing;
         if (thing == null) {
             throw new AssertionError("Thing is null");
@@ -322,8 +323,8 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
 
     private void intializeItem(ChannelUID channelUID, String itemName, String acceptedItemType) {
         GenericItem item = null;
-        if ("Number".equals(acceptedItemType)) {
-            item = new NumberItem(itemName);
+        if (acceptedItemType.startsWith("Number")) {
+            item = new NumberItem(acceptedItemType, itemName);
         } else if ("String".equals(acceptedItemType)) {
             item = new StringItem(itemName);
         }
@@ -455,7 +456,7 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
     @Test
     public void assertChannelCpuUptimeIsUpdated() {
         String channnelID = SysteminfoBindingConstants.CHANNEL_CPU_UPTIME;
-        String acceptedItemType = "Number";
+        String acceptedItemType = "Number:Time";
 
         QuantityType<Time> mockedCpuUptimeValue = new QuantityType<>(100, Units.MINUTE);
         when(mockedSystemInfo.getCpuUptime()).thenReturn(mockedCpuUptimeValue);
@@ -492,7 +493,7 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
     @Test
     public void assertChannelMemoryAvailableIsUpdated() {
         String channnelID = SysteminfoBindingConstants.CHANNEL_MEMORY_AVAILABLE;
-        String acceptedItemType = "Number";
+        String acceptedItemType = "Number:DataAmount";
 
         QuantityType<DataAmount> mockedMemoryAvailableValue = new QuantityType<>(1000, Units.MEBIBYTE);
         when(mockedSystemInfo.getMemoryAvailable()).thenReturn(mockedMemoryAvailableValue);
@@ -505,7 +506,7 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
     @Test
     public void assertChannelMemoryUsedIsUpdated() {
         String channnelID = SysteminfoBindingConstants.CHANNEL_MEMORY_USED;
-        String acceptedItemType = "Number";
+        String acceptedItemType = "Number:DataAmount";
 
         QuantityType<DataAmount> mockedMemoryUsedValue = new QuantityType<>(24, Units.MEBIBYTE);
         when(mockedSystemInfo.getMemoryUsed()).thenReturn(mockedMemoryUsedValue);
@@ -517,7 +518,7 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
     @Test
     public void assertChannelMemoryTotalIsUpdated() {
         String channnelID = SysteminfoBindingConstants.CHANNEL_MEMORY_TOTAL;
-        String acceptedItemType = "Number";
+        String acceptedItemType = "Number:DataAmount";
 
         QuantityType<DataAmount> mockedMemoryTotalValue = new QuantityType<>(1024, Units.MEBIBYTE);
         when(mockedSystemInfo.getMemoryTotal()).thenReturn(mockedMemoryTotalValue);
@@ -543,7 +544,7 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
     @Test
     public void assertChannelSwapAvailableIsUpdated() {
         String channnelID = SysteminfoBindingConstants.CHANNEL_SWAP_AVAILABLE;
-        String acceptedItemType = "Number";
+        String acceptedItemType = "Number:DataAmount";
 
         QuantityType<DataAmount> mockedSwapAvailableValue = new QuantityType<>(482, Units.MEBIBYTE);
         when(mockedSystemInfo.getSwapAvailable()).thenReturn(mockedSwapAvailableValue);
@@ -556,7 +557,7 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
     @Test
     public void assertChannelSwapUsedIsUpdated() {
         String channnelID = SysteminfoBindingConstants.CHANNEL_SWAP_USED;
-        String acceptedItemType = "Number";
+        String acceptedItemType = "Number:DataAmount";
 
         QuantityType<DataAmount> mockedSwapUsedValue = new QuantityType<>(30, Units.MEBIBYTE);
         when(mockedSystemInfo.getSwapUsed()).thenReturn(mockedSwapUsedValue);
@@ -568,7 +569,7 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
     @Test
     public void assertChannelSwapTotalIsUpdated() {
         String channnelID = SysteminfoBindingConstants.CHANNEL_SWAP_TOTAL;
-        String acceptedItemType = "Number";
+        String acceptedItemType = "Number:DataAmount";
 
         QuantityType<DataAmount> mockedSwapTotalValue = new QuantityType<>(512, Units.MEBIBYTE);
         when(mockedSystemInfo.getSwapTotal()).thenReturn(mockedSwapTotalValue);
@@ -630,7 +631,7 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
     @Test
     public void assertChannelStorageAvailableIsUpdated() throws DeviceNotFoundException {
         String channnelID = SysteminfoBindingConstants.CHANNEL_STORAGE_AVAILABLE;
-        String acceptedItemType = "Number";
+        String acceptedItemType = "Number:DataAmount";
 
         QuantityType<DataAmount> mockedStorageAvailableValue = new QuantityType<>(2000, Units.MEBIBYTE);
         when(mockedSystemInfo.getStorageAvailable(DEFAULT_DEVICE_INDEX)).thenReturn(mockedStorageAvailableValue);
@@ -643,7 +644,7 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
     @Test
     public void assertChannelStorageUsedIsUpdated() throws DeviceNotFoundException {
         String channnelID = SysteminfoBindingConstants.CHANNEL_STORAGE_USED;
-        String acceptedItemType = "Number";
+        String acceptedItemType = "Number:DataAmount";
 
         QuantityType<DataAmount> mockedStorageUsedValue = new QuantityType<>(500, Units.MEBIBYTE);
         when(mockedSystemInfo.getStorageUsed(DEFAULT_DEVICE_INDEX)).thenReturn(mockedStorageUsedValue);
@@ -656,7 +657,7 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
     @Test
     public void assertChannelStorageTotalIsUpdated() throws DeviceNotFoundException {
         String channnelID = SysteminfoBindingConstants.CHANNEL_STORAGE_TOTAL;
-        String acceptedItemType = "Number";
+        String acceptedItemType = "Number:DataAmount";
 
         QuantityType<DataAmount> mockedStorageTotalValue = new QuantityType<>(2500, Units.MEBIBYTE);
         when(mockedSystemInfo.getStorageTotal(DEFAULT_DEVICE_INDEX)).thenReturn(mockedStorageTotalValue);
@@ -722,7 +723,7 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
     @Test
     public void assertChannelSensorsCpuTempIsUpdated() {
         String channnelID = SysteminfoBindingConstants.CHANNEL_SENSORS_CPU_TEMPERATURE;
-        String acceptedItemType = "Number";
+        String acceptedItemType = "Number:Temperature";
 
         QuantityType<Temperature> mockedSensorsCpuTemperatureValue = new QuantityType<>(60, SIUnits.CELSIUS);
         when(mockedSystemInfo.getSensorsCpuTemperature()).thenReturn(mockedSensorsCpuTemperatureValue);
@@ -735,7 +736,7 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
     @Test
     public void assertChannelSensorsCpuVoltageIsUpdated() {
         String channnelID = SysteminfoBindingConstants.CHANNEL_SENOSRS_CPU_VOLTAGE;
-        String acceptedItemType = "Number";
+        String acceptedItemType = "Number:ElectricPotential";
 
         QuantityType<ElectricPotential> mockedSensorsCpuVoltageValue = new QuantityType<>(1000, Units.VOLT);
         when(mockedSystemInfo.getSensorsCpuVoltage()).thenReturn(mockedSensorsCpuVoltageValue);
@@ -787,7 +788,7 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
     @Test
     public void assertChannelBatteryRemainingTimeIsUpdated() throws DeviceNotFoundException {
         String channnelID = SysteminfoBindingConstants.CHANNEL_BATTERY_REMAINING_TIME;
-        String acceptedItemType = "Number";
+        String acceptedItemType = "Number:Time";
 
         QuantityType<Time> mockedBatteryRemainingTime = new QuantityType<>(3600, Units.MINUTE);
         when(mockedSystemInfo.getBatteryRemainingTime(DEFAULT_DEVICE_INDEX)).thenReturn(mockedBatteryRemainingTime);
@@ -836,7 +837,7 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
     @Test
     public void assertChannelNetworkDataSentIsUpdated() throws DeviceNotFoundException {
         String channnelID = SysteminfoBindingConstants.CHANNEL_NETWORK_DATA_SENT;
-        String acceptedItemType = "Number";
+        String acceptedItemType = "Number:DataAmount";
 
         QuantityType<DataAmount> mockedNetworkDataSent = new QuantityType<>(1000, Units.MEBIBYTE);
         when(mockedSystemInfo.getNetworkDataSent(DEFAULT_DEVICE_INDEX)).thenReturn(mockedNetworkDataSent);
@@ -848,7 +849,7 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
     @Test
     public void assertChannelNetworkDataReceivedIsUpdated() throws DeviceNotFoundException {
         String channnelID = SysteminfoBindingConstants.CHANNEL_NETWORK_DATA_RECEIVED;
-        String acceptedItemType = "Number";
+        String acceptedItemType = "Number:DataAmount";
 
         QuantityType<DataAmount> mockedNetworkDataReceiveed = new QuantityType<>(800, Units.MEBIBYTE);
         when(mockedSystemInfo.getNetworkDataReceived(DEFAULT_DEVICE_INDEX)).thenReturn(mockedNetworkDataReceiveed);
@@ -1056,7 +1057,7 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
     @Test
     public void assertChannelProcessMemoryIsUpdatedWithPIDset() throws DeviceNotFoundException {
         String channnelID = SysteminfoBindingConstants.CHANNEL_PROCESS_MEMORY;
-        String acceptedItemType = "Number";
+        String acceptedItemType = "Number:DataAmount";
         // The pid of the System idle process in Windows
         int pid = 0;
 

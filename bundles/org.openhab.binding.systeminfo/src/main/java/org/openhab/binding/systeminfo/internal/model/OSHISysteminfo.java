@@ -61,6 +61,7 @@ import oshi.util.EdidUtil;
  *         CentralProcessor#getSystemSerialNumber()
  * @author Wouter Born - Update to OSHI 4.0.0 and add null annotations
  * @author Mark Herwege - Add dynamic creation of extra channels
+ * @author Mark Herwege - Use units of measure
  *
  * @see <a href="https://github.com/oshi/oshi">OSHI GitHub repository</a>
  */

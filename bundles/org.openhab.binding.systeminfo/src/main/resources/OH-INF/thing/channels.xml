@@ -144,7 +144,7 @@
 		<item-type>Number:DataAmount</item-type>
 		<label>Available Heap</label>
 		<description>How much data is available in the Java heap.</description>
-		<state pattern="%.1f %unit%" readOnly="true"/>
+		<state pattern="%.0f MB" readOnly="true"/>
 		<config-description-ref uri="channel-type:systeminfo:mediumpriority"/>
 	</channel-type>
 
@@ -173,39 +173,39 @@
 	</channel-type>
 
 	<channel-type id="available">
-		<item-type>Number</item-type>
+		<item-type>Number:DataAmount</item-type>
 		<label>Available</label>
 		<description>Available size</description>
-		<state readOnly="true" pattern="%d MB"/>
+		<state readOnly="true" pattern="%.0f MB"/>
 		<config-description-ref uri="channel-type:systeminfo:highpriority"/>
 	</channel-type>
 
 	<channel-type id="used">
-		<item-type>Number</item-type>
+		<item-type>Number:DataAmount</item-type>
 		<label>Used</label>
 		<description>Used size</description>
-		<state readOnly="true" pattern="%d MB"/>
+		<state readOnly="true" pattern="%.0f MB"/>
 		<config-description-ref uri="channel-type:systeminfo:highpriority"/>
 	</channel-type>
 
 	<channel-type id="used_process">
-		<item-type>Number</item-type>
+		<item-type>Number:DataAmount</item-type>
 		<label>Used</label>
 		<description>Used size</description>
-		<state readOnly="true" pattern="%d MB"/>
+		<state readOnly="true" pattern="%.0f MB"/>
 		<config-description-ref uri="channel-type:systeminfo:highpriority_process"/>
 	</channel-type>
 
 	<channel-type id="total">
-		<item-type>Number</item-type>
+		<item-type>Number:DataAmount</item-type>
 		<label>Total</label>
 		<description>Total size</description>
-		<state readOnly="true" pattern="%d MB"/>
+		<state readOnly="true" pattern="%.0f MB"/>
 		<config-description-ref uri="channel-type:systeminfo:lowpriority"/>
 	</channel-type>
 
 	<channel-type id="availablePercent">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Available (%)</label>
 		<description>Available size in percent</description>
 		<state readOnly="true" pattern="%.1f %%"/>
@@ -213,7 +213,7 @@
 	</channel-type>
 
 	<channel-type id="usedPercent">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Used (%)</label>
 		<description>Used size in percent</description>
 		<state readOnly="true" pattern="%.1f %%"/>
@@ -269,7 +269,7 @@
 	</channel-type>
 
 	<channel-type id="cpuTemp" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>CPU Temperature</label>
 		<description>CPU temperature</description>
 		<state readOnly="true" pattern="%.1f °C"/>
@@ -277,7 +277,7 @@
 	</channel-type>
 
 	<channel-type id="cpuVoltage" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:ElectricPotential</item-type>
 		<label>CPU Voltage</label>
 		<description>CPU voltage</description>
 		<state readOnly="true" pattern="%.1f V"/>
@@ -293,7 +293,7 @@
 	</channel-type>
 
 	<channel-type id="remainingTime">
-		<item-type>Number</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Remaining Time</label>
 		<description>Remaining time</description>
 		<state readOnly="true" pattern="%.1f min"/>
@@ -301,7 +301,7 @@
 	</channel-type>
 
 	<channel-type id="remainingCapacity">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Remaining Capacity</label>
 		<description>Remaining capacity in percent</description>
 		<state readOnly="true" pattern="%.1f %%"/>
@@ -333,7 +333,7 @@
 	</channel-type>
 
 	<channel-type id="uptime" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Time</item-type>
 		<label>System Uptime</label>
 		<description>System uptime (time after start)</description>
 		<state readOnly="true" pattern="%.1f min"/>
@@ -413,18 +413,18 @@
 	</channel-type>
 
 	<channel-type id="dataSent" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:DataAmount</item-type>
 		<label>Data Sent</label>
 		<description>Volume of data sent</description>
-		<state readOnly="true" pattern="%d MB"/>
+		<state readOnly="true" pattern="%.0f MB"/>
 		<config-description-ref uri="channel-type:systeminfo:mediumpriority"/>
 	</channel-type>
 
 	<channel-type id="dataReceived" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:DataAmount</item-type>
 		<label>Data Received</label>
 		<description>Volume of data received</description>
-		<state readOnly="true" pattern="%d MB"/>
+		<state readOnly="true" pattern="%.0f MB"/>
 		<config-description-ref uri="channel-type:systeminfo:mediumpriority"/>
 	</channel-type>
 
