@@ -76,6 +76,7 @@ public class SomfyTahomaMDNSDiscoveryListener implements ServiceListener {
                     logger.debug("Gateway PIN: {}", pin);
                     handler.setGatewayPin(pin);
                     handler.updateConfiguration();
+                    break;
                 }
             }
         }

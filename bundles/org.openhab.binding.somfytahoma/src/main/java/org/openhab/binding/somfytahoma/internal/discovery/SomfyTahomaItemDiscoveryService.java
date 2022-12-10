@@ -459,7 +459,7 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService
         SomfyTahomaBridgeHandler localBridgeHandler = bridgeHandler;
         if (localBridgeHandler != null) {
             ThingUID thingUID = new ThingUID(thingTypeUID, localBridgeHandler.getThing().getUID(),
-                    deviceURL.replaceAll("[\\W]|_", ""));
+                    deviceURL.replaceAll("[^a-zA-Z0-9_]", ""));
 
             logger.debug("Detected a/an {} - label: {} device URL: {}", thingTypeUID.getId(), label, deviceURL);
             thingDiscovered(DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID)
