@@ -144,7 +144,7 @@
 		<item-type>Number:DataAmount</item-type>
 		<label>Available Heap</label>
 		<description>How much data is available in the Java heap.</description>
-		<state pattern="%.0f MB" readOnly="true"/>
+		<state pattern="%.0f MiB" readOnly="true"/>
 		<config-description-ref uri="channel-type:systeminfo:mediumpriority"/>
 	</channel-type>
 
@@ -176,7 +176,7 @@
 		<item-type>Number:DataAmount</item-type>
 		<label>Available</label>
 		<description>Available size</description>
-		<state readOnly="true" pattern="%.0f MB"/>
+		<state readOnly="true" pattern="%.0f MiB"/>
 		<config-description-ref uri="channel-type:systeminfo:highpriority"/>
 	</channel-type>
 
@@ -184,7 +184,7 @@
 		<item-type>Number:DataAmount</item-type>
 		<label>Used</label>
 		<description>Used size</description>
-		<state readOnly="true" pattern="%.0f MB"/>
+		<state readOnly="true" pattern="%.0f MiB"/>
 		<config-description-ref uri="channel-type:systeminfo:highpriority"/>
 	</channel-type>
 
@@ -192,7 +192,7 @@
 		<item-type>Number:DataAmount</item-type>
 		<label>Used</label>
 		<description>Used size</description>
-		<state readOnly="true" pattern="%.0f MB"/>
+		<state readOnly="true" pattern="%.0f MiB"/>
 		<config-description-ref uri="channel-type:systeminfo:highpriority_process"/>
 	</channel-type>
 
@@ -200,7 +200,7 @@
 		<item-type>Number:DataAmount</item-type>
 		<label>Total</label>
 		<description>Total size</description>
-		<state readOnly="true" pattern="%.0f MB"/>
+		<state readOnly="true" pattern="%.0f MiB"/>
 		<config-description-ref uri="channel-type:systeminfo:lowpriority"/>
 	</channel-type>
 
@@ -416,7 +416,7 @@
 		<item-type>Number:DataAmount</item-type>
 		<label>Data Sent</label>
 		<description>Volume of data sent</description>
-		<state readOnly="true" pattern="%.0f MB"/>
+		<state readOnly="true" pattern="%.0f MiB"/>
 		<config-description-ref uri="channel-type:systeminfo:mediumpriority"/>
 	</channel-type>
 
@@ -424,7 +424,7 @@
 		<item-type>Number:DataAmount</item-type>
 		<label>Data Received</label>
 		<description>Volume of data received</description>
-		<state readOnly="true" pattern="%.0f MB"/>
+		<state readOnly="true" pattern="%.0f MiB"/>
 		<config-description-ref uri="channel-type:systeminfo:mediumpriority"/>
 	</channel-type>
 
