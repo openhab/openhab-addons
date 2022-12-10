@@ -10,11 +10,11 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.airvisualnode.internal.json;
+package org.openhab.binding.airvisualnode.internal.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.airvisualnode.internal.json.airvisual.Settings;
-import org.openhab.binding.airvisualnode.internal.json.airvisual.Status;
+import org.openhab.binding.airvisualnode.internal.dto.airvisual.Settings;
+import org.openhab.binding.airvisualnode.internal.dto.airvisual.Status;
 
 /**
  * Interface for AirVisual and AirVisual Pro models

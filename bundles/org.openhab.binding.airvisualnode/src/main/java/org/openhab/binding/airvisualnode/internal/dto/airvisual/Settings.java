@@ -10,9 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.airvisualnode.internal.json.airvisualpro;
-
-import org.openhab.binding.airvisualnode.internal.json.airvisual.PowerSaving;
+package org.openhab.binding.airvisualnode.internal.dto.airvisual;
 
 /**
  * Settings data.
@@ -21,7 +19,6 @@ import org.openhab.binding.airvisualnode.internal.json.airvisual.PowerSaving;
  */
 public class Settings {
 
-    private String followMode;
     private String followedStation;
     private boolean isAqiUsa;
     private boolean isConcentrationShowed;
@@ -33,16 +30,12 @@ public class Settings {
     private int lcdBrightness;
     private String nodeName;
     private PowerSaving powerSaving;
-    private SensorMode sensorMode;
     private String speedUnit;
     private String timezone;
 
-    public Settings(String followMode, String followedStation, boolean isAqiUsa, boolean isConcentrationShowed,
-            boolean isIndoor, boolean isLcdOn, boolean isNetworkTime, boolean isTemperatureCelsius, String language,
-            int lcdBrightness, String nodeName, PowerSaving powerSaving, SensorMode sensorMode, String speedUnit,
-            String timezone) {
-
-        this.followMode = followMode;
+    public Settings(String followedStation, boolean isAqiUsa, boolean isConcentrationShowed, boolean isIndoor,
+            boolean isLcdOn, boolean isNetworkTime, boolean isTemperatureCelsius, String language, int lcdBrightness,
+            String nodeName, PowerSaving powerSaving, String speedUnit, String timezone) {
         this.followedStation = followedStation;
         this.isAqiUsa = isAqiUsa;
         this.isConcentrationShowed = isConcentrationShowed;
@@ -54,17 +47,8 @@ public class Settings {
         this.lcdBrightness = lcdBrightness;
         this.nodeName = nodeName;
         this.powerSaving = powerSaving;
-        this.sensorMode = sensorMode;
         this.speedUnit = speedUnit;
         this.timezone = timezone;
-    }
-
-    public String getFollowMode() {
-        return followMode;
-    }
-
-    public void setFollowMode(String followMode) {
-        this.followMode = followMode;
     }
 
     public String getFollowedStation() {

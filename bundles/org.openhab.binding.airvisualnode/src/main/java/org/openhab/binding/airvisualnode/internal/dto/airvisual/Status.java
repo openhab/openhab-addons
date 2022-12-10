@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.airvisualnode.internal.json.airvisual;
+package org.openhab.binding.airvisualnode.internal.dto.airvisual;
 
 /**
  * Status data.

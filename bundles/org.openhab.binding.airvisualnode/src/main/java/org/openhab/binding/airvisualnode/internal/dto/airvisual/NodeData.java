@@ -10,30 +10,28 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.airvisualnode.internal.json.airvisualpro;
+package org.openhab.binding.airvisualnode.internal.dto.airvisual;
 
-import java.util.List;
-
-import org.openhab.binding.airvisualnode.internal.json.DateAndTime;
-import org.openhab.binding.airvisualnode.internal.json.MeasurementsInterface;
-import org.openhab.binding.airvisualnode.internal.json.NodeDataInterface;
-import org.openhab.binding.airvisualnode.internal.json.airvisual.Settings;
-import org.openhab.binding.airvisualnode.internal.json.airvisual.Status;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.airvisualnode.internal.dto.DateAndTime;
+import org.openhab.binding.airvisualnode.internal.dto.MeasurementsInterface;
+import org.openhab.binding.airvisualnode.internal.dto.NodeDataInterface;
 
 /**
  * Top level object for AirVisual Node JSON data.
  *
  * @author Victor Antonovich - Initial contribution
  */
-public class ProNodeData implements NodeDataInterface {
+@NonNullByDefault
+public class NodeData implements NodeDataInterface {
 
     private DateAndTime dateAndTime;
-    private List<Measurements> measurements;
+    private Measurements measurements;
     private String serialNumber;
     private Settings settings;
     private Status status;
 
-    public ProNodeData(DateAndTime dateAndTime, List<Measurements> measurements, String serialNumber, Settings settings,
+    public NodeData(DateAndTime dateAndTime, Measurements measurements, String serialNumber, Settings settings,
             Status status) {
         this.dateAndTime = dateAndTime;
         this.measurements = measurements;
@@ -51,10 +49,10 @@ public class ProNodeData implements NodeDataInterface {
     }
 
     public MeasurementsInterface getMeasurements() {
-        return measurements.get(0);
+        return measurements;
     }
 
-    public void setMeasurements(List<Measurements> measurements) {
+    public void setMeasurements(Measurements measurements) {
         this.measurements = measurements;
     }
 

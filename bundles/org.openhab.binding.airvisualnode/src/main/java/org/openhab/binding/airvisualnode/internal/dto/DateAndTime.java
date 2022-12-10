@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.airvisualnode.internal.json;
+package org.openhab.binding.airvisualnode.internal.dto;
 
 /**
  * Date and time / timestamp data.

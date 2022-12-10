@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.airvisualnode.internal.json.airvisualpro;
+package org.openhab.binding.airvisualnode.internal.dto.airvisualpro;
 
 /**
  * Sensor Operating Mode

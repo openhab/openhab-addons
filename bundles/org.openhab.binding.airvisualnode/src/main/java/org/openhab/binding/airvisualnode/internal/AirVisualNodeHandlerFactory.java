@@ -14,6 +14,7 @@ package org.openhab.binding.airvisualnode.internal;
 
 import static org.openhab.binding.airvisualnode.internal.AirVisualNodeBindingConstants.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.airvisualnode.internal.handler.AirVisualNodeHandler;
 import org.openhab.core.thing.Thing;
@@ -29,6 +30,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Victor Antonovich - Initial contribution
  */
+@NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.airvisualnode")
 public class AirVisualNodeHandlerFactory extends BaseThingHandlerFactory {
 
