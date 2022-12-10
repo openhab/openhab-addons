@@ -202,6 +202,10 @@
 			<channel id="desiredHeatRangeHigh" typeId="desiredHeatRangeHigh"/>
 			<channel id="desiredCoolRangeLow" typeId="desiredCoolRangeLow"/>
 			<channel id="desiredCoolRangeHigh" typeId="desiredCoolRangeHigh"/>
+			<channel id="actualAQAccuracy" typeId="actualAQAccuracy"/>
+			<channel id="actualAQScore" typeId="actualAQScore"/>
+			<channel id="actualCO2" typeId="actualCO2"/>
+			<channel id="actualVOC" typeId="actualVOC"/>
 		</channels>
 	</channel-group-type>
 
@@ -314,6 +318,26 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Desired Cool Range High</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="actualAQAccuracy" advanced="true">
+		<item-type>Number</item-type>
+		<label>Actual Air Quality Accuracy</label>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+	<channel-type id="actualAQScore" advanced="true">
+		<item-type>Number</item-type>
+		<label>Actual Air Quality Score</label>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+	<channel-type id="actualCO2" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Actual CO2</label>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+	<channel-type id="actualVOC" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Actual VOC</label>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-group-type id="settings">

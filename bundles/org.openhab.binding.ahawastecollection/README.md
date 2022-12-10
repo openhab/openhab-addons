@@ -4,7 +4,7 @@ This binding provides information about the upcoming waste collection dates for 
 
 ## Supported Things
 
--   **collectionSchedule:** Represents the connection to the **aha Waste Collection Schedule** with four channels for the different waste types.
+- **collectionSchedule:** Represents the connection to the **aha Waste Collection Schedule** with four channels for the different waste types.
 
 ## Discovery
 
@@ -14,21 +14,20 @@ Discovery is not possible, due some form input values from the website above are
 
 For configuration of the **collectionSchedule** thing, you need the form inputs from the aha collections schedule web page. Follow the steps below to get the required configuration parameters from the form input values.
 
-
 1. Open [aha Abfuhrkalender](https://www.aha-region.de/abholtermine/abfuhrkalender) in your favorite brower with developer-console.
-2. Open the developer console and switch to network tab (for example press F12 in chrome / edge / firefox).
-3. Fill in the form: Select your commune, Street and house number and hit "Suchen".
-4. Select the first request to https://www.aha-region.de/abholtermine/abfuhrkalender (see first screenshot below)
-5. Check the form data at the end of the request for the form values (see second screenshot below)
-5. Fill in the values from the form input in thing configuration (see examples below)
+1. Open the developer console and switch to network tab (for example press F12 in chrome / edge / firefox).
+1. Fill in the form: Select your commune, Street and house number and hit "Suchen".
+1. Select the first request to [https://www.aha-region.de/abholtermine/abfuhrkalender](https://www.aha-region.de/abholtermine/abfuhrkalender) (see first screenshot below)
+1. Check the form data at the end of the request for the form values (see second screenshot below)
+1. Fill in the values from the form input in thing configuration (see examples below)
 
 ![Chrome Developer Console Top](doc/images/ChromeDevconsoleTop.png "Chrome Developer Console showing request URL")
 
-*Check if you've selected the correct request, that contains the form data*
+Check if you've selected the correct request, that contains the form data
 
 ![Chrome Developer Console Bottom](doc/images/ChromeDevconsoleBottom.png "Chrome Developer Console showing form inputs")
 
-*Grab the values for the configuration parameters from the form data section at the end of the request*
+Grab the values for the configuration parameters from the form data section at the end of the request
 
 **collectionSchedule** parameters:
 
@@ -44,7 +43,6 @@ For configuration of the **collectionSchedule** thing, you need the form inputs 
 
 The thing **aha Waste Collection Schedule** provides four channels for the upcoming day of waste collection for the different waste types.
 
-
 | channel  | type   | description                  |
 |----------|--------|------------------------------|
 | generalWaste  | DateTime | Next collection day for general waste  |
@@ -52,28 +50,26 @@ The thing **aha Waste Collection Schedule** provides four channels for the upcom
 | bioWaste  | DateTime | Next collection day for bio waste  |
 | paper  | DateTime | Next collection day for paper  |
 
-
 ## Full Example
 
 wasteCollection.things
 
-```
+```java
 Thing ahawastecollection:collectionSchedule:wasteCollectionSchedule "aha Abfuhrkalender" [ commune="Isernhagen", street="67269@Rosmarinweg+/+Kirchhorst@Kirchhorst", houseNumber="10", houseNumberAddon="", collectionPlace="67269-0010+" ] 
 ```
 
 wasteCollection.items
 
-```
+```java
 DateTime collectionDay_generalWaste "Next general waste collection" {channel="ahawastecollection:collectionSchedule:wasteCollectionSchedule:generalWaste"}
 DateTime collectionDay_leightweightPackaging "Next lightweight packaging collection" {channel="ahawastecollection:collectionSchedule:wasteCollectionSchedule:leightweightPackaging"}
 DateTime collectionDay_bioWaste "Next bio waste collection" {channel="ahawastecollection:collectionSchedule:wasteCollectionSchedule:bioWaste"}
 DateTime collectionDay_paper "Next paper collection" {channel="ahawastecollection:collectionSchedule:wasteCollectionSchedule:paper"}
 ```
 
+Example for rule that sends a notification with collected waste types on day before collection
 
-Example for rule that sends an notification with collected waste types on day before collection
-
-```
+```yaml
 triggers:
   - id: "1"
     configuration:

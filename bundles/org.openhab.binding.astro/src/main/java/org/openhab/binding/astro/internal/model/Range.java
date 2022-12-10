@@ -23,7 +23,7 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 
 /**
- * Range class which holds a start and a end calendar object.
+ * Range class which holds a start and an end calendar object.
  *
  * @author Gerhard Riegler - Initial contribution
  * @author Christoph Weitkamp - Introduced UoM

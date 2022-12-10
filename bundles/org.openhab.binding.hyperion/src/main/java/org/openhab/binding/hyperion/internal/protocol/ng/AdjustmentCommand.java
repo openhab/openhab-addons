@@ -15,7 +15,7 @@ package org.openhab.binding.hyperion.internal.protocol.ng;
 import org.openhab.binding.hyperion.internal.protocol.HyperionCommand;
 
 /**
- * The {@link AdjustmentCommand} is a POJO for sending a Adjustment command
+ * The {@link AdjustmentCommand} is a POJO for sending an Adjustment command
  * to the Hyperion.ng server.
  *
  * @author Daniel Walters - Initial contribution

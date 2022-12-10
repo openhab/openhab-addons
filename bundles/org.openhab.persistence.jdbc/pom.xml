@@ -22,7 +22,7 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <hikari.version>2.4.7</hikari.version>
     <dbutils.version>1.6</dbutils.version>
-    <yank.version>3.2.0</yank.version>
+    <yank.version>3.4.0</yank.version>
 
     <!-- JDBC database driver versions -->
     <derby.version>10.14.2.0</derby.version>
@@ -30,7 +30,7 @@
     <hsqldb.version>2.3.3</hsqldb.version>
     <mariadb.version>3.0.8</mariadb.version>
     <mysql.version>8.0.30</mysql.version>
-    <postgresql.version>42.4.1</postgresql.version>
+    <postgresql.version>42.4.3</postgresql.version>
     <sqlite.version>3.16.1</sqlite.version>
   </properties>
 

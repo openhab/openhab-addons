@@ -11,7 +11,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Energy Meter</label>
-		<description>A OpenWebNet BUS/SCS Energy Meter. BTicino models: F52x</description>
+		<description>An OpenWebNet BUS/SCS Energy Meter. BTicino models: F52x</description>
 
 		<channels>
 			<channel id="power" typeId="power"/>

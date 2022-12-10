@@ -18,6 +18,8 @@ import java.math.BigDecimal;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.measure.Unit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.items.GroupItem;
@@ -57,6 +59,8 @@ public class HomekitTaggedItem {
     public final static String PRIMARY_SERVICE = "primary";
     public final static String STEP = "step";
     public final static String UNIT = "unit";
+    public final static String EMULATE_STOP_STATE = "stop";
+    public final static String EMULATE_STOP_SAME_DIRECTION = "stopSameDirection";
 
     private static final Map<Integer, String> CREATED_ACCESSORY_IDS = new ConcurrentHashMap<>();
 
@@ -86,7 +90,7 @@ public class HomekitTaggedItem {
         this.homekitAccessoryType = homekitAccessoryType;
         this.homekitCharacteristicType = HomekitCharacteristicType.EMPTY;
         if (homekitAccessoryType != DUMMY) {
-            this.id = calculateId(item.getItem());
+            this.id = calculateId(item.getItem().getName());
         } else {
             this.id = 0;
         }
@@ -413,14 +417,34 @@ public class HomekitTaggedItem {
      * @param defaultValue default value
      * @return value
      */
-    public QuantityType getConfigurationAsQuantity(String key, QuantityType defaultValue) {
+    public QuantityType<?> getConfigurationAsQuantity(String key, QuantityType defaultValue,
+            boolean relativeConversion) {
         String stringValue = getConfiguration(key, new String());
         if (stringValue.isEmpty()) {
             return defaultValue;
         }
         var parsedValue = new QuantityType(stringValue);
-        var convertedValue = parsedValue.toInvertibleUnit(defaultValue.getUnit());
-        // not convertible? just assume it's in the expected unit
+        QuantityType<?> convertedValue;
+
+        if (relativeConversion) {
+            convertedValue = parsedValue.toUnitRelative(defaultValue.getUnit());
+        } else {
+            convertedValue = parsedValue.toInvertibleUnit(defaultValue.getUnit());
+        }
+        // not convertible? just assume it's in the item's unit
+        if (convertedValue == null) {
+            Unit unit;
+            if (getBaseItem() instanceof NumberItem && (unit = ((NumberItem) getBaseItem()).getUnit()) != null) {
+                var bdValue = new BigDecimal(stringValue);
+                parsedValue = new QuantityType(bdValue, unit);
+                if (relativeConversion) {
+                    convertedValue = parsedValue.toUnitRelative(defaultValue.getUnit());
+                } else {
+                    convertedValue = parsedValue.toInvertibleUnit(defaultValue.getUnit());
+                }
+            }
+        }
+        // still not convertible? just assume it's in the default's unit
         if (convertedValue == null) {
             return new QuantityType(parsedValue.toBigDecimal(), defaultValue.getUnit());
         }
@@ -443,24 +467,25 @@ public class HomekitTaggedItem {
         }
     }
 
-    private int calculateId(Item item) {
+    public static int calculateId(String name) {
         // magic number 629 is the legacy from apache HashCodeBuilder (17*37)
-        int id = 629 + item.getName().hashCode();
+        int id = 629 + name.hashCode();
         if (id < 0) {
             id += Integer.MAX_VALUE;
         }
         if (id < 2) {
             id = 2; // 0 and 1 are reserved
         }
+
         if (CREATED_ACCESSORY_IDS.containsKey(id)) {
-            if (!CREATED_ACCESSORY_IDS.get(id).equals(item.getName())) {
-                logger.warn(
+            if (!CREATED_ACCESSORY_IDS.get(id).equals(name)) {
+                LoggerFactory.getLogger(HomekitTaggedItem.class).warn(
                         "Could not create HomeKit accessory {} because its hash conflicts with {}. This is a 1:1,000,000 chance occurrence. Change one of the names and consider playing the lottery. See https://github.com/openhab/openhab-addons/issues/257#issuecomment-125886562",
-                        item.getName(), CREATED_ACCESSORY_IDS.get(id));
+                        name, CREATED_ACCESSORY_IDS.get(id));
                 return 0;
             }
         } else {
-            CREATED_ACCESSORY_IDS.put(id, item.getName());
+            CREATED_ACCESSORY_IDS.put(id, name);
         }
         return id;
     }

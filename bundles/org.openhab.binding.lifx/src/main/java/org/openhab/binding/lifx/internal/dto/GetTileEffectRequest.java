@@ -24,7 +24,6 @@ public class GetTileEffectRequest extends Packet {
     public static final int TYPE = 0x2CE;
 
     public GetTileEffectRequest() {
-        setTagged(false);
         setAddressable(true);
         setResponseRequired(true);
     }

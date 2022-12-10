@@ -21,7 +21,7 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 
 /**
- * The {@link JSONResponseHandler} checks an digitalSTROM-JSON response and can parse it to an {@link JsonObject}.
+ * The {@link JSONResponseHandler} checks a digitalSTROM-JSON response and can parse it to a {@link JsonObject}.
  *
  * @author Alexander Betker - Initial contribution
  * @author Alex Maier - Initial contribution
@@ -65,7 +65,7 @@ public class JSONResponseHandler {
             try {
                 return (JsonObject) JsonParser.parseString(jsonResponse);
             } catch (JsonParseException e) {
-                LOGGER.error("An JsonParseException occurred by parsing jsonRequest: {}", jsonResponse, e);
+                LOGGER.error("A JsonParseException occurred by parsing jsonRequest: {}", jsonResponse, e);
             }
         }
         return null;

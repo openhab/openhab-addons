@@ -206,7 +206,6 @@ public class TibberHandler extends BaseThingHandler {
 
                     updateChannel(DAILY_COST, myObject.get("cost").toString());
                     updateChannel(DAILY_CONSUMPTION, myObject.get("consumption").toString());
-
                 } catch (JsonSyntaxException e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "Error communicating with Tibber API: " + e.getMessage());
@@ -226,7 +225,6 @@ public class TibberHandler extends BaseThingHandler {
 
                     updateChannel(HOURLY_COST, myObject.get("cost").toString());
                     updateChannel(HOURLY_CONSUMPTION, myObject.get("consumption").toString());
-
                 } catch (JsonSyntaxException e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "Error communicating with Tibber API: " + e.getMessage());

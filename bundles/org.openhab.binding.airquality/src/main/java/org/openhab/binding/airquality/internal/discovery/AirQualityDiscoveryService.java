@@ -51,7 +51,7 @@ public class AirQualityDiscoveryService extends AbstractDiscoveryService impleme
     private @Nullable AirQualityBridgeHandler bridgeHandler;
 
     /**
-     * Creates a AirQualityDiscoveryService with enabled autostart.
+     * Creates an AirQualityDiscoveryService with enabled autostart.
      */
     public AirQualityDiscoveryService() {
         super(SUPPORTED_THING_TYPES_UIDS, DISCOVER_TIMEOUT_SECONDS, false);

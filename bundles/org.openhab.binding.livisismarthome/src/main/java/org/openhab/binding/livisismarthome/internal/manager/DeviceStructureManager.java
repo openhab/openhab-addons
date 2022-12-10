@@ -15,7 +15,6 @@ package org.openhab.binding.livisismarthome.internal.manager;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -44,8 +43,8 @@ public class DeviceStructureManager {
     private final Logger logger = LoggerFactory.getLogger(DeviceStructureManager.class);
 
     private final FullDeviceManager deviceManager;
-    private final Map<String, DeviceDTO> deviceMap;
-    private final Map<String, DeviceDTO> capabilityIdToDeviceMap;
+    private final Map<String, DeviceDTO> deviceMap = new ConcurrentHashMap<>();
+    private final Map<String, DeviceDTO> capabilityIdToDeviceMap = new ConcurrentHashMap<>();
     private String bridgeDeviceId = "";
 
     /**
@@ -55,8 +54,6 @@ public class DeviceStructureManager {
      */
     public DeviceStructureManager(FullDeviceManager deviceManager) {
         this.deviceManager = deviceManager;
-        deviceMap = Collections.synchronizedMap(new HashMap<>());
-        capabilityIdToDeviceMap = new ConcurrentHashMap<>();
     }
 
     /**

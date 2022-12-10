@@ -59,7 +59,8 @@ public abstract class State {
         context.getState().dispose();
         State newState = nextState.apply(context);
 
-        logger.trace("{} -> {}", context.getState().getClass().getSimpleName(), newState.getClass().getSimpleName());
+        logger.trace("{}: {} -> {}", context.getRuleUID(), context.getState().getClass().getSimpleName(),
+                newState.getClass().getSimpleName());
 
         context.setState(newState);
     }

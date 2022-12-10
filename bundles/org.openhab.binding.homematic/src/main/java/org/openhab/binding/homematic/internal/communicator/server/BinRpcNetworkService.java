@@ -74,7 +74,7 @@ public class BinRpcNetworkService implements Runnable {
     }
 
     /**
-     * Listening for events and starts the callbackHandler if a event received.
+     * Listening for events and starts the callbackHandler if an event received.
      */
     @Override
     public void run() {

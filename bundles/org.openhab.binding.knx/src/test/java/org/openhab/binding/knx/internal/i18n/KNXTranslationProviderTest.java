@@ -26,7 +26,7 @@ import tuwien.auto.calimero.link.KNXLinkClosedException;
  *
  */
 @NonNullByDefault
-public class KNXTranslationProviderTest {
+class KNXTranslationProviderTest {
     static final String UNKNOWN = "unknown text";
     static final String UNKNOWN_PATTERN = "unknown text {0}";
     static final String UNKNOWN_FIVE = "unknown text 5";
@@ -39,7 +39,7 @@ public class KNXTranslationProviderTest {
     static final String CONN_TYPE_NULL_VALUE = "Unknown IP connection type: null.";
 
     @Test
-    public void testGetBeforeInit() {
+    void testGetBeforeInit() {
         // initial state, should not crash and preferrably return original strings (w. pattern substitution)
         assertEquals(UNKNOWN, KNXTranslationProvider.I18N.get(UNKNOWN));
         assertEquals(UNKNOWN, KNXTranslationProvider.I18N.get(UNKNOWN, 5));
@@ -53,7 +53,7 @@ public class KNXTranslationProviderTest {
     }
 
     @Test
-    public void testSetProvider() {
+    void testSetProvider() {
         // initial state, should not crash
         KNXTranslationProvider.I18N.setProvider(null, null);
         assertNotNull(KNXTranslationProvider.I18N.get(UNKNOWN));
@@ -89,7 +89,7 @@ public class KNXTranslationProviderTest {
     }
 
     @Test
-    public void testGetLocalizedException() {
+    void testGetLocalizedException() {
         // initial state, should not crash
         KNXTranslationProvider.I18N.setProvider(null, null);
 

@@ -149,21 +149,22 @@ Switch living_room_pump_lock "Floor heating pump lock [MAP:(plugwiseha.map):%s]"
 Number:Power living_room_pump_power_usage "Floor heating pump power [%0.2fW]" {channel="plugwiseha:appliance_pump:home:living_room_pump:powerUsage"}
 
 Number:Pressure	main_boiler_waterpressure "Waterpressure" { channel="plugwiseha:appliance_boiler:home:main_boiler:waterPressure"}
-Switch	main_boiler_chState "Heating active" { channel="plugwiseha:appliance_boiler:home:main_boiler:chActive"}
-Switch	main_boiler_dhwState "Domestic hot water active" { channel="plugwiseha:appliance_boiler:home:main_boiler:dhwActive"}
+Switch	main_boiler_chState "Heating active" { channel="plugwiseha:appliance_boiler:home:main_boiler:chState"}
+Switch	main_boiler_dhwState "Domestic hot water active" { channel="plugwiseha:appliance_boiler:home:main_boiler:dhwState"}
 
 Switch main_boiler_coolingState "Cooling state" { channel="plugwiseha:appliance_boiler:home:main_boiler:coolingState"}
-Number:Temperature main_boiler_intendedBoilerTemp "Intended boiler temperature" {channel="plugwiseha:appliance_boiler:home:living_room_thermostat:intendedBoilerTemp"}
+Number:Temperature main_boiler_intendedBoilerTemp "Intended boiler temperature" {channel="plugwiseha:appliance_boiler:home:main_boiler:intendedBoilerTemp"}
 Switch main_boiler_flameState "Flame state" { channel="plugwiseha:appliance_boiler:home:main_boiler:flameState"}
 Switch main_boiler_intendedHeatingState "Intended heating state" { channel="plugwiseha:appliance_boiler:home:main_boiler:intendedHeatingState"}
 Number main_boiler_modulationLevel "Modulation level" {channel="plugwiseha:appliance_boiler:home:living_room_radiator:modulationLevel"}
 Number main_boiler_otAppFaultCode "Opentherm app. faultcode" {channel="plugwiseha:appliance_boiler:home:living_room_radiator:otAppFaultCode"}
-Number:Temperature main_boiler_dhwTemperature "DHW temperature" {channel="plugwiseha:appliance_boiler:home:living_room_thermostat:dhwTemperature"}
-Number main_boiler_otOEMFaultCode "Opentherm OEM faultcode" {channel="plugwiseha:appliance_boiler:home:living_room_radiator:otOEMFaultCode"}
-Number:Temperature main_boiler_boilerTemperature "Boiler temperature" {channel="plugwiseha:appliance_boiler:home:living_room_thermostat:boilerTemperature"}
-Number:Temperature main_boiler_dhwSetpoint "DHW setpoint" {channel="plugwiseha:appliance_boiler:home:living_room_thermostat:dhwSetpoint"}
-Number:Temperature main_boiler_maxBoilerTemperature "Max. boiler temperature" {channel="plugwiseha:appliance_boiler:home:living_room_thermostat:maxBoilerTemperature"}
+Number:Temperature main_boiler_dhwTemperature "DHW temperature" {channel="plugwiseha:appliance_boiler:home:main_boiler:dhwTemperature"}
+Number main_boiler_otOEMFaultCode "Opentherm OEM faultcode" {channel="plugwiseha:appliance_boiler:home:main_boiler:otOEMFaultCode"}
+Number:Temperature main_boiler_boilerTemperature "Boiler temperature" {channel="plugwiseha:appliance_boiler:home:main_boiler:boilerTemperature"}
+Number:Temperature main_boiler_dhwSetpoint "DHW setpoint" {channel="plugwiseha:appliance_boiler:home:main_boiler:dhwSetpoint"}
+Number:Temperature main_boiler_maxBoilerTemperature "Max. boiler temperature" {channel="plugwiseha:appliance_boiler:home:main_boiler:maxBoilerTemperature"}
 Switch main_boiler_dhwComfortMode "DHW comfort mode" { channel="plugwiseha:appliance_boiler:home:main_boiler:dhwComfortMode"}
+Number:Temperature main_boiler_returnTemperature "Boiler return temperature" {channel="plugwiseha:appliance_boiler:home:main_boiler:returnWaterTemperature"}
 ```
 
 **transform/plugwiseha.map**
@@ -214,6 +215,7 @@ sitemap plugwiseha label="PlugwiseHA Binding"
 		Number item=main_boiler_dhwSetpoint
 		Number item=main_boiler_maxBoilerTemperature
 		Switch item=main_boiler_dhwComfortMode
+        Number item=main_boiler_returnTemperature
 	}
 }
 ```

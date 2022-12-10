@@ -56,7 +56,7 @@ public class PWMModuleHandlerFactory extends BaseModuleHandlerFactory {
     protected @Nullable ModuleHandler internalCreate(Module module, String ruleUID) {
         switch (module.getTypeUID()) {
             case PWMTriggerHandler.MODULE_TYPE_ID:
-                return new PWMTriggerHandler((Trigger) module, itemRegistry, bundleContext);
+                return new PWMTriggerHandler((Trigger) module, itemRegistry, bundleContext, ruleUID);
         }
 
         return null;

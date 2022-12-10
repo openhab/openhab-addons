@@ -20,7 +20,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.types.Type;
 
 /**
- * Converts between a Homematic datapoint value and a openHAB DecimalType.
+ * Converts between a Homematic datapoint value and an openHAB DecimalType.
  *
  * @author Gerhard Riegler - Initial contribution
  */

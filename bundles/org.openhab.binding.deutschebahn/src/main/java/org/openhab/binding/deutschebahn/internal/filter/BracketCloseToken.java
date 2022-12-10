@@ -15,7 +15,7 @@ package org.openhab.binding.deutschebahn.internal.filter;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * A token representing an closing bracket.
+ * A token representing a closing bracket.
  * 
  * @author Sönke Küper - Initial contribution.
  */

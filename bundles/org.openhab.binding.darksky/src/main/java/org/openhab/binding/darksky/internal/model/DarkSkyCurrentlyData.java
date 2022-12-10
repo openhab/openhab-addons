@@ -13,7 +13,7 @@
 package org.openhab.binding.darksky.internal.model;
 
 /**
- * The {@link DarkSkyCurrentlyData} is the Java class used to map the JSON response to an Dark Sky request.
+ * The {@link DarkSkyCurrentlyData} is the Java class used to map the JSON response to a Dark Sky request.
  *
  * @author Christoph Weitkamp - Initial contribution
  */

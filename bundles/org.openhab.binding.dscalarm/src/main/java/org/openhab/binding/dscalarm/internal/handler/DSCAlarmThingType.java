@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Used to map thing types from the binding string to a ENUM value.
+ * Used to map thing types from the binding string to an ENUM value.
  *
  * @author Russell Stephens - Initial Contribution
  */

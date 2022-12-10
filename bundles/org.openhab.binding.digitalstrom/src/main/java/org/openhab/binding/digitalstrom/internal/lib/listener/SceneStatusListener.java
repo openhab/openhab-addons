@@ -15,7 +15,7 @@ package org.openhab.binding.digitalstrom.internal.lib.listener;
 import org.openhab.binding.digitalstrom.internal.lib.structure.scene.InternalScene;
 
 /**
- * The {@link SceneStatusListener} is notified, if a {@link InternalScene} status has changed or a
+ * The {@link SceneStatusListener} is notified, if an {@link InternalScene} status has changed or a
  * {@link InternalScene} has been removed or added.
  *
  * <p>
@@ -43,14 +43,14 @@ public interface SceneStatusListener {
     void onSceneStateChanged(boolean newState);
 
     /**
-     * This method is called whenever a {@link InternalScene} is removed.
+     * This method is called whenever an {@link InternalScene} is removed.
      *
      * @param scene that was removed
      */
     void onSceneRemoved(InternalScene scene);
 
     /**
-     * This method is called whenever a {@link InternalScene} is added.
+     * This method is called whenever an {@link InternalScene} is added.
      *
      * @param scene that was added
      */

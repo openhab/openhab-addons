@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="bondhome"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- The Bond Bridge -->
+	<bridge-type id="bondBridge">
+		<label>Bond Home Bridge</label>
+		<description>The RF/IR/Wifi Bridge</description>
+
+		<representation-property>serialNumber</representation-property>
+		<config-description-ref uri="thing-type:bondhome:bondbridge"/>
+
+	</bridge-type>
+
+
+</thing:thing-descriptions>

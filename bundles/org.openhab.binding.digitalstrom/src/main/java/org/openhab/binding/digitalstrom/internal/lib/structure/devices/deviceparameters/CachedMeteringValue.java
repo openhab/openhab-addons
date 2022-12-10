@@ -20,7 +20,7 @@ import org.openhab.binding.digitalstrom.internal.lib.structure.devices.devicepar
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.impl.DSUID;
 
 /**
- * The {@link CachedMeteringValue} saves the metering value of an digitalSTROM-Circuit.
+ * The {@link CachedMeteringValue} saves the metering value of a digitalSTROM-Circuit.
  *
  * @author Alexander Betker - Initial contribution
  * @author Michael Ochel - add methods getDateAsDate(), getMeteringType() and getMeteringUnit(); add missing java-doc

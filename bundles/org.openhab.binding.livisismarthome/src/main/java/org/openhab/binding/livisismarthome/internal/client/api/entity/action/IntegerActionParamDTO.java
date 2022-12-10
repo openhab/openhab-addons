@@ -13,7 +13,7 @@
 package org.openhab.binding.livisismarthome.internal.client.api.entity.action;
 
 /**
- * Defines the structure of a {@link IntegerActionParamDTO}.
+ * Defines the structure of an {@link IntegerActionParamDTO}.
  *
  * @author Oliver Kuhl - Initial contribution
  */

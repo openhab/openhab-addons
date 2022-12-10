@@ -36,7 +36,7 @@ public final class EventAttributeSelection implements AttributeSelection {
     private final EventAttribute<?, ?> eventAttribute;
 
     /**
-     * Creates an new {@link EventAttributeSelection}.
+     * Creates a new {@link EventAttributeSelection}.
      */
     public EventAttributeSelection(EventType eventType, EventAttribute<?, ?> eventAttribute) {
         this.eventType = eventType;
