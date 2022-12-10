@@ -17,6 +17,7 @@ import static org.openhab.binding.nanoleaf.internal.NanoleafBindingConstants.*;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -28,7 +29,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -66,6 +66,7 @@ import org.openhab.binding.nanoleaf.internal.model.IntegerState;
 import org.openhab.binding.nanoleaf.internal.model.Layout;
 import org.openhab.binding.nanoleaf.internal.model.On;
 import org.openhab.binding.nanoleaf.internal.model.PanelLayout;
+import org.openhab.binding.nanoleaf.internal.model.PositionDatum;
 import org.openhab.binding.nanoleaf.internal.model.Rhythm;
 import org.openhab.binding.nanoleaf.internal.model.Sat;
 import org.openhab.binding.nanoleaf.internal.model.State;
@@ -685,9 +686,24 @@ public class NanoleafControllerHandler extends BaseBridgeHandler implements Nano
 
     private void setSolidColor(HSBType color) {
         // If the panels are set to solid color, they are read from the state
-        List<Integer> allPanelIds = controllerInfo.getPanelLayout().getLayout().getPositionData().stream()
-                .mapToInt(pd -> pd.getPanelId()).boxed().collect(Collectors.toList());
-        panelColors.setMultiple(allPanelIds, color);
+        PanelLayout panelLayout = controllerInfo.getPanelLayout();
+        Layout layout = panelLayout.getLayout();
+
+        if (layout != null) {
+            List<PositionDatum> positionData = layout.getPositionData();
+            if (positionData != null) {
+                List<Integer> allPanelIds = new ArrayList<>(positionData.size());
+                for (PositionDatum pd : positionData) {
+                    allPanelIds.add(pd.getPanelId());
+                }
+
+                panelColors.setMultiple(allPanelIds, color);
+            } else {
+                logger.debug("Missing position datum when setting solid color for {}", getThing().getUID());
+            }
+        } else {
+            logger.debug("Missing layout when setting solid color for {}", getThing().getUID());
+        }
     }
 
     private void updateConfiguration() {
@@ -1009,7 +1025,16 @@ public class NanoleafControllerHandler extends BaseBridgeHandler implements Nano
     void parsePanelData(NanoleafControllerConfig config, ContentResponse panelData) {
         // panelData is in format (numPanels, (PanelId, 1, R, G, B, W, TransitionTime) * numPanel)
         @Nullable
-        Write response = gson.fromJson(panelData.getContentAsString(), Write.class);
+        Write response = null;
+
+        String panelDataContent = panelData.getContentAsString();
+        try {
+            response = gson.fromJson(panelDataContent, Write.class);
+        } catch (JsonSyntaxException jse) {
+            logger.error("Unable to parse panel data information from Nanoleaf", jse);
+            logger.trace("Panel Data which couldnt be parsed: {}", panelDataContent);
+        }
+
         if (response != null) {
             String[] tokenizedData = response.getAnimData().split(" ");
             if (config.deviceType.equals(CONFIG_DEVICE_TYPE_LIGHTPANELS)

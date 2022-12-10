@@ -15,7 +15,6 @@ package org.openhab.binding.nanoleaf.internal.colors;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -28,7 +27,7 @@ import org.slf4j.LoggerFactory;
  * Stores information about panels and their colors, while sending notifications to panels and controllers
  * about updated states.
  *
- * @author Jørgen Austvik - Refactoring to own class
+ * @author Jørgen Austvik - Initial contribution
  */
 @NonNullByDefault
 public class NanoleafPanelColors {
@@ -38,7 +37,7 @@ public class NanoleafPanelColors {
     // holds current color data per panel
     private final Map<Integer, HSBType> panelColors = new ConcurrentHashMap<>();
     private final Map<Integer, NanoleafPanelColorChangeListener> panelChangeListeners = new ConcurrentHashMap<>();
-    private final List<NanoleafControllerColorChangeListener> controllerListeners = new CopyOnWriteArrayList<>();
+    private @Nullable NanoleafControllerColorChangeListener controllerListener;
 
     private boolean updatePanelColorNoController(Integer panelId, HSBType color) {
         boolean updatePanel = false;
@@ -69,9 +68,14 @@ public class NanoleafPanelColors {
     private void updatePanelColor(Integer panelId, HSBType color) {
         boolean updatePanel = updatePanelColorNoController(panelId, color);
         if (updatePanel) {
-            for (NanoleafControllerColorChangeListener controllerListener : controllerListeners) {
-                controllerListener.onPanelChangedColor();
-            }
+            notifyControllerListener();
+        }
+    }
+
+    private void notifyControllerListener() {
+        NanoleafControllerColorChangeListener privateControllerListener = controllerListener;
+        if (privateControllerListener != null) {
+            privateControllerListener.onPanelChangedColor();
         }
     }
 
@@ -100,9 +104,14 @@ public class NanoleafPanelColors {
         panelChangeListeners.put(panelId, panelListener);
     }
 
+    public void unregisterChangeListener(Integer panelId) {
+        logger.trace("Removing color change listener for panel {}", panelId);
+        panelChangeListeners.remove(panelId);
+    }
+
     public void registerChangeListener(NanoleafControllerColorChangeListener controllerListener) {
-        logger.trace("Adding color change listener for controller");
-        controllerListeners.add(controllerListener);
+        logger.trace("Setting color change listener for controller");
+        this.controllerListener = controllerListener;
     }
 
     /**
@@ -140,9 +149,7 @@ public class NanoleafPanelColors {
         }
 
         if (updatePanel) {
-            for (NanoleafControllerColorChangeListener controllerListener : controllerListeners) {
-                controllerListener.onPanelChangedColor();
-            }
+            notifyControllerListener();
         }
     }
 }

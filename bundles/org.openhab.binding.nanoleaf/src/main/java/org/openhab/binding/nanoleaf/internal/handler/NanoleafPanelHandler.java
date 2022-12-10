@@ -45,6 +45,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BridgeHandler;
+import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
@@ -134,6 +135,14 @@ public class NanoleafPanelHandler extends BaseThingHandler implements NanoleafPa
     @Override
     public void handleRemoval() {
         logger.debug("Nanoleaf panel {} removed", getThing().getUID());
+        Bridge bridge = getBridge();
+        if (bridge != null) {
+            ThingHandler handler = bridge.getHandler();
+            if (handler instanceof NanoleafControllerHandler) {
+                ((NanoleafControllerHandler) handler).getColorInformation().unregisterChangeListener(getPanelID());
+            }
+        }
+
         super.handleRemoval();
     }
 
@@ -165,9 +174,9 @@ public class NanoleafPanelHandler extends BaseThingHandler implements NanoleafPa
 
         Bridge bridge = getBridge();
         if (bridge != null) {
-            NanoleafControllerHandler handler = (NanoleafControllerHandler) bridge.getHandler();
-            if (handler != null) {
-                handler.getColorInformation().registerChangeListener(getPanelID(), this);
+            ThingHandler handler = bridge.getHandler();
+            if (handler instanceof NanoleafControllerHandler) {
+                ((NanoleafControllerHandler) handler).getColorInformation().registerChangeListener(getPanelID(), this);
             }
         }
     }
@@ -277,17 +286,16 @@ public class NanoleafPanelHandler extends BaseThingHandler implements NanoleafPa
     }
 
     public Integer getPanelID() {
-        String panelID = getThing().getConfiguration().get(CONFIG_PANEL_ID).toString();
-        return Integer.valueOf(panelID);
+        return (Integer) getThing().getConfiguration().get(CONFIG_PANEL_ID);
     }
 
     private void setPanelColor(HSBType color) {
         Integer panelId = getPanelID();
         Bridge bridge = getBridge();
         if (bridge != null) {
-            NanoleafControllerHandler handler = (NanoleafControllerHandler) bridge.getHandler();
-            if (handler != null) {
-                handler.getColorInformation().setPanelColor(panelId, color);
+            ThingHandler handler = bridge.getHandler();
+            if (handler instanceof NanoleafControllerHandler) {
+                ((NanoleafControllerHandler) handler).getColorInformation().setPanelColor(panelId, color);
             } else {
                 logger.debug("Couldn't find handler for panel {}", panelId);
             }
