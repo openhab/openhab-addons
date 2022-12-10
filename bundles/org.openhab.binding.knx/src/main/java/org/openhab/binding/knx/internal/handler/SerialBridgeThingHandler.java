@@ -51,16 +51,13 @@ public class SerialBridgeThingHandler extends KNXBridgeBaseThingHandler {
         // create new instance using current configuration settings;
         // when a parameter change is done from UI, dispose() and initialize() are called
         SerialBridgeConfiguration config = getConfigAs(SerialBridgeConfiguration.class);
-        client = new SerialClient(config.getAutoReconnectPeriod(), thing.getUID(),
-                config.getResponseTimeout().intValue(), config.getReadingPause().intValue(),
-                config.getReadRetriesLimit().intValue(), getScheduler(), config.getSerialPort(), config.useCemi(),
-                this);
+        client = new SerialClient(config.getAutoReconnectPeriod(), thing.getUID(), config.getResponseTimeout(),
+                config.getReadingPause(), config.getReadRetriesLimit(), getScheduler(), config.getSerialPort(),
+                config.useCemi(), this);
 
         updateStatus(ThingStatus.UNKNOWN);
         // delay actual initialization, allow for longer runtime of actual initialization
-        initJob = scheduler.submit(() -> {
-            initializeLater();
-        });
+        initJob = scheduler.submit(this::initializeLater);
     }
 
     public void initializeLater() {
