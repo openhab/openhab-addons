@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.boschshc.internal.devices.twinguard;
+package org.openhab.binding.boschshc.internal.devices.smokedetector;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.boschshc.internal.devices.AbstractSmokeDetectorHandlerTest;
@@ -18,26 +18,26 @@ import org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * Unit Tests for {@link TwinguardHandler}.
+ * Unit Tests for {@link SmokeDetectorHandler}.
  *
- * @author David Pace - Initial contribution
+ * @author Gerd Zanker - Initial contribution
  *
  */
 @NonNullByDefault
-public class TwinguardHandlerTest extends AbstractSmokeDetectorHandlerTest<TwinguardHandler> {
+public class SmokeDetectorHandlerTest extends AbstractSmokeDetectorHandlerTest<SmokeDetectorHandler> {
 
     @Override
-    protected TwinguardHandler createFixture() {
-        return new TwinguardHandler(getThing());
+    protected SmokeDetectorHandler createFixture() {
+        return new SmokeDetectorHandler(getThing());
     }
 
     @Override
     protected String getDeviceID() {
-        return "hdm:ZigBee:000d6f0016d1a193";
+        return "hdm:HomeMaticIP:3014F711A00004DBB85C1234";
     }
 
     @Override
     protected ThingTypeUID getThingTypeUID() {
-        return BoschSHCBindingConstants.THING_TYPE_TWINGUARD;
+        return BoschSHCBindingConstants.THING_TYPE_SMOKE_DETECTOR;
     }
 }
