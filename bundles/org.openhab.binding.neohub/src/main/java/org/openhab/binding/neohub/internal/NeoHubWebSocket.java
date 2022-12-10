@@ -81,14 +81,14 @@ public class NeoHubWebSocket extends NeoHubSocketBase {
         try {
             httpClient.start();
         } catch (Exception e) {
-            throw new IOException("Error starting http client", e);
+            throw new IOException("Error starting HTTP client", e);
         }
         webSocketClient = new WebSocketClient(httpClient);
         webSocketClient.setConnectTimeout(config.socketTimeout * 1000);
         try {
             webSocketClient.start();
         } catch (Exception e) {
-            throw new IOException("Error starting web socket client", e);
+            throw new IOException("Error starting Web Socket client", e);
         }
     }
 

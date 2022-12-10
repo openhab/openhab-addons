@@ -87,7 +87,7 @@ public class NeoHubHandler extends BaseBridgeHandler {
 
     private ApiVersion apiVersion = ApiVersion.LEGACY;
     private boolean isApiOnline = false;
-    private int failedAttempts = 0;
+    private int failedSendAttempts = 0;
 
     public NeoHubHandler(Bridge bridge) {
         super(bridge);
@@ -398,15 +398,15 @@ public class NeoHubHandler extends BaseBridgeHandler {
         NeoHubAbstractDeviceData deviceData = fromNeoHubGetDeviceData();
         if (deviceData == null) {
             if (fastPollingCallsToGo.get() == 0) {
-                failedAttempts++;
-                if (failedAttempts < MAX_FAILED_SEND_ATTEMPTS) {
+                failedSendAttempts++;
+                if (failedSendAttempts < MAX_FAILED_SEND_ATTEMPTS) {
                     logger.debug("lazyPollingSchedulerExecute() deviceData:null, running again");
                     scheduler.submit(() -> lazyPollingSchedulerExecute());
                 }
             }
             return;
         } else {
-            failedAttempts = 0;
+            failedSendAttempts = 0;
 
             // dispatch deviceData to each of the hub's owned devices ..
             List<Thing> children = getThing().getThings();
