@@ -137,6 +137,16 @@ public class InstarHandler extends ChannelDuplexHandler {
                             && content.contains("response=\"200\";")) {// new
                         ipCameraHandler.newInstarApi = true;
                         ipCameraHandler.logger.debug("Alarm server sucessfully setup for a 2k+ Instar camera");
+                        if (ipCameraHandler.cameraConfig.getFfmpegInput().isEmpty()) {
+                            ipCameraHandler.rtspUri = "rtsp://" + ipCameraHandler.cameraConfig.getIp()
+                                    + "/livestream/12";
+                        }
+                        if (ipCameraHandler.cameraConfig.getMjpegUrl().isEmpty()) {
+                            ipCameraHandler.mjpegUri = "/livestream/12?action=play&media=mjpeg";
+                        }
+                        if (ipCameraHandler.cameraConfig.getSnapshotUrl().isEmpty()) {
+                            ipCameraHandler.snapshotUri = "/snap.cgi?chn=12";
+                        }
                     } else if (requestUrl.startsWith("/param.cgi?cmd=setmdalarm&-aname=server2&-switch=on&-interval=1")
                             && content.startsWith("[Succeed]set ok")) {
                         ipCameraHandler.newInstarApi = false;
