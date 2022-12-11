@@ -12,9 +12,7 @@
  */
 package org.openhab.binding.icloud.internal;
 
-import static org.openhab.binding.icloud.internal.ICloudBindingConstants.SUPPORTED_THING_TYPES_UIDS;
-import static org.openhab.binding.icloud.internal.ICloudBindingConstants.THING_TYPE_ICLOUD;
-import static org.openhab.binding.icloud.internal.ICloudBindingConstants.THING_TYPE_ICLOUDDEVICE;
+import static org.openhab.binding.icloud.internal.ICloudBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -63,13 +61,11 @@ public class ICloudHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
-
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_ICLOUD)) {
@@ -88,14 +84,12 @@ public class ICloudHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected void removeHandler(ThingHandler thingHandler) {
-
         if (thingHandler instanceof ICloudAccountBridgeHandler) {
             unregisterDeviceDiscoveryService((ICloudAccountBridgeHandler) thingHandler);
         }
     }
 
     private synchronized void registerDeviceDiscoveryService(ICloudAccountBridgeHandler bridgeHandler) {
-
         ICloudDeviceDiscovery discoveryService = new ICloudDeviceDiscovery(bridgeHandler,
                 this.bundleContext.getBundle(), this.i18nProvider, this.localeProvider);
         discoveryService.activate();
@@ -104,7 +98,6 @@ public class ICloudHandlerFactory extends BaseThingHandlerFactory {
     }
 
     private synchronized void unregisterDeviceDiscoveryService(ICloudAccountBridgeHandler bridgeHandler) {
-
         ServiceRegistration<?> serviceRegistration = this.discoveryServiceRegistrations
                 .get(bridgeHandler.getThing().getUID());
         if (serviceRegistration != null) {
@@ -120,23 +113,19 @@ public class ICloudHandlerFactory extends BaseThingHandlerFactory {
 
     @Reference
     protected void setLocaleProvider(LocaleProvider localeProvider) {
-
         this.localeProvider = localeProvider;
     }
 
     protected void unsetLocaleProvider(LocaleProvider localeProvider) {
-
         this.localeProvider = null;
     }
 
     @Reference
     public void setTranslationProvider(TranslationProvider i18nProvider) {
-
         this.i18nProvider = i18nProvider;
     }
 
     public void unsetTranslationProvider(TranslationProvider i18nProvider) {
-
         this.i18nProvider = null;
     }
 }

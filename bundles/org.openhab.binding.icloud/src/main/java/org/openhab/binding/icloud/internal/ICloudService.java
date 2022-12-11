@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.icloud.internal.utilities.ListUtil;
 import org.openhab.binding.icloud.internal.utilities.Pair;
 import org.openhab.core.storage.Storage;
@@ -36,6 +38,7 @@ import com.google.gson.GsonBuilder;
  *
  * @author Simon Spielmann Initial contribution
  */
+@NonNullByDefault
 public class ICloudService {
 
     private final Logger logger = LoggerFactory.getLogger(ICloudService.class);
@@ -87,7 +90,6 @@ public class ICloudService {
     public boolean authenticate(boolean forceRefresh) throws IOException, InterruptedException {
 
         boolean loginSuccessful = false;
-        // pyicloud 286
         if (this.session.getSessionToken() != null && !forceRefresh) {
             try {
                 this.data = validateToken();
@@ -105,7 +107,7 @@ public class ICloudService {
             requestBody.put("accountName", this.appleId);
             requestBody.put("password", this.password);
             requestBody.put("rememberMe", true);
-            if (this.session.hasToken()) {
+            if (session.hasToken()) {
                 requestBody.put("trustTokens", new String[] { this.session.getTrustToken() });
             } else {
                 requestBody.put("trustTokens", new String[0]);
@@ -136,18 +138,27 @@ public class ICloudService {
     public boolean authenticateWithToken() throws IOException, InterruptedException {
 
         Map<String, Object> requestBody = new HashMap<>();
-        requestBody.put("accountCountryCode", this.session.getAccountCountry());
-        requestBody.put("dsWebAuthToken", this.session.getSessionToken());
+
+        String accountCountry = session.getAccountCountry();
+        if (accountCountry != null) {
+            requestBody.put("accountCountryCode", accountCountry);
+        }
+
+        String sessionToken = session.getSessionToken();
+        if (sessionToken != null) {
+            requestBody.put("dsWebAuthToken", sessionToken);
+        }
+
         requestBody.put("extended_login", true);
-        if (this.session.hasToken()) {
-            requestBody.put("trustToken", this.session.getTrustToken());
+
+        if (session.hasToken()) {
+            requestBody.put("trustToken", session.getTrustToken());
         } else {
             requestBody.put("trustToken", "");
         }
 
         try {
-            this.data = this.gson.fromJson(
-                    this.session.post(SETUP_ENDPOINT + "/accountLogin", this.gson.toJson(requestBody), null),
+            data = gson.fromJson(session.post(SETUP_ENDPOINT + "/accountLogin", gson.toJson(requestBody), null),
                     Map.class);
         } catch (ICloudApiResponseException ex) {
             logger.debug("Invalid authentication.");
@@ -172,12 +183,12 @@ public class ICloudService {
                 Pair.of("X-Apple-Widget-Key", "d39ba9916b7251055b22c7f910e2ea796ee65e98b2ddecea8f5dde8d9d1a815d")));
     }
 
-    private Map<String, Object> validateToken() throws IOException, InterruptedException {
+    private Map<String, Object> validateToken() throws IOException, InterruptedException, ICloudApiResponseException {
 
         logger.debug("Checking session token validity");
-        String result = this.session.post(SETUP_ENDPOINT + "/validate", null, null);
+        String result = session.post(SETUP_ENDPOINT + "/validate", null, null);
         logger.debug("Session token is still valid");
-        return this.gson.fromJson(result, Map.class);
+        return gson.fromJson(result, Map.class);
     }
 
     /**
@@ -216,8 +227,9 @@ public class ICloudService {
      * @return {@code true} if code was accepted
      * @throws IOException if I/O error occurred
      * @throws InterruptedException if this request was interrupted
+     * @throws ICloudApiResponseException if the request failed (e.g. not OK HTTP return code)
      */
-    public boolean validate2faCode(String code) throws IOException, InterruptedException {
+    public boolean validate2faCode(String code) throws IOException, InterruptedException, ICloudApiResponseException {
 
         Map<String, Object> requestBody = Map.of("securityCode", Map.of("code", code));
 
@@ -242,18 +254,20 @@ public class ICloudService {
     }
 
     private void addSessionHeaders(List<Pair<String, String>> headers) {
-
-        if (this.session.getScnt() != null && !this.session.getScnt().isEmpty()) {
-            headers.add(Pair.of("scnt", this.session.getScnt()));
+        String scnt = session.getScnt();
+        if (scnt != null && !scnt.isEmpty()) {
+            headers.add(Pair.of("scnt", scnt));
         }
-        if (this.session.getSessionId() != null && !this.session.getSessionId().isEmpty()) {
-            headers.add(Pair.of("X-Apple-ID-Session-Id", this.session.getSessionId()));
+
+        String sessionId = session.getSessionId();
+        if (sessionId != null && !sessionId.isEmpty()) {
+            headers.add(Pair.of("X-Apple-ID-Session-Id", sessionId));
         }
     }
 
-    private String getWebserviceUrl(String wsKey) {
+    private @Nullable String getWebserviceUrl(String wsKey) {
         @SuppressWarnings("unchecked")
-        Map<String, Object> webservices = (Map<String, Object>) this.data.get("webservices");
+        Map<String, Object> webservices = (@Nullable Map<String, Object>) data.get("webservices");
         if (webservices == null) {
             return null;
         }
@@ -267,9 +281,10 @@ public class ICloudService {
      *
      * @throws IOException if I/O error occurred
      * @throws InterruptedException if this request was interrupted
+     * @throws ICloudApiResponseException if the request failed (e.g. not OK HTTP return code)
      *
      */
-    public boolean trustSession() throws IOException, InterruptedException {
+    public boolean trustSession() throws IOException, InterruptedException, ICloudApiResponseException {
 
         List<Pair<String, String>> headers = getAuthHeaders();
 
@@ -286,9 +301,9 @@ public class ICloudService {
      * @throws InterruptedException if this request was interrupted
      */
     public FindMyIPhoneServiceManager getDevices() throws IOException, InterruptedException {
-
-        if (getWebserviceUrl("findme") != null) {
-            return new FindMyIPhoneServiceManager(this.session, getWebserviceUrl("findme"));
+        String webserviceUrl = getWebserviceUrl("findme");
+        if (webserviceUrl != null) {
+            return new FindMyIPhoneServiceManager(this.session, webserviceUrl);
         } else {
             throw new IllegalStateException("Webservice URLs not set. Need to authenticate first.");
         }

@@ -39,6 +39,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -63,7 +64,6 @@ public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDevic
     private @Nullable ICloudAccountBridgeHandler icloudAccount;
 
     public ICloudDeviceHandler(Thing thing) {
-
         super(thing);
     }
 
@@ -107,15 +107,11 @@ public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDevic
             ((ICloudAccountBridgeHandler) bridge.getHandler()).registerListener(this);
         }
 
-        if (bridge == null || bridge.getStatus() == ThingStatus.UNINITIALIZED) {
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.BRIDGE_UNINITIALIZED);
-        } else if (bridge.getStatus() == ThingStatus.OFFLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-        } else if (bridge.getStatus() == ThingStatus.ONLINE) {
+        if (bridge.getStatus() == ThingStatus.ONLINE) {
             ((ICloudAccountBridgeHandler) bridge.getHandler()).refreshData();
             updateStatus(ThingStatus.ONLINE);
         } else {
-            updateStatus(ThingStatus.UNKNOWN);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
         }
     }
 
@@ -154,16 +150,17 @@ public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDevic
 
     @Override
     public void dispose() {
-
         Bridge bridge = getBridge();
         if (bridge != null) {
-            ((ICloudAccountBridgeHandler) bridge.getHandler()).unregisterListener(this);
+            ThingHandler bridgeHandler = bridge.getHandler();
+            if (bridgeHandler instanceof ICloudAccountBridgeHandler) {
+                ((ICloudAccountBridgeHandler) bridgeHandler).unregisterListener(this);
+            }
         }
         super.dispose();
     }
 
     private void updateLocationRelatedStates(ICloudDeviceInformation deviceInformationRecord) {
-
         DecimalType latitude = new DecimalType(deviceInformationRecord.getLocation().getLatitude());
         DecimalType longitude = new DecimalType(deviceInformationRecord.getLocation().getLongitude());
         DecimalType altitude = new DecimalType(deviceInformationRecord.getLocation().getAltitude());
@@ -178,25 +175,23 @@ public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDevic
 
     private @Nullable ICloudDeviceInformation getDeviceInformationRecord(
             List<ICloudDeviceInformation> deviceInformationList) {
-
         this.logger.debug("Device: [{}]", this.deviceId);
 
         for (ICloudDeviceInformation deviceInformationRecord : deviceInformationList) {
             String currentId = deviceInformationRecord.getId();
 
-            this.logger.debug("Current data element: [id = {}]", currentId);
+            logger.debug("Current data element: [id = {}]", currentId);
 
-            if (currentId != null && currentId.equals(this.deviceId)) {
+            if (currentId != null && currentId.equals(deviceId)) {
                 return deviceInformationRecord;
             }
         }
 
-        this.logger.debug("Unable to find device data.");
+        logger.debug("Unable to find device data.");
         return null;
     }
 
     private State getLastLocationUpdateDateTimeState(ICloudDeviceInformation deviceInformationRecord) {
-
         State dateTime = UnDefType.UNDEF;
 
         if (deviceInformationRecord.getLocation().getTimeStamp() > 0) {

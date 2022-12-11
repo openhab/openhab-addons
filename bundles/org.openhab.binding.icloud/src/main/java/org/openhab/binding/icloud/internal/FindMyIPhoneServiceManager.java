@@ -23,10 +23,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 /**
- *
  * This class gives access to the find my iPhone (FMIP) service.
  *
- * @author Simon Spielmann Initial Contribution.
+ * @author Simon Spielmann - Initial Contribution.
  */
 @NonNullByDefault
 public class FindMyIPhoneServiceManager {
@@ -48,7 +47,6 @@ public class FindMyIPhoneServiceManager {
      * @param serviceRoot Root URL for FMIP service.
      */
     public FindMyIPhoneServiceManager(ICloudSession session, String serviceRoot) {
-
         this.session = session;
         this.fmipRefreshUrl = URI.create(serviceRoot + FMIP_ENDPOINT + "/refreshClient");
         this.fmipSoundUrl = URI.create(serviceRoot + FMIP_ENDPOINT + "/playSound");
@@ -61,14 +59,13 @@ public class FindMyIPhoneServiceManager {
      *
      * @throws IOException if I/O error occurred
      * @throws InterruptedException if this blocking request was interrupted
+     * @throws ICloudApiResponseException if the request failed (e.g. not OK HTTP return code)
      *
      */
-    public String refreshClient() throws IOException, InterruptedException {
-
+    public String refreshClient() throws IOException, InterruptedException, ICloudApiResponseException {
         Map<String, Object> request = Map.of("clientContext",
                 Map.of("fmly", true, "shouldLocate", true, "selectedDevice", "All", "deviceListVersion", 1));
-
-        return this.session.post(this.fmipRefreshUrl.toString(), this.gson.toJson(request), null);
+        return session.post(this.fmipRefreshUrl.toString(), this.gson.toJson(request), null);
     }
 
     /**
@@ -77,10 +74,10 @@ public class FindMyIPhoneServiceManager {
      * @param deviceId ID of the device to play sound on
      * @throws IOException if I/O error occurred
      * @throws InterruptedException if this blocking request was interrupted
+     * @throws ICloudApiResponseException if the request failed (e.g. not OK HTTP return code)
      */
-    public void playSound(String deviceId) throws IOException, InterruptedException {
-
+    public void playSound(String deviceId) throws IOException, InterruptedException, ICloudApiResponseException {
         Map<String, Object> request = Map.of("device", deviceId, "fmyl", true, "subject", "Message from openHAB.");
-        this.session.post(this.fmipSoundUrl.toString(), this.gson.toJson(request), null);
+        session.post(this.fmipSoundUrl.toString(), this.gson.toJson(request), null);
     }
 }

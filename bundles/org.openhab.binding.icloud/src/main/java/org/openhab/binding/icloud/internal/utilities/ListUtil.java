@@ -16,12 +16,16 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * This class implements util methods for list handling.
  *
  * @author Simon Spielmann - Initial contribution
  *
  */
+@NonNullByDefault
 public abstract class ListUtil {
 
     private ListUtil() {
@@ -36,7 +40,8 @@ public abstract class ListUtil {
      * @param replacements Replacement entries
      * @return New list with replaced entries
      */
-    public static <K, V> List<Pair<K, V>> replaceEntries(List<Pair<K, V>> originalList, List<Pair<K, V>> replacements) {
+    public static <K, V> List<Pair<K, V>> replaceEntries(List<Pair<K, V>> originalList,
+            @Nullable List<Pair<K, V>> replacements) {
         List<Pair<K, V>> result = new ArrayList<>(originalList);
         if (replacements != null) {
             Iterator<Pair<K, V>> it = result.iterator();

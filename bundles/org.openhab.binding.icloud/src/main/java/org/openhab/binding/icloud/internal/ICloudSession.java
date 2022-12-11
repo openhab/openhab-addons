@@ -29,6 +29,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.icloud.internal.utilities.CustomCookieStore;
 import org.openhab.binding.icloud.internal.utilities.ListUtil;
 import org.openhab.binding.icloud.internal.utilities.Pair;
@@ -47,6 +49,7 @@ import com.google.gson.GsonBuilder;
  *
  * @author Simon Spielmann Initial contribution
  */
+@NonNullByDefault
 public class ICloudSession {
 
     private final Logger logger = LoggerFactory.getLogger(ICloudSession.class);
@@ -69,13 +72,12 @@ public class ICloudSession {
      * @param stateStorage Storage to persist session state.
      */
     public ICloudSession(Storage<String> stateStorage) {
-
         String storedData = stateStorage.get(SESSION_DATA_KEY);
         if (storedData != null) {
-            this.data = this.gson.fromJson(storedData, ICloudSessionData.class);
+            data = gson.fromJson(storedData, ICloudSessionData.class);
         }
         this.stateStorage = stateStorage;
-        this.client = HttpClient.newBuilder().version(Version.HTTP_1_1).followRedirects(Redirect.NORMAL)
+        client = HttpClient.newBuilder().version(Version.HTTP_1_1).followRedirects(Redirect.NORMAL)
                 .connectTimeout(Duration.ofSeconds(20))
                 .cookieHandler(new CookieManager(new CustomCookieStore(), CookiePolicy.ACCEPT_ALL)).build();
     }
@@ -86,13 +88,14 @@ public class ICloudSession {
      * @param url URL to call.
      * @param body Body for the request
      * @param overrideHeaders  If not null the given headers are used instead of the standard headers set via
-     *            {@link #setDefaultHeaders(Pair...)}
+     *            {@link #setDefaultHeaders(Pair...)} (optional)
      * @return Result body as {@link String}.
      * @throws IOException if I/O error occurred
      * @throws InterruptedException if this blocking request was interrupted
+     * @throws ICloudApiResponseException if the request failed (e.g. not OK HTTP return code)
      */
-    public String post(String url, String body, List<Pair<String, String>> overrideHeaders)
-            throws IOException, InterruptedException {
+    public String post(String url, @Nullable String body, @Nullable List<Pair<String, String>> overrideHeaders)
+            throws IOException, InterruptedException, ICloudApiResponseException {
 
         return request("POST", url, body, overrideHeaders);
     }
@@ -107,14 +110,17 @@ public class ICloudSession {
      * @return Result body as {@link String}.
      * @throws IOException if I/O error occurred
      * @throws InterruptedException if this blocking request was interrupted
+     * @throws ICloudApiResponseException if the request failed (e.g. not OK HTTP return code)
      */
-    public String get(String url, List<Pair<String, String>> overrideHeaders) throws IOException, InterruptedException {
+    public String get(String url, List<Pair<String, String>> overrideHeaders)
+            throws IOException, InterruptedException, ICloudApiResponseException {
 
         return request("GET", url, null, overrideHeaders);
     }
 
-    private String request(String method, String url, String body, List<Pair<String, String>> overrideHeaders)
-            throws IOException, InterruptedException {
+    private String request(String method, String url, @Nullable String body,
+            @Nullable List<Pair<String, String>> overrideHeaders)
+            throws IOException, InterruptedException, ICloudApiResponseException {
         logger.debug("iCloud request {} {}.", method, url);
 
         Builder builder = HttpRequest.newBuilder().uri(URI.create(url));
@@ -138,9 +144,7 @@ public class ICloudSession {
                 response.headers().toString(), response.body().toString());
 
         if (response.statusCode() >= 300) {
-            // Error Handling pyicloud 99-162
             throw new ICloudApiResponseException(url, response.statusCode());
-
         }
 
         // Store headers to reuse authentication
@@ -169,49 +173,43 @@ public class ICloudSession {
     /**
      * @return scnt
      */
-    public String getScnt() {
-
-        return this.data.scnt;
+    public @Nullable String getScnt() {
+        return data.scnt;
     }
 
     /**
      * @return sessionId
      */
-    public String getSessionId() {
-
-        return this.data.sessionId;
+    public @Nullable String getSessionId() {
+        return data.sessionId;
     }
 
     /**
      * @return sessionToken
      */
-    public String getSessionToken() {
-
-        return this.data.sessionToken;
+    public @Nullable String getSessionToken() {
+        return data.sessionToken;
     }
 
     /**
      * @return trustToken
      */
-    public String getTrustToken() {
-
-        return this.data.trustToken;
+    public @Nullable String getTrustToken() {
+        return data.trustToken;
     }
 
     /**
      * @return {@code true} if session token is not empty.
      */
     public boolean hasToken() {
-
-        return this.data.sessionToken != null && !this.data.sessionToken.isEmpty();
+        return data.sessionToken != null && !data.sessionToken.isEmpty();
     }
 
     /**
      * @return accountCountry
      */
-    public String getAccountCountry() {
-
-        return this.data.accountCountry;
+    public @Nullable String getAccountCountry() {
+        return data.accountCountry;
     }
 
     /**
@@ -221,14 +219,19 @@ public class ICloudSession {
      * @author Simon Spielmann Initial Contribution
      */
     private class ICloudSessionData {
+        @Nullable
         String scnt;
 
+        @Nullable
         String sessionId;
 
+        @Nullable
         String sessionToken;
 
+        @Nullable
         String trustToken;
 
+        @Nullable
         String accountCountry;
     }
 }

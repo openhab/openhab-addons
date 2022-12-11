@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Simon Spielmann Initial contribution
  */
 @NonNullByDefault
-public class ICloudApiResponseException extends RuntimeException {
+public class ICloudApiResponseException extends Exception {
 
     private int statusCode;
 

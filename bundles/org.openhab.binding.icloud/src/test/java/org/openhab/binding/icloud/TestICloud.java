@@ -21,12 +21,21 @@ import java.util.Scanner;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
+import org.openhab.binding.icloud.internal.ICloudApiResponseException;
 import org.openhab.binding.icloud.internal.ICloudDeviceInformationParser;
 import org.openhab.binding.icloud.internal.ICloudService;
+import org.openhab.binding.icloud.internal.ICloudSession;
 import org.openhab.binding.icloud.internal.json.response.ICloudAccountDataResponse;
 import org.openhab.core.storage.json.internal.JsonStorage;
+import org.slf4j.LoggerFactory;
+
+import com.google.gson.JsonSyntaxException;
+
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
 
 /**
  *
@@ -43,9 +52,15 @@ public class TestICloud {
     @Nullable
     private final String PW = System.getProperty("icloud.test.pw");
 
+    @BeforeEach
+    private void setUp() {
+        final Logger logger = (Logger) LoggerFactory.getLogger(ICloudSession.class);
+        logger.setLevel(Level.DEBUG);
+    }
+
     @Test
     @EnabledIfSystemProperty(named = "icloud.test.email", matches = ".*", disabledReason = "Only for manual execution.")
-    public void testAuth() throws IOException, InterruptedException {
+    public void testAuth() throws IOException, InterruptedException, ICloudApiResponseException, JsonSyntaxException {
 
         File jsonStorageFile = new File(System.getProperty("user.home"), "openhab.json");
         System.out.println(jsonStorageFile.toString());

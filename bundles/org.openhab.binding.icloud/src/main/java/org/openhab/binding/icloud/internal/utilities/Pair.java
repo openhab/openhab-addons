@@ -12,14 +12,16 @@
  */
 package org.openhab.binding.icloud.internal.utilities;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
- *
  * Implementation of simple pair. Used mainly for HTTP header handling.
  *
- * @author Simon Spielmann Initial contribution.
+ * @author Simon Spielmann - Initial contribution.
  * @param <K> Type of first element
  * @param <V> Type of second element
  */
+@NonNullByDefault
 public class Pair<K, V> {
 
     private K key;
@@ -34,7 +36,6 @@ public class Pair<K, V> {
      * @return Pair with given key and value
      */
     public static Pair<String, String> of(String key, String value) {
-
         Pair<String, String> p = new Pair<>();
         p.key = key;
         p.value = value;

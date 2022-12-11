@@ -12,10 +12,15 @@
  */
 package org.openhab.binding.icloud.internal.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
- * @author name - Initial contribution
+ * Enum to mark state during iCloud authentication.
+ *
+ * @author Simon Spielmann - Initial contribution
  *
  */
+@NonNullByDefault
 public enum AuthState {
     INITIAL,
     USER_PW_INVALID,

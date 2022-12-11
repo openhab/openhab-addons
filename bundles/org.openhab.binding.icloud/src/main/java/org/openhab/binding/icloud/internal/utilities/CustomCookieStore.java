@@ -18,18 +18,9 @@ import java.net.HttpCookie;
 import java.net.URI;
 import java.util.List;
 
-import org.openhab.core.storage.Storage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 /**
- *
  * This class implements a customized {@link CookieStore}. Its purpose is to add hyphens at the beginning and end of
  * each cookie value which is required by Apple iCloud API.
- *
  *
  * @author Simon Spielmann Initial contribution
  */
@@ -37,30 +28,21 @@ public class CustomCookieStore implements CookieStore {
 
     private CookieStore cookieStore;
 
-    private final Gson gson = new GsonBuilder().create();
-
-    private Storage<String> stateStorage;
-
-    private final static Logger LOGGER = LoggerFactory.getLogger(CustomCookieStore.class);
-
     /**
      * The constructor.
      *
      */
     public CustomCookieStore() {
-
         this.cookieStore = new CookieManager().getCookieStore();
     }
 
     @Override
     public void add(URI uri, HttpCookie cookie) {
-
         this.cookieStore.add(uri, cookie);
     }
 
     @Override
     public List<HttpCookie> get(URI uri) {
-
         List<HttpCookie> result = this.cookieStore.get(uri);
         filterCookies(result);
         return result;
@@ -68,7 +50,6 @@ public class CustomCookieStore implements CookieStore {
 
     @Override
     public List<HttpCookie> getCookies() {
-
         List<HttpCookie> result = this.cookieStore.getCookies();
         filterCookies(result);
         return result;
@@ -76,19 +57,16 @@ public class CustomCookieStore implements CookieStore {
 
     @Override
     public List<URI> getURIs() {
-
         return this.cookieStore.getURIs();
     }
 
     @Override
     public boolean remove(URI uri, HttpCookie cookie) {
-
         return this.cookieStore.remove(uri, cookie);
     }
 
     @Override
     public boolean removeAll() {
-
         return this.cookieStore.removeAll();
     }
 
@@ -98,7 +76,6 @@ public class CustomCookieStore implements CookieStore {
      * @param cookieList Current cookies. This list is modified in-place.
      */
     private void filterCookies(List<HttpCookie> cookieList) {
-
         for (HttpCookie cookie : cookieList) {
             if (!cookie.getValue().startsWith("\"")) {
                 cookie.setValue("\"" + cookie.getValue());

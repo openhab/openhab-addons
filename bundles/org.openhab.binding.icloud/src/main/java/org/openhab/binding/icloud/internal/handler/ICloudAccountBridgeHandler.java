@@ -40,12 +40,15 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
-import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonSyntaxException;
 
+/**
+ * @author Simon Spielmann - Initial contribution
+ *
+ */
 /**
  * Retrieves the data for a given account from iCloud and passes the information to
  * {@link org.openhab.binding.icloud.internal.discovery.ICloudDeviceDiscovery} and to the {@link ICloudDeviceHandler}s.
@@ -68,9 +71,6 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
 
     private AuthState authState = AuthState.INITIAL;
 
-    @Nullable
-    private ServiceRegistration<?> service;
-
     private final Object synchronizeRefresh = new Object();
 
     private Set<ICloudDeviceInformationListener> deviceInformationListeners = Collections
@@ -83,8 +83,13 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
 
     private final static String AUTH_CODE_KEY = "AUTH_CODE";
 
+    /**
+     * The constructor.
+     *
+     * @param bridge The bridge to set
+     * @param storage The storage service to set.
+     */
     public ICloudAccountBridgeHandler(Bridge bridge, Storage<String> storage) {
-
         super(bridge);
         this.storage = storage;
     }
@@ -115,7 +120,12 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
 
         this.iCloudDeviceInformationCache = new ExpiringCache<>(CACHE_EXPIRY, () -> {
             return callApiWithRetryAndExceptionHandling(() -> {
-                return this.iCloudService.getDevices().refreshClient();
+                if (iCloudService != null) {
+                    return iCloudService.getDevices().refreshClient();
+                } else {
+                    logger.debug("iCloud service is null. Returning null.");
+                    return null;
+                }
             });
 
         });
@@ -158,7 +168,7 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
             } else if (authState == AuthState.WAIT_FOR_CODE) {
                 try {
                     success = handle2FAAuthentication();
-                } catch (IOException | InterruptedException ex) {
+                } catch (IOException | InterruptedException | ICloudApiResponseException ex) {
                     logger.warn("Error while validating 2-FA code.", ex);
                     return null;
                 }
@@ -203,21 +213,17 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    /**
-     * @throws InterruptedException
-     * @throws IOException
-     *
-     */
-    private boolean handle2FAAuthentication() throws IOException, InterruptedException {
+    private boolean handle2FAAuthentication() throws IOException, InterruptedException, ICloudApiResponseException {
         logger.debug("Starting iCloud 2-FA authentication  AuthState={}, Thing={})...", authState,
                 getThing().getUID().getAsString());
-        if (authState != AuthState.WAIT_FOR_CODE) {
+        if (authState != AuthState.WAIT_FOR_CODE || iCloudService == null) {
             throw new IllegalStateException("2-FA authentication not initialized.");
         }
         ICloudAccountThingConfiguration config = getConfigAs(ICloudAccountThingConfiguration.class);
         String lastTriedCode = storage.get(AUTH_CODE_KEY);
+        String code = config.code;
         boolean success = false;
-        if (config.code == null || config.code.isBlank() || config.code.equals(lastTriedCode)) {
+        if (code == null || code.isBlank() || code.equals(lastTriedCode)) {
             // Still waiting for user to update config.
             logger.warn("ICloud authentication requires 2-FA code. Please provide code configuration for thing '{}'.",
                     getThing().getUID().getAsString());
@@ -230,7 +236,7 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
             logger.debug("Code is given in thing configuration '{}'. Trying to validate code...",
                     getThing().getUID().getAsString());
             storage.put(AUTH_CODE_KEY, lastTriedCode);
-            success = this.iCloudService.validate2faCode(config.code);
+            success = iCloudService.validate2faCode(code);
             if (!success) {
                 authState = AuthState.INITIAL;
                 logger.warn("ICloud token invalid.");
@@ -257,8 +263,9 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
-        if (this.refreshJob != null) {
-            this.refreshJob.cancel(true);
+        if (refreshJob != null) {
+            refreshJob.cancel(true);
+            refreshJob = null;
         }
         super.dispose();
     }
@@ -271,12 +278,10 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
     }
 
     public void registerListener(ICloudDeviceInformationListener listener) {
-
         this.deviceInformationListeners.add(listener);
     }
 
     public void unregisterListener(ICloudDeviceInformationListener listener) {
-
         this.deviceInformationListeners.remove(listener);
     }
 
@@ -340,7 +345,6 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
                 logger.debug("Trying to establish session trust.");
                 success = this.iCloudService.trustSession();
                 if (!success) {
-                    logger.warn("iCloud trust session failed.");
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Session trust failed.");
                     return false;
                 }
@@ -352,7 +356,7 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
             return true;
 
         } catch (IOException | InterruptedException e) {
-            logger.warn("iCloud authentication caused exception.", e);
+            logger.debug("iCloud authentication caused exception.", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             return false;
         } catch (Exception e) {
