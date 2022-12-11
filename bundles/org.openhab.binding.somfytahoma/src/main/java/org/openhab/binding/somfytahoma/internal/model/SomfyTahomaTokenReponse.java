@@ -15,22 +15,15 @@ package org.openhab.binding.somfytahoma.internal.model;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link SomfyTahomaStatusResponse} holds information about
- * response to getting gateway's status command.
+ * The {@link SomfyTahomaTokenReponse} holds information about generated token
  *
  * @author Ondrej Pecta - Initial contribution
  */
 @NonNullByDefault
-public class SomfyTahomaStatusResponse {
+public class SomfyTahomaTokenReponse {
+    private String token = "";
 
-    private String gatewayId = "";
-    private SomfyTahomaStatus connectivity = new SomfyTahomaStatus();
-
-    public SomfyTahomaStatus getConnectivity() {
-        return connectivity;
-    }
-
-    public String getGatewayId() {
-        return gatewayId;
+    public String getToken() {
+        return token;
     }
 }

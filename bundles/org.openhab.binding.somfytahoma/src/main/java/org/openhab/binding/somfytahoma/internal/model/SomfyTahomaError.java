@@ -15,22 +15,21 @@ package org.openhab.binding.somfytahoma.internal.model;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link SomfyTahomaStatusResponse} holds information about
- * response to getting gateway's status command.
+ * The {@link SomfyTahomaError} is used to parse error from API server.
  *
  * @author Ondrej Pecta - Initial contribution
  */
 @NonNullByDefault
-public class SomfyTahomaStatusResponse {
+public class SomfyTahomaError {
 
-    private String gatewayId = "";
-    private SomfyTahomaStatus connectivity = new SomfyTahomaStatus();
+    private String error = "";
+    private String errorCode = "";
 
-    public SomfyTahomaStatus getConnectivity() {
-        return connectivity;
+    public String getError() {
+        return error;
     }
 
-    public String getGatewayId() {
-        return gatewayId;
+    public String getErrorCode() {
+        return errorCode;
     }
 }

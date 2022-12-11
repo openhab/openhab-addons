@@ -36,6 +36,22 @@ public class SomfyTahomaDeviceDefinition {
         return states;
     }
 
+    private String widgetName = "";
+
+    private String uiClass = "";
+
+    public String getWidgetName() {
+        return widgetName;
+    }
+
+    public String getUiClass() {
+        return uiClass;
+    }
+
+    public void setWidgetName(String widgetName) {
+        this.widgetName = widgetName;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
