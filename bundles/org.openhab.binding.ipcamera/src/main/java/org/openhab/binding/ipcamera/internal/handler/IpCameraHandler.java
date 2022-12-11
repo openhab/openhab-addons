@@ -906,9 +906,9 @@ public class IpCameraHandler extends BaseThingHandler {
             case MJPEG:
                 if (ffmpegMjpeg == null) {
                     if (inputOptions.isEmpty()) {
-                        inputOptions = "-hide_banner -loglevel warning";
+                        inputOptions = "-hide_banner";
                     } else {
-                        inputOptions += " -hide_banner -loglevel warning";
+                        inputOptions += " -hide_banner";
                     }
                     ffmpegMjpeg = new Ffmpeg(this, format, cameraConfig.getFfmpegLocation(), inputOptions, rtspUri,
                             cameraConfig.getMjpegOptions(), "http://127.0.0.1:" + SERVLET_PORT + "/ipcamera/"
@@ -1574,6 +1574,12 @@ public class IpCameraHandler extends BaseThingHandler {
             if (localFfmpeg == null || !localFfmpeg.getIsAlive()) {
                 setupFfmpegFormat(FFmpegFormat.RTSP_ALARMS);
             }
+        }
+        // check if the thread has frozen due to camera doing a soft reboot
+        localFfmpeg = ffmpegMjpeg;
+        if (localFfmpeg != null && !localFfmpeg.getIsAlive()) {
+            logger.debug("MJPEG was not being produced by FFmpeg when it should have been, restarting FFmpeg.");
+            setupFfmpegFormat(FFmpegFormat.MJPEG);
         }
         if (openChannels.size() > 10) {
             logger.debug("There are {} open Channels being tracked.", openChannels.size());

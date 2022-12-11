@@ -131,7 +131,7 @@ public class Ffmpeg {
                     BufferedReader bufferedReader = new BufferedReader(errorStreamReader);
                     String line = null;
                     while ((line = bufferedReader.readLine()) != null) {
-                        logger.debug("{}", line);
+                        logger.trace("{}", line);
                         switch (format) {
                             case RTSP_ALARMS:
                                 if (line.contains("lavfi.")) {
@@ -172,8 +172,9 @@ public class Ffmpeg {
                                 } else if (line.contains("silence_end")) {
                                     ipCameraHandler.audioDetected();
                                 }
+                            case MJPEG:
                             case SNAPSHOT:
-                                notFrozen = true;// RTSP_ALARMS and SNAPSHOT both set this to true as there is no break.
+                                notFrozen = true;// RTSP_ALARMS, MJPEG and SNAPSHOT all set this to true, no break.
                                 break;
                         }
                     }

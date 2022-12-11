@@ -78,6 +78,7 @@ public class HomekitAccessoryFactory {
             put(CARBON_MONOXIDE_SENSOR, new HomekitCharacteristicType[] { CARBON_MONOXIDE_DETECTED_STATE });
             put(WINDOW_COVERING, new HomekitCharacteristicType[] { TARGET_POSITION, CURRENT_POSITION, POSITION_STATE });
             put(LIGHTBULB, new HomekitCharacteristicType[] { ON_STATE });
+            put(BASIC_FAN, new HomekitCharacteristicType[] { ON_STATE });
             put(FAN, new HomekitCharacteristicType[] { ACTIVE_STATUS });
             put(LIGHT_SENSOR, new HomekitCharacteristicType[] { LIGHT_LEVEL });
             put(TEMPERATURE_SENSOR, new HomekitCharacteristicType[] { CURRENT_TEMPERATURE });
@@ -119,6 +120,7 @@ public class HomekitAccessoryFactory {
             put(CARBON_MONOXIDE_SENSOR, HomekitCarbonMonoxideSensorImpl.class);
             put(WINDOW_COVERING, HomekitWindowCoveringImpl.class);
             put(LIGHTBULB, HomekitLightbulbImpl.class);
+            put(BASIC_FAN, HomekitBasicFanImpl.class);
             put(FAN, HomekitFanImpl.class);
             put(LIGHT_SENSOR, HomekitLightSensorImpl.class);
             put(TEMPERATURE_SENSOR, HomekitTemperatureSensorImpl.class);

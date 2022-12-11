@@ -64,7 +64,7 @@ public class TapoDiscoveryService extends AbstractDiscoveryService implements Th
     }
 
     /**
-     * deactivate
+     * activate
      */
     @Override
     public void activate() {
@@ -178,7 +178,7 @@ public class TapoDiscoveryService extends AbstractDiscoveryService implements Th
                 }
             }
         } catch (Exception e) {
-            logger.debug("error handlling CloudDevices", e);
+            logger.debug("error handling CloudDevices", e);
         }
     }
 

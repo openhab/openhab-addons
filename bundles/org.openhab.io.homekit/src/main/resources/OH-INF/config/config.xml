@@ -68,12 +68,6 @@
 			<description>Defines the IP address of the network interface to expose the HomeKit integration on.</description>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="startDelay" type="integer" required="true" groupName="core" unit="s">
-			<label>Start Delay</label>
-			<description>HomeKit start delay in case of item configuration differences.</description>
-			<default>30</default>
-			<advanced>true</advanced>
-		</parameter>
 		<parameter name="useDummyAccessories" type="boolean" required="true" groupName="core">
 			<label>Use Dummy Accessories</label>
 			<description><![CDATA[Create dummy accessories when an item is missing. See <a href="https://www.openhab.org/addons/integrations/homekit/#dummy-accessories">the documentation</a> for more information.

@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.bosesoundtouch.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.thing.Thing;
 
 /**
@@ -19,6 +21,7 @@ import org.openhab.core.thing.Thing;
  *
  * @author Ivaylo Ivanov - Initial contribution
  */
+@NonNullByDefault
 public class BoseSoundTouchConfiguration {
 
     // Device configuration parameters;
@@ -26,10 +29,10 @@ public class BoseSoundTouchConfiguration {
     public static final String MAC_ADDRESS = Thing.PROPERTY_MAC_ADDRESS;
     public static final String APP_KEY = "appKey";
 
-    public String host;
-    public String macAddress;
-    public String appKey;
+    public @Nullable String host;
+    public @Nullable String macAddress;
+    public @Nullable String appKey;
 
     // Not an actual configuration field, but it will contain the name of the group (in case of Stereo Pair)
-    public String groupName;
+    public String groupName = "";
 }
