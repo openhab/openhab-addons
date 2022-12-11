@@ -56,6 +56,7 @@ public class ItemToStorePointCreator {
         String measurementName = calculateMeasurementName(item, storeAlias);
         String itemName = item.getName();
         State state = getItemState(item);
+
         Object value = InfluxDBStateConvertUtils.stateToObject(state);
 
         InfluxPoint.Builder point = InfluxPoint.newBuilder(measurementName).withTime(Instant.now()).withValue(value)

@@ -13,11 +13,7 @@
 package org.openhab.persistence.influxdb.internal;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasEntry;
-import static org.hamcrest.Matchers.hasKey;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
