@@ -104,7 +104,7 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService
     protected void stopBackgroundDiscovery() {
         logger.debug("Stopping SomfyTahoma background discovery");
         ScheduledFuture<?> localDiscoveryJob = discoveryJob;
-        if (localDiscoveryJob != null && !localDiscoveryJob.isCancelled()) {
+        if (localDiscoveryJob != null) {
             localDiscoveryJob.cancel(true);
         }
     }

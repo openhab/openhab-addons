@@ -278,7 +278,7 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
             if (data == null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Received invalid data (login)");
-            } else if (!data.getErrorCode().equals("")) {
+            } else if (!data.getErrorCode().isEmpty()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, data.getError());
                 if (data.getError().startsWith(TOO_MANY_REQUESTS)) {
                     setTooManyRequests();
@@ -334,7 +334,7 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
             try {
                 if (thingConfig.getToken().isEmpty()) {
                     localToken = getNewLocalToken();
-                    logger.debug("Local token: {}", localToken);
+                    logger.debug("Local token retrieved");
                     activateLocalToken();
                     updateConfiguration();
                 } else {
@@ -343,7 +343,10 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
                 }
                 logger.debug("Local mode initialized, waiting for cloud sync");
                 Thread.sleep(3000);
-            } catch (InterruptedException | ExecutionException | TimeoutException ex) {
+            } catch (InterruptedException ex) {
+                logger.debug("Interruption during local mode initialization, falling back to cloud mode", ex);
+                Thread.currentThread().interrupt();
+            } catch (ExecutionException | TimeoutException ex) {
                 logger.debug("Exception during local mode initialization, falling back to cloud mode", ex);
                 cloudFallback = true;
             }
@@ -377,21 +380,29 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
 
     private void discoverGateway() {
         logger.debug("Starting mDNS discovery...");
+        JmDNS jmdns = null;
 
         try {
             // Create a JmDNS instance
-            JmDNS jmdns = JmDNS.create(InetAddress.getLocalHost());
+            jmdns = JmDNS.create(InetAddress.getLocalHost());
             jmdns.addServiceListener("_kizboxdev._tcp.local.", new SomfyTahomaMDNSDiscoveryListener(this));
 
             // Wait a bit
             Thread.sleep(TAHOMA_TIMEOUT * 1000);
-
-            jmdns.unregisterAllServices();
-            jmdns.close();
         } catch (InterruptedException e) {
             logger.debug("mDNS discovery interrupted", e);
+            Thread.currentThread().interrupt();
         } catch (IOException e) {
             logger.debug("Exception during mDNS discovery", e);
+        }
+
+        if (jmdns != null) {
+            jmdns.unregisterAllServices();
+            try {
+                jmdns.close();
+            } catch (IOException e) {
+                // ignore
+            }
         }
     }
 
@@ -427,7 +438,7 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
     }
 
     private List<SomfyTahomaEvent> getEvents() {
-        if ("".equals(eventsId)) {
+        if (eventsId.isEmpty()) {
             return List.of();
         }
 
@@ -461,8 +472,9 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
         retryFutures.forEach(x -> x.cancel(false));
 
         ScheduledFuture<?> localLoginFuture = loginFuture;
-        if (localLoginFuture != null && !localLoginFuture.isCancelled()) {
+        if (localLoginFuture != null) {
             localLoginFuture.cancel(true);
+            loginFuture = null;
         }
 
         HttpClient localHttpClient = httpClient;
@@ -472,6 +484,7 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
             } catch (Exception e) {
                 logger.debug("Error during http client stopping", e);
             }
+            httpClient = null;
         }
 
         // Clean access data
@@ -491,16 +504,19 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
      */
     private void stopPolling() {
         ScheduledFuture<?> localPollFuture = pollFuture;
-        if (localPollFuture != null && !localPollFuture.isCancelled()) {
+        if (localPollFuture != null) {
             localPollFuture.cancel(true);
+            pollFuture = null;
         }
         ScheduledFuture<?> localStatusFuture = statusFuture;
-        if (localStatusFuture != null && !localStatusFuture.isCancelled()) {
+        if (localStatusFuture != null) {
             localStatusFuture.cancel(true);
+            statusFuture = null;
         }
         ScheduledFuture<?> localReconciliationFuture = reconciliationFuture;
-        if (localReconciliationFuture != null && !localReconciliationFuture.isCancelled()) {
+        if (localReconciliationFuture != null) {
             localReconciliationFuture.cancel(true);
+            reconciliationFuture = null;
         }
     }
 
