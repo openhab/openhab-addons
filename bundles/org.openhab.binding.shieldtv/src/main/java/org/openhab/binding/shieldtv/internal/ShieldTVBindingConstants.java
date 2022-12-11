@@ -27,8 +27,12 @@ public class ShieldTVBindingConstants {
     private static final String BINDING_ID = "shieldtv";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_SAMPLE = new ThingTypeUID(BINDING_ID, "sample");
+    public static final ThingTypeUID THING_TYPE_SHIELDTV = new ThingTypeUID(BINDING_ID, "shieldtv");
 
     // List of all Channel ids
-    public static final String CHANNEL_1 = "channel1";
+    public static final String CHANNEL_KEYPRESS = "keypress";
+    public static final String CHANNEL_PINCODE = "pincode";
+
+    // List of all config properties
+    public static final String IPADDRESS = "ipAddress";
 }

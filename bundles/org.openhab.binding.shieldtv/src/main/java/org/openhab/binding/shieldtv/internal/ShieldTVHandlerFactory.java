@@ -24,6 +24,8 @@ import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link ShieldTVHandlerFactory} is responsible for creating things and thing
@@ -35,7 +37,9 @@ import org.osgi.service.component.annotations.Component;
 @Component(configurationPid = "binding.shieldtv", service = ThingHandlerFactory.class)
 public class ShieldTVHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_SAMPLE);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_SHIELDTV);
+
+    private final Logger logger = LoggerFactory.getLogger(ShieldTVHandlerFactory.class);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -46,7 +50,7 @@ public class ShieldTVHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (THING_TYPE_SAMPLE.equals(thingTypeUID)) {
+        if (THING_TYPE_SHIELDTV.equals(thingTypeUID)) {
             return new ShieldTVHandler(thing);
         }
 

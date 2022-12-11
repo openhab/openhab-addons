@@ -16,6 +16,7 @@ _Note that it is planned to generate some part of this based on the XML files wi
 - `bridge`: Short description of the Bridge, if any
 - `sample`: Short description of the Thing with the ThingTypeUID `sample`
 
+
 ## Discovery
 
 _Describe the available auto-discovery features here._
@@ -28,12 +29,6 @@ _In this section, you should link to this file and provide some information abou
 _The file could e.g. look like:_
 
 ```
-# Configuration for the ShieldTV Binding
-#
-# Default secret key for the pairing of the ShieldTV Thing.
-# It has to be between 10-40 (alphanumeric) characters.
-# This may be changed by the user for security reasons.
-secret=openHABSecret
 ```
 
 _Note that it is planned to generate some part of this based on the information that is available within ```src/main/resources/OH-INF/binding``` of your binding._
@@ -70,6 +65,11 @@ _Note that it is planned to generate some part of this based on the XML files wi
 _Provide a full usage example based on textual configuration files._
 _*.things, *.items examples are mandatory as textual configuration is well used by many users._
 _*.sitemap examples are optional._
+
+String ShieldTV_KEYPRESS "KEYPRESS [%s]" { channel = "shieldtv:shieldtv:theater:keypress" }
+String ShiledTV_PINCODE  "PINCODE [%s]" { channel = "shieldtv:shieldtv:theater:pincode" }
+
+Thing shieldtv:shieldtv:theater [ ipAddress="10.255.0.175" ]
 
 ## Any custom content here!
 
