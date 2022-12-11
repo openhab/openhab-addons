@@ -1032,7 +1032,7 @@ public class NanoleafControllerHandler extends BaseBridgeHandler implements Nano
             response = gson.fromJson(panelDataContent, Write.class);
         } catch (JsonSyntaxException jse) {
             logger.warn("Unable to parse panel data information from Nanoleaf", jse);
-            logger.trace("Panel Data which couldnt be parsed: {}", panelDataContent);
+            logger.trace("Panel Data which couldn't be parsed: {}", panelDataContent);
         }
 
         if (response != null) {
