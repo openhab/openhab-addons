@@ -63,7 +63,7 @@ public class MagentaTVDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
             ThingUID uid = getThingUID(device);
             if (uid != null) {
-                logger.debug("Discovered an MagentaTV Media Receiver {}, UDN: {}, Model {}.{}",
+                logger.debug("Discovered a MagentaTV Media Receiver {}, UDN: {}, Model {}.{}",
                         device.getDetails().getFriendlyName(), device.getIdentity().getUdn().getIdentifierString(),
                         modelName, device.getDetails().getModelDetails().getModelNumber());
 

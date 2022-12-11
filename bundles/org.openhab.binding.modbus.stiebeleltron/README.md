@@ -2,17 +2,17 @@
 
 This extension adds support for the Stiebel Eltron modbus protocol.
 
-An Internet Service Gateway (ISG) with an installed modbus extension is required in order to run this binding. 
-In case the modbus extension is not yet installed on the ISG, the ISG Updater Tool for the update can be found here: https://www.stiebel-eltron.de/de/home/produkte-loesungen/erneuerbare_energien/regelung_energiemanagement/internet_servicegateway/isg_web/downloads.html
+An Internet Service Gateway (ISG) with an installed modbus extension is required in order to run this binding.
+In case the modbus extension is not yet installed on the ISG, the ISG Updater Tool for the update can be found here: <https://www.stiebel-eltron.de/de/home/produkte-loesungen/erneuerbare_energien/regelung_energiemanagement/internet_servicegateway/isg_web/downloads.html>
 
 ## Supported Things
 
 This bundle adds the following thing types to the Modbus binding.
 Note, that the things will show up under the Modbus binding.
 
-| Thing              | ThingTypeID | Description                                        |
-| ------------------ | ----------- | -------------------------------------------------- |
-| Stiebel Eltron ISG | heatpump    | A stiebel eltron heat pump connected through a ISG |
+| Thing              | ThingTypeID | Description                                         |
+| ------------------ | ----------- | --------------------------------------------------- |
+| Stiebel Eltron ISG | heatpump    | A stiebel eltron heat pump connected through an ISG |
 
 ## Discovery
 
@@ -20,7 +20,7 @@ This extension does not support autodiscovery. The things need to be added manua
 
 A typical bridge configuration would look like this:
 
-```
+```java
 Bridge modbus:tcp:bridge [ host="10.0.0.2", port=502, id=1 ]
 ```
 
@@ -52,7 +52,7 @@ This group contains general operational information about the heat pump.
 | is-pumping       | Contact   | true      | OPEN in case the heat pump is currently in pumping mode       |
 | is-summer        | Contact   | true      | OPEN in case the heat pump is currently in summer mode        |
 
-### System Parameters Group 
+### System Parameters Group
 
 This group contains system paramters of the heat pump.
 
@@ -64,7 +64,7 @@ This group contains system paramters of the heat pump.
 | comfort-temperature-water   | Number:Temperature | false     | The current water comfort temperature                                                                                                          |
 | eco-temperature-water       | Number:Temperature | false     | The current water eco temperature                                                                                                              |
 
-### System Information Group 
+### System Information Group
 
 This group contains general operational information about the device.
 
@@ -83,7 +83,7 @@ This group contains general operational information about the device.
 | water-temperature          | Number:Temperature   | true      | The current water temperature                         |
 | water-temperature-setpoint | Number:Temperature   | true      | The current water temperature set point               |
 
-### Energy Information Group 
+### Energy Information Group
 
 This group contains about the energy consumption and delivery of the heat pump.
 
@@ -102,15 +102,15 @@ This group contains about the energy consumption and delivery of the heat pump.
 
 ### Thing Configuration
 
-```
+```java
 Bridge modbus:tcp:bridge "Stiebel Modbus TCP"[ host="hostname|ip", port=502, id=1 ] {
-	Thing heatpump stiebelEltron "StiebelEltron" (modbus:tcp:modbusbridge) @"Room"  [ ]
+ Thing heatpump stiebelEltron "StiebelEltron" (modbus:tcp:modbusbridge) @"Room"  [ ]
 }
 ```
 
 ### Item Configuration
 
-```
+```java
 Number:Temperature stiebel_eltron_temperature_ffk            "Temperature FFK [%.1f °C]" <temperature>    { channel="modbus:heatpump:stiebelEltron:systemInformation#fek-temperature" }
 Number:Temperature stiebel_eltron_setpoint_ffk            "Set point FFK [%.1f °C]" <temperature>    { channel="modbus:heatpump:stiebelEltron:systemInformation#fek-temperature-setpoint" }
 Number:Dimensionless stiebel_eltron_humidity_ffk            "Humidity FFK [%.1f %%]" <humidity>   { channel="modbus:heatpump:stiebelEltron:systemInformation#fek-humidity" }
@@ -151,49 +151,49 @@ Number:Energy stiebel_eltron_consumption_water_total            "Water heating p
 
 ### Sitemap Configuration
 
-```
-        Text label="Heat pumpt" icon="temperature" {
-			Frame label="Optation Mode" {
-				Default item=stiebel_eltron_mode_pump 
-				Default item=stiebel_eltron_mode_heating
-				Default item=stiebel_eltron_mode_water 
-				Default item=stiebel_eltron_mode_cooling 
-				Default item=stiebel_eltron_mode_summer
-			}
-			Frame label= "State" {
-				Default item=stiebel_eltron_operation_mode icon="settings"
-				Default item=stiebel_eltron_outdoor_temp  icon="temperature"
-				Default item=stiebel_eltron_temp_hk1  icon="temperature"
-				Default item=stiebel_eltron_setpoint_hk1  icon="temperature"
-				Default item=stiebel_eltron_vorlauf_temp  icon="temperature"
-				Default item=stiebel_eltron_ruecklauf_temp  icon="temperature"
-				Default item=stiebel_eltron_temp_water  icon="temperature"
-				Default item=stiebel_eltron_setpoint_water icon="temperature"
-				Default item=stiebel_eltron_temperature_ffk  icon="temperature"
-				Default item=stiebel_eltron_setpoint_ffk icon="temperature"
-				Default item=stiebel_eltron_humidity_ffk icon="humidity"
-				Default item=stiebel_eltron_dewpoint_ffk icon="temperature"
-				Default item=stiebel_eltron_source_temp icon="temperature"
-			}
-			Frame label="Paramters" {
-				Setpoint item=stiebel_eltron_heating_comfort_temp icon="temperature" step=1 minValue=5 maxValue=30
-				Setpoint item=stiebel_eltron_heating_eco_temp icon="temperature" step=1 minValue=5 maxValue=30
-				Setpoint item=stiebel_eltron_water_comfort_temp icon="temperature" step=1 minValue=10 maxValue=60
-				Setpoint item=stiebel_eltron_water_eco_temp icon="temperature" step=1 minValue=10 maxValue=60
-			}
-			Frame label="Energy consumption" {
-				Default item=stiebel_eltron_consumption_heat_today icon="energy"
-				Default item=stiebel_eltron_consumption_heat_total icon="energy"
-				Default item=stiebel_eltron_consumption_water_today icon="energy"
-				Default item=stiebel_eltron_consumption_water_total icon="energy"
-			}
-			Frame label="Heat quantity" {
-				Default item=stiebel_eltron_production_heat_today icon="radiator"
-				Default item=stiebel_eltron_production_heat_total icon="radiator"
-				Default item=stiebel_eltron_production_water_today icon="water"
-				Default item=stiebel_eltron_production_water_total icon="water"
-			}
+```perl
+Text label="Heat pumpt" icon="temperature" {
+ Frame label="Optation Mode" {
+  Default item=stiebel_eltron_mode_pump 
+  Default item=stiebel_eltron_mode_heating
+  Default item=stiebel_eltron_mode_water 
+  Default item=stiebel_eltron_mode_cooling 
+  Default item=stiebel_eltron_mode_summer
+ }
+ Frame label= "State" {
+  Default item=stiebel_eltron_operation_mode icon="settings"
+  Default item=stiebel_eltron_outdoor_temp  icon="temperature"
+  Default item=stiebel_eltron_temp_hk1  icon="temperature"
+  Default item=stiebel_eltron_setpoint_hk1  icon="temperature"
+  Default item=stiebel_eltron_vorlauf_temp  icon="temperature"
+  Default item=stiebel_eltron_ruecklauf_temp  icon="temperature"
+  Default item=stiebel_eltron_temp_water  icon="temperature"
+  Default item=stiebel_eltron_setpoint_water icon="temperature"
+  Default item=stiebel_eltron_temperature_ffk  icon="temperature"
+  Default item=stiebel_eltron_setpoint_ffk icon="temperature"
+  Default item=stiebel_eltron_humidity_ffk icon="humidity"
+  Default item=stiebel_eltron_dewpoint_ffk icon="temperature"
+  Default item=stiebel_eltron_source_temp icon="temperature"
+ }
+ Frame label="Paramters" {
+  Setpoint item=stiebel_eltron_heating_comfort_temp icon="temperature" step=1 minValue=5 maxValue=30
+  Setpoint item=stiebel_eltron_heating_eco_temp icon="temperature" step=1 minValue=5 maxValue=30
+  Setpoint item=stiebel_eltron_water_comfort_temp icon="temperature" step=1 minValue=10 maxValue=60
+  Setpoint item=stiebel_eltron_water_eco_temp icon="temperature" step=1 minValue=10 maxValue=60
+ }
+ Frame label="Energy consumption" {
+  Default item=stiebel_eltron_consumption_heat_today icon="energy"
+  Default item=stiebel_eltron_consumption_heat_total icon="energy"
+  Default item=stiebel_eltron_consumption_water_today icon="energy"
+  Default item=stiebel_eltron_consumption_water_total icon="energy"
+ }
+ Frame label="Heat quantity" {
+  Default item=stiebel_eltron_production_heat_today icon="radiator"
+  Default item=stiebel_eltron_production_heat_total icon="radiator"
+  Default item=stiebel_eltron_production_water_today icon="water"
+  Default item=stiebel_eltron_production_water_total icon="water"
+ }
 
-		}
+}
 
 ```

@@ -29,6 +29,7 @@ import org.openhab.binding.plugwiseha.internal.api.model.dto.GatewayEnvironment;
 import org.openhab.binding.plugwiseha.internal.api.model.dto.GatewayInfo;
 import org.openhab.binding.plugwiseha.internal.api.model.dto.Location;
 import org.openhab.binding.plugwiseha.internal.api.model.dto.Locations;
+import org.openhab.binding.plugwiseha.internal.api.model.dto.LocationsArray;
 import org.openhab.binding.plugwiseha.internal.api.model.dto.Log;
 import org.openhab.binding.plugwiseha.internal.api.model.dto.Logs;
 import org.openhab.binding.plugwiseha.internal.api.model.dto.Module;
@@ -87,6 +88,7 @@ public class PlugwiseHAXStream extends XStream {
         this.allowClass(Appliance.class);
         this.allowClass(Modules.class);
         this.allowClass(Module.class);
+        this.allowClass(LocationsArray.class);
         this.allowClass(Locations.class);
         this.allowClass(Location.class);
         this.allowClass(Logs.class);

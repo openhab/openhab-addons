@@ -1,8 +1,8 @@
 # Konnected Binding
 
-This binding is for interacting with a [Konnected Alarm Panel](https://konnected.io/). 
-Konnected Alarm Panels can connect to security sensors directly or interface with existing alarm panels. 
-Konnected is an open-source firmware and software that runs on a NodeMCU. 
+This binding is for interacting with a [Konnected Alarm Panel](https://konnected.io/).
+Konnected Alarm Panels can connect to security sensors directly or interface with existing alarm panels.
+Konnected is an open-source firmware and software that runs on a NodeMCU.
 The Konnected hardware is designed for an alarm panel installation, but the general purpose firmware/software can be run on a generic NodeMCU device.
 
 ## Supported Things
@@ -16,23 +16,22 @@ The binding will then create things for each module discovered which can be adde
 
 ## Thing Configuration
 
-The binding attempts to discover The Konnected Alarm Panels via the UPnP service. 
-The auto-discovery service of the binding will detect the base URL of the Konnected Alarm Panel. 
-When manually adding things, the base URL of the Konnected Alarm Panel will need to be configured. 
-The base URL should include scheme, address and port (for example http://192.168.1.123:9123).
+The binding attempts to discover The Konnected Alarm Panels via the UPnP service.
+The auto-discovery service of the binding will detect the base URL of the Konnected Alarm Panel.
+When manually adding things, the base URL of the Konnected Alarm Panel will need to be configured.
+The base URL should include scheme, address and port (for example `http://192.168.1.123:9123`).
 
 The binding will attempt to obtain the ip address of your openHAB server as configured in the OSGi framework.
 If it is unable to determine the IP address it will also attempt to use the network address service to obtain the IP address and port.
-Auto-discovery of the callback URL will fail if you are using reverse proxies and/or HTTPS for your openHAB server. 
-In this case you will need to configure the callback URL in the advanced configuration section. 
-The callback URL will normally end with /konnected (for example https://192.168.1.2/konnected).
+Auto-discovery of the callback URL will fail if you are using reverse proxies and/or HTTPS for your openHAB server.
+In this case you will need to configure the callback URL in the advanced configuration section.
+The callback URL will normally end with /konnected (for example `https://192.168.1.2/konnected`).
 
 In addition you can also turn off discovery which when this setting is synced to the module will cause the device to no longer respond to UPnP requests as documented.
-https://help.konnected.io/support/solutions/articles/32000023968-disabling-device-discovery
+<https://help.konnected.io/support/solutions/articles/32000023968-disabling-device-discovery>
 Please use this setting with caution and do not disable until a static ip address has been provided for your Konnected Alarm Panel via DHCP, router or otherwise.
 
 The blink setting will disable the transmission LED on the Konnected Alarm Panel.
-
 
 ## Channels
 
@@ -64,7 +63,7 @@ It can also be used to blink lights.
 A note about the Alarm Panel Pro.
 Zones 1-8 can be configured for any Channel-Types.  
 Zones 9-12, out1, alarm1 and out2/alarm2 can only be configured as an actuator.
-For more information, see: https://help.konnected.io/support/solutions/articles/32000028978-alarm-panel-pro-inputs-and-outputs 
+For more information, see: <https://help.konnected.io/support/solutions/articles/32000028978-alarm-panel-pro-inputs-and-outputs>
 
 DSB1820 temperature probes.
 These are one wire devices which can all be Konnected to the same "Zone" on the Konnected Alarm Panel.
@@ -73,26 +72,25 @@ This needs to be added to the channel if there are multiple probes connected.
 The default behavior in absence of this configuration will be to simply log the address of the received event.
 A channel should be added for each probe, as indicated above and configured with the appropriate address.
 
-
 ## Full Example
 
 *.items
 
-```
+```java
 Switch Siren "Siren" {channel="konnected:wifi-module:generic:siren"}
 Switch Back_Door_Sensor "Back Door" {channel="konnected:pro-module:generic:backd"}
 ```
 
 *.sitemap
 
-```
+```perl
 Switch item=Back_Door_Sensor label="Back Door" icon="door" mappings=[OPEN="Open", CLOSED="Closed"]
 Switch item=Siren label="Alarm Siren" icon="Siren" mappings=[ON="Open", OFF="Closed"]
 ```
 
 *.things
 
-```
+```java
 Thing konnected:wifi-module:generic "Konnected Module" [baseUrl="http://192.168.30.153:9586", macAddress="1586517"]{
    Type switch-wifi     : frontd    "Front Door"                        [zone="1"]
    Type actuator-wifi   : siren     "Siren"                             [zone="2", momentary = 50, times = 2, pause = 50]
@@ -109,4 +107,3 @@ Thing konnected:pro-module:generic "Konnected Module" [baseUrl="http://192.168.3
    Type temperature-pro : outhum    "Outside Temperature (DS18B20)" [zone="4", dht22 = false, pollInterval = 1, ds18b20Address = "XX:XX:XX:XX:XX:XX:XX"]
 }
 ```
-

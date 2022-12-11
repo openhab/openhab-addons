@@ -41,7 +41,6 @@ public class SetHevCycleRequest extends Packet {
     }
 
     public SetHevCycleRequest() {
-        setTagged(false);
         setAddressable(true);
         setResponseRequired(true);
     }

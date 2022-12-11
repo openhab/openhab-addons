@@ -416,7 +416,7 @@ public class IAqualinkHandler extends BaseThingHandler {
     }
 
     /**
-     * Update an channels state only if the value of the channel has changed since our last poll.
+     * Update a channel state only if the value of the channel has changed since our last poll.
      *
      * @param name
      * @param value

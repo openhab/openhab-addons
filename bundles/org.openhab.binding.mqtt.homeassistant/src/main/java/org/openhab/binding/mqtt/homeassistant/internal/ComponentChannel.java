@@ -96,7 +96,7 @@ public class ComponentChannel {
 
     public CompletableFuture<@Nullable Void> start(MqttBrokerConnection connection, ScheduledExecutorService scheduler,
             int timeout) {
-        // Make sure we set the callback again which might have been nulled during an stop
+        // Make sure we set the callback again which might have been nulled during a stop
         channelState.setChannelStateUpdateListener(this.channelStateUpdateListener);
 
         return channelState.start(connection, scheduler, timeout);

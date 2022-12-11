@@ -104,6 +104,7 @@ public class ShellyThingCreator {
     public static final String THING_TYPE_SHELLY3EM_STR = "shellyem3"; // bad: misspelled product name, it's 3EM
     public static final String THING_TYPE_SHELLY2_PREFIX = "shellyswitch";
     public static final String THING_TYPE_SHELLY2_RELAY_STR = "shelly2-relay";
+    public static final String THING_TYPE_SHELLY2_ROLLER_STR = "shelly2-roller";
     public static final String THING_TYPE_SHELLY25_PREFIX = "shellyswitch25";
     public static final String THING_TYPE_SHELLY25_RELAY_STR = "shelly25-relay";
     public static final String THING_TYPE_SHELLY25_ROLLER_STR = "shelly25-roller";
@@ -166,6 +167,8 @@ public class ShellyThingCreator {
     public static final ThingTypeUID THING_TYPE_SHELLY3EM = new ThingTypeUID(BINDING_ID, THING_TYPE_SHELLY3EM_STR);
     public static final ThingTypeUID THING_TYPE_SHELLY2_RELAY = new ThingTypeUID(BINDING_ID,
             THING_TYPE_SHELLY2_RELAY_STR);
+    public static final ThingTypeUID THING_TYPE_SHELLY2_ROLLER = new ThingTypeUID(BINDING_ID,
+            THING_TYPE_SHELLY2_ROLLER_STR);
     public static final ThingTypeUID THING_TYPE_SHELLY25_RELAY = new ThingTypeUID(BINDING_ID,
             THING_TYPE_SHELLY25_RELAY_STR);
     public static final ThingTypeUID THING_TYPE_SHELLY25_ROLLER = new ThingTypeUID(BINDING_ID,
@@ -367,7 +370,7 @@ public class ShellyThingCreator {
             return mode.equals(SHELLY_MODE_RELAY) ? THING_TYPE_SHELLY25_RELAY_STR : THING_TYPE_SHELLY25_ROLLER_STR;
         }
         if (name.startsWith(THING_TYPE_SHELLY2_PREFIX)) { // Shelly v2
-            return THING_TYPE_SHELLY2_RELAY_STR;
+            return mode.equals(SHELLY_MODE_RELAY) ? THING_TYPE_SHELLY2_RELAY_STR : THING_TYPE_SHELLY2_ROLLER_STR;
         }
         if (name.startsWith(THING_TYPE_SHELLYPLUG_STR)) {
             // shellyplug-s needs to be mapped to shellyplugs to follow the schema

@@ -13,7 +13,7 @@
 package org.openhab.binding.iaqualink.internal.api.dto;
 
 /**
- * Device refers to a iAqualink Pool Controller.
+ * Device refers to an iAqualink Pool Controller.
  *
  * @author Dan Cunningham - Initial contribution
  *

@@ -51,12 +51,6 @@ public class StateWifiFirmwareResponse extends Packet {
         this.version = version;
     }
 
-    public StateWifiFirmwareResponse() {
-        setTagged(false);
-        setAddressable(true);
-        setResponseRequired(true);
-    }
-
     @Override
     public int packetType() {
         return TYPE;

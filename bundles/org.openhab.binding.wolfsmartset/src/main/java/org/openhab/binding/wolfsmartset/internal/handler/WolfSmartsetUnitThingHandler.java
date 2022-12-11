@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@link WolfSmartsetUnitThingHandler} is responsible for updating the channels associated
- * with an WolfSmartset unit.
+ * with a WolfSmartset unit.
  *
  * @author Bo Biene - Initial contribution
  */

@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.bosesoundtouch.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link BoseSoundTouchNotFoundException} class is an exception
  *
  * @author Thomas Traunbauer - Initial contribution
  */
+@NonNullByDefault
 public class BoseSoundTouchNotFoundException extends Exception {
     private static final long serialVersionUID = 1L;
 

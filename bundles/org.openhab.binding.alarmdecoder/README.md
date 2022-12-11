@@ -5,9 +5,9 @@ It acts essentially like a keypad, reading and writing messages on the serial bu
 
 There are several versions of the adapter available:
 
-* *AD2PI* or *AD2PHAT* - A board that plugs into a Raspberry Pi and offers network-based TCP connectivity
-* *AD2SERIAL* - Attaches to a host via a serial port
-* *AD2USB* - Attaches to a host via USB
+- _AD2PI_ or _AD2PHAT_ - A board that plugs into a Raspberry Pi and offers network-based TCP connectivity
+- _AD2SERIAL_ - Attaches to a host via a serial port
+- _AD2USB_ - Attaches to a host via USB
 
 This binding allows openHAB to access the state of wired or wireless contacts and motion detectors connected to supported alarm panels, as well as the state of attached keypads and the messages send to attached LRR devices.
 Support is also available for sending keypad commands, including special/programmable keys supported by your panel.
@@ -16,19 +16,19 @@ Support is also available for sending keypad commands, including special/program
 
 The binding supports the following thing types:
 
-* `ipbridge` - Supports TCP connection to the AD.
-* `serialbridge` - Supports serial/USB connection to the AD.
-* `keypad` - Reports keypad status and optionally sends keypad messages.
-* `zone` - Reports status from zone expanders and relay expanders, and also from built-in zones via emulation.
-* `rfzone` - Reports status from RF zones.
-* `vzone` - Sends commands to virtual zones.
-* `lrr` - Reports messages sent from the panel to a Long Range Radio (LRR) or emulated LRR device.
+- `ipbridge` - Supports TCP connection to the AD.
+- `serialbridge` - Supports serial/USB connection to the AD.
+- `keypad` - Reports keypad status and optionally sends keypad messages.
+- `zone` - Reports status from zone expanders and relay expanders, and also from built-in zones via emulation.
+- `rfzone` - Reports status from RF zones.
+- `vzone` - Sends commands to virtual zones.
+- `lrr` - Reports messages sent from the panel to a Long Range Radio (LRR) or emulated LRR device.
 
 ## Discovery
 
 Background discovery is currently supported for `zone` and `rfzone` things.
-If the bridge `discovery` parameter is set to *true*, the first time a status message is seen from each zone or RF zone a corresponding thing will appear in the inbox.
-Leaving the `discovery` parameter set to *false* during normal operation is recommended, as it will slightly reduce resource consumption by the binding.
+If the bridge `discovery` parameter is set to _true_, the first time a status message is seen from each zone or RF zone a corresponding thing will appear in the inbox.
+Leaving the `discovery` parameter set to _false_ during normal operation is recommended, as it will slightly reduce resource consumption by the binding.
 
 ## Prerequisites
 
@@ -45,21 +45,21 @@ Although not mentioned in the Quick Start guide, configuring virtual relay board
 
 Alarm Decoder things can be configured through openHAB's management UI, or manually via configuration files.
 When first configuring the binding it is probably easiest to configure it via the management UI, even if you plan to use configuration files later.
-If you enable the *discovery* option on the bridge, as you fault zones (e.g. open doors and windows, trigger motion detectors, etc.) they should appear in the discovery inbox.
+If you enable the _discovery_ option on the bridge, as you fault zones (e.g. open doors and windows, trigger motion detectors, etc.) they should appear in the discovery inbox.
 
 ### ipbridge
 
-The `ipbridge` thing supports a TCP/IP connection to an Alarm Decoder device such as *AD2PI* or *AD2PHAT*.
+The `ipbridge` thing supports a TCP/IP connection to an Alarm Decoder device such as _AD2PI_ or _AD2PHAT_.
 
-* `hostname` (required) The hostname or IP address of the Alarm Decoder device
-* `tcpPort` (default = 10000) TCP port number for the Alarm Decoder connection
-* `discovery` (default = false) Enable automatic discovery of zones and RF zones
-* `reconnect` (1-60, default = 2) The period in minutes that the handler will wait between connection checks and connection attempts
-* `timeout` (0-60, default = 5) The period in minutes after which the connection will be reset if no valid messages have been received. Set to 0 to disable.
+- `hostname` (required) The hostname or IP address of the Alarm Decoder device
+- `tcpPort` (default = 10000) TCP port number for the Alarm Decoder connection
+- `discovery` (default = false) Enable automatic discovery of zones and RF zones
+- `reconnect` (1-60, default = 2) The period in minutes that the handler will wait between connection checks and connection attempts
+- `timeout` (0-60, default = 5) The period in minutes after which the connection will be reset if no valid messages have been received. Set to 0 to disable.
 
 Thing config file example:
 
-```
+```java
 Bridge alarmdecoder:ipbridge:ad1 [ hostname="cerberus.home", tcpPort=10000, discovery=true ] {
   Thing ...
   Thing ...
@@ -68,17 +68,17 @@ Bridge alarmdecoder:ipbridge:ad1 [ hostname="cerberus.home", tcpPort=10000, disc
 
 ### serialbridge
 
-The `serialbridge` thing supports a serial or USB connection to an Alarm Decoder device such as *AD2SERIAL* or *AD2USB*.
+The `serialbridge` thing supports a serial or USB connection to an Alarm Decoder device such as _AD2SERIAL_ or _AD2USB_.
 
 Parameters:
 
-* `serialPort` (required) The name of the serial port used to connect to the Alarm Decoder device
-* `bitrate` Speed of the serial connection
-* `discovery` (default=false) Enable automatic discovery of zones and RF zones
+- `serialPort` (required) The name of the serial port used to connect to the Alarm Decoder device
+- `bitrate` Speed of the serial connection
+- `discovery` (default=false) Enable automatic discovery of zones and RF zones
 
 Thing config file example:
 
-```
+```java
 Bridge alarmdecoder:serialbridge:ad1 [ serialPort="/dev/ttyS1", bitrate=115200, discovery=true ] {
   Thing ...
   Thing ...
@@ -98,10 +98,10 @@ Command strings containing invalid characters will be ignored.
 
 Parameters:
 
-* `addressMask` (default = 0) String containing the mask in hex of addresses for which the keypad thing will receive messages (0 = all addresses).
-* `sendCommands` (default = false) Allow keypad commands to be sent to the alarm system from openHAB. Enabling this means the alarm system will be only as secure as your openHAB system.
-* `sendStar` (default = false) When disarmed/faulted, automatically send the * character to obtain zone fault information.
-* `commandMapping` (optional) Comma separated list of key/value pairs mapping integers to command strings for `intcommand` channel.
+- `addressMask` (default = 0) String containing the mask in hex of addresses for which the keypad thing will receive messages (0 = all addresses).
+- `sendCommands` (default = false) Allow keypad commands to be sent to the alarm system from openHAB. Enabling this means the alarm system will be only as secure as your openHAB system.
+- `sendStar` (default = false) When disarmed/faulted, automatically send the * character to obtain zone fault information.
+- `commandMapping` (optional) Comma separated list of key/value pairs mapping integers to command strings for `intcommand` channel.
 
 Address masks
 
@@ -110,7 +110,7 @@ The first byte (left to right) represents devices 0-7, the second 8-15, the thir
 The mask itself is represented as a string containing a hexadecimal number.
 For example, a mask of 03000000 would indicate devices 0 and 1 as follows:
 
-```
+```text
 Mask: 03000000
 Bytes: 03       00       00       00
 Bits:  00000011 00000000 00000000 00000000
@@ -121,7 +121,7 @@ Device#         111111   22221111 33222222
 
 Thing config file example:
 
-```
+```java
   Thing keypad keypad1 [ addressMask=0, sendCommands=true ]
 ```
 
@@ -131,12 +131,12 @@ The `zone` thing reports status from zone expanders and relay expanders, and als
 
 Parameters:
 
-* `address` (required) Zone address
-* `channel` (required) Zone channel
+- `address` (required) Zone address
+- `channel` (required) Zone channel
 
 Thing config file example:
 
-```
+```java
   Thing zone frontdoor [ address=10, channel=1 ]
 ```
 
@@ -146,11 +146,11 @@ The `rfzone` thing reports status from wireless zones, such as 5800 series RF de
 
 Parameters:
 
-* `serial` (required) Serial number of the RF zone
+- `serial` (required) Serial number of the RF zone
 
 Thing config file example:
 
-```
+```java
   Thing rfzone motion1 [ serial=0180010 ]
 ```
 
@@ -163,11 +163,11 @@ The `state` channel is a switch type channel that reflects the current state of 
 
 Parameters:
 
-* `address` (required) Virtual zone number (0-99)
+- `address` (required) Virtual zone number (0-99)
 
 Thing config file example:
 
-```
+```java
   Thing vzone watersensor [ address=41 ]
 ```
 
@@ -178,11 +178,11 @@ These are normally specifically formatted messages as described in the [SIA DC-0
 They can also, depending on configuration, be other types of messages as described [here](https://www.alarmdecoder.com/wiki/index.php/LRR_Support).
 For panels that support multiple partitions, the partition for which a given lrr thing will receive messages can be defined.
 
-* `partition` (default = 0) Partition for which to receive LRR events (0 = All)
+- `partition` (default = 0) Partition for which to receive LRR events (0 = All)
 
 Thing config file example:
 
-```
+```java
   Thing lrr lrr [ partition=0 ]
 ```
 
@@ -190,13 +190,13 @@ Thing config file example:
 
 The alarmdecoder things expose the following channels:
 
-**zone**
+### zone
 
 |  channel     | type    |RO/RW| description                  |
 |--------------|---------|-----|------------------------------|
 | contact      | Contact |RO   |Zone contact state            |
 
-**rfzone**
+### rfzone
 
 |  channel     | type    |RO/RW| description                  |
 |--------------|---------|-----|------------------------------|
@@ -207,14 +207,14 @@ The alarmdecoder things expose the following channels:
 | loop3        | Contact | RO  |Loop 3 state                  |
 | loop4        | Contact | RO  |Loop 4 state                  |
 
-**vzone**
+### vzone
 
 |  channel     | type    |RO/RW| description                  |
 |--------------|---------|-----|------------------------------|
 | command      | String  | WO  |"OPEN" or "CLOSED" command    |
 | state        | Switch  | RW  |Zone state (ON = closed)      |
 
-**keypad**
+### keypad
 
 |  channel     | type    |RO/RW| description                  |
 |--------------|---------|-----|------------------------------|
@@ -239,11 +239,11 @@ The alarmdecoder things expose the following channels:
 | command      | String  | RW  |Keypad command                |
 | intcommand   | Number  | RW  |Integer keypad command        |
 
-*Note* - The `intcommand` channel is provided for backward compatibility with the OH1 version of the binding.
+_Note_ - The `intcommand` channel is provided for backward compatibility with the OH1 version of the binding.
 The integer to command string mappings are provided by the optional keypad `commandMapping` parameter.
 The default mapping is "0=0,1=1,2=2,3=3,4=4,5=5,6=6,7=7,8=8,9=9,10=*,11=#".
 
-**lrr**
+### lrr
 
 |  channel     | type    |RO/RW| description                  |
 |--------------|---------|-----|------------------------------|
@@ -256,7 +256,7 @@ The default mapping is "0=0,1=1,2=2,3=3,4=4,5=5,6=6,7=7,8=8,9=9,10=*,11=#".
 
 Example ad.things file:
 
-```
+```java
 Bridge alarmdecoder:ipbridge:ad1 [ hostname="cerberus.home", tcpPort=10000, discovery=true ] {
     Thing zone frontdoor [ address=10, channel=1 ]
     Thing zone backdoor [ address=11, channel=1 ]
@@ -269,7 +269,7 @@ Bridge alarmdecoder:ipbridge:ad1 [ hostname="cerberus.home", tcpPort=10000, disc
 
 Example ad.items file:
 
-```
+```java
 Number KeypadZone "Zone [%d]"  {channel="alarmdecoder:keypad:ad1:keypad1:zone"}
 String KeypadText "Message" {channel="alarmdecoder:keypad:ad1:keypad1:text"}
 Switch KeypadArmedAway "Armed Away" {channel="alarmdecoder:keypad:ad1:keypad1:armedaway"}
@@ -295,18 +295,18 @@ String LrrMessage "CID Message" {channel="alarmdecoder:lrr:ad1:lrr:cidmessage"}
 String LrrReportCode "CID Report Code" {channel="alarmdecoder:lrr:ad1:lrr:reportcode"}
 ```
 
-*Note: For brevity, not every possible keypad channel is linked to an item in the above example.*
+_Note: For brevity, not every possible keypad channel is linked to an item in the above example._
 
 ## Thing Actions
 
 The `ipbridge` and `serialbridge` things expose the following action to the automation engine:
 
-*reboot* - Send command to reboot the Alarm Decoder device. Accepts no parameters.
+_reboot_ - Send command to reboot the Alarm Decoder device. Accepts no parameters.
 
 ## Quirks
 
 The alarmdecoder device cannot query the panel for the state of individual zones.
-For this reason, the binding puts contacts into the "unknown" state (UNDEF), *until the panel goes into the READY state*.
+For this reason, the binding puts contacts into the "unknown" state (UNDEF), _until the panel goes into the READY state_.
 At that point, all contacts for which no update messages have arrived are presumed to be in the CLOSED state.
 In other words: to get to a clean slate after an openHAB restart, close all doors/windows such that the panel is READY.
 

@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.bosesoundtouch.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link NoInternetRadioPresetFoundException} class is an exception
  *
  * @author Thomas Traunbauer - Initial contribution
  */
+@NonNullByDefault
 public class NoInternetRadioPresetFoundException extends NoPresetFoundException {
     private static final long serialVersionUID = 1L;
 

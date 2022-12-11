@@ -118,22 +118,22 @@ The binding introduces the following channels:
 | load15             | Load for the last 15 minutes                                     | Number              | Medium           | True     |
 | threads            | Number of threads currently running or for the process           | Number              | Medium           | True     |
 | path               | The full path of the process                                     | String              | Low              | False    |
-| uptime             | System uptime (time after start) in minutes                      | Number              | Medium           | True     |
+| uptime             | System uptime (time after start) in minutes                      | Number:Time         | Medium           | True     |
 | name               | Name of the device or process                                    | String              | Low              | False    |
-| available          | Available size in MB                                             | Number              | High             | False    |
-| used               | Used size in MB                                                  | Number              | High             | False    |
-| total              | Total size in MB                                                 | Number              | Low              | False    |
-| availablePercent   | Available size in %                                              | Number              | High             | False    |
-| usedPercent        | Used size in %                                                   | Number              | High             | False    |
+| available          | Available size                                                   | Number:DataAmount   | High             | False    |
+| used               | Used size                                                        | Number:DataAmount   | High             | False    |
+| total              | Total size                                                       | Number:DataAmount   | Low              | False    |
+| availablePercent   | Available size in %                                              | Number:Dimensionless| High             | False    |
+| usedPercent        | Used size in %                                                   | Number:Dimensionless| High             | False    |
 | model              | The model of the device                                          | String              | Low              | True     |
 | serial             | The serial number of the device                                  | String              | Low              | True     |
 | description        | Description of the device                                        | String              | Low              | True     |
 | type               | Storage type                                                     | String              | Low              | True     |
-| cpuTemp            | CPU Temperature in degrees Celsius                               | Number              | High             | True     |
-| cpuVoltage         | CPU Voltage in V                                                 | Number              | Medium           | True     |
+| cpuTemp            | CPU Temperature in degrees Celsius                               | Number:Temperature  | High             | True     |
+| cpuVoltage         | CPU Voltage                                                      | Number:ElectricPotential| Medium       | True     |
 | fanSpeed           | Fan speed in rpm                                                 | Number              | Medium           | True     |
-| remainingTime      | Remaining time in minutes                                        | Number              | Medium           | False    |
-| remainingCapacity  | Remaining capacity in %                                          | Number              | Medium           | False    |
+| remainingTime      | Remaining time in minutes                                        | Number:Time         | Medium           | False    |
+| remainingCapacity  | Remaining capacity in %                                          | Number:Dimensionless| Medium           | False    |
 | information        | Product, manufacturer, SN, width and height of the display in cm | String              | Low              | True     |
 | ip                 | Host IP address of the network                                   | String              | Low              | False    |
 | mac                | MAC address                                                      | String              | Low              | True     |
@@ -141,9 +141,9 @@ The binding introduces the following channels:
 | networkDisplayName | The display name of the network                                  | String              | Low              | False    |
 | packetsSent        | Number of packets sent                                           | Number              | Medium           | True     |
 | packetsReceived    | Number of packets received                                       | Number              | Medium           | True     |
-| dataSent           | Data sent in MB                                                  | Number              | Medium           | True     |
-| dataReceived       | Data received in MB                                              | Number              | Medium           | True     |
-| availableHeap      | How many bytes are free out of the currently committed heap      | Number:DataAmount   | Medium           | True     |
+| dataSent           | Volume of data sent                                              | Number:DataAmount   | Medium           | True     |
+| dataReceived       | Volume of data received                                          | Number:DataAmount   | Medium           | True     |
+| availableHeap      | How much space is available in the currently committed heap      | Number:DataAmount   | Medium           | True     |
 | usedHeapPercent    | How much of the MAX heap size is actually used in %              | Number:Dimensionless| Medium           | False    |
 
 ## Channel configuration
@@ -195,80 +195,80 @@ Items:
 
 ```
 /* Network information*/
-String Network_AdapterName        "Adapter name"        <network>        { channel="systeminfo:computer:work:network#networkDisplayName" }
-String Network_Name               "Name"                <network>        { channel="systeminfo:computer:work:network#networkName" }
-String Network_IP                 "IP address"          <network>        { channel="systeminfo:computer:work:network#ip" }
-String Network_Mac                "Mac address"         <network>        { channel="systeminfo:computer:work:network#mac" }
-Number Network_DataSent           "Data sent"           <flowpipe>       { channel="systeminfo:computer:work:network#dataSent" }
-Number Network_DataReceived       "Data received"       <returnpipe>     { channel="systeminfo:computer:work:network#dataReceived" }
-Number Network_PacketsSent        "Packets sent"        <flowpipe>       { channel="systeminfo:computer:work:network#packetsSent" }
-Number Network_PacketsReceived    "Packets received"    <returnpipe>     { channel="systeminfo:computer:work:network#packetsReceived" }
+String Network_AdapterName         "Adapter name"        <network>       { channel="systeminfo:computer:work:network#networkDisplayName" }
+String Network_Name                "Name"                <network>       { channel="systeminfo:computer:work:network#networkName" }
+String Network_IP                  "IP address"          <network>       { channel="systeminfo:computer:work:network#ip" }
+String Network_Mac                 "Mac address"         <network>       { channel="systeminfo:computer:work:network#mac" }
+Number Network_DataSent            "Data sent"           <flowpipe>      { channel="systeminfo:computer:work:network#dataSent" }
+Number Network_DataReceived        "Data received"       <returnpipe>    { channel="systeminfo:computer:work:network#dataReceived" }
+Number Network_PacketsSent         "Packets sent"        <flowpipe>      { channel="systeminfo:computer:work:network#packetsSent" }
+Number Network_PacketsReceived     "Packets received"    <returnpipe>    { channel="systeminfo:computer:work:network#packetsReceived" }
 
 /* CPU information*/
-String CPU_Name                   "Name"                <none>           { channel="systeminfo:computer:work:cpu#name" }
-String CPU_Description            "Description"         <none>           { channel="systeminfo:computer:work:cpu#description" }
-Number CPU_Load                   "CPU Load"            <none>           { channel="systeminfo:computer:work:cpu#load" }
-Number CPU_Load1                  "Load (1 min)"        <none>           { channel="systeminfo:computer:work:cpu#load1" }
-Number CPU_Load5                  "Load (5 min)"        <none>           { channel="systeminfo:computer:work:cpu#load5" }
-Number CPU_Load15                 "Load (15 min)"       <none>           { channel="systeminfo:computer:work:cpu#load15" }
-Number CPU_Threads                "Threads"             <none>           { channel="systeminfo:computer:work:cpu#threads" }
-Number CPU_Uptime                 "Uptime"              <time>           { channel="systeminfo:computer:work:cpu#uptime" }
+String CPU_Name                    "Name"                <none>          { channel="systeminfo:computer:work:cpu#name" }
+String CPU_Description             "Description"         <none>          { channel="systeminfo:computer:work:cpu#description" }
+Number:Dimensionless CPU_Load      "CPU Load"            <none>          { channel="systeminfo:computer:work:cpu#load" }
+Number CPU_Load1                   "Load (1 min)"        <none>          { channel="systeminfo:computer:work:cpu#load1" }
+Number CPU_Load5                   "Load (5 min)"        <none>          { channel="systeminfo:computer:work:cpu#load5" }
+Number CPU_Load15                  "Load (15 min)"       <none>          { channel="systeminfo:computer:work:cpu#load15" }
+Number CPU_Threads                 "Threads"             <none>          { channel="systeminfo:computer:work:cpu#threads" }
+Number:Time CPU_Uptime             "Uptime"              <time>          { channel="systeminfo:computer:work:cpu#uptime" }
 
 /* Drive information*/
-String Drive_Name                 "Name"                <none>           { channel="systeminfo:computer:work:drive#name" }
-String Drive_Model                "Model"               <none>           { channel="systeminfo:computer:work:drive#model" }
-String Drive_Serial               "Serial"              <none>           { channel="systeminfo:computer:work:drive#serial" }
+String Drive_Name                  "Name"                <none>          { channel="systeminfo:computer:work:drive#name" }
+String Drive_Model                 "Model"               <none>          { channel="systeminfo:computer:work:drive#model" }
+String Drive_Serial                "Serial"              <none>          { channel="systeminfo:computer:work:drive#serial" }
 
 /* Storage information*/
-String Storage_Name               "Name"                <none>           { channel="systeminfo:computer:work:storage#name" }
-String Storage_Type               "Type"                <none>           { channel="systeminfo:computer:work:storage#type" }
-String Storage_Description        "Description"         <none>           { channel="systeminfo:computer:work:storage#description" }
-Number Storage_Available          "Available"           <none>           { channel="systeminfo:computer:work:storage#available" }
-Number Storage_Used               "Used"                <none>           { channel="systeminfo:computer:work:storage#used" }
-Number Storage_Total              "Total"               <none>           { channel="systeminfo:computer:work:storage#total" }
-Number Storage_Available_Percent  "Available (%)"       <none>           { channel="systeminfo:computer:work:storage#availablePercent" }
-Number Storage_Used_Percent       "Used (%)"            <none>           { channel="systeminfo:computer:work:storage#usedPercent" }
+String Storage_Name                "Name"                <none>          { channel="systeminfo:computer:work:storage#name" }
+String Storage_Type                "Type"                <none>          { channel="systeminfo:computer:work:storage#type" }
+String Storage_Description         "Description"         <none>          { channel="systeminfo:computer:work:storage#description" }
+Number:DataAmount Storage_Available "Available"          <none>          { channel="systeminfo:computer:work:storage#available" }
+Number:DataAmount Storage_Used     "Used"                <none>          { channel="systeminfo:computer:work:storage#used" }
+Number:DataAmount Storage_Total    "Total"               <none>          { channel="systeminfo:computer:work:storage#total" }
+Number:Dimensionless Storage_Available_Percent "Available (%)" <none>    { channel="systeminfo:computer:work:storage#availablePercent" }
+Number:Dimensionless Storage_Used_Percent "Used (%)"     <none>          { channel="systeminfo:computer:work:storage#usedPercent" }
 
 /* Memory information*/
-Number Memory_Available           "Available"           <none>           { channel="systeminfo:computer:work:memory#available" }
-Number Memory_Used                "Used"                <none>           { channel="systeminfo:computer:work:memory#used" }
-Number Memory_Total               "Total"               <none>           { channel="systeminfo:computer:work:memory#total" }
-Number Memory_Available_Percent   "Available (%)"       <none>           { channel="systeminfo:computer:work:memory#availablePercent" }
-Number Memory_Used_Percent        "Used (%)"            <none>           { channel="systeminfo:computer:work:memory#usedPercent" }
+Number Memory_Available            "Available"           <none>          { channel="systeminfo:computer:work:memory#available" }
+Number:DataAmount Memory_Used      "Used"                <none>          { channel="systeminfo:computer:work:memory#used" }
+Number:DataAmount Memory_Total     "Total"               <none>          { channel="systeminfo:computer:work:memory#total" }
+Number:Dimensionless Memory_Available_Percent "Available (%)" <none>     { channel="systeminfo:computer:work:memory#availablePercent" }
+Number:Dimensionless Memory_Used_Percent "Used (%)"      <none>          { channel="systeminfo:computer:work:memory#usedPercent" }
 
 /* Swap memory information*/
-Number Swap_Available             "Available"           <none>           { channel="systeminfo:computer:work:swap#available" }
-Number Swap_Used                  "Used"                <none>           { channel="systeminfo:computer:work:swap#used" }
-Number Swap_Total                 "Total"               <none>           { channel="systeminfo:computer:work:swap#total" }
-Number Swap_Available_Percent     "Available (%)"       <none>           { channel="systeminfo:computer:work:swap#availablePercent" }
-Number Swap_Used_Percent          "Used (%)"            <none>           { channel="systeminfo:computer:work:swap#usedPercent" }
+Number:DataAmount Swap_Available   "Available"           <none>          { channel="systeminfo:computer:work:swap#available" }
+Number:DataAmount Swap_Used        "Used"                <none>          { channel="systeminfo:computer:work:swap#used" }
+Number:DataAmount Swap_Total       "Total"               <none>          { channel="systeminfo:computer:work:swap#total" }
+Number:Dimensionless Swap_Available_Percent "Available (%)" <none>       { channel="systeminfo:computer:work:swap#availablePercent" }
+Number:Dimensionless Swap_Used_Percent "Used (%)"        <none>          { channel="systeminfo:computer:work:swap#usedPercent" }
 
 /* Battery information*/
-String Battery_Name               "Name"                <batterylevel>   { channel="systeminfo:computer:work:battery#name" }
-Number Battery_RemainingCapacity  "Remaining Capacity"  <batterylevel>   { channel="systeminfo:computer:work:battery#remainingCapacity" }
-Number Battery_RemainingTime      "Remaining Time"      <batterylevel>   { channel="systeminfo:computer:work:battery#remainingTime" }
+String Battery_Name                "Name"                <batterylevel>  { channel="systeminfo:computer:work:battery#name" }
+Number:Dimensionless Battery_RemainingCapacity "Remaining Capacity" <batterylevel> { channel="systeminfo:computer:work:battery#remainingCapacity" }
+Number:Time Battery_RemainingTime  "Remaining Time"      <batterylevel>  { channel="systeminfo:computer:work:battery#remainingTime" }
 
 /* Display information*/
-String Display_Description        "Display description" <screen>         { channel="systeminfo:computer:work:display#information" }
+String Display_Description         "Display description" <screen>        { channel="systeminfo:computer:work:display#information" }
 
 /* Sensors information*/
-Number Sensor_CPUTemp             "CPU Temperature"     <temperature>    { channel="systeminfo:computer:work:sensors#cpuTemp" }
-Number Sensor_CPUVoltage          "CPU Voltage"         <energy>         { channel="systeminfo:computer:work:sensors#cpuVoltage" }
-Number Sensor_FanSpeed            "Fan speed"           <fan>            { channel="systeminfo:computer:work:sensors#fanSpeed" }
+Number:Temperature Sensor_CPUTemp  "CPU Temperature"     <temperature>   { channel="systeminfo:computer:work:sensors#cpuTemp" }
+Number:ElectricPotential Sensor_CPUVoltage "CPU Voltage" <energy>        { channel="systeminfo:computer:work:sensors#cpuVoltage" }
+Number Sensor_FanSpeed             "Fan speed"           <fan>           { channel="systeminfo:computer:work:sensors#fanSpeed" }
 
 /* Current process information*/
-Number Current_process_load       "Load"                <none>           { channel="systeminfo:computer:work:currentProcess#load" }
-Number Current_process_used       "Used"                <none>           { channel="systeminfo:computer:work:currentProcess#used" }
-String Current_process_name       "Name"                <none>           { channel="systeminfo:computer:work:currentProcess#name" }
-Number Current_process_threads    "Threads"             <none>           { channel="systeminfo:computer:work:currentProcess#threads" }
-String Current_process_path       "Path"                <none>           { channel="systeminfo:computer:work:currentProcess#path" }
+Number:Dimensionless Current_process_load "Load"         <none>          { channel="systeminfo:computer:work:currentProcess#load" }
+Number:Dimensionless Current_process_used "Used"         <none>          { channel="systeminfo:computer:work:currentProcess#used" }
+String Current_process_name        "Name"                <none>          { channel="systeminfo:computer:work:currentProcess#name" }
+Number Current_process_threads     "Threads"             <none>          { channel="systeminfo:computer:work:currentProcess#threads" }
+String Current_process_path        "Path"                <none>          { channel="systeminfo:computer:work:currentProcess#path" }
 
 /* Process information*/
-Number Process_load               "Load"                <none>           { channel="systeminfo:computer:work:process#load" }
-Number Process_used               "Used"                <none>           { channel="systeminfo:computer:work:process#used" }
-String Process_name               "Name"                <none>           { channel="systeminfo:computer:work:process#name" }
-Number Process_threads            "Threads"             <none>           { channel="systeminfo:computer:work:process#threads" }
-String Process_path               "Path"                <none>           { channel="systeminfo:computer:work:process#path" }
+Number:Dimensionless Process_load  "Load"                <none>          { channel="systeminfo:computer:work:process#load" }
+Number:Dimensionless Process_used  "Used"                <none>          { channel="systeminfo:computer:work:process#used" }
+String Process_name                "Name"                <none>          { channel="systeminfo:computer:work:process#name" }
+Number Process_threads             "Threads"             <none>          { channel="systeminfo:computer:work:process#threads" }
+String Process_path                "Path"                <none>          { channel="systeminfo:computer:work:process#path" }
 ```
 
 Sitemap:

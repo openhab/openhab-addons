@@ -94,7 +94,8 @@ public class ShellyUtils {
                 throw new ShellyApiException(
                         PRE + className + " from JSON (syntax/format error: " + e.getMessage() + "): " + json, e);
             } catch (RuntimeException e) {
-                throw new ShellyApiException(PRE + className + " from JSON: " + json, e);
+                throw new ShellyApiException(
+                        PRE + className + " from JSON (" + getString(e.getMessage() + "), JSON=" + json), e);
             }
         }
     }

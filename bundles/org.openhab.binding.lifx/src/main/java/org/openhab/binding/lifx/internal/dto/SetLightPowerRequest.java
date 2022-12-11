@@ -47,7 +47,6 @@ public class SetLightPowerRequest extends Packet {
     public SetLightPowerRequest() {
         state = PowerState.OFF;
         this.duration = 0;
-        setTagged(false);
         setAddressable(true);
         setResponseRequired(true);
     }
@@ -55,7 +54,6 @@ public class SetLightPowerRequest extends Packet {
     public SetLightPowerRequest(PowerState state) {
         this.state = state;
         this.duration = 0;
-        setTagged(false);
         setAddressable(true);
         setResponseRequired(true);
     }

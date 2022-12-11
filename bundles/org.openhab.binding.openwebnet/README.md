@@ -43,11 +43,13 @@ The following Things and OpenWebNet `WHOs` are supported:
 | Gateway Management            |    `13`     |                       `bus_gateway`                        | Any IP gateway supporting OpenWebNet protocol should work        | Successfully tested: F452, F453, F453AV,F454, F455, MyHOMEServer1, MyHOME_Screen10, MyHOME_Screen3,5, MH201, MH202, MH200N. Some connection stability issues/gateway resets reported with MH202            |
 | Lighting                      |     `1`     |             `bus_on_off_switch`, `bus_dimmer`              | BUS switches and dimmers                                         | Successfully tested: F411/2, F411/4, F411U2, F422, F429. Some discovery issues reported with F429 (DALI Dimmers)                                                                                           |
 | Automation                    |     `2`     |                      `bus_automation`                      | BUS roller shutters, with position feedback and auto-calibration | Successfully tested: LN4672M2                                                                                                                                                                              |
-| Temperature Control           |     `4`     |  `bus_thermo_zone`, `bus_thermo_sensor`, `bus_thermo_cu`   | Thermo zones management and temperature sensors (probes).        | Successfully tested: H/LN4691, HS4692, KG4691; thermo sensors: L/N/NT4577 + 3455; Central Units (4 or 99 zones) are not fully supported yet. See [Channels - Thermo](#configuring-thermo) for more details |
-| Auxiliary (AUX)               |     `9`     |                         `bus_aux`                          | AUX commands                                                     | Successfully tested: AUX configured for bulgrar-alarm unit 3486. **Only sending AUX commands is supported**                                                                                                    |
-| Basic, CEN & CEN+ Scenarios          | `0`, `15`, `25` | `bus_scenario_control`, `bus_cen_scenario_control`, `bus_cenplus_scenario_control` | Basic and CEN/CEN+ Scenarios events and virtual activation                 | Successfully tested: CEN/CEN+ scenario control: HC/HD/HS/L/N/NT4680 and basic scenario modules F420/IR3456 + L4680 (WHO=0)                                                                                                                                                              |
-| Dry Contact and IR Interfaces |    `25`     |                    `bus_dry_contact_ir`                    | Dry Contacts and IR Interfaces                                   | Successfully tested: contact interfaces F428 and 3477; IR sensors: HC/HD/HS/L/N/NT4610                                                                                                                     |
-| Energy Management             |    `18`     |                     `bus_energy_meter`                     | Energy Management                                                | Successfully tested: F520, F521. Partially tested: F522, F523                                                                                                                                                                            |
+| Temperature Control           |     `4`     |  `bus_thermo_zone`, `bus_thermo_sensor`, `bus_thermo_cu`   | Thermo zones management and temperature sensors (probes)         | Successfully tested: H/LN4691, HS4692, KG4691; thermo sensors: L/N/NT4577 + 3455; Central Units (4 or 99 zones) are not fully supported yet. See [Channels - Thermo](#configuring-thermo) for more details |
+| Alarm                         |     `5`     |  `bus_alarm_system`, `bus_alarm_zone`                      | BUS Alarm system and zones                                       | Successfully tested: Burglar-alarm Unit 3486  |
+| Auxiliary (AUX)               |     `9`     |  `bus_aux`                                                 | AUX commands                                                     | Successfully tested: AUX configured for Burglar-alarm Unit 3486. **Only sending AUX commands is supported**    |
+| Basic, CEN & CEN+ Scenarios   | `0`, `15`, `25` | `bus_scenario_control`, `bus_cen_scenario_control`, `bus_cenplus_scenario_control` | Basic and CEN/CEN+ Scenarios events and virtual activation                 | Successfully tested: CEN/CEN+ scenario control: HC/HD/HS/L/N/NT4680 and basic scenario modules F420/IR3456 + L4680 (WHO=0)      |
+| Dry Contact and IR Interfaces |    `25`     |                    `bus_dry_contact_ir`                    | Dry Contacts and IR Interfaces                                   | Successfully tested: contact interfaces F428 and 3477; IR sensors: HC/HD/HS/L/N/NT4610      |
+| Energy Management             |    `18`     |                     `bus_energy_meter`                     | Energy Management                                                | Successfully tested: F520, F521. Partially tested: F522, F523                               |
+
 
 ### For ZigBee (Radio)
 
@@ -74,7 +76,7 @@ For other gateways you can add them manually, see [Thing Configuration](#thing-c
 #### Discovery by Activation
 
 BUS devices can also be discovered if they are activated while an Inbox Scan has been started: start a new Scan, wait 15-20 seconds and then _while the Scan is still active_, activate the physical device (for example dim the dimmer) to have it discovered by the binding.
-Setting the parameter `discoveryByActivation=true` for a BUS gateway Thing makes discovery by activation always working also when a Inbox Scan hasn't been started.
+Setting the parameter `discoveryByActivation=true` for a BUS gateway Thing makes discovery by activation always working also when an Inbox Scan hasn't been started.
 
 If a device cannot be discovered automatically from Inbox it's always possible to add it manually, see [Configuring Devices](#configuring-devices).
 
@@ -133,9 +135,10 @@ For any manually added device, you must configure:
         - scenario control module address `53` --> `where="53"`    
         - CEN scenario A=`05`, PL=`12` --> `where="0512"`
         - CEN+ scenario `5`: add `2` before --> `where="25"`
-        - Dry Contact or IR Interface `99`: add `3` before --> `where="399"`
-        - Energy meter F520/F521 numbered `1`: add `5` before  --> `where="51"`
-        - Energy meter F522/F523 numbered `4` add `7` before and `#0` after --> `where="74#0"`
+        - dry Contact or IR Interface `99`: add `3` before --> `where="399"`
+        - energy meter F520/F521 numbered `1`: add `5` before  --> `where="51"`
+        - energy meter F522/F523 numbered `4`: add `7` before and `#0` after --> `where="74#0"`
+        - alarm zone `2` --> `where="2"`
     - example for ZigBee devices: `where=765432101#9`. The ID of the device (ADDR part) is usually written in hexadecimal on the device itself, for example `ID 0074CBB1`: convert to decimal (`7654321`) and add `01#9` at the end to obtain `where=765432101#9`. For 2-unit switch devices (`zb_on_off_switch2u`), last part should be `00#9`.
  
 
@@ -157,83 +160,97 @@ Temperature sensors can be configured defining a `bus_thermo_sensor` Thing with 
 
 The (optional) Central Unit can be configured defining a `bus_themo_cu` Thing with the `where` configuration parameter (`OpenWebNet Address`) set to `where="0"`.
 
-##### Central Unit integration missing points 
+##### Thermo Central Unit integration missing points
 
 - Read setPoint temperature and current mode
 - Holiday activation command (all zones)
 - Discovery 
 
-#### Configuring Auxiliary (AUX)
+#### Configuring Alarm and Auxiliary (AUX)
 
-**NOTE** Receiving AUX messages originating from the BUS is not supported yet, only sending messages to the BUS is supported.
+**NOTE 1** Receiving AUX messages originating from the BUS is not supported yet, only sending messages to the BUS is supported
+
+**NOTE 2** Alarm messages on BUS are not sent by MyHOMEServer1, therfore this gateway cannot be used to integrate the BTicino Alarm system
 
 BUS Auxiliary commands (WHO=9) can be used to send on the BUS commands to control, for example, external devices or a BTicino Alarm system. 
 
-The BTicino Alarm system **cannot** be controlled directly via the OpenWebNet protocol: the only possibility is to use AUX commands and configure your Alarm Control Panel (Automations section) to execute some commands (e.g. Activate alarm) when it receives a particular AUX OpenWebNet command.
-Alarm Control Automations allow you to run an OpenWebNet command when a particular event occurs; in this case, the events are changes of state of the AUX device (WHO=9) and the command to be performed is a burglar alarm command (WHO=5).
+The BTicino Alarm system **cannot** be controlled directly via the OpenWebNet protocol: the only possibility is to use AUX commands and configure your Burglar-alarm Unit (`Automations` section) to execute some commands (e.g. Arm alarm) when it receives a particular AUX OpenWebNet command.
+Alarm Automations allow you to run an OpenWebNet command when a particular event occurs; in this case, the events are changes of state of the AUX device (WHO=9) and the command to be performed is a burglar alarm command (WHO=5).
 
-To configure Alarm Control Automations go to the menu:
+To configure Alarm Automations go to the menu:
 
     Antitheft -> Automations
 
-##### Example configuration Automation 1: when AUX-1 goes OFF, then DISENGAGE all Zones
+##### Example configuration Automation 1: when AUX-4 goes ON, then ARM all zones
 
-With this configuration when AUX `where=1` goes OFF, the Alarm will execute the automation and send command `*5*9##` to DISENGAGE all zones.
+With this configuration when AUX `where=4` goes ON, the Alarm will execute the automation and send command `*5*8##` to ARM all zones:
 
-    Name: Disengage all zones
-    Event: command OPEN = *9*0*1##
-    OPEN command to execute: *5*9##
-
-##### Example configuration Automation 2: when AUX-2 goes ON, then ENGAGE active Zones
-
-    Name: Engage active zones
-    Event: command OPEN = *9*1*2##
+    Name: Arm all zones
+    Event: command OPEN = *9*1*4##
     OPEN command to execute: *5*8##
 
-##### Example configuration Automation 3: when AUX-4 goes ON, then ENGAGE Zones 1, 2, 3, 4
+##### Example configuration Automation 2: when AUX-4 goes OFF, then DISARM all zones
 
-    Name: Engage zones 1-4
-    Event: command OPEN = *9*1*4##
-    OPEN command to execute: *5*8#1234##
+    Name: Disarm all zones
+    Event: command OPEN = *9*0*4##
+    OPEN command to execute: *5*9##
+
+##### Example configuration Automation 3: when AUX-5 goes ON, then ARM zones 1, 3, 4
+
+    Name: Arm zones 1 3 4
+    Event: command OPEN = *9*1*5##
+    OPEN command to execute: *5*8#134##
 
 ## Channels 
 
-### Lighting, Automation, Power meter, Basic/CEN/CEN+ Scenario Events and Dry Contact / IR Interfaces channels
+### Lighting, Automation, Basic/CEN/CEN+ Scenario Events, Dry Contact / IR Interfaces, Power and Aux channels
 
-| Channel Type ID (channel ID)            | Applies to Thing Type IDs                                     | Item Type     | Description                                                                                                                                     | Read/Write  |
-|-----------------------------------------|---------------------------------------------------------------|---------------|-------------------------------------------------------------------------------------------------------------------------------------------------|:-----------:|
-| `switch` or `switch_01`/`02` for ZigBee | `bus_on_off_switch`, `zb_on_off_switch`, `zb_on_off_switch2u` | Switch        | To switch the device `ON` and `OFF`                                                                                                             |     R/W     |
-| `brightness`                            | `bus_dimmer`, `zb_dimmer`                                     | Dimmer        | To adjust the brightness value (Percent, `ON`, `OFF`)                                                                                           |     R/W     |
-| `shutter`                               | `bus_automation`                                              | Rollershutter | To activate roller shutters (`UP`, `DOWN`, `STOP`, Percent - [see Shutter position](#shutter-position))                                         |     R/W     |
-| `button#X`                              | `bus_cen_scenario_control`, `bus_cenplus_scenario_control`    | String        | Trigger channel for CEN/CEN+ scenario events [see possible values](#scenario-channels)                                                           | R (TRIGGER) |
-| `sensor`                                | `bus_dry_contact_ir`                                          | Switch        | Indicates if a Dry Contact Interface is `ON`/`OFF`, or if a IR Sensor is detecting movement (`ON`), or not  (`OFF`)                             |      R      |
-| `power`                                 | `bus_energy_meter`                                            | Number:Power  | The current active power usage from Energy Meter                                                                                                |      R      |
+| Channel Type ID (channel ID)            | Applies to Thing Type IDs                                     | Item Type     | Description                                                                                                           | Read/Write  |
+|-----------------------------------------|---------------------------------------------------------------|---------------|-----------------------------------------------------------------------------------------------------------------------|:-----------:|
+| `switch` or `switch_01`/`02` for ZigBee | `bus_on_off_switch`, `zb_on_off_switch`, `zb_on_off_switch2u` | Switch        | To switch the device `ON` and `OFF`                                                                                   |     R/W     |
+| `brightness`                            | `bus_dimmer`, `zb_dimmer`                                     | Dimmer        | To adjust the brightness value (Percent, `ON`, `OFF`)                                                                 |     R/W     |
+| `shutter`                               | `bus_automation`                                              | Rollershutter | To activate roller shutters (`UP`, `DOWN`, `STOP`, Percent - [see Shutter position](#shutter-position))               |     R/W     |
+| `scenario`                              | `bus_scenario_control`                                        | String        | Trigger channel for Basic scenario events [see possible values](#scenario-channels)                                   | R (TRIGGER) |
+| `button#X`                              | `bus_cen_scenario_control`, `bus_cenplus_scenario_control`    | String        | Trigger channel for CEN/CEN+ scenario events [see possible values](#scenario-channels)                                | R (TRIGGER) |
+| `sensor`                                | `bus_dry_contact_ir`                                          | Switch        | Indicates if a Dry Contact Interface is `ON`/`OFF`, or if an IR Sensor is detecting movement (`ON`), or not  (`OFF`)  |      R      |
+| `power`                                 | `bus_energy_meter`                                            | Number:Power  | The current active power usage from Energy Meter                                                                      |      R      |
 | `aux`                                   | `bus_aux`                                                     | String        | Possible commands: `ON`, `OFF`, `TOGGLE`, `STOP`, `UP`, `DOWN`, `ENABLED`, `DISABLED`, `RESET_GEN`, `RESET_BI`, `RESET_TRI`. Only `ON` and `OFF` are supported for now |     R/W     |
-| `scenario`                              | `bus_scenario_control`    | String        | Trigger channel for Basic scenario events [see possible values](#scenario-channels)                                                           | R (TRIGGER) |
+
+
+### Alarm channels
+
+| Channel Type ID (channel ID) | Applies to Thing Type IDs              | Item Type   | Description                                                           | Read/Write  |
+|------------------------------|----------------------------------------|-------------|-----------------------------------------------------------------------|:-----------:|
+| `state`                      | `bus_alarm_system`, `bus_alarm_zone`   | Switch      | Alarm system or zone is active (`ON`) or inactive (`OFF`)             |      R      |
+| `network`                    | `bus_alarm_system`                     | Switch      | Alarm system network state (`ON` = network ok, `OFF` = no network)    |      R      |
+| `battery`                    | `bus_alarm_system`                     | String      | Alarm system battery state (`OK`, `FAULT`, `UNLOADED`)                |      R      |
+| `armed`                      | `bus_alarm_system`                     | Switch      | Alarm system is armed (`ON`) or disarmed (`OFF`)                      |      R      |
+| `alarm`                      | `bus_alarm_zone`                       | String      | Current alarm for the zone  (`SILENT`, `INTRUSION`, `TAMPERING`, `ANTI_PANIC`) |      R      |
+
 
 ### Thermo channels
 
-**NOTE** Channels marked with Advanced=Y can be shown from Thing configuration > Channels tab > check `Show advanced`.
+**NOTE** Channels marked in the table with `Advanced = Y` can be shown on the UI from Thing configuration > Channels tab > check `Show advanced`.
 
-| Channel Type ID (channel ID) | Applies to Thing Type IDs              | Item Type          | Description                                                                                                                                                                             | Read/Write | Advanced |
-| ---------------------------- | -------------------------------------- | ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :--------: | :------: |
-| `temperature`                | `bus_thermo_zone`, `bus_thermo_sensor` | Number:Temperature | The zone currently sensed temperature                                                                                                                                                   | R          | N        |
-| `setpointTemperature`        | `bus_thermo_zone`, `bus_thermo_cu`     | Number:Temperature | The zone or Central Unit setpoint temperature                                                                                                                                           | R/W        | N        |
-| `function`                   | `bus_thermo_zone`, `bus_thermo_cu`     | String             | The zone set thermo function (`COOLING`, `HEATING`, `GENERIC`) or the Central Unit thermo function (`COOLING`, `HEATING`)                                                               | R/W        | N        |
-| `mode`                       | `bus_thermo_zone`, `bus_thermo_cu`     | String             | The zone set mode (`MANUAL`, `PROTECTION`, `OFF`) or the Central Unit set mode ( `MANUAL`, `PROTECTION`, `OFF`, `WEEKLY`, `SCENARIO`)                                                   | R/W        | N        |
-| `speedFanCoil`               | `bus_thermo_zone`                      | String             | The zone fancoil speed: `AUTO`, `SPEED_1`, `SPEED_2`, `SPEED_3`                                                                                                                         | R/W        | N        |
+| Channel Type ID (channel ID) | Applies to Thing Type IDs              | Item Type          | Description                                                                                                                           | Read/Write | Advanced |
+| ---------------------------- | -------------------------------------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------- | :--------: | :------: |
+| `temperature`                | `bus_thermo_zone`, `bus_thermo_sensor` | Number:Temperature | The zone currently sensed temperature                                                                                                 | R          | N        |
+| `setpointTemperature`        | `bus_thermo_zone`, `bus_thermo_cu`     | Number:Temperature | The zone or Central Unit setpoint temperature                                                                                         | R/W        | N        |
+| `function`                   | `bus_thermo_zone`, `bus_thermo_cu`     | String             | The zone set thermo function (`COOLING`, `HEATING`, `GENERIC`) or the Central Unit thermo function (`COOLING`, `HEATING`)             | R/W        | N        |
+| `mode`                       | `bus_thermo_zone`, `bus_thermo_cu`     | String             | The zone set mode (`MANUAL`, `PROTECTION`, `OFF`) or the Central Unit set mode ( `MANUAL`, `PROTECTION`, `OFF`, `WEEKLY`, `SCENARIO`) | R/W        | N        |
+| `speedFanCoil`               | `bus_thermo_zone`                      | String             | The zone fancoil speed: `AUTO`, `SPEED_1`, `SPEED_2`, `SPEED_3`                                                                       | R/W        | N        |
 | `actuators`                  | `bus_thermo_zone`                      | String             | The zone actuator(s) status: `OFF`, `ON`, `OPENED`, `CLOSED` , `STOP`, `OFF_FAN_COIL`, `ON_SPEED_1`, `ON_SPEED_2`, `ON_SPEED_3`, `OFF_SPEED_1`, `OFF_SPEED_2`, `OFF_SPEED_3`            | R          | Y        |
-| `heatingValves`              | `bus_thermo_zone`                      | String             | The zone heating valve(s) status: `OFF`, `ON`, `OPENED`, `CLOSED` , `STOP`, `OFF_FAN_COIL`, `ON_SPEED_1`, `ON_SPEED_2`, `ON_SPEED_3`, `OFF_SPEED_1`, `OFF_SPEED_2`, `OFF_SPEED_3`       | R          | Y        |
-| `conditioningValves`         | `bus_thermo_zone`                      | String             | The zone conditioning valve(s) status: `OFF`, `ON`, `OPENED`, `CLOSED` , `STOP`, `OFF_FAN_COIL`, `ON_SPEED_1`, `ON_SPEED_2`, `ON_SPEED_3`, `OFF_SPEED_1`, `OFF_SPEED_2`, `OFF_SPEED_3`  | R          | Y        |
-| `localOffset`                | `bus_thermo_zone`                      | String             | The zone local offset status: `OFF`, `PROTECTION`, `MINUS_3`, `MINUS_2` , `MINUS_1`, `NORMAL`, `PLUS_1`, `PLUS_2`, `PLUS_3`                                                             | R          | Y        |
-| `remoteControl`              | `bus_thermo_cu`                        | String             | The Central Unit Remote Control status: `ENABLED`, `DISABLED`                                                                                                                           | R          | Y        |
-| `batteryStatus`              | `bus_thermo_cu`                        | String             | The Central Unit Battery status: `OK`, `KO`                                                                                                                                             | R          | Y        |
-| `weeklyProgram`              | `bus_thermo_cu`                        | Number             | The program number (`1`, `2`, `3`) when Central Unit mode is `WEEKLY`                                                                                                                   | R/W        | N        |
-| `scenarioProgram`            | `bus_thermo_cu`                        | Number             | The program number (`1`, `2`, ... ,  `16`) when Central Unit mode is `SCENARIO`                                                                                                          | R/W        | N        |
-| `failureDiscovered`          | `bus_thermo_cu`                        | Switch             | Indicates if a Failure was discovered by the Central Unit: `ON`, `OFF`                                                                                                                  | R          | Y        |
-| `atLeastOneProbeOff`         | `bus_thermo_cu`                        | Switch             | Indicates if at least one probe is in OFF mode: `ON`, `OFF`                                                                                                                             | R          | Y        |
-| `atLeastOneProbeProtection`  | `bus_thermo_cu`                        | Switch             | Indicates if at least one probe is in PROTECTION mode: `ON`, `OFF`                                                                                                                      | R          | Y        |
-| `atLeastOneProbeManual`      | `bus_thermo_cu`                        | Switch             | Indicates if at least one probe is in MANUAL mode: `ON`, `OFF`                                                                                                                          | R          | Y        |
+| `heatingValves`              | `bus_thermo_zone`                      | String             | The zone heating valve(s) status: `OFF`, `ON`, `OPENED`, `CLOSED` , `STOP`, `OFF_FAN_COIL`, `ON_SPEED_1`, `ON_SPEED_2`, `ON_SPEED_3`, `OFF_SPEED_1`, `OFF_SPEED_2`, `OFF_SPEED_3`            | R          | Y        |
+| `conditioningValves`         | `bus_thermo_zone`                      | String             | The zone conditioning valve(s) status: `OFF`, `ON`, `OPENED`, `CLOSED` , `STOP`, `OFF_FAN_COIL`, `ON_SPEED_1`, `ON_SPEED_2`, `ON_SPEED_3`, `OFF_SPEED_1`, `OFF_SPEED_2`, `OFF_SPEED_3`            | R          | Y        |
+| `localOffset`                | `bus_thermo_zone`                      | String             | The zone local offset status: `OFF`, `PROTECTION`, `MINUS_3`, `MINUS_2` , `MINUS_1`, `NORMAL`, `PLUS_1`, `PLUS_2`, `PLUS_3`           | R          | Y        |
+| `remoteControl`              | `bus_thermo_cu`                        | String             | The Central Unit Remote Control status: `ENABLED`, `DISABLED`                                                                         | R          | Y        |
+| `batteryStatus`              | `bus_thermo_cu`                        | String             | The Central Unit Battery status: `OK`, `KO`                                                                                           | R          | Y        |
+| `weeklyProgram`              | `bus_thermo_cu`                        | Number             | The program number (`1`, `2`, `3`) when Central Unit mode is `WEEKLY`                                                                 | R/W        | N        |
+| `scenarioProgram`            | `bus_thermo_cu`                        | Number             | The program number (`1`, `2`, ... ,  `16`) when Central Unit mode is `SCENARIO`                                                       | R/W        | N        |
+| `failureDiscovered`          | `bus_thermo_cu`                        | Switch             | Indicates if a Failure was discovered by the Central Unit: `ON`, `OFF`                                                                | R          | Y        |
+| `atLeastOneProbeOff`         | `bus_thermo_cu`                        | Switch             | Indicates if at least one probe is in OFF mode: `ON`, `OFF`                                                                           | R          | Y        |
+| `atLeastOneProbeProtection`  | `bus_thermo_cu`                        | Switch             | Indicates if at least one probe is in PROTECTION mode: `ON`, `OFF`                                                                    | R          | Y        |
+| `atLeastOneProbeManual`      | `bus_thermo_cu`                        | Switch             | Indicates if at least one probe is in MANUAL mode: `ON`, `OFF`                                                                        | R          | Y        |
 
 ### Notes on channels
 
@@ -282,7 +299,7 @@ In order to activate one of them you have to use two different channels:
 - with `mode` you can set the mode (`WEEKLY` or `SCENARIO`)
 - with `weeklyProgram` (if `WEEKLY` was set) or with `scenarioProgram` (if `SCENARIO` was set) you can set the program number
 
-Example: if you want to activate SCENARIO #9 on the thermo Central Unit you have to set `mode` = `SCENARIO` and `scenarioProgram` = `9`.
+Example: if you want to activate SCENARIO number 9 on the thermo Central Unit you have to set `mode` = `SCENARIO` and `scenarioProgram` = `9`.
 
 ## Full Example
 
@@ -309,7 +326,10 @@ Bridge openwebnet:bus_gateway:mybridge "MyHOMEServer1" [ host="192.168.1.35", pa
       bus_cenplus_scenario_control  LR_CENplus_scenario  "Living Room CEN+"         [ where="212", buttons="1,5,18" ]
       bus_dry_contact_ir            LR_IR_sensor         "Living Room IR Sensor"    [ where="399" ]
       
-      bus_aux		                Alarm_activation	 "Alarm activation"         [ where="4"   ]
+      bus_aux                       Alarm_Control        "Alarm control"            [ where="4" ]
+
+      bus_alarm_system              Alarm_Sys            "Alarm System"             [ where="0"  ]
+      bus_alarm_zone                Alarm_Zone_3         "Alarm Zone 3"             [ where="3"  ]
 }
 ```
 
@@ -328,32 +348,32 @@ Bridge openwebnet:zb_gateway:myZBgateway  [ serialPort="COM3" ] {
 
 Example items linked to BUS devices:
 
-NOTE: lights, blinds and zones (thermostat) can be handled  from personal assistants (Google Home, Alexa). In the following example `Google Assistant` (`ga="..."`) and `HomeKit` (`homekit="..."`)  were configured according to the [Google official documentation](https://www.openhab.org/docs/ecosystem/google-assistant) and [HomeKit official documentation](https://www.openhab.org/addons/integrations/homekit/) 
+NOTE: lights, blinds and zones (thermostat) can be handled from personal assistants (Google Home, Alexa). In the following example `Google Assistant` (`ga="..."`) and `HomeKit` (`homekit="..."`)  were configured according to the [Google official documentation](https://www.openhab.org/docs/ecosystem/google-assistant) and [HomeKit official documentation](https://www.openhab.org/addons/integrations/homekit/) 
 
 ```
-Switch              iLR_switch            "Light"               (gLivingRoom) { channel="openwebnet:bus_on_off_switch:mybridge:LR_switch:switch", ga="Light", homekit="Lighting" }
-Dimmer              iLR_dimmer            "Dimmer [%.0f %%]"    (gLivingRoom) { channel="openwebnet:bus_dimmer:mybridge:LR_dimmer:brightness", ga="Light", homekit="Lighting" }
+Switch              iLR_switch                  "Light"                       (gLivingRoom)     { channel="openwebnet:bus_on_off_switch:mybridge:LR_switch:switch", ga="Light", homekit="Lighting" }
+Dimmer              iLR_dimmer                  "Dimmer [%.0f %%]"            (gLivingRoom)     { channel="openwebnet:bus_dimmer:mybridge:LR_dimmer:brightness", ga="Light", homekit="Lighting" }
 
-Rollershutter       iLR_shutter           "Shutter [%.0f %%]"   (gShutters, gLivingRoom) { channel="openwebnet:bus_automation:mybridge:LR_shutter:shutter", ga="Blinds", homekit = "Window" }
+Rollershutter       iLR_shutter                 "Shutter [%.0f %%]"           (gShutters, gLivingRoom) { channel="openwebnet:bus_automation:mybridge:LR_shutter:shutter", ga="Blinds", homekit = "Window" }
 
-Number:Power        iCENTRAL_Ta           "Power [%.0f %unit%]" { channel="openwebnet:bus_energy_meter:mybridge:CENTRAL_Ta:power" }
-Number:Power        iCENTRAL_Tb           "Power [%.0f %unit%]" { channel="openwebnet:bus_energy_meter:mybridge:CENTRAL_Tb:power" }
+Number:Power        iCENTRAL_Ta                 "Power [%.0f %unit%]"                           { channel="openwebnet:bus_energy_meter:mybridge:CENTRAL_Ta:power" }
+Number:Power        iCENTRAL_Tb                 "Power [%.0f %unit%]"                           { channel="openwebnet:bus_energy_meter:mybridge:CENTRAL_Tb:power" }
 
-// 99 zones central unit 
-Group   gCentralUnit                "Central Unit"                
-Number:Temperature iCU_3550_manualset "Temperature"       (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:setpointTemperature", ga="thermostatTemperatureSetpoint" }
-String iCU_3550_remote    "Remote Control"                    (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:remoteControl" }
-String iCU_3550_battery   "Battery Status"                    (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:batteryStatus" }
-String iCU_3550_mode      "Mode"                              (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:mode" }
-Number iCU_3550_wpn       "Weekly Program"                    (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:weeklyProgram" } 
-Number iCU_3550_spn       "Scenario Program"                  (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:scenarioProgram" } 
-String iCU_3550_func      "Function"                          (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:function" }
-Switch iCU_3550_at1off    "At least one probe in OFF"         (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:atLeastOneProbeOff" } 
-Switch iCU_3550_at1pro    "At least one probe in PROTECTION"  (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:atLeastOneProbeProtection" } 
-Switch iCU_3550_at1man    "At least one probe in MANUAL"      (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:atLeastOneProbeManual" } 
-Switch iCU_3550_failure   "Failure discovered"                (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:failureDiscovered" } 
+// 99 zones thermo central unit
+Group               gCentralUnit                "Thermo Central Unit"
+Number:Temperature  iCU_3550_manualset          "Temperature"                          (gCentralUnit)    { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:setpointTemperature", ga="thermostatTemperatureSetpoint" }
+String              iCU_3550_remote             "Remote Control"                       (gCentralUnit)    { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:remoteControl" }
+String              iCU_3550_battery            "Battery Status"                       (gCentralUnit)    { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:batteryStatus" }
+String              iCU_3550_mode               "Mode"                                 (gCentralUnit)    { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:mode" }
+Number              iCU_3550_wpn                "Weekly Program"                       (gCentralUnit)    { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:weeklyProgram" }
+Number              iCU_3550_spn                "Scenario Program"                     (gCentralUnit)    { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:scenarioProgram" }
+String              iCU_3550_func               "Function"                             (gCentralUnit)    { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:function" }
+Switch              iCU_3550_at1off             "At least one probe in OFF"            (gCentralUnit)    { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:atLeastOneProbeOff" }
+Switch              iCU_3550_at1pro             "At least one probe in PROTECTION"     (gCentralUnit)    { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:atLeastOneProbeProtection" }
+Switch              iCU_3550_at1man             "At least one probe in MANUAL"         (gCentralUnit)    { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:atLeastOneProbeManual" }
+Switch              iCU_3550_failure            "Failure discovered"                   (gCentralUnit)    { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:failureDiscovered" }
 
-Group   gLivingRoomZone                         "Living Room Zone"   { ga="Thermostat" [ modes="auto=GENERIC,heat=HEATING,cool=COOLING", thermostatTemperatureRange="7,35", useFahrenheit=false ] }
+Group               gLivingRoomZone             "Living Room Zone"                              { ga="Thermostat" [ modes="auto=GENERIC,heat=HEATING,cool=COOLING", thermostatTemperatureRange="7,35", useFahrenheit=false ] }
 Number:Temperature  iLR_zone_temp               "Temperature [%.1f %unit%]"   (gLivingRoomZone) { channel="openwebnet:bus_thermo_zone:mybridge:LR_zone:temperature", ga="thermostatTemperatureAmbient" }
 Number:Temperature  iLR_zone_setTemp            "SetPoint Temperature"        (gLivingRoomZone) { channel="openwebnet:bus_thermo_zone:mybridge:LR_zone:setpointTemperature", ga="thermostatTemperatureSetpoint" }
 String              iLR_zone_fanSpeed           "FanSpeed"                    (gLivingRoomZone) { channel="openwebnet:bus_thermo_zone:mybridge:LR_zone:speedFanCoil" }
@@ -363,15 +383,21 @@ String              iLR_zone_actuators          "Actuators"                   (g
 String              iLR_zone_hv                 "Heating valves"              (gLivingRoomZone) { channel="openwebnet:bus_thermo_zone:mybridge:LR_zone:heatingValves" }
 String              iLR_zone_cv                 "Conditioning valves"         (gLivingRoomZone) { channel="openwebnet:bus_thermo_zone:mybridge:LR_zone:conditioningValves" }
 
-Number:Temperature  iEXT_temp                   "Temperature [%.1f %unit%]"   (gExternal) { channel="openwebnet:bus_thermo_sensor:mybridge:EXT_tempsensor:temperature" }
+Number:Temperature  iEXT_temp                   "Temperature [%.1f %unit%]"   (gExternal)       { channel="openwebnet:bus_thermo_sensor:mybridge:EXT_tempsensor:temperature" }
 
 String	            iCENPlusProxyItem	        "CEN+ Proxy Item"
 
-String              iAlarm_activation            "Alarm Activation"		                 { channel="openwebnet:bus_aux:mybridge:Alarm_activation:aux"}
 
-Switch              iLR_IR_sensor               "Sensor"                            { channel="openwebnet:bus_dry_contact_ir:mybridge:LR_IR_sensor:sensor" }
+Switch              iLR_IR_sensor               "Sensor"                                        { channel="openwebnet:bus_dry_contact_ir:mybridge:LR_IR_sensor:sensor" }
 
-
+// alarm aux, alarm unit and a zone
+String              iAlarm_Control              "Alarm Control Arm/Disarm"     (gAlarm)         { channel="openwebnet:bus_aux:mybridge:Alarm_Control:aux"}
+Switch              iAlarm_System_State         "Alarm state"                  (gAlarm)         { channel="openwebnet:bus_alarm_system:mybridge:Alarm_Sys:state" }
+Switch              iAlarm_System_Armed         "Alarm armed"                  (gAlarm)         { channel="openwebnet:bus_alarm_system:mybridge:Alarm_Sys:armed" }
+Switch              iAlarm_System_Network       "Alarm network"                (gAlarm)         { channel="openwebnet:bus_alarm_system:mybridge:Alarm_Sys:network" }
+String              iAlarm_System_Battery       "Alarm battery"                (gAlarm)         { channel="openwebnet:bus_alarm_system:mybridge:Alarm_Sys:battery" }
+Switch              iAlarm_Zone_3_State         "Zone 3 state"                 (gAlarm)         { channel="openwebnet:bus_alarm_zone:mybridge:Alarm_Zone_3:state" }
+String              iAlarm_Zone_3_Alarm         "Zone 3 alarm"                 (gAlarm)         { channel="openwebnet:bus_alarm_zone:mybridge:Alarm_Zone_3:alarm" }
 ```
 
 Example items linked to OpenWebNet ZigBee devices:
@@ -419,10 +445,15 @@ sitemap openwebnet label="OpenWebNet Binding Example Sitemap"
           Switch    item=iCENPlusProxyItem  label="My CEN+ scenario" icon="movecontrol"  mappings=[ON="Activate"]
     }
     
-    Frame label="Alarm activation via AUX command"
+    Frame label="Alarm"
     {
-          Switch item=iAlarm_activation         icon="siren"
-         
+         Switch  item=iAlarm_System_State       label="Alarm state"
+         Switch  item=iAlarm_Control            label="Arm/Disarm alarm"   icon="shield"
+         Switch  item=iAlarm_System_Armed       label="Armed"              icon="shield"
+         Switch  item=iAlarm_System_Network     label="Network"            icon="network"
+         Default item=iAlarm_System_Battery     label="Battery"            icon="battery"
+         Switch  item=iAlarm_Zone_3_State       label="Zone 3 state"
+         Default item=iAlarm_Zone_3_Alarm       label="Zone 3 alarm"       icon="siren"
     }
 }
 ```
@@ -467,6 +498,7 @@ when
 then
     sendCommand(iLR_dimmer, DECREASE)  
 end
+
 ```
 
 ## Notes
@@ -486,5 +518,6 @@ Special thanks for helping on testing this binding go to:
 [@gabriele.daltoe](https://community.openhab.org/u/gabriele.daltoe),
 [@feodor](https://community.openhab.org/u/feodor),
 [@aconte80](https://community.openhab.org/u/aconte80),
-[@rubenfuser](https://community.openhab.org/u/rubenfuser)
+[@rubenfuser](https://community.openhab.org/u/rubenfuser),
+[@stamate_viorel](https://community.openhab.org/u/stamate_viorel)
 and many others at the fantastic openHAB community!

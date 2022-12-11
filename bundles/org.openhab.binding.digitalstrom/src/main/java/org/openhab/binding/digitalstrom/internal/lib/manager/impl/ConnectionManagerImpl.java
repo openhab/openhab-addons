@@ -92,7 +92,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
 
     /**
      * The same constructor like {@link #ConnectionManagerImpl(Config, ConnectionListener)}, but through genApToken it
-     * can be set, if a application token will be automatically generated.
+     * can be set, if an application token will be automatically generated.
      *
      * @param config (must not be null)
      * @param connectionListener (can be null)
@@ -108,7 +108,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
     /**
      * Creates a new {@link ConnectionManagerImpl} with the given parameters, which are needed to create the
      * {@link HttpTransport} and to login into the digitalSTROM server. If the application token is null and the
-     * username and password are valid, a application token will be automatically generated or a existing application
+     * username and password are valid, an application token will be automatically generated or an existing application
      * token for the at {@link Config#getApplicationName()} set application name will be set.
      *
      * @param hostAddress (must not be null)
@@ -179,7 +179,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
 
     /**
      * The same constructor like {@link #ConnectionManagerImpl(String, String, String)}, but through genApToken it
-     * can be set, if a application token will be automatically generated.
+     * can be set, if an application token will be automatically generated.
      *
      * @param hostAddress (must not be null)
      * @param username (must not be null)
@@ -194,7 +194,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
 
     /**
      * The same constructor like {@link #ConnectionManagerImpl(String, String, String, String)}, but through genApToken
-     * it can be set, if a application token will be automatically generated.
+     * it can be set, if an application token will be automatically generated.
      *
      * @param hostAddress (must not be null)
      * @param username (can be null, if application token is set)
@@ -424,7 +424,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
                             applicationToken = this.digitalSTROMClient
                                     .requestAppplicationToken(config.getApplicationName());
                             logger.debug(
-                                    "no application-token for application {} found, generate a application-token {}",
+                                    "no application-token for application {} found, generate an application-token {}",
                                     config.getApplicationName(), applicationToken);
                             if (applicationToken != null && !applicationToken.isBlank()) {
                                 // enable applicationToken

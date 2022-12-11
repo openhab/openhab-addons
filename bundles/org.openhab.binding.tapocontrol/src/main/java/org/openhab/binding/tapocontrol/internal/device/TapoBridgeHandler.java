@@ -259,6 +259,8 @@ public class TapoBridgeHandler extends BaseBridgeHandler {
         if (config.cloudDiscovery) {
             logger.trace("{} discover devicelist from cloud", this.uid);
             deviceList = getDeviceListCloud();
+        } else {
+            logger.info("{} Discovery disabled in bridge settings ", this.uid);
         }
         return deviceList;
     }

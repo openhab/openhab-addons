@@ -37,7 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A command handler translates an openHAB command into a insteon message
+ * A command handler translates an openHAB command into an insteon message
  *
  * @author Daniel Pfrommer - Initial contribution
  * @author Bernd Pfrommer - openHAB 1 insteonplm binding

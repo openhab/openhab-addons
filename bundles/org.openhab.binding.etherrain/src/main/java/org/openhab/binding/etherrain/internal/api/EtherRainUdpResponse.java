@@ -15,7 +15,7 @@ package org.openhab.binding.etherrain.internal.api;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link EtherRainUdpResponse} is a encapsulation of the UDP broadcast response from the EtherRain
+ * The {@link EtherRainUdpResponse} is an encapsulation of the UDP broadcast response from the EtherRain
  *
  * @author Joe Inkenbrandt - Initial contribution
  */

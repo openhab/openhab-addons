@@ -33,7 +33,6 @@ public class GetColorZonesRequest extends Packet {
     private int endIndex = MAX_ZONE_INDEX;
 
     public GetColorZonesRequest() {
-        setTagged(false);
         setAddressable(true);
         setResponseRequired(true);
     }

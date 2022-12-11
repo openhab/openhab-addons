@@ -83,7 +83,7 @@ public enum VeluxProductType {
         private String description;
         private VeluxProductType typeClass;
 
-        // Reverse-lookup map for getting a ActuatorType from an TypeId
+        // Reverse-lookup map for getting an ActuatorType from a TypeId
         private static final Map<Integer, ActuatorType> LOOKUPTYPEID2ENUM = Stream.of(ActuatorType.values())
                 .collect(Collectors.toMap(ActuatorType::getNodeType, Function.identity()));
 

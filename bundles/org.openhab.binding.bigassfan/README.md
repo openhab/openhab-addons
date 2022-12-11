@@ -36,7 +36,7 @@ In the event that any of this information is changed on the device, the thing co
 
 ### Manual Thing Creation
 
-Fan and light things can be manually created using the *UI*, or by placing a *.things* file in the *conf/things* directory.
+Fan and light things can be manually created using the _UI_, or by placing a _.things_ file in the _conf/things_ directory.
 See example below.
 
 ## Device Discovery
@@ -46,7 +46,7 @@ Once added as a thing, the user can control the fan and light, similarly to how 
 
 Background discovery polls the network every few minutes for devices.
 Background discovery is **enabled** by default.
-To **disable** background discovery, add the following line to the *conf/services/runtime.cfg* file:
+To **disable** background discovery, add the following line to the _conf/services/runtime.cfg_ file:
 
 ```text
 discovery.bigassfan:background=false
@@ -179,7 +179,7 @@ Frame label="Control My Light" {
 
 ### Manual Thing Creation
 
-Place a file named *bigassfan.things* in the *conf/things* directory.
+Place a file named _bigassfan.things_ in the _conf/things_ directory.
 The file should contain lines formatted like this.
 
 ```java

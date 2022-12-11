@@ -134,7 +134,7 @@ public final class FilterParser {
     }
 
     /**
-     * State while parsing an conjunction.
+     * State while parsing a conjunction.
      */
     private static final class AndState extends State {
 
@@ -180,7 +180,7 @@ public final class FilterParser {
     }
 
     /**
-     * State while parsing an disjunction.
+     * State while parsing a disjunction.
      */
     private static final class OrState extends State {
 
@@ -226,7 +226,7 @@ public final class FilterParser {
     }
 
     /**
-     * State while parsing an Subquery.
+     * State while parsing a Subquery.
      */
     private static final class SubQueryState extends State {
 
