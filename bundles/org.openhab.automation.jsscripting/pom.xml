@@ -25,7 +25,7 @@
     <graal.version>22.0.0.2</graal.version> <!-- DO NOT UPGRADE: 22.0.0.2 is the latest version working on armv7l / OpenJDK 11.0.16 -->
     <asm.version>6.2.1</asm.version>
     <oh.version>${project.version}</oh.version>
-    <ohjs.version>openhab@3.1.1</ohjs.version>
+    <ohjs.version>openhab@3.1.2</ohjs.version>
   </properties>
 
   <build>
