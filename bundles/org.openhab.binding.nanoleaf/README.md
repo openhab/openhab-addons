@@ -113,7 +113,7 @@ Since the colors of the panels can make it difficult to see the panel ids, pleas
 For state to work, you need to set static colors to your panel. 
 This is because Nanoleaf does not return updates on colors for dynamic effects and animations.
 
-![Image](doc/NanoCanvas_rendered.jpg)
+![Image](doc/NanoCanvas_rendered.png)
 
 ## Thing Configuration
 
