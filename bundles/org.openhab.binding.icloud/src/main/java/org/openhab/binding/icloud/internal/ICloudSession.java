@@ -74,7 +74,10 @@ public class ICloudSession {
     public ICloudSession(Storage<String> stateStorage) {
         String storedData = stateStorage.get(SESSION_DATA_KEY);
         if (storedData != null) {
-            data = gson.fromJson(storedData, ICloudSessionData.class);
+            ICloudSessionData localSessionData = gson.fromJson(storedData, ICloudSessionData.class);
+            if (localSessionData != null) {
+                data = localSessionData;
+            }
         }
         this.stateStorage = stateStorage;
         client = HttpClient.newBuilder().version(Version.HTTP_1_1).followRedirects(Redirect.NORMAL)

@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Scanner;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
@@ -46,16 +45,20 @@ import ch.qos.logback.classic.Logger;
 @NonNullByDefault
 public class TestICloud {
 
-    @Nullable
-    private final String E_MAIL = System.getProperty("icloud.test.email");
-
-    @Nullable
-    private final String PW = System.getProperty("icloud.test.pw");
+    private final String E_MAIL;
+    private final String PW;
 
     @BeforeEach
     private void setUp() {
         final Logger logger = (Logger) LoggerFactory.getLogger(ICloudSession.class);
         logger.setLevel(Level.DEBUG);
+    }
+
+    public TestICloud() {
+        String sysPropMail = System.getProperty("icloud.test.email");
+        String sysPropPW = System.getProperty("icloud.test.pw");
+        E_MAIL = sysPropMail != null ? sysPropMail : "notset";
+        PW = sysPropPW != null ? sysPropPW : "notset";
     }
 
     @Test
@@ -68,7 +71,7 @@ public class TestICloud {
         JsonStorage<String> stateStorage = new JsonStorage<String>(jsonStorageFile, TestICloud.class.getClassLoader(),
                 0, 1000, 1000, List.of());
 
-        ICloudService service = new ICloudService(this.E_MAIL, this.PW, stateStorage);
+        ICloudService service = new ICloudService(E_MAIL, PW, stateStorage);
         service.authenticate(false);
         if (service.requires2fa()) {
             System.out.print("Code: ");

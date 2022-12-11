@@ -36,7 +36,7 @@ import com.google.gson.GsonBuilder;
  *
  * The implementation of this class is inspired by https://github.com/picklepete/pyicloud.
  *
- * @author Simon Spielmann Initial contribution
+ * @author Simon Spielmann - Initial contribution
  */
 @NonNullByDefault
 public class ICloudService {
@@ -152,14 +152,21 @@ public class ICloudService {
         requestBody.put("extended_login", true);
 
         if (session.hasToken()) {
-            requestBody.put("trustToken", session.getTrustToken());
+            String token = session.getTrustToken();
+            if (token != null) {
+                requestBody.put("trustToken", token);
+            }
         } else {
             requestBody.put("trustToken", "");
         }
 
         try {
-            data = gson.fromJson(session.post(SETUP_ENDPOINT + "/accountLogin", gson.toJson(requestBody), null),
-                    Map.class);
+            @Nullable
+            Map<String, Object> localSessionData = gson.fromJson(
+                    session.post(SETUP_ENDPOINT + "/accountLogin", gson.toJson(requestBody), null), Map.class);
+            if (localSessionData != null) {
+                data = localSessionData;
+            }
         } catch (ICloudApiResponseException ex) {
             logger.debug("Invalid authentication.");
             return false;
@@ -188,7 +195,13 @@ public class ICloudService {
         logger.debug("Checking session token validity");
         String result = session.post(SETUP_ENDPOINT + "/validate", null, null);
         logger.debug("Session token is still valid");
-        return gson.fromJson(result, Map.class);
+
+        @Nullable
+        Map<String, Object> localSessionData = gson.fromJson(result, Map.class);
+        if (localSessionData == null) {
+            throw new IOException("Unable to create data object from json response");
+        }
+        return localSessionData;
     }
 
     /**
