@@ -10,18 +10,24 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.nanoleaf.internal.layout;
+package org.openhab.binding.nanoleaf.internal.colors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.HSBType;
 
 /**
- * Stores the state of the panels.
+ * A listener used to notify panels when they change color.
  *
  * @author Jørgen Austvik - Initial contribution
  */
-@NonNullByDefault
-public interface PanelState {
 
-    HSBType getHSBForPanel(Integer panelId);
+@NonNullByDefault
+public interface NanoleafPanelColorChangeListener {
+
+    /**
+     * This method is called after a panel changes its color
+     *
+     * @param newColor the new color of the panel
+     */
+    void onPanelChangedColor(HSBType newColor);
 }
