@@ -107,7 +107,8 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener, Ready
         this.metadataRegistry = metadataRegistry;
         this.readyService = readyService;
         networkAddressService.addNetworkAddressChangeListener(this);
-        readyService.registerTracker(this, new ReadyMarkerFilter().withType(StartLevelService.STARTLEVEL_MARKER_TYPE));
+        readyService.registerTracker(this, new ReadyMarkerFilter().withType(StartLevelService.STARTLEVEL_MARKER_TYPE)
+                .withIdentifier(Integer.toString(StartLevelService.STARTLEVEL_STATES)));
     }
 
     private HomekitSettings processConfig(Map<String, Object> properties) {
@@ -152,8 +153,9 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener, Ready
         try {
             HomekitSettings oldSettings = settings;
             settings = processConfig(config);
-            if ((oldSettings == null) || (settings == null))
+            if ((oldSettings == null) || (settings == null)) {
                 return;
+            }
             if (!oldSettings.name.equals(settings.name) || !oldSettings.pin.equals(settings.pin)
                     || !oldSettings.setupId.equals(settings.setupId)
                     || (oldSettings.networkInterface != null
@@ -177,32 +179,16 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener, Ready
 
     @Override
     public synchronized void onReadyMarkerAdded(ReadyMarker readyMarker) {
-        int newLevel = Integer.parseInt(readyMarker.getIdentifier());
-        currentStartLevel = newLevel;
-
-        if (newLevel >= StartLevelService.STARTLEVEL_STATES) {
-            try {
-                startHomekitServer();
-            } catch (IOException | InvalidAlgorithmParameterException e) {
-                logger.warn("could not initialize HomeKit bridge: {}", e.getMessage());
-            }
+        try {
+            startHomekitServer();
+        } catch (IOException | InvalidAlgorithmParameterException e) {
+            logger.warn("could not initialize HomeKit bridge: {}", e.getMessage());
         }
     }
 
     @Override
-    @SuppressWarnings("PMD.EmptyWhileStmt")
     public synchronized void onReadyMarkerRemoved(ReadyMarker readyMarker) {
-        int newLevel = Integer.parseInt(readyMarker.getIdentifier());
-
-        if (currentStartLevel > newLevel) {
-            while (newLevel-- > 0 && !readyService
-                    .isReady(new ReadyMarker(StartLevelService.STARTLEVEL_MARKER_TYPE, Integer.toString(newLevel)))) {
-            }
-            currentStartLevel = newLevel;
-            if (currentStartLevel < StartLevelService.STARTLEVEL_STATES) {
-                stopHomekitServer();
-            }
-        }
+        stopHomekitServer();
     }
 
     private HomekitRoot startBridge(HomekitServer homekitServer, HomekitAuthInfoImpl authInfo,
