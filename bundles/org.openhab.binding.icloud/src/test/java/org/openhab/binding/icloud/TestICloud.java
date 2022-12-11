@@ -40,13 +40,13 @@ import ch.qos.logback.classic.Logger;
  *
  * Class to test/experiment with iCloud api.
  *
- * @author Simon Spielmann
+ * @author Simon Spielmann - Initial contribution
  */
 @NonNullByDefault
 public class TestICloud {
 
-    private final String E_MAIL;
-    private final String PW;
+    private final String iCloudTestEmail;
+    private final String iCloudTestPassword;
 
     @BeforeEach
     private void setUp() {
@@ -57,21 +57,20 @@ public class TestICloud {
     public TestICloud() {
         String sysPropMail = System.getProperty("icloud.test.email");
         String sysPropPW = System.getProperty("icloud.test.pw");
-        E_MAIL = sysPropMail != null ? sysPropMail : "notset";
-        PW = sysPropPW != null ? sysPropPW : "notset";
+        iCloudTestEmail = sysPropMail != null ? sysPropMail : "notset";
+        iCloudTestPassword = sysPropPW != null ? sysPropPW : "notset";
     }
 
     @Test
     @EnabledIfSystemProperty(named = "icloud.test.email", matches = ".*", disabledReason = "Only for manual execution.")
     public void testAuth() throws IOException, InterruptedException, ICloudApiResponseException, JsonSyntaxException {
-
         File jsonStorageFile = new File(System.getProperty("user.home"), "openhab.json");
         System.out.println(jsonStorageFile.toString());
 
         JsonStorage<String> stateStorage = new JsonStorage<String>(jsonStorageFile, TestICloud.class.getClassLoader(),
                 0, 1000, 1000, List.of());
 
-        ICloudService service = new ICloudService(E_MAIL, PW, stateStorage);
+        ICloudService service = new ICloudService(iCloudTestEmail, iCloudTestPassword, stateStorage);
         service.authenticate(false);
         if (service.requires2fa()) {
             System.out.print("Code: ");
@@ -83,7 +82,6 @@ public class TestICloud {
             if (!service.isTrustedSession()) {
                 System.err.println("Trust failed!!!");
             }
-
         }
         ICloudAccountDataResponse deviceInfo = new ICloudDeviceInformationParser()
                 .parse(service.getDevices().refreshClient());

@@ -61,15 +61,12 @@ public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDevic
 
     private @Nullable String deviceId;
 
-    private @Nullable ICloudAccountBridgeHandler icloudAccount;
-
     public ICloudDeviceHandler(Thing thing) {
         super(thing);
     }
 
     @Override
     public void deviceInformationUpdate(List<ICloudDeviceInformation> deviceInformationList) {
-
         ICloudDeviceInformation deviceInformationRecord = getDeviceInformationRecord(deviceInformationList);
         if (deviceInformationRecord != null) {
             if (deviceInformationRecord.getDeviceStatus() == 200) {
@@ -104,12 +101,16 @@ public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDevic
         this.logger.debug("initializeThing thing [{}]; bridge status: [{}]", getThing().getUID(), bridgeStatus);
 
         if (bridge != null) {
-            ((ICloudAccountBridgeHandler) bridge.getHandler()).registerListener(this);
-        }
-
-        if (bridge.getStatus() == ThingStatus.ONLINE) {
-            ((ICloudAccountBridgeHandler) bridge.getHandler()).refreshData();
-            updateStatus(ThingStatus.ONLINE);
+            ICloudAccountBridgeHandler handler = (ICloudAccountBridgeHandler) bridge.getHandler();
+            if (handler != null) {
+                handler.registerListener(this);
+                if (bridge.getStatus() == ThingStatus.ONLINE) {
+                    handler.refreshData();
+                    updateStatus(ThingStatus.ONLINE);
+                }
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            }
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
         }
@@ -117,7 +118,6 @@ public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDevic
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         this.logger.trace("Command '{}' received for channel '{}'", command, channelUID);
 
         ICloudAccountBridgeHandler bridge = (ICloudAccountBridgeHandler) getBridge().getHandler();

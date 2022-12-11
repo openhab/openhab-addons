@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  *
  * Exception for errors during calls of the iCloud API.
  *
- * @author Simon Spielmann Initial contribution
+ * @author Simon Spielmann - Initial contribution
  */
 @NonNullByDefault
 public class ICloudApiResponseException extends Exception {
@@ -32,7 +32,6 @@ public class ICloudApiResponseException extends Exception {
      * @param statusCode HTTP status code which was reported
      */
     public ICloudApiResponseException(String url, int statusCode) {
-
         super(String.format("Request %s failed with %s.", url, statusCode));
         this.statusCode = statusCode;
     }

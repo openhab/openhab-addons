@@ -81,7 +81,7 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
 
     private Storage<String> storage;
 
-    private final static String AUTH_CODE_KEY = "AUTH_CODE";
+    private static final String AUTH_CODE_KEY = "AUTH_CODE";
 
     /**
      * The constructor.
@@ -96,7 +96,6 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         logger.trace("Command '{}' received for channel '{}'", command, channelUID);
 
         if (command instanceof RefreshType) {
@@ -106,7 +105,6 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-
         logger.debug("iCloud bridge handler initializing ...");
 
         if (authState != AuthState.WAIT_FOR_CODE) {
@@ -148,7 +146,6 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
         boolean success = false;
         Throwable lastException = null;
         synchronized (synchronizeRefresh) {
-
             if (this.iCloudService == null) {
                 ICloudAccountThingConfiguration config = getConfigAs(ICloudAccountThingConfiguration.class);
                 final String localAppleId = config.appleId;
@@ -179,29 +176,30 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
 
             do {
                 try {
-
                     if (authState == AuthState.AUTHENTICATED) {
                         return wrapped.call();
                     } else {
                         checkLogin();
                     }
-                } catch (Exception ex) {
-                    logger.debug("Invocation failed. Retrying...", ex);
-                    lastException = ex;
-                    if (ex instanceof ICloudApiResponseException) {
-                        if (((ICloudApiResponseException) ex).getStatusCode() == 450) {
-                            checkLogin();
-                        }
-                    } else if (ex instanceof IllegalStateException) {
-                        logger.debug("Need to authenticate first.", ex);
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Wait for login");
-                        return null;
-                    } else if (ex instanceof IOException) {
-                        logger.warn("Unable to refresh device data", ex);
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
-                        return null;
+                } catch (ICloudApiResponseException e) {
+                    logger.debug("ICloudApiResponseException with status code {}", e.getStatusCode());
+                    if (e.getStatusCode() == 450) {
+                        checkLogin();
                     }
+                } catch (IllegalStateException e) {
+                    logger.debug("Need to authenticate first.", e);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Wait for login");
+                    return null;
+                } catch (IOException e) {
+                    logger.warn("Unable to refresh device data", e);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                    return null;
+                } catch (Exception e) {
+                    logger.debug("Unexpected exception occured", e);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                    return null;
                 }
+
                 retryCount++;
                 try {
                     Thread.sleep(200);
@@ -257,7 +255,6 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void handleRemoval() {
-
         super.handleRemoval();
     }
 
@@ -310,7 +307,6 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
      * requested a code {@link #validate2faCode}.
      */
     private boolean checkLogin() {
-
         logger.debug("Starting iCloud authentication (AuthState={}, Thing={})...", authState,
                 getThing().getUID().getAsString());
         if (authState == AuthState.WAIT_FOR_CODE) {
@@ -318,11 +314,8 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
         }
 
         try {
-            ICloudAccountThingConfiguration config = getConfigAs(ICloudAccountThingConfiguration.class);
-            boolean success = false;
-
             // No code requested yet or session is trusted (hopefully).
-            success = this.iCloudService.authenticate(false);
+            boolean success = this.iCloudService.authenticate(false);
             if (!success) {
                 authState = AuthState.USER_PW_INVALID;
                 logger.warn("iCloud authentication failed. Invalid credentials.");
@@ -354,7 +347,6 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.ONLINE);
             logger.debug("iCloud bridge handler authenticated.");
             return true;
-
         } catch (IOException | InterruptedException e) {
             logger.debug("iCloud authentication caused exception.", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
@@ -367,10 +359,8 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
     }
 
     public void refreshData() {
-
         logger.debug("iCloud bridge refreshing data ...");
         synchronized (this.synchronizeRefresh) {
-
             String json = this.iCloudDeviceInformationCache.getValue();
             logger.trace("json: {}", json);
 

@@ -47,7 +47,7 @@ import com.google.gson.GsonBuilder;
  *
  * The implementation of this class is inspired by https://github.com/picklepete/pyicloud.
  *
- * @author Simon Spielmann Initial contribution
+ * @author Simon Spielmann - Initial contribution
  */
 @NonNullByDefault
 public class ICloudSession {
@@ -64,7 +64,7 @@ public class ICloudSession {
 
     private Storage<String> stateStorage;
 
-    private final static String SESSION_DATA_KEY = "SESSION_DATA";
+    private static final String SESSION_DATA_KEY = "SESSION_DATA";
 
     /**
      * The constructor.
@@ -99,7 +99,6 @@ public class ICloudSession {
      */
     public String post(String url, @Nullable String body, @Nullable List<Pair<String, String>> overrideHeaders)
             throws IOException, InterruptedException, ICloudApiResponseException {
-
         return request("POST", url, body, overrideHeaders);
     }
 
@@ -117,7 +116,6 @@ public class ICloudSession {
      */
     public String get(String url, List<Pair<String, String>> overrideHeaders)
             throws IOException, InterruptedException, ICloudApiResponseException {
-
         return request("GET", url, null, overrideHeaders);
     }
 

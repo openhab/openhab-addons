@@ -17,7 +17,6 @@ import java.net.URI;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.icloud.internal.json.response.ICloudDeviceInformation;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -36,7 +35,7 @@ public class FindMyIPhoneServiceManager {
 
     private URI fmipSoundUrl;
 
-    private final static String FMIP_ENDPOINT = "/fmipservice/client/web";
+    private static final String FMIP_ENDPOINT = "/fmipservice/client/web";
 
     private final Gson gson = new GsonBuilder().create();
 

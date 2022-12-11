@@ -43,11 +43,11 @@ public class ICloudService {
 
     private final Logger logger = LoggerFactory.getLogger(ICloudService.class);
 
-    private final static String AUTH_ENDPOINT = "https://idmsa.apple.com/appleauth/auth";
+    private static final String AUTH_ENDPOINT = "https://idmsa.apple.com/appleauth/auth";
 
-    private final static String HOME_ENDPOINT = "https://www.icloud.com";
+    private static final String HOME_ENDPOINT = "https://www.icloud.com";
 
-    private final static String SETUP_ENDPOINT = "https://setup.icloud.com/setup/ws/1";
+    private static final String SETUP_ENDPOINT = "https://setup.icloud.com/setup/ws/1";
 
     private final Gson gson = new GsonBuilder().create();
 
@@ -70,7 +70,6 @@ public class ICloudService {
      * @param stateStorage Storage to save authentication state
      */
     public ICloudService(String appleId, String password, Storage<String> stateStorage) {
-
         this.appleId = appleId;
         this.password = password;
         this.clientId = "auth-" + UUID.randomUUID().toString().toLowerCase();
@@ -88,7 +87,6 @@ public class ICloudService {
      * @throws InterruptedException if request was interrupted
      */
     public boolean authenticate(boolean forceRefresh) throws IOException, InterruptedException {
-
         boolean loginSuccessful = false;
         if (this.session.getSessionToken() != null && !forceRefresh) {
             try {
@@ -121,7 +119,6 @@ public class ICloudService {
             } catch (ICloudApiResponseException ex) {
                 return false;
             }
-
         }
         return authenticateWithToken();
     }
@@ -136,7 +133,6 @@ public class ICloudService {
      *
      */
     public boolean authenticateWithToken() throws IOException, InterruptedException {
-
         Map<String, Object> requestBody = new HashMap<>();
 
         String accountCountry = session.getAccountCountry();
@@ -179,7 +175,6 @@ public class ICloudService {
      * @return
      */
     private List<Pair<String, String>> getAuthHeaders() {
-
         return new ArrayList<>(List.of(Pair.of("Accept", "*/*"), Pair.of("Content-Type", "application/json"),
                 Pair.of("X-Apple-OAuth-Client-Id", "d39ba9916b7251055b22c7f910e2ea796ee65e98b2ddecea8f5dde8d9d1a815d"),
                 Pair.of("X-Apple-OAuth-Client-Type", "firstPartyAuth"),
@@ -191,7 +186,6 @@ public class ICloudService {
     }
 
     private Map<String, Object> validateToken() throws IOException, InterruptedException, ICloudApiResponseException {
-
         logger.debug("Checking session token validity");
         String result = session.post(SETUP_ENDPOINT + "/validate", null, null);
         logger.debug("Session token is still valid");
@@ -210,7 +204,6 @@ public class ICloudService {
      * @return {@code true} if 2-FA authentication ({@link #validate2faCode(String)}) is required.
      */
     public boolean requires2fa() {
-
         if (this.data.containsKey("dsInfo")) {
             @SuppressWarnings("unchecked")
             Map<String, Object> dsInfo = (Map<String, Object>) this.data.get("dsInfo");
@@ -229,7 +222,6 @@ public class ICloudService {
      * @return {@code true} if session is trusted. Call {@link #trustSession()} if not.
      */
     public boolean isTrustedSession() {
-
         return (Boolean) this.data.getOrDefault("hsaTrustedBrowser", Boolean.FALSE);
     }
 
@@ -243,7 +235,6 @@ public class ICloudService {
      * @throws ICloudApiResponseException if the request failed (e.g. not OK HTTP return code)
      */
     public boolean validate2faCode(String code) throws IOException, InterruptedException, ICloudApiResponseException {
-
         Map<String, Object> requestBody = Map.of("securityCode", Map.of("code", code));
 
         List<Pair<String, String>> headers = ListUtil.replaceEntries(getAuthHeaders(),
@@ -298,7 +289,6 @@ public class ICloudService {
      *
      */
     public boolean trustSession() throws IOException, InterruptedException, ICloudApiResponseException {
-
         List<Pair<String, String>> headers = getAuthHeaders();
 
         addSessionHeaders(headers);

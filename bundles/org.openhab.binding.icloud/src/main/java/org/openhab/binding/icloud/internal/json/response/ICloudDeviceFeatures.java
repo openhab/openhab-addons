@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.icloud.internal.json.response;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Serializable class to parse json response received from the Apple server.
  *
@@ -19,135 +21,160 @@ package org.openhab.binding.icloud.internal.json.response;
  *
  */
 public class ICloudDeviceFeatures {
-    private boolean CLK;
 
+    @SerializedName("CLK")
+    private boolean clk;
+
+    @SerializedName("CLT")
     private boolean CLT;
 
-    private boolean CWP;
+    @SerializedName("CWP")
+    private boolean cwp;
 
-    private boolean KEY;
+    @SerializedName("KEY")
+    private boolean key;
 
-    private boolean KPD;
+    @SerializedName("KPD")
+    private boolean kpd;
 
-    private boolean LCK;
+    @SerializedName("LCK")
+    private boolean lck;
 
-    private boolean LKL;
+    @SerializedName("LKL")
+    private boolean lkl;
 
-    private boolean LKM;
+    @SerializedName("LKM")
+    private boolean lkm;
 
-    private boolean LLC;
+    @SerializedName("LLC")
+    private boolean llc;
 
-    private boolean LMG;
+    @SerializedName("LMG")
+    private boolean lmg;
 
-    private boolean LOC;
+    @SerializedName("LOC")
+    private boolean loc;
 
-    private boolean LST;
+    @SerializedName("LST")
+    private boolean lst;
 
-    private boolean MCS;
+    @SerializedName("MCS")
+    private boolean mcs;
 
-    private boolean MSG;
+    @SerializedName("MSG")
+    private boolean msg;
 
-    private boolean PIN;
+    @SerializedName("PIN")
+    private boolean pin;
 
-    private boolean REM;
+    @SerializedName("REM")
+    private boolean rem;
 
-    private boolean SND;
+    @SerializedName("SND")
+    private boolean snd;
 
-    private boolean SVP;
+    @SerializedName("SVP")
+    private boolean svp;
 
-    private boolean TEU;
+    @SerializedName("TEU")
+    private boolean teu;
 
-    private boolean WIP;
+    @SerializedName("WIP")
+    private boolean wip;
 
-    private boolean WMG;
+    @SerializedName("WMG")
+    private boolean wmg;
 
-    private boolean XRM;
+    @SerializedName("XRM")
+    private boolean xrm;
+
+    @SerializedName("CLT")
 
     public boolean getCLK() {
-        return this.CLK;
+        return this.clk;
     }
 
     public boolean getCLT() {
         return this.CLT;
     }
 
-    public boolean getCWP() {
-        return this.CWP;
+    public boolean getCwp() {
+        return this.cwp;
     }
 
-    public boolean getKEY() {
-        return this.KEY;
+    public boolean getKey() {
+        return this.key;
     }
 
-    public boolean getKPD() {
-        return this.KPD;
+    public boolean getKpd() {
+        return this.kpd;
     }
 
-    public boolean getLCK() {
-        return this.LCK;
+    public boolean getLck() {
+        return this.lck;
     }
 
-    public boolean getLKL() {
-        return this.LKL;
+    public boolean getLkl() {
+        return this.lkl;
     }
 
-    public boolean getLKM() {
-        return this.LKM;
+    public boolean getLkm() {
+        return this.lkm;
     }
 
-    public boolean getLLC() {
-        return this.LLC;
+    public boolean getLlc() {
+        return this.llc;
     }
 
-    public boolean getLMG() {
-        return this.LMG;
+    public boolean getLmg() {
+        return this.lmg;
     }
 
-    public boolean getLOC() {
-        return this.LOC;
+    public boolean getLoc() {
+        return this.loc;
     }
 
-    public boolean getLST() {
-        return this.LST;
+    public boolean getLst() {
+        return this.lst;
     }
 
-    public boolean getMCS() {
-        return this.MCS;
+    public boolean getMcs() {
+        return this.mcs;
     }
 
-    public boolean getMSG() {
-        return this.MSG;
+    public boolean getMsg() {
+        return this.msg;
     }
 
-    public boolean getPIN() {
-        return this.PIN;
+    public boolean getPin() {
+        return this.pin;
     }
 
-    public boolean getREM() {
-        return this.REM;
+    public boolean getRem() {
+        return this.rem;
     }
 
-    public boolean getSND() {
-        return this.SND;
+    public boolean getSnd() {
+        return this.snd;
     }
 
-    public boolean getSVP() {
-        return this.SVP;
+    public boolean getSvp() {
+        return this.svp;
     }
 
-    public boolean getTEU() {
-        return this.TEU;
+    public boolean getTeu() {
+        return this.teu;
     }
 
-    public boolean getWIP() {
-        return this.WIP;
+    public boolean getWip() {
+        return this.wip;
     }
 
-    public boolean getWMG() {
-        return this.WMG;
+    public boolean getWmg() {
+        return this.wmg;
     }
 
-    public boolean getXRM() {
-        return this.XRM;
+    public boolean getXrm() {
+        return this.xrm;
     }
 }
