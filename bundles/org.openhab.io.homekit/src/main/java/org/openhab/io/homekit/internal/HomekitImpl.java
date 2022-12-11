@@ -162,7 +162,7 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener, Ready
                     || oldSettings.instances != settings.instances) {
                 // the HomeKit server settings changed. we do a complete re-init
                 stopHomekitServer();
-                if (currentStartLevel >= settings.startLevel) {
+                if (currentStartLevel >= StartLevelService.STARTLEVEL_STATES) {
                     startHomekitServer();
                 }
             } else {
@@ -178,9 +178,14 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener, Ready
     @Override
     public synchronized void onReadyMarkerAdded(ReadyMarker readyMarker) {
         int newLevel = Integer.parseInt(readyMarker.getIdentifier());
+        currentStartLevel = newLevel;
 
-        if (newLevel > currentStartLevel) {
-            onStartLevelChanged(newLevel);
+        if (newLevel >= StartLevelService.STARTLEVEL_STATES) {
+            try {
+                startHomekitServer();
+            } catch (IOException | InvalidAlgorithmParameterException e) {
+                logger.warn("could not initialize HomeKit bridge: {}", e.getMessage());
+            }
         }
     }
 
@@ -193,22 +198,10 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener, Ready
             while (newLevel-- > 0 && !readyService
                     .isReady(new ReadyMarker(StartLevelService.STARTLEVEL_MARKER_TYPE, Integer.toString(newLevel)))) {
             }
-            onStartLevelChanged(newLevel);
-        }
-    }
-
-    private void onStartLevelChanged(int newStartLevel) {
-        int previousLevel = currentStartLevel;
-        currentStartLevel = newStartLevel;
-
-        if (previousLevel < settings.startLevel && newStartLevel >= settings.startLevel) {
-            try {
-                startHomekitServer();
-            } catch (IOException | InvalidAlgorithmParameterException e) {
-                logger.warn("could not initialize HomeKit bridge: {}", e.getMessage());
+            currentStartLevel = newLevel;
+            if (currentStartLevel < StartLevelService.STARTLEVEL_STATES) {
+                stopHomekitServer();
             }
-        } else if (previousLevel >= settings.startLevel && newStartLevel < settings.startLevel) {
-            stopHomekitServer();
         }
     }
 
@@ -346,7 +339,7 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener, Ready
     @Override
     public synchronized void onChanged(final List<CidrAddress> added, final List<CidrAddress> removed) {
         logger.trace("HomeKit bridge reacting on network interface changes.");
-        if (currentStartLevel < settings.startLevel) {
+        if (currentStartLevel < StartLevelService.STARTLEVEL_STATES) {
             return;
         }
         removed.forEach(i -> {

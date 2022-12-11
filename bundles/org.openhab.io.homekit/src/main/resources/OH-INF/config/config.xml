@@ -68,23 +68,6 @@
 			<description>Defines the IP address of the network interface to expose the HomeKit integration on.</description>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="startLevel" type="integer" required="true" groupName="core">
-			<label>Start Level</label>
-			<description><![CDATA[The openHAB Start Level at which to start the Homekit Bridge. You many want to set this to a higher value if you have scripts that create HomeKit Items, or you want to wait for item states to be restored from persistence. See <a href="https://www.openhab.org/javadoc/latest/org/openhab/core/service/startlevelservice">StartLevelService</a> for details on the available levels.
-			]]></description>
-			<options>
-				<option value="10">OSGi Bundles Activated</option>
-				<option value="20">Items Loaded</option>
-				<option value="30">States Restored From Persistence</option>
-				<option value="40">Rules Loaded</option>
-				<option value="50">Rule Engine Running</option>
-				<option value="70">UI</option>
-				<option value="80">Things Initialized</option>
-				<option value="100">Complete</option>
-			</options>
-			<default>30</default>
-			<advanced>true</advanced>
-		</parameter>
 		<parameter name="useDummyAccessories" type="boolean" required="true" groupName="core">
 			<label>Use Dummy Accessories</label>
 			<description><![CDATA[Create dummy accessories when an item is missing. See <a href="https://www.openhab.org/addons/integrations/homekit/#dummy-accessories">the documentation</a> for more information.
