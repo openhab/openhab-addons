@@ -47,7 +47,7 @@ public class FindMyIPhoneServiceManager {
     }
 
     /**
-     * Receive client informations as JSON.
+     * Receive client information as JSON.
      *
      * @return Information about all clients as JSON
      *         {@link org.openhab.binding.icloud.internal.json.response.ICloudDeviceInformation}.

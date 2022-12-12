@@ -38,6 +38,11 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class ICloudService {
 
+    /**
+     *
+     */
+    private static final String ICLOUD_CLIENT_ID = "d39ba9916b7251055b22c7f910e2ea796ee65e98b2ddecea8f5dde8d9d1a815d";
+
     private final Logger logger = LoggerFactory.getLogger(ICloudService.class);
 
     private static final String AUTH_ENDPOINT = "https://idmsa.apple.com/appleauth/auth";
@@ -171,13 +176,12 @@ public class ICloudService {
      */
     private List<Pair<String, String>> getAuthHeaders() {
         return new ArrayList<>(List.of(Pair.of("Accept", "*/*"), Pair.of("Content-Type", "application/json"),
-                Pair.of("X-Apple-OAuth-Client-Id", "d39ba9916b7251055b22c7f910e2ea796ee65e98b2ddecea8f5dde8d9d1a815d"),
+                Pair.of("X-Apple-OAuth-Client-Id", ICLOUD_CLIENT_ID),
                 Pair.of("X-Apple-OAuth-Client-Type", "firstPartyAuth"),
-                Pair.of("X-Apple-OAuth-Redirect-URI", "https://www.icloud.com"),
+                Pair.of("X-Apple-OAuth-Redirect-URI", HOME_ENDPOINT),
                 Pair.of("X-Apple-OAuth-Require-Grant-Code", "true"),
                 Pair.of("X-Apple-OAuth-Response-Mode", "web_message"), Pair.of("X-Apple-OAuth-Response-Type", "code"),
-                Pair.of("X-Apple-OAuth-State", this.clientId),
-                Pair.of("X-Apple-Widget-Key", "d39ba9916b7251055b22c7f910e2ea796ee65e98b2ddecea8f5dde8d9d1a815d")));
+                Pair.of("X-Apple-OAuth-State", this.clientId), Pair.of("X-Apple-Widget-Key", ICLOUD_CLIENT_ID)));
     }
 
     private Map<String, Object> validateToken() throws IOException, InterruptedException, ICloudApiResponseException {
@@ -249,7 +253,6 @@ public class ICloudService {
 
         trustSession();
         return true;
-        // return not self.requires_2sa
     }
 
     private void addSessionHeaders(List<Pair<String, String>> headers) {

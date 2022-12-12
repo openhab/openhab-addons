@@ -42,8 +42,7 @@ public class Pair<@NonNull K, @NonNull V> {
      * @return Pair with given key and value
      */
     public static Pair<String, String> of(String key, String value) {
-        Pair<String, String> p = new Pair<>(key, value);
-        return p;
+        return new Pair<>(key, value);
     }
 
     @Override

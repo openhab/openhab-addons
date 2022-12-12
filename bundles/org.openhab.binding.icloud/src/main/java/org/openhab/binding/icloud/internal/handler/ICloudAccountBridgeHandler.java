@@ -47,10 +47,6 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonSyntaxException;
 
 /**
- * @author Simon Spielmann - Initial contribution
- *
- */
-/**
  * Retrieves the data for a given account from iCloud and passes the information to
  * {@link org.openhab.binding.icloud.internal.discovery.ICloudDeviceDiscovery} and to the {@link ICloudDeviceHandler}s.
  *
@@ -355,12 +351,7 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.ONLINE);
             logger.debug("iCloud bridge handler authenticated.");
             return true;
-        } catch (IOException | InterruptedException e) {
-            logger.debug("iCloud authentication caused exception.", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            return false;
         } catch (Exception e) {
-            logger.debug("Something went wrong while constructing the icloud session", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             return false;
         }
