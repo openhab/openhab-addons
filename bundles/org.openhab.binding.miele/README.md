@@ -131,7 +131,7 @@ Channels available for each appliance type are listed below.
 | finish              | Number:Time          | Read       | Time to finish the program running on the appliance                 |
 | door                | Contact              | Read       | Current state of the door of the appliance                          |
 | switch              | Switch               | Write      | Switch the appliance on or off                                      |
-| powerConsumption    | Number:Power         | Read       | Power consumption by the currently running program on the appliance |
+| powerConsumption    | Number:Energy        | Read       | Power consumption by the currently running program on the appliance |
 | waterConsumption    | Number:Volume        | Read       | Water consumption by the currently running program on the appliance |
 
 ##### Programs
@@ -354,7 +354,7 @@ See oven.
 | switch              | Switch               | Write      | Switch the appliance on or off                                      |
 | target              | Number:Temperature   | Read       | Temperature of the selected program (10 °C = cold)                  |
 | spinningspeed       | String               | Read       | Spinning speed in the program running on the appliance              |
-| powerConsumption    | Number:Power         | Read       | Power consumption by the currently running program on the appliance |
+| powerConsumption    | Number:Energy        | Read       | Power consumption by the currently running program on the appliance |
 | waterConsumption    | Number:Volume        | Read       | Water consumption by the currently running program on the appliance |
 
 ##### Programs
@@ -432,7 +432,7 @@ String Dishwasher_Program "Program [%s]"                    {channel="miele:dish
 String Dishwasher_Phase "Phase [%s]"                        {channel="miele:dishwasher:home:dishwasher:phase"}
 DateTime Dishwasher_ElapsedTime "Elapsed time" <time>       {channel="miele:dishwasher:home:dishwasher:elapsed"}
 DateTime Dishwasher_FinishTime "Remaining time" <time>      {channel="miele:dishwasher:home:dishwasher:finish"}
-Number:Power Dishwasher_PowerConsumption                    {channel="miele:dishwasher:home:dishwasher:powerConsumption"}
+Number:Energy Dishwasher_PowerConsumption                   {channel="miele:dishwasher:home:dishwasher:powerConsumption"}
 Number:Volume Dishwasher_WaterConsumption                   {channel="miele:dishwasher:home:dishwasher:waterConsumption"}
 
 String Fridge_State                                         {channel="miele:fridge:home:fridge:state"}
@@ -460,7 +460,7 @@ Number:Temperature WashingMachine_Temperature <temperature> {channel="miele:wash
 String WashingMachine_SpinningSpeed                         {channel="miele:washingmachine:home:washingmachine:spinningspeed"}
 DateTime WashingMachine_ElapsedTime "Elapsed time" <time>   {channel="miele:washingmachine:home:washingmachine:elapsed"}
 DateTime WashingMachine_FinishTime "Remaining time" <time>  {channel="miele:washingmachine:home:washingmachine:finish"}
-Number:Power WashingMachine_PowerConsumption                {channel="miele:washingmachine:home:washingmachine:powerConsumption"}
+Number:Energy WashingMachine_PowerConsumption               {channel="miele:washingmachine:home:washingmachine:powerConsumption"}
 Number:Volume WashingMachine_WaterConsumption               {channel="miele:washingmachine:home:washingmachine:waterConsumption"}
 
 String TumbleDryer_State                                    {channel="miele:tumbledryer:home:tumbledryer:state"}
