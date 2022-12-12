@@ -98,9 +98,6 @@ public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDevic
         this.deviceId = configuration.deviceId;
 
         Bridge bridge = getBridge();
-        Object bridgeStatus = (bridge == null) ? null : bridge.getStatus();
-        this.logger.debug("initializeThing thing [{}]; bridge status: [{}]", getThing().getUID(), bridgeStatus);
-
         if (bridge != null) {
             ICloudAccountBridgeHandler handler = (ICloudAccountBridgeHandler) bridge.getHandler();
             if (handler != null) {
@@ -114,7 +111,7 @@ public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDevic
                         "Bridge handler is not configured");
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, "Bridge is not configured");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Bridge is not configured");
         }
     }
 
