@@ -92,7 +92,7 @@ public class OpenhabGraalJSScriptEngine
 
     // these fields start as null because they are populated on first use
     private String engineIdentifier;
-    private Consumer<String> scriptDependencyListener;
+    private @Nullable Consumer<String> scriptDependencyListener;
 
     private boolean initialized = false;
     private final String globalScript;

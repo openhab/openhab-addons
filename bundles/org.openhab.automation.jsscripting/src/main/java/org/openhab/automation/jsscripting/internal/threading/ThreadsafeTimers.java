@@ -113,7 +113,7 @@ public class ThreadsafeTimers {
      * @return Positive integer value which identifies the timer created; this value can be passed to
      *         <code>clearTimeout()</code> to cancel the timeout.
      */
-    public long setTimeout(Runnable callback, Long delay, Object... args) {
+    public long setTimeout(Runnable callback, Long delay, @Nullable Object... args) {
         long id = lastId.incrementAndGet();
         ScheduledCompletableFuture<Object> future = scheduler.schedule(() -> {
             try {
@@ -166,7 +166,7 @@ public class ThreadsafeTimers {
      * @return Numeric, non-zero value which identifies the timer created; this value can be passed to
      *         <code>clearInterval()</code> to cancel the interval.
      */
-    public long setInterval(Runnable callback, Long delay, Object... args) {
+    public long setInterval(Runnable callback, Long delay, @Nullable Object... args) {
         long id = lastId.incrementAndGet();
         ScheduledCompletableFuture<Object> future = scheduler.schedule(() -> {
             try {

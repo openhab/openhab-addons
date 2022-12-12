@@ -13,7 +13,11 @@
 
 package org.openhab.automation.jsscripting.internal.scope;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
@@ -28,7 +32,7 @@ import org.osgi.service.component.annotations.Activate;
  * @author Jonathan Gilbert - Initial contribution
  */
 public abstract class AbstractScriptExtensionProvider implements ScriptExtensionProvider {
-    private Map<String, Function<String, Object>> types;
+    private Map<String, Function<String, Object>> types = new HashMap<>();
     private Map<String, Map<String, Object>> idToTypes = new ConcurrentHashMap<>();
 
     protected abstract String getPresetName();
@@ -41,7 +45,6 @@ public abstract class AbstractScriptExtensionProvider implements ScriptExtension
 
     @Activate
     public void activate(final BundleContext context) {
-        types = new HashMap<>();
         initializeTypes(context);
     }
 
