@@ -188,13 +188,15 @@
 
 	<channel-type id="co2" advanced="false">
 		<item-type>Number:Dimensionless</item-type>
-		<label>CO₂ Concentration</label>
+		<label>CO2 Concentration</label>
+		<description>CO₂ concentration</description>
 		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
 
 	<channel-type id="dco2dt" advanced="false">
 		<item-type>Number</item-type>
-		<label>Change of CO₂ Concentr.</label>
+		<label>Change CO2 Concentration</label>
+		<description>Change of CO₂ concentration</description>
 		<state readOnly="true" pattern="%.2f ppm/s"></state>
 	</channel-type>
 
@@ -242,13 +244,15 @@
 
 	<channel-type id="no2" advanced="false">
 		<item-type>Number</item-type>
-		<label>NO₂ Concentration</label>
+		<label>NO2 Concentration</label>
+		<description>NO₂ concentration</description>
 		<state readOnly="true" pattern="%.2f μg/m³"></state>
 	</channel-type>
 
 	<channel-type id="o3" advanced="false">
 		<item-type>Number</item-type>
-		<label>O₃ Concentration</label>
+		<label>O3 Concentration</label>
+		<description>O₃ concentration</description>
 		<state readOnly="true" pattern="%.2f μg/m³"></state>
 	</channel-type>
 
@@ -290,7 +294,8 @@
 
 	<channel-type id="so2" advanced="false">
 		<item-type>Number</item-type>
-		<label>SO₂ Concentration</label>
+		<label>SO2 Concentration</label>
+		<description>SO₂ concentration</description>
 		<state readOnly="true" pattern="%.2f μg/m³"></state>
 	</channel-type>
 
@@ -327,133 +332,137 @@
 	<!-- Maximum error -->
 	<channel-type id="cnt0_3_maxerr" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Max. Error Fine Dust >0,3μm</label>
+		<label>Max Error Fine Dust >0,3μm</label>
 		<state readOnly="true" pattern="± %.2f %%"></state>
 	</channel-type>
 
 	<channel-type id="cnt0_5_maxerr" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Max. Error Fine Dust >0,5μm</label>
+		<label>Max Error Fine Dust >0,5μm</label>
 		<state readOnly="true" pattern="± %.2f %%"></state>
 	</channel-type>
 
 	<channel-type id="cnt1_maxerr" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Max. Error Fine Dust >1μm</label>
+		<label>Max Error Fine Dust >1μm</label>
 		<state readOnly="true" pattern="± %.2f %%"></state>
 	</channel-type>
 
 	<channel-type id="cnt2_5_maxerr" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Max. Error Fine Dust >2,5μm</label>
+		<label>Max Error Fine Dust >2,5μm</label>
 		<state readOnly="true" pattern="± %.2f %%"></state>
 	</channel-type>
 
 	<channel-type id="cnt5_maxerr" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Max. Error Fine Dust >5μm</label>
+		<label>Max Error Fine Dust >5μm</label>
 		<state readOnly="true" pattern="± %.2f %%"></state>
 	</channel-type>
 
 	<channel-type id="cnt10_maxerr" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Max. Error Fine Dust >10μm</label>
+		<label>Max Error Fine Dust >10μm</label>
 		<state readOnly="true" pattern="± %.2f %%"></state>
 	</channel-type>
 
 	<channel-type id="co_maxerr" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Max. Error CO Conc.</label>
+		<label>Max Error CO Concentration</label>
 		<state readOnly="true" pattern="± %.2f %%"></state>
 	</channel-type>
 
 	<channel-type id="co2_maxerr" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Max. Error CO₂ Conc.</label>
+		<label>Max Error CO2 Concentration</label>
+		<description>Maximum error CO₂ concentration</description>
 		<state readOnly="true" pattern="± %.2f %%"></state>
 	</channel-type>
 
 	<channel-type id="dewpt_maxerr" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Max. Error Dew Point</label>
+		<label>Max Error Dew Point</label>
 		<state readOnly="true" pattern="± %.2f %%"></state>
 	</channel-type>
 
 	<channel-type id="humidity_maxerr" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Max. Error Humidity</label>
+		<label>Max Error Humidity</label>
 		<state readOnly="true" pattern="± %.2f %%"></state>
 	</channel-type>
 
 	<channel-type id="humidity_abs_maxerr" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Max. Error Abs. Humidity</label>
+		<label>Max Error Absolute Humidity</label>
 		<state readOnly="true" pattern="± %.2f %%"></state>
 	</channel-type>
 
 	<channel-type id="no2_maxerr" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Max. Error NO₂ Conc.</label>
+		<label>Max Error NO2 Concentration</label>
+		<description>Maximum error NO₂ concentration</description>
 		<state readOnly="true" pattern="± %.2f %%"></state>
 	</channel-type>
 
 	<channel-type id="o3_maxerr" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Max. Error O₃ Conc.</label>
+		<label>Max Error O3 Concentration</label>
+		<description>Maximum error O₃ concentration</description>
 		<state readOnly="true" pattern="± %.2f %%"></state>
 	</channel-type>
 
 	<channel-type id="oxygen_maxerr" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Max. Error Oxygen Conc.</label>
+		<label>Max Error Oxygen Concentration</label>
 		<state readOnly="true" pattern="± %.2f %%"></state>
 	</channel-type>
 
 	<channel-type id="pm1_maxerr" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Max. Error Fine Dust Conc. >1μm</label>
+		<label>Max Error Fine Dust Concentration >1μm</label>
 		<state readOnly="true" pattern="± %.2f %%"></state>
 	</channel-type>
 
 	<channel-type id="pm10_maxerr" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Max. Error Fine Dust Conc. >10μm</label>
+		<label>Max Error Fine Dust Concentration >10μm</label>
 		<state readOnly="true" pattern="± %.2f %%"></state>
 	</channel-type>
 
 	<channel-type id="pm2_5_maxerr" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Max. Error Fine Dust Conc. >2,5μm</label>
+		<label>Max Error Fine Dust Concentration >2,5μm</label>
 		<state readOnly="true" pattern="± %.2f %%"></state>
 	</channel-type>
 
 	<channel-type id="pressure_maxerr" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Max. Error Pressure</label>
+		<label>Max Error Pressure</label>
 		<state readOnly="true" pattern="± %.2f %%"></state>
 	</channel-type>
 
 	<channel-type id="so2_maxerr" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Max. Error SO₂ Conc.</label>
+		<label>Max Error SO2 Concentration</label>
+		<description>Maximum error SO₂ concentration</description>
 		<state readOnly="true" pattern="± %.2f %%"></state>
 	</channel-type>
 
 	<channel-type id="sound_maxerr" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Max. Error Noise</label>
+		<label>Max Error Noise</label>
 		<state readOnly="true" pattern="± %.2f %%"></state>
 	</channel-type>
 
 	<channel-type id="temperature_maxerr" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Max. Error Temperature</label>
+		<label>Max Error Temperature</label>
 		<state readOnly="true" pattern="± %.2f %%"></state>
 	</channel-type>
 
 	<channel-type id="tvoc_maxerr" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Max. Error VOC Conc.</label>
+		<label>Max Error VOC Concentration</label>
 		<state readOnly="true" pattern="± %.2f %%"></state>
 	</channel-type>
 
