@@ -69,7 +69,7 @@ _*.sitemap examples are optional._
 String ShieldTV_KEYPRESS "KEYPRESS [%s]" { channel = "shieldtv:shieldtv:theater:keypress" }
 String ShiledTV_PINCODE  "PINCODE [%s]" { channel = "shieldtv:shieldtv:theater:pincode" }
 
-Thing shieldtv:shieldtv:theater [ ipAddress="10.255.0.175" ]
+Thing shieldtv:shieldtv:theater [ ipAddress="x.x.x.x", keystore="/home/openhab/shieldtv.theater.keystore", keystorePassword="secret" ]
 
 ## Any custom content here!
 

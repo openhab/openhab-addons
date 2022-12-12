@@ -20,25 +20,42 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.InterruptedIOException;
 import java.io.OutputStreamWriter;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.net.UnknownHostException;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Future;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shieldtv.internal.protocol.shieldtv.ShieldTVCommand;
 import org.openhab.binding.shieldtv.internal.protocol.shieldtv.ShieldTVMessageParser;
 import org.openhab.binding.shieldtv.internal.protocol.shieldtv.ShieldTVMessageParserCallbacks;
+import org.openhab.binding.shieldtv.internal.protocol.shieldtv.Request;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -58,6 +75,7 @@ public class ShieldTVHandler extends BaseThingHandler implements ShieldTVMessage
 
     private static final int DEFAULT_RECONNECT_MINUTES = 5;
     private static final int DEFAULT_HEARTBEAT_MINUTES = 5;
+    private static final long KEEPALIVE_TIMEOUT_SECONDS = 30;
 
     private static final String STATUS_INITIALIZING = "Initializing";
 
@@ -76,6 +94,8 @@ public class ShieldTVHandler extends BaseThingHandler implements ShieldTVMessage
     private @NonNullByDefault({}) ShieldTVMessageParser shieldtvMessageParser;
 
     private final BlockingQueue<ShieldTVCommand> sendQueue = new LinkedBlockingQueue<>();
+
+    private @Nullable Future<?> asyncInitializeTask;
 
     private @Nullable Thread senderThread;
     private @Nullable Thread readerThread;
@@ -125,6 +145,7 @@ public class ShieldTVHandler extends BaseThingHandler implements ShieldTVMessage
         config = getConfigAs(ShieldTVConfiguration.class);
 
         String ipAddress = config.ipAddress;
+        String keystorePassword = (config.keystorePassword == null) ? "" : config.keystorePassword;
 
         if (ipAddress == null || ipAddress.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "shieldtv address not specified");
@@ -133,45 +154,96 @@ public class ShieldTVHandler extends BaseThingHandler implements ShieldTVMessage
 
         reconnectInterval = (config.reconnect > 0) ? config.reconnect : DEFAULT_RECONNECT_MINUTES;
         heartbeatInterval = (config.heartbeat > 0) ? config.heartbeat : DEFAULT_HEARTBEAT_MINUTES;
+        sendDelay = (config.delay < 0) ? 0 : config.delay;
 
-        // TODO: Initialize the handler.
-        // The framework requires you to return from this method quickly, i.e. any network access must be done in
-        // the background initialization below.
-        // Also, before leaving this method a thing status from one of ONLINE, OFFLINE or UNKNOWN must be set. This
-        // might already be the real thing status in case you can decide it directly.
-        // In case you can not decide the thing status directly (e.g. for long running connection handshake using WAN
-        // access or similar) you should set status UNKNOWN here and then decide the real status asynchronously in the
-        // background.
+        if (config.keystore == null || keystorePassword == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Keystore/keystore password not configured");
+            return;
+        } else {
+            try (FileInputStream keystoreInputStream = new FileInputStream(config.keystore)) {
+                logger.trace("Initializing keystore");
+                KeyStore keystore = KeyStore.getInstance(KeyStore.getDefaultType());
 
-        // set the thing status to UNKNOWN temporarily and let the background task decide for the real status.
-        // the framework is then able to reuse the resources from the thing handler initialization.
-        // we set this upfront to reliably check status updates in unit tests.
-        updateStatus(ThingStatus.UNKNOWN);
+                keystore.load(keystoreInputStream, keystorePassword.toCharArray());
 
-        // Example for background initialization:
-        scheduler.execute(() -> {
-            boolean thingReachable = true; // <background task with long running initialization here>
-            // when done do:
-            if (thingReachable) {
-                updateStatus(ThingStatus.ONLINE);
-            } else {
-                updateStatus(ThingStatus.OFFLINE);
+                logger.trace("Initializing SSL Context");
+                KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+                kmf.init(keystore, keystorePassword.toCharArray());
+
+                TrustManager[] trustManagers;
+                if (config.certValidate) {
+                    // Use default trust manager which will attempt to validate server certificate from hub
+                    TrustManagerFactory tmf = TrustManagerFactory
+                            .getInstance(TrustManagerFactory.getDefaultAlgorithm());
+                    tmf.init(keystore);
+                    trustManagers = tmf.getTrustManagers();
+                } else {
+                    // Use no-op trust manager which will not verify certificates
+                    trustManagers = defineNoOpTrustManager();
+                }
+
+                sslContext = SSLContext.getInstance("TLS");
+                sslContext.init(kmf.getKeyManagers(), trustManagers, null);
+
+                sslsocketfactory = sslContext.getSocketFactory();
+            } catch (FileNotFoundException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Keystore file not found");
+                return;
+            } catch (CertificateException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Certificate exception");
+                return;
+            } catch (UnrecoverableKeyException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Key unrecoverable with supplied password");
+                return;
+            } catch (KeyManagementException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Key management exception");
+                logger.debug("Key management exception", e);
+                return;
+            } catch (KeyStoreException | NoSuchAlgorithmException | IOException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Error initializing keystore");
+                logger.debug("Error initializing keystore", e);
+                return;
             }
-        });
+        }
 
-        // These logging types should be primarily used by bindings
-        // logger.trace("Example trace message");
-        // logger.debug("Example debug message");
-        // logger.warn("Example warn message");
-        //
-        // Logging to INFO should be avoided normally.
-        // See https://www.openhab.org/docs/developer/guidelines.html#f-logging
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Connecting");
+        asyncInitializeTask = scheduler.submit(this::connect); // start the async connect task
 
-        // Note: When initialization can NOT be done set the status with more details for further
-        // analysis. See also class ThingStatusDetail for all available status details.
-        // Add a description to give user information to understand why thing does not work as expected. E.g.
-        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-        // "Can not access device as username and/or password are invalid");
+    }
+
+    private TrustManager[] defineNoOpTrustManager() {
+        return new TrustManager[] { new X509TrustManager() {
+            @Override
+            public void checkClientTrusted(final X509Certificate @Nullable [] chain, final @Nullable String authType) {
+                logger.debug("Assuming client certificate is valid");
+                if (chain != null && logger.isTraceEnabled()) {
+                    for (int cert = 0; cert < chain.length; cert++) {
+                        logger.trace("Subject DN: {}", chain[cert].getSubjectDN());
+                        logger.trace("Issuer DN: {}", chain[cert].getIssuerDN());
+                        logger.trace("Serial number {}:", chain[cert].getSerialNumber());
+                    }
+                }
+            }
+
+            @Override
+            public void checkServerTrusted(final X509Certificate @Nullable [] chain, final @Nullable String authType) {
+                logger.debug("Assuming server certificate is valid");
+                if (chain != null && logger.isTraceEnabled()) {
+                    for (int cert = 0; cert < chain.length; cert++) {
+                        logger.trace("Subject DN: {}", chain[cert].getSubjectDN());
+                        logger.trace("Issuer DN: {}", chain[cert].getIssuerDN());
+                        logger.trace("Serial number: {}", chain[cert].getSerialNumber());
+                    }
+                }
+            }
+
+            @Override
+            public X509Certificate @Nullable [] getAcceptedIssuers() {
+                return null;
+            }
+        } };
     }
 
     private synchronized void connect() {
@@ -357,7 +429,60 @@ public class ShieldTVHandler extends BaseThingHandler implements ShieldTVMessage
         logger.trace("Sending keepalive query");
     }
 
+    /*
+    private void checkInitialized() {
+        ThingStatusInfo statusInfo = getThing().getStatusInfo();
+        if (statusInfo.getStatus() == ThingStatus.OFFLINE && STATUS_INITIALIZING.equals(statusInfo.getDescription())) {
+            if (deviceDataLoaded && buttonDataLoaded) {
+                updateStatus(ThingStatus.ONLINE);
+            }
+        }
+    }
+    */
+
+    /**
+     * Schedules the reconnect task keepAliveReconnectJob to execute in KEEPALIVE_TIMEOUT_SECONDS. This should be
+     * cancelled by calling reconnectTaskCancel() if a valid response is received from the bridge.
+     */
+    private void reconnectTaskSchedule() {
+        synchronized (keepAliveReconnectLock) {
+            keepAliveReconnectJob = scheduler.schedule(this::keepaliveTimeoutExpired, KEEPALIVE_TIMEOUT_SECONDS,
+                    TimeUnit.SECONDS);
+        }
+    }
+
+    /**
+     * Cancels the reconnect task keepAliveReconnectJob.
+     */
+    private void reconnectTaskCancel(boolean interrupt) {
+        synchronized (keepAliveReconnectLock) {
+            ScheduledFuture<?> keepAliveReconnectJob = this.keepAliveReconnectJob;
+            if (keepAliveReconnectJob != null) {
+                logger.trace("Canceling scheduled reconnect job.");
+                keepAliveReconnectJob.cancel(interrupt);
+                this.keepAliveReconnectJob = null;
+            }
+        }
+    }
+
+    /**
+     * Executed by keepAliveReconnectJob if it is not cancelled by the LEAP message parser calling
+     * validMessageReceived() which in turn calls reconnectTaskCancel().
+     */
+    private void keepaliveTimeoutExpired() {
+        logger.debug("Keepalive response timeout expired. Initiating reconnect.");
+        reconnect();
+    }
+
     @Override
     public void validMessageReceived(String communiqueType) {
+        reconnectTaskCancel(true); // Got a good message, so cancel reconnect task.
     }
+
+    public void sendCommand(@Nullable ShieldTVCommand command) {
+        if (command != null) {
+            sendQueue.add(command);
+        }
+    }
+
 }

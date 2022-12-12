@@ -31,4 +31,8 @@ public class ShieldTVConfiguration {
     public boolean certValidate = false;
     public int reconnect;
     public int heartbeat;
+    public @Nullable String keystore;
+    public @Nullable String keystorePassword;
+    public int delay = 0;
+
 }
