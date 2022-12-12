@@ -23,6 +23,8 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class RetryException extends RuntimeException {
 
+    private static final long serialVersionUID = 1L;
+
     /**
      * The constructor.
      *

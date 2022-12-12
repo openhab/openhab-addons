@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.icloud.internal.utilities;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -22,11 +23,16 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @param <V> Type of second element
  */
 @NonNullByDefault
-public class Pair<K, V> {
+public class Pair<K extends @NonNull Object, V extends @NonNull Object> {
 
     private K key;
 
     private V value;
+
+    private Pair(K key, V value) {
+        this.key = key;
+        this.value = value;
+    }
 
     /**
      * Create pair with key and value. Both of type {@link String}.
@@ -36,9 +42,7 @@ public class Pair<K, V> {
      * @return Pair with given key and value
      */
     public static Pair<String, String> of(String key, String value) {
-        Pair<String, String> p = new Pair<>();
-        p.key = key;
-        p.value = value;
+        Pair<String, String> p = new Pair<>(key, value);
         return p;
     }
 

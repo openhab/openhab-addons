@@ -203,7 +203,8 @@ public class ICloudSession {
      * @return {@code true} if session token is not empty.
      */
     public boolean hasToken() {
-        return data.sessionToken != null && !data.sessionToken.isEmpty();
+        String sessionToken = data.sessionToken;
+        return sessionToken != null && !sessionToken.isEmpty();
     }
 
     /**
