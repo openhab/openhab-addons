@@ -104,7 +104,10 @@ Finally, an SDM Account Thing can be created to access the SDM project using the
 1. All required SDM Account Thing configuration parameters have now been entered so create it by clicking "Create Thing"
 
 The SDM Account Thing should now be ONLINE and have as status description "Using periodic refresh".
-It should also be possible to use the configured account to discover your Nest devices via the Inbox.
+
+Next click the "Enable" button on the [Smart Device Management API](https://console.cloud.google.com/apis/library/smartdevicemanagement.googleapis.com) page for your GCP project to enable the SDM API.
+
+Now it should also be possible to use the configured account to discover your Nest devices via the Inbox.
 
 You can monitor the SDM API using the Google Cloud Platform Console via [API & Services > Smart Device Management API](https://console.cloud.google.com/apis/api/smartdevicemanagement.googleapis.com/overview).
 
