@@ -28,10 +28,10 @@ import javax.script.ScriptException;
  * @param <T> The delegate class
  * @author Jonathan Gilbert - Initial contribution
  */
-public abstract class InvocationInterceptingScriptEngineWithInvocableAndAutoCloseable<T extends ScriptEngine & Invocable & AutoCloseable>
-        extends DelegatingScriptEngineWithInvocableAndAutocloseable<T> {
+public abstract class InvocationInterceptingScriptEngineWithInvocableAndAutoCloseableAndSynchronization<T extends ScriptEngine & Invocable & AutoCloseable>
+        extends DelegatingScriptEngineWithInvocableAndAutocloseableAndSynchronization<T> {
 
-    public InvocationInterceptingScriptEngineWithInvocableAndAutoCloseable(T delegate) {
+    public InvocationInterceptingScriptEngineWithInvocableAndAutoCloseableAndSynchronization(T delegate) {
         super(delegate);
     }
 

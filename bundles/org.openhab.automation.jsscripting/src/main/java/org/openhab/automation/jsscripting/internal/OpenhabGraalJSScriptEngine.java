@@ -45,7 +45,7 @@ import org.openhab.automation.jsscripting.internal.fs.DelegatingFileSystem;
 import org.openhab.automation.jsscripting.internal.fs.PrefixedSeekableByteChannel;
 import org.openhab.automation.jsscripting.internal.fs.ReadOnlySeekableByteArrayChannel;
 import org.openhab.automation.jsscripting.internal.fs.watch.JSDependencyTracker;
-import org.openhab.automation.jsscripting.internal.scriptengine.InvocationInterceptingScriptEngineWithInvocableAndAutoCloseable;
+import org.openhab.automation.jsscripting.internal.scriptengine.InvocationInterceptingScriptEngineWithInvocableAndAutoCloseableAndSynchronization;
 import org.openhab.core.automation.module.script.ScriptExtensionAccessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,7 +61,7 @@ import com.oracle.truffle.js.scriptengine.GraalJSScriptEngine;
  *         into the JS context; Fix memory leak caused by HostObject by making HostAccess reference static
  */
 public class OpenhabGraalJSScriptEngine
-        extends InvocationInterceptingScriptEngineWithInvocableAndAutoCloseable<GraalJSScriptEngine> {
+        extends InvocationInterceptingScriptEngineWithInvocableAndAutoCloseableAndSynchronization<GraalJSScriptEngine> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OpenhabGraalJSScriptEngine.class);
     private static final String GLOBAL_REQUIRE = "require(\"@jsscripting-globals\");";
@@ -83,8 +83,6 @@ public class OpenhabGraalJSScriptEngine
                     }, HostAccess.TargetMappingPrecedence.LOW)
             .build();
 
-    /** Shared lock object for synchronization of multi-thread access */
-    private final Object lock = new Object();
     private final JSRuntimeFeatures jsRuntimeFeatures;
 
     // these fields start as null because they are populated on first use
@@ -223,14 +221,6 @@ public class OpenhabGraalJSScriptEngine
             eval(globalScript);
         } catch (ScriptException e) {
             LOGGER.error("Could not inject global script", e);
-        }
-    }
-
-    @Override
-    public Object invokeFunction(String s, Object... objects) throws ScriptException, NoSuchMethodException {
-        // Synchronize multi-thread access to avoid exceptions when reloading a script file while the script is running
-        synchronized (lock) {
-            return super.invokeFunction(s, objects);
         }
     }
 

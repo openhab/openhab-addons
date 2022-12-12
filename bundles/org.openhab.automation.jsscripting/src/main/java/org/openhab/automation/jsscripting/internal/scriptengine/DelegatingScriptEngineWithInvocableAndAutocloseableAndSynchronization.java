@@ -26,47 +26,85 @@ import javax.script.ScriptException;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * {@link ScriptEngine} implementation that delegates to a supplied ScriptEngine instance. Allows overriding specific
- * methods.
+ * {@link ScriptEngine} implementation that delegates to a supplied ScriptEngine instance and provides multi-thread
+ * synchronization. Allows overriding specific methods.
  *
  * @author Jonathan Gilbert - Initial contribution
  */
-public abstract class DelegatingScriptEngineWithInvocableAndAutocloseable<T extends ScriptEngine & Invocable & AutoCloseable>
+public abstract class DelegatingScriptEngineWithInvocableAndAutocloseableAndSynchronization<T extends ScriptEngine & Invocable & AutoCloseable>
         implements ScriptEngine, Invocable, AutoCloseable {
     protected T delegate;
+    /** Shared lock object for synchronization of multi-thread access */
+    protected final Object lock = new Object();
 
-    public DelegatingScriptEngineWithInvocableAndAutocloseable(T delegate) {
+    public DelegatingScriptEngineWithInvocableAndAutocloseableAndSynchronization(T delegate) {
         this.delegate = delegate;
     }
 
     @Override
     public @Nullable Object eval(String s, ScriptContext scriptContext) throws ScriptException {
-        return Objects.nonNull(delegate) ? delegate.eval(s, scriptContext) : null;
+        if (Objects.nonNull(delegate)) {
+            synchronized (lock) {
+                return delegate.eval(s, scriptContext);
+            }
+        } else {
+            return null;
+        }
     }
 
     @Override
     public @Nullable Object eval(Reader reader, ScriptContext scriptContext) throws ScriptException {
-        return Objects.nonNull(delegate) ? delegate.eval(reader, scriptContext) : null;
+        if (Objects.nonNull(delegate)) {
+            synchronized (lock) {
+                return delegate.eval(reader, scriptContext);
+            }
+        } else {
+            return null;
+        }
     }
 
     @Override
     public @Nullable Object eval(String s) throws ScriptException {
-        return Objects.nonNull(delegate) ? delegate.eval(s) : null;
+        if (Objects.nonNull(delegate)) {
+            synchronized (lock) {
+                return delegate.eval(s);
+            }
+        } else {
+            return null;
+        }
     }
 
     @Override
     public @Nullable Object eval(Reader reader) throws ScriptException {
-        return Objects.nonNull(delegate) ? delegate.eval(reader) : null;
+        if (Objects.nonNull(delegate)) {
+            synchronized (lock) {
+                return delegate.eval(reader);
+            }
+        } else {
+            return null;
+        }
     }
 
     @Override
     public @Nullable Object eval(String s, Bindings bindings) throws ScriptException {
-        return Objects.nonNull(delegate) ? delegate.eval(s, bindings) : null;
+        if (Objects.nonNull(delegate)) {
+            synchronized (lock) {
+                return delegate.eval(s, bindings);
+            }
+        } else {
+            return null;
+        }
     }
 
     @Override
     public @Nullable Object eval(Reader reader, Bindings bindings) throws ScriptException {
-        return Objects.nonNull(delegate) ? delegate.eval(reader, bindings) : null;
+        if (Objects.nonNull(delegate)) {
+            synchronized (lock) {
+                return delegate.eval(reader, bindings);
+            }
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -115,12 +153,24 @@ public abstract class DelegatingScriptEngineWithInvocableAndAutocloseable<T exte
     @Override
     public @Nullable Object invokeMethod(Object o, String s, Object... objects)
             throws ScriptException, NoSuchMethodException {
-        return Objects.nonNull(delegate) ? delegate.invokeMethod(o, s, objects) : null;
+        if (Objects.nonNull(delegate)) {
+            synchronized (lock) {
+                return delegate.invokeMethod(o, s, objects);
+            }
+        } else {
+            return null;
+        }
     }
 
     @Override
     public @Nullable Object invokeFunction(String s, Object... objects) throws ScriptException, NoSuchMethodException {
-        return Objects.nonNull(delegate) ? delegate.invokeFunction(s, objects) : null;
+        if (Objects.nonNull(delegate)) {
+            synchronized (lock) {
+                return delegate.invokeFunction(s, objects);
+            }
+        } else {
+            return null;
+        }
     }
 
     @Override
