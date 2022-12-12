@@ -82,14 +82,14 @@ The information *@ "World"* is optional.
 ```php
 Group    iCloud_Group "iPhone"
 
-String   iPhone_BatteryStatus             "Battery Status [%s]" <battery> (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:batteryStatus"}
-Number   iPhone_BatteryLevel              "Battery Level [%d %%]"   <battery> (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:batteryLevel"}
-Switch   iPhone_FindMyPhone               "Trigger Find My iPhone"           (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:findMyPhone", autoupdate="false"}
-Switch   iPhone_Refresh                   "Force iPhone Refresh"             (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:location", autoupdate="false"}
-Location iPhone_Location                  "Coordinates"                      (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:location"}
-Number   iPhone_LocationAccuracy          "Coordinates Accuracy [%.0f m]"    (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:locationAccuracy"}
+String   iPhone_BatteryStatus             "Battery Status [%s]"     <battery>   (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:batteryStatus"}
+Number   iPhone_BatteryLevel              "Battery Level [%d %%]"   <battery>   (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:batteryLevel"}
+Switch   iPhone_FindMyPhone               "Trigger Find My iPhone"              (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:findMyPhone", autoupdate="false"}
+Switch   iPhone_Refresh                   "Force iPhone Refresh"                (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:location", autoupdate="false"}
+Location iPhone_Location                  "Coordinates"                         (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:location"}
+Number   iPhone_LocationAccuracy          "Coordinates Accuracy [%.0f m]"       (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:locationAccuracy"}
 DateTime iPhone_LocationLastUpdate        "Last Update [%1$td.%1$tm.%1$tY, %1$tH:%1$tM]" <time> (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:locationLastUpdate"}
-Switch   iPhone_Home                      "Phone Home"            <presence> (iCloud_Group)
+Switch   iPhone_Home                      "Phone Home"              <presence>  (iCloud_Group)
 ```
 
 ### icloud.sitemap
