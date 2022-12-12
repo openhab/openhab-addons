@@ -23,6 +23,7 @@ import java.io.InputStreamReader;
 import java.io.InterruptedIOException;
 import java.io.OutputStreamWriter;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -222,8 +223,8 @@ public class ShieldTVHandler extends BaseThingHandler implements ShieldTVMessage
             logger.debug("Opening SSL connection to {}:{}", config.ipAddress, config.port);
             SSLSocket sslsocket = (SSLSocket) sslsocketfactory.createSocket(config.ipAddress, config.port);
             sslsocket.startHandshake();
-            writer = new BufferedWriter(new OutputStreamWriter(sslsocket.getOutputStream()));
-            reader = new BufferedReader(new InputStreamReader(sslsocket.getInputStream()));
+            writer = new BufferedWriter(new OutputStreamWriter(sslsocket.getOutputStream(), StandardCharsets.ISO_8859_1));
+            reader = new BufferedReader(new InputStreamReader(sslsocket.getInputStream(), StandardCharsets.ISO_8859_1));
             this.sslsocket = sslsocket;
         } catch (UnknownHostException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Unknown host");
@@ -247,12 +248,12 @@ public class ShieldTVHandler extends BaseThingHandler implements ShieldTVMessage
 
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, STATUS_INITIALIZING);
 
-        Thread readerThread = new Thread(this::readerThreadJob, "Lutron reader");
+        Thread readerThread = new Thread(this::readerThreadJob, "ShiledTV reader");
         readerThread.setDaemon(true);
         readerThread.start();
         this.readerThread = readerThread;
 
-        Thread senderThread = new Thread(this::senderThreadJob, "Lutron sender");
+        Thread senderThread = new Thread(this::senderThreadJob, "ShieldTV sender");
         senderThread.setDaemon(true);
         senderThread.start();
         this.senderThread = senderThread;
@@ -343,7 +344,8 @@ public class ShieldTVHandler extends BaseThingHandler implements ShieldTVMessage
                 try {
                     BufferedWriter writer = this.writer;
                     if (writer != null) {
-                        writer.write(command.toString() + "\n");
+                        logger.trace("Raw command decodes as: {}", ShieldTVRequest.decodeMessage(command.toString()));
+                        writer.write(command.toString());
                         writer.flush();
                     }
                 } catch (InterruptedIOException e) {

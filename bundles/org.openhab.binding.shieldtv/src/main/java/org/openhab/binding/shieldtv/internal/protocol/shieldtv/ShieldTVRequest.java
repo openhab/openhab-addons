@@ -38,6 +38,9 @@ public class ShieldTVRequest {
         char ch[] = message.toCharArray();
         for (int i = 0; i < ch.length; i++) {
             String hexString = Integer.toHexString(ch[i]);
+            if (hexString.length() % 2 > 0) {
+                sb.append('0');
+            }
             sb.append(hexString);
         }
         String reply = sb.toString();
