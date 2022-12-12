@@ -22,7 +22,7 @@ import java.util.List;
  * This class implements a customized {@link CookieStore}. Its purpose is to add hyphens at the beginning and end of
  * each cookie value which is required by Apple iCloud API.
  *
- * @author Simon Spielmann Initial contribution
+ * @author Simon Spielmann - Initial contribution
  */
 public class CustomCookieStore implements CookieStore {
 

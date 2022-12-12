@@ -28,6 +28,7 @@ import org.openhab.binding.icloud.internal.ICloudApiResponseException;
 import org.openhab.binding.icloud.internal.ICloudDeviceInformationListener;
 import org.openhab.binding.icloud.internal.ICloudDeviceInformationParser;
 import org.openhab.binding.icloud.internal.ICloudService;
+import org.openhab.binding.icloud.internal.RetryException;
 import org.openhab.binding.icloud.internal.configuration.ICloudAccountThingConfiguration;
 import org.openhab.binding.icloud.internal.json.response.ICloudAccountDataResponse;
 import org.openhab.binding.icloud.internal.json.response.ICloudDeviceInformation;
@@ -207,7 +208,7 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
                     Thread.interrupted();
                 }
             } while (!success && retryCount < 3);
-            throw new RuntimeException("Invocation failed finally.", lastException);
+            throw new RetryException(lastException);
         }
     }
 

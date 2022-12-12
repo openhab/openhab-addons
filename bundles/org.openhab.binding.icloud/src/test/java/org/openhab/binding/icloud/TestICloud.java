@@ -26,18 +26,14 @@ import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.openhab.binding.icloud.internal.ICloudApiResponseException;
 import org.openhab.binding.icloud.internal.ICloudDeviceInformationParser;
 import org.openhab.binding.icloud.internal.ICloudService;
-import org.openhab.binding.icloud.internal.ICloudSession;
 import org.openhab.binding.icloud.internal.json.response.ICloudAccountDataResponse;
 import org.openhab.core.storage.json.internal.JsonStorage;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonSyntaxException;
 
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.Logger;
-
 /**
- *
  * Class to test/experiment with iCloud api.
  *
  * @author Simon Spielmann - Initial contribution
@@ -48,10 +44,14 @@ public class TestICloud {
     private final String iCloudTestEmail;
     private final String iCloudTestPassword;
 
+    private final Logger logger = LoggerFactory.getLogger(TestICloud.class);
+
     @BeforeEach
     private void setUp() {
-        final Logger logger = (Logger) LoggerFactory.getLogger(ICloudSession.class);
-        logger.setLevel(Level.DEBUG);
+        final Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+        if (logger instanceof ch.qos.logback.classic.Logger) {
+            ((ch.qos.logback.classic.Logger) logger).setLevel(ch.qos.logback.classic.Level.DEBUG);
+        }
     }
 
     public TestICloud() {
@@ -65,7 +65,7 @@ public class TestICloud {
     @EnabledIfSystemProperty(named = "icloud.test.email", matches = ".*", disabledReason = "Only for manual execution.")
     public void testAuth() throws IOException, InterruptedException, ICloudApiResponseException, JsonSyntaxException {
         File jsonStorageFile = new File(System.getProperty("user.home"), "openhab.json");
-        System.out.println(jsonStorageFile.toString());
+        logger.info(jsonStorageFile.toString());
 
         JsonStorage<String> stateStorage = new JsonStorage<String>(jsonStorageFile, TestICloud.class.getClassLoader(),
                 0, 1000, 1000, List.of());
@@ -80,7 +80,7 @@ public class TestICloud {
                 service.trustSession();
             }
             if (!service.isTrustedSession()) {
-                System.err.println("Trust failed!!!");
+                logger.info("Trust failed!!!");
             }
         }
         ICloudAccountDataResponse deviceInfo = new ICloudDeviceInformationParser()

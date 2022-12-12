@@ -10,37 +10,25 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.icloud.internal.handler;
+package org.openhab.binding.icloud.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Enum to mark state during iCloud authentication.
+ * This exception is thrown when a retry finally fails.
  *
  * @author Simon Spielmann - Initial contribution
- *
  */
 @NonNullByDefault
-public enum AuthState {
+public class RetryException extends RuntimeException {
 
     /**
-     * Authentication was not tried yet.
+     * The constructor.
+     *
+     * @param originalException Exception which was thrown for the last unsuccessful retry.
      */
-    INITIAL,
-
-    /**
-     * Entered credentials (apple id / password) are invalid.
-     */
-    USER_PW_INVALID,
-
-    /**
-     * Waiting for user to provide 2-FA code in thing configuration.
-     */
-    WAIT_FOR_CODE,
-
-    /**
-     * Sucessfully authenticated.
-     */
-    AUTHENTICATED
-
+    public RetryException(@Nullable Throwable originalException) {
+        super(originalException);
+    }
 }
