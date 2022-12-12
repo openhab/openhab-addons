@@ -18,6 +18,8 @@ import java.net.HttpCookie;
 import java.net.URI;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * This class implements a customized {@link CookieStore}. Its purpose is to add hyphens at the beginning and end of
  * each cookie value which is required by Apple iCloud API.
@@ -37,31 +39,31 @@ public class CustomCookieStore implements CookieStore {
     }
 
     @Override
-    public void add(URI uri, HttpCookie cookie) {
+    public void add(@Nullable URI uri, @Nullable HttpCookie cookie) {
         this.cookieStore.add(uri, cookie);
     }
 
     @Override
-    public List<HttpCookie> get(URI uri) {
+    public @Nullable List<HttpCookie> get(@Nullable URI uri) {
         List<HttpCookie> result = this.cookieStore.get(uri);
         filterCookies(result);
         return result;
     }
 
     @Override
-    public List<HttpCookie> getCookies() {
+    public @Nullable List<HttpCookie> getCookies() {
         List<HttpCookie> result = this.cookieStore.getCookies();
         filterCookies(result);
         return result;
     }
 
     @Override
-    public List<URI> getURIs() {
+    public @Nullable List<URI> getURIs() {
         return this.cookieStore.getURIs();
     }
 
     @Override
-    public boolean remove(URI uri, HttpCookie cookie) {
+    public boolean remove(@Nullable URI uri, @Nullable HttpCookie cookie) {
         return this.cookieStore.remove(uri, cookie);
     }
 

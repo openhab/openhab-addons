@@ -137,7 +137,8 @@ public class ICloudSession {
 
         HttpResponse<?> response = this.client.send(request, BodyHandlers.ofString());
 
-        String responseBodyAsString = response.body() != null ? response.body().toString() : "";
+        Object responseBody = response.body();
+        String responseBodyAsString = responseBody != null ? responseBody.toString() : "";
 
         logger.trace("Result {} {}\nHeaders -----\n{}\nBody -----\n{}\n------\n", url, response.statusCode(),
                 response.headers(), responseBodyAsString);

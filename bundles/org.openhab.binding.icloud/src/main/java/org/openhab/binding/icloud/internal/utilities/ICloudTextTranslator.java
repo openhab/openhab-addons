@@ -39,7 +39,7 @@ public class ICloudTextTranslator {
     }
 
     public String getText(String key, Object... arguments) {
-        Locale locale = localeProvider != null ? localeProvider.getLocale() : Locale.ENGLISH;
+        Locale locale = localeProvider.getLocale();
         String retText = i18nProvider.getText(bundle, key, getDefaultText(key), locale, arguments);
         return retText != null ? retText : key;
     }

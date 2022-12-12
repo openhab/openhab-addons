@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.List;
 import java.util.Scanner;
 
@@ -73,7 +74,10 @@ public class TestICloud {
         ICloudService service = new ICloudService(iCloudTestEmail, iCloudTestPassword, stateStorage);
         service.authenticate(false);
         if (service.requires2fa()) {
-            System.out.print("Code: ");
+            PrintStream consoleOutput = System.out;
+            if (consoleOutput != null) {
+                consoleOutput.print("Code: ");
+            }
             Scanner in = new Scanner(System.in);
             String code = in.nextLine();
             in.close();
