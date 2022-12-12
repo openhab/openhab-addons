@@ -15,7 +15,7 @@
   <name>openHAB Add-ons :: Bundles :: KNX Binding</name>
 
   <properties>
-    <bnd.importpackage>gnu.io;version="[3.12,6)",javax.microedition.io.*;resolution:="optional",javax.usb.*;resolution:="optional",org.usb4java.*;resolution:="optional"</bnd.importpackage>
+    <bnd.importpackage>javax.microedition.io.*;resolution:="optional",javax.usb.*;resolution:="optional",org.usb4java.*;resolution:="optional"</bnd.importpackage>
   </properties>
 
   <dependencies>
