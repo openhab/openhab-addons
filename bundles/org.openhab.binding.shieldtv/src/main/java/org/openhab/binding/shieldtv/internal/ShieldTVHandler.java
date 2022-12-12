@@ -16,12 +16,12 @@ import static org.openhab.binding.shieldtv.internal.ShieldTVBindingConstants.*;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.InterruptedIOException;
 import java.io.OutputStreamWriter;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.net.UnknownHostException;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
@@ -31,16 +31,15 @@ import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Future;
 
+import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
@@ -50,12 +49,12 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shieldtv.internal.protocol.shieldtv.ShieldTVCommand;
 import org.openhab.binding.shieldtv.internal.protocol.shieldtv.ShieldTVMessageParser;
 import org.openhab.binding.shieldtv.internal.protocol.shieldtv.ShieldTVMessageParserCallbacks;
-import org.openhab.binding.shieldtv.internal.protocol.shieldtv.Request;
+import org.openhab.binding.shieldtv.internal.protocol.shieldtv.ShieldTVRequest;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -108,34 +107,6 @@ public class ShieldTVHandler extends BaseThingHandler implements ShieldTVMessage
     public ShieldTVHandler(Thing thing) {
         super(thing);
         shieldtvMessageParser = new ShieldTVMessageParser(this);
-    }
-
-
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        if (CHANNEL_KEYPRESS.equals(channelUID.getId())) {
-            if (command instanceof RefreshType) {
-                // TODO: handle data refresh
-            }
-
-            // TODO: handle command
-
-            // Note: if communication with thing fails for some reason,
-            // indicate that by setting the status with detail information:
-            // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-            // "Could not control device at IP address x.x.x.x");
-        } else if (CHANNEL_PINCODE.equals(channelUID.getId())) {
-            if (command instanceof RefreshType) {
-                // TODO: handle data refresh
-            }
-
-            // TODO: handle command
-
-            // Note: if communication with thing fails for some reason,
-            // indicate that by setting the status with detail information:
-            // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-            // "Could not control device at IP address x.x.x.x");
-        }
     }
 
     @Override
@@ -210,7 +181,6 @@ public class ShieldTVHandler extends BaseThingHandler implements ShieldTVMessage
 
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Connecting");
         asyncInitializeTask = scheduler.submit(this::connect); // start the async connect task
-
     }
 
     private TrustManager[] defineNoOpTrustManager() {
@@ -290,6 +260,8 @@ public class ShieldTVHandler extends BaseThingHandler implements ShieldTVMessage
         logger.debug("Starting keepalive job with interval {}", heartbeatInterval);
         keepAliveJob = scheduler.scheduleWithFixedDelay(this::sendKeepAlive, heartbeatInterval, heartbeatInterval,
                 TimeUnit.MINUTES);
+
+        updateStatus(ThingStatus.ONLINE);
     }
 
     private void scheduleConnectRetry(long waitMinutes) {
@@ -430,15 +402,15 @@ public class ShieldTVHandler extends BaseThingHandler implements ShieldTVMessage
     }
 
     /*
-    private void checkInitialized() {
-        ThingStatusInfo statusInfo = getThing().getStatusInfo();
-        if (statusInfo.getStatus() == ThingStatus.OFFLINE && STATUS_INITIALIZING.equals(statusInfo.getDescription())) {
-            if (deviceDataLoaded && buttonDataLoaded) {
-                updateStatus(ThingStatus.ONLINE);
-            }
-        }
-    }
-    */
+     * private void checkInitialized() {
+     * ThingStatusInfo statusInfo = getThing().getStatusInfo();
+     * if (statusInfo.getStatus() == ThingStatus.OFFLINE && STATUS_INITIALIZING.equals(statusInfo.getDescription())) {
+     * if (deviceDataLoaded && buttonDataLoaded) {
+     * updateStatus(ThingStatus.ONLINE);
+     * }
+     * }
+     * }
+     */
 
     /**
      * Schedules the reconnect task keepAliveReconnectJob to execute in KEEPALIVE_TIMEOUT_SECONDS. This should be
@@ -485,4 +457,39 @@ public class ShieldTVHandler extends BaseThingHandler implements ShieldTVMessage
         }
     }
 
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        logger.trace("Command received: {}", channelUID.getId().toString());
+
+        if (CHANNEL_KEYPRESS.equals(channelUID.getId())) {
+            if (command instanceof RefreshType) {
+                // TODO: handle data refresh
+            }
+
+            // TODO: handle command
+
+            // Note: if communication with thing fails for some reason,
+            // indicate that by setting the status with detail information:
+            // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            // "Could not control device at IP address x.x.x.x");
+        } else if (CHANNEL_PINCODE.equals(channelUID.getId())) {
+            if (command instanceof RefreshType) {
+                // TODO: handle data refresh
+            }
+
+            // TODO: handle command
+
+            // Note: if communication with thing fails for some reason,
+            // indicate that by setting the status with detail information:
+            // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            // "Could not control device at IP address x.x.x.x");
+        } else if (CHANNEL_RAW.equals(channelUID.getId())) {
+            if (command instanceof StringType) {
+                String message = ShieldTVRequest.encodeMessage(command.toString());
+                logger.trace("Sending Raw Message: {}", message);
+                logger.trace("Raw Message Decodes as: {}", ShieldTVRequest.decodeMessage(message));
+                sendCommand(new ShieldTVCommand(message));
+            }
+        }
+    }
 }

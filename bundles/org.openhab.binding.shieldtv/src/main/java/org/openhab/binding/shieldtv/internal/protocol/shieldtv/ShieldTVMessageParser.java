@@ -34,9 +34,17 @@ public class ShieldTVMessageParser {
     }
 
     public void handleMessage(String msg) {
+        String decodedMessage;
         if (msg.trim().equals("")) {
             return; // Ignore empty lines
         }
+
         logger.trace("Received message: {}", msg);
+
+        decodedMessage = ShieldTVRequest.decodeMessage(msg);
+
+        logger.trace("Decoded message: {}", decodedMessage);
+
+        return;
     }
 }

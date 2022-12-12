@@ -34,5 +34,4 @@ public class ShieldTVConfiguration {
     public @Nullable String keystore;
     public @Nullable String keystorePassword;
     public int delay = 0;
-
 }

@@ -32,6 +32,7 @@ public class ShieldTVBindingConstants {
     // List of all Channel ids
     public static final String CHANNEL_KEYPRESS = "keypress";
     public static final String CHANNEL_PINCODE = "pincode";
+    public static final String CHANNEL_RAW = "raw";
 
     // List of all config properties
     public static final String IPADDRESS = "ipAddress";
