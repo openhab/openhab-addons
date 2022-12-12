@@ -159,7 +159,9 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
                 try {
                     success = handle2FAAuthentication();
                 } catch (IOException | InterruptedException | ICloudApiResponseException ex) {
-                    logger.warn("Error while validating 2-FA code.", ex);
+                    logger.debug("Error while validating 2-FA code.", ex);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                             "Error while validating 2-FA code.");
                     return null;
                 }
             }
