@@ -38,9 +38,6 @@ import org.openhab.core.storage.Storage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 /**
  *
  * Class to handle iCloud API session information for accessing the API.
@@ -60,8 +57,6 @@ public class ICloudSession {
 
     private ICloudSessionData data = new ICloudSessionData();
 
-    private final Gson gson = new GsonBuilder().create();
-
     private Storage<String> stateStorage;
 
     private static final String SESSION_DATA_KEY = "SESSION_DATA";
@@ -74,7 +69,7 @@ public class ICloudSession {
     public ICloudSession(Storage<String> stateStorage) {
         String storedData = stateStorage.get(SESSION_DATA_KEY);
         if (storedData != null) {
-            ICloudSessionData localSessionData = gson.fromJson(storedData, ICloudSessionData.class);
+            ICloudSessionData localSessionData = JsonUtils.fromJson(storedData, ICloudSessionData.class);
             if (localSessionData != null) {
                 data = localSessionData;
             }
@@ -141,8 +136,9 @@ public class ICloudSession {
         logger.trace("Calling {}\nHeaders -----\n{}\nBody -----\n{}\n------\n", url, request.headers(), body);
 
         HttpResponse<?> response = this.client.send(request, BodyHandlers.ofString());
+
         logger.trace("Result {} {}\nHeaders -----\n{}\nBody -----\n{}\n------\n", url, response.statusCode(),
-                response.headers().toString(), response.body().toString());
+                response.headers(), response.body());
 
         if (response.statusCode() >= 300) {
             throw new ICloudApiResponseException(url, response.statusCode());
@@ -156,9 +152,14 @@ public class ICloudSession {
         this.data.trustToken = response.headers().firstValue("X-Apple-TwoSV-Trust-Token").orElse(getTrustToken());
         this.data.scnt = response.headers().firstValue("scnt").orElse(getScnt());
 
-        this.stateStorage.put(SESSION_DATA_KEY, this.gson.toJson(this.data));
+        this.stateStorage.put(SESSION_DATA_KEY, JsonUtils.toJson(this.data));
 
-        return response.body().toString();
+        Object responseBody = response.body();
+        if (responseBody != null) {
+            return responseBody.toString() + "";
+        } else {
+            return "";
+        }
     }
 
     /**

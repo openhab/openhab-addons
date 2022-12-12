@@ -26,8 +26,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.icloud.internal.ICloudApiResponseException;
 import org.openhab.binding.icloud.internal.ICloudDeviceInformationListener;
-import org.openhab.binding.icloud.internal.ICloudDeviceInformationParser;
 import org.openhab.binding.icloud.internal.ICloudService;
+import org.openhab.binding.icloud.internal.JsonUtils;
 import org.openhab.binding.icloud.internal.RetryException;
 import org.openhab.binding.icloud.internal.configuration.ICloudAccountThingConfiguration;
 import org.openhab.binding.icloud.internal.json.response.ICloudAccountDataResponse;
@@ -56,6 +56,7 @@ import com.google.gson.JsonSyntaxException;
  *
  * @author Patrik Gfeller - Initial contribution
  * @author Hans-Jörg Merk - Extended support with initial Contribution
+ * @author Simon Spielmann - Rework for new iCloud API
  */
 @NonNullByDefault
 public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
@@ -63,8 +64,6 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(ICloudAccountBridgeHandler.class);
 
     private static final int CACHE_EXPIRY = (int) SECONDS.toMillis(10);
-
-    private final ICloudDeviceInformationParser deviceInformationParser = new ICloudDeviceInformationParser();
 
     private @Nullable ICloudService iCloudService;
 
@@ -104,6 +103,7 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
         }
     }
 
+    @SuppressWarnings("null")
     @Override
     public void initialize() {
         logger.debug("iCloud bridge handler initializing ...");
@@ -119,12 +119,11 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
 
         this.iCloudDeviceInformationCache = new ExpiringCache<>(CACHE_EXPIRY, () -> {
             return callApiWithRetryAndExceptionHandling(() -> {
-                if (iCloudService != null) {
-                    return iCloudService.getDevices().refreshClient();
-                } else {
-                    logger.debug("iCloud service is null. Returning null.");
-                    return null;
-                }
+                // callApiWithRetryAndExceptionHanlding ensures that iCloudService is not null when the following is
+                // called. Cannot use method local iCloudService instance here, because instance may be replaced with a
+                // new
+                // one during retry.
+                return iCloudService.getDevices().refreshClient();
             });
 
         });
@@ -134,15 +133,12 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
             this.refreshJob = this.scheduler.scheduleWithFixedDelay(this::refreshData, 0, config.refreshTimeInMinutes,
                     MINUTES);
         } else {
-            if (this.refreshJob != null) {
-                this.refreshJob.cancel(false);
-                this.refreshJob = null;
-            }
+            cancelRefresh();
         }
         logger.debug("iCloud bridge handler initialized.");
     }
 
-    private <T> T callApiWithRetryAndExceptionHandling(Callable<T> wrapped) {
+    private <@Nullable T> T callApiWithRetryAndExceptionHandling(Callable<T> wrapped) {
         int retryCount = 1;
         boolean success = false;
         Throwable lastException = null;
@@ -215,7 +211,8 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
     private boolean handle2FAAuthentication() throws IOException, InterruptedException, ICloudApiResponseException {
         logger.debug("Starting iCloud 2-FA authentication  AuthState={}, Thing={})...", authState,
                 getThing().getUID().getAsString());
-        if (authState != AuthState.WAIT_FOR_CODE || iCloudService == null) {
+        final ICloudService localICloudService = this.iCloudService;
+        if (authState != AuthState.WAIT_FOR_CODE || localICloudService == null) {
             throw new IllegalStateException("2-FA authentication not initialized.");
         }
         ICloudAccountThingConfiguration config = getConfigAs(ICloudAccountThingConfiguration.class);
@@ -235,7 +232,7 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
             logger.debug("Code is given in thing configuration '{}'. Trying to validate code...",
                     getThing().getUID().getAsString());
             storage.put(AUTH_CODE_KEY, lastTriedCode);
-            success = iCloudService.validate2faCode(code);
+            success = localICloudService.validate2faCode(code);
             if (!success) {
                 authState = AuthState.INITIAL;
                 logger.warn("ICloud token invalid.");
@@ -261,16 +258,25 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
-        if (refreshJob != null) {
-            refreshJob.cancel(true);
-            refreshJob = null;
-        }
+        cancelRefresh();
         super.dispose();
     }
 
+    private void cancelRefresh() {
+        final ScheduledFuture<?> refreshJob = this.refreshJob;
+        if (refreshJob != null) {
+            refreshJob.cancel(true);
+            this.refreshJob = null;
+        }
+    }
+
+    @SuppressWarnings("null")
     public void findMyDevice(String deviceId) throws IOException, InterruptedException {
         callApiWithRetryAndExceptionHandling(() -> {
-            this.iCloudService.getDevices().playSound(deviceId);
+            // callApiWithRetryAndExceptionHanlding ensures that iCloudService is not null when the following is
+            // called. Cannot use method local iCloudService instance here, because instance may be replaced with a new
+            // one during retry.
+            iCloudService.getDevices().playSound(deviceId);
             return null;
         });
     }
@@ -310,13 +316,14 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
     private boolean checkLogin() {
         logger.debug("Starting iCloud authentication (AuthState={}, Thing={})...", authState,
                 getThing().getUID().getAsString());
-        if (authState == AuthState.WAIT_FOR_CODE) {
+        final ICloudService localICloudService = this.iCloudService;
+        if (authState == AuthState.WAIT_FOR_CODE || localICloudService == null) {
             throw new IllegalStateException("2-FA authentication not completed.");
         }
 
         try {
             // No code requested yet or session is trusted (hopefully).
-            boolean success = this.iCloudService.authenticate(false);
+            boolean success = localICloudService.authenticate(false);
             if (!success) {
                 authState = AuthState.USER_PW_INVALID;
                 logger.warn("iCloud authentication failed. Invalid credentials.");
@@ -324,7 +331,7 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
                 this.iCloudService = null;
                 return false;
             }
-            if (iCloudService.requires2fa()) {
+            if (localICloudService.requires2fa()) {
                 // New code was requested. Wait for the user to update config.
                 logger.warn(
                         "iCloud authentication requires 2-FA code. Please provide code configuration for thing '{}'.",
@@ -335,9 +342,9 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
                 return false;
             }
 
-            if (!this.iCloudService.isTrustedSession()) {
+            if (!localICloudService.isTrustedSession()) {
                 logger.debug("Trying to establish session trust.");
-                success = this.iCloudService.trustSession();
+                success = localICloudService.trustSession();
                 if (!success) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Session trust failed.");
                     return false;
@@ -359,10 +366,17 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
         }
     }
 
+    /**
+     * Refresh iCloud device data.
+     */
     public void refreshData() {
         logger.debug("iCloud bridge refreshing data ...");
         synchronized (this.synchronizeRefresh) {
-            String json = this.iCloudDeviceInformationCache.getValue();
+            ExpiringCache<String> localCache = this.iCloudDeviceInformationCache;
+            if (localCache == null) {
+                return;
+            }
+            String json = localCache.getValue();
             logger.trace("json: {}", json);
 
             if (json == null) {
@@ -370,7 +384,7 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
             }
 
             try {
-                ICloudAccountDataResponse iCloudData = this.deviceInformationParser.parse(json);
+                ICloudAccountDataResponse iCloudData = JsonUtils.fromJson(json, ICloudAccountDataResponse.class);
                 if (iCloudData == null) {
                     return;
                 }

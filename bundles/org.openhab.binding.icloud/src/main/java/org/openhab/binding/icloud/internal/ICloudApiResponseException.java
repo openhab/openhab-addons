@@ -23,6 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class ICloudApiResponseException extends Exception {
 
+    private static final long serialVersionUID = 1L;
     private int statusCode;
 
     /**

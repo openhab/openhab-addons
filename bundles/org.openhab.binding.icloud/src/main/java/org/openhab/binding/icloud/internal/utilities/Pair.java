@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @param <V> Type of second element
  */
 @NonNullByDefault
-public class Pair<K extends @NonNull Object, V extends @NonNull Object> {
+public class Pair<@NonNull K, @NonNull V> {
 
     private K key;
 

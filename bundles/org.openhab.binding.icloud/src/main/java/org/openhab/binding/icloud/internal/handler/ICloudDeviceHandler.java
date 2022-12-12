@@ -53,6 +53,7 @@ import org.slf4j.LoggerFactory;
  * @author Patrik Gfeller - Initial contribution
  * @author Hans-Jörg Merk - Helped with testing and feedback
  * @author Gaël L'hopital - Added low battery
+ * @author Simon Spielmann - Rework for new iCloud API
  *
  */
 @NonNullByDefault
@@ -120,9 +121,15 @@ public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDevic
     public void handleCommand(ChannelUID channelUID, Command command) {
         this.logger.trace("Command '{}' received for channel '{}'", command, channelUID);
 
-        ICloudAccountBridgeHandler bridge = (ICloudAccountBridgeHandler) getBridge().getHandler();
+        Bridge bridge = getBridge();
         if (bridge == null) {
             this.logger.debug("No bridge found, ignoring command");
+            return;
+        }
+
+        ICloudAccountBridgeHandler bridgeHandler = (ICloudAccountBridgeHandler) bridge.getHandler();
+        if (bridgeHandler == null) {
+            this.logger.debug("No bridge handler found, ignoring command");
             return;
         }
 
@@ -135,7 +142,7 @@ public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDevic
                         this.logger.debug("Can't send Find My Device request, because deviceId is null!");
                         return;
                     }
-                    bridge.findMyDevice(deviceId);
+                    bridgeHandler.findMyDevice(deviceId);
                 } catch (IOException | InterruptedException e) {
                     this.logger.warn("Unable to execute find my device request", e);
                 }
@@ -144,7 +151,7 @@ public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDevic
         }
 
         if (command instanceof RefreshType) {
-            bridge.refreshData();
+            bridgeHandler.refreshData();
         }
     }
 

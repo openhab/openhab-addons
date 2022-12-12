@@ -27,9 +27,6 @@ import org.openhab.core.storage.Storage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 /**
  *
  * Class to access Apple iCloud API.
@@ -48,8 +45,6 @@ public class ICloudService {
     private static final String HOME_ENDPOINT = "https://www.icloud.com";
 
     private static final String SETUP_ENDPOINT = "https://setup.icloud.com/setup/ws/1";
-
-    private final Gson gson = new GsonBuilder().create();
 
     private String appleId;
 
@@ -114,7 +109,7 @@ public class ICloudService {
             List<Pair<String, String>> headers = getAuthHeaders();
 
             try {
-                this.session.post(AUTH_ENDPOINT + "/signin?isRememberMeEnabled=true", this.gson.toJson(requestBody),
+                this.session.post(AUTH_ENDPOINT + "/signin?isRememberMeEnabled=true", JsonUtils.toJson(requestBody),
                         headers);
             } catch (ICloudApiResponseException ex) {
                 return false;
@@ -158,8 +153,8 @@ public class ICloudService {
 
         try {
             @Nullable
-            Map<String, Object> localSessionData = gson.fromJson(
-                    session.post(SETUP_ENDPOINT + "/accountLogin", gson.toJson(requestBody), null), Map.class);
+            Map<String, Object> localSessionData = JsonUtils
+                    .toMap(session.post(SETUP_ENDPOINT + "/accountLogin", JsonUtils.toJson(requestBody), null));
             if (localSessionData != null) {
                 data = localSessionData;
             }
@@ -191,7 +186,7 @@ public class ICloudService {
         logger.debug("Session token is still valid");
 
         @Nullable
-        Map<String, Object> localSessionData = gson.fromJson(result, Map.class);
+        Map<String, Object> localSessionData = JsonUtils.toMap(result);
         if (localSessionData == null) {
             throw new IOException("Unable to create data object from json response");
         }
@@ -206,8 +201,8 @@ public class ICloudService {
     public boolean requires2fa() {
         if (this.data.containsKey("dsInfo")) {
             @SuppressWarnings("unchecked")
-            Map<String, Object> dsInfo = (Map<String, Object>) this.data.get("dsInfo");
-            if (((Double) dsInfo.getOrDefault("hsaVersion", "0")) == 2.0) {
+            Map<String, Object> dsInfo = (@Nullable Map<String, Object>) this.data.get("dsInfo");
+            if (dsInfo != null && ((Double) dsInfo.getOrDefault("hsaVersion", "0")) == 2.0) {
                 return (this.data.containsKey("hsaChallengeRequired")
                         && ((Boolean) this.data.getOrDefault("hsaChallengeRequired", Boolean.FALSE)
                                 || !isTrustedSession()));
@@ -243,7 +238,7 @@ public class ICloudService {
         addSessionHeaders(headers);
 
         try {
-            this.session.post(AUTH_ENDPOINT + "/verify/trusteddevice/securitycode", this.gson.toJson(requestBody),
+            this.session.post(AUTH_ENDPOINT + "/verify/trusteddevice/securitycode", JsonUtils.toJson(requestBody),
                     headers);
         } catch (ICloudApiResponseException ex) {
             logger.debug("Code verification failed.", ex);
@@ -275,7 +270,17 @@ public class ICloudService {
         if (webservices == null) {
             return null;
         }
-        return (String) ((Map<?, ?>) webservices.get(wsKey)).get("url");
+        if (webservices.get(wsKey) instanceof Map) {
+            Map<String, ?> wsMap = (@Nullable Map<String, ?>) webservices.get(wsKey);
+            if (wsMap == null) {
+                logger.error("Webservices result map has not expected format.");
+                return null;
+            }
+            return (String) wsMap.get("url");
+        } else {
+            logger.error("Webservices result map has not expected format.");
+            return null;
+        }
     }
 
     /**

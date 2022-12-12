@@ -24,8 +24,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.openhab.binding.icloud.internal.ICloudApiResponseException;
-import org.openhab.binding.icloud.internal.ICloudDeviceInformationParser;
 import org.openhab.binding.icloud.internal.ICloudService;
+import org.openhab.binding.icloud.internal.JsonUtils;
 import org.openhab.binding.icloud.internal.json.response.ICloudAccountDataResponse;
 import org.openhab.core.storage.json.internal.JsonStorage;
 import org.slf4j.Logger;
@@ -83,8 +83,8 @@ public class TestICloud {
                 logger.info("Trust failed!!!");
             }
         }
-        ICloudAccountDataResponse deviceInfo = new ICloudDeviceInformationParser()
-                .parse(service.getDevices().refreshClient());
+        ICloudAccountDataResponse deviceInfo = JsonUtils.fromJson(service.getDevices().refreshClient(),
+                ICloudAccountDataResponse.class);
         assertNotNull(deviceInfo);
         stateStorage.flush();
     }

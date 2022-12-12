@@ -18,9 +18,6 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 /**
  * This class gives access to the find my iPhone (FMIP) service.
  *
@@ -37,8 +34,6 @@ public class FindMyIPhoneServiceManager {
 
     private static final String FMIP_ENDPOINT = "/fmipservice/client/web";
 
-    private final Gson gson = new GsonBuilder().create();
-
     /**
      * The constructor.
      *
@@ -54,7 +49,8 @@ public class FindMyIPhoneServiceManager {
     /**
      * Receive client informations as JSON.
      *
-     * @return Information about all clients as JSON {@link ICloudDeviceInformation}.
+     * @return Information about all clients as JSON
+     *         {@link org.openhab.binding.icloud.internal.json.response.ICloudDeviceInformation}.
      *
      * @throws IOException if I/O error occurred
      * @throws InterruptedException if this blocking request was interrupted
@@ -64,7 +60,7 @@ public class FindMyIPhoneServiceManager {
     public String refreshClient() throws IOException, InterruptedException, ICloudApiResponseException {
         Map<String, Object> request = Map.of("clientContext",
                 Map.of("fmly", true, "shouldLocate", true, "selectedDevice", "All", "deviceListVersion", 1));
-        return session.post(this.fmipRefreshUrl.toString(), this.gson.toJson(request), null);
+        return session.post(this.fmipRefreshUrl.toString(), JsonUtils.toJson(request), null);
     }
 
     /**
@@ -77,6 +73,6 @@ public class FindMyIPhoneServiceManager {
      */
     public void playSound(String deviceId) throws IOException, InterruptedException, ICloudApiResponseException {
         Map<String, Object> request = Map.of("device", deviceId, "fmyl", true, "subject", "Message from openHAB.");
-        session.post(this.fmipSoundUrl.toString(), this.gson.toJson(request), null);
+        session.post(this.fmipSoundUrl.toString(), JsonUtils.toJson(request), null);
     }
 }
