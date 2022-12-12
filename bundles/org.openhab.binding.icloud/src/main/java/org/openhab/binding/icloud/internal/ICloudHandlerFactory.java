@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.icloud.internal.discovery.ICloudDeviceDiscovery;
 import org.openhab.binding.icloud.internal.handler.ICloudAccountBridgeHandler;
@@ -45,6 +46,7 @@ import org.osgi.service.component.annotations.Reference;
  * @author Patrik Gfeller - Initial contribution
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.icloud")
+@NonNullByDefault
 public class ICloudHandlerFactory extends BaseThingHandlerFactory {
     private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegistrations = new HashMap<>();
 
@@ -55,8 +57,11 @@ public class ICloudHandlerFactory extends BaseThingHandlerFactory {
     private final StorageService storageService;
 
     @Activate
-    public ICloudHandlerFactory(@Reference StorageService storageService) {
+    public ICloudHandlerFactory(@Reference StorageService storageService, @Reference LocaleProvider localeProvider,
+            @Reference TranslationProvider i18nProvider) {
         this.storageService = storageService;
+        this.localeProvider = localeProvider;
+        this.i18nProvider = i18nProvider;
     }
 
     @Override
@@ -109,23 +114,5 @@ public class ICloudHandlerFactory extends BaseThingHandlerFactory {
             serviceRegistration.unregister();
             this.discoveryServiceRegistrations.remove(bridgeHandler.getThing().getUID());
         }
-    }
-
-    @Reference
-    protected void setLocaleProvider(LocaleProvider localeProvider) {
-        this.localeProvider = localeProvider;
-    }
-
-    protected void unsetLocaleProvider(LocaleProvider localeProvider) {
-        this.localeProvider = null;
-    }
-
-    @Reference
-    public void setTranslationProvider(TranslationProvider i18nProvider) {
-        this.i18nProvider = i18nProvider;
-    }
-
-    public void unsetTranslationProvider(TranslationProvider i18nProvider) {
-        this.i18nProvider = null;
     }
 }
