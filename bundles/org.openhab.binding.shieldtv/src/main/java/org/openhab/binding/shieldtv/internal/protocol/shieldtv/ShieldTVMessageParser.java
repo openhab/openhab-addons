@@ -29,7 +29,14 @@ import org.slf4j.LoggerFactory;
 public class ShieldTVMessageParser {
     private final Logger logger = LoggerFactory.getLogger(ShieldTVMessageParser.class);
 
-    public void handleMessage(String msg) {
+    public ShieldTVMessageParser(ShieldTVMessageParserCallbacks callback) {
         return;
+    }
+
+    public void handleMessage(String msg) {
+        if (msg.trim().equals("")) {
+            return; // Ignore empty lines
+        }
+        logger.trace("Received message: {}", msg);
     }
 }
