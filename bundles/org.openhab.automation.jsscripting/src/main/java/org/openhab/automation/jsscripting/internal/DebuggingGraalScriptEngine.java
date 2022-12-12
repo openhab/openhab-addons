@@ -18,7 +18,7 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 
 import org.graalvm.polyglot.PolyglotException;
-import org.openhab.automation.jsscripting.internal.scriptengine.InvocationInterceptingScriptEngineWithInvocableAndAutoCloseableAndSynchronization;
+import org.openhab.automation.jsscripting.internal.scriptengine.InvocationInterceptingScriptEngineWithInvocableAndAutoCloseable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
  * @author Jonathan Gilbert - Initial contribution
  */
 class DebuggingGraalScriptEngine<T extends ScriptEngine & Invocable & AutoCloseable>
-        extends InvocationInterceptingScriptEngineWithInvocableAndAutoCloseableAndSynchronization<T> {
+        extends InvocationInterceptingScriptEngineWithInvocableAndAutoCloseable<T> {
 
     private static final Logger STACK_LOGGER = LoggerFactory
             .getLogger("org.openhab.automation.script.javascript.stack");
