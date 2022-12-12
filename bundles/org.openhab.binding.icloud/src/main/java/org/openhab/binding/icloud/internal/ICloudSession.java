@@ -137,8 +137,10 @@ public class ICloudSession {
 
         HttpResponse<?> response = this.client.send(request, BodyHandlers.ofString());
 
+        String responseBodyAsString = response.body() != null ? response.body().toString() : "";
+
         logger.trace("Result {} {}\nHeaders -----\n{}\nBody -----\n{}\n------\n", url, response.statusCode(),
-                response.headers(), response.body());
+                response.headers(), responseBodyAsString);
 
         if (response.statusCode() >= 300) {
             throw new ICloudApiResponseException(url, response.statusCode());
@@ -154,12 +156,7 @@ public class ICloudSession {
 
         this.stateStorage.put(SESSION_DATA_KEY, JsonUtils.toJson(this.data));
 
-        Object responseBody = response.body();
-        if (responseBody != null) {
-            return responseBody.toString() + "";
-        } else {
-            return "";
-        }
+        return responseBodyAsString;
     }
 
     /**

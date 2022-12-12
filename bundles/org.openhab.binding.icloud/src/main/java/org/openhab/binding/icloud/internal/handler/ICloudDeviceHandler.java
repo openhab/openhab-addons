@@ -27,7 +27,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.icloud.internal.ICloudDeviceInformationListener;
 import org.openhab.binding.icloud.internal.configuration.ICloudDeviceThingConfiguration;
-import org.openhab.binding.icloud.internal.json.response.ICloudDeviceInformation;
+import org.openhab.binding.icloud.internal.handler.dto.json.response.ICloudDeviceInformation;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;

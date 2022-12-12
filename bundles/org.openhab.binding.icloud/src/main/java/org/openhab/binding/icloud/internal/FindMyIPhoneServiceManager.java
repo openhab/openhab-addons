@@ -50,7 +50,7 @@ public class FindMyIPhoneServiceManager {
      * Receive client information as JSON.
      *
      * @return Information about all clients as JSON
-     *         {@link org.openhab.binding.icloud.internal.json.response.ICloudDeviceInformation}.
+     *         {@link org.openhab.binding.icloud.internal.handler.dto.json.response.ICloudDeviceInformation}.
      *
      * @throws IOException if I/O error occurred
      * @throws InterruptedException if this blocking request was interrupted

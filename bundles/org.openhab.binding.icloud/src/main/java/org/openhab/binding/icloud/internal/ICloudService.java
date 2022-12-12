@@ -268,20 +268,26 @@ public class ICloudService {
     }
 
     private @Nullable String getWebserviceUrl(String wsKey) {
-        @SuppressWarnings("unchecked")
-        Map<String, Object> webservices = (@Nullable Map<String, Object>) data.get("webservices");
-        if (webservices == null) {
-            return null;
-        }
-        if (webservices.get(wsKey) instanceof Map) {
-            Map<String, ?> wsMap = (@Nullable Map<String, ?>) webservices.get(wsKey);
-            if (wsMap == null) {
+        try {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> webservices = (@Nullable Map<String, Object>) data.get("webservices");
+            if (webservices == null) {
+                return null;
+            }
+            if (webservices.get(wsKey) instanceof Map) {
+                @SuppressWarnings("unchecked")
+                Map<String, ?> wsMap = (@Nullable Map<String, ?>) webservices.get(wsKey);
+                if (wsMap == null) {
+                    logger.error("Webservices result map has not expected format.");
+                    return null;
+                }
+                return (String) wsMap.get("url");
+            } else {
                 logger.error("Webservices result map has not expected format.");
                 return null;
             }
-            return (String) wsMap.get("url");
-        } else {
-            logger.error("Webservices result map has not expected format.");
+        } catch (ClassCastException e) {
+            logger.error("ClassCastException, map has not expected format.", e);
             return null;
         }
     }

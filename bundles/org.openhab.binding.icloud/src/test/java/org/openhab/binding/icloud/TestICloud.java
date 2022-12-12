@@ -26,7 +26,7 @@ import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.openhab.binding.icloud.internal.ICloudApiResponseException;
 import org.openhab.binding.icloud.internal.ICloudService;
 import org.openhab.binding.icloud.internal.JsonUtils;
-import org.openhab.binding.icloud.internal.json.response.ICloudAccountDataResponse;
+import org.openhab.binding.icloud.internal.handler.dto.json.response.ICloudAccountDataResponse;
 import org.openhab.core.storage.json.internal.JsonStorage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,7 +74,9 @@ public class TestICloud {
         service.authenticate(false);
         if (service.requires2fa()) {
             System.out.print("Code: ");
-            String code = new Scanner(System.in).nextLine();
+            Scanner in = new Scanner(System.in);
+            String code = in.nextLine();
+            in.close();
             assertTrue(service.validate2faCode(code));
             if (!service.isTrustedSession()) {
                 service.trustSession();

@@ -14,6 +14,7 @@ package org.openhab.binding.icloud.internal.utilities;
 
 import java.util.Locale;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
@@ -24,6 +25,7 @@ import org.osgi.framework.Bundle;
  *
  * @author Patrik Gfeller - Initial contribution
  */
+@NonNullByDefault
 public class ICloudTextTranslator {
 
     private final Bundle bundle;
@@ -38,10 +40,12 @@ public class ICloudTextTranslator {
 
     public String getText(String key, Object... arguments) {
         Locale locale = localeProvider != null ? localeProvider.getLocale() : Locale.ENGLISH;
-        return i18nProvider != null ? i18nProvider.getText(bundle, key, getDefaultText(key), locale, arguments) : key;
+        String retText = i18nProvider.getText(bundle, key, getDefaultText(key), locale, arguments);
+        return retText != null ? retText : key;
     }
 
     public String getDefaultText(@Nullable String key) {
-        return i18nProvider.getText(bundle, key, key, Locale.ENGLISH);
+        String retText = i18nProvider.getText(bundle, key, key, Locale.ENGLISH);
+        return retText != null ? retText : key != null ? key : "UNKNOWN_TEXT";
     }
 }
