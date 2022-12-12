@@ -30,6 +30,8 @@ import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -58,7 +60,8 @@ import com.oracle.truffle.js.scriptengine.GraalJSScriptEngine;
  * @author Jonathan Gilbert - Initial contribution
  * @author Dan Cunningham - Script injections
  * @author Florian Hotze - Create lock object for multi-thread synchronization; Inject the {@link JSRuntimeFeatures}
- *         into the JS context; Fix memory leak caused by HostObject by making HostAccess reference static
+ *         into the JS context; Fix memory leak caused by HostObject by making HostAccess reference static; Switch to
+ *         {@link Lock} for multi-thread synchronization
  */
 public class OpenhabGraalJSScriptEngine
         extends InvocationInterceptingScriptEngineWithInvocableAndAutoCloseable<GraalJSScriptEngine> {
@@ -84,7 +87,7 @@ public class OpenhabGraalJSScriptEngine
             .build();
 
     /** Shared lock object for synchronization of multi-thread access */
-    private final Object lock = new Object();
+    private final Lock lock = new ReentrantLock();
     private final JSRuntimeFeatures jsRuntimeFeatures;
 
     // these fields start as null because they are populated on first use
@@ -174,6 +177,8 @@ public class OpenhabGraalJSScriptEngine
 
     @Override
     protected void beforeInvocation() {
+        lock.lock();
+
         if (initialized) {
             return;
         }
@@ -227,11 +232,8 @@ public class OpenhabGraalJSScriptEngine
     }
 
     @Override
-    public Object invokeFunction(String s, Object... objects) throws ScriptException, NoSuchMethodException {
-        // Synchronize multi-thread access to avoid exceptions when reloading a script file while the script is running
-        synchronized (lock) {
-            return super.invokeFunction(s, objects);
-        }
+    protected void afterInvocation() {
+        lock.unlock();
     }
 
     @Override

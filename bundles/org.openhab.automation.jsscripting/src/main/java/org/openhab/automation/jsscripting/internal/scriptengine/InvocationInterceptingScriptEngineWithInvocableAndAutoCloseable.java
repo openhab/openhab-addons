@@ -38,6 +38,9 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndAutoClos
     protected void beforeInvocation() {
     }
 
+    protected void afterInvocation() {
+    }
+
     protected ScriptException afterThrowsInvocation(ScriptException se) {
         return se;
     }
@@ -49,6 +52,8 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndAutoClos
             return super.eval(s, scriptContext);
         } catch (ScriptException se) {
             throw afterThrowsInvocation(se);
+        } finally { // Make sure that Lock is unlocked regardless of an exception is thrown or not to avoid deadlocks
+            afterInvocation();
         }
     }
 
@@ -59,6 +64,8 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndAutoClos
             return super.eval(reader, scriptContext);
         } catch (ScriptException se) {
             throw afterThrowsInvocation(se);
+        } finally { // Make sure that Lock is unlocked regardless of an exception is thrown or not to avoid deadlocks
+            afterInvocation();
         }
     }
 
@@ -69,6 +76,8 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndAutoClos
             return super.eval(s);
         } catch (ScriptException se) {
             throw afterThrowsInvocation(se);
+        } finally { // Make sure that Lock is unlocked regardless of an exception is thrown or not to avoid deadlocks
+            afterInvocation();
         }
     }
 
@@ -79,6 +88,8 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndAutoClos
             return super.eval(reader);
         } catch (ScriptException se) {
             throw afterThrowsInvocation(se);
+        } finally { // Make sure that Lock is unlocked regardless of an exception is thrown or not to avoid deadlocks
+            afterInvocation();
         }
     }
 
@@ -89,6 +100,8 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndAutoClos
             return super.eval(s, bindings);
         } catch (ScriptException se) {
             throw afterThrowsInvocation(se);
+        } finally { // Make sure that Lock is unlocked regardless of an exception is thrown or not to avoid deadlocks
+            afterInvocation();
         }
     }
 
@@ -99,6 +112,8 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndAutoClos
             return super.eval(reader, bindings);
         } catch (ScriptException se) {
             throw afterThrowsInvocation(se);
+        } finally { // Make sure that Lock is unlocked regardless of an exception is thrown or not to avoid deadlocks
+            afterInvocation();
         }
     }
 
@@ -109,6 +124,8 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndAutoClos
             return super.invokeMethod(o, s, objects);
         } catch (ScriptException se) {
             throw afterThrowsInvocation(se);
+        } finally { // Make sure that Lock is unlocked regardless of an exception is thrown or not to avoid deadlocks
+            afterInvocation();
         }
     }
 
@@ -119,6 +136,8 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndAutoClos
             return super.invokeFunction(s, objects);
         } catch (ScriptException se) {
             throw afterThrowsInvocation(se);
+        } finally { // Make sure that Lock is unlocked regardless of an exception is thrown or not to avoid deadlocks
+            afterInvocation();
         }
     }
 }
