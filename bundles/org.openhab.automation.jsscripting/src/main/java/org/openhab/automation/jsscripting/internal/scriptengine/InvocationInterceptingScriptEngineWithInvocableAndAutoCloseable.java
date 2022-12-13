@@ -113,6 +113,10 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndAutoClos
             return afterInvocation(super.invokeMethod(o, s, objects));
         } catch (ScriptException se) {
             throw afterThrowsInvocation(se);
+        } catch (NoSuchMethodException e) { // Make sure to unlock on a NoSuchMethodException to avoid deadlocks
+            throw (NoSuchMethodException) afterInvocation(e); // This exception shouldn't be handled by the
+                                                              // OpenHABGraalJSScriptEngine, so don't use
+                                                              // afterThrowsInvocation
         }
     }
 
@@ -123,6 +127,10 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndAutoClos
             return afterInvocation(super.invokeFunction(s, objects));
         } catch (ScriptException se) {
             throw afterThrowsInvocation(se);
+        } catch (NoSuchMethodException e) { // Make sure to unlock on a NoSuchMethodException to avoid deadlocks
+            throw (NoSuchMethodException) afterInvocation(e); // This exception shouldn't be handled by the
+                                                              // OpenHABGraalJSScriptEngine, so don't use
+                                                              // afterThrowsInvocation
         }
     }
 }
