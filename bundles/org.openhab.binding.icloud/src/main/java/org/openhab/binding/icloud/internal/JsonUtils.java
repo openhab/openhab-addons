@@ -33,9 +33,9 @@ import com.google.gson.reflect.TypeToken;
  */
 @NonNullByDefault
 public class JsonUtils {
-    private final static Gson GSON = new GsonBuilder().create();
+    private static final Gson GSON = new GsonBuilder().create();
 
-    private final static Type STRING_OBJ_MAP_TYPE = new TypeToken<Map<String, Object>>() {
+    private static final Type STRING_OBJ_MAP_TYPE = new TypeToken<Map<String, Object>>() {
     }.getType();
 
     /**

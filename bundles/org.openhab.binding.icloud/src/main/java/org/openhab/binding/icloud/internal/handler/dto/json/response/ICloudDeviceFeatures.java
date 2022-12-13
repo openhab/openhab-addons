@@ -26,7 +26,7 @@ public class ICloudDeviceFeatures {
     private boolean clk;
 
     @SerializedName("CLT")
-    private boolean CLT;
+    private boolean clt;
 
     @SerializedName("CWP")
     private boolean cwp;
@@ -94,8 +94,8 @@ public class ICloudDeviceFeatures {
         return this.clk;
     }
 
-    public boolean getCLT() {
-        return this.CLT;
+    public boolean getClt() {
+        return this.clt;
     }
 
     public boolean getCwp() {
