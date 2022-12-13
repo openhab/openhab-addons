@@ -17,6 +17,7 @@ import java.net.URI;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.icloud.internal.utilities.JsonUtils;
 
 /**
  * This class gives access to the find my iPhone (FMIP) service.

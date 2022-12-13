@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.icloud.internal;
+package org.openhab.binding.icloud.internal.utilities;
 
 import java.lang.reflect.Type;
 import java.util.Map;

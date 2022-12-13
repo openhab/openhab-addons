@@ -21,6 +21,7 @@ import java.util.UUID;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.icloud.internal.utilities.JsonUtils;
 import org.openhab.binding.icloud.internal.utilities.ListUtil;
 import org.openhab.binding.icloud.internal.utilities.Pair;
 import org.openhab.core.storage.Storage;
