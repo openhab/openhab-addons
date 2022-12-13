@@ -89,7 +89,9 @@ public class JRubyScriptEngineFactory extends AbstractScriptEngineFactory {
         configuration.update(config, factory);
         // Re-initialize the dependency tracker's watchers.
         jrubyDependencyTracker.deactivate();
-        jrubyDependencyTracker.activate();
+        if (configuration.enableDependencyTracking()) {
+            jrubyDependencyTracker.activate();
+        }
     }
 
     @Override
@@ -119,7 +121,7 @@ public class JRubyScriptEngineFactory extends AbstractScriptEngineFactory {
         importClassesToRuby(scriptEngine, partitionedMap.getOrDefault(true, new HashMap<>()));
 
         Object scriptExtension = scopeValues.get("scriptExtension");
-        if (scriptExtension instanceof ScriptExtensionManagerWrapper) {
+        if (scriptExtension instanceof ScriptExtensionManagerWrapper && configuration.enableDependencyTracking()) {
             ScriptExtensionManagerWrapper wrapper = (ScriptExtensionManagerWrapper) scriptExtension;
             // we inject like this instead of using the script context, because
             // this is executed _before_ the dependency tracker is added to the script
