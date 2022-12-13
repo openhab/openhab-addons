@@ -105,6 +105,8 @@ public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDevic
                 if (bridge.getStatus() == ThingStatus.ONLINE) {
                     handler.refreshData();
                     updateStatus(ThingStatus.ONLINE);
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
                 }
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
