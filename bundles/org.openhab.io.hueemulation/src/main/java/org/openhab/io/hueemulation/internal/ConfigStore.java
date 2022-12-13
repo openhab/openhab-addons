@@ -276,7 +276,7 @@ public class ConfigStore {
         try {
             // Generate prefix if uuid is a randomly generated UUID
             if (UUID.fromString(uuid).version() == 4) {
-                final StringBuilder sb = new StringBuilder(23);
+                final StringBuilder sb = new StringBuilder(17);
                 sb.append(uuid, 0, 2).append(":").append(uuid, 2, 4).append(":").append(uuid, 4, 6).append(":")
                         .append(uuid, 6, 8).append(":").append(uuid, 9, 11).append(":").append(uuid, 11, 13);
                 prefix = sb.toString().toUpperCase();
