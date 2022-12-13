@@ -40,7 +40,7 @@ public class HomekitAuthInfoImpl implements HomekitAuthInfo {
     private static final String STORAGE_PRIVATE_KEY = "privateKey";
     private static final String STORAGE_USER_PREFIX = "user_";
 
-    private final Storage<String> storage;
+    private final Storage<Object> storage;
     private String mac;
     private BigInteger salt;
     private byte[] privateKey;
@@ -48,7 +48,7 @@ public class HomekitAuthInfoImpl implements HomekitAuthInfo {
     private String setupId;
     private boolean blockUserDeletion;
 
-    public HomekitAuthInfoImpl(Storage<String> storage, String pin, String setupId, boolean blockUserDeletion)
+    public HomekitAuthInfoImpl(Storage<Object> storage, String pin, String setupId, boolean blockUserDeletion)
             throws InvalidAlgorithmParameterException {
         this.storage = storage;
         this.pin = pin;
@@ -105,7 +105,7 @@ public class HomekitAuthInfoImpl implements HomekitAuthInfo {
 
     @Override
     public byte[] getUserPublicKey(String username) {
-        final String encodedKey = storage.get(createUserKey(username));
+        final String encodedKey = (String) storage.get(createUserKey(username));
         if (encodedKey != null) {
             return Base64.getDecoder().decode(encodedKey);
         } else {
@@ -151,7 +151,7 @@ public class HomekitAuthInfoImpl implements HomekitAuthInfo {
     }
 
     private void initializeStorage() throws InvalidAlgorithmParameterException {
-        mac = storage.get(STORAGE_MAC);
+        mac = (String) storage.get(STORAGE_MAC);
         final @Nullable Object saltConfig = storage.get(STORAGE_SALT);
         final @Nullable Object privateKeyConfig = storage.get(STORAGE_PRIVATE_KEY);
         if (mac == null) {

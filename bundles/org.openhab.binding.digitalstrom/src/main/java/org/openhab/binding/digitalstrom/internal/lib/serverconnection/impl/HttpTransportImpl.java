@@ -52,10 +52,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link HttpTransportImpl} executes an request to the digitalSTROM-Server.
+ * The {@link HttpTransportImpl} executes a request to the digitalSTROM-Server.
  * <p>
  * If a {@link Config} is given at the constructor. It sets the SSL-Certificate what is set in
- * {@link Config#getCert()}. If there is no SSL-Certificate, but an path to an external SSL-Certificate file what is set
+ * {@link Config#getCert()}. If there is no SSL-Certificate, but a path to an external SSL-Certificate file what is set
  * in {@link Config#getTrustCertPath()} this will be set. If no SSL-Certificate is set in the {@link Config} it will be
  * red out from the server and set in {@link Config#setCert(String)}.
  *

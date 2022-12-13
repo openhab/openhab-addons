@@ -31,6 +31,10 @@ public class SomfyTahomaConfig {
     private int statusTimeout = 300;
     private int retries = 10;
     private int retryDelay = 1000;
+    private boolean devMode = false;
+    private String pin = "";
+    private String ip = "";
+    private String token = "";
 
     public String getCloudPortal() {
         return cloudPortal;
@@ -60,6 +64,22 @@ public class SomfyTahomaConfig {
         return retryDelay;
     }
 
+    public boolean isDevMode() {
+        return devMode;
+    }
+
+    public String getPin() {
+        return pin;
+    }
+
+    public String getIp() {
+        return ip;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
     public void setCloudPortal(String cloudPortal) {
         this.cloudPortal = cloudPortal;
     }
@@ -78,5 +98,17 @@ public class SomfyTahomaConfig {
 
     public void setRetryDelay(int retryDelay) {
         this.retryDelay = retryDelay;
+    }
+
+    public void setPin(String pin) {
+        this.pin = pin;
+    }
+
+    public void setIp(String ip) {
+        this.ip = ip;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 }

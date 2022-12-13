@@ -34,10 +34,9 @@ public class GsonOptional {
      */
     private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
 
-    private final Gson gson;
+    private final Gson gson = new GsonBuilder().setDateFormat(DATE_FORMAT).create();
 
     public GsonOptional() {
-        gson = new GsonBuilder().setDateFormat(DATE_FORMAT).create();
     }
 
     public <T> Optional<T> fromJson(String json, Class<T> clazz) throws JsonSyntaxException {

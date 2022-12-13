@@ -1,22 +1,19 @@
 # MCD Binding
 
-This binding allows you to send sensor events from your openHAB environment to the cloud application Managing Care Digital (MCD) by [C&S Computer und Software GmbH](https://www.managingcare.de/). 
+This binding allows you to send sensor events from your openHAB environment to the cloud application Managing Care Digital (MCD) by [C&S Computer und Software GmbH](https://www.managingcare.de/).
 
-MCD is the platform for inpatient and outpatient nursing services. 
-Our REST API allows you to send a variety of sensor events to the system and thus being able to connect your Ambient Assisted Living (AAL) or smart home environment to the documentation software of your nursing service. 
+MCD is the platform for inpatient and outpatient nursing services.
+Our REST API allows you to send a variety of sensor events to the system and thus being able to connect your Ambient Assisted Living (AAL) or smart home environment to the documentation software of your nursing service.
 
 Please note that a valid account is needed to access MCD and the Sensor API.
 
-
 ## Supported Things
 
-There are two supported things: **MCD Bridge** and **MCD Sensor Thing**. 
-
+There are two supported things: **MCD Bridge** and **MCD Sensor Thing**.
 
 ## Discovery
 
-Discovery is not supported. 
-
+Discovery is not supported.
 
 ## Thing Configuration
 
@@ -24,7 +21,7 @@ This section shows the configuration parameters of both supported things.
 
 ### MCD Bridge
 
-The MCD Bridge (`mcdBridge`) needs to be configured with your valid C&S MCD / sync API credentials. 
+The MCD Bridge (`mcdBridge`) needs to be configured with your valid C&S MCD / sync API credentials.
 
 | parameter | description                        |
 |-----------|------------------------------------|
@@ -33,7 +30,7 @@ The MCD Bridge (`mcdBridge`) needs to be configured with your valid C&S MCD / sy
 
 ### MCD Sensor Thing
 
-Each sensor thing (`mcdSensor`) needs to be configured with the identical serial number, that is assigned to this sensor in MCD. 
+Each sensor thing (`mcdSensor`) needs to be configured with the identical serial number, that is assigned to this sensor in MCD.
 
 | parameter      | description                        |
 |----------------|------------------------------------|
@@ -41,16 +38,16 @@ Each sensor thing (`mcdSensor`) needs to be configured with the identical serial
 
 ## Channels
 
-The `mcdSensor` thing supports the following channels.  To see the sensors' events, please visit [Managing Care Digital](https://cundsdokumentation.de/) and navigate to the dashboard. 
+The `mcdSensor` thing supports the following channels.  To see the sensors' events, please visit [Managing Care Digital](https://cundsdokumentation.de/) and navigate to the dashboard.
 
 | channel     | type   | description                                   |
 |-------------|--------|-----------------------------------------------|
 | lastEvent | String | shows the last event that was sent with date and time |
 | sendEvent | String | stateless channel for sending events to the API, see list below for valid commands |
 
-The channel `sendEvent` accepts valid Sensor Event Definitions as well as the corresponding ID. 
-The following table contains all currently accepted Sensor Event Definitions that can be passed as String type commands. 
-As soon as new events are added to the API, you can use their ID, even if the Definition is not yet added to this list. 
+The channel `sendEvent` accepts valid Sensor Event Definitions as well as the corresponding ID.
+The following table contains all currently accepted Sensor Event Definitions that can be passed as String type commands.
+As soon as new events are added to the API, you can use their ID, even if the Definition is not yet added to this list.
 For more information about the API, you can have a look at the [C&S Sync API](https://cunds-syncapi.azurewebsites.net/ApiDocumentation).
 
 | Valid String Type Commands |
@@ -114,14 +111,13 @@ For more information about the API, you can have a look at the [C&S Sync API](ht
 | NUMBERPERSONS |
 | BRIGHTNESSZONE |
 
-
 ## Full Example
 
 Here is an example for the textual configuration. You can of course use the Administration section of the GUI as well.
 
 demo.things:
 
-```
+```java
 Bridge mcd:mcdBridge:exampleBridge [userEmail="your.email@examle.com", userPassword="your.password"]{
     Thing mcd:mcdSensor:examlpeSensor [serialNumber="123"]
     Thing mcd:mcdSensor:secondExamlpeSensor [serialNumber="456"]
@@ -130,14 +126,14 @@ Bridge mcd:mcdBridge:exampleBridge [userEmail="your.email@examle.com", userPassw
 
 demo.items:
 
-```
+```java
 String lastValue "Last Value" {channel="mcd:mcdSensor:examlpeSensor:lastValue"}
 String sendEvent "Send Event" {channel="mcd:mcdSensor:examlpeSensor:sendEvent"}
 ```
 
 demo.sitemap:
 
-```
+```perl
 Text item=sendEvent
 Text item=lastValue
 ```

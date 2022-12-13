@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="tapocontrol"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- L930 THING-TYPE (Multicolor LED-Lightstrip) -->
+	<thing-type id="L930">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>L930 LightStrip</label>
+		<description>Tapo Smart Multicolor LED-Lightstrip with ZoneControl</description>
+		<channel-groups>
+			<channel-group id="actuator" typeId="lightStrip"/>
+			<channel-group id="device" typeId="deviceState"/>
+		</channel-groups>
+		<representation-property>macAddress</representation-property>
+
+		<config-description-ref uri="thing-type:tapo:device"/>
+	</thing-type>
+</thing:thing-descriptions>

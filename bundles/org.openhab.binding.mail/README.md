@@ -54,7 +54,7 @@ Channels with type `UNREAD` give the number on unread mails in that folder.
 
 mail.things:
 
-```
+```java
 Thing mail:smtp:samplesmtp [ hostname="smtp.example.com", sender="mail@example.com", security="SSL", username="user", password="pass" ]
 
 Thing mail:imap:sampleimap [ hostname="imap.example.com", security="SSL", username="user", password="pass" ] {
@@ -66,14 +66,14 @@ Thing mail:imap:sampleimap [ hostname="imap.example.com", security="SSL", userna
 
 mail.items:
 
-```
+```java
 Number InboxTotal  "INBOX [%d]"        { channel="mail:imap:sampleimap:inbox_total" }
 Number InboxUnread "INBOX Unread [%d]" { channel="mail:imap:sampleimap:inbox_unread" }
 ```
 
 mail.sitemap:
 
-```
+```perl
 sitemap demo label="Main Menu"
 {
     Frame {
@@ -88,12 +88,12 @@ sitemap demo label="Main Menu"
 This binding includes rule actions for sending email.
 Six different actions available:
 
-* `boolean success = sendMail(String recipient, String subject, String text)`
-* `boolean success = sendMailWithAttachment(String recipient, String subject, String text, String URL)`
-* `boolean success = sendMailWithAttachments(String recipient, String subject, String text, List<String> URL)`
-* `boolean success = sendHtmlMail(String recipient, String subject, String htmlContent)`
-* `boolean success = sendHtmlMailWithAttachment(String recipient, String subject, String htmlContent, String URL)`
-* `boolean success = sendHtmlMailWithAttachments(String recipient, String subject, String htmlContent, List<String> URL)`
+- `boolean success = sendMail(String recipient, String subject, String text)`
+- `boolean success = sendMailWithAttachment(String recipient, String subject, String text, String URL)`
+- `boolean success = sendMailWithAttachments(String recipient, String subject, String text, List<String> URL)`
+- `boolean success = sendHtmlMail(String recipient, String subject, String htmlContent)`
+- `boolean success = sendHtmlMailWithAttachment(String recipient, String subject, String htmlContent, String URL)`
+- `boolean success = sendHtmlMailWithAttachments(String recipient, String subject, String htmlContent, List<String> URL)`
 
 The `sendMail(...)` send a plain text mail (with attachments if supplied).
 The `sendHtmlMail(...)` send a HTML mail (with attachments if supplied).
@@ -111,14 +111,14 @@ Using different character sets may produce unwanted results.
 
 Examples:
 
-```
+```java
 val mailActions = getActions("mail","mail:smtp:samplesmtp")
 val success = mailActions.sendMail("mail@example.com", "Test subject", "This is the mail content.")
 success = mailActions.sendMail("mail1@example.com, mail2@example.com", "Test subject", "This is the mail content sent to multiple recipients.")
 
 ```
 
-```
+```java
 import java.util.List
 
 val List<String> attachmentUrlList = newArrayList(
@@ -135,7 +135,7 @@ For example if you want e-mails sent by this binding to be grouped into a "threa
 Headers can be added inside a rule by calling the `mailActions.addHeader()` method before calling the respective `mailActions.sendMail()` method.
 See the example below.
 
-```
+```java
 rule "Send Mail with a 'Reference' header; for threaded view in e-mail client"
 when
     ...

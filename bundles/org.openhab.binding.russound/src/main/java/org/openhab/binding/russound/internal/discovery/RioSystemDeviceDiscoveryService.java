@@ -247,7 +247,7 @@ public class RioSystemDeviceDiscoveryService extends AbstractDiscoveryService {
             final String r = listener.getResponse();
             final Matcher m = respPattern.matcher(r);
             if (m.matches() && m.groupCount() >= groupNum) {
-                logger.debug("Message '{}' returned an valid response: {}", message, r);
+                logger.debug("Message '{}' returned a valid response: {}", message, r);
                 return m.group(groupNum);
             }
             logger.debug("Message '{}' returned an invalid response: {}", message, r);

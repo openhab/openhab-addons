@@ -14,11 +14,14 @@ package org.openhab.binding.bosesoundtouch.internal;
 
 import java.util.Collection;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link ContentItemMaker} class makes ContentItems for sources
  *
  * @author Thomas Traunbauer - Initial contribution
  */
+@NonNullByDefault
 public class ContentItemMaker {
 
     private final PresetContainer presetContainer;

@@ -79,10 +79,10 @@ public class BooleanItemReader {
                 || (trueThreshold != null && baseItem instanceof NumberItem))) {
             if (trueThreshold != null) {
                 logger.warn("Item {} is a {} instead of the expected SwitchItem, ContactItem, NumberItem or StringItem",
-                        item.getName(), item.getClass().getName());
+                        item.getName(), item.getClass().getSimpleName());
             } else {
                 logger.warn("Item {} is a {} instead of the expected SwitchItem, ContactItem or StringItem",
-                        item.getName(), item.getClass().getName());
+                        item.getName(), item.getClass().getSimpleName());
             }
         }
     }

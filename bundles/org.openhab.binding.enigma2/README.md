@@ -324,7 +324,7 @@ actions.sendQuestion("Say hello?")
 
 ### sendQuestion(text, timeout)
 
-Sends an question message to the device with will be shown on the TV screen.
+Sends a question message to the device with will be shown on the TV screen.
 The answer is provided to the "answer"-channel.
 
 Parameters:

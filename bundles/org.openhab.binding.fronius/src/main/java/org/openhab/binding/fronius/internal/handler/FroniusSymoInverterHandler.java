@@ -163,7 +163,7 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
      * get flow data for a specific inverter.
      *
      * @param number The inverter object of the given index
-     * @return an PowerFlowRealtimeInverter object.
+     * @return a PowerFlowRealtimeInverter object.
      */
     private PowerFlowRealtimeInverter getInverter(final String number) {
         return powerFlowResponse.getBody().getData().getInverters().get(number);

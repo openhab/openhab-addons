@@ -37,7 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link Telnet} is an Telnet Client which handles the connection
+ * The {@link Telnet} is a Telnet Client which handles the connection
  * to a network via the Telnet interface
  *
  * @author Johannes Einig - Initial contribution

@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * An exception that occurred while communicating with an groupepsa or an groupepsa bridge
+ * An exception that occurred while communicating with a groupepsa or a groupepsa bridge
  *
  * @author Arjan Mels - Initial contribution
  */
