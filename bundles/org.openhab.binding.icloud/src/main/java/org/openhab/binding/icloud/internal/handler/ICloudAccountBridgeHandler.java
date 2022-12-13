@@ -109,6 +109,7 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
             authState = AuthState.INITIAL;
         }
 
+        updateStatus(ThingStatus.UNKNOWN);
         Callable<?> initialAuthentication = () -> callApiWithRetryAndExceptionHandling(() -> {
             logger.debug("Dummy call for initial authentication.");
             return null;
