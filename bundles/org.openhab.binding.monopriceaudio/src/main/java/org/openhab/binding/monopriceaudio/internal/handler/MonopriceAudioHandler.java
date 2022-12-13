@@ -64,6 +64,7 @@ import org.slf4j.LoggerFactory;
  * Based on the Rotel binding by Laurent Garnier
  *
  * @author Michael Lobstein - Initial contribution
+ * @author Michael Lobstein - Add support for additional amplifier types
  */
 @NonNullByDefault
 public class MonopriceAudioHandler extends BaseThingHandler implements MonopriceAudioMessageEventListener {
@@ -448,9 +449,6 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
     @Override
     public void onNewMessageEvent(MonopriceAudioMessageEvent evt) {
         String key = evt.getKey();
-        if (!MonopriceAudioConnector.KEY_ERROR.equals(key)) {
-            updateStatus(ThingStatus.ONLINE);
-        }
 
         switch (key) {
             case MonopriceAudioConnector.KEY_ZONE_UPDATE:
@@ -469,12 +467,6 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
 
             case MonopriceAudioConnector.KEY_PING:
                 lastPollingUpdate = System.currentTimeMillis();
-                break;
-
-            case MonopriceAudioConnector.KEY_ERROR:
-                logger.debug("Reading feedback message failed");
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Reading thread ended");
-                closeConnection();
                 break;
 
             default:

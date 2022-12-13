@@ -32,15 +32,13 @@ import org.slf4j.LoggerFactory;
  *
  * @author Laurent Garnier - Initial contribution
  * @author Michael Lobstein - Adapted for the MonopriceAudio binding
+ * @author Michael Lobstein - Add support for additional amplifier types
  */
 @NonNullByDefault
 public abstract class MonopriceAudioConnector {
-    public static final String READ_ERROR = "Command Error.";
-
     // Message types
     public static final String KEY_ZONE_UPDATE = "zone_update";
     public static final String KEY_PING = "ping";
-    public static final String KEY_ERROR = "error";
 
     private final Logger logger = LoggerFactory.getLogger(MonopriceAudioConnector.class);
 
@@ -262,11 +260,6 @@ public abstract class MonopriceAudioConnector {
         String message = new String(incomingMessage, StandardCharsets.US_ASCII).trim();
 
         if (EMPTY.equals(message)) {
-            return;
-        }
-
-        if (READ_ERROR.equals(message)) {
-            dispatchKeyValue(KEY_ERROR, EMPTY);
             return;
         }
 

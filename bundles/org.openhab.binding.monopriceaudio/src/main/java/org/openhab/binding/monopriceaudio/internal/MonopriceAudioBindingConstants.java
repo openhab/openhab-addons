@@ -20,6 +20,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * used across the whole binding.
  *
  * @author Michael Lobstein - Initial contribution
+ * @author Michael Lobstein - Add support for additional amplifier types
  */
 @NonNullByDefault
 public class MonopriceAudioBindingConstants {

@@ -37,6 +37,7 @@ import org.osgi.service.component.annotations.Reference;
  * handlers.
  *
  * @author Michael Lobstein - Initial contribution
+ * @author Michael Lobstein - Add support for additional amplifier types
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.monopriceaudio", service = ThingHandlerFactory.class)
