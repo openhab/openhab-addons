@@ -107,30 +107,40 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndAutoClos
     }
 
     @Override
-    public Object invokeMethod(Object o, String s, Object... objects) throws ScriptException, NoSuchMethodException {
+    public Object invokeMethod(Object o, String s, Object... objects)
+            throws ScriptException, NoSuchMethodException, NullPointerException, IllegalArgumentException {
         try {
             beforeInvocation();
             return afterInvocation(super.invokeMethod(o, s, objects));
         } catch (ScriptException se) {
             throw afterThrowsInvocation(se);
-        } catch (NoSuchMethodException e) { // Make sure to unlock on a NoSuchMethodException to avoid deadlocks
-            throw (NoSuchMethodException) afterInvocation(e); // This exception shouldn't be handled by the
-                                                              // OpenHABGraalJSScriptEngine, so don't use
-                                                              // afterThrowsInvocation
+        } catch (Exception e) { // Make sure to unlock on exceptions from Invocable.invokeMethod to avoid deadlocks
+            // These exceptions shouldn't be handled by the OpenHABGraalJSScriptEngine, so don't use
+            // afterThrowsInvocation
+            if (e instanceof NoSuchMethodException) {
+                throw (NoSuchMethodException) afterInvocation(e);
+            } else if (e instanceof IllegalArgumentException) {
+                throw (IllegalArgumentException) afterInvocation(e);
+            }
+            return afterInvocation(e); // Avoid "missing return statement" warnings
         }
     }
 
     @Override
-    public Object invokeFunction(String s, Object... objects) throws ScriptException, NoSuchMethodException {
+    public Object invokeFunction(String s, Object... objects)
+            throws ScriptException, NoSuchMethodException, NullPointerException {
         try {
             beforeInvocation();
             return afterInvocation(super.invokeFunction(s, objects));
         } catch (ScriptException se) {
             throw afterThrowsInvocation(se);
-        } catch (NoSuchMethodException e) { // Make sure to unlock on a NoSuchMethodException to avoid deadlocks
-            throw (NoSuchMethodException) afterInvocation(e); // This exception shouldn't be handled by the
-                                                              // OpenHABGraalJSScriptEngine, so don't use
-                                                              // afterThrowsInvocation
+        } catch (Exception e) { // Make sure to unlock on exceptions from Invocable.invokeFunction to avoid deadlocks
+            // These exceptions shouldn't be handled by the OpenHABGraalJSScriptEngine, so don't use
+            // afterThrowsInvocation
+            if (e instanceof NoSuchMethodException) {
+                throw (NoSuchMethodException) afterInvocation(e);
+            }
+            return afterInvocation(e); // Avoid "missing return statement" warnings
         }
     }
 }

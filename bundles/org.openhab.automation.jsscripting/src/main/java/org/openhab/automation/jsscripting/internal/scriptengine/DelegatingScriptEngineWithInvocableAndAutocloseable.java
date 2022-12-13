@@ -109,7 +109,8 @@ public abstract class DelegatingScriptEngineWithInvocableAndAutocloseable<T exte
     }
 
     @Override
-    public Object invokeMethod(Object o, String s, Object... objects) throws ScriptException, NoSuchMethodException {
+    public Object invokeMethod(Object o, String s, Object... objects)
+            throws ScriptException, NoSuchMethodException, IllegalArgumentException {
         return delegate.invokeMethod(o, s, objects);
     }
 
