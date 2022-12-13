@@ -188,6 +188,7 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
                     }
                 } catch (ICloudApiResponseException e) {
                     logger.debug("ICloudApiResponseException with status code {}", e.getStatusCode());
+                    lastException = e;
                     if (e.getStatusCode() == 450) {
                         checkLogin();
                     }
