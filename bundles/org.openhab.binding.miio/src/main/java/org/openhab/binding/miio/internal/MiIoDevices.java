@@ -390,6 +390,7 @@ public enum MiIoDevices {
     ZHIMI_AIRP_CPA4("zhimi.airp.cpa4", "Xiaomi Smart Air Purifier 4 Compact", THING_TYPE_BASIC),
     ZHIMI_AIRP_MB4A("zhimi.airp.mb4a", "Mi Air Purifier 3C", THING_TYPE_BASIC),
     ZHIMI_AIRP_MB5("zhimi.airp.mb5", "Xiaomi Smart Air Purifier 4", THING_TYPE_BASIC),
+    ZHIMI_AIRP_VB4("zhimi.airp.vb4", "Xiaomi Smart Air Purifier 4 Pro", THING_TYPE_BASIC),
     ZHIMI_AIRPURIFIER_M1("zhimi.airpurifier.m1", "Mi Air Purifier 2 (mini)", THING_TYPE_BASIC),
     ZHIMI_AIRPURIFIER_M2("zhimi.airpurifier.m2", "Mi Air Purifier 2", THING_TYPE_BASIC),
     ZHIMI_AIRPURIFIER_MA1("zhimi.airpurifier.ma1", "Mi Air Purifier 2S", THING_TYPE_BASIC),
